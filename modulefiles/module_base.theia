@@ -1,0 +1,14 @@
+#%Module######################################################################
+##
+##      FV3GFS prerequisites
+##      Installed by:  Samuel Trahan (Samuel.Trahan@noaa.gov)
+##	Installed on:  2017-July-11
+##
+
+module load intel/16.1.150
+module load impi/5.1.2.150
+module load wgrib2
+module load hpss
+module load netcdf
+module load nco
+module load hdf5/1.8.14

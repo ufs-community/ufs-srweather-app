@@ -1,0 +1,157 @@
+#!/bin/sh
+
+set -xa
+export PS4='$SECONDS + '
+date
+
+###################################
+# Load the GRIB Utilities module
+####################################
+#. /usrx/local/Modules/default/init/ksh
+#module load util_shared/v1.0.0
+
+########################################
+# GFS TRACK OF TROPICAL CYCLONES GENERATION
+########################################
+
+export RUN_ENVIR=${RUN_ENVIR:-nco}
+export envir=${envir:-prod}
+export envir_getges=${envir_getges:-prod}
+export COMROOT=${COMROOT:-/com2}
+export NWROOT=${NWROOT:-/nwprod2}
+export COMROOTp1=${COMROOTp1:-/com}
+export NWROOTp1=${NWROOTp1:-/nwprod}
+export DCOMROOT=${DCOMROOT:-/dcom}
+export DBNROOT=${DBNROOT:-$NWROOTp1/spa_util/fakedbn}
+export global_shared_ver=${global_shared_ver:-${gfs_ver}}
+
+# 
+# obtain unique process id (pid) and make temp directories
+#
+export pid=$$
+export DATA=${DATA:-$DATAROOT/${job}.${pid}}
+if [ ! -d ${DATA} ]; then
+  mkdir -p $DATA
+fi
+cd $DATA 
+
+if [ ${RUN_ENVIR} != 'nco' ]; then
+  export jlogfile=${jlogfile:-$COMROOT/logs/${envir}/jlogfile}
+  export SENDDBN=${SENDDBN:-NO}
+#  module load prod_util
+fi
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export outid="LL$job"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+
+export cycle=t${cyc}z 
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+############################################
+
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+
+#################################
+# Set up the NET and RUN
+#################################
+export NET=gfs
+export RUN=gfs
+export model=gfs
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
+export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+
+export HOMEglobal=${HOMEglobal:-${NWROOT}/global_shared.${global_shared_ver}}
+export HOMERELO=${HOMERELO:-$HOMEglobal}
+export USHRELO=${USHtropcy:-$HOMERELO/ush}
+
+###################################
+# Set up the UTILITIES
+###################################
+export machine=${machine:-WCOSS_C}
+if [ $machine = WCOSS_C ] ; then
+   export APRNGETTX="aprun -j1 -n1 -N1 -d1"
+fi
+
+###################################
+# Run the setpdy script
+###################################
+# Run setpdy and initialize PDY variables
+setpdy.sh
+. PDY
+
+#export PDY=20161221
+
+########################################
+# Set up the input/output directory
+########################################
+
+
+export COMINgfs=${COMINgfs:-${COMROOT}/gfs/${envir}/gfs.${PDY}}
+export COMINgdas=${COMINgdas:-${COMROOT}/gfs/${envir}/gdas.${PDY}}
+export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export ATCFdir=${ATCFdir:-${COMROOTp1}/nhc/${envir}/atcf}
+
+export APRUNTRACK=${APRUNTRACK:-""}
+
+echo $COMINgfs
+
+if [ ! -d ${COMOUT} ]; then 
+  mkdir -p $COMOUT
+fi
+ 
+env
+
+########################################################
+# Execute the script.
+export cmodel=gfs
+export FHMAX2=252
+gfstrackhour1=180; gfstrackhour2=252
+if [ $gfstrackhour1 -gt $FHMAX2 ]; then gfstrackhour1=$FHMAX2 ; fi
+if [ $gfstrackhour2 -gt $FHMAX2 ]; then gfstrackhour2=$FHMAX2 ; fi
+
+if [[ $cmodel = gdas ]]; then
+    ${APRUNTRACK} ${PARATRKR:-$USHRELO/global_extrkr.sh} --gdas-last-hour 9
+#    cp $DATA/trak.gfso.atcfunix.$CDATE $COMOUT/gdas.$cycle.cyclone.trackatcfunix
+else
+    # Run first tracker for 180 hours for NHC/JTWC operational forecast:
+    ${APRUNTRACK} ${PARATRKR:-$USHRELO/global_extrkr.sh}
+#    ${APRUNTRACK} ${PARATRKR:-$USHRELO/global_extrkr.sh} --gfs-last-hour $gfstrackhour1 --wait-for-data 900
+#    cp $DATA/trak.gfso.atcfunix.$CDATE $COMOUT/gfso.$cycle.cyclone.trackatcfunix
+    # Run a second tracker for 252 hours for experimental ten day forecasts:
+#    if [ $gfstrackhour2 -gt $gfstrackhour1 ]; then
+#     export SENDNHC=NO
+#     ${APRUNTRACK} ${PARATRKR:-$USHRELO/global_extrkr.sh} --gfs-last-hour $gfstrackhour2 --wait-for-data 900
+#     cp $DATA/trak.gfso.atcfunix.$CDATE $COMOUT/gfso.$cycle.252hr.trackatcfunix
+#    fi
+fi
+
+#${APRUNTRACK} $USHRELO/global_extrkr.sh --gfs-last-hour $gfstrackhour1 --wait-for-data 900
+########################################################
+
+cd $DATAROOT
+if [ ${KEEPDATA:-NO} != YES ]; then
+  rm -rf $DATA
+fi
+
+date
