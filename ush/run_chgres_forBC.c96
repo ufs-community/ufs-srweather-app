@@ -1,0 +1,142 @@
+#!/bin/ksh
+#----WCOSS_CRAY JOBCARD
+##BSUB -L /bin/sh
+#BSUB -P FV3GFS-T2O
+#BSUB -oo log.chgres_forBC.%J
+#BSUB -eo log.chgres_forBC.%J
+#BSUB -J chgres_fv3
+#BSUB -q debug
+#BSUB -W 00:30
+#BSUB -M 1024
+#BSUB -extsched 'CRAYLINUX[]'
+#----WCOSS JOBCARD
+##BSUB -L /bin/sh
+##BSUB -P FV3GFS-T2O
+##BSUB -oo log.chgres.%J
+##BSUB -eo log.chgres.%J
+##BSUB -J chgres_fv3
+##BSUB -q devonprod
+##BSUB -x
+##BSUB -a openmp
+##BSUB -n 24
+##BSUB -R span[ptile=24]
+#----THEIA JOBCARD
+#PBS -l nodes=1:ppn=24
+#PBS -l walltime=0:40:00
+#PBS -A fv3-cpu
+#PBS -N chgres_fv3_bc
+##PBS -q debug
+#PBS -q batch
+#PBS -o log.chgres_forBC.$PBS_JOBID
+#PBS -e log.chgres_forBC.$PBS_JOBID
+#
+set -x
+#
+#
+# the following exports can all be set or just will default to what is in global_chgres_driver.sh
+#
+export gtype=regional              # grid type = uniform, stretch, or nest
+export OMP_NUM_THREADS_CH=24       #default for openMP threads
+export machine=THEIA             #WCOSS_C,WCOSS,THEIA
+export CASE=C96                    # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
+export CDATE=2018032700            # format yyyymmddhh yyyymmddhh ...
+export LEVS=64
+export LSOIL=4
+export ictype=opsgfs              # opsgfs for q3fy17 gfs with new land datasets; oldgfs for q2fy16 gfs.
+export nst_anl=.false.             # false or true to include NST analysis
+#
+#
+#
+if [ $machine = WCOSS_C ]; then
+ export NODES=28
+ . $MODULESHOME/init/sh 2>>/dev/null
+ module load PrgEnv-intel prod_envir  cfp-intel-sandybridge/1.1.0 2>>/dev/null
+ module list
+ export KMP_AFFINITY=disabled
+ export FIXgsm=/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_am
+ export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
+ export INIDIR=/gpfs/hps/nco/ops/com/gfs/prod/gfs.$ymd
+ export HOMEgfs=$LS_SUBCWD/..
+ export BASE_GSM=/gpfs/hps3/emc/meso/noscrub/${LOGNAME}/fv3gfs
+elif [ $machine = WCOSS ]; then
+ . /usrx/local/Modules/default/init/sh 2>>/dev/null
+ module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
+ module list
+ export APRUNC="time"
+elif [ $machine = THEIA ]; then
+ . /apps/lmod/lmod/init/sh
+ module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
+ module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
+ module list
+ export BASE_GSM=/scratch4/NCEPDEV/meso/noscrub/${LOGNAME}/fv3gfs
+ export FIXgsm=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am
+ export DATA=/scratch4/NCEPDEV/stmp4/${LOGNAME}/wrk.chgres
+ export APRUNC="time"
+ export COMROOTp2=/scratch4/NCEPDEV/rstprod/com
+ export ymd=`echo $CDATE | cut -c 1-8`
+ export INIDIR=$COMROOTp2/gfs/prod/gfs.$ymd
+ export HOMEgfs=$PBS_O_WORKDIR/..
+ ulimit -a
+ ulimit -s unlimited
+else
+ echo "$machine not supported, exit"
+ exit
+fi
+export FIXfv3=$BASE_GSM/fix/fix_fv3
+export CDAS=gfs                  # gfs or gdas
+CRES=`echo $CASE | cut -c 2-`
+export OUTDIR=$FIXfv3/C${CRES}
+#
+# if this is generating data for a regional run,
+# now create the boundary data except for the initial data since
+# that was created in the earlier call above
+#
+# start at hour 3 and create BC's every 3 hours
+#
+#
+# set the links to use the 4 halo grid and orog files
+# these are necessary for creating the boundary data
+#
+ ln -sf $FIXfv3/$CASE/${CASE}_grid.tile7.halo4.nc $FIXfv3/$CASE/${CASE}_grid.tile7.nc
+ ln -sf $FIXfv3/$CASE/${CASE}_oro_data.tile7.halo4.nc $FIXfv3/$CASE/${CASE}_oro_data.tile7.nc
+#
+hour=3
+end_hour=24
+while (test "$hour" -le "$end_hour")
+ do
+  if [ $hour -lt 10 ]; then
+   hour_name='00'$hour
+  elif [ $hour -lt 100 ]; then
+   hour_name='0'$hour
+  else
+   hour_name=$hour
+  fi
+ if [ $machine = WCOSS_C ]; then
+#
+#create input file for cfp in order to run multiple copies of global_chgres_driver.sh simultaneously
+#
+#since we are going to run simulataneously, we want different working directories for each hour
+#
+  BC_DATA=/gpfs/hps3/ptmp/${LOGNAME}/wrk.chgres.$hour_name
+  echo "env REGIONAL=2 bchour=$hour_name DATA=$BC_DATA $BASE_GSM/ush/global_chgres_driver.sh >&out.chgres.$hour_name" >>bcfile.input
+ elif [ $machine = THEIA ]; then
+#
+#for now on theia run the BC creation sequentially
+#
+  export REGIONAL=2
+  export HALO=4
+  export bchour=$hour_name
+  $BASE_GSM/ush/global_chgres_driver.sh
+ fi
+   hour=`expr $hour + 3`
+done
+#
+# for WCOSS_C we now run BC creation for all hours simultaneously
+#
+ if [ $machine = WCOSS_C ]; then
+  export APRUNC=time
+  export OMP_NUM_THREADS_CH=24      #default for openMP threads
+  aprun -j 1 -n 28 -N 1 -d 24 -cc depth cfp bcfile.input
+  rm bcfile.input
+ fi
+exit
