@@ -1,0 +1,25 @@
+total_member:            1
+print_esmf:              .true.
+PE_MEMBER01:             NPES 
+start_year:              YYYY
+start_month:             MM
+start_day:               DD 
+start_hour:              00
+start_minute:            0
+start_second:            0
+nhours_fcst:             ENDHOUR
+RUN_CONTINUE:            .false.
+ENS_SPS:                 .false.
+cpl:                     .false.
+
+dt_atmos:                450
+calendar:                'julian'
+memuse_verbose:          .false.
+atmos_nthreads:          1
+use_hyper_thread:        .false.
+ncores_per_node:         24
+debug_affinity:          .true.
+restart_interval:        0
+
+quilting:                .false.
+

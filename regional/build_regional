@@ -31,7 +31,7 @@ elif [ ${SITE} == "wcoss_cray" ]; then
 
 elif [ ${SITE} == "odin" ]; then
 
-    ln -fs /......../fv3gfs/fix/fix_am fix_am
+    ln -fs /scratch/ywang/test_runs/C768_nest/fv3-fix fix_am
 
 else
     echo "Unknown site " ${SITE}

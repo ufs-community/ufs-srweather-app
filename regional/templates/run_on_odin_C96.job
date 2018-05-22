@@ -1,0 +1,199 @@
+#!/bin/bash
+#SBATCH -A smallqueue
+#SBATCH -p workq
+#SBATCH -J fv3_regional
+#SBATCH -N 1 -n 24
+#SBATCH --ntasks-per-node=24
+#SBATCH --exclusive
+#SBATCH -t 08:45:00
+#SBATCH -o WWWDDD/fv3_EEEDDD_%j.out
+#SBATCH -e WWWDDD/fv3_EEEDDD_%j.err
+
+
+export eventdate=EEEDDD   #${eventdate:-20180102}
+export ymdh=${eventdate}00
+export ymd=`echo $ymdh |cut -c 1-8`
+export yyy=`echo $ymdh |cut -c 1-4`
+export mmm=`echo $ymdh |cut -c 5-6`
+export ddd=`echo $ymdh |cut -c 7-8`
+
+# should be defined in the calling script
+CASE=CCCCCC
+ENDHOUR=HHHHHH
+
+time1=$(date '+%s')
+echo "Job Started: $(date). Job Id:  $SLURM_JOBID"
+echo " "
+
+#set -eux
+#. /apps/lmod/lmod/init/sh
+#
+#module purge
+##module load intel/16.1.150 impi/5.1.2.150 netcdf/4.3.0
+#module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0
+#module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
+#module load esmf/7.1.0bs34.1
+#module list
+
+#module load newdefaults intel/2016.2.181 mvapich2/1.8 szip hdf5 netcdf4/4.2.1.1
+
+function module ()
+{
+    eval `/opt/cray/pe/modules/3.2.10.6/bin/modulecmd bash $*`
+}
+
+module use /scratch/ywang/external/modulefiles
+module load bacio/v2.0.2
+module load sp/v2.0.2
+module load ip/v3.0.0
+module load w3nco/v2.0.6
+module load w3emc/v2.3.0
+module load nemsio/v2.2.2
+
+module load esmf/7.1.0beta
+
+ulimit -s unlimited
+ulimit -a
+
+export PSM_TID_SENDSESSIONS_MAX=16384
+export OMP_NUM_THREADS=1
+##export OMP_STACKSIZE=1024m
+export ESMF_RUNTIME_COMPLIANCECHECK=OFF:depth=4
+export KMP_AFFINITY=scatter
+
+#export BASEDIR=FV3DDD         #${FV3DIR:-/scratch/ywang/external/fv3gfs}
+export FIX_AM=/scratch/ywang/external/emcfv3/fv3gfs/trunk/global_shared.v15.0.0/fix/fix_am
+export CO2DIR=$FIX_AM/fix_co2_proj
+
+export templates=FV3TTT
+
+export FIXDIR=WWWDDD
+export GFSDIR=WWWDDD/chgres_${CASE}_${eventdate}
+
+##WRKDIR=/scratch4/NCEPDEV/meso/noscrub/$LOGNAME/work_FV3_nest_C96_2017060700
+WRKDIR=WWWDDD/fv3_${CASE}_${eventdate}00
+if [[ -d $WRKDIR ]]; then
+  rm -rf $WRKDIR
+fi
+mkdir -p $WRKDIR
+cd $WRKDIR
+
+cp $templates/diag_table .
+cp $templates/data_table .
+cp $templates/field_table .
+cp $templates/input_${CASE}.nml input.nml
+cp $templates/model_configure .
+cp $templates/nems.configure .
+
+sed -i -e "/YYYYMMDD/s/YYYYMMDD/$ymd/" diag_table
+sed -i -e "/YYYY/s/YYYY/$yyy/"         diag_table
+sed -i -e "/MM/s/MM/$mmm/"             diag_table
+sed -i -e "/DD/s/DD/$ddd/"             diag_table
+
+sed -i -e "/YYYY/s/YYYY/$yyy/" model_configure
+sed -i -e "/MM/s/MM/$mmm/"     model_configure
+sed -i -e "/DD/s/DD/$ddd/"     model_configure
+
+layout_x="4"
+layout_y="6"
+io_layout="1,1"
+npes=$((${layout_x} * ${layout_y}))
+npx=211
+npy=193
+
+sed -i -e "/NPES/s/NPES/${npes}/;/nhours_fcst/s/ENDHOUR/${ENDHOUR}/"  model_configure
+
+sed -i -e "/LAYOUT/s/LAYOUTX/${layout_x}/;s/LAYOUTY/${layout_y}/" input.nml
+sed -i -e "/LAYOUT/s/LAYOUTIO/${io_layout}/"                      input.nml
+sed -i -e "/npx/s/NPX/${npx}/;/npy/s/NPY/${npy}/"                 input.nml
+
+sed -i -e "/FIX_AM/s#FIX_AM#${FIX_AM}#"      input.nml
+
+mkdir RESTART
+mkdir INPUT
+
+#export IOBUF_PARAMS="*:size=64M:verbose,%stdout:sync:size=1M:verbose,%stderr:sync:size=1M:verbose"
+#
+cp -p $FIX_AM/global_solarconstant_noaa_an.txt  solarconstant_noaa_an.txt
+cp -p $FIX_AM/global_o3prdlos.f77               global_o3prdlos.f77
+cp -p $FIX_AM/global_sfc_emissivity_idx.txt     sfc_emissivity_idx.txt
+cp -p $FIX_AM/global_co2historicaldata_glob.txt co2historicaldata_glob.txt
+cp -p $FIX_AM/co2monthlycyc.txt                 co2monthlycyc.txt
+cp -p $FIX_AM/global_climaeropac_global.txt     aerosol.dat
+#
+for file in `ls $CO2DIR/global_co2historicaldata* ` ; do
+  cp $file $(echo $(basename $file) |sed -e "s/global_//g")
+done
+
+#-----------------------------------------------------------------------
+# copy tile data and orography
+#-----------------------------------------------------------------------
+cp -p $FIXDIR/fix_${CASE}/${CASE}/${CASE}_grid.tile7.halo3.nc INPUT/
+cp -p $FIXDIR/fix_${CASE}/${CASE}/${CASE}_grid.tile7.halo4.nc INPUT/
+cp -p $FIXDIR/fix_${CASE}/${CASE}/${CASE}_mosaic.nc INPUT/
+
+cp -p $FIXDIR/fix_${CASE}/${CASE}/${CASE}_oro_data.tile7.halo0.nc INPUT/
+cp -p $FIXDIR/fix_${CASE}/${CASE}/${CASE}_oro_data.tile7.halo4.nc INPUT/
+
+cd INPUT
+ln -sf ${CASE}_grid.tile7.halo3.nc     ${CASE}_grid.tile7.nc
+ln -sf ${CASE}_grid.tile7.halo4.nc     grid.tile7.halo4.nc
+ln -sf ${CASE}_oro_data.tile7.halo4.nc ${CASE}_oro_data.tile7.nc
+ln -sf ${CASE}_oro_data.tile7.halo4.nc oro_data.tile7.halo4.nc
+ln -sf ${CASE}_oro_data.tile7.halo4.nc oro_data.tile7.nc
+ln -sf ${CASE}_oro_data.tile7.halo4.nc oro_data.nc
+ln -sf ${CASE}_mosaic.nc               grid_spec.nc
+
+cd $WRKDIR
+
+#-----------------------------------------------------------------------
+# copy GFS datasets
+#-----------------------------------------------------------------------
+#
+ln -sf $GFSDIR/gfs_bndy.tile7.???.nc INPUT/
+ln -sf $GFSDIR/gfs_data.tile7.nc INPUT/
+ln -sf $GFSDIR/sfc_data.tile7.nc INPUT/
+
+ln -s $GFSDIR/gfs_ctrl.nc INPUT/gfs_ctrl.nc
+
+cd INPUT
+ln -sf gfs_data.tile7.nc gfs_data.nc
+ln -sf sfc_data.tile7.nc sfc_data.nc
+
+cd $WRKDIR
+
+#-----------------------------------------------------------------------
+# run the FV3 job
+#-----------------------------------------------------------------------
+#
+
+ln -sf EXEPPP fv3_gfs.x
+sleep 15
+
+#mpiexec -np $PBS_NP ./fv3_gfs.x 1>out 2>err
+srun -n $npes ./fv3_gfs.x
+
+#file=RESTART/sfc_data.nest02.tile7.nc
+#if [ -f "$file" ]
+#then
+#  mv RESTART/sfc_data.nest02.tile7.nc RESTART/sfc_data.tile7.nc
+#else
+#  echo "$file not found."
+#fi
+
+touch done.fv3
+
+time2=$(date '+%s')
+
+let diff=time2-time1
+let hour=diff/3600
+let diff=diff%3600
+let min=diff/60
+let sec=diff%60
+
+echo -n "Job   Ended: $(date). "
+printf 'Job run time:  %02d:%02d:%02d' $hour $min $sec
+echo " "
+
+exit
+

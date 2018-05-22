@@ -1,5 +1,16 @@
 #!/bin/ksh
-set -ax
+#----Odin JOBCARD
+#SBATCH -A radar
+#SBATCH -p radarq
+#SBATCH -J chgres_KKKKKK
+#SBATCH -N 1 -n 24
+#SBATCH --ntasks-per-node=24
+#SBATCH --exclusive
+#SBATCH -t 02:30:00
+#SBATCH -o WRKDIR/chgres_FFFFFF_KKKKKK_%j.out
+#SBATCH -e WRKDIR/chgres_FFFFFF_KKKKKK_%j.err
+
+#set -ax
 #-------------------------------------------------------------------------------------------------
 # Makes ICs on fv3 globally uniform cubed-sphere grid using operational GFS initial conditions.
 # Fanglin Yang, 09/30/2016
@@ -16,34 +27,31 @@ set -ax
 #  Switch to use ush/global_chgres.sh.
 #-------------------------------------------------------------------------------------------------
 
-export OMP_NUM_THREADS_CH=${OMP_NUM_THREADS_CH:-24}
-export APRUNC=${APRUNC:-"time"}
+export OMP_NUM_THREADS_CH=LLLLLL
+export APRUNC="MMMMMM"
 
-export CASE=${CASE:-C96}                     # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
-export CRES=`echo $CASE | cut -c 2-`
-export CDATE=${CDATE:-${cdate:-2017031900}}  # format yyyymmddhh yyyymmddhh ...
-export CDUMP=${CDUMP:-gfs}                   # gfs or gdas
-export LEVS=${LEVS:-65}
-export LSOIL=${LSOIL:-4}
-export REGIONAL=${REGIONAL:-0}               # default is to assume uniform grid, which is REGIONAL=0
+export REGIONAL=AAAAAA                       # default is to assume uniform grid, which is REGIONAL=0
                                              # REGIONAL=1 - generate data and boundary (for regional case)
                                              # REGIONAL=2 - generate boundaries only (for regional case)
+export HALO=NNNNNN
+export CDUMP=BBBBBB                          # gfs or gdas
+export CRES=CCCCCC
+export CDATE=FFFFFF                          # format yyyymmddhh yyyymmddhh ...
+export LEVS=64
+export LSOIL=4
 
 export VERBOSE=YES
-pwd=$(pwd)
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD/gfs.v15.0.0}
-export FIXfv3=${FIXfv3:-$HOMEgfs/fix/fix_fv3_gmted2010}
-export FIXam=${FIXam:-$HOMEgfs/fix/fix_am}
-export CHGRESEXEC=$HOMEgfs/exec/global_chgres
-export CHGRESSH=$HOMEgfs/ush/global_chgres.sh
+export FIXfv3=GGGGGG
+export HOMEgfs=JJJJJJ
+export FIXam="IIIIII"
+export bchour=KKKKKK
 
 # Location of initial conditions for GFS (before chgres) and FV3 (after chgres)
-export INIDIR=${INIDIR:-$pwd}
-export OUTDIR=${OUTDIR:-$pwd/INPUT}
+export INIDIR=DDDDDD
+export OUTDIR=EEEEEE
 mkdir -p $OUTDIR
 
-export gtype=${gtype:-uniform}	    # grid type = uniform, stretch, nest or stand alone regional
+export gtype=HHHHHH	    # grid type = uniform, stretch, nest or stand alone regional
 
 if [ $gtype = uniform ];  then
   echo "creating uniform ICs"
@@ -63,10 +71,14 @@ else
   exit 9
 fi
 
+export CASE="C${CRES}"
+export CHGRESEXEC="$HOMEgfs/exec/global_chgres"
+export CHGRESSH="$HOMEgfs/ush/global_chgres.sh"
+
 #---------------------------------------------------------------
 
 # Temporary rundirectory
-export DATA=${DATA:-${RUNDIR:-$pwd/rundir$$}}
+export DATA="TMPDIR/$bchour"
 if [ ! -s $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 8
 
@@ -74,54 +86,21 @@ export ymd=`echo $CDATE | cut -c 1-8`
 export cyc=`echo $CDATE | cut -c 9-10`
 
 # Determine if we are current operations with NSST or the one before that
-#if [ ${ATMANL:-"NULL"} = "NULL" ]; then
-# if [ -s ${INIDIR}/nsnanl.${CDUMP}.$CDATE -o -s ${INIDIR}/${CDUMP}.t${cyc}z.nstanl.nemsio ]; then
-  ictype='opsgfs'
-# else
-#  ictype='oldgfs'
-# fi
-#else
+if [ ${ATMANL:-"NULL"} = "NULL" ]; then
+  if [ -s ${INIDIR}/nsnanl.${CDUMP}.$CDATE -o -s ${INIDIR}/${CDUMP}.t${cyc}z.nstanl.nemsio ]; then
+   ictype='opsgfs'
+  else
+   ictype='oldgfs'
+  fi
+else
 # if [ ${NSTANL:-"NULL"} = "NULL" ]; then
 #  ictype='oldgfs'
 # else
-#  ictype='opsgfs'
+  ictype='opsgfs'
 # fi
-#fi
+fi
 
-if [ $ictype = oldgfs ]; then   # input data is old spectral sigio format.
-
- if [ ${ATMANL:-"NULL"} = "NULL" ]; then
-  if [ -s ${INIDIR}/siganl.${CDUMP}.$CDATE ]; then
-   export ATMANL=$INIDIR/siganl.${CDUMP}.$CDATE
-   export SFCANL=$INIDIR/sfcanl.${CDUMP}.$CDATE
-  else
-   export ATMANL=$INIDIR/${CDUMP}.t${cyc}z.sanl
-   export SFCANL=$INIDIR/${CDUMP}.t${cyc}z.sfcanl
-  fi
- fi
-
- export NSTANL="NULL"
- export SOILTYPE_INP=zobler
- export VEGTYPE_INP=sib
- export nopdpvv=.false.
-
- #--sigio to user defined lat-lon gaussian grid
- JCAP_CASE=$((CRES*2-2))
- LONB_ATM=$((CRES*4))
- LATB_ATM=$((CRES*2))
- LONB_SFC=$((CRES*4))
- LATB_SFC=$((CRES*2))
- if [ $CRES -gt 768 -o $gtype = stretch -o $gtype = nest ]; then
-   JCAP_CASE=1534
-   LONB_ATM=3072
-   LATB_ATM=1536
-   LONB_SFC=3072
-   LATB_SFC=1536
- fi
-
-elif [ $ictype = opsgfs ]; then   # input data is nemsio format.
-
- if [ ${ATMANL:-"NULL"} = "NULL" ]; then
+if [ ${ATMANL:-"NULL"} = "NULL" ]; then
   if [ -s ${INIDIR}/gfnanl.${CDUMP}.$CDATE ]; then
    export ATMANL=$INIDIR/gfnanl.${CDUMP}.$CDATE
    export SFCANL=$INIDIR/sfnanl.${CDUMP}.$CDATE
@@ -131,22 +110,21 @@ elif [ $ictype = opsgfs ]; then   # input data is nemsio format.
    export SFCANL=$INIDIR/${CDUMP}.t${cyc}z.sfcanl.nemsio
    export NSTANL=$INIDIR/${CDUMP}.t${cyc}z.nstanl.nemsio
   fi
- fi
 
- export SOILTYPE_INP=statsgo
- export VEGTYPE_INP=igbp
- export nopdpvv=.true.
+  export SOILTYPE_INP=statsgo
+  export VEGTYPE_INP=igbp
+  export nopdpvv=.true.
 
- LONB_ATM=0   # not used for
- LATB_ATM=0   # ops files
- JCAP_CASE=$((CRES*2-2))
- LONB_SFC=$((CRES*4))
- LATB_SFC=$((CRES*2))
- if [ $CRES -gt 768 -o $gtype = stretch -o $gtype = nest ]; then
-   JCAP_CASE=1534
-   LONB_SFC=3072
-   LATB_SFC=1536
- fi
+  LONB_ATM=0   # not used for
+  LATB_ATM=0   # ops files
+  JCAP_CASE=$((CRES*2-2))
+  LONB_SFC=$((CRES*4))
+  LATB_SFC=$((CRES*2))
+  if [ $CRES -gt 768 -o $gtype = stretch -o $gtype = nest ]; then
+    JCAP_CASE=1534
+    LONB_SFC=3072
+    LATB_SFC=1536
+  fi
 fi  # is input data old or new format?
 
 
@@ -269,5 +247,8 @@ else # REGIONAL = 2, just generate boundary data
   mv ${DATA}/gfs_bndy.tile7.nc $OUTDIR/gfs_bndy.tile7.${bchour}.nc
 
 fi
+
+rm -rf $DATA
+touch $OUTDIR/done.chgres_$bchour
 
 exit 0
