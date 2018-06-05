@@ -7,7 +7,7 @@ FV3GFS_DIR=$( pwd )/..
 
 cd ${FV3GFS_DIR}/sorc
 ./build_fre-nctools.sh >& out.build_fre-nctools
-./build_orog.sh        >& out.build_orog
+./build_orog.sh ${SITE} >& out.build_orog
 ./build_chgres.sh      >& out.build_chgres
 
 
