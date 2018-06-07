@@ -28,8 +28,13 @@ if [ ! -s $outdir ]; then mkdir -p $outdir ;fi
 cd $outdir ||exit 8
 
 cp $griddir/$mosaic_grid .
-cp $griddir/C${res}_grid.tile?.nc .
-cp $orodir/${topo_file}.tile?.nc .
+if [ $gtype = regional ]; then
+  cp $griddir/C${res}_grid.tile7.nc .
+  cp $orodir/${topo_file}.tile7.nc .
+else
+  cp $griddir/C${res}_grid.tile?.nc .
+  cp $orodir/${topo_file}.tile?.nc .
+fi
 cp $executable .
 
 regional=.false.

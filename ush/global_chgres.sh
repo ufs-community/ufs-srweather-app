@@ -262,6 +262,7 @@ HOMEgfs=${HOMEgfs:-$BASEDIR/gfs.${gfs_ver}}
 EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 FIXfv3=${FIXfv3:-$HOMEgfs/fix/fix_fv3_gmted2010}
 FIXam=${FIXam:-$HOMEgfs/fix/fix_am}
+GRID_OROG_INPUT_DIR=${GRID_OROG_INPUT_DIR:-$FIXfv3/$CASE}
 
 DATA=${DATA:-$(pwd)}
 #  Filenames.
@@ -363,13 +364,17 @@ ln -sf $LONSPERLAT    chgres.inp.lpl3
 
 if [ $gtype = regional ]; then
  tile=7
- ln -sf ${FIXfv3}/${CASE}/${CASE}_grid.tile${tile}.halo${HALO}.nc chgres.fv3.grd.t${tile}
- ln -sf ${FIXfv3}/${CASE}/${CASE}_oro_data.tile${tile}.halo${HALO}.nc chgres.fv3.orog.t${tile}
+# ln -sf ${FIXfv3}/${CASE}/${CASE}_grid.tile${tile}.halo${HALO}.nc chgres.fv3.grd.t${tile}
+# ln -sf ${FIXfv3}/${CASE}/${CASE}_oro_data.tile${tile}.halo${HALO}.nc chgres.fv3.orog.t${tile}
+ ln -sf ${GRID_OROG_INPUT_DIR}/${CASE}_grid.tile${tile}.halo${HALO}.nc chgres.fv3.grd.t${tile}
+ ln -sf ${GRID_OROG_INPUT_DIR}/${CASE}_oro_data.tile${tile}.halo${HALO}.nc chgres.fv3.orog.t${tile}
 else
  tile=1
  while [ $tile -le $ntiles ]; do
-  ln -sf ${FIXfv3}/C${CRES}/C${CRES}_grid.tile${tile}.nc chgres.fv3.grd.t${tile}
-  ln -sf ${FIXfv3}/C${CRES}/C${CRES}_oro_data.tile${tile}.nc chgres.fv3.orog.t${tile}
+#  ln -sf ${FIXfv3}/C${CRES}/C${CRES}_grid.tile${tile}.nc chgres.fv3.grd.t${tile}
+#  ln -sf ${FIXfv3}/C${CRES}/C${CRES}_oro_data.tile${tile}.nc chgres.fv3.orog.t${tile}
+  ln -sf ${GRID_OROG_INPUT_DIR}/C${CRES}_grid.tile${tile}.nc chgres.fv3.grd.t${tile}
+  ln -sf ${GRID_OROG_INPUT_DIR}/C${CRES}_oro_data.tile${tile}.nc chgres.fv3.orog.t${tile}
   tile=`expr $tile + 1 `
  done
 fi

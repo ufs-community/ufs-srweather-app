@@ -38,6 +38,9 @@ export FIXam=${FIXam:-$HOMEgfs/fix/fix_am}
 export CHGRESEXEC=$HOMEgfs/exec/global_chgres
 export CHGRESSH=$HOMEgfs/ush/global_chgres.sh
 
+# Location of input grid and orography files needed by chgres.
+export GRID_OROG_INPUT_DIR=${GRID_OROG_INPUT_DIR:-$FIXfv3/$CASE}
+
 # Location of initial conditions for GFS (before chgres) and FV3 (after chgres)
 export INIDIR=${INIDIR:-$pwd}
 export OUTDIR=${OUTDIR:-$pwd/INPUT}

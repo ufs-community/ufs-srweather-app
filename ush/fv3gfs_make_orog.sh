@@ -59,7 +59,18 @@ if [ ! -s $executable ]; then
   exit 1 
 fi
 
-if [ ! -s $workdir ]; then mkdir -p $workdir ;fi
+#
+# Changed this so that workdir is first removed if it already exists
+# and then recreated.  This is needed because the file gmted2010.30sec.int 
+# that is copied into workdir as fort.235 is write-protected (i.e. even
+# the owner doesn't have write permission), so if workdir already exists
+# (from a previous call to this script) and thus fort.235 already ex-
+# ists, it can't get overwritten by the new version of gmted2010.30sec.int 
+# file, resulting in possibly incorrect old files being used (bad!).
+#
+#if [ ! -s $workdir ]; then mkdir -p $workdir ;fi
+if [ -e $workdir ]; then rm -rf $workdir; fi
+mkdir -p $workdir;
 if [ ! -s $outdir ]; then mkdir -p $outdir ;fi
 
 #jcap is for Gaussian grid
