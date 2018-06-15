@@ -49,6 +49,10 @@ set -eux
 #export machine="WCOSS"
 #export machine="WCOSS_C"
 export machine="THEIA"
+#
+# Convert machine name to lower case if necessary.
+#
+#machine=$( echo "$machine" | sed -e 's/\(.*\)/\L\1/' )  # <-- Don't do this yet, maybe later; requires changing this and other scripts to use lowercase everywhere.
 # 
 # Make sure machine is set to one of the allowed values.
 #
@@ -58,7 +62,7 @@ if [ "$machine" != "WCOSS_C" ] && \
   echo
   echo "Error.  Machine specified in \"machine\" is not supported:"
   echo "  machine = $machine"
-  echo "\"machine\" must be one of:  \"WCOSS_C\"  \"WCOSS\"  \"THEIA\""
+  echo "machine must be one of:  \"WCOSS_C\"  \"WCOSS\"  \"THEIA\""
   echo "Exiting script $0."
   exit 1
 fi
@@ -130,10 +134,11 @@ export CRES="C${RES}"
 #
 #-----------------------------------------------------------------------
 #
-export CDATE="2018041000"
+#export CDATE="2018041000"
 #export CDATE="2018051000"
 #export CDATE="2018053000"
 #export CDATE="2018060100"
+export CDATE=$( date "+%Y%m%d"00 ) 
 #
 # Extract from CDATE the starting year, month, day, and hour.  These are
 # needed below for various operations.`
@@ -291,7 +296,7 @@ if [ ! -d "$INIDIR" ]; then
 # Get the PBS job id of the above qsub interactive job from the first 
 # line of the file to which stdout was redirected. 
 #
-  jobid=$(head -1 out.${job_name} | sed -r -n 's/.* ([0-9]+)\.[A-Z,a-z,0-9]+ .*/\1/p' )
+  jobid=$( head -1 out.${job_name} | sed -r -n 's/.* ([0-9]+\.[A-Z,a-z,0-9]+) .*/\1/p' )
 #
 # Rename the files into which the stdout and stderr of the above qsub 
 # command were redirected by appending the job id to the ends of the
@@ -428,8 +433,8 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
 #
   export title="CONUS"           # Identifier based on nested or regional grid location.
   export title="BBBBB"           # Identifier based on nested or regional grid location.
-  export title="CCCCC"           # Identifier based on nested or regional grid location.
-  export title="DDDDD"           # Identifier based on nested or regional grid location.
+#  export title="CCCCC"           # Identifier based on nested or regional grid location.
+#  export title="DDDDD"           # Identifier based on nested or regional grid location.
 #
 # Set string that describes the grid resolution and type and the region
 # it covers.  This is used in setting directory names.

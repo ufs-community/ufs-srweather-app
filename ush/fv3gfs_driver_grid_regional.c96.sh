@@ -11,7 +11,7 @@
 #BSUB -extsched 'CRAYLINUX[]'
 #----THEIA JOBCARD
 #PBS -N fv3_grid_driver
-#PBS -A fv3-cpu
+#PBS -A gsd-fv3
 #PBS -o log.grid.regional.$PBS_JOBID
 #PBS -e log.grid.regional.$PBS_JOBID
 #PBS -l nodes=1:ppn=24
@@ -68,7 +68,8 @@ elif [ $machine = THEIA ]; then
  export APRUN=time
  export home_dir=$PBS_O_WORKDIR/..
  export topo=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog
- export TMPDIR=/scratch3/NCEPDEV/stmp1/$LOGNAME/fv3_grid.$gtype
+# export TMPDIR=/scratch3/NCEPDEV/stmp1/$LOGNAME/fv3_grid.$gtype
+ export TMPDIR=/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs
  set -x
 fi
 #----------------------------------------------------------------

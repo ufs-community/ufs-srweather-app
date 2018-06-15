@@ -29,7 +29,13 @@ elif [ $nargv -eq 7 ]; then  # cubed-sphere grid
   export orogfile="none"
   export hist_dir=$6
   export TMPDIR=$7
-  export workdir=$TMPDIR/C${res}/orog/tile$tile
+#  export workdir=$TMPDIR/C${res}/orog/tile$tile
+  if [ -z ${orog_dir+x} ]; then  # orog_dir is not set.
+    export workdir=$TMPDIR/C${res}/orog/tile$tile
+  else  # orog_dir is set.
+    echo "var is set to '$var'"
+    export workdir=$orog_dir/tile$tile
+  fi
 elif [ $nargv -eq 8 ]; then  # input your own orography files
   export res=$1 
   export lonb=$1

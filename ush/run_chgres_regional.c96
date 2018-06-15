@@ -23,7 +23,7 @@
 #----THEIA JOBCARD
 #PBS -l nodes=1:ppn=24
 #PBS -l walltime=0:30:00
-#PBS -A fv3-cpu
+#PBS -A gsd-fv3
 #PBS -N chgres_fv3
 #PBS -q debug
 #PBS -o log.chgres.$PBS_JOBID
@@ -40,7 +40,7 @@ export gtype=regional           # grid type = uniform, stretch, nest, or regiona
 export OMP_NUM_THREADS_CH=24       #default for openMP threads
 export machine=THEIA               #WCOSS_C,WCOSS,THEIA
 export CASE=C96                    # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
-export CDATE=2018032700            # format yyyymmddhh yyyymmddhh ...
+export CDATE=2018051000            # format yyyymmddhh yyyymmddhh ...
 export LEVS=64
 export LSOIL=4
 export ictype=opsgfs               # opsgfs for q3fy17 gfs with new land datasets; oldgfs for q2fy16 gfs.
@@ -48,7 +48,8 @@ export nst_anl=.false.             # false or true to include NST analysis
 #
 #export BASE_GSM=/scratch4/NCEPDEV/meso/noscrub/Tom.Black/chgres_nests/global_shared.v15.0.0
 #export BASE_GSM=/scratch4/NCEPDEV/global/noscrub/James.A.Abeles/fv3gfs/trunk/global_shared.v15.0.0
-export BASE_GSM=/scratch4/NCEPDEV/meso/noscrub/James.A.Abeles/fv3gfs
+#export BASE_GSM=/scratch4/NCEPDEV/meso/noscrub/James.A.Abeles/fv3gfs
+export BASE_GSM=/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3gfs
 #export BASE_GSM=/gpfs/hps3/emc/meso/noscrub/Tom.Black/chgres_nests/global_shared.v15.0.0
  
 export ymd=`echo $CDATE | cut -c 1-8`
@@ -74,7 +75,8 @@ elif [ $machine = THEIA ]; then
  module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
  module list
  export FIXgsm=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am
- export DATA=/scratch4/NCEPDEV/stmp4/${LOGNAME}/wrk.chgres
+# export DATA=/scratch4/NCEPDEV/stmp4/${LOGNAME}/wrk.chgres
+ export DATA=/scratch3/BMC/fim/${LOGNAME}/regional_FV3_EMC_visit_20180509/wrk.chgres
  export APRUNC="time"
   COMROOTp2=/scratch4/NCEPDEV/rstprod/com
  export ymd=`echo $CDATE | cut -c 1-8`
