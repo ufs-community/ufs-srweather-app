@@ -138,7 +138,7 @@ export CRES="C${RES}"
 #export CDATE="2018051000"
 #export CDATE="2018053000"
 #export CDATE="2018060100"
-export CDATE=$( date "+%Y%m%d"00 ) 
+export CDATE=$( date --date="yesterday" "+%Y%m%d"00 )
 #
 # Extract from CDATE the starting year, month, day, and hour.  These are
 # needed below for various operations.`
@@ -208,10 +208,15 @@ elif [ "$machine" = "WCOSS" ]; then
 
 elif [ "$machine" = "THEIA" ]; then
 
-  export BASE_GSM="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/fv3gfs"
+  #export BASE_GSM="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/fv3gfs"
+  #export COMROOTp2="/scratch4/NCEPDEV/rstprod/com"   # Does this really need to be exported??
+  #export INIDIR="$COMROOTp2/gfs/prod/gfs.$YMD"
+  #export TMPDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs"
+  
+  export BASE_GSM="/scratch3/BMC/det/beck/FV3-CAM/fv3gfs"
   export COMROOTp2="/scratch4/NCEPDEV/rstprod/com"   # Does this really need to be exported??
   export INIDIR="$COMROOTp2/gfs/prod/gfs.$YMD"
-  export TMPDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs"
+  export TMPDIR="/scratch3/BMC/det/beck/FV3-CAM/fv3gfs/work_dirs"
 
 fi
 #
