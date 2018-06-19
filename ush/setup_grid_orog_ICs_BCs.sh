@@ -38,7 +38,8 @@
 #-----------------------------------------------------------------------
 #
 #set -aux
-set -eux
+#set -eux
+set -ux
 #
 #-----------------------------------------------------------------------
 #
@@ -63,7 +64,7 @@ if [ "$machine" != "WCOSS_C" ] && \
   echo "Error.  Machine specified in \"machine\" is not supported:"
   echo "  machine = $machine"
   echo "machine must be one of:  \"WCOSS_C\"  \"WCOSS\"  \"THEIA\""
-  echo "Exiting script $0."
+  echo "Exiting script."
   exit 1
 fi
 #
@@ -76,8 +77,8 @@ fi
 #
 #export gtype="uniform"     # Grid type: uniform, stretch, nest, or regional
 #export gtype="stretch"     # Grid type: uniform, stretch, nest, or regional
-#export gtype="nest"        # Grid type: uniform, stretch, nest, or regional
-export gtype="regional"    # Grid type: uniform, stretch, nest, or regional
+export gtype="nest"        # Grid type: uniform, stretch, nest, or regional
+#export gtype="regional"    # Grid type: uniform, stretch, nest, or regional
 # 
 # Make sure gtype is set to one of the allowed values.
 #
@@ -89,7 +90,7 @@ if [ "$gtype" != "uniform" ] && \
   echo "Error.  Grid type specified in \"gtype\" is not supported:"
   echo "  gtype = $gtype"
   echo "gtype must be one of:  \"uniform\"  \"stretch\"  \"nest\"  \"regional\""
-  echo "Exiting script $0."
+  echo "Exiting script."
   exit 1
 fi
 #
@@ -118,7 +119,7 @@ if [ "$RES" != "48" ] && \
   echo "Error.  Grid resolution specified in \"RES\" is not supported:"
   echo "  RES = $RES"
   echo "RES must be one of:  48  96  192  384  768  1152  3072"
-  echo "Exiting script $0."
+  echo "Exiting script."
   exit 1
 fi
 #
@@ -136,9 +137,12 @@ export CRES="C${RES}"
 #
 #export CDATE="2018041000"
 #export CDATE="2018051000"
+#export CDATE="2018052800"
+#export CDATE="2018052900"
 #export CDATE="2018053000"
 #export CDATE="2018060100"
-export CDATE=$( date --date="yesterday" "+%Y%m%d"00 )
+#export CDATE=$( date "+%Y%m%d"00 )  # This sets CDATE to today.
+export CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
 #
 # Extract from CDATE the starting year, month, day, and hour.  These are
 # needed below for various operations.`
@@ -224,13 +228,14 @@ fi
 #
 # Check whether the directory (INIDIR) that's supposed to contain the 
 # GFS analysis corresponding to the CDATE specified above actually ex-
-# ists on disk.  If not, try to fetch the archived analysis file from 
-# mass store (HPSS).  
-#
-# GFS analysis files are available on disk for 2 weeks on WCOSS and 
-# WCOSS_C and for 2 days on THEIA, so they will not be available on disk
-# if the specified CDATE is older than these retention periods.  In this
-# case, we attempt to retrieve the analysis from mass store (HPSS).
+# ists on disk.  GFS analysis files are available on disk for 2 weeks on 
+# WCOSS and WCOSS_C and for 2 days on THEIA, so they will not be availa-
+# ble on disk if the specified CDATE is older than these retention per-
+# iods.  In this case, we will attempt (in another script that sources
+# this one) to retrieve the analysis file from mass store (HPSS) and 
+# then extract it.  Thus, if INIDIR as set above doesn't exist, reset it
+# to a location to which the archived analysis file from HPSS can be co-
+# pied and extracted.
 #
 #-----------------------------------------------------------------------
 #
@@ -238,9 +243,12 @@ if [ ! -d "$INIDIR" ]; then
 
   echo
   echo "The GFS analysis directory (INIDIR) is not available on disk for the specified CDATE:"
+  echo
   echo "  CDATE = $CDATE"
   echo "  INIDIR = $INIDIR"
-  echo "Attempting to retrieve analysis from HPSS (mass storage)..."
+  echo
+  echo "We will attempt to retrieve the archived analysis file for this CDATE from mass store (HPSS)."
+  echo "Resetting INIDIR to a location to which this archived analysis file can be copied and extracted."
 #
 # Set a new GFS analysis directory.  This is a local directory in which
 # archived (tar) analyses obtained from HPSS will be stored and extract-
@@ -257,58 +265,6 @@ if [ ! -d "$INIDIR" ]; then
 #
 #  export TAR_FILE="gpfs_hps_nco_ops_com_gfs_prod_gfs.${YYYY}${MM}${DD}${HH}.anl.tar"   # Need rstprod group access permission.
   export TAR_FILE="com2_gens_prod_cmce.${YMD}_${HH}.pgrba.tar"   # This is a file for which I have access permission.  Use for testing.
-#
-# Submit the job that fetches the tar file from HPSS.  This job must be
-# submitted to the "service" queue (because access to the HPSS is only 
-# available through this queue).
-#
-#  qsub -v INIDIR,HPSS_DIR,TAR_FILE $BASE_GSM/ush/read_from_HPSS.sh
-#
-# Submit as an interactive job (using the -I flag along with the -x flag
-# to specify the script to run) so that the system waits until the job 
-# is complete before moving on with the rest of this script.
-#
-# Note that the output of the interactive qsub command generates carri-
-# age return (or, equivalently, \r or Ctrl-M) characters that clutter 
-# the files into which this output is redirected.  In places, there are
-# two consecutive carriage returns as well as whitespace followed by two
-# carriage returns followed by more whitespace followed by a single car-
-# riage return.  To remove or replace these sequences of nuisance carri-
-# age returns and/or whitespace, we pipe the output of qsub through sed.  
-# The particular sed substitution strings used below are obtained by 
-# trial-and-error.
-#
-  job_name="fetch_GFSanl_from_HPSS"
-
-  qsub \
-  -v INIDIR,HPSS_DIR,TAR_FILE \
-  -A gsd-fv3 \
-  -N $job_name \
-  -q service \
-  -l nodes=1:ppn=1,walltime=00:30:00 \
-  -I \
-  -x "$BASE_GSM/ush/fetch_GFSanl_from_HPSS.sh" \
-  | sed -r -e 's/\s*\r\r\s+\r/\n/g' -e 's/\w*\r\r/\n/g' -e 's/\r//g' \
-  1>out.$job_name 2>err.$job_name 
-
-#  | sed -r 's/\s*\r\r\s+\r/\n/g' | sed -r 's/\w*\r\r/\n/g' | sed -r 's/\r//g' \
-#  | sed 's/\r//g' \
-#  | sed 's///g' \
-#  -o $BASE_GSM/ush/out.$job_name \
-#  -e $BASE_GSM/ush/err.$job_name \
-
-#
-# Get the PBS job id of the above qsub interactive job from the first 
-# line of the file to which stdout was redirected. 
-#
-  jobid=$( head -1 out.${job_name} | sed -r -n 's/.* ([0-9]+\.[A-Z,a-z,0-9]+) .*/\1/p' )
-#
-# Rename the files into which the stdout and stderr of the above qsub 
-# command were redirected by appending the job id to the ends of the
-# file names.
-#
-  mv out.$job_name out.$job_name.$jobid
-  mv err.$job_name err.$job_name.$jobid
 
 fi
 #
@@ -338,7 +294,7 @@ if [ "$gtype" = "uniform" ];  then
 # Set string that describes the grid resolution and type and the region
 # it covers.  This is used in setting directory names.
 # 
-  export grid_and_domain_str=${CRES}r10n1_uniform_${title}
+  export grid_and_domain_str=${CRES}_uniform_${title}
 #
 #-----------------------------------------------------------------------
 #
@@ -357,6 +313,7 @@ elif [ "$gtype" = "stretch" ]; then
 # grid. 
 #
   export stetch_fac=1.5          # Stretching factor for the grid.
+#  export stetch_fac=1.0          # Stretching factor for the grid.
 #
 # target_lon and target_lat are the longitude and latitude, in degrees,
 # of the center of the highest resolution tile of the stretched grid.
@@ -373,6 +330,7 @@ elif [ "$gtype" = "stretch" ]; then
 # "CONUS" if tile 6 is located over the continental United States.
 #
   export title="CONUS"           # Identifier based on refinement location.
+  export title="AAAAA"           # Identifier based on refinement location.
 #
 # Set string that describes the grid resolution and type and the region
 # it covers.  This is used in setting directory names.
@@ -437,7 +395,8 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
 # States.
 #
   export title="CONUS"           # Identifier based on nested or regional grid location.
-  export title="BBBBB"           # Identifier based on nested or regional grid location.
+  export title="AAAAA"           # Identifier based on nested or regional grid location.
+#  export title="BBBBB"           # Identifier based on nested or regional grid location.
 #  export title="CCCCC"           # Identifier based on nested or regional grid location.
 #  export title="DDDDD"           # Identifier based on nested or regional grid location.
 #
@@ -464,7 +423,7 @@ else
   echo "Error.  Grid type specified in \"gtype\" is not supported:"
   echo "  gtype = $gtype"
   echo "gtype must be one of:  \"uniform\"  \"stretch\"  \"nest\"  \"regional\""
-  echo "Exiting script $0."
+  echo "Exiting script."
   exit 1
 
 fi
@@ -499,7 +458,7 @@ if [ "$fcst_len_hrs" -gt "$fcst_len_hrs_max" ]; then
   echo "Error.  Forecast length is greater than maximum allowed length:"
   echo "  fcst_len_hrs = $fcst_len_hrs"
   echo "  fcst_len_hrs_max = $fcst_len_hrs_max"
-  echo "Exiting script $0."
+  echo "Exiting script."
   exit 1
 fi
 #
@@ -526,7 +485,7 @@ if [ "$gtype" = "regional" ]; then
     echo "  fcst_len_hrs = $fcst_len_hrs"
     echo "  BC_interval_hrs = $BC_interval_hrs"
     echo "  remainder = fcst_len_hrs % BC_interval_hrs = $remainder"
-    echo "Exiting script $0."
+    echo "Exiting script."
     exit 1
   fi
 

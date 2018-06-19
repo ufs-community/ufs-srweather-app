@@ -205,7 +205,7 @@
 # The files that will be created in grid_dir by the script grid_gen_scr
 # are:
 #
-# => The 7 grid files ${CRES}_grid.tileN.nc for N=1,...,7.                       <-- This needs to be rechecked.
+# => The 7 grid files ${CRES}_grid.tileN.nc for N=1,...,7.                       <-- This needs to be rechecked.  Are all 7 files needed?
 # => The grid mosaic file ${CRES}_mosaic.nc.  This file contains infor-
 #    mation only about "tile" 7 (the regional grid).
 #
@@ -249,11 +249,17 @@
 #-----------------------------------------------------------------------
 #
 
-set -ax
+#set -ax
 # The -u flag causes the script to exit if an undefined variable is encountered.
 #set -aux
-
-# For debugging:
+set -eux
+#
+#-----------------------------------------------------------------------
+#
+# Set debugging variables.
+#
+#-----------------------------------------------------------------------
+#
 stop_after_grid_gen="false"
 #stop_after_grid_gen="true"
 
@@ -262,7 +268,6 @@ stop_after_orog_gen="false"
 
 stop_after_orog_filter="false"
 #stop_after_orog_filter="true"
-
 
 # 
 #-----------------------------------------------------------------------
@@ -366,7 +371,7 @@ else
   echo
   echo "Error.  Machine specified in \"machine\" is not supported:"
   echo "  machine = $machine"
-  echo "Exiting script $0."
+  echo "Exiting script."
   exit 1
 
 fi
@@ -444,7 +449,7 @@ else
   echo "Error.  Grid type specified in \"gtype\" is not supported:"
   echo "  gtype = $gtype"
   echo "gtype must be one of:  \"uniform\"  \"stretch\"  \"nest\"  \"regional\""
-  echo "Exiting script $0."
+  echo "Exiting script."
   exit 1
 
 fi
@@ -486,7 +491,7 @@ else
   echo "Error.  Grid resolution specified in \"RES\" is not supported:"
   echo "  RES = $RES"
   echo "RES must be one of:  48  96  192  384  768  1152  3072"
-  echo "Exiting script $0."
+  echo "Exiting script."
   exit 1
 fi
 #
@@ -522,7 +527,6 @@ fi
 if [ "$gtype" = "uniform" ]; then
 
   export ntiles=6
-  export grid_and_domain_str=${CRES}r10n1_uniform_${title}
   export grid_dir=$TMPDIR/$grid_and_domain_str/grid
   export orog_dir=$TMPDIR/$grid_and_domain_str/orog
   export filter_dir=$TMPDIR/$grid_and_domain_str/filter_topo
@@ -1042,8 +1046,6 @@ elif [ "$gtype" = "regional" ]; then
   echo "================================================================================== "
   set -x
 
-fi
-
 
 
 #
@@ -1052,8 +1054,6 @@ fi
   export ntiles=1
   tile=7
 
-  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
-  export grid_and_domain_str=${CRES}r${rn}n${refine_ratio}_regional_${title}
   export grid_dir=$TMPDIR/$grid_and_domain_str/grid
   export orog_dir=$TMPDIR/$grid_and_domain_str/orog
 #  export filter_dir=$orog_dir   # nested grid orography will be filtered online -- how about for regional case???
@@ -1112,25 +1112,11 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
 # 
 #   oro.${CRES}.tile7.nc 
 #
-# and will place it in orog_dir (which is under TMPDIR).
+# and will place it in orog_dir (which is under TMPDIR).  It will also
+# create a work directory called tile7 under orog_dir.  This work di-
+# rectory can be removed after the orography file has been created (it
+# is currently not deleted).
 #  
-# The orography generation script orog_gen_scr called below for tile 7
-# creates a work directory that is different from (although related to)
-# TMPDIR set above.  This work directory is hardcoded in orog_gen_scr to
-# be 
-#
-#   $TMPDIR/${CRES}/orog/tile7
-#
-# This directory will contain various input files that the orography ge-
-# neration exectuable called by orog_gen_scr needs (including the grid 
-# file for the tile in consideration, ${CRES}_grid.tile7.nc).  The oro-
-# graphy output file will initially be placed in this work directory but 
-# then moved and renamed to $orog_dir/oro.${CRES}.tile7.nc.  The con-
-# tents of the work directory created by the script orog_gen_scr are not
-# needed once the move/rename is complete, but the work directory is not
-# automatically deleted by orog_gen_scr (maybe it should be to avoid 
-# confusion). 
-#
   echo
   echo "Begin orography generation for a ${grid_type_desc} (on `date`)."
 
