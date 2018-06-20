@@ -39,8 +39,8 @@ export NODES=2
 export gtype=regional           # grid type = uniform, stretch, nest, or regional
 export OMP_NUM_THREADS_CH=24       #default for openMP threads
 export machine=THEIA               #WCOSS_C,WCOSS,THEIA
-export CASE=C96                    # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
-export CDATE=2018061300            # format yyyymmddhh yyyymmddhh ...
+export CASE=C768                    # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
+export CDATE=2018061800            # format yyyymmddhh yyyymmddhh ...
 export LEVS=64
 export LSOIL=4
 export ictype=opsgfs               # opsgfs for q3fy17 gfs with new land datasets; oldgfs for q2fy16 gfs, pfv3gfs for parallel fv3 input

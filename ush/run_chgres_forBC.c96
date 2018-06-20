@@ -22,11 +22,11 @@
 ##BSUB -R span[ptile=24]
 #----THEIA JOBCARD
 #PBS -l nodes=1:ppn=24
-#PBS -l walltime=0:40:00
+#PBS -l walltime=0:30:00
 #PBS -A fv3-cpu
 #PBS -N chgres_fv3_bc
-##PBS -q debug
-#PBS -q batch
+#PBS -q debug
+##PBS -q batch
 #PBS -o log.chgres_forBC.$PBS_JOBID
 #PBS -e log.chgres_forBC.$PBS_JOBID
 #
@@ -39,10 +39,11 @@ export gtype=regional              # grid type = uniform, stretch, or nest
 export OMP_NUM_THREADS_CH=24       #default for openMP threads
 export machine=THEIA             #WCOSS_C,WCOSS,THEIA
 export CASE=C96                    # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
-export CDATE=2018032700            # format yyyymmddhh yyyymmddhh ...
+export CDATE=2018061100            # format yyyymmddhh yyyymmddhh ...
 export LEVS=64
 export LSOIL=4
 export ictype=opsgfs              # opsgfs for q3fy17 gfs with new land datasets; oldgfs for q2fy16 gfs.
+export ictypefv3=pfv3gfs
 export nst_anl=.false.             # false or true to include NST analysis
 #
 #
@@ -55,7 +56,12 @@ if [ $machine = WCOSS_C ]; then
  export KMP_AFFINITY=disabled
  export FIXgsm=/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_am
  export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
- export INIDIR=/gpfs/hps/nco/ops/com/gfs/prod/gfs.$ymd
+ if [ $ictypefv3 = pfv3gfs ]; then
+  hour=`echo $CDATE | cut -c 9-10`
+  export INIDIR=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$ymd/$hour
+ else
+  export INIDIR=/gpfs/hps/nco/ops/com/gfs/prod/gfs.$ymd
+ fi
  export HOMEgfs=$LS_SUBCWD/..
  export BASE_GSM=/gpfs/hps3/emc/meso/noscrub/${LOGNAME}/fv3gfs
 elif [ $machine = WCOSS ]; then
@@ -72,9 +78,14 @@ elif [ $machine = THEIA ]; then
  export FIXgsm=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am
  export DATA=/scratch4/NCEPDEV/stmp4/${LOGNAME}/wrk.chgres
  export APRUNC="time"
- export COMROOTp2=/scratch4/NCEPDEV/rstprod/com
  export ymd=`echo $CDATE | cut -c 1-8`
- export INIDIR=$COMROOTp2/gfs/prod/gfs.$ymd
+ if [ $ictypefv3 = pfv3gfs ]; then
+  hour=`echo $CDATE | cut -c 9-10`
+  export INIDIR=/scratch4/NCEPDEV/fv3-cam/noscrub/Eric.Rogers/prfv3rt1/gfs.$ymd/$hour
+ else
+  export COMROOTp2=/scratch4/NCEPDEV/rstprod/com
+  export INIDIR=$COMROOTp2/gfs/prod/gfs.$ymd
+ fi
  export HOMEgfs=$PBS_O_WORKDIR/..
  ulimit -a
  ulimit -s unlimited
@@ -101,7 +112,7 @@ export OUTDIR=$FIXfv3/C${CRES}
  ln -sf $FIXfv3/$CASE/${CASE}_oro_data.tile7.halo4.nc $FIXfv3/$CASE/${CASE}_oro_data.tile7.nc
 #
 hour=3
-end_hour=24
+end_hour=12
 while (test "$hour" -le "$end_hour")
  do
   if [ $hour -lt 10 ]; then
