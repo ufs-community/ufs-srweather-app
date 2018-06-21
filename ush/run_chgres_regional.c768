@@ -36,33 +36,34 @@ export NODES=2
 #
 # the following exports can all be set or just will default to what is in global_chgres_driver.sh
 #
-export gtype=regional           # grid type = uniform, stretch, nest, or regional
-export OMP_NUM_THREADS_CH=24       #default for openMP threads
-export machine=THEIA               #WCOSS_C,WCOSS,THEIA
-export CASE=C768                    # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
-export CDATE=2018061800            # format yyyymmddhh yyyymmddhh ...
+export gtype=regional        # grid type = uniform, stretch, nest, or regional
+export OMP_NUM_THREADS_CH=24 #default for openMP threads
+export machine=THEIA         #WCOSS_C,WCOSS,THEIA
+export CASE=C768              # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
+export CDATE=2018062000      # format yyyymmddhh yyyymmddhh ...
 export LEVS=64
 export LSOIL=4
-export ictype=opsgfs               # opsgfs for q3fy17 gfs with new land datasets; oldgfs for q2fy16 gfs, pfv3gfs for parallel fv3 input
-export ictypefv3=pfv3gfs
-export nst_anl=.false.             # false or true to include NST analysis
+export ictype=pfv3gfs        # opsgfs for q3fy17 gfs with new land datasets; oldgfs for q2fy16 gfs, pfv3gfs for parallel fv3 input
+export nst_anl=.false.       # false or true to include NST analysis
 #
-#export BASE_GSM=/scratch4/NCEPDEV/meso/noscrub/Tom.Black/chgres_nests/global_shared.v15.0.0
-#export BASE_GSM=/scratch4/NCEPDEV/global/noscrub/James.A.Abeles/fv3gfs/trunk/global_shared.v15.0.0
-export BASE_GSM=/scratch4/NCEPDEV/meso/noscrub/James.A.Abeles/fv3gfs
-#export BASE_GSM=/gpfs/hps3/emc/meso/noscrub/Tom.Black/chgres_nests/global_shared.v15.0.0
- 
+# NOTE: we have added ictype=pfv3gfs to allow for use of the FV3 parallel run data for chgres. In this job it is used to
+#       define the location of the data on theia and luna/surge. The job runs global_chgres_driver.sh. That script sets 
+#       ictype=opsgf and then exports variables for ATM,SFC and NST. With FV3 input we no longer need the NST file as NSST data 
+#       is in the surface file. We have reached out to Fanglin to modify the script but for now it works fine, just adds
+#       an unnecessary export.
+
 export ymd=`echo $CDATE | cut -c 1-8`
 
 if [ $machine = WCOSS_C ]; then
  . $MODULESHOME/init/sh 2>>/dev/null
  module load PrgEnv-intel prod_envir cfp-intel-sandybridge/1.1.0 2>>/dev/null
  module list
+ export BASE_GSM=/gpfs/hps3/emc/fv3-cam/noscrub/${LOGNAME}/fv3gfs
  export KMP_AFFINITY=disabled
- export FIXgsm=/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_am
+ export FIXgsm=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am
  export DATA=/gpfs/hps/ptmp/${LOGNAME}/wrk.chgres
  export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
- if [ $ictypefv3 = pfv3gfs ]; then
+ if [ $ictype = pfv3gfs ]; then
   hour=`echo $CDATE | cut -c 9-10`
   export INIDIR=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$ymd/$hour
  else
@@ -79,11 +80,12 @@ elif [ $machine = THEIA ]; then
  module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
  module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
  module list
- export FIXgsm=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am
+ export BASE_GSM=/scratch4/NCEPDEV/meso/noscrub/${LOGNAME}/fv3gfs
+ export FIXgsm=/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am
  export DATA=/scratch4/NCEPDEV/stmp4/${LOGNAME}/wrk.chgres
  export APRUNC="time"
  export ymd=`echo $CDATE | cut -c 1-8`
- if [ $ictypefv3 = pfv3gfs ]; then
+ if [ $ictype = pfv3gfs ]; then
   hour=`echo $CDATE | cut -c 9-10`
   export INIDIR=/scratch4/NCEPDEV/fv3-cam/noscrub/Eric.Rogers/prfv3rt1/gfs.$ymd/$hour
  else

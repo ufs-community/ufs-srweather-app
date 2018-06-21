@@ -1,16 +1,17 @@
-This file accompanies the guidlines in google document,
+This file accompanies the guidelines in google document,
 https://docs.google.com/document/d/1KkL3mHnDGKHwjpBV98QLYRWtxGKEUWuqy5cy5udZct0/edit#heading=h.9vqatrumwnqq
 
 How to build, configure and run regional FV3
 --------------------------------------------
-
-Let "TOP_DIR" be the Home of the "fvsgfs" checkout.
-
+We’ll refer to the directory where the fv3gfs and NEMSFV3gfs code was checked out as ${TOP_DIR} in the rest of this document.
 1) Building preprocessing and model code
-
-  $> cd ${TOP_DIR}/regional
-  $> ./build_regional
-
+  1-1. Build the preproccings utilities
+      cd ${TOP_DIR}/fv3gfs/regional
+      ./build_regional
+  1-2. Build the model code
+      cd ${TOP_DIR}/NEMSfv3gfs/tests
+      ./compile.sh ${TOP_DIR}/NEMSfv3gfs/FV3 {platform} "32BIT=Y" 32bit [clean_before] [clean_after] >& make.out.32bit
+        where {platform} is ‘wcoss_cray’ or ‘theia.intel’ 
 2) There are THREE steps to run a regional FV3 simulation. A job template
    is provided for each step in ${TOP_DIR}/regional/templates.
 
