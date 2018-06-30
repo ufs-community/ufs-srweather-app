@@ -6,7 +6,7 @@ if [ $# -ne 10 ]; then
    exit 1
 fi
 if [ $gtype = stretch ] || [ $gtype = regional ]; then
-stretch=$stetch_fac
+stretch=$stretch_fac
 else
 stretch=1.0
 fi

@@ -7,9 +7,9 @@ if [ $nargv -ne 3 -a $nargv -ne 6 -a $nargv -ne 12 ]; then
    echo "Usage for regular cubic sphere grid: "
    echo "  $0 resolution out_dir script_dir"
    echo "Usage for Stretched grid: "
-   echo "  $0 resolution out_dir stetch_fac target_lon target_lat script_dir"
+   echo "  $0 resolution out_dir stretch_fac target_lon target_lat script_dir"
    echo "Usage for Nested grid: "
-   echo "  $0 resolution out_dir stetch_fac target_lon target_lat refine_ratio istart_nest jstart_nest iend_nest jend_nest halo script_dir"
+   echo "  $0 resolution out_dir stretch_fac target_lon target_lat refine_ratio istart_nest jstart_nest iend_nest jend_nest halo script_dir"
    exit 1
 fi
 

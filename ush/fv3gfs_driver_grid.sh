@@ -83,13 +83,13 @@ cd $TMPDIR ||exit 8
 if [ $gtype = uniform ];  then
   echo "creating uniform ICs"
 elif [ $gtype = stretch ]; then
-  export stetch_fac=1.5   # Stretching factor for the grid
+  export stretch_fac=1.5   # Stretching factor for the grid
   export target_lon=-97.5 # center longitude of the highest resolution tile
   export target_lat=35.5  # center latitude of the highest resolution tile
   export title=c96s		  # identifier based on refined location
   echo "creating stretched grid"
 elif [ $gtype = nest ] || [ $gtype = regional ]; then
-  export stetch_fac=1.5  	 # Stretching factor for the grid
+  export stretch_fac=1.5  	 # Stretching factor for the grid
   export target_lon=-97.5   	 # center longitude of the highest resolution tile
   export target_lat=35.5 	 # center latitude of the highest resolution tile
   export refine_ratio=3 	 # Specify the refinement ratio for nest grid
@@ -201,7 +201,7 @@ if [ $gtype = uniform ];  then
 elif [ $gtype = stretch ]; then
 
   export ntiles=6
-  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+  export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
   export name=C${res}r${rn}_${title}
   export grid_dir=$TMPDIR/${name}/grid
   export orog_dir=$TMPDIR/$name/orog
@@ -211,7 +211,7 @@ elif [ $gtype = stretch ]; then
 
   echo 
   echo "............ execute fv3gfs_make_grid.sh ................."
-  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stetch_fac $target_lon $target_lat $script_dir
+  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stretch_fac $target_lon $target_lat $script_dir
   err=$?
   if [ $err != 0 ]; then
     exit $err
@@ -258,7 +258,7 @@ elif [ $gtype = stretch ]; then
 elif [ $gtype = nest ]; then
 
   export ntiles=7
-  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+  export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
   export name=C${res}r${rn}n${refine_ratio}_${title}
   export grid_dir=$TMPDIR/${name}/grid
   export orog_dir=$TMPDIR/$name/orog
@@ -268,7 +268,7 @@ elif [ $gtype = nest ]; then
 
   echo 
   echo "............ execute fv3gfs_make_grid.sh ................."
-  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stetch_fac $target_lon $target_lat $refine_ratio $istart_nest $jstart_nest $iend_nest $jend_nest $halo $script_dir
+  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stretch_fac $target_lon $target_lat $refine_ratio $istart_nest $jstart_nest $iend_nest $jend_nest $halo $script_dir
   err=$?
   if [ $err != 0 ]; then
     exit $err
@@ -360,7 +360,7 @@ elif [ $gtype = regional ]; then
  
   export ntiles=1
   tile=7
-  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+  export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
   export name=C${res}r${rn}n${refine_ratio}_${title}
   export grid_dir=$TMPDIR/${name}/grid
   export orog_dir=$TMPDIR/$name/orog
@@ -370,7 +370,7 @@ elif [ $gtype = regional ]; then
 
   echo
   echo "............ execute fv3gfs_make_grid.sh ................."
-  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stetch_fac $target_lon $target_lat $refine_ratio \
+  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stretch_fac $target_lon $target_lat $refine_ratio \
     $istart_nest_halo $jstart_nest_halo $iend_nest_halo $jend_nest_halo $halo $script_dir
   err=$?
   if [ $err != 0 ]; then
