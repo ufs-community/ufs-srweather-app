@@ -682,7 +682,7 @@ elif [ "$gtype" = "stretch" ]; then
   $script_dir/$grid_gen_scr \
     $RES \
     $grid_dir \
-    $stetch_fac $target_lon $target_lat \
+    $stretch_fac $target_lon $target_lat \
     $script_dir
   echo 
   echo "End grid generation for a ${grid_type_desc} (on `date`)..."
@@ -846,7 +846,7 @@ elif [ "$gtype" = "nest" ]; then
   $script_dir/$grid_gen_scr \
     $RES \
     $grid_dir \
-    $stetch_fac $target_lon $target_lat $refine_ratio \
+    $stretch_fac $target_lon $target_lat $refine_ratio \
     $istart_nest $jstart_nest $iend_nest $jend_nest \
     $halo \
     $script_dir
@@ -1173,7 +1173,7 @@ if [ 1 = 1 ]; then
   $script_dir/$grid_gen_scr \
     $RES \
     $grid_dir \
-    $stetch_fac $target_lon $target_lat $refine_ratio \
+    $stretch_fac $target_lon $target_lat $refine_ratio \
     $istart_nest_halo $jstart_nest_halo $iend_nest_halo $jend_nest_halo \
     $halo \
     $script_dir
@@ -1187,7 +1187,7 @@ else
   $script_dir/$grid_gen_scr \
     $RES \
     $grid_dir \
-    $stetch_fac $target_lon $target_lat $refine_ratio \
+    $stretch_fac $target_lon $target_lat $refine_ratio \
     $istart_nest $jstart_nest $iend_nest $jend_nest \
     $halo \
     $script_dir 
