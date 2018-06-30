@@ -526,7 +526,7 @@ fi
 #
 if [ "$gtype" = "uniform" ]; then
 
-  export ntiles=6
+#  export ntiles=6
   export grid_dir=$TMPDIR/$grid_and_domain_str/grid
   export orog_dir=$TMPDIR/$grid_and_domain_str/orog
   export filter_dir=$TMPDIR/$grid_and_domain_str/filter_topo
@@ -656,7 +656,7 @@ if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
 #
 elif [ "$gtype" = "stretch" ]; then
 
-  export ntiles=6
+#  export ntiles=6
   export grid_dir=$TMPDIR/$grid_and_domain_str/grid
   export orog_dir=$TMPDIR/$grid_and_domain_str/orog
   export filter_dir=$TMPDIR/$grid_and_domain_str/filter_topo
@@ -792,7 +792,7 @@ if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
 #
 elif [ "$gtype" = "nest" ]; then
 
-  export ntiles=7
+#  export ntiles=7
   export grid_dir=$TMPDIR/$grid_and_domain_str/grid
   export orog_dir=$TMPDIR/$grid_and_domain_str/orog
 #  export filter_dir=$orog_dir   # nested grid orography will be filtered online -- is filter_dir used at all for the nested case?
@@ -825,6 +825,17 @@ elif [ "$gtype" = "nest" ]; then
 # directory out_dir is ${CRES}_mosaic.nc.  Both the grid files and the 
 # mosaic files created in this step will be placed in grid_dir (which 
 # is under TMPDIR).
+#
+# Note that the parameter "halo" that is passed to grid_gen_scr below
+# is in turn used as an argument to the --halo flag of the make_hgrid
+# executable.  This flag (which needs to be specified only when the 
+# --nest_grid flag is set) is used to ensure that the nest and its halo
+# region together lie completely within the parent tile of the nest.  
+# This is necessary for the two-way interaction between the nest and pa-
+# rent tile.  In particular, the "halo" parameter does not cause an ex-
+# tra halo region to be written to the nest's grid file.  (Note that 
+# make_hgrid has a flag for the latter purpose called --out_halo, but
+# the documentation on how to use it is sparse.)
 #
 # Note that the value of ntiles set above doesn't affect the call below
 # to grid_gen_scr because ntiles gets reset in grid_gen_scr, in this 
@@ -943,8 +954,8 @@ elif [ "$gtype" = "regional" ]; then
 # We are now creating only 1 tile and it is tile 7.  Can probably remove the following two lines since they're repeated later.
 # unless ntiles is somehow used by another script...  But no other script is called between here and the next setting of ntiles.
 #
-  export ntiles=1
-  tile=7
+#  export ntiles=1
+#  tile=7
 
 
 #
@@ -976,19 +987,18 @@ elif [ "$gtype" = "regional" ]; then
 #
 #   nhalo_PT = nhalo/refine_ratio
 #
-# (where the "PT" stands for parent tile).  The corresponding number of
-# halo cells on the parent tile's supergrid (PTSG) is thus given by
+# (where the "PT" stands for "parent tile").  The corresponding number
+# of halo cells on the parent tile's supergrid is thus given by
 #
 #   nhalo_PTSG = 2*nhalo_PT
 #              = 2*nhalo/refine_ratio
 #
-# [Recall that the PTSG is obtained by reducing the grid size of the 
-# parent tile's grid by 2.  Thus, the PTSG has twice the number of grid
+# [Recall that the PTSG is obtained by reducing the grid size of the pa- 
+# rent tile's grid by 2.  Thus, the PTSG has twice the number of grid
 # cells in each direction as the parent tile's grid (but covers the same
 # region).]  The reason for calculating the number of halo points on the
 # PTSG is that the index limits that the executable make_hgrid (called 
-# by the grid generation script grid_gen_scr) takes as arguments are su-
-# pergrid indices.  
+# by script grid_gen_scr) takes as arguments are supergrid indices.  
 #
 # Note that nhalo_PTSG must be an integer, but the expression derived 
 # above for nhalo_PTSG may not yield an integer.  To ensure that we in-
@@ -1000,30 +1010,61 @@ elif [ "$gtype" = "regional" ]; then
 #   nhalo_PTSG = ceil(2*nhalo/refine_ratio)
 #
 # where ceil(...) is the ceiling function, i.e. it rounds its floating
-# point argument up to the next larger integer.  Since there is no 
-# ceil(...) function in bash, we can achieve this by adding the denomi-
-# nator minus one to the original numerator, i.e. by redefining nhalo_-
-# PTSG to be
+# point argument up to the next larger integer.  Since in bash division
+# of two integers returns a truncated integer and since bash has no 
+# ceil(...) function, we instead perform the rounding-up operation by 
+# adding the denominator (of the argument of ceil(...) above) minus one
+# to the original numerator, i.e. by redefining nhalo_PTSG to be
 #
 #   nhalo_PTSG = (2*nhalo + refine_ratio - 1)/refine_ratio
 #
+# (This trick works when dividing one positive integer by another.)  
 # Once we obtain nhalo_PTSG using this expression, we can obtain the 
 # PTSG index limits for the regional domain with halo from the index li-
 # mits for the regional domain without a halo by simply subtracting 
 # nhalo_PTSG from the lower index limits and adding nhalo_PTSG to the 
-# upper index limits as follows:
+# upper index limits, i.e.
 #
 #   istart_nest_halo = istart_nest - nhalo_PTSG
 #   iend_nest_halo = iend_nest + nhalo_PTSG
 #   jstart_nest_halo = jstart_nest - nhalo_PTSG
 #   jend_nest_halo = jend_nest + nhalo_PTSG
 #
+# A restriction (that probably originates from make_hgrid) on the start-
+# ing and ending indices of the regional or nested domains is that 
+# istart_nest_halo and jstart_nest_halo (as well as istart_nest and 
+# jstart_nest) must be odd, and iend_nest_halo and jend_nest_halo (as 
+# well as iend_nest and jend_nest) must be even.  These restrictions 
+# imply that the boundary of the regional or nested grid (with or with-
+# out a halo) must coincide with the gridlines of the parent grid; it
+# must not coincide with the half-lines (i.e. the lines on which the 
+# mass points lie) of the parent grid.  Thus, below, after calculating
+# the starting and ending indices using the formulas above, we ensure
+# that the starting indices are odd and the ending indices are even by
+# appropriately adjusting them by 1.
+#
   nhalo=5
   nhalo_PTSG=$(( (2*nhalo + refine_ratio - 1)/refine_ratio ))
+
   istart_nest_halo=$(( $istart_nest - $nhalo_PTSG ))
   iend_nest_halo=$(( $iend_nest + $nhalo_PTSG ))
   jstart_nest_halo=$(( $jstart_nest - $nhalo_PTSG ))
   jend_nest_halo=$(( $jend_nest + $nhalo_PTSG ))
+
+  if [ $(( istart_nest_halo%2 )) -eq 0 ]; then
+    istart_nest_halo=$(( istart_nest_halo - 1 ))
+  fi
+  if [ $(( iend_nest_halo%2 )) -eq 1 ]; then
+    iend_nest_halo=$(( iend_nest_halo + 1 ))
+  fi
+
+  if [ $(( jstart_nest_halo%2 )) -eq 0 ]; then
+    jstart_nest_halo=$(( jstart_nest_halo - 1 ))
+  fi
+  if [ $(( jend_nest_halo%2 )) -eq 1 ]; then
+    jend_nest_halo=$(( jend_nest_halo + 1 ))
+  fi
+
 
   set +x
   echo
@@ -1047,12 +1088,11 @@ elif [ "$gtype" = "regional" ]; then
   set -x
 
 
-
 #
 # We are now creating only 1 tile and it is tile 7.  Where are these parameters used?????
 #
-  export ntiles=1
-  tile=7
+#  export ntiles=1
+#  tile=7
 
   export grid_dir=$TMPDIR/$grid_and_domain_str/grid
   export orog_dir=$TMPDIR/$grid_and_domain_str/orog
@@ -1092,8 +1132,44 @@ elif [ "$gtype" = "regional" ]; then
 #
 # GSK: I sent an email to EMC about this on 5/22/2018 but haven't yet heard back.
 #
+# Note:
+# It is not clear how the "halo" parameter that is passed in the call 
+# below to grid_gen_scr is used.  More specifically, grid_gen_scr in 
+# turn calls the make_hgrid executable as follows:
+#
+#   make_hgrid --grid_type gnomonic_ed \
+#              --nlon 2*${RES}
+#              --grid_name C${RES}_grid \
+#              --do_schmidt --stretch_factor ${stretch_fac} --target_lon ${target_lon} --target_lat ${target_lat} \
+#              --nest_grid --parent_tile 6 --refine_ratio ${refine_ratio} \
+#                --istart_nest ${istart_nest_halo} --jstart_nest ${jstart_nest_halo} \
+#                --iend_nest ${iend_nest_halo} --jend_nest ${jend_nest_halo} \
+#              --halo ${halo} \
+#              --great_circle_algorithm
+#
+# This creates the 7 grid files ${CRES}_grid.tileN.nc for N=1,...,7.  
+# The 7th file ${CRES}_grid.tile7.nc represents the regional grid, and 
+# the extents of the arrays in that file do not seem to include a halo,
+# i.e. they are based only on the values passed via the four flags
+#
+#   --istart_nest ${istart_nest_halo}
+#   --jstart_nest ${jstart_nest_halo}
+#   --iend_nest ${iend_nest_halo}
+#   --jend_nest ${jend_nest_halo}
+#
+# The flag
+#
+#   --halo ${halo}
+#
+# doesn't seem to cause a halo to be added to the arrays in the file.  
+# Thus, it is not clear how the "--halo ${halo}" flag is used by make_-
+# hgrid.  Note that there is also the "--out_halo" flag that apparently
+# will cause the halo to be written out, so it is not clear why that is
+# not used instead of calculating istart_nest_halo etc above.
+#
   echo 
   echo "Begin grid generation for a ${grid_type_desc} (on `date`)."
+if [ 1 = 1 ]; then
   $script_dir/$grid_gen_scr \
     $RES \
     $grid_dir \
@@ -1101,6 +1177,21 @@ elif [ "$gtype" = "regional" ]; then
     $istart_nest_halo $jstart_nest_halo $iend_nest_halo $jend_nest_halo \
     $halo \
     $script_dir
+else
+# Not sure what the units are of the argument to the --out_halo flag of
+# make_hgrid.  Are they in cell counts on the parent tile or its supergrid,
+# or are they cell counts on the nest/regional tile or its supergrid.
+  export out_halo=$nhalo
+  export out_halo=$nhalo_PTSG
+  export out_halo=1
+  $script_dir/$grid_gen_scr \
+    $RES \
+    $grid_dir \
+    $stetch_fac $target_lon $target_lat $refine_ratio \
+    $istart_nest $jstart_nest $iend_nest $jend_nest \
+    $halo \
+    $script_dir 
+fi
   echo 
   echo "End grid generation for a ${grid_type_desc} (on `date`)."
 if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
@@ -1117,6 +1208,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
 # rectory can be removed after the orography file has been created (it
 # is currently not deleted).
 #  
+  tile=7
   echo
   echo "Begin orography generation for a ${grid_type_desc} (on `date`)."
 
@@ -1128,7 +1220,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
 # cfp.
 #
     export APRUN=time
-    echo "$script_dir/$orog_gen_scr $RES 7 $grid_dir $orog_dir $script_dir $topo_dir $TMPDIR " >> $TMPDIR/orog.file1
+    echo "$script_dir/$orog_gen_scr $RES $tile $grid_dir $orog_dir $script_dir $topo_dir $TMPDIR " >> $TMPDIR/orog.file1
 
     aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
     rm $TMPDIR/orog.file1
@@ -1208,7 +1300,7 @@ if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
        $npts_cgy \
        $halo \
        \'$filter_dir/${CRES}_grid.tile${tile}.nc\' \
-       \'$filter_dir/${CRES}_grid.tile${tile}.halo${halo}.nc\' >input.shave.grid.halo$halo
+       \'$filter_dir/${CRES}_grid.tile${tile}.halo${halo}.nc\' > input.shave.grid.halo${halo}
 
 # Create an input file for the shave executable to generate a grid file
 # with a halo of 4 cells.
@@ -1216,7 +1308,7 @@ if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
        $npts_cgy \
        $halop1 \
        \'$filter_dir/${CRES}_grid.tile${tile}.nc\' \
-       \'$filter_dir/${CRES}_grid.tile${tile}.halo${halop1}.nc\' >input.shave.grid.halo${halop1}
+       \'$filter_dir/${CRES}_grid.tile${tile}.halo${halop1}.nc\' > input.shave.grid.halo${halop1}
 #       \'$filter_dir/${CRES}_grid.tile${tile}.shave.nc\' >input.shave.grid
 
 # Create an input file for the shave executable to generate an orography
@@ -1225,7 +1317,7 @@ if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
        $npts_cgy \
        $halo0 \
        \'$filter_dir/oro.${CRES}.tile${tile}.nc\' \
-       \'$filter_dir/oro.${CRES}.tile${tile}.halo${halo0}.nc\' >input.shave.orog.halo$halo0
+       \'$filter_dir/oro.${CRES}.tile${tile}.halo${halo0}.nc\' > input.shave.orog.halo${halo0}
 
 # Create an input file for the shave executable to generate an orography
 # file with a halo of 4 cells.
@@ -1233,22 +1325,22 @@ if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
        $npts_cgy \
        $halop1 \
        \'$filter_dir/oro.${CRES}.tile${tile}.nc\' \
-       \'$filter_dir/oro.${CRES}.tile${tile}.halo${halop1}.nc\' >input.shave.orog.halo${halop1}
+       \'$filter_dir/oro.${CRES}.tile${tile}.halo${halop1}.nc\' > input.shave.orog.halo${halop1}
 #       \'$filter_dir/oro.${CRES}.tile${tile}.shave.nc\' >input.shave.orog
 
 #
 # Shave the grid and orography files.
 #
   if [ "$machine" = "WCOSS_C" ]; then
-    aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec <input.shave.grid.halo$halo
-    aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec <input.shave.grid.halo$halop1 
-    aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec <input.shave.orog.halo$halo0
-    aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec <input.shave.orog.halo$halop1
+    aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.grid.halo$halo
+    aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.grid.halo$halop1 
+    aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.orog.halo$halo0
+    aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.orog.halo$halop1
   elif [ "$machine" = "THEIA" ]; then
-    time $exec_dir/$shave_exec <input.shave.grid.halo$halo
-    time $exec_dir/$shave_exec <input.shave.grid.halo$halop1
-    time $exec_dir/$shave_exec <input.shave.orog.halo$halo0
-    time $exec_dir/$shave_exec <input.shave.orog.halo$halop1
+    time $exec_dir/$shave_exec < input.shave.grid.halo$halo
+    time $exec_dir/$shave_exec < input.shave.grid.halo$halop1
+    time $exec_dir/$shave_exec < input.shave.orog.halo$halo0
+    time $exec_dir/$shave_exec < input.shave.orog.halo$halop1
   fi
 
 fi
@@ -1282,6 +1374,15 @@ if [ "$gtype" = "regional" ]; then
 #-----------------------------------------------------------------------
 #
 else
+
+  case "$gtype" in
+    "uniform"|"stretch")
+      ntiles=6
+      ;;
+    "nest")
+      ntiles=7
+      ;;
+  esac
 
   tile=1
   while [ "$tile" -le "$ntiles" ]; do

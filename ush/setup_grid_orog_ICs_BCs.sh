@@ -77,8 +77,8 @@ fi
 #
 #export gtype="uniform"     # Grid type: uniform, stretch, nest, or regional
 #export gtype="stretch"     # Grid type: uniform, stretch, nest, or regional
-export gtype="nest"        # Grid type: uniform, stretch, nest, or regional
-#export gtype="regional"    # Grid type: uniform, stretch, nest, or regional
+#export gtype="nest"        # Grid type: uniform, stretch, nest, or regional
+export gtype="regional"    # Grid type: uniform, stretch, nest, or regional
 # 
 # Make sure gtype is set to one of the allowed values.
 #
@@ -104,6 +104,7 @@ fi
 #-----------------------------------------------------------------------
 #
 export RES="96"
+export RES="384"
 #export RES="768"
 # 
 # Make sure RES is set to one of the allowed values.
@@ -335,7 +336,8 @@ elif [ "$gtype" = "stretch" ]; then
 # Set string that describes the grid resolution and type and the region
 # it covers.  This is used in setting directory names.
 # 
-  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+#  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+  export rn=$( echo "$stetch_fac" | sed "s|\.|p|" )
   export grid_and_domain_str=${CRES}r${rn}_stretched_${title}
 #
 #-----------------------------------------------------------------------
@@ -396,18 +398,54 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
 #
   export title="CONUS"           # Identifier based on nested or regional grid location.
   export title="AAAAA"           # Identifier based on nested or regional grid location.
-#  export title="BBBBB"           # Identifier based on nested or regional grid location.
+  export title="change_make_hgrid_opts01"           # Identifier based on nested or regional grid location.
 #  export title="CCCCC"           # Identifier based on nested or regional grid location.
 #  export title="DDDDD"           # Identifier based on nested or regional grid location.
+
+  make_RAP_domain="true"
+#  make_RAP_domain="false"
+  if [ "$make_RAP_domain" = "true" ]; then
+#    export stetch_fac=0.6
+    export stetch_fac=0.7
+    export target_lon=-106.0
+    export target_lat=54.0
+    export refine_ratio=3
+#
+# In order to determine the starting and ending indices of the regional 
+# grid within its parent tile (or PT, which is tile 6), we assume that 
+# there is a gap between the boundary of the regional grid and that of
+# its parent tile (PT).  We set the width of this gap using the parame-
+# ter num_gap_cells_PT.  Note that this is a cell count on the PT grid
+# (not on the regional grid).  We must make the gap between the boundary
+# of the regional grid and that of its PT large enough (by making num_-
+# gap_cells_PT large enough) so that a region of halo cells around the 
+# boundary of the regional grid (the halo is added later in another 
+# script; its function is to feed in boundary conditions to the regional
+# grid) fits into the gap (i.e. does not overrun the boundary of the 
+# PT).  
+#
+# Currently, a halo of 5 regional grid cells is used round the regional
+# grid.  Setting num_gap_cells_PT to 10 leaves enough room for this 
+# halo.
+#
+    num_gap_cells_PT=10
+    export istart_nest=$(( 2*$num_gap_cells_PT + 1 ))
+    export iend_nest=$(( 2*$RES - 2*$num_gap_cells_PT ))
+    export jstart_nest=$istart_nest
+    export jend_nest=$iend_nest
+    export title="RAP"
+  fi
 #
 # Set string that describes the grid resolution and type and the region
 # it covers.  This is used in setting directory names.
 # 
   if [ "$gtype" = "nest" ];then
-    export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+#    export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+    export rn=$( echo "$stetch_fac" | sed "s|\.|p|" )
     export grid_and_domain_str=${CRES}r${rn}n${refine_ratio}_nested_${title}
   else
-    export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+#    export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+    export rn=$( echo "$stetch_fac" | sed "s|\.|p|" )
     export grid_and_domain_str=${CRES}r${rn}n${refine_ratio}_regional_${title}
   fi
 #
