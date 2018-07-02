@@ -311,8 +311,8 @@ elif [ "$gtype" = "stretch" ]; then
 # lower resolution than their counterparts on the original unstretched
 # grid. 
 #
-  export stetch_fac=1.5          # Stretching factor for the grid.
-#  export stetch_fac=1.0          # Stretching factor for the grid.
+  export stretch_fac=1.5          # Stretching factor for the grid.
+#  export stretch_fac=1.0          # Stretching factor for the grid.
 #
 # target_lon and target_lat are the longitude and latitude, in degrees,
 # of the center of the highest resolution tile of the stretched grid.
@@ -334,8 +334,8 @@ elif [ "$gtype" = "stretch" ]; then
 # Set string that describes the grid resolution and type and the region
 # it covers.  This is used in setting directory names.
 # 
-#  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
-  export rn=$( echo "$stetch_fac" | sed "s|\.|p|" )
+#  export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
+  export rn=$( echo "$stretch_fac" | sed "s|\.|p|" )
   export grid_and_domain_str=${CRES}r${rn}_stretched_${title}
 #
 #-----------------------------------------------------------------------
@@ -356,7 +356,7 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
 # nary or "ghost" parent grid relative to which the regional grid will 
 # be constructed.
 #
-  export stetch_fac=1.5          # Stretching factor for the grid.
+  export stretch_fac=1.5          # Stretching factor for the grid.
   export target_lon=-97.5        # Center longitude of the highest resolution tile.
   export target_lat=35.5         # Center latitude of the highest resolution tile.
 #
@@ -403,8 +403,8 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
   make_RAP_domain="true"
 #  make_RAP_domain="false"
   if [ "$make_RAP_domain" = "true" ]; then
-#    export stetch_fac=0.6
-    export stetch_fac=0.7
+#    export stretch_fac=0.6
+    export stretch_fac=0.7
     export target_lon=-106.0
     export target_lat=54.0
     export refine_ratio=3
@@ -438,12 +438,12 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
 # it covers.  This is used in setting directory names.
 # 
   if [ "$gtype" = "nest" ];then
-#    export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
-    export rn=$( echo "$stetch_fac" | sed "s|\.|p|" )
+#    export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
+    export rn=$( echo "$stretch_fac" | sed "s|\.|p|" )
     export grid_and_domain_str=${CRES}r${rn}n${refine_ratio}_nested_${title}
   else
-#    export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
-    export rn=$( echo "$stetch_fac" | sed "s|\.|p|" )
+#    export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
+    export rn=$( echo "$stretch_fac" | sed "s|\.|p|" )
     export grid_and_domain_str=${CRES}r${rn}n${refine_ratio}_regional_${title}
   fi
 #
