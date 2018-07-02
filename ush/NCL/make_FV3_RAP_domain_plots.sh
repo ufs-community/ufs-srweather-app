@@ -17,7 +17,7 @@ grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work
 RAP_grid_fn="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.nc"
 
 
-if [ 1 = 1 ]; then
+if [ 0 = 1 ]; then
 #
 # Show FV3 regional domain (tile 7) and the original RAP domain outline
 # on a cylindrical projection.
@@ -48,7 +48,7 @@ ncl -n plot_grid.ncl \
   grid_dir=\"$grid_dir\" \
   res=${RES} \
   tile_inds=\(/7/\) \
-  draw_tile_bdy=False \
+  draw_tile_bdy=True \
   draw_tile_grid=False \
   draw_RAP_domain=True \
   RAP_grid_fn=\"$RAP_grid_fn\" \
