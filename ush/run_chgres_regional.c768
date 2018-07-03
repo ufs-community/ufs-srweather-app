@@ -58,7 +58,7 @@ if [ $machine = WCOSS_C ]; then
  . $MODULESHOME/init/sh 2>>/dev/null
  module load PrgEnv-intel prod_envir cfp-intel-sandybridge/1.1.0 2>>/dev/null
  module list
- export BASE_GSM=/gpfs/hps3/emc/fv3-cam/noscrub/${LOGNAME}/fv3gfs
+ export BASE_GSM=/gpfs/hps3/emc/meso/noscrub/${LOGNAME}/fv3gfs
  export KMP_AFFINITY=disabled
  export FIXgsm=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am
  export DATA=/gpfs/hps/ptmp/${LOGNAME}/wrk.chgres
@@ -80,7 +80,7 @@ elif [ $machine = THEIA ]; then
  module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
  module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
  module list
- export BASE_GSM=/scratch4/NCEPDEV/meso/noscrub/${LOGNAME}/fv3gfs
+ export BASE_GSM=/scratch4/NCEPDEV/fv3-cam/noscrub/${LOGNAME}/fv3gfs
  export FIXgsm=/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am
  export DATA=/scratch4/NCEPDEV/stmp4/${LOGNAME}/wrk.chgres
  export APRUNC="time"
