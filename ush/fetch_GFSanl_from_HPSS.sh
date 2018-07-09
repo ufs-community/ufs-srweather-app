@@ -96,8 +96,8 @@ cd $INIDIR
 #
 #-----------------------------------------------------------------------
 #
-# Check whether the tar file to extract from HPSS actually exists.  If
-# not, exit the script.
+# Check whether the tar file to extract from HPSS actually exists in 
+# HPSS.  If not, exit the script.
 #
 #-----------------------------------------------------------------------
 #
@@ -130,16 +130,14 @@ fi
 #
 # Extract the atmosphere, near-sea-surface temperature, and surface ana-
 # lysis files from the tar file.
-# Why are these at 00z?  Are these actually at $HH, so they should be renamed???
 #
 #-----------------------------------------------------------------------
 #
-tar -xvf $INIDIR/$TAR_FILE --directory=$INIDIR ./pgrba/cmc_gespr.t00z.pgrbaf336 ./pgrba/cmc_gespr.t00z.pgrbaf342  # <-- Couple of dummy files to extract from the dummy tar file.
+tar -xvf $INIDIR/$TAR_FILE --directory=$INIDIR \
+  ./gfs.t00z.atmanl.nemsio \
+  ./gfs.t00z.nstanl.nemsio \
+  ./gfs.t00z.sfcanl.nemsio    # Why are these files at 00z?  Are these actually at $HH, so they should be renamed???
 tar_extract_result=$?
-# The following are the actual files to extract (once I have rstprod group membership).
-#  ./gfs.t00z.atmanl.nemsio \
-#  ./gfs.t00z.nstanl.nemsio \
-#  ./gfs.t00z.sfcanl.nemsio
 if [ "$tar_extract_result" != "0" ]; then
   echo
   echo "tar extract archive operation failed."
