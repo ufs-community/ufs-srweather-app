@@ -103,7 +103,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export RES="96"
+#export RES="96"
 export RES="384"
 #export RES="768"
 # 
@@ -144,8 +144,6 @@ export CRES="C${RES}"
 #export CDATE="2018060100"
 #export CDATE=$( date "+%Y%m%d"00 )  # This sets CDATE to today.
 export CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
-
-#export CDATE="2018080100"
 
 #
 # Extract from CDATE the starting year, month, day, and hour.  These are
@@ -236,6 +234,9 @@ fi
 # to a location to which the archived analysis file from HPSS can be co-
 # pied and extracted.
 #
+# Note that the user needs to be a memeber of the rstprod (restricted 
+# products) group to be able to access the GFS analysis files on HPSS. 
+#
 #-----------------------------------------------------------------------
 #
 if [ ! -d "$INIDIR" ]; then
@@ -249,21 +250,22 @@ if [ ! -d "$INIDIR" ]; then
   echo "We will attempt to retrieve the archived analysis file for this CDATE from mass store (HPSS)."
   echo "Resetting INIDIR to a location to which this archived analysis file can be copied and extracted."
 #
-# Set a new GFS analysis directory.  This is a local directory in which
-# archived (tar) analyses obtained from HPSS will be stored and extract-
-# ed.
+# Set a new GFS analysis directory.  This is a local directory into
+# which the archived analysis (i.e. .tar) file obtained from HPSS will 
+# be copied.  The relevant files from this archive file will be then be
+# extracted into this directory, and finally the archive files will be 
+# deleted (since it is usually very large).
 #
   export INIDIR="$BASE_GSM/../gfs/prod/gfs.${YMD}"
 #
-# Set the directory on mass store (HPSS) in which the tar archive file 
-# that we want to fetch is located.
+# Set the directory on mass store (HPSS) in which the tarred archive 
+# file that we want to fetch is located.
 #
   export HPSS_DIR="/NCEPPROD/hpssprod/runhistory/rh$YYYY/${YYYY}${MM}/${YMD}"
 #
 # Set the name of the tar file we want to fetch.
 #
-#  export TAR_FILE="gpfs_hps_nco_ops_com_gfs_prod_gfs.${YYYY}${MM}${DD}${HH}.anl.tar"   # Need rstprod group access permission.
-  export TAR_FILE="com2_gens_prod_cmce.${YMD}_${HH}.pgrba.tar"   # This is a file for which I have access permission.  Use for testing.
+  export TAR_FILE="gpfs_hps_nco_ops_com_gfs_prod_gfs.${YYYY}${MM}${DD}${HH}.anl.tar"  # Need rstprod group access permission to fetch this file.
 
 fi
 #
@@ -356,7 +358,7 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
 # nary or "ghost" parent grid relative to which the regional grid will 
 # be constructed.
 #
-  export stretch_fac=1.5          # Stretching factor for the grid.
+  export stretch_fac=1.5         # Stretching factor for the grid.
   export target_lon=-97.5        # Center longitude of the highest resolution tile.
   export target_lat=35.5         # Center latitude of the highest resolution tile.
 #
@@ -396,9 +398,7 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
 #
   export title="CONUS"           # Identifier based on nested or regional grid location.
   export title="AAAAA"           # Identifier based on nested or regional grid location.
-  export title="change_make_hgrid_opts01"           # Identifier based on nested or regional grid location.
-#  export title="CCCCC"           # Identifier based on nested or regional grid location.
-#  export title="DDDDD"           # Identifier based on nested or regional grid location.
+#  export title="change_make_hgrid_opts01"           # Identifier based on nested or regional grid location.
 
   make_RAP_domain="true"
 #  make_RAP_domain="false"
