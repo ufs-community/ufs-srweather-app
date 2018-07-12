@@ -142,7 +142,7 @@ elif [ "$machine" = "THEIA" ]; then
   export FIXgsm=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am
 # The variable DATA specifies the temporary (work) directory used by 
 # chgres_driver_scr.
-  export DATA="$TMPDIR/$grid_and_domain_str/ICs"
+  export DATA="$TMPDIR/$subdir_name/ICs"
   export APRUNC="time"
   ulimit -a
   ulimit -s unlimited

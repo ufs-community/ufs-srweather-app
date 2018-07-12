@@ -40,6 +40,8 @@
 #set -aux
 #set -eux
 set -ux
+
+. ./config.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -47,9 +49,7 @@ set -ux
 #
 #-----------------------------------------------------------------------
 #
-#export machine="WCOSS"
-#export machine="WCOSS_C"
-export machine="THEIA"
+export machine=${machine:-}
 #
 # Convert machine name to lower case if necessary.
 #
@@ -75,10 +75,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-#export gtype="uniform"     # Grid type: uniform, stretch, nest, or regional
-#export gtype="stretch"     # Grid type: uniform, stretch, nest, or regional
-#export gtype="nest"        # Grid type: uniform, stretch, nest, or regional
-export gtype="regional"    # Grid type: uniform, stretch, nest, or regional
+export gtype=${gtype:-}
 # 
 # Make sure gtype is set to one of the allowed values.
 #
@@ -96,16 +93,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the cubed-sphere grid tile resolution.  This must be one of the
-# following:
+# Set the cubed-sphere grid tile resolution for tiles 1 through 6.  This
+# must be one of "48", "96", "192", "384", "768", "1152", or "3072".
 #
-#   48, 96, 192, 384, 768, 1152, 3072
+# Note that for a nested or regional grid (gtype set to "nest" or "re-
+# gional"), the resolution of the nested or regional grid is determined
+# not only by this number but also the refinement ratio (refine_ratio).
 #
 #-----------------------------------------------------------------------
 #
-#export RES="96"
-export RES="384"
-#export RES="768"
+export RES=${RES:-}
 # 
 # Make sure RES is set to one of the allowed values.
 #
@@ -125,7 +122,7 @@ if [ "$RES" != "48" ] && \
 fi
 #
 # Set the C-resolution.  This is just a convenience variable containing
-# the character "C" followed by the resolution.
+# the character "C" followed by the tile resolution.
 #
 export CRES="C${RES}"
 #
@@ -136,15 +133,7 @@ export CRES="C${RES}"
 #
 #-----------------------------------------------------------------------
 #
-#export CDATE="2018041000"
-#export CDATE="2018051000"
-#export CDATE="2018052800"
-#export CDATE="2018052900"
-#export CDATE="2018053000"
-#export CDATE="2018060100"
-#export CDATE=$( date "+%Y%m%d"00 )  # This sets CDATE to today.
-export CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
-
+export CDATE=${CDATE:-}
 #
 # Extract from CDATE the starting year, month, day, and hour.  These are
 # needed below for various operations.`
@@ -197,27 +186,29 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+export BASE_GSM=${BASE_GSM:-}
+export TMPDIR=${TMPDIR:-}
+
 export YMD=`echo $CDATE | cut -c 1-8`
 
 if [ "$machine" = "WCOSS_C" ]; then
 
-  export BASE_GSM="/gpfs/hps3/emc/meso/noscrub/${LOGNAME}/fv3gfs"
+#  export BASE_GSM="/gpfs/hps3/emc/meso/noscrub/${LOGNAME}/fv3gfs"
   export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
-  export TMPDIR="/gpfs/hps3/ptmp/$LOGNAME/fv3_grid.$gtype"
+#  export TMPDIR="/gpfs/hps3/ptmp/$LOGNAME/fv3_grid.$gtype"
 
 elif [ "$machine" = "WCOSS" ]; then
 
 # Not sure how these should be set on WCOSS.
-  export BASE_GSM=""
   export INIDIR=""
-  export TMPDIR=""
+#  export TMPDIR=""
 
 elif [ "$machine" = "THEIA" ]; then
 
-  export BASE_GSM="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/fv3gfs"
+#  export BASE_GSM="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/fv3gfs"
   export COMROOTp2="/scratch4/NCEPDEV/rstprod/com"   # Does this really need to be exported??
   export INIDIR="$COMROOTp2/gfs/prod/gfs.$YMD"
-  export TMPDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs"
+#  export TMPDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs"
 
 fi
 #
@@ -239,33 +230,158 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ ! -d "$INIDIR" ]; then
+#if [ ! -d "$INIDIR" ]; then
+#
+#  echo
+#  echo "The GFS analysis directory (INIDIR) is not available on disk for the specified CDATE:"
+#  echo
+#  echo "  CDATE = $CDATE"
+#  echo "  INIDIR = $INIDIR"
+#  echo
+#  echo "Will attempt to retrieve the archived analysis file for this CDATE from mass store (HPSS)."
+#  echo "Resetting INIDIR to a location to which this archived analysis file can be copied and extracted."
+##
+## Set a new GFS analysis directory.  This is a local directory into
+## which the archived analysis (i.e. .tar) file obtained from HPSS will 
+## be copied.  The relevant files from this archive file will be then be
+## extracted into this directory, and finally the archive file will be 
+## deleted (since it is usually very large).
+##
+#  export INIDIR="$BASE_GSM/../gfs/prod/gfs.${YMD}"
+##
+## Set the directory on mass store (HPSS) in which the tarred archive 
+## file that we want to fetch is located.
+##
+#  export HPSS_DIR="/NCEPPROD/hpssprod/runhistory/rh$YYYY/${YYYY}${MM}/${YMD}"
+##
+## Set the name of the tar file we want to fetch.  Note that the user i
+## must to be a member of the rstprod group to be able to "get" this file
+## using hsi.
+##
+#  export TAR_FILE="gpfs_hps_nco_ops_com_gfs_prod_gfs.${YYYY}${MM}${DD}${HH}.anl.tar"
+#
+#fi
+
+
+#
+#-----------------------------------------------------------------------
+#
+# Set the names of the nemsio analysis files needed to generate initial
+# conditions.
+#
+#-----------------------------------------------------------------------
+#
+atmanl_file="gfs.t${HH}z.atmanl.nemsio"
+nstanl_file="gfs.t${HH}z.nstanl.nemsio"
+sfcanl_file="gfs.t${HH}z.sfcanl.nemsio"
+#
+#-----------------------------------------------------------------------
+#
+# Check whether the nemsio analysis files exist in the INIDIR specified
+# above.  If not, reset INIDIR to a new location.  
+#
+#-----------------------------------------------------------------------
+#
+if [ ! -f "$INIDIR/$atmanl_file" ] || \
+   [ ! -f "$INIDIR/$nstanl_file" ] || \
+   [ ! -f "$INIDIR/$sfcanl_file" ]; then
 
   echo
-  echo "The GFS analysis directory (INIDIR) is not available on disk for the specified CDATE:"
+  echo "One or more of the nemsio analysis files needed for initialization do not exist in INIDIR:"
   echo
-  echo "  CDATE = $CDATE"
   echo "  INIDIR = $INIDIR"
-  echo
-  echo "We will attempt to retrieve the archived analysis file for this CDATE from mass store (HPSS)."
-  echo "Resetting INIDIR to a location to which this archived analysis file can be copied and extracted."
+  echo "  atmanl_file = $atmanl_file"
+  echo "  nstanl_file = $nstanl_file"
+  echo "  sfcanl_file = $sfcanl_file"
 #
 # Set a new GFS analysis directory.  This is a local directory into
 # which the archived analysis (i.e. .tar) file obtained from HPSS will 
 # be copied.  The relevant files from this archive file will be then be
-# extracted into this directory, and finally the archive files will be 
+# extracted into this directory, and finally the archive file will be 
 # deleted (since it is usually very large).
 #
   export INIDIR="$BASE_GSM/../gfs/prod/gfs.${YMD}"
+
+  echo
+  echo "Resetting INIDIR to the following alternate location:"
+  echo
+  echo "  INIDIR = $INIDIR"
+
+  if [ -f "$INIDIR/$atmanl_file" ] && \
+     [ -f "$INIDIR/$nstanl_file" ] && \
+     [ -f "$INIDIR/$sfcanl_file" ]; then
+    echo
+    echo "This location contains the nemsio analysis files needed for initialization."
+    echo "Continuing."
+#    echo
+#    echo "  INIDIR = $INIDIR"
+#    echo "  atmanl_file = $atmanl_file"
+#    echo "  nstanl_file = $nstanl_file"
+#    echo "  sfcanl_file = $sfcanl_file"
+  else
+    echo
+    echo "This location also does not contain the nemsio analysis files needed for initialization."
+    echo "The analysis files must first be obtained from HPSS."
+#    echo "Exiting script."
+#    exit
+  fi
+
+fi
+
+
+
 #
-# Set the directory on mass store (HPSS) in which the tarred archive 
-# file that we want to fetch is located.
+#-----------------------------------------------------------------------
 #
-  export HPSS_DIR="/NCEPPROD/hpssprod/runhistory/rh$YYYY/${YYYY}${MM}/${YMD}"
+# Set the forecast length (in hours).
 #
-# Set the name of the tar file we want to fetch.
+#-----------------------------------------------------------------------
 #
-  export TAR_FILE="gpfs_hps_nco_ops_com_gfs_prod_gfs.${YYYY}${MM}${DD}${HH}.anl.tar"  # Need rstprod group access permission to fetch this file.
+fcst_len_hrs=${fcst_len_hrs:-}
+#
+# The forecast length (in hours) cannot contain more than 3 characters.
+# Thus, its maximum value is 999.  Check whether the specified forecast
+# length exceeds this maximum value.
+#
+fcst_len_hrs_max=999
+if [ "$fcst_len_hrs" -gt "$fcst_len_hrs_max" ]; then
+  echo
+  echo "Error.  Forecast length is greater than maximum allowed length:"
+  echo "  fcst_len_hrs = $fcst_len_hrs"
+  echo "  fcst_len_hrs_max = $fcst_len_hrs_max"
+  echo "Exiting script."
+  exit 1
+fi
+#
+#-----------------------------------------------------------------------
+#
+# For a regional grid, set the boundary condition (BC) time interval (in
+# hours), i.e. the interval between the times at which the BCs are pro-
+# vided.  We refer to these as the BC times.  Then create an integer ar-
+# ray containing these times.  
+#
+#-----------------------------------------------------------------------
+#
+if [ "$gtype" = "regional" ]; then
+
+  BC_interval_hrs=${BC_interval_hrs:-}
+#
+# Check whether the forecast length (fcst_len_hrs) is evenly divisible 
+# by the BC time interval.  If not, exit script.
+#
+  remainder=$(( $fcst_len_hrs % $BC_interval_hrs ))
+
+  if [ "$remainder" != "0" ]; then
+    echo
+    echo "Error.  The forecast length is not evenly divisible by the BC time interval:"
+    echo "  fcst_len_hrs = $fcst_len_hrs"
+    echo "  BC_interval_hrs = $BC_interval_hrs"
+    echo "  remainder = fcst_len_hrs % BC_interval_hrs = $remainder"
+    echo "Exiting script."
+    exit 1
+  fi
+
+  BC_times=$( seq 0 $BC_interval_hrs $fcst_len_hrs )
 
 fi
 #
@@ -273,10 +389,43 @@ fi
 #
 # Set various grid-type (gtype) dependent parameters.
 #
+# title:
+# This is a descriptive string used in directory names as a forecast 
+# identifier.
+#
+# coverage_str:
+# Describes the coverage of the grid.  This is "glob" for a global grid
+# and "rgnl" for a regional grid.
+#
+# nest_str:
+# Specifies whether or not the outer grid has embedded within it a nest-
+# ed grid.  This is "nest" for a global grid having a nest and empty for
+# a regional grid (since, at least for now, a regional grid can't have a
+# nest).
+# 
+# stretch_str:
+# This specifies whether or not the global grid is stretched.  This is 
+# empty if there is no stretching of the global grid (i.e. if stretch_-
+# fac is assumed to be 1) and "strch" otherwise.  Note that for gtype=
+# "regional", the global grid is a "ghost" grid in that it is only used
+# for grid generation (i.e. the model isn't integrated on the global 
+# grid).  Nevertheless, it may still be stretched, so stretch_str is 
+# still set to "strch" in this case.
+#
+# refine_str:
+# Specifies whether or not the outer grid has embedded within it a nest-
+# ed grid.  This is "nest" for a global grid having a nest and empty for
+# a regional grid (since, at least for now, a regional grid can't have a
+# nest).
+#
 #-----------------------------------------------------------------------
 #
 echo
 echo "Setting grid parameters..."
+
+title=${title:-}
+
+
 #
 #-----------------------------------------------------------------------
 #
@@ -286,16 +435,15 @@ echo "Setting grid parameters..."
 #
 if [ "$gtype" = "uniform" ];  then
 #
-# title is a string that is used in directory names below as a forecast
-# identifier.  Here, we set it to "global" to indicate that the grid has
-# global coverage.  Other values are possible.
+  coverage_str="glob"
+  nest_str=""
+  stretch_str=""
+  refine_str=""
 #
-  export title="global"          # Identifier based on grid coverage.
+# Unset variables that will not be used for gtype="uniform".
 #
-# Set string that describes the grid resolution and type and the region
-# it covers.  This is used in setting directory names.
-# 
-  export grid_and_domain_str=${CRES}_uniform_${title}
+  unset stretch_fac target_lon target_lat refine_ratio \
+        istart_nest iend_nest jstart_nest jend_nest
 #
 #-----------------------------------------------------------------------
 #
@@ -305,6 +453,11 @@ if [ "$gtype" = "uniform" ];  then
 #
 elif [ "$gtype" = "stretch" ]; then
 #
+  coverage_str="glob"
+  nest_str=""
+  stretch_str="strch"
+  refine_str=""
+#
 # stretch_fac is the factor by which tile 6 of the global cubed-sphere
 # grid will be compressed to obtain a new stretched global grid that has
 # a higher resolution (i.e. smaller grid size) on tile 6 (relative to 
@@ -313,8 +466,7 @@ elif [ "$gtype" = "stretch" ]; then
 # lower resolution than their counterparts on the original unstretched
 # grid. 
 #
-  export stretch_fac=1.5          # Stretching factor for the grid.
-#  export stretch_fac=1.0          # Stretching factor for the grid.
+  export stretch_fac=${stretch_fac:-1.5}
 #
 # target_lon and target_lat are the longitude and latitude, in degrees,
 # of the center of the highest resolution tile of the stretched grid.
@@ -322,31 +474,21 @@ elif [ "$gtype" = "stretch" ]; then
 # two parameters to move the highest resolution tile over the region of
 # interest.
 #
-  export target_lon=-97.5        # Center longitude of the highest resolution tile.
-  export target_lat=35.5         # Center latitude of the highest resolution tile.
-#
-# title is a string that is used in directory names below as a forecast
-# identifier.  One way to set this is to base it on the location of the 
-# region of refinement (i.e. tile 6).  For example, this can be set to 
-# "CONUS" if tile 6 is located over the continental United States.
-#
-  export title="CONUS"           # Identifier based on refinement location.
-  export title="AAAAA"           # Identifier based on refinement location.
-#
-# Set string that describes the grid resolution and type and the region
-# it covers.  This is used in setting directory names.
-# 
-#  export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
-  export rn=$( echo "$stretch_fac" | sed "s|\.|p|" )
-  export grid_and_domain_str=${CRES}r${rn}_stretched_${title}
+  export target_lon=${lon_tile6_ctr:--97.5}
+  export target_lat=${lat_tile6_ctr:-35.5}
 #
 #-----------------------------------------------------------------------
 #
-# Consider gtype set to "nest" or "regional".
+# Consider gtype set to "nest".
 #
 #-----------------------------------------------------------------------
 #
-elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
+elif [ "$gtype" = "nest" ]; then
+#
+  coverage_str="glob"
+  nest_str="nest"
+  stretch_str="strch"
+  refine_str="rfn"
 #
 # For gtype set to "nest", stretch_fac, target_lon, and target_lat have
 # the same meaning as for gtype set to "stretch", i.e. they are the 
@@ -358,9 +500,9 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
 # nary or "ghost" parent grid relative to which the regional grid will 
 # be constructed.
 #
-  export stretch_fac=1.5         # Stretching factor for the grid.
-  export target_lon=-97.5        # Center longitude of the highest resolution tile.
-  export target_lat=35.5         # Center latitude of the highest resolution tile.
+  export stretch_fac=${stretch_fac:-1.5}
+  export target_lon=${lon_tile6_ctr:--97.5}
+  export target_lat=${lat_tile6_ctr:-35.5}
 #
 # refine_ratio is the ratio of the number of grid points in the nested
 # grid to the number of grid points on the parent tile along the bound-
@@ -371,17 +513,74 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
 # the parent tile is delx, then the grid size on the nested grid will be
 # delx/refine_ratio.
 #
-  export refine_ratio=3          # Specify the refinement ratio for nest grid.
+  export refine_ratio=${refine_ratio:-3}
+#
+# Set
+#
+  istart_nest_tile6=${istart_nest_tile6:-14}
+  iend_nest_tile6=${iend_nest_tile6:-83}
+  jstart_nest_tile6=${jstart_nest_tile6:-19}
+  jend_nest_tile6=${jend_nest_tile6:-82}
 #
 # istart_nest, iend_nest, jstart_nest, and jend_nest are the starting 
 # and ending i and j indices of the nest on the parent tile's "super-
 # grid", where the parent tile is tile 6 and its supergrid is a grid
 # having twice the resolution of the parent tile's grid.
 #
-  export istart_nest=27          # Specify the starting i-direction index of nest grid in parent tile supergrid (Fortran index).
-  export iend_nest=166           # Specify the ending i-direction index of nest grid in parent tile supergrid (Fortran index).
-  export jstart_nest=37          # Specify the starting j-direction index of nest grid in parent tile supergrid (Fortran index).
-  export jend_nest=164           # Specify the ending j-direction index of nest grid in parent tile supergrid (Fortran index).
+  export istart_nest=$(( 2*$istart_nest_tile6 - 1 ))
+  export iend_nest=$(( 2*$iend_nest_tile6 ))
+  export jstart_nest=$(( 2*$jstart_nest_tile6 - 1 ))
+  export jend_nest=$(( 2*$jend_nest_tile6 ))
+#
+# Various halo sizes (units are number of cells beyond the boundary of
+# the nested or regional grid).
+#
+  export halo=3                  # Halo size to be used in the atmosphere cubic sphere model for the grid tile.
+#
+#-----------------------------------------------------------------------
+#
+# Consider gtype set to "regional".
+#
+#-----------------------------------------------------------------------
+#
+elif [ "$gtype" = "regional" ]; then
+#
+  coverage_str="rgnl"
+  nest_str=""
+  stretch_str="strch"
+  refine_str="rfn"
+#
+# For gtype set to "nest", stretch_fac, target_lon, and target_lat have
+# the same meaning as for gtype set to "stretch", i.e. they are the 
+# stretching factor and center longitude and latitude of the highest re-
+# solution tile (which is again hard-coded to be tile 6) of the global
+# grid that serves as the "parent" of the nested grid.
+#
+# For gtype set to "regional", these three parameters apply to an imagi-
+# nary or "ghost" parent grid relative to which the regional grid will 
+# be constructed.
+#
+  export stretch_fac=${stretch_fac:-1.5}
+  export target_lon=${lon_tile6_ctr:--97.5}
+  export target_lat=${lat_tile6_ctr:-35.5}
+  export refine_ratio=${refine_ratio:-3}
+#
+# Set
+#
+  istart_nest_tile6=${istart_nest_tile6:-14}
+  iend_nest_tile6=${iend_nest_tile6:-83}
+  jstart_nest_tile6=${jstart_nest_tile6:-19}
+  jend_nest_tile6=${jend_nest_tile6:-82}
+#
+# istart_nest, iend_nest, jstart_nest, and jend_nest are the starting 
+# and ending i and j indices of the nest on the parent tile's "super-
+# grid", where the parent tile is tile 6 and its supergrid is a grid
+# having twice the resolution of the parent tile's grid.
+#
+  export istart_nest=$(( 2*$istart_nest_tile6 - 1 ))
+  export iend_nest=$(( 2*$iend_nest_tile6 ))
+  export jstart_nest=$(( 2*$jstart_nest_tile6 - 1 ))
+  export jend_nest=$(( 2*$jend_nest_tile6 ))
 #
 # Various halo sizes (units are number of cells beyond the boundary of
 # the nested or regional grid).
@@ -389,19 +588,9 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
   export halo=3                  # Halo size to be used in the atmosphere cubic sphere model for the grid tile.
   export halop1=`expr $halo + 1` # Halo size that will be used for the orography and grid tile in chgres.
   export halo0=0                 # No halo, used to shave the filtered orography for use in the model.
-#
-# title is a string that is used in directory names below as a forecast
-# identifier.  One way to set this is to base it on the location of the 
-# nested or regional grid.  For example, this can be set to "CONUS" if 
-# the nested or regional grid is located over the continental United 
-# States.
-#
-  export title="CONUS"           # Identifier based on nested or regional grid location.
-  export title="AAAAA"           # Identifier based on nested or regional grid location.
-#  export title="change_make_hgrid_opts01"           # Identifier based on nested or regional grid location.
 
-  make_RAP_domain="true"
-#  make_RAP_domain="false"
+#  make_RAP_domain="true"
+  make_RAP_domain="false"
   if [ "$make_RAP_domain" = "true" ]; then
 #    export stretch_fac=0.6
     export stretch_fac=0.7
@@ -434,19 +623,6 @@ elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
     export title="RAP"
   fi
 #
-# Set string that describes the grid resolution and type and the region
-# it covers.  This is used in setting directory names.
-# 
-  if [ "$gtype" = "nest" ];then
-#    export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
-    export rn=$( echo "$stretch_fac" | sed "s|\.|p|" )
-    export grid_and_domain_str=${CRES}r${rn}n${refine_ratio}_nested_${title}
-  else
-#    export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
-    export rn=$( echo "$stretch_fac" | sed "s|\.|p|" )
-    export grid_and_domain_str=${CRES}r${rn}n${refine_ratio}_regional_${title}
-  fi
-#
 #-----------------------------------------------------------------------
 #
 # Disallowed value specified for gtype.
@@ -466,65 +642,51 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set out_dir.  This is the directory in which the scripts place their
-# output files.  Create this directory if doesn't already exist.
+# Create strings that will be used to form a subdirectory name for the 
+# current grid configuration.  Two subdirectories having this name will
+# be created; one will be a temporary work directory (created in the 
+# specified temporary directory TMPDIR), while the other will be the 
+# output directory for the preprocessing scripts (created in $BASE_GSM/
+# fix/fix_fv3).
 #
 #-----------------------------------------------------------------------
 #
-export out_dir="$BASE_GSM/fix/fix_fv3/$grid_and_domain_str"
+# If nest_str is set to a non-empty value (i.e. it is neither null nor
+# unset), prepend an underscore to it.  Otherwise, set it to null.
+#
+nest_str=${nest_str:+_${nest_str}}
+#
+# If stretch_str is set to a non-empty value (i.e. it is neither null 
+# nor unset), prepend an underscore to it and append to it the value of 
+# stretch_fac (with any decimal points replaced with "p"s).  Otherwise,
+# set it to null.
+#
+stretch_str=${stretch_str:+_${stretch_str}_$( echo "${stretch_fac}" | sed "s|\.|p|" )}
+#
+# If refine_str is set to a non-empty value (i.e. it is neither null nor
+# unset), prepend an underscore to it and append to it an underscore 
+# followed by the value of refine_ratio.  Otherwise, set it to null.
+#
+refine_str=${refine_str:+_${refine_str}_${refine_ratio}}
+#
+# If title is set to a non-empty value (i.e. it is neither null nor un-
+# set), prepend an underscore to it.  Otherwise, set it to null.
+#
+title=${title:+_${title}}
+#
+# Construct a subdirectory name for the current grid configuration.
+#
+export subdir_name=${coverage_str}${nest_str}_${CRES}${stretch_str}${refine_str}${title}
+#
+#-----------------------------------------------------------------------
+#
+# Set out_dir.  This is the directory in which the preprocessing scripts
+# place their output files.  Create this directory if doesn't already 
+# exist.
+#
+#-----------------------------------------------------------------------
+#
+export out_dir="$BASE_GSM/fix/fix_fv3/$subdir_name"
 mkdir -p $out_dir
-#
-#-----------------------------------------------------------------------
-#
-# Set the forecast length (in hours).
-#
-#-----------------------------------------------------------------------
-#
-fcst_len_hrs=6
-#fcst_len_hrs=9
-#fcst_len_hrs=24
-#
-# The forecast length (in hours) cannot contain more than 3 characters.
-# Thus, its maximum value is 999.  Check whether the specified forecast
-# length exceeds this maximum value.
-#
-fcst_len_hrs_max=999
-if [ "$fcst_len_hrs" -gt "$fcst_len_hrs_max" ]; then
-  echo
-  echo "Error.  Forecast length is greater than maximum allowed length:"
-  echo "  fcst_len_hrs = $fcst_len_hrs"
-  echo "  fcst_len_hrs_max = $fcst_len_hrs_max"
-  echo "Exiting script."
-  exit 1
-fi
-#
-#-----------------------------------------------------------------------
-#
-# For a regional grid, set the boundary condition (BC) time interval (in
-# hours), i.e. the interval between the times at which the BCs are pro-
-# vided.  We refer to these as the BC times.
-#
-#-----------------------------------------------------------------------
-#
-if [ "$gtype" = "regional" ]; then
-
-  BC_interval_hrs=3
-#
-# Check whether the forecast length (fcst_len_hrs) is evenly divisible 
-# by the BC time interval.  If not, exit script.
-#
-  remainder=$(( $fcst_len_hrs % $BC_interval_hrs ))
-
-  if [ "$remainder" != "0" ]; then
-    echo
-    echo "Error.  The forecast length is not evenly divisible by the BC time interval:"
-    echo "  fcst_len_hrs = $fcst_len_hrs"
-    echo "  BC_interval_hrs = $BC_interval_hrs"
-    echo "  remainder = fcst_len_hrs % BC_interval_hrs = $remainder"
-    echo "Exiting script."
-    exit 1
-  fi
-
-fi
 
 
