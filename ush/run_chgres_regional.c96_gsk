@@ -97,7 +97,9 @@ export OUTDIR=${out_dir}               # Directory in which output from chgres_d
 export HOMEgfs=$BASE_GSM               # Directory in which the "superstructure" fv3gfs code is located.
 export nst_anl=.false.                 # false or true to include NST analysis
 
-ln -fs /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am  ${BASE_GSM}/fix
+# This is something that needs to go somewhere earlier, like right after
+# the repo is cloned.
+# ln -fs /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am  ${BASE_GSM}/fix
 
 #
 # The following variables do not appear in chgres_driver_scr, but they
