@@ -28,7 +28,7 @@
 #----THEIA JOBCARD
 #
 #PBS -N chgres_ICs
-#PBS -A wrfruc
+#PBS -A gsd-fv3
 #PBS -o out.ICs_gen.$PBS_JOBID
 #PBS -e err.ICs_gen.$PBS_JOBID
 #PBS -l nodes=1:ppn=24
@@ -115,7 +115,7 @@ export NODES=2
 # Load modules and set machine-dependent parameters.
 #
 #-----------------------------------------------------------------------
-
+#
 export ymd=`echo $CDATE | cut -c 1-8`
 
 if [ "$machine" = "WCOSS_C" ]; then
