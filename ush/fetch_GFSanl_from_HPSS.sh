@@ -35,7 +35,7 @@ set -ux
 # 
 #-----------------------------------------------------------------------
 #
-cd $PBS_O_WORKDIR 
+#cd $PBS_O_WORKDIR 
 #
 #-----------------------------------------------------------------------
 #
@@ -70,18 +70,53 @@ module load hpss
 #
 #-----------------------------------------------------------------------
 #
-if [ -d "$INIDIR" ] && \
-   [ "$(ls -A $INIDIR)" ]; then
+#if [ -d "$INIDIR" ] && \
+#   [ "$(ls -A $INIDIR)" ]; then
+#  echo
+#  echo "The GFS analysis directory"
+#  echo
+#  echo "  INIDIR = $INIDIR"
+#  echo
+#  echo "already exists on disk and is not emtpy."
+#  echo "Thus, there is no need to fetch the archived analysis file from HPSS."
+#  echo "Exiting script."
+#  exit
+#fi
+if [ -f "$INIDIR/$atmanl_file" ] && \
+   [ -f "$INIDIR/$nstanl_file" ] && \
+   [ -f "$INIDIR/$sfcanl_file" ]; then
   echo
-  echo "The GFS analysis directory"
+  echo "The nemsio analysis files needed for initialization already exist in INIDIR:"
   echo
   echo "  INIDIR = $INIDIR"
+  echo "  atmanl_file = $atmanl_file"
+  echo "  nstanl_file = $nstanl_file"
+  echo "  sfcanl_file = $sfcanl_file"
   echo
-  echo "already exists on disk and is not emtpy."
-  echo "Thus, there is no need to fetch the archived analysis file from HPSS."
+  echo "Thus, there is no need to fetch the archived analysis (tar) file from HPSS."
   echo "Exiting script."
   exit
 fi
+
+
+# Get list of BC times (in hours since the beginning of the forecast).
+# First, check that 
+#[ $var =~ ^[-+]?[0-9]+$ ]
+#BC_files=$BC_times
+#${CDUMP}.t${HH}z.atmf${bchour}.nemsio
+#printf "gfs.t${HH}z.atmf%s.nemsio" "${BC_times[@]}"
+
+#printf "foo %s bar\n" "${a[@]}"
+
+file_names="aaaa"
+curnt_hr=$BC_interval_hrs
+while (test "$curnt_hr" -le "$fcst_len_hrs"); do
+  fcst_HHH=$( printf "%03d" "$curnt_hr" )
+  file_names="${file_names} gfs.t${HH}z.atmf${fcst_HHH}.nemsio"
+  curnt_hr=$(( $curnt_hr + BC_interval_hrs ))
+done
+
+exit
 #
 #-----------------------------------------------------------------------
 #
@@ -93,6 +128,25 @@ fi
 #
 mkdir -p $INIDIR
 cd $INIDIR
+#
+#-----------------------------------------------------------------------
+#
+# Set the directory on mass store (HPSS) in which the tarred archive 
+# file that we want to fetch is located.
+#
+#-----------------------------------------------------------------------
+#
+export HPSS_DIR="/NCEPPROD/hpssprod/runhistory/rh$YYYY/${YYYY}${MM}/${YMD}"
+#
+#-----------------------------------------------------------------------
+#
+# Set the name of the tar file we want to fetch.  Note that the user
+# must be a member of the rstprod group to be able to "get" this file
+# using hsi.
+#
+#-----------------------------------------------------------------------
+#
+export TAR_FILE="gpfs_hps_nco_ops_com_gfs_prod_gfs.${YYYY}${MM}${DD}${HH}.anl.tar"
 #
 #-----------------------------------------------------------------------
 #
@@ -133,10 +187,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-tar -xvf $INIDIR/$TAR_FILE --directory=$INIDIR \
-  ./gfs.t00z.atmanl.nemsio \
-  ./gfs.t00z.nstanl.nemsio \
-  ./gfs.t00z.sfcanl.nemsio    # Why are these files at 00z?  Are these actually at $HH, so they should be renamed???
+#tar -xvf $INIDIR/$TAR_FILE --directory=$INIDIR \
+#  ./$atmanl_file ./$nstanl_file ./$sfcanl_file
+tar -xvf $INIDIR/$TAR_FILE --directory=$INIDIR 
 tar_extract_result=$?
 if [ "$tar_extract_result" != "0" ]; then
   echo
@@ -151,7 +204,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-rm $INIDIR/$TAR_FILE 
+#rm $INIDIR/$TAR_FILE 
 
 
 

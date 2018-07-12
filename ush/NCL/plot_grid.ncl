@@ -11,6 +11,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
 load "pause.ncl"
 load "read_namelist.ncl"
+load "strcmp.ncl"
 
 begin
 ;
@@ -247,6 +248,8 @@ char_dq + "ncgm" + char_dq + "." + char_nl
   ncl_ver = get_ncl_version()
   ncl_ver = str_sub_str(ncl_ver, ".", "")
   ncl_ver = tointeger(ncl_ver)
+print("ncl_ver = " + ncl_ver)
+pause
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -407,93 +410,75 @@ print("========>>>> gtype = " + gtype)
 ;
 ; **********************************************************************
 ;                                                                      *
-; If draw_RAP_domain has been specified to be True on the command line, 
-; make sure that the name of the NetCDF file that describes the RAP grid
-; (RAP_grid_fn) has also been specified.  If not, print a message and 
-; exit.
+; Actions to take if draw_RAP_domain has been specified to be True on 
+; the command line, 
 ;                                                                      *
 ; **********************************************************************
 ;
-  if (draw_RAP_domain .and. .not. isvar("RAP_grid_fn")) then
-    print("")
-    print("The name of the NetCDF file that describes the RAP grid (RAP_grid_fn) has not been specified on the command line:")
-    print("")
-    print("  draw_RAP_domain = " + draw_RAP_domain)
-    print("  isvar(" + char_dq + "RAP_grid_fn" + char_dq + ") = " + isvar("RAP_grid_fn"))
-    print("")
-    print("Please rerun with a specified RAP_grid_fn.  Example:")
-    print("")
-    print("" + usage_msg)
-    print("")
-    print("For more help, type " + char_dq + "ncl plot_grid.ncl 'help=True'" + char_dq + " on the command line.")
-    print("Stopping.")
-    exit
-  end if
+  if (draw_RAP_domain .eq. True) then
 ;
-; **********************************************************************
-;                                                                      *
+; Check whether the name of the NetCDF file that describes the RAP grid
+; (RAP_grid_fn) has been specified on the command line.  If not, print 
+; out a message and exit.
+;
+    if (.not. isvar("RAP_grid_fn")) then
+      print("")
+      print("The name of the NetCDF file that describes the RAP grid (RAP_grid_fn) has not been specified on the command line:")
+      print("")
+      print("  draw_RAP_domain = " + draw_RAP_domain)
+      print("  isvar(" + char_dq + "RAP_grid_fn" + char_dq + ") = " + isvar("RAP_grid_fn"))
+      print("")
+      print("Please rerun with a specified RAP_grid_fn.  Example:")
+      print("")
+      print("" + usage_msg)
+      print("")
+      print("For more help, type " + char_dq + "ncl plot_grid.ncl 'help=True'" + char_dq + " on the command line.")
+      print("Stopping.")
+      exit
+    end if
+;
 ; Check whether draw_RAP_bdy has been specified on the command line.  If
 ; not, set it to True.
-;                                                                      *
-; **********************************************************************
 ;
-  if (.not. isvar("draw_RAP_bdy")) then
-    draw_RAP_bdy = True
-  end if
+    if (.not. isvar("draw_RAP_bdy")) then
+      draw_RAP_bdy = True
+    end if
 ;
-; **********************************************************************
-;                                                                      *
 ; Check whether draw_RAP_grid has been specified on the command line.  
 ; If not, set it to False.
-;                                                                      *
-; **********************************************************************
 ;
-  if (.not. isvar("draw_RAP_grid")) then
-    draw_RAP_grid = False
-  end if
-
-
-
-if (False) then
-;
-; **********************************************************************
-;                                                                      *
-; If draw_RAP_domain has been specified on the command line or has been 
-; set by default to False, then it is not possible to draw the RAP do-
-; main's boundary or its grid.  Thus, in this case, we (re)set draw_-
-; RAP_bdy and draw_RAP_grid to False.
-;                                                                      *
-; **********************************************************************
-;
-  if (draw_RAP_domain .eq. False) then
-
-    if (draw_RAP_bdy .eq. True) then
-      print("")
-      print("Resetting draw_RAP_bdy to False since draw_RAP_domain has been set to False:")
-      print("")
-      print("  draw_RAP_domain = " + draw_RAP_domain)
-      print("")
-      pause
-      draw_RAP_bdy = False
-    end if
-
-    if (draw_RAP_grid .eq. True) then
-      print("")
-      print("Resetting draw_RAP_grid to False since draw_RAP_domain has been set to False:")
-      print("")
-      print("  draw_RAP_domain = " + draw_RAP_domain)
-      print("")
-      pause
+    if (.not. isvar("draw_RAP_grid")) then
       draw_RAP_grid = False
     end if
+;
+; **********************************************************************
+;                                                                      *
+; Actions to take if draw_RAP_domain has been specified to be False on 
+; the command line, 
+;                                                                      *
+; **********************************************************************
+;
+  else
+;
+; If one or more of the variables RAP_grid_fn, draw_RAP_bdy, and draw_-
+; RAP_grid have been specified on the command line, they will have no
+; effect because draw_RAP_domain has been set to False.  In this case, 
+; print out an informational message.
+;
+    var_names = (/ "RAP_grid_fn", "draw_RAP_bdy", "draw_RAP_grid" /)
+    temp := dimsizes(var_names)
+    num_vars = temp(0)
+    do n=0, num_vars-1
+      var_name = var_names(n)
+      if (isvar(var_name)) then
+        print("")
+        print("Note:")
+        print("Since draw_RAP_domain is False (possibly by default), specifying " + \
+              var_name + char_nl + "on the command line will have no effect.")
+      end if
+    end do
 
   end if
-end if
-
-
-
-
-
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1060,8 +1045,14 @@ if (False) then
 else
 
     field_crnt_tile := new((/ ny, nx /), "double")
-    field_crnt_tile = n_tile
+;    field_crnt_tile = n_tile
+    field_crnt_tile = default_fillvalue("double")
+    field_crnt_tile@_FillValue = default_fillvalue("double")
+    field_crnt_tile(0,0) = 2.2
+    field_crnt_tile(ny/2,nx/2) = 5
+    field_crnt_tile(ny-1,nx-1) = 10.0
 
+    if (False) then
 ;
 ; Read in the cell edge distances.
 ; 
@@ -1090,6 +1081,7 @@ else
 ;    f_orog = addfile(orog_file, "r")
 ;    field_crnt_tile = f_orog->orog_raw
 
+    end if
 
 end if
 ;
@@ -1109,7 +1101,7 @@ end if
       field_by_cell := array_append_record(field_by_cell, ndtooned(field_crnt_tile), 0)
     end if
 ;
-; Print out some of field's basic statistics.
+; Print out some basic statistics of the field.
 ;
     field_min(nn) = min(field_crnt_tile)
     field_max(nn) = max(field_crnt_tile)
@@ -1252,8 +1244,8 @@ end if
 ;                                                                      *
 ; **********************************************************************
 ;
-    corner_i_inds := (/ 0, nx-1, nx-1, 0 /)
-    corner_j_inds := (/ 0, 0, ny-1, ny-1 /)
+    corner_i_inds := (/ 0, nx, nx, 0 /)
+    corner_j_inds := (/ 0, 0, ny, ny /)
     num_corners = 4
     corner_lons := new((/ num_corners /), "double")
     corner_lats := new((/ num_corners /), "double")
@@ -1310,6 +1302,18 @@ end if
 ;                                                                      *
 ; **********************************************************************
 ;
+  field_RAP_fillvalue = default_fillvalue("double")
+  field_RAP_fillvalue@_FillValue = field_RAP_fillvalue
+
+  field_RAP_min = field_RAP_fillvalue
+  field_RAP_max = field_RAP_fillvalue
+;print("field_RAP_max@_FillValue = " + field_RAP_max@_FillValue)
+;printVarSummary(field_RAP_max)
+;print("ismissing(field_RAP_max = " + ismissing(field_RAP_max))
+;pause
+  field_RAP_median = field_RAP_fillvalue
+  field_RAP_mean = field_RAP_fillvalue
+
   if (draw_RAP_domain) then
 
     print("")
@@ -1354,7 +1358,7 @@ end if
 ;
 ; Define a field on the RAP grid (at cell centers).
 ;
-    field_RAP := new((/ ny_RAP, nx_RAP /), "double")
+    field_RAP := new((/ ny_RAP, nx_RAP /), typeof(field_RAP_fillvalue))
 ;    field_RAP = n_tile + 1
     field_RAP = 50
 ;    field_RAP = lat_cntrs_RAP
@@ -1401,10 +1405,14 @@ end if
 ;    field := array_append_record(field, ndtooned(field_RAP), 0)
     field_by_cell_RAP := ndtooned(field_RAP)
 ;
-; Print out some of field's basic statistics.
+; Print out some basic statistics of the field.
 ;
     field_RAP_min = min(field_RAP)
     field_RAP_max = max(field_RAP)
+;print("field_RAP_max@_FillValue = " + field_RAP_max@_FillValue)
+;printVarSummary(field_RAP_max)
+;print("ismissing(field_RAP_max = " + ismissing(field_RAP_max))
+;pause
     field_RAP_median = dim_median_n(field_RAP, (/0,1/))
     field_RAP_mean = avg(field_RAP)
 
@@ -1474,16 +1482,6 @@ end if
 
       end do
     end do
-
-if (False) then
-print("BEFORE:")
-print("  dimsizes(lon_verts_by_cell) = " + dimsizes(lon_verts_by_cell))
-    lon_verts_by_cell := array_append_record(lon_verts_by_cell, lon_verts_by_cell_RAP, 0)
-print("AFTER:")
-print("  dimsizes(lon_verts_by_cell) = " + dimsizes(lon_verts_by_cell))
-    lat_verts_by_cell := array_append_record(lat_verts_by_cell, lat_verts_by_cell_RAP, 0)
-end if
-
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1559,8 +1557,8 @@ end if
     nx = nx_RAP
     ny = ny_RAP
 
-    corner_i_inds := (/ 0, nx-1, nx-1, 0 /)
-    corner_j_inds := (/ 0, 0, ny-1, ny-1 /)
+    corner_i_inds := (/ 0, nx, nx, 0 /)
+    corner_j_inds := (/ 0, 0, ny, ny /)
     num_corners = 4
     corner_lons := new(( num_corners ), "double")
     corner_lats := new(( num_corners ), "double")
@@ -1700,13 +1698,14 @@ end if
 ; If draw_tile_grid is True, then draw the cell edges.
   if (draw_tile_grid) then
     rsrc@cnCellFillEdgeColor = "black"
-;    rsrc@cnCellFillEdgeColor = "yellow"
+;    rsrc@cnCellFillMissingValEdgeColor = "red"  ; This seems to have no effect.
   end if
+  rsrc@cnMissingValFillColor = "transparent"
 
 ; Specify opacity of cell colors.
-  rsrc@cnFillOpacityF = 0.0 ; Transparent.
+;  rsrc@cnFillOpacityF = 0.0 ; Transparent.
 ;  rsrc@cnFillOpacityF = 0.35
-;  rsrc@cnFillOpacityF = 1.0 ; Opaque.
+  rsrc@cnFillOpacityF = 1.0 ; Opaque.
 
 ; Turn off contour lines (we just want to see colors).
   rsrc@cnLinesOn = False
@@ -1783,11 +1782,20 @@ func_z = False
   end if
 
 ; Set the minimum and maximum countour levels to plot manually.
+if (False) then
   cplot_min = floor(min((/ field_min, field_RAP_min /)))
+print("field_min = " + field_min)
+print("field_RAP_min = " + field_RAP_min)
+print("cplot_min = " + cplot_min)
   cplot_max = ceil(max((/ field_max, field_RAP_max /)))
+print("")
+print("field_max = " + field_max)
+print("field_RAP_max = " + field_RAP_max)
+print("cplot_max = " + cplot_max)
   rsrc@cnLevelSelectionMode = "ManualLevels"
   rsrc@cnMinLevelValF = cplot_min
   rsrc@cnMaxLevelValF = cplot_max
+end if
 
 ; Allow for spatially constant fields to be plotted.
   rsrc@cnConstFEnableFill = True
@@ -1862,9 +1870,9 @@ func_z = False
     rsrc_RAP@cnFillMode = "CellFill"
 
 ; Specify opacity of cell colors.
-;    rsrc_RAP@cnFillOpacityF = 0.0 ; Transparent.
+    rsrc_RAP@cnFillOpacityF = 0.0 ; Transparent.
 ;    rsrc_RAP@cnFillOpacityF = 0.35
-    rsrc_RAP@cnFillOpacityF = 1.0 ; Opaque.
+;    rsrc_RAP@cnFillOpacityF = 1.0 ; Opaque.
 
 ; Set sfXArray and sfYArray to the cell center coordinates.
     rsrc_RAP@sfXArray = lon_cntrs_by_cell_RAP
