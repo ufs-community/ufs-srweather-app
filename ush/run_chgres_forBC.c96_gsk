@@ -27,10 +27,10 @@
 #
 #----THEIA JOBCARD
 #
-#PBS -N chgres_BCs
+#PBS -N gen_BC_files_rgnl
 #PBS -A gsd-fv3
-#PBS -o out.BCs_gen.$PBS_JOBID
-#PBS -e err.BCs_gen.$PBS_JOBID
+#PBS -o out.$PBS_JOBNAME.$PBS_JOBID
+#PBS -e err.$PBS_JOBNAME.$PBS_JOBID
 #PBS -l nodes=1:ppn=24
 #PBS -q debug
 #PBS -l walltime=00:30:00

@@ -14,7 +14,7 @@
 #
 #----THEIA JOBCARD
 #
-#PBS -N fv3gfs_driver_grid
+#PBS -N make_grid_orog_rgnl
 #PBS -A gsd-fv3
 #PBS -o out.$PBS_JOBNAME.$PBS_JOBID
 #PBS -e err.$PBS_JOBNAME.$PBS_JOBID

@@ -6,9 +6,9 @@
 # This script sets up parameters needed by the scripts that:
 #
 # 1) Generate the grid and orography files.
-# 2) Generate the initial conditions (ICs) files.
-# 3) Generate the lateral boundary conditions (BCs) files (these are 
-#    needed only if running a regional grid).
+# 2) Generate the initial condition (IC) file.
+# 3) Generate the lateral boundary condition (BC) files (these are need-
+#    ed only if running a regional grid).
 #
 # These parameters are the ones most commonly modified by users.  They
 # are grouped into this script for convenience.  These parameters only 
@@ -142,6 +142,8 @@ YYYY=$(echo $CDATE | cut -c 1-4 )
 MM=$(echo $CDATE | cut -c 5-6 )
 DD=$(echo $CDATE | cut -c 7-8 )
 HH=$(echo $CDATE | cut -c 9-10 )
+
+export YMD=`echo $CDATE | cut -c 1-8`
 #
 #-----------------------------------------------------------------------
 #
@@ -176,9 +178,6 @@ fi
 # BASE_GSM:
 # This is the base directory for the "superstructure" fv3gfs code.
 #
-# INIDIR:
-# This is the location of the GFS analysis for the specified CDATE.
-#
 # TMPDIR:
 # This is a temporary work directory.  Scripts may create subdirecto-
 # ries under this directory and may or may not delete them after com-
@@ -188,148 +187,6 @@ fi
 #
 export BASE_GSM=${BASE_GSM:-}
 export TMPDIR=${TMPDIR:-}
-
-export YMD=`echo $CDATE | cut -c 1-8`
-
-if [ "$machine" = "WCOSS_C" ]; then
-
-#  export BASE_GSM="/gpfs/hps3/emc/meso/noscrub/${LOGNAME}/fv3gfs"
-  export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
-#  export TMPDIR="/gpfs/hps3/ptmp/$LOGNAME/fv3_grid.$gtype"
-
-elif [ "$machine" = "WCOSS" ]; then
-
-# Not sure how these should be set on WCOSS.
-  export INIDIR=""
-#  export TMPDIR=""
-
-elif [ "$machine" = "THEIA" ]; then
-
-#  export BASE_GSM="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/fv3gfs"
-  export COMROOTp2="/scratch4/NCEPDEV/rstprod/com"   # Does this really need to be exported??
-  export INIDIR="$COMROOTp2/gfs/prod/gfs.$YMD"
-#  export TMPDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs"
-
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Check whether the directory (INIDIR) that's supposed to contain the 
-# GFS analysis corresponding to the CDATE specified above actually ex-
-# ists on disk.  GFS analysis files are available on disk for 2 weeks on 
-# WCOSS and WCOSS_C and for 2 days on THEIA, so they will not be availa-
-# ble on disk if the specified CDATE is older than these retention per-
-# iods.  In this case, we will attempt (in another script that sources
-# this one) to retrieve the analysis file from mass store (HPSS) and 
-# then extract it.  Thus, if INIDIR as set above doesn't exist, reset it
-# to a location to which the archived analysis file from HPSS can be co-
-# pied and extracted.
-#
-# Note that the user needs to be a memeber of the rstprod (restricted 
-# products) group to be able to access the GFS analysis files on HPSS. 
-#
-#-----------------------------------------------------------------------
-#
-#if [ ! -d "$INIDIR" ]; then
-#
-#  echo
-#  echo "The GFS analysis directory (INIDIR) is not available on disk for the specified CDATE:"
-#  echo
-#  echo "  CDATE = $CDATE"
-#  echo "  INIDIR = $INIDIR"
-#  echo
-#  echo "Will attempt to retrieve the archived analysis file for this CDATE from mass store (HPSS)."
-#  echo "Resetting INIDIR to a location to which this archived analysis file can be copied and extracted."
-##
-## Set a new GFS analysis directory.  This is a local directory into
-## which the archived analysis (i.e. .tar) file obtained from HPSS will 
-## be copied.  The relevant files from this archive file will be then be
-## extracted into this directory, and finally the archive file will be 
-## deleted (since it is usually very large).
-##
-#  export INIDIR="$BASE_GSM/../gfs/prod/gfs.${YMD}"
-##
-## Set the directory on mass store (HPSS) in which the tarred archive 
-## file that we want to fetch is located.
-##
-#  export HPSS_DIR="/NCEPPROD/hpssprod/runhistory/rh$YYYY/${YYYY}${MM}/${YMD}"
-##
-## Set the name of the tar file we want to fetch.  Note that the user i
-## must to be a member of the rstprod group to be able to "get" this file
-## using hsi.
-##
-#  export TAR_FILE="gpfs_hps_nco_ops_com_gfs_prod_gfs.${YYYY}${MM}${DD}${HH}.anl.tar"
-#
-#fi
-
-
-#
-#-----------------------------------------------------------------------
-#
-# Set the names of the nemsio analysis files needed to generate initial
-# conditions.
-#
-#-----------------------------------------------------------------------
-#
-atmanl_file="gfs.t${HH}z.atmanl.nemsio"
-nstanl_file="gfs.t${HH}z.nstanl.nemsio"
-sfcanl_file="gfs.t${HH}z.sfcanl.nemsio"
-#
-#-----------------------------------------------------------------------
-#
-# Check whether the nemsio analysis files exist in the INIDIR specified
-# above.  If not, reset INIDIR to a new location.  
-#
-#-----------------------------------------------------------------------
-#
-if [ ! -f "$INIDIR/$atmanl_file" ] || \
-   [ ! -f "$INIDIR/$nstanl_file" ] || \
-   [ ! -f "$INIDIR/$sfcanl_file" ]; then
-
-  echo
-  echo "One or more of the nemsio analysis files needed for initialization do not exist in INIDIR:"
-  echo
-  echo "  INIDIR = $INIDIR"
-  echo "  atmanl_file = $atmanl_file"
-  echo "  nstanl_file = $nstanl_file"
-  echo "  sfcanl_file = $sfcanl_file"
-#
-# Set a new GFS analysis directory.  This is a local directory into
-# which the archived analysis (i.e. .tar) file obtained from HPSS will 
-# be copied.  The relevant files from this archive file will be then be
-# extracted into this directory, and finally the archive file will be 
-# deleted (since it is usually very large).
-#
-  export INIDIR="$BASE_GSM/../gfs/prod/gfs.${YMD}"
-
-  echo
-  echo "Resetting INIDIR to the following alternate location:"
-  echo
-  echo "  INIDIR = $INIDIR"
-
-  if [ -f "$INIDIR/$atmanl_file" ] && \
-     [ -f "$INIDIR/$nstanl_file" ] && \
-     [ -f "$INIDIR/$sfcanl_file" ]; then
-    echo
-    echo "This location contains the nemsio analysis files needed for initialization."
-    echo "Continuing."
-#    echo
-#    echo "  INIDIR = $INIDIR"
-#    echo "  atmanl_file = $atmanl_file"
-#    echo "  nstanl_file = $nstanl_file"
-#    echo "  sfcanl_file = $sfcanl_file"
-  else
-    echo
-    echo "This location also does not contain the nemsio analysis files needed for initialization."
-    echo "The analysis files must first be obtained from HPSS."
-#    echo "Exiting script."
-#    exit
-  fi
-
-fi
-
-
-
 #
 #-----------------------------------------------------------------------
 #
@@ -381,7 +238,7 @@ if [ "$gtype" = "regional" ]; then
     exit 1
   fi
 
-  BC_times=$( seq 0 $BC_interval_hrs $fcst_len_hrs )
+  BC_times_hrs=($( seq 0 $BC_interval_hrs $fcst_len_hrs ))
 
 fi
 #
@@ -442,8 +299,8 @@ if [ "$gtype" = "uniform" ];  then
 #
 # Unset variables that will not be used for gtype="uniform".
 #
-  unset stretch_fac target_lon target_lat refine_ratio \
-        istart_nest iend_nest jstart_nest jend_nest
+#  unset stretch_fac target_lon target_lat refine_ratio \
+#        istart_nest iend_nest jstart_nest jend_nest
 #
 #-----------------------------------------------------------------------
 #
@@ -589,8 +446,46 @@ elif [ "$gtype" = "regional" ]; then
   export halop1=`expr $halo + 1` # Halo size that will be used for the orography and grid tile in chgres.
   export halo0=0                 # No halo, used to shave the filtered orography for use in the model.
 
+
+
 #  make_RAP_domain="true"
   make_RAP_domain="false"
+  if [ "$make_RAP_domain" = "true" ]; then
+#    export stretch_fac=0.6
+    export stretch_fac=0.7
+    export target_lon=-106.0
+    export target_lat=54.0
+    export refine_ratio=3
+#
+# In order to determine the starting and ending indices of the regional 
+# grid within its parent tile (or PT, which is tile 6), we assume that 
+# there is a gap between the boundary of the regional grid and that of
+# its parent tile (PT).  We set the width of this gap using the parame-
+# ter num_gap_cells_PT.  Note that this is a cell count on the PT grid
+# (not on the regional grid).  We must make the gap between the boundary
+# of the regional grid and that of its PT large enough (by making num_-
+# gap_cells_PT large enough) so that a region of halo cells around the 
+# boundary of the regional grid (the halo is added later in another 
+# script; its function is to feed in boundary conditions to the regional
+# grid) fits into the gap (i.e. does not overrun the boundary of the 
+# PT).  
+#
+# Currently, a halo of 5 regional grid cells is used round the regional
+# grid.  Setting num_gap_cells_PT to 10 leaves enough room for this 
+# halo.
+#
+    num_gap_cells_PT=10
+    export istart_nest=$(( 2*$num_gap_cells_PT + 1 ))
+    export iend_nest=$(( 2*$RES - 2*$num_gap_cells_PT ))
+    export jstart_nest=$istart_nest
+    export jend_nest=$iend_nest
+    export title="RAP"
+  fi
+
+
+
+#  make_HRRR_domain="true"
+  make_HRRR_domain="false"
   if [ "$make_RAP_domain" = "true" ]; then
 #    export stretch_fac=0.6
     export stretch_fac=0.7
@@ -688,5 +583,17 @@ export subdir_name=${coverage_str}${nest_str}_${CRES}${stretch_str}${refine_str}
 #
 export out_dir="$BASE_GSM/fix/fix_fv3/$subdir_name"
 mkdir -p $out_dir
+#
+#-----------------------------------------------------------------------
+#
+# Set the directory (INIDIR) in which we will store the analysis (at the
+# initial time CDATE) and forecasts (at the boundary condition times) 
+# files.
+#
+#-----------------------------------------------------------------------
+#
+export INIDIR="${BASE_GSM}/../work_dirs/$subdir_name/gfs"
+mkdir -p $INIDIR
+
 
 
