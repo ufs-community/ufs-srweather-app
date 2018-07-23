@@ -1,11 +1,50 @@
+;==========================================================================
+; Description: This script reads FV3 grid information and model output
+;              fields and generated a 2-D color plot of the required fields
+;              on top of a map of the continents. The script can be run
+;              from the command line or the make_FV3_RAP_domain_plots.sh
+;              script.
 ;
-; **********************************************************************
-;                                                                      *
-; Type "ncl plot_grid.ncl 'help=True'" on the command line to obtain 
-; help for this script.
-;                                                                      *
-; **********************************************************************
+; Necessary input files: pause.ncl, README, strcmp.ncl
+;                        geo_em.d01.nc    (if draw_RAP_domain)
+;                        INPUT/C[res]_grid.tile[].nc
+;                        INPUT/grid_spec.nc
+;                        INPUT/oro_data.nc
+;                        a model output file specified by 'input_file' on the command line
 ;
+; Necessary input parameters: 
+;
+; Output file(s): C[res]_[map_proj]_[field]_hr[hour]_lev[n].png
+;
+; Usage: See README file
+
+; Assumptions: You have an FV3 model run directory with an INPUT directory
+;              containing the grid files for the tiles.
+;
+; Examples:
+;       ncl -n plot_fields.ncl 'help=True'    # print help using this script
+;
+;       ncl -n plot_fields.ncl \
+;           'help=False' \
+;           'grid_dir="./some_dir/grid"' \
+;           'input_file="nppgs2d.nc"' \
+;           'fields="u1000"' \
+;           'nlev="60"' \
+;           'fcst_index="6"' \
+;           'res=96' \
+;           'tile_inds=(/1,2,3/)' \
+;           'draw_tile_bdy=True' \
+;           'draw_tile_grid=True' \
+;           'draw_RAP_domain=True' \
+;           'RAP_grid_fn="./some_dir/RAP_grid.nc"' \
+;           'draw_RAP_bdy=True' \
+;           'draw_RAP_grid=True' \
+;           'map_proj="cyln"' \
+;           'map_proj_ctr=(/0,90/)' \
+;           'subreg=(/-30,30,-25,25/)' \
+;           'graphics_type="ncgm"'
+;==========================================================================
+
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
@@ -14,7 +53,23 @@ load "read_namelist.ncl"
 load "strcmp.ncl"
 
 begin
-;
+
+  pwd = systemfunc("pwd")
+  check_files = (/"README"/)   ; Add files to check here
+  nfiles = dimsizes(check_files)
+
+  do i=0,nfiles-1
+    ret = systemfunc("test -f " + pwd + "/" + check_files(i) + "; echo $?")
+    if(ret .eq. 0) then
+      print("--> " + check_files(i) + ": exists")
+    else if(ret .eq.1) then
+      print("Error: " + check_files(i) + ": doesn't exist")
+      print("Copy  " + check_files(i) + " from your original directory to your working directory")
+      exit
+    end if
+    end if
+  end do
+
 ; **********************************************************************
 ;                                                                      *
 ; Define special characters that can't be directly input into an NCL 
@@ -32,9 +87,13 @@ begin
 ; **********************************************************************
 ;
   usage_msg = \
-"  ncl -n plot_grid.ncl \" + char_nl + \
+"  ncl -n plot_fields.ncl \" + char_nl + \
 "      'help=False' \" + char_nl + \
 "      'grid_dir=" + char_dq + "./some_dir/grid" + char_dq + "' \" + char_nl + \
+"      'input_file=" + char_dq + "nggps2d.nc" + char_dq + "' \" + char_nl + \
+"      'fields=" + char_dq + "u1000" + char_dq + "' \" + char_nl + \
+"      'nlev=60' \" + char_nl + \
+"      'fcst_index=6' \" + char_nl + \
 "      'res=96' \" + char_nl + \
 "      'tile_inds=(/1,2,3/)' \" + char_nl + \
 "      'draw_tile_bdy=True' \" + char_nl + \
@@ -50,148 +109,6 @@ begin
 ;
 ; **********************************************************************
 ;                                                                      *
-; Create help message.  The help message contains the documentation for 
-; this script and thus should reflect any changes to the code.
-;                                                                      *
-; **********************************************************************
-;
-  help_msg = char_nl + \
-char_nl + \
-"This script generates a 2-D color plot of one or more of the tiles on" + char_nl + \
-"a cubed-sphere grid on top of a map of the continents.  Each tile is" + char_nl + \
-"depicted in the output graphics file as a uniformly colored region." + char_nl + \
-char_nl + \
-"An example of a call to this script from the command line is as fol-" + char_nl + \
-"lows:" + char_nl + \
-char_nl + \
-usage_msg + \
-char_nl + \
-char_nl + \
-"The output is a graphics file named" + char_nl + \
-char_nl + \
-"  C[res]_grid.[ext]" + char_nl + \
-char_nl + \
-"where res is the specified resolution and ext is the graphics file ex-" + char_nl + \
-"tension (determined by the specified output graphics type graphics_-" + char_nl + \
-"type).  The input arguments to this script are:" + char_nl + \
-char_nl + \
-"help:" + char_nl + \
-"This argument specifies whether or not to print out the documentation" + char_nl + \
-"for this script and exit.  It is either True or False.  Default is" + char_nl + \
-"False.  If this is set to True, this script prints out the documenta-" + char_nl + \
-"tion and exits, ignoring all other arguments.  To see the documenta-" + char_nl + \
-"tion, type " + char_dq + "ncl plot_grid.ncl 'help=True'" + char_dq + " on the command line in the" + char_nl + \
-"directory of this script." + char_nl + \
-char_nl + \
-"grid_dir:" + char_nl + \
-"This argument specifies the directory in which the grid files are lo-" + char_nl + \
-"cated.  It is assumed that these are NetCDF files with names of the" + char_nl + \
-"form" + char_nl + \
-char_nl + \
-"   C[res]_grid.tile[N].nc" + char_nl + \
-char_nl + \
-"where res is the resolution specified on the command line and N is the" + char_nl + \
-"tile number.  The tile numbers to consider are specified by the input" + char_nl + \
-"argument tile_inds (see below).  Default value is the current directo-" + char_nl + \
-"ry, i.e. " + char_dq + "./" + char_dq + "." + char_nl + \
-char_nl + \
-"res:" + char_nl + \
-"This argument specifies the cubed-sphere resolution, i.e. the number" + char_nl + \
-"of cells in each of the two horizontal directions on each of the 6" + char_nl + \
-"tiles of the global cubed-sphere grid.  Valid values are: 48, 96, 192," + char_nl + \ 
-"384, 768, 1152, and 3072." + char_nl + \
-char_nl + \
-"tile_inds:" + char_nl + \
-"This argument specifies the indices of those tiles on the cubed-sphere" + char_nl + \
-"grid that are to be plotted.  For example, to plot tiles 1, 3, and 5, " + char_nl + \
-"specify" + char_nl + \
-char_nl + \
-"  tile_inds = (/ 1, 3, 5 /)" + char_nl + \
-char_nl + \
-"If this is not specified, all available tiles are plotted (where by " + char_nl + \
-char_dq + "available" + char_dq + ", we mean all tiles for which there exists a grid file in" + char_nl + \
-"grid_dir)." + char_nl + \
-char_nl + \
-"draw_tile_bdy:" + char_nl + \
-"This argument specifies whether or not to draw the boundary of each " + char_nl + \
-"specified tile.  It is either True or False.  Default is True." + char_nl + \
-char_nl + \
-"draw_tile_grid:" + char_nl + \
-"This argument specifies whether or not to draw the boundaries of all" + char_nl + \
-"grid cells on each tile that is being plotted.  It is either True or " + char_nl + \
-"False.  Default is False.  For a high-resolution grid, this can make" + char_nl + \
-"it difficult to see the underlying color of the tile in the output" + char_nl + \
-"graphics file (because there would be many grid lines drawn very close" + char_nl + \
-"together)." + char_nl + \
-char_nl + \
-"draw_RAP_domain:" + char_nl + \
-"This argument specifies whether or not to draw the original [i.e. pre-" + char_nl + \
-"FV3 RAP (RAPid Refresh) domain].  It is either True or False.  Default" + char_nl + \
-"is False.  If this is set to True, the RAP domain is added to the plot" + char_nl + \
-"as a uniformly colored region (with a color that is different from any" + char_nl + \
-"of the cubed-sphere tiles)." + char_nl + \
-char_nl + \
-"RAP_grid_fn:" + char_nl + \
-"This argument specifies the full (i.e. including directory) file name" + char_nl + \
-"of the NetCDF file that describes the RAP grid.  This is used only if" + char_nl + \
-"draw_RAP_domain is set to True." + char_nl + \
-"" + char_nl + \
-"draw_RAP_bdy:" + char_nl + \
-"This argument specifies whether or not to draw the boundary of the RAP" + char_nl + \
-"domain.  It is either True or False.  Default is True.  This has no" + char_nl + \
-"effect if draw_RAP_domain is set to False." + char_nl + \
-char_nl + \
-"draw_RAP_grid:" + char_nl + \
-"This argument specifies whether or not to draw the boundaries of all" + char_nl + \
-"grid cells on the RAP domain.  It is either True or False.  Default is" + char_nl + \
-"False.  For a high-resolution RAP grid, setting this to True can make" + char_nl + \
-"it difficult to see the underlying color of the RAP domain in the out-" + char_nl + \
-"put graphics file (because there would be many grid lines drawn very" + char_nl + \
-"close together.  This has no effect if draw_RAP_domain is set to" + char_nl + \
-"False." +  char_nl + \
-char_nl + \
-"map_proj:" + char_nl + \
-"This argument specifies the map projection to use for the plot.  Valid" + char_nl + \
-"values are:" + char_nl + \
-char_nl + \
-"  " + char_dq + "cyln" + char_dq + " - for cylindrical-equidistant projection" + char_nl + \
-"  " + char_dq + "ortho" + char_dq + " - for orthographic (i.e. on a sphere) projection" + char_nl + \
-"  " + char_dq + "lamb" + char_dq + " - for Lambert equal-area projection" + char_nl + \
-char_nl + \
-"If this argument is omitted, a cylindrical-equidistant projection is" + char_nl + \
-"used.  " + char_nl + \
-char_nl + \
-"map_proj_ctr:" + char_nl + \
-"This argument specifies the point on the sphere at which to center the" + char_nl + \
-"map projection used for the plot.  It consists of the point's longi-" + char_nl + \
-"tude and latitude (in degrees), as follows:" + char_nl + \
-char_nl + \
-"  map_proj_ctr = (/ 30, 40 /)" + char_nl + \
-char_nl + \
-"If this is not specified, it is set to (/0,0/) for the cylindrical-" + char_nl + \
-"equidistant and orthographic (i.e. on a sphere) projections and to" + char_nl + \
-"(/0,90/) (i.e. the North Pole) for the Lambert equal-area projection." + char_nl + \
-char_nl + \
-"subreg:" + char_nl + \
-"If using a cylindrical-equidistant map projection, this argument spe-" + char_nl + \
-"cifies the minimum and maximum longitudes and latitudes (in degrees)" + char_nl + \
-"of the subregion to plot.  It has the format" + char_nl + \
-char_nl + \
-"  subreg = (/ lon_min, lon_max, lat_min, lat_max /)" + char_nl + \
-char_nl + \
-"where lon_min and lon_max are the minimum and maximum values of the" + char_nl + \
-"longitude and lat_min and lat_max are the minimum and maximum values" + char_nl + \
-"of the latitude.  If this arbument is omitted, the field is plotted on" + char_nl + \
-"the whole globe.  It is ignored for projections other than cylindri-" + char_nl + \
-"cal-equidistant." + char_nl + \
-char_nl + \
-"graphics_type:" + char_nl + \
-"This argument specifies the type of graphics file to generate as out-" + char_nl + \
-"put.  It can be either " + char_dq + "ncgm" + char_dq + " (NCAR Graphics) or " + char_dq + "png" + char_dq + ".  Default is" + char_nl + \
-char_dq + "ncgm" + char_dq + "." + char_nl 
-;
-; **********************************************************************
-;                                                                      *
 ; If the variable help is specified to be True on the command line, 
 ; print out the documentation and exit.
 ;                                                                      *
@@ -199,6 +116,7 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 ;
   if (isvar("help")) then
     if (help .eq. True) then
+      help_msg = systemfunc("cat " + pwd + "/" + "README")
       print("" + help_msg)
       exit
     end if
@@ -232,7 +150,7 @@ char_dq + "ncgm" + char_dq + "." + char_nl
     print("")
     print("" + usage_msg)
     print("")
-    print("For more help, type " + char_dq + "ncl plot_grid.ncl 'help=True'" + char_dq + " on the command line.")
+    print("For more help, type " + char_dq + "ncl plot_fields.ncl 'help=True'" + char_dq + " on the command line.")
     print("Stopping.")
     exit
   end if
@@ -248,8 +166,6 @@ char_dq + "ncgm" + char_dq + "." + char_nl
   ncl_ver = get_ncl_version()
   ncl_ver = str_sub_str(ncl_ver, ".", "")
   ncl_ver = tointeger(ncl_ver)
-;print("ncl_ver = " + ncl_ver)
-;pause
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -431,7 +347,7 @@ print("========>>>> gtype = " + gtype)
     print("")
     print("" + usage_msg)
     print("")
-    print("For more help, type " + char_dq + "ncl plot_grid.ncl 'help=True'" + char_dq + " on the command line.")
+    print("For more help, type " + char_dq + "ncl plot_fields.ncl 'help=True'" + char_dq + " on the command line.")
     print("Stopping.")
     exit
   end if
@@ -458,49 +374,6 @@ print("========>>>> gtype = " + gtype)
     draw_RAP_grid = False
   end if
 
-
-
-if (False) then
-;
-; **********************************************************************
-;                                                                      *
-; If draw_RAP_domain has been specified on the command line or has been 
-; set by default to False, then it is not possible to draw the RAP do-
-; main's boundary or its grid.  Thus, in this case, we (re)set draw_-
-; RAP_bdy and draw_RAP_grid to False.
-;                                                                      *
-; **********************************************************************
-;
-  if (draw_RAP_domain .eq. False) then
-
-    if (draw_RAP_bdy .eq. True) then
-      print("")
-      print("Resetting draw_RAP_bdy to False since draw_RAP_domain has been set to False:")
-      print("")
-      print("  draw_RAP_domain = " + draw_RAP_domain)
-      print("")
-      pause
-      draw_RAP_bdy = False
-    end if
-
-    if (draw_RAP_grid .eq. True) then
-      print("")
-      print("Resetting draw_RAP_grid to False since draw_RAP_domain has been set to False:")
-      print("")
-      print("  draw_RAP_domain = " + draw_RAP_domain)
-      print("")
-      pause
-      draw_RAP_grid = False
-    end if
-
-  end if
-end if
-
-
-
-
-
-;
 ; **********************************************************************
 ;                                                                      *
 ; Check whether map_proj is specified, and if so, whether the specified
@@ -609,13 +482,6 @@ end if
     print("Stopping.")
     exit
   end if
-
-
-
-
-
-
-if (False) then
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -624,16 +490,16 @@ if (False) then
 ;                                                                      *
 ; **********************************************************************
 ;
-  if (.not. isvar("fn")) then
+  if (.not. isvar("input_file")) then
     print("")
     print("The data file has not been specified on the command line:")
-    print("  isvar(" + char_dq + "fn" + char_dq + ") = " + isvar("fn"))
+    print("  isvar(" + char_dq + "input_file" + char_dq + ") = " + isvar("input_file"))
     print("Please specify the data file on the command line.  Example:")
     print("" + usage_msg)
     print("Stopping.")
     exit
   end if
-;
+
 ; **********************************************************************
 ;                                                                      *
 ; Check that the field to plot has been specified on the command line.  
@@ -641,25 +507,22 @@ if (False) then
 ;                                                                      *
 ; **********************************************************************
 ;
-  if (.not. isvar("field")) then
+  print ("Fields to be plotted are " + fields)
+  if (.not. isvar("fields")) then
     print("")
-    print("The field to plot has not been specified on the command " + \
+; Change array name.
+    fields_to_plot = fields
+    delete(fields)
+    print("The field(s) to plot has not been specified on the command " + \
           "line:")
-    print("  isvar(" + char_dq + "field" + char_dq + ") = " + \
-          isvar("field"))
-    print("Please specify the field to plot on the command line.  " + \
+    print("  isvar(" + char_dq + "fields" + char_dq + ") = " + \
+          isvar("fields"))
+    print("Please specify the field(s) to plot on the command line.  " + \
           "Example:")
     print("" + usage_msg)
     print("Stopping.")
     exit
   end if
-
-end if
-
-
-
-
-
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -670,251 +533,21 @@ end if
 ;                                                                      *
 ; **********************************************************************
 ;
-if (False) then
-  fn_nml = "input.nml"
-  nl_name = "coupler_nml"
-  nl := read_namelist(fn_nml, nl_name)
-  current_date := nl@current_date
-  yyyy := tostring_with_format(current_date(0), "%04i")
-  mo := tostring_with_format(current_date(1), "%02i")
-  dd := tostring_with_format(current_date(2), "%02i")
-  hh := tostring_with_format(current_date(3), "%02i")
-  mn := tostring_with_format(current_date(4), "%02i")
-  ss := tostring_with_format(current_date(5), "%02i")
-  date_str := yyyy + mo + dd + hh + mn + ss
-else
-  date_str := "yyyymoddhhmnss"
-end if
-;
-; **********************************************************************
-;                                                                      *
-; Get grid dimensions from the namelist file.  npx and npy are the num-
-; ber of edges on each tile, and npz is the number of vertical layer 
-; edges.
-;                                                                      *
-; **********************************************************************
-;
-if (False) then
-  fn_nml = "input.nml"
-  nl_name = "fv_core_nml"
-  nl := read_namelist(fn_nml, nl_name)
-  npx := nl@npx
-  npy := nl@npy
-  npz := nl@npz
-;print("npx = " + npx)
-;print("npy = " + npy)
-;print("npz = " + npz)
-;exit
-end if
-;
-; **********************************************************************
-;                                                                      *
-; Open the data file corresponding to the first tile and get the names 
-; of the variables defined in it.  Then check whether the specfied field 
-; to plot corresponds to one of these variables.  If not, print out a 
-; message and exit.
-;                                                                      *
-; **********************************************************************
-;
-if (False) then
-
-  n = 1
-  fn_data = date_str + "." + fn_data_short + ".tile" + n + ".nc"
-  fd = addfile(fn_data, "r")
-
-  var_names = getfilevarnames(fd)
-; Note: Use the str_match_ind_regex(...) function to be able to do an
-; exact match of the field name.  Otherwise, more than one element of 
-; var_names may match field_name.  For example, if field_name is set to
-; "h1000", then elements in var_names containing "h1000" and "rh1000"
-; will both be matched if we use the str_match_ind(...) function, which
-; we don't want.  Note that a "^" in a regular expression denotes the 
-; beginning of a string, and a "$" denotes the end of a string.
-;  idx_field := str_match_ind(var_names, field_name)
-  idx_field := str_match_ind_regex(var_names, "^" + field_name + "$")
-  if (ismissing(idx_field)) then
-
-    print("")
-    print("The specified field does not exist in the data file:")
-    print("  fn_data = " + char_dq + fn_data + char_dq)
-    print("  field = " + char_dq + field_name + char_dq)
-    print("Fields available in this file are:")
-
-    num_vars = dimsizes(var_names)
-    do i=0, num_vars-1
-      ip1 = i + 1
-      ip1_str = sprinti("%2.0i", ip1)
-; The following removes the leading "/" character from var_names(i).
-;      var_name = str_get_cols(var_names(i), 1, -1)
-      var_name = var_names(i)
-      print("  " + ip1_str + ") " + var_name)
-    end do
-
-    print("Please specify one of these fields as the field to plot.")
-    print("Stopping.")
-    exit
-
+  if (False) then  ; JLS keep for later
+    fn_nml = "input.nml"
+    nl_name = "coupler_nml"
+    nl := read_namelist(fn_nml, nl_name)
+    current_date := nl@current_date
+    yyyy := tostring_with_format(current_date(0), "%04i")
+    mo := tostring_with_format(current_date(1), "%02i")
+    dd := tostring_with_format(current_date(2), "%02i")
+    hh := tostring_with_format(current_date(3), "%02i")
+    mn := tostring_with_format(current_date(4), "%02i")
+    ss := tostring_with_format(current_date(5), "%02i")
+    date_str := yyyy + mo + dd + hh + mn + ss
+  else
+    date_str := "yyyymoddhhmnss"
   end if
-;
-; **********************************************************************
-;                                                                      *
-; Read in information about the field from the data file for the first
-; tile.  This is so that we can perform some preliminary checks.  Note
-; that we do not yet read in the field itself.
-;                                                                      *
-; **********************************************************************
-;
-; Get the field dimension names and sizes.
-  field_dim_names = getfilevardims(fd, field_name)
-  field_dim_sizes = getfilevardimsizes(fd, field_name)
-  num_field_dims = dimsizes(field_dim_sizes)
-; Get the description of the field and its units.
-  field_desc = fd->$field_name$@long_name
-  field_units = fd->$field_name$@units
-;
-; **********************************************************************
-;                                                                      *
-; Determine whether field is a function of time, altitude, latitude, 
-; and/or longitude.
-;                                                                      *
-; **********************************************************************
-;
-  func_t = False
-  func_z = False
-  func_y = False
-  func_x = False
-
-  do d=0, num_field_dims-1
-
-    dim_name = field_dim_names(d)
-
-    idx := str_match_ind(dim_name, "time")
-    if (.not. ismissing(idx)) then
-      func_t = True
-    end if
-
-    idx1 := str_match_ind(dim_name, "phalf")
-    idx2 := str_match_ind(dim_name, "pfull")
-    if ((.not. ismissing(idx1)) .or. (.not. ismissing(idx2))) then
-      func_z = True
-    end if
-
-    idx1 := str_match_ind(dim_name, "grid_y")
-    idx2 := str_match_ind(dim_name, "grid_yt")
-    if ((.not. ismissing(idx1)) .or. (.not. ismissing(idx2))) then
-      func_y = True
-    end if
-
-    idx1 := str_match_ind(dim_name, "grid_x")
-    idx2 := str_match_ind(dim_name, "grid_xt")
-    if ((.not. ismissing(idx1)) .or. (.not. ismissing(idx2))) then
-      func_x = True
-    end if
-
-  end do
-
-;print("func_t = " + func_t)
-;print("func_z = " + func_z)
-;print("func_y = " + func_y)
-;print("func_x = " + func_x)
-;pause
-;exit
-
-;
-; **********************************************************************
-;                                                                      *
-; If the field is a function of time, then the time index t must be spe-
-; cified on the command line (or somewhere else above), and it must be 
-; in the proper range.  Check for this.
-;                                                                      *
-; **********************************************************************
-;
-  if (func_t)
-
-    idx := str_match_ind(field_dim_names, "time")
-    num_times := field_dim_sizes(idx)
-
-    if (.not. isvar("t")) then
-
-      print("")
-      print("The specified field is a function of time, so the variable " + \
-            char_dq + "t" + char_dq + char_nl + \
-            "(the time index) must be specified on the command line:")
-      print("  field_name = " + char_dq + field_name + char_dq)
-      print("  func_t = " + func_t)
-      print("  isvar(" + char_dq + "t" + char_dq + ") = " + isvar("t"))
-      print("The dimension names and sizes for this field are:")
-      print("  " + field_dim_names + " = " + field_dim_sizes)
-      print("The value specified for " + char_dq + "t" + char_dq + " must " + \
-            "be between 0 and " + (num_times-1) + ", inclusive.")
-      print("Stopping.")
-      exit
-
-    end if
-
-    if ((t .lt. 0) .or. (t .gt. num_times-1)) then
-      print("")
-      print("The value specified for " + char_dq + "t" + char_dq + \
-            " on the command line must be between 0 and " + \
-            (num_times-1) + ", inclusive:")
-      print("  t = " + t)
-      print("Stopping.")
-      exit
-    end if
-
-  end if
-;
-; **********************************************************************
-;                                                                      *
-; If the field is a function of altitude, then the vertical index "k" at 
-; which the field will be plotted must be specified on the command line 
-; (or somewhere else above), and it must be in the proper range.  Check 
-; for this.
-;                                                                      *
-; **********************************************************************
-;
-  if (func_z)
-
-    idx1 := str_match_ind(field_dim_names, "phalf")
-    idx2 := str_match_ind(field_dim_names, "pfull")
-    if ((.not. ismissing(idx1)) .and. (ismissing(idx2))) then
-      num_z := field_dim_sizes(idx1)
-    else if ((ismissing(idx1)) .and. (.not. ismissing(idx2))) then
-      num_z := field_dim_sizes(idx2)
-    end if
-    end if
-
-    if (.not. isvar("k")) then
-
-      print("")
-      print("The specified field is a function of altitude, so the variable " + \
-            char_dq + "k" + char_dq + char_nl + \
-            " (the vertical index) must be specified on the command line:")
-      print("  field_name = " + char_dq + field_name + char_dq)
-      print("  func_z = " + func_z)
-      print("  isvar(" + char_dq + "k" + char_dq + ") = " + isvar("k"))
-      print("The dimension names and sizes for this field are:")
-      print("  " + field_dim_names + " = " + field_dim_sizes)
-      print("The value specified for " + char_dq + "z" + char_dq + " must " + \
-            "be between 0 and " + (num_z-1) + ", inclusive.")
-      print("Stopping.")
-      exit
-
-    end if
-
-    if ((k .lt. 0) .or. (k .gt. num_z-1)) then
-      print("")
-      print("The value specified for " + char_dq + "k" + char_dq + \
-            " on the command line must be between 0 and " + \
-            (num_z-1) + ", inclusive:")
-      print("  k = " + k)
-      print("Stopping.")
-      exit
-    end if
-
-  end if
-
-end if
 ;
 ; **********************************************************************
 ;
@@ -942,9 +575,9 @@ end if
 ; Strip away 3 halo points.
 ; **********************************************************************
 
-halo_T7 = 3
-nx_by_tile = nx_by_tile - 2*halo_T7
-ny_by_tile = ny_by_tile - 2*halo_T7
+  halo_T7 = 3
+  nx_by_tile = nx_by_tile - 2*halo_T7
+  ny_by_tile = ny_by_tile - 2*halo_T7
 
   nx_tms_ny_by_tile = nx_by_tile*ny_by_tile
   num_cells_to_plot_all_tiles = sum(nx_tms_ny_by_tile)
@@ -999,9 +632,9 @@ ny_by_tile = ny_by_tile - 2*halo_T7
 ; tile.
     nx = nx_by_tile(nn)
     ny = ny_by_tile(nn)
-print("")
-print("nx = " + nx)
-print("ny = " + ny)
+    print("")
+    print("nx = " + nx)
+    print("ny = " + ny)
 ;
 ; Open the NetCDF file containing the grid geometry.
 ;
@@ -1019,9 +652,9 @@ print("ny = " + ny)
     lon_verts_supergrid_crnt_tile := fg->x(:,:)
     lat_verts_supergrid_crnt_tile := fg->y(:,:)
 ; Shave off halo.
-print("")
-print(dimsizes(lon_verts_supergrid_crnt_tile))
-pause
+    print("")
+    print(dimsizes(lon_verts_supergrid_crnt_tile))
+;pause
     temp := dimsizes(lon_verts_supergrid_crnt_tile)
     nx_SG = temp(1)
     ny_SG = temp(0)
@@ -1032,7 +665,7 @@ pause
     := lon_verts_supergrid_crnt_tile(2*halo_T7:ny_SG-1-2*halo_T7, 2*halo_T7:nx_SG-1-2*halo_T7)
 print("")
 print(dimsizes(lon_verts_supergrid_crnt_tile))
-pause
+;pause
 ;    lat_verts_supergrid_crnt_tile \
 ;    := lat_verts_supergrid_crnt_tile(halo_SGT7:ny_SG-halo_SGT7, halo_SGT7:nx_SG-halo_SGT7)
     lat_verts_supergrid_crnt_tile \
@@ -1050,180 +683,152 @@ pause
 ;
 ; Delete supergrid coordinates to save memory.
 ;
-;    delete(lon_verts_supergrid_crnt_tile)
-;    delete(lat_verts_supergrid_crnt_tile)
     delete([/ lon_verts_supergrid_crnt_tile, lat_verts_supergrid_crnt_tile /])
 
+;TODO: Get *muptiple* field names from the command line
+; TODO use str_capital to capitalize the long names in the metadata
 
-
-; Open the NetCDF file containing the field to plot.
-;    fn_data = date_str + "." + fn_data_short + ".tile" + n_tile + ".nc"
-;    print("Reading field data from file " + fn_data + " ...")
-;    fd = addfile(fn_data,"r")
-
-; Read in the field, possibly at the specified time and/or vertical layer
-; or level index.
-if (False) then
-    if (func_t .and. func_z .and. func_y .and. func_x) then
-      field_crnt_tile := fd->$field_name$(t,k,:,:)
-    else if (func_t .and. func_y .and. func_x) then
-      field_crnt_tile := fd->$field_name$(t,:,:)
-    else if (func_z .and. func_y .and. func_x) then
-      field_crnt_tile := fd->$field_name$(k,:,:)
-    else if (func_y .and. func_x) then
-      field_crnt_tile := fd->$field_name$(:,:)
-    else if (func_t) then
-      field_crnt_tile := fd->$field_name$(t)
-    else if (func_z) then
-      field_crnt_tile := fd->$field_name$(k)
-    else
-      print("Disallowed dimensionality for specified field:")
-      print("  func_t = " + func_t)
-      print("  func_z = " + func_z)
-      print("  func_y = " + func_y)
-      print("  func_x = " + func_x)
-      print("Stopping.")
-      exit
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
-else
-
-    field_name = "grid_size"
-    field_name = "orog_raw"
-    field_name = "orog_filt"
-
-; TODO: Index of forecast field, not hour.  Use time variable hours since or days since?
-; TODO:  Convert all to hours since, add to top of plot with field name
-    fcst_hr = 12 
-
-;    field_name = "PRESsfc"
-;    field_name = "slp"
-;    field_name = "vort850"
-    field_name = "u1000"
-;    field_name = "v1000"
-;    field_name = "t1000"
-;    field_name = "q1000"
-;    field_name = "rh1000"
-;    field_name = "us"
-;    field_name = "vs"
-;    field_name = "ucomp"
-
-    plot_title = ""
-    if (strcmp(field_name, "grid_size")) then
-      plot_title = "Grid Size (km)"
-    else if (strcmp(field_name, "orog_raw")) then
-      plot_title = "Raw Orography (m)"
-    else if (strcmp(field_name, "orog_filt")) then
-      plot_title = "Filtered Orography (m)"
-    else if (strcmp(field_name, "PRESsfc")) then
-      plot_title = "Surface pressure (mb)"
-    end if
-    end if
-    end if
-    end if
-print("plot_title = " + plot_title)
-
+    plot_title = "" 
+    plot_subtitle = "" 
     field_crnt_tile := new((/ ny, nx /), "double")
-;    field_crnt_tile = n_tile
     field_crnt_tile = default_fillvalue("double")
     field_crnt_tile@_FillValue = default_fillvalue("double")
     field_crnt_tile(0,0) = 2.2
     field_crnt_tile(ny/2,nx/2) = 5
     field_crnt_tile(ny-1,nx-1) = 10.0
 
-    if (strcmp(field_name, "grid_size")) then
-;    if (False) then
-;
-; Read in the cell edge distances.
-; 
-;    dx := fg->dx(:,:)
-;    dy := fg->dy(:,:)
-    cell_area_supergrid_crnt_tile := fg->area(:,:)
-
-    do jj=0, 2*ny-2, 2
-      do ii=0, 2*nx-2, 2
-        j = jj/2
-        i = ii/2
-        field_crnt_tile(j,i) \
-        = cell_area_supergrid_crnt_tile(jj,ii) \
-        + cell_area_supergrid_crnt_tile(jj,ii+1) \
-        + cell_area_supergrid_crnt_tile(jj+1,ii+1) \
-        + cell_area_supergrid_crnt_tile(jj+1,ii)
-      end do
-    end do
-    field_crnt_tile := sqrt(field_crnt_tile)
-; Convert distance from meters to kilometers
-    field_crnt_tile := field_crnt_tile/1000.0
-    delete(cell_area_supergrid_crnt_tile)
-
-; The following works with tile 7 only!!
-    else if (strcmp(field_name, "orog_raw")) then
-;    orog_file = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/C384r0p7n3_regional_RAP/orog/oro.C384.tile7.nc"
-    orog_file = grid_dir + "/oro_data.nc"
-    f_orog = addfile(orog_file, "r")
-    field_crnt_tile = f_orog->orog_raw
-
-; The following works with tile 7 only!!
-    else if (strcmp(field_name, "orog_filt")) then
-    orog_file = grid_dir + "/oro_data.nc"
-    f_orog = addfile(orog_file, "r")
-    field_crnt_tile = f_orog->orog_filt
-
-
-    else if (strcmp(field_name, "PRESsfc")) then
-    file_name = grid_dir + "/../nggps2d.nc"
-    f_unit = addfile(file_name, "r")
-;    field_crnt_tile = f_unit->PRESsfc(fcst_hr-1,:,:)
-    field_crnt_tile = f_unit->$field_name$(fcst_hr-1,:,:)
-    pascals_per_millibar = 100.0d
-    field_crnt_tile := field_crnt_tile/pascals_per_millibar
-
-;TODO add time and convert to hours
-    field_desc = f_unit->$field_name$@long_name
-    field_units = f_unit->$field_name$@units
-    plot_title = field_desc + " [" + field_units + "]"
-
-    else if (strcmp(field_name, "slp") .or. \
-             strcmp(field_name, "u1000") .or. \
-             strcmp(field_name, "v1000") .or. \
-             strcmp(field_name, "t1000") .or. \
-             strcmp(field_name, "q1000") .or. \
-             strcmp(field_name, "rh1000") .or. \
-             strcmp(field_name, "us") .or. \
-             strcmp(field_name, "vs") .or. \
-             strcmp(field_name, "vort850")) then
-; Fix file name, add to input arguments
-      file_name = grid_dir + "/../atmos_4xdaily.nc"
+;------------------------------------------------------
+; Open input file requested from command line
+;------------------------------------------------------
+    file_name = grid_dir + "/../" + input_file
+    if (fileexists(file_name)) then
       f_unit = addfile(file_name, "r")
-      field_crnt_tile = f_unit->$field_name$(1,:,:)
-      field_desc = f_unit->$field_name$@long_name
-      field_units = f_unit->$field_name$@units
-      plot_title = field_desc + " [" + field_units + "]"
+    else
+      print ("ERROR:  The input file " + file_name + " does not exist")
+    end if
+;------------------------------------------------------
+; Check if field exists in file, if so, get dimensions
+;------------------------------------------------------
+    if (isfilevar(f_unit, fields)) then
+      print ( fields + " exists in file " + input_file )
+      field_dim_names = getfilevardims(f_unit, fields)
+      print ("field_dim_names = " + field_dim_names)
+      field_dim_sizes = getfilevardimsizes(f_unit, fields)
+      print ("field_dim_sizes = " + field_dim_sizes)
+      num_field_dims = dimsizes(field_dim_sizes)
+      print ("num_field_dims = " + num_field_dims)
+    else
+      print ( "Error: " + fields + " does NOT exist in file " + input_file )
+      print ( "Check " + input_file + " for available fields ")
+      exit
+    end if
+    field_name = fields
+;------------------------------------------------------
+; Check for time variable, read if it exists, check units and convert to hours
+;------------------------------------------------------
+    if (isfilevar(f_unit, "time")) then
+      time = f_unit->time
+      time_units = f_unit->time@units
+      print ("Time units are in " + time_units)
+      if ( .not. ismissing(str_index_of_substr(time_units, "hours since", 0)) ) then
+        print ("Time is in hours")
+		else if ( .not. ismissing(str_index_of_substr(time_units, "days since", 0)) ) then
+        print ("Time is in days, convert to hours")
+        time = time*24.
+      else
+        print ("I am not sure what the time units are")
+        exit
+      end if
+      end if
+      start_date = str_split(time_units, "since")
+    else
+      print ("WARNING:  No time variable in file " + file_name)
+    end if
+    print ("Time in hours are = " + time(:))
+;------------------------------------------------------
+; Check if field is 4d (time, pfull, yt, xy) which requires a vertical index
+;------------------------------------------------------
+    if (num_field_dims.eq.4) then
+      if (.not. isvar("nlev")) then
+        print ( "Error: Array " + fields + " is 3D and needs a vertical index")
+        print ("Set nlev in command line arguments")
+        exit
+      else 
+        ilev = stringtointeger(nlev)  ; nlev exists, convert to integer
+      end if
 
-    else if (strcmp(field_name, "ucomp") .or. \
-             strcmp(field_name, "vcomp") .or. \
-             strcmp(field_name, "nhpres"))
-      file_name = grid_dir + "/../nggps3d_hourly.nc"
-      f_unit = addfile(file_name, "r")
-      k = 60
       ref_pres_full = f_unit->pfull(:)
-      field_crnt_tile = f_unit->$field_name$(1,k,:,:)
+      field_crnt_tile = f_unit->$field_name$(1,ilev,:,:)
       field_desc = f_unit->$field_name$@long_name
       field_units = f_unit->$field_name$@units
-      plot_title = field_desc + " at pref = " + ref_pres_full(k) + " mb [" + field_units + "]"
+      plot_title = field_desc + " at pref = " + ref_pres_full(ilev) + " mb (" + field_units + ")"
+      plot_subtitle = "  Start date: " + start_date(2) + " Hour " + time(fcst_index-1)
+      fn_graphics = Cres + "_" + map_proj + "_" + fields + "_hr" + time(fcst_index-1) + "_lev" + nlev
 
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
+    else if (num_field_dims.eq.3) then       ; (time, yt, xt)
 
-end if
+      if (strcmp(fields, "PRESsfc")) then
+        field_crnt_tile = f_unit->$field_name$(fcst_index-1,:,:)
+        pascals_per_millibar = 100.0d
+        field_crnt_tile := field_crnt_tile/pascals_per_millibar
+        plot_title = "Surface pressure (mb)"
+      else
+        field_crnt_tile = f_unit->$field_name$(1,:,:)
+        field_desc = f_unit->$field_name$@long_name
+        field_units = f_unit->$field_name$@units
+        plot_title = field_desc + " (" + field_units + ")"
+      end if
+
+      plot_subtitle = "  Start date: " + start_date(2) + " Hour " + time(fcst_index-1)
+      fn_graphics = Cres + "_" + map_proj + "_" + fields + "_hr" + time(fcst_index-1)
+
+    else                           ; num_field_dims is 2 or less
+
+      if (strcmp(fields, "grid_size")) then
+
+        cell_area_supergrid_crnt_tile := fg->area(:,:)
+
+        do jj=0, 2*ny-2, 2
+          do ii=0, 2*nx-2, 2
+            j = jj/2
+            i = ii/2
+            field_crnt_tile(j,i) \
+            = cell_area_supergrid_crnt_tile(jj,ii) \
+            + cell_area_supergrid_crnt_tile(jj,ii+1) \
+            + cell_area_supergrid_crnt_tile(jj+1,ii+1) \
+            + cell_area_supergrid_crnt_tile(jj+1,ii)
+          end do
+        end do
+        field_crnt_tile := sqrt(field_crnt_tile)
+; Convert distance from meters to kilometers
+        field_crnt_tile := field_crnt_tile/1000.0
+        delete(cell_area_supergrid_crnt_tile)
+        plot_title = "Grid Size (km)"
+
+; The following works with tile 7 only!!
+      else if (strcmp(fields, "orog_raw")) then
+        orog_file = grid_dir + "/oro_data.nc"
+        f_orog = addfile(orog_file, "r")
+        field_crnt_tile = f_orog->orog_raw
+        plot_title = "Raw Orography (m)"
+
+; The following works with tile 7 only!!
+      else if (strcmp(fields, "orog_filt")) then
+        orog_file = grid_dir + "/oro_data.nc"
+        f_orog = addfile(orog_file, "r")
+        field_crnt_tile = f_orog->orog_filt
+        plot_title = "Filtered Orography (m)"
+
+      end if
+      end if
+      end if
+      fn_graphics = Cres + "_" + map_proj + "_" + fields
+
+    end if  ; End if num_field_dims is 4 or less
+    end if  ; End if num_field_dims is 3 or less
+
+
+    print("plot_title = " + plot_title)
 ;
 ; If on the first tile, convert the 2-D arrays containing the coordi-
 ; nates of the cell centers and the field values at cell centers to 1-D
@@ -1308,8 +913,8 @@ end if
 
 ;        field_by_cell(n_cell-1) = field_crnt_tile(j,i)
 
-      end do
-    end do
+      end do  ; nx
+    end do    ; ny
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1412,7 +1017,7 @@ end if
       print("Corner " + (c+1) + ":  lon = " + lon_str + " deg;  lat = " + lat_str + " deg")
     end do
 
-  end do
+  end do   ; End loop over tiles
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1773,8 +1378,6 @@ end if
 ;                                                                      *
 ; **********************************************************************
 ;
-  fn_graphics = Cres + "_grid"
-
   if (.not. ismissing(idx_ncgm)) then
     wks_type := "ncgm"
   else if (.not. ismissing(idx_png)) then
@@ -1791,7 +1394,6 @@ end if
 ; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
 ;
   gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
-;  gsn_define_colormap(wks, "BlAqGrYeOrReVi100")
 
 ;
 ; **********************************************************************
@@ -1863,31 +1465,8 @@ end if
 ; Turn off labelbar box lines.
 ;  rsrc@lbBoxLinesOn = False
 
-; Output interval in hours.  This should be read in from the namelist 
-; file (fdiag), although FV3 seems to always use 6 hours (4xdaily) 
-; regardless of the namelist value
-output_interval = 6.0
 ; Set the plot title.
-field_desc = "VVVVVVVVVVVVVV"
-field_units = "VVVVVVVVVVVVVV"
-func_t = False
-func_z = False
-
-  rsrc@tiMainString = field_desc + " [" + field_units + "]"
-  if (func_t .and. (.not. func_z)) then
-    rsrc@tiMainString = rsrc@tiMainString + " (t = " + output_interval*(t+1) + " hr)"
-  else if ((.not. func_t) .and. func_z) then
-    rsrc@tiMainString = rsrc@tiMainString + " (k = " + k + ")"
-  else if (func_t .and. func_z) then
-    rsrc@tiMainString = rsrc@tiMainString + " (t = " + output_interval*(t+1) + " hr, k = " + k + ")"
-  end if
-  end if
-  end if
-;  rsrc@tiMainString = "Sample Stretched Grid (one color per tile)"
-;  rsrc@tiMainString = "SAR-FV3 (Orange) and RAP (Red Outline) Domains/Grids"
-;  rsrc@tiMainString = "Grid Size (km) for CRES = " + Cres
-;  rsrc@tiMainString = "Grid Size (km)"
-  rsrc@tiMainString = plot_title
+  rsrc@tiMainString = plot_title + plot_subtitle
 
 ; Set the title font size.
   rsrc@tiMainFontHeightF = 0.015
@@ -1926,7 +1505,8 @@ func_z = False
   end if
 
 ; Set the minimum and maximum countour levels to plot manually.
-if (False) then
+;JLS if (False) then
+if (True) then
   cplot_min = floor(min((/ field_min, field_RAP_min /)))
 print("field_min = " + field_min)
 print("field_RAP_min = " + field_RAP_min)
