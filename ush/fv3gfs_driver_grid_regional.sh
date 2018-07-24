@@ -1,4 +1,5 @@
 #!/bin/sh
+
 #
 #----WCOSS_CRAY JOBCARD
 #
@@ -21,6 +22,7 @@
 #PBS -l nodes=1:ppn=24
 #PBS -q debug
 #PBS -l walltime=00:30:00
+#PBS -W umask=022
 #
 
 

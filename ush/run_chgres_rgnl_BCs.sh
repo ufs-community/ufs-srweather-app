@@ -36,6 +36,7 @@
 #PBS -l walltime=00:30:00
 ##PBS -q batch
 ##PBS -l walltime=00:40:00
+#PBS -W umask=022
 #
 
 

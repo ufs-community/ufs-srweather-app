@@ -103,6 +103,44 @@ fi
 #-----------------------------------------------------------------------
 #
 export RES=${RES:-}
+
+#
+# RES may have to be reset if the domain is regional and a predefined
+# regional domain is specified (e.g. the RAP or HRRR domain).
+#
+if [ "$gtype" = "regional" ]; then
+#
+# Set the variable predef_rgnl_domain that defines a predefined regional
+# domain/grid.  If this is not set, set it to an empty string, which re-
+# sults in no predefined regional domain.
+#
+  predef_rgnl_domain=${predef_rgnl_domain:-""}
+#
+# Possibly reset RES depending on the value of predef_rgnl_domain.
+#
+  case $predef_rgnl_domain in
+# No predined regional domain - do nothing.
+  "")
+# The RAP domain.
+  "RAP")
+    export RES="384"
+    ;;
+# The HRRR domain.
+  "HRRR")
+    export RES="384"
+    ;;
+# Unknown value of predef_rgnl_domain.
+  *)
+    echo
+    echo "Error.  Predefined regional domain specified in \"predef_rgnl_domain\" is not supported:"
+    echo "  predef_rgnl_domain = $predef_rgnl_domain"
+    echo "predef_rgnl_domain must be one of:  \"RAP\"  \"HRRR\""
+    echo "Exiting script."
+    exit 1
+    ;;
+  esac
+
+fi
 # 
 # Make sure RES is set to one of the allowed values.
 #
@@ -353,10 +391,6 @@ elif [ "$gtype" = "nest" ]; then
 # solution tile (which is again hard-coded to be tile 6) of the global
 # grid that serves as the "parent" of the nested grid.
 #
-# For gtype set to "regional", these three parameters apply to an imagi-
-# nary or "ghost" parent grid relative to which the regional grid will 
-# be constructed.
-#
   export stretch_fac=${stretch_fac:-1.5}
   export target_lon=${lon_tile6_ctr:--97.5}
   export target_lat=${lat_tile6_ctr:-35.5}
@@ -407,27 +441,144 @@ elif [ "$gtype" = "regional" ]; then
   stretch_str="strch"
   refine_str="rfn"
 #
-# For gtype set to "nest", stretch_fac, target_lon, and target_lat have
-# the same meaning as for gtype set to "stretch", i.e. they are the 
+#-----------------------------------------------------------------------
+#
+# Check if a predefined regional domain is set and proceed accordingly.
+#
+#-----------------------------------------------------------------------
+# 
+  case $predef_rgnl_domain in
+#
+#-----------------------------------------------------------------------
+#
+# Consider case of no predefined regional domain.
+#
+#-----------------------------------------------------------------------
+#
+  "")
+#
+# For gtype set to "regional", stretch_fac, target_lon, and target_lat 
+# have the same meaning as for gtype set to "stretch", i.e. they are the 
 # stretching factor and center longitude and latitude of the highest re-
-# solution tile (which is again hard-coded to be tile 6) of the global
-# grid that serves as the "parent" of the nested grid.
+# solution tile (which is again hard-coded to be tile 6) of the global 
+# grid that serves as the "parent" of the regional grid, except that 
+# this parent grid is an imaginary or "ghost" grid in the sense that the
+# governing equations are not integrated on it (they are integrated only
+# on the regional grid).  Thus, the parent grid is only used as a refer-
+# ence grid with respect to which to construct the regional grid.  The 
+# preprocessing will generate grid files for the 6 tiles of this parent
+# grid (as well as for the regional grid, i.e. tile 7), but those 6 grid
+# files will not be used as input to the FV3 model.
 #
-# For gtype set to "regional", these three parameters apply to an imagi-
-# nary or "ghost" parent grid relative to which the regional grid will 
-# be constructed.
+    export stretch_fac=${stretch_fac:-1.5}
+    export target_lon=${lon_tile6_ctr:--97.5}
+    export target_lat=${lat_tile6_ctr:-35.5}
 #
-  export stretch_fac=${stretch_fac:-1.5}
-  export target_lon=${lon_tile6_ctr:--97.5}
-  export target_lat=${lat_tile6_ctr:-35.5}
-  export refine_ratio=${refine_ratio:-3}
+# refine_ratio is the ratio of the number of grid cells in the regional
+# grid for each grid cell on the PT's grid along the boundary of the re-
+# gional grid (which consists of the lower, right, upper, and left edges
+# of the regional domain).  Thus, setting refine_ratio = 3 means that 
+# each cell on the PT's grid is met by 3 cells on the regional grid.  
+# Note also that if the grid size on the parent tile is delx, then the
+# grid size on the regional grid will be delx/refine_ratio.
 #
-# Set
+    export refine_ratio=${refine_ratio:-3}
+    export refine_ratio=${refine_ratio:-3}
 #
-  istart_nest_tile6=${istart_nest_tile6:-14}
-  iend_nest_tile6=${iend_nest_tile6:-83}
-  jstart_nest_tile6=${jstart_nest_tile6:-19}
-  jend_nest_tile6=${jend_nest_tile6:-82}
+# Starting and ending indices of regional domain on tile 6.
+#
+    istart_nest_tile6=${istart_nest_tile6:-14}
+    iend_nest_tile6=${iend_nest_tile6:-83}
+    jstart_nest_tile6=${jstart_nest_tile6:-19}
+    jend_nest_tile6=${jend_nest_tile6:-82}
+    ;;
+#
+#-----------------------------------------------------------------------
+#
+# Consider valid predefined regional domains.
+#
+# For the predefined domains, we determine the starting and ending indi-
+# ces of the regional grid within its parent tile (or PT, which is tile 
+# 6) by specifying the number of cells (as counted on tile 6) between 
+# the boundary of tile 6 and that of the regional grid (tile 7) along 
+# the left, right, bottom, and top portions of these boundaries.  (Note
+# that we do not use "west", "east", "north", and "south" here because 
+# the tiles aren't necessarily oriented such that the left boundary seg-
+# ment corresponds to the west edge, etc.)  We refer to this region of
+# cells between the tile 6 and tile 7 boundaries as the gap.  The width
+# of this gap along the left, right, bottom, and top portions of the 
+# boundaries are specified via the parameters
+#
+#   num_gap_cells_tile6_left
+#   num_gap_cells_tile6_right
+#   num_gap_cells_tile6_bottom
+#   num_gap_cells_tile6_top
+#
+# where the "_tile6" in these names is used to indicate that the cell
+# count is on tile 6 (not tile 7).
+#
+# Note that we must make the gap wide enough (by making the above four
+# parameters large enough) such that a region of halo cells around the 
+# boundary of the regional grid fits into the gap, i.e. such that the 
+# halo does not overrun the boundary of tile 6.  (The halo is added la-
+# ter in another script; its function is to feed in boundary conditions
+# to the regional grid.)  Currently, a halo of 5 regional grid cells is 
+# used round the regional grid.  Setting num_gap_cells_tile6_... to at
+# least 10 leaves enough room for this halo.
+#
+#-----------------------------------------------------------------------
+#
+
+#
+# The RAP domain.
+#
+  "RAP")
+
+    export title="RAP"
+
+    export stretch_fac=0.7
+    export target_lon=-106.0
+    export target_lat=54.0
+    export refine_ratio=3
+
+    num_gap_cells_tile6_left=10
+    istart_nest_tile6=$num_gap_cells_tile6_left
+
+    num_gap_cells_tile6_right=10
+    iend_nest_tile6=$(( $RES - $num_gap_cells_tile6_right ))
+
+    num_gap_cells_tile6_bottom=10
+    jstart_nest_tile6=$num_gap_cells_tile6_bottom
+
+    num_gap_cells_tile6_top=10
+    jend_nest_tile6=$(( $RES - $num_gap_cells_tile6_top ))
+    ;;
+#
+# The HRRR domain.
+#
+  "HRRR")
+
+    export title="HRRR"
+
+    export stretch_fac=1.8
+    export target_lon=-97.5
+    export target_lat=38.5
+    export refine_ratio=5
+
+    num_gap_cells_tile6_left=12
+    istart_nest_tile6=$num_gap_cells_tile6_left
+
+    num_gap_cells_tile6_right=12
+    iend_nest_tile6=$(( $RES - $num_gap_cells_tile6_right ))
+
+    num_gap_cells_tile6_bottom=80
+    jstart_nest_tile6=$num_gap_cells_tile6_bottom
+
+    num_gap_cells_tile6_top=80
+    jend_nest_tile6=$(( $RES - $num_gap_cells_tile6_top ))
+    ;;
+
+  esac
 #
 # istart_nest, iend_nest, jstart_nest, and jend_nest are the starting 
 # and ending i and j indices of the nest on the parent tile's "super-
@@ -445,78 +596,6 @@ elif [ "$gtype" = "regional" ]; then
   export halo=3                  # Halo size to be used in the atmosphere cubic sphere model for the grid tile.
   export halop1=`expr $halo + 1` # Halo size that will be used for the orography and grid tile in chgres.
   export halo0=0                 # No halo, used to shave the filtered orography for use in the model.
-
-
-
-#  make_RAP_domain="true"
-  make_RAP_domain="false"
-  if [ "$make_RAP_domain" = "true" ]; then
-#    export stretch_fac=0.6
-    export stretch_fac=0.7
-    export target_lon=-106.0
-    export target_lat=54.0
-    export refine_ratio=3
-#
-# In order to determine the starting and ending indices of the regional 
-# grid within its parent tile (or PT, which is tile 6), we assume that 
-# there is a gap between the boundary of the regional grid and that of
-# its parent tile (PT).  We set the width of this gap using the parame-
-# ter num_gap_cells_PT.  Note that this is a cell count on the PT grid
-# (not on the regional grid).  We must make the gap between the boundary
-# of the regional grid and that of its PT large enough (by making num_-
-# gap_cells_PT large enough) so that a region of halo cells around the 
-# boundary of the regional grid (the halo is added later in another 
-# script; its function is to feed in boundary conditions to the regional
-# grid) fits into the gap (i.e. does not overrun the boundary of the 
-# PT).  
-#
-# Currently, a halo of 5 regional grid cells is used round the regional
-# grid.  Setting num_gap_cells_PT to 10 leaves enough room for this 
-# halo.
-#
-    num_gap_cells_PT=10
-    export istart_nest=$(( 2*$num_gap_cells_PT + 1 ))
-    export iend_nest=$(( 2*$RES - 2*$num_gap_cells_PT ))
-    export jstart_nest=$istart_nest
-    export jend_nest=$iend_nest
-    export title="RAP"
-  fi
-
-
-
-#  make_HRRR_domain="true"
-  make_HRRR_domain="false"
-  if [ "$make_RAP_domain" = "true" ]; then
-#    export stretch_fac=0.6
-    export stretch_fac=0.7
-    export target_lon=-106.0
-    export target_lat=54.0
-    export refine_ratio=3
-#
-# In order to determine the starting and ending indices of the regional 
-# grid within its parent tile (or PT, which is tile 6), we assume that 
-# there is a gap between the boundary of the regional grid and that of
-# its parent tile (PT).  We set the width of this gap using the parame-
-# ter num_gap_cells_PT.  Note that this is a cell count on the PT grid
-# (not on the regional grid).  We must make the gap between the boundary
-# of the regional grid and that of its PT large enough (by making num_-
-# gap_cells_PT large enough) so that a region of halo cells around the 
-# boundary of the regional grid (the halo is added later in another 
-# script; its function is to feed in boundary conditions to the regional
-# grid) fits into the gap (i.e. does not overrun the boundary of the 
-# PT).  
-#
-# Currently, a halo of 5 regional grid cells is used round the regional
-# grid.  Setting num_gap_cells_PT to 10 leaves enough room for this 
-# halo.
-#
-    num_gap_cells_PT=10
-    export istart_nest=$(( 2*$num_gap_cells_PT + 1 ))
-    export iend_nest=$(( 2*$RES - 2*$num_gap_cells_PT ))
-    export jstart_nest=$istart_nest
-    export jend_nest=$iend_nest
-    export title="RAP"
-  fi
 #
 #-----------------------------------------------------------------------
 #
