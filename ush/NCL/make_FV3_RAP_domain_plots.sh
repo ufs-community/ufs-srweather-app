@@ -6,9 +6,10 @@
 #              CONUS with an outline of the RAP boundary.  Parameters that should
 #              be modified by the user at the top of this script are:
 #
-#                 input_file        # An FV3 netcdf output file
+#                 base_name         # Root name of the FV3 netcdf output file
+#                                   # .tile[n].nc will be appended in the ncl script
 #                 grid_dir          # The location of your input file
-#                 fields            # A field to plot from input_file
+#                 fields            # A field to plot from base_name
 #                 nlev              # A vertical level for (time,x,y,x) fields
 #                 fcst_index        # A time index to plot
 #
@@ -28,10 +29,9 @@ RES="96"
 
 CRES="C${RES}"
 
-input_file="atmos_4xdaily.nc"     # FV3 output file
-fields="u1000"                    # Fields to plot from input_file
+base_name="atmos_4xdaily"         # Base name of the FV3 output file
 nlev="50"                         # Vertical index to plot for 3D fields
-fcst_index="2"                    # Time index of forecast to plot
+fcst_index="1"                    # Time index of forecast to plot
 #grid_dir="/scratch3/BMC/det/beck/FV3-CAM/work.C384r0p7n3_regional_RAP/INPUT"
 #grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
 grid_dir="/scratch3/BMC/fim/Julie.Schramm/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
@@ -47,8 +47,8 @@ if [ 0 = 1 ]; then
 #
 ncl -n plot_fields.ncl \
   grid_dir=\"$grid_dir\" \
-  input_file=\"$input_file\" \
-  fields=\"${fields}\" \
+  base_name=\"$base_name\" \
+  'fields=(/"u1000", "v1000"/)' \
   nlev=${nlev} \
   fcst_index=${fcst_index} \
   res=${RES} \
@@ -71,8 +71,8 @@ if [ 0 = 1 ]; then
 #
 ncl -n plot_fields.ncl \
   grid_dir=\"$grid_dir\" \
-  input_file=\"$input_file\" \
-  fields=\"${fields}\" \
+  base_name=\"$base_name\" \
+  'fields=(/"u1000", "v1000"/)' \
   nlev=${nlev} \
   fcst_index=${fcst_index} \
   res=${RES} \
@@ -96,8 +96,8 @@ if [ 0 = 1 ]; then
 #
 ncl -n plot_fields.ncl \
   grid_dir=\"$grid_dir\" \
-  input_file=\"$input_file\" \
-  fields=\"${fields}\" \
+  base_name=\"$base_name\" \
+  'fields=(/"u1000", "v1000"/)' \
   nlev=${nlev} \
   fcst_index=${fcst_index} \
   res=${RES} \
@@ -121,8 +121,8 @@ if [ 0 = 1 ]; then
 #
 ncl -n plot_fields.ncl \
   grid_dir=\"$grid_dir\" \
-  input_file=\"$input_file\" \
-  fields=\"${fields}\" \
+  base_name=\"$base_name\" \
+  'fields=(/"u1000", "v1000"/)' \
   nlev=${nlev} \
   fcst_index=${fcst_index} \
   res=${RES} \
@@ -147,8 +147,8 @@ if [ 0 = 1 ]; then
 #
 ncl -n plot_fields.ncl \
   grid_dir=\"$grid_dir\" \
-  input_file=\"$input_file\" \
-  fields=\"${fields}\" \
+  base_name=\"$base_name\" \
+  'fields=(/"u1000", "v1000"/)' \
   nlev=${nlev} \
   fcst_index=${fcst_index} \
   res=${RES} \
@@ -177,8 +177,8 @@ if [ 1 = 1 ]; then
 #
 ncl -n plot_fields.ncl \
   grid_dir=\"$grid_dir\" \
-  input_file=\"$input_file\" \
-  fields=\"${fields}\" \
+  base_name=\"$base_name\" \
+  'fields=(/"u1000", "v1000"/)' \
   nlev=${nlev} \
   fcst_index=${fcst_index} \
   res=${RES} \
