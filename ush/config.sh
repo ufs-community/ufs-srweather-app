@@ -4,7 +4,8 @@
 # Machine and queue paramters.
 #
 machine="THEIA"       # Machine on which we are running.  Must be "WCOSS", "WCOSS_C", or "THEIA"
-ACCOUNT="gsd-fv3"     # The account under which to submit jobs to the queue.
+#ACCOUNT="gsd-fv3"     # The account under which to submit jobs to the queue.
+ACCOUNT="gsd-fv3-test"     # The account under which to submit jobs to the queue.
 #
 # Directories.
 #
@@ -36,7 +37,7 @@ istart_nest_tile6=10  # i-index on tile 6 at which nested or regional grid start
 iend_nest_tile6=374   # i-index on tile 6 at which nested or regional grid ends.
 jstart_nest_tile6=10  # j-index on tile 6 at which nested or regional grid starts.
 jend_nest_tile6=374   # j-index on tile 6 at which nested or regional grid ends.
-title="test_preproc"              # Descriptive string for the forecast.  Used in forming the name of the preprocessing output directory.
+title="test_preproc03"              # Descriptive string for the forecast.  Used in forming the name of the preprocessing output directory.
 #
 # Predefined regional domains.  If this is set to a valid non-empty 
 # string and if gtype is set to "regional", then the values set above
