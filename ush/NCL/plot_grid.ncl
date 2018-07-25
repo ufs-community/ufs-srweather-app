@@ -156,7 +156,8 @@ char_nl + \
 char_nl + \
 "  " + char_dq + "cyln" + char_dq + " - for cylindrical-equidistant projection" + char_nl + \
 "  " + char_dq + "ortho" + char_dq + " - for orthographic (i.e. on a sphere) projection" + char_nl + \
-"  " + char_dq + "lamb" + char_dq + " - for Lambert equal-area projection" + char_nl + \
+;"  " + char_dq + "lamb" + char_dq + " - for Lambert equal-area projection" + char_nl + \
+"  " + char_dq + "lamb" + char_dq + " - for Lambert conformal projection" + char_nl + \
 char_nl + \
 "If this argument is omitted, a cylindrical-equidistant projection is" + char_nl + \
 "used.  " + char_nl + \
@@ -248,8 +249,8 @@ char_dq + "ncgm" + char_dq + "." + char_nl
   ncl_ver = get_ncl_version()
   ncl_ver = str_sub_str(ncl_ver, ".", "")
   ncl_ver = tointeger(ncl_ver)
-print("ncl_ver = " + ncl_ver)
-pause
+;print("ncl_ver = " + ncl_ver)
+;pause
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -266,7 +267,12 @@ pause
 ;                                                                      *
 ; **********************************************************************
 ;
-  fn_mosaic := grid_dir + "/" + Cres + "_mosaic.nc"
+  idx = str_match(grid_dir, "INPUT")
+  if (ismissing(idx)) then
+    fn_mosaic := grid_dir + "/" + Cres + "_mosaic.nc"
+  else
+    fn_mosaic := grid_dir + "/grid_spec.nc"
+  end if
   fm = addfile(fn_mosaic, "r")
   num_tiles_avail := getfilevardimsizes(fm, "gridtiles")
   num_tiles_avail := num_tiles_avail(0)
@@ -410,75 +416,57 @@ print("========>>>> gtype = " + gtype)
 ;
 ; **********************************************************************
 ;                                                                      *
-; Actions to take if draw_RAP_domain has been specified to be True on 
-; the command line, 
+; If draw_RAP_domain has been specified to be True on the command line, 
+; make sure that the name of the NetCDF file that describes the RAP grid
+; (RAP_grid_fn) has also been specified.  If not, print a message and 
+; exit.
 ;                                                                      *
 ; **********************************************************************
 ;
-  if (draw_RAP_domain .eq. True) then
+  if (draw_RAP_domain .and. .not. isvar("RAP_grid_fn")) then
+    print("")
+    print("The name of the NetCDF file that describes the RAP grid (RAP_grid_fn) has not been specified on the command line:")
+    print("")
+    print("  draw_RAP_domain = " + draw_RAP_domain)
+    print("  isvar(" + char_dq + "RAP_grid_fn" + char_dq + ") = " + isvar("RAP_grid_fn"))
+    print("")
+    print("Please rerun with a specified RAP_grid_fn.  Example:")
+    print("")
+    print("" + usage_msg)
+    print("")
+    print("For more help, type " + char_dq + "ncl plot_grid.ncl 'help=True'" + char_dq + " on the command line.")
+    print("Stopping.")
+    exit
+  end if
 ;
-; Check whether the name of the NetCDF file that describes the RAP grid
-; (RAP_grid_fn) has been specified on the command line.  If not, print 
-; out a message and exit.
-;
-    if (.not. isvar("RAP_grid_fn")) then
-      print("")
-      print("The name of the NetCDF file that describes the RAP grid (RAP_grid_fn) has not been specified on the command line:")
-      print("")
-      print("  draw_RAP_domain = " + draw_RAP_domain)
-      print("  isvar(" + char_dq + "RAP_grid_fn" + char_dq + ") = " + isvar("RAP_grid_fn"))
-      print("")
-      print("Please rerun with a specified RAP_grid_fn.  Example:")
-      print("")
-      print("" + usage_msg)
-      print("")
-      print("For more help, type " + char_dq + "ncl plot_grid.ncl 'help=True'" + char_dq + " on the command line.")
-      print("Stopping.")
-      exit
-    end if
-;
+; **********************************************************************
+;                                                                      *
 ; Check whether draw_RAP_bdy has been specified on the command line.  If
 ; not, set it to True.
+;                                                                      *
+; **********************************************************************
 ;
-    if (.not. isvar("draw_RAP_bdy")) then
-      draw_RAP_bdy = True
-    end if
+  if (.not. isvar("draw_RAP_bdy")) then
+    draw_RAP_bdy = True
+  end if
 ;
+; **********************************************************************
+;                                                                      *
 ; Check whether draw_RAP_grid has been specified on the command line.  
 ; If not, set it to False.
-;
-    if (.not. isvar("draw_RAP_grid")) then
-      draw_RAP_grid = False
-    end if
-;
-; **********************************************************************
-;                                                                      *
-; Actions to take if draw_RAP_domain has been specified to be False on 
-; the command line, 
 ;                                                                      *
 ; **********************************************************************
 ;
-  else
-;
-; If one or more of the variables RAP_grid_fn, draw_RAP_bdy, and draw_-
-; RAP_grid have been specified on the command line, they will have no
-; effect because draw_RAP_domain has been set to False.  In this case, 
-; print out an informational message.
-;
-    var_names = (/ "RAP_grid_fn", "draw_RAP_bdy", "draw_RAP_grid" /)
-    temp := dimsizes(var_names)
-    num_vars = temp(0)
-    do n=0, num_vars-1
-      var_name = var_names(n)
-      if (isvar(var_name)) then
-        print("")
-        print("Note:")
-        print("Since draw_RAP_domain is False (possibly by default), specifying " + \
-              var_name + char_nl + "on the command line will have no effect.")
-      end if
-    end do
-
+  if (.not. isvar("draw_RAP_grid")) then
+    draw_RAP_grid = False
   end if
+
+
+
+
+
+
+
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -917,6 +905,11 @@ end if
     nx_by_tile(nn) = tile_dims(1)/2
   end do
 
+halo_T7 = 3
+;halo_T7 = 0
+nx_by_tile = nx_by_tile - 2*halo_T7
+ny_by_tile = ny_by_tile - 2*halo_T7
+
   nx_tms_ny_by_tile = nx_by_tile*ny_by_tile
   num_cells_to_plot_all_tiles = sum(nx_tms_ny_by_tile)
 ;
@@ -989,6 +982,21 @@ print("ny = " + ny)
 ; 
     lon_verts_supergrid_crnt_tile := fg->x(:,:)
     lat_verts_supergrid_crnt_tile := fg->y(:,:)
+; Shave off halo.
+print("")
+print("Supergrid dimenstions BEFORE shave:")
+print(dimsizes(lon_verts_supergrid_crnt_tile))
+;pause
+    temp := dimsizes(lon_verts_supergrid_crnt_tile)
+    nx_SG = temp(1)
+    ny_SG = temp(0)
+    lon_verts_supergrid_crnt_tile \
+    := lon_verts_supergrid_crnt_tile(2*halo_T7:ny_SG-1-2*halo_T7, 2*halo_T7:nx_SG-1-2*halo_T7)
+print("")
+print("Supergrid dimenstions AFTER shave:")
+print(dimsizes(lon_verts_supergrid_crnt_tile))
+    lat_verts_supergrid_crnt_tile \
+    := lat_verts_supergrid_crnt_tile(2*halo_T7:ny_SG-1-2*halo_T7, 2*halo_T7:nx_SG-1-2*halo_T7)
 ;
 ; Get the coordinates of the cell vertices on the current tile.
 ;
@@ -1044,44 +1052,139 @@ if (False) then
     end if
 else
 
+    field_name = "grid_size"
+;    field_name = "orog_raw"
+;    field_name = "orog_filt"
+;
+;    fcst_hr = 6
+;
+;    field_name = "PRESsfc"
+;    field_name = "slp"
+;    field_name = "vort850"
+;    field_name = "u1000"
+;    field_name = "v1000"
+;    field_name = "t1000"
+;    field_name = "q1000"
+;    field_name = "rh1000"
+;    field_name = "us"
+;    field_name = "vs"
+;    field_name = "ucomp"
+
+
     field_crnt_tile := new((/ ny, nx /), "double")
 ;    field_crnt_tile = n_tile
-    field_crnt_tile = default_fillvalue("double")
-    field_crnt_tile@_FillValue = default_fillvalue("double")
-    field_crnt_tile(0,0) = 2.2
-    field_crnt_tile(ny/2,nx/2) = 5
-    field_crnt_tile(ny-1,nx-1) = 10.0
+;    field_crnt_tile = default_fillvalue("double")
+;    field_crnt_tile@_FillValue = default_fillvalue("double")
+;    field_crnt_tile(0,0) = 2.2
+;    field_crnt_tile(ny/2,nx/2) = 5
+;    field_crnt_tile(ny-1,nx-1) = 10.0
 
-    if (False) then
+    plot_title = ""
+
+    if (strcmp(field_name, "grid_size")) then
+
 ;
 ; Read in the cell edge distances.
 ; 
-;    dx := fg->dx(:,:)
-;    dy := fg->dy(:,:)
-    cell_area_supergrid_crnt_tile := fg->area(:,:)
+;      dx := fg->dx(:,:)
+;      dy := fg->dy(:,:)
+      cell_area_supergrid_crnt_tile := fg->area(:,:)
 
-    do jj=0, 2*ny-2, 2
-      do ii=0, 2*nx-2, 2
-        j = jj/2
-        i = ii/2
-        field_crnt_tile(j,i) \
-        = cell_area_supergrid_crnt_tile(jj,ii) \
-        + cell_area_supergrid_crnt_tile(jj,ii+1) \
-        + cell_area_supergrid_crnt_tile(jj+1,ii+1) \
-        + cell_area_supergrid_crnt_tile(jj+1,ii)
+      do jj=0, 2*ny-2, 2
+        do ii=0, 2*nx-2, 2
+          j = jj/2
+          i = ii/2
+          field_crnt_tile(j,i) \
+          = cell_area_supergrid_crnt_tile(jj,ii) \
+          + cell_area_supergrid_crnt_tile(jj,ii+1) \
+          + cell_area_supergrid_crnt_tile(jj+1,ii+1) \
+          + cell_area_supergrid_crnt_tile(jj+1,ii)
+        end do
       end do
-    end do
-    field_crnt_tile := sqrt(field_crnt_tile)
+
+      field_crnt_tile := sqrt(field_crnt_tile)
 ; Convert distance from meters to kilometers
-    field_crnt_tile := field_crnt_tile/1000.0
-    delete(cell_area_supergrid_crnt_tile)
+      field_crnt_tile := field_crnt_tile/1000.0
+      delete(cell_area_supergrid_crnt_tile)
+
+      field_desc = "Grid Size"
+      field_units = "km"
+      plot_title = field_desc + " [" + field_units + "]"
 
 ; The following works with tile 7 only!!
-;    orog_file = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/C384r0p7n3_regional_RAP/orog/oro.C384.tile7.nc"
-;    f_orog = addfile(orog_file, "r")
-;    field_crnt_tile = f_orog->orog_raw
+    else if (strcmp(field_name, "orog_raw")) then
+
+;      orog_file = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/C384r0p7n3_regional_RAP/orog/oro.C384.tile7.nc"
+      orog_file = grid_dir + "/oro_data.nc"
+      f_orog = addfile(orog_file, "r")
+      field_crnt_tile = f_orog->orog_raw
+
+      field_desc = "Raw Orography"
+      field_units = "m"
+      plot_title = field_desc + " [" + field_units + "]"
+
+; The following works with tile 7 only!!
+    else if (strcmp(field_name, "orog_filt")) then
+
+      orog_file = grid_dir + "/oro_data.nc"
+      f_orog = addfile(orog_file, "r")
+      field_crnt_tile = f_orog->orog_filt
+
+      field_desc = "Filtered Orography"
+      field_units = "m"
+      plot_title = field_desc + " [" + field_units + "]"
+
+    else if (strcmp(field_name, "PRESsfc")) then
+
+      file_name = grid_dir + "/../nggps2d.nc"
+      f_unit = addfile(file_name, "r")
+      field_crnt_tile = f_unit->$field_name$(fcst_hr-1,:,:)
+      pascals_per_millibar = 100.0d
+      field_crnt_tile := field_crnt_tile/pascals_per_millibar
+
+      field_desc = f_unit->$field_name$@long_name
+      field_units = f_unit->$field_name$@units
+      plot_title = field_desc + " [" + field_units + "]"
+
+    else if (strcmp(field_name, "slp") .or. \
+             strcmp(field_name, "u1000") .or. \
+             strcmp(field_name, "v1000") .or. \
+             strcmp(field_name, "t1000") .or. \
+             strcmp(field_name, "q1000") .or. \
+             strcmp(field_name, "rh1000") .or. \
+             strcmp(field_name, "us") .or. \
+             strcmp(field_name, "vs") .or. \
+             strcmp(field_name, "vort850")) then
+
+      file_name = grid_dir + "/../atmos_4xdaily.nc"
+      f_unit = addfile(file_name, "r")
+      field_crnt_tile = f_unit->$field_name$(1,:,:)
+      field_desc = f_unit->$field_name$@long_name
+      field_units = f_unit->$field_name$@units
+      plot_title = field_desc + " [" + field_units + "]"
+
+    else if (strcmp(field_name, "ucomp") .or. \
+             strcmp(field_name, "vcomp") .or. \
+             strcmp(field_name, "nhpres"))
+
+      file_name = grid_dir + "/../nggps3d_4xdaily.nc"
+      f_unit = addfile(file_name, "r")
+      k = 60
+      ref_pres_full = f_unit->pfull(:)
+      field_crnt_tile = f_unit->$field_name$(1,k,:,:)
+      field_desc = f_unit->$field_name$@long_name
+      field_units = f_unit->$field_name$@units
+      plot_title = field_desc + " at pref = " + ref_pres_full(k) + " mb [" + field_units + "]"
 
     end if
+    end if
+    end if
+    end if
+    end if
+    end if
+
+print("")
+print("plot_title = " + plot_title)
 
 end if
 ;
@@ -1133,6 +1236,8 @@ end if
 ;
 ; **********************************************************************
 ;
+if (False) then
+
     do j=0, ny-1
       do i=0, nx-1
 ;
@@ -1170,6 +1275,55 @@ end if
 
       end do
     end do
+
+else
+
+    v = 0
+    lon := ndtooned(lon_verts_crnt_tile(0:ny-1,0:nx-1))
+    lat := ndtooned(lat_verts_crnt_tile(0:ny-1,0:nx-1))
+    lon_verts_by_cell(:,v) = lon
+    lat_verts_by_cell(:,v) = lat
+
+    v = 1
+    lon := ndtooned(lon_verts_crnt_tile(0:ny-1,1:nx))
+    lat := ndtooned(lat_verts_crnt_tile(0:ny-1,1:nx))
+    lon_verts_by_cell(:,v) = lon
+    lat_verts_by_cell(:,v) = lat
+
+    v = 2
+    lon := ndtooned(lon_verts_crnt_tile(1:ny,1:nx))
+    lat := ndtooned(lat_verts_crnt_tile(1:ny,1:nx))
+    lon_verts_by_cell(:,v) = lon
+    lat_verts_by_cell(:,v) = lat
+
+    v = 3
+    lon := ndtooned(lon_verts_crnt_tile(1:ny,0:nx-1))
+    lat := ndtooned(lat_verts_crnt_tile(1:ny,0:nx-1))
+    lon_verts_by_cell(:,v) = lon
+    lat_verts_by_cell(:,v) = lat
+
+    delete([/ lon, lat /])
+;
+; For cells that cross over the international date line, modify longi-
+; tudes of the vertices so that there is no discontinuity in their val-
+; ues.
+;
+    v_ref = 0
+    do v=1, num_edges_per_cell-1
+      abs_del_lon := abs(lon_verts_by_cell(:,v) - lon_verts_by_cell(:,v_ref))
+      is_greater := (lon_verts_by_cell(:,v) .gt. lon_verts_by_cell(:,v_ref))
+      lon_verts_by_cell(:,v) \
+      = where((abs_del_lon .gt. 180.0) .and. is_greater, \
+              lon_verts_by_cell(:,v) - 360.0, \
+              lon_verts_by_cell(:,v))
+      lon_verts_by_cell(:,v) \
+      = where((abs_del_lon .gt. 180.0) .and. (.not. is_greater), \
+              lon_verts_by_cell(:,v) + 360.0, \
+              lon_verts_by_cell(:,v))
+    end do
+    delete([/ abs_del_lon, is_greater /])
+
+end if
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1443,6 +1597,10 @@ end if
     lon_verts_by_cell_RAP := new((/ num_cells_to_plot_RAP, num_edges_per_cell /), "double")
     lat_verts_by_cell_RAP := new((/ num_cells_to_plot_RAP, num_edges_per_cell /), "double")
 
+
+;if (True) then
+if (False) then
+
     n_cell = 0
 
     do j=0, ny_RAP-1
@@ -1482,6 +1640,55 @@ end if
 
       end do
     end do
+
+else
+
+    v = 0
+    lon := ndtooned(lon_verts_RAP(0:ny_RAP-1,0:nx_RAP-1))
+    lat := ndtooned(lat_verts_RAP(0:ny_RAP-1,0:nx_RAP-1))
+    lon_verts_by_cell_RAP(:,v) = lon
+    lat_verts_by_cell_RAP(:,v) = lat
+
+    v = 1
+    lon := ndtooned(lon_verts_RAP(0:ny_RAP-1,1:nx_RAP))
+    lat := ndtooned(lat_verts_RAP(0:ny_RAP-1,1:nx_RAP))
+    lon_verts_by_cell_RAP(:,v) = lon
+    lat_verts_by_cell_RAP(:,v) = lat
+
+    v = 2
+    lon := ndtooned(lon_verts_RAP(1:ny_RAP,1:nx_RAP))
+    lat := ndtooned(lat_verts_RAP(1:ny_RAP,1:nx_RAP))
+    lon_verts_by_cell_RAP(:,v) = lon
+    lat_verts_by_cell_RAP(:,v) = lat
+
+    v = 3
+    lon := ndtooned(lon_verts_RAP(1:ny_RAP,0:nx_RAP-1))
+    lat := ndtooned(lat_verts_RAP(1:ny_RAP,0:nx_RAP-1))
+    lon_verts_by_cell_RAP(:,v) = lon
+    lat_verts_by_cell_RAP(:,v) = lat
+
+    delete([/ lon, lat /])
+;
+; For cells that cross over the international date line, modify longi-
+; tudes of the vertices so that there is no discontinuity in their val-
+; ues.
+;
+    v_ref = 0
+    do v=1, num_edges_per_cell-1
+      abs_del_lon := abs(lon_verts_by_cell_RAP(:,v) - lon_verts_by_cell_RAP(:,v_ref))
+      is_greater := (lon_verts_by_cell_RAP(:,v) .gt. lon_verts_by_cell_RAP(:,v_ref))
+      lon_verts_by_cell_RAP(:,v) \
+      = where((abs_del_lon .gt. 180.0) .and. is_greater, \
+              lon_verts_by_cell_RAP(:,v) - 360.0, \
+              lon_verts_by_cell_RAP(:,v))
+      lon_verts_by_cell_RAP(:,v) \
+      = where((abs_del_lon .gt. 180.0) .and. (.not. is_greater), \
+              lon_verts_by_cell_RAP(:,v) + 360.0, \
+              lon_verts_by_cell_RAP(:,v))
+    end do
+    delete([/ abs_del_lon, is_greater /])
+
+end if
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1700,19 +1907,37 @@ end if
     rsrc@cnCellFillEdgeColor = "black"
 ;    rsrc@cnCellFillMissingValEdgeColor = "red"  ; This seems to have no effect.
   end if
+
+; Set the color for cells containing missing values.  This is by default
+; "transparent", but we repeat it here for clarity.
   rsrc@cnMissingValFillColor = "transparent"
 
 ; Specify opacity of cell colors.
-;  rsrc@cnFillOpacityF = 0.0 ; Transparent.
+  rsrc@cnFillOpacityF = 0.0 ; Transparent.
+;  rsrc@cnFillOpacityF = 0.1
 ;  rsrc@cnFillOpacityF = 0.35
-  rsrc@cnFillOpacityF = 1.0 ; Opaque.
+;  rsrc@cnFillOpacityF = 1.0 ; Opaque.
 
 ; Turn off contour lines (we just want to see colors).
   rsrc@cnLinesOn = False
 ; Turn off contour line labels.
   rsrc@cnLineLabelsOn = False
 
-;  rsrc@lbLabelBarOn = False
+  if (rsrc@cnFillOpacityF .eq. 0.0) then
+print("Turning off LabelBar (color bar) for the FV3 contour plot.")
+pause
+    rsrc@lbLabelBarOn = False
+  end if
+  rsrc@lbLabelBarOn = True
+
+;  rsrc@lbBoxLinesOn = False
+  rsrc@lbBoxSeparatorLinesOn = False
+
+; Turn off text box that says "CONTOUR FROM AAA TO BBB BY CCC".
+  rsrc@cnInfoLabelOn = False
+
+  rsrc@lbLabelAlignment = "BoxCenters"
+  rsrc@lbOverrideFillOpacity = True
 
 ; Prevent overlap of labelbar labels.  Actually, the default value of 
 ; lbLabelAutoStride is already True for NCL V6.1.0 and later.
@@ -1743,7 +1968,8 @@ func_z = False
 ;  rsrc@tiMainString = "Sample Stretched Grid (one color per tile)"
 ;  rsrc@tiMainString = "SAR-FV3 (Orange) and RAP (Red Outline) Domains/Grids"
 ;  rsrc@tiMainString = "Grid Size (km) for CRES = " + Cres
-  rsrc@tiMainString = "Grid Size (km)"
+;  rsrc@tiMainString = "Grid Size (km)"
+  rsrc@tiMainString = plot_title
 
 ; Set the title font size.
   rsrc@tiMainFontHeightF = 0.015
@@ -1760,7 +1986,8 @@ func_z = False
   else if (.not. ismissing(idx_ortho)) then
     rsrc@mpProjection = "Orthographic"
   else if (.not. ismissing(idx_lamb)) then
-    rsrc@mpProjection = "LambertEqualArea"
+;    rsrc@mpProjection = "LambertEqualArea"
+    rsrc@mpProjection = "LambertConformal"
   end if
   end if
   end if
@@ -1775,26 +2002,61 @@ func_z = False
 ; If "subreg" is specified, plot only a subregion.  Note that this has
 ; an effect only for the cylindrical-equidistant map projection.
   if (isvar("subreg")) then
+
     rsrc@mpMinLonF = lon_min
     rsrc@mpMaxLonF = lon_max
     rsrc@mpMinLatF = lat_min
     rsrc@mpMaxLatF = lat_max
+
+    if (strcmp(map_proj, "lamb")) then
+print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+      rsrc@mpLimitMode = "LatLon"
+;      rsrc@mpMinLonF = -128
+;      rsrc@mpMaxLonF = -70
+;      rsrc@mpMinLatF = 20
+;      rsrc@mpMaxLatF = 53
+
+      rsrc@mpLambertParallel1F = 38.5
+      rsrc@mpLambertParallel2F = 38.5
+      rsrc@mpLambertMeridianF = -97.5
+
+;      rsrc@mpLimitMode = "Corners"
+;      rsrc@mpLeftCornerLonF = lon_min
+;      rsrc@mpLeftCornerLatF = lat_min
+;      rsrc@mpRightCornerLonF = lon_max
+;      rsrc@mpRightCornerLatF = lat_max
+      rsrc@mpLeftCornerLonF = -122
+      rsrc@mpLeftCornerLatF = 15
+      rsrc@mpRightCornerLonF = -65
+      rsrc@mpRightCornerLatF = 55
+
+    end if
+
   end if
 
 ; Set the minimum and maximum countour levels to plot manually.
-if (False) then
-  cplot_min = floor(min((/ field_min, field_RAP_min /)))
+if (True) then
+;if (False) then
+  factor = 10
+  cplot_min = floor(min(factor*(/ field_min, field_RAP_min /)))/factor
+;  cplot_min = min((/ field_min, field_RAP_min /))
 print("field_min = " + field_min)
 print("field_RAP_min = " + field_RAP_min)
 print("cplot_min = " + cplot_min)
-  cplot_max = ceil(max((/ field_max, field_RAP_max /)))
+
+  cplot_max = ceil(max(factor*(/ field_max, field_RAP_max /)))/factor
+;  cplot_max = max((/ field_max, field_RAP_max /))
 print("")
 print("field_max = " + field_max)
 print("field_RAP_max = " + field_RAP_max)
 print("cplot_max = " + cplot_max)
+
+  num_levels = 20
   rsrc@cnLevelSelectionMode = "ManualLevels"
   rsrc@cnMinLevelValF = cplot_min
   rsrc@cnMaxLevelValF = cplot_max
+  rsrc@cnLevelSpacingF = (cplot_max - cplot_min)/num_levels
+
 end if
 
 ; Allow for spatially constant fields to be plotted.
@@ -1808,6 +2070,32 @@ end if
 
 ; Draw the color contour plot (along with a map).
   map = gsn_csm_contour_map(wks, field_by_cell, rsrc)
+
+
+;
+; Retrieve contour levels.
+;
+  getvalues map@contour
+    "cnLevels" : levels
+  end getvalues
+
+;  print("")
+;  print("levels = " + levels)
+;  pause
+
+;  rsrc@lbLabelStrings = sprintf("%3.1f",levels)   ; Format the labels
+  rsrc@lbLabelStrings = sprintf("%4.2f",levels)   ; Format the labels
+;  print("")
+;  print("rsrc@lbLabelStrings = " + rsrc@lbLabelStrings)
+;  pause
+
+;  rsrc@lbLabelStrings = sprintf("%4.2g",levels)   ; Format the labels
+;  print("")
+;  print("rsrc@lbLabelStrings = " + rsrc@lbLabelStrings)
+;  pause
+
+  map = gsn_csm_contour_map(wks, field_by_cell, rsrc)
+
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1851,6 +2139,65 @@ end if
 ;
   if (draw_RAP_domain) then
 
+if (False) then
+getvalues map ; Get plot size for use in 
+   "vpHeightF" : vph ; creating labelbar. 
+   "vpWidthF" : vpw 
+end getvalues 
+
+print("")
+print(map@contour)
+pause
+
+print("")
+print(map)
+pause
+
+print("")
+printVarSummary(map)
+pause
+
+;print("")
+;printVarSummary(map@contour)
+;pause
+
+getvalues map@contour 
+   "cnMinLevelValF" : lb0 ; low label value 
+   "cnMinLevelValF" : lb1 ; high label value 
+   "cnLevelSpacingF" : spcF ; 
+   "lbLabelStride" : strd ; 
+;   "lbFillColors"   : colors
+;   "lbLabelStrings" : labels
+;   "lbBoxCount" : boxcount
+end getvalues 
+print("")
+print("vph = " + vph)
+print("vpw = " + vpw)
+print("lb0 = " + lb0)
+print("lb1 = " + lb1)
+print("spcF = " + spcF)
+print("strd = " + strd)
+;print("colors = " + colors)
+;print("labels = " + labels)
+;print("boxcount = " + boxcount)
+pause
+
+;  getvalues plt
+;    "pmAnnoViews" : anno_ids
+;  end getvalues
+;
+;;---Find the labelbar, and reverse it.
+;  do i=0,dimsizes(anno_ids)-1
+;    if(NhlClassName(anno_ids(i)).eq."labelBarClass") then
+;
+;;---Get the colors and the strings
+;      getvalues anno_ids(i)
+;        "lbFillColors"   : colors
+;        "lbLabelStrings" : labels
+;      end getvalues
+end if
+
+
 ; Specify resources.
     rsrc_RAP = True
 
@@ -1870,9 +2217,9 @@ end if
     rsrc_RAP@cnFillMode = "CellFill"
 
 ; Specify opacity of cell colors.
-    rsrc_RAP@cnFillOpacityF = 0.0 ; Transparent.
+;    rsrc_RAP@cnFillOpacityF = 0.0 ; Transparent.
 ;    rsrc_RAP@cnFillOpacityF = 0.35
-;    rsrc_RAP@cnFillOpacityF = 1.0 ; Opaque.
+    rsrc_RAP@cnFillOpacityF = 1.0 ; Opaque.
 
 ; Set sfXArray and sfYArray to the cell center coordinates.
     rsrc_RAP@sfXArray = lon_cntrs_by_cell_RAP
@@ -1901,7 +2248,11 @@ end if
 ; lbLabelAutoStride is already True for NCL V6.1.0 and later.
     rsrc_RAP@lbLabelAutoStride = True
 ; Turn off labelbar box lines.
-    rsrc_RAP@lbBoxLinesOn = False
+;    rsrc_RAP@lbBoxLinesOn = False
+
+
+
+;    rsrc_RAP@lbBoxCount = 5
 
 ; Turn on map tickmarks.
     rsrc_RAP@pmTickMarkDisplayMode = "Always"
@@ -1910,11 +2261,23 @@ end if
     rsrc_RAP@cnConstFEnableFill = True
     rsrc_RAP@cnConstFLabelOn = False
 
-; Set the minimum and maximum countour levels to plot manually.
+; Turn off text box that says "CONTOUR FROM AAA TO BBB BY CCC".
+    rsrc_RAP@cnInfoLabelOn = False
+
+; Set the title font size.
+    rsrc_RAP@tiMainFontHeightF = rsrc@tiMainFontHeightF
+
     rsrc_RAP@lbLabelBarOn = False
+; Set the minimum and maximum countour levels to plot manually.
+    if (rsrc_RAP@cnFillOpacityF .eq. 0.0) then
+print("Turning off LabelBar (color bar) for the RAP contour plot.")
+pause
+      rsrc_RAP@lbLabelBarOn = False
+    end if
     rsrc_RAP@cnLevelSelectionMode = "ManualLevels"
     rsrc_RAP@cnMinLevelValF = cplot_min
     rsrc_RAP@cnMaxLevelValF = cplot_max
+;    rsrc_RAP@cnLevelSpacingF = rsrc@cnLevelSpacingF
 
 ; Do not immediately draw the contour plot nor advance the frame because
 ; other objects might still need to be added to the plot.
