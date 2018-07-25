@@ -121,6 +121,7 @@ if [ "$gtype" = "regional" ]; then
   case $predef_rgnl_domain in
 # No predined regional domain - do nothing.
   "")
+    ;;
 # The RAP domain.
   "RAP")
     export RES="384"
