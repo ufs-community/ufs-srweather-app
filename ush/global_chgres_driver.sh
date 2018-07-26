@@ -73,10 +73,11 @@ cd $DATA || exit 8
 export ymd=`echo $CDATE | cut -c 1-8`
 export cyc=`echo $CDATE | cut -c 9-10`
 
+#ictype='opsgfs'
 # Determine if we are current operations with NSST or the one before that
 #if [ ${ATMANL:-"NULL"} = "NULL" ]; then
 # if [ -s ${INIDIR}/nsnanl.${CDUMP}.$CDATE -o -s ${INIDIR}/${CDUMP}.t${cyc}z.nstanl.nemsio ]; then
-  ictype='opsgfs'
+#  ictype='opsgfs'
 # else
 #  ictype='oldgfs'
 # fi
@@ -119,20 +120,24 @@ if [ $ictype = oldgfs ]; then   # input data is old spectral sigio format.
    LATB_SFC=1536
  fi
 
-elif [ $ictype = opsgfs ]; then   # input data is nemsio format.
+elif [ $ictype = opsgfs ] || [ $ictype = pfv3gfs ]; then   # input data is nemsio format.
 
- if [ ${ATMANL:-"NULL"} = "NULL" ]; then
-  if [ -s ${INIDIR}/gfnanl.${CDUMP}.$CDATE ]; then
-   export ATMANL=$INIDIR/gfnanl.${CDUMP}.$CDATE
-   export SFCANL=$INIDIR/sfnanl.${CDUMP}.$CDATE
-   export NSTANL=$INIDIR/nsnanl.${CDUMP}.$CDATE
-  else
+ if [ $ictype = pfv3gfs ]; then   #input is fv3gfs parallel
    export ATMANL=$INIDIR/${CDUMP}.t${cyc}z.atmanl.nemsio
    export SFCANL=$INIDIR/${CDUMP}.t${cyc}z.sfcanl.nemsio
-   export NSTANL=$INIDIR/${CDUMP}.t${cyc}z.nstanl.nemsio
+ else                             # opsgfs links
+  if [ ${ATMANL:-"NULL"} = "NULL" ]; then
+   if [ -s ${INIDIR}/gfnanl.${CDUMP}.$CDATE ]; then
+    export ATMANL=$INIDIR/gfnanl.${CDUMP}.$CDATE
+    export SFCANL=$INIDIR/sfnanl.${CDUMP}.$CDATE
+    export NSTANL=$INIDIR/nsnanl.${CDUMP}.$CDATE
+   else
+    export ATMANL=$INIDIR/${CDUMP}.t${cyc}z.atmanl.nemsio
+    export SFCANL=$INIDIR/${CDUMP}.t${cyc}z.sfcanl.nemsio
+    export NSTANL=$INIDIR/${CDUMP}.t${cyc}z.nstanl.nemsio
+   fi
   fi
  fi
-
  export SOILTYPE_INP=statsgo
  export VEGTYPE_INP=igbp
  export nopdpvv=.true.

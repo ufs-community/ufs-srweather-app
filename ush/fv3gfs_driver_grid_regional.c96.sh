@@ -54,7 +54,7 @@ if [ $machine = WCOSS_C ]; then
  export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
  export KMP_AFFINITY=disabled
  export home_dir=$LS_SUBCWD/..
- export topo=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_orog
+ export topo=/gpfs/hps/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog
  export TMPDIR=/gpfs/hps3/ptmp/$LOGNAME/fv3_grid.$gtype
 elif [ $machine = THEIA ]; then
  . /apps/lmod/lmod/init/sh
@@ -67,7 +67,7 @@ elif [ $machine = THEIA ]; then
  module list
  export APRUN=time
  export home_dir=$PBS_O_WORKDIR/..
- export topo=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog
+ export topo=/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_orog
  export TMPDIR=/scratch3/NCEPDEV/stmp1/$LOGNAME/fv3_grid.$gtype
  set -x
 fi
@@ -77,6 +77,10 @@ export script_dir=$home_dir/ush
 export exec_dir=$home_dir/exec
 export out_dir=$home_dir/fix/fix_fv3/C${res}
 
+#
+#remove TMPDIR to make sure no files remain from previous runs
+#
+if [ -d $TMPDIR ]; then rm -rf $TMPDIR; fi
 mkdir -p $out_dir $TMPDIR
 cd $TMPDIR ||exit 8
 
@@ -101,7 +105,7 @@ elif [ $gtype = nest ] || [ $gtype = regional ]; then
   export halo=3  	         # halo size to be used in the atmosphere cubic sphere model for the grid tile.
   export halop1=4                # halo size that will be used for the orography and grid tile in chgres
   export halo0=0                 # no halo, used to shave the filtered orography for use in the model
-  export title=c96s	         # identifier based on nest location
+  export title=c96r	         # identifier based on nest location
   if [ $gtype = nest ];then
    echo "creating nested grid"
   else
@@ -141,7 +145,6 @@ if [ $gtype = uniform ];  then
   export grid_dir=$TMPDIR/$name/grid
   export orog_dir=$TMPDIR/$name/orog
   export filter_dir=$TMPDIR/$name/filter_topo
-  rm -rf $TMPDIR/$name                  
   mkdir -p $grid_dir $orog_dir $filter_dir
 
   echo 
@@ -187,7 +190,6 @@ elif [ $gtype = stretch ]; then
   export grid_dir=$TMPDIR/${name}/grid
   export orog_dir=$TMPDIR/$name/orog
   export filter_dir=$TMPDIR/${name}/filter_topo
-  rm -rf $TMPDIR/$name                  
   mkdir -p $grid_dir $orog_dir $filter_dir
 
   echo 
@@ -233,7 +235,6 @@ elif [ $gtype = nest ]; then
   export grid_dir=$TMPDIR/${name}/grid
   export orog_dir=$TMPDIR/$name/orog
   export filter_dir=$orog_dir   # nested grid topography will be filtered online
-  rm -rf $TMPDIR/$name                  
   mkdir -p $grid_dir $orog_dir $filter_dir
 
   echo 
@@ -322,7 +323,6 @@ set -x
   export grid_dir=$TMPDIR/${name}/grid
   export orog_dir=$TMPDIR/$name/orog
   export filter_dir=$orog_dir   # nested grid topography will be filtered online
-  rm -rf $TMPDIR/$name
   mkdir -p $grid_dir $orog_dir $filter_dir
 
   echo
@@ -383,7 +383,6 @@ if [ $gtype = regional ]; then
 #
 # Now shave the orography file with no halo and then the grid file with a halo of 3. This is necessary for running the model.
 #
-#echo $npts_cgx $npts_cgy $halo \'$filter_dir/oro.C${res}.tile${tile}.nc\' \'$filter_dir/oro.C${res}.tile${tile}.shave.nc\' >input.shave.orog.halo$halo
 echo $npts_cgx $npts_cgy $halo0 \'$filter_dir/oro.C${res}.tile${tile}.nc\' \'$filter_dir/oro.C${res}.tile${tile}.shave.nc\' >input.shave.orog.halo$halo0
 echo $npts_cgx $npts_cgy $halo \'$filter_dir/C${res}_grid.tile${tile}.nc\' \'$filter_dir/C${res}_grid.tile${tile}.shave.nc\' >input.shave.grid.halo$halo
 if [ $machine = WCOSS_C ]; then

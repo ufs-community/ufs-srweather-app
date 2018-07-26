@@ -39,7 +39,7 @@ export gtype=regional        # grid type = uniform, stretch, nest, or regional
 export OMP_NUM_THREADS_CH=24 #default for openMP threads
 export machine=THEIA         #WCOSS_C,WCOSS,THEIA
 export CASE=C96              # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
-export CDATE=2018062000      # format yyyymmddhh yyyymmddhh ...
+export CDATE=2018072500      # format yyyymmddhh yyyymmddhh ...
 export LEVS=64
 export LSOIL=4
 export ictype=pfv3gfs        # opsgfs for q3fy17 gfs with new land datasets; oldgfs for q2fy16 gfs, pfv3gfs for parallel fv3 input
@@ -96,6 +96,11 @@ else
  echo "$machine not supported, exit"
  exit
 fi
+#
+# remove working directory to make sure no previous runs are left behind
+# it will be created in the global_chgres_driver.sh script
+#
+if [ -d $DATA ]; then rm -rf $DATA; fi
 export FIXfv3=$BASE_GSM/fix/fix_fv3
 export CDAS=gfs                  # gfs or gdas
 CRES=`echo $CASE | cut -c 2-`
@@ -153,4 +158,11 @@ done
   aprun -j 1 -n 28 -N 1 -d 24 -cc depth cfp bcfile.input
   rm bcfile.input
  fi
+#
+#remove the links that were set above for the halo4 files
+#
+if [ $gtype = regional ] ; then
+ rm $FIXfv3/$CASE/${CASE}_grid.tile7.nc
+ rm  $FIXfv3/$CASE/${CASE}_oro_data.tile7.nc
+fi
 exit
