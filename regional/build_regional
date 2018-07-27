@@ -9,6 +9,9 @@ fi
 SITE=${1}
 
 FV3GFS_DIR=$( pwd )/..
+if [ ${SITE} == "cheyenne" ]; then
+  export NCEPLIB_DIR=/glade/p/ral/jntp/GMTB/tools/NCEPlibs/20180717/intel-18.0.1/
+fi
 
 cd ${FV3GFS_DIR}/sorc
 ./build_fre-nctools.sh ${SITE} >& out.build_fre-nctools
