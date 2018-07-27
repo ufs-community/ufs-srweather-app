@@ -29,11 +29,9 @@ elif [ $nargv -eq 7 ]; then  # cubed-sphere grid
   export orogfile="none"
   export hist_dir=$6
   export TMPDIR=$7
-#  export workdir=$TMPDIR/C${res}/orog/tile$tile
   if [ -z ${orog_dir+x} ]; then  # orog_dir is not set.
     export workdir=$TMPDIR/C${res}/orog/tile$tile
-  else  # orog_dir is set.
-    echo "var is set to '$var'"
+  else                           # orog_dir is set, so use it.
     export workdir=$orog_dir/tile$tile
   fi
 elif [ $nargv -eq 8 ]; then  # input your own orography files
@@ -74,7 +72,6 @@ fi
 # ists, it can't get overwritten by the new version of gmted2010.30sec.int 
 # file, resulting in possibly incorrect old files being used (bad!).
 #
-#if [ ! -s $workdir ]; then mkdir -p $workdir ;fi
 if [ -e $workdir ]; then rm -rf $workdir; fi
 mkdir -p $workdir;
 if [ ! -s $outdir ]; then mkdir -p $outdir ;fi
