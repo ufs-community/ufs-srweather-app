@@ -9,8 +9,8 @@ ACCOUNT="gsd-fv3-test"     # The account under which to submit jobs to the queue
 #
 # Directories.
 #
-BASE_GSM="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/fv3gfs"  # Directory in which clone of fv3gfs git repository is located.
-TMPDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs" # Temporary work directory.
+BASEDIR="/scratch3/BMC/det/beck/FV3-CAM"  # Directory in which clone of fv3gfs and NEMSfv3gfs git repositories are located.
+TMPDIR="/scratch3/BMC/det/beck/FV3-CAM/work_dirs" # Temporary work directory.
 #
 # Forecast parameters.
 #
@@ -18,7 +18,7 @@ CDATE="2018060400"    # Starting date of forecast.  Format is "YYYYMMDDHH".
 #CDATE="2018071000"    # Starting date of forecast.  Format is "YYYYMMDDHH".
 #CDATE=$( date "+%Y%m%d"00 )  # This sets CDATE to today.
 #CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
-fcst_len_hrs=6        # Forecast length (in hours).
+fcst_len_hrs=24        # Forecast length (in hours).
 #BC_interval_hrs=3     # Boundary condition time interval (in hours).
 BC_interval_hrs=6     # Boundary condition time interval (in hours).
 #
@@ -50,5 +50,5 @@ title="test_preproc03"              # Descriptive string for the forecast.  Used
 #
 predef_rgnl_domain=""      # No predefined regional domain.
 #predef_rgnl_domain="RAP"   # Set grid configuration to that of the RAP domain.
-#predef_rgnl_domain="HRRR"  # Set grid configuration to that of the HRRR domain.
+predef_rgnl_domain="HRRR"  # Set grid configuration to that of the HRRR domain.
 

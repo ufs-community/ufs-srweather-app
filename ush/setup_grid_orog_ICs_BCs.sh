@@ -224,8 +224,17 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export BASE_GSM=${BASE_GSM:-}
+export BASEDIR=${BASEDIR:-}
 export TMPDIR=${TMPDIR:-}
+export BASE_GSM="$BASEDIR/fv3gfs"
+
+if [ "$machine" = "WCOSS_C" ]; then
+  export FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_am"
+elif [ "$machine" = "WCOSS" ]; then
+  export FIXgsm=""
+elif [ "$machine" = "THEIA" ]; then
+  export FIXgsm="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am"
+fi
 #
 #-----------------------------------------------------------------------
 #

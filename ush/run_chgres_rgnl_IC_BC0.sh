@@ -126,7 +126,6 @@ if [ "$machine" = "WCOSS_C" ]; then
   module list
 
   export KMP_AFFINITY=disabled
-  export FIXgsm=/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_am
   export DATA=/gpfs/hps/ptmp/${LOGNAME}/wrk.chgres
   export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
 
@@ -145,7 +144,6 @@ elif [ "$machine" = "THEIA" ]; then
   module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
   module list
 
-  export FIXgsm=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am
 # The variable DATA specifies the temporary (work) directory used by 
 # chgres_driver_scr.
   export DATA="$TMPDIR/$subdir_name/ICs"
