@@ -672,7 +672,7 @@ mkdir -p $out_dir
 #
 #-----------------------------------------------------------------------
 #
-export INIDIR="${BASE_GSM}/../work_dirs/$subdir_name/gfs"
+export INIDIR="${TMPDIR}/$subdir_name/gfs"
 mkdir -p $INIDIR
 
 
