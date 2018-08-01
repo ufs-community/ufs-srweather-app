@@ -30,7 +30,7 @@
 ;           'base_name="nppgs2d"' \
 ;           'fields=(/"u1000", "v1000"/)' \
 ;           'nlev="60"' \
-;           'fcst_index="6"' \
+;           'fcst_index="(/6/)"' \
 ;           'res=96' \
 ;           'tile_inds=(/1,2,3/)' \
 ;           'draw_tile_bdy=True' \
@@ -91,9 +91,9 @@ begin
 "      'help=False' \" + char_nl + \
 "      'grid_dir=" + char_dq + "./some_dir/grid" + char_dq + "' \" + char_nl + \
 "      'base_name=" + char_dq + "nggps2d.nc" + char_dq + "' \" + char_nl + \
-"      'fields=(/u1000,v1000/)' \" + char_nl + \
+"      'fields=(u1000,v1000/)' \" + char_nl + \
 "      'nlev=60' \" + char_nl + \
-"      'fcst_index=6' \" + char_nl + \
+"      'fcst_index=(/6/)' \" + char_nl + \
 "      'res=96' \" + char_nl + \
 "      'tile_inds=(/1,2,3/)' \" + char_nl + \
 "      'draw_tile_bdy=True' \" + char_nl + \
@@ -131,6 +131,33 @@ begin
 ;
   if (.not. isvar("grid_dir")) then
     grid_dir = "./"
+  end if
+
+; **********************************************************************
+;                                                                      *
+; Check whether the fcst_index has been specified on the command line.
+; If not, print out a message and exit. If so, check for indices or 'all'
+;                                                                      *
+; **********************************************************************
+  if (.not. isvar("fcst_index")) then
+    print("")
+    print("ERROR: fcst_index has not been specified on the command line:")
+    print("")
+    print("Please rerun with a specified resolution.  Example:")
+    print("")
+    print("" + usage_msg)
+    print("")
+  else
+    if (isint(fcst_index)) then    ; Integer indices
+      print ("fcst_index is an integer" + fcst_index) 
+    else if (isstring(fcst_index))
+      print ("fcst_index is a string" + fcst_index) 
+    else
+      print ("ERROR:  Check format of fcst_index.")
+      exit
+    end if
+    end if
+    n_fcst_index = dimsizes(fcst_index)
   end if
 ;
 ; **********************************************************************
@@ -227,8 +254,7 @@ begin
 
     gtype = "regional"
 ; For a regional grid, although tiles 1 through 6 are not used in the 
-; time-integration, they are still available for visualization.
-;    valid_tile_inds = (/ 7 /)
+; time-integration, they are still available for visualization.  ;    valid_tile_inds = (/ 7 /)
     valid_tile_inds = (/ 1, 2, 3, 4, 5, 6, 7 /)
 
   else
@@ -570,7 +596,7 @@ print("========>>>> gtype = " + gtype)
   end do
 
 ; **********************************************************************
-; Strip away 3 halo points.
+; Strip away 3 halo points for regional.
 ; **********************************************************************
 
   halo_T7 = 3
@@ -605,6 +631,45 @@ print("========>>>> gtype = " + gtype)
   do ifield = 0, dimsizes(fields) - 1 
     field_name = fields(ifield)
 ;
+;------------------------------------------------------
+; Loop over times
+;------------------------------------------------------
+    file_name = grid_dir + "/../" + base_name + ".tile" + inds_tiles_to_plot(0) + ".nc"
+
+    if (fileexists(file_name)) then
+      f_unit = addfile(file_name, "r")
+    else
+      print ("ERROR:  The input file " + file_name + " does not exist")
+    end if
+
+    if (isfilevar(f_unit, "time")) then
+      time = f_unit->time
+      num_times = dimsizes(time)     ; Number of time indices in file
+      if ( fcst_index(0) .eq. "all" ) then
+        time_inds = ispan(0, num_times-1, 1)    ; Use all time indices
+      else                                    ; Test if user input times are
+        time_inds = new((/ n_fcst_index /), "integer")
+        do itest = 0, n_fcst_index-1             ; in the range in file
+          if (fcst_index(itest) .ge. 1 .and. fcst_index(itest) .le. num_times) then
+            time_inds(itest) = fcst_index(itest)
+          else
+            print ("ERROR:  fcst_index is out of the range of 1 and " + num_times)
+            exit
+          end if
+        end do
+      end if
+    else
+      print ("WARNING:  No time variable in file " + file_name)
+    end if
+    print ("Time indices to plot = " + time_inds)
+;------------------------------------------------------
+; Loop over times
+; JLS TODO indent two spaces for time loop
+;------------------------------------------------------
+    do itime = 0, dimsizes(time_inds) - 1 
+
+      tindex = time_inds(itime)
+      print("Time loop " + itime + " tindex = " + tindex)
 ; **********************************************************************
 ;                                                                      *
 ; Loop through the specified tiles and read in the grid geometry (i.e.
@@ -613,222 +678,222 @@ print("========>>>> gtype = " + gtype)
 ;                                                                      *
 ; **********************************************************************
 ;
-    field_min := new((/ num_tiles_to_plot /), "double")
-    field_max := new((/ num_tiles_to_plot /), "double")
-    field_median := new((/ num_tiles_to_plot /), "double")
-    field_mean := new((/ num_tiles_to_plot /), "double")
+      field_min := new((/ num_tiles_to_plot /), "double")
+      field_max := new((/ num_tiles_to_plot /), "double")
+      field_median := new((/ num_tiles_to_plot /), "double")
+      field_mean := new((/ num_tiles_to_plot /), "double")
 
-    n_cell = 0
+      n_cell = 0
 
-    do nn=0, num_tiles_to_plot-1
+      do nn=0, num_tiles_to_plot-1
 
-      print("")
-      print("============================================================")
-      print("")
-      print("nn = " + nn)
+        print("")
+        print("============================================================")
+        print("")
+        print("nn = " + nn)
 
-      n_tile = inds_tiles_to_plot(nn)
+        n_tile = inds_tiles_to_plot(nn)
 
-      print("")
-      print("n_tile = " + n_tile)
+        print("")
+        print("n_tile = " + n_tile)
 
 ; Get the number of cells in each of the two directions on the current
 ; tile.
-      nx = nx_by_tile(nn)
-      ny = ny_by_tile(nn)
-      print("")
-      print("nx = " + nx)
-      print("ny = " + ny)
+        nx = nx_by_tile(nn)
+        ny = ny_by_tile(nn)
+        print("")
+        print("nx = " + nx)
+        print("ny = " + ny)
 ;
 ; Open the NetCDF file containing the grid geometry.
 ;
-      grid_fn := grid_dir + "/" + Cres + "_grid.tile" + n_tile + ".nc"
-      print("")
-      print("Reading grid geometry from file:")
-      print("  grid_fn = " + grid_fn)
-      fg = addfile(grid_fn, "r")
+        grid_fn := grid_dir + "/" + Cres + "_grid.tile" + n_tile + ".nc"
+        print("")
+        print("Reading grid geometry from file:")
+        print("  grid_fn = " + grid_fn)
+        fg = addfile(grid_fn, "r")
 ;
 ; Read in the supergrid coordinates.  The supergrid of a given tile is a
 ; grid having twice the resolution of the actual (i.e. computational) 
 ; grid of that tile.  It is used to store the coordintes of both the 
 ; centers and the vertices of the cells on the computational grid.
 ; 
-      lon_verts_supergrid_crnt_tile := fg->x(:,:)
-      lat_verts_supergrid_crnt_tile := fg->y(:,:)
+        lon_verts_supergrid_crnt_tile := fg->x(:,:)
+        lat_verts_supergrid_crnt_tile := fg->y(:,:)
 ; Shave off halo.
-      print("")
-      print(dimsizes(lon_verts_supergrid_crnt_tile))
+        print("")
+        print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;pause
-      temp := dimsizes(lon_verts_supergrid_crnt_tile)
-      nx_SG = temp(1)
-      ny_SG = temp(0)
+        temp := dimsizes(lon_verts_supergrid_crnt_tile)
+        nx_SG = temp(1)
+        ny_SG = temp(0)
 ;    halo_SGT7 = 7
 ;    lon_verts_supergrid_crnt_tile \
 ;    := lon_verts_supergrid_crnt_tile(halo_SGT7:ny_SG-halo_SGT7, halo_SGT7:nx_SG-halo_SGT7)
-      lon_verts_supergrid_crnt_tile \
-      := lon_verts_supergrid_crnt_tile(2*halo_T7:ny_SG-1-2*halo_T7, 2*halo_T7:nx_SG-1-2*halo_T7)
-print("")
-print(dimsizes(lon_verts_supergrid_crnt_tile))
+        lon_verts_supergrid_crnt_tile \
+        := lon_verts_supergrid_crnt_tile(2*halo_T7:ny_SG-1-2*halo_T7, 2*halo_T7:nx_SG-1-2*halo_T7)
+       print("")
+       print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;pause
 ;    lat_verts_supergrid_crnt_tile \
 ;    := lat_verts_supergrid_crnt_tile(halo_SGT7:ny_SG-halo_SGT7, halo_SGT7:nx_SG-halo_SGT7)
-      lat_verts_supergrid_crnt_tile \
-      := lat_verts_supergrid_crnt_tile(2*halo_T7:ny_SG-1-2*halo_T7, 2*halo_T7:nx_SG-1-2*halo_T7)
+        lat_verts_supergrid_crnt_tile \
+        := lat_verts_supergrid_crnt_tile(2*halo_T7:ny_SG-1-2*halo_T7, 2*halo_T7:nx_SG-1-2*halo_T7)
 ;
 ; Get the coordinates of the cell vertices on the current tile.
 ;
-      lon_verts_crnt_tile := lon_verts_supergrid_crnt_tile(0::2,0::2)
-      lat_verts_crnt_tile := lat_verts_supergrid_crnt_tile(0::2,0::2)
+        lon_verts_crnt_tile := lon_verts_supergrid_crnt_tile(0::2,0::2)
+        lat_verts_crnt_tile := lat_verts_supergrid_crnt_tile(0::2,0::2)
 ;
 ; Get the coordinates of the cell centers on the current tile.
 ;
-      lon_cntrs_crnt_tile := lon_verts_supergrid_crnt_tile(1::2,1::2)
-      lat_cntrs_crnt_tile := lat_verts_supergrid_crnt_tile(1::2,1::2)
+        lon_cntrs_crnt_tile := lon_verts_supergrid_crnt_tile(1::2,1::2)
+        lat_cntrs_crnt_tile := lat_verts_supergrid_crnt_tile(1::2,1::2)
 ;
 ; Delete supergrid coordinates to save memory.
 ;
-      delete([/ lon_verts_supergrid_crnt_tile, lat_verts_supergrid_crnt_tile /])
+        delete([/ lon_verts_supergrid_crnt_tile, lat_verts_supergrid_crnt_tile /])
 
-      plot_title = "" 
-      plot_subtitle = "" 
-      field_crnt_tile := new((/ ny, nx /), "double")
-      field_crnt_tile = default_fillvalue("double")
-      field_crnt_tile@_FillValue = default_fillvalue("double")
-      field_crnt_tile(0,0) = 2.2
-      field_crnt_tile(ny/2,nx/2) = 5
-      field_crnt_tile(ny-1,nx-1) = 10.0
+        plot_title = "" 
+        plot_subtitle = "" 
+        field_crnt_tile := new((/ ny, nx /), "double")
+        field_crnt_tile = default_fillvalue("double")
+        field_crnt_tile@_FillValue = default_fillvalue("double")
+        field_crnt_tile(0,0) = 2.2
+        field_crnt_tile(ny/2,nx/2) = 5
+        field_crnt_tile(ny-1,nx-1) = 10.0
 
 ;------------------------------------------------------
 ; Open input file requested from command line using base_name
 ; that contains field data
 ;------------------------------------------------------
-      file_name = grid_dir + "/../" + base_name + ".tile" + n_tile + ".nc"
-      if (fileexists(file_name)) then
-        f_unit = addfile(file_name, "r")
-      else
-        print ("ERROR:  The input file " + file_name + " does not exist")
-      end if
+        file_name = grid_dir + "/../" + base_name + ".tile" + n_tile + ".nc"
+        if (fileexists(file_name)) then
+          f_unit = addfile(file_name, "r")
+        else
+          print ("ERROR:  The input file " + file_name + " does not exist")
+        end if
 ;------------------------------------------------------
 ; Check if each field exists in file, if so, get dimensions
 ;------------------------------------------------------
-      if (isfilevar(f_unit, field_name)) then
-        print ( field_name + " exists in file " + file_name )
-        field_dim_names = getfilevardims(f_unit, field_name)
-        print ("field_dim_names = " + field_dim_names)
-        field_dim_sizes = getfilevardimsizes(f_unit, field_name)
-        print ("field_dim_sizes = " + field_dim_sizes)
-        num_field_dims = dimsizes(field_dim_sizes)
-        print ("num_field_dims = " + num_field_dims)
-      else
-        print ( "Error: " + field_name + " does NOT exist in file " + file_name )
-        print ( "Check " + file_name + " for available fields ")
-        exit
-      end if
+        if (isfilevar(f_unit, field_name)) then
+          print ( field_name + " exists in file " + file_name )
+          field_dim_names = getfilevardims(f_unit, field_name)
+          print ("field_dim_names = " + field_dim_names)
+          field_dim_sizes = getfilevardimsizes(f_unit, field_name)
+          print ("field_dim_sizes = " + field_dim_sizes)
+          num_field_dims = dimsizes(field_dim_sizes)
+          print ("num_field_dims = " + num_field_dims)
+        else
+          print ( "Error: " + field_name + " does NOT exist in file " + file_name )
+          print ( "Check " + file_name + " for available fields ")
+          exit
+        end if
 ;------------------------------------------------------
 ; Check for time variable, read if it exists, check units and convert to hours
 ;------------------------------------------------------
-      if (isfilevar(f_unit, "time")) then
-        time = f_unit->time
-        time_units = f_unit->time@units
-        print ("Time units are in " + time_units)
-        if ( .not. ismissing(str_index_of_substr(time_units, "hours since", 0)) ) then
-          print ("Time is in hours")
-	  	  else if ( .not. ismissing(str_index_of_substr(time_units, "days since", 0)) ) then
-          print ("Time is in days, convert to hours")
-          time = time*24.
+        if (isfilevar(f_unit, "time")) then
+          time = f_unit->time
+          time_units = f_unit->time@units
+          print ("Time units are in " + time_units)
+          if ( .not. ismissing(str_index_of_substr(time_units, "hours since", 0)) ) then
+            print ("Time is in hours")
+	  	    else if ( .not. ismissing(str_index_of_substr(time_units, "days since", 0)) ) then
+            print ("Time is in days, convert to hours")
+            time = time*24.
+          else
+            print ("I am not sure what the time units are")
+            exit
+          end if
+          end if
+          start_date = str_split(time_units, "since")
         else
-          print ("I am not sure what the time units are")
-          exit
+          print ("WARNING:  No time variable in file " + file_name)
         end if
-        end if
-        start_date = str_split(time_units, "since")
-      else
-        print ("WARNING:  No time variable in file " + file_name)
-      end if
-      print ("Time in hours are = " + time(:))
+        print ("Time in hours = " + time(:))
 ;------------------------------------------------------
 ; Check if field is 4d (time, pfull, yt, xy) which requires a vertical index
 ;------------------------------------------------------
-      if (num_field_dims.eq.4) then
-        if (.not. isvar("nlev")) then
-          print ( "Error: Array " + field_name + " is 3D and needs a vertical index")
-          print ("Set nlev in command line arguments")
-          exit
-        else 
-          ilev = stringtointeger(nlev)  ; nlev exists, convert to integer
-        end if
+        if (num_field_dims.eq.4) then
+          if (.not. isvar("nlev")) then
+            print ( "Error: Array " + field_name + " is 3D and needs a vertical index")
+            print ("Set nlev in command line arguments")
+            exit
+          else 
+            ilev = stringtointeger(nlev)  ; nlev exists, convert to integer
+          end if
 
-        ref_pres_full = f_unit->pfull(:)
-        field_crnt_tile = f_unit->$field_name$(1,ilev,:,:)
-        field_desc = f_unit->$field_name$@long_name
-        field_units = f_unit->$field_name$@units
-        plot_title = field_desc + " at pref = " + ref_pres_full(ilev) + " mb (" + field_units + ")"
-        plot_subtitle = "  Start date: " + start_date(2) + " Hour " + time(fcst_index-1)
-        fn_graphics = Cres + "_" + map_proj + "_" + field_name + "_hr" + time(fcst_index-1) + "_lev" + nlev
-
-      else if (num_field_dims.eq.3) then       ; (time, yt, xt)
-
-        if (strcmp(field_name, "PRESsfc")) then
-          field_crnt_tile = f_unit->$field_name$(fcst_index-1,:,:)
-          pascals_per_millibar = 100.0d
-          field_crnt_tile := field_crnt_tile/pascals_per_millibar
-          plot_title = "Surface pressure (mb)"
-        else
-          field_crnt_tile = f_unit->$field_name$(1,:,:)
+          ref_pres_full = f_unit->pfull(:)
+          field_crnt_tile = f_unit->$field_name$(tindex,ilev,:,:)
           field_desc = f_unit->$field_name$@long_name
           field_units = f_unit->$field_name$@units
-          plot_title = field_desc + " (" + field_units + ")"
-        end if
+          plot_title = field_desc + " at pref = " + ref_pres_full(ilev) + " mb (" + field_units + ")"
+          plot_subtitle = "  Start date: " + start_date(2) + " Hour " + time(tindex)
+          fn_graphics = Cres + "_" + map_proj + "_" + field_name + "_hr" + time(tindex) + "_lev" + nlev
 
-        plot_subtitle = "  Start date: " + start_date(2) + " Hour " + time(fcst_index-1)
-        fn_graphics = Cres + "_" + map_proj + "_" + field_name + "_hr" + time(fcst_index-1)
+        else if (num_field_dims.eq.3) then       ; (time, yt, xt)
 
-      else                           ; num_field_dims is 2 or less
+          if (strcmp(field_name, "PRESsfc")) then
+            field_crnt_tile = f_unit->$field_name$(tindex,:,:)
+            pascals_per_millibar = 100.0d
+            field_crnt_tile := field_crnt_tile/pascals_per_millibar
+            plot_title = "Surface pressure (mb)"
+          else
+            field_crnt_tile = f_unit->$field_name$(tindex,:,:)
+            field_desc = f_unit->$field_name$@long_name
+            field_units = f_unit->$field_name$@units
+            plot_title = field_desc + " (" + field_units + ")"
+          end if
 
-        if (strcmp(field_name, "grid_size")) then
+          plot_subtitle = "  Start date: " + start_date(2) + " Hour " + time(tindex)
+          fn_graphics = Cres + "_" + map_proj + "_" + field_name + "_hr" + time(tindex)
 
-          cell_area_supergrid_crnt_tile := fg->area(:,:)
+        else                           ; num_field_dims is 2 or less
 
-          do jj=0, 2*ny-2, 2
-            do ii=0, 2*nx-2, 2
-              j = jj/2
-              i = ii/2
-              field_crnt_tile(j,i) \
-              = cell_area_supergrid_crnt_tile(jj,ii) \
-              + cell_area_supergrid_crnt_tile(jj,ii+1) \
-              + cell_area_supergrid_crnt_tile(jj+1,ii+1) \
-              + cell_area_supergrid_crnt_tile(jj+1,ii)
+          if (strcmp(field_name, "grid_size")) then
+
+            cell_area_supergrid_crnt_tile := fg->area(:,:)
+
+            do jj=0, 2*ny-2, 2
+              do ii=0, 2*nx-2, 2
+                j = jj/2
+                i = ii/2
+                field_crnt_tile(j,i) \
+                = cell_area_supergrid_crnt_tile(jj,ii) \
+                + cell_area_supergrid_crnt_tile(jj,ii+1) \
+                + cell_area_supergrid_crnt_tile(jj+1,ii+1) \
+                + cell_area_supergrid_crnt_tile(jj+1,ii)
+              end do
             end do
-          end do
-          field_crnt_tile := sqrt(field_crnt_tile)
+            field_crnt_tile := sqrt(field_crnt_tile)
 ; Convert distance from meters to kilometers
-          field_crnt_tile := field_crnt_tile/1000.0
-          delete(cell_area_supergrid_crnt_tile)
-          plot_title = "Grid Size (km)"
+            field_crnt_tile := field_crnt_tile/1000.0
+            delete(cell_area_supergrid_crnt_tile)
+            plot_title = "Grid Size (km)"
 
 ; The following works with tile 7 only!!
-        else if (strcmp(field_name, "orog_raw")) then
-          orog_file = grid_dir + "/oro_data.nc"
-          f_orog = addfile(orog_file, "r")
-          field_crnt_tile = f_orog->orog_raw
-          plot_title = "Raw Orography (m)"
+          else if (strcmp(field_name, "orog_raw")) then
+            orog_file = grid_dir + "/oro_data.nc"
+            f_orog = addfile(orog_file, "r")
+            field_crnt_tile = f_orog->orog_raw
+            plot_title = "Raw Orography (m)"
 
 ; The following works with tile 7 only!!
-        else if (strcmp(field_name, "orog_filt")) then
-          orog_file = grid_dir + "/oro_data.nc"
-          f_orog = addfile(orog_file, "r")
-          field_crnt_tile = f_orog->orog_filt
-          plot_title = "Filtered Orography (m)"
+          else if (strcmp(field_name, "orog_filt")) then
+            orog_file = grid_dir + "/oro_data.nc"
+            f_orog = addfile(orog_file, "r")
+            field_crnt_tile = f_orog->orog_filt
+            plot_title = "Filtered Orography (m)"
 
-        end if
-        end if
-        end if
-        fn_graphics = Cres + "_" + map_proj + "_" + field_name
+          end if
+          end if
+          end if
+          fn_graphics = Cres + "_" + map_proj + "_" + field_name
 
-      end if  ; End if num_field_dims is 4 or less
-      end if  ; End if num_field_dims is 3 or less
+        end if  ; End if num_field_dims is 4 or less
+        end if  ; End if num_field_dims is 3 or less
 
-      print("plot_title = " + plot_title)
+        print("plot_title = " + plot_title)
 ;---------------------------------------------------
 ; Done reading data field
 ;---------------------------------------------------
@@ -839,30 +904,30 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ; cond, third, etc tile, perform this conversion and then concatenate 
 ; the results to the 1-D arrays generated for previous tiles.
 ;
-      if (nn .eq. 0) then
-        lon_cntrs_by_cell := ndtooned(lon_cntrs_crnt_tile)
-        lat_cntrs_by_cell := ndtooned(lat_cntrs_crnt_tile)
-        field_by_cell := ndtooned(field_crnt_tile)
-      else
-        lon_cntrs_by_cell := array_append_record(lon_cntrs_by_cell, ndtooned(lon_cntrs_crnt_tile), 0)
-        lat_cntrs_by_cell := array_append_record(lat_cntrs_by_cell, ndtooned(lat_cntrs_crnt_tile), 0)
-        field_by_cell := array_append_record(field_by_cell, ndtooned(field_crnt_tile), 0)
-      end if
+        if (nn .eq. 0) then
+          lon_cntrs_by_cell := ndtooned(lon_cntrs_crnt_tile)
+          lat_cntrs_by_cell := ndtooned(lat_cntrs_crnt_tile)
+          field_by_cell := ndtooned(field_crnt_tile)
+        else
+          lon_cntrs_by_cell := array_append_record(lon_cntrs_by_cell, ndtooned(lon_cntrs_crnt_tile), 0)
+          lat_cntrs_by_cell := array_append_record(lat_cntrs_by_cell, ndtooned(lat_cntrs_crnt_tile), 0)
+          field_by_cell := array_append_record(field_by_cell, ndtooned(field_crnt_tile), 0)
+        end if
 ;
 ; Print out some basic statistics of the field.
 ;
-      field_min(nn) = min(field_crnt_tile)
-      field_max(nn) = max(field_crnt_tile)
-      field_median(nn) = dim_median_n(field_crnt_tile, (/0,1/))
-      field_mean(nn) = avg(field_crnt_tile)
+        field_min(nn) = min(field_crnt_tile)
+        field_max(nn) = max(field_crnt_tile)
+        field_median(nn) = dim_median_n(field_crnt_tile, (/0,1/))
+        field_mean(nn) = avg(field_crnt_tile)
 
-      print("")
-      print("Field min and max values over current tile are:")
-      print("  field_min = " + field_min(nn))
-      print("  field_max = " + field_max(nn))
-      print("  field_median = " + field_median(nn))
-      print("  field_mean = " + field_mean(nn))
-;     print("  dimsizes(field_crnt_tile) = " + dimsizes(field_crnt_tile))
+        print("")
+        print("Field min and max values over current tile are:")
+        print("  field_min = " + field_min(nn))
+        print("  field_max = " + field_max(nn))
+        print("  field_median = " + field_median(nn))
+        print("  field_mean = " + field_mean(nn))
+;       print("  dimsizes(field_crnt_tile) = " + dimsizes(field_crnt_tile))
 
 ;pause
 ;
@@ -881,50 +946,50 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;
 ; **********************************************************************
 ;
-      v = 0
-      lon := ndtooned(lon_verts_crnt_tile(0:ny-1,0:nx-1))
-      lat := ndtooned(lat_verts_crnt_tile(0:ny-1,0:nx-1))
-      lon_verts_by_cell(:,v) = lon
-      lat_verts_by_cell(:,v) = lat
+        v = 0
+        lon := ndtooned(lon_verts_crnt_tile(0:ny-1,0:nx-1))
+        lat := ndtooned(lat_verts_crnt_tile(0:ny-1,0:nx-1))
+        lon_verts_by_cell(:,v) = lon
+        lat_verts_by_cell(:,v) = lat
 
-      v = 1
-      lon := ndtooned(lon_verts_crnt_tile(0:ny-1,1:nx))
-      lat := ndtooned(lat_verts_crnt_tile(0:ny-1,1:nx))
-      lon_verts_by_cell(:,v) = lon
-      lat_verts_by_cell(:,v) = lat
+        v = 1
+        lon := ndtooned(lon_verts_crnt_tile(0:ny-1,1:nx))
+        lat := ndtooned(lat_verts_crnt_tile(0:ny-1,1:nx))
+        lon_verts_by_cell(:,v) = lon
+        lat_verts_by_cell(:,v) = lat
 
-      v = 2
-      lon := ndtooned(lon_verts_crnt_tile(1:ny,1:nx))
-      lat := ndtooned(lat_verts_crnt_tile(1:ny,1:nx))
-      lon_verts_by_cell(:,v) = lon
-      lat_verts_by_cell(:,v) = lat
+        v = 2
+        lon := ndtooned(lon_verts_crnt_tile(1:ny,1:nx))
+        lat := ndtooned(lat_verts_crnt_tile(1:ny,1:nx))
+        lon_verts_by_cell(:,v) = lon
+        lat_verts_by_cell(:,v) = lat
 
-      v = 3
-      lon := ndtooned(lon_verts_crnt_tile(1:ny,0:nx-1))
-      lat := ndtooned(lat_verts_crnt_tile(1:ny,0:nx-1))
-      lon_verts_by_cell(:,v) = lon
-      lat_verts_by_cell(:,v) = lat
+        v = 3
+        lon := ndtooned(lon_verts_crnt_tile(1:ny,0:nx-1))
+        lat := ndtooned(lat_verts_crnt_tile(1:ny,0:nx-1))
+        lon_verts_by_cell(:,v) = lon
+        lat_verts_by_cell(:,v) = lat
 
-      delete([/ lon, lat /])
+        delete([/ lon, lat /])
 ;
 ; For cells that cross over the international date line, modify longi-
 ; tudes of the vertices so that there is no discontinuity in their val-
 ; ues.
 ;
-      v_ref = 0
-      do v=1, num_edges_per_cell-1
-        abs_del_lon := abs(lon_verts_by_cell(:,v) - lon_verts_by_cell(:,v_ref))
-        is_greater := (lon_verts_by_cell(:,v) .gt. lon_verts_by_cell(:,v_ref))
+        v_ref = 0
+        do v=1, num_edges_per_cell-1
+          abs_del_lon := abs(lon_verts_by_cell(:,v) - lon_verts_by_cell(:,v_ref))
+          is_greater := (lon_verts_by_cell(:,v) .gt. lon_verts_by_cell(:,v_ref))
+          lon_verts_by_cell(:,v) \
+          = where((abs_del_lon .gt. 180.0) .and. is_greater, \
+                  lon_verts_by_cell(:,v) - 360.0, \
+                  lon_verts_by_cell(:,v))
         lon_verts_by_cell(:,v) \
-        = where((abs_del_lon .gt. 180.0) .and. is_greater, \
-                lon_verts_by_cell(:,v) - 360.0, \
-                lon_verts_by_cell(:,v))
-        lon_verts_by_cell(:,v) \
-        = where((abs_del_lon .gt. 180.0) .and. (.not. is_greater), \
-                lon_verts_by_cell(:,v) + 360.0, \
-                lon_verts_by_cell(:,v))
-      end do
-      delete([/ abs_del_lon, is_greater /])
+          = where((abs_del_lon .gt. 180.0) .and. (.not. is_greater), \
+                  lon_verts_by_cell(:,v) + 360.0, \
+                  lon_verts_by_cell(:,v))
+        end do
+        delete([/ abs_del_lon, is_greater /])
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -934,64 +999,64 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-      if (draw_tile_bdy) then
+        if (draw_tile_bdy) then
 
-        lon_bdy_crnt_tile := new((/ 1 /), "double")
-        lat_bdy_crnt_tile := new((/ 1 /), "double")
+          lon_bdy_crnt_tile := new((/ 1 /), "double")
+          lat_bdy_crnt_tile := new((/ 1 /), "double")
 ;
 ; Copy in coordinate of point at (i,j) = (0,0).
 ;
-        i = 0
-        j = 0
-        lon_bdy_crnt_tile(0) = lon_verts_crnt_tile(j,i)
-        lat_bdy_crnt_tile(0) = lat_verts_crnt_tile(j,i)
+          i = 0
+          j = 0
+          lon_bdy_crnt_tile(0) = lon_verts_crnt_tile(j,i)
+          lat_bdy_crnt_tile(0) = lat_verts_crnt_tile(j,i)
 ;
 ; Append coordinate values along j=0.
 ;
-        j = 0
-        lon_bdy_crnt_tile := array_append_record(lon_bdy_crnt_tile, lon_verts_crnt_tile(j,1:), 0)
-        lat_bdy_crnt_tile := array_append_record(lat_bdy_crnt_tile, lat_verts_crnt_tile(j,1:), 0)
+          j = 0
+          lon_bdy_crnt_tile := array_append_record(lon_bdy_crnt_tile, lon_verts_crnt_tile(j,1:), 0)
+          lat_bdy_crnt_tile := array_append_record(lat_bdy_crnt_tile, lat_verts_crnt_tile(j,1:), 0)
 ;
 ; Append coordinate values along i=nx.
 ;
-        i = nx
-        lon_bdy_crnt_tile := array_append_record(lon_bdy_crnt_tile, lon_verts_crnt_tile(1:,i), 0)
-        lat_bdy_crnt_tile := array_append_record(lat_bdy_crnt_tile, lat_verts_crnt_tile(1:,i), 0)
+          i = nx
+          lon_bdy_crnt_tile := array_append_record(lon_bdy_crnt_tile, lon_verts_crnt_tile(1:,i), 0)
+          lat_bdy_crnt_tile := array_append_record(lat_bdy_crnt_tile, lat_verts_crnt_tile(1:,i), 0)
 ;
 ; Append coordinate values along j=ny.  Note that in specifying the i-
 ; index range, i.e. nx-1:0, we do not specify a negative stride, i.e.
 ; we do not use nx-1:0:-1 because the order of the elements is automati-
 ; cally reversed if the starting index is larger than the ending index.
 ;
-        j = ny
-        lon_bdy_crnt_tile := array_append_record(lon_bdy_crnt_tile, lon_verts_crnt_tile(j,nx-1:0), 0)
-        lat_bdy_crnt_tile := array_append_record(lat_bdy_crnt_tile, lat_verts_crnt_tile(j,nx-1:0), 0)
+          j = ny
+          lon_bdy_crnt_tile := array_append_record(lon_bdy_crnt_tile, lon_verts_crnt_tile(j,nx-1:0), 0)
+          lat_bdy_crnt_tile := array_append_record(lat_bdy_crnt_tile, lat_verts_crnt_tile(j,nx-1:0), 0)
 ;
 ; Append coordinate values along i=0.  Note that in specifying the j-
 ; index range, i.e. ny-1:1, we do not specify a negative stride, i.e.
 ; we do not use ny-1:1:-1 because the order of the elements is automati-
 ; cally reversed if the starting index is larger than the ending index.
 ;
-        i = 0
-        lon_bdy_crnt_tile := array_append_record(lon_bdy_crnt_tile, lon_verts_crnt_tile(ny-1:1,i), 0)
-        lat_bdy_crnt_tile := array_append_record(lat_bdy_crnt_tile, lat_verts_crnt_tile(ny-1:1,i), 0)
+          i = 0
+          lon_bdy_crnt_tile := array_append_record(lon_bdy_crnt_tile, lon_verts_crnt_tile(ny-1:1,i), 0)
+          lat_bdy_crnt_tile := array_append_record(lat_bdy_crnt_tile, lat_verts_crnt_tile(ny-1:1,i), 0)
 ;
 ; Repeat the first point on the tile boundary also as the last point so 
 ; that the polyline object representing the tile boundary closes on it-
 ; self.
 ;
-        lon_bdy_crnt_tile := array_append_record(lon_bdy_crnt_tile, (/ lon_bdy_crnt_tile(0) /), 0)
-        lat_bdy_crnt_tile := array_append_record(lat_bdy_crnt_tile, (/ lat_bdy_crnt_tile(0) /), 0)
+          lon_bdy_crnt_tile := array_append_record(lon_bdy_crnt_tile, (/ lon_bdy_crnt_tile(0) /), 0)
+          lat_bdy_crnt_tile := array_append_record(lat_bdy_crnt_tile, (/ lat_bdy_crnt_tile(0) /), 0)
 ;
 ; Copy the coordinates of the current tile's boundary from the temporary 
 ; work arrays to the arrays that will be passed to the plotting func-
 ; tions.
 ;
-        nx_pls_ny = nx_pls_ny_by_tile(nn)
-        lon_bdy_by_tile(nn,0:2*nx_pls_ny) = lon_bdy_crnt_tile
-        lat_bdy_by_tile(nn,0:2*nx_pls_ny) = lat_bdy_crnt_tile
+          nx_pls_ny = nx_pls_ny_by_tile(nn)
+          lon_bdy_by_tile(nn,0:2*nx_pls_ny) = lon_bdy_crnt_tile
+          lat_bdy_by_tile(nn,0:2*nx_pls_ny) = lat_bdy_crnt_tile
 
-      end if
+        end if
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -999,35 +1064,35 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-      corner_i_inds := (/ 0, nx, nx, 0 /)
-      corner_j_inds := (/ 0, 0, ny, ny /)
-      num_corners = 4
-      corner_lons := new((/ num_corners /), "double")
-      corner_lats := new((/ num_corners /), "double")
+        corner_i_inds := (/ 0, nx, nx, 0 /)
+        corner_j_inds := (/ 0, 0, ny, ny /)
+        num_corners = 4
+        corner_lons := new((/ num_corners /), "double")
+        corner_lats := new((/ num_corners /), "double")
 
-      do c=0, num_corners-1
-        corner_lons(c) = lon_verts_crnt_tile(corner_j_inds(c), corner_i_inds(c))
-        corner_lats(c) = lat_verts_crnt_tile(corner_j_inds(c), corner_i_inds(c))
-        if (corner_lons(c) .gt. 180.0) then
-          corner_lons(c) = corner_lons(c) - 360.0
-        end if
-      end do
+        do c=0, num_corners-1
+          corner_lons(c) = lon_verts_crnt_tile(corner_j_inds(c), corner_i_inds(c))
+          corner_lats(c) = lat_verts_crnt_tile(corner_j_inds(c), corner_i_inds(c))
+          if (corner_lons(c) .gt. 180.0) then
+            corner_lons(c) = corner_lons(c) - 360.0
+          end if
+        end do
 ;print("")
 ;print("lon = " + corner_lons + " deg;  lat = " + corner_lats + " deg")
 ;pause
 
-      print("")
-      print("Tile corner lon/lat coordinates are:")
-      do c=0, num_corners-1
-        lon := corner_lons(c)
-        lat := corner_lats(c)
-        fmt_str = "%7.2f"
-        lon_str = sprintf(fmt_str, lon)
-        lat_str = sprintf(fmt_str, lat)
-        print("Corner " + (c+1) + ":  lon = " + lon_str + " deg;  lat = " + lat_str + " deg")
-      end do
+        print("")
+        print("Tile corner lon/lat coordinates are:")
+        do c=0, num_corners-1
+          lon := corner_lons(c)
+          lat := corner_lats(c)
+          fmt_str = "%7.2f"
+          lon_str = sprintf(fmt_str, lon)
+          lat_str = sprintf(fmt_str, lat)
+          print("Corner " + (c+1) + ":  lon = " + lon_str + " deg;  lat = " + lat_str + " deg")
+        end do
 
-    end do   ; End loop over tiles
+      end do   ; End loop over tiles
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1036,20 +1101,20 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-    field_min := min(field_by_cell)
-    field_max := max(field_by_cell)
-    field_median := dim_median_n(field_by_cell, (/0/))
-    field_mean := avg(field_by_cell)
+      field_min := min(field_by_cell)
+      field_max := max(field_by_cell)
+      field_median := dim_median_n(field_by_cell, (/0/))
+      field_mean := avg(field_by_cell)
 
-    print("")
-    print("============================================================")
-    print("")
-    print("Field min and max values over all tiles to be plotted are:")
-    print("  field_min = " + field_min)
-    print("  field_max = " + field_max)
-    print("  field_median = " + field_median)
-    print("  field_mean = " + field_mean)
-    print("  dimsizes(field_by_cell) = " + dimsizes(field_by_cell))
+      print("")
+      print("============================================================")
+      print("")
+      print("Field min and max values over all tiles to be plotted are:")
+      print("  field_min = " + field_min)
+      print("  field_max = " + field_max)
+      print("  field_median = " + field_median)
+      print("  field_mean = " + field_mean)
+      print("  dimsizes(field_by_cell) = " + dimsizes(field_by_cell))
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1057,79 +1122,79 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-    field_RAP_fillvalue = default_fillvalue("double")
-    field_RAP_fillvalue@_FillValue = field_RAP_fillvalue
+      field_RAP_fillvalue = default_fillvalue("double")
+      field_RAP_fillvalue@_FillValue = field_RAP_fillvalue
 
-    field_RAP_min = field_RAP_fillvalue
-    field_RAP_max = field_RAP_fillvalue
+      field_RAP_min = field_RAP_fillvalue
+      field_RAP_max = field_RAP_fillvalue
 ;print("field_RAP_max@_FillValue = " + field_RAP_max@_FillValue)
 ;printVarSummary(field_RAP_max)
 ;print("ismissing(field_RAP_max = " + ismissing(field_RAP_max))
 ;pause
-    field_RAP_median = field_RAP_fillvalue
-    field_RAP_mean = field_RAP_fillvalue
+      field_RAP_median = field_RAP_fillvalue
+      field_RAP_mean = field_RAP_fillvalue
 
-    if (draw_RAP_domain) then
+      if (draw_RAP_domain) then
 
-      print("")
-      print("============================================================")
+        print("")
+        print("============================================================")
 ;
 ; Open the NetCDF file describing the RAP grid.
 ;
-      print("")
-      print("Reading RAP grid geometry from file:")
-      print("  RAP_grid_fn = " + RAP_grid_fn)
-      fg = addfile(RAP_grid_fn, "r")
+        print("")
+        print("Reading RAP grid geometry from file:")
+        print("  RAP_grid_fn = " + RAP_grid_fn)
+        fg = addfile(RAP_grid_fn, "r")
 ;
 ; Read in the cell center coordinates of the RAP domain.
 ; 
-      lon_cntrs_RAP := fg->XLONG_M(:,:,:)
-      lat_cntrs_RAP := fg->XLAT_M(:,:,:)
+        lon_cntrs_RAP := fg->XLONG_M(:,:,:)
+        lat_cntrs_RAP := fg->XLAT_M(:,:,:)
 ;
 ; Read in the cell corner coordinates of the RAP domain.
 ; 
-      lon_verts_RAP := fg->XLONG_C(:,:,:)
-      lat_verts_RAP := fg->XLAT_C(:,:,:)
+        lon_verts_RAP := fg->XLONG_C(:,:,:)
+        lat_verts_RAP := fg->XLAT_C(:,:,:)
 ;
 ; Remove singleton dimensions (e.g. time) and convert to double preci-
 ; sion.
 ;
-      lon_cntrs_RAP := todouble(rm_single_dims(lon_cntrs_RAP))
-      lat_cntrs_RAP := todouble(rm_single_dims(lat_cntrs_RAP))
+        lon_cntrs_RAP := todouble(rm_single_dims(lon_cntrs_RAP))
+        lat_cntrs_RAP := todouble(rm_single_dims(lat_cntrs_RAP))
 
-      lon_verts_RAP := todouble(rm_single_dims(lon_verts_RAP))
-      lat_verts_RAP := todouble(rm_single_dims(lat_verts_RAP))
+        lon_verts_RAP := todouble(rm_single_dims(lon_verts_RAP))
+        lat_verts_RAP := todouble(rm_single_dims(lat_verts_RAP))
 ;
 ; Get the dimensions of the RAP domain.
 ;
-      RAP_dims := dimsizes(lon_cntrs_RAP)
-      nx_RAP = RAP_dims(1)
-      ny_RAP = RAP_dims(0)
+        RAP_dims := dimsizes(lon_cntrs_RAP)
+        nx_RAP = RAP_dims(1)
+        ny_RAP = RAP_dims(0)
 
-      print("")
-      print("nx_RAP = " + nx_RAP)
-      print("ny_RAP = " + ny_RAP)
+        print("")
+        print("nx_RAP = " + nx_RAP)
+        print("ny_RAP = " + ny_RAP)
 ;
 ; Define a field on the RAP grid (at cell centers).
 ;
-      field_RAP := new((/ ny_RAP, nx_RAP /), typeof(field_RAP_fillvalue))
-      field_RAP = 50
+        field_RAP := new((/ ny_RAP, nx_RAP /), typeof(field_RAP_fillvalue))
+        field_RAP = 50
 
 ;
 ; Read in the cell edge distances.
 ; 
 
 ;    make_hgrid_command = fg1@history
-      dx = fg@DX
-      dy = fg@DY
-      dx_tms_dy = dx*dy
-      mapfac_mx := fg->MAPFAC_MX(:,:,:)
-      mapfac_my := fg->MAPFAC_MY(:,:,:)
-      mapfac_mx := rm_single_dims(mapfac_mx)
-      mapfac_my := rm_single_dims(mapfac_my)
-      cell_area := dx_tms_dy/(mapfac_mx*mapfac_my)
+        dx = fg@DX
+        dy = fg@DY
+        dx_tms_dy = dx*dy
+        mapfac_mx := fg->MAPFAC_MX(:,:,:)
+        mapfac_my := fg->MAPFAC_MY(:,:,:)
+        mapfac_mx := rm_single_dims(mapfac_mx)
+        mapfac_my := rm_single_dims(mapfac_my)
+        cell_area := dx_tms_dy/(mapfac_mx*mapfac_my)
 ; Grid distance in km.
-      field_RAP = sqrt(cell_area)/1000.0
+        field_RAP = sqrt(cell_area)/1000.0
 
 
 ;
@@ -1139,34 +1204,34 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;
 ;    lon_cntrs_by_cell := array_append_record(lon_cntrs_by_cell, ndtooned(lon_cntrs_RAP), 0)
 ;    lat_cntrs_by_cell := array_append_record(lat_cntrs_by_cell, ndtooned(lat_cntrs_RAP), 0)
-      lon_cntrs_by_cell_RAP := ndtooned(lon_cntrs_RAP)
-      lat_cntrs_by_cell_RAP := ndtooned(lat_cntrs_RAP)
+        lon_cntrs_by_cell_RAP := ndtooned(lon_cntrs_RAP)
+        lat_cntrs_by_cell_RAP := ndtooned(lat_cntrs_RAP)
 ;
 ; Add to the array containing field values at cell centers (which cur-
 ; rently contains values for cells on the tiles of the cubed-sphere 
 ; grid) the field values at the centers of cells on the RAP grid.
 ;
 ;    field := array_append_record(field, ndtooned(field_RAP), 0)
-      field_by_cell_RAP := ndtooned(field_RAP)
+        field_by_cell_RAP := ndtooned(field_RAP)
 ;
 ; Print out some basic statistics of the field.
 ;
-      field_RAP_min = min(field_RAP)
-      field_RAP_max = max(field_RAP)
+        field_RAP_min = min(field_RAP)
+        field_RAP_max = max(field_RAP)
 ;print("field_RAP_max@_FillValue = " + field_RAP_max@_FillValue)
 ;printVarSummary(field_RAP_max)
 ;print("ismissing(field_RAP_max = " + ismissing(field_RAP_max))
 ;pause
-      field_RAP_median = dim_median_n(field_RAP, (/0,1/))
-      field_RAP_mean = avg(field_RAP)
+        field_RAP_median = dim_median_n(field_RAP, (/0,1/))
+        field_RAP_mean = avg(field_RAP)
 
-      print("")
-      print("Field min and max values over the RAP domain are:")
-      print("  dimsizes(field_by_cell_RAP) = " + dimsizes(field_by_cell_RAP))
-      print("  field_RAP_min = " + field_RAP_min)
-      print("  field_RAP_max = " + field_RAP_max)
-      print("  field_RAP_median = " + field_RAP_median)
-      print("  field_RAP_mean = " + field_RAP_mean)
+        print("")
+        print("Field min and max values over the RAP domain are:")
+        print("  dimsizes(field_by_cell_RAP) = " + dimsizes(field_by_cell_RAP))
+        print("  field_RAP_min = " + field_RAP_min)
+        print("  field_RAP_max = " + field_RAP_max)
+        print("  field_RAP_median = " + field_RAP_median)
+        print("  field_RAP_mean = " + field_RAP_mean)
 ;
 ; **********************************************************************
 ;
@@ -1183,54 +1248,54 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;
 ; **********************************************************************
 ;
-      num_cells_to_plot_RAP = nx_RAP*ny_RAP
-      lon_verts_by_cell_RAP := new((/ num_cells_to_plot_RAP, num_edges_per_cell /), "double")
-      lat_verts_by_cell_RAP := new((/ num_cells_to_plot_RAP, num_edges_per_cell /), "double")
+        num_cells_to_plot_RAP = nx_RAP*ny_RAP
+        lon_verts_by_cell_RAP := new((/ num_cells_to_plot_RAP, num_edges_per_cell /), "double")
+        lat_verts_by_cell_RAP := new((/ num_cells_to_plot_RAP, num_edges_per_cell /), "double")
 
-      v = 0
-      lon := ndtooned(lon_verts_RAP(0:ny_RAP-1,0:nx_RAP-1))
-      lat := ndtooned(lat_verts_RAP(0:ny_RAP-1,0:nx_RAP-1))
-      lon_verts_by_cell_RAP(:,v) = lon
-      lat_verts_by_cell_RAP(:,v) = lat
+        v = 0
+        lon := ndtooned(lon_verts_RAP(0:ny_RAP-1,0:nx_RAP-1))
+        lat := ndtooned(lat_verts_RAP(0:ny_RAP-1,0:nx_RAP-1))
+        lon_verts_by_cell_RAP(:,v) = lon
+        lat_verts_by_cell_RAP(:,v) = lat
 
-      v = 1
-      lon := ndtooned(lon_verts_RAP(0:ny_RAP-1,1:nx_RAP))
-      lat := ndtooned(lat_verts_RAP(0:ny_RAP-1,1:nx_RAP))
-      lon_verts_by_cell_RAP(:,v) = lon
-      lat_verts_by_cell_RAP(:,v) = lat
+        v = 1
+        lon := ndtooned(lon_verts_RAP(0:ny_RAP-1,1:nx_RAP))
+        lat := ndtooned(lat_verts_RAP(0:ny_RAP-1,1:nx_RAP))
+        lon_verts_by_cell_RAP(:,v) = lon
+        lat_verts_by_cell_RAP(:,v) = lat
 
-      v = 2
-      lon := ndtooned(lon_verts_RAP(1:ny_RAP,1:nx_RAP))
-      lat := ndtooned(lat_verts_RAP(1:ny_RAP,1:nx_RAP))
-      lon_verts_by_cell_RAP(:,v) = lon
-      lat_verts_by_cell_RAP(:,v) = lat
+        v = 2
+        lon := ndtooned(lon_verts_RAP(1:ny_RAP,1:nx_RAP))
+        lat := ndtooned(lat_verts_RAP(1:ny_RAP,1:nx_RAP))
+        lon_verts_by_cell_RAP(:,v) = lon
+        lat_verts_by_cell_RAP(:,v) = lat
 
-      v = 3
-      lon := ndtooned(lon_verts_RAP(1:ny_RAP,0:nx_RAP-1))
-      lat := ndtooned(lat_verts_RAP(1:ny_RAP,0:nx_RAP-1))
-      lon_verts_by_cell_RAP(:,v) = lon
-      lat_verts_by_cell_RAP(:,v) = lat
+        v = 3
+        lon := ndtooned(lon_verts_RAP(1:ny_RAP,0:nx_RAP-1))
+        lat := ndtooned(lat_verts_RAP(1:ny_RAP,0:nx_RAP-1))
+        lon_verts_by_cell_RAP(:,v) = lon
+        lat_verts_by_cell_RAP(:,v) = lat
 
-      delete([/ lon, lat /])
+        delete([/ lon, lat /])
 ;
 ; For cells that cross over the international date line, modify longi-
 ; tudes of the vertices so that there is no discontinuity in their val-
 ; ues.
 ;
-      v_ref = 0
-      do v=1, num_edges_per_cell-1
-        abs_del_lon := abs(lon_verts_by_cell_RAP(:,v) - lon_verts_by_cell_RAP(:,v_ref))
-        is_greater := (lon_verts_by_cell_RAP(:,v) .gt. lon_verts_by_cell_RAP(:,v_ref))
-        lon_verts_by_cell_RAP(:,v) \
-        = where((abs_del_lon .gt. 180.0) .and. is_greater, \
-                lon_verts_by_cell_RAP(:,v) - 360.0, \
-                lon_verts_by_cell_RAP(:,v))
-        lon_verts_by_cell_RAP(:,v) \
-        = where((abs_del_lon .gt. 180.0) .and. (.not. is_greater), \
-                lon_verts_by_cell_RAP(:,v) + 360.0, \
-                lon_verts_by_cell_RAP(:,v))
-      end do
-      delete([/ abs_del_lon, is_greater /])
+        v_ref = 0
+        do v=1, num_edges_per_cell-1
+          abs_del_lon := abs(lon_verts_by_cell_RAP(:,v) - lon_verts_by_cell_RAP(:,v_ref))
+          is_greater := (lon_verts_by_cell_RAP(:,v) .gt. lon_verts_by_cell_RAP(:,v_ref))
+          lon_verts_by_cell_RAP(:,v) \
+          = where((abs_del_lon .gt. 180.0) .and. is_greater, \
+                  lon_verts_by_cell_RAP(:,v) - 360.0, \
+                  lon_verts_by_cell_RAP(:,v))
+          lon_verts_by_cell_RAP(:,v) \
+          = where((abs_del_lon .gt. 180.0) .and. (.not. is_greater), \
+                  lon_verts_by_cell_RAP(:,v) + 360.0, \
+                  lon_verts_by_cell_RAP(:,v))
+        end do
+        delete([/ abs_del_lon, is_greater /])
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1240,33 +1305,33 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-      if (draw_RAP_bdy) then
+        if (draw_RAP_bdy) then
 ;
 ; Create arrays that will contain the coordinates of points on the boun-
 ; dary of the RAP domain.  Initially, these contain only one element 
 ; each.
 ; 
-        lon_bdy_RAP := new((/ 1 /), "double")
-        lat_bdy_RAP := new((/ 1 /), "double")
+          lon_bdy_RAP := new((/ 1 /), "double")
+          lat_bdy_RAP := new((/ 1 /), "double")
 ;
 ; Copy in coordinate of point at (i,j) = (0,0).
 ;
-        i = 0
-        j = 0
-        lon_bdy_RAP(0) = lon_verts_RAP(j,i)
-        lat_bdy_RAP(0) = lat_verts_RAP(j,i)
+          i = 0
+          j = 0
+          lon_bdy_RAP(0) = lon_verts_RAP(j,i)
+          lat_bdy_RAP(0) = lat_verts_RAP(j,i)
 ;
 ; Append coordinate values along j=0.
 ;
-        j = 0
-        lon_bdy_RAP := array_append_record(lon_bdy_RAP, lon_verts_RAP(j,1:), 0)
-        lat_bdy_RAP := array_append_record(lat_bdy_RAP, lat_verts_RAP(j,1:), 0)
+          j = 0
+          lon_bdy_RAP := array_append_record(lon_bdy_RAP, lon_verts_RAP(j,1:), 0)
+          lat_bdy_RAP := array_append_record(lat_bdy_RAP, lat_verts_RAP(j,1:), 0)
 ;
 ; Append coordinate values along i=nx_RAP.
 ;
-        i = nx_RAP
-        lon_bdy_RAP := array_append_record(lon_bdy_RAP, lon_verts_RAP(1:,i), 0)
-        lat_bdy_RAP := array_append_record(lat_bdy_RAP, lat_verts_RAP(1:,i), 0)
+          i = nx_RAP
+          lon_bdy_RAP := array_append_record(lon_bdy_RAP, lon_verts_RAP(1:,i), 0)
+          lat_bdy_RAP := array_append_record(lat_bdy_RAP, lat_verts_RAP(1:,i), 0)
 ;
 ; Append coordinate values along j=ny_RAP.  Note that in specifying the 
 ; i-index range, i.e. nx_RAP-1:0, we do not specify a negative stride, 
@@ -1274,9 +1339,9 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ; automatically reversed if the starting index is larger than the ending 
 ; index.
 ;
-        j = ny_RAP
-        lon_bdy_RAP := array_append_record(lon_bdy_RAP, lon_verts_RAP(j,nx_RAP-1:0), 0)
-        lat_bdy_RAP := array_append_record(lat_bdy_RAP, lat_verts_RAP(j,nx_RAP-1:0), 0)
+          j = ny_RAP
+          lon_bdy_RAP := array_append_record(lon_bdy_RAP, lon_verts_RAP(j,nx_RAP-1:0), 0)
+          lat_bdy_RAP := array_append_record(lat_bdy_RAP, lat_verts_RAP(j,nx_RAP-1:0), 0)
 ;
 ; Append coordinate values along i=0.  Note that in specifying the j-in-
 ; dex range, i.e. ny_RAP-1:1, we do not specify a negative stride, i.e.
@@ -1284,18 +1349,18 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ; matically reversed if the starting index is larger than the ending in-
 ; dex.
 ;
-        i = 0
-        lon_bdy_RAP := array_append_record(lon_bdy_RAP, lon_verts_RAP(ny_RAP-1:1,i), 0)
-        lat_bdy_RAP := array_append_record(lat_bdy_RAP, lat_verts_RAP(ny_RAP-1:1,i), 0)
+          i = 0
+          lon_bdy_RAP := array_append_record(lon_bdy_RAP, lon_verts_RAP(ny_RAP-1:1,i), 0)
+          lat_bdy_RAP := array_append_record(lat_bdy_RAP, lat_verts_RAP(ny_RAP-1:1,i), 0)
 ;
 ; Repeat the first point on the RAP boundary also as the last point so 
 ; that the polyline object representing the tile boundary closes on it-
 ; self.
 ;
-        lon_bdy_RAP := array_append_record(lon_bdy_RAP, (/ lon_bdy_RAP(0) /), 0)
-        lat_bdy_RAP := array_append_record(lat_bdy_RAP, (/ lat_bdy_RAP(0) /), 0)
+          lon_bdy_RAP := array_append_record(lon_bdy_RAP, (/ lon_bdy_RAP(0) /), 0)
+          lat_bdy_RAP := array_append_record(lat_bdy_RAP, (/ lat_bdy_RAP(0) /), 0)
 
-      end if
+        end if  ; end if draw_RAP_bdy
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1303,77 +1368,77 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-      nx = nx_RAP
-      ny = ny_RAP
+        nx = nx_RAP
+        ny = ny_RAP
 
-      corner_i_inds := (/ 0, nx, nx, 0 /)
-      corner_j_inds := (/ 0, 0, ny, ny /)
-      num_corners = 4
-      corner_lons := new(( num_corners ), "double")
-      corner_lats := new(( num_corners ), "double")
+        corner_i_inds := (/ 0, nx, nx, 0 /)
+        corner_j_inds := (/ 0, 0, ny, ny /)
+        num_corners = 4
+        corner_lons := new(( num_corners ), "double")
+        corner_lats := new(( num_corners ), "double")
 
-      do c=0, num_corners-1
-        corner_lons(c) = lon_verts_RAP(corner_j_inds(c), corner_i_inds(c))
-        corner_lats(c) = lat_verts_RAP(corner_j_inds(c), corner_i_inds(c))
-        if (corner_lons(c) .gt. 180.0) then
-          corner_lons(c) = corner_lons(c) - 360.0
-        end if
-      end do
+        do c=0, num_corners-1
+          corner_lons(c) = lon_verts_RAP(corner_j_inds(c), corner_i_inds(c))
+          corner_lats(c) = lat_verts_RAP(corner_j_inds(c), corner_i_inds(c))
+          if (corner_lons(c) .gt. 180.0) then
+            corner_lons(c) = corner_lons(c) - 360.0
+          end if
+        end do
 ;print("")
 ;print("lon = " + corner_lons + " deg;  lat = " + corner_lats + " deg")
 ;pause
 
-      print("")
-      print("RAP domain corner lon/lat coordinates are:")
-      do c=0, num_corners-1
-        lon := corner_lons(c)
-        lat := corner_lats(c)
-        fmt_str = "%7.2f"
-        lon_str = sprintf(fmt_str, lon)
-        lat_str = sprintf(fmt_str, lat)
-        print("Corner " + (c+1) + ":  lon = " + lon_str + " deg;  lat = " + lat_str + " deg")
-      end do
+        print("")
+        print("RAP domain corner lon/lat coordinates are:")
+        do c=0, num_corners-1
+          lon := corner_lons(c)
+          lat := corner_lats(c)
+          fmt_str = "%7.2f"
+          lon_str = sprintf(fmt_str, lon)
+          lat_str = sprintf(fmt_str, lat)
+          print("Corner " + (c+1) + ":  lon = " + lon_str + " deg;  lat = " + lat_str + " deg")
+        end do
 
-      rem_x = mod(nx_RAP, 2)
-      rem_y = mod(ny_RAP, 2)
-      if ((rem_x .eq. 0) .and. (rem_y .eq. 0)) then
-        i_cntr = nx_RAP/2
-        j_cntr = ny_RAP/2
-        lon_RAP_cntr = lon_verts_RAP(j_cntr,i_cntr)
-        lat_RAP_cntr = lat_verts_RAP(j_cntr,i_cntr)
-      else if ((rem_x .eq. 1) .and. (rem_y .eq. 0)) then
-        i_cntr = (nx_RAP - 1)/2
-        j_cntr = ny_RAP/2
-        lon_vpts_RAP := fg->XLONG_V(:,:,:)
-        lat_vpts_RAP := fg->XLAT_V(:,:,:)
-        lon_vpts_RAP := todouble(rm_single_dims(lon_vpts_RAP))
-        lat_vpts_RAP := todouble(rm_single_dims(lat_vpts_RAP))
-        lon_RAP_cntr = lon_vpts_RAP(j_cntr,i_cntr)
-        lat_RAP_cntr = lat_vpts_RAP(j_cntr,i_cntr)
-      else if ((rem_x .eq. 0) .and. (rem_y .eq. 1)) then
-        i_cntr = nx_RAP/2
-        j_cntr = (ny_RAP - 1)/2
-        lon_upts_RAP := fg->XLONG_U(:,:,:)
-        lat_upts_RAP := fg->XLAT_U(:,:,:)
-        lon_upts_RAP := todouble(rm_single_dims(lon_upts_RAP))
-        lat_upts_RAP := todouble(rm_single_dims(lat_upts_RAP))
-        lon_RAP_cntr = lon_upts_RAP(j_cntr,i_cntr)
-        lat_RAP_cntr = lat_upts_RAP(j_cntr,i_cntr)
-      else if ((rem_x .eq. 1) .and. (rem_y .eq. 1)) then
-        i_cntr = (nx_RAP - 1)/2
-        j_cntr = (ny_RAP - 1)/2
-        lon_RAP_cntr = lon_cntrs_RAP(j_cntr,i_cntr)
-        lat_RAP_cntr = lat_cntrs_RAP(j_cntr,i_cntr)
-      end if
-      end if
-      end if
-      end if
+        rem_x = mod(nx_RAP, 2)
+        rem_y = mod(ny_RAP, 2)
+        if ((rem_x .eq. 0) .and. (rem_y .eq. 0)) then
+          i_cntr = nx_RAP/2
+          j_cntr = ny_RAP/2
+          lon_RAP_cntr = lon_verts_RAP(j_cntr,i_cntr)
+          lat_RAP_cntr = lat_verts_RAP(j_cntr,i_cntr)
+        else if ((rem_x .eq. 1) .and. (rem_y .eq. 0)) then
+          i_cntr = (nx_RAP - 1)/2
+          j_cntr = ny_RAP/2
+          lon_vpts_RAP := fg->XLONG_V(:,:,:)
+          lat_vpts_RAP := fg->XLAT_V(:,:,:)
+          lon_vpts_RAP := todouble(rm_single_dims(lon_vpts_RAP))
+          lat_vpts_RAP := todouble(rm_single_dims(lat_vpts_RAP))
+          lon_RAP_cntr = lon_vpts_RAP(j_cntr,i_cntr)
+          lat_RAP_cntr = lat_vpts_RAP(j_cntr,i_cntr)
+        else if ((rem_x .eq. 0) .and. (rem_y .eq. 1)) then
+          i_cntr = nx_RAP/2
+          j_cntr = (ny_RAP - 1)/2
+          lon_upts_RAP := fg->XLONG_U(:,:,:)
+          lat_upts_RAP := fg->XLAT_U(:,:,:)
+          lon_upts_RAP := todouble(rm_single_dims(lon_upts_RAP))
+          lat_upts_RAP := todouble(rm_single_dims(lat_upts_RAP))
+          lon_RAP_cntr = lon_upts_RAP(j_cntr,i_cntr)
+          lat_RAP_cntr = lat_upts_RAP(j_cntr,i_cntr)
+        else if ((rem_x .eq. 1) .and. (rem_y .eq. 1)) then
+          i_cntr = (nx_RAP - 1)/2
+          j_cntr = (ny_RAP - 1)/2
+          lon_RAP_cntr = lon_cntrs_RAP(j_cntr,i_cntr)
+          lat_RAP_cntr = lat_cntrs_RAP(j_cntr,i_cntr)
+        end if
+        end if
+        end if
+        end if
 
-      print("")
-      print("lon_RAP_cntr = " + lon_RAP_cntr + " deg")
-      print("lat_RAP_cntr = " + lat_RAP_cntr + " deg")
+        print("")
+        print("lon_RAP_cntr = " + lon_RAP_cntr + " deg")
+        print("lat_RAP_cntr = " + lat_RAP_cntr + " deg")
 
-    end if
+      end if   ; end if draw_RAP_domain
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1382,22 +1447,22 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-  if (.not. ismissing(idx_ncgm)) then
-      wks_type := "ncgm"
-    else if (.not. ismissing(idx_png)) then
-      wks_type := "png"
-      wks_type@wkWidth = 1000
-      wks_type@wkHeight = 750
-    end if
-    end if
+      if (.not. ismissing(idx_ncgm)) then
+        wks_type := "ncgm"
+      else if (.not. ismissing(idx_png)) then
+        wks_type := "png"
+        wks_type@wkWidth = 1000
+        wks_type@wkHeight = 750
+      end if
+      end if
 
-    wks := gsn_open_wks(wks_type, fn_graphics)
+      wks := gsn_open_wks(wks_type, fn_graphics)
 
 ; Set the colormap.  To see the various colormaps, go to:
 ;
 ; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
 ;
-    gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
+      gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
 
 ;
 ; **********************************************************************
@@ -1406,60 +1471,59 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-    print("")
-    print("#############################################################")
-    print("")
-    print("Generating plot in file:")
-    print("  " + fn_graphics + "." + graphics_type)
+      print("")
+      print("#############################################################")
+      print("")
+      print("Generating plot in file:")
+      print("  " + fn_graphics + "." + graphics_type)
 
 ; Specify resources.
-    rsrc = True
+      rsrc = True
 
 ; Maximize size of plot in frame.
-    rsrc@gsnMaximize = True
+      rsrc@gsnMaximize = True
 
 ; Use full colormap, but start at color index 24.
-    rsrc@gsnSpreadColors = True
-    rsrc@gsnSpreadColorStart = 24
+      rsrc@gsnSpreadColors = True
+      rsrc@gsnSpreadColorStart = 24
 
 ; Turn on contour fill.
-    rsrc@cnFillOn = True
+      rsrc@cnFillOn = True
 ; Set the fill mode to "CellFill".  This means each cell has a single 
 ; color that represents the field value for that cell, and no interopla-
 ; tion is performed.  Other values for this resource can be "AreaFill" 
 ; and "RasterFill", but those require interoplation.
-    rsrc@cnFillMode = "CellFill"
+      rsrc@cnFillMode = "CellFill"
 
 ; Set sfXArray and sfYArray to the cell center coordinates.
-    rsrc@sfXArray = lon_cntrs_by_cell
-    rsrc@sfYArray = lat_cntrs_by_cell
+      rsrc@sfXArray = lon_cntrs_by_cell
+      rsrc@sfYArray = lat_cntrs_by_cell
 
 ; Set sfXCellBounds and sfYCellBounds to the cell vertex coordinates.
-    rsrc@sfXCellBounds = lon_verts_by_cell
-    rsrc@sfYCellBounds = lat_verts_by_cell
+      rsrc@sfXCellBounds = lon_verts_by_cell
+      rsrc@sfYCellBounds = lat_verts_by_cell
 
 ; Set sfDataArray to the field (which has one value per cell).
-    rsrc@sfDataArray = field_by_cell
+      rsrc@sfDataArray = field_by_cell
 
 ; If draw_tile_grid is True, then draw the cell edges.
-    if (draw_tile_grid) then
-      rsrc@cnCellFillEdgeColor = "black"
-;    rsrc@cnCellFillMissingValEdgeColor = "red"  ; This seems to have no effect.
-    end if
+      if (draw_tile_grid) then
+        rsrc@cnCellFillEdgeColor = "black"
+      end if
 
 ; Set the color for cells containing missing values.  This is by default
 ; "transparent", but we repeat it here for clarity.
-    rsrc@cnMissingValFillColor = "transparent"
+      rsrc@cnMissingValFillColor = "transparent"
 
 ; Specify opacity of cell colors.
 ;  rsrc@cnFillOpacityF = 0.0 ; Transparent.
 ;  rsrc@cnFillOpacityF = 0.35
-    rsrc@cnFillOpacityF = 1.0 ; Opaque.
+      rsrc@cnFillOpacityF = 1.0 ; Opaque.
 
 ; Turn off contour lines (we just want to see colors).
-    rsrc@cnLinesOn = False
+      rsrc@cnLinesOn = False
 ; Turn off contour line labels.
-    rsrc@cnLineLabelsOn = False
+      rsrc@cnLineLabelsOn = False
 
 ;  rsrc@lbLabelBarOn = False
 
@@ -1470,71 +1534,74 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;  rsrc@lbBoxLinesOn = False
 
 ; Set the plot title.
-    rsrc@tiMainString = plot_title + plot_subtitle
+      rsrc@tiMainString = plot_title + plot_subtitle
 
 ; Set the title font size.
-    rsrc@tiMainFontHeightF = 0.015
+      rsrc@tiMainFontHeightF = 0.015
 
 ; Set the latitude and longitude of the center of the map projection co-
 ; ordinate system.
-    rsrc@mpCenterLonF = map_proj_ctr(0)
-    rsrc@mpCenterLatF = map_proj_ctr(1)
+      rsrc@mpCenterLonF = map_proj_ctr(0)
+      rsrc@mpCenterLatF = map_proj_ctr(1)
 
 ; Set the map projection to use.  For the Lambert equal-area projection, 
 ; we rotate the projection such that it is centered at the North Pole.
-    if (.not. ismissing(idx_cyln)) then
-      rsrc@mpProjection = "CylindricalEquidistant"
-    else if (.not. ismissing(idx_ortho)) then
-      rsrc@mpProjection = "Orthographic"
-    else if (.not. ismissing(idx_lamb)) then
-      rsrc@mpProjection = "LambertEqualArea"
-    end if
-    end if
-    end if
+      if (.not. ismissing(idx_cyln)) then
+        rsrc@mpProjection = "CylindricalEquidistant"
+      else if (.not. ismissing(idx_ortho)) then
+        rsrc@mpProjection = "Orthographic"
+      else if (.not. ismissing(idx_lamb)) then
+        rsrc@mpProjection = "LambertEqualArea"
+      end if
+      end if
+      end if
 
 ; Improve the resolution of the map outlines.  Default is "LowRes".
-    rsrc@mpDataBaseVersion = "MediumRes"
-;  rsrc@mpDataBaseVersion = "HighRes"
+      rsrc@mpDataBaseVersion = "MediumRes"
 
 ; Turn on map tickmarks.
-    rsrc@pmTickMarkDisplayMode = "Always"
+      rsrc@pmTickMarkDisplayMode = "Always"
 
 ; If "subreg" is specified, plot only a subregion.  Note that this has
 ; an effect only for the cylindrical-equidistant map projection.
-    if (isvar("subreg")) then
-      rsrc@mpMinLonF = lon_min
-      rsrc@mpMaxLonF = lon_max
-      rsrc@mpMinLatF = lat_min
-      rsrc@mpMaxLatF = lat_max
-    end if
+      if (isvar("subreg")) then
+        rsrc@mpMinLonF = lon_min
+        rsrc@mpMaxLonF = lon_max
+        rsrc@mpMinLatF = lat_min
+        rsrc@mpMaxLatF = lat_max
+      end if
 
 ; Set the minimum and maximum countour levels to plot manually.
-    if (False) then
-      cplot_min = floor(min((/ field_min, field_RAP_min /)))
-      print("field_min = " + field_min)
-      print("field_RAP_min = " + field_RAP_min)
-      print("cplot_min = " + cplot_min)
-      cplot_max = ceil(max((/ field_max, field_RAP_max /)))
-      print("")
-      print("field_max = " + field_max)
-      print("field_RAP_max = " + field_RAP_max)
-      print("cplot_max = " + cplot_max)
-      rsrc@cnLevelSelectionMode = "ManualLevels"
-      rsrc@cnMinLevelValF = cplot_min
-      rsrc@cnMaxLevelValF = cplot_max
-    end if
+; Do this for the first time so it is consistent for all plots
+    if (itime.eq.0) then
+        cplot_min = floor(min((/ field_min, field_RAP_min /)))
+        print("field_min = " + field_min)
+        print("field_RAP_min = " + field_RAP_min)
+        print("cplot_min = " + cplot_min)
+        cplot_max = ceil(max((/ field_max, field_RAP_max /)))
+        print("")
+        print("field_max = " + field_max)
+        print("field_RAP_max = " + field_RAP_max)
+        print("cplot_max = " + cplot_max)
+        maxlev = 16
+        mnmxint = nice_mnmxintvl( cplot_min, cplot_max, maxlev, False)
+        rsrc@cnLevelSelectionMode = "ManualLevels"
+        rsrc@cnMinLevelValF = mnmxint(0)
+        rsrc@cnMaxLevelValF = mnmxint(1)
+        rsrc@cnLevelSpacingF = mnmxint(2)
+      end if
 
 ; Allow for spatially constant fields to be plotted.
-    rsrc@cnConstFEnableFill = True
-    rsrc@cnConstFLabelOn = False
+      rsrc@cnConstFEnableFill = True
+      rsrc@cnConstFLabelOn = False
 
 ; Do not immediately draw the contour plot nor advance the frame because
 ; other objects might still need to be added to the plot.
-    rsrc@gsnDraw = False
-    rsrc@gsnFrame = False
+      rsrc@gsnDraw = False
+      rsrc@gsnFrame = False
 
 ; Draw the color contour plot (along with a map).
-    map = gsn_csm_contour_map(wks, field_by_cell, rsrc)
+      map = gsn_csm_contour_map(wks, field_by_cell, rsrc)
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1542,11 +1609,11 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-    if (draw_tile_bdy) then
+      if (draw_tile_bdy) then
 
-      resp := True
-      resp@gsLineColor = "blue"
-      resp@gsLineThicknessF = 4.0
+        resp := True
+        resp@gsLineColor = "blue"
+        resp@gsLineThicknessF = 4.0
 ;
 ; Note that the graphical id returned by the gsn_add_polyline(...) for
 ; each tile must be saved at least until the plot is drawn.  If it is 
@@ -1555,15 +1622,15 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ; son, we first define an array of graphical ids and then save the id
 ; for each tile in an element of the array.
 ;
-      id_tile_bdy := new((/ num_tiles_to_plot /), graphic)
-      do nn=0, num_tiles_to_plot-1
-        n_tile = inds_tiles_to_plot(nn)
-;       print("Drawing boundary of tile #" + n_tile + "...")
-        id_tile_bdy(nn) = gsn_add_polyline( wks, map, \
-                          lon_bdy_by_tile(nn,:), lat_bdy_by_tile(nn,:), resp)
-      end do
+        id_tile_bdy := new((/ num_tiles_to_plot /), graphic)
+        do nn=0, num_tiles_to_plot-1
+          n_tile = inds_tiles_to_plot(nn)
+;         print("Drawing boundary of tile #" + n_tile + "...")
+          id_tile_bdy(nn) = gsn_add_polyline( wks, map, \
+                            lon_bdy_by_tile(nn,:), lat_bdy_by_tile(nn,:), resp)
+        end do
 
-     end if
+      end if
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1572,93 +1639,93 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-    if (draw_RAP_domain) then
+      if (draw_RAP_domain) then
 
 ; Specify resources.
-      rsrc_RAP = True
+        rsrc_RAP = True
 
 ; Maximize size of plot in frame.
-      rsrc_RAP@gsnMaximize = True
+        rsrc_RAP@gsnMaximize = True
 
 ; Use full colormap, but start at color index 24.
-      rsrc_RAP@gsnSpreadColors = True
-      rsrc_RAP@gsnSpreadColorStart = 24
+        rsrc_RAP@gsnSpreadColors = True
+        rsrc_RAP@gsnSpreadColorStart = 24
 
 ; Turn on contour fill.
-      rsrc_RAP@cnFillOn = True
+        rsrc_RAP@cnFillOn = True
 ; Set the fill mode to "CellFill".  This means each cell has a single 
 ; color that represents the field value for that cell, and no interopla-
 ; tion is performed.  Other values for this resource can be "AreaFill" 
 ; and "RasterFill", but those require interoplation.
-      rsrc_RAP@cnFillMode = "CellFill"
+        rsrc_RAP@cnFillMode = "CellFill"
 
 ; Specify opacity of cell colors.
-      rsrc_RAP@cnFillOpacityF = 0.0 ; Transparent.
+        rsrc_RAP@cnFillOpacityF = 0.0 ; Transparent.
 ;    rsrc_RAP@cnFillOpacityF = 0.35
 ;    rsrc_RAP@cnFillOpacityF = 1.0 ; Opaque.
 
 ; Set sfXArray and sfYArray to the cell center coordinates.
-      rsrc_RAP@sfXArray = lon_cntrs_by_cell_RAP
-      rsrc_RAP@sfYArray = lat_cntrs_by_cell_RAP
+        rsrc_RAP@sfXArray = lon_cntrs_by_cell_RAP
+        rsrc_RAP@sfYArray = lat_cntrs_by_cell_RAP
 
 ; Set sfXCellBounds and sfYCellBounds to the cell vertex coordinates.
-      rsrc_RAP@sfXCellBounds = lon_verts_by_cell_RAP
-      rsrc_RAP@sfYCellBounds = lat_verts_by_cell_RAP
+        rsrc_RAP@sfXCellBounds = lon_verts_by_cell_RAP
+        rsrc_RAP@sfYCellBounds = lat_verts_by_cell_RAP
 
 ; Set sfDataArray to the field (which has one value per cell).
-      rsrc_RAP@sfDataArray = field_by_cell_RAP
+        rsrc_RAP@sfDataArray = field_by_cell_RAP
 
 ; If draw_RAP_grid is True, then draw the cell edges.
-      if (draw_RAP_grid) then
-        rsrc_RAP@cnCellFillEdgeColor = "red"
-      end if
+        if (draw_RAP_grid) then
+          rsrc_RAP@cnCellFillEdgeColor = "red"
+        end if
 
 ; Turn off contour lines (we just want to see colors).
-      rsrc_RAP@cnLinesOn = False
+        rsrc_RAP@cnLinesOn = False
 ; Turn off contour line labels.
-      rsrc_RAP@cnLineLabelsOn = False
+        rsrc_RAP@cnLineLabelsOn = False
 
 ; Prevent overlap of labelbar labels.  Actually, the default value of 
 ; lbLabelAutoStride is already True for NCL V6.1.0 and later.
-      rsrc_RAP@lbLabelAutoStride = True
+        rsrc_RAP@lbLabelAutoStride = True
 ; Turn off labelbar box lines.
-      rsrc_RAP@lbBoxLinesOn = False
+        rsrc_RAP@lbBoxLinesOn = False
 
 ; Turn on map tickmarks.
-      rsrc_RAP@pmTickMarkDisplayMode = "Always"
+        rsrc_RAP@pmTickMarkDisplayMode = "Always"
 
 ; Allow for spatially constant fields to be plotted.
-      rsrc_RAP@cnConstFEnableFill = True
-      rsrc_RAP@cnConstFLabelOn = False
+        rsrc_RAP@cnConstFEnableFill = True
+        rsrc_RAP@cnConstFLabelOn = False
 
 ; Set the minimum and maximum countour levels to plot manually.
-      rsrc_RAP@lbLabelBarOn = False
-      rsrc_RAP@cnLevelSelectionMode = "ManualLevels"
-      rsrc_RAP@cnMinLevelValF = cplot_min
-      rsrc_RAP@cnMaxLevelValF = cplot_max
+        rsrc_RAP@lbLabelBarOn = False
+        rsrc_RAP@cnLevelSelectionMode = "ManualLevels"
+        rsrc_RAP@cnMinLevelValF = cplot_min
+        rsrc_RAP@cnMaxLevelValF = cplot_max
 
 ; Do not immediately draw the contour plot nor advance the frame because
 ; other objects might still need to be added to the plot.
-      rsrc_RAP@gsnDraw = False
-      rsrc_RAP@gsnFrame = False
+        rsrc_RAP@gsnDraw = False
+        rsrc_RAP@gsnFrame = False
 
 ; Draw the color contour plot (without a map since that has already been
 ; drawn above while generating the FV3 tiles).
-      map_RAP = gsn_csm_contour(wks, field_by_cell_RAP, rsrc_RAP)
+        map_RAP = gsn_csm_contour(wks, field_by_cell_RAP, rsrc_RAP)
 
 ; If draw_RAP_bdy is set to True, draw a boundary around the RAP domain.
-      if (draw_RAP_bdy) then
-        resp := True
-        resp@gsLineColor = "red"
-        resp@gsLineThicknessF = 4.0
-        id_RAP_bdy = gsn_add_polyline(wks, map, lon_bdy_RAP, lat_bdy_RAP, resp)
-      end if
+        if (draw_RAP_bdy) then
+          resp := True
+          resp@gsLineColor = "red"
+          resp@gsLineThicknessF = 4.0
+          id_RAP_bdy = gsn_add_polyline(wks, map, lon_bdy_RAP, lat_bdy_RAP, resp)
+        end if
 
 ; Overlay the contour plot of the RAP domain on top of the one for the
 ; cubed-sphere tile(s).
-      overlay(map, map_RAP)
+        overlay(map, map_RAP)
 
-    end if
+      end if   ; end if draw_RAP_domain
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -1666,13 +1733,14 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;                                                                      *
 ; **********************************************************************
 ;
-    draw(map)
-    frame(wks)
+      draw(map)
+      frame(wks)
 
-    print("")
-    print("Done generating plot in file:")
-    print("  " + fn_graphics + "." + graphics_type)
+      print("")
+      print("Done generating plot in file:")
+      print("  " + fn_graphics + "." + graphics_type)
 
+    end do    ; End of loop over times
   end do    ; End of loop over fields
 
 end

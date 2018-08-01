@@ -29,16 +29,44 @@ RES="96"
 
 CRES="C${RES}"
 
-base_name="atmos_4xdaily"         # Base name of the FV3 output file
+#base_name="atmos_4xdaily"         # Base name of the FV3 output file, .tile[n].nc will be appended
+#fields='"u1000", "v1000"'         # Fields to plot
+base_name="nggps2d"         # Base name of the FV3 output file, .tile[n].nc will be appended
+fields='"PWATclm", "HGTsfc"'         # Fields to plot
 nlev="50"                         # Vertical index to plot for 3D fields
-fcst_index="1"                    # Time index of forecast to plot
+#fcst_index='1, 2'                    # Time index '2' or indices '1, 2' of forecast to plot or '"all"'
+fcst_index='"all"'                    # Time index '2' or indices '1, 2' of forecast to plot or '"all"'
 #grid_dir="/scratch3/BMC/det/beck/FV3-CAM/work.C384r0p7n3_regional_RAP/INPUT"
 #grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
 grid_dir="/scratch3/BMC/fim/Julie.Schramm/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
+#grid_dir="/scratch4/BMC/gmtb/Julie.Schramm/C96fv3gfs2016092900/INPUT"
 #grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
 
 #RAP_grid_fn="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.nc"
 RAP_grid_fn="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.RAP.nc"
+
+if [ 0 = 1 ]; then
+#
+# Show FV3 global domain (tiles 1-6) on a global cylindrical projection.
+#
+ncl -n plot_fields.ncl \
+  grid_dir=\"$grid_dir\" \
+  base_name=\"$base_name\" \
+  fields=\(\/"$fields"/\) \
+  nlev=${nlev} \
+  fcst_index=${fcst_index} \
+  res=${RES} \
+  tile_inds=\(/1,2,3,4,5,6/\) \
+  draw_tile_bdy=True \
+  draw_tile_grid=False \
+  draw_RAP_domain=False \
+  RAP_grid_fn=\"$RAP_grid_fn\" \
+  draw_RAP_bdy=False \
+  draw_RAP_grid=False \
+  map_proj=\"cyln\" \
+  graphics_type=\"png\"
+#
+fi
 
 if [ 0 = 1 ]; then
 #
@@ -178,9 +206,9 @@ if [ 1 = 1 ]; then
 ncl -n plot_fields.ncl \
   grid_dir=\"$grid_dir\" \
   base_name=\"$base_name\" \
-  'fields=(/"u1000", "v1000"/)' \
+  fields=\(\/"$fields"/\) \
   nlev=${nlev} \
-  fcst_index=${fcst_index} \
+  fcst_index=\(\/"$fcst_index"/\) \
   res=${RES} \
   tile_inds=\(/7/\) \
   draw_tile_bdy=True \
