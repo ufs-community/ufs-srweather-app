@@ -596,10 +596,16 @@ print("========>>>> gtype = " + gtype)
   end do
 
 ; **********************************************************************
+; Strip away 0 halo points for global.
+; **********************************************************************
+  halo_T7 = 0
+; **********************************************************************
 ; Strip away 3 halo points for regional.
 ; **********************************************************************
+  if (gtype.eq.regional) then
+    halo_T7 = 3
+  end if
 
-  halo_T7 = 3
   nx_by_tile = nx_by_tile - 2*halo_T7
   ny_by_tile = ny_by_tile - 2*halo_T7
 
