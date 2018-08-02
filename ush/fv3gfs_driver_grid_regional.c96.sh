@@ -1,15 +1,23 @@
 #!/bin/sh
-#----WCOSS_CRAY JOBCARD
-#BSUB -L /bin/sh
-#BSUB -P FV3GFS-T2O
-#BSUB -oo log.grid.%J
-#BSUB -eo log.grid.%J
-#BSUB -J grid_fv3
-#BSUB -q debug
-#BSUB -M 2400
-#BSUB -W 00:30
-#BSUB -extsched 'CRAYLINUX[]'
-#----THEIA JOBCARD
+##----WCOSS_CRAY JOBCARD
+##BSUB -L /bin/sh
+##BSUB -P FV3GFS-T2O
+##BSUB -oo log.grid.%J
+##BSUB -eo log.grid.%J
+##BSUB -J grid_fv3
+##BSUB -q debug
+##BSUB -M 2400
+##BSUB -W 00:30
+##BSUB -extsched 'CRAYLINUX[]'
+##----THEIA JOBCARD
+##PBS -N fv3_grid_driver
+##PBS -A gsd-fv3
+##PBS -o log.grid.regional.$PBS_JOBID
+##PBS -e log.grid.regional.$PBS_JOBID
+##PBS -l nodes=1:ppn=24
+##PBS -q debug
+##PBS -l walltime=00:30:00
+#----Cheyenne JOBCARD
 #PBS -N fv3_grid_driver
 #PBS -A fv3-cpu
 #PBS -o log.grid.regional.$PBS_JOBID
@@ -18,9 +26,30 @@
 #PBS -q debug
 #PBS -l walltime=00:30:00
 
-set -ax
+set -aux
 
-machine=THEIA
+##
+## TEMPORARY VARIABLES FOR TESTING
+## SHOULD BE PROVIDED BY WORKFLOW XML IN THE FUTURE
+##
+
+machine=CHEYENNE
+FV3GFS_DIR=/gpfs/fs1/work/kavulich/FV3/rocoto_pp_workflow/fv3gfs
+
+
+
+
+
+
+
+
+
+
+
+##
+## END TEMPORARY VARIABLES
+##
+
 export machine=${machine:-WCOSS_C}
 
 ulimit -a
@@ -70,6 +99,21 @@ elif [ $machine = THEIA ]; then
  export topo=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog
  export TMPDIR=/scratch3/NCEPDEV/stmp1/$LOGNAME/fv3_grid.$gtype
  set -x
+elif [ $machine = CHEYENNE ]; then
+ source /glade/u/apps/ch/modulefiles/default/localinit/localinit.sh
+ export TMPDIR=/glade/scratch/${USER}/tmp
+ module load ncarenv
+ module load intel/18.0.1
+ module load ncarcompilers
+ module load impi
+ module load netcdf
+ module list
+ export APRUN=time
+ export home_dir=$FV3GFS_DIR
+ export topo=/glade/p/ral/jntp/GMTB/FV3GFS_V1_RELEASE/fix/fix_orog
+else
+  echo "UNKNOWN MACHINE"
+  exit 4
 fi
 #----------------------------------------------------------------
 
@@ -172,6 +216,12 @@ elif [ $machine = THEIA ]; then
     echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
     $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
   done
+elif [ $machine = CHEYENNE ]; then
+  for tile in 1 2 3 4 5 6 ; do
+    echo
+    echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
+    $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
+  done
 fi
   echo "End uniform orography generation at `date`"
 #
@@ -213,6 +263,12 @@ if [ $machine = WCOSS_C ]; then
   aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
   rm $TMPDIR/orog.file1
 elif [ $machine = THEIA ]; then
+  for tile in 1 2 3 4 5 6 ; do
+    echo
+    echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
+    $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
+  done
+elif [ $machine = CHEYENNE ]; then
   for tile in 1 2 3 4 5 6 ; do
     echo
     echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
@@ -265,6 +321,12 @@ elif [ $machine = THEIA ]; then
     echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
     $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
   done
+elif [ $machine = CHEYENNE ]; then
+ for tile in 1 2 3 4 5 6 7; do
+    echo
+    echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
+    $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
+  done
 fi
   echo "Grid and orography files are now prepared for nested grid"
 elif [ $gtype = regional ]; then
@@ -273,7 +335,8 @@ elif [ $gtype = regional ]; then
 #
 export ntiles=1
 tile=7
-set +x # don't echo all the computation to figure out how many points to add/subtract from start/end nest values
+# don't echo all the computation to figure out how many points to add/subtract from start/end nest values
+set +x
 #
 # number of parent points
 #
@@ -349,6 +412,10 @@ elif [ $machine = THEIA ]; then
     echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
     $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
 ######################  done
+elif [ $machine = CHEYENNE ]; then
+    echo
+    echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
+    $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
 fi
   echo
   echo "............ execute fv3gfs_filter_topo.sh .............."
@@ -367,6 +434,9 @@ if [ $machine = WCOSS_C ]; then
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.orog
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.grid
 elif [ $machine = THEIA ]; then
+  time $exec_dir/shave.x <input.shave.orog
+  time $exec_dir/shave.x <input.shave.grid
+elif [ $machine = CHEYENNE ]; then
   time $exec_dir/shave.x <input.shave.orog
   time $exec_dir/shave.x <input.shave.grid
 fi
@@ -390,6 +460,9 @@ if [ $machine = WCOSS_C ]; then
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.orog.halo$halo0
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.grid.halo$halo
 elif [ $machine = THEIA ]; then
+  time $exec_dir/shave.x <input.shave.orog.halo$halo0
+  time $exec_dir/shave.x <input.shave.grid.halo$halo
+elif [ $machine = CHEYENNE ]; then
   time $exec_dir/shave.x <input.shave.orog.halo$halo0
   time $exec_dir/shave.x <input.shave.grid.halo$halo
 fi
