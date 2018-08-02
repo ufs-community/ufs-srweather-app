@@ -1053,7 +1053,7 @@ if (False) then
 else
 
     field_name = "grid_size"
-;    field_name = "orog_raw"
+    field_name = "orog_raw"
 ;    field_name = "orog_filt"
 ;
 ;    fcst_hr = 6
@@ -1913,10 +1913,10 @@ end if
   rsrc@cnMissingValFillColor = "transparent"
 
 ; Specify opacity of cell colors.
-  rsrc@cnFillOpacityF = 0.0 ; Transparent.
+;  rsrc@cnFillOpacityF = 0.0 ; Transparent.
 ;  rsrc@cnFillOpacityF = 0.1
 ;  rsrc@cnFillOpacityF = 0.35
-;  rsrc@cnFillOpacityF = 1.0 ; Opaque.
+  rsrc@cnFillOpacityF = 1.0 ; Opaque.
 
 ; Turn off contour lines (we just want to see colors).
   rsrc@cnLinesOn = False
@@ -1925,7 +1925,7 @@ end if
 
   if (rsrc@cnFillOpacityF .eq. 0.0) then
 print("Turning off LabelBar (color bar) for the FV3 contour plot.")
-pause
+;pause
     rsrc@lbLabelBarOn = False
   end if
   rsrc@lbLabelBarOn = True
@@ -2217,9 +2217,9 @@ end if
     rsrc_RAP@cnFillMode = "CellFill"
 
 ; Specify opacity of cell colors.
-;    rsrc_RAP@cnFillOpacityF = 0.0 ; Transparent.
+    rsrc_RAP@cnFillOpacityF = 0.0 ; Transparent.
 ;    rsrc_RAP@cnFillOpacityF = 0.35
-    rsrc_RAP@cnFillOpacityF = 1.0 ; Opaque.
+;    rsrc_RAP@cnFillOpacityF = 1.0 ; Opaque.
 
 ; Set sfXArray and sfYArray to the cell center coordinates.
     rsrc_RAP@sfXArray = lon_cntrs_by_cell_RAP
@@ -2271,7 +2271,7 @@ end if
 ; Set the minimum and maximum countour levels to plot manually.
     if (rsrc_RAP@cnFillOpacityF .eq. 0.0) then
 print("Turning off LabelBar (color bar) for the RAP contour plot.")
-pause
+;pause
       rsrc_RAP@lbLabelBarOn = False
     end if
     rsrc_RAP@cnLevelSelectionMode = "ManualLevels"
