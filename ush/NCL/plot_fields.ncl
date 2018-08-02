@@ -596,13 +596,10 @@ print("========>>>> gtype = " + gtype)
   end do
 
 ; **********************************************************************
-; Strip away 0 halo points for global.
+; For a regional grid, strip away 3 halo points.
 ; **********************************************************************
   halo_T7 = 0
-; **********************************************************************
-; Strip away 3 halo points for regional.
-; **********************************************************************
-  if (gtype.eq.regional) then
+  if (strcmp(gtype, "regional")) then
     halo_T7 = 3
   end if
 
@@ -952,29 +949,36 @@ print("========>>>> gtype = " + gtype)
 ;
 ; **********************************************************************
 ;
+        if (nn .eq. 0) then
+          indx_start = 0
+        else
+          indx_start = sum(nx_tms_ny_by_tile(0:nn-1))
+        end if
+        indx_end = indx_start + nx_tms_ny_by_tile(nn) - 1
+
         v = 0
         lon := ndtooned(lon_verts_crnt_tile(0:ny-1,0:nx-1))
         lat := ndtooned(lat_verts_crnt_tile(0:ny-1,0:nx-1))
-        lon_verts_by_cell(:,v) = lon
-        lat_verts_by_cell(:,v) = lat
+        lon_verts_by_cell(indx_start:indx_end,v) = lon
+        lat_verts_by_cell(indx_start:indx_end,v) = lat
 
         v = 1
         lon := ndtooned(lon_verts_crnt_tile(0:ny-1,1:nx))
         lat := ndtooned(lat_verts_crnt_tile(0:ny-1,1:nx))
-        lon_verts_by_cell(:,v) = lon
-        lat_verts_by_cell(:,v) = lat
+        lon_verts_by_cell(indx_start:indx_end,v) = lon
+        lat_verts_by_cell(indx_start:indx_end,v) = lat
 
         v = 2
         lon := ndtooned(lon_verts_crnt_tile(1:ny,1:nx))
         lat := ndtooned(lat_verts_crnt_tile(1:ny,1:nx))
-        lon_verts_by_cell(:,v) = lon
-        lat_verts_by_cell(:,v) = lat
+        lon_verts_by_cell(indx_start:indx_end,v) = lon
+        lat_verts_by_cell(indx_start:indx_end,v) = lat
 
         v = 3
         lon := ndtooned(lon_verts_crnt_tile(1:ny,0:nx-1))
         lat := ndtooned(lat_verts_crnt_tile(1:ny,0:nx-1))
-        lon_verts_by_cell(:,v) = lon
-        lat_verts_by_cell(:,v) = lat
+        lon_verts_by_cell(indx_start:indx_end,v) = lon
+        lat_verts_by_cell(indx_start:indx_end,v) = lat
 
         delete([/ lon, lat /])
 ;
@@ -982,18 +986,23 @@ print("========>>>> gtype = " + gtype)
 ; tudes of the vertices so that there is no discontinuity in their val-
 ; ues.
 ;
+; This may not be necessary since NCL might be smart enough to figure 
+; this out, but I'm not sure.  Needs more testing.
+;
         v_ref = 0
         do v=1, num_edges_per_cell-1
-          abs_del_lon := abs(lon_verts_by_cell(:,v) - lon_verts_by_cell(:,v_ref))
-          is_greater := (lon_verts_by_cell(:,v) .gt. lon_verts_by_cell(:,v_ref))
-          lon_verts_by_cell(:,v) \
+          abs_del_lon := abs(lon_verts_by_cell(indx_start:indx_end,v) \
+                       - lon_verts_by_cell(indx_start:indx_end,v_ref))
+          is_greater := (lon_verts_by_cell(indx_start:indx_end,v) .gt. \
+                         lon_verts_by_cell(indx_start:indx_end,v_ref))
+          lon_verts_by_cell(indx_start:indx_end,v) \
           = where((abs_del_lon .gt. 180.0) .and. is_greater, \
-                  lon_verts_by_cell(:,v) - 360.0, \
-                  lon_verts_by_cell(:,v))
-        lon_verts_by_cell(:,v) \
+                  lon_verts_by_cell(indx_start:indx_end,v) - 360.0, \
+                  lon_verts_by_cell(indx_start:indx_end,v))
+          lon_verts_by_cell(indx_start:indx_end,v) \
           = where((abs_del_lon .gt. 180.0) .and. (.not. is_greater), \
-                  lon_verts_by_cell(:,v) + 360.0, \
-                  lon_verts_by_cell(:,v))
+                  lon_verts_by_cell(indx_start:indx_end,v) + 360.0, \
+                  lon_verts_by_cell(indx_start:indx_end,v))
         end do
         delete([/ abs_del_lon, is_greater /])
 ;

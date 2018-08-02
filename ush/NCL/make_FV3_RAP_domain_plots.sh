@@ -34,8 +34,8 @@ CRES="C${RES}"
 base_name="nggps2d"         # Base name of the FV3 output file, .tile[n].nc will be appended
 fields='"PWATclm", "HGTsfc"'         # Fields to plot
 nlev="50"                         # Vertical index to plot for 3D fields
-#fcst_index='1, 2'                    # Time index '2' or indices '1, 2' of forecast to plot or '"all"'
-fcst_index='"all"'                    # Time index '2' or indices '1, 2' of forecast to plot or '"all"'
+fcst_index="1,2"                    # Time index '2' or indices '1, 2' of forecast to plot or '"all"'
+#fcst_index='"all"'                    # Time index '2' or indices '1, 2' of forecast to plot or '"all"'
 #grid_dir="/scratch3/BMC/det/beck/FV3-CAM/work.C384r0p7n3_regional_RAP/INPUT"
 #grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
 #grid_dir="/scratch3/BMC/fim/Julie.Schramm/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
@@ -54,7 +54,7 @@ ncl -n plot_fields.ncl \
   base_name=\"$base_name\" \
   fields=\(\/"$fields"/\) \
   nlev=${nlev} \
-  fcst_index=${fcst_index} \
+  fcst_index=\(/${fcst_index}/\) \
   res=${RES} \
   tile_inds=\(/1,2,3,4,5,6/\) \
   draw_tile_bdy=True \
@@ -66,6 +66,7 @@ ncl -n plot_fields.ncl \
   map_proj=\"cyln\" \
   graphics_type=\"png\"
 #
+#  tile_inds=\(/4/\) \
 fi
 
 if [ 0 = 1 ]; then
