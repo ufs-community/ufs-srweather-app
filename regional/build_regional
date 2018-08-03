@@ -12,7 +12,7 @@ cd ${FV3GFS_DIR}/sorc
 
 
 cd ${FV3GFS_DIR}/../NEMSfv3gfs/tests
-./compile.sh ${FV3GFS_DIR}/../NEMSfv3gfs/FV3 ${SITE} "DEBUG=Y 32BIT=Y" 32bit NO NO >& make.out.32bit
+./compile.sh ${FV3GFS_DIR}/../NEMSfv3gfs/FV3 ${SITE} "DEBUG=Y 32BIT=Y" 32bit YES NO >& make.out.32bit
 
 # prepare fixed data directories
 

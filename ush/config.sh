@@ -18,6 +18,12 @@ CDATE="2018060400"    # Starting date of forecast.  Format is "YYYYMMDDHH".
 #CDATE="2018071000"    # Starting date of forecast.  Format is "YYYYMMDDHH".
 #CDATE=$( date "+%Y%m%d"00 )  # This sets CDATE to today.
 #CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
+
+start_year=${CDATE:0:4}
+start_month=${CDATE:4:2}
+start_day=${CDATE:6:2}
+start_hour=${CDATE:8:2}
+
 fcst_len_hrs=24        # Forecast length (in hours).
 #BC_interval_hrs=3     # Boundary condition time interval (in hours).
 BC_interval_hrs=6     # Boundary condition time interval (in hours).
@@ -49,6 +55,6 @@ title="test_preproc03"              # Descriptive string for the forecast.  Used
 # "RAP"  "HRRR"
 #
 predef_rgnl_domain=""      # No predefined regional domain.
-#predef_rgnl_domain="RAP"   # Set grid configuration to that of the RAP domain.
-predef_rgnl_domain="HRRR"  # Set grid configuration to that of the HRRR domain.
+predef_rgnl_domain="RAP"   # Set grid configuration to that of the RAP domain.
+#predef_rgnl_domain="HRRR"  # Set grid configuration to that of the HRRR domain.
 
