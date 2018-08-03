@@ -72,9 +72,15 @@ cp ${fix_files}/fix_co2_proj/global_co2historicaldata_2018.txt ${RUNDIR}/co2hist
 cp ${fix_files}/global_co2historicaldata_glob.txt ${RUNDIR}/co2historicaldata_glob.txt
 cp ${fix_files}/co2monthlycyc.txt ${RUNDIR}
 
-#Copy FV3 executable to run directory
-#echo "Copying FV3 executable to run directory..."
-#cp $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
+#Check to make sure FV3 executable exists and copy to run directory
+if [ ! -f $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe ]; then
+   echo "FV3 executable does not exist, please compile first.  Exiting..."
+   exit 1
+else
+   echo "Copying FV3 executable to run directory..."
+   cp $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
+fi
+
 
 #Make INPUT directory within the run directory if it doesn't already exist
 if [ ! -d $RUNDIR/INPUT ]; then
@@ -257,4 +263,4 @@ sed -i -r -e "s/(ppn=)(.*)/\1$PPN/" ${RUNDIR}/run.${CRES}.regional
 
 #Modify $RUNDIR in run.${CRES}.regionl
 echo "Modifying run directory in run.${CRES}.regional..."
-sed -i -r -e "s/\$\{RUNDIR\}/${RUNDIR}" ${RUNDIR}/run.${CRES}.regional
+sed -i -r -e 's+\$\{RUNDIR\}+'"${RUNDIR}"'+' ${RUNDIR}/run.${CRES}.regional
