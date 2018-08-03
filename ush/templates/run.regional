@@ -1,0 +1,48 @@
+#!/bin/sh -l
+#PBS -A gsd-fv3-test
+#PBS -e err.regional.$PBS_JOBID
+#PBS -o out.regional.$PBS_JOBID
+#PBS -N fv3
+#PBS -l nodes=20:ppn=24
+#PBS -q batch
+#PBS -l walltime=03:00:00
+
+set -eux
+. /apps/lmod/lmod/init/sh
+
+module purge
+module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0
+module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
+
+module list
+
+ulimit -s unlimited
+ulimit -a
+
+export KMP_AFFINITY=scatter
+export OMP_NUM_THREADS=2
+export OMP_STACKSIZE=1024m
+
+export RUNDIR="${RUNDIR}"
+cd $RUNDIR
+#
+#ln -sf model_configure.c768 model_configure
+#ln -sf input.nml.c768.gfdl_mp_2 input.nml
+
+#
+#clean up any old files
+#
+rm -f time_stamp.out
+rm -f stderr.* stdout.*
+rm -f PET*
+rm -f core*
+rm -f *.nc
+rm -f logfile.*
+rm -f nemsusage.xml
+rm -f fort.*
+rm -f regional_*.tile7.nc
+rm -f RESTART/*
+#
+#cp $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe fv3_gfs.x
+mpirun -l -np $PBS_NP ./fv3_gfs.x
+exit
