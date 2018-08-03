@@ -8,7 +8,7 @@
 . ./setup_grid_orog_ICs_BCs.sh
 
 #Define template namelist/configure file location
-templates="${BASEDIR}/templates"
+templates="${BASEDIR}/fv3gfs/ush/templates"
 
 #Define fixed file location
 fix_files=${FIXgsm}
@@ -90,6 +90,7 @@ fi
 cp ${out_dir}/${CRES}_grid.tile7.halo3.nc ${RUNDIR}/INPUT
 ln -s ${RUNDIR}/INPUT/${CRES}_grid.tile7.halo3.nc ${RUNDIR}/INPUT/${CRES}_grid.tile7.nc
 cp ${out_dir}/${CRES}_grid.tile7.halo4.nc ${RUNDIR}/INPUT
+ln -s ${RUNDIR}/INPUT/${CRES}_grid.tile7.halo4.nc ${RUNDIR}/INPUT/grid.tile7.halo4.nc
 cp ${out_dir}/${CRES}_mosaic.nc ${RUNDIR}/INPUT
 ln -s ${RUNDIR}/INPUT/${CRES}_mosaic.nc ${RUNDIR}/INPUT/grid_spec.nc
 cp ${out_dir}/${CRES}_oro_data.tile7.halo0.nc ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.halo0.nc
@@ -253,3 +254,7 @@ echo "Modifying nodes and PPN in run.${CRES}.regional..."
 echo ""
 sed -i -r -e "s/^(#PBS.*nodes=)([^:]*)(:.*)/\1$Nodes\3/" ${RUNDIR}/run.${CRES}.regional
 sed -i -r -e "s/(ppn=)(.*)/\1$PPN/" ${RUNDIR}/run.${CRES}.regional
+
+#Modify $RUNDIR in run.${CRES}.regionl
+echo "Modifying run directory in run.${CRES}.regional..."
+sed -i -r -e "s/\$\{RUNDIR\}/${RUNDIR}" ${RUNDIR}/run.${CRES}.regional
