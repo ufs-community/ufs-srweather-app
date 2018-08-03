@@ -252,9 +252,9 @@ echo ""
 sed -i -r -e "s/^(\s*ncores_per_node:\s*)(.*)/\1$ncores_per_node/" ${RUNDIR}/model_configure
 
 #Calculate values for nodes and ppn for job scheduler
-PPN=$cores_per_node 
+PPN=$ncores_per_node 
       
-Nodes=$(( ($PE_MEMBER01+$cores_per_node-1)/$cores_per_node ))
+Nodes=$(( ($PE_MEMBER01+$ncores_per_node-1)/$ncores_per_node ))
 
 echo "Nodes: $Nodes"
 echo "PPN: $PPN"
