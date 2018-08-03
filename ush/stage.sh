@@ -114,7 +114,7 @@ ln -s ${RUNDIR}/INPUT/sfc_data.tile7.nc ${RUNDIR}/INPUT/sfc_data.nc
 ##############################################
 
 #Define cores per node for current system
-cores_per_node=24 #Theia
+ncores_per_node=24 #Theia
 #cores_per_node=?? #Jet
 #cores_per_node=?? #Cheyenne
 
@@ -245,6 +245,11 @@ echo "Modifying simulation date and time in diag_table... "
 echo ""
 sed -i -r -e "s/YYYYMMDD.HHZ.CRES/${start_year}${start_month}${start_day}.${start_hour}Z.${CRES}/" ${RUNDIR}/diag_table
 sed -i -r -e "s/YYYY MM DD HH/${start_year} ${start_month} ${start_day} ${start_hour}/" ${RUNDIR}/diag_table
+
+#Modify cores per node
+echo "Modifying number of cores per node in model_configure... "
+echo ""
+sed -i -r -e "s/^(\s*ncores_per_node:\s*)(.*)/\1$ncores_per_node/" ${RUNDIR}/model_configure
 
 #Calculate values for nodes and ppn for job scheduler
 PPN=$cores_per_node 

@@ -15,7 +15,7 @@ calendar:                'julian'
 memuse_verbose:          .false.
 atmos_nthreads:          2
 use_hyper_thread:        .false.
-ncores_per_node:         24
+ncores_per_node:         <ncores_per_node>
 debug_affinity:          .true.
 restart_interval:        0
 quilting:                .false.
