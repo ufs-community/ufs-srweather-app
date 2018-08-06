@@ -16,15 +16,39 @@ fix_files=${FIXgsm}
 #Define run directory
 RUNDIR="${BASEDIR}/run_dirs/${subdir_name}"
 
-#Make run directory if it doesn't already exist
-if [ ! -d $RUNDIR ]; then
-   echo "Making $RUNDIR..."
-   mkdir $RUNDIR
-else
-   echo "Removing pre-existing $RUNDIR and creating $RUNDIR"
-   rm -rf $RUNDIR
-   mkdir $RUNDIR
+#
+# Check if the run directory already exists.  If so, don't delete it in 
+# case it contains needed information.  Instead, rename it to it origi-
+# nal name followed by "_oldNNN", where NNN is a 3-digit integer.
+#
+if [ -d $RUNDIR ]; then
+
+  i=1
+  old_indx=$( printf "%03d" "$i" )
+  RUNDIR_OLD=${RUNDIR}_old${old_indx}
+  while [ -d ${RUNDIR_OLD} ]; do
+    i=$[$i+1]
+    old_indx=$( printf "%03d" "$i" )
+    RUNDIR_OLD=${RUNDIR}_old${old_indx}
+  done
+
+  echo
+  echo "Run directory already exists:"
+  echo
+  echo "  RUNDIR = \"$RUNDIR\""
+  echo
+  echo "Renaming preexisting run directory to:"
+  echo
+  echo "  RUNDIR_OLD = \"$RUNDIR_OLD\""
+  echo
+  mv $RUNDIR $RUNDIR_OLD
+
 fi
+#
+# Create the run directory.  Note that at this point, we are guaranteed
+# that RUNDIR doesn't already exist.
+#
+mkdir -p $RUNDIR
 
 #Copy all namelist and configure file templates to the run directory
 echo "Copying necessary namelist and configure file templates to the run directory..."
@@ -231,10 +255,10 @@ sed -i -r -e "s/^(\s*PE_MEMBER01:\s*)(.*)/\1$PE_MEMBER01/" ${RUNDIR}/model_confi
 
 echo "Modifying simulation date and time in model_configure... "
 echo ""
-sed -i -r -e "s/^(\s*start_year:\s*)(.*)/\1$start_year/" ${RUNDIR}/model_configure
-sed -i -r -e "s/^(\s*start_month:\s*)(.*)/\1$start_month/" ${RUNDIR}/model_configure
-sed -i -r -e "s/^(\s*start_day:\s*)(.*)/\1$start_day/" ${RUNDIR}/model_configure
-sed -i -r -e "s/^(\s*start_hour:\s*)(.*)/\1$start_hour/" ${RUNDIR}/model_configure
+sed -i -r -e "s/^(\s*start_year:\s*)(<start_year>)(.*)/\1${YYYY}\3/" ${RUNDIR}/model_configure
+sed -i -r -e "s/^(\s*start_month:\s*)(<start_month>)(.*)/\1${MM}\3/" ${RUNDIR}/model_configure
+sed -i -r -e "s/^(\s*start_day:\s*)(<start_day>)(.*)/\1${DD}\3/" ${RUNDIR}/model_configure
+sed -i -r -e "s/^(\s*start_hour:\s*)(<start_hour>)(.*)/\1${HH}\3/" ${RUNDIR}/model_configure
 
 echo "Modifying forecast length in model_configure... "
 echo ""
@@ -243,8 +267,8 @@ sed -i -r -e "s/^(\s*nhours_fcst:\s*)(.*)/\1$fcst_len_hrs/" ${RUNDIR}/model_conf
 #Modify simulation date, time, and resolution in diag_table
 echo "Modifying simulation date and time in diag_table... "
 echo ""
-sed -i -r -e "s/YYYYMMDD.HHZ.CRES/${start_year}${start_month}${start_day}.${start_hour}Z.${CRES}/" ${RUNDIR}/diag_table
-sed -i -r -e "s/YYYY MM DD HH/${start_year} ${start_month} ${start_day} ${start_hour}/" ${RUNDIR}/diag_table
+sed -i -r -e "s/^<YYYYMMDD>\.<HH>Z\.<CRES>/${YMD}\.${HH}Z\.${CRES}/" ${RUNDIR}/diag_table
+sed -i -r -e "s/^<YYYY>\s+<MM>\s+<DD>\s+<HH>\s+/${YYYY} ${MM} ${DD} ${HH} /" ${RUNDIR}/diag_table
 
 #Modify cores per node
 echo "Modifying number of cores per node in model_configure... "

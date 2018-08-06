@@ -9,8 +9,8 @@ ACCOUNT="gsd-fv3-test"     # The account under which to submit jobs to the queue
 #
 # Directories.
 #
-BASEDIR="/scratch3/BMC/det/beck/FV3-CAM"  # Directory in which clone of fv3gfs and NEMSfv3gfs git repositories are located.
-TMPDIR="/scratch3/BMC/det/beck/FV3-CAM/work_dirs" # Temporary work directory.
+BASEDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509" # Directory in which clone of fv3gfs and NEMSfv3gfs git repositories are located.
+TMPDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs"  # Temporary work directory.
 #
 # Forecast parameters.
 #
@@ -18,11 +18,6 @@ CDATE="2018060400"    # Starting date of forecast.  Format is "YYYYMMDDHH".
 #CDATE="2018071000"    # Starting date of forecast.  Format is "YYYYMMDDHH".
 #CDATE=$( date "+%Y%m%d"00 )  # This sets CDATE to today.
 #CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
-
-start_year=${CDATE:0:4}
-start_month=${CDATE:4:2}
-start_day=${CDATE:6:2}
-start_hour=${CDATE:8:2}
 
 fcst_len_hrs=24        # Forecast length (in hours).
 #BC_interval_hrs=3     # Boundary condition time interval (in hours).

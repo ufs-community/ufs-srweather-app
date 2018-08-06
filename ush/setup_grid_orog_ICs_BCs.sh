@@ -177,12 +177,12 @@ export CDATE=${CDATE:-}
 # Extract from CDATE the starting year, month, day, and hour.  These are
 # needed below for various operations.`
 #
-YYYY=$(echo $CDATE | cut -c 1-4 )
-MM=$(echo $CDATE | cut -c 5-6 )
-DD=$(echo $CDATE | cut -c 7-8 )
-HH=$(echo $CDATE | cut -c 9-10 )
+YYYY=${CDATE:0:4}
+MM=${CDATE:4:2}
+DD=${CDATE:6:2}
+HH=${CDATE:8:2}
 
-export YMD=`echo $CDATE | cut -c 1-8`
+export YMD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
