@@ -8,5 +8,5 @@ pathnam=`pwd`
 pathroc=${ROCOTO_PATH}
 
 # rm ${pathnam}/HRRR_retro.ys.db
-echo "${pathroc}/bin/rocotorun -w ${pathnam}/FV3.xml -d ${pathnam}/pp.db -v 10"
-${pathroc}/bin/rocotorun -w ${pathnam}/FV3.xml -d ${pathnam}/pp.db -v 10
+echo "${pathroc}/bin/rocotorun -w ${pathnam}/FV3.xml -d ${pathnam}/prep.db -v 10"
+${pathroc}/bin/rocotorun -w ${pathnam}/FV3.xml -d ${pathnam}/prep.db -v 10

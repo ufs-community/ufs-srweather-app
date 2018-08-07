@@ -37,15 +37,6 @@ set -aux
 #FV3GFS_DIR=/gpfs/fs1/work/kavulich/FV3/rocoto_pp_workflow/fv3gfs
 
 
-
-
-
-
-
-
-
-
-
 ##
 ## END TEMPORARY VARIABLES
 ##
@@ -61,9 +52,9 @@ ulimit -s unlimited
 
 #----------------------------------------------------------------
 
-export USER=$LOGNAME 
-export res=96	 	   # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
-export gtype=regional      # grid type: uniform, stretch, nest or regional
+export USER=${USER:-$LOGNAME}
+export res=${res:=96}	 	   # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
+export gtype=${gtype:=regional}      # grid type: uniform, stretch, nest or regional
 
 #----------------------------------------------------------------
 # The orography code runs with threads.  On Cray, the code is

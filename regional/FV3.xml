@@ -8,12 +8,11 @@ UFS-CAM system: the regional FV3
 
 This is an initial version which only runs the preprocessing
 -->
-<!ENTITY USER "${USER}">
+<!ENTITY USER "kavulich">
 <!--  
-ACCOUNT will be charged for any submitted jobs (so far everything is on login nodes)
-wrfrun - used on theia
-P48503002 - DTC Annual
-P48500053 - DTC Monthly, Default, and for HPSS
+ACCOUNT will be charged for any submitted jobs
+P48503002 - Cheyenne DTC Annual
+P48500053 - Cheyenne DTC Monthly, Default, and for HPSS
  -->
 <!ENTITY ACCOUNT "P48500053">
 
@@ -73,18 +72,17 @@ Cheyenne supports several queues for running
 
 <!-- Run-specific environment variables.-->
 
+<!-- Grid type: uniform, stretch, nest or regional. This workflow is designed for regional but could support others in the future-->
+<!ENTITY GRID_TYPE "regional">
+
+<!-- Resolution: number of points in each direction for each tile. Currenly only these values are supported: "48", "96", "192", "384", "768", "1152", or "3072"-->
+<!ENTITY RESOLUTION "96">
+
+<!-- Start date of forecast (currently unused)-->
+<!ENTITY START_DATE "2018060300">
 
 <!-- ENV variables from ush/config.sh to look at later
 
-machine="THEIA"       # Machine on which we are running.  Must be "WCOSS", "WCOSS_C", or "THEIA"
-#gtype="uniform"       # Grid type.  Must be "uniform", "stretch", "nest", or "regional"
-#gtype="stretch"       # Grid type.  Must be "uniform", "stretch", "nest", or "regional"
-#gtype="nest"          # Grid type.  Must be "uniform", "stretch", "nest", or "regional"
-gtype="regional"      # Grid type.  Must be "uniform", "stretch", "nest", or "regional"
-RES="384"             # Number of points in each direction of each tile of global grid.  Must be "48", "96", "192", "384", "768", "1152", or "3072"
-CDATE="2018060300"    # Starting date of forecast.  Format is "YYYYMMDDHH".
-#CDATE=$( date "+%Y%m%d"00 )  # This sets CDATE to today.
-#CDATE=$( date -REMOVETHISTEXTLATER-date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
 BASE_GSM="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/fv3gfs"  # Directory in which clone of fv3gfs git repository is located.
 TMPDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs" # Temporary work directory.
 fcst_len_hrs=6        # Forecast length (in hours).
@@ -101,17 +99,6 @@ jend_nest_tile6=374   # j-index on tile 6 at which nested or regional grid ends.
  -->
 
 
-
-
-
-
-
-
-
-
-
-
-
 ]>
 
 <workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20">
@@ -122,7 +109,7 @@ jend_nest_tile6=374   # j-index on tile 6 at which nested or regional grid ends.
     <cyclestr>&LOG_DIR;/preprocessing_@Y@m@d@H.log</cyclestr>
   </log>
 
-  <task name="prep_task_1" maxtries="2">
+  <task name="prep_task_1" maxtries="20">
 
     &RESERVATION_SHARE;
     &PP_WALLTIME;
@@ -139,8 +126,23 @@ jend_nest_tile6=374   # j-index on tile 6 at which nested or regional grid ends.
     </envar>
 
     <envar>
+      <name>USER</name>
+      <value>&USER;</value>
+    </envar>
+
+    <envar>
       <name>machine</name>
       <value>&PLATFORM;</value>
+    </envar>
+
+    <envar>
+      <name>gtype</name>
+      <value>&GRID_TYPE;</value>
+    </envar>
+
+    <envar>
+      <name>res</name>
+      <value>&RESOLUTION;</value>
     </envar>
 <!--    <dependency>
       <datadep><cyclestr>&SST_DIR;/@y@j00000000</cyclestr></datadep>
