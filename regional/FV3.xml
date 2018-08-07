@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE workflow [
+
+<!-- PURPOSE:
+This workflow is nominally to fully run the workflow for the
+UFS-CAM system: the regional FV3
+
+This is an initial version which only runs the preprocessing
+-->
+<!ENTITY USER "${USER}">
+<!--  
+ACCOUNT will be charged for any submitted jobs (so far everything is on login nodes)
+wrfrun - used on theia
+P48503002 - DTC Annual
+P48500053 - DTC Monthly, Default, and for HPSS
+ -->
+<!ENTITY ACCOUNT "P48500053">
+
+<!--
+This workflow will eventually have to work on a variety of platforms if it is going
+to be the standard way to run the regional FV3. Right now we are working on Cheyenne.
+-->
+<!ENTITY PLATFORM "CHEYENNE">
+
+<!--
+pbspro is the job scheduler for Cheyenne. Other machines may need different values
+-->
+<!ENTITY SCHED "pbspro">
+
+<!--
+Cheyenne supports several queues for running
+-->
+<!ENTITY QUEUE "economy">
+<!ENTITY QUEUE_FAST "economy">
+<!ENTITY QUEUE_SHARE "share"> 
+<!ENTITY HPSS_QUEUE "hpss">
+<!ENTITY GE "geyser"> 
+
+<!-- Location of HRRR bin, exec, static, xml dirs. -->
+<!-- bin - has the wrapreper scripts that are called from this workflow. -->
+<!-- exec - has links to all the source area executables under rapid-refresh repo. -->
+<!ENTITY TOP_DIR "/gpfs/fs1/work/kavulich/FV3/rocoto_pp_workflow">
+<!ENTITY FV3_DIR "&TOP_DIR;/fv3gfs">
+<!ENTITY NEMSFV3_DIR "&TOP_DIR;/NEMSfv3gfs">
+
+<!ENTITY EXPERIMENT_DIR "/glade/scratch/kavulich/FV3_pp_testing">
+<!ENTITY DATABASE_DIR "&EXPERIMENT_DIR;">
+
+<!ENTITY LOG_DIR "&TOP_DIR;/logs">
+
+<!-- LSM/PBL Uses aprox 2+Gig Memory/core for IO.
+     Compute tasks use about 1+Gig Memory/core. 
+     Yellowstone has 25 Gig total available on a node.
+     Set prepn=8 for IO. This will utilize apreprox 16G+ of the memory.
+     If you use prepn=12 , that uses about 12*2G+ = ~25G+ and you 
+     reach an LSF MEMORY TERM Limit and programs is halted.
+     Core setting X for IO X:prepn=8 is based on settings namelist_quilt.
+     X = nio_tasks_per_group * nio_groups = total IO cores
+-->
+<!ENTITY PP_PROC "32:prepn=32+2:prepn=8">
+
+<!ENTITY PP_WALLTIME "<walltime>00:30:00</walltime>">
+
+
+<!-- NOTE THAT MEMORY FOR SHARED JOBS IS INTERPRETED AS PER-PROCESS -->
+<!-- This is what gets passed through to PBS/LSF - BE CAREFUL TO USE THE APPROPRIATE SYNTAX -->
+<!ENTITY RESERVATION '<queue>&QUEUE;</queue><account>&ACCOUNT;</account>'>  
+<!ENTITY RESERVATION_FAST '<queue>&QUEUE_FAST;</queue><account>&ACCOUNT;</account>'>
+<!ENTITY RESERVATION_SHARE '<queue>&QUEUE_SHARE;</queue><account>&ACCOUNT;</account>'>
+<!ENTITY RESERVATION_HPSS '<queue>&HPSS_QUEUE;</queue><account>&ACCOUNT;</account>'>  
+
+
+<!-- Run-specific environment variables.-->
+
+
+<!-- ENV variables from ush/config.sh to look at later
+
+machine="THEIA"       # Machine on which we are running.  Must be "WCOSS", "WCOSS_C", or "THEIA"
+#gtype="uniform"       # Grid type.  Must be "uniform", "stretch", "nest", or "regional"
+#gtype="stretch"       # Grid type.  Must be "uniform", "stretch", "nest", or "regional"
+#gtype="nest"          # Grid type.  Must be "uniform", "stretch", "nest", or "regional"
+gtype="regional"      # Grid type.  Must be "uniform", "stretch", "nest", or "regional"
+RES="384"             # Number of points in each direction of each tile of global grid.  Must be "48", "96", "192", "384", "768", "1152", or "3072"
+CDATE="2018060300"    # Starting date of forecast.  Format is "YYYYMMDDHH".
+#CDATE=$( date "+%Y%m%d"00 )  # This sets CDATE to today.
+#CDATE=$( date -REMOVETHISTEXTLATER-date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
+BASE_GSM="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/fv3gfs"  # Directory in which clone of fv3gfs git repository is located.
+TMPDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs" # Temporary work directory.
+fcst_len_hrs=6        # Forecast length (in hours).
+BC_interval_hrs=3     # Boundary condition time interval (in hours).
+title="test"          # Descriptive string for the forecast.  Used in forming output directory name.
+stretch_fac=0.7       # Stretching factor used in the Schmidt transformation (stretching of cubed sphere grid).
+lon_tile6_ctr=-106.0  # Longitude of center of tile 6 (in degrees).
+lat_tile6_ctr=54.0    # Latitude of center of tile 6 (in degrees).
+refine_ratio=3        # Refinement ratio for nested or regional grid.
+istart_nest_tile6=10  # i-index on tile 6 at which nested or regional grid starts.
+iend_nest_tile6=374   # i-index on tile 6 at which nested or regional grid ends.
+jstart_nest_tile6=10  # j-index on tile 6 at which nested or regional grid starts.
+jend_nest_tile6=374   # j-index on tile 6 at which nested or regional grid ends.
+ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+]>
+
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20">
+
+<cycledef>201807190000 201807190000 06:00:00</cycledef>
+
+  <log>
+    <cyclestr>&LOG_DIR;/preprocessing_@Y@m@d@H.log</cyclestr>
+  </log>
+
+  <task name="prep_task_1" maxtries="2">
+
+    &RESERVATION_SHARE;
+    &PP_WALLTIME;
+
+    <command>&FV3_DIR;/ush/fv3gfs_driver_grid_regional.rocoto.sh</command>
+    <cores>1</cores>
+    <nodesize>1</nodesize>
+    <jobname>fv3_grid_driver_regional</jobname>
+    <join><cyclestr>&LOG_DIR;/fv3_grid_driver_regional_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>FV3GFS_DIR</name>
+      <value>&TOP_DIR;/fv3gfs</value>
+    </envar>
+
+    <envar>
+      <name>machine</name>
+      <value>&PLATFORM;</value>
+    </envar>
+<!--    <dependency>
+      <datadep><cyclestr>&SST_DIR;/@y@j00000000</cyclestr></datadep>
+    </dependency>-->
+ 
+  </task>
+<!--  <task name="archive_cycle" cycledefs="group0" maxtries="2">
+      &ARCHIVE_RESOURCES;
+      &RESERVATION_FAST;
+
+      <command>&SCRIPTS;/ARCHIVE/archive_cycle.ksh</command>
+      <cores>&ARCHIVE_PROC;</cores>
+      <nodesize>36</nodesize>
+      <jobname><cyclestr>HRRR_archive_@Y@m@d@H</cyclestr></jobname>
+      <join><cyclestr>&LOG_DIR;/log/archive_@Y@m@d@H.log</cyclestr></join>
+
+      <envar>
+        <name>DOMAIN_LIST</name>
+        <value>hrconus</value>
+      </envar>
+      <envar>
+        <name>START_TIME</name>
+        <value><cyclestr>@Y@m@d@H</cyclestr></value>
+      </envar>
+      <envar>
+        <name>MOAD_DATAROOT</name>
+        <value><cyclestr>&DATAROOT;/@Y@m@d@H</cyclestr></value>
+      </envar>
+      <envar>
+        <name>ENS_MEMBERS_LIST</name>
+        <value>&ENS_MEMBERS;</value>
+      </envar>
+
+      <envar>
+        <name>LOG_DIR</name>
+        <value><cyclestr>&LOG_DIR;/log</cyclestr></value>
+      </envar>
+      <envar>
+        <name>FCST_TIME</name>
+        <value>#fcsthour#</value>
+      </envar>
+      <envar>
+        <name>ACCUM_TIME</name>
+        <value>24</value>
+      </envar>
+      <envar>
+        <name>BUCKET_TIME</name>
+        <value>1</value>
+      </envar>
+      <envar>
+        <name>GRID_VX</name>
+        <value>FCST</value>
+      </envar>
+      <envar>
+        <name>MET_EXE_ROOT</name>
+        <value>&MET_EXEC;</value>
+      </envar>
+      <envar>
+        <name>MET_CONFIG</name>
+        <value>&MET_CONFIG;</value>
+      </envar>
+      <envar>
+        <name>UNIPOST_EXEC</name>
+        <value>&UNIPOST_EXEC;</value>
+      </envar>
+      <envar>
+        <name>RAW_OBS</name>
+        <value>&MRMS_DIR;</value>
+      </envar>
+      <envar>
+        <name>MODEL</name>
+        <value>&MODEL;</value>
+      </envar>
+      <envar>
+        <name>VX_VAR</name>
+        <value>APCP</value>
+      </envar>
+
+      <dependency>
+        <and>
+          <taskdep task="done_fullfcst"/>
+        </and>
+      </dependency>
+  </task>-->
+
+</workflow>
