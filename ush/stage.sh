@@ -212,6 +212,7 @@ echo ""
 sed -i -r -e "s/^(\s*target_lat\s*=)(.*)/\1 $target_lat/" ${RUNDIR}/input.nml
 sed -i -r -e "s/^(\s*target_lon\s*=)(.*)/\1 $target_lon/" ${RUNDIR}/input.nml
 sed -i -r -e "s/^(\s*stretch_fac\s*=)(.*)/\1 $stretch_fac/" ${RUNDIR}/input.nml
+sed -i -r -e "s/^(\s*bc_update_interval\s*=)(.*)/\1 $BC_interval_hrs/" ${RUNDIR}/input.nml
 
 #Test whether dimensions values are evenly divisible by user-chosen layout_x and layout_y
 
