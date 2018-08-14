@@ -1,11 +1,29 @@
 #!/bin/bash
+#
+#----THEIA JOBCARD
+#
+# Note that the following PBS directives do not have any effect if this
+# script is called via an interactive TORQUE/PBS job (i.e. using the -I 
+# flag to qsub along with the -x flag to specify this script).  The fol-
+# lowing directives are placed here in case this script is called as a 
+# batch (i.e. non-interactive) job.
+#
+#PBS -N stage
+#PBS -A gsd-fv3
+#PBS -o out.$PBS_JOBNAME.$PBS_JOBID
+#PBS -e err.$PBS_JOBNAME.$PBS_JOBID
+#PBS -l nodes=1:ppn=1
+#PBS -q batch
+#PBS -l walltime=0:30:00
+#PBS -W umask=022
 
 ############################################
 # Staging script to set up FV3 run directory
 ############################################
 
 #Source variables from user-defined file
-. ./setup_grid_orog_ICs_BCs.sh
+. ${BASEDIR}/fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
+
 
 #Define template namelist/configure file location
 templates="${BASEDIR}/fv3gfs/ush/templates"
@@ -133,32 +151,10 @@ ln -s ${RUNDIR}/INPUT/gfs_data.tile7.nc ${RUNDIR}/INPUT/gfs_data.nc
 cp ${out_dir}/sfc_data.tile7.nc ${RUNDIR}/INPUT
 ln -s ${RUNDIR}/INPUT/sfc_data.tile7.nc ${RUNDIR}/INPUT/sfc_data.nc
 
-##############################################
-# Compute math required for grid decomposition
-##############################################
+#############################################################################################################3###
+# Math required for grid decomposition and sed commands to replace template values in namelists/configure files #
+#################################################################################################################
 
-#Define cores per node for current system
-ncores_per_node=24 #Theia
-#cores_per_node=?? #Jet
-#cores_per_node=?? #Cheyenne
-
-#Define layout_x and layout_y
-layout_x=15  #19 - for HRRR
-layout_y=15  #25 - for HRRR
-
-#Define run directory
-RUNDIR="${BASEDIR}/run_dirs/${subdir_name}"
-
-####################################
-
-#Verify that directories/files exist
-
-#Check to make sure the run directory exists
-if [ ! -d $RUNDIR ]; then
-   echo "$RUNDIR does not exist.  Please create it first.  Exiting..."
-   exit 1
-fi  
-    
 #Verify that input.nml exists
 
 if [ ! -f $RUNDIR/input.nml ]; then

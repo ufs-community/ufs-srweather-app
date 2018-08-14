@@ -9,8 +9,8 @@ ACCOUNT="gsd-fv3-test"     # The account under which to submit jobs to the queue
 #
 # Directories.
 #
-BASEDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509" # Directory in which clone of fv3gfs and NEMSfv3gfs git repositories are located.
-TMPDIR="/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs"  # Temporary work directory.
+BASEDIR="/scratch3/BMC/det/beck/FV3-CAM" # Directory in which clone of fv3gfs and NEMSfv3gfs git repositories are located.
+TMPDIR="/scratch3/BMC/det/beck/FV3-CAM/work_dirs"  # Temporary work directory.
 #
 # Forecast parameters.
 #
@@ -52,4 +52,13 @@ title="test_preproc03"              # Descriptive string for the forecast.  Used
 predef_rgnl_domain=""      # No predefined regional domain.
 predef_rgnl_domain="RAP"   # Set grid configuration to that of the RAP domain.
 #predef_rgnl_domain="HRRR"  # Set grid configuration to that of the HRRR domain.
+
+#Define cores per node for current system
+ncores_per_node=24 #Theia
+#cores_per_node=?? #Jet
+#cores_per_node=?? #Cheyenne
+
+#Define layout_x and layout_y
+layout_x=15  #19 - for HRRR
+layout_y=15  #25 - for HRRR
 

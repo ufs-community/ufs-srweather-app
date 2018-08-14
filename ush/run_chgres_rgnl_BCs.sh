@@ -64,7 +64,7 @@ cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
-. ./setup_grid_orog_ICs_BCs.sh 
+. ${BASEDIR}/fv3gfs/ush/setup_grid_orog_ICs_BCs.sh 
 #
 #-----------------------------------------------------------------------
 #
@@ -171,8 +171,8 @@ fi
 #-----------------------------------------------------------------------
 #
 export HALO=4
-ln -sf $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
-ln -sf $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
+ln -s $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
+ln -s $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
 
 
 #
@@ -239,8 +239,5 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-rm $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
-rm $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
-
-
-
+#rm $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
+#rm $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc

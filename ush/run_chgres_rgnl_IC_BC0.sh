@@ -72,7 +72,7 @@ cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
-. ./setup_grid_orog_ICs_BCs.sh 
+. ${BASEDIR}/fv3gfs/ush/setup_grid_orog_ICs_BCs.sh 
 #
 #-----------------------------------------------------------------------
 #
@@ -178,8 +178,8 @@ if [ "$gtype" = "regional" ]; then
 # are needed by chgres to create the boundary data.
 #
   export HALO=4
-  ln -sf $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
-  ln -sf $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
+  ln -s $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
+  ln -s $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
 
 else
 #
@@ -206,10 +206,7 @@ $BASE_GSM/ush/$chgres_driver_scr
 #
 #-----------------------------------------------------------------------
 #
-if [ "$gtype" = "regional" ]; then
-  rm $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
-  rm $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
-fi
-
-
-
+#if [ "$gtype" = "regional" ]; then
+#  rm $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
+#  rm $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
+#fi

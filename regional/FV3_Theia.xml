@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE workflow [
+
+<!ENTITY USER "Jeff.Beck">
+<!ENTITY ACCOUNT "gsd-fv3">
+<!ENTITY MACHINE "THEIA">
+<!ENTITY QUEUE "batch">
+<!ENTITY QUEUE_HPSS "service">
+<!ENTITY SCHED "moabtorque"> 
+
+<!ENTITY BASEDIR "/scratch3/BMC/det/beck/FV3-CAM">
+<!ENTITY TMPDIR "&BASEDIR;/work_dirs">
+
+<!ENTITY LOG_DIR "&BASEDIR;/fv3gfs/log">
+
+<!ENTITY GTYPE "regional">
+<!ENTITY RES "384">
+<!ENTITY FCST_LEN_HRS "24">
+<!ENTITY BC_INTERVAL_HRS "6">
+<!ENTITY STRETCH_FAC "1.5">
+<!ENTITY LON_TILE6_CTR "-106.0">
+<!ENTITY LAT_TILE6_CTR "54.0">
+<!ENTITY REFINE_RATIO "3">
+<!ENTITY ISTART_NEST_TILE6 "10">
+<!ENTITY IEND_NEST_TILE6 "374">
+<!ENTITY JSTART_NEST_TILE6 "10">
+<!ENTITY JEND_NEST_TILE6 "374">
+
+<!ENTITY PREDEF_RGNL_DOMAIN "RAP">
+
+<!ENTITY LAYOUT_X "15"> <!-- 19 for HRRR -->
+<!ENTITY LAYOUT_Y "15"> <!-- 25 for HRRR -->
+<!ENTITY NCORES_PER_NODE "24">
+
+<!ENTITY GET_GFS_PROC "1:ppn=1">
+<!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_PROC "1:ppn=24">
+<!ENTITY CHGRES_RGNL_IC_BC0_PROC "1:ppn=24">
+<!ENTITY CHGRES_RGNL_BCS_PROC "1:ppn=24">
+<!ENTITY STAGE_PROC "1:ppn=1">
+
+<!ENTITY GET_GFS_RESOURCES "<walltime>00:30:00</walltime>">
+<!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_RESOURCES "<walltime>00:30:00</walltime>">
+<!ENTITY CHGRES_RGNL_IC_BC0_RESOURCES "<walltime>00:30:00</walltime>">
+<!ENTITY CHGRES_RGNL_BCS_RESOURCES "<walltime>00:30:00</walltime>">
+<!ENTITY CHGRES_RGNL_BCS_RESOURCES "<walltime>00:30:00</walltime>">
+<!ENTITY STAGE_RESOURCES "<walltime>00:10:00</walltime>">
+
+<!ENTITY RESERVATION '<native>-W umask=022 -m n</native><queue>&QUEUE;</queue><account>&ACCOUNT;</account>'> 
+<!ENTITY RESERVATION_HPSS '<native>-W umask=022 -m n</native><queue>&QUEUE_HPSS;</queue><account>&ACCOUNT;</account>'> 
+
+]>
+
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20">
+
+<cycledef>00 00 04 06 2018 *</cycledef>
+
+  <log>
+    <cyclestr>&LOG_DIR;/FV3_@Y@m@d@H.log</cyclestr>
+  </log>
+
+  <task name="fv3gfs_driver_grid_regional" maxtries="2">
+
+    &FV3GFS_DRIVER_GRID_REGIONAL_RESOURCES;
+    &RESERVATION;
+
+    <command>&BASEDIR;/fv3gfs/ush/fv3gfs_driver_grid_regional.sh</command>
+    <nodes>&FV3GFS_DRIVER_GRID_REGIONAL_PROC;</nodes>
+    <jobname>fv3gfs_drvr_grid</jobname>
+    <join><cyclestr>&LOG_DIR;/fv3gfs_driver_grid_regional_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>BASEDIR</name>
+      <value>&BASEDIR;</value>
+    </envar>
+
+    <envar>
+      <name>TMPDIR</name>
+      <value>&TMPDIR;</value>
+    </envar>
+
+    <envar>
+      <name>machine</name>
+      <value>&MACHINE;</value>
+    </envar>
+
+    <envar>
+      <name>CDATE</name>
+      <value><cyclestr>@Y@m@d@H</cyclestr></value>
+    </envar>
+
+    <envar>
+      <name>BC_interval_hrs</name>
+      <value>&BC_INTERVAL_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>fcst_len_hrs</name>
+      <value>&FCST_LEN_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>gtype</name>
+      <value>&GTYPE;</value>
+    </envar>
+
+    <envar>
+      <name>RES</name>
+      <value>&RES;</value>
+    </envar>
+
+    <envar>
+      <name>predef_rgnl_domain</name>
+      <value>&PREDEF_RGNL_DOMAIN;</value>
+    </envar>
+
+  </task>
+
+  <task name="get_GFS_anl_fcst_files" maxtries="2">
+
+    &GET_GFS_RESOURCES;
+    &RESERVATION_HPSS;
+
+    <command>&BASEDIR;/fv3gfs/ush/get_GFS_anl_fcst_files.sh</command>
+    <nodes>&GET_GFS_PROC;</nodes>
+    <jobname>get_GFS_anl_fcst_files</jobname>
+    <join><cyclestr>&LOG_DIR;/get_GFS_anl_fcst_files_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>BASEDIR</name>
+      <value>&BASEDIR;</value>
+    </envar>
+
+    <envar>
+      <name>TMPDIR</name>
+      <value>&TMPDIR;</value>
+    </envar>
+
+    <envar>
+      <name>machine</name>
+      <value>&MACHINE;</value>
+    </envar>
+
+    <envar>
+      <name>CDATE</name>
+      <value><cyclestr>@Y@m@d@H</cyclestr></value>
+    </envar>
+
+    <envar>
+      <name>BC_interval_hrs</name>
+      <value>&BC_INTERVAL_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>fcst_len_hrs</name>
+      <value>&FCST_LEN_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>gtype</name>
+      <value>&GTYPE;</value>
+    </envar>
+
+    <envar>
+      <name>RES</name>
+      <value>&RES;</value>
+    </envar>
+
+    <envar>
+      <name>predef_rgnl_domain</name>
+      <value>&PREDEF_RGNL_DOMAIN;</value>
+    </envar>
+
+    <dependency>
+       <taskdep task="fv3gfs_driver_grid_regional"/>
+    </dependency>
+
+  </task> 
+
+  <task name="run_chgres_rgnl_IC_BC0" maxtries="2">
+
+    &CHGRES_RGNL_IC_BC0_RESOURCES;
+    &RESERVATION;
+
+    <command>&BASEDIR;/fv3gfs/ush/run_chgres_rgnl_IC_BC0.sh</command>
+    <nodes>&CHGRES_RGNL_IC_BC0_PROC;</nodes>
+    <jobname>chgres_IC_BC0</jobname>
+    <join><cyclestr>&LOG_DIR;/run_chgres_rgnl_IC_BC0_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>BASEDIR</name>
+      <value>&BASEDIR;</value>
+    </envar>
+
+    <envar>
+      <name>TMPDIR</name>
+      <value>&TMPDIR;</value>
+    </envar>
+
+    <envar>
+      <name>machine</name>
+      <value>&MACHINE;</value>
+    </envar>
+
+    <envar>
+      <name>CDATE</name>
+      <value><cyclestr>@Y@m@d@H</cyclestr></value>
+    </envar>
+
+    <envar>
+      <name>BC_interval_hrs</name>
+      <value>&BC_INTERVAL_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>fcst_len_hrs</name>
+      <value>&FCST_LEN_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>gtype</name>
+      <value>&GTYPE;</value>
+    </envar>
+
+    <envar>
+      <name>RES</name>
+      <value>&RES;</value>
+    </envar>
+
+    <envar>
+      <name>predef_rgnl_domain</name>
+      <value>&PREDEF_RGNL_DOMAIN;</value>
+    </envar>
+
+    <dependency>
+     <and>
+      <taskdep task="fv3gfs_driver_grid_regional"/>
+      <taskdep task="get_GFS_anl_fcst_files"/>
+     </and> 
+   </dependency>
+
+  </task>
+
+  <task name="run_chgres_rgnl_BCs" maxtries="3">
+
+    &CHGRES_RGNL_BCS_RESOURCES;
+    &RESERVATION;
+
+    <command>&BASEDIR;/fv3gfs/ush/run_chgres_rgnl_BCs.sh</command>
+    <nodes>&CHGRES_RGNL_BCS_PROC;</nodes>
+    <jobname>chgres_BCs</jobname>
+    <join><cyclestr>&LOG_DIR;/run_chgres_rgnl_BCs_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>BASEDIR</name>
+      <value>&BASEDIR;</value>
+    </envar>
+
+    <envar>
+      <name>TMPDIR</name>
+      <value>&TMPDIR;</value>
+    </envar>
+
+    <envar>
+      <name>machine</name>
+      <value>&MACHINE;</value>
+    </envar>
+
+    <envar>
+      <name>CDATE</name>
+      <value><cyclestr>@Y@m@d@H</cyclestr></value>
+    </envar>
+
+    <envar>
+      <name>BC_interval_hrs</name>
+      <value>&BC_INTERVAL_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>fcst_len_hrs</name>
+      <value>&FCST_LEN_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>gtype</name>
+      <value>&GTYPE;</value>
+    </envar>
+
+    <envar>
+      <name>RES</name>
+      <value>&RES;</value>
+    </envar>
+
+    <envar>
+      <name>predef_rgnl_domain</name>
+      <value>&PREDEF_RGNL_DOMAIN;</value>
+    </envar>
+
+    <dependency>
+     <and>
+      <taskdep task="fv3gfs_driver_grid_regional"/>
+      <taskdep task="get_GFS_anl_fcst_files"/>
+     </and>
+    </dependency>
+
+  </task>
+
+  <task name="stage" maxtries="2">
+
+    &STAGE_RESOURCES;
+    &RESERVATION;
+
+    <command>&BASEDIR;/fv3gfs/ush/stage.sh</command>
+    <nodes>&STAGE_PROC;</nodes>
+    <jobname>stage</jobname>
+    <join><cyclestr>&LOG_DIR;/stage_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>BASEDIR</name>
+      <value>&BASEDIR;</value>
+    </envar>
+
+    <envar>
+      <name>TMPDIR</name>
+      <value>&TMPDIR;</value>
+    </envar>
+
+    <envar>
+      <name>machine</name>
+      <value>&MACHINE;</value>
+    </envar>
+
+    <envar>
+      <name>CDATE</name>
+      <value><cyclestr>@Y@m@d@H</cyclestr></value>
+    </envar>
+
+    <envar>
+      <name>BC_interval_hrs</name>
+      <value>&BC_INTERVAL_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>fcst_len_hrs</name>
+      <value>&FCST_LEN_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>gtype</name>
+      <value>&GTYPE;</value>
+    </envar>
+
+    <envar>
+      <name>RES</name>
+      <value>&RES;</value>
+    </envar>
+
+    <envar>
+      <name>predef_rgnl_domain</name>
+      <value>&PREDEF_RGNL_DOMAIN;</value>
+    </envar>
+
+    <envar>
+      <name>layout_x</name>
+      <value>&LAYOUT_X;</value>
+    </envar> 
+
+    <envar>
+      <name>layout_y</name>
+      <value>&LAYOUT_Y;</value>
+    </envar>
+
+    <envar>
+      <name>ncores_per_node</name>
+      <value>&NCORES_PER_NODE;</value>
+    </envar>
+
+    <dependency>
+     <and>
+      <taskdep task="run_chgres_rgnl_IC_BC0"/>
+      <taskdep task="run_chgres_rgnl_BCs"/>
+     </and>
+    </dependency>
+
+  </task>
+
+<!-- <task name="FV3" maxtries="2">
+
+    &FV3_RESOURCES;
+    &RESERVATION;
+
+    <command>&BASEDIR;/fv3gfs/run_dir</command>
+    <nodes>&FV3_PROC;</nodes>
+    <jobname>FV3</jobname>
+    <join><cyclestr>&LOG_DIR;/FV3_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>BASEDIR</name>
+      <value>&BASEDIR;</value>
+    </envar>
+
+    <dependency>
+      <taskdep task="stage"/>
+    </dependency>
+
+  </task> -->
+
+</workflow>
