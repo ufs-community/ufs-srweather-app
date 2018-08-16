@@ -75,7 +75,7 @@ cp ${templates}/model_configure ${RUNDIR}
 cp ${templates}/diag_table ${RUNDIR}
 cp ${templates}/field_table ${RUNDIR}
 cp ${templates}/nems.configure ${RUNDIR}
-cp ${templates}/run.regional ${RUNDIR}/run.${CRES}.regional
+cp ${templates}/run.regional ${RUNDIR}/run.regional
 
 #Place all fixed files into run directory
 echo "Copying necessary fixed files into the run directory..."
@@ -171,8 +171,8 @@ fi
 
 #Verify that run script exists
 
-if [ ! -f $RUNDIR/run.${CRES}.regional ]; then
-   echo "Run script, run.${CRES}.regional, does not exist.  Check your run directory.  Exiting..."
+if [ ! -f $RUNDIR/run.regional ]; then
+   echo "Run script, run.regional, does not exist.  Check your run directory.  Exiting..."
    exit 1
 fi
 
@@ -282,11 +282,16 @@ echo "PPN: $PPN"
 echo"" 
     
 #Modify nodes and PPN in the run script
-echo "Modifying nodes and PPN in run.${CRES}.regional..."
+echo "Modifying nodes and PPN in run.regional..."
 echo ""
-sed -i -r -e "s/^(#PBS.*nodes=)([^:]*)(:.*)/\1$Nodes\3/" ${RUNDIR}/run.${CRES}.regional
-sed -i -r -e "s/(ppn=)(.*)/\1$PPN/" ${RUNDIR}/run.${CRES}.regional
+sed -i -r -e "s/^(#PBS.*nodes=)([^:]*)(:.*)/\1$Nodes\3/" ${RUNDIR}/run.regional
+sed -i -r -e "s/(ppn=)(.*)/\1$PPN/" ${RUNDIR}/run.regional
 
-#Modify $RUNDIR in run.${CRES}.regionl
+#Modify $RUNDIR in run.regional
 echo "Modifying run directory in run.${CRES}.regional..."
-sed -i -r -e 's+\$\{RUNDIR\}+'"${RUNDIR}"'+' ${RUNDIR}/run.${CRES}.regional
+sed -i -r -e 's+\$\{RUNDIR\}+'"${RUNDIR}"'+' ${RUNDIR}/run.regional
+
+#Modify FV3 run proc in FV3_Theia.xml
+echo "Modifying FV3 run proc in FV3_Theia.xml..."
+REGEXP="(^\s*<!ENTITY\s*FV3_PROC\s*\")(.*)(\">.*)"
+sed -i -r -e "s/$REGEXP/\1${Nodes}:ppn=${PPN}\3/g" ${BASEDIR}/fv3gfs/regional/FV3_Theia.xml
