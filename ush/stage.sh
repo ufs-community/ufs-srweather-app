@@ -136,20 +136,20 @@ fi
 
 #Copy, rename, and link pre-processing NetCDF files to ${RUNDIR}/INPUT
 cp ${out_dir}/${CRES}_grid.tile7.halo3.nc ${RUNDIR}/INPUT
-ln -s ${RUNDIR}/INPUT/${CRES}_grid.tile7.halo3.nc ${RUNDIR}/INPUT/${CRES}_grid.tile7.nc
+ln -sf ${RUNDIR}/INPUT/${CRES}_grid.tile7.halo3.nc ${RUNDIR}/INPUT/${CRES}_grid.tile7.nc
 cp ${out_dir}/${CRES}_grid.tile7.halo4.nc ${RUNDIR}/INPUT
-ln -s ${RUNDIR}/INPUT/${CRES}_grid.tile7.halo4.nc ${RUNDIR}/INPUT/grid.tile7.halo4.nc
+ln -sf ${RUNDIR}/INPUT/${CRES}_grid.tile7.halo4.nc ${RUNDIR}/INPUT/grid.tile7.halo4.nc
 cp ${out_dir}/${CRES}_mosaic.nc ${RUNDIR}/INPUT
-ln -s ${RUNDIR}/INPUT/${CRES}_mosaic.nc ${RUNDIR}/INPUT/grid_spec.nc
+ln -sf ${RUNDIR}/INPUT/${CRES}_mosaic.nc ${RUNDIR}/INPUT/grid_spec.nc
 cp ${out_dir}/${CRES}_oro_data.tile7.halo0.nc ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.halo0.nc
 cp ${out_dir}/${CRES}_oro_data.tile7.halo4.nc ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.halo4.nc
-ln -s ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.halo0.nc ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.nc
-ln -s ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.halo0.nc ${RUNDIR}/INPUT/oro_data.nc
-ln -s ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.halo4.nc ${RUNDIR}/INPUT/oro_data.tile7.halo4.nc
+ln -sf ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.halo0.nc ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.nc
+ln -sf ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.halo0.nc ${RUNDIR}/INPUT/oro_data.nc
+ln -sf ${RUNDIR}/INPUT/${CRES}_oro_data.tile7.halo4.nc ${RUNDIR}/INPUT/oro_data.tile7.halo4.nc
 cp ${out_dir}/gfs* ${RUNDIR}/INPUT
-ln -s ${RUNDIR}/INPUT/gfs_data.tile7.nc ${RUNDIR}/INPUT/gfs_data.nc
+ln -sf ${RUNDIR}/INPUT/gfs_data.tile7.nc ${RUNDIR}/INPUT/gfs_data.nc
 cp ${out_dir}/sfc_data.tile7.nc ${RUNDIR}/INPUT
-ln -s ${RUNDIR}/INPUT/sfc_data.tile7.nc ${RUNDIR}/INPUT/sfc_data.nc
+ln -sf ${RUNDIR}/INPUT/sfc_data.tile7.nc ${RUNDIR}/INPUT/sfc_data.nc
 
 #############################################################################################################3###
 # Math required for grid decomposition and sed commands to replace template values in namelists/configure files #

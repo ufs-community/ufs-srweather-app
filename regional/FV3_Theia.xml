@@ -391,7 +391,7 @@
     &FV3_RESOURCES;
     &RESERVATION;
 
-    <command>&BASEDIR;/fv3gfs/run_dir/run.regional</command>
+    <command>&BASEDIR;/fv3gfs/ush/run_FV3.sh</command>
     <nodes>&FV3_PROC;</nodes>
     <jobname>run_FV3</jobname>
     <join><cyclestr>&LOG_DIR;/run_FV3_@Y@m@d@H.log</cyclestr></join>
@@ -399,6 +399,61 @@
     <envar>
       <name>BASEDIR</name>
       <value>&BASEDIR;</value>
+    </envar>
+
+    <envar>
+      <name>TMPDIR</name>
+      <value>&TMPDIR;</value>
+    </envar>
+
+    <envar>
+      <name>machine</name>
+      <value>&MACHINE;</value>
+    </envar>
+
+    <envar>
+      <name>CDATE</name>
+      <value><cyclestr>@Y@m@d@H</cyclestr></value>
+    </envar>
+
+    <envar>
+      <name>BC_interval_hrs</name>
+      <value>&BC_INTERVAL_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>fcst_len_hrs</name>
+      <value>&FCST_LEN_HRS;</value>
+    </envar>
+
+    <envar>
+      <name>gtype</name>
+      <value>&GTYPE;</value>
+    </envar>
+
+    <envar>
+      <name>RES</name>
+      <value>&RES;</value>
+    </envar>
+
+    <envar>
+      <name>predef_rgnl_domain</name>
+      <value>&PREDEF_RGNL_DOMAIN;</value>
+    </envar>
+
+    <envar>
+      <name>layout_x</name>
+      <value>&LAYOUT_X;</value>
+    </envar>
+
+    <envar>
+      <name>layout_y</name>
+      <value>&LAYOUT_Y;</value>
+    </envar>
+
+    <envar>
+      <name>ncores_per_node</name>
+      <value>&NCORES_PER_NODE;</value>
     </envar>
 
     <dependency>

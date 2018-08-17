@@ -171,8 +171,8 @@ fi
 #-----------------------------------------------------------------------
 #
 export HALO=4
-ln -s $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
-ln -s $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
+ln -sf $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
+ln -sf $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
 
 
 #
