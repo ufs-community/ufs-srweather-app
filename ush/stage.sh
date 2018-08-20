@@ -76,6 +76,7 @@ cp ${templates}/diag_table ${RUNDIR}
 cp ${templates}/field_table ${RUNDIR}
 cp ${templates}/nems.configure ${RUNDIR}
 cp ${templates}/run.regional ${RUNDIR}/run.regional
+touch ${RUNDIR}/data_table
 
 #Place all fixed files into run directory
 echo "Copying necessary fixed files into the run directory..."
