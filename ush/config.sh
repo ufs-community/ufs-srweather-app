@@ -49,7 +49,7 @@ title=${title:-"test_preproc03"}             # Descriptive string for the foreca
 # "RAP"  "HRRR"
 #
 predef_rgnl_domain=${predef_rgnl_domain:-""}      # No predefined regional domain.
-#predef_rgnl_domain=${predef_rgnl_domain:-"RAP"}   # Set grid configuration to that of the RAP domain.
+#predef_rgnl_domain="RAP"   # Set grid configuration to that of the RAP domain.
 #predef_rgnl_domain="HRRR"  # Set grid configuration to that of the HRRR domain.
 
 #Define cores per node for current system
@@ -62,4 +62,4 @@ layout_x=${layout_x:-15}  #19 - for HRRR
 layout_y=${layout_y:-15}  #25 - for HRRR
 
 #Define whether to use the "write component" or not
-quilting=${quilting:-"false"}
+quilting=${quilting:-".false."}
