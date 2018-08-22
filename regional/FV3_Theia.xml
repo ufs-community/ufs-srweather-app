@@ -19,13 +19,19 @@
 <!ENTITY FCST_LEN_HRS "24">
 <!ENTITY BC_INTERVAL_HRS "6">
 <!ENTITY STRETCH_FAC "1.5">
-<!ENTITY LON_TILE6_CTR "-106.0">
 <!ENTITY LAT_TILE6_CTR "54.0">
+<!ENTITY LON_TILE6_CTR "-106.0">
 <!ENTITY REFINE_RATIO "3">
 <!ENTITY ISTART_NEST_TILE6 "10">
 <!ENTITY IEND_NEST_TILE6 "374">
+<!-- <!ENTITY JSTART_NEST_TILE6 "10">
+<!ENTITY JEND_NEST_TILE6 "374"> -->
+
 <!ENTITY JSTART_NEST_TILE6 "10">
-<!ENTITY JEND_NEST_TILE6 "374">
+<!ENTITY JEND_NEST_TILE6 "369">
+
+<!ENTITY TITLE "FV3">
+<!ENTITY QUILTING "TRUE">
 
 <!ENTITY PREDEF_RGNL_DOMAIN "RAP">
 
@@ -112,9 +118,59 @@
     </envar>
 
     <envar>
+      <name>stretch_fac</name>
+      <value>&STRETCH_FAC;</value>
+    </envar>
+
+    <envar>
+      <name>lat_tile6_ctr</name>
+      <value>&LAT_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>lon_tile6_ctr</name>
+      <value>&LON_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>refine_ratio</name>
+      <value>&REFINE_RATIO;</value>
+    </envar>
+
+    <envar>
+      <name>istart_nest_tile6</name>
+      <value>&ISTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>iend_nest_tile6</name>
+      <value>&IEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jstart_nest_tile6</name>
+      <value>&JSTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jend_nest_tile6</name>
+      <value>&JEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>title</name>
+      <value>&TITLE;</value>
+    </envar>
+
+    <envar>
+      <name>quilting</name>
+      <value>&QUILTING;</value>
+    </envar>
+
+<!--    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar>
+    </envar> -->
 
   </task>
 
@@ -169,9 +225,59 @@
     </envar>
 
     <envar>
+      <name>stretch_fac</name>
+      <value>&STRETCH_FAC;</value>
+    </envar>
+
+    <envar>
+      <name>lat_tile6_ctr</name>
+      <value>&LAT_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>lon_tile6_ctr</name>
+      <value>&LON_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>refine_ratio</name>
+      <value>&REFINE_RATIO;</value>
+    </envar>
+
+    <envar>
+      <name>istart_nest_tile6</name>
+      <value>&ISTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>iend_nest_tile6</name>
+      <value>&IEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jstart_nest_tile6</name>
+      <value>&JSTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jend_nest_tile6</name>
+      <value>&JEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>title</name>
+      <value>&TITLE;</value>
+    </envar>
+
+    <envar>
+      <name>quilting</name>
+      <value>&QUILTING;</value>
+    </envar>
+
+<!--    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar>
+    </envar> -->
 
     <dependency>
        <taskdep task="fv3gfs_driver_grid_regional"/>
@@ -230,9 +336,59 @@
     </envar>
 
     <envar>
+      <name>stretch_fac</name>
+      <value>&STRETCH_FAC;</value>
+    </envar>
+
+    <envar>
+      <name>lat_tile6_ctr</name>
+      <value>&LAT_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>lon_tile6_ctr</name>
+      <value>&LON_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>refine_ratio</name>
+      <value>&REFINE_RATIO;</value>
+    </envar>
+
+    <envar>
+      <name>istart_nest_tile6</name>
+      <value>&ISTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>iend_nest_tile6</name>
+      <value>&IEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jstart_nest_tile6</name>
+      <value>&JSTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jend_nest_tile6</name>
+      <value>&JEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>title</name>
+      <value>&TITLE;</value>
+    </envar>
+
+    <envar>
+      <name>quilting</name>
+      <value>&QUILTING;</value>
+    </envar>
+
+<!--    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar>
+    </envar> -->
 
     <dependency>
      <and>
@@ -294,9 +450,59 @@
     </envar>
 
     <envar>
+      <name>stretch_fac</name>
+      <value>&STRETCH_FAC;</value>
+    </envar>
+
+    <envar>
+      <name>lat_tile6_ctr</name>
+      <value>&LAT_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>lon_tile6_ctr</name>
+      <value>&LON_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>refine_ratio</name>
+      <value>&REFINE_RATIO;</value>
+    </envar>
+
+    <envar>
+      <name>istart_nest_tile6</name>
+      <value>&ISTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>iend_nest_tile6</name>
+      <value>&IEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jstart_nest_tile6</name>
+      <value>&JSTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jend_nest_tile6</name>
+      <value>&JEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>title</name>
+      <value>&TITLE;</value>
+    </envar>
+
+    <envar>
+      <name>quilting</name>
+      <value>&QUILTING;</value>
+    </envar>
+
+<!--    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar>
+    </envar> -->
 
     <dependency>
      <and>
@@ -358,9 +564,59 @@
     </envar>
 
     <envar>
+      <name>stretch_fac</name>
+      <value>&STRETCH_FAC;</value>
+    </envar>
+
+    <envar>
+      <name>lat_tile6_ctr</name>
+      <value>&LAT_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>lon_tile6_ctr</name>
+      <value>&LON_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>refine_ratio</name>
+      <value>&REFINE_RATIO;</value>
+    </envar>
+
+    <envar>
+      <name>istart_nest_tile6</name>
+      <value>&ISTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>iend_nest_tile6</name>
+      <value>&IEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jstart_nest_tile6</name>
+      <value>&JSTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jend_nest_tile6</name>
+      <value>&JEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>title</name>
+      <value>&TITLE;</value>
+    </envar>
+
+    <envar>
+      <name>quilting</name>
+      <value>&QUILTING;</value>
+    </envar>
+
+<!--    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar>
+    </envar> -->
 
     <envar>
       <name>layout_x</name>
@@ -386,7 +642,7 @@
 
   </task>
 
-  <task name="run_FV3" maxtries="2">
+  <task name="run_FV3" maxtries="7">
 
     &FV3_RESOURCES;
     &RESERVATION;
@@ -437,9 +693,59 @@
     </envar>
 
     <envar>
+      <name>stretch_fac</name>
+      <value>&STRETCH_FAC;</value>
+    </envar>
+
+    <envar>
+      <name>lat_tile6_ctr</name>
+      <value>&LAT_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>lon_tile6_ctr</name>
+      <value>&LON_TILE6_CTR;</value>
+    </envar>
+
+    <envar>
+      <name>refine_ratio</name>
+      <value>&REFINE_RATIO;</value>
+    </envar>
+
+    <envar>
+      <name>istart_nest_tile6</name>
+      <value>&ISTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>iend_nest_tile6</name>
+      <value>&IEND_NEST_TILE6;</value>
+    </envar>
+    
+    <envar>
+      <name>jstart_nest_tile6</name>
+      <value>&JSTART_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>jend_nest_tile6</name>
+      <value>&JEND_NEST_TILE6;</value>
+    </envar>
+
+    <envar>
+      <name>title</name>
+      <value>&TITLE;</value>
+    </envar>
+
+    <envar>
+      <name>quilting</name>
+      <value>&QUILTING;</value>
+    </envar>
+
+<!--    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar>
+    </envar> -->
 
     <envar>
       <name>layout_x</name>

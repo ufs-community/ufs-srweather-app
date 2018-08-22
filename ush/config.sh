@@ -36,7 +36,7 @@ refine_ratio=${refine_ratio:-3}        # Refinement ratio for nested or regional
 istart_nest_tile6=${istart_nest_tile6:-10}  # i-index on tile 6 at which nested or regional grid starts.
 iend_nest_tile6=${iend_nest_tile6:-374}   # i-index on tile 6 at which nested or regional grid ends.
 jstart_nest_tile6=${jstart_nest_tile6:-10}  # j-index on tile 6 at which nested or regional grid starts.
-jend_nest_tile6=i${jend_nest_tile6:-374}   # j-index on tile 6 at which nested or regional grid ends.
+jend_nest_tile6=${jend_nest_tile6:-374}   # j-index on tile 6 at which nested or regional grid ends.
 title=${title:-"test_preproc03"}             # Descriptive string for the forecast.  Used in forming the name of the preprocessing output directory.
 #
 # Predefined regional domains.  If this is set to a valid non-empty 
@@ -49,7 +49,7 @@ title=${title:-"test_preproc03"}             # Descriptive string for the foreca
 # "RAP"  "HRRR"
 #
 predef_rgnl_domain=${predef_rgnl_domain:-""}      # No predefined regional domain.
-predef_rgnl_domain=${predef_rgnl_domain:-"RAP"}   # Set grid configuration to that of the RAP domain.
+#predef_rgnl_domain=${predef_rgnl_domain:-"RAP"}   # Set grid configuration to that of the RAP domain.
 #predef_rgnl_domain="HRRR"  # Set grid configuration to that of the HRRR domain.
 
 #Define cores per node for current system
@@ -60,3 +60,6 @@ ncores_per_node=${ncores_per_node:-24} #Theia
 #Define layout_x and layout_y
 layout_x=${layout_x:-15}  #19 - for HRRR
 layout_y=${layout_y:-15}  #25 - for HRRR
+
+#Define whether to use the "write component" or not
+quilting=${quilting:-"false"}

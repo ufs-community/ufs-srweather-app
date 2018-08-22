@@ -76,7 +76,7 @@ cp ${templates}/diag_table ${RUNDIR}
 cp ${templates}/field_table ${RUNDIR}
 cp ${templates}/nems.configure ${RUNDIR}
 cp ${templates}/run.regional ${RUNDIR}/run.regional
-touch ${RUNDIR}/data_table
+cp ${templates}/data_table ${RUNDIR}
 
 #Place all fixed files into run directory
 echo "Copying necessary fixed files into the run directory..."
@@ -133,6 +133,16 @@ else
    echo "Removing and recreating pre-existing INPUT directory"
    rm -rf $RUNDIR/INPUT
    mkdir $RUNDIR/INPUT
+fi
+
+#Make RESTART directory within the run directory if it doesn't already exist
+if [ ! -d $RUNDIR/RESTART ]; then
+   echo "Making $RUNDIR/RESTART..."
+   mkdir $RUNDIR/RESTART
+else
+   echo "Removing and recreating pre-existing RESTART directory"
+   rm -rf $RUNDIR/RESTART
+   mkdir $RUNDIR/RESTART
 fi
 
 #Copy, rename, and link pre-processing NetCDF files to ${RUNDIR}/INPUT
@@ -247,6 +257,10 @@ echo "PE_MEMBER01 for model_configure: $PE_MEMBER01"
 echo ""
 
 #Modify values in model_configure
+echo "Modifying quilting in model_configure... "
+echo ""
+sed -i -r -e "s/^(\s*quilting:\s*)(.*)/\1$quilting/" ${RUNDIR}/model_configure
+
 echo "Modifying PE_MEMBER01 in model_configure... "
 echo ""
 sed -i -r -e "s/^(\s*PE_MEMBER01:\s*)(.*)/\1$PE_MEMBER01/" ${RUNDIR}/model_configure
