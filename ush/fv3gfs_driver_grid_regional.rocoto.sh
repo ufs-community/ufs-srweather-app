@@ -17,14 +17,14 @@
 ##PBS -l nodes=1:ppn=24
 ##PBS -q debug
 ##PBS -l walltime=00:30:00
-#----Cheyenne JOBCARD
-#PBS -N fv3_grid_driver
-#PBS -A fv3-cpu
-#PBS -o log.grid.regional.$PBS_JOBID
-#PBS -e log.grid.regional.$PBS_JOBID
-#PBS -l nodes=1:ppn=24
-#PBS -q debug
-#PBS -l walltime=00:30:00
+##----Cheyenne JOBCARD
+##PBS -N fv3_grid_driver
+##PBS -A gsd-fv3
+##PBS -o log.grid.regional.$PBS_JOBID
+##PBS -e log.grid.regional.$PBS_JOBID
+##PBS -l nodes=1:ppn=24
+##PBS -q debug
+##PBS -l walltime=00:30:00
 
 set -aux
 
@@ -33,17 +33,8 @@ set -aux
 ## SHOULD BE PROVIDED BY WORKFLOW XML IN THE FUTURE
 ##
 
-machine=CHEYENNE
-FV3GFS_DIR=/gpfs/fs1/work/kavulich/FV3/rocoto_pp_workflow/fv3gfs
-
-
-
-
-
-
-
-
-
+#machine=CHEYENNE
+#FV3GFS_DIR=/gpfs/fs1/work/kavulich/FV3/rocoto_pp_workflow/fv3gfs
 
 
 ##
@@ -61,9 +52,9 @@ ulimit -s unlimited
 
 #----------------------------------------------------------------
 
-export USER=$LOGNAME 
-export res=96	 	   # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
-export gtype=regional      # grid type: uniform, stretch, nest or regional
+export USER=${USER:-$LOGNAME}
+export res=${res:=96}	 	   # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
+export gtype=${gtype:=regional}      # grid type: uniform, stretch, nest or regional
 
 #----------------------------------------------------------------
 # The orography code runs with threads.  On Cray, the code is
@@ -97,7 +88,8 @@ elif [ $machine = THEIA ]; then
  export APRUN=time
  export home_dir=$PBS_O_WORKDIR/..
  export topo=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog
- export TMPDIR=/scratch3/NCEPDEV/stmp1/$LOGNAME/fv3_grid.$gtype
+# export TMPDIR=/scratch3/NCEPDEV/stmp1/$LOGNAME/fv3_grid.$gtype
+ export TMPDIR=/scratch3/BMC/fim/$LOGNAME/regional_FV3_EMC_visit_20180509/work_dirs
  set -x
 elif [ $machine = CHEYENNE ]; then
  source /glade/u/apps/ch/modulefiles/default/localinit/localinit.sh

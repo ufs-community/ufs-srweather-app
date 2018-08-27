@@ -1,0 +1,11 @@
+#%Module#####################################################
+## Module file for fre-nctools for NCAR/UCAR Cheyenne machine
+#############################################################
+module purge
+module load ncarenv/1.2   
+module load intel/18.0.1
+module load ncarcompilers/0.4.1
+module load impi/2018.1.163
+module load netcdf/4.6.1
+# No hdf5 loaded since netcdf and hdf5 reside together on cheyenne
+

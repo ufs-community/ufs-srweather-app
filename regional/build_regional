@@ -1,14 +1,22 @@
 #!/bin/bash
 set -eux
 
+if [ $# -eq 0 ] ; then
+    echo "ERROR: You must provide the platform as a command-line argument"
+    exit 1
+fi
+
 SITE=${1}
 
 FV3GFS_DIR=$( pwd )/..
+if [ ${SITE} == "cheyenne" ]; then
+  export NCEPLIB_DIR=/glade/p/ral/jntp/GMTB/tools/NCEPlibs/20180717/intel-18.0.1/
+fi
 
 cd ${FV3GFS_DIR}/sorc
-./build_fre-nctools.sh >& out.build_fre-nctools
-./build_orog.sh ${SITE} >& out.build_orog
-./build_chgres.sh      >& out.build_chgres
+./build_fre-nctools.sh ${SITE} >& out.build_fre-nctools
+./build_orog.sh ${SITE}        >& out.build_orog
+./build_chgres.sh ${SITE}      >& out.build_chgres
 
 
 cd ${FV3GFS_DIR}/../NEMSfv3gfs/tests
@@ -32,6 +40,10 @@ elif [ ${SITE} == "wcoss_cray" ]; then
 elif [ ${SITE} == "odin" ]; then
 
     ln -fs /scratch/ywang/test_runs/C768_nest/fv3-fix fix_am
+
+elif [ ${SITE} == "cheyenne" ]; then
+
+    ln -sf /glade/p/ral/jntp/GMTB/FV3GFS_V1_RELEASE/fix/fix_am/ fix_am
 
 else
     echo "Unknown site " ${SITE}

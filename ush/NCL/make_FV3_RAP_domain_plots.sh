@@ -204,6 +204,9 @@ if [ 0 = 1 ]; then
 # Show FV3 regional domain (tile 7) and the original RAP domain outline
 # on a subregional cylindrical projection centered over CONUS.
 #
+# Show FV3 regional domain (tile 7) and the original RAP domain outline
+# on a subregional cylindrical projection centered over CONUS.
+#
 ncl -n plot_fields.ncl \
   grid_dir=\"$grid_dir\" \
   base_name=\"$base_name\" \
