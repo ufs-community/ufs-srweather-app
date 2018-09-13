@@ -70,6 +70,20 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Set the number of cores per node for the specified machine.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$machine" = "WCOSS_C" ]; then
+  export ncores_per_node=${ncores_per_node}  # Don't know the default on WCOS_C, so must get it from environment.
+elif [ "$machine" = "WCOSS" ]; then
+  export ncores_per_node=${ncores_per_node}  # Don't know the default on WCOS, so must get it from environment.
+elif [ "$machine" = "THEIA" ]; then
+  export ncores_per_node=${ncores_per_node:-24}
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Set the cubed-sphere grid type (gtype).  This can be one of "uniform", 
 # "stretch", "nest", and "regional".
 #
