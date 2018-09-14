@@ -1052,8 +1052,11 @@ if (False) then
     end if
 else
 
-    field_name = "grid_size"
-    field_name = "orog_raw"
+    field_name = "sqrt_area"
+    field_name = "dx_dy_min"
+;    field_name = "dx_ovr_dy"
+
+;    field_name = "orog_raw"
 ;    field_name = "orog_filt"
 ;
 ;    fcst_hr = 6
@@ -1072,6 +1075,15 @@ else
 
 
     field_crnt_tile := new((/ ny, nx /), "double")
+    dxS_crnt_tile := new((/ ny, nx /), "double")
+    dxN_crnt_tile := new((/ ny, nx /), "double")
+    dyW_crnt_tile := new((/ ny, nx /), "double")
+    dyE_crnt_tile := new((/ ny, nx /), "double")
+    dx_min_crnt_tile := new((/ ny, nx /), "double")
+    dy_min_crnt_tile := new((/ ny, nx /), "double")
+    ds_min_crnt_tile := new((/ ny, nx /), "double")
+    dx_ovr_dy_crnt_tile := new((/ ny, nx /), "double")
+
 ;    field_crnt_tile = n_tile
 ;    field_crnt_tile = default_fillvalue("double")
 ;    field_crnt_tile@_FillValue = default_fillvalue("double")
@@ -1081,34 +1093,141 @@ else
 
     plot_title = ""
 
-    if (strcmp(field_name, "grid_size")) then
+    if (strcmp(field_name, "sqrt_area")) then
 
 ;
 ; Read in the cell edge distances.
 ; 
-;      dx := fg->dx(:,:)
-;      dy := fg->dy(:,:)
       cell_area_supergrid_crnt_tile := fg->area(:,:)
 
       do jj=0, 2*ny-2, 2
         do ii=0, 2*nx-2, 2
+
           j = jj/2
           i = ii/2
+
           field_crnt_tile(j,i) \
           = cell_area_supergrid_crnt_tile(jj,ii) \
           + cell_area_supergrid_crnt_tile(jj,ii+1) \
           + cell_area_supergrid_crnt_tile(jj+1,ii+1) \
           + cell_area_supergrid_crnt_tile(jj+1,ii)
+
         end do
       end do
 
       field_crnt_tile := sqrt(field_crnt_tile)
 ; Convert distance from meters to kilometers
-      field_crnt_tile := field_crnt_tile/1000.0
+;      field_crnt_tile := field_crnt_tile/1000.0
+
+      field_crnt_tile := dx_ovr_dy_crnt_tile
+;      field_crnt_tile := ds_min_crnt_tile
+;      field_crnt_tile := dx_min_crnt_tile
+;      field_crnt_tile := dx_min_crnt_tile/dy_min_crnt_tile
+
       delete(cell_area_supergrid_crnt_tile)
 
-      field_desc = "Grid Size"
+      field_desc = "SQRT(cell area)"
       field_units = "km"
+
+      plot_title = field_desc + " [" + field_units + "]"
+
+    else if (strcmp(field_name, "dx_dy_min")) then
+
+;
+; Read in the cell edge distances.
+; 
+      dx_supergrid_crnt_tile := fg->dx(:,:)
+      dy_supergrid_crnt_tile := fg->dy(:,:)
+
+      do jj=0, 2*ny-2, 2
+        do ii=0, 2*nx-2, 2
+
+          j = jj/2
+          i = ii/2
+
+          dxS_crnt_tile(j,i) \
+          = dx_supergrid_crnt_tile(jj,ii) \
+          + dx_supergrid_crnt_tile(jj,ii+1)
+
+          dxN_crnt_tile(j,i) \
+          = dx_supergrid_crnt_tile(jj+1,ii) \
+          + dx_supergrid_crnt_tile(jj+1,ii+1)
+
+          dyW_crnt_tile(j,i) \
+          = dy_supergrid_crnt_tile(jj,ii) \
+          + dy_supergrid_crnt_tile(jj+1,ii)
+
+          dyE_crnt_tile(j,i) \
+          = dy_supergrid_crnt_tile(jj,ii+1) \
+          + dy_supergrid_crnt_tile(jj+1,ii+1)
+
+          dx_min_crnt_tile(j,i) \
+          = min( (/ dxS_crnt_tile(j,i), dxN_crnt_tile(j,i) /) )
+
+          dy_min_crnt_tile(j,i) \
+          = min( (/ dyW_crnt_tile(j,i), dyE_crnt_tile(j,i) /) )
+
+          ds_min_crnt_tile(j,i) \
+          = min( (/ dx_min_crnt_tile(j,i), dy_min_crnt_tile(j,i) /) )
+
+        end do
+      end do
+
+      field_crnt_tile := ds_min_crnt_tile
+; Convert distance from meters to kilometers
+      field_crnt_tile := field_crnt_tile/1000.0
+
+      field_desc = "MIN(dx, dy)"
+      field_units = "km"
+
+      plot_title = field_desc + " [" + field_units + "]"
+
+    else if (strcmp(field_name, "dx_ovr_dy")) then
+;
+; Read in the cell edge distances.
+; 
+      dx_supergrid_crnt_tile := fg->dx(:,:)
+      dy_supergrid_crnt_tile := fg->dy(:,:)
+
+      do jj=0, 2*ny-2, 2
+        do ii=0, 2*nx-2, 2
+
+          j = jj/2
+          i = ii/2
+
+          dxS_crnt_tile(j,i) \
+          = dx_supergrid_crnt_tile(jj,ii) \
+          + dx_supergrid_crnt_tile(jj,ii+1)
+
+          dxN_crnt_tile(j,i) \
+          = dx_supergrid_crnt_tile(jj+1,ii) \
+          + dx_supergrid_crnt_tile(jj+1,ii+1)
+
+          dyW_crnt_tile(j,i) \
+          = dy_supergrid_crnt_tile(jj,ii) \
+          + dy_supergrid_crnt_tile(jj+1,ii)
+
+          dyE_crnt_tile(j,i) \
+          = dy_supergrid_crnt_tile(jj,ii+1) \
+          + dy_supergrid_crnt_tile(jj+1,ii+1)
+
+          dx_min_crnt_tile(j,i) \
+          = min( (/ dxS_crnt_tile(j,i), dxN_crnt_tile(j,i) /) )
+
+          dy_min_crnt_tile(j,i) \
+          = min( (/ dyW_crnt_tile(j,i), dyE_crnt_tile(j,i) /) )
+
+          dx_ovr_dy_crnt_tile(j,i) \
+          = dx_min_crnt_tile(j,i)/dy_min_crnt_tile(j,i)
+
+        end do
+      end do
+
+      field_crnt_tile := dx_ovr_dy_crnt_tile
+
+      field_desc = "Ratio of dx to dy (dx/dy)"
+      field_units = "-"
+
       plot_title = field_desc + " [" + field_units + "]"
 
 ; The following works with tile 7 only!!
@@ -1176,6 +1295,8 @@ else
       field_units = f_unit->$field_name$@units
       plot_title = field_desc + " at pref = " + ref_pres_full(k) + " mb [" + field_units + "]"
 
+    end if
+    end if
     end if
     end if
     end if
@@ -1936,7 +2057,7 @@ print("Turning off LabelBar (color bar) for the FV3 contour plot.")
 ; Turn off text box that says "CONTOUR FROM AAA TO BBB BY CCC".
   rsrc@cnInfoLabelOn = False
 
-  rsrc@lbLabelAlignment = "BoxCenters"
+;  rsrc@lbLabelAlignment = "BoxCenters"
   rsrc@lbOverrideFillOpacity = True
 
 ; Prevent overlap of labelbar labels.  Actually, the default value of 
@@ -2007,6 +2128,8 @@ func_z = False
     rsrc@mpMaxLonF = lon_max
     rsrc@mpMinLatF = lat_min
     rsrc@mpMaxLatF = lat_max
+
+    rsrc@mpLimitMode = "LatLon"
 
     if (strcmp(map_proj, "lamb")) then
 print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")

@@ -974,7 +974,7 @@ elif [ "$gtype" = "regional" ]; then
 # The grid generation script grid_gen_scr calls the make_hgrid executa-
 # ble to construct the regional grid.  This executable in turn accepts 
 # as arguments the index limits of the regional domain on the regional
-# grid parent tile's supergrid (PTSG), where the supergrid is a grid 
+# grid's parent tile's supergrid (PTSG), where the supergrid is a grid 
 # having double the resolution of the parent tile.  Thus, in order to
 # use make_hgrid to construct a regional grid with halo cells, we must
 # modified values for the PTSG index limits istart_nest, iend_nest, 
@@ -983,14 +983,14 @@ elif [ "$gtype" = "regional" ]; then
 # cells (supplying make_hgrid with istart_nest, iend_nest, jstart_nest,
 # and jend_nest will result in a regional grid without a halo).  Next,
 # we describe how to specify the modified values of the index limits
-# (which we refer to by istart_nest_halo, iend_nest_halo, jstart_nest_=
+# (which we refer to by istart_nest_halo, iend_nest_halo, jstart_nest_-
 # halo, and jend_nest_halo).
 #
-# Let nhalo_T7 denote the number of halo cells we'd like to have along all
-# four edges of the regional domain (i.e. north, south, east, and west).
-# Note that nhalo_T7 is the number of halo grid cells as counted on the re-
-# gional grid (tile 7).  The number of halo cells as counted on the parent tile's (tile 6's)
-# grid is then given by
+# Let nhalo_T7 denote the number of halo cells we'd like to have along 
+# all four edges of the regional domain (i.e. north, south, east, and 
+# west).  Note that nhalo_T7 is the number of halo grid cells as counted
+# on the regional grid (tile 7).  The number of halo cells as counted on
+# the parent tile's (tile 6's) grid is then given by
 #
 #   nhalo_T6 = nhalo_T7/refine_ratio
 #
@@ -1001,18 +1001,19 @@ elif [ "$gtype" = "regional" ]; then
 #              = 2*nhalo_T7/refine_ratio
 #
 # [Recall that the PTSG is obtained by reducing the grid size of the pa- 
-# rent tile's grid by 2.  Thus, the PTSG has twice the number of grid
-# cells in each direction as the parent tile's grid (but covers the same
-# region).]  The reason for calculating the number of halo points on the
-# PTSG is that the index limits that the executable make_hgrid (called 
-# by script grid_gen_scr) takes as arguments are supergrid indices.  
+# rent tile's grid by a factor of 2.  Thus, the PTSG has twice the num-
+# ber of grid cells in each direction as the parent tile's grid (but co-
+# vers the same region).]  The reason for calculating the number of halo
+# points on the PTSG is that the index limits that the executable make_-
+# hgrid (called by script grid_gen_scr) takes as arguments are supergrid
+# indices.  
 #
 # Note that nhalo_T6SG must be an integer, but the expression derived 
 # above for nhalo_T6SG may not yield an integer.  To ensure that we in-
 # clude enough PTSG cells when calling make_hgrid so that there are at 
-# least nhalo_T7 regional grid cells around the regional domain, we round 
-# up the result of the expression above for nhalo_T6SG, i.e. we redefine 
-# nhalo_T6SG to be
+# least nhalo_T7 regional grid cells around the regional domain, we 
+# round up the result of the expression above for nhalo_T6SG, i.e. we
+# redefine nhalo_T6SG to be
 #
 #   nhalo_T6SG = ceil(2*nhalo_T7/refine_ratio)
 #
@@ -1037,19 +1038,6 @@ elif [ "$gtype" = "regional" ]; then
 #   jstart_nest_halo = jstart_nest - nhalo_T6SG
 #   jend_nest_halo = jend_nest + nhalo_T6SG
 #
-# A restriction (that probably originates from make_hgrid) on the start-
-# ing and ending indices of the regional or nested domains is that 
-# istart_nest_halo and jstart_nest_halo (as well as istart_nest and 
-# jstart_nest) must be odd, and iend_nest_halo and jend_nest_halo (as 
-# well as iend_nest and jend_nest) must be even.  These restrictions 
-# imply that the boundary of the regional or nested grid (with or with-
-# out a halo) must coincide with the gridlines of the parent grid; it
-# must not coincide with the half-lines (i.e. the lines on which the 
-# mass points lie) of the parent grid.  Thus, below, after calculating
-# the starting and ending indices using the formulas above, we ensure
-# that the starting indices are odd and the ending indices are even by
-# appropriately adjusting them by 1.
-#
 #  nhalo_T7=5
   nhalo_T7=$(( $halop1 + 1 ))
   nhalo_T6SG=$(( (2*nhalo_T7 + refine_ratio - 1)/refine_ratio ))
@@ -1058,7 +1046,20 @@ elif [ "$gtype" = "regional" ]; then
   iend_nest_halo=$(( $iend_nest + $nhalo_T6SG ))
   jstart_nest_halo=$(( $jstart_nest - $nhalo_T6SG ))
   jend_nest_halo=$(( $jend_nest + $nhalo_T6SG ))
-
+#
+# A restriction (that probably originates from make_hgrid) on the start-
+# ing and ending indices of the regional or nested domains is that 
+# istart_nest_halo and jstart_nest_halo (as well as istart_nest and 
+# jstart_nest) must be odd, and iend_nest_halo and jend_nest_halo (as 
+# well as iend_nest and jend_nest) must be even.  These restrictions 
+# imply that the boundary of the regional or nested grid (with or with-
+# out a halo) must coincide with the gridlines of the parent grid; it
+# must not coincide with the half-gridlines (i.e. the lines on which the 
+# mass points lie) of the parent grid.  Thus, below, after calculating
+# the starting and ending indices using the formulas above, we ensure
+# that the starting indices are odd and the ending indices are even by
+# appropriately adjusting them by 1.
+#
   if [ $(( istart_nest_halo%2 )) -eq 0 ]; then
     istart_nest_halo=$(( istart_nest_halo - 1 ))
   fi
