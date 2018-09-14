@@ -18,39 +18,40 @@
 <!ENTITY RES "384">
 <!ENTITY FCST_LEN_HRS "24">
 <!ENTITY BC_INTERVAL_HRS "6">
-<!ENTITY STRETCH_FAC "1.5">
-<!ENTITY LAT_TILE6_CTR "54.0">
-<!ENTITY LON_TILE6_CTR "-106.0">
-<!ENTITY REFINE_RATIO "3">
-<!ENTITY ISTART_NEST_TILE6 "10">
-<!ENTITY IEND_NEST_TILE6 "374">
-<!-- <!ENTITY JSTART_NEST_TILE6 "10">
-<!ENTITY JEND_NEST_TILE6 "374"> -->
 
-<!ENTITY JSTART_NEST_TILE6 "10">
-<!ENTITY JEND_NEST_TILE6 "369">
+<!-- For the HRRR -->
+<!ENTITY STRETCH_FAC "1.8">
+<!ENTITY LAT_TILE6_CTR "38.5">
+<!ENTITY LON_TILE6_CTR "-97.5">
+<!ENTITY REFINE_RATIO "5">
+<!ENTITY ISTART_NEST_TILE6 "12">
+<!ENTITY IEND_NEST_TILE6 "372">
+<!ENTITY JSTART_NEST_TILE6 "80">
+<!ENTITY JEND_NEST_TILE6 "304">
+<!-- [(304-80)*5]+5 = must be divisible by layout_y
+     [(372-12)*5]+5 = must be divisible by layout_x -->
 
-<!ENTITY TITLE "FV3">
-<!ENTITY QUILTING "TRUE">
+<!ENTITY TITLE "HRRR"> <!-- Originally set to "FV3" -->
+<!ENTITY QUILTING ".true.">
 
-<!ENTITY PREDEF_RGNL_DOMAIN "RAP">
+<!ENTITY PREDEF_RGNL_DOMAIN "HRRR">
 
-<!ENTITY LAYOUT_X "15"> <!-- 19 for HRRR -->
-<!ENTITY LAYOUT_Y "15"> <!-- 25 for HRRR -->
-<!ENTITY NCORES_PER_NODE "24">
+<!ENTITY LAYOUT_X "19"> <!-- 15 for the RAP, 19 for HRRR -->
+<!ENTITY LAYOUT_Y "25"> <!-- 12 for the RAP, 25 for HRRR -->
+<!ENTITY WRITE_GROUPS "1">
+<!ENTITY WRITE_TASKS_PER_GROUP "25"> <!-- 25 for HRRR, 20 for RAP -->
 
 <!ENTITY GET_GFS_PROC "1:ppn=1">
 <!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_PROC "1:ppn=24">
 <!ENTITY CHGRES_RGNL_IC_BC0_PROC "1:ppn=24">
 <!ENTITY CHGRES_RGNL_BCS_PROC "1:ppn=24">
 <!ENTITY STAGE_PROC "1:ppn=1">
-<!ENTITY FV3_PROC "10:ppn=24">
+<!ENTITY FV3_PROC "21:ppn=24">
 
-<!ENTITY GET_GFS_RESOURCES "<walltime>00:30:00</walltime>">
-<!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_RESOURCES "<walltime>00:30:00</walltime>">
-<!ENTITY CHGRES_RGNL_IC_BC0_RESOURCES "<walltime>00:30:00</walltime>">
-<!ENTITY CHGRES_RGNL_BCS_RESOURCES "<walltime>00:30:00</walltime>">
-<!ENTITY CHGRES_RGNL_BCS_RESOURCES "<walltime>00:30:00</walltime>">
+<!ENTITY GET_GFS_RESOURCES "<walltime>00:20:00</walltime>">
+<!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_RESOURCES "<walltime>00:15:00</walltime>">
+<!ENTITY CHGRES_RGNL_IC_BC0_RESOURCES "<walltime>00:10:00</walltime>">
+<!ENTITY CHGRES_RGNL_BCS_RESOURCES "<walltime>00:20:00</walltime>">
 <!ENTITY STAGE_RESOURCES "<walltime>00:10:00</walltime>">
 <!ENTITY FV3_RESOURCES "<walltime>03:00:00</walltime>">
 
@@ -163,18 +164,28 @@
     </envar>
 
     <envar>
+      <name>write_groups</name>
+      <value>&WRITE_GROUPS;</value>
+    </envar>
+
+    <envar>
+      <name>write_tasks_per_group</name>
+      <value>&WRITE_TASKS_PER_GROUP;</value>
+    </envar>
+
+    <envar>
       <name>quilting</name>
       <value>&QUILTING;</value>
     </envar>
 
-<!--    <envar>
+    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar> -->
+    </envar>
 
   </task>
 
-  <task name="get_GFS_anl_fcst_files" maxtries="2">
+  <task name="get_GFS_anl_fcst_files" maxtries="3">
 
     &GET_GFS_RESOURCES;
     &RESERVATION_HPSS;
@@ -270,14 +281,24 @@
     </envar>
 
     <envar>
+      <name>write_groups</name>
+      <value>&WRITE_GROUPS;</value>
+    </envar>
+
+    <envar>
+      <name>write_tasks_per_group</name>
+      <value>&WRITE_TASKS_PER_GROUP;</value>
+    </envar>
+
+    <envar>
       <name>quilting</name>
       <value>&QUILTING;</value>
     </envar>
 
-<!--    <envar>
+    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar> -->
+    </envar>
 
     <dependency>
        <taskdep task="fv3gfs_driver_grid_regional"/>
@@ -381,14 +402,24 @@
     </envar>
 
     <envar>
+      <name>write_groups</name>
+      <value>&WRITE_GROUPS;</value>
+    </envar>
+
+    <envar>
+      <name>write_tasks_per_group</name>
+      <value>&WRITE_TASKS_PER_GROUP;</value>
+    </envar>
+
+    <envar>
       <name>quilting</name>
       <value>&QUILTING;</value>
     </envar>
 
-<!--    <envar>
+    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar> -->
+    </envar>
 
     <dependency>
      <and>
@@ -495,14 +526,24 @@
     </envar>
 
     <envar>
+      <name>write_groups</name>
+      <value>&WRITE_GROUPS;</value>
+    </envar>
+
+    <envar>
+      <name>write_tasks_per_group</name>
+      <value>&WRITE_TASKS_PER_GROUP;</value>
+    </envar>
+
+    <envar>
       <name>quilting</name>
       <value>&QUILTING;</value>
     </envar>
 
-<!--    <envar>
+    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar> -->
+    </envar>
 
     <dependency>
      <and>
@@ -513,7 +554,7 @@
 
   </task>
 
-  <task name="stage" maxtries="2">
+  <task name="stage" maxtries="1">
 
     &STAGE_RESOURCES;
     &RESERVATION;
@@ -609,14 +650,24 @@
     </envar>
 
     <envar>
+      <name>write_groups</name>
+      <value>&WRITE_GROUPS;</value>
+    </envar>
+
+    <envar>
+      <name>write_tasks_per_group</name>
+      <value>&WRITE_TASKS_PER_GROUP;</value>
+    </envar>
+
+    <envar>
       <name>quilting</name>
       <value>&QUILTING;</value>
     </envar>
 
-<!--    <envar>
+    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar> -->
+    </envar>
 
     <envar>
       <name>layout_x</name>
@@ -628,11 +679,6 @@
       <value>&LAYOUT_Y;</value>
     </envar>
 
-    <envar>
-      <name>ncores_per_node</name>
-      <value>&NCORES_PER_NODE;</value>
-    </envar>
-
     <dependency>
      <and>
       <taskdep task="run_chgres_rgnl_IC_BC0"/>
@@ -642,7 +688,7 @@
 
   </task>
 
-  <task name="run_FV3" maxtries="7">
+  <task name="run_FV3" maxtries="1">
 
     &FV3_RESOURCES;
     &RESERVATION;
@@ -738,14 +784,24 @@
     </envar>
 
     <envar>
+      <name>write_groups</name>
+      <value>&WRITE_GROUPS;</value>
+    </envar>
+
+    <envar>
+      <name>write_tasks_per_group</name>
+      <value>&WRITE_TASKS_PER_GROUP;</value>
+    </envar>
+
+    <envar>
       <name>quilting</name>
       <value>&QUILTING;</value>
     </envar>
 
-<!--    <envar>
+    <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar> -->
+    </envar>
 
     <envar>
       <name>layout_x</name>
@@ -755,11 +811,6 @@
     <envar>
       <name>layout_y</name>
       <value>&LAYOUT_Y;</value>
-    </envar>
-
-    <envar>
-      <name>ncores_per_node</name>
-      <value>&NCORES_PER_NODE;</value>
     </envar>
 
     <dependency>

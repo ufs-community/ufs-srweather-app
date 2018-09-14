@@ -67,3 +67,9 @@ layout_y=${layout_y:-15}  #25 - for HRRR
 
 #Define whether to use the "write component" or not
 quilting=${quilting:-".false."}
+
+#Define number of write groups
+write_groups=${write_groups:-"1"}
+
+#Define write tasks per group
+write_tasks_per_group=${write_tasks_per_group:-"24"}

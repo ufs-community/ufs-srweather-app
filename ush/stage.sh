@@ -221,20 +221,36 @@ sed -i -r -e "s/^(\s*target_lon\s*=)(.*)/\1 $target_lon/" ${RUNDIR}/input.nml
 sed -i -r -e "s/^(\s*stretch_fac\s*=)(.*)/\1 $stretch_fac/" ${RUNDIR}/input.nml
 sed -i -r -e "s/^(\s*bc_update_interval\s*=)(.*)/\1 $BC_interval_hrs/" ${RUNDIR}/input.nml
 
-#Test whether dimensions values are evenly divisible by user-chosen layout_x and layout_y
+#Test whether dimensions values are evenly divisible by user-chosen layout_x and layout_y.
 
+#Make sure latitude dimension is divisible by layout_y.
 if [[ $(( $lat%$layout_y )) -eq 0 ]]; then
-   echo "Latitude dimension is evenly divisible by user-defined layout_y"
+   echo "Latitude dimension ($lat) is evenly divisible by user-defined layout_y ($layout_y)"
 else
-   echo "Latitude dimension is not evenly divisible by user-defined layout_y, please redefine.  Exiting."
+   echo "Latitude dimension ($lat) is not evenly divisible by user-defined layout_y ($layout_y), please redefine.  Exiting."
    exit 1
 fi
 
+#Make sure longitude dimension is divisible by layout_x.
 if [[ $(( $lon%$layout_x )) -eq 0 ]]; then 
-   echo "Longitude dimension is evenly divisible by user-defined layout_x"
+   echo "Longitude dimension ($lon) is evenly divisible by user-defined layout_x ($layout_x)"
 else  
-   echo "Longitude dimension is not evenly divisible by user-defined layout_x, please redefine.  Exiting."
+   echo "Longitude dimension ($lon) is not evenly divisible by user-defined layout_x ($layout_x), please redefine.  Exiting."
    exit 1
+fi
+
+#If the write component is turned on, make sure PE_MEMBER01 is divisible by write_tasks_per_group.
+if [[ $quilting = ".true." ]]; then
+ 
+ if [[ $(( (($layout_x*$layout_y)+($write_groups*$write_tasks_per_group))%$write_tasks_per_group )) -eq 0 ]]; then
+    echo "Value of PE_MEMBER01 ($(( ($layout_x*$layout_y)+($write_groups*$write_tasks_per_group) ))) is evenly divisible by write_tasks_per_group ($write_tasks_per_group)."
+ else
+    echo "Value of PE_MEMBER01 ($(( ($layout_x*$layout_y)+($write_groups*$write_tasks_per_group) ))) is not evenly divisible by write_tasks_per_group ($write_tasks_per_group), please redefine.  Exiting."
+    exit 1
+ fi
+
+else
+  : #Do nothing
 fi
  
 echo ""
@@ -250,16 +266,33 @@ echo "Modifying layout_x and layout_y values in input.nml..."
 sed -i -r -e "s/^(\s*layout\s*=\s*)(.*)/\1$layout_x,$layout_y/" ${RUNDIR}/input.nml
 
 #Calculate PE_MEMBER01
-PE_MEMBER01=$(($layout_x*$layout_y))
+if [[ $quilting = ".true." ]]; then
+
+#Add write_groups*write_tasks_per_group to the product of layout_x and layout_y for the write component.
+PE_MEMBER01=$(( ($layout_x*$layout_y)+($write_groups*$write_tasks_per_group) ))
+
+else
+
+PE_MEMBER01=$(( $layout_x*$layout_y ))
+
+fi
 
 echo ""
-echo "PE_MEMBER01 for model_configure: $PE_MEMBER01"
+echo "PE_MEMBER01 for model_configure: ${PE_MEMBER01}"
 echo ""
 
 #Modify values in model_configure
 echo "Modifying quilting in model_configure... "
 echo ""
 sed -i -r -e "s/^(\s*quilting:\s*)(.*)/\1$quilting/" ${RUNDIR}/model_configure
+
+echo "Modifying write_groups in model_configure... "
+echo ""
+sed -i -r -e "s/^(\s*write_groups:\s*)(.*)/\1$write_groups/" ${RUNDIR}/model_configure
+
+echo "Modifying write_tasks_per_group in model_configure... "
+echo ""
+sed -i -r -e "s/^(\s*write_tasks_per_group:\s*)(.*)/\1$write_tasks_per_group/" ${RUNDIR}/model_configure
 
 echo "Modifying PE_MEMBER01 in model_configure... "
 echo ""
@@ -305,6 +338,10 @@ sed -i -r -e "s/(ppn=)(.*)/\1$PPN/" ${RUNDIR}/run.regional
 #Modify $RUNDIR in run.regional
 echo "Modifying run directory in run.${CRES}.regional..."
 sed -i -r -e 's+\$\{RUNDIR\}+'"${RUNDIR}"'+' ${RUNDIR}/run.regional
+
+#Modify $PBS_NP in run.regional
+echo "Modifying \$PBS_NP directory in run.${CRES}.regional..."
+sed -i -r -e 's+\$PBS_NP+'"${PE_MEMBER01}"'+' ${RUNDIR}/run.regional
 
 #Modify FV3 run proc in FV3_Theia.xml
 echo "Modifying FV3 run proc in FV3_Theia.xml..."
