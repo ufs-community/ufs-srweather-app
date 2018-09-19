@@ -1,13 +1,11 @@
 #!/bin/sh
 
-# LSBATCH: User input
-#BSUB -J gdas_gempak_ncdc_00
-#BSUB -o /gpfs/hps/ptmp/Boi.Vuong/output/gdas_gempak_ncdc_00.o%J
-#BSUB -e /gpfs/hps/ptmp/Boi.Vuong/output/gdas_gempak_ncdc_00.o%J
-#BSUB -L /bin/sh
+#BSUB -J jgfs_pgrb2_spec_npoess_00
+#BSUB -o /gpfs/hps3/ptmp/Boi.Vuong/output/gfs_pgrb2_spec_npoess_00.o%J
+#BSUB -e /gpfs/hps3/ptmp/Boi.Vuong/output/gfs_pgrb2_spec_npoess_00.o%J
+#BSUB -q debug
+#BSUB -cwd /gpfs/hps3/ptmp/Boi.Vuong/output
 #BSUB -W 00:30
-#BSUB -q "dev_shared"
-#BSUB -cwd /gpfs/hps/ptmp/Boi.Vuong/output
 #BSUB -P GFS-T2O
 #BSUB -R rusage[mem=1000]
 
@@ -17,9 +15,12 @@ export OMP_STACKSIZE=1024m
 export MP_LABELIO=yes
 export MP_STDOUTMODE=ordered
 
-export PDY=20170304
+export PDY=`date -u +%Y%m%d`
+# expor PDY=20180605
+
 export PDY1=`expr $PDY - 1`
 
+# export cyc=06
 export cyc=00
 export cycle=t${cyc}z
 
@@ -31,34 +32,27 @@ date
 ##  Load the GRIB Utilities module
 #####################################
 
-. /opt/modules/3.2.6.7/init/sh
+#%include <head.h>
+#%include <envir-p2.h>
+
+. $MODULESHOME/init/sh
 module load PrgEnv-intel/5.2.56
 module load cfp-intel-sandybridge/1.1.0
 module load ESMF-intel-sandybridge/3_1_0rp5
-module load iobuf
+module load iobuf/2.0.8
 module load craype-hugepages2M
 module load craype-haswell
 module load prod_envir
-module load prod_util/1.0.5
-###########################################
-# Now set up GEMPAK/NTRANS environment
-###########################################
-module load gempak/7.3.0
-
-#
-#   This is a test version of GRIB_UTIL.v1.0.5 on CRAY
-#
-module unload grib_util/1.0.3
-module use /gpfs/hps/nco/ops/nwtest/modulefiles
-module load grib_util/1.0.5
-
-#
-#   This is a test version of UTIL_SHARED.v1.0.5 on CRAY
-#
-module use /usrx/local/nceplibs/util_shared.v1.0.5/modulefiles
-module load util_shared/1.0.5
+module load prod_util
+module load grib_util/1.0.3
 
 module list
+
+export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
+
+############################################
+# GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
+############################################
 
 ##############################################
 # Define COM, PCOM, COMIN  directories
@@ -69,16 +63,18 @@ module list
 # export envir=prod
 
 export SENDCOM=YES
-export SENDDBN=NO
 export KEEPDATA=YES
-export job=gdas_gempak_ncdc_${cyc}
-export job=gdas_gempak_${cyc}
+export job=gfs_pgrb2_spec_npoess_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
-export DATAROOT=/gpfs/hps/ptmp/Boi.Vuong/output
-export NWROOT=/gpfs/hps/emc/global/noscrub/Boi.Vuong/svn
-export COMROOT2=/gpfs/hps/ptmp/Boi.Vuong/com
-export PCOMROOT2=/gpfs/hps/ptmp/Boi.Vuong/pcom/${envir}
+
+# Set FAKE DBNET for testing
+export SENDDBN=YES
+export DBNROOT=/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/fakedbn
+
+export DATAROOT=/gpfs/hps3/ptmp/Boi.Vuong/output
+export NWROOT=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn
+export COMROOT2=/gpfs/hps3/ptmp/Boi.Vuong/com
 
 mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles $PCOMROOT2
 export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
@@ -86,8 +82,7 @@ export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 #############################################################
 # Specify versions
 #############################################################
-export gdas_ver=v14.1.0
-export gfs_ver=v14.1.0
+export gfs_ver=v15.0.0
 
 ##########################################################
 # obtain unique process id (pid) and make temp directory
@@ -99,37 +94,45 @@ cd $DATA
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgdas=${HOMEgdas:-${NWROOT}/gdas.${gdas_ver}}
-export EXECgdas=${EXECgdas:-$HOMEgdas/exec}
-export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
-export FIXgdas=${FIXgdas:-$HOMEgdas/gempak/fix}
-export USHgdas=${USHgdas:-$HOMEgdas/gempak/ush}
-export SRCgdas=${SRCgdas:-$HOMEgdas/scripts}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export USHgfs=${USHgfs:-$HOMEgfs/ush}
+export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
+export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
+export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
 
 ###################################
 # Specify NET and RUN Name and model
 ####################################
 export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
+export RUN=${RUN:-gfs}
+export model=${model:-gfs}
 
 ##############################################
 # Define COM directories
 ##############################################
 if [ $envir = "prod" ] ; then
-#  This setting is for testing with GDAS (production)
-  export COMIN=${COMROOTp2}/nawips/prod/gdas.${PDY}
+#  This setting is for testing with GFS (production)
+  export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/gfs.${PDY}         ### NCO PROD
 else
-  export COMIN=/gpfs/hps/ptmp/Boi.Vuong/com/nawips/para/gdas.${PDY}
+#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/com2/gfs/para/gfs.${PDY}         ### EMC PARA Realtime
+
+  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
+
+#    export COMIN=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn/gfs.${PDY}/${cyc} ### Boi PARA
+
+#  export COMIN=/gpfs/hps3/nco/ops/com/gfs/para/gfs.${PDY}       ### NCO PARA
 fi
 
-export COMNCDC=${COMNCDC:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}}
-export pcom=${pcom:-${PCOMROOT2}/${RUN}}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
+export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p  $COMNCDC $pcom
+  mkdir -m 775 -p $COMOUT $COMOUTwmo
 fi
 
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgdas/jobs/JGDAS_GEMPAK_NCDC
+sh $HOMEgfs/jobs/JGFS_PGRB2_SPEC_NPOESS

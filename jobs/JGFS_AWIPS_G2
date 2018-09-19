@@ -60,10 +60,10 @@ export model=${model:-gfs}
 ##############################################
 export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
-export PCOM=${PCOM:-${COMOUT}/wmo}
+export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT $PCOM
+  mkdir -m 775 -p $COMOUT $COMOUTwmo
 fi
 
 export pgmout=OUTPUT.$$
@@ -84,12 +84,17 @@ chmod 775 $DATA/poescript
 export MP_PGMMODEL=mpmd
 export MP_CMDFILE=$DATA/poescript
 
-export NODES=1
-export APRUN=${APRUN_AWIPSCFP:-"aprun -n 4 -N 4 -d2 -cc depth cfp"}
+ntasks=${NTASKS_AWIPS:-$(cat $DATA/poescript | wc -l)}
+ptile=${PTILE_AWIPS:-4}
+threads=${NTHREADS_AWIPS:-1}
+export OMP_NUM_THREADS=$threads
+APRUN="mpirun -n $ntasks cfp "
 
-echo " aprun is   $APRUN "
-$APRUN $DATA/poescript
-export err=$?;err_chk
+APRUN_AWIPSCFP=${APRUN_AWIPSCFP:-$APRUN}
+APRUNCFP=$(eval echo $APRUN_AWIPSCFP)
+
+$APRUNCFP $DATA/poescript
+export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY!"
 postmsg $jlogfile "$msg"

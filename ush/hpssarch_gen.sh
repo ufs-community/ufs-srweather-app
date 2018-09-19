@@ -63,6 +63,7 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}nawips/gfs_${PDY}${cyc}.sfc             " >>gfsa.txt
   echo  "${dirname}nawips/gfs_${PDY}${cyc}.snd             " >>gfsa.txt
   echo  "${dirname}bufr.t${cyc}z                           " >>gfsa.txt
+  echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
 
   echo  "${dirname}${head}pgrb2.0p50.anl                   " >>gfsb.txt
   echo  "${dirname}${head}pgrb2.0p50.anl.idx               " >>gfsb.txt
@@ -155,6 +156,13 @@ if [ $type = "gdas" ]; then
   echo  "${dirname}${head}pgrb2.1p00.anl.idx         " >>gdas.txt
   echo  "${dirname}${head}atmanl.nemsio              " >>gdas.txt
   echo  "${dirname}${head}sfcanl.nemsio              " >>gdas.txt
+  for fstep in prep anal fcst vrfy radmon minmon oznmon; do
+   if [ -s ./logs/${CDATE}/gdas${fstep}.log ]; then
+     echo  "./logs/${CDATE}/gdas${fstep}.log         " >>gdas.txt
+   fi
+  done
+  echo  "./logs/${CDATE}/gdaspost*.log               " >>gdas.txt
+
   fh=0
   while [ $fh -le 9 ]; do
     fhr=$(printf %03i $fh)
@@ -172,7 +180,6 @@ if [ $type = "gdas" ]; then
 
 
   #..................
-  echo  "${dirname}${head}atmanl.ensres.nemsio     " >>gdas_restarta.txt
   echo  "${dirname}${head}cnvstat                  " >>gdas_restarta.txt
   echo  "${dirname}${head}radstat                  " >>gdas_restarta.txt
   echo  "${dirname}${head}nsstbufr                 " >>gdas_restarta.txt
@@ -210,6 +217,7 @@ if [ $type = "enkf.gdas" -o $type = "enkf.gfs" ]; then
   NTARS=$((NMEM_ENKF/NMEM_EARCGRP))
   [[ $NTARS -eq 0 ]] && NTARS=1
   [[ $((NTARS*NMEM_EARCGRP)) -lt $NMEM_ENKF ]] && NTARS=$((NTARS+1))
+  NTARS2=$((NTARS/2))
 
   dirname="./enkf.${CDUMP}.${PDY}/${cyc}/"
   head="${CDUMP}.t${cyc}z."
@@ -224,6 +232,10 @@ if [ $type = "enkf.gdas" -o $type = "enkf.gfs" ]; then
   echo  "${dirname}${head}oznstat.ensmean            " >>enkf.${CDUMP}.txt
   echo  "${dirname}${head}radstat.ensmean            " >>enkf.${CDUMP}.txt
   echo  "${dirname}${head}atmanl.ensmean.nemsio      " >>enkf.${CDUMP}.txt
+  for fstep in eobs eomg ecen eupd efcs epos ; do
+   echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf.${CDUMP}.txt
+  done
+
   fh=3
   while [ $fh -le 9 ]; do
     fhr=$(printf %03i $fh)
@@ -252,7 +264,9 @@ if [ $type = "enkf.gdas" -o $type = "enkf.gfs" ]; then
      head="${CDUMP}.t${cyc}z."
 
     #---
-    echo "${dirname}${head}ratmanl.nemsio       " >>enkf.${CDUMP}_grp${n}.txt
+    if [ $n -le $NTARS2 ]; then
+     echo "${dirname}${head}ratmanl.nemsio      " >>enkf.${CDUMP}_grp${n}.txt
+    fi
     echo "${dirname}${head}atmf006.nemsio       " >>enkf.${CDUMP}_grp${n}.txt
     echo "${dirname}${head}cnvstat              " >>enkf.${CDUMP}_grp${n}.txt
     echo "${dirname}${head}gsistat              " >>enkf.${CDUMP}_grp${n}.txt
