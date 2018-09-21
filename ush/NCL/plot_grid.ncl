@@ -984,7 +984,7 @@ print("ny = " + ny)
     lat_verts_supergrid_crnt_tile := fg->y(:,:)
 ; Shave off halo.
 print("")
-print("Supergrid dimenstions BEFORE shave:")
+print("Supergrid dimensions BEFORE shave:")
 print(dimsizes(lon_verts_supergrid_crnt_tile))
 ;pause
     temp := dimsizes(lon_verts_supergrid_crnt_tile)
@@ -993,7 +993,7 @@ print(dimsizes(lon_verts_supergrid_crnt_tile))
     lon_verts_supergrid_crnt_tile \
     := lon_verts_supergrid_crnt_tile(2*halo_T7:ny_SG-1-2*halo_T7, 2*halo_T7:nx_SG-1-2*halo_T7)
 print("")
-print("Supergrid dimenstions AFTER shave:")
+print("Supergrid dimensions AFTER shave:")
 print(dimsizes(lon_verts_supergrid_crnt_tile))
     lat_verts_supergrid_crnt_tile \
     := lat_verts_supergrid_crnt_tile(2*halo_T7:ny_SG-1-2*halo_T7, 2*halo_T7:nx_SG-1-2*halo_T7)
@@ -1117,9 +1117,9 @@ else
 
       field_crnt_tile := sqrt(field_crnt_tile)
 ; Convert distance from meters to kilometers
-;      field_crnt_tile := field_crnt_tile/1000.0
+      field_crnt_tile := field_crnt_tile/1000.0
 
-      field_crnt_tile := dx_ovr_dy_crnt_tile
+;      field_crnt_tile := dx_ovr_dy_crnt_tile
 ;      field_crnt_tile := ds_min_crnt_tile
 ;      field_crnt_tile := dx_min_crnt_tile
 ;      field_crnt_tile := dx_min_crnt_tile/dy_min_crnt_tile
@@ -1357,71 +1357,36 @@ end if
 ;
 ; **********************************************************************
 ;
-if (False) then
-
-    do j=0, ny-1
-      do i=0, nx-1
-;
-; Use the (/ ... /) on the right-hand sides to prevent copying of meta-
-; data into xpoly and ypoly.
-;
-        v = 0
-        xpoly(v) = (/ lon_verts_crnt_tile(j,i) /)
-        ypoly(v) = (/ lat_verts_crnt_tile(j,i) /)
-        v = 1
-        xpoly(v) = (/ lon_verts_crnt_tile(j,i+1) /)
-        ypoly(v) = (/ lat_verts_crnt_tile(j,i+1) /)
-        v = 2
-        xpoly(v) = (/ lon_verts_crnt_tile(j+1,i+1) /)
-        ypoly(v) = (/ lat_verts_crnt_tile(j+1,i+1) /)
-        v = 3
-        xpoly(v) = (/ lon_verts_crnt_tile(j+1,i) /)
-        ypoly(v) = (/ lat_verts_crnt_tile(j+1,i) /)
-
-        do v=0, num_edges_per_cell-1
-          if (abs(xpoly(v) - xpoly(0)) .gt. 180.0) then
-            if (xpoly(v) .gt. xpoly(0)) then
-              xpoly(v) = xpoly(v) - 360.0
-            else
-              xpoly(v) = xpoly(v) + 360.0
-            end if
-          end if
-        end do
-
-        n_cell = n_cell + 1
-        lon_verts_by_cell(n_cell-1,:) = xpoly
-        lat_verts_by_cell(n_cell-1,:) = ypoly
-
-;        field_by_cell(n_cell-1) = field_crnt_tile(j,i)
-
-      end do
-    end do
-
-else
+    if (nn .eq. 0) then
+      indx_start = 0
+    else
+      indx_start = sum(nx_tms_ny_by_tile(0:nn-1))
+    end if
+    indx_end = indx_start + nx_tms_ny_by_tile(nn) - 1
 
     v = 0
     lon := ndtooned(lon_verts_crnt_tile(0:ny-1,0:nx-1))
     lat := ndtooned(lat_verts_crnt_tile(0:ny-1,0:nx-1))
-    lon_verts_by_cell(:,v) = lon
-    lat_verts_by_cell(:,v) = lat
+    lon_verts_by_cell(indx_start:indx_end,v) = lon
+    lat_verts_by_cell(indx_start:indx_end,v) = lat
 
     v = 1
     lon := ndtooned(lon_verts_crnt_tile(0:ny-1,1:nx))
     lat := ndtooned(lat_verts_crnt_tile(0:ny-1,1:nx))
-    lon_verts_by_cell(:,v) = lon
-    lat_verts_by_cell(:,v) = lat
+    lon_verts_by_cell(indx_start:indx_end,v) = lon
+    lat_verts_by_cell(indx_start:indx_end,v) = lat
 
     v = 2
     lon := ndtooned(lon_verts_crnt_tile(1:ny,1:nx))
     lat := ndtooned(lat_verts_crnt_tile(1:ny,1:nx))
-    lon_verts_by_cell(:,v) = lon
-    lat_verts_by_cell(:,v) = lat
+    lon_verts_by_cell(indx_start:indx_end,v) = lon
+    lat_verts_by_cell(indx_start:indx_end,v) = lat
 
     v = 3
     lon := ndtooned(lon_verts_crnt_tile(1:ny,0:nx-1))
     lat := ndtooned(lat_verts_crnt_tile(1:ny,0:nx-1))
-    lon_verts_by_cell(:,v) = lon
-    lat_verts_by_cell(:,v) = lat
+    lon_verts_by_cell(indx_start:indx_end,v) = lon
+    lat_verts_by_cell(indx_start:indx_end,v) = lat
 
     delete([/ lon, lat /])
 ;
@@ -1429,6 +1394,10 @@ else
 ; tudes of the vertices so that there is no discontinuity in their val-
 ; ues.
 ;
+; Not sure if this is necessary.
+
+;if (True) then
+if (False) then
     v_ref = 0
     do v=1, num_edges_per_cell-1
       abs_del_lon := abs(lon_verts_by_cell(:,v) - lon_verts_by_cell(:,v_ref))
@@ -1443,7 +1412,6 @@ else
               lon_verts_by_cell(:,v))
     end do
     delete([/ abs_del_lon, is_greater /])
-
 end if
 ;
 ; **********************************************************************
@@ -1718,52 +1686,6 @@ end if
     lon_verts_by_cell_RAP := new((/ num_cells_to_plot_RAP, num_edges_per_cell /), "double")
     lat_verts_by_cell_RAP := new((/ num_cells_to_plot_RAP, num_edges_per_cell /), "double")
 
-
-;if (True) then
-if (False) then
-
-    n_cell = 0
-
-    do j=0, ny_RAP-1
-      do i=0, nx_RAP-1
-;
-; Use the (/ ... /) on the right-hand sides to prevent copying of meta-
-; data into xpoly and ypoly.
-;
-        v = 0
-        xpoly(v) = (/ lon_verts_RAP(j,i) /)
-        ypoly(v) = (/ lat_verts_RAP(j,i) /)
-        v = 1
-        xpoly(v) = (/ lon_verts_RAP(j,i+1) /)
-        ypoly(v) = (/ lat_verts_RAP(j,i+1) /)
-        v = 2
-        xpoly(v) = (/ lon_verts_RAP(j+1,i+1) /)
-        ypoly(v) = (/ lat_verts_RAP(j+1,i+1) /)
-        v = 3
-        xpoly(v) = (/ lon_verts_RAP(j+1,i) /)
-        ypoly(v) = (/ lat_verts_RAP(j+1,i) /)
-
-        do v=0, num_edges_per_cell-1
-          if (abs(xpoly(v) - xpoly(0)) .gt. 180.0) then
-            if (xpoly(v) .gt. xpoly(0)) then
-              xpoly(v) = xpoly(v) - 360.0
-            else
-              xpoly(v) = xpoly(v) + 360.0
-            end if
-          end if
-        end do
-
-        n_cell = n_cell + 1
-        lon_verts_by_cell_RAP(n_cell-1,:) = xpoly
-        lat_verts_by_cell_RAP(n_cell-1,:) = ypoly
-
-;        field_by_cell_RAP(n_cell-1) = field_RAP(j,i)
-
-      end do
-    end do
-
-else
-
     v = 0
     lon := ndtooned(lon_verts_RAP(0:ny_RAP-1,0:nx_RAP-1))
     lat := ndtooned(lat_verts_RAP(0:ny_RAP-1,0:nx_RAP-1))
@@ -1794,6 +1716,11 @@ else
 ; tudes of the vertices so that there is no discontinuity in their val-
 ; ues.
 ;
+; Not sure if this is necessary.
+
+;if (True) then
+if (False) then
+
     v_ref = 0
     do v=1, num_edges_per_cell-1
       abs_del_lon := abs(lon_verts_by_cell_RAP(:,v) - lon_verts_by_cell_RAP(:,v_ref))
@@ -2119,6 +2046,10 @@ func_z = False
 
 ; Turn on map tickmarks.
   rsrc@pmTickMarkDisplayMode = "Always"
+
+; Plot curves of constant longitude and latitude (regardless of the plot
+; projection).
+  rsrc@mpGridAndLimbOn = True
 
 ; If "subreg" is specified, plot only a subregion.  Note that this has
 ; an effect only for the cylindrical-equidistant map projection.
