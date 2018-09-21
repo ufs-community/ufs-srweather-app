@@ -41,8 +41,8 @@
 #set -eux
 set -ux
 
-. $BASEDIR/fv3gfs/ush/config.sh
-#. ./config.sh
+#. $BASEDIR/fv3gfs/ush/config.sh
+. ./config.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -588,7 +588,6 @@ elif [ "$gtype" = "regional" ]; then
     export title="HRRR"
 
 #    export stretch_fac=1.8
-#    export stretch_fac=1.7
     export stretch_fac=1.65
     export target_lon=-97.5
     export target_lat=38.5
