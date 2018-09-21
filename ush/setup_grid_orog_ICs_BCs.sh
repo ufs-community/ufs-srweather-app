@@ -42,6 +42,7 @@
 set -ux
 
 . $BASEDIR/fv3gfs/ush/config.sh
+#. ./config.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -560,10 +561,12 @@ elif [ "$gtype" = "regional" ]; then
 
     export title="RAP"
 
-    export stretch_fac=0.7
+#    export stretch_fac=0.7
+    export stretch_fac=0.63
     export target_lon=-106.0
     export target_lat=54.0
     export refine_ratio=3
+#    export refine_ratio=4
 
     num_gap_cells_tile6_left=10
     istart_nest_tile6=$num_gap_cells_tile6_left
@@ -584,7 +587,9 @@ elif [ "$gtype" = "regional" ]; then
 
     export title="HRRR"
 
-    export stretch_fac=1.8
+#    export stretch_fac=1.8
+#    export stretch_fac=1.7
+    export stretch_fac=1.65
     export target_lon=-97.5
     export target_lat=38.5
     export refine_ratio=5
