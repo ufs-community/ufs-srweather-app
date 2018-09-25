@@ -31,15 +31,15 @@
 <!-- [(304-80)*5]+5 = must be divisible by layout_y
      [(372-12)*5]+5 = must be divisible by layout_x -->
 
-<!ENTITY TITLE "RAP_newdomain"> <!-- Originally set to "FV3" -->
+<!ENTITY TITLE "HRRR_newdomain"> <!-- Originally set to "FV3" -->
 <!ENTITY QUILTING ".true.">
 <!ENTITY PRINT_ESMF ".false.">
 
 
-<!ENTITY PREDEF_RGNL_DOMAIN "RAP">
+<!ENTITY PREDEF_RGNL_DOMAIN "HRRR">
 
-<!ENTITY LAYOUT_X "15"> <!-- 15 for the RAP, 19 for HRRR -->
-<!ENTITY LAYOUT_Y "15"> <!-- 15 for the RAP, 25 for HRRR -->
+<!ENTITY LAYOUT_X "19"> <!-- 15 for the RAP, 19 for HRRR -->
+<!ENTITY LAYOUT_Y "25"> <!-- 15 for the RAP, 25 for HRRR -->
 <!ENTITY WRITE_GROUPS "1">
 <!ENTITY WRITE_TASKS_PER_GROUP "25"> <!-- 25 for RAP and HRRR -->
 
@@ -48,7 +48,7 @@
 <!ENTITY CHGRES_RGNL_IC_BC0_PROC "1:ppn=24">
 <!ENTITY CHGRES_RGNL_BCS_PROC "1:ppn=24">
 <!ENTITY STAGE_PROC "1:ppn=1">
-<!ENTITY FV3_PROC "11:ppn=24">
+<!ENTITY FV3_PROC "21:ppn=24">
 
 <!ENTITY GET_GFS_RESOURCES "<walltime>00:20:00</walltime>">
 <!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_RESOURCES "<walltime>00:15:00</walltime>">
@@ -695,7 +695,7 @@
 
   </task>
 
-  <task name="run_FV3" maxtries="1">
+  <task name="run_FV3" maxtries="2">
 
     &FV3_RESOURCES;
     &RESERVATION;

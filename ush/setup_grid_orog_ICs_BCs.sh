@@ -41,8 +41,16 @@
 #set -eux
 set -ux
 
-#. $BASEDIR/fv3gfs/ush/config.sh
+if [ -v ${BASEDIR} ]; then
+
+. ${BASEDIR}/fv3gfs/ush/config.sh
+
+else
+
 . ./config.sh
+
+fi
+
 #
 #-----------------------------------------------------------------------
 #
