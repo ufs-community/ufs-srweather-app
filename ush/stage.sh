@@ -71,12 +71,27 @@ mkdir -p $RUNDIR
 #Copy all namelist and configure file templates to the run directory
 echo "Copying necessary namelist and configure file templates to the run directory..."
 cp ${templates}/input.nml ${RUNDIR}
-cp ${templates}/model_configure ${RUNDIR}
 cp ${templates}/diag_table ${RUNDIR}
 cp ${templates}/field_table ${RUNDIR}
 cp ${templates}/nems.configure ${RUNDIR}
 cp ${templates}/run.regional ${RUNDIR}/run.regional
 cp ${templates}/data_table ${RUNDIR}
+
+#Copy correct model_configure file depending on quilting and preset domain
+
+if [[ $quilting = ".true." && $predef_rgnl_domain = "HRRR" ]]; then
+
+   cp ${templates}/model_configure_wrtcomp_HRRR ${RUNDIR}/model_configure
+
+elif [[ $quilting = ".true." && $predef_rgnl_domain = "RAP" ]]; then
+
+   cp ${templates}/model_configure_wrtcomp_RAP ${RUNDIR}/model_configure
+
+else
+
+   cp ${templates}/model_configure_no_wrtcomp ${RUNDIR}/model_configure
+
+fi
 
 #Place all fixed files into run directory
 echo "Copying necessary fixed files into the run directory..."
@@ -173,7 +188,7 @@ if [ ! -f $RUNDIR/input.nml ]; then
    exit 1
 fi
 
-#Verify that model_configure exists
+#Verify that a version of the model_configure file exists
 
 if [ ! -f $RUNDIR/model_configure ]; then
    echo "model_configure does not exist.  Check your run directory.  Exiting..."
@@ -282,7 +297,11 @@ echo "PE_MEMBER01 for model_configure: ${PE_MEMBER01}"
 echo ""
 
 #Modify values in model_configure
-echo "Modifying quilting in model_configure... "
+echo "Modifying print_esmf flag in model_configure... "
+echo ""
+sed -i -r -e "s/^(\s*print_esmf:\s*)(.*)/\1$print_esmf/" ${RUNDIR}/model_configure
+
+echo "Modifying quilting flag in model_configure... "
 echo ""
 sed -i -r -e "s/^(\s*quilting:\s*)(.*)/\1$quilting/" ${RUNDIR}/model_configure
 

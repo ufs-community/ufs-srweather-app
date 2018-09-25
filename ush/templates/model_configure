@@ -18,7 +18,7 @@ use_hyper_thread:        .false.
 ncores_per_node:         <ncores_per_node>
 debug_affinity:          .true.
 restart_interval:        0
-print_esmf:              .true.
+print_esmf:              <print_esmf>
 
 quilting:                <quilting>
 write_groups:            <write_groups> 
@@ -32,22 +32,32 @@ write_fsyncflag:         .false.
 # output_grid:             'rotated_latlon'  #Ben's domain
 # cen_lon:                 -97.5  # central longitude
 # cen_lat:                 34.0   # central latitude
-# lon1:                    -22.0  # longitude of lower-left point in rotated coordinate system (in degrees)
+# lon1:                    -22.0  # longitude of lower-left point in non-rotated coordinate system (in degrees)
 # lat1:                    -17.0  # latitude of lower-left ...
 # lon2:                    22.0   # longitude of upper-right ...
 # lat2:                    17.0   # latitude of upper-right ...
 # dlon:                    0.02
 # dlat:                    0.02
 
-output_grid:             'rotated_latlon'  #Subset of HRRR domain
-cen_lon:                 -97.5  # central longitude
-cen_lat:                 38.5   # central latitude
-lon1:                    -10.0  # longitude of lower-left point in rotated coordinate system (in degrees) True HRRR is -122.7195
-lat1:                    -10.0  # latitude of lower-left ... True HRRR is 21.13812
-lon2:                    10.0   # longitude of upper-right ... True HRRR is -60.91719
-lat2:                    10.0   # latitude of upper-right ... True HRRR is 47.84219
-dlon:                    0.02
-dlat:                    0.02
+#output_grid:             'rotated_latlon'  #Subset of HRRR domain
+#cen_lon:                 -97.5  # central longitude
+#cen_lat:                 38.5   # central latitude
+#lon1:                    -10.0  # longitude of lower-left point in non-rotated coordinate system (in degrees) True HRRR is -122.7195
+#lat1:                    -10.0  # latitude of lower-left ... True HRRR is 21.13812
+#lon2:                    10.0   # longitude of upper-right ... True HRRR is -60.91719
+#lat2:                    10.0   # latitude of upper-right ... True HRRR is 47.84219
+#dlon:                    0.02
+#dlat:                    0.02
+
+output_grid:             'rotated_latlon'  #RAP domain
+cen_lon:                 -106.0 # central longitude
+cen_lat:                 54.0   # central latitude
+lon1:                    -57.9926 # longitude of lower-left point in non-rotated coordinate system (in degrees) True RAP is -139.070632
+lat1:                    -50.74344 # latitude of lower-left ... True RAP is -10.661108
+lon2:                    57.99249   # longitude of upper-right ... True RAP is 22.7527256
+lat2:                    50.74344  # latitude of upper-right ... True RAP is 46.5570412
+dlon:                    0.1218331
+dlat:                    0.121833
 
 #output_grid:             'lambert_conformal'
 #cen_lon:                 -97.5   # central longitude

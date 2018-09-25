@@ -68,6 +68,9 @@ layout_y=${layout_y:-15}  #25 - for HRRR
 #Define whether to use the "write component" or not
 quilting=${quilting:-".false."}
 
+#Define whether to output ESMF information or not
+print_esmf=${print_esmf:-".false."}
+
 #Define number of write groups
 write_groups=${write_groups:-"1"}
 
