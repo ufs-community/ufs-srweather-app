@@ -1,14 +1,24 @@
 #!/bin/sh
-#----WCOSS_CRAY JOBCARD
-#BSUB -L /bin/sh
+#----WCOSS DELL JOBCARD
+#BSUB /bin/sh
 #BSUB -P FV3GFS-T2O
-#BSUB -oo log.grid.%J
-#BSUB -eo log.grid.%J
+#BSUB -n 1
+#BSUB -R span[ptile=1]
+#BSUB -o log.grid_96.%J
+#BSUB -e log.grid_96.%J
 #BSUB -J grid_fv3
 #BSUB -q debug
-#BSUB -M 2400
 #BSUB -W 00:30
-#BSUB -extsched 'CRAYLINUX[]'
+#----WCOSS_CRAY JOBCARD
+##BSUB -L /bin/sh
+##BSUB -P FV3GFS-T2O
+##BSUB -oo log.grid.%J
+##BSUB -eo log.grid.%J
+##BSUB -J grid_fv3
+##BSUB -q debug
+##BSUB -M 2400
+##BSUB -W 00:30
+##BSUB -extsched 'CRAYLINUX[]'
 #----THEIA JOBCARD
 #PBS -N fv3_grid_driver
 #PBS -A fv3-cpu
@@ -20,7 +30,7 @@
 
 set -ax
 
-machine=THEIA
+machine=DELL
 export machine=${machine:-WCOSS_C}
 
 ulimit -a
@@ -33,7 +43,7 @@ ulimit -s unlimited
 #----------------------------------------------------------------
 
 export USER=$LOGNAME 
-export res=96	 	   # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
+export res=96	 	   # resolution of tile: 48, 96, 192, 384, 96, 1152, 3072
 export gtype=regional      # grid type: uniform, stretch, nest or regional
 
 #----------------------------------------------------------------
@@ -56,6 +66,23 @@ if [ $machine = WCOSS_C ]; then
  export home_dir=$LS_SUBCWD/..
  export topo=/gpfs/hps/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog
  export TMPDIR=/gpfs/hps3/ptmp/$LOGNAME/fv3_grid.$gtype
+elif [ $machine = DELL ]; then
+ set +x
+ . /usrx/local/prod/lmod/lmod/init/sh
+ module load EnvVars/1.0.2 lmod/7.7 settarg/7.7 lsf/10.1 prod_envir/1.0.2 mktgs/1.0
+ module use -a /usrx/local/dev/modulefiles
+ module load git/2.14.3
+ module load ips/18.0.1.163
+ module load impi/18.0.1
+ module load NetCDF/4.5.0
+ module load HDF5-serial/1.10.1
+ module list
+ set -x
+ export KMP_AFFINITY=disabled
+ export home_dir=$LS_SUBCWD/..
+ export topo=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog
+ export TMPDIR=/gpfs/dell3/ptmp/$LOGNAME/fv3_grid.$gtype
+ export APRUN=time
 elif [ $machine = THEIA ]; then
  . /apps/lmod/lmod/init/sh
  set +x
@@ -94,18 +121,18 @@ elif [ $gtype = stretch ]; then
   export title=c96s		  # identifier based on refined location
   echo "creating stretched grid"
 elif [ $gtype = nest ] || [ $gtype = regional ]; then
-  export stetch_fac=1.5  	 # Stretching factor for the grid
-  export target_lon=-97.5   	 # center longitude of the highest resolution tile
-  export target_lat=35.5 	 # center latitude of the highest resolution tile
-  export refine_ratio=3 	 # Specify the refinement ratio for nest grid
-  export istart_nest=27  	 # Specify the starting i-direction index of nest grid in parent tile supergrid(Fortran index)
-  export jstart_nest=37  	 # Specify the starting j-direction index of nest grid in parent tile supergrid(Fortran index)
-  export iend_nest=166  	 # Specify the ending i-direction index of nest grid in parent tile supergrid(Fortran index)
-  export jend_nest=164  	 # Specify the ending j-direction index of nest grid in parent tile supergrid(Fortran index)
-  export halo=3  	         # halo size to be used in the atmosphere cubic sphere model for the grid tile.
+  export stetch_fac=1.5          # Stretching factor for the grid
+  export target_lon=-97.5        # center longitude of the highest resolution tile
+  export target_lat=35.5         # center latitude of the highest resolution tile
+  export refine_ratio=3          # Specify the refinement ratio for nest grid
+  export istart_nest=27          # Specify the starting i-direction index of nest grid in parent tile supergrid(Fortran index)
+  export jstart_nest=37          # Specify the starting j-direction index of nest grid in parent tile supergrid(Fortran index)
+  export iend_nest=166           # Specify the ending i-direction index of nest grid in parent tile supergrid(Fortran index)
+  export jend_nest=164           # Specify the ending j-direction index of nest grid in parent tile supergrid(Fortran index)
+  export halo=3                  # halo size to be used in the atmosphere cubic sphere model for the grid tile.
   export halop1=4                # halo size that will be used for the orography and grid tile in chgres
   export halo0=0                 # no halo, used to shave the filtered orography for use in the model
-  export title=c96r	         # identifier based on nest location
+  export title=c96r              # identifier based on nest location
   if [ $gtype = nest ];then
    echo "creating nested grid"
   else
@@ -116,7 +143,7 @@ else
 fi
 
 #----------------------------------------------------------------
-#filter_topo parameters. C192->50km, C384->25km, C768->13km, C1152->8.5km, C3072->3.2km
+#filter_topo parameters. C192->50km, C384->25km, C96->13km, C1152->8.5km, C3072->3.2km
 if [ $res -eq 48 ]; then 
  export cd4=0.12;  export max_slope=0.12; export n_del2_weak=4;   export peak_fac=1.1  
 elif [ $res -eq 96 ]; then 
@@ -343,6 +370,10 @@ if [ $machine = WCOSS_C ]; then
 
   aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
   rm $TMPDIR/orog.file1
+elif [ $machine = DELL ]; then
+    echo
+    echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
+    $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
 elif [ $machine = THEIA ]; then
 ####################### for tile in 1 2 3 4 5 6 7; do
     echo
@@ -366,7 +397,7 @@ echo $npts_cgx $npts_cgy $halop1 \'$filter_dir/C${res}_grid.tile${tile}.nc\' \'$
 if [ $machine = WCOSS_C ]; then
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.orog
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.grid
-elif [ $machine = THEIA ]; then
+elif [ $machine = THEIA ] || [ $machine = DELL ]; then
   time $exec_dir/shave.x <input.shave.orog
   time $exec_dir/shave.x <input.shave.grid
 fi
@@ -388,7 +419,7 @@ echo $npts_cgx $npts_cgy $halo \'$filter_dir/C${res}_grid.tile${tile}.nc\' \'$fi
 if [ $machine = WCOSS_C ]; then
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.orog.halo$halo0
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.grid.halo$halo
-elif [ $machine = THEIA ]; then
+elif [ $machine = THEIA ] || [ $machine = DELL ]; then
   time $exec_dir/shave.x <input.shave.orog.halo$halo0
   time $exec_dir/shave.x <input.shave.grid.halo$halo
 fi

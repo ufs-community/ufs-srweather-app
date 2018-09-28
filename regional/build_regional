@@ -20,6 +20,9 @@ if [ ${SITE} == "theia" ]; then
 
     ln -fs /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am fix_am
 
+elif [ ${SITE} == "wcoss" || ${SITE} == "dell" ]; then
+    ln -fs /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am fix_am
+
 elif [ ${SITE} == "wcoss_cray" ]; then
 
     ln -fs /gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am  fix_am
