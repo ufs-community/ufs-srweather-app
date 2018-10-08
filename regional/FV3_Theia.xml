@@ -10,6 +10,8 @@
 <!ENTITY SCHED "moabtorque"> 
 
 <!ENTITY BASEDIR "/scratch3/BMC/det/beck/FV3-CAM">
+<!ENTITY TEMPLATES "&BASEDIR;/fv3gfs/ush/templates">
+
 <!ENTITY TMPDIR "&BASEDIR;/work_dirs">
 
 <!ENTITY LOG_DIR "&BASEDIR;/fv3gfs/log">
@@ -31,25 +33,27 @@
 <!-- [(304-80)*5]+5 = must be divisible by layout_y
      [(372-12)*5]+5 = must be divisible by layout_x -->
 
-<!ENTITY TITLE "HRRR_newdomain"> <!-- Originally set to "FV3" -->
+<!ENTITY TITLE "RAP"> <!-- Originally set to "FV3" -->
 <!ENTITY QUILTING ".true.">
 <!ENTITY PRINT_ESMF ".false.">
 
+<!ENTITY PREDEF_RGNL_DOMAIN "RAP">
 
-<!ENTITY PREDEF_RGNL_DOMAIN "HRRR">
-
-<!ENTITY LAYOUT_X "19"> <!-- 15 for the RAP, 19 for HRRR -->
-<!ENTITY LAYOUT_Y "25"> <!-- 15 for the RAP, 25 for HRRR -->
+<!ENTITY LAYOUT_X "15"> <!-- 15 for the RAP, 19 for HRRR -->
+<!ENTITY LAYOUT_Y "15"> <!-- 15 for the RAP, 25 for HRRR -->
+<!ENTITY NCORES_PER_NODE "24">
 <!ENTITY WRITE_GROUPS "1">
 <!ENTITY WRITE_TASKS_PER_GROUP "25"> <!-- 25 for RAP and HRRR -->
 
+<!ENTITY EDIT_CONFIG_PROC "1:ppn=1">
 <!ENTITY GET_GFS_PROC "1:ppn=1">
 <!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_PROC "1:ppn=24">
 <!ENTITY CHGRES_RGNL_IC_BC0_PROC "1:ppn=24">
 <!ENTITY CHGRES_RGNL_BCS_PROC "1:ppn=24">
 <!ENTITY STAGE_PROC "1:ppn=1">
-<!ENTITY FV3_PROC "21:ppn=24">
+<!ENTITY FV3_PROC "11:ppn=24">
 
+<!ENTITY EDIT_CONFIG_RESOURCES "<walltime>00:05:00</walltime>">
 <!ENTITY GET_GFS_RESOURCES "<walltime>00:20:00</walltime>">
 <!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_RESOURCES "<walltime>00:15:00</walltime>">
 <!ENTITY CHGRES_RGNL_IC_BC0_RESOURCES "<walltime>00:10:00</walltime>">
@@ -70,15 +74,20 @@
     <cyclestr>&LOG_DIR;/FV3_@Y@m@d@H.log</cyclestr>
   </log>
 
-  <task name="fv3gfs_driver_grid_regional" maxtries="3">
+  <task name="edit_config" maxtries="1">
 
-    &FV3GFS_DRIVER_GRID_REGIONAL_RESOURCES;
-    &RESERVATION;
+    &EDIT_CONFIG_RESOURCES;
+    &RESERVATION;    
 
-    <command>&BASEDIR;/fv3gfs/ush/fv3gfs_driver_grid_regional.sh</command>
-    <nodes>&FV3GFS_DRIVER_GRID_REGIONAL_PROC;</nodes>
-    <jobname>fv3gfs_drvr_grid</jobname>
-    <join><cyclestr>&LOG_DIR;/fv3gfs_driver_grid_regional_@Y@m@d@H.log</cyclestr></join>
+    <command>&BASEDIR;/fv3gfs/ush/edit_config.sh</command>
+    <nodes>&EDIT_CONFIG_PROC;</nodes>
+    <jobname>edit_config</jobname>
+    <join><cyclestr>&LOG_DIR;/edit_config_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>templates</name>
+      <value>&TEMPLATES;</value>
+    </envar>
 
     <envar>
       <name>BASEDIR</name>
@@ -93,11 +102,6 @@
     <envar>
       <name>machine</name>
       <value>&MACHINE;</value>
-    </envar>
-
-    <envar>
-      <name>CDATE</name>
-      <value><cyclestr>@Y@m@d@H</cyclestr></value>
     </envar>
 
     <envar>
@@ -176,14 +180,55 @@
     </envar>
 
     <envar>
+      <name>layout_x</name>
+      <value>&LAYOUT_X;</value>
+    </envar>
+
+    <envar>
+      <name>layout_y</name>
+      <value>&LAYOUT_Y;</value>
+    </envar>
+
+    <envar>
+      <name>ncores_per_node</name>
+      <value>&NCORES_PER_NODE;</value>
+    </envar>
+
+    <envar>
       <name>quilting</name>
       <value>&QUILTING;</value>
+    </envar>
+
+    <envar>
+      <name>print_esmf</name>
+      <value>&PRINT_ESMF;</value>
     </envar>
 
     <envar>
       <name>predef_rgnl_domain</name>
       <value>&PREDEF_RGNL_DOMAIN;</value>
     </envar>
+ 
+  </task>
+
+  <task name="fv3gfs_driver_grid_regional" maxtries="4">
+
+    &FV3GFS_DRIVER_GRID_REGIONAL_RESOURCES;
+    &RESERVATION;
+
+    <command>&BASEDIR;/fv3gfs/ush/fv3gfs_driver_grid_regional.sh</command>
+    <nodes>&FV3GFS_DRIVER_GRID_REGIONAL_PROC;</nodes>
+    <jobname>fv3gfs_drvr_grid</jobname>
+    <join><cyclestr>&LOG_DIR;/fv3gfs_driver_grid_regional_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>TMPDIR</name>
+      <value>&TMPDIR;</value>
+    </envar>
+
+    <dependency>
+       <taskdep task="edit_config"/>
+    </dependency>
 
   </task>
 
@@ -198,108 +243,13 @@
     <join><cyclestr>&LOG_DIR;/get_GFS_anl_fcst_files_@Y@m@d@H.log</cyclestr></join>
 
     <envar>
-      <name>BASEDIR</name>
-      <value>&BASEDIR;</value>
-    </envar>
-
-    <envar>
       <name>TMPDIR</name>
       <value>&TMPDIR;</value>
     </envar>
 
     <envar>
-      <name>machine</name>
-      <value>&MACHINE;</value>
-    </envar>
-
-    <envar>
       <name>CDATE</name>
       <value><cyclestr>@Y@m@d@H</cyclestr></value>
-    </envar>
-
-    <envar>
-      <name>BC_interval_hrs</name>
-      <value>&BC_INTERVAL_HRS;</value>
-    </envar>
-
-    <envar>
-      <name>fcst_len_hrs</name>
-      <value>&FCST_LEN_HRS;</value>
-    </envar>
-
-    <envar>
-      <name>gtype</name>
-      <value>&GTYPE;</value>
-    </envar>
-
-    <envar>
-      <name>RES</name>
-      <value>&RES;</value>
-    </envar>
-
-    <envar>
-      <name>stretch_fac</name>
-      <value>&STRETCH_FAC;</value>
-    </envar>
-
-    <envar>
-      <name>lat_tile6_ctr</name>
-      <value>&LAT_TILE6_CTR;</value>
-    </envar>
-
-    <envar>
-      <name>lon_tile6_ctr</name>
-      <value>&LON_TILE6_CTR;</value>
-    </envar>
-
-    <envar>
-      <name>refine_ratio</name>
-      <value>&REFINE_RATIO;</value>
-    </envar>
-
-    <envar>
-      <name>istart_nest_tile6</name>
-      <value>&ISTART_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>iend_nest_tile6</name>
-      <value>&IEND_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>jstart_nest_tile6</name>
-      <value>&JSTART_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>jend_nest_tile6</name>
-      <value>&JEND_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>title</name>
-      <value>&TITLE;</value>
-    </envar>
-
-    <envar>
-      <name>write_groups</name>
-      <value>&WRITE_GROUPS;</value>
-    </envar>
-
-    <envar>
-      <name>write_tasks_per_group</name>
-      <value>&WRITE_TASKS_PER_GROUP;</value>
-    </envar>
-
-    <envar>
-      <name>quilting</name>
-      <value>&QUILTING;</value>
-    </envar>
-
-    <envar>
-      <name>predef_rgnl_domain</name>
-      <value>&PREDEF_RGNL_DOMAIN;</value>
     </envar>
 
     <dependency>
@@ -317,110 +267,15 @@
     <nodes>&CHGRES_RGNL_IC_BC0_PROC;</nodes>
     <jobname>chgres_IC_BC0</jobname>
     <join><cyclestr>&LOG_DIR;/run_chgres_rgnl_IC_BC0_@Y@m@d@H.log</cyclestr></join>
-
-    <envar>
-      <name>BASEDIR</name>
-      <value>&BASEDIR;</value>
-    </envar>
-
+    
     <envar>
       <name>TMPDIR</name>
       <value>&TMPDIR;</value>
     </envar>
 
     <envar>
-      <name>machine</name>
-      <value>&MACHINE;</value>
-    </envar>
-
-    <envar>
       <name>CDATE</name>
       <value><cyclestr>@Y@m@d@H</cyclestr></value>
-    </envar>
-
-    <envar>
-      <name>BC_interval_hrs</name>
-      <value>&BC_INTERVAL_HRS;</value>
-    </envar>
-
-    <envar>
-      <name>fcst_len_hrs</name>
-      <value>&FCST_LEN_HRS;</value>
-    </envar>
-
-    <envar>
-      <name>gtype</name>
-      <value>&GTYPE;</value>
-    </envar>
-
-    <envar>
-      <name>RES</name>
-      <value>&RES;</value>
-    </envar>
-
-    <envar>
-      <name>stretch_fac</name>
-      <value>&STRETCH_FAC;</value>
-    </envar>
-
-    <envar>
-      <name>lat_tile6_ctr</name>
-      <value>&LAT_TILE6_CTR;</value>
-    </envar>
-
-    <envar>
-      <name>lon_tile6_ctr</name>
-      <value>&LON_TILE6_CTR;</value>
-    </envar>
-
-    <envar>
-      <name>refine_ratio</name>
-      <value>&REFINE_RATIO;</value>
-    </envar>
-
-    <envar>
-      <name>istart_nest_tile6</name>
-      <value>&ISTART_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>iend_nest_tile6</name>
-      <value>&IEND_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>jstart_nest_tile6</name>
-      <value>&JSTART_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>jend_nest_tile6</name>
-      <value>&JEND_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>title</name>
-      <value>&TITLE;</value>
-    </envar>
-
-    <envar>
-      <name>write_groups</name>
-      <value>&WRITE_GROUPS;</value>
-    </envar>
-
-    <envar>
-      <name>write_tasks_per_group</name>
-      <value>&WRITE_TASKS_PER_GROUP;</value>
-    </envar>
-
-    <envar>
-      <name>quilting</name>
-      <value>&QUILTING;</value>
-    </envar>
-
-    <envar>
-      <name>predef_rgnl_domain</name>
-      <value>&PREDEF_RGNL_DOMAIN;</value>
     </envar>
 
     <dependency>
@@ -443,108 +298,13 @@
     <join><cyclestr>&LOG_DIR;/run_chgres_rgnl_BCs_@Y@m@d@H.log</cyclestr></join>
 
     <envar>
-      <name>BASEDIR</name>
-      <value>&BASEDIR;</value>
-    </envar>
-
-    <envar>
       <name>TMPDIR</name>
       <value>&TMPDIR;</value>
     </envar>
 
     <envar>
-      <name>machine</name>
-      <value>&MACHINE;</value>
-    </envar>
-
-    <envar>
       <name>CDATE</name>
       <value><cyclestr>@Y@m@d@H</cyclestr></value>
-    </envar>
-
-    <envar>
-      <name>BC_interval_hrs</name>
-      <value>&BC_INTERVAL_HRS;</value>
-    </envar>
-
-    <envar>
-      <name>fcst_len_hrs</name>
-      <value>&FCST_LEN_HRS;</value>
-    </envar>
-
-    <envar>
-      <name>gtype</name>
-      <value>&GTYPE;</value>
-    </envar>
-
-    <envar>
-      <name>RES</name>
-      <value>&RES;</value>
-    </envar>
-
-    <envar>
-      <name>stretch_fac</name>
-      <value>&STRETCH_FAC;</value>
-    </envar>
-
-    <envar>
-      <name>lat_tile6_ctr</name>
-      <value>&LAT_TILE6_CTR;</value>
-    </envar>
-
-    <envar>
-      <name>lon_tile6_ctr</name>
-      <value>&LON_TILE6_CTR;</value>
-    </envar>
-
-    <envar>
-      <name>refine_ratio</name>
-      <value>&REFINE_RATIO;</value>
-    </envar>
-
-    <envar>
-      <name>istart_nest_tile6</name>
-      <value>&ISTART_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>iend_nest_tile6</name>
-      <value>&IEND_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>jstart_nest_tile6</name>
-      <value>&JSTART_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>jend_nest_tile6</name>
-      <value>&JEND_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>title</name>
-      <value>&TITLE;</value>
-    </envar>
-
-    <envar>
-      <name>write_groups</name>
-      <value>&WRITE_GROUPS;</value>
-    </envar>
-
-    <envar>
-      <name>write_tasks_per_group</name>
-      <value>&WRITE_TASKS_PER_GROUP;</value>
-    </envar>
-
-    <envar>
-      <name>quilting</name>
-      <value>&QUILTING;</value>
-    </envar>
-
-    <envar>
-      <name>predef_rgnl_domain</name>
-      <value>&PREDEF_RGNL_DOMAIN;</value>
     </envar>
 
     <dependency>
@@ -556,7 +316,7 @@
 
   </task>
 
-  <task name="stage" maxtries="1">
+  <task name="stage" maxtries="2">
 
     &STAGE_RESOURCES;
     &RESERVATION;
@@ -567,18 +327,8 @@
     <join><cyclestr>&LOG_DIR;/stage_@Y@m@d@H.log</cyclestr></join>
 
     <envar>
-      <name>BASEDIR</name>
-      <value>&BASEDIR;</value>
-    </envar>
-
-    <envar>
       <name>TMPDIR</name>
       <value>&TMPDIR;</value>
-    </envar>
-
-    <envar>
-      <name>machine</name>
-      <value>&MACHINE;</value>
     </envar>
 
     <envar>
@@ -587,103 +337,8 @@
     </envar>
 
     <envar>
-      <name>BC_interval_hrs</name>
-      <value>&BC_INTERVAL_HRS;</value>
-    </envar>
-
-    <envar>
-      <name>fcst_len_hrs</name>
-      <value>&FCST_LEN_HRS;</value>
-    </envar>
-
-    <envar>
-      <name>gtype</name>
-      <value>&GTYPE;</value>
-    </envar>
-
-    <envar>
-      <name>RES</name>
-      <value>&RES;</value>
-    </envar>
-
-    <envar>
-      <name>stretch_fac</name>
-      <value>&STRETCH_FAC;</value>
-    </envar>
-
-    <envar>
-      <name>lat_tile6_ctr</name>
-      <value>&LAT_TILE6_CTR;</value>
-    </envar>
-
-    <envar>
-      <name>lon_tile6_ctr</name>
-      <value>&LON_TILE6_CTR;</value>
-    </envar>
-
-    <envar>
-      <name>refine_ratio</name>
-      <value>&REFINE_RATIO;</value>
-    </envar>
-
-    <envar>
-      <name>istart_nest_tile6</name>
-      <value>&ISTART_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>iend_nest_tile6</name>
-      <value>&IEND_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>jstart_nest_tile6</name>
-      <value>&JSTART_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>jend_nest_tile6</name>
-      <value>&JEND_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>title</name>
-      <value>&TITLE;</value>
-    </envar>
-
-    <envar>
-      <name>write_groups</name>
-      <value>&WRITE_GROUPS;</value>
-    </envar>
-
-    <envar>
-      <name>write_tasks_per_group</name>
-      <value>&WRITE_TASKS_PER_GROUP;</value>
-    </envar>
-
-    <envar>
-      <name>quilting</name>
-      <value>&QUILTING;</value>
-    </envar>
-
-    <envar>
-      <name>print_esmf</name>
-      <value>&PRINT_ESMF;</value>
-    </envar>
-
-    <envar>
-      <name>predef_rgnl_domain</name>
-      <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar>
-
-    <envar>
-      <name>layout_x</name>
-      <value>&LAYOUT_X;</value>
-    </envar> 
-
-    <envar>
-      <name>layout_y</name>
-      <value>&LAYOUT_Y;</value>
+      <name>templates</name>
+      <value>&TEMPLATES;</value>
     </envar>
 
     <dependency>
@@ -695,7 +350,7 @@
 
   </task>
 
-  <task name="run_FV3" maxtries="2">
+  <task name="run_FV3" maxtries="3">
 
     &FV3_RESOURCES;
     &RESERVATION;
@@ -706,118 +361,8 @@
     <join><cyclestr>&LOG_DIR;/run_FV3_@Y@m@d@H.log</cyclestr></join>
 
     <envar>
-      <name>BASEDIR</name>
-      <value>&BASEDIR;</value>
-    </envar>
-
-    <envar>
       <name>TMPDIR</name>
       <value>&TMPDIR;</value>
-    </envar>
-
-    <envar>
-      <name>machine</name>
-      <value>&MACHINE;</value>
-    </envar>
-
-    <envar>
-      <name>CDATE</name>
-      <value><cyclestr>@Y@m@d@H</cyclestr></value>
-    </envar>
-
-    <envar>
-      <name>BC_interval_hrs</name>
-      <value>&BC_INTERVAL_HRS;</value>
-    </envar>
-
-    <envar>
-      <name>fcst_len_hrs</name>
-      <value>&FCST_LEN_HRS;</value>
-    </envar>
-
-    <envar>
-      <name>gtype</name>
-      <value>&GTYPE;</value>
-    </envar>
-
-    <envar>
-      <name>RES</name>
-      <value>&RES;</value>
-    </envar>
-
-    <envar>
-      <name>stretch_fac</name>
-      <value>&STRETCH_FAC;</value>
-    </envar>
-
-    <envar>
-      <name>lat_tile6_ctr</name>
-      <value>&LAT_TILE6_CTR;</value>
-    </envar>
-
-    <envar>
-      <name>lon_tile6_ctr</name>
-      <value>&LON_TILE6_CTR;</value>
-    </envar>
-
-    <envar>
-      <name>refine_ratio</name>
-      <value>&REFINE_RATIO;</value>
-    </envar>
-
-    <envar>
-      <name>istart_nest_tile6</name>
-      <value>&ISTART_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>iend_nest_tile6</name>
-      <value>&IEND_NEST_TILE6;</value>
-    </envar>
-    
-    <envar>
-      <name>jstart_nest_tile6</name>
-      <value>&JSTART_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>jend_nest_tile6</name>
-      <value>&JEND_NEST_TILE6;</value>
-    </envar>
-
-    <envar>
-      <name>title</name>
-      <value>&TITLE;</value>
-    </envar>
-
-    <envar>
-      <name>write_groups</name>
-      <value>&WRITE_GROUPS;</value>
-    </envar>
-
-    <envar>
-      <name>write_tasks_per_group</name>
-      <value>&WRITE_TASKS_PER_GROUP;</value>
-    </envar>
-
-    <envar>
-      <name>quilting</name>
-      <value>&QUILTING;</value>
-    </envar>
-
-    <envar>
-      <name>predef_rgnl_domain</name>
-      <value>&PREDEF_RGNL_DOMAIN;</value>
-    </envar>
-
-    <envar>
-      <name>layout_x</name>
-      <value>&LAYOUT_X;</value>
-    </envar>
-
-    <envar>
-      <name>layout_y</name>
-      <value>&LAYOUT_Y;</value>
     </envar>
 
     <dependency>

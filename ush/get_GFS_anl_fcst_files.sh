@@ -43,7 +43,7 @@ cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
-. $BASEDIR/fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
+. $TMPDIR/../fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
 #
 #-----------------------------------------------------------------------
 #

@@ -22,16 +22,13 @@
 ############################################
 
 #Source variables from user-defined file
-. ${BASEDIR}/fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
-
-
-#Define template namelist/configure file location
-templates="${BASEDIR}/fv3gfs/ush/templates"
+. ${TMPDIR}/../fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
 
 #Define fixed file location
 fix_files=${FIXgsm}
 
 #Define run directory
+
 RUNDIR="${BASEDIR}/run_dirs/${subdir_name}"
 
 #
@@ -76,20 +73,26 @@ cp ${templates}/field_table ${RUNDIR}
 cp ${templates}/nems.configure ${RUNDIR}
 cp ${templates}/run.regional ${RUNDIR}/run.regional
 cp ${templates}/data_table ${RUNDIR}
+cp ${templates}/model_configure ${RUNDIR}/model_configure
 
-#Copy correct model_configure file depending on quilting and preset domain
+#Append model_configure file depending on quilting and preset domain
 
-if [[ $quilting = ".true." && $predef_rgnl_domain = "HRRR" ]]; then
+if [[ $quilting = ".true." ]]; then
 
-   cp ${templates}/model_configure_wrtcomp_HRRR ${RUNDIR}/model_configure
+  if [[ $predef_rgnl_domain = "HRRR" ]]; then
 
-elif [[ $quilting = ".true." && $predef_rgnl_domain = "RAP" ]]; then
+    cat ${templates}/wrtcomp_HRRR >> ${RUNDIR}/model_configure   
 
-   cp ${templates}/model_configure_wrtcomp_RAP ${RUNDIR}/model_configure
+  elif [[ $predef_rgnl_domain = "RAP" ]]; then
 
-else
+    cat ${templates}/wrtcomp_RAP >> ${RUNDIR}/model_configure
 
-   cp ${templates}/model_configure_no_wrtcomp ${RUNDIR}/model_configure
+  else
+
+    echo "Please define model output projection and grid manually in model_configure file."
+    exit 1
+
+  fi
 
 fi
 

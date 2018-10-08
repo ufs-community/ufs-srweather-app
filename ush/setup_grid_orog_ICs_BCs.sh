@@ -41,13 +41,13 @@
 #set -eux
 set -ux
 
-if [ -v ${BASEDIR} ]; then
+if [ -z ${TMPDIR} ]; then
 
-. ${BASEDIR}/fv3gfs/ush/config.sh
+. ./config.sh
 
 else
 
-. ./config.sh
+. ${TMPDIR}/config.sh
 
 fi
 

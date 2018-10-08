@@ -10,7 +10,10 @@ ulimit -s unlimited
 ulimit -a
 
 #Source variables from user-defined file
-. ${BASEDIR}/fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
+. ${TMPDIR}/../fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
 
 #Run the run.regional script to execute FV3
-${BASEDIR}/run_dirs/${subdir_name}/run.regional
+${TMPDIR}/../run_dirs/${subdir_name}/run.regional
+
+#Move config.sh script from $TMPDIR to $RUNDIR
+mv ${TMPDIR}/config.sh ${RUNDIR}/config.sh
