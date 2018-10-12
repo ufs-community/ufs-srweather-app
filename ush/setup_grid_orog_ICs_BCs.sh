@@ -68,6 +68,7 @@ export machine=${machine:-}
 #
 if [ "$machine" != "WCOSS_C" ] && \
    [ "$machine" != "WCOSS" ] && \
+   [ "$machine" != "Odin" ] && \
    [ "$machine" != "THEIA" ]; then
   echo
   echo "Error.  Machine specified in \"machine\" is not supported:"
@@ -88,6 +89,8 @@ if [ "$machine" = "WCOSS_C" ]; then
 elif [ "$machine" = "WCOSS" ]; then
   export ncores_per_node=${ncores_per_node}  # Don't know the default on WCOS, so must get it from environment.
 elif [ "$machine" = "THEIA" ]; then
+  export ncores_per_node=${ncores_per_node:-24}
+elif [ "$machine" = "Odin" ]; then
   export ncores_per_node=${ncores_per_node:-24}
 fi
 #
@@ -257,6 +260,8 @@ elif [ "$machine" = "WCOSS" ]; then
   export FIXgsm=""
 elif [ "$machine" = "THEIA" ]; then
   export FIXgsm="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am"
+elif [ "$machine" = "Odin" ]; then
+  export FIXgsm="/scratch/ywang/external/fix_am"
 fi
 #
 #-----------------------------------------------------------------------
