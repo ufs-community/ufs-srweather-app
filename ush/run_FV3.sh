@@ -14,6 +14,3 @@ ulimit -a
 
 #Run the run.regional script to execute FV3
 ${TMPDIR}/../run_dirs/${subdir_name}/run.regional
-
-#Move config.sh script from $TMPDIR to $RUNDIR
-mv ${TMPDIR}/config.sh ${RUNDIR}/config.sh
