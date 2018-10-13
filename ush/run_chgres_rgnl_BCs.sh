@@ -1,46 +1,4 @@
 #!/bin/ksh
-#
-#----WCOSS_CRAY JOBCARD
-#
-##BSUB -L /bin/sh
-#BSUB -P FV3GFS-T2O
-#BSUB -o log.chgres_forBC.%J
-#BSUB -e log.chgres_forBC.%J
-#BSUB -J chgres_fv3
-#BSUB -q debug
-#BSUB -W 00:30
-#BSUB -M 1024
-#BSUB -extsched 'CRAYLINUX[]'
-#
-#----WCOSS JOBCARD
-#
-##BSUB -L /bin/sh
-##BSUB -P FV3GFS-T2O
-##BSUB -oo log.chgres.%J
-##BSUB -eo log.chgres.%J
-##BSUB -J chgres_fv3
-##BSUB -q devonprod
-##BSUB -x
-##BSUB -a openmp
-##BSUB -n 24
-##BSUB -R span[ptile=24]
-#
-#----THEIA JOBCARD
-#
-#PBS -N gen_BC_files_rgnl
-#PBS -A gsd-fv3
-#PBS -o out.$PBS_JOBNAME.$PBS_JOBID
-#PBS -e err.$PBS_JOBNAME.$PBS_JOBID
-#PBS -l nodes=1:ppn=24
-#PBS -q debug
-#PBS -l walltime=00:30:00
-##PBS -q batch
-##PBS -l walltime=00:40:00
-#PBS -W umask=022
-#
-
-
-
 
 set -eux
 # 
@@ -56,7 +14,7 @@ set -eux
 # 
 #-----------------------------------------------------------------------
 #
-cd $PBS_O_WORKDIR
+#cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
@@ -155,6 +113,15 @@ elif [ "$machine" = "THEIA" ]; then
   export APRUNC="time"
   ulimit -a
   ulimit -s unlimited
+elif [ "$machine" = "Odin" ]; then
+
+# The variable DATA specifies the temporary (work) directory used by
+# chgres_driver_scr.
+  export DATA="$TMPDIR/$subdir_name/BCs"
+  export APRUNC="srun -n 1"
+
+  ulimit -a
+  ulimit -s unlimited
 
 else
 
@@ -208,7 +175,7 @@ while (test "$curnt_hr" -le "$fcst_len_hrs"); do
     BC_DATA=/gpfs/hps3/ptmp/${LOGNAME}/wrk.chgres.$HHH
     echo "env REGIONAL=2 bchour=$HHH DATA=$BC_DATA $BASE_GSM/ush/$chgres_driver_scr >&out.chgres.$HHH" >>bcfile.input
 
-  elif [ $machine = THEIA ]; then
+  elif [ $machine = THEIA -o $machine = "Odin" ]; then
 #
 # On theia, run the BC generation sequentially for now.
 #

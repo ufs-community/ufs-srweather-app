@@ -356,6 +356,7 @@ echo "Modifying nodes and PPN in run.regional..."
 echo ""
 sed -i -r -e "s/^(#PBS.*nodes=)([^:]*)(:.*)/\1$Nodes\3/" ${RUNDIR}/run.regional
 sed -i -r -e "s/(ppn=)(.*)/\1$PPN/" ${RUNDIR}/run.regional
+sed -i -r -e "s/MACHINE/${machine}/" ${RUNDIR}/run.regional
 
 #Modify $RUNDIR in run.regional
 echo "Modifying run directory in run.${CRES}.regional..."

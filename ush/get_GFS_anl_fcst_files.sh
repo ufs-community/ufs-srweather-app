@@ -35,7 +35,7 @@ set -ux
 # 
 #-----------------------------------------------------------------------
 #
-cd $PBS_O_WORKDIR 
+#cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
@@ -44,14 +44,7 @@ cd $PBS_O_WORKDIR
 #-----------------------------------------------------------------------
 #
 . $TMPDIR/../fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
-#
-#-----------------------------------------------------------------------
-#
-# Load the HPSS module.
-#
-#-----------------------------------------------------------------------
-#
-module load hpss
+
 #
 #-----------------------------------------------------------------------
 #
@@ -99,6 +92,8 @@ elif [ "$machine" = "THEIA" ]; then
 #  export COMROOTp2="/scratch4/NCEPDEV/rstprod/com"   # Does this really need to be exported??
 #  export INIDIR_SYS="$COMROOTp2/gfs/prod/gfs.$YMD"
   export INIDIR_SYS="/scratch4/NCEPDEV/rstprod/com/gfs/prod/gfs.$YMD"
+elif [ "$machine" = "Odin" ]; then
+  export INIDIR_SYS="/scratch/ywang/test_runs/FV3_regional/gfs/$YMD"
 fi
 #
 #-----------------------------------------------------------------------
@@ -119,7 +114,8 @@ anl_or_fcst="analysis"
 # file.
 #
 temp="gfs.t${HH}z."
-anl_files=( ${temp}atmanl.nemsio ${temp}nstanl.nemsio ${temp}sfcanl.nemsio )
+#anl_files=( ${temp}atmanl.nemsio ${temp}nstanl.nemsio ${temp}sfcanl.nemsio )
+anl_files=( ${temp}atmanl.nemsio ${temp}sfcanl.nemsio )
 #
 # Set the number of needed analysis files.
 #
@@ -186,6 +182,14 @@ if [ "$num_files_found" -eq "$num_files_needed" ]; then
 #-----------------------------------------------------------------------
 #
 else
+#
+#-----------------------------------------------------------------------
+#
+# Load the HPSS module.
+#
+#-----------------------------------------------------------------------
+#
+  module load hpss
 #
 #-----------------------------------------------------------------------
 #

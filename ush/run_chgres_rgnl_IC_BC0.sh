@@ -1,41 +1,4 @@
 #!/bin/ksh
-#
-#----WCOSS_CRAY JOBCARD
-#
-##BSUB -L /bin/sh
-#BSUB -P NAM-T2O
-#BSUB -o log.chgres.%J
-#BSUB -e log.chgres.%J
-#BSUB -J chgres_fv3
-#BSUB -q "debug"
-#BSUB -W 00:30
-#BSUB -M 1024
-#BSUB -extsched 'CRAYLINUX[]'
-#
-#----WCOSS JOBCARD
-#
-##BSUB -L /bin/sh
-##BSUB -P FV3GFS-T2O
-##BSUB -oo log.chgres.%J
-##BSUB -eo log.chgres.%J
-##BSUB -J chgres_fv3
-##BSUB -q devonprod
-##BSUB -x
-##BSUB -a openmp
-##BSUB -n 24
-##BSUB -R span[ptile=24]
-#
-#----THEIA JOBCARD
-#
-#PBS -N gen_IC_BC0_files_rgnl
-#PBS -A gsd-fv3
-#PBS -o out.$PBS_JOBNAME.$PBS_JOBID
-#PBS -e err.$PBS_JOBNAME.$PBS_JOBID
-#PBS -l nodes=1:ppn=24
-#PBS -q debug
-#PBS -l walltime=00:30:00
-#PBS -W umask=022
-#
 
 # 
 #-----------------------------------------------------------------------
@@ -64,7 +27,7 @@ set -eux
 # 
 #-----------------------------------------------------------------------
 #
-cd $PBS_O_WORKDIR
+#cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
@@ -148,6 +111,12 @@ elif [ "$machine" = "THEIA" ]; then
 # chgres_driver_scr.
   export DATA="$TMPDIR/$subdir_name/ICs"
   export APRUNC="time"
+  ulimit -a
+  ulimit -s unlimited
+
+elif [ "$machine" = "Odin" ]; then
+  export DATA="$TMPDIR/$subdir_name/ICs"
+  export APRUNC="srun -n 1"
   ulimit -a
   ulimit -s unlimited
 

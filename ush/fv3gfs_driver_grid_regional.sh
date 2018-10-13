@@ -1,33 +1,6 @@
 #!/bin/sh
 
 #
-#----WCOSS_CRAY JOBCARD
-#
-#BSUB -L /bin/sh
-#BSUB -P FV3GFS-T2O
-#BSUB -oo log.grid.%J
-#BSUB -eo log.grid.%J
-#BSUB -J grid_fv3
-#BSUB -q debug
-#BSUB -M 2400
-#BSUB -W 00:30
-#BSUB -extsched 'CRAYLINUX[]'
-#
-#----THEIA JOBCARD
-#
-#PBS -N make_grid_orog_rgnl
-#PBS -A gsd-fv3
-#PBS -o out.$PBS_JOBNAME.$PBS_JOBID
-#PBS -e err.$PBS_JOBNAME.$PBS_JOBID
-#PBS -l nodes=1:ppn=24
-#PBS -q debug
-#PBS -l walltime=00:30:00
-#PBS -W umask=022
-#
-
-
-
-#
 #-----------------------------------------------------------------------
 #
 # This script generates grid and orography files in NetCDF format that 
@@ -272,6 +245,13 @@ stop_after_orog_filter="false"
 #stop_after_orog_filter="true"
 
 # 
+# these are expected from rocoto config file - Added by Y. Wang
+#
+#export BASEDIR="/scratch/ywang/external/regionalFV3"
+#export TMPDIR="/scratch/ywang/test_runs/FV3_regional/work_dirs"
+#export machine="Odin"
+#export gtype="regional"
+#
 #-----------------------------------------------------------------------
 #
 # When this script is run using the qsub command, its default working 
@@ -284,7 +264,7 @@ stop_after_orog_filter="false"
 # 
 #-----------------------------------------------------------------------
 #
-cd $PBS_O_WORKDIR
+#cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
@@ -368,6 +348,10 @@ elif [ "$machine" = "THEIA" ]; then
   export APRUN="time"
   export topo_dir="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog"
 
+elif [ "$machine" = "Odin" ]; then
+
+  export APRUN="srun -n 1"
+  export topo_dir="/scratch/ywang/external/fix_am/fix_orog"
 else
 
   echo
@@ -600,7 +584,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
     aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
     rm $TMPDIR/orog.file1
 
-  elif [ "$machine" = "THEIA" ]; then
+  elif [ "$machine" = "THEIA" -o "$machine" = "Odin" ]; then
 
     for tile in 1 2 3 4 5 6 ; do
       echo
@@ -734,7 +718,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
     aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
     rm $TMPDIR/orog.file1
 
-  elif [ "$machine" = "THEIA" ]; then
+  elif [ "$machine" = "THEIA" -o "$machine" = "Odin" ]; then
 
     for tile in 1 2 3 4 5 6 ; do
       echo
@@ -906,7 +890,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
     aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
     rm $TMPDIR/orog.file1
 
-  elif [ "$machine" = "THEIA" ]; then
+  elif [ "$machine" = "THEIA" -o "$machine" = "Odin" ]; then
 
     for tile in 1 2 3 4 5 6 7; do
       echo
@@ -1271,7 +1255,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
     aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
     rm $TMPDIR/orog.file1
 
-  elif [ "$machine" = "THEIA" ]; then
+  elif [ "$machine" = "THEIA" -o "$machine" = "Odin" ]; then
 
     echo
     echo "Executing $orog_gen_scr for tile $tile..."
@@ -1415,6 +1399,11 @@ if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
     time $exec_dir/$shave_exec < input.shave.grid.halo$halop1
     time $exec_dir/$shave_exec < input.shave.orog.halo$halo0
     time $exec_dir/$shave_exec < input.shave.orog.halo$halop1
+  elif [ "$machine" = "Odin" ]; then
+    ${APRUN} $exec_dir/$shave_exec < input.shave.grid.halo$halo
+    ${APRUN} $exec_dir/$shave_exec < input.shave.grid.halo$halop1
+    ${APRUN} $exec_dir/$shave_exec < input.shave.orog.halo$halo0
+    ${APRUN} $exec_dir/$shave_exec < input.shave.orog.halo$halop1
   fi
 
 fi
