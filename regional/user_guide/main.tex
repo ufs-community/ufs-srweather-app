@@ -1,0 +1,56 @@
+\documentclass[12pt,letterpaper,oneside]{scrbook}
+
+\usepackage{import}
+
+\usepackage{dtcdoc}
+
+% Local Commands
+\newcommand{\quotes}[1]{``#1''}
+
+\usepackage{longtable}
+
+\usepackage{morefloats}
+
+\usepackage{multirow}
+
+\usepackage{hanging}
+
+\makeindex
+
+\setcounter{tocdepth}{5}
+
+\setcounter{secnumdepth}{5} 
+
+\begin{document}
+
+\frontmatter
+
+\import{./}{title.tex}
+
+\clearpage
+\thispagestyle{empty}
+\import{./}{ack.tex}
+\import{./}{foreword.tex}
+
+\tableofcontents
+
+
+\mainmatter
+% Chapter 1: Overview
+\import{./}{dtc_ch1.tex}
+% Chapter 2: Building
+\import{./}{dtc_ch2.tex}
+% Appendices
+\appendix
+% Appendix A:
+\import{./}{dtc_appendixA.tex}
+
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\backmatter
+
+\bibliographystyle{abbrv}
+\bibliography{references}
+
+\end{document}
+
