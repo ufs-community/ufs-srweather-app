@@ -23,13 +23,13 @@
 \subsection{Description of Rocoto tasks}
 
 \begin{itemize}
-\item fv3gfs\_driver\_grid\_regional
+\item \verb|fv3gfs_driver_grid_regional|
     \begin{itemize}
     \item Generates the netCDF files describing the grid and (unfiltered and filtered) orography.  These consist of two grid description files and two filtered orography files.  The first grid file describes a regional grid having a halo region of 3 cells, while the other describes a grid with 4 halo cells.  These two files are obtained by ''shaving'' a file describing a grid with an even larger halo, e.g. 6 cells (which is also output in a temp directory)  Similarly, the first filtered orography file contains 0 halo cells while the second contains 4 halo cells.  These are also obtained by shaving a filtered orography file with an even larger halo (e.g. 6 cells).
     \end{itemize}
 \item \verb|get_GFS_anl_fcst_files|
     \begin{itemize}
-    \item Copies GFS analysis and forecast files (in nemsio format) that are needed to generate the IC/BC netcdf files for a SAR-FV3 run.  These are either copied from disk (if available) or extracted from an archive (tar) file that is copied over from HPSS.  There are 3 analysis files (\verb|gfs.t00z.atmanl.nemsio|, \verb|gfs.t00z.nstanl.nemsio|, and \verb|gfs.t00z.sfcanl.nemsio|) and one forecast file for each hour after the initial time for which a netCDF BC file needs to be generated (e.g. \verb|gfs.t00z.atmf003.nemsio|, \verb|gfs.t00z.atmf006.nemsio|, etc). 
+    \item Copies GFS analysis and forecast files (in nemsio format) that are needed to generate the IC/BC netcdf files for a SAR FV3 run.  These are either copied from disk (if available) or extracted from an archive (tar) file that is copied over from HPSS.  There are 3 analysis files (\verb|gfs.t00z.atmanl.nemsio|, \verb|gfs.t00z.nstanl.nemsio|, and \verb|gfs.t00z.sfcanl.nemsio|) and one forecast file for each hour after the initial time for which a netCDF BC file needs to be generated (e.g. \verb|gfs.t00z.atmf003.nemsio|, \verb|gfs.t00z.atmf006.nemsio|, etc). 
     \end{itemize}
 \item \verb|run_chgres_rgnl_IC_BC0|
     \begin{itemize}
@@ -37,13 +37,13 @@
     \end{itemize}
 \item \verb|run_chgres_rgn_BCs|
     \begin{itemize}
-    \item Generates the netCDF BCs files for all forecast hours AFTER hour 0 at a frequency of \verb|?BC_INTERVAL_HRS?| hours out to \verb|?FCST_LEN_HRS| (as defined in Rocoto workflow).  These files are named, for example, \verb|gfs_bndy.tile7.003.nc|, \verb|gfs_bndy.tile7.006.nc|, etc.
+    \item Generates the netCDF BCs files for all forecast hours AFTER hour 0 at a frequency of \verb|"BC_INTERVAL_HRS"| hours out to \verb|"FCST_LEN_HRS"| (as defined in Rocoto workflow).  These files are named, for example, \verb|gfs_bndy.tile7.003.nc|, \verb|gfs_bndy.tile7.006.nc|, etc.
     \end{itemize}
 \item \verb|stage|
     \begin{itemize}
-    \item Creates run directory and copy/link necessary netCDF files generated during the preprocessing tasks into the INPUT directory
-    \item Copies template namelist and configure files into the run directory and modify them according to variables defined in the workflow related to start/end time, forecast length, boundary condition interval, grid decomposition and script-calculated nodes and ppn, etc.
-    \item Modifies Rocoto workflow resource definitions for nodes and processes per node for the run\_FV3 task based on user-defined layout\_x and layout\_y 
+    \item Creates the run directory and copies/links necessary netCDF files generated during the preprocessing tasks into the INPUT directory
+    \item Copies template namelist and configure files into the run directory and modifies them according to variables defined in the workflow related to start/end time, forecast length, boundary condition interval, grid decomposition and script-calculated nodes and ppn, etc.
+    \item Modifies the Rocoto workflow resource definitions for nodes and processes per node for the run\_FV3 task based on user-defined layout\_x and layout\_y 
 \end{itemize}
 \item \verb|run_FV3|
     \begin{itemize}
