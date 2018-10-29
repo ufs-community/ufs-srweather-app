@@ -27,11 +27,15 @@ export topo_file=oro.C${res}
 if [ ! -s $outdir ]; then mkdir -p $outdir ;fi
 cd $outdir ||exit 8
 
-cp $griddir/$mosaic_grid .
 if [ $gtype = regional ]; then
-  cp $griddir/C${res}_grid.tile7.nc .
-  cp $orodir/${topo_file}.tile7.nc .
+#  cp $griddir/$mosaic_grid .
+#  cp $griddir/C${res}_grid.tile7.nc .
+#  cp $orodir/${topo_file}.tile7.nc .
+  ln -fs $griddir/$mosaic_grid $outdir/$mosaic_grid
+  ln -fs $griddir/C${res}_grid.tile7.nc $outdir/C${res}_grid.tile7.nc
+  ln -fs $orodir/${topo_file}.tile7.nc $outdir/${topo_file}.tile7.nc
 else
+  cp $griddir/$mosaic_grid .
   cp $griddir/C${res}_grid.tile?.nc .
   cp $orodir/${topo_file}.tile?.nc .
 fi

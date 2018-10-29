@@ -40,47 +40,88 @@
 # 
 #-----------------------------------------------------------------------
 #
-# This script generates an initial conditions (ICs) file and a surface
-# file on a given grid at a specified date.  The ICs file contains For a regional grid, it al-
-# so generates a boundary file at the initial time 
-# on the grid
-# specified by the parameters in  
+# This script generates:
+#
+# 1) A NetCDF initial condition (IC) file on a regional grid for the 
+#    date/time on which the analysis files in the directory specified by
+#    INIDIR are valid.  Note that this file does not include data in the
+#    halo of this regional grid (that data is found in the boundary con-
+#    dition (BC) files).
+#
+# 2) A NetCDF surface file on the regional grid.  As with the IC file, 
+#    this file does not include data in the halo.
+#
+# 3) A NetCDF boundary condition (BC) file containing data on the halo
+#    of the regional grid at the initial time (i.e. at the same time as
+#    the one at which the IC file is valid).
+#
+# 4) A NetCDF GFS "control" file named gfs_ctrl.nc that contains infor-
+#    mation on the vertical coordinate and the number of tracers for 
+#    which initial and boundary conditions are provided.
+#
+# All four of these NetCDF files are placed in the directory specified 
+# by WORKDIR_ICBC.
 # 
 #-----------------------------------------------------------------------
 #
 
-
+#
+#-----------------------------------------------------------------------
+#
+# Change shell behavior with "set" with these flags:
+#
+# -a 
+# This will cause the script to automatically export all variables and 
+# functions which are modified or created to the environments of subse-
+# quent commands.
+#
+# -e 
+# This will cause the script to exit as soon as any line in the script 
+# fails (with some exceptions; see manual).  Apparently, it is a bad 
+# idea to use "set -e".  See here:
+#   http://mywiki.wooledge.org/BashFAQ/105
+#
+# -u 
+# This will cause the script to exit if an undefined variable is encoun-
+# tered.
+#
+# -x
+# This will cause all executed commands in the script to be printed to 
+# the terminal (used for debugging).
+#
+#-----------------------------------------------------------------------
+#
 set -eux
-# 
-#-----------------------------------------------------------------------
-#
-# When this script is run using the qsub command, its default working 
-# directory is the user's home directory (unless another one is speci-
-# fied  via qsub's -d flag; the -d flag sets the environment variable 
-# PBS_O_INITDIR, which is by default undefined).  Here, we change direc-
-# tory to the one in which the qsub command is issued, and that directo-
-# ry is specified in the environment variable PBS_O_WORKDIR.  This must
-# be done to be able to source the setup script below.
-# 
-#-----------------------------------------------------------------------
-#
-cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
-# Source the setup script.
+# Source the script that defines the necessary shell environment varia-
+# bles.
 #
 #-----------------------------------------------------------------------
 #
-. ${TMPDIR}/../fv3gfs/ush/setup_grid_orog_ICs_BCs.sh 
+. $RUNDIR/var_defns.sh
+export BASEDIR
+export INIDIR  # This is the variable that determines the directory in
+               # which chgres looks for the input nemsio files.
+export gtype
 #
 #-----------------------------------------------------------------------
 #
-# Set the file name of the diver script that runs chgres.
+# Set the file name of the diver script that runs the chgres utility.
 #
 #-----------------------------------------------------------------------
 #
 chgres_driver_scr="global_chgres_driver.sh"
+#
+#-----------------------------------------------------------------------
+#
+# Create the directory in which the ouput from this script will be 
+# placed (if it doesn't already exist).
+#
+#-----------------------------------------------------------------------
+#
+mkdir -p $WORKDIR_ICBC
 #
 #-----------------------------------------------------------------------
 #
@@ -92,24 +133,17 @@ export OMP_NUM_THREADS_CH=24           # Default for openMP threads.
 export CASE=${CRES}
 export LEVS=64
 export LSOIL=4
-export FIXfv3=${BASE_GSM}/fix/fix_fv3
-export GRID_OROG_INPUT_DIR=${out_dir}  # Directory in which input grid and orography files are located.
-export OUTDIR=${out_dir}               # Directory in which output from chgres_driver_scr is placed.
-export HOMEgfs=$BASE_GSM               # Directory in which the "superstructure" fv3gfs code is located.
-export nst_anl=.false.                 # false or true to include NST analysis
-
-# This is something that needs to go somewhere earlier, like right after
-# the repo is cloned.
-# ln -fs /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am  ${BASE_GSM}/fix
-
+export FIXfv3=${FV3SAR_DIR}/fix/fix_fv3
+export GRID_OROG_INPUT_DIR=$WORKDIR_SHVE  # Directory in which input grid and orography files are located.
+export OUTDIR=$WORKDIR_ICBC               # Directory in which output from chgres_driver_scr is placed.
+export HOMEgfs=$FV3SAR_DIR                # Directory in which the "superstructure" fv3gfs code is located.
+export nst_anl=.false.                    # false or true to include NST analysis
 #
 # The following variables do not appear in chgres_driver_scr, but they
 # may be needed by other scripts called by chgres_driver_scr.           <-- Maybe not.  Run and see what happens??
 #
-export CDAS=gfs                        # gfs or gdas; may not be needed by chgres_driver_scr, but hard to tell.
+export CDAS=gfs  # gfs or gdas; may not be needed by chgres_driver_scr, but hard to tell.
 export NODES=2
-
-
 #
 #-----------------------------------------------------------------------
 #
@@ -117,7 +151,7 @@ export NODES=2
 #
 #-----------------------------------------------------------------------
 #
-export ymd=`echo $CDATE | cut -c 1-8`
+export ymd=$YMD
 
 if [ "$machine" = "WCOSS_C" ]; then
 
@@ -146,7 +180,7 @@ elif [ "$machine" = "THEIA" ]; then
 
 # The variable DATA specifies the temporary (work) directory used by 
 # chgres_driver_scr.
-  export DATA="$TMPDIR/$subdir_name/ICs"
+  export DATA="$WORKDIR_ICBC/ICs_work"
   export APRUNC="time"
   ulimit -a
   ulimit -s unlimited
@@ -160,36 +194,29 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Perform grid-type dependent tasks.
-#
-#-----------------------------------------------------------------------
-#
-if [ "$gtype" = "regional" ]; then
-#
-# For gtype set to "regional", set REGIONAL to 1.  This will cause 
-# chgres_driver_scr to generate an initial conditions file only on the 
-# regional grid (tile 7) and to generate a boundary conditions file 
-# (which contains field values only in the halo of the regional domain)
-# only at the initial time.
-#
-  export REGIONAL=1
-#
 # Create links to the grid and orography files with 4 halo cells.  These
 # are needed by chgres to create the boundary data.
 #
-  export HALO=4
-  ln -sf $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
-  ln -sf $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
-
-else
+#-----------------------------------------------------------------------
 #
-# For gtype set to "uniform", "stretch", or "nest", set REGIONAL to 0.  
-# This will cause chgres_driver_scr to generate global initial condi-
-# tions.
-#
-  export REGIONAL=0
+export HALO=$halop1
 
-fi
+ln -fs $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
+       $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
+
+ln -fs $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
+       $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
+#
+#-----------------------------------------------------------------------
+#
+# Set REGIONAL to 1.  This will cause the chgres_driver_scr script to 
+# generate an initial conditions file, a boundary conditions file (con-
+# taining field values only in the halo of the regional domain) at the
+# initial time, and a surface file.
+#
+#-----------------------------------------------------------------------
+#
+export REGIONAL=1
 #
 #-----------------------------------------------------------------------
 #
@@ -197,16 +224,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-$BASE_GSM/ush/$chgres_driver_scr
-#
-#-----------------------------------------------------------------------
-#
-# For a regional grid, remove the links that were created above for the 
-# 4-halo files.
-#
-#-----------------------------------------------------------------------
-#
-#if [ "$gtype" = "regional" ]; then
-#  rm $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
-#  rm $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
-#fi
+$USHDIR/$chgres_driver_scr
+
+
+

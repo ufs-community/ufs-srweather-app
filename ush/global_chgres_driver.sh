@@ -182,9 +182,10 @@ export FNABSC=$FIXam/global_mxsnoalb.uariz.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}
 export FNALBC=$FIXam/global_snowfree_albedo.bosu.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.rg.grb
 
 #
-# For a regional run, if REGIONAL=2 (generate boundary data only) this script is called multiple times
-# so that each boundary time other than hour 0 will be done individually. This allows multiple instances
-# of chgres to execute simultaneously
+# For a regional run, if REGIONAL=2 (generate boundary data only) this 
+# script is called multiple times so that each boundary time other than
+# hour 0 will be done individually.  This allows multiple instances of 
+# chgres to execute simultaneously.
 #
 
 if [ $REGIONAL -ne 2 ]; then           # REGIONAL -ne 2 is for uniform and regional hour 0

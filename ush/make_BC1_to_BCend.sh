@@ -41,45 +41,64 @@
 
 
 
+#
+#-----------------------------------------------------------------------
+#
+# This script generates NetCDF boundary condition (BC) files that con-
+# tain data for the halo region of a regional grid.  One file is gene-
+# rated for each boundary time AFTER the initial time up until the final 
+# forecast time.  For example, if the boundary is to be updated every 3 
+# hours (this frequency is determined by the variable BC_update_intvl_hrs) 
+# and the forecast is to run for 24 hours (the forecast length is deter-
+# mined by the variable fcst_len_hrs), then a file is generated for 
+# forecast hours 3, 6, 9, 12, 15, 18, and 24 (but not hour 0 since that
+# is handled in the script that generates the initial condition file).  
+# All the generated NetCDF BC files are placed in the directory speci-
+# fied by WORKDIR_ICBC.
+#
+#-----------------------------------------------------------------------
+#
 
+#
+#-----------------------------------------------------------------------
+#
+# Change shell behavior with "set" with these flags:
+#
+# -a 
+# This will cause the script to automatically export all variables and 
+# functions which are modified or created to the environments of subse-
+# quent commands.
+#
+# -e 
+# This will cause the script to exit as soon as any line in the script 
+# fails (with some exceptions; see manual).  Apparently, it is a bad 
+# idea to use "set -e".  See here:
+#   http://mywiki.wooledge.org/BashFAQ/105
+#
+# -u 
+# This will cause the script to exit if an undefined variable is encoun-
+# tered.
+#
+# -x
+# This will cause all executed commands in the script to be printed to 
+# the terminal (used for debugging).
+#
+#-----------------------------------------------------------------------
+#
 set -eux
-# 
-#-----------------------------------------------------------------------
-#
-# When this script is run using the qsub command, its default working 
-# directory is the user's home directory (unless another one is speci-
-# fied  via qsub's -d flag; the -d flag sets the environment variable 
-# PBS_O_INITDIR, which is by default undefined).  Here, we change direc-
-# tory to the one in which the qsub command is issued, and that directo-
-# ry is specified in the environment variable PBS_O_WORKDIR.  This must
-# be done to be able to source the setup script below.
-# 
-#-----------------------------------------------------------------------
-#
-cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
-# Source the setup script.
+# Source the script that defines the necessary shell environment varia-
+# bles.
 #
 #-----------------------------------------------------------------------
 #
-. ${TMPDIR}/../fv3gfs/ush/setup_grid_orog_ICs_BCs.sh 
-#
-#-----------------------------------------------------------------------
-#
-# This script is only for a regional grid.  Check for this and exit if
-# gtype is not set to "regional".
-#
-#-----------------------------------------------------------------------
-#
-if [ "$gtype" != "regional" ]; then
-  echo
-  echo "This script is meant to be run only for a regional grid (gypte=\"regional\"):"
-  echo "  gtype = $gtype"
-  echo "Exiting script $0."
-  exit 1
-fi
+. $RUNDIR/var_defns.sh
+export BASEDIR
+export INIDIR  # This is the variable that determines the directory in 
+               # which chgres looks for the input nemsio files.
+export gtype
 #
 #-----------------------------------------------------------------------
 #
@@ -91,6 +110,15 @@ chgres_driver_scr="global_chgres_driver.sh"
 #
 #-----------------------------------------------------------------------
 #
+# Create the directory in which the ouput from this script will be 
+# placed (if it doesn't already exist).
+#
+#-----------------------------------------------------------------------
+#
+mkdir -p $WORKDIR_ICBC
+#
+#-----------------------------------------------------------------------
+#
 # Set variables needed by chgres_driver_scr.
 #
 #-----------------------------------------------------------------------
@@ -99,19 +127,16 @@ export OMP_NUM_THREADS_CH=24           # Default for openMP threads.
 export CASE=${CRES}
 export LEVS=64
 export LSOIL=4
-export FIXfv3=${BASE_GSM}/fix/fix_fv3
-export GRID_OROG_INPUT_DIR=${out_dir}  # Directory in which input grid and orography files are located.
-export OUTDIR=${out_dir}               # Directory in which output from chgres_driver_scr is placed.
-export HOMEgfs=$BASE_GSM               # Directory in which the "superstructure" fv3gfs code is located.
-export nst_anl=.false.                 # false or true to include NST analysis
+export FIXfv3=${FV3SAR_DIR}/fix/fix_fv3
+export GRID_OROG_INPUT_DIR=$WORKDIR_SHVE  # Directory in which input grid and orography files are located. 
+export OUTDIR=$WORKDIR_ICBC               # Directory in which output from chgres_driver_scr is placed.
+export HOMEgfs=$FV3SAR_DIR                # Directory in which the "superstructure" fv3gfs code is located.
+export nst_anl=.false.                    # false or true to include NST analysis
 #
 # The following variables do not appear in chgres_driver_scr, but they
 # may be needed by other scripts called by chgres_driver_scr.           <-- Maybe not.  Run and see what happens??
 #
 export CDAS=gfs                        # gfs or gdas; may not be needed by chgres_driver_scr, but hard to tell.
-
-
-
 #
 #-----------------------------------------------------------------------
 #
@@ -119,7 +144,7 @@ export CDAS=gfs                        # gfs or gdas; may not be needed by chgre
 #
 #-----------------------------------------------------------------------
 #
-export ymd=`echo $CDATE | cut -c 1-8`
+export ymd=$YMD
 
 if [ "$machine" = "WCOSS_C" ]; then
 
@@ -142,8 +167,6 @@ elif [ "$machine" = "WCOSS" ]; then
 
 elif [ "$machine" = "THEIA" ]; then
 
-#  export NODES=2   # Does this need to be set? It wasn't set in the original version of this script.
-
   . /apps/lmod/lmod/init/sh
   module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
   module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
@@ -151,7 +174,7 @@ elif [ "$machine" = "THEIA" ]; then
 
 # The variable DATA specifies the temporary (work) directory used by 
 # chgres_driver_scr.
-  export DATA="$TMPDIR/$subdir_name/BCs"
+  export DATA="$WORKDIR_ICBC/BCs_work"
   export APRUNC="time"
   ulimit -a
   ulimit -s unlimited
@@ -170,11 +193,26 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export HALO=4
-ln -sf $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
-ln -sf $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.halo${HALO}.nc $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
+export HALO=$halop1
 
+ln -fs $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
+       $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
 
+ln -fs $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
+       $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
+#
+#-----------------------------------------------------------------------
+#
+# Set REGIONAL to 2.  This will cause the chgres_driver_scr script to 
+# generate a boundary conditions file (containing field values only in
+# the halo of the regional domain) for each boundary time after the ini-
+# tial time (e.g. hours 3, 6, 9, etc but not hour 0 since that is done 
+# in the script that generates the initial conditions and surface 
+# files).
+#
+#-----------------------------------------------------------------------
+#
+export REGIONAL=2
 #
 #-----------------------------------------------------------------------
 #
@@ -185,7 +223,7 @@ ln -sf $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.halo${HALO}.nc $GRID_OROG_INP
 #
 #-----------------------------------------------------------------------
 #
-curnt_hr=$BC_interval_hrs
+curnt_hr=$BC_update_intvl_hrs
 
 while (test "$curnt_hr" -le "$fcst_len_hrs"); do
 
@@ -200,31 +238,29 @@ while (test "$curnt_hr" -le "$fcst_len_hrs"); do
 # create the cfp input file; we do not call chgres_driver_scr.  That is 
 # done later below after exiting the while loop.
 #
-
-#
-# HALO is not set for WCOSS_C, so it will default to 0 in global_chgrs.sh.  That seems wrong!!!!
-# So I set it above for any machine.
-#
     BC_DATA=/gpfs/hps3/ptmp/${LOGNAME}/wrk.chgres.$HHH
-    echo "env REGIONAL=2 bchour=$HHH DATA=$BC_DATA $BASE_GSM/ush/$chgres_driver_scr >&out.chgres.$HHH" >>bcfile.input
+    echo "env REGIONAL=2 bchour=$HHH DATA=$BC_DATA $USHDIR/$chgres_driver_scr >&out.chgres.$HHH" >>bcfile.input
 
   elif [ $machine = THEIA ]; then
 #
 # On theia, run the BC generation sequentially for now.
 #
-    export REGIONAL=2
     export bchour=$HHH
-    $BASE_GSM/ush/$chgres_driver_scr
+    $USHDIR/$chgres_driver_scr
 
   fi
 #
 # Increment the current BC time.
 #
-  curnt_hr=$(( $curnt_hr + BC_interval_hrs ))
+  curnt_hr=$(( $curnt_hr + BC_update_intvl_hrs ))
 
 done
 #
+#-----------------------------------------------------------------------
+#
 # On WCOSS_C, now run the BC generation for all BC hours simultaneously.
+#
+#-----------------------------------------------------------------------
 #
 if [ $machine = WCOSS_C ]; then
   export APRUNC=time
@@ -232,12 +268,5 @@ if [ $machine = WCOSS_C ]; then
   aprun -j 1 -n 28 -N 1 -d 24 -cc depth cfp bcfile.input
   rm bcfile.input
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Remove the links that were created above for the 4-halo files.
-#
-#-----------------------------------------------------------------------
-#
-#rm $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
-#rm $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
+
+
