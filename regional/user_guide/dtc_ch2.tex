@@ -1,0 +1,98 @@
+\chapter{Chapter 2 Software Installation}
+ 
+%-------------------------------------------------------------------------------
+\section{Introduction}
+%-------------------------------------------------------------------------------
+\section{Obtaining the SAR-FV3 Source Code}
+The source code for the SAR-FV3 pre-processing utilities and the regional model reside in two separate 
+NOAA VLAB repositories.  The pre-processing utilities are located in the fv3gfs repository.  To clone
+this repository:
+
+    \begin{enumerate}
+       \item Create a directory called \verb|${TOP_DIR}|: \\
+          \verb|mkdir ${TOP_DIR}|
+       \item Change directory: \\
+          \verb|cd  ${TOP_DIR}|
+       \item Clone the repository: \\
+          \verb|git clone --recursive ssh://${USER}@vlab.ncep.noaa.gov:29418/fv3gfs|
+       \item Change into the fv3gfs directory: \\
+          \verb|cd fv3gfs|
+       \item Check out the regional\_UFS branch: \\
+           \verb|git checkout regional_UFS|
+    \end{enumerate}
+
+The model source code is located in thke NEMSfv3gfs repository.  To clone this repository:
+
+    \begin{enumerate}
+       \item Go back to top directory: \\
+          \verb|cd ${TOP_DIR}|
+       \item Clone the repository: \\
+          \verb|git clone --recursive ssh://${USER}@vlab.ncep.noaa.gov:29418/NEMSfv3gfs|
+       \item Change into the NEMSfv3gfs directory: \\
+          \verb|cd NEMSfv3gfs|
+       \item Check out the regional\_fv3\_nemsfv3gfs branch: \\
+          \verb|git checkout regional_fv3_nemsfv3gfs|
+    \end{enumerate}
+
+\section{System Requirements, Libraries and Tools}
+
+\subsection{Compilers}
+
+Intel is the only currently supported compiler for building the pre-processing utilities and the SAR-FV3 model.
+
+\subsection{NCEP Libraries}
+
+A number of the NCEP (National Center for Environmental Prediction) production libraries are necessary
+for building and running the SAR-FV3 pre-processing utilities and model (Table~\ref{tab:ncep_libs}).
+These libraries are not part of the source code distribution.
+If they are not already installed on your computer platform, you may have to download some or all the
+source code from \url{http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/} and build the libraries yourself.
+Note that these libraries must be built with the same compiler used to build the pre-processing utilities
+SAR-FV3 model.
+Another option is to clone the git repository \url{https://github.com/climbfuji/NCEPlibs.git} and follow
+the build instructions.  This currently includes only the libraries used by the SAR-FV3 model.
+
+\begin{table}[!htb]
+\begin{center}
+\begin{tabular}{ l c c }
+\hline
+ NCEP Library & Pre-Processing & SAR-FV3 \\ 
+\hline
+ bacio/v2.0.1       &   & X \\ 
+ bacio/v2.0.2       & X &   \\ 
+ gfsio/v1.1.0       & X &   \\ 
+ ip/v2.0.0          & X & X \\  
+ ip/v3.0.0          & X &   \\  
+ landsfcutil/v2.1.0 & X &   \\ 
+ nemsio/v2.2.3      & X & X \\ 
+ nemsiogfs/v2.0.1   & X &   \\ 
+ sfcio/v1.0.0       & X &   \\ 
+ sigio/v2.0.1       & X &   \\ 
+ sp/v2.0.2          & X & X \\ 
+ w3emc/v2.0.5       & X & X \\   
+ w3emc/v2.2.0       & X &   \\   
+ w3nco/v2.0.6       & X & X \\
+\hline
+\end{tabular}
+\caption{\label{tab:ncep_libs}NCEP libraries necessary to build the SAR-FV3 pre-processing utilities and the model.
+                              X indicates that the library is required.}
+\end{center}
+\end{table}
+
+\subsection{External Libraries}
+
+In addition to the NCEP libraries, several external support libraries are required but not included with
+the source code.  Most of these libraries are installed as part of the compiler installation.  For SAR-FV3, these
+libraries are:
+
+  \begin{itemize}
+    \item \verb|Intel compiler|
+    \item \verb|impi|
+    \item \verb|ESMFv7.1.0|
+    \item \verb|netCDF|
+    \item \verb|HDF5|
+    \item \verb|pnetCDF|
+  \end{itemize}
+
+
+\section{Compiling the SAR-FV3 Source Code}
