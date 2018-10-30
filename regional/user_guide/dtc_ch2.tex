@@ -3,60 +3,53 @@
 %-------------------------------------------------------------------------------
 \section{Introduction}
 %-------------------------------------------------------------------------------
-\section{Obtaining the SAR-FV3 Source Code}
-The source code for the SAR-FV3 pre-processing utilities and the regional model reside in two separate 
+\section{Obtaining the FV3SAR Source Code} \label{obtain_src}
+The source code for the FV3SAR pre-processing utilities and the regional model reside in two separate 
 NOAA VLAB repositories.  The pre-processing utilities are located in the fv3gfs repository.  To clone
-this repository:
+this repository, create a directory called \verb|${TOP_DIR}|, clone the repository and check out the 
+\verb|regional_UFS| branch:
 
-    \begin{enumerate}
-       \item Create a directory called \verb|${TOP_DIR}|: \\
-          \verb|mkdir ${TOP_DIR}|
-       \item Change directory: \\
-          \verb|cd  ${TOP_DIR}|
-       \item Clone the repository: \\
-          \verb|git clone --recursive ssh://${USER}@vlab.ncep.noaa.gov:29418/fv3gfs|
-       \item Change into the fv3gfs directory: \\
-          \verb|cd fv3gfs|
-       \item Check out the regional\_UFS branch: \\
-           \verb|git checkout regional_UFS|
-    \end{enumerate}
+    \begin{itemize}
+       \item[] \verb|% mkdir ${TOP_DIR}|
+       \item[] \verb|% cd  ${TOP_DIR}|
+       \item[] \verb|% git clone --recursive ssh://${USER}@vlab.ncep.noaa.gov:29418/fv3gfs|
+       \item[] \verb|% cd fv3gfs|
+       \item[] \verb|% git checkout regional_UFS|
+    \end{itemize}
 
 The model source code is located in thke NEMSfv3gfs repository.  To clone this repository:
 
     \begin{enumerate}
-       \item Go back to top directory: \\
-          \verb|cd ${TOP_DIR}|
-       \item Clone the repository: \\
-          \verb|git clone --recursive ssh://${USER}@vlab.ncep.noaa.gov:29418/NEMSfv3gfs|
-       \item Change into the NEMSfv3gfs directory: \\
-          \verb|cd NEMSfv3gfs|
-       \item Check out the regional\_fv3\_nemsfv3gfs branch: \\
-          \verb|git checkout regional_fv3_nemsfv3gfs|
+       \item[] \verb|% cd ${TOP_DIR}|
+       \item[] \verb|% git clone --recursive ssh://${USER}@vlab.ncep.noaa.gov:29418/NEMSfv3gfs|
+       \item[] \verb|% cd NEMSfv3gfs|
+       \item[] \verb|% git checkout regional_fv3_nemsfv3gfs|
     \end{enumerate}
 
 \section{System Requirements, Libraries and Tools}
 
-\subsection{Compilers}
+\subsection{Supported Platforms and Compilers}
 
-Intel is the only currently supported compiler for building the pre-processing utilities and the SAR-FV3 model.
+The FV3SAR model is supported on the NOAA HPC Theia and NCAR Supercomputer Cheyenne.  Intel is the only
+currently supported compiler for building the pre-processing utilities and the FV3SAR model.
 
 \subsection{NCEP Libraries}
 
 A number of the NCEP (National Center for Environmental Prediction) production libraries are necessary
-for building and running the SAR-FV3 pre-processing utilities and model (Table~\ref{tab:ncep_libs}).
+for building and running the FV3SAR pre-processing utilities and model (Table~\ref{tab:ncep_libs}).
 These libraries are not part of the source code distribution.
 If they are not already installed on your computer platform, you may have to download some or all the
 source code from \url{http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/} and build the libraries yourself.
 Note that these libraries must be built with the same compiler used to build the pre-processing utilities
-SAR-FV3 model.
+FV3SAR model.
 Another option is to clone the git repository \url{https://github.com/climbfuji/NCEPlibs.git} and follow
-the build instructions.  This currently includes only the libraries used by the SAR-FV3 model.
+the build instructions.  This currently includes only the libraries used by the FV3SAR model.
 
 \begin{table}[!htb]
 \begin{center}
 \begin{tabular}{ l c c }
 \hline
- NCEP Library & Pre-Processing & SAR-FV3 \\ 
+ NCEP Library & Pre-Processing & FV3SAR \\ 
 \hline
  bacio/v2.0.1       &   & X \\ 
  bacio/v2.0.2       & X &   \\ 
@@ -74,7 +67,7 @@ the build instructions.  This currently includes only the libraries used by the 
  w3nco/v2.0.6       & X & X \\
 \hline
 \end{tabular}
-\caption{\label{tab:ncep_libs}NCEP libraries necessary to build the SAR-FV3 pre-processing utilities and the model.
+\caption{\label{tab:ncep_libs}NCEP libraries necessary to build the FV3SAR pre-processing utilities and the model.
                               X indicates that the library is required.}
 \end{center}
 \end{table}
@@ -82,17 +75,66 @@ the build instructions.  This currently includes only the libraries used by the 
 \subsection{External Libraries}
 
 In addition to the NCEP libraries, several external support libraries are required but not included with
-the source code.  Most of these libraries are installed as part of the compiler installation.  For SAR-FV3, these
+the source code.  Most of these libraries are installed as part of the compiler installation.  For FV3SAR, these
 libraries are:
 
   \begin{itemize}
-    \item \verb|Intel compiler|
-    \item \verb|impi|
-    \item \verb|ESMFv7.1.0|
-    \item \verb|netCDF|
-    \item \verb|HDF5|
-    \item \verb|pnetCDF|
+    \item Intel compiler
+    \item impi|
+    \item ESMFv7.1.0
+    \item netCDF
+    \item HDF5
+    \item pnetCDF
   \end{itemize}
 
 
-\section{Compiling the SAR-FV3 Source Code}
+\section{Compiling the FV3SAR Source Code}
+
+To run the end-to-end FV3SAR forecasting system, the pre-processing utilities, the FV3SAR model, and the
+post-porcessing components must be built.  This section describes the steps for the supported compilers
+on the available platforms.  The directory \verb|${TOP_DIR}| is assumed to be where the code has been checked 
+out as described in Section \ref{obtain_src}.
+
+\subsection{Building the FV3SAR Pre-Processing Utilities}
+
+To build the FV3SAR pre-processing utilities:
+
+\begin{itemize}
+  \item[] \verb|% cd ${TOP_DIR}/fv3gfs/regional| 
+  \item[] \verb|% ./build_regional ${SITE}|
+\end{itemize}
+
+where site is one of "theia", "cheyenne", "wcoss\_cray", or "odin".  When the build completes, you will see 9
+executables in \verb|${TOP_DIR}/fv3gfs/exec|:
+
+\begin{itemize}
+  \item[] \verb|% ls ${TOP_DIR}/fv3gfs/exec| 
+  \item[] \verb|filter_topo        global_chgres         make_solo_mosaic    | 
+  \item[] \verb|fregrid            make_hgrid            ml01rg2.x           | 
+  \item[] \verb|fregrid_parallel   make_hgrid_parallel   shave.x             | 
+\end{itemize}
+
+\subsection{Building the FV3SAR Model}
+
+To build the FV3SAR model:
+
+\begin{itemize}
+  \item[] \verb|% cd ${TOP_DIR}/NEMSfv3gfs/tests| 
+  \item[] \verb|% ./compile.sh ${TOP_DIR}/NEMSfv3gfs/FV3 ${platform} "32BIT=Y" 32bit \\|
+  \item[] \verb|               [clean_before] [clean_after] >& make.out.32bit|
+\end{itemize}
+
+where \verb|${platform}| is wcoss\_cray or theia.intel  To run with debugging flags, change the quantity in
+the double quotes to "32BIT=Y DEBUG=Y".  The last two optional arguments [clean\_before] and [clean\_after]
+control whether or not to run make clean to remove temporary files. The default values are “YES”. Specifying
+“NO” will skip cleaning step, which will speed up repeating compilation, which is useful for debugging.
+
+Currently all the fixed fields necessary to run a uniform global case without a nest are in subdirectories
+on each supported machine:
+
+\begin{itemize}
+  \item[] \verb|/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_fv3| on the cray
+  \item[] \verb|/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_fv3| on theia
+  \item[] \verb|/glade/p/ral/jntp/GMTB/FV3GFS_V1_RELEASE/fix/fix_am/| on Cheyenne
+\end{itemize}
+
