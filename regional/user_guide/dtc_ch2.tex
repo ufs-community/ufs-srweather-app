@@ -17,13 +17,23 @@ this repository, create a directory called \verb|${TOP_DIR}|, clone the reposito
        \item[] \verb|% git checkout regional_UFS|
     \end{itemize}
 
-The model source code is located in thke NEMSfv3gfs repository.  To clone this repository:
+The model source code is located in the NEMSfv3gfs repository, which includes three submodules: FMS, FV3,
+and NEMS.  You will need to clone the main repository, checkout the regional\_fv3\_nemsfv3gfs branch, and
+check out the appropriate branch for each submodule:
 
     \begin{enumerate}
        \item[] \verb|% cd ${TOP_DIR}|
        \item[] \verb|% git clone --recursive ssh://${USER}@vlab.ncep.noaa.gov:29418/NEMSfv3gfs|
        \item[] \verb|% cd NEMSfv3gfs|
        \item[] \verb|% git checkout regional_fv3_nemsfv3gfs|
+       \item[] \verb|% cd FV3|
+       \item[] \verb|% git checkout regional_fv3|
+       \item[] \verb|% cd ${TOP_DIR}|
+       \item[] \verb|% cd FMS|
+       \item[] \verb|% git checkout GFS-FMS|
+       \item[] \verb|% cd ${TOP_DIR}|
+       \item[] \verb|% cd NEMS|
+       \item[] \verb|% git checkout master|
     \end{enumerate}
 
 \section{System Requirements, Libraries and Tools}
@@ -120,14 +130,54 @@ To build the FV3SAR model:
 
 \begin{itemize}
   \item[] \verb|% cd ${TOP_DIR}/NEMSfv3gfs/tests| 
-  \item[] \verb|% ./compile.sh ${TOP_DIR}/NEMSfv3gfs/FV3 ${platform} "32BIT=Y" 32bit \\|
-  \item[] \verb|               [clean_before] [clean_after] >& make.out.32bit|
+  \item[] \verb|% ./compile.sh ${TOP_DIR}/NEMSfv3gfs/FV3 ${BUILD_TARGET} >& make.out.32bit|
 \end{itemize}
 
-where \verb|${platform}| is wcoss\_cray or theia.intel  To run with debugging flags, change the quantity in
-the double quotes to "32BIT=Y DEBUG=Y".  The last two optional arguments [clean\_before] and [clean\_after]
-control whether or not to run make clean to remove temporary files. The default values are “YES”. Specifying
-“NO” will skip cleaning step, which will speed up repeating compilation, which is useful for debugging.
+where \verb|${BUILD_TARGET}| is one of
+
+\begin{itemize}
+  \item[] \verb| cheyenne.gnu cheyenne.intel cheyenne.pgi  odin |
+  \item[] \verb| theia.gnu    theia.intel    theia.pgi     wcoss_cray | 
+\end{itemize}
+
+When the regional model compilation is complete, the line
+
+\verb|Elapsed time 568 seconds. Compiling  finished|
+ 
+will be printed at the end of the file.  There will be an executable \verb|NEMS.x| created in
+\verb|${TOP_DIR}/NEMSfv3gfs/NEMS/exe/| which will be copied over to \verb|${TOP_DIR}/NEMSfv3gfs/tests/fv3.exe/|.
+
+There are other command-line options available when running \verb|compile.sh| and are shown in Table
+\ref{tab:compile_args}.
+
+\begin{table}[!htb]
+\begin{center}
+\begin{tabular}{ l l l l }
+\hline
+ Argument Number & Argument Name          & Example                      & Optional \\
+\hline
+ 1               & path to FV3 directory  & ../FV3                       & No       \\ 
+ 2               & BUILD\_TARGET          & theia.intel, cheyenne.intel  & No       \\ 
+ 3               & MAKE\_OPT              & DEBUG=Y 32BIT=Y REPRO=N      & Yes      \\ 
+ 4               & BUILD\_NAME            & 32bit                        & Yes      \\ 
+ 5               & clean\_before          & YES                          & Yes      \\ 
+ 6               & clean\_after           & YES                          & Yes      \\ 
+\hline
+\end{tabular}
+\caption{\label{tab:compile_args} Command-line options to build FV3SAR.}
+\end{center}
+\end{table}
+
+To build with debugging flags, add the following quantities to the \verb|compile.sh| command:
+
+\begin{itemize}
+  \item[] \verb|% ./compile.sh ../FV3 ${BUILD_TARGET} "32BIT=Y DEBUG=Y" 32bit \\|
+  \item[] \verb| [clean_before] [clean_after] >& make.out.32bit|
+\end{itemize}
+
+The last two optional arguments [clean\_before] and [clean\_after] control whether or not to run
+make clean to remove temporary files. The default values are “YES”. Specifying “NO” will skip
+cleaning step, which will speed up repeating compilation, which is useful for debugging.
 
 Currently all the fixed fields necessary to run a uniform global case without a nest are in subdirectories
 on each supported machine:
