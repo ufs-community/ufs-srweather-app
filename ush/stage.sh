@@ -3,9 +3,9 @@
 #----THEIA JOBCARD
 #
 # Note that the following PBS directives do not have any effect if this
-# script is called via an interactive TORQUE/PBS job (i.e. using the -I 
+# script is called via an interactive TORQUE/PBS job (i.e. using the -I
 # flag to qsub along with the -x flag to specify this script).  The fol-
-# lowing directives are placed here in case this script is called as a 
+# lowing directives are placed here in case this script is called as a
 # batch (i.e. non-interactive) job.
 #
 #PBS -N stage
@@ -32,7 +32,7 @@ fix_files=${FIXgsm}
 RUNDIR="${BASEDIR}/run_dirs/${subdir_name}"
 
 #
-# Check if the run directory already exists.  If so, don't delete it in 
+# Check if the run directory already exists.  If so, don't delete it in
 # case it contains needed information.  Instead, rename it to it origi-
 # nal name followed by "_oldNNN", where NNN is a 3-digit integer.
 #
@@ -81,7 +81,7 @@ if [[ $quilting = ".true." ]]; then
 
   if [[ $predef_rgnl_domain = "HRRR" ]]; then
 
-    cat ${templates}/wrtcomp_HRRR >> ${RUNDIR}/model_configure   
+    cat ${templates}/wrtcomp_HRRR >> ${RUNDIR}/model_configure
 
   elif [[ $predef_rgnl_domain = "RAP" ]]; then
 
@@ -89,8 +89,9 @@ if [[ $quilting = ".true." ]]; then
 
   else
 
-    echo "Please define model output projection and grid manually in model_configure file."
-    exit 1
+    cat ${templates}/wrtcomp_NSSL >> ${RUNDIR}/model_configure
+    #echo "Please define model output projection and grid manually in model_configure file."
+    #exit 1
 
   fi
 
@@ -214,17 +215,17 @@ lon=$(ncdump -h ${RUNDIR}/INPUT/sfc_data.tile7.nc | grep "lon =" | sed -e "s/.*=
 echo "FV3 domain dimensions for selected case:"
 echo "Latitude = $lat"
 echo "Longitude = $lon"
-             
+
 #Define npx and npy
 npx=$(($lon+1))
 npy=$(($lat+1))
-    
+
 echo ""
 echo "For input.nml:"
 echo "npx = $npx"
 echo "npy = $npy"
 echo ""
-    
+
 #Modify npx and npy values in input.nml
 echo "Modifying npx and npy values in input.nml..."
 echo ""
@@ -250,16 +251,16 @@ else
 fi
 
 #Make sure longitude dimension is divisible by layout_x.
-if [[ $(( $lon%$layout_x )) -eq 0 ]]; then 
+if [[ $(( $lon%$layout_x )) -eq 0 ]]; then
    echo "Longitude dimension ($lon) is evenly divisible by user-defined layout_x ($layout_x)"
-else  
+else
    echo "Longitude dimension ($lon) is not evenly divisible by user-defined layout_x ($layout_x), please redefine.  Exiting."
    exit 1
 fi
 
 #If the write component is turned on, make sure PE_MEMBER01 is divisible by write_tasks_per_group.
 if [[ $quilting = ".true." ]]; then
- 
+
  if [[ $(( (($layout_x*$layout_y)+($write_groups*$write_tasks_per_group))%$write_tasks_per_group )) -eq 0 ]]; then
     echo "Value of PE_MEMBER01 ($(( ($layout_x*$layout_y)+($write_groups*$write_tasks_per_group) ))) is evenly divisible by write_tasks_per_group ($write_tasks_per_group)."
  else
@@ -270,11 +271,11 @@ if [[ $quilting = ".true." ]]; then
 else
   : #Do nothing
 fi
- 
+
 echo ""
 echo "Value for layout(x): $layout_x"
 echo "Value for layout(y): $layout_y"
-    
+
 echo ""
 echo "Layout for input.nml: $layout_x,$layout_y"
 echo ""
@@ -343,14 +344,14 @@ echo ""
 sed -i -r -e "s/^(\s*ncores_per_node:\s*)(.*)/\1$ncores_per_node/" ${RUNDIR}/model_configure
 
 #Calculate values for nodes and ppn for job scheduler
-PPN=$ncores_per_node 
-      
+PPN=$ncores_per_node
+
 Nodes=$(( ($PE_MEMBER01+$ncores_per_node-1)/$ncores_per_node ))
 
 echo "Nodes: $Nodes"
 echo "PPN: $PPN"
-echo"" 
-    
+echo""
+
 #Modify nodes and PPN in the run script
 echo "Modifying nodes and PPN in run.regional..."
 echo ""

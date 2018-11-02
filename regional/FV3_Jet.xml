@@ -3,16 +3,17 @@
 <!DOCTYPE workflow [
 
 <!ENTITY USER "Yunheng.Wang">
-<!ENTITY ACCOUNT "smallqueue">
-<!ENTITY QUEUE "workq">
-<!ENTITY MACHINE "Odin">
-<!ENTITY SCHED "slurm">
+<!ENTITY ACCOUNT "hpc-wof1">
+<!ENTITY MACHINE "Jet">
+<!ENTITY QUEUE "batch">
+<!ENTITY QUEUE_HPSS "service">
+<!ENTITY SCHED "moabtorque">
 
-<!ENTITY BASEDIR "/scratch/ywang/external/regionalFV3">
+<!ENTITY BASEDIR "/lfs3/projects/hpc-wof1/ywang/regional_fv3">
 <!ENTITY TEMPLATES "&BASEDIR;/fv3gfs/ush/templates">
 
-<!ENTITY UPPDIR "/scratch/ywang/external/regionalFV3/EMC_post/sorc/ncep_post.fd">
-<!ENTITY FIX "/scratch/ywang/external/regionalFV3">
+<!ENTITY UPPDIR "/lfs3/projects/hpc-wof1/ywang/regional_fv3/EMC_post/sorc/ncep_post.fd">
+<!ENTITY FIX "/lfs3/projects/hpc-wof1/ywang/regional_fv3">
 
 <!ENTITY TMPDIR "&BASEDIR;/work_dirs">
 
@@ -37,37 +38,37 @@
      [(372-12)*5]+5 = must be divisible by layout_x -->
 
 <!ENTITY TITLE "nssl"> <!-- Originally set to "FV3" -->
-<!ENTITY QUILTING ".true.">
+<!ENTITY QUILTING ".false.">
 <!ENTITY PRINT_ESMF ".false.">
 
 <!ENTITY PREDEF_RGNL_DOMAIN "">
 
 <!ENTITY LAYOUT_X "16"> <!-- 15 for the RAP, 19 for HRRR -->
 <!ENTITY LAYOUT_Y "48"> <!-- 15 for the RAP, 25 for HRRR -->
-<!ENTITY NCORES_PER_NODE "24">
+<!ENTITY NCORES_PER_NODE "16">
 <!ENTITY WRITE_GROUPS "1">
-<!ENTITY WRITE_TASKS_PER_GROUP "16"> <!-- 25 for RAP and HRRR -->
+<!ENTITY WRITE_TASKS_PER_GROUP "24"> <!-- 25 for RAP and HRRR -->
 
 <!ENTITY EDIT_CONFIG_PROC "1:ppn=1">
 <!ENTITY GET_GFS_PROC "1:ppn=1">
-<!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_PROC "1:ppn=24">
-<!ENTITY CHGRES_RGNL_IC_BC0_PROC "1:ppn=24">
-<!ENTITY CHGRES_RGNL_BCS_PROC "1:ppn=24">
+<!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_PROC "1:ppn=16">
+<!ENTITY CHGRES_RGNL_IC_BC0_PROC "1:ppn=16">
+<!ENTITY CHGRES_RGNL_BCS_PROC "1:ppn=16">
 <!ENTITY STAGE_PROC "1:ppn=1">
-<!ENTITY FV3_PROC "32:ppn=24">
-<!ENTITY POST_PROC "1:ppn=24">
+<!ENTITY FV3_PROC "48:ppn=16">
+<!ENTITY POST_PROC "1:ppn=16">
 
 <!ENTITY EDIT_CONFIG_RESOURCES "<walltime>00:05:00</walltime>">
 <!ENTITY GET_GFS_RESOURCES "<walltime>00:20:00</walltime>">
 <!ENTITY FV3GFS_DRIVER_GRID_REGIONAL_RESOURCES "<walltime>00:15:00</walltime>">
-<!ENTITY CHGRES_RGNL_IC_BC0_RESOURCES "<walltime>00:10:00</walltime>">
-<!ENTITY CHGRES_RGNL_BCS_RESOURCES "<walltime>00:20:00</walltime>">
+<!ENTITY CHGRES_RGNL_IC_BC0_RESOURCES "<walltime>00:30:00</walltime>">
+<!ENTITY CHGRES_RGNL_BCS_RESOURCES "<walltime>00:40:00</walltime>">
 <!ENTITY STAGE_RESOURCES "<walltime>00:10:00</walltime>">
-<!ENTITY FV3_RESOURCES "<walltime>08:45:00</walltime>">
+<!ENTITY FV3_RESOURCES "<walltime>04:45:00</walltime>">
 <!ENTITY POST_RESOURCES "<walltime>00:10:00</walltime>">
 
-<!ENTITY RESERVATION '<queue>&QUEUE;</queue><account>&ACCOUNT;</account>'>
-<!ENTITY RESERVATION_HPSS '<queue>&QUEUE;</queue><account>&ACCOUNT;</account>'>
+<!ENTITY RESERVATION '<native>-W umask=022 -m n -l partition=xjet</native><queue>&QUEUE;</queue><account>&ACCOUNT;</account>'>
+<!ENTITY RESERVATION_HPSS '<native>-W umask=022 -m n -l partition=xjet:sjet:vjet</native><queue>&QUEUE_HPSS;</queue><account>&ACCOUNT;</account>'>
 
 ]>
 
@@ -216,7 +217,7 @@
 
   </task>
 
-  <task name="fv3gfs_driver_grid_regional" maxtries="4">
+  <task name="fv3gfs_driver_grid_regional" maxtries="8">
 
     &FV3GFS_DRIVER_GRID_REGIONAL_RESOURCES;
     &RESERVATION;
@@ -380,7 +381,7 @@
 
     <var name="fhr">&FHR;</var>
 
-    <task name="postf#fhr#" maxtries="4">
+    <task name="postf#fhr#" maxtries="2">
 
     &POST_RESOURCES;
     &RESERVATION;
@@ -427,8 +428,8 @@
 
     <dependency>
       <and>
-        <datadep age="05:00"><cyclestr>/scratch/ywang/external/regionalFV3/run_dirs/rgnl_C384_strch_2_rfn_4_nssl/dynf0#fhr#.nc</cyclestr></datadep>
-        <datadep age="05:00"><cyclestr>/scratch/ywang/external/regionalFV3/run_dirs/rgnl_C384_strch_2_rfn_4_nssl/phyf0#fhr#.nc</cyclestr></datadep>
+        <datadep age="05:00"><cyclestr>/lfs3/projects/hpc-wof1/ywang/regional_fv3/run_dirs/rgnl_C384_strch_2_rfn_4_nssl/dynf0#fhr#.nc</cyclestr></datadep>
+        <datadep age="05:00"><cyclestr>/lfs3/projects/hpc-wof1/ywang/regional_fv3/run_dirs/rgnl_C384_strch_2_rfn_4_nssl/phyf0#fhr#.nc</cyclestr></datadep>
       </and>
     </dependency>
 

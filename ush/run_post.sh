@@ -11,14 +11,53 @@ WGRIB2=wgrib2
 #Source variables from user-defined file
 . ${TMPDIR}/../fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
 
-cd /scratch3/BMC/det/beck/FV3-CAM/run_dirs/rgnl_C384_strch_1p65_rfn_5_HRRR
+if [ "$machine" = "Odin" ]; then
+  export APRUN="srun -n 1"
+elif [ "$machine" = "Jet" ]; then
+  . /apps/lmod/lmod/init/sh 
+  module load newdefaults
+  module load intel/15.0.3.187
+  module load impi/5.1.1.109
+  module load szip
+  module load hdf5
+  module load netcdf4/4.2.1.1
+  
+  set libdir /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+  
+  export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+  module use /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib/modulefiles
+  
+  module load bacio-intel-sandybridge
+  module load sp-intel-sandybridge
+  module load ip-intel-sandybridge
+  module load w3nco-intel-sandybridge
+  module load w3emc-intel-sandybridge
+  module load nemsio-intel-sandybridge
+  module load sfcio-intel-sandybridge
+  module load sigio-intel-sandybridge
+  module load g2-intel-sandybridge
+  module load g2tmpl-intel-sandybridge
+  module load gfsio-intel-sandybridge
+  module load crtm-intel-sandybridge
+  
+  module use /lfs3/projects/hfv3gfs/emc.nemspara/soft/modulefiles
+  module load esmf/7.1.0r_impi_optim
+
+  export APRUN="mpirun -np 1"
+else
+  export APRUN="mpiexec -l -np 1"
+fi
+
+RUNDIR="${BASEDIR}/run_dirs/${subdir_name}"
+
+cd ${RUNDIR}
 mkdir -p postprd
 cd postprd
 
 mkdir -p ${fhr}
 cd ${fhr}
 
-echo "starting time" 
+echo "starting time"
 date
 
 export tmmark=tm00
@@ -28,15 +67,15 @@ export fhr=${fhr}
 
 echo "${fhr} is fhr."
 
-dyn=/scratch3/BMC/det/beck/FV3-CAM/run_dirs/rgnl_C384_strch_1p65_rfn_5_HRRR/dynf0${fhr}.nc
-phy=/scratch3/BMC/det/beck/FV3-CAM/run_dirs/rgnl_C384_strch_1p65_rfn_5_HRRR/phyf0${fhr}.nc
+dyn=${RUNDIR}/dynf0${fhr}.nc
+phy=${RUNDIR}/phyf0${fhr}.nc
 
 # CONUS domain
 #gridspecs="lambert:262.5:38.5:38.5 237.280:1799:3000 21.138:1059:3000"
 # Grid for nested model output
 #gridspecs="lambert:262.5:34.0:34.0 240.16287231:1728:2888.8889 13.73298645:1440:2888.8889"
 
-export POST_TIME=`/scratch4/BMC/hmtb/beck/rapid-refresh/UPP/comupp/src/ndate/ndate.exe +${fhr} ${CDATE}`
+export POST_TIME=`${BASEDIR}/UPP/comupp/src/ndate/ndate.exe +${fhr} ${CDATE}`
 export YYYY=`echo $POST_TIME | cut -c1-4`
 export MM=`echo $POST_TIME | cut -c5-6`
 export DD=`echo $POST_TIME | cut -c7-8`
@@ -57,15 +96,15 @@ EOF
 
 rm -f fort.*
 
-cp ${FIX}/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp ${FIX}/UPP/fix/nam_micro_lookup.dat ./eta_micro_lookup.dat
 
 # copy flat files
-cp ${FIX}/postxconfig-NT-NMM_new.txt ./postxconfig-NT.txt
-cp ${FIX}/params_grib2_tbl_new ./params_grib2_tbl_new
+cp ${FIX}/UPP/fix/postxconfig-NT-NMM_new.txt ./postxconfig-NT.txt
+cp ${FIX}/UPP/fix/params_grib2_tbl_new ./params_grib2_tbl_new
 
 # Run the post processor
 cp ${UPPDIR}/ncep_post .
-mpirun -l -np $PBS_NP ./ncep_post < itag
+${APRUN} ./ncep_post < itag
 
 # Rename output
 mv BGDAWP.GrbF${fhr} ../${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
@@ -87,7 +126,7 @@ mv BGRD3D.GrbF${fhr} ../${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
 
 cd ..
 
-rm -rf ${fhr}
+#rm -rf ${fhr}
 
 echo "PROGRAM IS COMPLETE!!!!!"
 
