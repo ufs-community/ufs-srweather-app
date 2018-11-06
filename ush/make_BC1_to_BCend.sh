@@ -45,16 +45,16 @@
 #-----------------------------------------------------------------------
 #
 # This script generates NetCDF boundary condition (BC) files that con-
-# tain data for the halo region of a regional grid.  One file is gene-
-# rated for each boundary time AFTER the initial time up until the final 
+# tain data for the halo region of a regional grid.  One file is genera-
+# ted for each boundary time AFTER the initial time up until the final 
 # forecast time.  For example, if the boundary is to be updated every 3 
-# hours (this frequency is determined by the variable BC_update_intvl_hrs) 
-# and the forecast is to run for 24 hours (the forecast length is deter-
-# mined by the variable fcst_len_hrs), then a file is generated for 
-# forecast hours 3, 6, 9, 12, 15, 18, and 24 (but not hour 0 since that
-# is handled in the script that generates the initial condition file).  
-# All the generated NetCDF BC files are placed in the directory speci-
-# fied by WORKDIR_ICBC.
+# hours (this update interval is determined by the variable BC_update_-
+# intvl_hrs) and the forecast is to run for 24 hours (the forecast 
+# length is determined by the variable fcst_len_hrs), then a file is ge-
+# nerated for forecast hours 3, 6, 9, 12, 15, 18, and 24 (but not hour 
+# 0 since that is handled by the script that generates the initial con-
+# dition file).  All the generated NetCDF BC files are placed in the di-
+# rectory specified by WORKDIR_ICBC.
 #
 #-----------------------------------------------------------------------
 #
@@ -94,7 +94,8 @@ set -eux
 #
 #-----------------------------------------------------------------------
 #
-. $RUNDIR/var_defns.sh
+. $SCRIPT_VAR_DEFNS_FP
+
 export BASEDIR
 export INIDIR  # This is the variable that determines the directory in 
                # which chgres looks for the input nemsio files.
@@ -193,7 +194,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export HALO=$halop1
+export HALO=${nh4_T7}
 
 ln -fs $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
        $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc

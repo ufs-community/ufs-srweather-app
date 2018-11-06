@@ -100,7 +100,8 @@ set -eux
 #
 #-----------------------------------------------------------------------
 #
-. $RUNDIR/var_defns.sh
+. $SCRIPT_VAR_DEFNS_FP
+
 export BASEDIR
 export INIDIR  # This is the variable that determines the directory in
                # which chgres looks for the input nemsio files.
@@ -199,7 +200,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export HALO=$halop1
+export HALO=${nh4_T7}
 
 ln -fs $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
        $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc

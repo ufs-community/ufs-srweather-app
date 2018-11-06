@@ -13,8 +13,8 @@
 #
 #-----------------------------------------------------------------------
 #
-machine=${machine:-"THEIA"}
-ACCOUNT=${ACCOUNT:-"gsd-fv3"}
+machine="THEIA"
+ACCOUNT="gsd-fv3"
 #
 #-----------------------------------------------------------------------
 #
@@ -31,7 +31,43 @@ ACCOUNT=${ACCOUNT:-"gsd-fv3"}
 #-----------------------------------------------------------------------
 #
 BASEDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
-TMPDIR=${TMPDIR:-"/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs"}
+TMPDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs"
+#
+#-----------------------------------------------------------------------
+#
+# File names.  Definitions:
+#
+# FV3_NAMELIST_FN:
+# Name of file containing the FV3SAR namelist settings.
+#
+# DIAG_TABLE_FN:
+# Name of file that specifies the fields that the FV3SAR will output.                                                                                                   
+#
+# FIELD_TABLE_FN:
+# Name of file that specifies ???
+#
+# DATA_TABLE_FN:
+# Name of file that specifies ???
+#
+# MODEL_CONFIG_FN:
+# Name of file that specifies ???
+#
+# NEMS_CONFIG_FN:
+# Name of file that specifies ???
+#
+# SCRIPT_VAR_DEFNS_FN:
+# Name of file that is sourced by the worflow scripts to set variable 
+# values.
+#
+#-----------------------------------------------------------------------
+#
+FV3_NAMELIST_FN="input.nml"
+DIAG_TABLE_FN="diag_table"
+FIELD_TABLE_FN="field_table"
+DATA_TABLE_FN="data_table"
+MODEL_CONFIG_FN="model_configure"
+NEMS_CONFIG_FN="nems.configure"
+SCRIPT_VAR_DEFNS_FN="var_defns.sh"
 #
 #-----------------------------------------------------------------------
 #
@@ -51,12 +87,52 @@ TMPDIR=${TMPDIR:-"/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180
 #-----------------------------------------------------------------------
 #
 #
-CDATE=${CDATE:-"2018060400"}           
+CDATE="2018060400"           
 #CDATE=$( date "+%Y%m%d"00 )                     # This sets CDATE to today.
 #CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
 #
-fcst_len_hrs=${fcst_len_hrs:-6}
-BC_update_intvl_hrs=${BC_update_intvl_hrs:-6}
+fcst_len_hrs=6
+BC_update_intvl_hrs=6
+#
+#-----------------------------------------------------------------------
+#
+# Set run_title.  This variable contains a descriptive string for the 
+# current run/forecast that is used in forming the names of the run and
+# work (temporary) directories that will be created.  It should be used
+# to distinguish these directories from the run and work directories ge-
+# nerated by other FV3SAR runs.  Note that since it will be used in di-
+# rectory names, it should not contain spaces.
+#
+#-----------------------------------------------------------------------
+#
+run_title="desc_str03"
+#
+#-----------------------------------------------------------------------
+#
+# Set predef_domain.  This variable specifies a predefined (regional)
+# domain, as follows:
+#
+# * If predef_domain is set to an empty string, the grid configuration
+#   parameters set below are used to generate a grid.
+#
+# * If predef_domain is set to a valid non-empty string, the grid confi-
+#   guration parameters set below are overwritten by predefined values
+#   in order to generate a predefined grid.  Valid non-empty values for
+#   predef_domain currently consist of:
+#
+#     "RAP"
+#     "HRRR"
+#
+#   These result in regional grids that cover (as closely as possible) 
+#   the domains used in the WRF/ARW-based RAP and HRRR models, respec-
+#   tively.  The run title string (run_title) set above is also modified
+#   to reflect the specified predefined domain.
+#
+#-----------------------------------------------------------------------
+#
+#predef_domain=""
+predef_domain="RAP"
+#predef_domain="HRRR"
 #
 #-----------------------------------------------------------------------
 #
@@ -162,49 +238,15 @@ BC_update_intvl_hrs=${BC_update_intvl_hrs:-6}
 #
 #-----------------------------------------------------------------------
 #
-RES=${RES:-"384"}
-lon_ctr_T6=${lon_ctr_T6:--97.5}
-lat_ctr_T6=${lat_ctr_T6:-35.5}
-stretch_fac=${stretch_fac:-1.5}
-istart_rgnl_T6=${istart_rgnl_T6:-10}
-iend_rgnl_T6=${iend_rgnl_T6:-374}
-jstart_rgnl_T6=${jstart_rgnl_T6:-10}
-jend_rgnl_T6=${jend_rgnl_T6:-374}
-refine_ratio=${refine_ratio:-3}
-#
-#-----------------------------------------------------------------------
-#
-# Set predef_rgnl_domain.  This variable specifies a predefined regional
-# domain, as follows:
-#
-# * If predef_rgnl_domain is set to an empty string, the grid configura-
-#   tion parameters set above are used to generate a regional grid.
-#
-# * If predef_rgnl_domain is set to a valid non-empty string, the grid
-#   configuration parameters set above are overwritted by predefined 
-#   values in order to generate a predefined grid.  Valid non-empty val-
-#   ues for predef_rgnl_domain currently consist of "RAP" and "HRRR".
-#   These result in regional grids that cover (as closely as possible) 
-#   the domains using in the WRF/ARW-based RAP and HRRR models, respect-
-#   ively.
-#
-#-----------------------------------------------------------------------
-#
-#predef_rgnl_domain=${predef_rgnl_domain:-""}
-predef_rgnl_domain=${predef_rgnl_domain:-"RAP"}
-#predef_rgnl_domain=${predef_rgnl_domain:-"HRRR"}
-#
-#-----------------------------------------------------------------------
-#
-# Set run_title.  This variable contains a descriptive string for the 
-# current run/forecast that is used in forming the names of the run and
-# work (temporary) directories that will be created.  It should be used
-# to distinguish these directories from the run and work directories ge-
-# nerated by other FV3SAR runs.
-#
-#-----------------------------------------------------------------------
-#
-run_title=${run_title:-"desc_str01"}
+RES="384"
+lon_ctr_T6=-97.5
+lat_ctr_T6=35.5
+stretch_fac=1.5
+istart_rgnl_T6=10
+iend_rgnl_T6=374
+jstart_rgnl_T6=10
+jend_rgnl_T6=374
+refine_ratio=3
 #
 #-----------------------------------------------------------------------
 #
@@ -238,12 +280,22 @@ preexisting_dir_method="overwrite"
 #
 #-----------------------------------------------------------------------
 #
+# Set the flag that determines whether or not the workflow scripts tend
+# to be more verbose.  This must be set to "true" or "false".
+#
+#-----------------------------------------------------------------------
+#
+VERBOSE="true"
+#VERBOSE="false"
+#
+#-----------------------------------------------------------------------
+#
 # Set the number of MPI tasks to use in the x and y directions.
 #
 #-----------------------------------------------------------------------
 #
-layout_x=${layout_x:-13}  #19(?) - for HRRR
-layout_y=${layout_y:-13}  #25(?) - for HRRR
+layout_x="14"  #19(?) - for HRRR
+layout_y="14"  #25(?) - for HRRR
 #
 #-----------------------------------------------------------------------
 #
@@ -265,15 +317,15 @@ layout_y=${layout_y:-13}  #25(?) - for HRRR
 # ESMF routines.  Must be ".true." or ".false.".  Note that the write 
 # component uses ESMF library routines to interpolate from the native
 # FV3SAR grid to the user-specified output grid (which is defined in the
-# NEMS configuration file model_configure in the forecast's run directo-
-# ry).
+# model configuration file MODEL_CONFIG_FN in the forecast's run direc-
+# tory).
 #
 #-----------------------------------------------------------------------
 #
-quilting=${quilting:-".false."}
-write_groups=${write_groups:-"1"}
-write_tasks_per_group=${write_tasks_per_group:-"24"}
-print_esmf=${print_esmf:-".false."}
+quilting=".true."
+write_groups="1"
+write_tasks_per_group="14"
+print_esmf=".false."
 
 
 

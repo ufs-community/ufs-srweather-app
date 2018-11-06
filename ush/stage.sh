@@ -17,49 +17,211 @@
 #PBS -l walltime=0:30:00
 #PBS -W umask=022
 
-############################################
-# Staging script to set up FV3 run directory
-############################################
 
+#
+#-----------------------------------------------------------------------
+#
+# This script copies files from various directories into the run direc-
+# tory, creates links to some of them, and modifies others (e.g. temp-
+# lates) to customize them for the current run.
+#
+#-----------------------------------------------------------------------
+#
+
+
+#
+#-----------------------------------------------------------------------
+#
+# Change shell behavior with "set" with these flags:
+#
+# -a 
+# This will cause the script to automatically export all variables and 
+# functions which are modified or created to the environments of subse-
+# quent commands.
+#
+# -e 
+# This will cause the script to exit as soon as any line in the script 
+# fails (with some exceptions; see manual).  Apparently, it is a bad 
+# idea to use "set -e".  See here:
+#   http://mywiki.wooledge.org/BashFAQ/105
+#
+# -u 
+# This will cause the script to exit if an undefined variable is encoun-
+# tered.
+#
+# -x
+# This will cause all executed commands in the script to be printed to 
+# the terminal (used for debugging).
+#
+#-----------------------------------------------------------------------
+#
+#set -aux
+#set -eux
 set -ux
-
+#
+#-----------------------------------------------------------------------
+#
 # Source the script that defines the necessary shell environment varia-
 # bles.
-. $RUNDIR/var_defns.sh
-
-#Copy all namelist and configure file templates to the run directory
-echo "Copying necessary namelist and configure file templates to the run directory..."
-cp $TEMPLATE_DIR/input.nml $RUNDIR
-cp $TEMPLATE_DIR/diag_table $RUNDIR
-cp $TEMPLATE_DIR/field_table $RUNDIR
-cp $TEMPLATE_DIR/nems.configure $RUNDIR
-cp $TEMPLATE_DIR/run.regional $RUNDIR/run.regional
-cp $TEMPLATE_DIR/data_table $RUNDIR
-cp $TEMPLATE_DIR/model_configure $RUNDIR/model_configure
-
-#Append model_configure file depending on quilting and preset domain
-
-if [[ $quilting = ".true." ]]; then
-
-  if [[ $predef_rgnl_domain = "HRRR" ]]; then
-
-    cat $TEMPLATE_DIR/wrtcomp_HRRR >> $RUNDIR/model_configure   
-
-  elif [[ $predef_rgnl_domain = "RAP" ]]; then
-
-    cat $TEMPLATE_DIR/wrtcomp_RAP >> $RUNDIR/model_configure
-
-  else
-
-    echo "Please define model output projection and grid manually in model_configure file."
-    exit 1
-
-  fi
-
+#
+#-----------------------------------------------------------------------
+#
+. $SCRIPT_VAR_DEFNS_FP
+#
+#-----------------------------------------------------------------------
+#
+# Source the shell script containing the function that replaces variable
+# values (or value placeholders) in several types of files (e.g. Fortran
+# namelist files) with actual values.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/set_file_param.sh
+#
+#-----------------------------------------------------------------------
+#
+# Copy templates of various input files to the run directory.
+#
+#-----------------------------------------------------------------------
+#
+if [ $VERBOSE ]; then
+  echo
+  echo "Copying templates of various input files to the run directory..."
 fi
 
-#Place all fixed files in run directory
-echo "Copying necessary fixed files to the run directory..."
+cp $TEMPLATE_DIR/$FV3_NAMELIST_FN $RUNDIR
+cp $TEMPLATE_DIR/$MODEL_CONFIG_FN $RUNDIR
+cp $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
+cp $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
+cp $TEMPLATE_DIR/$DATA_TABLE_FN $RUNDIR
+cp $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
+#
+#-----------------------------------------------------------------------
+#
+# Set parameters in the FV3SAR namelist file.
+#
+#-----------------------------------------------------------------------
+#
+FV3_NAMELIST_FP="$RUNDIR/$FV3_NAMELIST_FN"
+if [ $VERBOSE ]; then
+  echo
+  echo "Setting parameters in file:"
+  echo "  FV3_NAMELIST_FP = $FV3_NAMELIST_FP"
+fi
+#
+# Set npx_T7 and npy_T7, which are just nx_T7 plus 1 and ny_T7 plus 1, 
+# respectively.  These need to be set in the FV3SAR Fortran namelist 
+# file.  They represent the number of cell vertices in the x and y di-
+# rections on the regional grid (tile 7).
+#
+npx_T7=$(( $nx_T7 + 1 ))
+npy_T7=$(( $ny_T7 + 1 ))
+#
+# Set parameters.
+#
+set_file_param $FV3_NAMELIST_FP "layout" "$layout_x,$layout_y" $VERBOSE
+set_file_param $FV3_NAMELIST_FP "npx" $npx_T7 $VERBOSE
+set_file_param $FV3_NAMELIST_FP "npy" $npy_T7 $VERBOSE
+set_file_param $FV3_NAMELIST_FP "target_lon" $lon_ctr_T6 $VERBOSE
+set_file_param $FV3_NAMELIST_FP "target_lat" $lat_ctr_T6 $VERBOSE
+set_file_param $FV3_NAMELIST_FP "stretch_fac" $stretch_fac $VERBOSE
+set_file_param $FV3_NAMELIST_FP "bc_update_interval" $BC_update_intvl_hrs $VERBOSE
+#
+#-----------------------------------------------------------------------
+#
+# Set parameters in the model configuration file.
+#
+#-----------------------------------------------------------------------
+#
+MODEL_CONFIG_FP="$RUNDIR/$MODEL_CONFIG_FN"
+if [ $VERBOSE ]; then
+  echo
+  echo "Setting parameters in file:"
+  echo "  MODEL_CONFIG_FP = $MODEL_CONFIG_FP"
+fi
+
+set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
+set_file_param $MODEL_CONFIG_FP "quilting" $quilting $VERBOSE
+set_file_param $MODEL_CONFIG_FP "write_groups" $write_groups $VERBOSE
+set_file_param $MODEL_CONFIG_FP "write_tasks_per_group" $write_tasks_per_group $VERBOSE
+set_file_param $MODEL_CONFIG_FP "PE_MEMBER01" $PE_MEMBER01 $VERBOSE
+set_file_param $MODEL_CONFIG_FP "start_year" $YYYY $VERBOSE
+set_file_param $MODEL_CONFIG_FP "start_month" $MM $VERBOSE
+set_file_param $MODEL_CONFIG_FP "start_day" $DD $VERBOSE
+set_file_param $MODEL_CONFIG_FP "start_hour" $HH $VERBOSE
+set_file_param $MODEL_CONFIG_FP "nhours_fcst" $fcst_len_hrs $VERBOSE
+set_file_param $MODEL_CONFIG_FP "ncores_per_node" $ncores_per_node $VERBOSE
+#
+#-----------------------------------------------------------------------
+#
+# If the write component is to be used, then a set of parameters that 
+# define the write-component's output grid need to be specified in the
+# MODEL_CONFIG file.  These are already available for the predefined RAP
+# and HRRR grids and can simply be appended to the file.  For other 
+# grids, they need to be manually specified in the model configuration
+# file.
+#
+#-----------------------------------------------------------------------
+#
+if [[ $quilting = ".true." ]]; then
+#
+  case $predef_rgnl_domain in
+#
+  "RAP")
+    cat $TEMPLATE_DIR/wrtcomp_RAP >> $MODEL_CONFIG_FP
+    ;;
+#
+  "HRRR")
+    cat $TEMPLATE_DIR/wrtcomp_HRRR >> $MODEL_CONFIG_FP
+    ;;
+#
+  "")
+    echo
+    echo "In order to use the write component with a non-predefined \
+FV3SAR native grid, the output grid must be specified in the file \
+specified in the variable MODEL_CONFIG_FN:"
+    echo "  MODEL_CONFIG_FN = $MODEL_CONFIG_FN"
+    echo "This must be done manually."
+    echo "Exiting script."
+    exit 1
+    ;;
+#
+  esac
+#
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Set parameters in the file that specifies the fields to output.
+#
+#-----------------------------------------------------------------------
+#
+DIAG_TABLE_FP="$RUNDIR/$DIAG_TABLE_FN"
+if [ $VERBOSE ]; then
+  echo
+  echo "Setting parameters in file:"
+  echo "  DIAG_TABLE_FP = $DIAG_TABLE_FP"
+fi
+
+set_file_param $DIAG_TABLE_FP "CRES" $CRES $VERBOSE
+set_file_param $DIAG_TABLE_FP "YYYY" $YYYY $VERBOSE
+set_file_param $DIAG_TABLE_FP "MM" $MM $VERBOSE
+set_file_param $DIAG_TABLE_FP "DD" $DD $VERBOSE
+set_file_param $DIAG_TABLE_FP "HH" $HH $VERBOSE
+set_file_param $DIAG_TABLE_FP "YYYYMMDD" $YMD $VERBOSE
+#
+#-----------------------------------------------------------------------
+#
+# Copy fixed files from system directory to run directory.  Note that 
+# some of these files get renamed.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$VERBOSE" = "true" ]; then
+  echo
+  echo "Copying fixed files from system directory to run directory..."
+fi
+
 cp $FIXgsm/CFSR.SEAICE.1982.2012.monthly.clim.grb $RUNDIR
 cp $FIXgsm/RTGSST.1982.2012.monthly.clim.grb $RUNDIR
 cp $FIXgsm/seaice_newland.grb $RUNDIR
@@ -94,38 +256,56 @@ cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2017.txt $RUNDIR/co2historicald
 cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2018.txt $RUNDIR/co2historicaldata_2018.txt
 cp $FIXgsm/global_co2historicaldata_glob.txt $RUNDIR/co2historicaldata_glob.txt
 cp $FIXgsm/co2monthlycyc.txt $RUNDIR
+#
+#-----------------------------------------------------------------------
+#
+# Copy the FV3SAR executable to the run directory.
+#
+#-----------------------------------------------------------------------
+#
+FV3SAR_EXEC="$BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe"
 
-#Check to make sure FV3 executable exists and copy to run directory
-if [ ! -f $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe ]; then
-   echo "FV3 executable does not exist, please compile first.  Exiting..."
-   exit 1
+if [ -f $FV3SAR_EXEC ]; then
+  
+  if [ "$VERBOSE" = "true" ]; then
+    echo
+    echo "Copying FV3SAR executable to the run directory..."
+  fi
+  cp $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
+#  cp /scratch3/BMC/det/beck/FV3-CAM/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
+
 else
-   echo "Copying FV3 executable to run directory..."
-   cp $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
-#   cp /scratch3/BMC/det/beck/FV3-CAM/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
+
+  echo
+  echo "The FV3SAR executable specified in FV3SAR_EXEC does not exist:"
+  echo "  FV3SAR_EXEC = $FV3SAR_EXEC"
+  echo "Build FV3SAR and rerun."
+  echo "Exiting script."
+  exit 1
+
 fi
-
-
-#Make RESTART directory within the run directory if it doesn't already exist
-if [ ! -d $RUNDIR/RESTART ]; then
-   echo "Making $RUNDIR/RESTART..."
-   mkdir $RUNDIR/RESTART
-else
-   echo "Removing and recreating pre-existing RESTART directory"
-   rm -rf $RUNDIR/RESTART
-   mkdir $RUNDIR/RESTART
+#
+#-----------------------------------------------------------------------
+#
+# Copy files from various work directories into the run directory and 
+# create necesary links.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$VERBOSE" = "true" ]; then
+  echo
+  echo "Copying files from work directories into run directory and \
+creating links..."
 fi
-
-
-#Copy, rename, and link pre-processing NetCDF files to $RUNDIR/INPUT
-
+#
+#-----------------------------------------------------------------------
 #
 # Copy the grid mosaic file (which describes the connectivity of the va-
 # rious tiles) to the INPUT subdirectory of the run directory.  In the 
 # regional case, this file doesn't have much information because the 
 # regional grid is not connected to any other tiles.  However, a mosaic
 # file (with a different name; see below) must still be read in by the
-# FV3 code.
+# FV3SAR code.
 #
 # Note that the FV3 code (specifically the FMS code) looks for a file 
 # named "grid_spec.nc" in the INPUT subdirectory of the run directory
@@ -135,265 +315,122 @@ fi
 # case, "gridfiles" will contain only one file name, that of the file
 # describing the grid on tile 7. 
 #
-cp $WORKDIR_GRID/$CRES_mosaic.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/$CRES_mosaic.nc $RUNDIR/INPUT/grid_spec.nc
+#-----------------------------------------------------------------------
 #
-# The variable "gridfiles" in grid_spec.nc will contain a file name of
-# $CRES_grid.tile7.nc, and the FV3 code will try to read this file.  
-# This file should contain the regional grid with a halo of 3 cells.
-# Thus, we first copy the grid file with a 3-cell halo to the INPUT 
-# subdirectory of the run directory, and we then create a link named
-# {CRES}_grid.tile7.nc that points to this file.
+cp $WORKDIR_GRID/${CRES}_mosaic.nc $RUNDIR/INPUT
+ln -sf $RUNDIR/INPUT/${CRES}_mosaic.nc $RUNDIR/INPUT/grid_spec.nc
 #
-cp $WORKDIR_SHVE/$CRES_grid.tile7.halo${halo}.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/$CRES_grid.tile7.halo${halo}.nc \
-       $RUNDIR/INPUT/$CRES_grid.tile7.nc
+#-----------------------------------------------------------------------
 #
-# Copy the grid file with a halo of 4 cells to the INPUT subdirectory of
-# the run directory.  The regional portion of the FV3 code looks for a 
-# file named "grid.tile7.halo4.nc" from which to read in the regional 
-# grid, but this is not the name of the grid file that the preprocessing
-# generates.  Thus, we create a link with this name that points to the 
-# grid file.
+# The FV3SAR model looks for a file named "${CRES}_grid.tile7.nc" from
+# which to read in the grid with a 3-cell-wide halo.  This data is crea-
+# ted by the preprocessing but is placed in a file with a different name
+# ("${CRES}_grid.tile7.halo3.nc").  Thus, we first copy the file created
+# by the preprocessing to the INPUT subdirectory of the run directory 
+# and then create a symlink named "${CRES}_grid.tile7.nc" that points to
+# it.
 #
-cp $WORKDIR_SHVE/$CRES_grid.tile7.halo${halop1}.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/$CRES_grid.tile7.halo${halop1}.nc \
-       $RUNDIR/INPUT/grid.tile7.halo${halop1}.nc
+#-----------------------------------------------------------------------
 #
-# Copy the filtered orography file with a halo of 4 cells to the INPUT 
-# subdirectory of the run directory.  The regional portion of the FV3 
-# code looks for a file named "oro_data.tile7.halo4.nc" from which to 
-# read in the orogrpahy, but this is not the name of the filtered oro-
-# graphy file that the preprocessing generates.  Thus, we create a link
-# with this name that points to the orography file.
+cp $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc $RUNDIR/INPUT
+ln -sf $RUNDIR/INPUT/${CRES}_grid.tile7.halo${nh3_T7}.nc \
+       $RUNDIR/INPUT/${CRES}_grid.tile7.nc
 #
-cp $WORKDIR_SHVE/$CRES_oro_data.tile7.halo${halop1}.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/$CRES_oro_data.tile7.halo${halop1}.nc \
-       $RUNDIR/INPUT/oro_data.tile7.halo${halop1}.nc
+#-----------------------------------------------------------------------
 #
-# It turns out that the FV3 model also needs to read in a file named 
-# "oro_data.nc" that contains the filtered orography without any halo
-# cells.  Copy that file from the shave directory to the INPUT subdi-
-# rectory of the run directory and create a link with the aforementioned
-# name that points to it.
+# The FV3SAR model looks for a file named "grid.tile7.halo4.nc" from 
+# which to read in the grid with a 4-cell-wide halo.  This data is crea-
+# ted by the preprocessing but is placed in a file with a different name
+# ("${CRES}_grid.tile7.halo4.nc").  Thus, we first copy the file created
+# by the preprocessing to the INPUT subdirectory of the run directory 
+# and then create a symlink named "grid.tile7.halo4.nc" that points to
+# it.
 #
-cp $WORKDIR_SHVE/$CRES_oro_data.tile7.halo${halo0}.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/$CRES_oro_data.tile7.halo${halo0}.nc \
+#-----------------------------------------------------------------------
+#
+cp $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc $RUNDIR/INPUT
+ln -sf $RUNDIR/INPUT/${CRES}_grid.tile7.halo${nh4_T7}.nc \
+       $RUNDIR/INPUT/grid.tile7.halo${nh4_T7}.nc
+#
+#-----------------------------------------------------------------------
+#
+# The FV3SAR model looks for a file named "oro_data.tile7.halo4.nc" from
+# which to read in the orogrpahy with a 4-cell-wide halo.  This data is
+# created by the preprocessing but is placed in a file with a different
+# name ("${CRES}_oro_data.tile7.halo4.nc").  Thus, we first copy the 
+# file created by the preprocessing to the INPUT subdirectory of the run
+# directory and then create a symlink named "oro_data.tile7.halo4.nc" 
+# that points to it.
+#
+#-----------------------------------------------------------------------
+#
+cp $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc $RUNDIR/INPUT
+ln -sf $RUNDIR/INPUT/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
+       $RUNDIR/INPUT/oro_data.tile7.halo${nh4_T7}.nc
+#
+#-----------------------------------------------------------------------
+#
+# The FV3SAR model looks for a file named "oro_data.nc" from which to 
+# read in the orogrpahy without a halo.  This data is created by the 
+# preprocessing but is placed in a file with a different name 
+# ("${CRES}_oro_data.tile7.halo0.nc").  Thus, we first copy the file 
+# created by the preprocessing to the INPUT subdirectory of the run di-
+# rectory and then create a symlink named "oro_data.nc" that points to
+# it.
+#
+#-----------------------------------------------------------------------
+#
+cp $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc $RUNDIR/INPUT
+ln -sf $RUNDIR/INPUT/${CRES}_oro_data.tile7.halo${nh0_T7}.nc \
        $RUNDIR/INPUT/oro_data.nc
 #
-# Copy the ICs file (with a halo of 4 cells since the input grid and 
-# orography files to the chgres program that created the ICs file had 4
-# 4 cells) to the INPUT subdirectory of the run directory.  The FV3 code
-# looks for a file named "gfs_data.nc" from which to read in the ICs, 
-# but this is not the name of the ICs file that the preprocessing gene-
-# rates.  Thus, we create a link with this name that points to the ICs
-# file.
+#-----------------------------------------------------------------------
+#
+# The FV3SAR model looks for a file named "gfs_data.nc" from which to 
+# read in the initial conditions with a 4-cell-wide halo.  This data is
+# created by the preprocessing but is placed in a file with a different
+# name ("gfs_data.tile7.nc").  Thus, we first copy the file created by 
+# the preprocessing to the INPUT subdirectory of the run directory and 
+# then create a symlink named "gfs_data.nc" that points to it.
+#
+#-----------------------------------------------------------------------
 #
 cp $WORKDIR_ICBC/gfs_data.tile7.nc $RUNDIR/INPUT
 ln -sf $RUNDIR/INPUT/gfs_data.tile7.nc \
        $RUNDIR/INPUT/gfs_data.nc
 #
-# Copy the surface file (with a halo of 4 cells since the input grid and 
-# orography files to the chgres program that created the surface file 
-# had 4 halo cells) to the INPUT subdirectory of the run directory.  The
-# FV3 code looks for a file named "gfs_data.nc" from which to read in 
-# the ICs, but this is not the name of the ICs file that the preprocess-
-# ing generates.  Thus, we create a link with this name that points to 
-# the ICs file.
+#-----------------------------------------------------------------------
+#
+# The FV3SAR model looks for a file named "gfs_data.nc" from which to 
+# read in the surface without a halo.  This data is created by the pre-
+# processing but is placed in a file with a different name ("sfc_data.-
+# tile7.nc").  Thus, we first copy the file created by the preprocessing
+# to the INPUT subdirectory of the run directory and then create a sym-
+# link named "sfc_data.nc" that points to it.
+#
+#-----------------------------------------------------------------------
 #
 cp $WORKDIR_ICBC/sfc_data.tile7.nc $RUNDIR/INPUT
 ln -sf $RUNDIR/INPUT/sfc_data.tile7.nc \
        $RUNDIR/INPUT/sfc_data.nc
 #
+#-----------------------------------------------------------------------
+#
 # Copy the boundary files (one per boundary update time) to the INPUT 
 # subdirectory of the run directory.
 #
+#-----------------------------------------------------------------------
+#
 cp $WORKDIR_ICBC/gfs_bndy*.nc $RUNDIR/INPUT
+#
+#-----------------------------------------------------------------------
 #
 # Copy the file gfs_ctrl.nc containing information about the vertical
 # coordinate and the number of tracers from its temporary location to 
 # the INPUT subdirectory of the run directory.
 #
+#-----------------------------------------------------------------------
+#
 cp $WORKDIR_ICBC/gfs_ctrl.nc $RUNDIR/INPUT
 
 
-
-if [ 0 = 1 ]; then
-#
-##cp ${out_dir}/$CRES_oro_data.tile7.halo0.nc $RUNDIR/INPUT/$CRES_oro_data.tile7.halo0.nc
-##cp ${out_dir}/$CRES_oro_data.tile7.halo4.nc $RUNDIR/INPUT/$CRES_oro_data.tile7.halo4.nc
-#
-ln -sf $RUNDIR/INPUT/$CRES_oro_data.tile7.halo${halo0}.nc \
-       $RUNDIR/INPUT/$CRES_oro_data.tile7.nc
-
-fi
-
-#############################################################################################################3###
-# Math required for grid decomposition and sed commands to replace template values in namelists/configure files #
-#################################################################################################################
-
-cd $RUNDIR
-
-# Read in the grid dimensions from the NetCDF file containing surface
-# fields.
-nx=$(ncdump -h $RUNDIR/INPUT/sfc_data.tile7.nc | grep "lon =" | sed -e "s/.*= //;s/ .*//")
-ny=$(ncdump -h $RUNDIR/INPUT/sfc_data.tile7.nc | grep "lat =" | sed -e "s/.*= //;s/ .*//")
-
-echo "FV3SAR regional domain dimensions:"
-echo "  nx = $nx"
-echo "  ny = $ny"
-             
-# Set npx and npy.
-npx=$(( $nx+1 ))
-npy=$(( $ny+1))
-    
-echo ""
-echo "For input.nml:"
-echo "npx = $npx"
-echo "npy = $npy"
-echo ""
-    
-#Modify npx and npy values in input.nml
-echo "Modifying npx and npy values in input.nml..."
-echo ""
-sed -i -r -e "s/^(\s*npx\s*=)(.*)/\1 $npx/" $RUNDIR/input.nml
-sed -i -r -e "s/^(\s*npy\s*=)(.*)/\1 $npy/" $RUNDIR/input.nml
-
-#Modify target_lon, target_lat, stretch_fac in input.nml
-echo "Modifying target_lat and target_lon in input.nml..."
-echo ""
-sed -i -r -e "s/^(\s*target_lon\s*=)(.*)/\1 $lon_ctr_T6/" $RUNDIR/input.nml
-sed -i -r -e "s/^(\s*target_lat\s*=)(.*)/\1 $lat_ctr_T6/" $RUNDIR/input.nml
-sed -i -r -e "s/^(\s*stretch_fac\s*=)(.*)/\1 $stretch_fac/" $RUNDIR/input.nml
-sed -i -r -e "s/^(\s*bc_update_interval\s*=)(.*)/\1 $BC_update_intvl_hrs/" $RUNDIR/input.nml
-
-#Test whether dimensions values are evenly divisible by user-chosen layout_x and layout_y.
-
-# Make sure number of cells in y direction is divisible by layout_y.
-if [[ $(( $ny%$layout_y )) -eq 0 ]]; then
-   echo "Latitude dimension ($ny) is evenly divisible by user-defined layout_y ($layout_y)"
-else
-   echo "Latitude dimension ($ny) is not evenly divisible by user-defined layout_y ($layout_y), please redefine.  Exiting."
-   exit 1
-fi
-
-#Make sure longitude dimension is divisible by layout_x.
-if [[ $(( $lon%$layout_x )) -eq 0 ]]; then 
-   echo "Longitude dimension ($lon) is evenly divisible by user-defined layout_x ($layout_x)"
-else  
-   echo "Longitude dimension ($lon) is not evenly divisible by user-defined layout_x ($layout_x), please redefine.  Exiting."
-   exit 1
-fi
-
-#If the write component is turned on, make sure PE_MEMBER01 is divisible by write_tasks_per_group.
-if [[ $quilting = ".true." ]]; then
- 
- if [[ $(( (($layout_x*$layout_y)+($write_groups*$write_tasks_per_group))%$write_tasks_per_group )) -eq 0 ]]; then
-    echo "Value of PE_MEMBER01 ($(( ($layout_x*$layout_y)+($write_groups*$write_tasks_per_group) ))) is evenly divisible by write_tasks_per_group ($write_tasks_per_group)."
- else
-    echo "Value of PE_MEMBER01 ($(( ($layout_x*$layout_y)+($write_groups*$write_tasks_per_group) ))) is not evenly divisible by write_tasks_per_group ($write_tasks_per_group), please redefine.  Exiting."
-    exit 1
- fi
-
-else
-  : #Do nothing
-fi
- 
-echo ""
-echo "Value for layout(x): $layout_x"
-echo "Value for layout(y): $layout_y"
-    
-echo ""
-echo "Layout for input.nml: $layout_x,$layout_y"
-echo ""
-
-#Modify layout_x and layout_y values in input.nml
-echo "Modifying layout_x and layout_y values in input.nml..."
-sed -i -r -e "s/^(\s*layout\s*=\s*)(.*)/\1$layout_x,$layout_y/" $RUNDIR/input.nml
-
-#Calculate PE_MEMBER01
-if [[ $quilting = ".true." ]]; then
-
-#Add write_groups*write_tasks_per_group to the product of layout_x and layout_y for the write component.
-  PE_MEMBER01=$(( ($layout_x*$layout_y)+($write_groups*$write_tasks_per_group) ))
-
-else
-
-  PE_MEMBER01=$(( $layout_x*$layout_y ))
-
-fi
-
-echo ""
-echo "PE_MEMBER01 for model_configure: ${PE_MEMBER01}"
-echo ""
-
-#Modify values in model_configure
-echo "Modifying print_esmf flag in model_configure... "
-echo ""
-sed -i -r -e "s/^(\s*print_esmf:\s*)(.*)/\1$print_esmf/" $RUNDIR/model_configure
-
-echo "Modifying quilting flag in model_configure... "
-echo ""
-sed -i -r -e "s/^(\s*quilting:\s*)(.*)/\1$quilting/" $RUNDIR/model_configure
-
-echo "Modifying write_groups in model_configure... "
-echo ""
-sed -i -r -e "s/^(\s*write_groups:\s*)(.*)/\1$write_groups/" $RUNDIR/model_configure
-
-echo "Modifying write_tasks_per_group in model_configure... "
-echo ""
-sed -i -r -e "s/^(\s*write_tasks_per_group:\s*)(.*)/\1$write_tasks_per_group/" $RUNDIR/model_configure
-
-echo "Modifying PE_MEMBER01 in model_configure... "
-echo ""
-sed -i -r -e "s/^(\s*PE_MEMBER01:\s*)(.*)/\1$PE_MEMBER01/" $RUNDIR/model_configure
-
-echo "Modifying simulation date and time in model_configure... "
-echo ""
-sed -i -r -e "s/^(\s*start_year:\s*)(<start_year>)(.*)/\1${YYYY}\3/" $RUNDIR/model_configure
-sed -i -r -e "s/^(\s*start_month:\s*)(<start_month>)(.*)/\1${MM}\3/" $RUNDIR/model_configure
-sed -i -r -e "s/^(\s*start_day:\s*)(<start_day>)(.*)/\1${DD}\3/" $RUNDIR/model_configure
-sed -i -r -e "s/^(\s*start_hour:\s*)(<start_hour>)(.*)/\1${HH}\3/" $RUNDIR/model_configure
-
-echo "Modifying forecast length in model_configure... "
-echo ""
-sed -i -r -e "s/^(\s*nhours_fcst:\s*)(.*)/\1$fcst_len_hrs/" $RUNDIR/model_configure
-
-#Modify simulation date, time, and resolution in diag_table
-echo "Modifying simulation date and time in diag_table... "
-echo ""
-sed -i -r -e "s/^<YYYYMMDD>\.<HH>Z\.<CRES>/${YMD}\.${HH}Z\.$CRES/" $RUNDIR/diag_table
-sed -i -r -e "s/^<YYYY>\s+<MM>\s+<DD>\s+<HH>\s+/${YYYY} ${MM} ${DD} ${HH} /" $RUNDIR/diag_table
-
-#Modify cores per node
-echo "Modifying number of cores per node in model_configure... "
-echo ""
-sed -i -r -e "s/^(\s*ncores_per_node:\s*)(.*)/\1$ncores_per_node/" $RUNDIR/model_configure
-
-#Calculate values for nodes and ppn for job scheduler
-PPN=$ncores_per_node 
-      
-Nodes=$(( ($PE_MEMBER01+$ncores_per_node-1)/$ncores_per_node ))
-
-echo "Nodes: $Nodes"
-echo "PPN: $PPN"
-echo "" 
-    
-#Modify nodes and PPN in the run script
-echo "Modifying nodes and PPN in run.regional..."
-echo ""
-sed -i -r -e "s/^(#PBS.*nodes=)([^:]*)(:.*)/\1$Nodes\3/" $RUNDIR/run.regional
-sed -i -r -e "s/(ppn=)(.*)/\1$PPN/" $RUNDIR/run.regional
-
-#Modify $RUNDIR in run.regional
-echo "Modifying run directory in run.$CRES.regional..."
-sed -i -r -e 's+\$\{RUNDIR\}+'"$RUNDIR"'+' $RUNDIR/run.regional
-
-#Modify $PBS_NP in run.regional
-echo "Modifying \$PBS_NP directory in run.$CRES.regional..."
-sed -i -r -e 's+\$PBS_NP+'"${PE_MEMBER01}"'+' $RUNDIR/run.regional
-
-#Modify FV3 run proc in FV3_Theia.xml
-echo "Modifying FV3 run proc in FV3_Theia.xml..."
-REGEXP="(^\s*<!ENTITY\s*FV3_PROC\s*\")(.*)(\">.*)"
-sed -i -r -e "s/$REGEXP/\1${Nodes}:ppn=${PPN}\3/g" ${BASEDIR}/fv3gfs/regional/FV3_Theia.xml

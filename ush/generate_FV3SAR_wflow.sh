@@ -44,7 +44,7 @@ set -ux
 #-----------------------------------------------------------------------
 #
 XML_TEMPLATE="$TEMPLATE_DIR/FV3SAR_wflow.xml"
-XML_FILENAME="${RUNDIR}/FV3SAR_wflow.xml"
+XML_FILENAME="$RUNDIR/FV3SAR_wflow.xml"
 #
 #-----------------------------------------------------------------------
 #
@@ -63,14 +63,20 @@ cp $XML_TEMPLATE $XML_FILENAME
 #
 #-----------------------------------------------------------------------
 #
+REGEXP="(^\s*<!ENTITY\s+SCRIPT_VAR_DEFNS_FP\s*\")(.*)(\">.*)"
+sed -i -r -e "s|$REGEXP|\1${SCRIPT_VAR_DEFNS_FP}\3|g" $XML_FILENAME
+
 REGEXP="(^\s*<!ENTITY\s+ACCOUNT\s*\")(.*)(\">.*)"
 sed -i -r -e "s|$REGEXP|\1${ACCOUNT}\3|g" $XML_FILENAME
-#
+
 REGEXP="(^\s*<!ENTITY\s+USHDIR\s*\")(.*)(\">.*)"
 sed -i -r -e "s|$REGEXP|\1${USHDIR}\3|g" $XML_FILENAME
-#
+
 REGEXP="(^\s*<!ENTITY\s+RUNDIR\s*\")(.*)(\">.*)"
 sed -i -r -e "s|$REGEXP|\1${RUNDIR}\3|g" $XML_FILENAME
+
+REGEXP="(^\s*<!ENTITY\s*PROC_RUN_FV3SAR\s*\")(.*)(\">.*)"
+sed -i -r -e "s/$REGEXP/\1${NUM_NODES}:ppn=${ncores_per_node}\3/g" $XML_FILENAME
 #
 #-----------------------------------------------------------------------
 #
