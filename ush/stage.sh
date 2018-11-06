@@ -139,27 +139,15 @@ if [ $VERBOSE ]; then
   echo "Setting parameters in file:"
   echo "  MODEL_CONFIG_FP = $MODEL_CONFIG_FP"
 fi
-
-set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
-set_file_param $MODEL_CONFIG_FP "quilting" $quilting $VERBOSE
-set_file_param $MODEL_CONFIG_FP "write_groups" $write_groups $VERBOSE
-set_file_param $MODEL_CONFIG_FP "write_tasks_per_group" $write_tasks_per_group $VERBOSE
-set_file_param $MODEL_CONFIG_FP "PE_MEMBER01" $PE_MEMBER01 $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_year" $YYYY $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_month" $MM $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_day" $DD $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_hour" $HH $VERBOSE
-set_file_param $MODEL_CONFIG_FP "nhours_fcst" $fcst_len_hrs $VERBOSE
-set_file_param $MODEL_CONFIG_FP "ncores_per_node" $ncores_per_node $VERBOSE
 #
 #-----------------------------------------------------------------------
 #
 # If the write component is to be used, then a set of parameters that 
 # define the write-component's output grid need to be specified in the
-# MODEL_CONFIG file.  These are already available for the predefined RAP
-# and HRRR grids and can simply be appended to the file.  For other 
-# grids, they need to be manually specified in the model configuration
-# file.
+# MODEL_CONFIG file.  Templates for these are already available for the
+# predefined RAP and HRRR domains and can simply be appended to the 
+# file.  For other grids, they need to be manually specified in the mo-
+# del configuration file.
 #
 #-----------------------------------------------------------------------
 #
@@ -189,6 +177,18 @@ specified in the variable MODEL_CONFIG_FN:"
   esac
 #
 fi
+
+set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
+set_file_param $MODEL_CONFIG_FP "quilting" $quilting $VERBOSE
+set_file_param $MODEL_CONFIG_FP "write_groups" $write_groups $VERBOSE
+set_file_param $MODEL_CONFIG_FP "write_tasks_per_group" $write_tasks_per_group $VERBOSE
+set_file_param $MODEL_CONFIG_FP "PE_MEMBER01" $PE_MEMBER01 $VERBOSE
+set_file_param $MODEL_CONFIG_FP "start_year" $YYYY $VERBOSE
+set_file_param $MODEL_CONFIG_FP "start_month" $MM $VERBOSE
+set_file_param $MODEL_CONFIG_FP "start_day" $DD $VERBOSE
+set_file_param $MODEL_CONFIG_FP "start_hour" $HH $VERBOSE
+set_file_param $MODEL_CONFIG_FP "nhours_fcst" $fcst_len_hrs $VERBOSE
+set_file_param $MODEL_CONFIG_FP "ncores_per_node" $ncores_per_node $VERBOSE
 #
 #-----------------------------------------------------------------------
 #
