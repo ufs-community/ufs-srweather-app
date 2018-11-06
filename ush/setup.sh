@@ -1173,6 +1173,7 @@ BC_times_hrs=(${BC_times_hrs[@]})  # BC_times_hrs is an array, even if it has on
 #
 #-----------------------------------------------------------------------
 #
+ncores_per_node="$ncores_per_node"
 PE_MEMBER01="$PE_MEMBER01"
 EOM
 

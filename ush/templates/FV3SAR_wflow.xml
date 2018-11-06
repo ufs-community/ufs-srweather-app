@@ -237,8 +237,8 @@ the workflow XML.
 
     <command>&USHDIR;/get_GFS_files.sh</command>
     <nodes>&PROC_GET_GFS_FILES;</nodes>
-    <jobname>get_GFS_anl_fcst_files</jobname>
-    <join><cyclestr>&LOG_DIR;/get_GFS_anl_fcst_files_@Y@m@d@H.log</cyclestr></join>
+    <jobname>get_GFS_files</jobname>
+    <join><cyclestr>&LOG_DIR;/get_GFS_files_@Y@m@d@H.log</cyclestr></join>
 
     <envar>
       <name>SCRIPT_VAR_DEFNS_FP</name>
@@ -280,7 +280,7 @@ the workflow XML.
     <dependency>
      <and>
       <taskdep task="make_grid_orog"/>
-      <taskdep task="get_GFS_anl_fcst_files"/>
+      <taskdep task="get_GFS_files"/>
      </and> 
    </dependency>
 
@@ -310,7 +310,7 @@ the workflow XML.
     <dependency>
      <and>
       <taskdep task="make_grid_orog"/>
-      <taskdep task="get_GFS_anl_fcst_files"/>
+      <taskdep task="get_GFS_files"/>
      </and>
     </dependency>
 

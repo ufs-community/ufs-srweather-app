@@ -165,7 +165,7 @@ set_file_param $MODEL_CONFIG_FP "ncores_per_node" $ncores_per_node $VERBOSE
 #
 if [[ $quilting = ".true." ]]; then
 #
-  case $predef_rgnl_domain in
+  case $predef_domain in
 #
   "RAP")
     cat $TEMPLATE_DIR/wrtcomp_RAP >> $MODEL_CONFIG_FP
