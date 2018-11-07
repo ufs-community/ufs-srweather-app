@@ -31,7 +31,11 @@ set -ux
 #-----------------------------------------------------------------------
 #
 # Source the setup script.  Note that this in turn sources the configu-
-# ration script config.sh file in the current directory.
+# ration file/script (config.sh) in the current directory.  It also cre-
+# ates the run and work directories, the INPUT and RESTART subdirecto-
+# ries under the run directory, and a variable definitions file/script
+# in the run directory.  The latter gets sources by each of the scripts
+# that run the various workflow tasks.
 #
 #-----------------------------------------------------------------------
 #
@@ -39,12 +43,15 @@ set -ux
 #
 #-----------------------------------------------------------------------
 #
-# Set the names of the template and actual rocoto xml files.
+# Set the names of the template and actual rocoto xml files and their 
+# full paths.
 #
 #-----------------------------------------------------------------------
 #
-XML_TEMPLATE="$TEMPLATE_DIR/FV3SAR_wflow.xml"
-XML_FILENAME="$RUNDIR/FV3SAR_wflow.xml"
+XML_TEMPLATE_FN="FV3SAR_wflow.xml"
+XML_TEMPLATE_FP="$TEMPLATE_DIR/$XML_TEMPLATE_FN"
+XML_FN="FV3SAR_wflow.xml"
+XML_FP="$RUNDIR/$XML_FN"
 #
 #-----------------------------------------------------------------------
 #
@@ -52,134 +59,42 @@ XML_FILENAME="$RUNDIR/FV3SAR_wflow.xml"
 #
 #-----------------------------------------------------------------------
 #
-cp $XML_TEMPLATE $XML_FILENAME
+cp $XML_TEMPLATE_FP $XML_FP
 #
 #-----------------------------------------------------------------------
 #
-# Fill in the xml file with parameter values specified in the config.sh
-# file and those calculated by the setup script sourced above.
-#
-# First, fill in values of those parameters needed only by the workflow.
+# Fill in the xml file with parameter values that are either specified
+# in the configuration file/script (config.sh) or set in the setup 
+# script sourced above.
 #
 #-----------------------------------------------------------------------
 #
 REGEXP="(^\s*<!ENTITY\s+SCRIPT_VAR_DEFNS_FP\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${SCRIPT_VAR_DEFNS_FP}\3|g" $XML_FILENAME
+sed -i -r -e "s|$REGEXP|\1${SCRIPT_VAR_DEFNS_FP}\3|g" $XML_FP
 
 REGEXP="(^\s*<!ENTITY\s+ACCOUNT\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${ACCOUNT}\3|g" $XML_FILENAME
+sed -i -r -e "s|$REGEXP|\1${ACCOUNT}\3|g" $XML_FP
 
 REGEXP="(^\s*<!ENTITY\s+USHDIR\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${USHDIR}\3|g" $XML_FILENAME
+sed -i -r -e "s|$REGEXP|\1${USHDIR}\3|g" $XML_FP
 
 REGEXP="(^\s*<!ENTITY\s+RUNDIR\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${RUNDIR}\3|g" $XML_FILENAME
+sed -i -r -e "s|$REGEXP|\1${RUNDIR}\3|g" $XML_FP
 
 REGEXP="(^\s*<!ENTITY\s*PROC_RUN_FV3SAR\s*\")(.*)(\">.*)"
-sed -i -r -e "s/$REGEXP/\1${NUM_NODES}:ppn=${ncores_per_node}\3/g" $XML_FILENAME
+sed -i -r -e "s/$REGEXP/\1${NUM_NODES}:ppn=${ncores_per_node}\3/g" $XML_FP
 #
 #-----------------------------------------------------------------------
 #
-# Next, fill in values of those parameters needed only by the scripts 
-# for the various tasks.
-#
-#-----------------------------------------------------------------------
-#
-if [ 0 = 1 ]; then
-
-REGEXP="(^\s*<!ENTITY\s+MACHINE\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${MACHINE}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+USER\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${USER}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+BASEDIR\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${BASEDIR}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+FV3SAR_DIR\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${FV3SAR_DIR}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+TEMPLATE_DIR\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${TEMPLATE_DIR}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+TMPDIR\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${TMPDIR}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+GTYPE\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${gtype}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+RES\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${RES}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+FCST_LEN_HRS\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${fcst_len_hrs}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+BC_UPDATE_INTVL_HRS\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${BC_update_intvl_hrs}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+STRETCH_FAC\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${stretch_fac}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+LON_CTR_T6\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${lon_ctr_T6}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+LAT_CTR_T6\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${lat_ctr_T6}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+REFINE_RATIO\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${refine_ratio}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+ISTART_RGNL_T6\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${istart_rgnl_T6}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+IEND_RGNL_T6\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${iend_rgnl_T6}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+JSTART_RGNL_T6\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${jstart_rgnl_T6}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+JEND_RGNL_T6\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${jend_rgnl_T6}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+RUN_TITLE\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${run_title}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+QUILTING\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${quilting}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+PRINT_ESMF\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${print_esmf}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+PREDEF_RGNL_DOMAIN\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${predef_rgnl_domain}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+LAYOUT_X\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${layout_x}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+LAYOUT_Y\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${layout_y}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+NCORES_PER_NODE\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${ncores_per_node}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+WRITE_GROUPS\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${write_groups}\3|g" $XML_FILENAME
-
-REGEXP="(^\s*<!ENTITY\s+WRITE_TASKS_PER_GROUP\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${write_tasks_per_group}\3|g" $XML_FILENAME
-
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Set the location of the rocoto executable.
+# Get the full path to the various rocoto commands.
 #
 #-----------------------------------------------------------------------
 #
 set +x
 module load rocoto
 set -x
-ROCOTO_EXEC_DIR=$( which rocotorun )
+ROCOTO_EXEC_FP=$( which rocotorun )
+ROCOTO_EXEC_DIR=${ROCOTO_EXEC_FP%/rocotorun}
 #
 #-----------------------------------------------------------------------
 #
@@ -189,35 +104,22 @@ ROCOTO_EXEC_DIR=$( which rocotorun )
 #
 #-----------------------------------------------------------------------
 #
-DB_FILENAME="${XML_FILENAME%.xml}.db"
+DB_FN="${XML_FN%.xml}.db"
 
-if [ -f "$XML_FILENAME" ]; then
+cmd="cd $RUNDIR && ${ROCOTO_EXEC_DIR}/rocotorun -d ${DB_FN} -w ${XML_FN} -v 10"
+echo
+echo "To run the workflow, use the following command:"
+echo
+echo "$cmd"
+echo
+echo "This command can be added in the user's crontab for automatic \
+resubmission of the workflow."
 
-  cmd="${ROCOTO_EXEC_DIR}/rocotorun -d ${DB_FILENAME} -w ${XML_FILENAME} -v 10"
-  echo
-  echo "To run the workflow, use the following command:"
-  echo
-  echo "$cmd"
-  echo
-  echo "This can also be placed in a crontab for automatic resubmission of the workflow."
-
-  cmd="${ROCOTO_EXEC_DIR}/rocotostat -d ${DB_FILENAME} -w ${XML_FILENAME} -v 10"
-  echo
-  echo "To check on the status of the workflow, use the following command:"
-  echo
-  echo "$cmd"
-
-else
-
-  echo
-  echo "Rocoto XML file was not created.  It should be at:"
-  echo
-  echo "  $XML_FILENAME"
-  echo
-  echo "Exiting script."
-  exit 1
-
-fi
+cmd="cd $RUNDIR && ${ROCOTO_EXEC_DIR}/rocotostat -d ${DB_FN} -w ${XML_FN} -v 10"
+echo
+echo "To check on the status of the workflow, use the following command:"
+echo
+echo "$cmd"
 
 
 

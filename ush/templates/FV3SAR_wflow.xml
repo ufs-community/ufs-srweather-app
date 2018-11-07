@@ -4,7 +4,7 @@
 
 <!--
 SECTION 1:
-Variables that will be modified by the workflow generation script.
+Variables that are modified by the workflow generation script.
 -->
 
 <!--
@@ -27,7 +27,7 @@ the workflow XML.
 
 <!--
 SECTION 2:
-Variables that will not modified by the workflow generation script.
+Variables that are not modified by the workflow generation script.
 -->
 <!ENTITY QUEUE_DEFAULT    "debug">
 <!ENTITY QUEUE_HPSS       "service">
