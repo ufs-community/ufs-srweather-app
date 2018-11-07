@@ -11,10 +11,33 @@
 # ACCOUNT:
 # The account under which to submit jobs to the queue.
 #
+# QUEUE_DEFAULT:
+# The default queue to which workflow tasks are submitted.  If a task 
+# does not have a specific variable in which its queue is defined (e.g.
+# QUEUE_HPSS, QUEUE_RUN_FV3SAR; see below), it is submitted to this 
+# queue.  If this is not set or set to an empty string, it will be reset
+# to a machine-dependent value in the setup script (setup.sh).
+#
+# QUEUE_HPSS:
+# The queue to which the get_GFS_files task is submitted.  This task 
+# either copies the GFS analysis and forecast files from a system direc-
+# tory or fetches them from HPSS.  In either case, it places the files 
+# in a temporary directory.  If this is not set or set to an empty 
+# string, it will be reset to a machine-dependent value in the setup 
+# script (setup.sh).
+#
+# QUEUE_RUN_FV3SAR:
+# The queue to which the run_FV3SAR task is submitted.  This task runs
+# the forecast.  If this is not set or set to an empty string, it will
+# be reset to a machine-dependent value in the setup script (setup.sh).
+#
 #-----------------------------------------------------------------------
 #
 MACHINE="THEIA"
 ACCOUNT="gsd-fv3"
+QUEUE_DEFAULT="debug"
+QUEUE_HPSS="service"
+QUEUE_RUN_FV3SAR="batch"
 #
 #-----------------------------------------------------------------------
 #

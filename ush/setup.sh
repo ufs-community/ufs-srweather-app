@@ -118,7 +118,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the number of cores per node for the specified machine.
+# Set the number of cores per node, the job scheduler, and the names of 
+# several queues.  These queues are defined in the configuration script
+# (config.sh).
 #
 #-----------------------------------------------------------------------
 #
@@ -126,22 +128,57 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
-  ncores_per_node=${ncores_per_node}  # Don't know the default on WCOS_C, so must get it from environment.
+  echo
+  echo "ERROR:  Don't know how to set several parameters on MACHINE=\"$MACHINE\"."
+  echo "Please specify the correct parameters for this machine in the \
+setup script.  Then remove this message and exit call and rerun."
+  exit 1
+  ncores_per_node=""
+  SCHED=""
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
+  QUEUE_HPSS=${QUEUE_HPSS:-""}
+  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
   ;;
 #
 "WCOSS")
 #
-  ncores_per_node=${ncores_per_node}  # Don't know the default on WCOS, so must get it from environment.
+  echo
+  echo "ERROR:  Don't know how to set several parameters on MACHINE=\"$MACHINE\"."
+  echo "Please specify the correct parameters for this machine in the \
+setup script.  Then remove this message and exit call and rerun."
+  exit 1
+  ncores_per_node=""
+  SCHED=""
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
+  QUEUE_HPSS=${QUEUE_HPSS:-""}
+  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
   ;;
 #
-"THEIA" | "JET")
+"THEIA")
 #
   ncores_per_node=24
+  SCHED="moabtorque"
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
+  QUEUE_HPSS=${QUEUE_HPSS:-"service"}
+  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
+  ;;
+#
+"JET")
+#
+  ncores_per_node=24
+  SCHED="moabtorque"
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
+  QUEUE_HPSS=${QUEUE_HPSS:-"service"}
+  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-"batch"}
   ;;
 #
 "ODIN")
 #
   ncores_per_node=24
+  SCHED="slurm"
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
+  QUEUE_HPSS=${QUEUE_HPSS:-""}
+  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
   ;;
 #
 esac
@@ -474,7 +511,7 @@ esac
 #-----------------------------------------------------------------------
 #
 stretch_str="_S$( echo "${stretch_fac}" | sed "s|\.|p|" )"
-refine_str="_R${refine_ratio}"
+refine_str="_RR${refine_ratio}"
 RUN_SUBDIR=${CRES}${stretch_str}${refine_str}${run_title}
 #
 #-----------------------------------------------------------------------
@@ -541,7 +578,9 @@ WORKDIR_ICBC=$WORKDIR/ICs_BCs
 #
 #-----------------------------------------------------------------------
 #
-RUNDIR="${BASEDIR}/run_dirs/${RUN_SUBDIR}"
+RUNDIR_BASE="${BASEDIR}/run_dirs"
+mkdir -p ${RUNDIR_BASE}
+RUNDIR="${RUNDIR_BASE}/${RUN_SUBDIR}"
 check_for_preexist_dir $RUNDIR $preexisting_dir_method
 if [ $? -ne 0 ]; then
   exit 1

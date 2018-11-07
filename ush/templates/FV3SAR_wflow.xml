@@ -8,31 +8,32 @@ Variables that are modified by the workflow generation script.
 -->
 
 <!--
+The following are variables that are not passed to the shell scripts 
+that execute the various worklflow tasks but are used in other ways by
+the workflow XML.
+-->
+<!ENTITY ACCOUNT          "">
+<!ENTITY SCHED            ""> 
+<!ENTITY QUEUE_DEFAULT    "">
+<!ENTITY QUEUE_HPSS       "">
+<!ENTITY QUEUE_RUN_FV3SAR "">
+
+<!ENTITY USHDIR "">
+<!ENTITY RUNDIR "">
+<!ENTITY PROC_RUN_FV3SAR "">
+
+<!--
 The following are variables that are passed to the shell scripts that 
 execute the various workflow tasks but are not otherwise used in the 
 workflow XML.
 -->
 <!ENTITY SCRIPT_VAR_DEFNS_FP "">
 
-<!--
-The following are variables that are not passed to the shell scripts 
-that execute the various worklflow tasks but are used in other ways by
-the workflow XML.
--->
-<!ENTITY ACCOUNT "">
-<!ENTITY USHDIR "">
-<!ENTITY RUNDIR "">
-<!ENTITY PROC_RUN_FV3SAR "">
-
 
 <!--
 SECTION 2:
 Variables that are not modified by the workflow generation script.
 -->
-<!ENTITY QUEUE_DEFAULT    "debug">
-<!ENTITY QUEUE_HPSS       "service">
-<!ENTITY QUEUE_RUN_FV3SAR "batch">
-<!ENTITY SCHED            "moabtorque"> 
 <!ENTITY LOG_DIR          "&RUNDIR;/log">
 
 <!ENTITY UPPDIR "/scratch4/BMC/hmtb/beck/rapid-refresh/UPP/comupp/bin">

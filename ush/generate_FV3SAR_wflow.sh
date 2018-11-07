@@ -75,6 +75,18 @@ sed -i -r -e "s|$REGEXP|\1${SCRIPT_VAR_DEFNS_FP}\3|g" $XML_FP
 REGEXP="(^\s*<!ENTITY\s+ACCOUNT\s*\")(.*)(\">.*)"
 sed -i -r -e "s|$REGEXP|\1${ACCOUNT}\3|g" $XML_FP
 
+REGEXP="(^\s*<!ENTITY\s+SCHED\s*\")(.*)(\">.*)"
+sed -i -r -e "s|$REGEXP|\1${SCHED}\3|g" $XML_FP
+
+REGEXP="(^\s*<!ENTITY\s+QUEUE_DEFAULT\s*\")(.*)(\">.*)"
+sed -i -r -e "s|$REGEXP|\1${QUEUE_DEFAULT}\3|g" $XML_FP
+
+REGEXP="(^\s*<!ENTITY\s+QUEUE_HPSS\s*\")(.*)(\">.*)"
+sed -i -r -e "s|$REGEXP|\1${QUEUE_HPSS}\3|g" $XML_FP
+
+REGEXP="(^\s*<!ENTITY\s+QUEUE_RUN_FV3SAR\s*\")(.*)(\">.*)"
+sed -i -r -e "s|$REGEXP|\1${QUEUE_RUN_FV3SAR}\3|g" $XML_FP
+
 REGEXP="(^\s*<!ENTITY\s+USHDIR\s*\")(.*)(\">.*)"
 sed -i -r -e "s|$REGEXP|\1${USHDIR}\3|g" $XML_FP
 
