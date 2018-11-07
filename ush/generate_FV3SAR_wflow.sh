@@ -88,7 +88,7 @@ sed -i -r -e "s/$REGEXP/\1${NUM_NODES}:ppn=${ncores_per_node}\3/g" $XML_FILENAME
 if [ 0 = 1 ]; then
 
 REGEXP="(^\s*<!ENTITY\s+MACHINE\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${machine}\3|g" $XML_FILENAME
+sed -i -r -e "s|$REGEXP|\1${MACHINE}\3|g" $XML_FILENAME
 
 REGEXP="(^\s*<!ENTITY\s+USER\s*\")(.*)(\">.*)"
 sed -i -r -e "s|$REGEXP|\1${USER}\3|g" $XML_FILENAME

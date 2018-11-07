@@ -15,6 +15,7 @@ function check_for_preexist_dir() {
 # tion of a new directory is performed in another script).
 #
     "overwrite")
+#
       rm -rf $dir
 #
       if [ $? -ne 0 ]; then
@@ -31,6 +32,7 @@ function check_for_preexist_dir() {
 # new directory is performed in another script).
 #
     "rename")
+#
       i=1
       old_indx=$( printf "%03d" "$i" )
       old_dir=${dir}_old${old_indx}
@@ -63,6 +65,7 @@ function check_for_preexist_dir() {
 # to stop execution.
 #
     "quit")
+#
       echo
       echo "Error from function $0:  Directory already exists:"
       echo "  dir = $dir"
@@ -76,6 +79,7 @@ function check_for_preexist_dir() {
 # is sourced) to stop execution.
 #
     *)
+#
       echo
       echo "Error from function $0:  Disallowed value for \"preexisting_dir_method\":"
       echo "  preexisting_dir_method = $preexisting_dir_method"

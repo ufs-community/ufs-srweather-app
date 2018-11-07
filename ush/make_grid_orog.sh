@@ -187,15 +187,6 @@ shave_exec="shave.x"
 #
 #-----------------------------------------------------------------------
 #
-# Set stack size to unlimited.
-#
-#-----------------------------------------------------------------------
-#
-ulimit -a
-ulimit -s unlimited
-#
-#-----------------------------------------------------------------------
-#
 # The orography code runs with threads.  On Cray, the code is optimized 
 # for six threads.  Do not change.  
 # Note that OMP_NUM_THREADS and OMP_STACKSIZE only affect the threaded   <== I don't think this is true.  Remove??
@@ -215,8 +206,10 @@ export OMP_STACKSIZE=2048m
 #
 #-----------------------------------------------------------------------
 #
-if [ "$machine" = "WCOSS_C" ]; then
-
+case $MACHINE in
+#
+"WCOSS_C" | "WCOSS")
+#
   set +x
   . $MODULESHOME/init/sh
   module load PrgEnv-intel cfp-intel-sandybridge/1.1.0
@@ -228,11 +221,14 @@ if [ "$machine" = "WCOSS_C" ]; then
   export KMP_AFFINITY=disabled
   export topo_dir=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_orog
 
-elif [ "$machine" = "THEIA" ]; then
-
-  . /apps/lmod/lmod/init/sh
-
+  ulimit -s unlimited
+  ulimit -a
+  ;;
+#
+"THEIA")
+#
   set +x
+  . /apps/lmod/lmod/init/sh
   module purge
   module load intel/16.1.150
   module load impi
@@ -244,15 +240,39 @@ elif [ "$machine" = "THEIA" ]; then
   export APRUN="time"
   export topo_dir="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog"
 
-else
+  ulimit -s unlimited
+  ulimit -a
+  ;;
+#
+"JET")
+#
+  set +x
+  . /apps/lmod/lmod/init/sh
+  module purge
+  module load newdefaults
+  module load intel/15.0.3.187
+  module load impi/5.1.1.109
+  module load szip
+  module load hdf5
+  module load netcdf4/4.2.1.1
+  module list
+  set -x
 
-  echo
-  echo "Error.  Machine specified in \"machine\" is not supported:"
-  echo "  machine = $machine"
-  echo "Exiting script."
-  exit 1
+  export APRUN="time"
+  export topo_dir="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_orog"
+#  . $USHDIR/set_stack_limit_jet.sh
+  ulimit -a
+#
+"ODIN")
+#
+  export APRUN="srun -n 1"
+  export topo_dir="/scratch/ywang/external/fix_am/fix_orog"
 
-fi
+  ulimit -s unlimited
+  ulimit -a
+  ;;
+#
+esac
 #
 #-----------------------------------------------------------------------
 #
@@ -419,29 +439,32 @@ tile=7
 echo
 echo "Begin orography file generation (on `date`)."
 
-if [ "$machine" = "WCOSS_C" ]; then
+case $MACHINE in
+#
+"WCOSS_C" | "WCOSS")
 #
 # On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for 
 # the orography.  For now, we have only one tile in the regional case, 
 # but in the future we will have more.  First, create an input file for 
 # cfp.
 #
-  export APRUN=time
+#  export APRUN="time"
   echo "$USHDIR/$orog_gen_scr $RES $tile $WORKDIR_GRID $WORKDIR_OROG $USHDIR $topo_dir $TMPDIR " >> $TMPDIR/orog.file1
-
   aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
   rm $TMPDIR/orog.file1
-
-elif [ "$machine" = "THEIA" ]; then
-
+  ;;
+#
+"THEIA" | "JET" | "ODIN")
+#
   echo
   echo "Executing $orog_gen_scr for tile $tile..."
   $USHDIR/$orog_gen_scr $RES $tile $WORKDIR_GRID $WORKDIR_OROG $USHDIR $topo_dir $TMPDIR
   echo
   echo "Done executing $orog_gen_scr for tile $tile."
-
-fi
-#  
+  ;;
+#
+esac
+# 
 #-----------------------------------------------------------------------
 #
 # For clarity, rename the tile 7 orography file such that its new name
@@ -623,23 +646,13 @@ echo $nx_T7 \
      \'$WORKDIR_SHVE/${CRES}_oro_data.tile${tile}.halo${nh4_T7}.nc\' \
      > input.shave.orog.halo${nh4_T7}
 #
-# Shave the grid and orography files.
+# Shave the grid and orography files.  Note that APRUN is defined dif-
+# ferently for each machine.
 #
-if [ "$machine" = "WCOSS_C" ]; then
-
-  aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.grid.halo${nh3_T7}
-  aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.grid.halo${nh4_T7} 
-  aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.orog.halo${nh0_T7}
-  aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.orog.halo${nh4_T7}
-
-elif [ "$machine" = "THEIA" ]; then
-
-  time $exec_dir/$shave_exec < input.shave.grid.halo${nh3_T7}
-  time $exec_dir/$shave_exec < input.shave.grid.halo${nh4_T7}
-  time $exec_dir/$shave_exec < input.shave.orog.halo${nh0_T7}
-  time $exec_dir/$shave_exec < input.shave.orog.halo${nh4_T7}
-
-fi
+$APRUN $exec_dir/$shave_exec < input.shave.grid.halo${nh3_T7}
+$APRUN $exec_dir/$shave_exec < input.shave.grid.halo${nh4_T7} 
+$APRUN $exec_dir/$shave_exec < input.shave.orog.halo${nh0_T7}
+$APRUN $exec_dir/$shave_exec < input.shave.orog.halo${nh4_T7}
 
 echo
 echo "Done \"shaving\" regional grid and filtered orography files."

@@ -91,23 +91,27 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Convert machine name to lower case if necessary.  Then make sure that
-# machine is set to one of the allowed values.
+# Convert machine name to upper case if necessary.  Then make sure that
+# MACHINE is set to one of the allowed values.
 #
 #-----------------------------------------------------------------------
 #
-#machine=$( echo "$machine" | sed -e 's/\(.*\)/\L\1/' )  # <-- Don't do this yet, maybe later; requires changing this and other scripts to use lowercase everywhere.
+MACHINE=$( echo "$MACHINE" | sed -e 's/\(.*\)/\U\1/' )
 
-if [ "$machine" != "WCOSS_C" ] && \
-   [ "$machine" != "WCOSS" ] && \
-   [ "$machine" != "THEIA" ]; then
+if [ "$MACHINE" != "WCOSS_C" ] && \
+   [ "$MACHINE" != "WCOSS" ] && \
+   [ "$MACHINE" != "THEIA" ] && \
+   [ "$MACHINE" != "JET" ] && \
+   [ "$MACHINE" != "ODIN" ]; then
   echo
-  echo "Error.  Machine specified in \"machine\" is not supported:"
-  echo "  machine = $machine"
-  echo "machine must be set to one of the following:"
+  echo "Error.  Machine specified in \"MACHINE\" is not supported:"
+  echo "  MACHINE = $MACHINE"
+  echo "MACHINE must be set to one of the following:"
   echo "  \"WCOSS_C\""
   echo "  \"WCOSS\""
   echo "  \"THEIA\""
+  echo "  \"JET\""
+  echo "  \"ODIN\""
   echo "Exiting script."
   exit 1
 fi
@@ -118,13 +122,29 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$machine" = "WCOSS_C" ]; then
+case $MACHINE in
+#
+"WCOSS_C")
+#
   ncores_per_node=${ncores_per_node}  # Don't know the default on WCOS_C, so must get it from environment.
-elif [ "$machine" = "WCOSS" ]; then
+  ;;
+#
+"WCOSS")
+#
   ncores_per_node=${ncores_per_node}  # Don't know the default on WCOS, so must get it from environment.
-elif [ "$machine" = "THEIA" ]; then
-  ncores_per_node=${ncores_per_node:-24}
-fi
+  ;;
+#
+"THEIA" | "JET")
+#
+  ncores_per_node=24
+  ;;
+#
+"ODIN")
+#
+  ncores_per_node=24
+  ;;
+#
+esac
 #
 #-----------------------------------------------------------------------
 #
@@ -170,10 +190,12 @@ fi
 case $predef_domain in
 #
 "RAP")   # The RAP domain.
+#
   RES="384"
   ;;
 #
 "HRRR")  # The HRRR domain.
+#
   RES="384"
   ;;
 #
@@ -246,14 +268,35 @@ FV3SAR_DIR="$BASEDIR/tmp/fv3gfs"
 USHDIR="$FV3SAR_DIR/ush"
 TEMPLATE_DIR="$USHDIR/templates"
 
-if [ "$machine" = "WCOSS_C" ]; then
+case $MACHINE in
+#
+"WCOSS_C")
+#
   FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_am"
-elif [ "$machine" = "WCOSS" ]; then
-  FIXgsm=""
-elif [ "$machine" = "THEIA" ]; then
-#  FIXgsm="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am"
+  ;;
+#
+"WCOSS")
+#
+  FIXgsm=""  # Don't know what this should be.
+  ;;
+#
+"THEIA")
+#
+#  FIXgsm="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am"  # Not sure what the difference is (if any) between the svn and git fix_am directories.
   FIXgsm="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am"
-fi
+  ;;
+#
+"JET")
+#
+  export FIXgsm="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_am"
+  ;;
+#
+"ODIN")
+#
+  export FIXgsm="/scratch/ywang/external/fix_am"
+  ;;
+#
+esac
 #
 #-----------------------------------------------------------------------
 #
@@ -309,8 +352,15 @@ run_title=${run_title:+_$run_title}
 #
 #-----------------------------------------------------------------------
 #
-# Check if predef_domain is set to a valid (non-empty) value and reset
-# the grid configuration parameters and run_title accordingly. 
+# Check if predef_domain is set to a valid (non-empty) value.  If so:
+#
+# 1) Reset the run title (run_title).
+# 2) Reset the grid parameters.
+# 3) If the write component is to be used (i.e. quilting is set to 
+#    ".true.") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the 
+#    name of the write-component template file is unset or empty, set 
+#    that filename variable to the appropriate preexisting template 
+#    file.
 #
 # For the predefined domains, we determine the starting and ending indi-
 # ces of the regional grid within tile 6 by specifying margins (in units
@@ -336,7 +386,7 @@ run_title=${run_title:+_$run_title}
 # that the halo does not overrun the boundary of tile 6.  (The halo is
 # added later in another script; its function is to feed in boundary
 # conditions to the regional grid.)  Currently, a halo of 5 regional 
-# grid cells is used round the regional grid.  Setting num_margin_-
+# grid cells is used around the regional grid.  Setting num_margin_-
 # cells_T6_... to at least 10 leaves enough room for this halo.
 #
 #-----------------------------------------------------------------------
@@ -344,15 +394,17 @@ run_title=${run_title:+_$run_title}
 case $predef_domain in
 #
 "RAP")  # The RAP domain.
-
-  lon_ctr_T6=-106.0
-  lat_ctr_T6=54.0
-  stretch_fac=0.63
-  refine_ratio=3
 #
 # Prepend the string "_RAP" to run_title.
 #
   run_title="_RAP${run_title}"
+#
+# Reset grid parameters.
+#
+  lon_ctr_T6=-106.0
+  lat_ctr_T6=54.0
+  stretch_fac=0.63
+  refine_ratio=3
 
   num_margin_cells_T6_left=10
   istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
@@ -365,18 +417,29 @@ case $predef_domain in
 
   num_margin_cells_T6_top=10
   jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+#
+# If the write-component is being used and the name of the template file
+# that specifies various write-component parameters has not been speci-
+# fied (either the variable containing the name is not defined, or it is
+# set to an empty string), set the name of the template file.
+#
+  if [ "$quilting" = ".true." -a -z "$WRTCMP_PARAMS_TEMPLATE_FN" ]; then
+    WRTCMP_PARAMS_TEMPLATE_FN="wrtcomp_RAP"
+  fi
   ;;
 #
 "HRRR")  # The HRRR domain.
-
-  lon_ctr_T6=-97.5
-  lat_ctr_T6=38.5
-  stretch_fac=1.65
-  refine_ratio=5
 #
 # Prepend the string "_HRRR" to run_title.
 #
   run_title="_HRRR${run_title}"
+#
+# Reset grid parameters.
+#
+  lon_ctr_T6=-97.5
+  lat_ctr_T6=38.5
+  stretch_fac=1.65
+  refine_ratio=5
 
   num_margin_cells_T6_left=12
   istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
@@ -389,8 +452,17 @@ case $predef_domain in
 
   num_margin_cells_T6_top=80
   jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+#
+# If the write-component is being used and the name of the template file
+# that specifies various write-component parameters has not been speci-
+# fied (either the variable containing the name is not defined, or it is
+# set to an empty string), set the name of the template file.
+#
+  if [ "$quilting" = ".true." -a -z "$WRTCMP_PARAMS_TEMPLATE_FN" ]; then
+    WRTCMP_PARAMS_TEMPLATE_FN="wrtcomp_HRRR"
+  fi
   ;;
-
+#
 esac
 #
 #-----------------------------------------------------------------------
@@ -831,29 +903,6 @@ set -x
 
 
 
-#
-#-----------------------------------------------------------------------
-#
-# Read in the dimensions of the regional grid from the NetCDF file con-
-# taining surface fields (which does not have a halo).
-#
-#-----------------------------------------------------------------------
-#
-if [ 0 = 1 ]; then
-nx=$(ncdump -h $RUNDIR/INPUT/sfc_data.tile7.nc | \
-     grep "lon =" | sed -e "s/.*= //;s/ .*//")
-ny=$(ncdump -h $RUNDIR/INPUT/sfc_data.tile7.nc | \
-     grep "lat =" | sed -e "s/.*= //;s/ .*//")
-
-if [ "$VERBOSE" = "true" ]; then
-  echo
-  echo "FV3SAR regional domain dimensions (without a halo) are:"
-  echo "  nx = $nx"
-  echo "  ny = $ny"
-fi
-fi
-
-
 
 #
 #-----------------------------------------------------------------------
@@ -865,7 +914,7 @@ fi
 #-----------------------------------------------------------------------
 #
 PE_MEMBER01=$(( $layout_x*$layout_y ))
-if [[ $quilting = ".true." ]]; then
+if [ "$quilting" = ".true." ]; then
   PE_MEMBER01=$(( $PE_MEMBER01 + $write_groups*$write_tasks_per_group ))
 fi
 
@@ -914,35 +963,45 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If the write component is being used, make sure that PE_MEMBER01 is 
-# divisible by write_tasks_per_group.
+# If the write component is going to be used to write output files, make 
+# sure that the variable that contains the name of the template file 
+# that defines the write-component parameters (WRTCMP_PARAMS_TEMPLATE_-
+# FN) is not undefined or blank.
 #
 #-----------------------------------------------------------------------
 #
-if [ 0 = 1 ]; then
-if [ $quilting = ".true." ]; then
-  rem=$(( $PE_MEMBER01%$write_tasks_per_group ))
-  if [ $rem -ne 0 ]; then
-    echo
-    echo "The total number of MPI tasks (PE_MEMBER01) must be divisible \
-by the number of tasks per write group (write_tasks_per_group):"
-    echo "  PE_MEMBER01 = $PE_MEMBER01"
-    echo "  write_tasks_per_group = $write_tasks_per_group"
-    echo "  PE_MEMBER01%write_tasks_per_group = $rem"
-    echo "Exiting script."
-    exit 1
-  fi
-fi
+if [ "$quilting" = ".true." -a -z "$WRTCMP_PARAMS_TEMPLATE_FN" ]; then
+  echo
+  echo "The write-component template file has not been specified:"
+  echo "  WRTCMP_PARAMS_TEMPLATE_FN = $WRTCMP_PARAMS_TEMPLATE_FN"
+  echo "Exiting script."
+  exit 1
 fi
 
 
-if [ $quilting = ".true." ]; then
+
+
+#
+#-----------------------------------------------------------------------
+#
+# If the write component is going to be used, make sure that the number 
+# of grid cells in the y direction (ny_T7) is divisible by the number of 
+# write tasks per group.  This is because the ny_T7 rows of the grid
+# must be distributed evenly among the write_tasks_per_group tasks in a 
+# given write group, i.e. each task must receive the same number of 
+# rows.  This implies that ny_T7 must be evenly divisible by write_-
+# tasks_per_group.  If it isn't, the write component will hang or fail.  
+# We check for this below.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$quilting" = ".true." ]; then
   rem=$(( $ny_T7%$write_tasks_per_group ))
   if [ $rem -ne 0 ]; then
     echo
     echo "The number of grid points in the y direction on the regional \
-grid (ny_T7) must be divisible by the number of tasks per write group \
-(write_tasks_per_group):"
+grid (ny_T7) must be evenly divisible by the number of tasks per write \
+group (write_tasks_per_group):"
     echo "  ny_T7 = $ny_T7"
     echo "  write_tasks_per_group = $write_tasks_per_group"
     echo "  ny_T7%write_tasks_per_group = $rem"
@@ -1014,10 +1073,11 @@ mkdir $RUNDIR/RESTART
 # file.  We will create this file by first copying the configuration 
 # script config.sh in the shell script directory (USHDIR) to the run di-
 # rectory.  Then, if predef_domain is set to a valid non-empty value, we
-# will modify the values of the grid parameters and run_title in this 
-# file to match those of the predefined domain.  Finally, we will append
-# to this file the values of new variables that have been derived above
-# from those in the configuration script (config.sh).
+# will modify the values of run_title, the grid parameters, and possibly 
+# WRTCMP_PARAMS_TEMPLATE_FN (if it is unset or empty) in the variable 
+# definitions file to match those of the predefined domain.  Finally, we
+# will append to this file the values of new variables that have been 
+# derived above from those in the configuration script (config.sh).
 #
 # First, set the full path to the variable definitions file and copy the
 # configuration file into it.
@@ -1042,8 +1102,10 @@ read -r -d '' str_to_insert << EOM
 # Section 1: 
 # This section is a copy of the configuration file (config.sh) in the 
 # shell scripts directory (USHDIR) execpt that if predef_domain has been
-# set to a valid non-empty string, the grid parameters and run_title
-# have been adjusted to match those of the specified predefined domain.
+# set to a valid non-empty string, the run title (run_title), the grid 
+# parameters, and possibly the name of the write-component parameter 
+# file (WRTCMP_PARAMS_TEMPLATE_FN) have been adjusted to match those of 
+# the specified predefined domain.
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
 #
@@ -1064,11 +1126,12 @@ sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
 #
 #-----------------------------------------------------------------------
 #
-# If predef_domain is set to a valid non-empty string, then the grid pa-
-# rameters and the variable run_title specified in the configuration 
-# file would have been overwritten above by new values.  In this case, 
-# replace the values of these parameters in the variable defintions file
-# (that were inherited from the configurtion file) with the new values.
+# If predef_domain is set to a valid non-empty string, then run_title, 
+# the grid parameters, and possibly also WRTCMP_PARAMS_TEMPLATE_FN spe-
+# cified in the configuration file would have been overwritten above by 
+# new values.  In this case, replace the values of these parameters in 
+# the variable defintions file (that were inherited from the configura-
+# tion file) with the new values.
 #
 #-----------------------------------------------------------------------
 #
@@ -1076,12 +1139,14 @@ if [ -n "${predef_domain}" ]; then
 
   if [ "$VERBOSE" = "true" ]; then
     echo
-    echo "Updating grid parameters and run_title in file SCRIPT_VAR_DEFNS_FP \
-to that of the predefined domain:"
-    echo "SCRIPT_VAR_DEFNS_FP = $SCRIPT_VAR_DEFNS_FP"
-    echo "predef_domain = $predef_domain"
+    echo "Updating run_title, the grid parameters, and WRTCMP_PARAMS_TEMPLATE_FN \
+in the variable definitions file SCRIPT_VAR_DEFNS_FP to that of the predefined \
+domain:"
+    echo "  SCRIPT_VAR_DEFNS_FP = $SCRIPT_VAR_DEFNS_FP"
+    echo "  predef_domain = $predef_domain"
   fi
 
+  set_file_param $SCRIPT_VAR_DEFNS_FP "run_title" $run_title $VERBOSE
   set_file_param $SCRIPT_VAR_DEFNS_FP "RES" $RES $VERBOSE
   set_file_param $SCRIPT_VAR_DEFNS_FP "lon_ctr_T6" $lon_ctr_T6 $VERBOSE
   set_file_param $SCRIPT_VAR_DEFNS_FP "lat_ctr_T6" $lat_ctr_T6 $VERBOSE
@@ -1091,7 +1156,7 @@ to that of the predefined domain:"
   set_file_param $SCRIPT_VAR_DEFNS_FP "iend_rgnl_T6" $iend_rgnl_T6 $VERBOSE
   set_file_param $SCRIPT_VAR_DEFNS_FP "jend_rgnl_T6" $jend_rgnl_T6 $VERBOSE
   set_file_param $SCRIPT_VAR_DEFNS_FP "refine_ratio" $refine_ratio $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "run_title" $run_title $VERBOSE
+  set_file_param $SCRIPT_VAR_DEFNS_FP "WRTCMP_PARAMS_TEMPLATE_FN" $WRTCMP_PARAMS_TEMPLATE_FN
 
 fi
 #

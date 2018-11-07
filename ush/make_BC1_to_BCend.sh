@@ -124,7 +124,7 @@ mkdir -p $WORKDIR_ICBC
 #
 #-----------------------------------------------------------------------
 #
-export OMP_NUM_THREADS_CH=24           # Default for openMP threads.
+export OMP_NUM_THREADS_CH=24              # Default for openMP threads.
 export CASE=${CRES}
 export LEVS=64
 export LSOIL=4
@@ -143,12 +143,17 @@ export CDAS=gfs                        # gfs or gdas; may not be needed by chgre
 #
 # Load modules and set machine-dependent parameters.
 #
+# Note that the variable DATA specifies the temporary (work) directory 
+# used by chgres_driver_scr.
+#
 #-----------------------------------------------------------------------
 #
 export ymd=$YMD
 
-if [ "$machine" = "WCOSS_C" ]; then
-
+case $MACHINE in
+#
+"WCOSS_C")
+#
   export NODES=28
   . $MODULESHOME/init/sh 2>>/dev/null
   module load PrgEnv-intel prod_envir cfp-intel-sandybridge/1.1.0 2>>/dev/null
@@ -157,35 +162,56 @@ if [ "$machine" = "WCOSS_C" ]; then
   export KMP_AFFINITY=disabled
   export DATA=/gpfs/hps/ptmp/${LOGNAME}/wrk.chgres
   export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
-
-elif [ "$machine" = "WCOSS" ]; then
-
+  ;;
+#
+"WCOSS")
+#
   . /usrx/local/Modules/default/init/sh 2>>/dev/null
   module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
   module list
 
   export APRUNC="time"
-
-elif [ "$machine" = "THEIA" ]; then
-
+  ;;
+#
+"THEIA")
+#
   . /apps/lmod/lmod/init/sh
   module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
   module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
   module list
 
-# The variable DATA specifies the temporary (work) directory used by 
-# chgres_driver_scr.
   export DATA="$WORKDIR_ICBC/BCs_work"
   export APRUNC="time"
-  ulimit -a
   ulimit -s unlimited
+  ulimit -a
+  ;;
+#
+"JET")
+#
+  . /apps/lmod/lmod/init/sh
+  module purge
+  module load newdefaults
+  module load intel/15.0.3.187
+  module load impi/5.1.1.109
+  module load szip
+  module load hdf5
+  module load netcdf4/4.2.1.1
+  module list
 
-else
-
-  echo "$machine not supported, exit"
-  exit
-
-fi
+  export DATA="$WORKDIR_ICBC/BCs_work"
+  export APRUNC="time"
+#  . $USHDIR/set_stack_limit_jet.sh
+  ulimit -a
+#
+"ODIN")
+#
+  export DATA="$WORKDIR_ICBC/BCs_work"
+  export APRUNC="srun -n 1"
+  ulimit -s unlimited
+  ulimit -a
+  ;;
+#
+esac
 #
 #-----------------------------------------------------------------------
 #
@@ -217,10 +243,11 @@ export REGIONAL=2
 #
 #-----------------------------------------------------------------------
 #
-# Loop through the BC times starting with the second (where the first
-# BC time is the model initialization time) and generate BCs at each
-# time.  We do not generate BCs for the first BC time because that is
-# done by another script that also generates the initial conditions.
+# Loop through the BC update times starting with the second (where the 
+# first BC update time is the model initialization time) and generate 
+# BCs at each time.  We do not generate BCs for the first BC update 
+# time because that is done by another script that also generates the 
+# surface fields and initial conditions.
 #
 #-----------------------------------------------------------------------
 #
@@ -230,28 +257,40 @@ while (test "$curnt_hr" -le "$fcst_len_hrs"); do
 
   HHH=$( printf "%03d" "$curnt_hr" )
 
-  if [ $machine = WCOSS_C ]; then
+  case $MACHINE in
+#
+  "WCOSS_C")
 #
 # On WCOSS_C, create an input file for cfp in order to run multiple co-
 # pies of chgres_driver_scr simultaneously.  Since we are going to per-
-# form the BC generation for all BC times simulataneously, we must use a
-# different working directory for each BC time.  Note that here, we only 
-# create the cfp input file; we do not call chgres_driver_scr.  That is 
-# done later below after exiting the while loop.
+# form the BC generation for all BC update times simulataneously, we 
+# must use a different working directory for each time.  Note that here, 
+# we only create the cfp input file; we do not call chgres_driver_scr.  
+# That is done later below after exiting the while loop.
 #
     BC_DATA=/gpfs/hps3/ptmp/${LOGNAME}/wrk.chgres.$HHH
     echo "env REGIONAL=2 bchour=$HHH DATA=$BC_DATA $USHDIR/$chgres_driver_scr >&out.chgres.$HHH" >>bcfile.input
-
-  elif [ $machine = THEIA ]; then
+    ;;
 #
-# On theia, run the BC generation sequentially for now.
+  "WCOSS")
+#
+    echo
+    echo "Not sure what to do for WCOSS."
+    echo "Exiting script."
+    exit 1
+    ;;
+#
+  "THEIA" | "JET" | "ODIN")
+#
+# On theia and odin, run the BC generation sequentially for now.
 #
     export bchour=$HHH
     $USHDIR/$chgres_driver_scr
-
-  fi
+    ;;
 #
-# Increment the current BC time.
+  esac
+#
+# Increment the current BC update time.
 #
   curnt_hr=$(( $curnt_hr + BC_update_intvl_hrs ))
 
@@ -259,11 +298,12 @@ done
 #
 #-----------------------------------------------------------------------
 #
-# On WCOSS_C, now run the BC generation for all BC hours simultaneously.
+# On WCOSS_C, now run the BC generation for all BC update times simul-
+# taneously.
 #
 #-----------------------------------------------------------------------
 #
-if [ $machine = WCOSS_C ]; then
+if [ "$MACHINE" = "WCOSS_C" ]; then
   export APRUNC=time
   export OMP_NUM_THREADS_CH=24      # Default for openMP threads.
   aprun -j 1 -n 28 -N 1 -d 24 -cc depth cfp bcfile.input

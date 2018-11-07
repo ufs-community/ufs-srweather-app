@@ -130,7 +130,7 @@ mkdir -p $WORKDIR_ICBC
 #
 #-----------------------------------------------------------------------
 #
-export OMP_NUM_THREADS_CH=24           # Default for openMP threads.
+export OMP_NUM_THREADS_CH=24              # Default for openMP threads.
 export CASE=${CRES}
 export LEVS=64
 export LSOIL=4
@@ -150,12 +150,17 @@ export NODES=2
 #
 # Load modules and set machine-dependent parameters.
 #
+# Note that the variable DATA specifies the temporary (work) directory
+# used by chgres_driver_scr.
+#
 #-----------------------------------------------------------------------
 #
 export ymd=$YMD
 
-if [ "$machine" = "WCOSS_C" ]; then
-
+case $MACHINE in
+#
+"WCOSS_C")
+#
   . $MODULESHOME/init/sh 2>>/dev/null
   module load PrgEnv-intel prod_envir cfp-intel-sandybridge/1.1.0 2>>/dev/null
   module list
@@ -163,35 +168,57 @@ if [ "$machine" = "WCOSS_C" ]; then
   export KMP_AFFINITY=disabled
   export DATA=/gpfs/hps/ptmp/${LOGNAME}/wrk.chgres
   export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
-
-elif [ "$machine" = "WCOSS" ]; then
-
+  ;;
+#
+"WCOSS")
+#
   . /usrx/local/Modules/default/init/sh 2>>/dev/null
   module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
   module list
 
   export APRUNC="time"
-
-elif [ "$machine" = "THEIA" ]; then
-
+  ;;
+#
+"THEIA")
+#
   . /apps/lmod/lmod/init/sh
   module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
   module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
   module list
 
-# The variable DATA specifies the temporary (work) directory used by 
-# chgres_driver_scr.
   export DATA="$WORKDIR_ICBC/ICs_work"
   export APRUNC="time"
-  ulimit -a
   ulimit -s unlimited
+  ulimit -a
+  ;;
+#
+"JET")
+#
+  . /apps/lmod/lmod/init/sh
+  module purge
+  module load newdefaults
+  module load intel/15.0.3.187
+  module load impi/5.1.1.109
+  module load szip
+  module load hdf5
+  module load netcdf4/4.2.1.1
+  module list
 
-else
-
-  echo "$machine not supported, exit"
-  exit
-
-fi
+  export DATA="$WORKDIR_ICBC/ICs_work"
+  export APRUNC="time"
+#  . $USHDIR/set_stack_limit_jet.sh
+  ulimit -a
+  ;;
+#
+"ODIN")
+#
+  export DATA="$WORKDIR_ICBC/ICs_work"
+  export APRUNC="srun -n 1"
+  ulimit -s unlimited
+  ulimit -a
+  ;;
+#
+esac
 #
 #-----------------------------------------------------------------------
 #

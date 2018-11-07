@@ -72,16 +72,6 @@ set -ux
 #
 #-----------------------------------------------------------------------
 #
-# Load the HPSS module.
-#
-#-----------------------------------------------------------------------
-#
-set +x
-module load hpss
-set -x
-#
-#-----------------------------------------------------------------------
-#
 # Create the directory INIDIR if it doesn't already exist.  This is the
 # directory in which we will store the analysis (at the initial time 
 # specified in CDATE) files (which consist of the atmospheric analysis
@@ -132,13 +122,34 @@ prefix_tar_files="gpfs_hps_nco_ops_com_gfs_prod_gfs"
 #
 #-----------------------------------------------------------------------
 #
-if [ "$machine" = "WCOSS_C" ]; then
+case $MACHINE in
+#
+"WCOSS_C")
+#
   export INIDIR_SYS="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
-elif [ "$machine" = "WCOSS" ]; then
+  ;;
+#
+"WCOSS")
+#
   export INIDIR_SYS=""  # Not sure how these should be set on WCOSS.
-elif [ "$machine" = "THEIA" ]; then
+  ;;
+#
+"THEIA")
+#
   export INIDIR_SYS="/scratch4/NCEPDEV/rstprod/com/gfs/prod/gfs.$YMD"
-fi
+  ;;
+#
+"JET")
+#
+  export INIDIR_SYS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs/$YMD"
+  ;;
+#
+"ODIN")
+#
+  export INIDIR_SYS="/scratch/ywang/test_runs/FV3_regional/gfs/$YMD"
+  ;;
+#
+esac
 #
 #-----------------------------------------------------------------------
 #
@@ -158,7 +169,9 @@ anl_or_fcst="analysis"
 # first (i.e. 0th forecast hour) BC NetCDF files.
 #
 temp="gfs.t${HH}z."
-anl_files=( ${temp}atmanl.nemsio ${temp}nstanl.nemsio ${temp}sfcanl.nemsio )
+# For now, don't get analysis file for near-surface temperature.
+#anl_files=( ${temp}atmanl.nemsio ${temp}nstanl.nemsio ${temp}sfcanl.nemsio )
+anl_files=( ${temp}atmanl.nemsio ${temp}sfcanl.nemsio )
 #
 # Set the number of needed analysis files.
 #
@@ -228,6 +241,16 @@ if [ "$num_files_found" -eq "$num_files_needed" ]; then
 #-----------------------------------------------------------------------
 #
 else
+#
+#-----------------------------------------------------------------------
+#
+# Load the HPSS module.
+#
+#-----------------------------------------------------------------------
+#
+  set +x
+  module load hpss
+  set -x
 #
 #-----------------------------------------------------------------------
 #

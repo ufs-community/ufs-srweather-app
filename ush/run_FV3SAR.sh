@@ -59,16 +59,48 @@ set -eux
 #
 #-----------------------------------------------------------------------
 #
-. /apps/lmod/lmod/init/sh
+case $MACHINE in
+#
+"WCOSS_C" | "WCOSS" | "THEIA")
+#
+  . /apps/lmod/lmod/init/sh
+  module purge
+  module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0
+  module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
+  module list
 
-module purge
-module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0
-module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
+  ulimit -s unlimited
+  ulimit -a
+  APRUN="mpirun -l -np"
+  ;;
+#
+"JET")
+# 
+  . /apps/lmod/lmod/init/sh
+  module purge
+  module load newdefaults
+  module load intel/15.0.3.187
+  module load impi/5.1.1.109
+  module load szip
+  module load hdf5
+  module load netcdf4/4.2.1.1
+  module list
 
-module list
+#  . $USHDIR/set_stack_limit_jet.sh
+  ulimit -a
+  APRUN="mpirun -np"
+  ;;
+#
+"ODIN")
+# 
+  module list
 
-ulimit -s unlimited
-ulimit -a
+  ulimit -s unlimited
+  ulimit -a
+  APRUN="srun -n"
+  ;;
+# 
+esac
 #
 #-----------------------------------------------------------------------
 #
@@ -114,6 +146,6 @@ cd $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
-mpirun -l -np $PE_MEMBER01 $RUNDIR/fv3_gfs.x
+$APRUN $PE_MEMBER01 $RUNDIR/fv3_gfs.x
 
 

@@ -98,7 +98,8 @@ cp $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
-# Set parameters in the FV3SAR namelist file.
+# Set the full path to the FV3SAR namelist file.  Then set parameters in 
+# that file.
 #
 #-----------------------------------------------------------------------
 #
@@ -129,7 +130,7 @@ set_file_param $FV3_NAMELIST_FP "bc_update_interval" $BC_update_intvl_hrs $VERBO
 #
 #-----------------------------------------------------------------------
 #
-# Set parameters in the model configuration file.
+# Set the full path to the model configuration file.
 #
 #-----------------------------------------------------------------------
 #
@@ -142,42 +143,26 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If the write component is to be used, then a set of parameters that 
-# define the write-component's output grid need to be specified in the
-# MODEL_CONFIG file.  Templates for these are already available for the
-# predefined RAP and HRRR domains and can simply be appended to the 
-# file.  For other grids, they need to be manually specified in the mo-
-# del configuration file.
+# If the write component is to be used, then a set of parameters, inclu-
+# ding those that define the write component's output grid, need to be 
+# specified in the model configuration file (MODEL_CONFIG_FP).  This is
+# done by appending a template file specified by the variable WRTCMP_PA-
+# RAMS_TEMPLATE_FN to MODEL_CONFIG_FP and then modifying the values in 
+# the modified MODEL_CONFIG_FP file.  Note that WRTCMP_PARAMS_TEMPLATE_-
+# FN is assumed to be located in the templates directory (TEMPLATE_DIR).
+# First, append WRTCMP_PARAMS_TEMPLATE_FN to MODEL_CONFIG_FP.  
 #
 #-----------------------------------------------------------------------
 #
-if [[ $quilting = ".true." ]]; then
+WRTCMP_PARAMS_TEMPLATE_FP="$TEMPLATE_DIR/$WRTCMP_PARAMS_TEMPLATE_FN"
+cat $WRTCMP_PARAMS_TEMPLATE_FP >> $MODEL_CONFIG_FP
 #
-  case $predef_domain in
+#-----------------------------------------------------------------------
 #
-  "RAP")
-    cat $TEMPLATE_DIR/wrtcomp_RAP >> $MODEL_CONFIG_FP
-    ;;
+# Now set parameters in the model configuration file.
 #
-  "HRRR")
-    cat $TEMPLATE_DIR/wrtcomp_HRRR >> $MODEL_CONFIG_FP
-    ;;
+#-----------------------------------------------------------------------
 #
-  "")
-    echo
-    echo "In order to use the write component with a non-predefined \
-FV3SAR native grid, the output grid must be specified in the file \
-specified in the variable MODEL_CONFIG_FN:"
-    echo "  MODEL_CONFIG_FN = $MODEL_CONFIG_FN"
-    echo "This must be done manually."
-    echo "Exiting script."
-    exit 1
-    ;;
-#
-  esac
-#
-fi
-
 set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
 set_file_param $MODEL_CONFIG_FP "quilting" $quilting $VERBOSE
 set_file_param $MODEL_CONFIG_FP "write_groups" $write_groups $VERBOSE
@@ -192,7 +177,8 @@ set_file_param $MODEL_CONFIG_FP "ncores_per_node" $ncores_per_node $VERBOSE
 #
 #-----------------------------------------------------------------------
 #
-# Set parameters in the file that specifies the fields to output.
+# Set the full path to the file that specifies the fields to output.  
+# Then set parameters in that file.
 #
 #-----------------------------------------------------------------------
 #

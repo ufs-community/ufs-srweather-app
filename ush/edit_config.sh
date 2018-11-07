@@ -8,7 +8,7 @@ cp ${templates}/config.sh ${TMPDIR}/config.sh
 
 #Use sed to set all environment variables in config.sh
 
-sed -i -r -e "s/^(\s*machine=)(.*)(#.*)/\1$machine\ \3/" ${TMPDIR}/config.sh 
+sed -i -r -e "s/^(\s*MACHINE=)(.*)(#.*)/\1$MACHINE\ \3/" ${TMPDIR}/config.sh 
 sed -i -r -e "s?^(\s*BASEDIR=)(.*)(#.*)?\1$BASEDIR\ \3?" ${TMPDIR}/config.sh
 sed -i -r -e "s?^(\s*TMPDIR=)(.*)(#.*)?\1$TMPDIR\ \3?" ${TMPDIR}/config.sh
 sed -i -r -e "s/^(\s*fcst_len_hrs=)(.*)(#.*)/\1$fcst_len_hrs\ \3/" ${TMPDIR}/config.sh

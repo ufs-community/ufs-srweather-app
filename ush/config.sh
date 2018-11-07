@@ -4,16 +4,16 @@
 #
 # Set machine and queue parameters.  Definitions:
 #
-# machine:
-# Machine on which we are running.  Must be "WCOSS", "WCOSS_C", or 
-# "THEIA".
+# MACHINE:
+# Machine on which we are running.  Must be one of "WCOSS_C", "WCOSS", 
+# "THEIA", "JET", and "ODIN".
 #
 # ACCOUNT:
 # The account under which to submit jobs to the queue.
 #
 #-----------------------------------------------------------------------
 #
-machine="THEIA"
+MACHINE="THEIA"
 ACCOUNT="gsd-fv3"
 #
 #-----------------------------------------------------------------------
@@ -41,7 +41,7 @@ TMPDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_d
 # Name of file containing the FV3SAR namelist settings.
 #
 # DIAG_TABLE_FN:
-# Name of file that specifies the fields that the FV3SAR will output.                                                                                                   
+# Name of file that specifies the fields that the FV3SAR will output.
 #
 # FIELD_TABLE_FN:
 # Name of file that specifies ???
@@ -59,6 +59,22 @@ TMPDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_d
 # Name of file that is sourced by the worflow scripts to set variable 
 # values.
 #
+# WRTCMP_PARAMS_TEMPLATE_FN:
+# Name of the template file that needs to be appended to the model con-
+# figuration file (MODEL_CONFIG_FN) if the write component (quilting) is
+# going to be used to write output files.  This file contains defini-
+# tions (either in terms of actual values or placeholders) of the para-
+# meters that the write component needs.  If the write component is go-
+# ing to be used, this file is first appended to MODEL_CONFIG_FN, and 
+# any placeholder values in the variable definitions in the new MODEL_-
+# CONFIG_FN file are subsequently replaced by actual values.  If a pre-
+# defined domain is being used (see predef_domain below), WRTCMP_PA-
+# RAMS_TEMPLATE_FN may be set to an empty string.  In this case, it will
+# be reset to the name of the existing template file for that predefined
+# domain.  It is assumed that the file specified by WRTCMP_PARAMS_TEMP-
+# LATE_FN is located in the templates directory TEMPLATE_DIR, which is
+# in turn defined in the setup script.
+#
 #-----------------------------------------------------------------------
 #
 FV3_NAMELIST_FN="input.nml"
@@ -68,6 +84,7 @@ DATA_TABLE_FN="data_table"
 MODEL_CONFIG_FN="model_configure"
 NEMS_CONFIG_FN="nems.configure"
 SCRIPT_VAR_DEFNS_FN="var_defns.sh"
+WRTCMP_PARAMS_TEMPLATE_FN=""
 #
 #-----------------------------------------------------------------------
 #
@@ -294,8 +311,8 @@ VERBOSE="true"
 #
 #-----------------------------------------------------------------------
 #
-layout_x="14"  #19(?) - for HRRR
-layout_y="14"  #25(?) - for HRRR
+layout_x="14"
+layout_y="14"
 #
 #-----------------------------------------------------------------------
 #
