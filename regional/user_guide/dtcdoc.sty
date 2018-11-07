@@ -131,13 +131,13 @@
 \newcommand{\execout}[1]{% Output on a terminal
 {\small\fontfamily{qcr}\fontshape{n}\fontseries{l}\selectfont{#1}}}
 
-\newcommand{\execsub}[1]{% Variable that needs substituting
+\newcommand{\execsub}[1]{% Variable that needs subsituting
 {\small\fontfamily{qcr}\fontshape{sl}\fontseries{m}\selectfont{#1}}}
 
 \newcommand{\vf}[1]{% Variable in a file
 {\fontfamily{cmss}\fontshape{sl}\fontseries{m}\selectfont{#1}}}
 
-% Create macros for table font/style
+% Create macro's for table font/style
 \newcolumntype{+}{>{\global\let\currentrowstyle\relax}}
 \newcolumntype{^}{>{\currentrowstyle}}
 \newcommand{\rowstyle}[1]{\gdef\currentrowstyle{#1}%

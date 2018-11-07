@@ -19,8 +19,8 @@ cd ${FV3GFS_DIR}/sorc
 ./build_chgres.sh ${SITE}      >& out.build_chgres
 
 
-cd ${FV3GFS_DIR}/../NEMSfv3gfs/tests
-./compile.sh ${FV3GFS_DIR}/../NEMSfv3gfs/FV3 ${SITE} "DEBUG=Y 32BIT=Y" 32bit YES NO >& make.out.32bit
+#cd ${FV3GFS_DIR}/../NEMSfv3gfs/tests
+#./compile.sh ${FV3GFS_DIR}/../NEMSfv3gfs/FV3 ${SITE} "DEBUG=N 32BIT=Y" 32bit YES NO >& make.out.32bit
 
 # prepare fixed data directories
 
@@ -45,6 +45,9 @@ elif [ ${SITE} == "cheyenne" ]; then
 
     ln -sf /glade/p/ral/jntp/GMTB/FV3GFS_V1_RELEASE/fix/fix_am/ fix_am
 
+elif [ ${SITE} == "jet" ]; then
+
+    ln -sf regional/build_regional/fix/fix_am fix_am
 else
     echo "Unknown site " ${SITE}
     exit
