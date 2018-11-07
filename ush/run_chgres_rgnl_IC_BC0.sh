@@ -1,70 +1,33 @@
 #!/bin/ksh
-#
-#----WCOSS_CRAY JOBCARD
-#
-##BSUB -L /bin/sh
-#BSUB -P NAM-T2O
-#BSUB -o log.chgres.%J
-#BSUB -e log.chgres.%J
-#BSUB -J chgres_fv3
-#BSUB -q "debug"
-#BSUB -W 00:30
-#BSUB -M 1024
-#BSUB -extsched 'CRAYLINUX[]'
-#
-#----WCOSS JOBCARD
-#
-##BSUB -L /bin/sh
-##BSUB -P FV3GFS-T2O
-##BSUB -oo log.chgres.%J
-##BSUB -eo log.chgres.%J
-##BSUB -J chgres_fv3
-##BSUB -q devonprod
-##BSUB -x
-##BSUB -a openmp
-##BSUB -n 24
-##BSUB -R span[ptile=24]
-#
-#----THEIA JOBCARD
-#
-#PBS -N gen_IC_BC0_files_rgnl
-#PBS -A gsd-fv3
-#PBS -o out.$PBS_JOBNAME.$PBS_JOBID
-#PBS -e err.$PBS_JOBNAME.$PBS_JOBID
-#PBS -l nodes=1:ppn=24
-#PBS -q debug
-#PBS -l walltime=00:30:00
-#PBS -W umask=022
-#
 
-# 
+#
 #-----------------------------------------------------------------------
 #
 # This script generates an initial conditions (ICs) file and a surface
 # file on a given grid at a specified date.  The ICs file contains For a regional grid, it al-
-# so generates a boundary file at the initial time 
+# so generates a boundary file at the initial time
 # on the grid
-# specified by the parameters in  
-# 
+# specified by the parameters in
+#
 #-----------------------------------------------------------------------
 #
 
 
 set -eux
-# 
+#
 #-----------------------------------------------------------------------
 #
-# When this script is run using the qsub command, its default working 
+# When this script is run using the qsub command, its default working
 # directory is the user's home directory (unless another one is speci-
-# fied  via qsub's -d flag; the -d flag sets the environment variable 
+# fied  via qsub's -d flag; the -d flag sets the environment variable
 # PBS_O_INITDIR, which is by default undefined).  Here, we change direc-
 # tory to the one in which the qsub command is issued, and that directo-
 # ry is specified in the environment variable PBS_O_WORKDIR.  This must
 # be done to be able to source the setup script below.
-# 
+#
 #-----------------------------------------------------------------------
 #
-cd $PBS_O_WORKDIR
+#cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
@@ -72,7 +35,7 @@ cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
-. ${BASEDIR}/fv3gfs/ush/setup_grid_orog_ICs_BCs.sh 
+. ${TMPDIR}/../fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -144,10 +107,45 @@ elif [ "$machine" = "THEIA" ]; then
   module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
   module list
 
-# The variable DATA specifies the temporary (work) directory used by 
+# The variable DATA specifies the temporary (work) directory used by
 # chgres_driver_scr.
   export DATA="$TMPDIR/$subdir_name/ICs"
   export APRUNC="time"
+  ulimit -a
+  ulimit -s unlimited
+
+elif [ "$machine" = "Jet" ]; then
+
+  . /apps/lmod/lmod/init/sh
+  module purge
+  module load newdefaults
+  module load intel/15.0.3.187
+  module load impi/5.1.1.109
+  module load szip
+  module load hdf5
+  module load netcdf4/4.2.1.1
+  module list
+
+# The variable DATA specifies the temporary (work) directory used by
+# chgres_driver_scr.
+  export DATA="$TMPDIR/$subdir_name/ICs"
+  export APRUNC="time"
+
+  # Set the stack limit as high as we can.
+  #if [[ $( ulimit -s ) != unlimited ]] ; then
+  #    for try_limit in 20000 18000 12000 9000 6000 3000 1500 1000 800 ; do
+  #        if [[ ! ( $( ulimit -s ) -gt $(( try_limit * 1000 )) ) ]] ; then
+  #              ulimit -s $(( try_limit * 1000 ))
+  #        else
+  #              break
+  #        fi
+  #    done
+  #fi
+
+  ulimit -a
+elif [ "$machine" = "Odin" ]; then
+  export DATA="$TMPDIR/$subdir_name/ICs"
+  export APRUNC="srun -n 1"
   ulimit -a
   ulimit -s unlimited
 
@@ -166,9 +164,9 @@ fi
 #
 if [ "$gtype" = "regional" ]; then
 #
-# For gtype set to "regional", set REGIONAL to 1.  This will cause 
-# chgres_driver_scr to generate an initial conditions file only on the 
-# regional grid (tile 7) and to generate a boundary conditions file 
+# For gtype set to "regional", set REGIONAL to 1.  This will cause
+# chgres_driver_scr to generate an initial conditions file only on the
+# regional grid (tile 7) and to generate a boundary conditions file
 # (which contains field values only in the halo of the regional domain)
 # only at the initial time.
 #
@@ -183,7 +181,7 @@ if [ "$gtype" = "regional" ]; then
 
 else
 #
-# For gtype set to "uniform", "stretch", or "nest", set REGIONAL to 0.  
+# For gtype set to "uniform", "stretch", or "nest", set REGIONAL to 0.
 # This will cause chgres_driver_scr to generate global initial condi-
 # tions.
 #
@@ -201,7 +199,7 @@ $BASE_GSM/ush/$chgres_driver_scr
 #
 #-----------------------------------------------------------------------
 #
-# For a regional grid, remove the links that were created above for the 
+# For a regional grid, remove the links that were created above for the
 # 4-halo files.
 #
 #-----------------------------------------------------------------------

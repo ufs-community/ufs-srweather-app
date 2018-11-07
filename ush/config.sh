@@ -8,7 +8,7 @@ ACCOUNT=${ACCOUNT:-"gsd-fv3"}     # The account under which to submit jobs to th
 #
 # Directories.
 #
-BASEDIR=${BASEDIR:-"/scratch3/BMC/det/beck/FV3-CAM"}          # Directory in which clone of fv3gfs and NEMSfv3gfs git repositories are located.
+BASEDIR=/scratch3/BMC # Directory in which clone of fv3gfs and NEMSfv3gfs git repositories are located.
 TMPDIR=${TMPDIR:-"/scratch3/BMC/det/beck/FV3-CAM/work_dirs"}  # Temporary work directory.
 #
 # Forecast parameters.
@@ -16,7 +16,7 @@ TMPDIR=${TMPDIR:-"/scratch3/BMC/det/beck/FV3-CAM/work_dirs"}  # Temporary work d
 CDATE=${CDATE:-"2018060400"}           # Starting date of forecast.  Format is "YYYYMMDDHH".
 #CDATE=$( date "+%Y%m%d"00 )           # This sets CDATE to today.
 #CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
-fcst_len_hrs=${fcst_len_hrs:-24}       # Forecast length (in hours).
+fcst_len_hrs=${fcst_len_hrs:-24} # Forecast length (in hours).
 BC_interval_hrs=${BC_interval_hrs:-6}  # Boundary condition time interval (in hours).
 #
 # Grid configuration.
@@ -67,6 +67,9 @@ layout_y=${layout_y:-15}  #25 - for HRRR
 
 #Define whether to use the "write component" or not
 quilting=${quilting:-".false."}
+
+#Define whether to output ESMF information or not
+print_esmf=${print_esmf:-".false."}
 
 #Define number of write groups
 write_groups=${write_groups:-"1"}

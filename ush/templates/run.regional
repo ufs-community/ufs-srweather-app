@@ -7,17 +7,42 @@
 #PBS -q batch
 #PBS -l walltime=03:00:00
 
-set -eux
-. /apps/lmod/lmod/init/sh
+machine=MACHINE
 
-module purge
-module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0
-module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
+if [ "$machine" = "THEIA" -o "$machine" = "WCOSS" -o "$machine" = "WCOSS_C" ]; then
+  set -eux
+  . /apps/lmod/lmod/init/sh
 
-module list
+  module purge
+  module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0
+  module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
 
-ulimit -s unlimited
-ulimit -a
+  module list
+
+  ulimit -s unlimited
+  ulimit -a
+
+  APRUN="mpirun -l -np"
+elif [ "$machine" = "Jet" ]; then
+  
+  . /apps/lmod/lmod/init/sh
+  module purge
+  module load newdefaults
+  module load intel/15.0.3.187
+  module load impi/5.1.1.109
+  module load szip
+  module load hdf5
+  module load netcdf4/4.2.1.1
+  module list
+
+  APRUN="mpirun -np"
+elif [ "$machine" = "Odin" ]; then
+  module list
+
+  ulimit -s unlimited
+  ulimit -a
+  APRUN="srun -n"
+fi
 
 export KMP_AFFINITY=scatter
 export OMP_NUM_THREADS=2
@@ -44,5 +69,5 @@ rm -f regional_*.tile7.nc
 rm -f RESTART/*
 #
 #cp $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe fv3_gfs.x
-mpirun -l -np $PBS_NP ./fv3_gfs.x
+${APRUN} $PBS_NP ./fv3_gfs.x
 exit

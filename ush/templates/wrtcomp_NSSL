@@ -1,0 +1,25 @@
+
+write_groups:            <write_groups>
+write_tasks_per_group:   <write_tasks_per_group>
+num_files:               2
+filename_base:           'dyn''phy'
+output_file:             'netcdf'
+write_nemsioflip:        .false.
+write_fsyncflag:         .false.
+
+output_grid:             'lambert_conformal'  # HRRRv3 domain                                  
+cen_lon:                 -98.0                # central longitude                          
+cen_lat:                  39.0                # central latitude                           
+stdlat1:                  30.0                                                
+stdlat2:                  60.0                                                
+nx:                       1201                # Number of points along x-axis.            
+ny:                        921                # Number of points along y-axis.            
+lon1:                    -118.00       # longitude of first grid point (lower-left) (in degrees)
+lat1:                     22.00       # latitude of first grid point (lower-left) (in degrees)
+dx:                       3500.0              # x-direction grid length                   
+dy:                       3500.0              # y-direction grid length    
+
+nfhout:                  1
+nfhmax_hf:               60
+nfhout_hf:               1
+nsout:                   -1

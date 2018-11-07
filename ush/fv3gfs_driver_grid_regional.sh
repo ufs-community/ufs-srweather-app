@@ -1,39 +1,12 @@
 #!/bin/sh
 
 #
-#----WCOSS_CRAY JOBCARD
-#
-#BSUB -L /bin/sh
-#BSUB -P FV3GFS-T2O
-#BSUB -oo log.grid.%J
-#BSUB -eo log.grid.%J
-#BSUB -J grid_fv3
-#BSUB -q debug
-#BSUB -M 2400
-#BSUB -W 00:30
-#BSUB -extsched 'CRAYLINUX[]'
-#
-#----THEIA JOBCARD
-#
-#PBS -N make_grid_orog_rgnl
-#PBS -A gsd-fv3
-#PBS -o out.$PBS_JOBNAME.$PBS_JOBID
-#PBS -e err.$PBS_JOBNAME.$PBS_JOBID
-#PBS -l nodes=1:ppn=24
-#PBS -q debug
-#PBS -l walltime=00:30:00
-#PBS -W umask=022
-#
-
-
-
-#
 #-----------------------------------------------------------------------
 #
-# This script generates grid and orography files in NetCDF format that 
+# This script generates grid and orography files in NetCDF format that
 # are required as inputs for running FV3.  These files are generated for
 # one of four cubed-sphere grid configurations (or grid types).  The va-
-# riable gtype determines the grid type.  The four grid types (and their 
+# riable gtype determines the grid type.  The four grid types (and their
 # respective gtype values) are:
 #
 # 1) Uniform global grid (gtype="uniform").
@@ -45,8 +18,8 @@
 #    er resolution (i.e. smaller grid spacing) within that tile.  Note
 #    that in order to maintain the grid's global coverage, the tile op-
 #    posite tile 6 is stretched so that it has a lower resolution (i.e.
-#    larger grid spacing) than the corresponding uniform cubed-sphere 
-#    grid, and the remaining 4 tiles are in some regions (near tile 6) 
+#    larger grid spacing) than the corresponding uniform cubed-sphere
+#    grid, and the remaining 4 tiles are in some regions (near tile 6)
 #    compressed and in other regions (near the tile opposite to tile 6)
 #    stretched.
 #
@@ -54,18 +27,18 @@
 #    This is the same as the stretched/compressed global grid but with
 #    a higher-resolution grid embedded within tile 6.  The embedded grid
 #    is referred to as the nested grid or simply the "nest", and it co-
-#    vers some subregion of tile 6.  Tile 6 is referred to as the nest's 
+#    vers some subregion of tile 6.  Tile 6 is referred to as the nest's
 #    parent tile.  For convenience, in the model code the nest is treat-
 #    ed as another tile (tile 7) even though it in general does not en-
-#    compass a complete tile.  The model is integrated in time on both 
-#    the global (possibly stretched/compressed) grid and on the nest.  
-#    To integrate the solution in the nest (tile 7), boundary conditions 
-#    (BCs) along the four edges of the nest must be specified.  These 
+#    compass a complete tile.  The model is integrated in time on both
+#    the global (possibly stretched/compressed) grid and on the nest.
+#    To integrate the solution in the nest (tile 7), boundary conditions
+#    (BCs) along the four edges of the nest must be specified.  These
 #    are provided in a halo region (or simply a halo) around the nest.
 #    This halo consists of a band of several cells.  The solution with-
 #    in the halo is obtained by interpolation from the parent tile (tile
-#    6) instead of solving the governing equations as would be done in 
-#    the interior of the nest.  Note that for computational efficiency, 
+#    6) instead of solving the governing equations as would be done in
+#    the interior of the nest.  Note that for computational efficiency,
 #    the global and nested grids are integrated simultaneously in time
 #    (as opposed to sequentially).  This means that in order to obtain
 #    the BCs for the nest, the solution from the global grid must be ex-
@@ -74,15 +47,15 @@
 #    able results in practice (Lucas Harris, 6/12/2018, FV3 training).
 #
 # 4) Regional grid (without a global parent grid) (gtype="regional").
-#    This is similar to the nested configuration in that there is a 
+#    This is similar to the nested configuration in that there is a
 #    higher-resolution grid embedded within tile 6, but in this case the
 #    time-integration is performed only on this embedded grid (but not
 #    on the global grid).  The high-resolution embedded grid, which we
-#    refer to as the regional grid, gets its boundary conditions from 
-#    external files (which in turn may be obtained from another model).  
-#    In the model code, the regional grid is taken to be tile 7 (even 
+#    refer to as the regional grid, gets its boundary conditions from
+#    external files (which in turn may be obtained from another model).
+#    In the model code, the regional grid is taken to be tile 7 (even
 #    though it in general does not encompass a complete tile), and tiles
-#    1 through 6 are not present (don't exist in memory) because they 
+#    1 through 6 are not present (don't exist in memory) because they
 #    are not needed.
 #
 #
@@ -101,10 +74,10 @@
 #
 # Also, this script sets the three temporary directories specified by
 # the variables grid_dir, orog_dir, and filter_dir.  The contents of
-# these directories are as follows: 
+# these directories are as follows:
 #
 # => grid_dir
-#    This is a temporary directory in which files generated by the grid 
+#    This is a temporary directory in which files generated by the grid
 #    generation script (grid_gen_scr) are placed.
 #
 # => orog_dir
@@ -115,7 +88,7 @@
 #    This is a temporary directory in which files generated by the oro-
 #    graphy filtering script (orog_filter_scr) are placed.
 #
-# Note that the above are temporary directories.  The final output of 
+# Note that the above are temporary directories.  The final output of
 # this script is saved in the directory specified by the variable out_-
 # dir.
 #
@@ -131,14 +104,14 @@
 #
 # => The 6 grid files corresponding to each tile, ${CRES}_grid.tileN.nc
 #    for N=1,...,6.
-# => The grid mosaic (connectivity) file ${CRES}_mosaic.nc.  This file 
+# => The grid mosaic (connectivity) file ${CRES}_mosaic.nc.  This file
 #    describes how the 6 tiles are connected.
 #
 #
-# The files and directories that will be created in orog_dir by the 
+# The files and directories that will be created in orog_dir by the
 # script orog_gen_scr are:
 #
-# => The 6 orography files corresponding to each tile, 
+# => The 6 orography files corresponding to each tile,
 #    oro.${CRES}.tileN.nc for N=1,...,6.
 # => The 6 temporary directories tileN for N=1,...,6.  These are just
 #    work directories for each of the tiles.  Each of these can be dele-
@@ -150,16 +123,16 @@
 # The files that will be created in filter_dir by the script orog_fltr_-
 # scr are:
 #
-# => The 6 grid files ${CRES}_grid.tileN.nc for N=1,...,6 and the grid 
-#    mosaic file {CRES}_mosaic.nc.  These are just copies of the ones 
+# => The 6 grid files ${CRES}_grid.tileN.nc for N=1,...,6 and the grid
+#    mosaic file {CRES}_mosaic.nc.  These are just copies of the ones
 #    created in grid_dir.
-# => An executable file called filter_topo that performs the orography 
+# => An executable file called filter_topo that performs the orography
 #    filtering.  This is just a copy of the filter_topo executable loca-
 #    ted in the executable directory specified in the variable exec_dir.
 # => A namelist file called input.nml needed by the filter_topo execut-
 #    able.
 # => The filtered versions of the orography files corresponding to each
-#    tile, oro.${CRES}.tileN.nc for N=1,...,6.  Note that these have the 
+#    tile, oro.${CRES}.tileN.nc for N=1,...,6.  Note that these have the
 #    same names as the orography files in orog_dir, but their contents
 #    are different.
 #
@@ -168,12 +141,12 @@
 # filter_dir and then overwritten by their respective filtered versions.
 #
 #
-# Once the scripts grid_gen_scr, orog_gen_scr, and orog_fltr_scr have 
+# Once the scripts grid_gen_scr, orog_gen_scr, and orog_fltr_scr have
 # completed and the temporary directories grid_dir, orog_dir, and fil-
 # ter_dir have been populated, a subset of the files in these directo-
 # ries that are needed to run the FV3 model are copied to the final out-
 # put directory out_dir (which is set in the setup script setup_grid_-
-# orog_ICs_BCs.sh that is sourced at the beginning of this script).  
+# orog_ICs_BCs.sh that is sourced at the beginning of this script).
 # More specifically:
 #
 # => The grid files ${CRES}_grid.tileN.nc for N=1,...,6 and the grid mo-
@@ -191,8 +164,8 @@
 #
 # The directories and files created for this case have the same names as
 # the ones for the gtype="uniform" case.  Of course, for a given cubed-
-# sphere resolution, their contents will be different because they are 
-# for a stretched/compressed (instead of uniform) global cubed-sphere 
+# sphere resolution, their contents will be different because they are
+# for a stretched/compressed (instead of uniform) global cubed-sphere
 # grid.
 #
 #
@@ -212,7 +185,7 @@
 #    mation only about "tile" 7 (the regional grid).
 #
 #
-# The files that will be created in orog_dir by the script orog_gen_scr 
+# The files that will be created in orog_dir by the script orog_gen_scr
 # are:
 #
 # => The orography file for the regional grid, oro.${CRES}.tile7.nc.
@@ -221,30 +194,30 @@
 # The files that will be created in filter_dir by the script orog_fltr_-
 # scr are:
 #
-# => The filtered version of the orography file for the regional grid, 
+# => The filtered version of the orography file for the regional grid,
 #    oro.${CRES}.tile7.nc (this has the same name as the unfiltered orogra-
 #    phy file in orog_dir).  This is generated by the orography filter-
 #    ing script specified by the variable orog_fltr_scr.
 # => The 7 grid files ${CRES}_grid.tileN.nc for N=1,...,7 and the grid
-#    mosaic file {CRES}_mosaic.nc.  These are just copies of the ones 
+#    mosaic file {CRES}_mosaic.nc.  These are just copies of the ones
 #    created in grid_dir and are copied over by the orography filtering
 #    script orog_fltr_scr.
-# => An executable file called filter_topo that performs the orography 
-#    filtering.  This is copied over from the executable directory 
+# => An executable file called filter_topo that performs the orography
+#    filtering.  This is copied over from the executable directory
 #    (exec_dir) by the orography filtering script orog_fltr_scr.
 # => A namelist file called input.nml needed by the executable that per-
-#    forms the orography filtering.  This is created by the orography 
+#    forms the orography filtering.  This is created by the orography
 #    filtering script orog_fltr_scr.
 #
 # => Text files used as input to the "shave" executable specified by the
 #    variable shave_exec.  This files are:
-# 
+#
 #      input.shave.grid
 #      input.shave.grid.halo3
 #      input.shave.orog
 #      input.shave.orog.halo0
 #
-# => Shaved versions of the regional grid and orography files, 
+# => Shaved versions of the regional grid and orography files,
 #    ${CRES}_grid.tile7.shave.nc and oro.${CRES}.tile7.shave.nc.
 #
 #
@@ -271,20 +244,27 @@ stop_after_orog_gen="false"
 stop_after_orog_filter="false"
 #stop_after_orog_filter="true"
 
-# 
+#
+# these are expected from rocoto config file - Added by Y. Wang
+#
+#export BASEDIR="/scratch/ywang/external/regionalFV3"
+#export TMPDIR="/scratch/ywang/test_runs/FV3_regional/work_dirs"
+#export machine="Odin"
+#export gtype="regional"
+#
 #-----------------------------------------------------------------------
 #
-# When this script is run using the qsub command, its default working 
+# When this script is run using the qsub command, its default working
 # directory is the user's home directory (unless another one is speci-
-# fied  via qsub's -d flag; the -d flag sets the environment variable 
+# fied  via qsub's -d flag; the -d flag sets the environment variable
 # PBS_O_INITDIR, which is by default undefined).  Here, we change direc-
 # tory to the one in which the qsub command is issued, and that directo-
 # ry is specified in the environment variable PBS_O_WORKDIR.  This must
 # be done to be able to source the setup script.
-# 
+#
 #-----------------------------------------------------------------------
 #
-cd $PBS_O_WORKDIR
+#cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
@@ -292,14 +272,14 @@ cd $PBS_O_WORKDIR
 #
 #-----------------------------------------------------------------------
 #
-. $BASEDIR/fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
+. $TMPDIR/../fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
 #
 #-----------------------------------------------------------------------
 #
-# Set the file names of the scripts to use for generating the grid 
-# files, the orography files, and for filtering the orography files, 
-# respectively.  Also, set the name of the executable file used to 
-# "shave" (i.e. remove the halo from) certain grid and orography 
+# Set the file names of the scripts to use for generating the grid
+# files, the orography files, and for filtering the orography files,
+# respectively.  Also, set the name of the executable file used to
+# "shave" (i.e. remove the halo from) certain grid and orography
 # files.  The shaving is needed only for the gtype="regional" case.
 #
 #-----------------------------------------------------------------------
@@ -315,13 +295,11 @@ shave_exec="shave.x"
 #
 #-----------------------------------------------------------------------
 #
-ulimit -a
-ulimit -s unlimited
 #
 #-----------------------------------------------------------------------
 #
-# The orography code runs with threads.  On Cray, the code is optimized 
-# for six threads.  Do not change.  
+# The orography code runs with threads.  On Cray, the code is optimized
+# for six threads.  Do not change.
 # Note that OMP_NUM_THREADS and OMP_STACKSIZE only affect the threaded   <== I don't think this is true.  Remove??
 # executions on Cray; they don't affect executions on theia.
 #
@@ -352,6 +330,9 @@ if [ "$machine" = "WCOSS_C" ]; then
   export KMP_AFFINITY=disabled
   export topo_dir=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_orog
 
+  ulimit -a
+  ulimit -s unlimited
+
 elif [ "$machine" = "THEIA" ]; then
 
   . /apps/lmod/lmod/init/sh
@@ -368,6 +349,45 @@ elif [ "$machine" = "THEIA" ]; then
   export APRUN="time"
   export topo_dir="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog"
 
+  ulimit -a
+  ulimit -s unlimited
+
+elif [ "$machine" = "Jet" ]; then
+
+  . /apps/lmod/lmod/init/sh
+
+  set +x
+  module purge
+  module load newdefaults
+  module load intel/15.0.3.187
+  module load impi/5.1.1.109
+  module load szip
+  module load hdf5
+  module load netcdf4/4.2.1.1
+  module list
+  set -x
+
+  export APRUN="time"
+  export topo_dir="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_orog"
+
+  # Set the stack limit as high as we can.
+  #if [[ $( ulimit -s ) != unlimited ]] ; then
+  #    for try_limit in 20000 18000 12000 9000 6000 3000 1500 1000 800 ; do
+  #        if [[ ! ( $( ulimit -s ) -gt $(( try_limit * 1000 )) ) ]] ; then
+  #              ulimit -s $(( try_limit * 1000 ))
+  #        else
+  #              break
+  #        fi
+  #    done
+  #fi
+
+  ulimit -a
+elif [ "$machine" = "Odin" ]; then
+
+  export APRUN="srun -n 1"
+  export topo_dir="/scratch/ywang/external/fix_am/fix_orog"
+  ulimit -a
+  ulimit -s unlimited
 else
 
   echo
@@ -383,11 +403,11 @@ fi
 # Set various directories.  These are:
 #
 # script_dir:
-# This is the directory in which this script and all scripts that it 
+# This is the directory in which this script and all scripts that it
 # calls are located.
 #
 # exec_dir:
-# This is the directory in which all executables called by this script 
+# This is the directory in which all executables called by this script
 # are located.
 #
 #-----------------------------------------------------------------------
@@ -397,13 +417,13 @@ export exec_dir="$BASE_GSM/exec"
 #
 #-----------------------------------------------------------------------
 #
-# TMPDIR specifies a temporary working directory.  Subdirectories will 
-# be created under this directory for the outputs of the grid generation 
-# script (grid_gen_scr), the orography generation script (orog_gen_scr), 
+# TMPDIR specifies a temporary working directory.  Subdirectories will
+# be created under this directory for the outputs of the grid generation
+# script (grid_gen_scr), the orography generation script (orog_gen_scr),
 # and the orography filtering script (orog_filter_scr).
 #
-# Create the temporary directory (if it doesn't already exist).  Then 
-# change location to it. 
+# Create the temporary directory (if it doesn't already exist).  Then
+# change location to it.
 #
 #-----------------------------------------------------------------------
 #
@@ -422,21 +442,21 @@ echo "Setting grid parameters..."
 
 if [ "$gtype" = "uniform" ];  then
 #
-# Set the string that describes the grid type (gtype) chosen above.  
+# Set the string that describes the grid type (gtype) chosen above.
 # This string will be used in informational messages.
 #
   grid_type_desc="uniform global grid"
 
 elif [ "$gtype" = "stretch" ]; then
 #
-# Set the string that describes the grid type (gtype) chosen above.  
+# Set the string that describes the grid type (gtype) chosen above.
 # This string will be used in informational messages.
 #
   grid_type_desc="stretched global grid"
 
 elif [ "$gtype" = "nest" ] || [ "$gtype" = "regional" ]; then
 #
-# Set the string that describes the grid type (gtype) chosen above.  
+# Set the string that describes the grid type (gtype) chosen above.
 # This string will be used in informational messages.
 #
   if [ "$gtype" = "nest" ];then
@@ -458,7 +478,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set paramters used in filtering of the orography (which is done by the 
+# Set paramters used in filtering of the orography (which is done by the
 # script specified by orog_fltr_scr).  The mapping from cubed-sphere C-
 # resolution to nominal grid size for a uniform (i.e. unstretched) glo-
 # bal grid is as follows:
@@ -474,20 +494,20 @@ fi
 echo
 echo "Setting orography filtering parameters..."
 
-if [ $RES -eq 48 ]; then 
-  export cd4=0.12; export max_slope=0.12; export n_del2_weak=4;  export peak_fac=1.1  
-elif [ $RES -eq 96 ]; then 
-  export cd4=0.12; export max_slope=0.12; export n_del2_weak=8;  export peak_fac=1.1  
-elif [ $RES -eq 192 ]; then 
-  export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.05  
-elif [ $RES -eq 384 ]; then 
-  export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.0  
-elif [ $RES -eq 768 ]; then 
-  export cd4=0.15; export max_slope=0.12; export n_del2_weak=16; export peak_fac=1.0  
-elif [ $RES -eq 1152 ]; then 
-  export cd4=0.15; export max_slope=0.16; export n_del2_weak=20; export peak_fac=1.0  
-elif [ $RES -eq 3072 ]; then 
-  export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0  
+if [ $RES -eq 48 ]; then
+  export cd4=0.12; export max_slope=0.12; export n_del2_weak=4;  export peak_fac=1.1
+elif [ $RES -eq 96 ]; then
+  export cd4=0.12; export max_slope=0.12; export n_del2_weak=8;  export peak_fac=1.1
+elif [ $RES -eq 192 ]; then
+  export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.05
+elif [ $RES -eq 384 ]; then
+  export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.0
+elif [ $RES -eq 768 ]; then
+  export cd4=0.15; export max_slope=0.12; export n_del2_weak=16; export peak_fac=1.0
+elif [ $RES -eq 1152 ]; then
+  export cd4=0.15; export max_slope=0.16; export n_del2_weak=20; export peak_fac=1.0
+elif [ $RES -eq 3072 ]; then
+  export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
 else
   echo
   echo "Error.  Grid resolution specified in \"RES\" is not supported:"
@@ -532,61 +552,61 @@ if [ "$gtype" = "uniform" ]; then
   export grid_dir=$TMPDIR/$subdir_name/grid
   export orog_dir=$TMPDIR/$subdir_name/orog
   export filter_dir=$TMPDIR/$subdir_name/filter_topo
-  rm -rf $TMPDIR/$subdir_name                  
+  rm -rf $TMPDIR/$subdir_name
   mkdir -p $grid_dir $orog_dir $filter_dir
 #
 # Generate grid files.
 #
-# The following will create 6 grid files (one per tile) named 
+# The following will create 6 grid files (one per tile) named
 #
 #   ${CRES}_grid.tileN.nc for N=1,...,6.
 #
 # It will also create a mosaic file named ${CRES}_mosaic.nc that de-
-# scribes how the tiles are connected (i.e. a grid connectivity file).  
+# scribes how the tiles are connected (i.e. a grid connectivity file).
 # All these files will be placed in grid_dir (which is under TMPDIR).
 #
 # Note that the value of ntiles set above doesn't affect the call below
-# to grid_gen_scr because ntiles gets reset in grid_gen_scr, in this 
+# to grid_gen_scr because ntiles gets reset in grid_gen_scr, in this
 # case to 6.
 #
-  echo 
+  echo
   echo "Begin grid generation for a ${grid_type_desc} (on `date`)..."
   $script_dir/$grid_gen_scr $RES $grid_dir $script_dir
-  echo 
+  echo
   echo "End grid generation for a ${grid_type_desc} (on `date`)."
 if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
 #
 # Generate orography files.
 #
-# The following will create 6 orography files (one per tile) named 
+# The following will create 6 orography files (one per tile) named
 #
 #   oro.${CRES}.tileN.nc for N=1,...,6
 #
 # and will place them in orog_dir (which is under TMPDIR).
-# 
-# The orography generation script orog_gen_scr called below for each 
+#
+# The orography generation script orog_gen_scr called below for each
 # tile creates a work directory that is different from (although rela-
 # ted to) TMPDIR set above.  This work directory is hardcoded in orog_-
-# gen_scr to be 
+# gen_scr to be
 #
 #   $TMPDIR/${CRES}/orog/tile${tile}
 #
-# (where ${tile} is the tile number) and will contain various input 
+# (where ${tile} is the tile number) and will contain various input
 # files that the orography generation exectuable called by orog_gen_scr
-# needs (including the grid file for the tile in consideration, 
+# needs (including the grid file for the tile in consideration,
 # ${CRES}_grid.tile${tile}.nc).  The orography output file will initial-
-# ly be placed in this work directory but then moved and renamed to 
+# ly be placed in this work directory but then moved and renamed to
 # $orog_dir/oro.${CRES}.tile${tile}.nc.  The contents of the work direc-
-# tory created by orog_gen_scr are not needed once the move/rename is 
-# complete, but the work directory is not automatically deleted by 
-# orog_gen_scr (maybe it should be to avoid confusion). 
+# tory created by orog_gen_scr are not needed once the move/rename is
+# complete, but the work directory is not automatically deleted by
+# orog_gen_scr (maybe it should be to avoid confusion).
 #
   echo
   echo "Begin orography generation for a ${grid_type_desc} (on `date`)..."
 
   if [ "$machine" = "WCOSS_C" ]; then
 #
-# On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for 
+# On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for
 # the orography.  First, create input files for cfp.
 #
     export APRUN=time
@@ -600,7 +620,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
     aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
     rm $TMPDIR/orog.file1
 
-  elif [ "$machine" = "THEIA" ]; then
+  elif [ "$machine" = "THEIA" -o "$machine" = "Odin" -o "$machine" = "Jet" ]; then
 
     for tile in 1 2 3 4 5 6 ; do
       echo
@@ -618,8 +638,8 @@ if [ "$stop_after_orog_gen" = "true" ]; then exit; fi
 #
 # Generate filtered orography files.
 #
-# The following will create 6 filtered orography files (one per tile) 
-# named 
+# The following will create 6 filtered orography files (one per tile)
+# named
 #
 #   oro.${CRES}.tileN.nc for N=1,...,6
 #
@@ -629,20 +649,20 @@ if [ "$stop_after_orog_gen" = "true" ]; then exit; fi
 # and mosaic file (which it assumes is named ${CRES}_mosaic.nc) created
 # in grid_dir and the (unfiltered) orography files generated in orog_dir
 # to filter_dir.  It also copies the executable that performs the fil-
-# tering from exec_dir to filter_dir and creates a namelist file that 
+# tering from exec_dir to filter_dir and creates a namelist file that
 # the executable needs to run.  When run, for each tile listed in the
-# mosaic file, the executable replaces the unfiltered orography file 
+# mosaic file, the executable replaces the unfiltered orography file
 # with its filtered counterpart (and gives it the same name).  Since in
-# this case the mosaic file lists all 6 tiles, a filtered orography 
-# file is generated for each tile. 
+# this case the mosaic file lists all 6 tiles, a filtered orography
+# file is generated for each tile.
 #
-  echo 
+  echo
   echo "Begin filtering of orography for a ${grid_type_desc} (on `date`)."
   $script_dir/$orog_fltr_scr \
     $RES $grid_dir $orog_dir $filter_dir \
     $cd4 $peak_fac $max_slope $n_del2_weak \
     $script_dir $gtype
-  echo 
+  echo
   echo "End filtering of orography for a ${grid_type_desc} (on `date`)."
 if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
 
@@ -662,65 +682,65 @@ elif [ "$gtype" = "stretch" ]; then
   export grid_dir=$TMPDIR/$subdir_name/grid
   export orog_dir=$TMPDIR/$subdir_name/orog
   export filter_dir=$TMPDIR/$subdir_name/filter_topo
-  rm -rf $TMPDIR/$subdir_name                  
+  rm -rf $TMPDIR/$subdir_name
   mkdir -p $grid_dir $orog_dir $filter_dir
 #
 # Generate grid files.
 #
-# The following will create 6 grid files (one per tile) named 
+# The following will create 6 grid files (one per tile) named
 #
 #   ${CRES}_grid.tileN.nc for N=1,...,6.
 #
 # It will also create a mosaic file named ${CRES}_mosaic.nc that de-
-# scribes how the tiles are connected (i.e. a grid connectivity file).  
+# scribes how the tiles are connected (i.e. a grid connectivity file).
 # All these files will be placed in grid_dir (which is under TMPDIR).
 #
 # Note that the value of ntiles set above doesn't affect the call below
-# to grid_gen_scr because ntiles gets reset in grid_gen_scr, in this 
+# to grid_gen_scr because ntiles gets reset in grid_gen_scr, in this
 # case to 6.
 #
-  echo 
+  echo
   echo "Begin grid generation for a ${grid_type_desc} (on `date`)..."
   $script_dir/$grid_gen_scr \
     $RES \
     $grid_dir \
     $stretch_fac $target_lon $target_lat \
     $script_dir
-  echo 
+  echo
   echo "End grid generation for a ${grid_type_desc} (on `date`)..."
 if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
 #
 # Generate orography files.
 #
-# The following will create 6 orography files (one per tile) named 
+# The following will create 6 orography files (one per tile) named
 #
 #   oro.${CRES}.tileN.nc for N=1,...,6
 #
 # and will place them in orog_dir (which is under TMPDIR).
-# 
-# The orography generation script orog_gen_scr called below for each 
+#
+# The orography generation script orog_gen_scr called below for each
 # tile creates a work directory that is different from (although rela-
 # ted to) TMPDIR set above.  This work directory is hardcoded in orog_-
-# gen_scr to be 
+# gen_scr to be
 #
 #   $TMPDIR/${CRES}/orog/tile${tile}
 #
-# (where ${tile} is the tile number) and will contain various input 
+# (where ${tile} is the tile number) and will contain various input
 # files that the orography generation exectuable called by orog_gen_scr
-# needs (including the grid file for the tile in consideration, 
+# needs (including the grid file for the tile in consideration,
 # ${CRES}_grid.tile${tile}.nc).  The orography output file will initial-
-# ly be placed in this work directory but then moved and renamed to 
+# ly be placed in this work directory but then moved and renamed to
 # $orog_dir/oro.${CRES}.tile${tile}.nc.  The contents of the work direc-
-# tory created by orog_gen_scr are not needed once the move/rename is 
-# complete, but the work directory is not automatically deleted by 
-# orog_gen_scr (maybe it should be to avoid confusion). 
+# tory created by orog_gen_scr are not needed once the move/rename is
+# complete, but the work directory is not automatically deleted by
+# orog_gen_scr (maybe it should be to avoid confusion).
 #
   echo
   echo "Begin orography generation for a ${grid_type_desc} (on `date`)..."
 
   if [ "$machine" = "WCOSS_C" ]; then
 #
-# On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for 
+# On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for
 # the orography.  First, create input files for cfp.
 #
     export APRUN=time
@@ -734,7 +754,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
     aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
     rm $TMPDIR/orog.file1
 
-  elif [ "$machine" = "THEIA" ]; then
+  elif [ "$machine" = "THEIA" -o "$machine" = "Odin"  -o "$machine" = "Jet" ]; then
 
     for tile in 1 2 3 4 5 6 ; do
       echo
@@ -751,8 +771,8 @@ if [ "$stop_after_orog_gen" = "true" ]; then exit; fi
 #
 # Generate filtered orography files.
 #
-# The following will create 6 filtered orography files (one per tile) 
-# named 
+# The following will create 6 filtered orography files (one per tile)
+# named
 #
 #   oro.${CRES}.tileN.nc for N=1,...,6
 #
@@ -762,20 +782,20 @@ if [ "$stop_after_orog_gen" = "true" ]; then exit; fi
 # and mosaic file (which it assumes is named ${CRES}_mosaic.nc) created
 # in grid_dir and the (unfiltered) orography files generated in orog_dir
 # to filter_dir.  It also copies the executable that performs the fil-
-# tering from exec_dir to filter_dir and creates a namelist file that 
+# tering from exec_dir to filter_dir and creates a namelist file that
 # the executable needs to run.  When run, for each tile listed in the
-# mosaic file, the executable replaces the unfiltered orography file 
+# mosaic file, the executable replaces the unfiltered orography file
 # with its filtered counterpart (and gives it the same name).  Since in
-# this case the mosaic file lists all 6 tiles, a filtered orography 
-# file is generated for each tile. 
+# this case the mosaic file lists all 6 tiles, a filtered orography
+# file is generated for each tile.
 #
-  echo 
+  echo
   echo "Begin filtering of orography for a ${grid_type_desc} (on `date`)."
   $script_dir/$orog_fltr_scr \
     $RES $grid_dir $orog_dir $filter_dir \
     $cd4 $peak_fac $max_slope $n_del2_weak \
     $script_dir $gtype
-  echo 
+  echo
   echo "End filtering of orography for a ${grid_type_desc} (on `date`)."
 if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
 
@@ -786,8 +806,8 @@ if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
 #-----------------------------------------------------------------------
 #
 # Next, consider a stretched global grid with a nested grid in tile 6.
-# The nested grid is referenced as an additional "tile" beyond the 6 
-# tiles of the global grid, so it is referred to as "tile" 7 (even 
+# The nested grid is referenced as an additional "tile" beyond the 6
+# tiles of the global grid, so it is referred to as "tile" 7 (even
 # though it in general does not encompass a complete tile).
 #
 #-----------------------------------------------------------------------
@@ -799,13 +819,13 @@ elif [ "$gtype" = "nest" ]; then
   export orog_dir=$TMPDIR/$subdir_name/orog
 #  export filter_dir=$orog_dir   # nested grid orography will be filtered online -- is filter_dir used at all for the nested case?
   export filter_dir=$TMPDIR/$subdir_name/filter_topo
-  rm -rf $TMPDIR/$subdir_name                  
+  rm -rf $TMPDIR/$subdir_name
   mkdir -p $grid_dir $orog_dir $filter_dir
 #
 # Generate grid files.
 #
-# The following will create 7 grid files (one per tile, where the 7th 
-# "tile" is the grid that covers the nested domain) named 
+# The following will create 7 grid files (one per tile, where the 7th
+# "tile" is the grid that covers the nested domain) named
 #
 #   ${CRES}_grid.tileN.nc for N=1,...,7.
 #
@@ -815,40 +835,40 @@ elif [ "$gtype" = "nest" ]; then
 #   ${CRES}_coarse_mosaic.nc
 #   ${CRES}_nested_mosaic.nc
 #
-# ${CRES}_mosaic.nc describes how all 7 tiles (i.e. the global tiles 
+# ${CRES}_mosaic.nc describes how all 7 tiles (i.e. the global tiles
 # plus the nested grid) are connected (with "tile" 7 being nested within
-# tile 6); ${CRES}_coarse mosaic.nc describes how the 6 global tiles are 
+# tile 6); ${CRES}_coarse mosaic.nc describes how the 6 global tiles are
 # connected without considering the nested tile; and ${CRES}_nested_mo-
-# saic.nc considers only "tile" 7 and thus does not contain any useful 
+# saic.nc considers only "tile" 7 and thus does not contain any useful
 # connectivigy information (not sure why it is generated).  Note that
-# none of the only mosaic files are used in the orography generation 
+# none of the only mosaic files are used in the orography generation
 # step that follows (the orography filtering is done online for gytpe=
-# "nest"), and the only one that is eventually copied into the output 
-# directory out_dir is ${CRES}_mosaic.nc.  Both the grid files and the 
-# mosaic files created in this step will be placed in grid_dir (which 
+# "nest"), and the only one that is eventually copied into the output
+# directory out_dir is ${CRES}_mosaic.nc.  Both the grid files and the
+# mosaic files created in this step will be placed in grid_dir (which
 # is under TMPDIR).
 #
 # Note that the parameter "halo" that is passed to grid_gen_scr below
 # is in turn used as an argument to the --halo flag of the make_hgrid
-# executable.  This flag (which needs to be specified only when the 
+# executable.  This flag (which needs to be specified only when the
 # --nest_grid flag is set) is used to ensure that the nest and its halo
-# region together lie completely within the parent tile of the nest.  
+# region together lie completely within the parent tile of the nest.
 # This is necessary for the two-way interaction between the nest and pa-
 # rent tile.  In particular, the "halo" parameter does not cause an ex-
 # tra halo region to be written to the nest's grid file.
 #
 # Note also that make_hgrid has an --out_halo option that, according to
-# the documentation, is meant to output extra halo cells around the 
+# the documentation, is meant to output extra halo cells around the
 # nested or regional grid boundary in the file generated by make_hgrid.
-# However, according to Rusty Benson of GFDL, this flag was originally 
-# created for a special purpose and is limited to only outputting at 
+# However, according to Rusty Benson of GFDL, this flag was originally
+# created for a special purpose and is limited to only outputting at
 # most 1 extra halo point.  Thus, it should not be used.
 #
 # Note that the value of ntiles set above doesn't affect the call below
-# to grid_gen_scr because ntiles gets reset in grid_gen_scr, in this 
+# to grid_gen_scr because ntiles gets reset in grid_gen_scr, in this
 # case to 7.
 #
-  echo 
+  echo
   echo "Begin grid generation for a ${grid_type_desc} (on `date`)."
   $script_dir/$grid_gen_scr \
     $RES \
@@ -857,41 +877,41 @@ elif [ "$gtype" = "nest" ]; then
     $istart_nest $jstart_nest $iend_nest $jend_nest \
     $halo \
     $script_dir
-  echo 
+  echo
   echo "End grid generation for a ${grid_type_desc} (on `date`)."
 if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
 #
 # Generate orography files.
 #
-# The following will create 7 orography files (one per tile) named 
+# The following will create 7 orography files (one per tile) named
 #
 #   oro.${CRES}.tileN.nc for N=1,...,7
 #
 # and will place them in orog_dir (which is under TMPDIR).
-#  
-# The orography generation script orog_gen_scr called below for each 
+#
+# The orography generation script orog_gen_scr called below for each
 # tile creates a work directory that is different from (although rela-
 # ted to) TMPDIR set above.  This work directory is hardcoded in orog_-
-# gen_scr to be 
+# gen_scr to be
 #
 #   $TMPDIR/${CRES}/orog/tile${tile}
 #
-# (where ${tile} is the tile number) and will contain various input 
+# (where ${tile} is the tile number) and will contain various input
 # files that the orography generation exectuable called by orog_gen_scr
-# needs (including the grid file for the tile in consideration, 
+# needs (including the grid file for the tile in consideration,
 # ${CRES}_grid.tile${tile}.nc).  The orography output file will initial-
-# ly be placed in the work directory but then moved and renamed to 
+# ly be placed in the work directory but then moved and renamed to
 # $orog_dir/oro.${CRES}.tile${tile}.nc.  The contents of the work direc-
-# tory created by orog_gen_scr are not needed once the move/rename is 
-# complete, but the work directory is not automatically deleted by 
-# orog_gen_scr (maybe it should be to avoid confusion). 
+# tory created by orog_gen_scr are not needed once the move/rename is
+# complete, but the work directory is not automatically deleted by
+# orog_gen_scr (maybe it should be to avoid confusion).
 #
   echo
   echo "Begin orography generation for a ${grid_type_desc} (on `date`)."
 
   if [ "$machine" = "WCOSS_C" ]; then
 #
-# On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for 
+# On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for
 # the orography.  First, create input files for cfp.
 #
     export APRUN=time
@@ -906,7 +926,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
     aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
     rm $TMPDIR/orog.file1
 
-  elif [ "$machine" = "THEIA" ]; then
+  elif [ "$machine" = "THEIA" -o "$machine" = "Odin" -o "$machine" = "Jet" ]; then
 
     for tile in 1 2 3 4 5 6 7; do
       echo
@@ -947,10 +967,10 @@ if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
 #
 #-----------------------------------------------------------------------
 #
-# Next, consider a regional grid.  In this case, the parent stretched 
+# Next, consider a regional grid.  In this case, the parent stretched
 # global grid is not actually generated, i.e. it is an imaginary or     <-- Is this true?  Turns out maybe not!!
-# "ghost" parent grid.  Nevertheless, the regional grid is referenced as 
-# an additional "tile" beyond the 6 tiles on the ghost global grid, so 
+# "ghost" parent grid.  Nevertheless, the regional grid is referenced as
+# an additional "tile" beyond the 6 tiles on the ghost global grid, so
 # it is referred to as "tile 7" (even though it in general does not en-
 # compass a complete "ghost" tile).
 #
@@ -968,26 +988,26 @@ elif [ "$gtype" = "regional" ]; then
 #
 # We want to construct a regional grid with a given number of halo cells
 # along all four edges.  These halo cells extend beyond the regional do-
-# main and are used in the regional model to feed in external boundary 
+# main and are used in the regional model to feed in external boundary
 # conditions to the regional model.
 #
 # The grid generation script grid_gen_scr calls the make_hgrid executa-
-# ble to construct the regional grid.  This executable in turn accepts 
+# ble to construct the regional grid.  This executable in turn accepts
 # as arguments the index limits of the regional domain on the regional
-# grid's parent tile's supergrid (PTSG), where the supergrid is a grid 
+# grid's parent tile's supergrid (PTSG), where the supergrid is a grid
 # having double the resolution of the parent tile.  Thus, in order to
 # use make_hgrid to construct a regional grid with halo cells, we must
-# modified values for the PTSG index limits istart_nest, iend_nest, 
+# modified values for the PTSG index limits istart_nest, iend_nest,
 # jstart_nest, and jend_nest specified above that will result in make_-
-# hgrid generating a regional grid with the required number of halo 
+# hgrid generating a regional grid with the required number of halo
 # cells (supplying make_hgrid with istart_nest, iend_nest, jstart_nest,
 # and jend_nest will result in a regional grid without a halo).  Next,
 # we describe how to specify the modified values of the index limits
 # (which we refer to by istart_nest_halo, iend_nest_halo, jstart_nest_-
 # halo, and jend_nest_halo).
 #
-# Let nhalo_T7 denote the number of halo cells we'd like to have along 
-# all four edges of the regional domain (i.e. north, south, east, and 
+# Let nhalo_T7 denote the number of halo cells we'd like to have along
+# all four edges of the regional domain (i.e. north, south, east, and
 # west).  Note that nhalo_T7 is the number of halo grid cells as counted
 # on the regional grid (tile 7).  The number of halo cells as counted on
 # the parent tile's (tile 6's) grid is then given by
@@ -1000,18 +1020,18 @@ elif [ "$gtype" = "regional" ]; then
 #   nhalo_T6SG = 2*nhalo_T6
 #              = 2*nhalo_T7/refine_ratio
 #
-# [Recall that the PTSG is obtained by reducing the grid size of the pa- 
+# [Recall that the PTSG is obtained by reducing the grid size of the pa-
 # rent tile's grid by a factor of 2.  Thus, the PTSG has twice the num-
 # ber of grid cells in each direction as the parent tile's grid (but co-
 # vers the same region).]  The reason for calculating the number of halo
 # points on the PTSG is that the index limits that the executable make_-
 # hgrid (called by script grid_gen_scr) takes as arguments are supergrid
-# indices.  
+# indices.
 #
-# Note that nhalo_T6SG must be an integer, but the expression derived 
+# Note that nhalo_T6SG must be an integer, but the expression derived
 # above for nhalo_T6SG may not yield an integer.  To ensure that we in-
-# clude enough PTSG cells when calling make_hgrid so that there are at 
-# least nhalo_T7 regional grid cells around the regional domain, we 
+# clude enough PTSG cells when calling make_hgrid so that there are at
+# least nhalo_T7 regional grid cells around the regional domain, we
 # round up the result of the expression above for nhalo_T6SG, i.e. we
 # redefine nhalo_T6SG to be
 #
@@ -1019,18 +1039,18 @@ elif [ "$gtype" = "regional" ]; then
 #
 # where ceil(...) is the ceiling function, i.e. it rounds its floating
 # point argument up to the next larger integer.  Since in bash division
-# of two integers returns a truncated integer and since bash has no 
-# ceil(...) function, we instead perform the rounding-up operation by 
+# of two integers returns a truncated integer and since bash has no
+# ceil(...) function, we instead perform the rounding-up operation by
 # adding the denominator (of the argument of ceil(...) above) minus one
 # to the original numerator, i.e. by redefining nhalo_T6SG to be
 #
 #   nhalo_T6SG = (2*nhalo_T7 + refine_ratio - 1)/refine_ratio
 #
-# (This trick works when dividing one positive integer by another.)  
-# Once we obtain nhalo_T6SG using this expression, we can obtain the 
+# (This trick works when dividing one positive integer by another.)
+# Once we obtain nhalo_T6SG using this expression, we can obtain the
 # PTSG index limits for the regional domain with halo from the index li-
-# mits for the regional domain without a halo by simply subtracting 
-# nhalo_T6SG from the lower index limits and adding nhalo_T6SG to the 
+# mits for the regional domain without a halo by simply subtracting
+# nhalo_T6SG from the lower index limits and adding nhalo_T6SG to the
 # upper index limits, i.e.
 #
 #   istart_nest_halo = istart_nest - nhalo_T6SG
@@ -1048,13 +1068,13 @@ elif [ "$gtype" = "regional" ]; then
   jend_nest_halo=$(( $jend_nest + $nhalo_T6SG ))
 #
 # A restriction (that probably originates from make_hgrid) on the start-
-# ing and ending indices of the regional or nested domains is that 
-# istart_nest_halo and jstart_nest_halo (as well as istart_nest and 
-# jstart_nest) must be odd, and iend_nest_halo and jend_nest_halo (as 
-# well as iend_nest and jend_nest) must be even.  These restrictions 
+# ing and ending indices of the regional or nested domains is that
+# istart_nest_halo and jstart_nest_halo (as well as istart_nest and
+# jstart_nest) must be odd, and iend_nest_halo and jend_nest_halo (as
+# well as iend_nest and jend_nest) must be even.  These restrictions
 # imply that the boundary of the regional or nested grid (with or with-
 # out a halo) must coincide with the gridlines of the parent grid; it
-# must not coincide with the half-gridlines (i.e. the lines on which the 
+# must not coincide with the half-gridlines (i.e. the lines on which the
 # mass points lie) of the parent grid.  Thus, below, after calculating
 # the starting and ending indices using the formulas above, we ensure
 # that the starting indices are odd and the ending indices are even by
@@ -1089,7 +1109,7 @@ elif [ "$gtype" = "regional" ]; then
   set +x
   echo
   echo "================================================================================== "
-  echo "For refine_ratio= $refine_ratio" 
+  echo "For refine_ratio= $refine_ratio"
 #
   nptsx=`expr $iend_nest - $istart_nest + 1`
   npts_cgx=`expr $nptsx \* $refine_ratio / 2`
@@ -1121,12 +1141,12 @@ elif [ "$gtype" = "regional" ]; then
   rm -rf $TMPDIR/$subdir_name
   mkdir -p $grid_dir $orog_dir $filter_dir
 #
-# Generate grid files.  
+# Generate grid files.
 #
-# The following will create 7 grid files (one per tile, where the 7th 
-# "tile" is the grid that covers the regional domain) named 
+# The following will create 7 grid files (one per tile, where the 7th
+# "tile" is the grid that covers the regional domain) named
 #
-#   ${CRES}_grid.tileN.nc for N=1,...,7.  
+#   ${CRES}_grid.tileN.nc for N=1,...,7.
 #
 # It will also create a mosaic file named ${CRES}_mosaic.nc that con-
 # tains information only about tile 7 (i.e. it does not have any infor-
@@ -1135,26 +1155,26 @@ elif [ "$gtype" = "regional" ]; then
 # cified by grid_dir (which is under TMPDIR).
 #
 # Note that the value of ntiles set above doesn't affect the call below
-# to grid_gen_scr because ntiles gets reset in grid_gen_scr, in this 
+# to grid_gen_scr because ntiles gets reset in grid_gen_scr, in this
 # case to 1.
 #
 # It is not clear why grid files for the first 6 tiles are generated
-# because they are not needed to run the FV3 model, and they do not 
-# seem to be used later on in the orography generation or filtering 
-# steps. 
+# because they are not needed to run the FV3 model, and they do not
+# seem to be used later on in the orography generation or filtering
+# steps.
 #
 # It might be because it is not possible to directly generate a stand-
 # alone regional grid using the make_hgrid executable that grid_gen_scr
-# calls, i.e. it might be because with make_hgrid, one has to either 
-# create just the 6 global tiles or create the 6 global tiles plus the 
-# regional (which is treated as if it's a nested grid), and then for the 
+# calls, i.e. it might be because with make_hgrid, one has to either
+# create just the 6 global tiles or create the 6 global tiles plus the
+# regional (which is treated as if it's a nested grid), and then for the
 # case of gtype="regional" just not use the 6 global tiles.
 #
 # GSK: I sent an email to EMC about this on 5/22/2018 but haven't yet heard back.
 #
 # Note:
-# It is not clear how the "halo" parameter that is passed in the call 
-# below to grid_gen_scr is used.  More specifically, grid_gen_scr in 
+# It is not clear how the "halo" parameter that is passed in the call
+# below to grid_gen_scr is used.  More specifically, grid_gen_scr in
 # turn calls the make_hgrid executable as follows:
 #
 #   make_hgrid --grid_type gnomonic_ed \
@@ -1167,8 +1187,8 @@ elif [ "$gtype" = "regional" ]; then
 #              --halo ${halo} \
 #              --great_circle_algorithm
 #
-# This creates the 7 grid files ${CRES}_grid.tileN.nc for N=1,...,7.  
-# The 7th file ${CRES}_grid.tile7.nc represents the regional grid, and 
+# This creates the 7 grid files ${CRES}_grid.tileN.nc for N=1,...,7.
+# The 7th file ${CRES}_grid.tile7.nc represents the regional grid, and
 # the extents of the arrays in that file do not seem to include a halo,
 # i.e. they are based only on the values passed via the four flags
 #
@@ -1182,20 +1202,20 @@ elif [ "$gtype" = "regional" ]; then
 #   --halo ${halo}
 #
 # only checks to make sure that the nested or regional grid combined
-# with the specified halo lies completely within the parent tile.  If 
-# so, make_hgrid issues a warning and exits.  Thus, the --halo flag 
+# with the specified halo lies completely within the parent tile.  If
+# so, make_hgrid issues a warning and exits.  Thus, the --halo flag
 # is not meant to be used to add a halo region to the nested or regional
-# grid whose limits are specified by the flags --istart_nest, 
+# grid whose limits are specified by the flags --istart_nest,
 # --iend_nest, --jstart_nest, and --jend_nest.
-# 
+#
 # Note also that make_hgrid has an --out_halo option that, according to
-# the documentation, is meant to output extra halo cells around the 
+# the documentation, is meant to output extra halo cells around the
 # nested or regional grid boundary in the file generated by make_hgrid.
-# However, according to Rusty Benson of GFDL, this flag was originally 
-# created for a special purpose and is limited to only outputting at 
+# However, according to Rusty Benson of GFDL, this flag was originally
+# created for a special purpose and is limited to only outputting at
 # most 1 extra halo point.  Thus, it should not be used.
 #
-  echo 
+  echo
   echo "Begin grid generation for a ${grid_type_desc} (on `date`)."
 if [ 0 = 1 ]; then
   $script_dir/$grid_gen_scr \
@@ -1206,15 +1226,15 @@ if [ 0 = 1 ]; then
     $halo \
     $script_dir
 elif [ 1 = 1 ]; then
-# The make_hgrid executable that grid_gen_scr in turn calls takes the 
+# The make_hgrid executable that grid_gen_scr in turn calls takes the
 # next-to-last argument below to grid_gen_scr and passes it as an argu-
 # ment to the --halo flag of make_hgrid.  make_hgrid then checks that
-# a regional or nested grid of size specified by its --istart_nest, 
+# a regional or nested grid of size specified by its --istart_nest,
 # --iend_nest, --jstart_nest, and --jend_nest flag with a halo around it
 # of size specified by --halo does not extend beyond the boundaries of
 # the parent grid (tile 6).  In this case, since the values passed to
 # the --istart_nest, ..., and --jend_nest flags already include a halo
-# (because these arguments are $istart_nest_halo, $iend_nest_halo, 
+# (because these arguments are $istart_nest_halo, $iend_nest_halo,
 # $jstart_nest_halo, and $jend_nest_halo), it is reasonable to pass as
 # the argument to --halo a zero.  However, make_hgrid requires that the
 # argument to --halo be at least 1, so below, we pass a 1 as the next-
@@ -1238,31 +1258,31 @@ elif [ 1 = 1 ]; then
          ${CRES}_grid.tile${tile}.nc
   cd -
 fi
-  echo 
+  echo
   echo "End grid generation for a ${grid_type_desc} (on `date`)."
 if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
 #
 # Generate an orography file corresponding to tile 7 (the regional do-
-# main) only.  
+# main) only.
 #
-# The following will create an orography file named 
-# 
-#   oro.${CRES}.tile7.nc 
+# The following will create an orography file named
+#
+#   oro.${CRES}.tile7.nc
 #
 # and will place it in orog_dir (which is under TMPDIR).  It will also
 # create a work directory called tile7 under orog_dir.  This work di-
 # rectory can be removed after the orography file has been created (it
 # is currently not deleted).
-#  
+#
   tile=7
   echo
   echo "Begin orography generation for a ${grid_type_desc} (on `date`)."
 
   if [ "$machine" = "WCOSS_C" ]; then
 #
-# On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for 
-# the orography.  For now, we have only one tile in the regional case, 
-# but in the future we will have more.  First, create an input file for 
+# On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for
+# the orography.  For now, we have only one tile in the regional case,
+# but in the future we will have more.  First, create an input file for
 # cfp.
 #
     export APRUN=time
@@ -1271,7 +1291,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
     aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
     rm $TMPDIR/orog.file1
 
-  elif [ "$machine" = "THEIA" ]; then
+  elif [ "$machine" = "THEIA" -o "$machine" = "Odin"  -o "$machine" = "Jet" ]; then
 
     echo
     echo "Executing $orog_gen_scr for tile $tile..."
@@ -1285,7 +1305,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
 # contains the halo size.  Then create a link whose name doesn't contain
 # the halo size that points to this file.
   tile=7
-  cd $orog_dir 
+  cd $orog_dir
   mv oro.${CRES}.tile${tile}.nc \
      oro.${CRES}.tile${tile}.halo${nhalo_T7}.nc
   ln -fs oro.${CRES}.tile${tile}.halo${nhalo_T7}.nc \
@@ -1298,7 +1318,7 @@ if [ "$stop_after_grid_gen" = "true" ]; then exit; fi
 if [ "$stop_after_orog_gen" = "true" ]; then exit; fi
 #
 # Generate a filtered orography file corresponding to tile 7 (the re-
-# gional domain) only.  
+# gional domain) only.
 #
 # The following will create a filtered orography file named
 #
@@ -1310,29 +1330,29 @@ if [ "$stop_after_orog_gen" = "true" ]; then exit; fi
 # and mosaic file (which it assumes is named ${CRES}_mosaic.nc) created
 # in grid_dir and the (unfiltered) orography files generated in orog_dir
 # to filter_dir.  It also copies the executable that performs the fil-
-# tering from exec_dir to filter_dir and creates a namelist file that 
+# tering from exec_dir to filter_dir and creates a namelist file that
 # the executable needs to run.  When run, for each tile listed in the
-# mosaic file, the executable replaces the unfiltered orography file 
+# mosaic file, the executable replaces the unfiltered orography file
 # with its filtered counterpart (and gives it the same name).  Since in
 # this case the mosaic file lists only tile 7, a filtered orography file
-# is generated only for tile 7.  Thus, the grid files for the first 6 
-# tiles are not used and thus do not need to be copied from grid_dir to 
-# filter_dir (this fix requires a small change to orog_fltr_scr, which 
+# is generated only for tile 7.  Thus, the grid files for the first 6
+# tiles are not used and thus do not need to be copied from grid_dir to
+# filter_dir (this fix requires a small change to orog_fltr_scr, which
 # GSK has made).  Also, since the orography generation step above cre-
 # ates only one orography file in orog_dir, only one such file is copied
 # from orog_dir to filter_dir (as is appropriate).
 #
-  echo 
+  echo
   echo "Begin filtering of orography for a ${grid_type_desc} (on `date`)."
   $script_dir/$orog_fltr_scr \
     $RES $grid_dir \
     $orog_dir $filter_dir $cd4 $peak_fac $max_slope $n_del2_weak \
     $script_dir $gtype
-  echo 
+  echo
   echo "End filtering of orography for a ${grid_type_desc} (on `date`)."
 
 # For clarity, rename the tile 7 filtered orography file such that its
-# new name contains the halo size.  Then create a link whose name 
+# new name contains the halo size.  Then create a link whose name
 # doesn't contain the halo size that points to this file.
   tile=7
   cd $filter_dir
@@ -1348,18 +1368,18 @@ if [ "$stop_after_orog_gen" = "true" ]; then exit; fi
 
 if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
 #
-# Partially "shave" the halos from the grid and orography files.  The 
+# Partially "shave" the halos from the grid and orography files.  The
 # following shaved files are needed:
 #
-# 1) Regional grid file with a halo of 3 cells.  
+# 1) Regional grid file with a halo of 3 cells.
 # 2) Regional grid file with a halo of 4 cells.
 # 3) Regional orography file without a halo.
 # 4) Regional orography file with a halo of 4 cells.
 #
 # The regional grid and orography files with a halo of 4 cells are need-
-# ed by the chgres program to create boundary conditions (BCs) with 4 
-# rows and columns.  The regional grid file with 3 halo cells and the 
-# orography file with no halo cells are simply inputs that the regional 
+# ed by the chgres program to create boundary conditions (BCs) with 4
+# rows and columns.  The regional grid file with 3 halo cells and the
+# orography file with no halo cells are simply inputs that the regional
 # model needs to read in.  Note that the output files from the shave
 # program are placed in filter_dir.
 #
@@ -1407,14 +1427,19 @@ if [ "$stop_after_orog_filter" = "true" ]; then exit; fi
 #
   if [ "$machine" = "WCOSS_C" ]; then
     aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.grid.halo$halo
-    aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.grid.halo$halop1 
+    aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.grid.halo$halop1
     aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.orog.halo$halo0
     aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/$shave_exec < input.shave.orog.halo$halop1
-  elif [ "$machine" = "THEIA" ]; then
+  elif [ "$machine" = "THEIA"  -o "$machine" = "Jet" ]; then
     time $exec_dir/$shave_exec < input.shave.grid.halo$halo
     time $exec_dir/$shave_exec < input.shave.grid.halo$halop1
     time $exec_dir/$shave_exec < input.shave.orog.halo$halo0
     time $exec_dir/$shave_exec < input.shave.orog.halo$halop1
+  elif [ "$machine" = "Odin" ]; then
+    ${APRUN} $exec_dir/$shave_exec < input.shave.grid.halo$halo
+    ${APRUN} $exec_dir/$shave_exec < input.shave.grid.halo$halop1
+    ${APRUN} $exec_dir/$shave_exec < input.shave.orog.halo$halo0
+    ${APRUN} $exec_dir/$shave_exec < input.shave.orog.halo$halop1
   fi
 
 fi
@@ -1427,7 +1452,7 @@ echo "======>>>>>>  Done generating grid and orography files for a ${grid_type_d
 # Copy files from filter_dir to the final output directory out_dir.
 #
 # For a regional grid, we only need to copy the shaved regional grid and   <-- Verify that this is true.
-# orography files.  
+# orography files.
 #
 #-----------------------------------------------------------------------
 #
@@ -1467,7 +1492,7 @@ else
 
 fi
 
-# Copy the mosaic file that describes how the tile(s) of the grid fit 
+# Copy the mosaic file that describes how the tile(s) of the grid fit
 # together.
 #cp $filter_dir/${CRES}_mosaic.nc $out_dir/grid_spec.nc
 #cp $filter_dir/${CRES}_mosaic.nc $out_dir/${CRES}_mosaic.nc

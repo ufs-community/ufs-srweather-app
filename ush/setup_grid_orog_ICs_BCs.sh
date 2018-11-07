@@ -11,8 +11,8 @@
 #    ed only if running a regional grid).
 #
 # These parameters are the ones most commonly modified by users.  They
-# are grouped into this script for convenience.  These parameters only 
-# need to be modified here because the above three scripts source this 
+# are grouped into this script for convenience.  These parameters only
+# need to be modified here because the above three scripts source this
 # script at the start of their execution.
 #
 #-----------------------------------------------------------------------
@@ -23,16 +23,16 @@
 #
 # Change shell behavior with "set" with these flags:
 #
-# -e 
-# This will cause the script to exit as soon as any line in the script 
+# -e
+# This will cause the script to exit as soon as any line in the script
 # fails (with some exceptions; see manual).
 #
-# -u 
+# -u
 # This will cause the script to exit if an undefined variable is encoun-
 # tered.
 #
 # -x
-# This will cause all executed commands in the script to be printed to 
+# This will cause all executed commands in the script to be printed to
 # the terminal (used for debugging).
 #
 #-----------------------------------------------------------------------
@@ -41,8 +41,16 @@
 #set -eux
 set -ux
 
-#. $BASEDIR/fv3gfs/ush/config.sh
+if [ -z ${TMPDIR} ]; then
+
 . ./config.sh
+
+else
+
+. ${TMPDIR}/config.sh
+
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -55,11 +63,13 @@ export machine=${machine:-}
 # Convert machine name to lower case if necessary.
 #
 #machine=$( echo "$machine" | sed -e 's/\(.*\)/\L\1/' )  # <-- Don't do this yet, maybe later; requires changing this and other scripts to use lowercase everywhere.
-# 
+#
 # Make sure machine is set to one of the allowed values.
 #
 if [ "$machine" != "WCOSS_C" ] && \
    [ "$machine" != "WCOSS" ] && \
+   [ "$machine" != "Odin" ] && \
+   [ "$machine" != "Jet" ] && \
    [ "$machine" != "THEIA" ]; then
   echo
   echo "Error.  Machine specified in \"machine\" is not supported:"
@@ -79,19 +89,21 @@ if [ "$machine" = "WCOSS_C" ]; then
   export ncores_per_node=${ncores_per_node}  # Don't know the default on WCOS_C, so must get it from environment.
 elif [ "$machine" = "WCOSS" ]; then
   export ncores_per_node=${ncores_per_node}  # Don't know the default on WCOS, so must get it from environment.
-elif [ "$machine" = "THEIA" ]; then
+elif [ "$machine" = "THEIA" -o "$machine" = "Jet" ]; then
+  export ncores_per_node=${ncores_per_node:-24}
+elif [ "$machine" = "Odin" ]; then
   export ncores_per_node=${ncores_per_node:-24}
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the cubed-sphere grid type (gtype).  This can be one of "uniform", 
+# Set the cubed-sphere grid type (gtype).  This can be one of "uniform",
 # "stretch", "nest", and "regional".
 #
 #-----------------------------------------------------------------------
 #
 export gtype=${gtype:-}
-# 
+#
 # Make sure gtype is set to one of the allowed values.
 #
 if [ "$gtype" != "uniform" ] && \
@@ -157,7 +169,7 @@ if [ "$gtype" = "regional" ]; then
   esac
 
 fi
-# 
+#
 # Make sure RES is set to one of the allowed values.
 #
 if [ "$RES" != "48" ] && \
@@ -203,14 +215,14 @@ export YMD=${CDATE:0:8}
 #
 # The following may not be necessary since global_chgres_driver.sh resets ictype.  But it was in the original version of this script, so we keep it here for now.
 #
-# Set the type (ictype) of GFS analysis file we will be reading in to 
-# obtain the ICs.  This type (or format) must be either "opsgfs" (the 
+# Set the type (ictype) of GFS analysis file we will be reading in to
+# obtain the ICs.  This type (or format) must be either "opsgfs" (the
 # current operational GFS format; used for dates on and after the tran-
-# sition date of July 19, 2017) or "oldgfs" (old GFS format; for dates 
+# sition date of July 19, 2017) or "oldgfs" (old GFS format; for dates
 # before the transition date).
 #
 # Calculate the duration in seconds from some default date (see man page
-# of "date" command) to the specified CDATE and the duration from that 
+# of "date" command) to the specified CDATE and the duration from that
 # default date to the transition date.  Then compare these two durations
 # to determine the ictype.
 #
@@ -249,6 +261,10 @@ elif [ "$machine" = "WCOSS" ]; then
   export FIXgsm=""
 elif [ "$machine" = "THEIA" ]; then
   export FIXgsm="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am"
+elif [ "$machine" = "Jet" ]; then
+  export FIXgsm="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_am"
+elif [ "$machine" = "Odin" ]; then
+  export FIXgsm="/scratch/ywang/external/fix_am"
 fi
 #
 #-----------------------------------------------------------------------
@@ -278,7 +294,7 @@ fi
 # For a regional grid, set the boundary condition (BC) time interval (in
 # hours), i.e. the interval between the times at which the BCs are pro-
 # vided.  We refer to these as the BC times.  Then create an integer ar-
-# ray containing these times.  
+# ray containing these times.
 #
 #-----------------------------------------------------------------------
 #
@@ -286,7 +302,7 @@ if [ "$gtype" = "regional" ]; then
 
   BC_interval_hrs=${BC_interval_hrs:-}
 #
-# Check whether the forecast length (fcst_len_hrs) is evenly divisible 
+# Check whether the forecast length (fcst_len_hrs) is evenly divisible
 # by the BC time interval.  If not, exit script.
 #
   remainder=$(( $fcst_len_hrs % $BC_interval_hrs ))
@@ -310,7 +326,7 @@ fi
 # Set various grid-type (gtype) dependent parameters.
 #
 # title:
-# This is a descriptive string used in directory names as a forecast 
+# This is a descriptive string used in directory names as a forecast
 # identifier.
 #
 # coverage_str:
@@ -322,14 +338,14 @@ fi
 # ed grid.  This is "nest" for a global grid having a nest and empty for
 # a regional grid (since, at least for now, a regional grid can't have a
 # nest).
-# 
+#
 # stretch_str:
-# This specifies whether or not the global grid is stretched.  This is 
+# This specifies whether or not the global grid is stretched.  This is
 # empty if there is no stretching of the global grid (i.e. if stretch_-
 # fac is assumed to be 1) and "strch" otherwise.  Note that for gtype=
 # "regional", the global grid is a "ghost" grid in that it is only used
-# for grid generation (i.e. the model isn't integrated on the global 
-# grid).  Nevertheless, it may still be stretched, so stretch_str is 
+# for grid generation (i.e. the model isn't integrated on the global
+# grid).  Nevertheless, it may still be stretched, so stretch_str is
 # still set to "strch" in this case.
 #
 # refine_str:
@@ -380,11 +396,11 @@ elif [ "$gtype" = "stretch" ]; then
 #
 # stretch_fac is the factor by which tile 6 of the global cubed-sphere
 # grid will be compressed to obtain a new stretched global grid that has
-# a higher resolution (i.e. smaller grid size) on tile 6 (relative to 
+# a higher resolution (i.e. smaller grid size) on tile 6 (relative to
 # tile 6 of the original unstretched global grid).  Note that this im-
 # plies that the remaining 5 tiles of the new stretched grid will have
 # lower resolution than their counterparts on the original unstretched
-# grid. 
+# grid.
 #
   export stretch_fac=${stretch_fac:-1.5}
 #
@@ -411,7 +427,7 @@ elif [ "$gtype" = "nest" ]; then
   refine_str="rfn"
 #
 # For gtype set to "nest", stretch_fac, target_lon, and target_lat have
-# the same meaning as for gtype set to "stretch", i.e. they are the 
+# the same meaning as for gtype set to "stretch", i.e. they are the
 # stretching factor and center longitude and latitude of the highest re-
 # solution tile (which is again hard-coded to be tile 6) of the global
 # grid that serves as the "parent" of the nested grid.
@@ -422,9 +438,9 @@ elif [ "$gtype" = "nest" ]; then
 #
 # refine_ratio is the ratio of the number of grid points in the nested
 # grid to the number of grid points on the parent tile along the bound-
-# ary of the two grids (where the boundary consists of four segments - 
-# the lower, right, upper, and left edges of the nest region).  Thus, 
-# setting refine_ratio = 3 means that each cell of the parent tile is 
+# ary of the two grids (where the boundary consists of four segments -
+# the lower, right, upper, and left edges of the nest region).  Thus,
+# setting refine_ratio = 3 means that each cell of the parent tile is
 # met by 3 cells of the nested grid.  Note also that if the grid size on
 # the parent tile is delx, then the grid size on the nested grid will be
 # delx/refine_ratio.
@@ -438,7 +454,7 @@ elif [ "$gtype" = "nest" ]; then
   jstart_nest_tile6=${jstart_nest_tile6:-19}
   jend_nest_tile6=${jend_nest_tile6:-82}
 #
-# istart_nest, iend_nest, jstart_nest, and jend_nest are the starting 
+# istart_nest, iend_nest, jstart_nest, and jend_nest are the starting
 # and ending i and j indices of the nest on the parent tile's "super-
 # grid", where the parent tile is tile 6 and its supergrid is a grid
 # having twice the resolution of the parent tile's grid.
@@ -471,7 +487,7 @@ elif [ "$gtype" = "regional" ]; then
 # Check if a predefined regional domain is set and proceed accordingly.
 #
 #-----------------------------------------------------------------------
-# 
+#
   case $predef_rgnl_domain in
 #
 #-----------------------------------------------------------------------
@@ -482,15 +498,15 @@ elif [ "$gtype" = "regional" ]; then
 #
   "")
 #
-# For gtype set to "regional", stretch_fac, target_lon, and target_lat 
-# have the same meaning as for gtype set to "stretch", i.e. they are the 
+# For gtype set to "regional", stretch_fac, target_lon, and target_lat
+# have the same meaning as for gtype set to "stretch", i.e. they are the
 # stretching factor and center longitude and latitude of the highest re-
-# solution tile (which is again hard-coded to be tile 6) of the global 
-# grid that serves as the "parent" of the regional grid, except that 
+# solution tile (which is again hard-coded to be tile 6) of the global
+# grid that serves as the "parent" of the regional grid, except that
 # this parent grid is an imaginary or "ghost" grid in the sense that the
 # governing equations are not integrated on it (they are integrated only
 # on the regional grid).  Thus, the parent grid is only used as a refer-
-# ence grid with respect to which to construct the regional grid.  The 
+# ence grid with respect to which to construct the regional grid.  The
 # preprocessing will generate grid files for the 6 tiles of this parent
 # grid (as well as for the regional grid, i.e. tile 7), but those 6 grid
 # files will not be used as input to the FV3 model.
@@ -502,8 +518,8 @@ elif [ "$gtype" = "regional" ]; then
 # refine_ratio is the ratio of the number of grid cells in the regional
 # grid for each grid cell on the PT's grid along the boundary of the re-
 # gional grid (which consists of the lower, right, upper, and left edges
-# of the regional domain).  Thus, setting refine_ratio = 3 means that 
-# each cell on the PT's grid is met by 3 cells on the regional grid.  
+# of the regional domain).  Thus, setting refine_ratio = 3 means that
+# each cell on the PT's grid is met by 3 cells on the regional grid.
 # Note also that if the grid size on the parent tile is delx, then the
 # grid size on the regional grid will be delx/refine_ratio.
 #
@@ -523,15 +539,15 @@ elif [ "$gtype" = "regional" ]; then
 # Consider valid predefined regional domains.
 #
 # For the predefined domains, we determine the starting and ending indi-
-# ces of the regional grid within its parent tile (or PT, which is tile 
-# 6) by specifying the number of cells (as counted on tile 6) between 
-# the boundary of tile 6 and that of the regional grid (tile 7) along 
+# ces of the regional grid within its parent tile (or PT, which is tile
+# 6) by specifying the number of cells (as counted on tile 6) between
+# the boundary of tile 6 and that of the regional grid (tile 7) along
 # the left, right, bottom, and top portions of these boundaries.  (Note
-# that we do not use "west", "east", "north", and "south" here because 
+# that we do not use "west", "east", "north", and "south" here because
 # the tiles aren't necessarily oriented such that the left boundary seg-
 # ment corresponds to the west edge, etc.)  We refer to this region of
 # cells between the tile 6 and tile 7 boundaries as the gap.  The width
-# of this gap along the left, right, bottom, and top portions of the 
+# of this gap along the left, right, bottom, and top portions of the
 # boundaries are specified via the parameters
 #
 #   num_gap_cells_tile6_left
@@ -543,11 +559,11 @@ elif [ "$gtype" = "regional" ]; then
 # count is on tile 6 (not tile 7).
 #
 # Note that we must make the gap wide enough (by making the above four
-# parameters large enough) such that a region of halo cells around the 
-# boundary of the regional grid fits into the gap, i.e. such that the 
+# parameters large enough) such that a region of halo cells around the
+# boundary of the regional grid fits into the gap, i.e. such that the
 # halo does not overrun the boundary of tile 6.  (The halo is added la-
 # ter in another script; its function is to feed in boundary conditions
-# to the regional grid.)  Currently, a halo of 5 regional grid cells is 
+# to the regional grid.)  Currently, a halo of 5 regional grid cells is
 # used round the regional grid.  Setting num_gap_cells_tile6_... to at
 # least 10 leaves enough room for this halo.
 #
@@ -608,7 +624,7 @@ elif [ "$gtype" = "regional" ]; then
 
   esac
 #
-# istart_nest, iend_nest, jstart_nest, and jend_nest are the starting 
+# istart_nest, iend_nest, jstart_nest, and jend_nest are the starting
 # and ending i and j indices of the nest on the parent tile's "super-
 # grid", where the parent tile is tile 6 and its supergrid is a grid
 # having twice the resolution of the parent tile's grid.
@@ -644,10 +660,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Create strings that will be used to form a subdirectory name for the 
+# Create strings that will be used to form a subdirectory name for the
 # current grid configuration.  Two subdirectories having this name will
-# be created; one will be a temporary work directory (created in the 
-# specified temporary directory TMPDIR), while the other will be the 
+# be created; one will be a temporary work directory (created in the
+# specified temporary directory TMPDIR), while the other will be the
 # output directory for the preprocessing scripts (created in $BASE_GSM/
 # fix/fix_fv3).
 #
@@ -658,15 +674,15 @@ fi
 #
 nest_str=${nest_str:+_${nest_str}}
 #
-# If stretch_str is set to a non-empty value (i.e. it is neither null 
-# nor unset), prepend an underscore to it and append to it the value of 
+# If stretch_str is set to a non-empty value (i.e. it is neither null
+# nor unset), prepend an underscore to it and append to it the value of
 # stretch_fac (with any decimal points replaced with "p"s).  Otherwise,
 # set it to null.
 #
 stretch_str=${stretch_str:+_${stretch_str}_$( echo "${stretch_fac}" | sed "s|\.|p|" )}
 #
 # If refine_str is set to a non-empty value (i.e. it is neither null nor
-# unset), prepend an underscore to it and append to it an underscore 
+# unset), prepend an underscore to it and append to it an underscore
 # followed by the value of refine_ratio.  Otherwise, set it to null.
 #
 refine_str=${refine_str:+_${refine_str}_${refine_ratio}}
@@ -683,7 +699,7 @@ export subdir_name=${coverage_str}${nest_str}_${CRES}${stretch_str}${refine_str}
 #-----------------------------------------------------------------------
 #
 # Set out_dir.  This is the directory in which the preprocessing scripts
-# place their output files.  Create this directory if doesn't already 
+# place their output files.  Create this directory if doesn't already
 # exist.
 #
 #-----------------------------------------------------------------------
@@ -694,7 +710,7 @@ mkdir -p $out_dir
 #-----------------------------------------------------------------------
 #
 # Set the directory (INIDIR) in which we will store the analysis (at the
-# initial time CDATE) and forecasts (at the boundary condition times) 
+# initial time CDATE) and forecasts (at the boundary condition times)
 # files.
 #
 #-----------------------------------------------------------------------
