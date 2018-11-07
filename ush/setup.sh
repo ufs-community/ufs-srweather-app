@@ -1156,7 +1156,7 @@ domain:"
   set_file_param $SCRIPT_VAR_DEFNS_FP "iend_rgnl_T6" $iend_rgnl_T6 $VERBOSE
   set_file_param $SCRIPT_VAR_DEFNS_FP "jend_rgnl_T6" $jend_rgnl_T6 $VERBOSE
   set_file_param $SCRIPT_VAR_DEFNS_FP "refine_ratio" $refine_ratio $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "WRTCMP_PARAMS_TEMPLATE_FN" $WRTCMP_PARAMS_TEMPLATE_FN
+  set_file_param $SCRIPT_VAR_DEFNS_FP "WRTCMP_PARAMS_TEMPLATE_FN" $WRTCMP_PARAMS_TEMPLATE_FN $VERBOSE
 
 fi
 #

@@ -202,6 +202,7 @@ case $MACHINE in
   export APRUNC="time"
 #  . $USHDIR/set_stack_limit_jet.sh
   ulimit -a
+  ;;
 #
 "ODIN")
 #
