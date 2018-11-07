@@ -1,0 +1,72 @@
+\chapter{Community SAR-FV3 Workflow}
+ 
+%-------------------------------------------------------------------------------
+\section{Overview}
+\begin{itemize}
+\item The Community SAR-FV3 workflow and associated scripts are available in the \verb|regional_UFS| branch of the fv3gfs repository.
+\item Within the regional directory, a complete workflow for Theia exists (\verb|FV3_Theia.xml|), while a parallel workflow for Cheyenne is currently under development (\verb|FV3_Cheyenne.xml|).  Eventually both workflows will be merged to allow for multi-platform flexibility.
+\item The workflow and scripts are designed to accommodate any domain, resolution, stretch factor, \verb|BC_interval|, or forecast length, with the scripts handling all subsequent grid decomposition automatically (only \verb|layout_x|, \verb|layout_y|, and \verb|ncores_per_node| are required as environment variables).
+\item All scripts called by the workflow can be found in the ush directory and are run in this order:
+    \begin{itemize}
+    \item \verb|fv3gfs_driver_grid_regional.sh|
+    \item \verb|get_GFS_anl_fcst_files.sh|
+    \item \verb|run_chgres_rgnl_IC_BC0.sh|
+    \item \verb|run_chgres_rgnl_BCs.sh|
+    \item \verb|stage.sh|
+    \item \verb|run_FV3.sh|
+    \end{itemize}
+\item Dependencies exist on successful completion of the previous script/task before the workflow can continue.
+\item The stage task in the workflow automatically handles grid decomposition definitions necessary within the input.nml file based on user-defined \verb|layout_x| and \verb|layout_y| and will warn the user (then fail) if the chosen \verb|layout_x| and \verb|layout_y| are incompatible with the generated domain.
+\item The shell scripts called by the Rocoto workflow can also be run on the command line without any modifications (in this case, the shell scripts will source a global config.sh file located in ush instead of obtaining environment variable info from the Rocoto workflow)
+\end{itemize}
+
+\subsection{Description of Rocoto tasks}
+
+\begin{itemize}
+\item \verb|fv3gfs_driver_grid_regional|
+    \begin{itemize}
+    \item Generates the netCDF files describing the grid and (unfiltered and filtered) orography.  These consist of two grid description files and two filtered orography files.  The first grid file describes a regional grid having a halo region of 3 cells, while the other describes a grid with 4 halo cells.  These two files are obtained by ''shaving'' a file describing a grid with an even larger halo, e.g. 6 cells (which is also output in a temp directory)  Similarly, the first filtered orography file contains 0 halo cells while the second contains 4 halo cells.  These are also obtained by shaving a filtered orography file with an even larger halo (e.g. 6 cells).
+    \end{itemize}
+\item \verb|get_GFS_anl_fcst_files|
+    \begin{itemize}
+    \item Copies GFS analysis and forecast files (in nemsio format) that are needed to generate the IC/BC netcdf files for a SAR FV3 run.  These are either copied from disk (if available) or extracted from an archive (tar) file that is copied over from HPSS.  There are 3 analysis files (\verb|gfs.t00z.atmanl.nemsio|, \verb|gfs.t00z.nstanl.nemsio|, and \verb|gfs.t00z.sfcanl.nemsio|) and one forecast file for each hour after the initial time for which a netCDF BC file needs to be generated (e.g. \verb|gfs.t00z.atmf003.nemsio|, \verb|gfs.t00z.atmf006.nemsio|, etc). 
+    \end{itemize}
+\item \verb|run_chgres_rgnl_IC_BC0|
+    \begin{itemize}
+    \item Generates the netCDF ICs file and the first (i.e. forecast hour 0) netCDF BCs file.  The ICs file is named gfs\_data.tile7.nc, and the first BCs file is named \verb|gfs_bndy.tile7.000.nc|.
+    \end{itemize}
+\item \verb|run_chgres_rgn_BCs|
+    \begin{itemize}
+    \item Generates the netCDF BCs files for all forecast hours AFTER hour 0 at a frequency of \verb|"BC_INTERVAL_HRS"| hours out to \verb|"FCST_LEN_HRS"| (as defined in Rocoto workflow).  These files are named, for example, \verb|gfs_bndy.tile7.003.nc|, \verb|gfs_bndy.tile7.006.nc|, etc.
+    \end{itemize}
+\item \verb|stage|
+    \begin{itemize}
+    \item Creates the run directory and copies/links necessary netCDF files generated during the preprocessing tasks into the INPUT directory
+    \item Copies template namelist and configure files into the run directory and modifies them according to variables defined in the workflow related to start/end time, forecast length, boundary condition interval, grid decomposition and script-calculated nodes and ppn, etc.
+    \item Modifies the Rocoto workflow resource definitions for nodes and processes per node for the run\_FV3 task based on user-defined layout\_x and layout\_y 
+\end{itemize}
+\item \verb|run_FV3|
+    \begin{itemize}
+    \item Starts integration of the model through execution of the run.regional script in the run directory
+    \end{itemize}
+\end{itemize}
+
+This is a dummy citation to stop latex from complaining that the document contains no citations: \cite{Anderson2007}.  
+Bye.
+
+
+%-------------------------------------------------------------------------------
+\subsection{Steps to run rocoto tasks}
+
+\begin{enumerate}
+\item Set environment variables, \verb|layout_x|, \verb|layout_y|, and \verb|ncores_per_node|
+\item Modify ENTITY in \verb ''regional/FV3_Theia.xml'' |, for examples, 
+\verb|USER, ACCOUNT, BASEDIR .... RES, FCST_LEN_HRS, BC_INTERVAL_HRS|
+\item Build NEMSfv3gfs
+\item Launch rocotorun as
+\verb|$>rocotorun -w ${pathnam}/FV3_Theia.xml -d ${pathnam}/FV3_Theia.db -v 10|
+Where \verb|${pathnam}| is the working directory of fv3gfs. File \verb|?FV3_Theia.db?| need not exist prior to the first time the command is run.
+\end{enumerate}
+
+
+
