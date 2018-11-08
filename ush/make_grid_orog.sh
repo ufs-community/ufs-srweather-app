@@ -219,7 +219,7 @@ case $MACHINE in
   export NODES=1
   export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
   export KMP_AFFINITY=disabled
-  export topo_dir=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_orog
+  export topo_dir="/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_orog"
 
   ulimit -s unlimited
   ulimit -a
