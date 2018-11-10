@@ -43,15 +43,25 @@ set -ux
 #
 #-----------------------------------------------------------------------
 #
-# Set the names of the template and actual rocoto xml files and their 
-# full paths.
+# Source the shell script containing the function that replaces variable
+# values (or value placeholders) in several types of files (e.g. Fortran
+# namelist files) with actual values.  This must be done here to define
+# the function so that it can be used later below.
 #
 #-----------------------------------------------------------------------
 #
-XML_TEMPLATE_FN="FV3SAR_wflow.xml"
-XML_TEMPLATE_FP="$TEMPLATE_DIR/$XML_TEMPLATE_FN"
-XML_FN="FV3SAR_wflow.xml"
-XML_FP="$RUNDIR/$XML_FN"
+. ./set_file_param.sh
+#
+#-----------------------------------------------------------------------
+#
+# Set the full paths to the template and actual workflow xml files.  The
+# actual workflow xml will be placed in the run directory and then used
+# by rocoto to run the workflow.
+#
+#-----------------------------------------------------------------------
+#
+TEMPLATE_XML_FP="$TEMPLATE_DIR/$WFLOW_XML_FN"
+WFLOW_XML_FP="$RUNDIR/$WFLOW_XML_FN"
 #
 #-----------------------------------------------------------------------
 #
@@ -59,7 +69,26 @@ XML_FP="$RUNDIR/$XML_FN"
 #
 #-----------------------------------------------------------------------
 #
-cp $XML_TEMPLATE_FP $XML_FP
+cp $TEMPLATE_XML_FP $WFLOW_XML_FP
+#
+#-----------------------------------------------------------------------
+#
+# Set local variables that will be used later below to replace place-
+# holder values in the workflow xml file.
+#
+#-----------------------------------------------------------------------
+#
+PROC_RUN_FV3SAR="${NUM_NODES}:ppn=${ncores_per_node}"
+
+FHR=( $( seq 0 1 $fcst_len_hrs ) )
+i=0
+FHR_STR=$( printf "%02d" "${FHR[i]}" )
+numel=${#FHR[@]}
+for i in $(seq 0 $(($numel-1)) ); do
+  HH=$( printf "%02d" "${FHR[i]}" )
+  FHR_STR="$FHR_STR $HH"
+done
+FHR="$FHR_STR"
 #
 #-----------------------------------------------------------------------
 #
@@ -69,32 +98,35 @@ cp $XML_TEMPLATE_FP $XML_FP
 #
 #-----------------------------------------------------------------------
 #
-REGEXP="(^\s*<!ENTITY\s+SCRIPT_VAR_DEFNS_FP\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${SCRIPT_VAR_DEFNS_FP}\3|g" $XML_FP
+set_file_param $WFLOW_XML_FP "SCRIPT_VAR_DEFNS_FP" \
+               "$SCRIPT_VAR_DEFNS_FP" $VERBOSE
 
-REGEXP="(^\s*<!ENTITY\s+ACCOUNT\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${ACCOUNT}\3|g" $XML_FP
+set_file_param $WFLOW_XML_FP "ACCOUNT" \
+               "$ACCOUNT" $VERBOSE
 
-REGEXP="(^\s*<!ENTITY\s+SCHED\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${SCHED}\3|g" $XML_FP
+set_file_param $WFLOW_XML_FP "SCHED" \
+               "$SCHED" $VERBOSE
 
-REGEXP="(^\s*<!ENTITY\s+QUEUE_DEFAULT\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${QUEUE_DEFAULT}\3|g" $XML_FP
+set_file_param $WFLOW_XML_FP "QUEUE_DEFAULT" \
+               "$QUEUE_DEFAULT" $VERBOSE
 
-REGEXP="(^\s*<!ENTITY\s+QUEUE_HPSS\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${QUEUE_HPSS}\3|g" $XML_FP
+set_file_param $WFLOW_XML_FP "QUEUE_HPSS" \
+               "$QUEUE_HPSS" $VERBOSE
 
-REGEXP="(^\s*<!ENTITY\s+QUEUE_RUN_FV3SAR\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${QUEUE_RUN_FV3SAR}\3|g" $XML_FP
+set_file_param $WFLOW_XML_FP "QUEUE_RUN_FV3SAR" \
+               "$QUEUE_RUN_FV3SAR" $VERBOSE
 
-REGEXP="(^\s*<!ENTITY\s+USHDIR\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${USHDIR}\3|g" $XML_FP
+set_file_param $WFLOW_XML_FP "USHDIR" \
+               "$USHDIR" $VERBOSE
 
-REGEXP="(^\s*<!ENTITY\s+RUNDIR\s*\")(.*)(\">.*)"
-sed -i -r -e "s|$REGEXP|\1${RUNDIR}\3|g" $XML_FP
+set_file_param $WFLOW_XML_FP "RUNDIR" \
+               "$RUNDIR" $VERBOSE
 
-REGEXP="(^\s*<!ENTITY\s*PROC_RUN_FV3SAR\s*\")(.*)(\">.*)"
-sed -i -r -e "s/$REGEXP/\1${NUM_NODES}:ppn=${ncores_per_node}\3/g" $XML_FP
+set_file_param $WFLOW_XML_FP "PROC_RUN_FV3SAR" \
+               "$PROC_RUN_FV3SAR" $VERBOSE
+
+set_file_param $WFLOW_XML_FP "FHR" \
+               "$FHR" $VERBOSE
 #
 #-----------------------------------------------------------------------
 #
@@ -116,9 +148,9 @@ ROCOTO_EXEC_DIR=${ROCOTO_EXEC_FP%/rocotorun}
 #
 #-----------------------------------------------------------------------
 #
-DB_FN="${XML_FN%.xml}.db"
+WFLOW_DB_FN="${WFLOW_XML_FN%.xml}.db"
 
-cmd="cd $RUNDIR && ${ROCOTO_EXEC_DIR}/rocotorun -d ${DB_FN} -w ${XML_FN} -v 10"
+cmd="cd $RUNDIR && ${ROCOTO_EXEC_DIR}/rocotorun -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
 echo
 echo "To run the workflow, use the following command:"
 echo
@@ -127,7 +159,7 @@ echo
 echo "This command can be added in the user's crontab for automatic \
 resubmission of the workflow."
 
-cmd="cd $RUNDIR && ${ROCOTO_EXEC_DIR}/rocotostat -d ${DB_FN} -w ${XML_FN} -v 10"
+cmd="cd $RUNDIR && ${ROCOTO_EXEC_DIR}/rocotostat -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
 echo
 echo "To check on the status of the workflow, use the following command:"
 echo

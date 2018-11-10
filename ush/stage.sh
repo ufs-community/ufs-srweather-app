@@ -130,7 +130,8 @@ set_file_param $FV3_NAMELIST_FP "bc_update_interval" $BC_update_intvl_hrs $VERBO
 #
 #-----------------------------------------------------------------------
 #
-# Set the full path to the model configuration file.
+# Set the full path to the model configuration file.  Then set parame-
+# ters in that file.
 #
 #-----------------------------------------------------------------------
 #
@@ -140,33 +141,7 @@ if [ $VERBOSE ]; then
   echo "Setting parameters in file:"
   echo "  MODEL_CONFIG_FP = $MODEL_CONFIG_FP"
 fi
-#
-#-----------------------------------------------------------------------
-#
-# If the write component is to be used, then a set of parameters, inclu-
-# ding those that define the write component's output grid, need to be 
-# specified in the model configuration file (MODEL_CONFIG_FP).  This is
-# done by appending a template file specified by the variable WRTCMP_PA-
-# RAMS_TEMPLATE_FN to MODEL_CONFIG_FP and then modifying the values in 
-# the modified MODEL_CONFIG_FP file.  Note that WRTCMP_PARAMS_TEMPLATE_-
-# FN is assumed to be located in the templates directory (TEMPLATE_DIR).
-# First, append WRTCMP_PARAMS_TEMPLATE_FN to MODEL_CONFIG_FP.  
-#
-#-----------------------------------------------------------------------
-#
-WRTCMP_PARAMS_TEMPLATE_FP="$TEMPLATE_DIR/$WRTCMP_PARAMS_TEMPLATE_FN"
-cat $WRTCMP_PARAMS_TEMPLATE_FP >> $MODEL_CONFIG_FP
-#
-#-----------------------------------------------------------------------
-#
-# Now set parameters in the model configuration file.
-#
-#-----------------------------------------------------------------------
-#
-set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
-set_file_param $MODEL_CONFIG_FP "quilting" $quilting $VERBOSE
-set_file_param $MODEL_CONFIG_FP "write_groups" $write_groups $VERBOSE
-set_file_param $MODEL_CONFIG_FP "write_tasks_per_group" $write_tasks_per_group $VERBOSE
+
 set_file_param $MODEL_CONFIG_FP "PE_MEMBER01" $PE_MEMBER01 $VERBOSE
 set_file_param $MODEL_CONFIG_FP "start_year" $YYYY $VERBOSE
 set_file_param $MODEL_CONFIG_FP "start_month" $MM $VERBOSE
@@ -174,6 +149,28 @@ set_file_param $MODEL_CONFIG_FP "start_day" $DD $VERBOSE
 set_file_param $MODEL_CONFIG_FP "start_hour" $HH $VERBOSE
 set_file_param $MODEL_CONFIG_FP "nhours_fcst" $fcst_len_hrs $VERBOSE
 set_file_param $MODEL_CONFIG_FP "ncores_per_node" $ncores_per_node $VERBOSE
+set_file_param $MODEL_CONFIG_FP "quilting" $quilting $VERBOSE
+set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
+#
+#-----------------------------------------------------------------------
+#
+# If the write component is to be used, then a set of parameters, in-
+# cluding those that define the write component's output grid, need to
+# be specified in the model configuration file (MODEL_CONFIG_FP).  This 
+# is done by appending a template file (in which some write-component 
+# parameters are set to actual values while others are set to placehol-
+# ders) to MODEL_CONFIG_FP and then replacing the placeholder values in
+# the (new) MODEL_CONFIG_FP file with actual values.  The full path of
+# this template file is specified in the variable WRTCMP_PA RAMS_TEMP-
+# LATE_FP. 
+#
+#-----------------------------------------------------------------------
+#
+if [ "$quilting" = ".true." ]; then
+  cat $WRTCMP_PARAMS_TEMPLATE_FP >> $MODEL_CONFIG_FP
+  set_file_param $MODEL_CONFIG_FP "write_groups" $write_groups $VERBOSE
+  set_file_param $MODEL_CONFIG_FP "write_tasks_per_group" $write_tasks_per_group $VERBOSE
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -286,6 +283,14 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Change location to the INPUT subdirectory of the run directory.
+#
+#-----------------------------------------------------------------------
+#
+cd $RUNDIR/INPUT
+#
+#-----------------------------------------------------------------------
+#
 # Copy the grid mosaic file (which describes the connectivity of the va-
 # rious tiles) to the INPUT subdirectory of the run directory.  In the 
 # regional case, this file doesn't have much information because the 
@@ -303,8 +308,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_GRID/${CRES}_mosaic.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/${CRES}_mosaic.nc $RUNDIR/INPUT/grid_spec.nc
+cp $WORKDIR_GRID/${CRES}_mosaic.nc .
+ln -sf ${CRES}_mosaic.nc grid_spec.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -318,9 +323,8 @@ ln -sf $RUNDIR/INPUT/${CRES}_mosaic.nc $RUNDIR/INPUT/grid_spec.nc
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/${CRES}_grid.tile7.halo${nh3_T7}.nc \
-       $RUNDIR/INPUT/${CRES}_grid.tile7.nc
+cp $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc .
+ln -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -334,9 +338,8 @@ ln -sf $RUNDIR/INPUT/${CRES}_grid.tile7.halo${nh3_T7}.nc \
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/${CRES}_grid.tile7.halo${nh4_T7}.nc \
-       $RUNDIR/INPUT/grid.tile7.halo${nh4_T7}.nc
+cp $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc .
+ln -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -350,9 +353,8 @@ ln -sf $RUNDIR/INPUT/${CRES}_grid.tile7.halo${nh4_T7}.nc \
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
-       $RUNDIR/INPUT/oro_data.tile7.halo${nh4_T7}.nc
+cp $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc .
+ln -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -366,9 +368,8 @@ ln -sf $RUNDIR/INPUT/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/${CRES}_oro_data.tile7.halo${nh0_T7}.nc \
-       $RUNDIR/INPUT/oro_data.nc
+cp $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
+ln -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -381,9 +382,8 @@ ln -sf $RUNDIR/INPUT/${CRES}_oro_data.tile7.halo${nh0_T7}.nc \
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_ICBC/gfs_data.tile7.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/gfs_data.tile7.nc \
-       $RUNDIR/INPUT/gfs_data.nc
+cp $WORKDIR_ICBC/gfs_data.tile7.nc .
+ln -sf gfs_data.tile7.nc gfs_data.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -396,9 +396,8 @@ ln -sf $RUNDIR/INPUT/gfs_data.tile7.nc \
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_ICBC/sfc_data.tile7.nc $RUNDIR/INPUT
-ln -sf $RUNDIR/INPUT/sfc_data.tile7.nc \
-       $RUNDIR/INPUT/sfc_data.nc
+cp $WORKDIR_ICBC/sfc_data.tile7.nc .
+ln -sf sfc_data.tile7.nc sfc_data.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -407,7 +406,7 @@ ln -sf $RUNDIR/INPUT/sfc_data.tile7.nc \
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_ICBC/gfs_bndy*.nc $RUNDIR/INPUT
+cp $WORKDIR_ICBC/gfs_bndy*.nc .
 #
 #-----------------------------------------------------------------------
 #
@@ -417,6 +416,6 @@ cp $WORKDIR_ICBC/gfs_bndy*.nc $RUNDIR/INPUT
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_ICBC/gfs_ctrl.nc $RUNDIR/INPUT
+cp $WORKDIR_ICBC/gfs_ctrl.nc .
 
 

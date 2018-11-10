@@ -517,24 +517,8 @@ cat << EOF >> fort.81
 EOF
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-${CHGRESTHREAD:-1}}
-#
-# GSK 2018-10-12:
-# I changed the original cat command
-#
-#   cat << EOF >> NAMCHG
-#
-# to
-#
-#   cat << EOF > NAMCHG
-#
-# i.e. the >> should be replaced with a >.  That is so that we do not 
-# just append to the preexisting NAMCHG file.  If we just append, then
-# the appneded namelist will not be read in because fortran's behavior
-# is to read at the start of the file and stop reading after the first
-# namelist is read in (I verified this behavior with the chgres executa-
-# ble).
-#
-cat << EOF > NAMCHG
+
+cat << EOF >> NAMCHG
   &NAMCHG  LEVS=$LEVS, LONB=$LONB, LATB=$LATB,
            NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
            LSOIL=$LSOIL, IVSSFC=$IVSSFC, OUTTYP=$OUTTYP,

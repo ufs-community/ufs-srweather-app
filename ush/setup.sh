@@ -252,7 +252,8 @@ if [ "$RES" != "48" ] && \
    [ "$RES" != "1152" ] && \
    [ "$RES" != "3072" ]; then
   echo
-  echo "Error.  Number of grid points specified in \"RES\" is not supported:"
+  echo "Error.  Number of grid cells per tile (in each direction) \
+specified in \"RES\" is not supported:"
   echo "  RES = $RES"
   echo "RES must be one of:  48  96  192  384  768  1152  3072"
   echo "Exiting script."
@@ -301,7 +302,7 @@ YMD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
-FV3SAR_DIR="$BASEDIR/tmp/fv3gfs"
+FV3SAR_DIR="$BASEDIR/fv3gfs"
 USHDIR="$FV3SAR_DIR/ush"
 TEMPLATE_DIR="$USHDIR/templates"
 
@@ -455,13 +456,14 @@ case $predef_domain in
   num_margin_cells_T6_top=10
   jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 #
-# If the write-component is being used and the name of the template file
-# that specifies various write-component parameters has not been speci-
-# fied (either the variable containing the name is not defined, or it is
-# set to an empty string), set the name of the template file.
+# If the write-component is being used and the variable (WRTCMP_PARAMS_-
+# TEMPLATE_FN) containing the name of the template file that specifies 
+# various write-component parameters has not been specified or has been
+# set to an empty string, reset it to the preexisting template file for
+# the RAP domain.
 #
-  if [ "$quilting" = ".true." -a -z "$WRTCMP_PARAMS_TEMPLATE_FN" ]; then
-    WRTCMP_PARAMS_TEMPLATE_FN="wrtcomp_RAP"
+  if [ "$quilting" = ".true." ]; then
+    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcomp_RAP"}
   fi
   ;;
 #
@@ -490,13 +492,14 @@ case $predef_domain in
   num_margin_cells_T6_top=80
   jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 #
-# If the write-component is being used and the name of the template file
-# that specifies various write-component parameters has not been speci-
-# fied (either the variable containing the name is not defined, or it is
-# set to an empty string), set the name of the template file.
+# If the write-component is being used and the variable (WRTCMP_PARAMS_-
+# TEMPLATE_FN) containing the name of the template file that specifies 
+# various write-component parameters has not been specified or has been
+# set to an empty string, reset it to the preexisting template file for
+# the HRRR domain.
 #
-  if [ "$quilting" = ".true." -a -z "$WRTCMP_PARAMS_TEMPLATE_FN" ]; then
-    WRTCMP_PARAMS_TEMPLATE_FN="wrtcomp_HRRR"
+  if [ "$quilting" = ".true." ]; then
+    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcomp_HRRR"}
   fi
   ;;
 #
@@ -1002,17 +1005,20 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If the write component is going to be used to write output files, make 
-# sure that the variable that contains the name of the template file 
-# that defines the write-component parameters (WRTCMP_PARAMS_TEMPLATE_-
-# FN) is not undefined or blank.
+# Set the full path to the template file that defines the write-compo-
+# nent parameters.  This file is assumed/expected to be in the templates
+# directory (TEMPLATE_DIR).  Then, if the write component is going to be
+# used to write output files (i.e. quilting is set to ".true."), make 
+# sure that this template file exists.
 #
 #-----------------------------------------------------------------------
 #
-if [ "$quilting" = ".true." -a -z "$WRTCMP_PARAMS_TEMPLATE_FN" ]; then
+WRTCMP_PARAMS_TEMPLATE_FP="$TEMPLATE_DIR/$WRTCMP_PARAMS_TEMPLATE_FN"
+if [ \( "$quilting" = ".true." \) -a \
+     \( ! -f "$WRTCMP_PARAMS_TEMPLATE_FP" \) ]; then
   echo
-  echo "The write-component template file has not been specified:"
-  echo "  WRTCMP_PARAMS_TEMPLATE_FN = $WRTCMP_PARAMS_TEMPLATE_FN"
+  echo "The write-component template file does not exist:"
+  echo "  WRTCMP_PARAMS_TEMPLATE_FP = $WRTCMP_PARAMS_TEMPLATE_FP"
   echo "Exiting script."
   exit 1
 fi
@@ -1111,12 +1117,13 @@ mkdir $RUNDIR/RESTART
 # scripts in the workflow.  We refer to this as the variable definitions
 # file.  We will create this file by first copying the configuration 
 # script config.sh in the shell script directory (USHDIR) to the run di-
-# rectory.  Then, if predef_domain is set to a valid non-empty value, we
-# will modify the values of run_title, the grid parameters, and possibly 
-# WRTCMP_PARAMS_TEMPLATE_FN (if it is unset or empty) in the variable 
-# definitions file to match those of the predefined domain.  Finally, we
-# will append to this file the values of new variables that have been 
-# derived above from those in the configuration script (config.sh).
+# rectory (and renaming it to the value in SCRIPT_VAR_DEFNS_FP), then 
+# resetting the original values in this variable definitions file (that
+# were inherited from config.sh) of those variables that were modified
+# in this setup script to their new values, and finally appending to the
+# variable definitions file any new variables introduced in this setup
+# script that may be needed by the scripts that perform the various 
+# tasks in the workflow (and which source the variable defintions file).
 #
 # First, set the full path to the variable definitions file and copy the
 # configuration file into it.
@@ -1140,11 +1147,13 @@ read -r -d '' str_to_insert << EOM
 #-----------------------------------------------------------------------
 # Section 1: 
 # This section is a copy of the configuration file (config.sh) in the 
-# shell scripts directory (USHDIR) execpt that if predef_domain has been
-# set to a valid non-empty string, the run title (run_title), the grid 
-# parameters, and possibly the name of the write-component parameter 
-# file (WRTCMP_PARAMS_TEMPLATE_FN) have been adjusted to match those of 
-# the specified predefined domain.
+# shell scripts directory (USHDIR) execpt that any parameters in that 
+# file that were modified by the setup script (setup.sh) are assigned 
+# the updated values in this file.  [This can happen, for example, if 
+# the variable predef_domain in config.sh has been set to a valid non-
+# empty string, in which case the run title (run_title), the grid para-
+# meters, and possibly the name of the write-component parameter file 
+# (WRTCMP_PARAMS_TEMPLATE_FN) will be modified in setup.sh.]
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
 #
@@ -1165,12 +1174,12 @@ sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
 #
 #-----------------------------------------------------------------------
 #
-# If predef_domain is set to a valid non-empty string, then run_title, 
-# the grid parameters, and possibly also WRTCMP_PARAMS_TEMPLATE_FN spe-
-# cified in the configuration file would have been overwritten above by 
-# new values.  In this case, replace the values of these parameters in 
-# the variable defintions file (that were inherited from the configura-
-# tion file) with the new values.
+# If predef_domain is set to a valid non-empty string, then the values 
+# of run_title, the grid parameters, and possibly WRTCMP_PARAMS_TEMP-
+# LATE_FN specified in the configuration file would have been updated 
+# above.  In this case, replace the values of these parameters in the 
+# variable defintions file (that were inherited from the configuration
+# file) with the updated values.
 #
 #-----------------------------------------------------------------------
 #
@@ -1202,7 +1211,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Append additional variable definitions (and comments) to the variable
-# definitions file.  These variables have been set above using the vari0
+# definitions file.  These variables have been set above using the vari-
 # ables in the configuration script.  They are needed by various tasks/
 # scripts in the workflow.
 #
@@ -1215,7 +1224,9 @@ cat << EOM >> $SCRIPT_VAR_DEFNS_FP
 #-----------------------------------------------------------------------
 # Section 2: 
 # This section defines variables that have been derived from the ones
-# above by the setup script (setup.sh).
+# above by the setup script (setup.sh) and which are needed by one or
+# more of the scripts that perform the workflow tasks (those scripts 
+# source this variable definitions file).
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
 #
@@ -1241,7 +1252,16 @@ WORKDIR_ICBC="$WORKDIR_ICBC"
 #
 #-----------------------------------------------------------------------
 #
-# Grid configuration parameters.
+# Files.
+#
+#-----------------------------------------------------------------------
+#
+WRTCMP_PARAMS_TEMPLATE_FP="$WRTCMP_PARAMS_TEMPLATE_FP"
+#
+#-----------------------------------------------------------------------
+#
+# Grid configuration parameters (these are in addition to the basic ones
+# defined above).
 #
 #-----------------------------------------------------------------------
 #

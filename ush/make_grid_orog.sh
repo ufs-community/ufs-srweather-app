@@ -155,8 +155,8 @@
 #
 #-----------------------------------------------------------------------
 #
-set -eux
-#set -ux
+#set -eux
+set -ux
 
 #
 #-----------------------------------------------------------------------
@@ -169,6 +169,19 @@ set -eux
 . $SCRIPT_VAR_DEFNS_FP
 
 export gtype
+export stretch_fac
+#
+#-----------------------------------------------------------------------
+#
+# Source the shell script containing the function that checks for preex-
+# isting directories and handles them according to the setting of the 
+# variable preexisting_dir_method (which is specified in the configura-
+# tion script config.sh).  This must be done here to define the function
+# so that it can be used later below.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/check_for_preexist_dir.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -289,12 +302,41 @@ export exec_dir="$FV3SAR_DIR/exec"
 # Create the various directories needed by the various steps/substeps in
 # this script.
 #
+# Note that there may be preexisting versions of these directories from
+# previous runs of this script (e.g. from the workflow task that runs 
+# this script failing and then being called again).  Thus, we first make
+# sure preexisting versions are deleted.
+#
 #-----------------------------------------------------------------------
 #
+check_for_preexist_dir $WORKDIR_GRID "delete"
+if [ $? -ne 0 ]; then
+  exit 1
+fi
 mkdir $WORKDIR_GRID
+
+check_for_preexist_dir $WORKDIR_OROG "delete"
+if [ $? -ne 0 ]; then
+  exit 1
+fi
 mkdir $WORKDIR_OROG
+
+check_for_preexist_dir $WORKDIR_FLTR "delete"
+if [ $? -ne 0 ]; then
+  exit 1
+fi
 mkdir $WORKDIR_FLTR
+
+check_for_preexist_dir $WORKDIR_SHVE "delete"
+if [ $? -ne 0 ]; then
+  exit 1
+fi
 mkdir $WORKDIR_SHVE
+
+check_for_preexist_dir $WORKDIR_ICBC "delete"
+if [ $? -ne 0 ]; then
+  exit 1
+fi
 mkdir $WORKDIR_ICBC
 #
 #-----------------------------------------------------------------------
@@ -508,13 +550,6 @@ elif [ $RES -eq 1152 ]; then
   export cd4=0.15; export max_slope=0.16; export n_del2_weak=20; export peak_fac=1.0  
 elif [ $RES -eq 3072 ]; then 
   export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0  
-else
-  echo
-  echo "Error.  Grid resolution specified in \"RES\" is not supported:"
-  echo "  RES = $RES"
-  echo "RES must be one of:  48  96  192  384  768  1152  3072"
-  echo "Exiting script."
-  exit 1
 fi
 #
 #-----------------------------------------------------------------------
@@ -557,20 +592,14 @@ $USHDIR/$orog_fltr_scr \
 #
 #-----------------------------------------------------------------------
 #
-# For clarity, rename the tile 7 grid and filtered orography files in 
-# WORKDIR_FLTR such that their new name contain the halo size.  Then 
-# create links whose name don't contain the halo size that point to 
-# these files.
+# For clarity, rename the tile 7 filtered orography file in WORKDIR_FLTR
+# such that its new name contains the halo size.  Then create a link 
+# whose name doesn't contain the halo size that points to the file.
 #
 #-----------------------------------------------------------------------
 #
 tile=7
 cd $WORKDIR_FLTR
-mv ${CRES}_grid.tile${tile}.nc \
-   ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc
-ln -fs ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc \
-       ${CRES}_grid.tile${tile}.nc
-
 mv oro.${CRES}.tile${tile}.nc \
    oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
 ln -fs oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \

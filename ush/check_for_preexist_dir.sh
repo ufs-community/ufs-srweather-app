@@ -10,11 +10,11 @@ function check_for_preexist_dir() {
 
     case $preexisting_dir_method in
 #
-# If preexisting_dir_method is set to "overwrite", we remove the pre-
-# existing directory in order to be able to create a new one (the crea-
-# tion of a new directory is performed in another script).
+# If preexisting_dir_method is set to "delete", we remove the preexist-
+# ing directory in order to be able to create a new one (the creation of
+# a new directory is performed in another script).
 #
-    "overwrite")
+    "delete")
 #
       rm -rf $dir
 #
@@ -83,7 +83,7 @@ function check_for_preexist_dir() {
       echo
       echo "Error from function $0:  Disallowed value for \"preexisting_dir_method\":"
       echo "  preexisting_dir_method = $preexisting_dir_method"
-      echo "Allowed values are:  \"overwrite\"  \"rename\"  \"quit\""
+      echo "Allowed values are:  \"delete\"  \"rename\"  \"quit\""
       echo "Exiting with nonzero status."
       exit 1
       ;;

@@ -1,5 +1,5 @@
 #!/bin/ksh
-set -ax
+set -aux
 
 if [ $# -ne 10 ]; then
    echo "Usage: $0 resolution grid_dir orog_dir out_dir cd4 peak_fac max_slope n_del2_weak script_dir gtype "
@@ -28,12 +28,22 @@ if [ ! -s $outdir ]; then mkdir -p $outdir ;fi
 cd $outdir ||exit 8
 
 if [ $gtype = regional ]; then
+#
+# Make links instead of copying to avoid multiple copies of files.
+#
 #  cp $griddir/$mosaic_grid .
 #  cp $griddir/C${res}_grid.tile7.nc .
-#  cp $orodir/${topo_file}.tile7.nc .
   ln -fs $griddir/$mosaic_grid $outdir/$mosaic_grid
   ln -fs $griddir/C${res}_grid.tile7.nc $outdir/C${res}_grid.tile7.nc
-  ln -fs $orodir/${topo_file}.tile7.nc $outdir/${topo_file}.tile7.nc
+#
+# Don't link to the input orography file containing the data that is go-
+# ing to be filtered because filter_topo will overwrite its input (un-
+# filtered) orography file with the filtered orography.  Thus, creating
+# a symlink to the input file would overwrite the unfiltered file in 
+# orodir.  Instead, just copy the unfiltered file to outdir, where it 
+# will be read as input and overwritten by the filtered data.
+#
+  cp $orodir/${topo_file}.tile7.nc .
 else
   cp $griddir/$mosaic_grid .
   cp $griddir/C${res}_grid.tile?.nc .

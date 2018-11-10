@@ -8,22 +8,22 @@ cp ${templates}/config.sh ${TMPDIR}/config.sh
 
 #Use sed to set all environment variables in config.sh
 
-sed -i -r -e "s/^(\s*MACHINE=)(.*)(#.*)/\1$MACHINE\ \3/" ${TMPDIR}/config.sh 
+sed -i -r -e "s/^(\s*machine=)(.*)(#.*)/\1$machine\ \3/" ${TMPDIR}/config.sh 
 sed -i -r -e "s?^(\s*BASEDIR=)(.*)(#.*)?\1$BASEDIR\ \3?" ${TMPDIR}/config.sh
 sed -i -r -e "s?^(\s*TMPDIR=)(.*)(#.*)?\1$TMPDIR\ \3?" ${TMPDIR}/config.sh
 sed -i -r -e "s/^(\s*fcst_len_hrs=)(.*)(#.*)/\1$fcst_len_hrs\ \3/" ${TMPDIR}/config.sh
-sed -i -r -e "s/^(\s*BC_update_intvl_hrs=)(.*)(#.*)/\1$BC_update_intvl_hrs\ \3/" ${TMPDIR}/config.sh
+sed -i -r -e "s/^(\s*BC_interval_hrs=)(.*)(#.*)/\1$BC_interval_hrs\ \3/" ${TMPDIR}/config.sh
 sed -i -r -e "s/^(\s*gtype=)(.*)(#.*)/\1$gtype\ \3/" ${TMPDIR}/config.sh
 sed -i -r -e "s/^(\s*RES=)(.*)(#.*)/\1$RES\ \3/" ${TMPDIR}/config.sh
 sed -i -r -e "s/^(\s*stretch_fac=)(.*)(#.*)/\1$stretch_fac\ \3/" ${TMPDIR}/config.sh
-sed -i -r -e "s/^(\s*lon_ctr_T6=)(.*)(#.*)/\1$lon_ctr_T6\ \3/" ${TMPDIR}/config.sh
-sed -i -r -e "s/^(\s*lat_ctr_T6=)(.*)(#.*)/\1$lat_ctr_T6\ \3/" ${TMPDIR}/config.sh
+sed -i -r -e "s/^(\s*lon_tile6_ctr=)(.*)(#.*)/\1$lon_tile6_ctr\ \3/" ${TMPDIR}/config.sh
+sed -i -r -e "s/^(\s*lat_tile6_ctr=)(.*)(#.*)/\1$lat_tile6_ctr\ \3/" ${TMPDIR}/config.sh
 sed -i -r -e "s/^(\s*refine_ratio=)(.*)(#.*)/\1$refine_ratio\ \3/" ${TMPDIR}/config.sh
-sed -i -r -e "s/^(\s*istart_rgnl_T6=)(.*)(#.*)/\1$istart_rgnl_T6\ \3/" ${TMPDIR}/config.sh
-sed -i -r -e "s/^(\s*iend_rgnl_T6=)(.*)(#.*)/\1$iend_rgnl_T6\ \3/" ${TMPDIR}/config.sh
-sed -i -r -e "s/^(\s*jstart_rgnl_T6=)(.*)(#.*)/\1$jstart_rgnl_T6\ \3/" ${TMPDIR}/config.sh
-sed -i -r -e "s/^(\s*jend_rgnl_T6=)(.*)(#.*)/\1$jend_rgnl_T6\ \3/" ${TMPDIR}/config.sh
-sed -i -r -e "s/^(\s*run_title=)(.*)(#.*)/\1$run_title\ \3/" ${TMPDIR}/config.sh
+sed -i -r -e "s/^(\s*istart_nest_tile6=)(.*)(#.*)/\1$istart_nest_tile6\ \3/" ${TMPDIR}/config.sh
+sed -i -r -e "s/^(\s*iend_nest_tile6=)(.*)(#.*)/\1$iend_nest_tile6\ \3/" ${TMPDIR}/config.sh
+sed -i -r -e "s/^(\s*jstart_nest_tile6=)(.*)(#.*)/\1$jstart_nest_tile6\ \3/" ${TMPDIR}/config.sh
+sed -i -r -e "s/^(\s*jend_nest_tile6=)(.*)(#.*)/\1$jend_nest_tile6\ \3/" ${TMPDIR}/config.sh
+sed -i -r -e "s/^(\s*title=)(.*)(#.*)/\1$title\ \3/" ${TMPDIR}/config.sh
 sed -i -r -e "s/^(\s*predef_rgnl_domain=)(.*)(#.*)/\1$predef_rgnl_domain\ \3/" ${TMPDIR}/config.sh
 sed -i -r -e "s/^(\s*layout_x=)(.*)(#.*)/\1$layout_x\ \3/" ${TMPDIR}/config.sh
 sed -i -r -e "s/^(\s*layout_y=)(.*)(#.*)/\1$layout_y\ \3/" ${TMPDIR}/config.sh

@@ -1,5 +1,5 @@
 #!/bin/ksh
-set -ax
+set -aux
 
 nargv=$#
 
@@ -29,10 +29,10 @@ elif [ $nargv -eq 7 ]; then  # cubed-sphere grid
   export orogfile="none"
   export hist_dir=$6
   export TMPDIR=$7
-  if [ -z ${WORKDIR_OROG+x} ]; then  # WORKDIR_OROG is not set.
+  if [ -z ${orog_dir+x} ]; then  # orog_dir is not set.
     export workdir=$TMPDIR/C${res}/orog/tile$tile
-  else                           # WORKDIR_OROG is set, so use it.
-    export workdir=$WORKDIR_OROG/tile$tile
+  else                           # orog_dir is set, so use it.
+    export workdir=$orog_dir/tile$tile
   fi
 elif [ $nargv -eq 8 ]; then  # input your own orography files
   export res=$1 
