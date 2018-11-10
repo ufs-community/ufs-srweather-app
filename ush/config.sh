@@ -174,8 +174,8 @@ run_title="desc_str"
 #
 #-----------------------------------------------------------------------
 #
-#predef_domain=""
-predef_domain="RAP"
+predef_domain=""
+#predef_domain="RAP"
 #predef_domain="HRRR"
 #
 #-----------------------------------------------------------------------
@@ -341,8 +341,8 @@ VERBOSE="true"
 #
 #-----------------------------------------------------------------------
 #
-layout_x="14"
-layout_y="14"
+layout_x="20"  # One possibility: 14 for RAP, 20 for HRRR.
+layout_y="20"  # One possibility: 14 for RAP, 20 for HRRR.
 #
 #-----------------------------------------------------------------------
 #
@@ -371,7 +371,7 @@ layout_y="14"
 #
 quilting=".true."
 write_groups="1"
-write_tasks_per_group="14"
+write_tasks_per_group="20"  # One possibility: 14 for RAP, 20 for HRRR.
 print_esmf=".false."
 
 
