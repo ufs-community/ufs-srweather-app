@@ -3,9 +3,9 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script sets parameters needed by the various scripts that are 
-# called by the rocoto workflow.  This secondary set of parameters is 
-# calculated using the primary set of user-defined parameters in the 
+# This script sets parameters needed by the various scripts that are
+# called by the rocoto workflow.  This secondary set of parameters is
+# calculated using the primary set of user-defined parameters in the
 # configuration script config.sh.  This script then saves both sets of
 # parameters in a variable-definitions script in the run directory that
 # will be sourced by the various scripts called by the workflow.
@@ -18,23 +18,23 @@
 #
 # Change shell behavior with "set" with these flags:
 #
-# -a 
-# This will cause the script to automatically export all variables and 
+# -a
+# This will cause the script to automatically export all variables and
 # functions which are modified or created to the environments of subse-
 # quent commands.
 #
-# -e 
-# This will cause the script to exit as soon as any line in the script 
-# fails (with some exceptions; see manual).  Apparently, it is a bad 
+# -e
+# This will cause the script to exit as soon as any line in the script
+# fails (with some exceptions; see manual).  Apparently, it is a bad
 # idea to use "set -e".  See here:
 #   http://mywiki.wooledge.org/BashFAQ/105
 #
-# -u 
+# -u
 # This will cause the script to exit if an undefined variable is encoun-
 # tered.
 #
 # -x
-# This will cause all executed commands in the script to be printed to 
+# This will cause all executed commands in the script to be printed to
 # the terminal (used for debugging).
 #
 #-----------------------------------------------------------------------
@@ -54,7 +54,7 @@ set -ux
 #-----------------------------------------------------------------------
 #
 # Source the shell script containing the function that checks for preex-
-# isting directories and handles them according to the setting of the 
+# isting directories and handles them according to the setting of the
 # variable preexisting_dir_method (which is specified in the configura-
 # tion script config.sh).  This must be done here to define the function
 # so that it can be used later below.
@@ -73,7 +73,7 @@ set -ux
 #-----------------------------------------------------------------------
 #
 . ./set_file_param.sh
-# 
+#
 #-----------------------------------------------------------------------
 #
 # Make sure VERBOSE is set to either "true" or "false".
@@ -118,7 +118,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the number of cores per node, the job scheduler, and the names of 
+# Set the number of cores per node, the job scheduler, and the names of
 # several queues.  These queues are defined in the configuration script
 # (config.sh).
 #
@@ -187,7 +187,7 @@ esac
 #
 # Set the grid type (gtype).  In general, in the FV3 code, this can take
 # on one of the following values: "global", "stretch", "nest", and "re-
-# gional".  The first three values are for various configurations of a 
+# gional".  The first three values are for various configurations of a
 # global grid, while the last one is for a regional grid.  Since here we
 # are only interested in a regional grid, gtype must be set to "region-
 # al".
@@ -195,7 +195,7 @@ esac
 #-----------------------------------------------------------------------
 #
 gtype="regional"
-# 
+#
 #-----------------------------------------------------------------------
 #
 # Make sure predef_domain is set to one of the allowed values.
@@ -216,12 +216,12 @@ of the following:"
   echo "Exiting script."
   exit 1
 fi
-# 
+#
 #-----------------------------------------------------------------------
 #
 # If predef_domain is set to a non-empty string, reset RES to the appro-
 # priate value.
-# 
+#
 #-----------------------------------------------------------------------
 #
 case $predef_domain in
@@ -237,7 +237,7 @@ case $predef_domain in
   ;;
 #
 esac
-# 
+#
 #-----------------------------------------------------------------------
 #
 # Make sure RES is set to one of the allowed values.
@@ -271,7 +271,7 @@ CRES="C${RES}"
 #
 #-----------------------------------------------------------------------
 #
-# Extract from CDATE the starting year, month, day, and hour of the 
+# Extract from CDATE the starting year, month, day, and hour of the
 # forecast.  These areneeded below for various operations.`
 #
 #-----------------------------------------------------------------------
@@ -357,7 +357,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Check whether the forecast length (fcst_len_hrs) is evenly divisible 
+# Check whether the forecast length (fcst_len_hrs) is evenly divisible
 # by the BC update interval (BC_update_intvl_hrs).  If not, print out a
 # warning and exit this script.  If so, generate an array of forecast
 # hours at which the boundary values will be updated.
@@ -394,16 +394,16 @@ run_title=${run_title:+_$run_title}
 #
 # 1) Reset the run title (run_title).
 # 2) Reset the grid parameters.
-# 3) If the write component is to be used (i.e. quilting is set to 
-#    ".true.") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the 
-#    name of the write-component template file is unset or empty, set 
-#    that filename variable to the appropriate preexisting template 
+# 3) If the write component is to be used (i.e. quilting is set to
+#    ".true.") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the
+#    name of the write-component template file is unset or empty, set
+#    that filename variable to the appropriate preexisting template
 #    file.
 #
 # For the predefined domains, we determine the starting and ending indi-
 # ces of the regional grid within tile 6 by specifying margins (in units
 # of number of cells on tile 6) between the boundary of tile 6 and that
-# of the regional grid (tile 7) along the left, right, bottom, and top 
+# of the regional grid (tile 7) along the left, right, bottom, and top
 # portions of these boundaries.  Note that we do not use "west", "east",
 # "south", and "north" here because the tiles aren't necessarily orient-
 # ed such that the left boundary segment corresponds to the west edge,
@@ -418,12 +418,12 @@ run_title=${run_title:+_$run_title}
 # where the "_T6" in these names is used to indicate that the cell count
 # is on tile 6, not tile 7.
 #
-# Note that we must make the margins wide enough (by making the above 
-# four parameters large enough) such that a region of halo cells around 
-# the boundary of the regional grid fits into the margins, i.e. such 
+# Note that we must make the margins wide enough (by making the above
+# four parameters large enough) such that a region of halo cells around
+# the boundary of the regional grid fits into the margins, i.e. such
 # that the halo does not overrun the boundary of tile 6.  (The halo is
 # added later in another script; its function is to feed in boundary
-# conditions to the regional grid.)  Currently, a halo of 5 regional 
+# conditions to the regional grid.)  Currently, a halo of 5 regional
 # grid cells is used around the regional grid.  Setting num_margin_-
 # cells_T6_... to at least 10 leaves enough room for this halo.
 #
@@ -457,7 +457,7 @@ case $predef_domain in
   jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 #
 # If the write-component is being used and the variable (WRTCMP_PARAMS_-
-# TEMPLATE_FN) containing the name of the template file that specifies 
+# TEMPLATE_FN) containing the name of the template file that specifies
 # various write-component parameters has not been specified or has been
 # set to an empty string, reset it to the preexisting template file for
 # the RAP domain.
@@ -493,7 +493,7 @@ case $predef_domain in
   jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 #
 # If the write-component is being used and the variable (WRTCMP_PARAMS_-
-# TEMPLATE_FN) containing the name of the template file that specifies 
+# TEMPLATE_FN) containing the name of the template file that specifies
 # various write-component parameters has not been specified or has been
 # set to an empty string, reset it to the preexisting template file for
 # the HRRR domain.
@@ -525,7 +525,7 @@ RUN_SUBDIR=${CRES}${stretch_str}${refine_str}${run_title}
 # already exists and if so, moves it, deletes it, or quits out of this
 # script (the action taken depends on the value of the variable preex-
 # isting_dir_method).  Note that we do not yet create a new work direc-
-# tory; we will do that later below once the configuration parameters 
+# tory; we will do that later below once the configuration parameters
 # pass the various tests.
 #
 #-----------------------------------------------------------------------
@@ -538,7 +538,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Define the various work subdirectories under the main work directory.  
+# Define the various work subdirectories under the main work directory.
 # Each of these corresponds to a different step/substep/task in the pre-
 # processing, as follows:
 #
@@ -556,7 +556,7 @@ fi
 # filtered orography files.
 #
 # WORKDIR_ICBC:
-# Work directory for the preprocessing steps that generate the files 
+# Work directory for the preprocessing steps that generate the files
 # containing the surface fields as well as the initial and boundary con-
 # ditions.
 #
@@ -571,7 +571,7 @@ WORKDIR_ICBC=$WORKDIR/ICs_BCs
 #-----------------------------------------------------------------------
 #
 # Define the full path of the run directory.  This is the directory in
-# which most of the input files to the FV3SAR as well as most of the 
+# which most of the input files to the FV3SAR as well as most of the
 # output files that it generates will be placed.  Then call the function
 # that checks whether the run directory already exists and if so, moves
 # it, deletes it, or quits out of this script (the action taken depends
@@ -592,7 +592,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Set the directory INIDIR in which we will store the analysis (at the
-# initial time CDATE) and forecast (at the boundary condition times) 
+# initial time CDATE) and forecast (at the boundary condition times)
 # files.  These are the files that will be used to generate surface
 # fields and initial and boundary conditions for the FV3SAR.
 #
@@ -604,14 +604,14 @@ INIDIR="${WORKDIR}/gfs"
 #
 # The following may not be necessary since global_chgres_driver.sh resets ictype.  But it was in the original version of this script, so we keep it here for now.
 #
-# Set the type (ictype) of GFS analysis file we will be reading in to 
-# obtain the ICs.  This type (or format) must be either "opsgfs" (the 
+# Set the type (ictype) of GFS analysis file we will be reading in to
+# obtain the ICs.  This type (or format) must be either "opsgfs" (the
 # current operational GFS format; used for dates on and after the tran-
-# sition date of July 19, 2017) or "oldgfs" (old GFS format; for dates 
+# sition date of July 19, 2017) or "oldgfs" (old GFS format; for dates
 # before the transition date).
 #
 # Calculate the duration in seconds from some default date (see man page
-# of "date" command) to the specified CDATE and the duration from that 
+# of "date" command) to the specified CDATE and the duration from that
 # default date to the transition date.  Then compare these two durations
 # to determine the ictype.
 #
@@ -625,23 +625,12 @@ if [ "$IC_date_sec" -ge "$transition_date_sec" ]; then
 else
   ictype="oldgfs"
 fi
-
-
-
-
-
-
-
-
-
-
-
 #
 #-----------------------------------------------------------------------
 #
-# Any regional model must be supplied lateral boundary conditions (in 
+# Any regional model must be supplied lateral boundary conditions (in
 # addition to initial conditions) to be able to perform a forecast.  In
-# FV3SAR model, these boundary conditions (BCs) are supplied using a 
+# FV3SAR model, these boundary conditions (BCs) are supplied using a
 # "halo" of grid cells around the regional domain that extend beyond the
 # boundary of the domain.  The model is formulated such that along with
 # files containing these BCs, it needs as input the following files (in
@@ -651,12 +640,12 @@ fi
 #    the domain.
 # 2) A grid file that includes a halo of 4 cells beyond the boundary of
 #    the domain.
-# 3) A (filtered) orography file without a halo, i.e. a halo of width 
+# 3) A (filtered) orography file without a halo, i.e. a halo of width
 #    0 cells.
 # 4) A (filtered) orography file that includes a halo of 4 cells beyond
 #    the boundary of the domain.
 #
-# Note that the regional grid is referred to as "tile 7" in the code.  
+# Note that the regional grid is referred to as "tile 7" in the code.
 # We will let:
 #
 # * nh0_T7 denote the width (in units of number of cells on tile 7) of
@@ -684,7 +673,7 @@ nh4_T7=$(( $nh3_T7 + 1 ))
 # indices) of the regional grid on the supergrid of the regional grid's
 # parent tile.  The regional grid's parent tile is tile 6, and the su-
 # pergrid of any given tile is defined as the grid obtained by doubling
-# the number of cells in each direction on that tile's grid.  We will 
+# the number of cells in each direction on that tile's grid.  We will
 # denote these index limits by
 #
 #   istart_rgnl_T6SG
@@ -710,10 +699,10 @@ nh4_T7=$(( $nh3_T7 + 1 ))
 #   jstart_rgnl_T6SG = 2*jstart_rgnl_T6 - 1
 #   jend_rgnl_T6SG = 2*jend_rgnl_T6
 #
-# These are obtained assuming that grid cells on tile 6 must either be 
+# These are obtained assuming that grid cells on tile 6 must either be
 # completely within the regional domain or completely outside of it,
 # i.e. the boundary of the regional grid must coincide with gridlines
-# on the tile 6 grid; it cannot cut through tile 6 cells.  (Note that 
+# on the tile 6 grid; it cannot cut through tile 6 cells.  (Note that
 # this implies that the starting indices on the tile 6 supergrid must be
 # odd while the ending indices must be even; the above expressions sa-
 # tisfy this requirement.)  We perfrom these calculations next.
@@ -731,7 +720,7 @@ jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
 # on the tile 6 supergrid calculated above, make_hgrid will generate a
 # regional grid without a halo.  To obtain a regional grid with a halo,
 # we must pass to make_hgrid the index limits (on the tile 6 supergrid)
-# of the regional grid including a halo.  We will let the variables 
+# of the regional grid including a halo.  We will let the variables
 #
 #   istart_rgnl_wide_halo_T6SG
 #   iend_rgnl_wide_halo_T6SG
@@ -739,17 +728,17 @@ jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
 #   jend_rgnl_wide_halo_T6SG
 #
 # denote these limits.  The reason we include "_wide_halo" in these va-
-# riable names is that the halo of the grid that we will first generate 
+# riable names is that the halo of the grid that we will first generate
 # will be wider than the halos that are actually needed as inputs to the
 # FV3SAR model (i.e. the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos
 # described above).  We will generate the grids with narrower halos that
 # the model needs later on by "shaving" layers of cells from this wide-
 # halo grid.  Next, we describe how to calculate the above indices.
 #
-# Let nhw_T7 denote the width of the "wide" halo in units of number of 
-# grid cells on the regional grid (i.e. tile 7) that we'd like to have 
+# Let nhw_T7 denote the width of the "wide" halo in units of number of
+# grid cells on the regional grid (i.e. tile 7) that we'd like to have
 # along all four edges of the regional domain (left, right, bottom, and
-# top).  To obtain the corresponding halo width in units of number of 
+# top).  To obtain the corresponding halo width in units of number of
 # cells on the tile 6 grid -- which we denote by nhw_T6 -- we simply di-
 # vide nhw_T7 by the refinement ratio, i.e.
 #
@@ -761,8 +750,8 @@ jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
 #            = 2*nhw_T7/refine_ratio
 #
 # Note that nhw_T6SG must be an integer, but the expression for it de-
-# rived above may not yield an integer.  To ensure that the halo has a 
-# width of at least nhw_T7 cells on the regional grid, we round up the 
+# rived above may not yield an integer.  To ensure that the halo has a
+# width of at least nhw_T7 cells on the regional grid, we round up the
 # result of the expression above for nhw_T6SG, i.e. we redefine nhw_T6SG
 # to be
 #
@@ -770,17 +759,17 @@ jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
 #
 # where ceil(...) is the ceiling function, i.e. it rounds its floating
 # point argument up to the next larger integer.  Since in bash division
-# of two integers returns a truncated integer and since bash has no 
+# of two integers returns a truncated integer and since bash has no
 # built-in ceil(...) function, we perform the rounding-up operation by
 # adding the denominator (of the argument of ceil(...) above) minus 1 to
 # the original numerator, i.e. by redefining nhw_T6SG to be
 #
 #   nhw_T6SG = (2*nhw_T7 + refine_ratio - 1)/refine_ratio
 #
-# This trick works when dividing one positive integer by another.  
+# This trick works when dividing one positive integer by another.
 #
-# In order to calculate nhw_T6G using the above expression, we must 
-# first specify nhw_T7.  Next, we specify an initial value for it by 
+# In order to calculate nhw_T6G using the above expression, we must
+# first specify nhw_T7.  Next, we specify an initial value for it by
 # setting it to one more than the largest-width halo that the model ac-
 # tually needs, which is nh4_T7.  We then calculate nhw_T6SG using the
 # above expression.  Note that these values of nhw_T7 and nhw_T6SG will
@@ -796,8 +785,8 @@ nhw_T6SG=$(( (2*nhw_T7 + refine_ratio - 1)/refine_ratio ))
 #
 #-----------------------------------------------------------------------
 #
-# With an initial value of nhw_T6SG now available, we can obtain the 
-# tile 6 supergrid index limits of the regional domain (including the 
+# With an initial value of nhw_T6SG now available, we can obtain the
+# tile 6 supergrid index limits of the regional domain (including the
 # wide halo) from the index limits for the regional domain without a ha-
 # lo by simply subtracting nhw_T6SG from the lower index limits and add-
 # ing nhw_T6SG to the upper index limits, i.e.
@@ -818,15 +807,15 @@ jend_rgnl_wide_halo_T6SG=$(( $jend_rgnl_T6SG + $nhw_T6SG ))
 #
 #-----------------------------------------------------------------------
 #
-# As for the regional grid without a halo, the regional grid with a wide 
-# halo that make_hgrid will generate must be such that grid cells on 
+# As for the regional grid without a halo, the regional grid with a wide
+# halo that make_hgrid will generate must be such that grid cells on
 # tile 6 either lie completely within this grid or outside of it, i.e.
 # they cannot lie partially within/outside of it.  This implies that the
-# starting indices on the tile 6 supergrid of the grid with wide halo 
-# must be odd while the ending indices must be even.  Thus, below, we 
+# starting indices on the tile 6 supergrid of the grid with wide halo
+# must be odd while the ending indices must be even.  Thus, below, we
 # subtract 1 from the starting indices if they are even (which ensures
 # that there will be at least nhw_T7 halo cells along the left and bot-
-# tom boundaries), and we add 1 to the ending indices if they are odd 
+# tom boundaries), and we add 1 to the ending indices if they are odd
 # (which ensures that there will be at least nhw_T7 halo cells along the
 # right and top boundaries).
 #
@@ -912,7 +901,7 @@ set +x
 #-----------------------------------------------------------------------
 #
 # For informational purposes, calculate the number of cells in each di-
-# rection on the regional grid that includes the wide halo (of width 
+# rection on the regional grid that includes the wide halo (of width
 # nhw_T7 cells).  We denote these by nx_wide_halo_T7 and ny_wide_halo_-
 # T7, respectively.
 #
@@ -939,17 +928,10 @@ echo "ny_wide_halo_T7 = $ny_T7 \
 jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"
 
 set -x
-
-
-
-
-
-
-
 #
 #-----------------------------------------------------------------------
 #
-# Calculate PE_MEMBER01.  This is the number of MPI tasks used for the 
+# Calculate PE_MEMBER01.  This is the number of MPI tasks used for the
 # forecast, including those for the write component if quilting is set
 # to true.
 #
@@ -975,7 +957,7 @@ fi
 #-----------------------------------------------------------------------
 #
 rem=$(( $nx_T7%$layout_x ))
-if [ $rem -ne 0 ]; then 
+if [ $rem -ne 0 ]; then
    echo
    echo "The number of grid cells in the x direction (nx_T7) is not evenly \
 divisible by the number of MPI tasks in the x direction (layout_x):"
@@ -986,7 +968,7 @@ divisible by the number of MPI tasks in the x direction (layout_x):"
 fi
 
 rem=$(( $ny_T7%$layout_y ))
-if [ $rem -ne 0 ]; then 
+if [ $rem -ne 0 ]; then
    echo
    echo "The number of grid cells in the x direction (ny_T7) is not evenly \
 divisible by the number of MPI tasks in the x direction (layout_y):"
@@ -995,7 +977,7 @@ divisible by the number of MPI tasks in the x direction (layout_y):"
    echo "Exiting script."
    exit 1
 fi
- 
+
 if [ $VERBOSE ]; then
   echo
   echo "The MPI task layout is as follows:"
@@ -1008,7 +990,7 @@ fi
 # Set the full path to the template file that defines the write-compo-
 # nent parameters.  This file is assumed/expected to be in the templates
 # directory (TEMPLATE_DIR).  Then, if the write component is going to be
-# used to write output files (i.e. quilting is set to ".true."), make 
+# used to write output files (i.e. quilting is set to ".true."), make
 # sure that this template file exists.
 #
 #-----------------------------------------------------------------------
@@ -1022,20 +1004,16 @@ if [ \( "$quilting" = ".true." \) -a \
   echo "Exiting script."
   exit 1
 fi
-
-
-
-
 #
 #-----------------------------------------------------------------------
 #
-# If the write component is going to be used, make sure that the number 
-# of grid cells in the y direction (ny_T7) is divisible by the number of 
+# If the write component is going to be used, make sure that the number
+# of grid cells in the y direction (ny_T7) is divisible by the number of
 # write tasks per group.  This is because the ny_T7 rows of the grid
-# must be distributed evenly among the write_tasks_per_group tasks in a 
-# given write group, i.e. each task must receive the same number of 
+# must be distributed evenly among the write_tasks_per_group tasks in a
+# given write group, i.e. each task must receive the same number of
 # rows.  This implies that ny_T7 must be evenly divisible by write_-
-# tasks_per_group.  If it isn't, the write component will hang or fail.  
+# tasks_per_group.  If it isn't, the write component will hang or fail.
 # We check for this below.
 #
 #-----------------------------------------------------------------------
@@ -1057,15 +1035,15 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Calculate the number of nodes (NUM_NODES) to request from the job 
-# scheduler.  This is just PE_MEMBER01 dividied by the number of cores 
+# Calculate the number of nodes (NUM_NODES) to request from the job
+# scheduler.  This is just PE_MEMBER01 dividied by the number of cores
 # per node (ncores_per_node) rounded up to the nearest integer, i.e.
 #
 #   NUM_NODES = ceil(PE_MEMBER01/ncores_per_node)
 #
 # where ceil(...) is the ceiling function, i.e. it rounds its floating
 # point argument up to the next larger integer.  Since in bash division
-# of two integers returns a truncated integer and since bash has no 
+# of two integers returns a truncated integer and since bash has no
 # built-in ceil(...) function, we perform the rounding-up operation by
 # adding the denominator (of the argument of ceil(...) above) minus 1 to
 # the original numerator, i.e. by redefining NUM_NODES to be
@@ -1075,22 +1053,6 @@ fi
 #-----------------------------------------------------------------------
 #
 NUM_NODES=$(( ($PE_MEMBER01 + $ncores_per_node - 1)/$ncores_per_node ))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #
 #-----------------------------------------------------------------------
 #
@@ -1105,24 +1067,20 @@ mkdir $WORKDIR
 mkdir $RUNDIR
 mkdir $RUNDIR/INPUT
 mkdir $RUNDIR/RESTART
-
-
-
-
 #
 #-----------------------------------------------------------------------
 #
 # Generate the shell script that will appear in the run directory (RUN-
-# DIR) and will contain definitions of variables needed by the various 
+# DIR) and will contain definitions of variables needed by the various
 # scripts in the workflow.  We refer to this as the variable definitions
-# file.  We will create this file by first copying the configuration 
+# file.  We will create this file by first copying the configuration
 # script config.sh in the shell script directory (USHDIR) to the run di-
-# rectory (and renaming it to the value in SCRIPT_VAR_DEFNS_FP), then 
+# rectory (and renaming it to the value in SCRIPT_VAR_DEFNS_FP), then
 # resetting the original values in this variable definitions file (that
 # were inherited from config.sh) of those variables that were modified
 # in this setup script to their new values, and finally appending to the
 # variable definitions file any new variables introduced in this setup
-# script that may be needed by the scripts that perform the various 
+# script that may be needed by the scripts that perform the various
 # tasks in the workflow (and which source the variable defintions file).
 #
 # First, set the full path to the variable definitions file and copy the
@@ -1145,14 +1103,14 @@ read -r -d '' str_to_insert << EOM
 #
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
-# Section 1: 
-# This section is a copy of the configuration file (config.sh) in the 
-# shell scripts directory (USHDIR) execpt that any parameters in that 
-# file that were modified by the setup script (setup.sh) are assigned 
-# the updated values in this file.  [This can happen, for example, if 
+# Section 1:
+# This section is a copy of the configuration file (config.sh) in the
+# shell scripts directory (USHDIR) execpt that any parameters in that
+# file that were modified by the setup script (setup.sh) are assigned
+# the updated values in this file.  [This can happen, for example, if
 # the variable predef_domain in config.sh has been set to a valid non-
 # empty string, in which case the run title (run_title), the grid para-
-# meters, and possibly the name of the write-component parameter file 
+# meters, and possibly the name of the write-component parameter file
 # (WRTCMP_PARAMS_TEMPLATE_FN) will be modified in setup.sh.]
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
@@ -1174,10 +1132,10 @@ sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
 #
 #-----------------------------------------------------------------------
 #
-# If predef_domain is set to a valid non-empty string, then the values 
+# If predef_domain is set to a valid non-empty string, then the values
 # of run_title, the grid parameters, and possibly WRTCMP_PARAMS_TEMP-
-# LATE_FN specified in the configuration file would have been updated 
-# above.  In this case, replace the values of these parameters in the 
+# LATE_FN specified in the configuration file would have been updated
+# above.  In this case, replace the values of these parameters in the
 # variable defintions file (that were inherited from the configuration
 # file) with the updated values.
 #
@@ -1222,10 +1180,10 @@ cat << EOM >> $SCRIPT_VAR_DEFNS_FP
 #
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
-# Section 2: 
+# Section 2:
 # This section defines variables that have been derived from the ones
 # above by the setup script (setup.sh) and which are needed by one or
-# more of the scripts that perform the workflow tasks (those scripts 
+# more of the scripts that perform the workflow tasks (those scripts
 # source this variable definitions file).
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
@@ -1241,7 +1199,7 @@ cat << EOM >> $SCRIPT_VAR_DEFNS_FP
 FV3SAR_DIR="$FV3SAR_DIR"
 USHDIR="$USHDIR"
 TEMPLATE_DIR="$TEMPLATE_DIR"
-INIDIR="$INIDIR"              
+INIDIR="$INIDIR"
 RUNDIR="$RUNDIR"
 FIXgsm="$FIXgsm"
 WORKDIR_GRID="$WORKDIR_GRID"

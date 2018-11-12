@@ -37,18 +37,18 @@
 #PBS -W umask=022
 #
 
-# 
+#
 #-----------------------------------------------------------------------
 #
 # This script generates:
 #
-# 1) A NetCDF initial condition (IC) file on a regional grid for the 
+# 1) A NetCDF initial condition (IC) file on a regional grid for the
 #    date/time on which the analysis files in the directory specified by
 #    INIDIR are valid.  Note that this file does not include data in the
 #    halo of this regional grid (that data is found in the boundary con-
 #    dition (BC) files).
 #
-# 2) A NetCDF surface file on the regional grid.  As with the IC file, 
+# 2) A NetCDF surface file on the regional grid.  As with the IC file,
 #    this file does not include data in the halo.
 #
 # 3) A NetCDF boundary condition (BC) file containing data on the halo
@@ -56,12 +56,12 @@
 #    the one at which the IC file is valid).
 #
 # 4) A NetCDF GFS "control" file named gfs_ctrl.nc that contains infor-
-#    mation on the vertical coordinate and the number of tracers for 
+#    mation on the vertical coordinate and the number of tracers for
 #    which initial and boundary conditions are provided.
 #
-# All four of these NetCDF files are placed in the directory specified 
+# All four of these NetCDF files are placed in the directory specified
 # by WORKDIR_ICBC.
-# 
+#
 #-----------------------------------------------------------------------
 #
 
@@ -70,23 +70,23 @@
 #
 # Change shell behavior with "set" with these flags:
 #
-# -a 
-# This will cause the script to automatically export all variables and 
+# -a
+# This will cause the script to automatically export all variables and
 # functions which are modified or created to the environments of subse-
 # quent commands.
 #
-# -e 
-# This will cause the script to exit as soon as any line in the script 
-# fails (with some exceptions; see manual).  Apparently, it is a bad 
+# -e
+# This will cause the script to exit as soon as any line in the script
+# fails (with some exceptions; see manual).  Apparently, it is a bad
 # idea to use "set -e".  See here:
 #   http://mywiki.wooledge.org/BashFAQ/105
 #
-# -u 
+# -u
 # This will cause the script to exit if an undefined variable is encoun-
 # tered.
 #
 # -x
-# This will cause all executed commands in the script to be printed to 
+# This will cause all executed commands in the script to be printed to
 # the terminal (used for debugging).
 #
 #-----------------------------------------------------------------------
@@ -117,7 +117,7 @@ chgres_driver_scr="global_chgres_driver.sh"
 #
 #-----------------------------------------------------------------------
 #
-# Create the directory in which the ouput from this script will be 
+# Create the directory in which the ouput from this script will be
 # placed (if it doesn't already exist).
 #
 #-----------------------------------------------------------------------
@@ -237,7 +237,7 @@ ln -fs $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
 #
 #-----------------------------------------------------------------------
 #
-# Set REGIONAL to 1.  This will cause the chgres_driver_scr script to 
+# Set REGIONAL to 1.  This will cause the chgres_driver_scr script to
 # generate an initial conditions file, a boundary conditions file (con-
 # taining field values only in the halo of the regional domain) at the
 # initial time, and a surface file.

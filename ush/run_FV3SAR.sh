@@ -21,23 +21,23 @@
 #
 # Change shell behavior with "set" with these flags:
 #
-# -a 
-# This will cause the script to automatically export all variables and 
+# -a
+# This will cause the script to automatically export all variables and
 # functions which are modified or created to the environments of subse-
 # quent commands.
 #
-# -e 
-# This will cause the script to exit as soon as any line in the script 
-# fails (with some exceptions; see manual).  Apparently, it is a bad 
+# -e
+# This will cause the script to exit as soon as any line in the script
+# fails (with some exceptions; see manual).  Apparently, it is a bad
 # idea to use "set -e".  See here:
 #   http://mywiki.wooledge.org/BashFAQ/105
 #
-# -u 
+# -u
 # This will cause the script to exit if an undefined variable is encoun-
 # tered.
 #
 # -x
-# This will cause all executed commands in the script to be printed to 
+# This will cause all executed commands in the script to be printed to
 # the terminal (used for debugging).
 #
 #-----------------------------------------------------------------------
@@ -75,7 +75,7 @@ case $MACHINE in
   ;;
 #
 "JET")
-# 
+#
   . /apps/lmod/lmod/init/sh
   module purge
   module load newdefaults
@@ -92,14 +92,14 @@ case $MACHINE in
   ;;
 #
 "ODIN")
-# 
+#
   module list
 
   ulimit -s unlimited
   ulimit -a
   APRUN="srun -n"
   ;;
-# 
+#
 esac
 #
 #-----------------------------------------------------------------------
@@ -131,7 +131,7 @@ export OMP_STACKSIZE=1024m
 #
 #-----------------------------------------------------------------------
 #
-# Change location to the run directory.  This is necessary because the 
+# Change location to the run directory.  This is necessary because the
 # FV3SAR executable will look for various files in the current directo-
 # ry.  Since those files have been staged in the run directory, the cur-
 # rent directory must be the run directory.

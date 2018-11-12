@@ -5,25 +5,25 @@
 # Set machine and queue parameters.  Definitions:
 #
 # MACHINE:
-# Machine on which we are running.  Must be one of "WCOSS_C", "WCOSS", 
+# Machine on which we are running.  Must be one of "WCOSS_C", "WCOSS",
 # "THEIA", "JET", and "ODIN".
 #
 # ACCOUNT:
 # The account under which to submit jobs to the queue.
 #
 # QUEUE_DEFAULT:
-# The default queue to which workflow tasks are submitted.  If a task 
+# The default queue to which workflow tasks are submitted.  If a task
 # does not have a specific variable in which its queue is defined (e.g.
-# QUEUE_HPSS, QUEUE_RUN_FV3SAR; see below), it is submitted to this 
+# QUEUE_HPSS, QUEUE_RUN_FV3SAR; see below), it is submitted to this
 # queue.  If this is not set or set to an empty string, it will be reset
 # to a machine-dependent value in the setup script (setup.sh).
 #
 # QUEUE_HPSS:
-# The queue to which the get_GFS_files task is submitted.  This task 
+# The queue to which the get_GFS_files task is submitted.  This task
 # either copies the GFS analysis and forecast files from a system direc-
-# tory or fetches them from HPSS.  In either case, it places the files 
-# in a temporary directory.  If this is not set or set to an empty 
-# string, it will be reset to a machine-dependent value in the setup 
+# tory or fetches them from HPSS.  In either case, it places the files
+# in a temporary directory.  If this is not set or set to an empty
+# string, it will be reset to a machine-dependent value in the setup
 # script (setup.sh).
 #
 # QUEUE_RUN_FV3SAR:
@@ -82,7 +82,7 @@ TMPDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_d
 # Name of the workflow XML file to be passed to rocoto.
 #
 # SCRIPT_VAR_DEFNS_FN:
-# Name of file that is sourced by the worflow scripts to set variable 
+# Name of file that is sourced by the worflow scripts to set variable
 # values.
 #
 # WRTCMP_PARAMS_TEMPLATE_FN:
@@ -91,7 +91,7 @@ TMPDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_d
 # going to be used to write output files.  This file contains defini-
 # tions (either in terms of actual values or placeholders) of the para-
 # meters that the write component needs.  If the write component is go-
-# ing to be used, this file is first appended to MODEL_CONFIG_FN, and 
+# ing to be used, this file is first appended to MODEL_CONFIG_FN, and
 # any placeholder values in the variable definitions in the new MODEL_-
 # CONFIG_FN file are subsequently replaced by actual values.  If a pre-
 # defined domain is being used (see predef_domain below), WRTCMP_PA-
@@ -131,7 +131,7 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 #-----------------------------------------------------------------------
 #
 #
-CDATE="2018060400"           
+CDATE="2018060400"
 #CDATE=$( date "+%Y%m%d"00 )                     # This sets CDATE to today.
 #CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
 #
@@ -140,7 +140,7 @@ BC_update_intvl_hrs=6
 #
 #-----------------------------------------------------------------------
 #
-# Set run_title.  This variable contains a descriptive string for the 
+# Set run_title.  This variable contains a descriptive string for the
 # current run/forecast that is used in forming the names of the run and
 # work (temporary) directories that will be created.  It should be used
 # to distinguish these directories from the run and work directories ge-
@@ -167,7 +167,7 @@ run_title="desc_str"
 #     "RAP"
 #     "HRRR"
 #
-#   These result in regional grids that cover (as closely as possible) 
+#   These result in regional grids that cover (as closely as possible)
 #   the domains used in the WRF/ARW-based RAP and HRRR models, respec-
 #   tively.  The run title string (run_title) set above is also modified
 #   to reflect the specified predefined domain.
@@ -189,8 +189,8 @@ predef_domain=""
 #
 # * RES is the number of grid cells in either one of the two horizontal
 #   directions x and y on any one of the 6 tiles of the global cubed-
-#   sphere grid.  RES must be one of "48", "96", "192", "384", "768", 
-#   "1152", and "3072".  The mapping from RES to nominal resolution 
+#   sphere grid.  RES must be one of "48", "96", "192", "384", "768",
+#   "1152", and "3072".  The mapping from RES to nominal resolution
 #   (cell size) for a uniform global grid (i.e. Schmidt stretch factor
 #   stretch_fac set to 1) is as follows:
 #
@@ -200,7 +200,7 @@ predef_domain=""
 #     C1152  -->   8.5km
 #     C3072  -->   3.2km
 #
-#   Note that these are nominal resolutions.  The actual cell size on 
+#   Note that these are nominal resolutions.  The actual cell size on
 #   the global grid tiles varies somewhat as we move across a tile.
 #
 # * Tile 6 has arbitrarily been chosen as the tile to use to orient the
@@ -213,7 +213,7 @@ predef_domain=""
 #   still greater than 0) expands tile 6.  The remaining 5 tiles change
 #   shape as necessary to maintain global coverage of the grid.
 #
-# * The cell size on a given global tile depends on both RES and 
+# * The cell size on a given global tile depends on both RES and
 #   stretch_fac (since changing RES changes the number of cells in the
 #   tile, and changing stretch_fac modifies the shape and size of the
 #   tile).
@@ -233,15 +233,15 @@ predef_domain=""
 # * In the FV3SAR code, for convenience the regional grid is denoted as
 #   "tile 7" even though it doesn't map back to one of the 6 faces of
 #   the cube from which the global grid is generated (it maps back to
-#   only a subregion on face 6 since it is wholly confined within tile 
+#   only a subregion on face 6 since it is wholly confined within tile
 #   6).  Tile 6 is often referred to as the "parent" tile of the region-
 #   al grid.
 #
 # * refine_ratio is the refinement ratio of the regional grid (tile 7)
 #   with respect to the grid on its parent tile (tile 6), i.e. it is the
-#   number of grid cells along the boundary of the regional grid that 
+#   number of grid cells along the boundary of the regional grid that
 #   abut one cell on tile 6.  Thus, the cell size on the regional grid
-#   depends not only on RES and stretch_fac (because the cell size on 
+#   depends not only on RES and stretch_fac (because the cell size on
 #   tile 6 depends on these two parameters) but also on refine_ratio.
 #   Note that as on the tiles of the global grid, the cell size on the
 #   regional grid is not uniform but varies as we move across the grid.
@@ -250,7 +250,7 @@ predef_domain=""
 #
 # RES:
 # Number of points in each of the two horizontal directions (x and y)
-# on each tile of the global grid.  Must be "48", "96", "192", "384", 
+# on each tile of the global grid.  Must be "48", "96", "192", "384",
 # "768", "1152", or "3072"
 #
 # lon_ctr_T6:
@@ -260,7 +260,7 @@ predef_domain=""
 # Latitude of the center of tile 6 (in degrees).
 #
 # stretch_fac:
-# Stretching factor used in the Schmidt transformation applied to the 
+# Stretching factor used in the Schmidt transformation applied to the
 # cubed sphere grid.
 #
 # istart_rgnl_T6:
@@ -278,7 +278,7 @@ predef_domain=""
 # refine_ratio:
 # Cell refinement ratio for the regional grid, i.e. the number of cells
 # in either the x or y direction on the regional grid (tile 7) that abut
-# one cell on its parent tile (tile 6). 
+# one cell on its parent tile (tile 6).
 #
 #-----------------------------------------------------------------------
 #
@@ -295,7 +295,7 @@ refine_ratio=3
 #-----------------------------------------------------------------------
 #
 # Set preexisting_dir_method.  This variable determines the strategy to
-# use to deal with preexisting run and/or work directories (e.g ones 
+# use to deal with preexisting run and/or work directories (e.g ones
 # generated by previous forecasts; such directories may be encountered
 # if the value of run_title specified above does not result in unique
 # direcotry names).  This variable must be set to one of "delete", "re-
@@ -310,13 +310,13 @@ refine_ratio=3
 #   The preexisting directory is renamed and a new directory (having the
 #   same name as the original preexisting directory) is created.  The
 #   new name of the preexisting directory consists of its original name
-#   and the suffix "_oldNNN", where NNN is a 3-digit integer chosen to 
+#   and the suffix "_oldNNN", where NNN is a 3-digit integer chosen to
 #   make the new name unique.
 #
 # * "quit":
-#   The preexisting directory is left unchanged, but execution of the 
+#   The preexisting directory is left unchanged, but execution of the
 #   currently running script is terminated.  In this case, the preexist-
-#   ing directory must be dealt with manually before rerunning the 
+#   ing directory must be dealt with manually before rerunning the
 #   script.
 #
 #-----------------------------------------------------------------------
@@ -353,7 +353,7 @@ layout_y="20"  # One possibility: 14 for RAP, 20 for HRRR.
 # be ".true." or ".false.".
 #
 # write_groups:
-# The number of write groups (i.e. groups of MPI tasks) to use in the 
+# The number of write groups (i.e. groups of MPI tasks) to use in the
 # write component.
 #
 # write_tasks_per_group:
@@ -361,7 +361,7 @@ layout_y="20"  # One possibility: 14 for RAP, 20 for HRRR.
 #
 # print_esmf:
 # Flag for whether or not to output extra (debugging) information from
-# ESMF routines.  Must be ".true." or ".false.".  Note that the write 
+# ESMF routines.  Must be ".true." or ".false.".  Note that the write
 # component uses ESMF library routines to interpolate from the native
 # FV3SAR grid to the user-specified output grid (which is defined in the
 # model configuration file MODEL_CONFIG_FN in the forecast's run direc-

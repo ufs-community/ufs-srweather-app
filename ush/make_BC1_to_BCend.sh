@@ -46,12 +46,12 @@
 #
 # This script generates NetCDF boundary condition (BC) files that con-
 # tain data for the halo region of a regional grid.  One file is genera-
-# ted for each boundary time AFTER the initial time up until the final 
-# forecast time.  For example, if the boundary is to be updated every 3 
+# ted for each boundary time AFTER the initial time up until the final
+# forecast time.  For example, if the boundary is to be updated every 3
 # hours (this update interval is determined by the variable BC_update_-
-# intvl_hrs) and the forecast is to run for 24 hours (the forecast 
+# intvl_hrs) and the forecast is to run for 24 hours (the forecast
 # length is determined by the variable fcst_len_hrs), then a file is ge-
-# nerated for forecast hours 3, 6, 9, 12, 15, 18, and 24 (but not hour 
+# nerated for forecast hours 3, 6, 9, 12, 15, 18, and 24 (but not hour
 # 0 since that is handled by the script that generates the initial con-
 # dition file).  All the generated NetCDF BC files are placed in the di-
 # rectory specified by WORKDIR_ICBC.
@@ -64,23 +64,23 @@
 #
 # Change shell behavior with "set" with these flags:
 #
-# -a 
-# This will cause the script to automatically export all variables and 
+# -a
+# This will cause the script to automatically export all variables and
 # functions which are modified or created to the environments of subse-
 # quent commands.
 #
-# -e 
-# This will cause the script to exit as soon as any line in the script 
-# fails (with some exceptions; see manual).  Apparently, it is a bad 
+# -e
+# This will cause the script to exit as soon as any line in the script
+# fails (with some exceptions; see manual).  Apparently, it is a bad
 # idea to use "set -e".  See here:
 #   http://mywiki.wooledge.org/BashFAQ/105
 #
-# -u 
+# -u
 # This will cause the script to exit if an undefined variable is encoun-
 # tered.
 #
 # -x
-# This will cause all executed commands in the script to be printed to 
+# This will cause all executed commands in the script to be printed to
 # the terminal (used for debugging).
 #
 #-----------------------------------------------------------------------
@@ -97,7 +97,7 @@ set -eux
 . $SCRIPT_VAR_DEFNS_FP
 
 export BASEDIR
-export INIDIR  # This is the variable that determines the directory in 
+export INIDIR  # This is the variable that determines the directory in
                # which chgres looks for the input nemsio files.
 export gtype
 #
@@ -111,7 +111,7 @@ chgres_driver_scr="global_chgres_driver.sh"
 #
 #-----------------------------------------------------------------------
 #
-# Create the directory in which the ouput from this script will be 
+# Create the directory in which the ouput from this script will be
 # placed (if it doesn't already exist).
 #
 #-----------------------------------------------------------------------
@@ -129,7 +129,7 @@ export CASE=${CRES}
 export LEVS=64
 export LSOIL=4
 export FIXfv3=${FV3SAR_DIR}/fix/fix_fv3
-export GRID_OROG_INPUT_DIR=$WORKDIR_SHVE  # Directory in which input grid and orography files are located. 
+export GRID_OROG_INPUT_DIR=$WORKDIR_SHVE  # Directory in which input grid and orography files are located.
 export OUTDIR=$WORKDIR_ICBC               # Directory in which output from chgres_driver_scr is placed.
 export HOMEgfs=$FV3SAR_DIR                # Directory in which the "superstructure" fv3gfs code is located.
 export nst_anl=.false.                    # false or true to include NST analysis
@@ -143,7 +143,7 @@ export CDAS=gfs                        # gfs or gdas; may not be needed by chgre
 #
 # Load modules and set machine-dependent parameters.
 #
-# Note that the variable DATA specifies the temporary (work) directory 
+# Note that the variable DATA specifies the temporary (work) directory
 # used by chgres_driver_scr.
 #
 #-----------------------------------------------------------------------
@@ -231,11 +231,11 @@ ln -fs $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
 #
 #-----------------------------------------------------------------------
 #
-# Set REGIONAL to 2.  This will cause the chgres_driver_scr script to 
+# Set REGIONAL to 2.  This will cause the chgres_driver_scr script to
 # generate a boundary conditions file (containing field values only in
 # the halo of the regional domain) for each boundary time after the ini-
-# tial time (e.g. hours 3, 6, 9, etc but not hour 0 since that is done 
-# in the script that generates the initial conditions and surface 
+# tial time (e.g. hours 3, 6, 9, etc but not hour 0 since that is done
+# in the script that generates the initial conditions and surface
 # files).
 #
 #-----------------------------------------------------------------------
@@ -244,10 +244,10 @@ export REGIONAL=2
 #
 #-----------------------------------------------------------------------
 #
-# Loop through the BC update times starting with the second (where the 
-# first BC update time is the model initialization time) and generate 
-# BCs at each time.  We do not generate BCs for the first BC update 
-# time because that is done by another script that also generates the 
+# Loop through the BC update times starting with the second (where the
+# first BC update time is the model initialization time) and generate
+# BCs at each time.  We do not generate BCs for the first BC update
+# time because that is done by another script that also generates the
 # surface fields and initial conditions.
 #
 #-----------------------------------------------------------------------
@@ -264,9 +264,9 @@ while (test "$curnt_hr" -le "$fcst_len_hrs"); do
 #
 # On WCOSS_C, create an input file for cfp in order to run multiple co-
 # pies of chgres_driver_scr simultaneously.  Since we are going to per-
-# form the BC generation for all BC update times simulataneously, we 
-# must use a different working directory for each time.  Note that here, 
-# we only create the cfp input file; we do not call chgres_driver_scr.  
+# form the BC generation for all BC update times simulataneously, we
+# must use a different working directory for each time.  Note that here,
+# we only create the cfp input file; we do not call chgres_driver_scr.
 # That is done later below after exiting the while loop.
 #
     BC_DATA=/gpfs/hps3/ptmp/${LOGNAME}/wrk.chgres.$HHH

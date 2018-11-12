@@ -4,23 +4,23 @@
 #
 # Change shell behavior with "set" with these flags:
 #
-# -a 
-# This will cause the script to automatically export all variables and 
+# -a
+# This will cause the script to automatically export all variables and
 # functions which are modified or created to the environments of subse-
 # quent commands.
 #
-# -e 
-# This will cause the script to exit as soon as any line in the script 
-# fails (with some exceptions; see manual).  Apparently, it is a bad 
+# -e
+# This will cause the script to exit as soon as any line in the script
+# fails (with some exceptions; see manual).  Apparently, it is a bad
 # idea to use "set -e".  See here:
 #   http://mywiki.wooledge.org/BashFAQ/105
 #
-# -u 
+# -u
 # This will cause the script to exit if an undefined variable is encoun-
 # tered.
 #
 # -x
-# This will cause all executed commands in the script to be printed to 
+# This will cause all executed commands in the script to be printed to
 # the terminal (used for debugging).
 #
 #-----------------------------------------------------------------------
@@ -93,7 +93,7 @@ FHR="$FHR_STR"
 #-----------------------------------------------------------------------
 #
 # Fill in the xml file with parameter values that are either specified
-# in the configuration file/script (config.sh) or set in the setup 
+# in the configuration file/script (config.sh) or set in the setup
 # script sourced above.
 #
 #-----------------------------------------------------------------------

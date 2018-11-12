@@ -3,9 +3,9 @@
 #----THEIA JOBCARD
 #
 # Note that the following PBS directives do not have any effect if this
-# script is called via an interactive TORQUE/PBS job (i.e. using the -I 
+# script is called via an interactive TORQUE/PBS job (i.e. using the -I
 # flag to qsub along with the -x flag to specify this script).  The fol-
-# lowing directives are placed here in case this script is called as a 
+# lowing directives are placed here in case this script is called as a
 # batch (i.e. non-interactive) job.
 #
 #PBS -N stage
@@ -34,23 +34,23 @@
 #
 # Change shell behavior with "set" with these flags:
 #
-# -a 
-# This will cause the script to automatically export all variables and 
+# -a
+# This will cause the script to automatically export all variables and
 # functions which are modified or created to the environments of subse-
 # quent commands.
 #
-# -e 
-# This will cause the script to exit as soon as any line in the script 
-# fails (with some exceptions; see manual).  Apparently, it is a bad 
+# -e
+# This will cause the script to exit as soon as any line in the script
+# fails (with some exceptions; see manual).  Apparently, it is a bad
 # idea to use "set -e".  See here:
 #   http://mywiki.wooledge.org/BashFAQ/105
 #
-# -u 
+# -u
 # This will cause the script to exit if an undefined variable is encoun-
 # tered.
 #
 # -x
-# This will cause all executed commands in the script to be printed to 
+# This will cause all executed commands in the script to be printed to
 # the terminal (used for debugging).
 #
 #-----------------------------------------------------------------------
@@ -98,7 +98,7 @@ cp $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
-# Set the full path to the FV3SAR namelist file.  Then set parameters in 
+# Set the full path to the FV3SAR namelist file.  Then set parameters in
 # that file.
 #
 #-----------------------------------------------------------------------
@@ -110,8 +110,8 @@ if [ $VERBOSE ]; then
   echo "  FV3_NAMELIST_FP = $FV3_NAMELIST_FP"
 fi
 #
-# Set npx_T7 and npy_T7, which are just nx_T7 plus 1 and ny_T7 plus 1, 
-# respectively.  These need to be set in the FV3SAR Fortran namelist 
+# Set npx_T7 and npy_T7, which are just nx_T7 plus 1 and ny_T7 plus 1,
+# respectively.  These need to be set in the FV3SAR Fortran namelist
 # file.  They represent the number of cell vertices in the x and y di-
 # rections on the regional grid (tile 7).
 #
@@ -156,13 +156,13 @@ set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
 #
 # If the write component is to be used, then a set of parameters, in-
 # cluding those that define the write component's output grid, need to
-# be specified in the model configuration file (MODEL_CONFIG_FP).  This 
-# is done by appending a template file (in which some write-component 
+# be specified in the model configuration file (MODEL_CONFIG_FP).  This
+# is done by appending a template file (in which some write-component
 # parameters are set to actual values while others are set to placehol-
 # ders) to MODEL_CONFIG_FP and then replacing the placeholder values in
 # the (new) MODEL_CONFIG_FP file with actual values.  The full path of
 # this template file is specified in the variable WRTCMP_PA RAMS_TEMP-
-# LATE_FP. 
+# LATE_FP.
 #
 #-----------------------------------------------------------------------
 #
@@ -174,7 +174,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the full path to the file that specifies the fields to output.  
+# Set the full path to the file that specifies the fields to output.
 # Then set parameters in that file.
 #
 #-----------------------------------------------------------------------
@@ -195,7 +195,7 @@ set_file_param $DIAG_TABLE_FP "YYYYMMDD" $YMD $VERBOSE
 #
 #-----------------------------------------------------------------------
 #
-# Copy fixed files from system directory to run directory.  Note that 
+# Copy fixed files from system directory to run directory.  Note that
 # some of these files get renamed.
 #
 #-----------------------------------------------------------------------
@@ -249,7 +249,7 @@ cp $FIXgsm/co2monthlycyc.txt $RUNDIR
 FV3SAR_EXEC="$BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe"
 
 if [ -f $FV3SAR_EXEC ]; then
-  
+
   if [ "$VERBOSE" = "true" ]; then
     echo
     echo "Copying FV3SAR executable to the run directory..."
@@ -270,7 +270,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Copy files from various work directories into the run directory and 
+# Copy files from various work directories into the run directory and
 # create necesary links.
 #
 #-----------------------------------------------------------------------
@@ -292,19 +292,19 @@ cd $RUNDIR/INPUT
 #-----------------------------------------------------------------------
 #
 # Copy the grid mosaic file (which describes the connectivity of the va-
-# rious tiles) to the INPUT subdirectory of the run directory.  In the 
-# regional case, this file doesn't have much information because the 
+# rious tiles) to the INPUT subdirectory of the run directory.  In the
+# regional case, this file doesn't have much information because the
 # regional grid is not connected to any other tiles.  However, a mosaic
 # file (with a different name; see below) must still be read in by the
 # FV3SAR code.
 #
-# Note that the FV3 code (specifically the FMS code) looks for a file 
+# Note that the FV3 code (specifically the FMS code) looks for a file
 # named "grid_spec.nc" in the INPUT subdirectory of the run directory
-# as the grid mosaic file.  Assuming it finds this file, it then reads 
-# in the variable "gridfiles" in this file that contains the names of 
+# as the grid mosaic file.  Assuming it finds this file, it then reads
+# in the variable "gridfiles" in this file that contains the names of
 # the grid files for each of the tiles of the grid.  In the regional
 # case, "gridfiles" will contain only one file name, that of the file
-# describing the grid on tile 7. 
+# describing the grid on tile 7.
 #
 #-----------------------------------------------------------------------
 #
@@ -317,7 +317,7 @@ ln -sf ${CRES}_mosaic.nc grid_spec.nc
 # which to read in the grid with a 3-cell-wide halo.  This data is crea-
 # ted by the preprocessing but is placed in a file with a different name
 # ("${CRES}_grid.tile7.halo3.nc").  Thus, we first copy the file created
-# by the preprocessing to the INPUT subdirectory of the run directory 
+# by the preprocessing to the INPUT subdirectory of the run directory
 # and then create a symlink named "${CRES}_grid.tile7.nc" that points to
 # it.
 #
@@ -328,11 +328,11 @@ ln -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
-# The FV3SAR model looks for a file named "grid.tile7.halo4.nc" from 
+# The FV3SAR model looks for a file named "grid.tile7.halo4.nc" from
 # which to read in the grid with a 4-cell-wide halo.  This data is crea-
 # ted by the preprocessing but is placed in a file with a different name
 # ("${CRES}_grid.tile7.halo4.nc").  Thus, we first copy the file created
-# by the preprocessing to the INPUT subdirectory of the run directory 
+# by the preprocessing to the INPUT subdirectory of the run directory
 # and then create a symlink named "grid.tile7.halo4.nc" that points to
 # it.
 #
@@ -346,9 +346,9 @@ ln -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
 # The FV3SAR model looks for a file named "oro_data.tile7.halo4.nc" from
 # which to read in the orogrpahy with a 4-cell-wide halo.  This data is
 # created by the preprocessing but is placed in a file with a different
-# name ("${CRES}_oro_data.tile7.halo4.nc").  Thus, we first copy the 
+# name ("${CRES}_oro_data.tile7.halo4.nc").  Thus, we first copy the
 # file created by the preprocessing to the INPUT subdirectory of the run
-# directory and then create a symlink named "oro_data.tile7.halo4.nc" 
+# directory and then create a symlink named "oro_data.tile7.halo4.nc"
 # that points to it.
 #
 #-----------------------------------------------------------------------
@@ -358,10 +358,10 @@ ln -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
 #
-# The FV3SAR model looks for a file named "oro_data.nc" from which to 
-# read in the orogrpahy without a halo.  This data is created by the 
-# preprocessing but is placed in a file with a different name 
-# ("${CRES}_oro_data.tile7.halo0.nc").  Thus, we first copy the file 
+# The FV3SAR model looks for a file named "oro_data.nc" from which to
+# read in the orogrpahy without a halo.  This data is created by the
+# preprocessing but is placed in a file with a different name
+# ("${CRES}_oro_data.tile7.halo0.nc").  Thus, we first copy the file
 # created by the preprocessing to the INPUT subdirectory of the run di-
 # rectory and then create a symlink named "oro_data.nc" that points to
 # it.
@@ -373,11 +373,11 @@ ln -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
 #
 #-----------------------------------------------------------------------
 #
-# The FV3SAR model looks for a file named "gfs_data.nc" from which to 
+# The FV3SAR model looks for a file named "gfs_data.nc" from which to
 # read in the initial conditions with a 4-cell-wide halo.  This data is
 # created by the preprocessing but is placed in a file with a different
-# name ("gfs_data.tile7.nc").  Thus, we first copy the file created by 
-# the preprocessing to the INPUT subdirectory of the run directory and 
+# name ("gfs_data.tile7.nc").  Thus, we first copy the file created by
+# the preprocessing to the INPUT subdirectory of the run directory and
 # then create a symlink named "gfs_data.nc" that points to it.
 #
 #-----------------------------------------------------------------------
@@ -387,7 +387,7 @@ ln -sf gfs_data.tile7.nc gfs_data.nc
 #
 #-----------------------------------------------------------------------
 #
-# The FV3SAR model looks for a file named "gfs_data.nc" from which to 
+# The FV3SAR model looks for a file named "gfs_data.nc" from which to
 # read in the surface without a halo.  This data is created by the pre-
 # processing but is placed in a file with a different name ("sfc_data.-
 # tile7.nc").  Thus, we first copy the file created by the preprocessing
@@ -401,7 +401,7 @@ ln -sf sfc_data.tile7.nc sfc_data.nc
 #
 #-----------------------------------------------------------------------
 #
-# Copy the boundary files (one per boundary update time) to the INPUT 
+# Copy the boundary files (one per boundary update time) to the INPUT
 # subdirectory of the run directory.
 #
 #-----------------------------------------------------------------------
@@ -411,7 +411,7 @@ cp $WORKDIR_ICBC/gfs_bndy*.nc .
 #-----------------------------------------------------------------------
 #
 # Copy the file gfs_ctrl.nc containing information about the vertical
-# coordinate and the number of tracers from its temporary location to 
+# coordinate and the number of tracers from its temporary location to
 # the INPUT subdirectory of the run directory.
 #
 #-----------------------------------------------------------------------
