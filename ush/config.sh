@@ -53,8 +53,9 @@ QUEUE_RUN_FV3SAR="batch"
 #
 #-----------------------------------------------------------------------
 #
-BASEDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
-TMPDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs"
+BASEDIR="/scratch3/BMC/det/beck/FV3-CAM/temp"
+TMPDIR="${BASEDIR}/../work_dirs"
+UPPDIR="${BASEDIR}/../EMC_post/sorc/ncep_post.fd"
 #
 #-----------------------------------------------------------------------
 #
@@ -126,7 +127,8 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 # BC_update_intvl_hrs:
 # The frequency (in integer hours) with which boundary data will be pro-
 # vided to the FV3SAR model.  We will refer to this as the boundary up-
-# date interval.
+# date interval.  This value must be greater than six for retrospective cases
+# using nemsio files from HPSS.
 #
 #-----------------------------------------------------------------------
 #
@@ -149,7 +151,7 @@ BC_update_intvl_hrs=6
 #
 #-----------------------------------------------------------------------
 #
-run_title="desc_str"
+run_title="test9"
 #
 #-----------------------------------------------------------------------
 #
@@ -174,8 +176,8 @@ run_title="desc_str"
 #
 #-----------------------------------------------------------------------
 #
-predef_domain=""
-#predef_domain="RAP"
+#predef_domain=""
+predef_domain="RAP"
 #predef_domain="HRRR"
 #
 #-----------------------------------------------------------------------
@@ -373,6 +375,3 @@ quilting=".true."
 write_groups="1"
 write_tasks_per_group="20"  # One possibility: 14 for RAP, 20 for HRRR.
 print_esmf=".false."
-
-
-

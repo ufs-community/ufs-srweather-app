@@ -454,7 +454,7 @@ tile=7
 cd $WORKDIR_GRID
 mv ${CRES}_grid.tile${tile}.nc \
    ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc
-ln -fs ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc \
+ln -sf ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc \
        ${CRES}_grid.tile${tile}.nc
 cd -
 
@@ -521,7 +521,7 @@ tile=7
 cd $WORKDIR_OROG
 mv oro.${CRES}.tile${tile}.nc \
    oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
-ln -fs oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
+ln -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
        oro.${CRES}.tile${tile}.nc
 cd -
 
@@ -603,7 +603,7 @@ tile=7
 cd $WORKDIR_FLTR
 mv oro.${CRES}.tile${tile}.nc \
    oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
-ln -fs oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
+ln -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
        oro.${CRES}.tile${tile}.nc
 cd -
 
