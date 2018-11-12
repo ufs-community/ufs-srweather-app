@@ -454,7 +454,7 @@ tile=7
 cd $WORKDIR_GRID
 mv ${CRES}_grid.tile${tile}.nc \
    ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc
-ln -fs ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc \
+ln -sf ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc \
        ${CRES}_grid.tile${tile}.nc
 cd -
 
@@ -520,7 +520,7 @@ tile=7
 cd $WORKDIR_OROG 
 mv oro.${CRES}.tile${tile}.nc \
    oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
-ln -fs oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
+ln -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
        oro.${CRES}.tile${tile}.nc
 cd -
 
@@ -550,6 +550,13 @@ elif [ $RES -eq 1152 ]; then
   export cd4=0.15; export max_slope=0.16; export n_del2_weak=20; export peak_fac=1.0  
 elif [ $RES -eq 3072 ]; then 
   export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0  
+else
+  echo
+  echo "Error.  Grid resolution specified in \"RES\" is not supported:"
+  echo "  RES = $RES"
+  echo "RES must be one of:  48  96  192  384  768  1152  3072"
+  echo "Exiting script."
+  exit 1
 fi
 #
 #-----------------------------------------------------------------------
@@ -602,7 +609,7 @@ tile=7
 cd $WORKDIR_FLTR
 mv oro.${CRES}.tile${tile}.nc \
    oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
-ln -fs oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
+ln -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
        oro.${CRES}.tile${tile}.nc
 cd -
 

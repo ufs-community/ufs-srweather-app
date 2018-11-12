@@ -22,7 +22,6 @@ the workflow XML.
 <!ENTITY RUNDIR "">
 <!ENTITY PROC_RUN_FV3SAR "">
 
-<!-- <!ENTITY FHR    "00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24"> -->
 <!ENTITY FHR "">
 
 <!--
@@ -39,8 +38,8 @@ Variables that are not modified by the workflow generation script.
 -->
 <!ENTITY LOG_DIR          "&RUNDIR;/log">
 
-<!ENTITY UPPDIR "/scratch4/BMC/hmtb/beck/rapid-refresh/UPP/comupp/bin">
-<!ENTITY FIX    "/scratch3/BMC/det/beck/FV3-CAM/">
+<!ENTITY UPPDIR "">
+<!ENTITY UPPFIX "">
 
 <!ENTITY PROC_GET_GFS_FILES     "1:ppn=1">
 <!ENTITY PROC_MAKE_GRID_OROG    "1:ppn=24">
@@ -213,8 +212,6 @@ Variables that are not modified by the workflow generation script.
 
   </task>
 
-
-<?ignore
   <metatask name="post">
     
     <var name="fhr">&FHR;<var>
@@ -245,8 +242,8 @@ Variables that are not modified by the workflow generation script.
     </envar>
 
     <envar>
-      <name>FIX</name>
-      <value>&FIX;</value>
+      <name>UPPFIX</name>
+      <value>&UPPFIX;</value>
     </envar>
 
     <dependency>
@@ -259,6 +256,5 @@ Variables that are not modified by the workflow generation script.
     </task>
 
   </metatask>
-?>
 
 </workflow>

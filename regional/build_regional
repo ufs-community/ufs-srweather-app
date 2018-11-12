@@ -18,9 +18,8 @@ cd ${FV3GFS_DIR}/sorc
 ./build_orog.sh ${SITE}        >& out.build_orog
 ./build_chgres.sh ${SITE}      >& out.build_chgres
 
-
 #cd ${FV3GFS_DIR}/../NEMSfv3gfs/tests
-#./compile.sh ${FV3GFS_DIR}/../NEMSfv3gfs/FV3 ${SITE} "DEBUG=N 32BIT=Y" 32bit YES NO >& make.out.32bit
+#./compile.sh ${FV3GFS_DIR}/../NEMSfv3gfs/FV3 ${SITE} "DEBUG=Y 32BIT=Y" 32bit YES NO >& make.out.32bit
 
 # prepare fixed data directories
 
@@ -30,16 +29,16 @@ cd fix
 
 if [ ${SITE} == "theia" ]; then
 
-    ln -fs /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am fix_am
+    ln -sfn /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am fix_am
 
 elif [ ${SITE} == "wcoss_cray" ]; then
 
-    ln -fs /gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am  fix_am
+    ln -sfn /gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am  fix_am
     echo "module swap pmi pmi/5.0.11" >> ${FV3GFS_DIR}/../NEMSfv3gfs/modulefiles/wcoss_cray/fv3
 
 elif [ ${SITE} == "odin" ]; then
 
-    ln -fs /scratch/ywang/test_runs/C768_nest/fv3-fix fix_am
+    ln -sfn /scratch/ywang/test_runs/C768_nest/fv3-fix fix_am
 
 elif [ ${SITE} == "cheyenne" ]; then
 

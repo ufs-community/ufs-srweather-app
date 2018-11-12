@@ -305,6 +305,7 @@ YMD=${CDATE:0:8}
 FV3SAR_DIR="$BASEDIR/fv3gfs"
 USHDIR="$FV3SAR_DIR/ush"
 TEMPLATE_DIR="$USHDIR/templates"
+UPPFIX="$BASEDIR/fv3gfs/fix"
 
 case $MACHINE in
 #
@@ -1102,7 +1103,7 @@ NUM_NODES=$(( ($PE_MEMBER01 + $ncores_per_node - 1)/$ncores_per_node ))
 #-----------------------------------------------------------------------
 #
 mkdir $WORKDIR
-mkdir $RUNDIR
+mkdir -p $RUNDIR
 mkdir $RUNDIR/INPUT
 mkdir $RUNDIR/RESTART
 

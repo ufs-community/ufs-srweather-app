@@ -127,6 +127,12 @@ set_file_param $WFLOW_XML_FP "PROC_RUN_FV3SAR" \
 
 set_file_param $WFLOW_XML_FP "FHR" \
                "$FHR" $VERBOSE
+
+set_file_param $WFLOW_XML_FP "UPPDIR" \
+               "UPPDIR" $VERBOSE
+
+set_file_param $WFLOW_XML_FP "UPPFIX" \
+               "UPPFIX" $VERBOSE
 #
 #-----------------------------------------------------------------------
 #
