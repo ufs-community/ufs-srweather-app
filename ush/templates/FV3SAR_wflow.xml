@@ -42,16 +42,16 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY UPPDIR "/scratch4/BMC/hmtb/beck/rapid-refresh/UPP/comupp/bin">
 <!ENTITY FIX    "/scratch3/BMC/det/beck/FV3-CAM/">
 
-<!ENTITY PROC_GET_GFS_FILES     "1:ppn=1">
 <!ENTITY PROC_MAKE_GRID_OROG    "1:ppn=24">
+<!ENTITY PROC_GET_GFS_FILES     "1:ppn=1">
 <!ENTITY PROC_MAKE_SURF_IC_BC0  "1:ppn=24">
 <!ENTITY PROC_MAKE_BC1_TO_BCEND "1:ppn=24">
 <!ENTITY PROC_STAGE             "1:ppn=1">
 <!-- <!ENTITY PROC_RUN_FV3SAR "11:ppn=24"> -->
 <!ENTITY PROC_POST              "1:ppn=24">
 
-<!ENTITY RSRC_GET_GFS_FILES     "<walltime>00:20:00</walltime>">
 <!ENTITY RSRC_MAKE_GRID_OROG    "<walltime>00:15:00</walltime>">
+<!ENTITY RSRC_GET_GFS_FILES     "<walltime>00:20:00</walltime>">
 <!ENTITY RSRC_MAKE_SURF_IC_BC0  "<walltime>00:10:00</walltime>">
 <!ENTITY RSRC_MAKE_BC1_TO_BCEND "<walltime>00:20:00</walltime>">
 <!ENTITY RSRC_STAGE             "<walltime>00:10:00</walltime>">
