@@ -19,48 +19,85 @@
 #
 
 
+#
+#-----------------------------------------------------------------------
+#
+# This script gets (either from disk or from the mass store, aka HPSS)
+# the necessary GFS analysis and forecast files (which are in nemsio
+# format) needed to generate NetCDF files containing the initial atmo-
+# spheric fields, the surface fields, and the boundary conditions that
+# are needed to run a forecast with the FV3SAR.  It places these files
+# in a directory specified by INIDIR.
+#
+#-----------------------------------------------------------------------
+#
 
+#
+#-----------------------------------------------------------------------
+#
+# Change shell behavior with "set" with these flags:
+#
+# -a
+# This will cause the script to automatically export all variables and
+# functions which are modified or created to the environments of subse-
+# quent commands.
+#
+# -e
+# This will cause the script to exit as soon as any line in the script
+# fails (with some exceptions; see manual).  Apparently, it is a bad
+# idea to use "set -e".  See here:
+#   http://mywiki.wooledge.org/BashFAQ/105
+#
+# -u
+# This will cause the script to exit if an undefined variable is encoun-
+# tered.
+#
+# -x
+# This will cause all executed commands in the script to be printed to
+# the terminal (used for debugging).
+#
+#-----------------------------------------------------------------------
+#
 #set -eux
 set -ux
 #
 #-----------------------------------------------------------------------
 #
-# When this script is run using the qsub command, its default working
-# directory is the user's home directory (unless another one is speci-
-# fied  via qsub's -d flag; the -d flag sets the environment variable
-# PBS_O_INITDIR, which is by default undefined).  Here, we change direc-
-# tory to the one in which the qsub command is issued, and that directo-
-# ry is specified in the environment variable PBS_O_WORKDIR.  This must
-# be done to be able to source the setup script.
+# Source the script that defines the necessary shell environment varia-
+# bles.
 #
 #-----------------------------------------------------------------------
 #
-#cd $PBS_O_WORKDIR
+. $SCRIPT_VAR_DEFNS_FP
 #
 #-----------------------------------------------------------------------
 #
-# Source the setup script.
+# Create the directory INIDIR if it doesn't already exist.  This is the
+# directory in which we will store the analysis (at the initial time
+# specified in CDATE) files (which consist of the atmospheric analysis
+# file, the surface analysis file, and the near-surface temperature ana-
+# lysis file) and the forecasts files (which are needed at each boundary
+# condition time except at the initial time since that is in the atmo-
+# spheric analysis file).  Then change location to INIDIR.
 #
 #-----------------------------------------------------------------------
 #
-. $TMPDIR/../fv3gfs/ush/setup_grid_orog_ICs_BCs.sh
-
-#
-#-----------------------------------------------------------------------
-#
-# Change location to INIDIR.  This is the directory in which we will
-# store the analysis (at the initial time CDATE) and forecasts (at the
-# boundary condition times) files.
-#
-#-----------------------------------------------------------------------
-#
+mkdir -p $INIDIR
 cd $INIDIR
+
+if [ $? -ne 0 ]; then
+  echo
+  echo "Could not change directory to INIDIR:"
+  echo "  INIDIR = $INIDIR"
+  echo "Exiting script."
+  exit 1
+fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the directory on mass store (HPSS) in which the archive (tar)
-# files that we may need to extract files from are located.  Also, set
-# a prefix that appears in the names of these tar files.
+# Set the directory on mass store (HPSS) in which the archived (tar)
+# files from which we may need to extract the necessary files are loca-
+# ted.  Also, set a prefix that appears in the names of these tar files.
 #
 #-----------------------------------------------------------------------
 #
@@ -69,40 +106,57 @@ prefix_tar_files="gpfs_hps_nco_ops_com_gfs_prod_gfs"
 #
 #-----------------------------------------------------------------------
 #
-# Set the system directory in which all analysis and forecast files
-# needed to run a forecast MAY be found.  On theia, these directories
-# contain the needed files for the past two days (today and yesterday,
-# or yesterday and the day before), while on WCOSS they contain the
-# needed files for the past two weeks.
+# Set the system directory (i.e. location on disk, not on HPSS) in which
+# all analysis and forecast files needed to generate the input files for
+# FV3SAR may be found (if CDATE isn't too long ago).  On theia, these
+# directories contain the needed files for the past two days (today and
+# yesterday, or yesterday and the day before), while on WCOSS they con-
+# tain the needed files for the past two weeks.
 #
-# If the starting date of the forecast (CDATE) is within this time per-
-# iod (i.e two days on theia and two weeks on WCOSS), the needed files
+# If the starting date of the forecast (CDATE) is within this time win-
+# dow (i.e. two days on theia and two weeks on WCOSS), the needed files
 # may simply be copied over from these system directories to INIDIR.  If
-# CDATE is a time that goes back beyond this time period, then the need-
-# ed files must be obtained from the mass store (HPSS) and placed into
-# INIDIR.
+# CDATE is a time that is outside (i.e. older than) this time window,
+# then the needed files must be obtained from the mass store (HPSS) and
+# placed into INIDIR.
 #
 #-----------------------------------------------------------------------
 #
-if [ "$machine" = "WCOSS_C" ]; then
+case $MACHINE in
+#
+"WCOSS_C")
+#
   export INIDIR_SYS="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
-elif [ "$machine" = "WCOSS" ]; then
+  ;;
+#
+"WCOSS")
+#
   export INIDIR_SYS=""  # Not sure how these should be set on WCOSS.
-elif [ "$machine" = "THEIA" ]; then
-#  export COMROOTp2="/scratch4/NCEPDEV/rstprod/com"   # Does this really need to be exported??
-#  export INIDIR_SYS="$COMROOTp2/gfs/prod/gfs.$YMD"
+  ;;
+#
+"THEIA")
+#
   export INIDIR_SYS="/scratch4/NCEPDEV/rstprod/com/gfs/prod/gfs.$YMD"
-elif [ "$machine" = "Jet" ]; then
+  ;;
+#
+"JET")
+#
   export INIDIR_SYS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs/$YMD"
-elif [ "$machine" = "Odin" ]; then
+  ;;
+#
+"ODIN")
+#
   export INIDIR_SYS="/scratch/ywang/test_runs/FV3_regional/gfs/$YMD"
-fi
+  ;;
+#
+esac
 #
 #-----------------------------------------------------------------------
 #
 # First, obtain (i.e. place into INIDIR) the analysis files needed to
-# run a simulation.  These are needed in order to generate the initial
-# condition (IC) file and the 0th hour boundary condtion (BC) file.
+# run a forecast with the FV3SAR.  These files are needed in order to
+# generate the initial condition (IC), surface, and 0th hour boundary
+# condtion (BC) files (in NetCDF format) that are inputs to the FV3SAR.
 #
 #-----------------------------------------------------------------------
 #
@@ -111,11 +165,11 @@ fi
 #
 anl_or_fcst="analysis"
 #
-# Set the names of the analysis files needed to generate the initial
-# condition file and the first (0th forecast hour) boundary condition
-# file.
+# Set the names of the analysis files needed to generate the IC and the
+# first (i.e. 0th forecast hour) BC NetCDF files.
 #
 temp="gfs.t${HH}z."
+# For now, don't get analysis file for near-surface temperature.
 #anl_files=( ${temp}atmanl.nemsio ${temp}nstanl.nemsio ${temp}sfcanl.nemsio )
 anl_files=( ${temp}atmanl.nemsio ${temp}sfcanl.nemsio )
 #
@@ -123,19 +177,21 @@ anl_files=( ${temp}atmanl.nemsio ${temp}sfcanl.nemsio )
 #
 num_files_needed="${#anl_files[@]}"
 #
-# Set the name of the tar file that is supposed to contain the needed
-# analysis files.
+# Set the name of the tar file in HPSS that is supposed to contain the
+# needed analysis files.  This file will only be needed if the analysis
+# files cannot be found on disk.
 #
 ANL_TAR_FILE="${prefix_tar_files}.${CDATE}.anl.tar"
 #
-# Set the name of the directory within the archive in which the needed
-# analysis files should be located.
+# Set the name of the directory within the tar in which the needed ana-
+# lysis files should be located.  This will only be used if the analysis
+# files aren't already available on disk.
 #
 ARCHIVE_DIR="."
 #
-# Set variables containing the analysis file names with the appropriate
-# paths that can be used below to either copy the analysis files from
-# INIDIR_SYS or to extract them from a tar file in HPSS.
+# Set variables containing the analysis file names (including paths)
+# that can be used below to either copy the analysis files from INIDIR_-
+# SYS or to extract them from a tar file in HPSS.
 #
 files_to_copy=""
 files_to_extract=""
@@ -149,12 +205,13 @@ done
 # We first need to check whether the needed analysis files all exist in
 # the system directory INIDIR_SYS specified above.  We perform this
 # check by counting the number of needed analysis files that actually
-# exist in INIDIR_SYS (num_files_found).  If that number is the same as
-# the number of needed analysis files (num_files_needed), it means all
-# the needed analysis files exist in INIDIR_SYS (in which case we will
-# simply copy them over to INIDIR).  If that number is different, then
-# all the needed analysis files are not in INIDIR_SYS (in which case we
-# will have to get them from HPSS.
+# exist in INIDIR_SYS (num_files_found).  If that number is equal to the
+# number of needed analysis files (num_files_needed), it means all the
+# needed analysis files exist in INIDIR_SYS.  In this case, we will sim-
+# ply copy them from INIDIR_SYS to INIDIR.  If the number of files found
+# is not equal to the number needed, then all the needed analysis files
+# are not in INIDIR_SYS.  In this case, we will have to get them from
+# HPSS and place them in INIDIR.
 #
 #-----------------------------------------------------------------------
 #
@@ -178,8 +235,8 @@ if [ "$num_files_found" -eq "$num_files_needed" ]; then
 #
 #-----------------------------------------------------------------------
 #
-# If the needed analysis files are not found in INIDIR_SYS, try to ex-
-# tract them from HPSS and into INIDIR.
+# If the needed analysis files are not all found in INIDIR_SYS, try to
+# extract them from HPSS and into INIDIR.
 #
 #-----------------------------------------------------------------------
 #
@@ -191,29 +248,32 @@ else
 #
 #-----------------------------------------------------------------------
 #
+  set +x
   module load hpss
+  set -x
 #
 #-----------------------------------------------------------------------
 #
-# Get a list of those needed analysis files that also exist in the tar
-# file.  This is simply a check to make sure that the tar file in HPSS
+# Calculate the number of needed analysis files that exist in the tar
+# file (num_files found).  If this is not equal to the number of analy-
+# sis files needed (num_files_needed), print out a message and exit the
+# script.  This is simply a check to make sure that the tar file in HPSS
 # actually contains tne needed analysis files.
 #
 #-----------------------------------------------------------------------
 #
+# Get a list of those needed analysis files that also exist in the tar
+# file.  This list (plus 2 informational lines) are stored in the file
+# specified by htar_stdout_fn.
+#
   htar_stdout_fn="htar_stdout_anl.txt"
   htar -tvf $HPSS_DIR/$ANL_TAR_FILE $files_to_extract > $htar_stdout_fn
-#
-# Count the number of needed analysis files that exist in the tar file.
-# If this is not equal to the number of analysis files needed (num_-
-# files_needed), print out a message and exit the script.
-#
   num_lines=$( wc -l < $htar_stdout_fn )
 #
-# In the file htar_stdout_fn into which the stdout from the htar command
-# is redirected, there will be one line per file found plus two trailing
-# informational lines.  Thus, to obtain the number of files found, we
-# simply subtract 2 from the number of lines.
+# The file specified by htar_stdout_fn will contain one line per file
+# found plus two trailing informational lines.  Thus, to obtain the num-
+# ber of files found, we simply subtract 2 from the number of lines in
+# the file.
 #
   num_files_found=$(( $num_lines - 2 ))
   if [ "$num_files_found" -ne "$num_files_needed" ]; then
@@ -250,16 +310,16 @@ else
     exit 1
   fi
 #
-# Count the number of analysis files extracted.  If this is not equal to
-# the number of analysis files needed (num_files_needed), print out a
-# message and exit the script.
+# Calculate the number of analysis files extracted from the tar file.
+# If this is not equal to the number of analysis files needed (num_-
+# files_needed), print out a message and exit the script.
 #
   num_lines=$( wc -l < $htar_stdout_fn )
 #
-# In the file htar_stdout_fn into which the stdout from the htar command
-# is redirected, there will be one line per extracted file plus two
-# trailing informational lines.  Thus, to obtain the number of extractedi
-# files, we simply subtract 2 from the number of lines.
+# In the file htar_stdout_fn into which the output from the htar command
+# to stdout is redirected, there will be one line per extracted file
+# plus two trailing informational lines.  Thus, to obtain the number of
+# extracted files, we simply subtract 2 from the number of lines.
 #
   num_files_found=$(( $num_lines - 2 ))
   if [ "$num_files_found" -ne "$num_files_needed" ]; then
@@ -391,27 +451,27 @@ if [ "$num_files_found" -eq "$num_files_needed" ]; then
 #
 else
 #
-# If the BC time interval (BC_interval_hrs) is less than the frequency
-# with which the forecast is saved in HPSS (given below by BC_interval_-
-# hrs_HPSS_min), then some of the forecast files needed to generate the
-# BC files will not be found in HPSS.  In this case, issue a warning.
+# If the BC update interval (BC_update_intvl_hrs) is less than the fre-
+# quency with which the forecast is saved in HPSS (given below by BC_up-
+# date_intvl_hrs_HPSS_min), then some of the forecast files needed to
+# generate the BC files will not be found in HPSS.  In this case, issue
+# a warning.
 #
-  BC_interval_hrs_HPSS_min=6
-  if [ "$BC_interval_hrs" -lt "$BC_interval_hrs_HPSS_min" ]; then
+  BC_update_intvl_hrs_HPSS_min=6
+  if [ "$BC_update_intvl_hrs" -lt "$BC_update_intvl_hrs_HPSS_min" ]; then
     echo
     echo "CAUTION:"
     echo
     echo "As of 07/182018, the forecast files in the mass store (HPSS) are available"
-    echo "only every BC_interval_hrs_HPSS_min=${BC_interval_hrs_HPSS_min} hours."
+    echo "only every BC_update_intvl_hrs_HPSS_min=${BC_update_intvl_hrs_HPSS_min} hours."
     echo
-    echo "Since BC_interval_hrs is set to a value smaller than this, some of the"
+    echo "Since BC_update_intvl_hrs is set to a value smaller than this, some of the"
     echo "forecast files needed to generate BC files will not be found in HPSS."
     echo
-    echo "  BC_interval_hrs_HPSS_min = $BC_interval_hrs_HPSS_min"
-    echo "  BC_interval_hrs = $BC_interval_hrs"
+    echo "  BC_update_intvl_hrs_HPSS_min = $BC_update_intvl_hrs_HPSS_min"
+    echo "  BC_update_intvl_hrs = $BC_update_intvl_hrs"
     echo
   fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -515,3 +575,5 @@ else
   fi
 
 fi
+
+

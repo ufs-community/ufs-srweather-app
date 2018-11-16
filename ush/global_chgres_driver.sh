@@ -1,5 +1,5 @@
 #!/bin/ksh
-set -ax
+set -aux
 #-------------------------------------------------------------------------------------------------
 # Makes ICs on fv3 globally uniform cubed-sphere grid using operational GFS initial conditions.
 # Fanglin Yang, 09/30/2016

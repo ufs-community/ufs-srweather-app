@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE workflow [
+
+<!--
+SECTION 1:
+Variables that are modified by the workflow generation script.
+-->
+
+<!--
+The following are variables that are not passed to the shell scripts 
+that execute the various worklflow tasks but are used in other ways by
+the workflow XML.
+-->
+<!ENTITY ACCOUNT          "">
+<!ENTITY SCHED            ""> 
+<!ENTITY QUEUE_DEFAULT    "">
+<!ENTITY QUEUE_HPSS       "">
+<!ENTITY QUEUE_RUN_FV3SAR "">
+
+<!ENTITY USHDIR "">
+<!ENTITY RUNDIR "">
+<!ENTITY PROC_RUN_FV3SAR "">
+
+<!ENTITY FHR "">
+
+<!--
+The following are variables that are passed to the shell scripts that 
+execute the various workflow tasks but are not otherwise used in the 
+workflow XML.
+-->
+<!ENTITY SCRIPT_VAR_DEFNS_FP "">
+
+
+<!--
+SECTION 2:
+Variables that are not modified by the workflow generation script.
+-->
+<!ENTITY LOG_DIR          "&RUNDIR;/log">
+
+<!ENTITY UPPDIR "">
+<!ENTITY UPPFIX "">
+
+<!ENTITY PROC_MAKE_GRID_OROG    "1:ppn=24">
+<!ENTITY PROC_GET_GFS_FILES     "1:ppn=1">
+<!ENTITY PROC_MAKE_SURF_IC_BC0  "1:ppn=24">
+<!ENTITY PROC_MAKE_BC1_TO_BCEND "1:ppn=24">
+<!ENTITY PROC_STAGE             "1:ppn=1">
+<!-- <!ENTITY PROC_RUN_FV3SAR "11:ppn=24"> -->
+<!ENTITY PROC_POST              "1:ppn=24">
+
+<!ENTITY RSRC_MAKE_GRID_OROG    "<walltime>00:15:00</walltime>">
+<!ENTITY RSRC_GET_GFS_FILES     "<walltime>00:20:00</walltime>">
+<!ENTITY RSRC_MAKE_SURF_IC_BC0  "<walltime>00:10:00</walltime>">
+<!ENTITY RSRC_MAKE_BC1_TO_BCEND "<walltime>00:20:00</walltime>">
+<!ENTITY RSRC_STAGE             "<walltime>00:10:00</walltime>">
+<!ENTITY RSRC_RUN_FV3SAR        "<walltime>03:00:00</walltime>">
+<!ENTITY RSRC_POST              "<walltime>00:30:00</walltime>">
+
+<!ENTITY RSRV_DEFAULT    "<native>-W umask=022 -m n</native><queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_HPSS       "<native>-W umask=022 -m n</native><queue>&QUEUE_HPSS;</queue><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_RUN_FV3SAR "<native>-W umask=022 -m n</native><queue>&QUEUE_RUN_FV3SAR;</queue><account>&ACCOUNT;</account>"> 
+
+]>
+
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20">
+
+<cycledef>00 00 04 06 2018 *</cycledef>
+
+  <log>
+    <cyclestr>&LOG_DIR;/FV3_@Y@m@d@H.log</cyclestr>
+  </log>
+
+  <task name="make_grid_orog" maxtries="4">
+
+    &RSRC_MAKE_GRID_OROG;
+    &RSRV_DEFAULT;
+
+    <command>&USHDIR;/make_grid_orog.sh</command>
+    <nodes>&PROC_MAKE_GRID_OROG;</nodes>
+    <jobname>make_grid_orog</jobname>
+    <join><cyclestr>&LOG_DIR;/make_grid_orog_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>SCRIPT_VAR_DEFNS_FP</name>
+      <value>&SCRIPT_VAR_DEFNS_FP;</value>
+    </envar>
+
+  </task>
+
+
+  <task name="get_GFS_files" maxtries="3">
+
+    &RSRC_GET_GFS_FILES;
+    &RSRV_HPSS;
+
+    <command>&USHDIR;/get_GFS_files.sh</command>
+    <nodes>&PROC_GET_GFS_FILES;</nodes>
+    <jobname>get_GFS_files</jobname>
+    <join><cyclestr>&LOG_DIR;/get_GFS_files_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>SCRIPT_VAR_DEFNS_FP</name>
+      <value>&SCRIPT_VAR_DEFNS_FP;</value>
+    </envar>
+
+    <envar>
+      <name>CDATE</name>
+      <value><cyclestr>@Y@m@d@H</cyclestr></value>
+    </envar>
+
+    <dependency>
+       <taskdep task="make_grid_orog"/>
+    </dependency>
+
+  </task> 
+
+
+  <task name="make_surf_IC_BC0" maxtries="3">
+
+    &RSRC_MAKE_SURF_IC_BC0;
+    &RSRV_DEFAULT;
+
+    <command>&USHDIR;/make_surf_IC_BC0.sh</command>
+    <nodes>&PROC_MAKE_SURF_IC_BC0;</nodes>
+    <jobname>make_surf_IC_BC0</jobname>
+    <join><cyclestr>&LOG_DIR;/make_surf_IC_BC0_@Y@m@d@H.log</cyclestr></join>
+    
+    <envar>
+      <name>SCRIPT_VAR_DEFNS_FP</name>
+      <value>&SCRIPT_VAR_DEFNS_FP;</value>
+    </envar>
+
+    <dependency>
+     <and>
+      <taskdep task="make_grid_orog"/>
+      <taskdep task="get_GFS_files"/>
+     </and> 
+   </dependency>
+
+  </task>
+
+
+  <task name="make_BC1_to_BCend" maxtries="3">
+
+    &RSRC_MAKE_BC1_TO_BCEND;
+    &RSRV_DEFAULT;
+
+    <command>&USHDIR;/make_BC1_to_BCend.sh</command>
+    <nodes>&PROC_MAKE_BC1_TO_BCEND;</nodes>
+    <jobname>make_BC1_to_BCend</jobname>
+    <join><cyclestr>&LOG_DIR;/make_BC1_to_BCend_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>SCRIPT_VAR_DEFNS_FP</name>
+      <value>&SCRIPT_VAR_DEFNS_FP;</value>
+    </envar>
+
+    <dependency>
+     <and>
+      <taskdep task="make_grid_orog"/>
+      <taskdep task="get_GFS_files"/>
+     </and>
+    </dependency>
+
+  </task>
+
+
+  <task name="stage" maxtries="2">
+
+    &RSRC_STAGE;
+    &RSRV_DEFAULT;
+
+    <command>&USHDIR;/stage.sh</command>
+    <nodes>&PROC_STAGE;</nodes>
+    <jobname>stage</jobname>
+    <join><cyclestr>&LOG_DIR;/stage_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>SCRIPT_VAR_DEFNS_FP</name>
+      <value>&SCRIPT_VAR_DEFNS_FP;</value>
+    </envar>
+
+    <dependency>
+     <and>
+      <taskdep task="make_surf_IC_BC0"/>
+      <taskdep task="make_BC1_to_BCend"/>
+     </and>
+    </dependency>
+
+  </task>
+
+
+  <task name="run_FV3SAR" maxtries="3">
+
+    &RSRC_RUN_FV3SAR;
+    &RSRV_RUN_FV3SAR;
+
+    <command>&USHDIR;/run_FV3SAR.sh</command>
+    <nodes>&PROC_RUN_FV3SAR;</nodes>
+    <jobname>run_FV3SAR</jobname>
+    <join><cyclestr>&LOG_DIR;/run_FV3SAR_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>SCRIPT_VAR_DEFNS_FP</name>
+      <value>&SCRIPT_VAR_DEFNS_FP;</value>
+    </envar>
+
+    <dependency>
+      <taskdep task="stage"/>
+    </dependency>
+
+  </task>
+
+  <metatask name="post">
+    
+    <var name="fhr">&FHR;<var>
+    
+    <task name="post#fhr#" maxtries="2">
+    
+    &RSRC_POST;
+    &RSRV_DEFAULT;
+
+    <command>&USHDIR;/run_post.sh</command>
+    <nodes>&PROC_POST;</nodes>
+    <jobname>run_post</jobname>
+    <join><cyclestr>&LOG_DIR;/run_post_@Y@m@d@H.log</cyclestr></join>
+
+    <envar>
+      <name>CDATE</name>
+      <value><cyclestr>@Y@m@d@H</cyclestr></value>
+    </envar>
+   
+    <envar>
+      <name>UPPDIR</name>
+      <value>&UPPDIR;</value>
+    </envar>
+ 
+    <envar>
+      <name>fhr</name>
+      <value>#fhr#</value>
+    </envar>
+
+    <envar>
+      <name>UPPFIX</name>
+      <value>&UPPFIX;</value>
+    </envar>
+
+    <dependency>
+      <and>
+        <datadep age="05:00"><cyclestr>&RUNDIR;/dynf0#fhr#.nc</cyclestr></datadep>
+        <datadep age="05:00"><cyclestr>&RUNDIR;/phyf0#fhr#.nc</cyclestr></datadep>
+      </and>
+    </dependency>
+
+    </task>
+
+  </metatask>
+
+</workflow>

@@ -1,6 +1,6 @@
 #!/bin/ksh --login
 
-set -x
+set -ux
 
 module purge
 module load intel mvapich2 netcdf
@@ -96,11 +96,11 @@ EOF
 
 rm -f fort.*
 
-cp ${FIX}/UPP/fix/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp ${FIX}/nam_micro_lookup.dat ./eta_micro_lookup.dat
 
 # copy flat files
-cp ${FIX}/UPP/fix/postxconfig-NT-NMM_new.txt ./postxconfig-NT.txt
-cp ${FIX}/UPP/fix/params_grib2_tbl_new ./params_grib2_tbl_new
+cp ${FIX}/postxconfig-NT-NMM_new.txt ./postxconfig-NT.txt
+cp ${FIX}/params_grib2_tbl_new ./params_grib2_tbl_new
 
 # Run the post processor
 cp ${UPPDIR}/ncep_post .

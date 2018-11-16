@@ -1,5 +1,5 @@
 #!/bin/ksh
-set -ax
+set -aux
 
 nargv=$#
 
@@ -29,11 +29,13 @@ elif [ $nargv -eq 7 ]; then  # cubed-sphere grid
   export orogfile="none"
   export hist_dir=$6
   export TMPDIR=$7
-  if [ -z ${orog_dir+x} ]; then  # orog_dir is not set.
-    export workdir=$TMPDIR/C${res}/orog/tile$tile
-  else                           # orog_dir is set, so use it.
-    export workdir=$orog_dir/tile$tile
-  fi
+  export workdir=$TMPDIR/C${res}/orog/tile$tile
+# Set workdir_rgnl, which is the work directory for the FV3SAR (i.e. the
+# regional FV3).  workdir_rgnl will be set to an empty string if WORK-
+# DIR_OROG is unset or empty.
+  workdir_rgnl=${WORKDIR_OROG:+$WORKDIR_OROG/tile$tile}
+# If workdir_rgnl is set to a non-empty string, set workdir to it.
+  export workdir=${workdir_rgnl:-$workdir}
 elif [ $nargv -eq 8 ]; then  # input your own orography files
   export res=$1 
   export lonb=$1
