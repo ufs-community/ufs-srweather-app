@@ -38,9 +38,6 @@ Variables that are not modified by the workflow generation script.
 -->
 <!ENTITY LOG_DIR          "&RUNDIR;/log">
 
-<!ENTITY UPPDIR "">
-<!ENTITY UPPFIX "">
-
 <!ENTITY PROC_MAKE_GRID_OROG    "1:ppn=24">
 <!ENTITY PROC_GET_GFS_FILES     "1:ppn=1">
 <!ENTITY PROC_MAKE_SURF_IC_BC0  "1:ppn=24">
@@ -214,7 +211,7 @@ Variables that are not modified by the workflow generation script.
 
   <metatask name="post">
     
-    <var name="fhr">&FHR;<var>
+    <var name="fhr">&FHR;</var>
     
     <task name="post#fhr#" maxtries="2">
     
@@ -232,18 +229,8 @@ Variables that are not modified by the workflow generation script.
     </envar>
    
     <envar>
-      <name>UPPDIR</name>
-      <value>&UPPDIR;</value>
-    </envar>
- 
-    <envar>
       <name>fhr</name>
       <value>#fhr#</value>
-    </envar>
-
-    <envar>
-      <name>UPPFIX</name>
-      <value>&UPPFIX;</value>
     </envar>
 
     <dependency>
