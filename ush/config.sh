@@ -51,11 +51,22 @@ QUEUE_RUN_FV3SAR="batch"
 # Temporary work directory.  A subdirectory for the current run will be
 # created under this.
 #
+# UPPDIR:
+# Directory in which the UPP executable is found (??).
+#
 #-----------------------------------------------------------------------
 #
-BASEDIR="/scratch3/BMC/det/beck/FV3-CAM/temp"
-TMPDIR="${BASEDIR}/../work_dirs"
-UPPDIR="${BASEDIR}/../EMC_post/sorc/ncep_post.fd"
+BASEDIR="/path/to/directory/of/fv3gfs/and/NEMSfv3gfs/clones"
+TMPDIR="/path/to/temporary/work/directories"
+UPPDIR="/path/to/UPP/executable"
+
+#BASEDIR="/scratch3/BMC/det/beck/FV3-CAM/temp"
+#TMPDIR="${BASEDIR}/../work_dirs"
+#UPPDIR="${BASEDIR}/../EMC_post/sorc/ncep_post.fd"
+
+#BASEDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
+#TMPDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs"
+#UPPDIR="/scratch3/BMC/det/beck/FV3-CAM/EMC_post/sorc/ncep_post.fd"
 #
 #-----------------------------------------------------------------------
 #
@@ -127,8 +138,10 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 # BC_update_intvl_hrs:
 # The frequency (in integer hours) with which boundary data will be pro-
 # vided to the FV3SAR model.  We will refer to this as the boundary up-
-# date interval.  This value must be greater than six for retrospective cases
-# using nemsio files from HPSS.
+# date interval.  As of 11/12/2018, the boundary data is obtained from 
+# GFS forecast files in nemsio format, which are stored in mass storage
+# (HPSS).  Since these forecast files are available only every 6 hours, 
+# BC_update_intvl_hrs must be greater than or equal to 6.
 #
 #-----------------------------------------------------------------------
 #
@@ -151,7 +164,7 @@ BC_update_intvl_hrs=6
 #
 #-----------------------------------------------------------------------
 #
-run_title="test9"
+run_title="desc_str"
 #
 #-----------------------------------------------------------------------
 #
@@ -176,8 +189,8 @@ run_title="test9"
 #
 #-----------------------------------------------------------------------
 #
-#predef_domain=""
-predef_domain="RAP"
+predef_domain=""
+#predef_domain="RAP"
 #predef_domain="HRRR"
 #
 #-----------------------------------------------------------------------
