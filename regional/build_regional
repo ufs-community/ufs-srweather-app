@@ -18,8 +18,6 @@ cd ${FV3GFS_DIR}/sorc
 ./build_orog.sh ${SITE}        >& out.build_orog
 ./build_chgres.sh ${SITE}      >& out.build_chgres
 
-#cd ${FV3GFS_DIR}/../NEMSfv3gfs/tests
-#./compile.sh ${FV3GFS_DIR}/../NEMSfv3gfs/FV3 ${SITE} "DEBUG=Y 32BIT=Y" 32bit YES NO >& make.out.32bit
 
 # prepare fixed data directories
 
@@ -30,6 +28,10 @@ cd fix
 if [ ${SITE} == "theia" ]; then
 
     ln -sfn /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am fix_am
+
+elif [ ${SITE} == "wcoss" || ${SITE} == "dell" ]; then
+
+    ln -sfn /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am fix_am
 
 elif [ ${SITE} == "wcoss_cray" ]; then
 

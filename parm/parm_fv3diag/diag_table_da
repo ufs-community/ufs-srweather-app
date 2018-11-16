@@ -13,6 +13,7 @@
 #"gfs_dyn",     "ice_nc",      "nccice",       "fv3_history",    "all",  .false.,  "none",  2
 #"gfs_dyn",     "rain_nc",     "nconrd",       "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "o3mr",        "o3mr",         "fv3_history",    "all",  .false.,  "none",  2
+#"gfs_dyn",     "cld_amt",     "cld_amt",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "delp",        "dpres",        "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "delz",        "delz",         "fv3_history",    "all",  .false.,  "none",  2
 #"gfs_dyn",     "pfhy",        "preshy",       "fv3_history",    "all",  .false.,  "none",  2
@@ -111,6 +112,7 @@
 
 "gfs_sfc",     "crain",         "crain",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "tprcp",         "tprcp",        "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_phys",    "rainc",         "cnvprcp",      "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "hgtsfc",        "orog",         "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "weasd",         "weasd",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "f10m",          "f10m",         "fv3_history2d",  "all",  .false.,  "none",  2

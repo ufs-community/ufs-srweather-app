@@ -97,6 +97,11 @@ cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}    tmpfile2${fcsthrs}
 cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}   tmpfile2b${fcsthrs}
 cat tmpfile2${fcsthrs}   tmpfile2b${fcsthrs}  >  tmpfile${fcsthrs}
 $WGRIB2 tmpfile${fcsthrs} | grep  -F -f $PARMproduct/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile  tmpfile${fcsthrs}
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File: masterfile does not exist."
+   exit $err
+fi
 
 $WGRIB2 masterfile -match ":PWAT:entire atmosphere" -grib gfs_pwat.grb
 $WGRIB2 masterfile | grep -v ":PWAT:entire atmosphere" | $WGRIB2 -i -grib temp_gfs  masterfile
@@ -188,19 +193,19 @@ fi
 
       if [ $SENDCOM = "YES" ] ; then
         ##############################
-        # Post Files to PCOM
+        # Post Files to  ${COMOUTwmo}
         ##############################
 
-        mv grib2.awpgfs${fcsthrs}.${GRID}   $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}
+        mv grib2.awpgfs${fcsthrs}.${GRID}    ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}
 
         ##############################
         # Distribute Data
         ##############################
 
         if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
-           $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}
+           $DBNROOT/bin/dbn_alert NTC_LOW $NET $job  ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}
         else
-           msg="File grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc} not posted to db_net."
+           msg="File ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc} not posted to db_net."
            postmsg "$jlogfile" "$msg"
         fi
       fi
@@ -216,19 +221,19 @@ fi
       if [ $SENDCOM = "YES" ] ; then
 
       ##############################
-      # Post Files to PCOM
+      # Post Files to  ${COMOUTwmo} 
       ##############################
 
-      mv grib2.awpgfs_20km_${GRID}_f${fcsthrs}   $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name
+      mv grib2.awpgfs_20km_${GRID}_f${fcsthrs}    ${COMOUTwmo}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name
 
       ##############################
       # Distribute Data
       ##############################
 
       if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
-         $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name
+         $DBNROOT/bin/dbn_alert NTC_LOW $NET $job  ${COMOUTwmo}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name
       else
-         msg="File $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name not posted to db_net."
+         msg="File  ${COMOUTwmo}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name not posted to db_net."
          postmsg "$jlogfile" "$msg"
       fi
      fi
@@ -238,7 +243,9 @@ fi
 
 done
 
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+   cat $pgmout
+fi
 
 ############################################################################################
 # GOOD RUN

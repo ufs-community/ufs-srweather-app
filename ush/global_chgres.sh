@@ -71,7 +71,7 @@
 #                   defaults to input sigma file value
 #     REGIONAL      Process stand-alone regional grid.  When '1', remove halo
 #                   from grids and create an atmospheric boundary file.
-#                   When '2', create boundary file only.  When '0',
+#                   When '2', create boundary file only.  When '0', 
 #                   do neither (process as normal for a global grid).
 #                   Default is '0'.
 #     HALO          When processing a stand-alone regional grid, this
@@ -518,7 +518,7 @@ EOF
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-${CHGRESTHREAD:-1}}
 
-cat << EOF >> NAMCHG
+ eval $APRUNC $CHGRESEXEC <<EOF $REDOUT$PGMOUT $REDERR$PGMERR
   &NAMCHG  LEVS=$LEVS, LONB=$LONB, LATB=$LATB,
            NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
            LSOIL=$LSOIL, IVSSFC=$IVSSFC, OUTTYP=$OUTTYP,
@@ -527,8 +527,6 @@ cat << EOF >> NAMCHG
            HALO=$HALO, NTILES=$ntiles, $CHGRESVARS
  /
 EOF
-#eval
-$APRUNC $CHGRESEXEC < NAMCHG
 
 export ERR=$?
 export err=$ERR
@@ -545,6 +543,8 @@ cd $pwd
 [[ $mkdata = YES ]]&&rmdir $DATA
 $ENDSCRIPT
 set +x
-
-echo $(date) EXITING $0 with return code $err >&2
+if [[ "$VERBOSE" = "YES" ]]
+then
+   echo $(date) EXITING $0 with return code $err >&2
+fi
 exit $err
