@@ -482,6 +482,12 @@ tile=7
 echo
 echo "Begin orography file generation (on `date`)."
 
+#
+# We need to export WORKDIR_OROG so that orog_gen_scr sets its internal
+# work directory correctly for the regional case.
+#
+export WORKDIR_OROG
+
 case $MACHINE in
 #
 "WCOSS_C" | "WCOSS")
