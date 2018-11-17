@@ -157,7 +157,7 @@ dyn_file=${RUNDIR}/dynf0${fhr}.nc
 phy_file=${RUNDIR}/phy_filef0${fhr}.nc
 
 # Do these need to be exported??  Probably not since only an executable is called below, not a script.
-export POST_TIME=`${UPPDIR}/sorc/ncep_post.fd/ndate.exe +${fhr} ${CDATE}`
+export POST_TIME=`${UPPDIR}/ndate.exe +${fhr} ${CDATE}`
 export YYYY=`echo $POST_TIME | cut -c1-4`
 export MM=`echo $POST_TIME | cut -c5-6`
 export DD=`echo $POST_TIME | cut -c7-8`
