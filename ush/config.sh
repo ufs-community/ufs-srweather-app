@@ -62,9 +62,9 @@ BASEDIR="/path/to/directory/of/fv3gfs/and/NEMSfv3gfs/clones"
 TMPDIR="/path/to/temporary/work/directories"
 UPPDIR="/path/to/UPP/executable"
 
-#BASEDIR="/scratch3/BMC/det/beck/FV3-CAM/temp"
-#TMPDIR="${BASEDIR}/../work_dirs"
-#UPPDIR="${BASEDIR}/../EMC_post/sorc/ncep_post.fd"
+#BASEDIR="/scratch3/BMC/det/beck/FV3-CAM"
+#TMPDIR="${BASEDIR}/work_dirs"
+#UPPDIR="${BASEDIR}/EMC_post/sorc/ncep_post.fd"
 
 #BASEDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 #TMPDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs"
@@ -148,7 +148,7 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 #-----------------------------------------------------------------------
 #
 #
-CDATE="2018060400"
+CDATE="YYYYMMDDHH"
 #CDATE=$( date "+%Y%m%d"00 )                     # This sets CDATE to today.
 #CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
 #
