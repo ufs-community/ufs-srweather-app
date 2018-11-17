@@ -100,6 +100,7 @@ export BASEDIR
 export INIDIR  # This is the variable that determines the directory in
                # which chgres looks for the input nemsio files.
 export gtype
+export ictype
 #
 #-----------------------------------------------------------------------
 #
@@ -128,6 +129,7 @@ export OMP_NUM_THREADS_CH=24              # Default for openMP threads.
 export CASE=${CRES}
 export LEVS=64
 export LSOIL=4
+export NTRAC=7
 export FIXfv3=${FV3SAR_DIR}/fix/fix_fv3
 export GRID_OROG_INPUT_DIR=$WORKDIR_SHVE  # Directory in which input grid and orography files are located.
 export OUTDIR=$WORKDIR_ICBC               # Directory in which output from chgres_driver_scr is placed.
@@ -170,7 +172,30 @@ case $MACHINE in
   module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
   module list
 
+  export DATA=/ptmpp2/${LOGNAME}/wrk.chgres
   export APRUNC="time"
+  ;;
+#
+"DELL")
+#
+  set +x
+  . /usrx/local/prod/lmod/lmod/init/sh
+  module load EnvVars/1.0.2 lmod/7.7 settarg/7.7 lsf/10.1 prod_envir/1.0.2
+  module load ips/18.0.1.163 
+  module load impi/18.0.1
+  module load NetCDF/4.5.0
+  module load HDF5-serial/1.10.1
+  module load CFP/2.0.1
+  module list
+  set -x
+
+  export KMP_AFFINITY=disabled
+  export DATA=/gpfs/dell3/ptmp/${LOGNAME}/wrk.chgres
+  export APRUNC="time"
+#  export BASE_GSM=/gpfs/dell2/emc/modeling/noscrub/${LOGNAME}/fv3gfs
+#  export FIXgsm=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am
+#  export ymd=`echo $CDATE | cut -c 1-8`
+#  export HOMEgfs=$LS_SUBCWD/..
   ;;
 #
 "THEIA")

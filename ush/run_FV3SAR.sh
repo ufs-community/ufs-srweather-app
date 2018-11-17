@@ -104,23 +104,6 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Clean up any old files in the run directory.
-#
-#-----------------------------------------------------------------------
-#
-rm -f $RUNDIR/time_stamp.out
-rm -f $RUNDIR/stderr.* stdout.*
-rm -f $RUNDIR/PET*
-rm -f $RUNDIR/core*
-rm -f $RUNDIR/*.nc
-rm -f $RUNDIR/logfile.*
-rm -f $RUNDIR/nemsusage.xml
-rm -f $RUNDIR/fort.*
-rm -f $RUNDIR/regional_*.tile7.nc
-rm -f $RUNDIR/RESTART/*
-#
-#-----------------------------------------------------------------------
-#
 # Set and export variables.
 #
 #-----------------------------------------------------------------------
@@ -142,10 +125,28 @@ cd $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
+# Remove old files in the run directory (e.g. from a previous unsuccess-
+# ful run).
+#
+#-----------------------------------------------------------------------
+#
+rm -f time_stamp.out
+rm -f stderr.* stdout.*
+rm -f PET*
+rm -f core*
+rm -f *.nc
+rm -f logfile.*
+rm -f nemsusage.xml
+rm -f fort.*
+rm -f regional_*.tile7.nc
+rm -f RESTART/*
+#
+#-----------------------------------------------------------------------
+#
 # Run the FV3SAR model.
 #
 #-----------------------------------------------------------------------
 #
-$APRUN $PE_MEMBER01 $RUNDIR/fv3_gfs.x
+$APRUN $PE_MEMBER01 fv3_gfs.x
 
 

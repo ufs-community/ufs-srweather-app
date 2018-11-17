@@ -184,9 +184,9 @@ rm -f fort.*
 #
 #-----------------------------------------------------------------------
 #
-cp ${FIX}/nam_micro_lookup.dat ./eta_micro_lookup.dat
-cp ${FIX}/postxconfig-NT-NMM_new.txt ./postxconfig-NT.txt
-cp ${FIX}/params_grib2_tbl_new ./params_grib2_tbl_new
+cp $UPPFIX/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp $UPPFIX/postxconfig-NT-NMM_new.txt ./postxconfig-NT.txt
+cp $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
 #
 #-----------------------------------------------------------------------
 #

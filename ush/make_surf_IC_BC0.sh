@@ -106,6 +106,7 @@ export BASEDIR
 export INIDIR  # This is the variable that determines the directory in
                # which chgres looks for the input nemsio files.
 export gtype
+export ictype
 #
 #-----------------------------------------------------------------------
 #
@@ -134,6 +135,7 @@ export OMP_NUM_THREADS_CH=24              # Default for openMP threads.
 export CASE=${CRES}
 export LEVS=64
 export LSOIL=4
+export NTRAC=7
 export FIXfv3=${FV3SAR_DIR}/fix/fix_fv3
 export GRID_OROG_INPUT_DIR=$WORKDIR_SHVE  # Directory in which input grid and orography files are located.
 export OUTDIR=$WORKDIR_ICBC               # Directory in which output from chgres_driver_scr is placed.
@@ -161,9 +163,11 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
+  set +x
   . $MODULESHOME/init/sh 2>>/dev/null
   module load PrgEnv-intel prod_envir cfp-intel-sandybridge/1.1.0 2>>/dev/null
   module list
+  set -x
 
   export KMP_AFFINITY=disabled
   export DATA=/gpfs/hps/ptmp/${LOGNAME}/wrk.chgres
@@ -172,19 +176,53 @@ case $MACHINE in
 #
 "WCOSS")
 #
+  set +x
   . /usrx/local/Modules/default/init/sh 2>>/dev/null
   module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
   module list
+  set -x
 
+  export DATA=/ptmpp2/${LOGNAME}/wrk.chgres
   export APRUNC="time"
+  ;;
+#
+"DELL")
+#
+  set +x
+  . /usrx/local/prod/lmod/lmod/init/sh
+  module load EnvVars/1.0.2 lmod/7.7 settarg/7.7 lsf/10.1 prod_envir/1.0.2
+  module use -a /usrx/local/dev/modulefiles
+  module load git/2.14.3
+  module load ips/18.0.1.163
+  module load impi/18.0.1
+  module load NetCDF/4.5.0
+  module load HDF5-serial/1.10.1
+  module list
+  set -x
+
+  export KMP_AFFINITY=disabled
+  export APRUN=time
+  export DATA=/gpfs/dell3/ptmp/${LOGNAME}/wrk.chgres
+#  export BASE_GSM=/gpfs/dell2/emc/modeling/noscrub/${LOGNAME}/fv3gfs
+#  export FIXgsm=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am
+#  export home_dir=$LS_SUBCWD/..
+#  if [ $ictype = pfv3gfs ]; then
+#    hour=`echo $CDATE | cut -c 9-10`
+#    export INIDIR=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$ymd/$hour
+#  else
+#    export INIDIR=/gpfs/hps/nco/ops/com/gfs/prod/gfs.$ymd
+#  fi
+#  export HOMEgfs=$LS_SUBCWD/..
   ;;
 #
 "THEIA")
 #
+  set +x
   . /apps/lmod/lmod/init/sh
   module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
   module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
   module list
+  set -x
 
   export DATA="$WORKDIR_ICBC/ICs_work"
   export APRUNC="time"
@@ -194,6 +232,7 @@ case $MACHINE in
 #
 "JET")
 #
+  set +x
   . /apps/lmod/lmod/init/sh
   module purge
   module load newdefaults
@@ -203,6 +242,7 @@ case $MACHINE in
   module load hdf5
   module load netcdf4/4.2.1.1
   module list
+  set -x
 
   export DATA="$WORKDIR_ICBC/ICs_work"
   export APRUNC="time"

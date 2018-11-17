@@ -31,12 +31,11 @@ workflow XML.
 -->
 <!ENTITY SCRIPT_VAR_DEFNS_FP "">
 
-
 <!--
 SECTION 2:
 Variables that are not modified by the workflow generation script.
 -->
-<!ENTITY LOG_DIR          "&RUNDIR;/log">
+<!ENTITY LOG_DIR "&RUNDIR;/log">
 
 <!ENTITY PROC_MAKE_GRID_OROG    "1:ppn=24">
 <!ENTITY PROC_GET_GFS_FILES     "1:ppn=1">
@@ -52,7 +51,7 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY RSRC_MAKE_BC1_TO_BCEND "<walltime>00:20:00</walltime>">
 <!ENTITY RSRC_STAGE             "<walltime>00:10:00</walltime>">
 <!ENTITY RSRC_RUN_FV3SAR        "<walltime>03:00:00</walltime>">
-<!ENTITY RSRC_POST              "<walltime>00:30:00</walltime>">
+<!ENTITY RSRC_POST              "<walltime>00:15:00</walltime>">
 
 <!ENTITY RSRV_DEFAULT    "<native>-W umask=022 -m n</native><queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
 <!ENTITY RSRV_HPSS       "<native>-W umask=022 -m n</native><queue>&QUEUE_HPSS;</queue><account>&ACCOUNT;</account>"> 
@@ -209,25 +208,26 @@ Variables that are not modified by the workflow generation script.
 
   </task>
 
+
   <metatask name="post">
     
     <var name="fhr">&FHR;</var>
     
-    <task name="post#fhr#" maxtries="2">
+    <task name="post_#fhr#" maxtries="2">
     
     &RSRC_POST;
     &RSRV_DEFAULT;
 
     <command>&USHDIR;/run_post.sh</command>
     <nodes>&PROC_POST;</nodes>
-    <jobname>run_post</jobname>
-    <join><cyclestr>&LOG_DIR;/run_post_@Y@m@d@H.log</cyclestr></join>
+    <jobname>run_post_#fhr#</jobname>
+    <join><cyclestr>&LOG_DIR;/run_post_#fhr#_@Y@m@d@H.log</cyclestr></join>
 
     <envar>
-      <name>CDATE</name>
-      <value><cyclestr>@Y@m@d@H</cyclestr></value>
+      <name>SCRIPT_VAR_DEFNS_FP</name>
+      <value>&SCRIPT_VAR_DEFNS_FP;</value>
     </envar>
-   
+
     <envar>
       <name>fhr</name>
       <value>#fhr#</value>

@@ -35,7 +35,7 @@
 #
 MACHINE="THEIA"
 ACCOUNT="gsd-fv3"
-QUEUE_DEFAULT="debug"
+QUEUE_DEFAULT="batch"
 QUEUE_HPSS="service"
 QUEUE_RUN_FV3SAR="batch"
 #
@@ -52,7 +52,9 @@ QUEUE_RUN_FV3SAR="batch"
 # created under this.
 #
 # UPPDIR:
-# Directory in which the UPP executable is found (??).
+# Directory in which the NCEP post (UPP) executable is located.  Note 
+# that the ndate executable needs to be compiled in the community UPP
+# and copied into UPPDIR.
 #
 #-----------------------------------------------------------------------
 #
@@ -152,6 +154,27 @@ CDATE="2018060400"
 #
 fcst_len_hrs=6
 BC_update_intvl_hrs=6
+#
+#-----------------------------------------------------------------------
+#
+# Set the parameter (ictype) that determines the source model for the 
+# initial and boundary conditions.  The values that ictype can take on
+# are:
+#
+# * "oldgfs":
+#   Old GFS output.  This is for Quarter 2 of FY2016 (should this be 
+#   2017?) and earlier.
+#
+# * "opsgfs":
+#   Operational GFS.  This is for Quarter 3 of FY2017 and later.  It 
+#   uses new land datasets.
+#
+# * "pfv3gfs":
+#   The FV3 "parallels".
+#
+#-----------------------------------------------------------------------
+#
+ictype="opsgfs"
 #
 #-----------------------------------------------------------------------
 #

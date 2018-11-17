@@ -312,17 +312,46 @@ case $MACHINE in
 "WCOSS_C")
 #
   FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_am"
+
+#  if [ "$ictype" = "pfv3gfs" ]; then
+#    export INIDIR="/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$YMD/$HH"
+#  else
+#    export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
+#  fi
   ;;
 #
 "WCOSS")
 #
-  FIXgsm=""  # Don't know what this should be.
+  FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
+
+#  if [ "$ictype" = "pfv3gfs" ]; then
+#    export INIDIR="/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$YMD/$HH"
+#  else
+#    export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
+#  fi
+  ;;
+#
+"DELL")
+#
+  FIXgsm="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
+
+#  if [ "$ictype" = "pfv3gfs" ]; then
+#    export INIDIR="/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$YMD/$HH"
+#  else
+#    export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
+#  fi
   ;;
 #
 "THEIA")
 #
-#  FIXgsm="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_am"  # Not sure what the difference is (if any) between the svn and git fix_am directories.
   FIXgsm="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am"
+
+#  if [ "$ictype" = "pfv3gfs" ]; then
+#    export INIDIR="/scratch4/NCEPDEV/fv3-cam/noscrub/Eric.Rogers/prfv3rt1/gfs.$YMD/$HH"
+#  else
+#    export COMROOTp2="/scratch4/NCEPDEV/rstprod/com"
+#    export INIDIR="$COMROOTp2/gfs/prod/gfs.$YMD"
+#  fi
   ;;
 #
 "JET")
@@ -618,6 +647,7 @@ INIDIR="${WORKDIR}/gfs"
 #
 #-----------------------------------------------------------------------
 #
+if [ 0 = 1 ]; then
 IC_date_sec=$( date -d "${YYYY}-${MM}-${DD} ${HH} UTC" "+%s" )
 transition_date_sec=$( date -d "2017-07-19 00 UTC" "+%s" )
 
@@ -625,6 +655,7 @@ if [ "$IC_date_sec" -ge "$transition_date_sec" ]; then
   ictype="opsgfs"
 else
   ictype="oldgfs"
+fi
 fi
 #
 #-----------------------------------------------------------------------
