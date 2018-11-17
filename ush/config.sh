@@ -149,6 +149,7 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 #
 #
 CDATE="YYYYMMDDHH"
+#CDATE="2018060400"
 #CDATE=$( date "+%Y%m%d"00 )                     # This sets CDATE to today.
 #CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
 #
