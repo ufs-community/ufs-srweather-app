@@ -154,7 +154,7 @@ export cyc=${HH}   # Does this need to be exported?
 #-----------------------------------------------------------------------
 #
 dyn_file=${RUNDIR}/dynf0${fhr}.nc
-phy_file=${RUNDIR}/phy_filef0${fhr}.nc
+phy_file=${RUNDIR}/phyf0${fhr}.nc
 
 # Do these need to be exported??  Probably not since only an executable is called below, not a script.
 export POST_TIME=`${UPPDIR}/ndate.exe +${fhr} ${CDATE}`
