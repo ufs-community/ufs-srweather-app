@@ -65,10 +65,6 @@ UPPDIR="/path/to/UPP/executable"
 #BASEDIR="/scratch3/BMC/det/beck/FV3-CAM"
 #TMPDIR="${BASEDIR}/work_dirs"
 #UPPDIR="${BASEDIR}/EMC_post/sorc/ncep_post.fd"
-
-#BASEDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
-#TMPDIR="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs"
-#UPPDIR="/scratch3/BMC/det/beck/FV3-CAM/EMC_post/sorc/ncep_post.fd"
 #
 #-----------------------------------------------------------------------
 #
@@ -149,12 +145,8 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 #
 #
 CDATE="YYYYMMDDHH"
-#CDATE="2018060400"
-#CDATE=$( date "+%Y%m%d"00 )                     # This sets CDATE to today.
-#CDATE=$( date --date="yesterday" "+%Y%m%d"00 )  # This sets CDATE to yesterday.
-#
-fcst_len_hrs=6
-BC_update_intvl_hrs=6
+fcst_len_hrs="6"
+BC_update_intvl_hrs="6"
 #
 #-----------------------------------------------------------------------
 #
