@@ -76,10 +76,15 @@ case $MACHINE in
 #
 "THEIA")
 #
+  np=`cat $PBS_NODEFILE | wc -l`
+
   module purge
   module load intel mvapich2 netcdf
+  ulimit -a
+  ulimit -s unlimited
+  ulimit -a
 
-  export APRUN="mpirun -l -np $PBS_NP"
+  export APRUN="mpirun -l -np $np"
   ;;
 #
 "JET")
@@ -145,7 +150,9 @@ cd ${FHR_DIR}
 #-----------------------------------------------------------------------
 #
 export cyc=${HH}   # Does this need to be exported?
-#
+
+export tmmark=tm${HH} # Does this need to be exported?
+
 #-----------------------------------------------------------------------
 #
 # Create text file containing arguments to the post-processing executa-
@@ -168,7 +175,7 @@ ${dyn_file}
 netcdf
 grib2
 ${YYYY}-${MM}-${DD}_${HH}:00:00
-GFS
+FV3R
 ${phy_file}
 
  &NAMPGB
@@ -205,8 +212,6 @@ if [ -n ${predef_domain} ]; then
 else 
  TITLE=${run_title:1}
 fi
-
-export tmmark=tm00  # Does this need to be exported?  I don't think so...
 
 mv BGDAWP.GrbF${fhr} ../${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
 mv BGRD3D.GrbF${fhr} ../${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
@@ -246,7 +251,7 @@ WGRIB2="wgrib2"
 #
 #-----------------------------------------------------------------------
 #
-rm -rf ${FHR_DIR}
+#rm -rf ${FHR_DIR}
 
 echo "Post-processing completed for fhr = $fhr hr."
 
