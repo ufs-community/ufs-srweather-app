@@ -6,7 +6,8 @@
 # This script sets parameters needed by the various scripts that are
 # called by the rocoto workflow.  This secondary set of parameters is
 # calculated using the primary set of user-defined parameters in the
-# configuration script config.sh.  This script then saves both sets of
+# default and local workflow/experiment configuration scripts (whose 
+# file names are defined below).  This script then saves both sets of 
 # parameters in a variable-definitions script in the run directory that
 # will be sourced by the various scripts called by the workflow.
 #
@@ -45,19 +46,62 @@ set -ux
 #
 #-----------------------------------------------------------------------
 #
-# Source the configuration script.
+# Set the names of the default and local workflow/experiment configura-
+# tion scripts.
 #
 #-----------------------------------------------------------------------
 #
-. ./config.sh
+DEFAULT_CONFIG_FN="config_defaults.sh"
+LOCAL_CONFIG_FN="config.sh"
+#
+#-----------------------------------------------------------------------
+#
+# Source the configuration script containing default values of experi-
+# ment variables.
+#
+#-----------------------------------------------------------------------
+#
+. ./${DEFAULT_CONFIG_FN}
+#
+#-----------------------------------------------------------------------
+#
+# If a local configuration script exists, source that as well.  Here, by
+# "local", we mean one that contains variable settings that are relevant
+# only to the local environment (e.g. a directory setting that applies
+# only to the current user on the current machine).  Note that this lo-
+# cal script is not tracked by the repository, whereas the default con-
+# figuration script sourced above is tracked.  Any variable settings in
+# the local script will override the ones in the default script.  The 
+# purpose of having a local configuration script is to avoid having to 
+# make changes to the default configuration script that are only appli-
+# cable to one user, one machine, etc.
+#
+#-----------------------------------------------------------------------
+#
+if [ -f "$LOCAL_CONFIG_FN" ]; then
+#
+# We require that the variables being set in the local configuration 
+# script have counterparts in the default configuration script.  This is
+# so that we do not accidentally introduce new variables in the local
+# script without also officially introducing them in the default script.
+# Thus, before sourcing the local configuration script, we check for 
+# this.
+#
+  . ./compare_config_scripts.sh
+#
+# Now source the local configuration script.
+#
+  . ./$LOCAL_CONFIG_FN
+#
+fi
 #
 #-----------------------------------------------------------------------
 #
 # Source the shell script containing the function that checks for preex-
 # isting directories and handles them according to the setting of the
-# variable preexisting_dir_method (which is specified in the configura-
-# tion script config.sh).  This must be done here to define the function
-# so that it can be used later below.
+# variable preexisting_dir_method [which is specified in the configura-
+# tion script(s)].  This must be done here so that the function is de-
+# fined before it is used later below.
 #
 #-----------------------------------------------------------------------
 #
@@ -67,8 +111,8 @@ set -ux
 #
 # Source the shell script containing the function that replaces variable
 # values (or value placeholders) in several types of files (e.g. Fortran
-# namelist files) with actual values.  This must be done here to define
-# the function so that it can be used later below.
+# namelist files) with actual values.  This must be done here so that 
+# the function is defined before it is used later below.
 #
 #-----------------------------------------------------------------------
 #
@@ -81,11 +125,13 @@ set -ux
 #-----------------------------------------------------------------------
 #
 if [ "$VERBOSE" != "true" ] && [ "$VERBOSE" != "false" ]; then
-  echo
-  echo "Error.  The verbosity flag VERBOSE must be set to either \
-\"trueS\" or \"false\":"
-  echo "  VERBOSE = $VERBOSE"
-  echo "Exiting script."
+  MSG=$(printf "\
+Error:
+The verbosity flag VERBOSE must be set to either \"true\" or \"false\":
+  VERBOSE = \"$VERBOSE\"
+Exiting script.
+")
+  printf '%s\n' "$MSG"
   exit 1
 fi
 #
@@ -100,27 +146,36 @@ MACHINE=$( echo "$MACHINE" | sed -e 's/\(.*\)/\U\1/' )
 
 if [ "$MACHINE" != "WCOSS_C" ] && \
    [ "$MACHINE" != "WCOSS" ] && \
+   [ "$MACHINE" != "DELL" ] && \
    [ "$MACHINE" != "THEIA" ] && \
    [ "$MACHINE" != "JET" ] && \
-   [ "$MACHINE" != "ODIN" ]; then
-  echo
-  echo "Error.  Machine specified in \"MACHINE\" is not supported:"
-  echo "  MACHINE = $MACHINE"
-  echo "MACHINE must be set to one of the following:"
-  echo "  \"WCOSS_C\""
-  echo "  \"WCOSS\""
-  echo "  \"THEIA\""
-  echo "  \"JET\""
-  echo "  \"ODIN\""
-  echo "Exiting script."
+   [ "$MACHINE" != "ODIN" ] && \
+   [ "$MACHINE" != "CHEYENNE" ]; then
+
+  MSG=$(printf "\
+Error:
+Machine specified in MACHINE is not supported:
+  MACHINE = \"$MACHINE\"
+MACHINE must be set to one of the following:
+  \"WCOSS_C\"
+  \"WCOSS\"
+  \"DELL\"
+  \"THEIA\"
+  \"JET\"
+  \"ODIN\"
+  \"CHEYENNE\"
+Exiting script.
+")
+  printf '%s\n' "$MSG"
   exit 1
+
 fi
 #
 #-----------------------------------------------------------------------
 #
 # Set the number of cores per node, the job scheduler, and the names of
-# several queues.  These queues are defined in the configuration script
-# (config.sh).
+# several queues.  These queues are defined in the default and local 
+# workflow/experiment configuration script.
 #
 #-----------------------------------------------------------------------
 #
@@ -128,11 +183,16 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
-  echo
-  echo "ERROR:  Don't know how to set several parameters on MACHINE=\"$MACHINE\"."
-  echo "Please specify the correct parameters for this machine in the \
-setup script.  Then remove this message and exit call and rerun."
+  MSG=$(printf "\
+Error:
+Don't know how to set several parameters on MACHINE=\"$MACHINE\".
+Please specify the correct parameters for this machine in the setup script.  
+Then remove this message and exit call and rerun.
+Exiting script.
+")
+  printf '%s\n' "$MSG"
   exit 1
+
   ncores_per_node=""
   SCHED=""
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
@@ -142,11 +202,16 @@ setup script.  Then remove this message and exit call and rerun."
 #
 "WCOSS")
 #
-  echo
-  echo "ERROR:  Don't know how to set several parameters on MACHINE=\"$MACHINE\"."
-  echo "Please specify the correct parameters for this machine in the \
-setup script.  Then remove this message and exit call and rerun."
+  MSG=$(printf "\
+Error:
+Don't know how to set several parameters on MACHINE=\"$MACHINE\".
+Please specify the correct parameters for this machine in the setup script.  
+Then remove this message and exit call and rerun.
+Exiting script.
+")
+  printf '%s\n' "$MSG"
   exit 1
+
   ncores_per_node=""
   SCHED=""
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
@@ -181,6 +246,22 @@ setup script.  Then remove this message and exit call and rerun."
   QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
   ;;
 #
+"CHEYENNE")
+#
+  MSG=$(printf "\
+Error:
+Don't know how to set several parameters on MACHINE=\"$MACHINE\".
+Please specify the correct parameters for this machine in the setup script.  
+Then remove this message and exit call and rerun.
+Exiting script.
+")
+
+  ncores_per_node=
+  SCHED=""
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
+  QUEUE_HPSS=${QUEUE_HPSS:-""}
+  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
+#
 esac
 #
 #-----------------------------------------------------------------------
@@ -205,15 +286,16 @@ gtype="regional"
 if [ "$predef_domain" != "" ] && \
    [ "$predef_domain" != "RAP" ] && \
    [ "$predef_domain" != "HRRR" ]; then
-  echo
-  echo "Error.  Predefined regional domain specified in \"predef_domain\" \
-is not supported:"
-  echo "  predef_domain = $predef_domain"
-  echo "predef_domain must be set either to an empty string or to one \
-of the following:"
-  echo "  \"RAP\""
-  echo "  \"HRRR\""
-  echo "Exiting script."
+  MSG=$(printf "\
+Error:
+Predefined regional domain specified in predef_domain is not supported:
+  predef_domain = \"$predef_domain\"
+predef_domain must be set either to an empty string or to one of the following:
+  \"RAP\"
+  \"HRRR\"
+Exiting script.
+")
+  printf '%s\n' "$MSG"
   exit 1
 fi
 #
@@ -251,13 +333,18 @@ if [ "$RES" != "48" ] && \
    [ "$RES" != "768" ] && \
    [ "$RES" != "1152" ] && \
    [ "$RES" != "3072" ]; then
-  echo
-  echo "Error.  Number of grid cells per tile (in each direction) \
-specified in \"RES\" is not supported:"
-  echo "  RES = $RES"
-  echo "RES must be one of:  48  96  192  384  768  1152  3072"
-  echo "Exiting script."
+
+  MSG=$(printf "\
+Error:
+Number of grid cells per tile (in each horizontal direction) specified in
+RES is not supported:
+  RES = $RES
+RES must be one of:  48  96  192  384  768  1152  3072
+Exiting script.
+")
+  printf '%s\n' "$MSG"
   exit 1
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -268,6 +355,30 @@ fi
 #-----------------------------------------------------------------------
 #
 CRES="C${RES}"
+#
+#-----------------------------------------------------------------------
+#
+# Check that CDATE is a string consisting of exactly 10 digits.  The 
+# temporary variable CDATE_OR_NULL will be empty if CDATE is not a 
+# string of exactly 10 digits.
+#
+#-----------------------------------------------------------------------
+#
+#
+CDATE_OR_NULL=$(echo $CDATE | sed -n -r -e "s/^([0-9]{10})$/\1/p")
+
+if [ -z "${CDATE_OR_NULL}" ]; then
+  MSG=$(printf "\
+Error:
+CDATE must be a string consisting of exactly 10 digits of the form \"YYYYMMDDHH\",
+where YYYY is the 4-digit year, MM is the 2-digit month, DD is the 2-digit day-
+of-month, and HH is the 2-digit hour-of-day.
+  CDATE = \"$CDATE\"
+Exiting script.
+")
+  printf '%s\n' "$MSG"
+  exit 1
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -377,11 +488,14 @@ esac
 #
 fcst_len_hrs_max=999
 if [ "$fcst_len_hrs" -gt "$fcst_len_hrs_max" ]; then
-  echo
-  echo "Error.  Forecast length is greater than maximum allowed length:"
-  echo "  fcst_len_hrs = $fcst_len_hrs"
-  echo "  fcst_len_hrs_max = $fcst_len_hrs_max"
-  echo "Exiting script."
+  MSG=$(printf "\
+Error:
+Forecast length is greater than maximum allowed length:
+  fcst_len_hrs = $fcst_len_hrs
+  fcst_len_hrs_max = $fcst_len_hrs_max
+Exiting script.
+")
+  printf '%s\n' "$MSG"
   exit 1
 fi
 #
@@ -397,15 +511,22 @@ fi
 rem=$(( $fcst_len_hrs % $BC_update_intvl_hrs ))
 
 if [ "$rem" -ne "0" ]; then
-  echo
-  echo "Error.  The forecast length is not evenly divisible by the BC update interval:"
-  echo "  fcst_len_hrs = $fcst_len_hrs"
-  echo "  BC_update_intvl_hrs = $BC_update_intvl_hrs"
-  echo "  rem = fcst_len_hrs % BC_update_intvl_hrs = $rem"
-  echo "Exiting script."
+
+  MSG=$(printf "\
+Error:
+The forecast length is not evenly divisible by the BC update interval:
+  fcst_len_hrs = $fcst_len_hrs
+  BC_update_intvl_hrs = $BC_update_intvl_hrs
+  rem = fcst_len_hrs % BC_update_intvl_hrs = $rem
+Exiting script.
+")
+  printf '%s\n' "$MSG"
   exit 1
+
 else
+
   BC_times_hrs=($( seq 0 $BC_update_intvl_hrs $fcst_len_hrs ))
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -555,8 +676,8 @@ RUN_SUBDIR=${CRES}${stretch_str}${refine_str}${run_title}
 # already exists and if so, moves it, deletes it, or quits out of this
 # script (the action taken depends on the value of the variable preex-
 # isting_dir_method).  Note that we do not yet create a new work direc-
-# tory; we will do that later below once the configuration parameters
-# pass the various tests.
+# tory; we will do that later below once the workflow/experiment config-
+# uration parameters pass the various checks.
 #
 #-----------------------------------------------------------------------
 #
@@ -607,7 +728,8 @@ WORKDIR_ICBC=$WORKDIR/ICs_BCs
 # it, deletes it, or quits out of this script (the action taken depends
 # on the value of the variable preexisting_dir_method).  Note that we do
 # not yet create a new run directory; we will do that later below once
-# the configuration parameters pass the various tests.
+# the workflow/experiment configuration parameters pass the various 
+# checks.
 #
 #-----------------------------------------------------------------------
 #
@@ -882,22 +1004,31 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-set -x
+set +x
 
-echo
-echo "Original values of halo width on tile 6 supergrid and on tile 7:"
-echo "  nhw_T6SG = $nhw_T6SG"
-echo "  nhw_T7 = $nhw_T7"
+if [ "$VERBOSE" = "true" ]; then
+  MSG=$(printf "\
+Original values of halo width on tile 6 supergrid and on tile 7 are:
+  nhw_T6SG = $nhw_T6SG
+  nhw_T7 = $nhw_T7
+")
+  printf '%s\n' "$MSG"
+fi
 
 nhw_T6SG=$(( $istart_rgnl_T6SG - $istart_rgnl_wide_halo_T6SG ))
 nhw_T6=$(( $nhw_T6SG/2 ))
 nhw_T7=$(( $nhw_T6*$refine_ratio ))
 
-echo "Values of halo width on tile 6 supergrid and on tile 7 AFTER adjustments:"
-echo "  nhw_T6SG = $nhw_T6SG"
-echo "  nhw_T7 = $nhw_T7"
+if [ "$VERBOSE" = "true" ]; then
+  MSG=$(printf "\
+Values of halo width on tile 6 supergrid and on tile 7 AFTER adjustments are:
+  nhw_T6SG = $nhw_T6SG
+  nhw_T7 = $nhw_T7
+")
+  printf '%s\n' "$MSG"
+fi
 
-set +x
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -918,17 +1049,25 @@ ny_T6SG=$(( $jend_rgnl_T6SG - $jstart_rgnl_T6SG + 1 ))
 ny_T6=$(( $ny_T6SG/2 ))
 ny_T7=$(( $ny_T6*$refine_ratio ))
 
-echo
-#
-echo "nx_T7 = $nx_T7 \
-(istart_rgnl_T6SG = $istart_rgnl_T6SG, \
-iend_rgnl_T6SG = $iend_rgnl_T6SG)"
-#
-echo "ny_T7 = $ny_T7 \
-(jstart_rgnl_T6SG = $jstart_rgnl_T6SG, \
-jend_rgnl_T6SG = $jend_rgnl_T6SG)"
+if [ "$VERBOSE" = "true" ]; then
 
-set +x
+  MSG=$(printf "\
+nx_T7 = $nx_T7 \
+(istart_rgnl_T6SG = $istart_rgnl_T6SG, \
+iend_rgnl_T6SG = $iend_rgnl_T6SG)
+")
+  printf '%s\n' "$MSG"
+
+  MSG=$(printf "\
+ny_T7 = $ny_T7 \
+(jstart_rgnl_T6SG = $jstart_rgnl_T6SG, \
+jend_rgnl_T6SG = $jend_rgnl_T6SG)
+")
+  printf '%s\n' "$MSG"
+
+fi
+
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -939,7 +1078,7 @@ set +x
 #
 #-----------------------------------------------------------------------
 #
-set -x
+set +x
 
 nx_wide_halo_T6SG=$(( $iend_rgnl_wide_halo_T6SG - $istart_rgnl_wide_halo_T6SG + 1 ))
 nx_wide_halo_T6=$(( $nx_wide_halo_T6SG/2 ))
@@ -949,15 +1088,23 @@ ny_wide_halo_T6SG=$(( $jend_rgnl_wide_halo_T6SG - $jstart_rgnl_wide_halo_T6SG + 
 ny_wide_halo_T6=$(( $ny_wide_halo_T6SG/2 ))
 ny_wide_halo_T7=$(( $ny_wide_halo_T6*$refine_ratio ))
 
-echo
-#
-echo "nx_wide_halo_T7 = $nx_T7 \
+if [ "$VERBOSE" = "true" ]; then
+
+  MSG=$(printf "\
+nx_wide_halo_T7 = $nx_T7 \
 (istart_rgnl_wide_halo_T6SG = $istart_rgnl_wide_halo_T6SG, \
-iend_rgnl_wide_halo_T6SG = $iend_rgnl_wide_halo_T6SG)"
-#
-echo "ny_wide_halo_T7 = $ny_T7 \
+iend_rgnl_wide_halo_T6SG = $iend_rgnl_wide_halo_T6SG)
+")
+  printf '%s\n' "$MSG"
+
+  MSG=$(printf "\
+ny_wide_halo_T7 = $ny_T7 \
 (jstart_rgnl_wide_halo_T6SG = $jstart_rgnl_wide_halo_T6SG, \
-jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"
+jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)
+")
+  printf '%s\n' "$MSG"
+
+fi
 
 set -x
 #
@@ -974,11 +1121,13 @@ if [ "$quilting" = ".true." ]; then
   PE_MEMBER01=$(( $PE_MEMBER01 + $write_groups*$write_tasks_per_group ))
 fi
 
-if [ $VERBOSE ]; then
-  echo
-  echo "The number of MPI tasks for the forecast (including those for \
-the write component if it is being used) are:"
-  echo "  PE_MEMBER01 = $PE_MEMBER01"
+if [ "$VERBOSE" = "true" ]; then
+  MSG=$(printf "\
+The number of MPI tasks for the forecast (including those for the write component
+if it is being used) are:
+  PE_MEMBER01 = $PE_MEMBER01
+")
+  printf '%s\n' "$MSG"
 fi
 #
 #-----------------------------------------------------------------------
@@ -990,31 +1139,37 @@ fi
 #
 rem=$(( $nx_T7%$layout_x ))
 if [ $rem -ne 0 ]; then
-   echo
-   echo "The number of grid cells in the x direction (nx_T7) is not evenly \
-divisible by the number of MPI tasks in the x direction (layout_x):"
-   echo "  nx_T7 = $nx_T7"
-   echo "  layout_x = $layout_x"
-   echo "Exiting script."
-   exit 1
+  MSG=$(printf "\
+The number of grid cells in the x direction (nx_T7) is not evenly divisible
+by the number of MPI tasks in the x direction (layout_x):
+  nx_T7 = $nx_T7
+  layout_x = $layout_x
+Exiting script.
+")
+  printf '%s\n' "$MSG"
+  exit 1
 fi
 
 rem=$(( $ny_T7%$layout_y ))
 if [ $rem -ne 0 ]; then
-   echo
-   echo "The number of grid cells in the x direction (ny_T7) is not evenly \
-divisible by the number of MPI tasks in the x direction (layout_y):"
-   echo "  ny_T7 = $ny_T7"
-   echo "  layout_y = $layout_y"
-   echo "Exiting script."
-   exit 1
+  MSG=$(printf "\
+The number of grid cells in the y direction (ny_T7) is not evenly divisible
+by the number of MPI tasks in the y direction (layout_y):
+  ny_T7 = $ny_T7
+  layout_y = $layout_y
+Exiting script.
+")
+  printf '%s\n' "$MSG"
+  exit 1
 fi
 
-if [ $VERBOSE ]; then
-  echo
-  echo "The MPI task layout is as follows:"
-  echo "  layout_x = $layout_x"
-  echo "  layout_y = $layout_y"
+if [ "$VERBOSE" = "true" ]; then
+  MSG=$(printf "\
+The MPI task layout is as follows:
+  layout_x = $layout_x
+  layout_y = $layout_y
+")
+  printf '%s\n' "$MSG"
 fi
 #
 #-----------------------------------------------------------------------
@@ -1030,10 +1185,13 @@ fi
 WRTCMP_PARAMS_TEMPLATE_FP="$TEMPLATE_DIR/$WRTCMP_PARAMS_TEMPLATE_FN"
 if [ \( "$quilting" = ".true." \) -a \
      \( ! -f "$WRTCMP_PARAMS_TEMPLATE_FP" \) ]; then
-  echo
-  echo "The write-component template file does not exist:"
-  echo "  WRTCMP_PARAMS_TEMPLATE_FP = $WRTCMP_PARAMS_TEMPLATE_FP"
-  echo "Exiting script."
+  MSG=$(printf "\
+Error:
+The write-component template file does not exist:
+  WRTCMP_PARAMS_TEMPLATE_FP = \"$WRTCMP_PARAMS_TEMPLATE_FP\"
+Exiting script.
+")
+  printf '%s\n' "$MSG"
   exit 1
 fi
 #
@@ -1051,18 +1209,22 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "$quilting" = ".true." ]; then
+
   rem=$(( $ny_T7%$write_tasks_per_group ))
+
   if [ $rem -ne 0 ]; then
-    echo
-    echo "The number of grid points in the y direction on the regional \
-grid (ny_T7) must be evenly divisible by the number of tasks per write \
-group (write_tasks_per_group):"
-    echo "  ny_T7 = $ny_T7"
-    echo "  write_tasks_per_group = $write_tasks_per_group"
-    echo "  ny_T7%write_tasks_per_group = $rem"
-    echo "Exiting script."
+    MSG=$(printf "\
+The number of grid points in the y direction on the regional grid (ny_T7) must
+be evenly divisible by the number of tasks per write group (write_tasks_per_group):
+  ny_T7 = $ny_T7
+  write_tasks_per_group = $write_tasks_per_group
+  ny_T7 % write_tasks_per_group = $rem
+Exiting script.
+")
+    printf '%s\n' "$MSG"
     exit 1
   fi
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -1105,27 +1267,35 @@ mkdir $RUNDIR/RESTART
 # Generate the shell script that will appear in the run directory (RUN-
 # DIR) and will contain definitions of variables needed by the various
 # scripts in the workflow.  We refer to this as the variable definitions
-# file.  We will create this file by first copying the configuration
-# script config.sh in the shell script directory (USHDIR) to the run di-
-# rectory (and renaming it to the value in SCRIPT_VAR_DEFNS_FP), then
-# resetting the original values in this variable definitions file (that
-# were inherited from config.sh) of those variables that were modified
-# in this setup script to their new values, and finally appending to the
-# variable definitions file any new variables introduced in this setup
-# script that may be needed by the scripts that perform the various
-# tasks in the workflow (and which source the variable defintions file).
+# file.  We will create this file by:
+#
+# 1) Copying the default workflow/experiment configuration script (spe-
+#    fied by DEFAULT_CONFIG_FN and located in the shell script directory
+#    USHDIR) to the run directory and renaming it to the name specified
+#    by SCRIPT_VAR_DEFNS_FN.
+#
+# 2) Resetting the original values of the variables defined in this file
+#    to their current values.  This is necessary because these variables 
+#    may have been reset by the local configuration script (if one ex-
+#    ists in USHDIR) and/or by this setup script, e.g. because predef_-
+#    domain is set to a valid non-empty value.
+#
+# 3) Appending to the variable definitions file any new variables intro-
+#    duced in this setup script that may be needed by the scripts that
+#    perform the various tasks in the workflow (and which source the va-
+#    riable defintions file).
 #
 # First, set the full path to the variable definitions file and copy the
-# configuration file into it.
+# default configuration script into it.
 #
 #-----------------------------------------------------------------------
 #
 SCRIPT_VAR_DEFNS_FP="$RUNDIR/$SCRIPT_VAR_DEFNS_FN"
-cp ./config.sh $SCRIPT_VAR_DEFNS_FP
+cp ./${DEFAULT_CONFIG_FN} ${SCRIPT_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-# Add a comment at the beginning of the variable definitions script that
+# Add a comment at the beginning of the variable definitions file that
 # indicates that the first section of that file is (mostly) the same as
 # the configuration file.
 #
@@ -1136,14 +1306,10 @@ read -r -d '' str_to_insert << EOM
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
 # Section 1:
-# This section is a copy of the configuration file (config.sh) in the
-# shell scripts directory (USHDIR) execpt that any parameters in that
-# file that were modified by the setup script (setup.sh) are assigned
-# the updated values in this file.  [This can happen, for example, if
-# the variable predef_domain in config.sh has been set to a valid non-
-# empty string, in which case the run title (run_title), the grid para-
-# meters, and possibly the name of the write-component parameter file
-# (WRTCMP_PARAMS_TEMPLATE_FN) will be modified in setup.sh.]
+# This section is a copy of the default workflow/experiment configura-
+# tion file config_defaults.sh in the shell scripts directory USHDIR ex-
+# cept that variable values have been updated to those set by the setup
+# script (setup.sh).
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
 #
@@ -1164,46 +1330,48 @@ sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
 #
 #-----------------------------------------------------------------------
 #
-# If predef_domain is set to a valid non-empty string, then the values
-# of run_title, the grid parameters, and possibly WRTCMP_PARAMS_TEMP-
-# LATE_FN specified in the configuration file would have been updated
-# above.  In this case, replace the values of these parameters in the
-# variable defintions file (that were inherited from the configuration
-# file) with the updated values.
+# Reset each of the variables in the variable definitions file to its 
+# value in the current environment.  To accomplish this, we:
+#
+# 1) Create a list of variable settings by stripping out comments, blank
+#    lines, extraneous leading whitespace, etc from the variable defini-
+#    tions file (which is currently identical to the default workflow/
+#    experiment configuration script) and saving the result in the vari-
+#    able var_list.  Each line of var_list will have the form
+#
+#      VAR=...
+#
+#    where the VAR is a variable name and ... is the value from the de-
+#    fault configuration script (which does not necessarily correspond
+#    to the current value of the variable).
+#
+# 2) Loop through each line of var_list.  For each line, extract the
+#    variable name (and save it in the variable var_name), get its value
+#    from the current environment (using bash indirection, i.e. 
+#    ${!var_name}), and use the set_file_param() function to replace the
+#    value of the variable in the variable definitions script (denoted 
+#    above by ...) with its current value. 
 #
 #-----------------------------------------------------------------------
 #
-if [ -n "${predef_domain}" ]; then
+var_list=$( sed -r \
+            -e "s/^([ ]*)([^ ]+.*)/\2/g" \
+            -e "/^#.*/d" \
+            -e "/^$/d" \
+            ${SCRIPT_VAR_DEFNS_FP} )
 
-  if [ "$VERBOSE" = "true" ]; then
-    echo
-    echo "Updating run_title, the grid parameters, and WRTCMP_PARAMS_TEMPLATE_FN \
-in the variable definitions file SCRIPT_VAR_DEFNS_FP to that of the predefined \
-domain:"
-    echo "  SCRIPT_VAR_DEFNS_FP = $SCRIPT_VAR_DEFNS_FP"
-    echo "  predef_domain = $predef_domain"
-  fi
-
-  set_file_param $SCRIPT_VAR_DEFNS_FP "run_title" $run_title $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "RES" $RES $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "lon_ctr_T6" $lon_ctr_T6 $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "lat_ctr_T6" $lat_ctr_T6 $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "stretch_fac" $stretch_fac $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "istart_rgnl_T6" $istart_rgnl_T6 $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "jstart_rgnl_T6" $jstart_rgnl_T6 $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "iend_rgnl_T6" $iend_rgnl_T6 $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "jend_rgnl_T6" $jend_rgnl_T6 $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "refine_ratio" $refine_ratio $VERBOSE
-  set_file_param $SCRIPT_VAR_DEFNS_FP "WRTCMP_PARAMS_TEMPLATE_FN" $WRTCMP_PARAMS_TEMPLATE_FN $VERBOSE
-
-fi
+while read crnt_line; do
+  var_name=$(echo ${crnt_line} | sed -n -r -e "s/^([^ ]*)=.*/\1/p")
+  var_value="${!var_name}"
+  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}" "$VERBOSE"
+done <<< "${var_list}"
 #
 #-----------------------------------------------------------------------
 #
 # Append additional variable definitions (and comments) to the variable
 # definitions file.  These variables have been set above using the vari-
-# ables in the configuration script.  They are needed by various tasks/
-# scripts in the workflow.
+# ables in the default and local configuration scripts.  These variables
+# are needed by various tasks/scripts in the workflow.
 #
 #-----------------------------------------------------------------------
 #

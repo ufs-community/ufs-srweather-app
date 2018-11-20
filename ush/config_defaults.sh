@@ -6,7 +6,7 @@
 #
 # MACHINE:
 # Machine on which we are running.  Must be one of "WCOSS_C", "WCOSS",
-# "THEIA", "JET", and "ODIN".
+# "DELL", "THEIA", "JET", "ODIN", and "CHEYENNE".
 #
 # ACCOUNT:
 # The account under which to submit jobs to the queue.
@@ -61,10 +61,6 @@ QUEUE_RUN_FV3SAR="batch"
 BASEDIR="/path/to/directory/of/fv3gfs/and/NEMSfv3gfs/clones"
 TMPDIR="/path/to/temporary/work/directories"
 UPPDIR="/path/to/UPP/executable"
-
-#BASEDIR="/scratch3/BMC/det/beck/FV3-CAM"
-#TMPDIR="${BASEDIR}/work_dirs"
-#UPPDIR="${BASEDIR}/EMC_post/sorc/ncep_post.fd"
 #
 #-----------------------------------------------------------------------
 #
