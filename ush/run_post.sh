@@ -192,7 +192,7 @@ rm -f fort.*
 #-----------------------------------------------------------------------
 #
 cp $UPPFIX/nam_micro_lookup.dat ./eta_micro_lookup.dat
-cp $UPPFIX/postxconfig-NT-NMM_new.txt ./postxconfig-NT.txt
+cp $UPPFIX/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
 cp $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
 #
 #-----------------------------------------------------------------------
