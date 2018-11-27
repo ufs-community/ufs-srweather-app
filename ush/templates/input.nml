@@ -40,7 +40,7 @@
        npx      = <npx>
        npy      = <npy> 
        ntiles   = 1,
-       npz    = 63
+       npz    = 64
        !grid_type = -1
        make_nh = .T.
        fv_debug = .T.
@@ -129,7 +129,7 @@
 
  &external_ic_nml 
        filtered_terrain = .true.
-       levp = 64
+       levp = 65
        gfs_dwinds = .true.
        checker_tr = .F.
        nt_checker = 0

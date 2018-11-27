@@ -20,7 +20,6 @@ the workflow XML.
 
 <!ENTITY USHDIR "">
 <!ENTITY RUNDIR "">
-<!ENTITY PROC_RUN_FV3SAR "">
 
 <!ENTITY FHR "">
 
@@ -42,8 +41,8 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY PROC_MAKE_SURF_IC_BC0  "1:ppn=24">
 <!ENTITY PROC_MAKE_BC1_TO_BCEND "1:ppn=24">
 <!ENTITY PROC_STAGE             "1:ppn=1">
-<!-- <!ENTITY PROC_RUN_FV3SAR "11:ppn=24"> -->
-<!ENTITY PROC_POST              "2:ppn=24">
+<!ENTITY PROC_RUN_FV3SAR "">
+<!ENTITY PROC_POST              "1:ppn=24">
 
 <!ENTITY RSRC_MAKE_GRID_OROG    "<walltime>00:15:00</walltime>">
 <!ENTITY RSRC_GET_GFS_FILES     "<walltime>00:20:00</walltime>">

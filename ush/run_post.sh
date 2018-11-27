@@ -76,10 +76,15 @@ case $MACHINE in
 #
 "THEIA")
 #
-  module purge
-  module load intel mvapich2 netcdf
+  np=`cat $PBS_NODEFILE | wc -l`
 
-  export APRUN="mpirun -l -np $PBS_NP"
+  module purge
+  module load intel impi netcdf #mvapich2 netcdf
+  ulimit -a
+  ulimit -s unlimited
+  ulimit -a
+
+  export APRUN="mpirun -l -np $np"
   ;;
 #
 "JET")
@@ -145,7 +150,9 @@ cd ${FHR_DIR}
 #-----------------------------------------------------------------------
 #
 export cyc=${HH}   # Does this need to be exported?
-#
+
+export tmmark=tm${HH} # Does this need to be exported?
+
 #-----------------------------------------------------------------------
 #
 # Create text file containing arguments to the post-processing executa-
@@ -168,7 +175,7 @@ ${dyn_file}
 netcdf
 grib2
 ${YYYY}-${MM}-${DD}_${HH}:00:00
-GFS
+FV3R
 ${phy_file}
 
  &NAMPGB
@@ -185,7 +192,7 @@ rm -f fort.*
 #-----------------------------------------------------------------------
 #
 cp $UPPFIX/nam_micro_lookup.dat ./eta_micro_lookup.dat
-cp $UPPFIX/postxconfig-NT-NMM_new.txt ./postxconfig-NT.txt
+cp $UPPFIX/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
 cp $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
 #
 #-----------------------------------------------------------------------
@@ -206,10 +213,8 @@ else
  TITLE=${run_title:1}
 fi
 
-export tmmark=tm00  # Does this need to be exported?  I don't think so...
-
-mv BGDAWP.GrbF${fhr} ../${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
-mv BGRD3D.GrbF${fhr} ../${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
+mv BGDAWP${fhr}.${tmmark} ../${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
+mv BGRD3D${fhr}.${tmmark} ../${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
 #mv BGRDSF.GrbF${fhr} ${TITLE}.t${cyc}z.bgrdsf${fhr}.${tmmark}
 
 #
@@ -246,7 +251,7 @@ WGRIB2="wgrib2"
 #
 #-----------------------------------------------------------------------
 #
-rm -rf ${FHR_DIR}
+#rm -rf ${FHR_DIR}
 
 echo "Post-processing completed for fhr = $fhr hr."
 
