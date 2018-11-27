@@ -110,7 +110,7 @@ export ictype
 #
 #-----------------------------------------------------------------------
 #
-# Set the file name of the diver script that runs the chgres utility.
+# Set the file name of the driver script that runs the chgres utility.
 #
 #-----------------------------------------------------------------------
 #
@@ -133,7 +133,7 @@ mkdir -p $WORKDIR_ICBC
 #
 export OMP_NUM_THREADS_CH=24              # Default for openMP threads.
 export CASE=${CRES}
-export LEVS=64
+export LEVS=65
 export LSOIL=4
 export NTRAC=7
 export FIXfv3=${FV3SAR_DIR}/fix/fix_fv3

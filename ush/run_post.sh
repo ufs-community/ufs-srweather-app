@@ -79,7 +79,7 @@ case $MACHINE in
   np=`cat $PBS_NODEFILE | wc -l`
 
   module purge
-  module load intel mvapich2 netcdf
+  module load intel impi netcdf #mvapich2 netcdf
   ulimit -a
   ulimit -s unlimited
   ulimit -a
@@ -213,8 +213,8 @@ else
  TITLE=${run_title:1}
 fi
 
-mv BGDAWP.GrbF${fhr} ../${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
-mv BGRD3D.GrbF${fhr} ../${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
+mv BGDAWP${fhr}.${tmmark} ../${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
+mv BGRD3D${fhr}.${tmmark} ../${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
 #mv BGRDSF.GrbF${fhr} ${TITLE}.t${cyc}z.bgrdsf${fhr}.${tmmark}
 
 #

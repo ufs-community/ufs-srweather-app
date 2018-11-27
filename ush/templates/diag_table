@@ -114,6 +114,7 @@
 "gfs_dyn",     "temp",        "tmp",       "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "liq_wat",     "clwmr",   "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "o3mr",        "o3mr",      "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",     "cld_amt",     "cld_amt",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "delp",        "dpres",     "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "delz",        "delz",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "w",           "vvel",      "fv3_history",    "all",  .false.,  "none",  2
