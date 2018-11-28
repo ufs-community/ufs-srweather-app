@@ -28,41 +28,10 @@
 #-----------------------------------------------------------------------
 #
 
-
 #
 #-----------------------------------------------------------------------
 #
-# Change shell behavior with "set" with these flags:
-#
-# -a
-# This will cause the script to automatically export all variables and
-# functions which are modified or created to the environments of subse-
-# quent commands.
-#
-# -e
-# This will cause the script to exit as soon as any line in the script
-# fails (with some exceptions; see manual).  Apparently, it is a bad
-# idea to use "set -e".  See here:
-#   http://mywiki.wooledge.org/BashFAQ/105
-#
-# -u
-# This will cause the script to exit if an undefined variable is encoun-
-# tered.
-#
-# -x
-# This will cause all executed commands in the script to be printed to
-# the terminal (used for debugging).
-#
-#-----------------------------------------------------------------------
-#
-#set -aux
-#set -eux
-set -ux
-#
-#-----------------------------------------------------------------------
-#
-# Source the script that defines the necessary shell environment varia-
-# bles.
+# Source the variable definitions script.                                                                                                         
 #
 #-----------------------------------------------------------------------
 #
@@ -70,13 +39,21 @@ set -ux
 #
 #-----------------------------------------------------------------------
 #
-# Source the shell script containing the function that replaces variable
-# values (or value placeholders) in several types of files (e.g. Fortran
-# namelist files) with actual values.
+# Source utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/set_file_param.sh
+. $USHDIR/utility_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -84,10 +61,8 @@ set -ux
 #
 #-----------------------------------------------------------------------
 #
-if [ $VERBOSE ]; then
-  echo
-  echo "Copying templates of various input files to the run directory..."
-fi
+print_info_msg_verbose "\
+Copying templates of various input files to the run directory..."
 
 cp $TEMPLATE_DIR/$FV3_NAMELIST_FN $RUNDIR
 cp $TEMPLATE_DIR/$MODEL_CONFIG_FN $RUNDIR
@@ -104,11 +79,10 @@ cp $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
 #-----------------------------------------------------------------------
 #
 FV3_NAMELIST_FP="$RUNDIR/$FV3_NAMELIST_FN"
-if [ $VERBOSE ]; then
-  echo
-  echo "Setting parameters in file:"
-  echo "  FV3_NAMELIST_FP = $FV3_NAMELIST_FP"
-fi
+
+print_info_msg_verbose "\
+Setting parameters in file:
+  FV3_NAMELIST_FP = \"$FV3_NAMELIST_FP\""
 #
 # Set npx_T7 and npy_T7, which are just nx_T7 plus 1 and ny_T7 plus 1,
 # respectively.  These need to be set in the FV3SAR Fortran namelist
@@ -136,11 +110,10 @@ set_file_param $FV3_NAMELIST_FP "bc_update_interval" $BC_update_intvl_hrs $VERBO
 #-----------------------------------------------------------------------
 #
 MODEL_CONFIG_FP="$RUNDIR/$MODEL_CONFIG_FN"
-if [ $VERBOSE ]; then
-  echo
-  echo "Setting parameters in file:"
-  echo "  MODEL_CONFIG_FP = $MODEL_CONFIG_FP"
-fi
+
+print_info_msg_verbose "\
+Setting parameters in file:
+  MODEL_CONFIG_FP = \"$MODEL_CONFIG_FP\""
 
 set_file_param $MODEL_CONFIG_FP "PE_MEMBER01" $PE_MEMBER01 $VERBOSE
 set_file_param $MODEL_CONFIG_FP "start_year" $YYYY $VERBOSE
@@ -180,11 +153,10 @@ fi
 #-----------------------------------------------------------------------
 #
 DIAG_TABLE_FP="$RUNDIR/$DIAG_TABLE_FN"
-if [ $VERBOSE ]; then
-  echo
-  echo "Setting parameters in file:"
-  echo "  DIAG_TABLE_FP = $DIAG_TABLE_FP"
-fi
+
+print_info_msg_verbose "\
+Setting parameters in file:
+  DIAG_TABLE_FP = \"$DIAG_TABLE_FP\""
 
 set_file_param $DIAG_TABLE_FP "CRES" $CRES $VERBOSE
 set_file_param $DIAG_TABLE_FP "YYYY" $YYYY $VERBOSE
@@ -200,10 +172,8 @@ set_file_param $DIAG_TABLE_FP "YYYYMMDD" $YMD $VERBOSE
 #
 #-----------------------------------------------------------------------
 #
-if [ "$VERBOSE" = "true" ]; then
-  echo
-  echo "Copying fixed files from system directory to run directory..."
-fi
+print_info_msg_verbose "\
+Copying fixed files from system directory to run directory..."
 
 cp $FIXgsm/CFSR.SEAICE.1982.2012.monthly.clim.grb $RUNDIR
 cp $FIXgsm/RTGSST.1982.2012.monthly.clim.grb $RUNDIR
@@ -250,21 +220,16 @@ FV3SAR_EXEC="$BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe"
 
 if [ -f $FV3SAR_EXEC ]; then
 
-  if [ "$VERBOSE" = "true" ]; then
-    echo
-    echo "Copying FV3SAR executable to the run directory..."
-  fi
+  print_info_msg_verbose "\
+Copying FV3SAR executable to the run directory..."
   cp $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
-#  cp /scratch3/BMC/det/beck/FV3-CAM/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
 
 else
 
-  echo
-  echo "The FV3SAR executable specified in FV3SAR_EXEC does not exist:"
-  echo "  FV3SAR_EXEC = $FV3SAR_EXEC"
-  echo "Build FV3SAR and rerun."
-  echo "Exiting script."
-  exit 1
+  print_err_msg_exit "\
+The FV3SAR executable specified in FV3SAR_EXEC does not exist:
+  FV3SAR_EXEC = \"$FV3SAR_EXEC\"
+Build FV3SAR and rerun."
 
 fi
 #
@@ -275,11 +240,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$VERBOSE" = "true" ]; then
-  echo
-  echo "Copying files from work directories into run directory and \
-creating links..."
-fi
+print_info_msg_verbose "\
+Copying files from work directories into run directory and creating links..."
 #
 #-----------------------------------------------------------------------
 #
@@ -417,5 +379,14 @@ cp $WORKDIR_ICBC/gfs_bndy*.nc .
 #-----------------------------------------------------------------------
 #
 cp $WORKDIR_ICBC/gfs_ctrl.nc .
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+restore_shell_opts
 
 

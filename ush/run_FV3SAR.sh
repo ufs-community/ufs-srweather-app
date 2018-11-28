@@ -19,39 +19,29 @@
 #
 #-----------------------------------------------------------------------
 #
-# Change shell behavior with "set" with these flags:
-#
-# -a
-# This will cause the script to automatically export all variables and
-# functions which are modified or created to the environments of subse-
-# quent commands.
-#
-# -e
-# This will cause the script to exit as soon as any line in the script
-# fails (with some exceptions; see manual).  Apparently, it is a bad
-# idea to use "set -e".  See here:
-#   http://mywiki.wooledge.org/BashFAQ/105
-#
-# -u
-# This will cause the script to exit if an undefined variable is encoun-
-# tered.
-#
-# -x
-# This will cause all executed commands in the script to be printed to
-# the terminal (used for debugging).
-#
-#-----------------------------------------------------------------------
-#
-set -eux
-#
-#-----------------------------------------------------------------------
-#
-# Source the script that defines the necessary shell environment varia-
-# bles.
+# Source the variable definitions script.
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
+#
+#-----------------------------------------------------------------------
+#
+# Source utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/utility_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set -e -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -148,5 +138,14 @@ rm -f RESTART/*
 #-----------------------------------------------------------------------
 #
 $APRUN $PE_MEMBER01 fv3_gfs.x
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+restore_shell_opts
 
 

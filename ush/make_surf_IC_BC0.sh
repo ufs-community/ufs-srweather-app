@@ -68,40 +68,36 @@
 #
 #-----------------------------------------------------------------------
 #
-# Change shell behavior with "set" with these flags:
-#
-# -a
-# This will cause the script to automatically export all variables and
-# functions which are modified or created to the environments of subse-
-# quent commands.
-#
-# -e
-# This will cause the script to exit as soon as any line in the script
-# fails (with some exceptions; see manual).  Apparently, it is a bad
-# idea to use "set -e".  See here:
-#   http://mywiki.wooledge.org/BashFAQ/105
-#
-# -u
-# This will cause the script to exit if an undefined variable is encoun-
-# tered.
-#
-# -x
-# This will cause all executed commands in the script to be printed to
-# the terminal (used for debugging).
-#
-#-----------------------------------------------------------------------
-#
-set -eux
-#
-#-----------------------------------------------------------------------
-#
-# Source the script that defines the necessary shell environment varia-
-# bles.
+# Source the variable definitions script.
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
-
+#
+#-----------------------------------------------------------------------
+#
+# Source utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/utility_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set -e -u -x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Export select variables.
+#
+#-----------------------------------------------------------------------
+#
 export BASEDIR
 export INIDIR  # This is the variable that determines the directory in
                # which chgres looks for the input nemsio files.
@@ -163,11 +159,14 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
-  set +x
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . $MODULESHOME/init/sh 2>>/dev/null
   module load PrgEnv-intel prod_envir cfp-intel-sandybridge/1.1.0 2>>/dev/null
   module list
-  set -x
+
+  restore_shell_opts
 
   export KMP_AFFINITY=disabled
   export DATA=/gpfs/hps/ptmp/${LOGNAME}/wrk.chgres
@@ -176,11 +175,14 @@ case $MACHINE in
 #
 "WCOSS")
 #
-  set +x
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . /usrx/local/Modules/default/init/sh 2>>/dev/null
   module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
   module list
-  set -x
+
+  restore_shell_opts
 
   export DATA=/ptmpp2/${LOGNAME}/wrk.chgres
   export APRUNC="time"
@@ -188,7 +190,9 @@ case $MACHINE in
 #
 "DELL")
 #
-  set +x
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . /usrx/local/prod/lmod/lmod/init/sh
   module load EnvVars/1.0.2 lmod/7.7 settarg/7.7 lsf/10.1 prod_envir/1.0.2
   module use -a /usrx/local/dev/modulefiles
@@ -198,7 +202,8 @@ case $MACHINE in
   module load NetCDF/4.5.0
   module load HDF5-serial/1.10.1
   module list
-  set -x
+
+  restore_shell_opts
 
   export KMP_AFFINITY=disabled
   export APRUN=time
@@ -217,12 +222,15 @@ case $MACHINE in
 #
 "THEIA")
 #
-  set +x
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . /apps/lmod/lmod/init/sh
   module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
   module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
   module list
-  set -x
+
+  restore_shell_opts
 
   export DATA="$WORKDIR_ICBC/ICs_work"
   export APRUNC="time"
@@ -232,7 +240,9 @@ case $MACHINE in
 #
 "JET")
 #
-  set +x
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . /apps/lmod/lmod/init/sh
   module purge
   module load newdefaults
@@ -242,7 +252,8 @@ case $MACHINE in
   module load hdf5
   module load netcdf4/4.2.1.1
   module list
-  set -x
+
+  restore_shell_opts
 
   export DATA="$WORKDIR_ICBC/ICs_work"
   export APRUNC="time"
@@ -256,6 +267,10 @@ case $MACHINE in
   export APRUNC="srun -n 1"
   ulimit -s unlimited
   ulimit -a
+  ;;
+#
+"CHEYENNE")
+#
   ;;
 #
 esac
@@ -293,6 +308,16 @@ export REGIONAL=1
 #-----------------------------------------------------------------------
 #
 $USHDIR/$chgres_driver_scr
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+restore_shell_opts
+
 
 
 

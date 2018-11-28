@@ -132,56 +132,38 @@
 #
 #-----------------------------------------------------------------------
 #
-# Change shell behavior with "set" with these flags:
-#
-# -a
-# This will cause the script to automatically export all variables and
-# functions which are modified or created to the environments of subse-
-# quent commands.
-#
-# -e
-# This will cause the script to exit as soon as any line in the script
-# fails (with some exceptions; see manual).  Apparently, it is a bad
-# idea to use "set -e".  See here:
-#   http://mywiki.wooledge.org/BashFAQ/105
-#
-# -u
-# This will cause the script to exit if an undefined variable is encoun-
-# tered.
-#
-# -x
-# This will cause all executed commands in the script to be printed to
-# the terminal (used for debugging).
-#
-#-----------------------------------------------------------------------
-#
-#set -eux
-set -ux
-
-#
-#-----------------------------------------------------------------------
-#
-# Source the script that defines the necessary shell environment varia-
-# bles.
+# Source the variable definitions script.                                                                                                         
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
-
+#
+#-----------------------------------------------------------------------
+#
+# Source utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/utility_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set -u -x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Export select variables.
+#
+#-----------------------------------------------------------------------
+#
 export gtype
 export stretch_fac
-#
-#-----------------------------------------------------------------------
-#
-# Source the shell script containing the function that checks for preex-
-# isting directories and handles them according to the setting of the
-# variable preexisting_dir_method (which is specified in the configura-
-# tion script config.sh).  This must be done here to define the function
-# so that it can be used later below.
-#
-#-----------------------------------------------------------------------
-#
-. $USHDIR/check_for_preexist_dir.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -223,11 +205,14 @@ case $MACHINE in
 #
 "WCOSS_C" | "WCOSS")
 #
-  set +x
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . $MODULESHOME/init/sh
   module load PrgEnv-intel cfp-intel-sandybridge/1.1.0
   module list
-  set -x
+
+  restore_shell_opts
 
   export NODES=1
   export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
@@ -240,7 +225,9 @@ case $MACHINE in
 #
 "THEIA")
 #
-  set +x
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . /apps/lmod/lmod/init/sh
   module purge
   module load intel/16.1.150
@@ -248,7 +235,8 @@ case $MACHINE in
   module load hdf5/1.8.14
   module load netcdf/4.3.0
   module list
-  set -x
+
+  restore_shell_opts
 
   export APRUN="time"
   export topo_dir="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog"
@@ -259,7 +247,9 @@ case $MACHINE in
 #
 "JET")
 #
-  set +x
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . /apps/lmod/lmod/init/sh
   module purge
   module load newdefaults
@@ -269,7 +259,8 @@ case $MACHINE in
   module load hdf5
   module load netcdf4/4.2.1.1
   module list
-  set -x
+
+  restore_shell_opts
 
   export APRUN="time"
   export topo_dir="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_orog"
@@ -430,8 +421,7 @@ mkdir $WORKDIR_ICBC
 #
 #-----------------------------------------------------------------------
 #
-echo
-echo "Begin grid file generation (on `date`)."
+print_info_msg_verbose "Starting grid file generation..."
 
 $USHDIR/$grid_gen_scr \
   $RES \
@@ -458,8 +448,7 @@ ln -sf ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc \
        ${CRES}_grid.tile${tile}.nc
 cd -
 
-echo
-echo "End grid file generation (on `date`)."
+print_info_msg_verbose "Grid file generation complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -478,10 +467,9 @@ echo "End grid file generation (on `date`)."
 #
 #-----------------------------------------------------------------------
 #
-tile=7
-echo
-echo "Begin orography file generation (on `date`)."
+print_info_msg_verbose "Starting orography file generation..."
 
+tile=7
 #
 # We need to export WORKDIR_OROG so that orog_gen_scr sets its internal
 # work directory correctly for the regional case.
@@ -497,20 +485,24 @@ case $MACHINE in
 # but in the future we will have more.  First, create an input file for
 # cfp.
 #
-#  export APRUN="time"
-  echo "$USHDIR/$orog_gen_scr $RES $tile $WORKDIR_GRID $WORKDIR_OROG \
-$USHDIR $topo_dir $TMPDIR " >> $TMPDIR/orog.file1
+  printf "%s\n" "\
+$USHDIR/$orog_gen_scr \
+$RES \
+$tile \
+$WORKDIR_GRID \
+$WORKDIR_OROG \
+$USHDIR \
+$topo_dir \
+$TMPDIR" \
+  >> $TMPDIR/orog.file1
+
   aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
   rm $TMPDIR/orog.file1
   ;;
 #
 "THEIA" | "JET" | "ODIN")
 #
-  echo
-  echo "Executing $orog_gen_scr for tile $tile..."
   $USHDIR/$orog_gen_scr $RES $tile $WORKDIR_GRID $WORKDIR_OROG $USHDIR $topo_dir $TMPDIR
-  echo
-  echo "Done executing $orog_gen_scr for tile $tile."
   ;;
 #
 esac
@@ -531,8 +523,7 @@ ln -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
        oro.${CRES}.tile${tile}.nc
 cd -
 
-echo
-echo "End orography file generation (on `date`)."
+print_info_msg_verbose "Orography file generation complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -540,8 +531,7 @@ echo "End orography file generation (on `date`)."
 #
 #-----------------------------------------------------------------------
 #
-echo
-echo "Setting orography filtering parameters..."
+print_info_msg_verbose "Setting orography filtering parameters..."
 
 if [ $RES -eq 48 ]; then
   export cd4=0.12; export max_slope=0.12; export n_del2_weak=4;  export peak_fac=1.1
@@ -589,8 +579,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-echo
-echo "Begin filtering of orography (on `date`)."
+print_info_msg_verbose "Starting filtering of orography..."
+
 $USHDIR/$orog_fltr_scr \
   $RES \
   $WORKDIR_GRID $WORKDIR_OROG $WORKDIR_FLTR \
@@ -613,8 +603,7 @@ ln -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
        oro.${CRES}.tile${tile}.nc
 cd -
 
-echo
-echo "End filtering of orography (on `date`)."
+print_info_msg_verbose "Filtering of orography complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -637,51 +626,55 @@ echo "End filtering of orography (on `date`)."
 #
 #-----------------------------------------------------------------------
 #
-echo
-echo "\"Shaving\" regional grid and filtered orography files to reduce \
-them to required compute size..."
+print_info_msg_verbose "\
+\"Shaving\" regional grid and filtered orography files to reduce them to
+required compute size..."
 
 cd $WORKDIR_SHVE
 #
 # Create an input file for the shave executable to generate a grid file
 # with a halo of 3 cells.
 #
-echo $nx_T7 \
-     $ny_T7 \
-     $nh3_T7 \
-     \'$WORKDIR_FLTR/${CRES}_grid.tile${tile}.nc\' \
-     \'$WORKDIR_SHVE/${CRES}_grid.tile${tile}.halo${nh3_T7}.nc\' \
-     > input.shave.grid.halo${nh3_T7}
+printf "%s %s %s %s %s\n" \
+  $nx_T7 \
+  $ny_T7 \
+  $nh3_T7 \
+  \'$WORKDIR_FLTR/${CRES}_grid.tile${tile}.nc\' \
+  \'$WORKDIR_SHVE/${CRES}_grid.tile${tile}.halo${nh3_T7}.nc\' \
+  > input.shave.grid.halo${nh3_T7}
 #
 # Create an input file for the shave executable to generate a grid file
 # with a halo of 4 cells.
 #
-echo $nx_T7 \
-     $ny_T7 \
-     $nh4_T7 \
-     \'$WORKDIR_FLTR/${CRES}_grid.tile${tile}.nc\' \
-     \'$WORKDIR_SHVE/${CRES}_grid.tile${tile}.halo${nh4_T7}.nc\' \
-     > input.shave.grid.halo${nh4_T7}
+printf "%s %s %s %s %s\n" \
+  $nx_T7 \
+  $ny_T7 \
+  $nh4_T7 \
+  \'$WORKDIR_FLTR/${CRES}_grid.tile${tile}.nc\' \
+  \'$WORKDIR_SHVE/${CRES}_grid.tile${tile}.halo${nh4_T7}.nc\' \
+  > input.shave.grid.halo${nh4_T7}
 #
 # Create an input file for the shave executable to generate an orography
 # file without a halo.
 #
-echo $nx_T7 \
-     $ny_T7 \
-     $nh0_T7 \
-     \'$WORKDIR_FLTR/oro.${CRES}.tile${tile}.nc\' \
-     \'$WORKDIR_SHVE/${CRES}_oro_data.tile${tile}.halo${nh0_T7}.nc\' \
-     > input.shave.orog.halo${nh0_T7}
+printf "%s %s %s %s %s\n" \
+  $nx_T7 \
+  $ny_T7 \
+  $nh0_T7 \
+  \'$WORKDIR_FLTR/oro.${CRES}.tile${tile}.nc\' \
+  \'$WORKDIR_SHVE/${CRES}_oro_data.tile${tile}.halo${nh0_T7}.nc\' \
+  > input.shave.orog.halo${nh0_T7}
 #
 # Create an input file for the shave executable to generate an orography
 # file with a halo of 4 cells.
 #
-echo $nx_T7 \
-     $ny_T7 \
-     $nh4_T7 \
-     \'$WORKDIR_FLTR/oro.${CRES}.tile${tile}.nc\' \
-     \'$WORKDIR_SHVE/${CRES}_oro_data.tile${tile}.halo${nh4_T7}.nc\' \
-     > input.shave.orog.halo${nh4_T7}
+printf "%s %s %s %s %s\n" \
+  $nx_T7 \
+  $ny_T7 \
+  $nh4_T7 \
+  \'$WORKDIR_FLTR/oro.${CRES}.tile${tile}.nc\' \
+  \'$WORKDIR_SHVE/${CRES}_oro_data.tile${tile}.halo${nh4_T7}.nc\' \
+  > input.shave.orog.halo${nh4_T7}
 #
 # Shave the grid and orography files.  Note that APRUN is defined dif-
 # ferently for each machine.
@@ -691,8 +684,16 @@ $APRUN $exec_dir/$shave_exec < input.shave.grid.halo${nh4_T7}
 $APRUN $exec_dir/$shave_exec < input.shave.orog.halo${nh0_T7}
 $APRUN $exec_dir/$shave_exec < input.shave.orog.halo${nh4_T7}
 
-echo
-echo "Done \"shaving\" regional grid and filtered orography files."
-
+print_info_msg_verbose "\
+\"Shaving\" of regional grid and filtered orography files complete."
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+restore_shell_opts
 
 

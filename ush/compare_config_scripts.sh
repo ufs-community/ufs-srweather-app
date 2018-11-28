@@ -14,32 +14,21 @@
 #
 #-----------------------------------------------------------------------
 #
-# Change shell behavior with "set" with these flags:
-#
-# -a
-# This will cause the script to automatically export all variables and
-# functions which are modified or created to the environments of subse-
-# quent commands.
-#
-# -e
-# This will cause the script to exit as soon as any line in the script
-# fails (with some exceptions; see manual).  Apparently, it is a bad
-# idea to use "set -e".  See here:
-#   http://mywiki.wooledge.org/BashFAQ/105
-#
-# -u
-# This will cause the script to exit if an undefined variable is encoun-
-# tered.
-#
-# -x
-# This will cause all executed commands in the script to be printed to
-# the terminal (used for debugging).
+# Source utility functions.
 #
 #-----------------------------------------------------------------------
 #
-#set -aux
-#set -eux
-set -ux
+. ./utility_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set -u; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -88,35 +77,40 @@ while read crnt_line; do
 # Note that a variable name will be found only if the equal sign immed-
 # iately follows the variable name.
 # 
-  var_name=$(echo ${crnt_line} | sed -n -r -e "s/^([^ ]*)=.*/\1/p")
+  var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p")
 
   if [ -z "${var_name}" ]; then
-    MSG=$(printf "\
-Error:
+    print_err_msg_exit "\
 No variable name found in local configuration script \"${LOCAL_CONFIG_FN}\":
   crnt_line = \"${crnt_line}\"
-  var_name = \"${var_name}\"
-Exiting script.
-")
-    printf '%s\n' "$MSG"
-    exit 1
+  var_name = \"${var_name}\""
   fi
+#
+# Use a herestring to input list of variables in the default configura-
+# tion file to grep.  Also, redirect the output to null because we are
+# only interested in the exit status of grep (which will be nonzero if 
+# the specified regex was not found in the list)..
+#
+  grep "^${var_name}=" <<< "${var_list_default}" > /dev/null 2>&1
 
-  grep "^${var_name}=" <<< "${var_list_default}"
   if [ $? -ne 0 ]; then
-    MSG=$(printf "\
-Error:
+    print_err_msg_exit "\
 Variable in local configuration script \"${LOCAL_CONFIG_FN}\" not set in default
 configuration script \"${DEFAULT_CONFIG_FN}\":
   var_name = \"${var_name}\"
 Please assign a default value to this variable in \"${DEFAULT_CONFIG_FN}\" 
-and rerun.
-Exiting script.
-")
-    printf '%s\n' "$MSG"
-    exit 1
+and rerun."
   fi
 
 done <<< "${var_list_local}"
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+restore_shell_opts
 
 

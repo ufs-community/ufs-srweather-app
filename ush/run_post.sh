@@ -32,12 +32,19 @@ set -ux
 #
 #-----------------------------------------------------------------------
 #
-# Source the script that defines the necessary shell environment varia-
-# bles.
+# Source the variable definitions script.                                                                                                         
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
+#
+#-----------------------------------------------------------------------
+#
+# Source utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/utility_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -164,17 +171,23 @@ dyn_file=${RUNDIR}/dynf0${fhr}.nc
 phy_file=${RUNDIR}/phyf0${fhr}.nc
 
 # Do these need to be exported??  Probably not since only an executable is called below, not a script.
-export POST_TIME=`${UPPDIR}/ndate.exe +${fhr} ${CDATE}`
-export YYYY=`echo $POST_TIME | cut -c1-4`
-export MM=`echo $POST_TIME | cut -c5-6`
-export DD=`echo $POST_TIME | cut -c7-8`
-export HH=`echo $POST_TIME | cut -c9-10`
+#export POST_TIME=`${UPPDIR}/ndate.exe +${fhr} ${CDATE}`
+#export YYYY=`echo $POST_TIME | cut -c1-4`
+#export MM=`echo $POST_TIME | cut -c5-6`
+#export DD=`echo $POST_TIME | cut -c7-8`
+#export HH=`echo $POST_TIME | cut -c9-10`
+
+POST_TIME=$( ${UPPDIR}/ndate.exe +${fhr} ${CDATE} )
+POST_YYYY=${POST_TIME:0:4}
+POST_MM=${POST_TIME:4:2}
+POST_DD=${POST_TIME:6:2}
+POST_HH=${POST_TIME:8:2}
 
 cat > itag <<EOF
 ${dyn_file}
 netcdf
 grib2
-${YYYY}-${MM}-${DD}_${HH}:00:00
+${POST_YYYY}-${POST_MM}-${POST_DD}_${POST_HH}:00:00
 FV3R
 ${phy_file}
 
@@ -253,5 +266,5 @@ WGRIB2="wgrib2"
 #
 #rm -rf ${FHR_DIR}
 
-echo "Post-processing completed for fhr = $fhr hr."
+print_info_msg_verbose "Post-processing completed for fhr = $fhr hr."
 

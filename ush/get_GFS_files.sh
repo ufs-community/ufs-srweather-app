@@ -35,40 +35,29 @@
 #
 #-----------------------------------------------------------------------
 #
-# Change shell behavior with "set" with these flags:
-#
-# -a
-# This will cause the script to automatically export all variables and
-# functions which are modified or created to the environments of subse-
-# quent commands.
-#
-# -e
-# This will cause the script to exit as soon as any line in the script
-# fails (with some exceptions; see manual).  Apparently, it is a bad
-# idea to use "set -e".  See here:
-#   http://mywiki.wooledge.org/BashFAQ/105
-#
-# -u
-# This will cause the script to exit if an undefined variable is encoun-
-# tered.
-#
-# -x
-# This will cause all executed commands in the script to be printed to
-# the terminal (used for debugging).
-#
-#-----------------------------------------------------------------------
-#
-#set -eux
-set -ux
-#
-#-----------------------------------------------------------------------
-#
-# Source the script that defines the necessary shell environment varia-
-# bles.
+# Source the variable definitions script.                                                                                                         
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
+#
+#-----------------------------------------------------------------------
+#
+# Source utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/utility_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -86,11 +75,9 @@ mkdir -p $INIDIR
 cd $INIDIR
 
 if [ $? -ne 0 ]; then
-  echo
-  echo "Could not change directory to INIDIR:"
-  echo "  INIDIR = $INIDIR"
-  echo "Exiting script."
-  exit 1
+  print_err_msg_exit "\
+Could not change directory to INIDIR:
+  INIDIR = \"$INIDIR\""
 fi
 #
 #-----------------------------------------------------------------------
@@ -248,9 +235,10 @@ else
 #
 #-----------------------------------------------------------------------
 #
-  set +x
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
   module load hpss
-  set -x
+  restore_shell_opts
 #
 #-----------------------------------------------------------------------
 #
@@ -277,21 +265,23 @@ else
 #
   num_files_found=$(( $num_lines - 2 ))
   if [ "$num_files_found" -ne "$num_files_needed" ]; then
-    echo
-    echo "The needed ${anl_or_fcst} files are not all available in HPSS."
-    echo
-    echo "  num_files_found = ${num_files_found} (number of ${anl_or_fcst} files found in HPSS)"
-    echo "  num_files_needed = ${num_files_needed} (number of ${anl_or_fcst} files needed)"
-    echo
-    echo "See the output of the htar command in the file ${htar_stdout_fn} in the directory"
-    echo
-    echo "  pwd = "$(pwd)
-    echo
-    echo "for the list of files found."
-    echo "Exiting script."
-    exit 1
+
+    print_err_msg_exit "\
+The necessary ${anl_or_fcst} files are not all available in HPSS:
+
+  num_files_found = ${num_files_found} (number of ${anl_or_fcst} files found in HPSS)
+  num_files_needed = ${num_files_needed} (number of ${anl_or_fcst} files needed)
+
+See the output of the htar command in the file ${htar_stdout_fn} in the directory
+
+  pwd = \"$(pwd)\"
+
+for the list of files found."
+
   else
+
     rm $htar_stdout_fn
+
   fi
 #
 #-----------------------------------------------------------------------
@@ -304,10 +294,7 @@ else
   htar -xvf $HPSS_DIR/$ANL_TAR_FILE $files_to_extract > $htar_stdout_fn
   htar_result=$?
   if [ "$htar_result" -ne "0" ]; then
-    echo
-    echo "htar extract operation failed."
-    echo "Exiting script."
-    exit 1
+    print_err_msg_exit "htar extract operation failed."
   fi
 #
 # Calculate the number of analysis files extracted from the tar file.
@@ -323,21 +310,23 @@ else
 #
   num_files_found=$(( $num_lines - 2 ))
   if [ "$num_files_found" -ne "$num_files_needed" ]; then
-    echo
-    echo "The htar operation was not able to extract all needed ${anl_or_fcst} files from HPSS:"
-    echo
-    echo "  num_files_found = ${num_files_found} (number of ${anl_or_fcst} files extracted)"
-    echo "  num_files_needed = ${$num_files_needed} (number of ${anl_or_fcst} files needed)"
-    echo
-    echo "See the output of the htar command in the file ${htar_stdout_fn} in the directory"
-    echo
-    echo "  pwd = "$(pwd)
-    echo
-    echo "for the list of files extracted."
-    echo "Exiting script."
-    exit 1
+
+    print_err_msg_exit "\
+The htar operation was not able to extract all necessary ${anl_or_fcst} files from HPSS:
+
+  num_files_found = ${num_files_found} (number of ${anl_or_fcst} files extracted)
+  num_files_needed = ${$num_files_needed} (number of ${anl_or_fcst} files needed)
+
+See the output of the htar command in the file ${htar_stdout_fn} in the directory
+
+  pwd = \"$(pwd)\"
+
+for the list of files extracted."
+
   else
+
     rm $htar_stdout_fn
+
   fi
 #
 # If ARCHIVE_DIR is not set to the current directory (i.e. "."), then
@@ -350,7 +339,7 @@ else
     mv .$ARCHIVE_DIR/* .
 # Get the first subdirectory in ARCHIVE_DIR (i.e. the directory after
 # the first forward slash).
-    subdir_to_remove=$( echo ${ARCHIVE_DIR} | sed -r 's|^\/([^/]*).*|\1|' )
+    subdir_to_remove=$( printf "%s" "${ARCHIVE_DIR}" | sed -r 's|^\/([^/]*).*|\1|' )
     rm -rf ./$subdir_to_remove
   fi
 
@@ -383,8 +372,9 @@ num_BC_times="${#BC_times_hrs[@]}"
 # not needed here.
 #
 num_files_needed=$(( $num_BC_times - 1 ))
-echo
-echo "num_files_needed = $num_files_needed"
+print_info_msg_verbose "\
+The number of BC files needed (not including at the initial time) are:
+  num_files_needed = $num_files_needed"
 #
 # Set the name of the tar file that is supposed to contain the needed
 # forecast files.
@@ -394,7 +384,7 @@ SIGMA_TAR_FILE="${prefix_tar_files}.${CDATE}.sigma.tar"
 # Set the name of the directory within the archive in which the needed
 # forecast files should be located.
 #
-temp=$( echo ${prefix_tar_files} | sed -r 's|_|\/|g' )  # Use sed to replace underscores with forward slashes.
+temp=$( printf "%s" "${prefix_tar_files}" | sed -r 's|_|\/|g' )  # Use sed to replace underscores with forward slashes.
 ARCHIVE_DIR="/${temp}.${YMD}"
 #
 # Set variables containing the forecast file names with the appropriate
@@ -459,18 +449,17 @@ else
 #
   BC_update_intvl_hrs_HPSS_min=6
   if [ "$BC_update_intvl_hrs" -lt "$BC_update_intvl_hrs_HPSS_min" ]; then
-    echo
-    echo "CAUTION:"
-    echo
-    echo "As of 07/182018, the forecast files in the mass store (HPSS) are available"
-    echo "only every BC_update_intvl_hrs_HPSS_min=${BC_update_intvl_hrs_HPSS_min} hours."
-    echo
-    echo "Since BC_update_intvl_hrs is set to a value smaller than this, some of the"
-    echo "forecast files needed to generate BC files will not be found in HPSS."
-    echo
-    echo "  BC_update_intvl_hrs_HPSS_min = $BC_update_intvl_hrs_HPSS_min"
-    echo "  BC_update_intvl_hrs = $BC_update_intvl_hrs"
-    echo
+    print_info_msg "\
+CAUTION:
+
+As of 07/182018, the forecast files in the mass store (HPSS) are available
+only every BC_update_intvl_hrs_HPSS_min=${BC_update_intvl_hrs_HPSS_min} hours.
+
+Since BC_update_intvl_hrs is set to a value smaller than this, some of the
+forecast files needed to generate BC files will not be found in HPSS:
+
+  BC_update_intvl_hrs_HPSS_min = $BC_update_intvl_hrs_HPSS_min
+  BC_update_intvl_hrs = $BC_update_intvl_hrs"
   fi
 #
 #-----------------------------------------------------------------------
@@ -497,21 +486,23 @@ else
 #
   num_files_found=$(( $num_lines - 2 ))
   if [ "$num_files_found" -ne "$num_files_needed" ]; then
-    echo
-    echo "The needed ${anl_or_fcst} files are not all available in HPSS."
-    echo
-    echo "  num_files_found = ${num_files_found} (number of forecast files found in HPSS)"
-    echo "  num_files_needed = {$num_files_needed} (number of forecast files needed)"
-    echo
-    echo "See the output of the htar command in the file ${htar_stdout_fn} in the directory"
-    echo
-    echo "  pwd = "$(pwd)
-    echo
-    echo "for the list of files found."
-    echo "Exiting script."
-    exit 1
+
+    print_err_msg_exit "\
+The necessary ${anl_or_fcst} files are not all available in HPSS:
+
+  num_files_found = ${num_files_found} (number of forecast files found in HPSS)
+  num_files_needed = ${$num_files_needed} (number of forecast files needed)
+
+See the output of the htar command in the file ${htar_stdout_fn} in the directory
+
+  pwd = $(pwd)
+
+for the list of files found."
+
   else
+
     rm $htar_stdout_fn
+
   fi
 #
 #-----------------------------------------------------------------------
@@ -524,10 +515,7 @@ else
   htar -xvf $HPSS_DIR/$SIGMA_TAR_FILE $files_to_extract > $htar_stdout_fn
   htar_result=$?
   if [ "$htar_result" -ne "0" ]; then
-    echo
-    echo "htar extract operation failed."
-    echo "Exiting script."
-    exit 1
+    print_err_msg_exit "htar extract operation failed."
   fi
 #
 # Count the number of forecast files extracted.  If this is not equal to
@@ -543,21 +531,23 @@ else
 #
   num_files_found=$(( $num_lines - 2 ))
   if [ "$num_files_found" -ne "$num_files_needed" ]; then
-    echo
-    echo "The htar operation was not able to extract all needed ${anl_or_fcst} files from HPSS:"
-    echo
-    echo "  num_files_found = ${num_files_found} (number of ${anl_or_fcst} files extracted)"
-    echo "  num_files_needed = ${$num_files_needed} (number of ${anl_or_fcst} files needed)"
-    echo
-    echo "See the output of the htar command in the file ${htar_stdout_fn} in the directory"
-    echo
-    echo "  pwd = "$(pwd)
-    echo
-    echo "for the list of files extracted."
-    echo "Exiting script."
-    exit 1
+
+    print_err_msg_exit "\
+The htar operation was not able to extract all necessary ${anl_or_fcst} files from HPSS:
+
+  num_files_found = ${num_files_found} (number of ${anl_or_fcst} files extracted)
+  num_files_needed = ${$num_files_needed} (number of ${anl_or_fcst} files needed)
+
+See the output of the htar command in the file ${htar_stdout_fn} in the directory
+
+  pwd = $(pwd)
+
+for the list of files extracted."
+
   else
+
     rm $htar_stdout_fn
+
   fi
 #
 # If ARCHIVE_DIR is not set to the current directory (i.e. "."), then
@@ -570,10 +560,20 @@ else
     mv .$ARCHIVE_DIR/* .
 # Get the first subdirectory in ARCHIVE_DIR (i.e. the directory after
 # the first forward slash).
-    subdir_to_remove=$( echo ${ARCHIVE_DIR} | sed -r 's|^\/([^/]*).*|\1|' )
+    subdir_to_remove=$( printf "%s" "${ARCHIVE_DIR}" | sed -r 's|^\/([^/]*).*|\1|' )
     rm -rf ./$subdir_to_remove
   fi
 
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+restore_shell_opts
+
 
 

@@ -2,31 +2,21 @@
 #
 #-----------------------------------------------------------------------
 #
-# Change shell behavior with "set" with these flags:
-#
-# -a
-# This will cause the script to automatically export all variables and
-# functions which are modified or created to the environments of subse-
-# quent commands.
-#
-# -e
-# This will cause the script to exit as soon as any line in the script
-# fails (with some exceptions; see manual).  Apparently, it is a bad
-# idea to use "set -e".  See here:
-#   http://mywiki.wooledge.org/BashFAQ/105
-#
-# -u
-# This will cause the script to exit if an undefined variable is encoun-
-# tered.
-#
-# -x
-# This will cause all executed commands in the script to be printed to
-# the terminal (used for debugging).
+# Source utility functions.
 #
 #-----------------------------------------------------------------------
 #
-#set -eux
-set -ux
+. ./utility_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -40,17 +30,6 @@ set -ux
 #-----------------------------------------------------------------------
 #
 . ./setup.sh
-#
-#-----------------------------------------------------------------------
-#
-# Source the shell script containing the function that replaces variable
-# values (or value placeholders) in several types of files (e.g. Fortran
-# namelist files) with actual values.  This must be done here to define
-# the function so that it can be used later below.
-#
-#-----------------------------------------------------------------------
-#
-. ./set_file_param.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -130,13 +109,22 @@ set_file_param $WFLOW_XML_FP "FHR" \
 #
 #-----------------------------------------------------------------------
 #
+# Save the current shell options, turn off the xtrace option, load the
+# rocoto module, then restore the original shell options.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set +x; } > /dev/null 2>&1
+module load rocoto
+restore_shell_opts
+#
+#-----------------------------------------------------------------------
+#
 # Get the full path to the various rocoto commands.
 #
 #-----------------------------------------------------------------------
 #
-set +x
-module load rocoto
-set -x
 ROCOTO_EXEC_FP=$( which rocotorun )
 ROCOTO_EXEC_DIR=${ROCOTO_EXEC_FP%/rocotorun}
 #
@@ -151,19 +139,25 @@ ROCOTO_EXEC_DIR=${ROCOTO_EXEC_FP%/rocotorun}
 WFLOW_DB_FN="${WFLOW_XML_FN%.xml}.db"
 
 cmd="cd $RUNDIR && ${ROCOTO_EXEC_DIR}/rocotorun -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
-echo
-echo "To run the workflow, use the following command:"
-echo
-echo "$cmd"
-echo
-echo "This command can be added in the user's crontab for automatic \
-resubmission of the workflow."
+print_info_msg "\
+To run the workflow, use the following command:
+  \"$cmd\"
+This command can be added to the user's crontab for automatic resubmission 
+of the workflow."
 
 cmd="cd $RUNDIR && ${ROCOTO_EXEC_DIR}/rocotostat -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
-echo
-echo "To check on the status of the workflow, use the following command:"
-echo
-echo "$cmd"
+print_info_msg "\
+To check on the status of the workflow, use the following command:
+  \"$cmd\""
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+restore_shell_opts
 
 
 

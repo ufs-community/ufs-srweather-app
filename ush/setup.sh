@@ -17,32 +17,21 @@
 #
 #-----------------------------------------------------------------------
 #
-# Change shell behavior with "set" with these flags:
-#
-# -a
-# This will cause the script to automatically export all variables and
-# functions which are modified or created to the environments of subse-
-# quent commands.
-#
-# -e
-# This will cause the script to exit as soon as any line in the script
-# fails (with some exceptions; see manual).  Apparently, it is a bad
-# idea to use "set -e".  See here:
-#   http://mywiki.wooledge.org/BashFAQ/105
-#
-# -u
-# This will cause the script to exit if an undefined variable is encoun-
-# tered.
-#
-# -x
-# This will cause all executed commands in the script to be printed to
-# the terminal (used for debugging).
+# Source utility functions.
 #
 #-----------------------------------------------------------------------
 #
-#set -aux
-#set -eux
-set -ux
+. ./utility_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -97,42 +86,14 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Source the shell script containing the function that checks for preex-
-# isting directories and handles them according to the setting of the
-# variable preexisting_dir_method [which is specified in the configura-
-# tion script(s)].  This must be done here so that the function is de-
-# fined before it is used later below.
-#
-#-----------------------------------------------------------------------
-#
-. ./check_for_preexist_dir.sh
-#
-#-----------------------------------------------------------------------
-#
-# Source the shell script containing the function that replaces variable
-# values (or value placeholders) in several types of files (e.g. Fortran
-# namelist files) with actual values.  This must be done here so that 
-# the function is defined before it is used later below.
-#
-#-----------------------------------------------------------------------
-#
-. ./set_file_param.sh
-#
-#-----------------------------------------------------------------------
-#
 # Make sure VERBOSE is set to either "true" or "false".
 #
 #-----------------------------------------------------------------------
 #
 if [ "$VERBOSE" != "true" ] && [ "$VERBOSE" != "false" ]; then
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 The verbosity flag VERBOSE must be set to either \"true\" or \"false\":
-  VERBOSE = \"$VERBOSE\"
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+  VERBOSE = \"$VERBOSE\""
 fi
 #
 #-----------------------------------------------------------------------
@@ -142,7 +103,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-MACHINE=$( echo "$MACHINE" | sed -e 's/\(.*\)/\U\1/' )
+MACHINE=$( printf "%s" "$MACHINE" | sed -e 's/\(.*\)/\U\1/' )
 
 if [ "$MACHINE" != "WCOSS_C" ] && \
    [ "$MACHINE" != "WCOSS" ] && \
@@ -152,8 +113,7 @@ if [ "$MACHINE" != "WCOSS_C" ] && \
    [ "$MACHINE" != "ODIN" ] && \
    [ "$MACHINE" != "CHEYENNE" ]; then
 
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 Machine specified in MACHINE is not supported:
   MACHINE = \"$MACHINE\"
 MACHINE must be set to one of the following:
@@ -163,11 +123,7 @@ MACHINE must be set to one of the following:
   \"THEIA\"
   \"JET\"
   \"ODIN\"
-  \"CHEYENNE\"
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+  \"CHEYENNE\""
 
 fi
 #
@@ -183,15 +139,10 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
-Then remove this message and exit call and rerun.
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+Then remove this message and rerun."
 
   ncores_per_node=""
   SCHED=""
@@ -202,15 +153,10 @@ Exiting script.
 #
 "WCOSS")
 #
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
-Then remove this message and exit call and rerun.
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+Then remove this message and rerun."
 
   ncores_per_node=""
   SCHED=""
@@ -248,13 +194,10 @@ Exiting script.
 #
 "CHEYENNE")
 #
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
-Then remove this message and exit call and rerun.
-Exiting script.
-")
+Then remove this message and rerun."
 
   ncores_per_node=
   SCHED=""
@@ -286,17 +229,12 @@ gtype="regional"
 if [ "$predef_domain" != "" ] && \
    [ "$predef_domain" != "RAP" ] && \
    [ "$predef_domain" != "HRRR" ]; then
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 Predefined regional domain specified in predef_domain is not supported:
   predef_domain = \"$predef_domain\"
 predef_domain must be set either to an empty string or to one of the following:
   \"RAP\"
-  \"HRRR\"
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+  \"HRRR\""
 fi
 #
 #-----------------------------------------------------------------------
@@ -334,16 +272,11 @@ if [ "$RES" != "48" ] && \
    [ "$RES" != "1152" ] && \
    [ "$RES" != "3072" ]; then
 
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 Number of grid cells per tile (in each horizontal direction) specified in
 RES is not supported:
   RES = $RES
-RES must be one of:  48  96  192  384  768  1152  3072
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+RES must be one of:  48  96  192  384  768  1152  3072"
 
 fi
 #
@@ -365,19 +298,14 @@ CRES="C${RES}"
 #-----------------------------------------------------------------------
 #
 #
-CDATE_OR_NULL=$(echo $CDATE | sed -n -r -e "s/^([0-9]{10})$/\1/p")
+CDATE_OR_NULL=$( printf "%s" "$CDATE" | sed -n -r -e "s/^([0-9]{10})$/\1/p" )
 
 if [ -z "${CDATE_OR_NULL}" ]; then
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 CDATE must be a string consisting of exactly 10 digits of the form \"YYYYMMDDHH\",
 where YYYY is the 4-digit year, MM is the 2-digit month, DD is the 2-digit day-
 of-month, and HH is the 2-digit hour-of-day.
-  CDATE = \"$CDATE\"
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+  CDATE = \"$CDATE\""
 fi
 #
 #-----------------------------------------------------------------------
@@ -422,7 +350,7 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
-  FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_am"
+  FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
 
 #  if [ "$ictype" = "pfv3gfs" ]; then
 #    export INIDIR="/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$YMD/$HH"
@@ -488,15 +416,10 @@ esac
 #
 fcst_len_hrs_max=999
 if [ "$fcst_len_hrs" -gt "$fcst_len_hrs_max" ]; then
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 Forecast length is greater than maximum allowed length:
   fcst_len_hrs = $fcst_len_hrs
-  fcst_len_hrs_max = $fcst_len_hrs_max
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+  fcst_len_hrs_max = $fcst_len_hrs_max"
 fi
 #
 #-----------------------------------------------------------------------
@@ -512,16 +435,11 @@ rem=$(( $fcst_len_hrs % $BC_update_intvl_hrs ))
 
 if [ "$rem" -ne "0" ]; then
 
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 The forecast length is not evenly divisible by the BC update interval:
   fcst_len_hrs = $fcst_len_hrs
   BC_update_intvl_hrs = $BC_update_intvl_hrs
-  rem = fcst_len_hrs % BC_update_intvl_hrs = $rem
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+  rem = fcst_len_hrs % BC_update_intvl_hrs = $rem"
 
 else
 
@@ -664,7 +582,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-stretch_str="_S$( echo "${stretch_fac}" | sed "s|\.|p|" )"
+stretch_str="_S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
 refine_str="_RR${refine_ratio}"
 RUN_SUBDIR=${CRES}${stretch_str}${refine_str}${run_title}
 #
@@ -991,6 +909,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Save the current shell options and temporarily turn off the xtrace op-
+# tion to prevent clutter in stdout.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
 # Now that the starting and ending tile 6 supergrid indices of the re-
 # gional grid with the wide halo have been calculated (and adjusted), we
 # recalculate the width of the wide halo on:
@@ -1004,31 +932,19 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-set +x
-
-if [ "$VERBOSE" = "true" ]; then
-  MSG=$(printf "\
+print_info_msg_verbose "\
 Original values of halo width on tile 6 supergrid and on tile 7 are:
   nhw_T6SG = $nhw_T6SG
-  nhw_T7 = $nhw_T7
-")
-  printf '%s\n' "$MSG"
-fi
+  nhw_T7 = $nhw_T7"
 
 nhw_T6SG=$(( $istart_rgnl_T6SG - $istart_rgnl_wide_halo_T6SG ))
 nhw_T6=$(( $nhw_T6SG/2 ))
 nhw_T7=$(( $nhw_T6*$refine_ratio ))
 
-if [ "$VERBOSE" = "true" ]; then
-  MSG=$(printf "\
+print_info_msg_verbose "\
 Values of halo width on tile 6 supergrid and on tile 7 AFTER adjustments are:
   nhw_T6SG = $nhw_T6SG
-  nhw_T7 = $nhw_T7
-")
-  printf '%s\n' "$MSG"
-fi
-
-set -x
+  nhw_T7 = $nhw_T7"
 #
 #-----------------------------------------------------------------------
 #
@@ -1039,8 +955,6 @@ set -x
 #
 #-----------------------------------------------------------------------
 #
-set +x
-
 nx_T6SG=$(( $iend_rgnl_T6SG - $istart_rgnl_T6SG + 1 ))
 nx_T6=$(( $nx_T6SG/2 ))
 nx_T7=$(( $nx_T6*$refine_ratio ))
@@ -1049,25 +963,15 @@ ny_T6SG=$(( $jend_rgnl_T6SG - $jstart_rgnl_T6SG + 1 ))
 ny_T6=$(( $ny_T6SG/2 ))
 ny_T7=$(( $ny_T6*$refine_ratio ))
 
-if [ "$VERBOSE" = "true" ]; then
-
-  MSG=$(printf "\
+print_info_msg_verbose "\
 nx_T7 = $nx_T7 \
 (istart_rgnl_T6SG = $istart_rgnl_T6SG, \
-iend_rgnl_T6SG = $iend_rgnl_T6SG)
-")
-  printf '%s\n' "$MSG"
+iend_rgnl_T6SG = $iend_rgnl_T6SG)"
 
-  MSG=$(printf "\
+print_info_msg_verbose "\
 ny_T7 = $ny_T7 \
 (jstart_rgnl_T6SG = $jstart_rgnl_T6SG, \
-jend_rgnl_T6SG = $jend_rgnl_T6SG)
-")
-  printf '%s\n' "$MSG"
-
-fi
-
-set -x
+jend_rgnl_T6SG = $jend_rgnl_T6SG)"
 #
 #-----------------------------------------------------------------------
 #
@@ -1078,8 +982,6 @@ set -x
 #
 #-----------------------------------------------------------------------
 #
-set +x
-
 nx_wide_halo_T6SG=$(( $iend_rgnl_wide_halo_T6SG - $istart_rgnl_wide_halo_T6SG + 1 ))
 nx_wide_halo_T6=$(( $nx_wide_halo_T6SG/2 ))
 nx_wide_halo_T7=$(( $nx_wide_halo_T6*$refine_ratio ))
@@ -1088,25 +990,23 @@ ny_wide_halo_T6SG=$(( $jend_rgnl_wide_halo_T6SG - $jstart_rgnl_wide_halo_T6SG + 
 ny_wide_halo_T6=$(( $ny_wide_halo_T6SG/2 ))
 ny_wide_halo_T7=$(( $ny_wide_halo_T6*$refine_ratio ))
 
-if [ "$VERBOSE" = "true" ]; then
-
-  MSG=$(printf "\
+print_info_msg_verbose "\
 nx_wide_halo_T7 = $nx_T7 \
 (istart_rgnl_wide_halo_T6SG = $istart_rgnl_wide_halo_T6SG, \
-iend_rgnl_wide_halo_T6SG = $iend_rgnl_wide_halo_T6SG)
-")
-  printf '%s\n' "$MSG"
+iend_rgnl_wide_halo_T6SG = $iend_rgnl_wide_halo_T6SG)"
 
-  MSG=$(printf "\
+print_info_msg_verbose "\
 ny_wide_halo_T7 = $ny_T7 \
 (jstart_rgnl_wide_halo_T6SG = $jstart_rgnl_wide_halo_T6SG, \
-jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)
-")
-  printf '%s\n' "$MSG"
-
-fi
-
-set -x
+jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options before turning off xtrace.
+#
+#-----------------------------------------------------------------------
+#
+restore_shell_opts
 #
 #-----------------------------------------------------------------------
 #
@@ -1121,14 +1021,10 @@ if [ "$quilting" = ".true." ]; then
   PE_MEMBER01=$(( $PE_MEMBER01 + $write_groups*$write_tasks_per_group ))
 fi
 
-if [ "$VERBOSE" = "true" ]; then
-  MSG=$(printf "\
+print_info_msg_verbose "\
 The number of MPI tasks for the forecast (including those for the write component
 if it is being used) are:
-  PE_MEMBER01 = $PE_MEMBER01
-")
-  printf '%s\n' "$MSG"
-fi
+  PE_MEMBER01 = $PE_MEMBER01"
 #
 #-----------------------------------------------------------------------
 #
@@ -1139,38 +1035,26 @@ fi
 #
 rem=$(( $nx_T7%$layout_x ))
 if [ $rem -ne 0 ]; then
-  MSG=$(printf "\
+  print_err_msg_exit "\
 The number of grid cells in the x direction (nx_T7) is not evenly divisible
 by the number of MPI tasks in the x direction (layout_x):
   nx_T7 = $nx_T7
-  layout_x = $layout_x
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+  layout_x = $layout_x"
 fi
 
 rem=$(( $ny_T7%$layout_y ))
 if [ $rem -ne 0 ]; then
-  MSG=$(printf "\
+  print_err_msg_exit "\
 The number of grid cells in the y direction (ny_T7) is not evenly divisible
 by the number of MPI tasks in the y direction (layout_y):
   ny_T7 = $ny_T7
-  layout_y = $layout_y
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+  layout_y = $layout_y"
 fi
 
-if [ "$VERBOSE" = "true" ]; then
-  MSG=$(printf "\
-The MPI task layout is as follows:
+print_info_msg_verbose "\
+The MPI task layout is:
   layout_x = $layout_x
-  layout_y = $layout_y
-")
-  printf '%s\n' "$MSG"
-fi
+  layout_y = $layout_y"
 #
 #-----------------------------------------------------------------------
 #
@@ -1185,14 +1069,9 @@ fi
 WRTCMP_PARAMS_TEMPLATE_FP="$TEMPLATE_DIR/$WRTCMP_PARAMS_TEMPLATE_FN"
 if [ \( "$quilting" = ".true." \) -a \
      \( ! -f "$WRTCMP_PARAMS_TEMPLATE_FP" \) ]; then
-  MSG=$(printf "\
-Error:
+  print_err_msg_exit "\
 The write-component template file does not exist:
-  WRTCMP_PARAMS_TEMPLATE_FP = \"$WRTCMP_PARAMS_TEMPLATE_FP\"
-Exiting script.
-")
-  printf '%s\n' "$MSG"
-  exit 1
+  WRTCMP_PARAMS_TEMPLATE_FP = \"$WRTCMP_PARAMS_TEMPLATE_FP\""
 fi
 #
 #-----------------------------------------------------------------------
@@ -1213,16 +1092,12 @@ if [ "$quilting" = ".true." ]; then
   rem=$(( $ny_T7%$write_tasks_per_group ))
 
   if [ $rem -ne 0 ]; then
-    MSG=$(printf "\
+    print_err_msg_exit "\
 The number of grid points in the y direction on the regional grid (ny_T7) must
 be evenly divisible by the number of tasks per write group (write_tasks_per_group):
   ny_T7 = $ny_T7
   write_tasks_per_group = $write_tasks_per_group
-  ny_T7 % write_tasks_per_group = $rem
-Exiting script.
-")
-    printf '%s\n' "$MSG"
-    exit 1
+  ny_T7 % write_tasks_per_group = $rem"
   fi
 
 fi
@@ -1361,7 +1236,7 @@ var_list=$( sed -r \
             ${SCRIPT_VAR_DEFNS_FP} )
 
 while read crnt_line; do
-  var_name=$(echo ${crnt_line} | sed -n -r -e "s/^([^ ]*)=.*/\1/p")
+  var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p" )
   var_value="${!var_name}"
   set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}" "$VERBOSE"
 done <<< "${var_list}"
@@ -1459,5 +1334,13 @@ BC_times_hrs=(${BC_times_hrs[@]})  # BC_times_hrs is an array, even if it has on
 ncores_per_node="$ncores_per_node"
 PE_MEMBER01="$PE_MEMBER01"
 EOM
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the start of this script/function.
+#
+#-----------------------------------------------------------------------
+#
+restore_shell_opts
 
 

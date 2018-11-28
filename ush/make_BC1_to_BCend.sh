@@ -62,40 +62,36 @@
 #
 #-----------------------------------------------------------------------
 #
-# Change shell behavior with "set" with these flags:
-#
-# -a
-# This will cause the script to automatically export all variables and
-# functions which are modified or created to the environments of subse-
-# quent commands.
-#
-# -e
-# This will cause the script to exit as soon as any line in the script
-# fails (with some exceptions; see manual).  Apparently, it is a bad
-# idea to use "set -e".  See here:
-#   http://mywiki.wooledge.org/BashFAQ/105
-#
-# -u
-# This will cause the script to exit if an undefined variable is encoun-
-# tered.
-#
-# -x
-# This will cause all executed commands in the script to be printed to
-# the terminal (used for debugging).
-#
-#-----------------------------------------------------------------------
-#
-set -eux
-#
-#-----------------------------------------------------------------------
-#
-# Source the script that defines the necessary shell environment varia-
-# bles.
+# Source the variable definitions script.                                                                                                         
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
-
+#
+#-----------------------------------------------------------------------
+#
+# Source utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/utility_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+save_shell_opts
+{ set -e -u -x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Export select variables.
+#
+#-----------------------------------------------------------------------
+#
 export BASEDIR
 export INIDIR  # This is the variable that determines the directory in
                # which chgres looks for the input nemsio files.
@@ -156,29 +152,41 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
-  export NODES=28
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . $MODULESHOME/init/sh 2>>/dev/null
   module load PrgEnv-intel prod_envir cfp-intel-sandybridge/1.1.0 2>>/dev/null
   module list
 
+  restore_shell_opts
+
+  export NODES=28
   export KMP_AFFINITY=disabled
-  export DATA=/gpfs/hps/ptmp/${LOGNAME}/wrk.chgres
+  export DATA="/gpfs/hps/ptmp/${LOGNAME}/wrk.chgres"
   export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
   ;;
 #
 "WCOSS")
 #
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . /usrx/local/Modules/default/init/sh 2>>/dev/null
   module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
   module list
 
-  export DATA=/ptmpp2/${LOGNAME}/wrk.chgres
+  restore_shell_opts
+
+  export DATA="/ptmpp2/${LOGNAME}/wrk.chgres"
   export APRUNC="time"
   ;;
 #
 "DELL")
 #
-  set +x
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . /usrx/local/prod/lmod/lmod/init/sh
   module load EnvVars/1.0.2 lmod/7.7 settarg/7.7 lsf/10.1 prod_envir/1.0.2
   module load ips/18.0.1.163 
@@ -187,23 +195,28 @@ case $MACHINE in
   module load HDF5-serial/1.10.1
   module load CFP/2.0.1
   module list
-  set -x
+
+  restore_shell_opts
 
   export KMP_AFFINITY=disabled
-  export DATA=/gpfs/dell3/ptmp/${LOGNAME}/wrk.chgres
+  export DATA="/gpfs/dell3/ptmp/${LOGNAME}/wrk.chgres"
   export APRUNC="time"
 #  export BASE_GSM=/gpfs/dell2/emc/modeling/noscrub/${LOGNAME}/fv3gfs
 #  export FIXgsm=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am
-#  export ymd=`echo $CDATE | cut -c 1-8`
 #  export HOMEgfs=$LS_SUBCWD/..
   ;;
 #
 "THEIA")
 #
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . /apps/lmod/lmod/init/sh
   module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
   module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
   module list
+
+  restore_shell_opts
 
   export DATA="$WORKDIR_ICBC/BCs_work"
   export APRUNC="time"
@@ -213,6 +226,9 @@ case $MACHINE in
 #
 "JET")
 #
+  save_shell_opts
+  { set +x; } > /dev/null 2>&1
+
   . /apps/lmod/lmod/init/sh
   module purge
   module load newdefaults
@@ -222,6 +238,8 @@ case $MACHINE in
   module load hdf5
   module load netcdf4/4.2.1.1
   module list
+
+  restore_shell_opts
 
   export DATA="$WORKDIR_ICBC/BCs_work"
   export APRUNC="time"
@@ -282,6 +300,7 @@ curnt_hr=$BC_update_intvl_hrs
 while (test "$curnt_hr" -le "$fcst_len_hrs"); do
 
   HHH=$( printf "%03d" "$curnt_hr" )
+  export bchour=$HHH
 
   case $MACHINE in
 #
@@ -294,25 +313,41 @@ while (test "$curnt_hr" -le "$fcst_len_hrs"); do
 # we only create the cfp input file; we do not call chgres_driver_scr.
 # That is done later below after exiting the while loop.
 #
-    BC_DATA=/gpfs/hps3/ptmp/${LOGNAME}/wrk.chgres.$HHH
-    echo "env REGIONAL=2 bchour=$HHH DATA=$BC_DATA $USHDIR/$chgres_driver_scr >&out.chgres.$HHH" >>bcfile.input
+    BC_DATA="/gpfs/hps3/ptmp/${LOGNAME}/wrk.chgres.$HHH"
+    printf "%s\n" \
+      "env DATA=$BC_DATA $USHDIR/$chgres_driver_scr >& out.chgres.$HHH" \
+      >> bcfile.input
     ;;
 #
   "WCOSS")
 #
-    echo
-    echo "Not sure what to do for WCOSS."
-    echo "Exiting script."
-    exit 1
+    BC_DATA="/ptmpp2/${LOGNAME}/wrk.chgres.$HHH"
+    printf "%s\n" \
+      "env DATA=$BC_DATA $USHDIR/$chgres_driver_scr >& out.chgres.$HHH" \
+      >> bcfile.input
+    ;;
+#
+  "DELL")
+#
+    BC_DATA="/gpfs/dell3/ptmp/${LOGNAME}/wrk.chgres.$HHH"
+    printf "%s\n" \
+      "env DATA=$BC_DATA $USHDIR/$chgres_driver_scr >& out.chgres.$HHH" \
+      >> bcfile.input
     ;;
 #
   "THEIA" | "JET" | "ODIN")
 #
-# On theia and odin, run the BC generation sequentially for now.
+# On theia, jet, and odin, run the BC generation sequentially for now.
 #
-    export bchour=$HHH
     $USHDIR/$chgres_driver_scr
     ;;
+#
+  "CHEYENNE")
+#
+    print_err_msg_exit "\
+Don't know how to set several parameters on MACHINE=\"$MACHINE\".
+Please specify the correct parameters for this machine.  Then remove this
+message and rerun."
 #
   esac
 #
@@ -324,16 +359,40 @@ done
 #
 #-----------------------------------------------------------------------
 #
-# On WCOSS_C, now run the BC generation for all BC update times simul-
-# taneously.
+# On WCOSS_C, WCOSS, and DELL, now run the BC generation for all BC up-
+# date times simultaneously.
 #
 #-----------------------------------------------------------------------
 #
-if [ "$MACHINE" = "WCOSS_C" ]; then
-  export APRUNC=time
-  export OMP_NUM_THREADS_CH=24      # Default for openMP threads.
-  aprun -j 1 -n 28 -N 1 -d 24 -cc depth cfp bcfile.input
-  rm bcfile.input
-fi
-
+case $MACHINE in
+#
+  "WCOSS_C")
+#
+    aprun -j 1 -n 28 -N 1 -d 24 -cc depth cfp bcfile.input
+    rm bcfile.input
+    ;;
+#
+  "WCOSS")
+#
+    export MP_CSS_INTERRUPT=yes
+    mpirun.lsf cfp bcfile.input
+    rm bcfile.input
+    ;;
+#
+  "DELL")
+#
+    mpirun cfp bcfile.input
+    rm bcfile.input
+    ;;
+#
+esac
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+restore_shell_opts
 

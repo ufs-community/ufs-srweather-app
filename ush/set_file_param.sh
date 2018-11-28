@@ -1,26 +1,61 @@
+#
+#-----------------------------------------------------------------------
+#
+# This file defines a function that replaces placeholder values of vari-
+# ables in several different types of files with actual values.
+#
+#-----------------------------------------------------------------------
+#
 function set_file_param() {
-
-  file_full_path="$1"
-  param="$2"
-  value="$3"
-  verbose="$4"
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+  save_shell_opts
+  { set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Set local variables to appropriate input arguments.
+#
+#-----------------------------------------------------------------------
+#
+  local file_full_path="$1"
+  local param="$2"
+  local value="$3"
+  local verbose="$4"
+#
+#-----------------------------------------------------------------------
 #
 # Extract just the file name from the full path.
 #
-  file="${file_full_path##*/}"
+#-----------------------------------------------------------------------
+#
+  local file="${file_full_path##*/}"
+#
+#-----------------------------------------------------------------------
 #
 # If verbose is set to "true", print out an informational message.
 #
-  if [ "$verbose" = "true" ]; then
-    echo
-    echo "Setting parameter \"$param\" in file \"$file\"..."
-  fi
+#-----------------------------------------------------------------------
+#
+  print_info_msg_verbose "\
+Setting parameter \"$param\" in file \"$file\"..."
+#
+#-----------------------------------------------------------------------
 #
 # The procedure we use to set the value of the specified parameter de-
 # pends on the file the parameter is in.  Compare the file name to seve-
 # ral known file names and issue the appropriate sed command.  See the
 # configuration file for definitions of the known file names.
 #
+#-----------------------------------------------------------------------
+#
+  local regex_orig=""
   case $file in
 #
   "$WFLOW_XML_FN")
@@ -45,29 +80,43 @@ function set_file_param() {
 #
   "$SCRIPT_VAR_DEFNS_FN")
 #
-# Note that we have to escape the pipe (|) in regex_orig (the pipe acts
-# as "OR") because that's also the character we use as the delimiter in
-# the sed command.
+#-----------------------------------------------------------------------
+#
+# In the following regex (regex_orig), we have to escape the pipe (|) 
+# (which acts as an "OR") because that's also the character we use as 
+# the delimiter in the following sed command.
+#
+#-----------------------------------------------------------------------
 #
     regex_orig="(^\s*$param=)(\".*\"\|[^ \"]*)(\s*[#].*)?"
     sed -i -r -e "s|$regex_orig|\1\"$value\"\3|g" $file_full_path
     ;;
+#
+#-----------------------------------------------------------------------
 #
 # If "file" is set to a disallowed value, we simply exit with a nonzero
 # status.  Note that "exit" is different than "return" because it will
 # cause the calling script (in which this file/function is sourced) to
 # stop execution.
 #
+#-----------------------------------------------------------------------
+#
   *)
-    echo
-    echo "Error from function $0:  Unkown file:"
-    echo "  file = $file"
-    echo "Exiting with nonzero status."
-    exit 1
+    print_err_msg_exit "\
+Function \"${FUNCNAME[0]}\":  Unkown file:
+  file = $file"
     ;;
 #
   esac
-  
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+  restore_shell_opts
 }
 
 
