@@ -15,8 +15,7 @@ function set_file_param() {
 #
 #-----------------------------------------------------------------------
 #
-  save_shell_opts
-  { set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -80,13 +79,9 @@ Setting parameter \"$param\" in file \"$file\"..."
 #
   "$SCRIPT_VAR_DEFNS_FN")
 #
-#-----------------------------------------------------------------------
-#
 # In the following regex (regex_orig), we have to escape the pipe (|) 
 # (which acts as an "OR") because that's also the character we use as 
 # the delimiter in the following sed command.
-#
-#-----------------------------------------------------------------------
 #
     regex_orig="(^\s*$param=)(\".*\"\|[^ \"]*)(\s*[#].*)?"
     sed -i -r -e "s|$regex_orig|\1\"$value\"\3|g" $file_full_path
@@ -104,7 +99,7 @@ Setting parameter \"$param\" in file \"$file\"..."
   *)
     print_err_msg_exit "\
 Function \"${FUNCNAME[0]}\":  Unkown file:
-  file = $file"
+  file = \"$file\""
     ;;
 #
   esac
@@ -116,7 +111,7 @@ Function \"${FUNCNAME[0]}\":  Unkown file:
 #
 #-----------------------------------------------------------------------
 #
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 }
 
 

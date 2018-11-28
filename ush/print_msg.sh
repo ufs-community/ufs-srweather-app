@@ -23,8 +23,7 @@ function print_info_msg() {
 #
 #-----------------------------------------------------------------------
 #
-  save_shell_opts
-  { set +x; } > /dev/null 2>&1
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -68,7 +67,7 @@ $info_msg
 #
 #-----------------------------------------------------------------------
 #
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 }
 
 
@@ -83,9 +82,33 @@ $info_msg
 #
 function print_info_msg_verbose() {
 #
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Print the message only if VERBOSE is set to "true".
+#
+#-----------------------------------------------------------------------
+#
   if [ "$VERBOSE" = "true" ]; then
     print_info_msg "$1"
   fi
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+  { restore_shell_opts; } > /dev/null 2>&1
 }
 
 
@@ -106,8 +129,7 @@ function print_err_msg_exit() {
 #
 #-----------------------------------------------------------------------
 #
-  save_shell_opts
-  { set +x; } > /dev/null 2>&1
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -157,5 +179,5 @@ Exiting script or function with nonzero status.
 #
 #-----------------------------------------------------------------------
 #
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 }

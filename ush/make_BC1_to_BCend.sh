@@ -83,8 +83,7 @@
 #
 #-----------------------------------------------------------------------
 #
-save_shell_opts
-{ set -e -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -152,14 +151,13 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
-  save_shell_opts
-  { set +x; } > /dev/null 2>&1
+  { save_shell_opts; set +x; } > /dev/null 2>&1
 
   . $MODULESHOME/init/sh 2>>/dev/null
   module load PrgEnv-intel prod_envir cfp-intel-sandybridge/1.1.0 2>>/dev/null
   module list
 
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 
   export NODES=28
   export KMP_AFFINITY=disabled
@@ -169,14 +167,13 @@ case $MACHINE in
 #
 "WCOSS")
 #
-  save_shell_opts
-  { set +x; } > /dev/null 2>&1
+  { save_shell_opts; set +x; } > /dev/null 2>&1
 
   . /usrx/local/Modules/default/init/sh 2>>/dev/null
   module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
   module list
 
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 
   export DATA="/ptmpp2/${LOGNAME}/wrk.chgres"
   export APRUNC="time"
@@ -184,8 +181,7 @@ case $MACHINE in
 #
 "DELL")
 #
-  save_shell_opts
-  { set +x; } > /dev/null 2>&1
+  { save_shell_opts; set +x; } > /dev/null 2>&1
 
   . /usrx/local/prod/lmod/lmod/init/sh
   module load EnvVars/1.0.2 lmod/7.7 settarg/7.7 lsf/10.1 prod_envir/1.0.2
@@ -196,7 +192,7 @@ case $MACHINE in
   module load CFP/2.0.1
   module list
 
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 
   export KMP_AFFINITY=disabled
   export DATA="/gpfs/dell3/ptmp/${LOGNAME}/wrk.chgres"
@@ -208,15 +204,14 @@ case $MACHINE in
 #
 "THEIA")
 #
-  save_shell_opts
-  { set +x; } > /dev/null 2>&1
+  { save_shell_opts; set +x; } > /dev/null 2>&1
 
   . /apps/lmod/lmod/init/sh
   module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
   module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
   module list
 
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 
   export DATA="$WORKDIR_ICBC/BCs_work"
   export APRUNC="time"
@@ -226,8 +221,7 @@ case $MACHINE in
 #
 "JET")
 #
-  save_shell_opts
-  { set +x; } > /dev/null 2>&1
+  { save_shell_opts; set +x; } > /dev/null 2>&1
 
   . /apps/lmod/lmod/init/sh
   module purge
@@ -239,7 +233,7 @@ case $MACHINE in
   module load netcdf4/4.2.1.1
   module list
 
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 
   export DATA="$WORKDIR_ICBC/BCs_work"
   export APRUNC="time"
@@ -394,5 +388,5 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-restore_shell_opts
+{ restore_shell_opts; } > /dev/null 2>&1
 

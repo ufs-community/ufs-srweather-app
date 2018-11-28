@@ -153,8 +153,7 @@
 #
 #-----------------------------------------------------------------------
 #
-save_shell_opts
-{ set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -205,14 +204,13 @@ case $MACHINE in
 #
 "WCOSS_C" | "WCOSS")
 #
-  save_shell_opts
-  { set +x; } > /dev/null 2>&1
+  { save_shell_opts; set +x; } > /dev/null 2>&1
 
   . $MODULESHOME/init/sh
   module load PrgEnv-intel cfp-intel-sandybridge/1.1.0
   module list
 
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 
   export NODES=1
   export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
@@ -225,8 +223,7 @@ case $MACHINE in
 #
 "THEIA")
 #
-  save_shell_opts
-  { set +x; } > /dev/null 2>&1
+  { save_shell_opts; set +x; } > /dev/null 2>&1
 
   . /apps/lmod/lmod/init/sh
   module purge
@@ -236,7 +233,7 @@ case $MACHINE in
   module load netcdf/4.3.0
   module list
 
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 
   export APRUN="time"
   export topo_dir="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog"
@@ -247,8 +244,7 @@ case $MACHINE in
 #
 "JET")
 #
-  save_shell_opts
-  { set +x; } > /dev/null 2>&1
+  { save_shell_opts; set +x; } > /dev/null 2>&1
 
   . /apps/lmod/lmod/init/sh
   module purge
@@ -260,7 +256,7 @@ case $MACHINE in
   module load netcdf4/4.2.1.1
   module list
 
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 
   export APRUN="time"
   export topo_dir="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_orog"
@@ -694,6 +690,6 @@ print_info_msg_verbose "\
 #
 #-----------------------------------------------------------------------
 #
-restore_shell_opts
+{ restore_shell_opts; } > /dev/null 2>&1
 
 

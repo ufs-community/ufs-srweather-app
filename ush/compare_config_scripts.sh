@@ -27,8 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-save_shell_opts
-{ set -u; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -80,26 +79,32 @@ while read crnt_line; do
   var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p")
 
   if [ -z "${var_name}" ]; then
-    print_err_msg_exit "\
-No variable name found in local configuration script \"${LOCAL_CONFIG_FN}\":
+
+    print_info_msg "\
+Current line of onfiguration script \"${LOCAL_CONFIG_FN}\" does not contain
+a variable name:
   crnt_line = \"${crnt_line}\"
-  var_name = \"${var_name}\""
-  fi
+  var_name = \"${var_name}\"
+Skipping to next line."
+
+  else
 #
 # Use a herestring to input list of variables in the default configura-
 # tion file to grep.  Also, redirect the output to null because we are
 # only interested in the exit status of grep (which will be nonzero if 
 # the specified regex was not found in the list)..
 #
-  grep "^${var_name}=" <<< "${var_list_default}" > /dev/null 2>&1
+    grep "^${var_name}=" <<< "${var_list_default}" > /dev/null 2>&1
 
-  if [ $? -ne 0 ]; then
-    print_err_msg_exit "\
+    if [ $? -ne 0 ]; then
+      print_err_msg_exit "\
 Variable in local configuration script \"${LOCAL_CONFIG_FN}\" not set in default
 configuration script \"${DEFAULT_CONFIG_FN}\":
   var_name = \"${var_name}\"
 Please assign a default value to this variable in \"${DEFAULT_CONFIG_FN}\" 
 and rerun."
+    fi
+
   fi
 
 done <<< "${var_list_local}"
@@ -111,6 +116,6 @@ done <<< "${var_list_local}"
 #
 #-----------------------------------------------------------------------
 #
-restore_shell_opts
+{ restore_shell_opts; } > /dev/null 2>&1
 
 

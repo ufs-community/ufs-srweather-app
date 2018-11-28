@@ -15,8 +15,7 @@
 #
 #-----------------------------------------------------------------------
 #
-save_shell_opts
-{ set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -114,10 +113,9 @@ set_file_param $WFLOW_XML_FP "FHR" \
 #
 #-----------------------------------------------------------------------
 #
-save_shell_opts
-{ set +x; } > /dev/null 2>&1
+{ save_shell_opts; set +x; } > /dev/null 2>&1
 module load rocoto
-restore_shell_opts
+{ restore_shell_opts; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -157,7 +155,7 @@ To check on the status of the workflow, use the following command:
 #
 #-----------------------------------------------------------------------
 #
-restore_shell_opts
+{ restore_shell_opts; } > /dev/null 2>&1
 
 
 

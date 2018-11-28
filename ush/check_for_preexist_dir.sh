@@ -16,8 +16,7 @@ function check_for_preexist_dir() {
 #
 #-----------------------------------------------------------------------
 #
-  save_shell_opts
-  { set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -141,7 +140,7 @@ Allowed values are:  \"delete\"  \"rename\"  \"quit\""
 #
 #-----------------------------------------------------------------------
 #
-  restore_shell_opts
+  { restore_shell_opts; } > /dev/null 2>&1
 }
 
 

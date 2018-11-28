@@ -1,38 +1,17 @@
 #!/bin/sh -l
+#
+#-----------------------------------------------------------------------
+#
+# This script runs the post-processor (UPP) on the NetCDF output files
+# of the write component of the FV3SAR model.
+#
+#-----------------------------------------------------------------------
+#
 
 #
 #-----------------------------------------------------------------------
 #
-# Change shell behavior with "set" with these flags:
-#
-# -a
-# This will cause the script to automatically export all variables and
-# functions which are modified or created to the environments of subse-
-# quent commands.
-#
-# -e
-# This will cause the script to exit as soon as any line in the script
-# fails (with some exceptions; see manual).  Apparently, it is a bad
-# idea to use "set -e".  See here:
-#   http://mywiki.wooledge.org/BashFAQ/105
-#
-# -u
-# This will cause the script to exit if an undefined variable is encoun-
-# tered.
-#
-# -x
-# This will cause all executed commands in the script to be printed to
-# the terminal (used for debugging).
-#
-#-----------------------------------------------------------------------
-#
-#set -eux
-set -ux
-
-#
-#-----------------------------------------------------------------------
-#
-# Source the variable definitions script.                                                                                                         
+# Source the variable definitions script.
 #
 #-----------------------------------------------------------------------
 #
@@ -45,6 +24,15 @@ set -ux
 #-----------------------------------------------------------------------
 #
 . $USHDIR/utility_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -83,13 +71,10 @@ case $MACHINE in
 #
 "THEIA")
 #
-  np=`cat $PBS_NODEFILE | wc -l`
+  np=$( cat $PBS_NODEFILE | wc -l )
 
   module purge
   module load intel impi netcdf #mvapich2 netcdf
-  ulimit -a
-  ulimit -s unlimited
-  ulimit -a
 
   export APRUN="mpirun -l -np $np"
   ;;
@@ -151,15 +136,14 @@ cd ${FHR_DIR}
 #
 #-----------------------------------------------------------------------
 #
-# Get the cycle hour from the environment before $HH is reset by 
-# ndate.exe for the forecast hour.
+# Get the cycle hour.  This is just the variable HH set in the setup.sh
+# script.
 #
 #-----------------------------------------------------------------------
 #
-export cyc=${HH}   # Does this need to be exported?
-
-export tmmark=tm${HH} # Does this need to be exported?
-
+cyc=${HH}
+tmmark="tm${HH}"
+#
 #-----------------------------------------------------------------------
 #
 # Create text file containing arguments to the post-processing executa-
@@ -169,13 +153,6 @@ export tmmark=tm${HH} # Does this need to be exported?
 #
 dyn_file=${RUNDIR}/dynf0${fhr}.nc
 phy_file=${RUNDIR}/phyf0${fhr}.nc
-
-# Do these need to be exported??  Probably not since only an executable is called below, not a script.
-#export POST_TIME=`${UPPDIR}/ndate.exe +${fhr} ${CDATE}`
-#export YYYY=`echo $POST_TIME | cut -c1-4`
-#export MM=`echo $POST_TIME | cut -c5-6`
-#export DD=`echo $POST_TIME | cut -c7-8`
-#export HH=`echo $POST_TIME | cut -c9-10`
 
 POST_TIME=$( ${UPPDIR}/ndate.exe +${fhr} ${CDATE} )
 POST_YYYY=${POST_TIME:0:4}
@@ -264,7 +241,17 @@ WGRIB2="wgrib2"
 #
 #-----------------------------------------------------------------------
 #
-#rm -rf ${FHR_DIR}
+rm -rf ${FHR_DIR}
+
 
 print_info_msg_verbose "Post-processing completed for fhr = $fhr hr."
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
 
