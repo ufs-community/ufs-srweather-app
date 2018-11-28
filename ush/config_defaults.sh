@@ -33,11 +33,11 @@
 #
 #-----------------------------------------------------------------------
 #
-MACHINE="THEIA"
-ACCOUNT="gsd-fv3"
-QUEUE_DEFAULT="batch"
-QUEUE_HPSS="service"
-QUEUE_RUN_FV3SAR="batch"
+MACHINE="BIG_COMPUTER"
+ACCOUNT="project_name"
+QUEUE_DEFAULT="debug_queue"
+QUEUE_HPSS="hpss_queue"
+QUEUE_RUN_FV3SAR="production_queue"
 #
 #-----------------------------------------------------------------------
 #
@@ -139,9 +139,8 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 #
 #-----------------------------------------------------------------------
 #
-#
 CDATE="YYYYMMDDHH"
-fcst_len_hrs="6"
+fcst_len_hrs="24"
 BC_update_intvl_hrs="6"
 #
 #-----------------------------------------------------------------------
