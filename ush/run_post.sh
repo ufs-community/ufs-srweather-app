@@ -119,7 +119,7 @@ case $MACHINE in
   ;;
 #
 esac
-#
+
 #-----------------------------------------------------------------------
 #
 # Create directory (POSTPRD_DIR) in which to store post-processing out-
@@ -128,29 +128,29 @@ esac
 # low after the processing for the current hour is complete.
 #
 #-----------------------------------------------------------------------
-#
+
 POSTPRD_DIR="$RUNDIR/postprd"
 FHR_DIR="${POSTPRD_DIR}/$fhr"
 mkdir -p ${FHR_DIR}
 cd ${FHR_DIR}
-#
+
 #-----------------------------------------------------------------------
 #
 # Get the cycle hour.  This is just the variable HH set in the setup.sh
 # script.
 #
 #-----------------------------------------------------------------------
-#
+
 cyc=${HH}
 tmmark="tm${HH}"
-#
+
 #-----------------------------------------------------------------------
 #
 # Create text file containing arguments to the post-processing executa-
 # ble.
 #
 #-----------------------------------------------------------------------
-#
+
 dyn_file=${RUNDIR}/dynf0${fhr}.nc
 phy_file=${RUNDIR}/phyf0${fhr}.nc
 
@@ -174,24 +174,24 @@ ${phy_file}
 EOF
 
 rm -f fort.*
-#
+
 #-----------------------------------------------------------------------
 #
 # Stage files.
 #
 #-----------------------------------------------------------------------
-#
+
 cp $UPPFIX/nam_micro_lookup.dat ./eta_micro_lookup.dat
 cp $UPPFIX/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
 cp $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
-#
+
 #-----------------------------------------------------------------------
 #
 # Run the post-processor and move output files from FHR_DIR to POSTPRD_-
 # DIR.
 #
 #-----------------------------------------------------------------------
-#
+
 cp ${UPPDIR}/ncep_post .
 ${APRUN} ./ncep_post < itag
 
@@ -203,55 +203,26 @@ else
  TITLE=${run_title:1}
 fi
 
-mv BGDAWP${fhr}.${tmmark} ../${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
-mv BGRD3D${fhr}.${tmmark} ../${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
-#mv BGRDSF.GrbF${fhr} ${TITLE}.t${cyc}z.bgrdsf${fhr}.${tmmark}
+mv BGDAWP.GrbF${fhr} ../${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
+mv BGRD3D.GrbF${fhr} ../${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
 
-#
-#-----------------------------------------------------------------------
-#
-# Convert native grid files to grid ??? using wgrib2.
-#
-#-----------------------------------------------------------------------
-#
-WGRIB2="wgrib2"
-
-# CONUS domain
-#gridspecs="lambert:262.5:38.5:38.5 237.280:1799:3000 21.138:1059:3000"
-# Grid for nested model output
-#gridspecs="lambert:262.5:34.0:34.0 240.16287231:1728:2888.8889 13.73298645:1440:2888.8889"
-
-#${WGRIB2} ${RUN}.t${cyc}z.bgdawp${fhr}.${tmmark} | grep -F -f ${FIX}/wgrib2.txtlists/nam_nests.hiresf_nn.txt | ${WGRIB2} -i -grib inputs.grib ${RUN}.t${cyc}z.bgdawp${fhr}.${tmmark}
-#${WGRIB2} inputs.grib -new_grid_vectors "UGRD:VGRD:USTM:VSTM" -submsg_uv inputs.grib.uv
-#${WGRIB2} ${RUN}.t${cyc}z.bgdawp${fhr}.${tmmark} -match ":(APCP|WEASD|SNOD):" -grib inputs.grib.uv_budget
-
-#${WGRIB2} inputs.grib.uv -set_bitmap 1 -set_grib_type c3 -new_grid_winds grid -new_grid_interpolation neighbor -new_grid_vectors "UGRD:VGRD:USTM:VSTM" -new_grid ${gridspecs} conusf${fhr}.${tmmark}.uv
-#${WGRIB2} conusf${fhr}.${tmmark}.uv -new_grid_vectors "UGRD:VGRD:USTM:VSTM" -submsg_uv conusf${fhr}.${tmmark}.nn
-
-#${WGRIB2} inputs.grib.uv_budget -set_bitmap 1 -set_grib_type c3 -new_grid_winds grid -new_grid_interpolation budget -new_grid ${gridspecs} conusf${fhr}.${tmmark}.budget
-#cat conusf${fhr}.${tmmark}.nn conusf${fhr}.${tmmark}.budget > conusf${fhr}.${tmmark}
-
-#${WGRIB2} conusf${fhr}.${tmmark} -s > conusf${fhr}.${tmmark}.idx
-
-
-#
 #-----------------------------------------------------------------------
 #
 # Remove work directory.
 #
 #-----------------------------------------------------------------------
-#
+
 rm -rf ${FHR_DIR}
 
 
 print_info_msg_verbose "Post-processing completed for fhr = $fhr hr."
-#
+
 #-----------------------------------------------------------------------
 #
 # Restore the shell options saved at the beginning of this script/func-
 # tion.
 #
 #-----------------------------------------------------------------------
-#
+
 { restore_shell_opts; } > /dev/null 2>&1
 
