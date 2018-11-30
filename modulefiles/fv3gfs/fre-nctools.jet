@@ -1,0 +1,18 @@
+#%Module######################################################################
+   #module load intel
+   #module load mvapich2
+   #module load netcdf
+   #module load szip
+   #module load hdf5
+  
+   module load newdefaults
+   module load intel/15.0.3.187
+   module load impi/5.1.1.109
+   module load szip
+   module load hdf5
+   module load netcdf4/4.2.1.1
+
+   #export HDF5_DIR=$HDF5
+   #export NETCDF_DIR=$NETCDF4
+   #export HDF5_HOME=$HDF5
+   #export NETCDF_HOME=$NETCDF4

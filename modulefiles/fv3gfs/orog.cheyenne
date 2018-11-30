@@ -1,0 +1,9 @@
+#%Module#####################################################
+## Module file for orog
+#############################################################
+# Loading Intel Compiler Suite
+module load intel/18.0.1
+module load netcdf/4.6.1
+
+# NCEP libraries are pre-built for now
+

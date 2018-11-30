@@ -8,12 +8,12 @@ fi
 
 SITE=${1}
 
-FV3GFS_DIR=$( pwd )/..
+FV3SAR_DIR=$( pwd )/..
 if [ ${SITE} == "cheyenne" ]; then
   export NCEPLIB_DIR=/glade/p/ral/jntp/GMTB/tools/NCEPlibs/20180717/intel-18.0.1/
 fi
 
-cd ${FV3GFS_DIR}/sorc
+cd ${FV3SAR_DIR}/sorc
 ./build_fre-nctools.sh ${SITE} >& out.build_fre-nctools
 ./build_orog.sh ${SITE}        >& out.build_orog
 ./build_chgres.sh ${SITE}      >& out.build_chgres
@@ -21,7 +21,7 @@ cd ${FV3GFS_DIR}/sorc
 
 # prepare fixed data directories
 
-cd ${FV3GFS_DIR}
+cd ${FV3SAR_DIR}
 mkdir -p fix/fix_fv3
 cd fix
 
