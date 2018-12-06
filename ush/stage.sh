@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/sh -l
+
 #
 #----THEIA JOBCARD
 #
@@ -39,11 +40,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source utility functions.
+# Source function definition files.
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/utility_funcs.sh
+. $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -63,12 +64,12 @@
 print_info_msg_verbose "\
 Copying templates of various input files to the run directory..."
 
-cp $TEMPLATE_DIR/$FV3_NAMELIST_FN $RUNDIR
-cp $TEMPLATE_DIR/$MODEL_CONFIG_FN $RUNDIR
-cp $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
-cp $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
-cp $TEMPLATE_DIR/$DATA_TABLE_FN $RUNDIR
-cp $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
+cp_vrfy $TEMPLATE_DIR/$FV3_NAMELIST_FN $RUNDIR
+cp_vrfy $TEMPLATE_DIR/$MODEL_CONFIG_FN $RUNDIR
+cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
+cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
+cp_vrfy $TEMPLATE_DIR/$DATA_TABLE_FN $RUNDIR
+cp_vrfy $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
@@ -174,40 +175,40 @@ set_file_param $DIAG_TABLE_FP "YYYYMMDD" $YMD $VERBOSE
 print_info_msg_verbose "\
 Copying fixed files from system directory to run directory..."
 
-cp $FIXgsm/CFSR.SEAICE.1982.2012.monthly.clim.grb $RUNDIR
-cp $FIXgsm/RTGSST.1982.2012.monthly.clim.grb $RUNDIR
-cp $FIXgsm/seaice_newland.grb $RUNDIR
-cp $FIXgsm/global_climaeropac_global.txt $RUNDIR/aerosol.dat
-cp $FIXgsm/global_albedo4.1x1.grb $RUNDIR
-cp $FIXgsm/global_glacier.2x2.grb $RUNDIR
-cp $FIXgsm/global_h2o_pltc.f77 $RUNDIR/global_h2oprdlos.f77
-cp $FIXgsm/global_maxice.2x2.grb $RUNDIR
-cp $FIXgsm/global_mxsnoalb.uariz.t126.384.190.rg.grb $RUNDIR
-cp $FIXgsm/global_o3prdlos.f77 $RUNDIR
-cp $FIXgsm/global_shdmax.0.144x0.144.grb $RUNDIR
-cp $FIXgsm/global_shdmin.0.144x0.144.grb $RUNDIR
-cp $FIXgsm/global_slope.1x1.grb $RUNDIR
-cp $FIXgsm/global_snoclim.1.875.grb $RUNDIR
-cp $FIXgsm/global_snowfree_albedo.bosu.t126.384.190.rg.grb $RUNDIR
-cp $FIXgsm/global_soilmgldas.t126.384.190.grb $RUNDIR
-cp $FIXgsm/global_soiltype.statsgo.t126.384.190.rg.grb $RUNDIR
-cp $FIXgsm/global_tg3clim.2.6x1.5.grb $RUNDIR
-cp $FIXgsm/global_vegfrac.0.144.decpercent.grb $RUNDIR
-cp $FIXgsm/global_vegtype.igbp.t126.384.190.rg.grb $RUNDIR
-cp $FIXgsm/global_zorclim.1x1.grb $RUNDIR
-cp $FIXgsm/global_sfc_emissivity_idx.txt $RUNDIR/sfc_emissivity_idx.txt
-cp $FIXgsm/global_solarconstant_noaa_an.txt $RUNDIR/solarconstant_noaa_an.txt
-cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2010.txt $RUNDIR/co2historicaldata_2010.txt
-cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2011.txt $RUNDIR/co2historicaldata_2011.txt
-cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2012.txt $RUNDIR/co2historicaldata_2012.txt
-cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2013.txt $RUNDIR/co2historicaldata_2013.txt
-cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2014.txt $RUNDIR/co2historicaldata_2014.txt
-cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2015.txt $RUNDIR/co2historicaldata_2015.txt
-cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2016.txt $RUNDIR/co2historicaldata_2016.txt
-cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2017.txt $RUNDIR/co2historicaldata_2017.txt
-cp $FIXgsm/fix_co2_proj/global_co2historicaldata_2018.txt $RUNDIR/co2historicaldata_2018.txt
-cp $FIXgsm/global_co2historicaldata_glob.txt $RUNDIR/co2historicaldata_glob.txt
-cp $FIXgsm/co2monthlycyc.txt $RUNDIR
+cp_vrfy $FIXgsm/CFSR.SEAICE.1982.2012.monthly.clim.grb $RUNDIR
+cp_vrfy $FIXgsm/RTGSST.1982.2012.monthly.clim.grb $RUNDIR
+cp_vrfy $FIXgsm/seaice_newland.grb $RUNDIR
+cp_vrfy $FIXgsm/global_climaeropac_global.txt $RUNDIR/aerosol.dat
+cp_vrfy $FIXgsm/global_albedo4.1x1.grb $RUNDIR
+cp_vrfy $FIXgsm/global_glacier.2x2.grb $RUNDIR
+cp_vrfy $FIXgsm/global_h2o_pltc.f77 $RUNDIR/global_h2oprdlos.f77
+cp_vrfy $FIXgsm/global_maxice.2x2.grb $RUNDIR
+cp_vrfy $FIXgsm/global_mxsnoalb.uariz.t126.384.190.rg.grb $RUNDIR
+cp_vrfy $FIXgsm/global_o3prdlos.f77 $RUNDIR
+cp_vrfy $FIXgsm/global_shdmax.0.144x0.144.grb $RUNDIR
+cp_vrfy $FIXgsm/global_shdmin.0.144x0.144.grb $RUNDIR
+cp_vrfy $FIXgsm/global_slope.1x1.grb $RUNDIR
+cp_vrfy $FIXgsm/global_snoclim.1.875.grb $RUNDIR
+cp_vrfy $FIXgsm/global_snowfree_albedo.bosu.t126.384.190.rg.grb $RUNDIR
+cp_vrfy $FIXgsm/global_soilmgldas.t126.384.190.grb $RUNDIR
+cp_vrfy $FIXgsm/global_soiltype.statsgo.t126.384.190.rg.grb $RUNDIR
+cp_vrfy $FIXgsm/global_tg3clim.2.6x1.5.grb $RUNDIR
+cp_vrfy $FIXgsm/global_vegfrac.0.144.decpercent.grb $RUNDIR
+cp_vrfy $FIXgsm/global_vegtype.igbp.t126.384.190.rg.grb $RUNDIR
+cp_vrfy $FIXgsm/global_zorclim.1x1.grb $RUNDIR
+cp_vrfy $FIXgsm/global_sfc_emissivity_idx.txt $RUNDIR/sfc_emissivity_idx.txt
+cp_vrfy $FIXgsm/global_solarconstant_noaa_an.txt $RUNDIR/solarconstant_noaa_an.txt
+cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2010.txt $RUNDIR/co2historicaldata_2010.txt
+cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2011.txt $RUNDIR/co2historicaldata_2011.txt
+cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2012.txt $RUNDIR/co2historicaldata_2012.txt
+cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2013.txt $RUNDIR/co2historicaldata_2013.txt
+cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2014.txt $RUNDIR/co2historicaldata_2014.txt
+cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2015.txt $RUNDIR/co2historicaldata_2015.txt
+cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2016.txt $RUNDIR/co2historicaldata_2016.txt
+cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2017.txt $RUNDIR/co2historicaldata_2017.txt
+cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2018.txt $RUNDIR/co2historicaldata_2018.txt
+cp_vrfy $FIXgsm/global_co2historicaldata_glob.txt $RUNDIR/co2historicaldata_glob.txt
+cp_vrfy $FIXgsm/co2monthlycyc.txt $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
@@ -221,7 +222,7 @@ if [ -f $FV3SAR_EXEC ]; then
 
   print_info_msg_verbose "\
 Copying FV3SAR executable to the run directory..."
-  cp $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
+  cp_vrfy $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
 
 else
 
@@ -269,7 +270,7 @@ cd $RUNDIR/INPUT
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_GRID/${CRES}_mosaic.nc .
+cp_vrfy $WORKDIR_GRID/${CRES}_mosaic.nc .
 ln -sf ${CRES}_mosaic.nc grid_spec.nc
 #
 #-----------------------------------------------------------------------
@@ -284,7 +285,7 @@ ln -sf ${CRES}_mosaic.nc grid_spec.nc
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc .
+cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc .
 ln -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
 #
 #-----------------------------------------------------------------------
@@ -299,7 +300,7 @@ ln -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc .
+cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc .
 ln -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
@@ -314,7 +315,7 @@ ln -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc .
+cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc .
 ln -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
@@ -329,7 +330,7 @@ ln -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
+cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
 ln -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
 #
 #-----------------------------------------------------------------------
@@ -343,7 +344,7 @@ ln -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_ICBC/gfs_data.tile7.nc .
+cp_vrfy $WORKDIR_ICBC/gfs_data.tile7.nc .
 ln -sf gfs_data.tile7.nc gfs_data.nc
 #
 #-----------------------------------------------------------------------
@@ -357,7 +358,7 @@ ln -sf gfs_data.tile7.nc gfs_data.nc
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_ICBC/sfc_data.tile7.nc .
+cp_vrfy $WORKDIR_ICBC/sfc_data.tile7.nc .
 ln -sf sfc_data.tile7.nc sfc_data.nc
 #
 #-----------------------------------------------------------------------
@@ -367,7 +368,7 @@ ln -sf sfc_data.tile7.nc sfc_data.nc
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_ICBC/gfs_bndy*.nc .
+cp_vrfy $WORKDIR_ICBC/gfs_bndy*.nc .
 #
 #-----------------------------------------------------------------------
 #
@@ -377,7 +378,7 @@ cp $WORKDIR_ICBC/gfs_bndy*.nc .
 #
 #-----------------------------------------------------------------------
 #
-cp $WORKDIR_ICBC/gfs_ctrl.nc .
+cp_vrfy $WORKDIR_ICBC/gfs_ctrl.nc .
 #
 #-----------------------------------------------------------------------
 #

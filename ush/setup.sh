@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -l
 
 #
 #-----------------------------------------------------------------------
@@ -17,11 +17,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source utility functions.
+# Source function definition files.
 #
 #-----------------------------------------------------------------------
 #
-. ./utility_funcs.sh
+. ./source_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -30,7 +30,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -340,10 +340,10 @@ YMD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
-FV3SAR_DIR="$BASEDIR/fv3sar_workflow"
+FV3SAR_DIR="$BASEDIR/fv3gfs"
 USHDIR="$FV3SAR_DIR/ush"
 TEMPLATE_DIR="$USHDIR/templates"
-UPPFIX="$BASEDIR/fv3sar_workflow/fix/fix_upp"
+UPPFIX="$BASEDIR/fv3gfs/fix/fix_upp"
 
 case $MACHINE in
 #
@@ -600,9 +600,6 @@ RUN_SUBDIR=${CRES}${stretch_str}${refine_str}${run_title}
 #
 WORKDIR=$TMPDIR/$RUN_SUBDIR
 check_for_preexist_dir $WORKDIR $preexisting_dir_method
-if [ $? -ne 0 ]; then
-  exit 1
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -651,12 +648,10 @@ WORKDIR_ICBC=$WORKDIR/ICs_BCs
 #-----------------------------------------------------------------------
 #
 RUNDIR_BASE="${BASEDIR}/run_dirs"
-mkdir -p ${RUNDIR_BASE}
+mkdir_vrfy -p "${RUNDIR_BASE}"
+
 RUNDIR="${RUNDIR_BASE}/${RUN_SUBDIR}"
 check_for_preexist_dir $RUNDIR $preexisting_dir_method
-if [ $? -ne 0 ]; then
-  exit 1
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1130,10 +1125,10 @@ NUM_NODES=$(( ($PE_MEMBER01 + $ncores_per_node - 1)/$ncores_per_node ))
 #
 #-----------------------------------------------------------------------
 #
-mkdir $WORKDIR
-mkdir -p $RUNDIR
-mkdir $RUNDIR/INPUT
-mkdir $RUNDIR/RESTART
+mkdir_vrfy -p "$WORKDIR"
+mkdir_vrfy -p "$RUNDIR"
+mkdir_vrfy "$RUNDIR/INPUT"
+mkdir_vrfy "$RUNDIR/RESTART"
 #
 #-----------------------------------------------------------------------
 #
@@ -1164,7 +1159,7 @@ mkdir $RUNDIR/RESTART
 #-----------------------------------------------------------------------
 #
 SCRIPT_VAR_DEFNS_FP="$RUNDIR/$SCRIPT_VAR_DEFNS_FN"
-cp ./${DEFAULT_CONFIG_FN} ${SCRIPT_VAR_DEFNS_FP}
+cp_vrfy ./${DEFAULT_CONFIG_FN} ${SCRIPT_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -l
 
 #
 # Set the stack limit as high as possible.

@@ -18,7 +18,7 @@ FUNCS_DIR=${USHDIR:-"."}
 #
 #-----------------------------------------------------------------------
 #
-# Source ithe file containing the functions that print out messages.
+# Source the file containing the functions that print out messages.
 #
 #-----------------------------------------------------------------------
 #
@@ -44,4 +44,13 @@ FUNCS_DIR=${USHDIR:-"."}
 #-----------------------------------------------------------------------
 #
 . ${FUNCS_DIR}/check_for_preexist_dir.sh
-
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing functions that execute filesystem commands
+# (e.g. "cp", "mv") with verification (i.e. verifying that the commands
+# completed successfully).
+#
+#-----------------------------------------------------------------------
+#
+. ${FUNCS_DIR}/filesys_cmds_vrfy.sh

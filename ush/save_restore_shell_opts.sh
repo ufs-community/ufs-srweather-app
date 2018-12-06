@@ -1,3 +1,17 @@
+#
+#-----------------------------------------------------------------------
+#
+# This file defines functions used to save and restore the state of the
+# shell options.  The function save_shell_opts() appends the current set
+# of shell options to the end of a global array named shell_opts_array,
+# while the function restore_shell_opts() restores the shell options 
+# stored in the last element of shell_opts_array (and removes that ele-
+# ment from the array).
+# 
+#-----------------------------------------------------------------------
+#
+
+
 function save_shell_opts() {
 #
 # Get the current set of shell options and save them in the local varia-
@@ -12,10 +26,10 @@ function save_shell_opts() {
 #
   shell_opts_array+=("${shell_opts}")
 #
-} > /dev/null 2>&1  # This will redirect both stdout and stderr to null
+}
+#} > /dev/null 2>&1  # This will redirect both stdout and stderr to null
                     # even if xtrace is enabled when the function gets
                     # called.
-
 
 
 function restore_shell_opts() {
@@ -38,6 +52,7 @@ function restore_shell_opts() {
 #
   set $shell_opts  
 #
-} > /dev/null 2>&1  # This will redirect both stdout and stderr to null
+}
+#} > /dev/null 2>&1  # This will redirect both stdout and stderr to null
                     # even if xtrace is enabled when the function gets
                     # called.

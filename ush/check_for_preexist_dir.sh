@@ -2,8 +2,8 @@
 #-----------------------------------------------------------------------
 #
 # This file defines a function that checks for a preexisting version of
-# the specified directory and handles them according to the method spe-
-# cified in preexisting_dir_method.
+# the specified directory and, if present, deals with it according to 
+# the method specified in the variable preexisting_dir_method.
 #
 #-----------------------------------------------------------------------
 #
@@ -17,6 +17,29 @@ function check_for_preexist_dir() {
 #-----------------------------------------------------------------------
 #
   { save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Check arguments.
+#
+#-----------------------------------------------------------------------
+#
+  if [ "$#" -ne 2 ]; then
+    print_err_msg_exit "\
+Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
+Usage:
+
+  ${FUNCNAME[0]} dir preexisting_dir_method
+
+where the arguments are defined as follows:
+
+  dir:
+  Name of directory to check for a preexisting version.
+
+  preexisting_dir_method:
+  String specifying the action to take if a preexisting version of dir
+  is found.  Valid values are \"delete\", \"rename\", and \"quit\"."
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -48,15 +71,7 @@ function check_for_preexist_dir() {
 #
     "delete")
 
-      rm -rf "$dir"
-
-      if [ $? -ne 0 ]; then
-        print_info_msg "\
-Function \"${FUNCNAME[0]}\":  Cannot remove existing directory:
-  dir = \"$dir\"
-Returning with nonzero status."
-        return 1
-      fi
+      rm_vrfy -rf "$dir"
       ;;
 #
 #-----------------------------------------------------------------------
@@ -84,16 +99,7 @@ Function \"${FUNCNAME[0]}\":  Directory already exists:
 Moving (renaming) preexisting directory to:
   old_dir = \"$old_dir\""
 
-      mv "$dir" "$old_dir"
-
-      if [ $? -ne 0 ]; then
-        print_info_msg "\
-Function \"${FUNCNAME[0]}\":  Cannot move (rename) existing directory:
-  dir = \"$dir\"
-  old_dir = \"$old_dir\"
-Returning with nonzero status."
-        return 1
-      fi
+      mv_vrfy "$dir" "$old_dir"
       ;;
 #
 #-----------------------------------------------------------------------

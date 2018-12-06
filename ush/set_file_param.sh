@@ -19,6 +19,34 @@ function set_file_param() {
 #
 #-----------------------------------------------------------------------
 #
+# Check arguments.
+#
+#-----------------------------------------------------------------------
+#
+  if [ "$#" -ne 4 ]; then
+    print_err_msg_exit "\
+Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
+Usage:
+
+  ${FUNCNAME[0]} file_full_path param value verbose
+
+where the arguments are defined as follows:
+
+  file_full_path:
+  Full path to the file in which the specified parameter's value will be set.
+
+  param: 
+  Name of the parameter whose value will be set.
+
+  value:
+  Value to set the parameter to.
+
+  verbose:
+  Whether to be verbose (\"true\" or \"false\")."
+  fi
+#
+#-----------------------------------------------------------------------
+#
 # Set local variables to appropriate input arguments.
 #
 #-----------------------------------------------------------------------

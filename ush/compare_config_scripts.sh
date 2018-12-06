@@ -1,4 +1,6 @@
-#!/bin/sh
+# This file is always sourced by another script (i.e. it's never run in
+# its own shell), so there's no need to put the #!/bin/some_shell on the
+# first line.
 
 #
 #-----------------------------------------------------------------------
@@ -14,11 +16,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source utility functions.
+# Source function definition files.
 #
 #-----------------------------------------------------------------------
 #
-. ./utility_funcs.sh
+. ./source_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -81,7 +83,7 @@ while read crnt_line; do
   if [ -z "${var_name}" ]; then
 
     print_info_msg "\
-Current line of onfiguration script \"${LOCAL_CONFIG_FN}\" does not contain
+Current line of configuration script \"${LOCAL_CONFIG_FN}\" does not contain
 a variable name:
   crnt_line = \"${crnt_line}\"
   var_name = \"${var_name}\"
@@ -94,16 +96,13 @@ Skipping to next line."
 # only interested in the exit status of grep (which will be nonzero if 
 # the specified regex was not found in the list)..
 #
-    grep "^${var_name}=" <<< "${var_list_default}" > /dev/null 2>&1
-
-    if [ $? -ne 0 ]; then
-      print_err_msg_exit "\
+    grep "^${var_name}=" <<< "${var_list_default}" > /dev/null 2>&1 || \
+    print_err_msg_exit "\
 Variable in local configuration script \"${LOCAL_CONFIG_FN}\" not set in default
 configuration script \"${DEFAULT_CONFIG_FN}\":
   var_name = \"${var_name}\"
 Please assign a default value to this variable in \"${DEFAULT_CONFIG_FN}\" 
 and rerun."
-    fi
 
   fi
 

@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/sh -l
+
 #
 #----WCOSS_CRAY JOBCARD
 #
@@ -70,11 +71,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source utility functions.
+# Source function definition files.
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/utility_funcs.sh
+. $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -112,7 +113,7 @@ chgres_driver_scr="global_chgres_driver.sh"
 #
 #-----------------------------------------------------------------------
 #
-mkdir -p $WORKDIR_ICBC
+mkdir_vrfy -p "$WORKDIR_ICBC"
 #
 #-----------------------------------------------------------------------
 #
@@ -363,20 +364,20 @@ case $MACHINE in
   "WCOSS_C")
 #
     aprun -j 1 -n 28 -N 1 -d 24 -cc depth cfp bcfile.input
-    rm bcfile.input
+    rm_vrfy bcfile.input
     ;;
 #
   "WCOSS")
 #
     export MP_CSS_INTERRUPT=yes
     mpirun.lsf cfp bcfile.input
-    rm bcfile.input
+    rm_vrfy bcfile.input
     ;;
 #
   "DELL")
 #
     mpirun cfp bcfile.input
-    rm bcfile.input
+    rm_vrfy bcfile.input
     ;;
 #
 esac

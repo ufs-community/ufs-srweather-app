@@ -1,4 +1,5 @@
 #!/bin/sh -l
+
 #
 #-----------------------------------------------------------------------
 #
@@ -19,11 +20,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source utility functions.
+# Source function definition files.
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/utility_funcs.sh
+. $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -40,13 +41,13 @@
 #
 #-----------------------------------------------------------------------
 #
-
-#module load intel impi netcdf
+print_info_msg_verbose "Starting post-processing for fhr = $fhr hr..."
 
 case $MACHINE in
 #
 "WCOSS_C" | "WCOSS" )
 #
+  { save_shell_opts; set +x; } > /dev/null 2>&1
   . $MODULESHOME/init/ksh
   module load PrgEnv-intel ESMF-intel-haswell/3_1_0rp5 cfp-intel-sandybridge iobuf craype-hugepages2M craype-haswell
 #  module load cfp-intel-sandybridge/1.1.0
@@ -57,8 +58,9 @@ case $MACHINE in
   module load grib_util/1.0.3
   module load crtm-intel/2.2.5
   module list
+  { restore_shell_opts; } > /dev/null 2>&1
 
-# specify computation resource
+# Specify computational resources.
   export NODES=8
   export ntasks=96
   export ptile=12
@@ -66,21 +68,23 @@ case $MACHINE in
   export MP_LABELIO=yes
   export OMP_NUM_THREADS=$threads
 
-  export APRUN="aprun -j 1 -n${ntasks} -N${ptile} -d${threads} -cc depth"
+  APRUN="aprun -j 1 -n${ntasks} -N${ptile} -d${threads} -cc depth"
   ;;
 #
 "THEIA")
 #
-  np=$( cat $PBS_NODEFILE | wc -l )
-
+  { save_shell_opts; set +x; } > /dev/null 2>&1
   module purge
   module load intel impi netcdf #mvapich2 netcdf
+  { restore_shell_opts; } > /dev/null 2>&1
 
-  export APRUN="mpirun -l -np $np"
+  np=$( cat $PBS_NODEFILE | wc -l )
+  APRUN="mpirun -l -np $np"
   ;;
 #
 "JET")
 #
+  { save_shell_opts; set +x; } > /dev/null 2>&1
   . /apps/lmod/lmod/init/sh 
   module load newdefaults
   module load intel/15.0.3.187
@@ -88,12 +92,14 @@ case $MACHINE in
   module load szip
   module load hdf5
   module load netcdf4/4.2.1.1
+  { restore_shell_opts; } > /dev/null 2>&1
   
   set libdir /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
   
   export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+
+  { save_shell_opts; set +x; } > /dev/null 2>&1
   module use /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib/modulefiles
-  
   module load bacio-intel-sandybridge
   module load sp-intel-sandybridge
   module load ip-intel-sandybridge
@@ -109,30 +115,41 @@ case $MACHINE in
   
   module use /lfs3/projects/hfv3gfs/emc.nemspara/soft/modulefiles
   module load esmf/7.1.0r_impi_optim
+  { restore_shell_opts; } > /dev/null 2>&1
 
-  export APRUN="mpirun -l -np $PBS_NP"
+  APRUN="mpirun -l -np $PBS_NP"
   ;;
 #
 "ODIN")
 #
-  export APRUN="srun -n 1"
+  APRUN="srun -n 1"
   ;;
 #
 esac
 
 #-----------------------------------------------------------------------
 #
-# Create directory (POSTPRD_DIR) in which to store post-processing out-
-# put.  Also, create a temporary work directory (FHR_DIR) for the cur-
-# rent output hour being processed.  FHR_DIR will be deleted later be-
-# low after the processing for the current hour is complete.
+# If it doesn't already exist, create the directory (POSTPRD_DIR) in 
+# which to store post-processing output.  (Note that POSTPRD_DIR may al-
+# ready have been created by this post-processing script run for a dif-
+# ferent forecast hour.)  Also, create a temporary work directory (FHR_-
+# DIR) for the current forecast hour being processed.  FHR_DIR will be 
+# deleted later after the processing for the current forecast hour is 
+# complete.
+#
+# Note that there may be a preexisting version of FHR_DIR from previous 
+# runs of this script for the current forecast hour (e.g. from the work-
+# flow task that runs this script failing and then being called again).  
+# Thus, we first make sure preexisting versions are deleted.
 #
 #-----------------------------------------------------------------------
 
 POSTPRD_DIR="$RUNDIR/postprd"
+mkdir_vrfy -p "${POSTPRD_DIR}"
+
 FHR_DIR="${POSTPRD_DIR}/$fhr"
-mkdir -p ${FHR_DIR}
-cd ${FHR_DIR}
+check_for_preexist_dir $FHR_DIR "delete"
+mkdir_vrfy -p "${FHR_DIR}"
 
 #-----------------------------------------------------------------------
 #
@@ -146,8 +163,8 @@ tmmark="tm${HH}"
 
 #-----------------------------------------------------------------------
 #
-# Create text file containing arguments to the post-processing executa-
-# ble.
+# Create a text file (itag) containing arguments to pass to the post-
+# processing executable.
 #
 #-----------------------------------------------------------------------
 
@@ -173,17 +190,19 @@ ${phy_file}
  /
 EOF
 
-rm -f fort.*
 
 #-----------------------------------------------------------------------
 #
-# Stage files.
+# Change location to the work directory (FHR_DIR) Stage files.
 #
 #-----------------------------------------------------------------------
 
-cp $UPPFIX/nam_micro_lookup.dat ./eta_micro_lookup.dat
-cp $UPPFIX/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
-cp $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
+cd ${FHR_DIR}
+rm_vrfy -f fort.*
+
+cp_vrfy $UPPFIX/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp_vrfy $UPPFIX/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
+cp_vrfy $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
 
 #-----------------------------------------------------------------------
 #
@@ -192,28 +211,28 @@ cp $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
 #
 #-----------------------------------------------------------------------
 
-cp ${UPPDIR}/ncep_post .
+cp_vrfy ${UPPDIR}/ncep_post .
 ${APRUN} ./ncep_post < itag
+
+#-----------------------------------------------------------------------
+#
+# Move (and rename) the output files from the work directory to their
+# final location (POSTPRD_DIR).  Then delete the work directory. 
+#
+#-----------------------------------------------------------------------
 
 # If run_title is set to an empty string in config.sh, I think TITLE 
 # will also be empty.  Must try out that case...
 if [ -n ${predef_domain} ]; then 
- TITLE=${predef_domain}
+  TITLE=${predef_domain}
 else 
- TITLE=${run_title:1}
+  TITLE=${run_title:1}
 fi
 
-mv BGDAWP.GrbF${fhr} ../${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
-mv BGRD3D.GrbF${fhr} ../${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
+mv_vrfy BGDAWP.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
+mv_vrfy BGRD3D.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
 
-#-----------------------------------------------------------------------
-#
-# Remove work directory.
-#
-#-----------------------------------------------------------------------
-
-rm -rf ${FHR_DIR}
-
+rm_vrfy -rf ${FHR_DIR}
 
 print_info_msg_verbose "Post-processing completed for fhr = $fhr hr."
 

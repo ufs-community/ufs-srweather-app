@@ -27,6 +27,22 @@ function print_info_msg() {
 #
 #-----------------------------------------------------------------------
 #
+# Check arguments.
+#
+#-----------------------------------------------------------------------
+#
+  if [ "$#" -ne 1 ]; then
+    print_err_msg_exit "\
+Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
+Usage:
+
+  ${FUNCNAME[0]} msg
+
+where msg is the message to print."
+  fi
+#
+#-----------------------------------------------------------------------
+#
 # Set local variables.
 #
 #-----------------------------------------------------------------------
@@ -93,6 +109,22 @@ function print_info_msg_verbose() {
 #
 #-----------------------------------------------------------------------
 #
+# Check arguments.
+#
+#-----------------------------------------------------------------------
+#
+  if [ "$#" -ne 1 ]; then
+    print_err_msg_exit "\
+Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
+Usage:
+
+  ${FUNCNAME[0]} msg
+
+where msg is the message to print."
+  fi
+#
+#-----------------------------------------------------------------------
+#
 # Print the message only if VERBOSE is set to "true".
 #
 #-----------------------------------------------------------------------
@@ -133,11 +165,26 @@ function print_err_msg_exit() {
 #
 #-----------------------------------------------------------------------
 #
-# Set local variables.
+# If no arguments are supplied, use a standard error message. 
 #
 #-----------------------------------------------------------------------
 #
-  local err_msg="$1"
+  if [ "$#" -eq 0 ]; then
+
+    local MSG=$(printf "\
+ERROR.  Exiting script or function with nonzero status.
+")
+#
+#-----------------------------------------------------------------------
+#
+# If one argument is supplied, we assume it is the message to print out
+# between informational lines that are always printed.
+#
+#-----------------------------------------------------------------------
+#
+  elif [ "$#" -eq 1 ]; then
+
+    local err_msg="$1"
 #
 #-----------------------------------------------------------------------
 #
@@ -146,7 +193,7 @@ function print_err_msg_exit() {
 #
 #-----------------------------------------------------------------------
 #
-  err_msg=$( printf '%s' "${err_msg}" )
+    err_msg=$( printf '%s' "${err_msg}" )
 #
 #-----------------------------------------------------------------------
 #
@@ -154,7 +201,7 @@ function print_err_msg_exit() {
 #
 #-----------------------------------------------------------------------
 #
-  local MSG=$(printf "\
+    local MSG=$(printf "\
 ERROR:
 $err_msg
 Exiting script or function with nonzero status.
@@ -162,7 +209,31 @@ Exiting script or function with nonzero status.
 #
 #-----------------------------------------------------------------------
 #
-# Print out the message and exit.
+# If more than one argument is supplied, print out a usage error mes-
+# sage.
+#
+#-----------------------------------------------------------------------
+#
+  elif [ "$#" -gt 1 ]; then
+
+    local MSG=$(printf "\
+Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
+Usage:
+
+  ${FUNCNAME[0]}
+
+or
+
+  ${FUNCNAME[0]} msg
+
+where msg is an optional error message to print.  Exiting with nonzero status.
+")
+
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# Print out MSG and exit function/script with nonzero status.
 #
 #-----------------------------------------------------------------------
 #

@@ -1,4 +1,7 @@
-#!/bin/sh
+# This file is always sourced by another script (i.e. it's never run in
+# its own shell), so there's no need to put the #!/bin/some_shell on the
+# first line.
+
 #
 #-----------------------------------------------------------------------
 #

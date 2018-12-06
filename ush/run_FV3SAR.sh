@@ -1,4 +1,5 @@
 #!/bin/sh -l
+
 #PBS -A gsd-fv3-test
 #PBS -e err.regional.$PBS_JOBID
 #PBS -o out.regional.$PBS_JOBID
@@ -27,11 +28,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source utility functions.
+# Source function definition files.
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/utility_funcs.sh
+. $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -119,16 +120,16 @@ cd $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
-rm -f time_stamp.out
-rm -f stderr.* stdout.*
-rm -f PET*
-rm -f core*
-rm -f *.nc
-rm -f logfile.*
-rm -f nemsusage.xml
-rm -f fort.*
-rm -f regional_*.tile7.nc
-rm -f RESTART/*
+rm_vrfy -f time_stamp.out
+rm_vrfy -f stderr.* stdout.*
+rm_vrfy -f PET*
+rm_vrfy -f core*
+rm_vrfy -f *.nc
+rm_vrfy -f logfile.*
+rm_vrfy -f nemsusage.xml
+rm_vrfy -f fort.*
+rm_vrfy -f regional_*.tile7.nc
+rm_vrfy -f RESTART/*
 #
 #-----------------------------------------------------------------------
 #

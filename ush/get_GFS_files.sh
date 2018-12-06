@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/sh -l
+
 #
 #----THEIA JOBCARD
 #
@@ -43,11 +44,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source utility functions.
+# Source function definition files.
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/utility_funcs.sh
+. $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -70,14 +71,10 @@
 #
 #-----------------------------------------------------------------------
 #
-mkdir -p $INIDIR
-cd $INIDIR
-
-if [ $? -ne 0 ]; then
-  print_err_msg_exit "\
+mkdir_vrfy -p "$INIDIR"
+cd $INIDIR || print_err_msg_exit "\
 Could not change directory to INIDIR:
   INIDIR = \"$INIDIR\""
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -217,7 +214,7 @@ done
 #
 if [ "$num_files_found" -eq "$num_files_needed" ]; then
 
-  cp $files_to_copy $INIDIR
+  cp_vrfy $files_to_copy $INIDIR
 #
 #-----------------------------------------------------------------------
 #
@@ -278,7 +275,7 @@ for the list of files found."
 
   else
 
-    rm $htar_stdout_fn
+    rm_vrfy $htar_stdout_fn
 
   fi
 #
@@ -323,7 +320,7 @@ for the list of files extracted."
 
   else
 
-    rm $htar_stdout_fn
+    rm_vrfy $htar_stdout_fn
 
   fi
 #
@@ -334,11 +331,11 @@ for the list of files extracted."
 # remove the subdirectory created by htar.
 #
   if [ "$ARCHIVE_DIR" != "." ]; then
-    mv .$ARCHIVE_DIR/* .
+    mv_vrfy .$ARCHIVE_DIR/* .
 # Get the first subdirectory in ARCHIVE_DIR (i.e. the directory after
 # the first forward slash).
     subdir_to_remove=$( printf "%s" "${ARCHIVE_DIR}" | sed -r 's|^\/([^/]*).*|\1|' )
-    rm -rf ./$subdir_to_remove
+    rm_vrfy -rf ./$subdir_to_remove
   fi
 
 fi
@@ -428,7 +425,7 @@ done
 #
 if [ "$num_files_found" -eq "$num_files_needed" ]; then
 
-  cp $files_to_copy $INIDIR
+  cp_vrfy $files_to_copy $INIDIR
 #
 #-----------------------------------------------------------------------
 #
@@ -499,7 +496,7 @@ for the list of files found."
 
   else
 
-    rm $htar_stdout_fn
+    rm_vrfy $htar_stdout_fn
 
   fi
 #
@@ -544,7 +541,7 @@ for the list of files extracted."
 
   else
 
-    rm $htar_stdout_fn
+    rm_vrfy $htar_stdout_fn
 
   fi
 #
@@ -555,11 +552,11 @@ for the list of files extracted."
 # remove the subdirectory created by htar.
 #
   if [ "$ARCHIVE_DIR" != "." ]; then
-    mv .$ARCHIVE_DIR/* .
+    mv_vrfy .$ARCHIVE_DIR/* .
 # Get the first subdirectory in ARCHIVE_DIR (i.e. the directory after
 # the first forward slash).
     subdir_to_remove=$( printf "%s" "${ARCHIVE_DIR}" | sed -r 's|^\/([^/]*).*|\1|' )
-    rm -rf ./$subdir_to_remove
+    rm_vrfy -rf ./$subdir_to_remove
   fi
 
 fi
