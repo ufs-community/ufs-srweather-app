@@ -135,7 +135,7 @@ export NTRAC=7
 export FIXfv3=${FV3SAR_DIR}/fix/fix_fv3
 export GRID_OROG_INPUT_DIR=$WORKDIR_SHVE  # Directory in which input grid and orography files are located.
 export OUTDIR=$WORKDIR_ICBC               # Directory in which output from chgres_driver_scr is placed.
-export HOMEgfs=$FV3SAR_DIR                # Directory in which the "superstructure" fv3gfs code is located.
+export HOMEgfs=$FV3SAR_DIR                # Directory in which the "superstructure" fv3sar_workflow code is located.
 export nst_anl=.false.                    # false or true to include NST analysis
 #
 # The following variables do not appear in chgres_driver_scr, but they

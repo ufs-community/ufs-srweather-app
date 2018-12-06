@@ -340,10 +340,10 @@ YMD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
-FV3SAR_DIR="$BASEDIR/fv3gfs"
+FV3SAR_DIR="$BASEDIR/fv3sar_workflow"
 USHDIR="$FV3SAR_DIR/ush"
 TEMPLATE_DIR="$USHDIR/templates"
-UPPFIX="$BASEDIR/fv3gfs/fix/fix_upp"
+UPPFIX="$FV3SAR_DIR/fix/fix_upp"
 
 case $MACHINE in
 #
