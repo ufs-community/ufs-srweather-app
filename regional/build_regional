@@ -49,7 +49,10 @@ elif [ ${SITE} == "cheyenne" ]; then
 elif [ ${SITE} == "jet" ]; then
 
     ln -sfn regional/build_regional/fix/fix_am fix_am
+
 else
+
     echo "Unknown site " ${SITE}
     exit
+
 fi
