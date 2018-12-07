@@ -135,7 +135,7 @@ esac
 # ferent forecast hour.)  Also, create a temporary work directory (FHR_-
 # DIR) for the current forecast hour being processed.  FHR_DIR will be 
 # deleted later after the processing for the current forecast hour is 
-# complete.
+# complete.  Then change location to FHR_DIR.
 #
 # Note that there may be a preexisting version of FHR_DIR from previous 
 # runs of this script for the current forecast hour (e.g. from the work-
@@ -150,6 +150,8 @@ mkdir_vrfy -p "${POSTPRD_DIR}"
 FHR_DIR="${POSTPRD_DIR}/$fhr"
 check_for_preexist_dir $FHR_DIR "delete"
 mkdir_vrfy -p "${FHR_DIR}"
+
+cd ${FHR_DIR}
 
 #-----------------------------------------------------------------------
 #
@@ -177,15 +179,6 @@ POST_MM=${POST_TIME:4:2}
 POST_DD=${POST_TIME:6:2}
 POST_HH=${POST_TIME:8:2}
 
-#-----------------------------------------------------------------------
-#
-# Change location to the work directory (FHR_DIR) and stage files.
-#
-#-----------------------------------------------------------------------
-
-cd ${FHR_DIR}
-rm_vrfy -f fort.*
-
 cat > itag <<EOF
 ${dyn_file}
 netcdf
@@ -199,14 +192,21 @@ ${phy_file}
  /
 EOF
 
+#-----------------------------------------------------------------------
+#
+# Stage files in FHR_DIR.
+#
+#-----------------------------------------------------------------------
+
+rm_vrfy -f fort.*
+
 cp_vrfy $UPPFIX/nam_micro_lookup.dat ./eta_micro_lookup.dat
 cp_vrfy $UPPFIX/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
 cp_vrfy $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
 
 #-----------------------------------------------------------------------
 #
-# Run the post-processor and move output files from FHR_DIR to POSTPRD_-
-# DIR.
+# Copy the UPP executable to FHR_DIR and run the post-processor.
 #
 #-----------------------------------------------------------------------
 

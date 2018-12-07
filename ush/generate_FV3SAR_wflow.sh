@@ -16,7 +16,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -129,25 +129,57 @@ ROCOTO_EXEC_DIR=${ROCOTO_EXEC_FP%/rocotorun}
 #
 #-----------------------------------------------------------------------
 #
-# For convenience, print out the shell command that needs to be issued
-# in order to launch the workflow.  This should be placed in the user's
-# crontab so that the workflow is continually resubmitted.
+# For convenience, print out the commands that needs to be issued on the 
+# command line in order to launch the workflow and to check its status.  
+# Also, print out the command that should be placed in the user's cron-
+# tab in order for the workflow to be continually resubmitted.
 #
 #-----------------------------------------------------------------------
 #
 WFLOW_DB_FN="${WFLOW_XML_FN%.xml}.db"
 
-cmd="cd $RUNDIR && ${ROCOTO_EXEC_DIR}/rocotorun -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
-print_info_msg "\
-To run the workflow, use the following command:
-  \"$cmd\"
-This command can be added to the user's crontab for automatic resubmission 
-of the workflow."
+rocotorun_cmd="${ROCOTO_EXEC_DIR}/rocotorun -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
+rocotostat_cmd="${ROCOTO_EXEC_DIR}/rocotostat -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
 
-cmd="cd $RUNDIR && ${ROCOTO_EXEC_DIR}/rocotostat -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
 print_info_msg "\
-To check on the status of the workflow, use the following command:
-  \"$cmd\""
+========================================================================
+========================================================================
+
+Workflow generation completed.
+
+========================================================================
+========================================================================
+
+The run directory and work directory for this experiment are:
+
+  RUNDIR=\"$RUNDIR\"
+  WORKDIR=\"$WORKDIR\"
+
+To launch the workflow, change location to the run directory and issue the following 
+command:
+
+  $rocotorun_cmd
+
+To check on the status of the workflow, issue the following command (from the 
+run directory):
+
+  $rocotostat_cmd
+
+Note that the rocotorun command above must be issued after the completion of 
+each task in the workflow in order for the workflow to submit the next task to
+the queue.  
+
+Note also that in order for the output of the rocotostat command above to be 
+up-to-date, the rocotorun command must be issued immediately before the rocotostat 
+command.
+
+For automatic resubmission of the workflow (say every 3 minutes), the following 
+line can be added to the user's crontab (use \"crontab -e\" to edit the cron 
+table): 
+
+*/3 * * * * cd $RUNDIR && $rocotorun_cmd
+
+Done."
 #
 #-----------------------------------------------------------------------
 #
