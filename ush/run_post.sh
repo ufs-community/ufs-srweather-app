@@ -177,6 +177,15 @@ POST_MM=${POST_TIME:4:2}
 POST_DD=${POST_TIME:6:2}
 POST_HH=${POST_TIME:8:2}
 
+#-----------------------------------------------------------------------
+#
+# Change location to the work directory (FHR_DIR) and stage files.
+#
+#-----------------------------------------------------------------------
+
+cd ${FHR_DIR}
+rm_vrfy -f fort.*
+
 cat > itag <<EOF
 ${dyn_file}
 netcdf
@@ -189,16 +198,6 @@ ${phy_file}
  KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,
  /
 EOF
-
-
-#-----------------------------------------------------------------------
-#
-# Change location to the work directory (FHR_DIR) Stage files.
-#
-#-----------------------------------------------------------------------
-
-cd ${FHR_DIR}
-rm_vrfy -f fort.*
 
 cp_vrfy $UPPFIX/nam_micro_lookup.dat ./eta_micro_lookup.dat
 cp_vrfy $UPPFIX/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
