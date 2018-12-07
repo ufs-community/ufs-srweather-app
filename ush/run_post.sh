@@ -233,7 +233,7 @@ mv_vrfy BGRD3D.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark
 
 rm_vrfy -rf ${FHR_DIR}
 
-print_info_msg_verbose "Post-processing completed for fhr = $fhr hr."
+print_info_msg_verbose "Post-processing completed for fhr = ${fhr}."
 
 #-----------------------------------------------------------------------
 #
@@ -243,4 +243,3 @@ print_info_msg_verbose "Post-processing completed for fhr = $fhr hr."
 #-----------------------------------------------------------------------
 
 { restore_shell_opts; } > /dev/null 2>&1
-

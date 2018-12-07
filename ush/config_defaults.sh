@@ -38,7 +38,7 @@
 #
 MACHINE="BIG_COMPUTER"
 ACCOUNT="project_name"
-QUEUE_DEFAULT="debug_queue"
+QUEUE_DEFAULT="batch_queue"
 QUEUE_HPSS="hpss_queue"
 QUEUE_RUN_FV3SAR="production_queue"
 #
