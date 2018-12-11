@@ -422,12 +422,12 @@ $USHDIR/$grid_gen_scr \
 #-----------------------------------------------------------------------
 #
 tile=7
-cd $WORKDIR_GRID
+cd_vrfy $WORKDIR_GRID
 mv_vrfy ${CRES}_grid.tile${tile}.nc \
         ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc
-ln -sf ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc \
-       ${CRES}_grid.tile${tile}.nc
-cd -
+ln_vrfy -sf ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc \
+            ${CRES}_grid.tile${tile}.nc
+cd_vrfy -
 
 print_info_msg_verbose "Grid file generation complete."
 #
@@ -497,12 +497,12 @@ esac
 #-----------------------------------------------------------------------
 #
 tile=7
-cd $WORKDIR_OROG
+cd_vrfy $WORKDIR_OROG
 mv_vrfy oro.${CRES}.tile${tile}.nc \
         oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
-ln -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
-       oro.${CRES}.tile${tile}.nc
-cd -
+ln_vrfy -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
+            oro.${CRES}.tile${tile}.nc
+cd_vrfy -
 
 print_info_msg_verbose "Orography file generation complete."
 #
@@ -577,12 +577,12 @@ $USHDIR/$orog_fltr_scr \
 #-----------------------------------------------------------------------
 #
 tile=7
-cd $WORKDIR_FLTR
+cd_vrfy $WORKDIR_FLTR
 mv_vrfy oro.${CRES}.tile${tile}.nc \
         oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
-ln -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
-       oro.${CRES}.tile${tile}.nc
-cd -
+ln_vrfy -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
+            oro.${CRES}.tile${tile}.nc
+cd_vrfy -
 
 print_info_msg_verbose "Filtering of orography complete."
 #
@@ -611,7 +611,7 @@ print_info_msg_verbose "\
 \"Shaving\" regional grid and filtered orography files to reduce them to
 required compute size..."
 
-cd $WORKDIR_SHVE
+cd_vrfy $WORKDIR_SHVE
 #
 # Create an input file for the shave executable to generate a grid file
 # with a halo of 3 cells.

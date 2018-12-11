@@ -151,7 +151,7 @@ FHR_DIR="${POSTPRD_DIR}/$fhr"
 check_for_preexist_dir $FHR_DIR "delete"
 mkdir_vrfy -p "${FHR_DIR}"
 
-cd ${FHR_DIR}
+cd_vrfy ${FHR_DIR}
 
 #-----------------------------------------------------------------------
 #

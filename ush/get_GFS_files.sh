@@ -72,7 +72,7 @@
 #-----------------------------------------------------------------------
 #
 mkdir_vrfy -p "$INIDIR"
-cd $INIDIR || print_err_msg_exit "\
+cd_vrfy $INIDIR || print_err_msg_exit "\
 Could not change directory to INIDIR:
   INIDIR = \"$INIDIR\""
 #

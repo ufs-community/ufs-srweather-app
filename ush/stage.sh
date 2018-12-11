@@ -249,7 +249,7 @@ Copying files from work directories into run directory and creating links..."
 #
 #-----------------------------------------------------------------------
 #
-cd $RUNDIR/INPUT
+cd_vrfy $RUNDIR/INPUT
 #
 #-----------------------------------------------------------------------
 #
@@ -271,7 +271,7 @@ cd $RUNDIR/INPUT
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_GRID/${CRES}_mosaic.nc .
-ln -sf ${CRES}_mosaic.nc grid_spec.nc
+ln_vrfy -sf ${CRES}_mosaic.nc grid_spec.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -286,7 +286,7 @@ ln -sf ${CRES}_mosaic.nc grid_spec.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc .
-ln -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
+ln_vrfy -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -301,7 +301,7 @@ ln -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc .
-ln -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
+ln_vrfy -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -316,7 +316,7 @@ ln -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc .
-ln -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
+ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -331,7 +331,7 @@ ln -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
-ln -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
+ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -345,7 +345,7 @@ ln -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_ICBC/gfs_data.tile7.nc .
-ln -sf gfs_data.tile7.nc gfs_data.nc
+ln_vrfy -sf gfs_data.tile7.nc gfs_data.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -359,7 +359,7 @@ ln -sf gfs_data.tile7.nc gfs_data.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_ICBC/sfc_data.tile7.nc .
-ln -sf sfc_data.tile7.nc sfc_data.nc
+ln_vrfy -sf sfc_data.tile7.nc sfc_data.nc
 #
 #-----------------------------------------------------------------------
 #
