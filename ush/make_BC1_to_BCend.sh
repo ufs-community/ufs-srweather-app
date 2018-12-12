@@ -334,7 +334,9 @@ while (test "$curnt_hr" -le "$fcst_len_hrs"); do
 #
 # On theia, jet, and odin, run the BC generation sequentially for now.
 #
-    $USHDIR/$chgres_driver_scr
+    $USHDIR/$chgres_driver_scr || print_err_msg_exit "\
+Call to script that generates boundary condition files returned with
+nonzero exit code."
     ;;
 #
   "CHEYENNE")
@@ -381,6 +383,19 @@ case $MACHINE in
     ;;
 #
 esac
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating successful completion of script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\
+
+========================================================================
+Boundary condition files for first through last boundary update times
+(not including the initial forecast time) generated successfully!!!
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #

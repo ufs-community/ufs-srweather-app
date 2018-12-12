@@ -211,7 +211,9 @@ cp_vrfy $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
 #-----------------------------------------------------------------------
 
 cp_vrfy ${UPPDIR}/ncep_post .
-${APRUN} ./ncep_post < itag
+${APRUN} ./ncep_post < itag || print_err_msg_exit "\
+Call to executable to run post for forecast hour $fhr returned with non-
+zero exit code."
 
 #-----------------------------------------------------------------------
 #
@@ -232,8 +234,18 @@ mv_vrfy BGDAWP.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark
 mv_vrfy BGRD3D.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
 
 rm_vrfy -rf ${FHR_DIR}
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating successful completion of script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\
 
-print_info_msg_verbose "Post-processing completed for fhr = $fhr hr."
+========================================================================
+Post-processing for forecast hour $fhr completed successfully.
+========================================================================"
 
 #-----------------------------------------------------------------------
 #

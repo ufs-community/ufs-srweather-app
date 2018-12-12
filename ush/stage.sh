@@ -382,6 +382,19 @@ cp_vrfy $WORKDIR_ICBC/gfs_ctrl.nc .
 #
 #-----------------------------------------------------------------------
 #
+# Print message indicating successful completion of script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\
+
+========================================================================
+All necessary files and links needed to launch a forecast copied/created
+successfully!!!
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
 # Restore the shell options saved at the beginning of this script/func-
 # tion.
 #
