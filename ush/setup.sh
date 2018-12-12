@@ -1231,7 +1231,7 @@ var_list=$( sed -r \
 while read crnt_line; do
   var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p" )
   var_value="${!var_name}"
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}" "$VERBOSE"
+  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}"
 done <<< "${var_list}"
 #
 #-----------------------------------------------------------------------

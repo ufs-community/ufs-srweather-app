@@ -94,13 +94,13 @@ npy_T7=$(( $ny_T7 + 1 ))
 #
 # Set parameters.
 #
-set_file_param $FV3_NAMELIST_FP "layout" "$layout_x,$layout_y" $VERBOSE
-set_file_param $FV3_NAMELIST_FP "npx" $npx_T7 $VERBOSE
-set_file_param $FV3_NAMELIST_FP "npy" $npy_T7 $VERBOSE
-set_file_param $FV3_NAMELIST_FP "target_lon" $lon_ctr_T6 $VERBOSE
-set_file_param $FV3_NAMELIST_FP "target_lat" $lat_ctr_T6 $VERBOSE
-set_file_param $FV3_NAMELIST_FP "stretch_fac" $stretch_fac $VERBOSE
-set_file_param $FV3_NAMELIST_FP "bc_update_interval" $BC_update_intvl_hrs $VERBOSE
+set_file_param "$FV3_NAMELIST_FP" "layout" "$layout_x,$layout_y"
+set_file_param "$FV3_NAMELIST_FP" "npx" "$npx_T7"
+set_file_param "$FV3_NAMELIST_FP" "npy" "$npy_T7"
+set_file_param "$FV3_NAMELIST_FP" "target_lon" "$lon_ctr_T6"
+set_file_param "$FV3_NAMELIST_FP" "target_lat" "$lat_ctr_T6"
+set_file_param "$FV3_NAMELIST_FP" "stretch_fac" "$stretch_fac"
+set_file_param "$FV3_NAMELIST_FP" "bc_update_interval" "$BC_update_intvl_hrs"
 #
 #-----------------------------------------------------------------------
 #
@@ -115,15 +115,15 @@ print_info_msg_verbose "\
 Setting parameters in file:
   MODEL_CONFIG_FP = \"$MODEL_CONFIG_FP\""
 
-set_file_param $MODEL_CONFIG_FP "PE_MEMBER01" $PE_MEMBER01 $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_year" $YYYY $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_month" $MM $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_day" $DD $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_hour" $HH $VERBOSE
-set_file_param $MODEL_CONFIG_FP "nhours_fcst" $fcst_len_hrs $VERBOSE
-set_file_param $MODEL_CONFIG_FP "ncores_per_node" $ncores_per_node $VERBOSE
-set_file_param $MODEL_CONFIG_FP "quilting" $quilting $VERBOSE
-set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
+set_file_param "$MODEL_CONFIG_FP" "PE_MEMBER01" "$PE_MEMBER01"
+set_file_param "$MODEL_CONFIG_FP" "start_year" "$YYYY"
+set_file_param "$MODEL_CONFIG_FP" "start_month" "$MM"
+set_file_param "$MODEL_CONFIG_FP" "start_day" "$DD"
+set_file_param "$MODEL_CONFIG_FP" "start_hour" "$HH"
+set_file_param "$MODEL_CONFIG_FP" "nhours_fcst" "$fcst_len_hrs"
+set_file_param "$MODEL_CONFIG_FP" "ncores_per_node" "$ncores_per_node"
+set_file_param "$MODEL_CONFIG_FP" "quilting" "$quilting"
+set_file_param "$MODEL_CONFIG_FP" "print_esmf" "$print_esmf"
 #
 #-----------------------------------------------------------------------
 #
@@ -141,8 +141,8 @@ set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
 #
 if [ "$quilting" = ".true." ]; then
   cat $WRTCMP_PARAMS_TEMPLATE_FP >> $MODEL_CONFIG_FP
-  set_file_param $MODEL_CONFIG_FP "write_groups" $write_groups $VERBOSE
-  set_file_param $MODEL_CONFIG_FP "write_tasks_per_group" $write_tasks_per_group $VERBOSE
+  set_file_param "$MODEL_CONFIG_FP" "write_groups" "$write_groups"
+  set_file_param "$MODEL_CONFIG_FP" "write_tasks_per_group" "$write_tasks_per_group"
 fi
 #
 #-----------------------------------------------------------------------
@@ -158,12 +158,12 @@ print_info_msg_verbose "\
 Setting parameters in file:
   DIAG_TABLE_FP = \"$DIAG_TABLE_FP\""
 
-set_file_param $DIAG_TABLE_FP "CRES" $CRES $VERBOSE
-set_file_param $DIAG_TABLE_FP "YYYY" $YYYY $VERBOSE
-set_file_param $DIAG_TABLE_FP "MM" $MM $VERBOSE
-set_file_param $DIAG_TABLE_FP "DD" $DD $VERBOSE
-set_file_param $DIAG_TABLE_FP "HH" $HH $VERBOSE
-set_file_param $DIAG_TABLE_FP "YYYYMMDD" $YMD $VERBOSE
+set_file_param "$DIAG_TABLE_FP" "CRES" "$CRES"
+set_file_param "$DIAG_TABLE_FP" "YYYY" "$YYYY"
+set_file_param "$DIAG_TABLE_FP" "MM" "$MM"
+set_file_param "$DIAG_TABLE_FP" "DD" "$DD"
+set_file_param "$DIAG_TABLE_FP" "HH" "$HH"
+set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YMD"
 #
 #-----------------------------------------------------------------------
 #
