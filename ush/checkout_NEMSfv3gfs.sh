@@ -5,7 +5,7 @@ set -u
 #
 #-----------------------------------------------------------------------
 #
-# Check arguments.
+# Set the usage message to print out if necessary.
 #
 #-----------------------------------------------------------------------
 #
@@ -32,9 +32,11 @@ $usage_msg"
 #
 #-----------------------------------------------------------------------
 #
-# Set variable that determines whether the head branches or specific 
-# commits will be checked out.  Then ensure that it has an allowed val-
-# ue.
+# Set the variable that determines whether the head of a branch or a 
+# specific commit (identified by a unique hash number) will be checked
+# out from each repository (i.e. the main NEMSfv3gfs repository and each
+# of its submodules).  Then ensure that this variable has been set to a
+# valid value.
 #
 #-----------------------------------------------------------------------
 #
@@ -74,7 +76,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Clone the repository.
+# Recursively clone the FV3GFS repository.
 #
 #-----------------------------------------------------------------------
 #
@@ -88,7 +90,7 @@ git clone --recursive ssh://${USER}@vlab.ncep.noaa.gov:29418/NEMSfv3gfs
 #
 #-----------------------------------------------------------------------
 #
-cd NEMSfv3gfs
+cd $BASEDIR/NEMSfv3gfs
 git checkout ${branch_NEMSfv3gfs}
 
 cd $BASEDIR/NEMSfv3gfs/FV3
@@ -99,4 +101,5 @@ git checkout ${branch_FMS}
 
 cd $BASEDIR/NEMSfv3gfs/NEMS
 git checkout ${branch_NEMS}
+
 
