@@ -1,7 +1,6 @@
 #!/bin/sh -l
 
 module load nccmp
-#set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -22,26 +21,44 @@ function cmp_ncfiles_one_dir() {
   cd $dir1/$subdir
 
   for fn in *.$fileext; do
+ 
+    fn1="$fn" 
+    if [ -f "$fn1" ] && [ ! -h "$fn1" ]; then  # Check if regular file and not a symlink.
+
+      fn2="$dir2/$subdir/$fn"
+      if [ -e "$fn2" ]; then  # Check if file exists.
+
+        if [ -f "$fn2" ] && [ ! -h "$fn2" ]; then  # Check if regular file and not a symlink.
   
-    if [ -f "$fn" ] && [ ! -h "$fn" ]; then
+          printf "\nComparing file \"$fn\" in subdirectory \"$subdir\" ...\n"
+          nccmp -d $fn1 $fn2
+#          nccmp -dS $fn1 $fn2
+#          nccmp -d -t 1e-3 $fn1 $fn2
+#          nccmp -d --precision='%g10.5' $fn1 $fn2
   
-      printf "\nComparing file \"$fn\" in subdirectory \"$subdir\" ...\n"
-      nccmp -d $fn $dir2/$subdir/$fn
-#      nccmp -dS $fn $dir2/$subdir/$fn
-#      nccmp -d -t 1e-3 $fn $dir2/$subdir/$fn
-#      nccmp -d --precision='%g' $fn $dir2/$subdir/$fn
+          if [ $? = 0 ]; then
+            msg=$( printf "%s" "Files are identical." )
+          elif [ $? = 1 ]; then
+            msg=$( printf "%s" "===>>> FILES ARE DIFFERENT!!!" )
+          else
+            msg=$( printf "%s" "FATAL ERROR.  Exiting script." )
+            exit 1
+          fi
+    
+          printf "%s\n" "$msg"
   
-      if [ $? = 0 ]; then
-        msg=$( printf "%s" "Files are identical." )
-      elif [ $? = 1 ]; then
-        msg=$( printf "%s" "===>>> FILES ARE DIFFERENT!!!" )
+        else
+          printf "\n%s\n" "File \"$fn\" in \"$dir2/$subdir\" is a symbolic link.  Skipping."
+        fi
+
       else
-        msg=$( printf "%s" "FATAL ERROR.  Exiting script." )
+        printf "\n%s\n" "File \"$fn\" does not exist in \"$dir2/$subdir\"."
+        printf "\n%s\n" "Exiting script."
         exit 1
       fi
-
-      printf "%s\n" "$msg"
-  
+        
+    else
+      printf "\n%s\n" "File \"$fn\" in \"$dir1/$subdir\" is a symbolic link.  Skipping."
     fi
   
   done
@@ -56,16 +73,16 @@ function cmp_ncfiles_one_dir() {
 #
 #-----------------------------------------------------------------------
 #
-rundir1="$1"
-rundir2="$2"
+#set -x
+
+rundir1="$( readlink -f $1 )"
+rundir2="$( readlink -f $2 )"
 
 printf "\n"
 printf "%s\n" "rundir1 = \"$rundir1\""
 printf "%s\n" "rundir2 = \"$rundir2\""
 
-subdirs=("." "INPUT")
-
-#set -x
+subdirs=("INPUT" ".")
 
 for subdir in "${subdirs[@]}"; do
 
