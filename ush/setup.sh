@@ -104,27 +104,15 @@ fi
 #
 MACHINE=$( printf "%s" "$MACHINE" | sed -e 's/\(.*\)/\U\1/' )
 
-if [ "$MACHINE" != "WCOSS_C" ] && \
-   [ "$MACHINE" != "WCOSS" ] && \
-   [ "$MACHINE" != "DELL" ] && \
-   [ "$MACHINE" != "THEIA" ] && \
-   [ "$MACHINE" != "JET" ] && \
-   [ "$MACHINE" != "ODIN" ] && \
-   [ "$MACHINE" != "CHEYENNE" ]; then
-
-  print_err_msg_exit "\
+valid_MACHINES=("WCOSS_C" "WCOSS" "DELL" "THEIA" "JET" "ODIN" "CHEYENNE")
+iselementof "$MACHINE" valid_MACHINES || { \
+valid_MACHINES_str=$(printf "\"%s\" " "${valid_MACHINES[@]}");
+print_err_msg_exit "\
 Machine specified in MACHINE is not supported:
   MACHINE = \"$MACHINE\"
 MACHINE must be set to one of the following:
-  \"WCOSS_C\"
-  \"WCOSS\"
-  \"DELL\"
-  \"THEIA\"
-  \"JET\"
-  \"ODIN\"
-  \"CHEYENNE\""
-
-fi
+  $valid_MACHINES_str
+"; }
 #
 #-----------------------------------------------------------------------
 #
@@ -225,15 +213,16 @@ gtype="regional"
 #
 #-----------------------------------------------------------------------
 #
-if [ "$predef_domain" != "" ] && \
-   [ "$predef_domain" != "RAP" ] && \
-   [ "$predef_domain" != "HRRR" ]; then
+valid_predef_domains=("RAP" "HRRR" "EMCCONUS")
+if [ ! -z ${predef_domain} ]; then
+  iselementof "$predef_domain" valid_predef_domains || { \
+  valid_predef_domains_str=$(printf "\"%s\" " "${valid_predef_domains[@]}");
   print_err_msg_exit "\
 Predefined regional domain specified in predef_domain is not supported:
   predef_domain = \"$predef_domain\"
 predef_domain must be set either to an empty string or to one of the following:
-  \"RAP\"
-  \"HRRR\""
+  $valid_predef_domains_str
+"; }
 fi
 #
 #-----------------------------------------------------------------------
@@ -245,14 +234,19 @@ fi
 #
 case $predef_domain in
 #
-"RAP")   # The RAP domain.
+"RAP")        # The RAP domain.
 #
   RES="384"
   ;;
 #
-"HRRR")  # The HRRR domain.
+"HRRR")       # The HRRR domain.
 #
   RES="384"
+  ;;
+#
+"EMCCONUS")   # EMC's C768 domain over the CONUS.
+#
+  RES="768"
   ;;
 #
 esac
@@ -263,21 +257,15 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-if [ "$RES" != "48" ] && \
-   [ "$RES" != "96" ] && \
-   [ "$RES" != "192" ] && \
-   [ "$RES" != "384" ] && \
-   [ "$RES" != "768" ] && \
-   [ "$RES" != "1152" ] && \
-   [ "$RES" != "3072" ]; then
-
-  print_err_msg_exit "\
+valid_RESES=("48" "96" "192" "384" "768" "1152" "3072")
+iselementof "$RES" valid_RESES || { \
+valid_RESES_str=$(printf "\"%s\" " "${valid_RESES[@]}");
+print_err_msg_exit "\
 Number of grid cells per tile (in each horizontal direction) specified in
 RES is not supported:
-  RES = $RES
-RES must be one of:  48  96  192  384  768  1152  3072"
-
-fi
+  RES = \"$RES\"
+RES must be one of the following:  $valid_RESES_str
+"; }
 #
 #-----------------------------------------------------------------------
 #
@@ -568,6 +556,42 @@ case $predef_domain in
 #
   if [ "$quilting" = ".true." ]; then
     WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcomp_HRRR"}
+  fi
+  ;;
+#
+"EMCCONUS")  # EMC's C768 domain over the CONUS.
+#
+# Prepend the string "_EMCCONUS" to run_title.
+#
+  run_title="_EMCCONUS${run_title}"
+#
+# Reset grid parameters.
+#
+  lon_ctr_T6=-97.5
+  lat_ctr_T6=38.5
+  stretch_fac=1.5
+  refine_ratio=3
+
+  num_margin_cells_T6_left=61
+  istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+
+  num_margin_cells_T6_right=67
+  iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+
+  num_margin_cells_T6_bottom=165
+  jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+
+  num_margin_cells_T6_top=171
+  jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+#
+# If the write-component is being used and the variable (WRTCMP_PARAMS_-
+# TEMPLATE_FN) containing the name of the template file that specifies
+# various write-component parameters has not been specified or has been
+# set to an empty string, reset it to the preexisting template file for
+# the RAP domain.
+#
+  if [ "$quilting" = ".true." ]; then
+    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcomp_EMCCONUS"}
   fi
   ;;
 #
