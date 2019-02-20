@@ -55,7 +55,8 @@ case $MACHINE in
 #
   . /apps/lmod/lmod/init/sh
   module purge
-  module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0
+#  module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0 #no_ccpp
+  module load intel/18.0.1.163 impi/5.1.2.150 netcdf/4.3.0 pnetcdf/1.5.0-impi #ccpp
   module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
   module list
 

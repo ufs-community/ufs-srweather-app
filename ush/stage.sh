@@ -64,9 +64,19 @@
 print_info_msg_verbose "\
 Copying templates of various input files to the run directory..."
 
+if [ "$CCPP" = "true" ]; then
+cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_NAMELIST_FN $RUNDIR/input.nml
+print_info_msg_verbose "\
+Copying CCPP namelist to the run directory..."
+cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_FN $RUNDIR/diag_table
+print_info_msg_verbose "\
+Copying CCPP-specific diag_table to the run directory..."
+else
 cp_vrfy $TEMPLATE_DIR/$FV3_NAMELIST_FN $RUNDIR
-cp_vrfy $TEMPLATE_DIR/$MODEL_CONFIG_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
+fi
+
+cp_vrfy $TEMPLATE_DIR/$MODEL_CONFIG_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$DATA_TABLE_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
@@ -78,7 +88,7 @@ cp_vrfy $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
-FV3_NAMELIST_FP="$RUNDIR/$FV3_NAMELIST_FN"
+FV3_NAMELIST_FP="$RUNDIR/input.nml"
 
 print_info_msg_verbose "\
 Setting parameters in file:
@@ -152,6 +162,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+
 DIAG_TABLE_FP="$RUNDIR/$DIAG_TABLE_FN"
 
 print_info_msg_verbose "\
@@ -164,6 +175,31 @@ set_file_param $DIAG_TABLE_FP "MM" $MM $VERBOSE
 set_file_param $DIAG_TABLE_FP "DD" $DD $VERBOSE
 set_file_param $DIAG_TABLE_FP "HH" $HH $VERBOSE
 set_file_param $DIAG_TABLE_FP "YYYYMMDD" $YMD $VERBOSE
+
+#
+#-----------------------------------------------------------------------
+# If CCPP=true, Copy correct CCPP suite file to run directory
+#-----------------------------------------------------------------------
+#
+if [ "$CCPP" = "true" ]; then
+
+if [ "$CCPP_suite" = "GFS" ]; then
+
+cp_vrfy $CCPPDIR/../ccpp/suites/suite_FV3_GFS_2017_updated_gfdlmp_regional.xml $RUNDIR/ccpp_suite.xml
+
+print_info_msg_verbose "\
+Copying GFS physics suite XML file to run directory as ccpp_suite.xml"
+
+else
+
+cp_vrfy $CCPPDIR/../ccpp/suites/suite_FV3_GSD.xml $RUNDIR/ccpp_suite.xml
+
+print_info_msg_verbose "\
+Copying GSD physics suite XML file to the run directory as ccpp_suite.xml"
+
+fi
+
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -216,13 +252,24 @@ cp_vrfy $FIXgsm/co2monthlycyc.txt $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
+if [ "$CCPP" = "true" ]; then
+
+FV3SAR_EXEC="$CCPPDIR/fv3_1.exe"
+
+print_info_msg_verbose "\
+Setting CCPP FV3 executable to FV3SAR_EXEC"
+
+else
+
 FV3SAR_EXEC="$BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe"
+
+fi
 
 if [ -f $FV3SAR_EXEC ]; then
 
   print_info_msg_verbose "\
 Copying FV3SAR executable to the run directory..."
-  cp_vrfy $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
+  cp_vrfy $FV3SAR_EXEC $RUNDIR/fv3_gfs.x
 
 else
 
@@ -388,5 +435,3 @@ cp_vrfy $WORKDIR_ICBC/gfs_ctrl.nc .
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-
-
