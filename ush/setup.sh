@@ -298,7 +298,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Extract from CDATE the starting year, month, day, and hour of the
-# forecast.  These areneeded below for various operations.`
+# forecast.  These are needed below for various operations.
 #
 #-----------------------------------------------------------------------
 #
@@ -323,8 +323,8 @@ YMD=${CDATE:0:8}
 # ed.
 #
 # FIXgsm:
-# System directory from which to copy fixed files that are needed as in-
-# puts to the FV3SAR model.
+# System directory in which the fixed (i.e. time-independent) files that
+# are needed to run the FV3SAR model are located.
 #
 #-----------------------------------------------------------------------
 #
@@ -430,7 +430,7 @@ The forecast length is not evenly divisible by the BC update interval:
 
 else
 
-  BC_times_hrs=($( seq 0 $BC_update_intvl_hrs $fcst_len_hrs ))
+  BC_update_times_hrs=($( seq 0 $BC_update_intvl_hrs $fcst_len_hrs ))
 
 fi
 #
@@ -680,9 +680,9 @@ check_for_preexist_dir $RUNDIR $preexisting_dir_method
 #-----------------------------------------------------------------------
 #
 # Set the directory INIDIR in which we will store the analysis (at the
-# initial time CDATE) and forecast (at the boundary condition times)
-# files.  These are the files that will be used to generate surface
-# fields and initial and boundary conditions for the FV3SAR.
+# initial time CDATE) and forecast (at the boundary update times) files.  
+# These are the files that will be used to generate surface fields and 
+# initial and boundary conditions for the FV3SAR.
 #
 #-----------------------------------------------------------------------
 #
@@ -949,19 +949,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+
 print_info_msg_verbose "\
-Original values of halo width on tile 6 supergrid and on tile 7 are:
+Original values of the halo width on the tile 6 supergrid and on the 
+tile 7 grid are:
   nhw_T6SG = $nhw_T6SG
-  nhw_T7 = $nhw_T7"
+  nhw_T7   = $nhw_T7"
 
 nhw_T6SG=$(( $istart_rgnl_T6SG - $istart_rgnl_wide_halo_T6SG ))
 nhw_T6=$(( $nhw_T6SG/2 ))
 nhw_T7=$(( $nhw_T6*$refine_ratio ))
 
 print_info_msg_verbose "\
-Values of halo width on tile 6 supergrid and on tile 7 AFTER adjustments are:
+Values of the halo width on the tile 6 supergrid and on the tile 7 grid 
+AFTER adjustments are:
   nhw_T6SG = $nhw_T6SG
-  nhw_T7 = $nhw_T7"
+  nhw_T7   = $nhw_T7"
 #
 #-----------------------------------------------------------------------
 #
@@ -972,23 +975,67 @@ Values of halo width on tile 6 supergrid and on tile 7 AFTER adjustments are:
 #
 #-----------------------------------------------------------------------
 #
-nx_T6SG=$(( $iend_rgnl_T6SG - $istart_rgnl_T6SG + 1 ))
-nx_T6=$(( $nx_T6SG/2 ))
-nx_T7=$(( $nx_T6*$refine_ratio ))
+nx_rgnl_T6SG=$(( $iend_rgnl_T6SG - $istart_rgnl_T6SG + 1 ))
+nx_rgnl_T6=$(( $nx_rgnl_T6SG/2 ))
+nx_T7=$(( $nx_rgnl_T6*$refine_ratio ))
 
-ny_T6SG=$(( $jend_rgnl_T6SG - $jstart_rgnl_T6SG + 1 ))
-ny_T6=$(( $ny_T6SG/2 ))
-ny_T7=$(( $ny_T6*$refine_ratio ))
+ny_rgnl_T6SG=$(( $jend_rgnl_T6SG - $jstart_rgnl_T6SG + 1 ))
+ny_rgnl_T6=$(( $ny_rgnl_T6SG/2 ))
+ny_T7=$(( $ny_rgnl_T6*$refine_ratio ))
+#
+# The following are set only for informational purposes.
+#
+nx_T6=$RES
+ny_T6=$RES
+nx_T6SG=$(( $nx_T6*2 ))
+ny_T6SG=$(( $ny_T6*2 ))
+
+prime_factors_nx_T7=$( factor $nx_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
+prime_factors_ny_T7=$( factor $ny_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
 
 print_info_msg_verbose "\
-nx_T7 = $nx_T7 \
-(istart_rgnl_T6SG = $istart_rgnl_T6SG, \
-iend_rgnl_T6SG = $iend_rgnl_T6SG)"
+The number of cells in the two horizontal directions (x and y) on the 
+parent tile's (tile 6) grid and supergrid are:
+  nx_T6 = $nx_T6
+  ny_T6 = $ny_T6
+  nx_T6SG = $nx_T6SG
+  ny_T6SG = $ny_T6SG
 
-print_info_msg_verbose "\
-ny_T7 = $ny_T7 \
-(jstart_rgnl_T6SG = $jstart_rgnl_T6SG, \
-jend_rgnl_T6SG = $jend_rgnl_T6SG)"
+The number of cells in the two horizontal directions on the tile 6 grid
+and supergrid that the regional domain (tile 7) WITHOUT A HALO encompasses
+are:
+  nx_rgnl_T6 = $nx_rgnl_T6
+  ny_rgnl_T6 = $ny_rgnl_T6
+  nx_rgnl_T6SG = $nx_rgnl_T6SG
+  ny_rgnl_T6SG = $ny_rgnl_T6SG
+
+The starting and ending i and j indices on the tile 6 grid used to 
+generate this regional grid are:
+  istart_rgnl_T6 = $istart_rgnl_T6
+  iend_rgnl_T6   = $iend_rgnl_T6
+  jstart_rgnl_T6 = $jstart_rgnl_T6
+  jend_rgnl_T6   = $jend_rgnl_T6
+
+The corresponding starting and ending i and j indices on the tile 6 
+supergrid are:
+  istart_rgnl_T6SG = $istart_rgnl_T6SG
+  iend_rgnl_T6SG   = $iend_rgnl_T6SG
+  jstart_rgnl_T6SG = $jstart_rgnl_T6SG
+  jend_rgnl_T6SG   = $jend_rgnl_T6SG
+
+The refinement ratio (ratio of the number of cells in tile 7 that abut
+a single cell in tile 6) is:
+  refine_ratio = $refine_ratio
+
+The number of cells in the two horizontal directions on the regional 
+tile's/domain's (tile 7) grid WITHOUT A HALO are:
+  nx_T7 = $nx_T7
+  ny_T7 = $ny_T7
+
+The prime factors of nx_T7 and ny_T7 are (useful for determining an MPI
+task layout, i.e. layout_x and layout_y):
+  prime_factors_nx_T7: $prime_factors_nx_T7
+  prime_factors_ny_T7: $prime_factors_ny_T7"
 #
 #-----------------------------------------------------------------------
 #
@@ -1331,7 +1378,7 @@ ny_T7="$ny_T7"
 #
 #-----------------------------------------------------------------------
 #
-# Initial date and time and boundary condition times.
+# Initial date and time and boundary update times.
 #
 #-----------------------------------------------------------------------
 #
@@ -1340,7 +1387,7 @@ MM="$MM"
 DD="$DD"
 HH="$HH"
 YMD="$YMD"
-BC_times_hrs=(${BC_times_hrs[@]})  # BC_times_hrs is an array, even if it has only one element.
+BC_update_times_hrs=(${BC_update_times_hrs[@]})  # BC_update_times_hrs is an array, even if it has only one element.
 #
 #-----------------------------------------------------------------------
 #

@@ -52,10 +52,10 @@
 # hours (this update interval is determined by the variable BC_update_-
 # intvl_hrs) and the forecast is to run for 24 hours (the forecast
 # length is determined by the variable fcst_len_hrs), then a file is ge-
-# nerated for forecast hours 3, 6, 9, 12, 15, 18, and 24 (but not hour
-# 0 since that is handled by the script that generates the initial con-
-# dition file).  All the generated NetCDF BC files are placed in the di-
-# rectory specified by WORKDIR_ICBC.
+# nerated for each of the forecast hours 3, 6, 9, 12, 15, 18, and 24 
+# (but not hour 0 since that is handled by the script that generates the
+# initial condition file).  All the generated NetCDF BC files are placed
+# in the directory specified by WORKDIR_ICBC.
 #
 #-----------------------------------------------------------------------
 #
