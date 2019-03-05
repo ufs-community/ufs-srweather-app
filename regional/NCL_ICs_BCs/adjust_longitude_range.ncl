@@ -19,6 +19,8 @@
 ;                                                                      *
 ; **********************************************************************
 
+load "strcmp.ncl"
+
 undef("adjust_longitude_range")
 
 function adjust_longitude_range( \

@@ -1,3 +1,4 @@
+;
 ; **********************************************************************
 ;
 ; File name: strcmp.ncl
@@ -9,12 +10,13 @@
 ; tical and False otherwise.  It is called as follows:
 ;
 ;   are_equal = strcmp(str1, str2)
-;                                                                      *
+;
 ; **********************************************************************
-
+;
 undef("strcmp")
 
 function strcmp(str1:string, str2:string)
+
 local len1, len2, match_result, are_equal
 
 begin

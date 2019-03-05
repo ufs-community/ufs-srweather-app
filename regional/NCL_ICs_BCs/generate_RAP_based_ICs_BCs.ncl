@@ -16,10 +16,9 @@ load "pause.ncl"
 load "strcmp.ncl"
 load "interpolate_RAP_to_SARFV3.ncl"
 load "read_RAP_grid.ncl"
-load "read_SARFV3_grid.ncl"
+load "read_FV3SAR_grid_halo.ncl"
 load "calc_field_stats.ncl"
 load "read_RAP_horiz_field.ncl"
-;load "plot_horiz_field.ncl"
 load "adjust_longitude_range.ncl"
 load "set_cnLevels_lbLabels.ncl"
 load "plot_model_field_generic.ncl"
@@ -360,6 +359,7 @@ print("")
 ; **********************************************************************
 ;
   file_dir = "./"
+;file_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 
   RAP_geo_file = "geo_em.d01.RAP.nc"
   RAP_geo_file = file_dir + "/" + RAP_geo_file
@@ -414,12 +414,13 @@ print("")
 ;  nh = 4
   nh = 50
 
-  SARFV3_grid_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3gfs/fix/fix_fv3/rgnl_C384_strch_1p8_rfn_5_HRRR"
+;  SARFV3_grid_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3gfs/fix/fix_fv3/rgnl_C384_strch_1p8_rfn_5_HRRR"
+  SARFV3_grid_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/rgnl_C384_strch_1p5_rfn_3_descriptive_str/filter_topo"
   CRES = "C384"
   SARFV3_halo4_grid_file = CRES + "_grid.tile7.halo4.nc"
   SARFV3_halo4_grid_file_full = SARFV3_grid_dir + "/" + SARFV3_halo4_grid_file
 
-  out := read_SARFV3_grid(SARFV3_halo4_grid_file_full, nh)
+  out := read_FV3SAR_grid_halo(SARFV3_halo4_grid_file_full, nh)
 
 ;;  num_cells_SARFV3 = out@num_cells_total
 ;  lon_cntrs_by_cell_SARFV3 = out@lon_cntrs_by_cell
@@ -834,9 +835,10 @@ print("")
 ;
 ; Set the flag that determines whether plots will be resized (e.g. to a
 ; larger area than the default).  This would generally be done using the
-; gsnMaximize resource, but it's not clear how to do use or reset this
-; resource after adding annotations to the plot (annotations in our case
-; are the plot titles), so we do the resizing/maximization manually.
+; gsnMaximize resource, but it's not clear how to use or reset this re-
+; source after adding annotations to the plot (annotations in our case
+; are the plot titles).  Thus, we perform the resizing/maximization man-
+; ually.
 ;
           plot_options_common@resize_plot = True
 ;

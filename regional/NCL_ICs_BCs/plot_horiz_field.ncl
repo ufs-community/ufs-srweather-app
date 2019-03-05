@@ -12,7 +12,8 @@
 ; **********************************************************************
 
 load "strcmp.ncl"
-load "get_resized_viewport.ncl"
+load "special_chars.ncl"
+load "get_resized_viewport_dims.ncl"
 
 undef("plot_horiz_field")
 
@@ -25,7 +26,7 @@ function plot_horiz_field( \
          fn_graphics:string, \
          plot_options:logical)
 
-local char_dq, fn_graphics, wks_type, wks, \
+local fn_graphics, wks_type, wks, \
       rsrc, \
       out
 
@@ -37,8 +38,8 @@ begin
 ;                                                                      *
 ; **********************************************************************
 ;
-  char_dq = integertochar(34)
-  char_nl = str_get_nl()
+;  char_dq = integertochar(34)
+;  char_nl = str_get_nl()
 ;
 ; **********************************************************************
 ;                                                                      *
@@ -722,7 +723,7 @@ begin
     opts := True
 ;    opts@verbose = True
     opts@verbose = False
-    out := get_resized_viewport( \
+    out := get_resized_viewport_dims( \
            map, plot_options@bounding_box_size_NDC, opts)
   
     vpXF_new = out@vpXF
