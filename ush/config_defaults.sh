@@ -77,17 +77,26 @@ CCPPDIR="/path/to/CCPP/executable"
 # FV3_NAMELIST_FN:
 # Name of file containing the FV3SAR namelist settings.
 #
-# FV3_CCPP_NAMELIST_FN:
-# Name of file containing the FV3SAR namelist settings for a CCPP run.
+# FV3_CCPP_GFS_NAMELIST_FN:
+# Name of file containing the FV3SAR namelist settings for a CCPP run using GFS physics.
+#
+# FV3_CCPP_GSD_NAMELIST_FN:
+# Name of file containing the FV3SAR namelist settings for a CCPP run using GSD physics.
 #
 # DIAG_TABLE_FN:
 # Name of file that specifies the fields that the FV3SAR will output.
 #
-# DIAG_TABLE_CCPP_FN:
-# Required as current version of CCPP FV3 executable cannot handle refl_10cm variable in diag_table.
+# DIAG_TABLE_CCPP_GFS_FN:
+# Required as current version of CCPP FV3 executable using GFS physics cannot handle refl_10cm variable in diag_table.
+#
+# DIAG_TABLE_CCPP_GSD_FN:
+# Uses specific variables for Thompson MP
 #
 # FIELD_TABLE_FN:
 # Name of file that specifies ???
+#
+# FIELD_TABLE_CCPP_GSD_FN:
+# Field table for a CCPP run using GSD physics
 #
 # DATA_TABLE_FN:
 # Name of file that specifies ???
@@ -124,10 +133,13 @@ CCPPDIR="/path/to/CCPP/executable"
 #-----------------------------------------------------------------------
 #
 FV3_NAMELIST_FN="input.nml"
-FV3_CCPP_NAMELIST_FN="input_ccpp.nml"
+FV3_CCPP_GFS_NAMELIST_FN="input_ccpp_gfs.nml"
+FV3_CCPP_GSD_NAMELIST_FN="input_ccpp_gsd.nml"
 DIAG_TABLE_FN="diag_table"
-DIAG_TABLE_CCPP_FN="diag_table_CCPP"
+DIAG_TABLE_CCPP_GSD_FN="diag_table_ccpp_gsd"
+DIAG_TABLE_CCPP_GFS_FN="diag_table_ccpp_gfs"
 FIELD_TABLE_FN="field_table"
+FIELD_TABLE_CCPP_GSD_FN="field_table_ccpp_gsd"
 DATA_TABLE_FN="data_table"
 MODEL_CONFIG_FN="model_configure"
 NEMS_CONFIG_FN="nems.configure"
@@ -201,7 +213,7 @@ run_title="desc_str"
 # corresponds with settings used in the EMC regional regression tests.
 #-----------------------------------------------------------------------
 #
-CCPP="true"
+CCPP="true" # "true" or "false"
 #
 #-----------------------------------------------------------------------
 # If CCPP=true, the suite flag defines the physics package for which the

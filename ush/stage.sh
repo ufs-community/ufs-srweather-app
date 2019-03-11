@@ -65,19 +65,54 @@ print_info_msg_verbose "\
 Copying templates of various input files to the run directory..."
 
 if [ "$CCPP" = "true" ]; then
-cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_NAMELIST_FN $RUNDIR/input.nml
-print_info_msg_verbose "\
-Copying CCPP namelist to the run directory..."
-cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_FN $RUNDIR/diag_table
-print_info_msg_verbose "\
-Copying CCPP-specific diag_table to the run directory..."
-else
+
+   if [ "$CCPP_suite" = "GFS" ]; then
+
+   cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GFS_NAMELIST_FN $RUNDIR/input.nml
+   print_info_msg_verbose "\
+   Copying CCPP GFS physics namelist to the run directory..."
+
+   cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GFS_FN $RUNDIR/diag_table
+   print_info_msg_verbose "\
+   Copying CCPP-specific GFS physics diag_table to the run directory..."
+
+   cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
+
+   elif [ "$CCPP_suite" = "GSD" ]; then
+
+   cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GSD_NAMELIST_FN $RUNDIR/input.nml
+   print_info_msg_verbose "\
+   Copying CCPP GSD physics namelist to the run directory..."
+
+   cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/diag_table
+   print_info_msg_verbose "\
+   Copying CCPP-specific GSD physics diag_table to the run directory..."
+ 
+   cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $RUNDIR/field_table
+   print_info_msg_verbose "\
+   Copying CCPP-specific GSD physics field_table to the run directory..."
+
+   else
+
+   print_err_msg_exit "\
+   CCPP physics suite either doesn't exist or is not supported.  Exiting..."
+
+   fi
+
+elif [ "$CCPP" = "false" ]; then
+
 cp_vrfy $TEMPLATE_DIR/$FV3_NAMELIST_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
+cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
+
+else
+
+   print_err_msg_exit "\
+   CCPP option must be set to either \"true\" or \"false.\"  Exiting..."
+
 fi
 
 cp_vrfy $TEMPLATE_DIR/$MODEL_CONFIG_FN $RUNDIR
-cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$DATA_TABLE_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
 #
@@ -183,21 +218,22 @@ set_file_param $DIAG_TABLE_FP "YYYYMMDD" $YMD $VERBOSE
 #
 if [ "$CCPP" = "true" ]; then
 
-if [ "$CCPP_suite" = "GFS" ]; then
+   if [ "$CCPP_suite" = "GFS" ]; then
 
-cp_vrfy $CCPPDIR/../ccpp/suites/suite_FV3_GFS_2017_updated_gfdlmp_regional.xml $RUNDIR/ccpp_suite.xml
+   cp_vrfy $CCPPDIR/../ccpp/suites/suite_FV3_GFS_2017_updated_gfdlmp_regional.xml $RUNDIR/ccpp_suite.xml
 
-print_info_msg_verbose "\
-Copying GFS physics suite XML file to run directory as ccpp_suite.xml"
+   print_info_msg_verbose "\
+   Copying GFS physics suite XML file to run directory as ccpp_suite.xml"
 
-else
+   elif [ "$CCPP_suite" = "GSD" ]; then
 
-cp_vrfy $CCPPDIR/../ccpp/suites/suite_FV3_GSD.xml $RUNDIR/ccpp_suite.xml
+   cp_vrfy $CCPPDIR/../ccpp/suites/suite_FV3_GSD.xml $RUNDIR/ccpp_suite.xml
+   cp_vrfy $GSDFIX/CCN_ACTIVATE.BIN $RUNDIR
+  
+ print_info_msg_verbose "\
+   Copying GSD physics suite XML file and Thompson MP CCN fix file to the run directory"
 
-print_info_msg_verbose "\
-Copying GSD physics suite XML file to the run directory as ccpp_suite.xml"
-
-fi
+   fi
 
 fi
 #

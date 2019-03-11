@@ -161,7 +161,8 @@
        debug          = .false.
        oz_phys        = .true.
        oz_phys_2015   = .false.
-       nstf_name      = 1,1,1,0,5
+       !nstf_name      = 1,1,1,0,5
+       nstf_name      = 2,1,1,0,5       
        cplflx         = .F.
        iau_delthrs    = 6
        iaufhrs        = 30

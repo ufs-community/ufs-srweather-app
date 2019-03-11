@@ -344,6 +344,7 @@ FV3SAR_DIR="$BASEDIR/fv3sar_workflow"
 USHDIR="$FV3SAR_DIR/ush"
 TEMPLATE_DIR="$USHDIR/templates"
 UPPFIX="$FV3SAR_DIR/fix/fix_upp"
+GSDFIX="$FV3SAR_DIR/fix/fix_gsd"
 
 case $MACHINE in
 #
@@ -687,6 +688,7 @@ transition_date_sec=$( date -d "2017-07-19 00 UTC" "+%s" )
 
 if [ "$IC_date_sec" -ge "$transition_date_sec" ]; then
   ictype="opsgfs"
+#  ictype="pfv3gfs"
 else
   ictype="oldgfs"
 fi
@@ -1271,6 +1273,7 @@ INIDIR="$INIDIR"
 RUNDIR="$RUNDIR"
 FIXgsm="$FIXgsm"
 UPPFIX="$UPPFIX"
+GSDFIX="$GSDFIX"
 WORKDIR_GRID="$WORKDIR_GRID"
 WORKDIR_OROG="$WORKDIR_OROG"
 WORKDIR_FLTR="$WORKDIR_FLTR"
