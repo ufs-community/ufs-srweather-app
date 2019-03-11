@@ -16,4 +16,6 @@ kms_per_meter = 1.0d/meters_per_km
 meters2_per_km2 = meters_per_km^2
 kms2_per_meter2 = 1.0d/meters2_per_km2
 
+degC_per_degF = 5.0d+0/9.0d+0
+degF_per_degC = 1.0d+0/degC_per_degF
 

@@ -456,30 +456,6 @@ begin
       lon_bdy_crnt_tile := bdy_info@x_bdy
       lat_bdy_crnt_tile := bdy_info@y_bdy
 ;
-; Append a missing value after the last boundary coordinate of the cur-
-; rent tile.  This missing value is used to delimit the boundary coordi-
-; nates of each tile.
-;
-; Actually, the missing value was useful in the plotting routines to 
-; prevent a line being drawn from the last point on the boundary of one
-; tile to the first point on the boundary of the next tile.  Now that we
-; are plotting each tile boundary as a separte polyline object, we don't
-; need to add this missing value.  
-;
-
-;
-; Try removing the following at some point.
-;
-if (insert_missing_delimiter) then
-      lon_bdy_crnt_tile \
-      := array_append_record(lon_bdy_crnt_tile, \
-         default_fillvalue(coord_data_type), 0)
-
-      lat_bdy_crnt_tile \
-      := array_append_record(lat_bdy_crnt_tile, \
-         default_fillvalue(coord_data_type), 0)
-end if
-;
 ; Now either initialize (if on the first specified tile) or append to 
 ; (if on the second, third, etc, specified tiles) the arrays that will 
 ; contain the coordinates of the boundary points on all specified tiles.  

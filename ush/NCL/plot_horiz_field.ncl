@@ -24,21 +24,20 @@ function plot_horiz_field( \
          lat_cntrs_unstruc:snumeric, \
          lon_verts_unstruc:snumeric, \
          lat_verts_unstruc:snumeric, \
-         lon_bdy_all_grids:snumeric, \
-         lat_bdy_all_grids:snumeric, \
+         lon_bdy_all_bdies:snumeric, \
+         lat_bdy_all_bdies:snumeric, \
          field_unstruc:snumeric, \
          grid_opts:logical, \
          bdy_opts:logical, \
-         plot_options:logical)
+         plot_opts:logical)
 
-local po, \
-      valid_map_projs, valid_vals, msg, \
+local valid_map_projs, valid_vals, msg, \
       num_grids, num_cells_all_grids, indx_start, indx_end, i, \
       wks_type, wks, \
       all_fields_missing, \
       rsrc, \
       lon_cntrs_crnt_grid_unstruc, lat_cntrs_crnt_grid_unstruc, \
-      lon_cntrs_crnt_grid_unstruc, lat_verts_crnt_grid_unstruc, \
+      lon_verts_crnt_grid_unstruc, lat_verts_crnt_grid_unstruc, \
       field_crnt_grid_unstruc, \
       field_missing, \
       contour_map, contour_overlay, \
@@ -56,23 +55,12 @@ local po, \
       lbar_x, lbar_y, lbar_h, lbar_w, lbar_fh, \
       opts, \
       viewport_info, vpXF_new, vpYF_new, vpWidthF_new, vpHeightF_new, \
-      num_bdies, \
-      show_grid_bdy, bdy_colors, bdy_line_thicknesses, bdy_dash_patterns, \
-      bdy_end_inds, bdy_start_inds, \
-      id_grid_bdies, resp, bdy_start_indx, bdy_end_indx, \
-      lon_crnt_bdy, lat_crnt_bdy, \
+      num_bdies, show_grid_bdy, temp, \
+      bdy_indx_start, bdy_indx_end, id_grid_bdies, \
+      resp, lon_crnt_bdy, lat_crnt_bdy, \
       plot_info
 
 begin
-;
-; **********************************************************************
-;
-; Copy plot_options into a local variable to avoid changing it on out-
-; put.
-;
-; **********************************************************************
-;
-  po := plot_options
 ;
 ; **********************************************************************
 ;
@@ -88,23 +76,23 @@ begin
 ; **********************************************************************
 ;
 ; If the map projection (map_proj) has not been specified as an attrib-
-; ute of po, set it to a default value.
+; ute of plot_opts, set it to a default value.
 ;
 ; **********************************************************************
 ;
-  if (.not. isatt(po, "map_proj")) then 
-    po@map_proj = "cyln"
+  if (.not. isatt(plot_opts, "map_proj")) then 
+    plot_opts@map_proj = "cyln"
   end if
 ;
 ; **********************************************************************
 ;
-; Verify that po@map_proj is set to a valid value.
+; Verify that plot_opts@map_proj is set to a valid value.
 ;
 ; **********************************************************************
 ;
   valid_map_projs = (/ "cyln", "ortho", "lamb" /)
 
-  if (.not. strcmp_exact(valid_map_projs, po@map_proj)) then
+  if (.not. strcmp_exact(valid_map_projs, plot_opts@map_proj)) then
 
     valid_vals \
     := char_dq \
@@ -112,8 +100,8 @@ begin
     + char_dq
 
     msg := char_nl + \
-"The map projection (po@map_proj) is not set to a valid value:" + char_nl + \
-"  po@map_proj = " + char_dq + po@map_proj + char_dq + char_nl + \
+"The map projection (plot_opts@map_proj) is not set to a valid value:" + char_nl + \
+"  plot_opts@map_proj = " + char_dq + plot_opts@map_proj + char_dq + char_nl + \
 "Valid values are:" + char_nl + \
 "  " + valid_vals + char_nl + \
 "Please provide a valid map projection.  " + \
@@ -126,27 +114,27 @@ begin
 ; **********************************************************************
 ;
 ; If the center of the specified map projection (map_proj_ctr) has not 
-; been specified as an attibute of po, set it to a default that depends 
-; on the map projection.  map_proj_ctr should be a 1-D array having two
-; elements.  These two elements are the longitude (in degrees east) and 
-; latitude (in degrees north), respectively of the center of the map 
-; projection.
+; been specified as an attibute of plot_opts, set it to a default that 
+; depends on the map projection.  map_proj_ctr should be a 1-D array 
+; having two elements.  These two elements are the longitude (in degrees
+; east) and latitude (in degrees north), respectively of the center of
+; the map projection.
 ;
 ; **********************************************************************
 ;
-  if (.not. isatt(po, "map_proj_ctr")) then 
+  if (.not. isatt(plot_opts, "map_proj_ctr")) then 
 
-    po@map_proj_ctr = new((/2/), "float")
+    plot_opts@map_proj_ctr = new((/ 2 /), "float")
 
-    if (strcmp_exact(po@map_proj, "cyln")) then
-      po@map_proj_ctr(0) = 0.
-      po@map_proj_ctr(1) = 0.
-    else if (strcmp_exact(po@map_proj, "ortho")) then
-      po@map_proj_ctr(0) = 0.
-      po@map_proj_ctr(1) = 0.
-    else if (strcmp_exact(po@map_proj, "lamb")) then
-      po@map_proj_ctr(0) = 0.
-      po@map_proj_ctr(1) = 90.
+    if (strcmp_exact(plot_opts@map_proj, "cyln")) then
+      plot_opts@map_proj_ctr(0) = 0.
+      plot_opts@map_proj_ctr(1) = 0.
+    else if (strcmp_exact(plot_opts@map_proj, "ortho")) then
+      plot_opts@map_proj_ctr(0) = 0.
+      plot_opts@map_proj_ctr(1) = 0.
+    else if (strcmp_exact(plot_opts@map_proj, "lamb")) then
+      plot_opts@map_proj_ctr(0) = 0.
+      plot_opts@map_proj_ctr(1) = 90.
     end if
     end if
     end if
@@ -155,39 +143,28 @@ begin
 ;
 ; **********************************************************************
 ;
-; If draw_grid has not been specified as an attribute of po, set it to 
-; a default value.
+; If left_str and right_str have not been specified as attributes of 
+; plot_opts, set them to default values.
 ;
 ; **********************************************************************
 ;
-;  if (.not. isatt(po, "draw_grid")) then 
-;    po@draw_grid = False
-;  end if
-;
-; **********************************************************************
-;
-; If left_str and right_str have not been specified as attributes of po,
-; set them to default values.
-;
-; **********************************************************************
-;
-  if (.not. isatt(po, "left_str")) then 
-    po@left_str = ""
+  if (.not. isatt(plot_opts, "left_str")) then 
+    plot_opts@left_str = ""
   end if
 
-  if (.not. isatt(po, "right_str")) then 
-    po@right_str = ""
+  if (.not. isatt(plot_opts, "right_str")) then 
+    plot_opts@right_str = ""
   end if
 ;
 ; **********************************************************************
 ;
-; If plot_subreg has not been specified as an attribute of po, set it to
-; a default value.
+; If plot_subreg has not been specified as an attribute of plot_opts, 
+; set it to a default value.
 ;
 ; **********************************************************************
 ;
-  if (.not. isatt(po, "plot_subreg")) then
-    po@plot_subreg = False
+  if (.not. isatt(plot_opts, "plot_subreg")) then
+    plot_opts@plot_subreg = False
   end if
 ;
 ; **********************************************************************
@@ -245,11 +222,18 @@ print("(nx_all_grids, ny_all_grids) = " + \
 ; **********************************************************************
 ;
 ; Set the flag that indicates whether fields on all grids have missing 
-; values everywhere.
+; values everywhere.  If this flag gets set to True, reset the contour
+; levels and labelbar (colorbar) labels to indicate that there are no
+; valid values in the fields.
 ;
 ; **********************************************************************
 ;
   all_fields_missing := all(ismissing(field_unstruc))
+
+  if (all_fields_missing) then
+    plot_opts@cnLevels := default_fillvalue(typeof(field_crnt_grid_unstruc))
+    plot_opts@lbLabels := "No Valid Field Values"
+  end if
 ;
 ; **********************************************************************
 ;
@@ -345,11 +329,6 @@ print("indx_end(i) = " + indx_end(i))
 ;
     field_crnt_grid_unstruc \
     := field_unstruc(indx_start(i):indx_end(i))
-
-    if (all_fields_missing) then
-      po@cnLevels := default_fillvalue(typeof(field_crnt_grid_unstruc))
-      po@lbLabels := "No Valid Field Values"
-    end if
 ;
 ; If all values of the field on the current grid are missing/fill val-
 ; ues, then reset at least one value to a non-missing value (e.g. zero),
@@ -431,17 +410,17 @@ print("indx_end(i) = " + indx_end(i))
 ; Set the latitude and longitude of the center of the map projection co-
 ; ordinate system.
 ;
-      rsrc@mpCenterLonF = po@map_proj_ctr(0)
-      rsrc@mpCenterLatF = po@map_proj_ctr(1)
+      rsrc@mpCenterLonF = plot_opts@map_proj_ctr(0)
+      rsrc@mpCenterLatF = plot_opts@map_proj_ctr(1)
 ;
 ; Set the map projection to use.  For the Lambert equal-area projection, 
 ; we rotate the projection such that it is centered at the North Pole.
 ;
-      if (strcmp_exact(po@map_proj, "cyln")) then
+      if (strcmp_exact(plot_opts@map_proj, "cyln")) then
         rsrc@mpProjection = "CylindricalEquidistant"
-      else if (strcmp_exact(po@map_proj, "ortho")) then
+      else if (strcmp_exact(plot_opts@map_proj, "ortho")) then
         rsrc@mpProjection = "Orthographic"
-      else if (strcmp_exact(po@map_proj, "lamb")) then
+      else if (strcmp_exact(plot_opts@map_proj, "lamb")) then
 ;        rsrc@mpProjection = "LambertEqualArea"
         rsrc@mpProjection = "LambertConformal"
       end if
@@ -458,18 +437,19 @@ print("indx_end(i) = " + indx_end(i))
 ;
       rsrc@mpGridAndLimbOn = True
 ;
-; If "plot_subreg" is specified, plot only a subregion.  Note that this has
-; an effect only for the cylindrical-equidistant map projection.            Is this True???
+; If plot_opts@plot_subreg is set to True, plot only a subregion.  Note
+; that this has an effect only for the cylindrical-equidistant map pro-
+; jection.                                                              <---  Is this True???
 ;
-      if (plot_subreg) then
+      if (plot_opts@plot_subreg) then
         rsrc@mpLimitMode = "LatLon"
-        rsrc@mpMinLonF = po@subreg_limits(0)
-        rsrc@mpMaxLonF = po@subreg_limits(1)
-        rsrc@mpMinLatF = po@subreg_limits(2)
-        rsrc@mpMaxLatF = po@subreg_limits(3)
+        rsrc@mpMinLonF = plot_opts@subreg_limits(0)
+        rsrc@mpMaxLonF = plot_opts@subreg_limits(1)
+        rsrc@mpMinLatF = plot_opts@subreg_limits(2)
+        rsrc@mpMaxLatF = plot_opts@subreg_limits(3)
       end if
   
-      if (strcmp_exact(po@map_proj, "lamb")) then
+      if (strcmp_exact(plot_opts@map_proj, "lamb")) then
   
         rsrc@mpLimitMode = "LatLon"
 ;        rsrc@mpMinLonF = -128
@@ -482,10 +462,10 @@ print("indx_end(i) = " + indx_end(i))
         rsrc@mpLambertMeridianF = -97.5
 
 ;        rsrc@mpLimitMode = "Corners"
-;        rsrc@mpLeftCornerLonF = po@lon_min
-;        rsrc@mpLeftCornerLatF = po@lat_min
-;        rsrc@mpRightCornerLonF = po@lon_max
-;        rsrc@mpRightCornerLatF = po@lat_max
+;        rsrc@mpLeftCornerLonF = plot_opts@lon_min
+;        rsrc@mpLeftCornerLatF = plot_opts@lat_min
+;        rsrc@mpRightCornerLonF = plot_opts@lon_max
+;        rsrc@mpRightCornerLatF = plot_opts@lat_max
         rsrc@mpLeftCornerLonF = -122
         rsrc@mpLeftCornerLatF = 15
         rsrc@mpRightCornerLonF = -65
@@ -526,13 +506,14 @@ print("indx_end(i) = " + indx_end(i))
 ;
 ; **********************************************************************
 ;
-; If contour lines are turned on, Set resources related to them.
+; If contour lines are turned on, set resources related to them.
 ;
 ; **********************************************************************
 ;
     if (rsrc@cnLinesOn) then
 ;
-; This
+; The cnLineLabelDensityF resource can be increased to increase the den-
+; sity of the contour line labels.
 ;
       rsrc@cnLineLabelDensityF = 2.0
 ;
@@ -584,7 +565,7 @@ print("indx_end(i) = " + indx_end(i))
 ; belbar/colorbar labels).
 ;
       rsrc@cnExplicitLineLabelsOn = True
-      rsrc@cnLineLabelStrings = po@lbLabels
+      rsrc@cnLineLabelStrings = plot_opts@lbLabels
 
     end if
 ;
@@ -601,13 +582,13 @@ print("indx_end(i) = " + indx_end(i))
 ;    rsrc@cnLevelSelectionMode = "EqualSpacedLevels"  ; This should not be used!  Investigate further.
 
     if (strcmp_exact(rsrc@cnLevelSelectionMode, "ManualLevels")) then
-      rsrc@cnMinLevelValF = po@cnLevel_min
-      rsrc@cnMaxLevelValF = po@cnLevel_max
-      rsrc@cnLevelSpacingF = po@cnStep
+      rsrc@cnMinLevelValF = plot_opts@cnLevel_min
+      rsrc@cnMaxLevelValF = plot_opts@cnLevel_max
+      rsrc@cnLevelSpacingF = plot_opts@cnStep
     else if (strcmp_exact(rsrc@cnLevelSelectionMode, "ExplicitLevels")) then
-      rsrc@cnLevels = po@cnLevels
+      rsrc@cnLevels = plot_opts@cnLevels
 ;    else if (strcmp_exact(rsrc@cnLevelSelectionMode, "EqualSpacedLevels")) then
-;      rsrc@cnMaxLevelCount = po@nLevs
+;      rsrc@cnMaxLevelCount = plot_opts@nLevs
 ;      rsrc@cnMaxLevelCount = 10
     else
       msg := char_nl + \
@@ -637,7 +618,7 @@ print("indx_end(i) = " + indx_end(i))
 ; **********************************************************************
 ;
     rsrc@cnExplicitLabelBarLabelsOn = True
-    rsrc@lbLabelStrings = po@lbLabels
+    rsrc@lbLabelStrings = plot_opts@lbLabels
 ;
 ; **********************************************************************
 ;
@@ -665,25 +646,25 @@ print("indx_end(i) = " + indx_end(i))
 ; **********************************************************************
 ;
 ; If available (e.g. from a previous call to this function) as attri-
-; butes of po, retrieve the viewport parameters to use for this plot and
-; set them to corresponding attributes in rsrc.  These viewport values
-; consist of the NDC coordinates of the lower-left corner of the view-
-; port and the width and height of the viewport (also in NDC units).  
+; butes of plot_opts, retrieve the viewport parameters to use for this 
+; plot and set them to corresponding attributes in rsrc.  These viewport
+; values consist of the NDC coordinates of the lower-left corner of the 
+; viewport and the width and height of the viewport (also in NDC units).  
 ; Note that the viewport for a contour plot conists of the rectagle de-
 ; lineated by the x and y axes.  If the viewport parameters are not spe-
-; cified as attributes of po, they will be set by the plotting routine
-; [gsn_csm_contour_map(...)].
+; cified as attributes of plot_opts, they will be set by the plotting 
+; routine [gsn_csm_contour_map(...)].
 ;
 ; **********************************************************************
 ;
-    if (isatt(po, "vpXF") .and. \
-        isatt(po, "vpYF") .and. \
-        isatt(po, "vpWidthF") .and. \
-        isatt(po, "vpHeightF")) then
-      rsrc@vpXF = po@vpXF
-      rsrc@vpYF = po@vpYF
-      rsrc@vpWidthF = po@vpWidthF
-      rsrc@vpHeightF = po@vpHeightF
+    if (isatt(plot_opts, "vpXF") .and. \
+        isatt(plot_opts, "vpYF") .and. \
+        isatt(plot_opts, "vpWidthF") .and. \
+        isatt(plot_opts, "vpHeightF")) then
+      rsrc@vpXF = plot_opts@vpXF
+      rsrc@vpYF = plot_opts@vpYF
+      rsrc@vpWidthF = plot_opts@vpWidthF
+      rsrc@vpHeightF = plot_opts@vpHeightF
     end if
 ;
 ; **********************************************************************
@@ -781,7 +762,7 @@ print("indx_end(i) = " + indx_end(i))
   txres := True
   txres@txFontHeightF = FontHeightF_LR
   txres@txFontColor = FontColor_LR
-  txid_left_str = gsn_create_text(wks, po@left_str, txres)
+  txid_left_str = gsn_create_text(wks, plot_opts@left_str, txres)
 
   amres := True
   amres@amParallelPosF = -0.5
@@ -810,7 +791,7 @@ print("indx_end(i) = " + indx_end(i))
   txres@txFontHeightF = FontHeightF_LR
   txres@txFontColor = FontColor_LR
   txres@txJust = "BottomLeft"
-  txid_right_str = gsn_create_text(wks, po@right_str, txres)
+  txid_right_str = gsn_create_text(wks, plot_opts@right_str, txres)
 
   amres := True
   amres@amParallelPosF = 0.5
@@ -859,7 +840,7 @@ print("indx_end(i) = " + indx_end(i))
   txres := True
   txres@txFontHeightF = FontHeightF_C
   txres@txFontColor = FontColor_C
-  txid_cntr_str = gsn_create_text(wks, po@main_str, txres)
+  txid_cntr_str = gsn_create_text(wks, plot_opts@main_str, txres)
 
   amres := True
   amres@amParallelPosF = 0.0  ; Horizontally centered above plot.
@@ -879,20 +860,20 @@ print("indx_end(i) = " + indx_end(i))
   end getvalues 
   lb_object = pmAnnoViews(0)
 
-  if (isatt(po, "lbar_x") .and. \
-      isatt(po, "lbar_y") .and. \
-      isatt(po, "lbar_w") .and. \
-      isatt(po, "lbar_h") .and. \
-      isatt(po, "lbar_fh")) then
+  if (isatt(plot_opts, "lbar_x") .and. \
+      isatt(plot_opts, "lbar_y") .and. \
+      isatt(plot_opts, "lbar_w") .and. \
+      isatt(plot_opts, "lbar_h") .and. \
+      isatt(plot_opts, "lbar_fh")) then
 
     rsrc@lbAutoManage = False
 
     setvalues lb_object 
-      "vpXF"                 : po@lbar_x
-      "vpYF"                 : po@lbar_y
-      "vpHeightF"            : po@lbar_h
-      "vpWidthF"             : po@lbar_w
-      "lbLabelFontHeightF"   : po@lbar_fh
+      "vpXF"                 : plot_opts@lbar_x
+      "vpYF"                 : plot_opts@lbar_y
+      "vpHeightF"            : plot_opts@lbar_h
+      "vpWidthF"             : plot_opts@lbar_w
+      "lbLabelFontHeightF"   : plot_opts@lbar_fh
     end setvalues 
 
   end if
@@ -935,15 +916,14 @@ print("indx_end(i) = " + indx_end(i))
 ;
 ; **********************************************************************
 ;
-  if (isatt(po, "resize_plot") .and. \
-      isatt(po, "bounding_box_size_NDC") .and. \
-      po@resize_plot) then
+  if (isatt(plot_opts, "resize_plot") .and. \
+      isatt(plot_opts, "bounding_box_size_NDC") .and. \
+      plot_opts@resize_plot) then
 
     opts := True
     opts@verbose = False
-    viewport_info \
-    := get_resized_viewport_dims( \
-       contour_map, po@bounding_box_size_NDC, opts)
+    viewport_info := get_resized_viewport_dims( \
+                     contour_map, plot_opts@bounding_box_size_NDC, opts)
   
     vpXF_new = viewport_info@vpXF
     vpYF_new = viewport_info@vpYF
@@ -961,10 +941,9 @@ print("indx_end(i) = " + indx_end(i))
 ;
 ; **********************************************************************
 ;
-; If bdy_opts is set to True, draw grid boundaries.  
-;
-; Note that bdy_opts should be set to True only if there is at least one
-; valid set of boundary coordinates to plot.
+; If bdy_opts is set to True, draw grid boundaries.  Note that bdy_opts
+; should be set to True only if there is at least one valid set of 
+; boundary coordinates to plot.
 ;
 ; **********************************************************************
 ;
@@ -972,33 +951,47 @@ print("indx_end(i) = " + indx_end(i))
 
     num_bdies = bdy_opts@num_bdies
     show_grid_bdy = bdy_opts@plot_bdy
-    bdy_colors = bdy_opts@bdy_colors
-    bdy_line_thicknesses = bdy_opts@bdy_line_thicknesses
-    bdy_dash_patterns = bdy_opts@bdy_dash_patterns
-  
-    bdy_end_inds := ind(ismissing(lon_bdy_all_grids)) - 1
 
-    bdy_start_inds := bdy_end_inds + 2
-    bdy_start_inds := array_append_record((/ 0 /), bdy_start_inds, 0)
-    bdy_start_inds := bdy_start_inds(0:num_bdies-1)
+    if (.not. isatt(bdy_opts, "bdy_colors")) then
+      temp := new((/ num_bdies /), "string")
+      temp = "black"
+      bdy_opts@bdy_colors := temp
+    end if
+
+    if (.not. isatt(bdy_opts, "bdy_line_thicknesses")) then
+      temp := new((/ num_bdies /), "float")
+      temp = 4.0
+      bdy_opts@bdy_line_thicknesses := temp
+    end if
+
+    if (.not. isatt(bdy_opts, "bdy_dash_patterns")) then
+      temp := new((/ num_bdies /), "integer")
+      temp = 0
+      bdy_opts@bdy_dash_patterns := temp
+    end if
 
     id_grid_bdies := new(num_bdies, "graphic")
+    bdy_indx_end := -1
 
     do i=0, num_bdies-1
-  
+ 
+      bdy_indx_start := bdy_indx_end + 1
+      bdy_indx_end \
+      := bdy_indx_start + bdy_opts@num_bdy_pts_all_bdies(i) - 1
+
       if (show_grid_bdy(i)) then
+print("") 
+print("i = " + i) 
+print("bdy_indx_start = " + bdy_indx_start)
+print("bdy_indx_end = " + bdy_indx_end)
 
         resp := True
-        resp@gsLineColor = bdy_colors(i)
-        resp@gsLineThicknessF = bdy_line_thicknesses(i)
-        resp@gsLineDashPattern = bdy_dash_patterns(i)
-    
-        bdy_start_indx := bdy_start_inds(i)
-        bdy_end_indx := bdy_end_inds(i)
-    
-        lon_crnt_bdy := lon_bdy_all_grids(bdy_start_indx:bdy_end_indx)
-        lat_crnt_bdy := lat_bdy_all_grids(bdy_start_indx:bdy_end_indx)
-    
+        resp@gsLineColor = bdy_opts@bdy_colors(i)
+        resp@gsLineThicknessF = bdy_opts@bdy_line_thicknesses(i)
+        resp@gsLineDashPattern = bdy_opts@bdy_dash_patterns(i)
+        lon_crnt_bdy := lon_bdy_all_bdies(bdy_indx_start:bdy_indx_end)
+        lat_crnt_bdy := lat_bdy_all_bdies(bdy_indx_start:bdy_indx_end)
+
         id_grid_bdies(i) \
         = gsn_add_polyline( \
           wks, contour_map, lon_crnt_bdy, lat_crnt_bdy, resp)

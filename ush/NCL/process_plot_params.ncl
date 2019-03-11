@@ -382,6 +382,17 @@ example_usage_and_help_str
 ;
 ; **********************************************************************
 ;
+; If show_tile_bdies has been set to True and tile_bdy_color has not 
+; been specified on the command line, set the latter to a default value.
+;
+; **********************************************************************
+;
+  if (show_tile_bdies .and. .not. isvar("tile_bdy_color")) then
+    tile_bdy_color := "blue"
+  end if
+;
+; **********************************************************************
+;
 ; If show_tile_grids has not been specified on the command line, set it
 ; to False.
 ;
@@ -480,6 +491,17 @@ example_usage_and_help_str
 ;
   if (.not. isvar("show_RAP_bdy")) then
     show_RAP_bdy = False
+  end if
+;
+; **********************************************************************
+;
+; If show_RAP_bdy has been set to True and RAP_bdy_color has not been 
+; specified on the command line, set the latter to a default value.
+;
+; **********************************************************************
+;
+  if (show_RAP_bdy .and. .not. isvar("RAP_bdy_color")) then
+    RAP_bdy_color := "red"
   end if
 ;
 ; **********************************************************************
@@ -919,27 +941,36 @@ end if
   plot_params@cres = cres
   plot_params@run_dir = run_dir
   plot_params@work_dir = work_dir
+
   plot_params@horiz_dist_units = horiz_dist_units
   plot_params@horiz_area_units = horiz_area_units
+
   plot_params@show_tile_bdies = show_tile_bdies
+  plot_params@tile_bdy_color = tile_bdy_color
   plot_params@show_tile_grids = show_tile_grids
+  plot_params@field_name = field_name
+
+  plot_params@show_RAP_bdy = show_RAP_bdy
+  plot_params@RAP_bdy_color = RAP_bdy_color
+  plot_params@show_RAP_grid = show_RAP_grid
   plot_params@plot_RAP_field = plot_RAP_field
   plot_params@field_name_RAP = field_name_RAP
-  plot_params@show_RAP_bdy = show_RAP_bdy
-  plot_params@show_RAP_grid = show_RAP_grid
+
   plot_params@graphics_type = graphics_type
   plot_params@map_proj = map_proj
   plot_params@map_proj_ctr = map_proj_ctr
+
   plot_params@remove_rgnl_halo = remove_rgnl_halo
+
   plot_params@plot_subreg = plot_subreg
   plot_params@subreg_limits = subreg_limits
 
-  if (strcmp_exact(caller, "plot_grid")) then
-    plot_params@field_name = field_name
-  else if (strcmp_exact(caller, "plot_fields")) then
-; Add attributes specific to calling plot_fields.
-  end if
-  end if
+;  if (strcmp_exact(caller, "plot_grid")) then
+;    plot_params@field_name = field_name
+;  else if (strcmp_exact(caller, "plot_fields")) then
+;; Add attributes specific to calling plot_fields.
+;  end if
+;  end if
 
   return(plot_params)
 

@@ -20,9 +20,14 @@ local str_out
 
 begin
 
-  str_out = new((/num_repeats/), string)
-  str_out = str_in                ; This must be an equal sign, not a colon-equal.
-  str_out := str_concat(str_out)  ; This must be a colon-equal sign, not an equal.
+  if (num_repeats .eq. 0) then
+    str_out = ""
+  else
+    str_out = new((/num_repeats/), string)
+    str_out = str_in                ; This must be an equal sign, not a colon-equal.
+    str_out := str_concat(str_out)  ; This must be a colon-equal sign, not an equal.
+  end if
+
   return(str_out)
 
 end
