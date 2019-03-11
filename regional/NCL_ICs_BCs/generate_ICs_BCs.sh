@@ -31,7 +31,9 @@ plot_SARFV3_fields="True"
 #grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/rgnl_C384_strch_2p0_rfn_3_HRRR/grid"
 #grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/rgnl_C384_strch_1p8_rfn_3_HRRR/grid"
 #grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/rgnl_C384_strch_1p8_rfn_5_HRRR/grid"
-grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/rgnl_C384_strch_0p7_rfn_3_test_all/grid"
+#grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/rgnl_C384_strch_0p7_rfn_3_test_all/grid"
+grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/rgnl_C384_strch_1p5_rfn_3_descriptive_str/filter_topo"
+grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/C384_S0p63_RR3_RAP_new_chgres_fv3sar07/shave"
 
 RAP_grid_fn="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.RAP.nc"
 #RAP_grid_fn="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.HRRR.nc"
@@ -49,7 +51,7 @@ ncl -n generate_RAP_based_ICs_BCs.ncl \
   plot_SARFV3_fields=${plot_SARFV3_fields} \
   'regions=[/ [/ "GLOBE",    (/-180,  180, -90,  90/), False, False /], \
               [/ "SARFV3",   (/-140,  -60,  20,  55/), False, False /], \
-              [/ "SARFV3NW", (/-135, -130,  45,  50/),  True, True  /], \
+              [/ "SARFV3NW", (/-145, -135,  50,  60/),  True, True  /], \
               [/ "SARFV3SE", (/ -75,  -70,  20,  25/),  True, False /], \
               [/ "dummy_list_element_dont_remove" /] \
            /]' \
@@ -286,7 +288,7 @@ ncl -n plot_grid.ncl \
 fi
 
 
-if [ 1 = 1 ]; then
+if [ 0 = 1 ]; then
 #
 #ncl -n plot_fields.ncl \
 ncl -n plot_grid.ncl \

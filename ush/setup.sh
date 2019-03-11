@@ -104,27 +104,15 @@ fi
 #
 MACHINE=$( printf "%s" "$MACHINE" | sed -e 's/\(.*\)/\U\1/' )
 
-if [ "$MACHINE" != "WCOSS_C" ] && \
-   [ "$MACHINE" != "WCOSS" ] && \
-   [ "$MACHINE" != "DELL" ] && \
-   [ "$MACHINE" != "THEIA" ] && \
-   [ "$MACHINE" != "JET" ] && \
-   [ "$MACHINE" != "ODIN" ] && \
-   [ "$MACHINE" != "CHEYENNE" ]; then
-
-  print_err_msg_exit "\
+valid_MACHINES=("WCOSS_C" "WCOSS" "DELL" "THEIA" "JET" "ODIN" "CHEYENNE")
+iselementof "$MACHINE" valid_MACHINES || { \
+valid_MACHINES_str=$(printf "\"%s\" " "${valid_MACHINES[@]}");
+print_err_msg_exit "\
 Machine specified in MACHINE is not supported:
   MACHINE = \"$MACHINE\"
 MACHINE must be set to one of the following:
-  \"WCOSS_C\"
-  \"WCOSS\"
-  \"DELL\"
-  \"THEIA\"
-  \"JET\"
-  \"ODIN\"
-  \"CHEYENNE\""
-
-fi
+  $valid_MACHINES_str
+"; }
 #
 #-----------------------------------------------------------------------
 #
@@ -225,15 +213,16 @@ gtype="regional"
 #
 #-----------------------------------------------------------------------
 #
-if [ "$predef_domain" != "" ] && \
-   [ "$predef_domain" != "RAP" ] && \
-   [ "$predef_domain" != "HRRR" ]; then
+valid_predef_domains=("RAP" "HRRR" "EMCCONUS")
+if [ ! -z ${predef_domain} ]; then
+  iselementof "$predef_domain" valid_predef_domains || { \
+  valid_predef_domains_str=$(printf "\"%s\" " "${valid_predef_domains[@]}");
   print_err_msg_exit "\
 Predefined regional domain specified in predef_domain is not supported:
   predef_domain = \"$predef_domain\"
 predef_domain must be set either to an empty string or to one of the following:
-  \"RAP\"
-  \"HRRR\""
+  $valid_predef_domains_str
+"; }
 fi
 #
 #-----------------------------------------------------------------------
@@ -245,14 +234,19 @@ fi
 #
 case $predef_domain in
 #
-"RAP")   # The RAP domain.
+"RAP")        # The RAP domain.
 #
   RES="384"
   ;;
 #
-"HRRR")  # The HRRR domain.
+"HRRR")       # The HRRR domain.
 #
   RES="384"
+  ;;
+#
+"EMCCONUS")   # EMC's C768 domain over the CONUS.
+#
+  RES="768"
   ;;
 #
 esac
@@ -263,21 +257,15 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-if [ "$RES" != "48" ] && \
-   [ "$RES" != "96" ] && \
-   [ "$RES" != "192" ] && \
-   [ "$RES" != "384" ] && \
-   [ "$RES" != "768" ] && \
-   [ "$RES" != "1152" ] && \
-   [ "$RES" != "3072" ]; then
-
-  print_err_msg_exit "\
+valid_RESES=("48" "96" "192" "384" "768" "1152" "3072")
+iselementof "$RES" valid_RESES || { \
+valid_RESES_str=$(printf "\"%s\" " "${valid_RESES[@]}");
+print_err_msg_exit "\
 Number of grid cells per tile (in each horizontal direction) specified in
 RES is not supported:
-  RES = $RES
-RES must be one of:  48  96  192  384  768  1152  3072"
-
-fi
+  RES = \"$RES\"
+RES must be one of the following:  $valid_RESES_str
+"; }
 #
 #-----------------------------------------------------------------------
 #
@@ -310,7 +298,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Extract from CDATE the starting year, month, day, and hour of the
-# forecast.  These areneeded below for various operations.`
+# forecast.  These are needed below for various operations.
 #
 #-----------------------------------------------------------------------
 #
@@ -335,8 +323,8 @@ YMD=${CDATE:0:8}
 # ed.
 #
 # FIXgsm:
-# System directory from which to copy fixed files that are needed as in-
-# puts to the FV3SAR model.
+# System directory in which the fixed (i.e. time-independent) files that
+# are needed to run the FV3SAR model are located.
 #
 #-----------------------------------------------------------------------
 #
@@ -442,7 +430,7 @@ The forecast length is not evenly divisible by the BC update interval:
 
 else
 
-  BC_times_hrs=($( seq 0 $BC_update_intvl_hrs $fcst_len_hrs ))
+  BC_update_times_hrs=($( seq 0 $BC_update_intvl_hrs $fcst_len_hrs ))
 
 fi
 #
@@ -571,6 +559,42 @@ case $predef_domain in
   fi
   ;;
 #
+"EMCCONUS")  # EMC's C768 domain over the CONUS.
+#
+# Prepend the string "_EMCCONUS" to run_title.
+#
+  run_title="_EMCCONUS${run_title}"
+#
+# Reset grid parameters.
+#
+  lon_ctr_T6=-97.5
+  lat_ctr_T6=38.5
+  stretch_fac=1.5
+  refine_ratio=3
+
+  num_margin_cells_T6_left=61
+  istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+
+  num_margin_cells_T6_right=67
+  iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+
+  num_margin_cells_T6_bottom=165
+  jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+
+  num_margin_cells_T6_top=171
+  jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+#
+# If the write-component is being used and the variable (WRTCMP_PARAMS_-
+# TEMPLATE_FN) containing the name of the template file that specifies
+# various write-component parameters has not been specified or has been
+# set to an empty string, reset it to the preexisting template file for
+# the RAP domain.
+#
+  if [ "$quilting" = ".true." ]; then
+    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcomp_EMCCONUS"}
+  fi
+  ;;
+#
 esac
 #
 #-----------------------------------------------------------------------
@@ -656,9 +680,9 @@ check_for_preexist_dir $RUNDIR $preexisting_dir_method
 #-----------------------------------------------------------------------
 #
 # Set the directory INIDIR in which we will store the analysis (at the
-# initial time CDATE) and forecast (at the boundary condition times)
-# files.  These are the files that will be used to generate surface
-# fields and initial and boundary conditions for the FV3SAR.
+# initial time CDATE) and forecast (at the boundary update times) files.  
+# These are the files that will be used to generate surface fields and 
+# initial and boundary conditions for the FV3SAR.
 #
 #-----------------------------------------------------------------------
 #
@@ -925,19 +949,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+
 print_info_msg_verbose "\
-Original values of halo width on tile 6 supergrid and on tile 7 are:
+Original values of the halo width on the tile 6 supergrid and on the 
+tile 7 grid are:
   nhw_T6SG = $nhw_T6SG
-  nhw_T7 = $nhw_T7"
+  nhw_T7   = $nhw_T7"
 
 nhw_T6SG=$(( $istart_rgnl_T6SG - $istart_rgnl_wide_halo_T6SG ))
 nhw_T6=$(( $nhw_T6SG/2 ))
 nhw_T7=$(( $nhw_T6*$refine_ratio ))
 
 print_info_msg_verbose "\
-Values of halo width on tile 6 supergrid and on tile 7 AFTER adjustments are:
+Values of the halo width on the tile 6 supergrid and on the tile 7 grid 
+AFTER adjustments are:
   nhw_T6SG = $nhw_T6SG
-  nhw_T7 = $nhw_T7"
+  nhw_T7   = $nhw_T7"
 #
 #-----------------------------------------------------------------------
 #
@@ -948,23 +975,67 @@ Values of halo width on tile 6 supergrid and on tile 7 AFTER adjustments are:
 #
 #-----------------------------------------------------------------------
 #
-nx_T6SG=$(( $iend_rgnl_T6SG - $istart_rgnl_T6SG + 1 ))
-nx_T6=$(( $nx_T6SG/2 ))
-nx_T7=$(( $nx_T6*$refine_ratio ))
+nx_rgnl_T6SG=$(( $iend_rgnl_T6SG - $istart_rgnl_T6SG + 1 ))
+nx_rgnl_T6=$(( $nx_rgnl_T6SG/2 ))
+nx_T7=$(( $nx_rgnl_T6*$refine_ratio ))
 
-ny_T6SG=$(( $jend_rgnl_T6SG - $jstart_rgnl_T6SG + 1 ))
-ny_T6=$(( $ny_T6SG/2 ))
-ny_T7=$(( $ny_T6*$refine_ratio ))
+ny_rgnl_T6SG=$(( $jend_rgnl_T6SG - $jstart_rgnl_T6SG + 1 ))
+ny_rgnl_T6=$(( $ny_rgnl_T6SG/2 ))
+ny_T7=$(( $ny_rgnl_T6*$refine_ratio ))
+#
+# The following are set only for informational purposes.
+#
+nx_T6=$RES
+ny_T6=$RES
+nx_T6SG=$(( $nx_T6*2 ))
+ny_T6SG=$(( $ny_T6*2 ))
+
+prime_factors_nx_T7=$( factor $nx_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
+prime_factors_ny_T7=$( factor $ny_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
 
 print_info_msg_verbose "\
-nx_T7 = $nx_T7 \
-(istart_rgnl_T6SG = $istart_rgnl_T6SG, \
-iend_rgnl_T6SG = $iend_rgnl_T6SG)"
+The number of cells in the two horizontal directions (x and y) on the 
+parent tile's (tile 6) grid and supergrid are:
+  nx_T6 = $nx_T6
+  ny_T6 = $ny_T6
+  nx_T6SG = $nx_T6SG
+  ny_T6SG = $ny_T6SG
 
-print_info_msg_verbose "\
-ny_T7 = $ny_T7 \
-(jstart_rgnl_T6SG = $jstart_rgnl_T6SG, \
-jend_rgnl_T6SG = $jend_rgnl_T6SG)"
+The number of cells in the two horizontal directions on the tile 6 grid
+and supergrid that the regional domain (tile 7) WITHOUT A HALO encompasses
+are:
+  nx_rgnl_T6 = $nx_rgnl_T6
+  ny_rgnl_T6 = $ny_rgnl_T6
+  nx_rgnl_T6SG = $nx_rgnl_T6SG
+  ny_rgnl_T6SG = $ny_rgnl_T6SG
+
+The starting and ending i and j indices on the tile 6 grid used to 
+generate this regional grid are:
+  istart_rgnl_T6 = $istart_rgnl_T6
+  iend_rgnl_T6   = $iend_rgnl_T6
+  jstart_rgnl_T6 = $jstart_rgnl_T6
+  jend_rgnl_T6   = $jend_rgnl_T6
+
+The corresponding starting and ending i and j indices on the tile 6 
+supergrid are:
+  istart_rgnl_T6SG = $istart_rgnl_T6SG
+  iend_rgnl_T6SG   = $iend_rgnl_T6SG
+  jstart_rgnl_T6SG = $jstart_rgnl_T6SG
+  jend_rgnl_T6SG   = $jend_rgnl_T6SG
+
+The refinement ratio (ratio of the number of cells in tile 7 that abut
+a single cell in tile 6) is:
+  refine_ratio = $refine_ratio
+
+The number of cells in the two horizontal directions on the regional 
+tile's/domain's (tile 7) grid WITHOUT A HALO are:
+  nx_T7 = $nx_T7
+  ny_T7 = $ny_T7
+
+The prime factors of nx_T7 and ny_T7 are (useful for determining an MPI
+task layout, i.e. layout_x and layout_y):
+  prime_factors_nx_T7: $prime_factors_nx_T7
+  prime_factors_ny_T7: $prime_factors_ny_T7"
 #
 #-----------------------------------------------------------------------
 #
@@ -1231,7 +1302,7 @@ var_list=$( sed -r \
 while read crnt_line; do
   var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p" )
   var_value="${!var_name}"
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}" "$VERBOSE"
+  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}"
 done <<< "${var_list}"
 #
 #-----------------------------------------------------------------------
@@ -1307,7 +1378,7 @@ ny_T7="$ny_T7"
 #
 #-----------------------------------------------------------------------
 #
-# Initial date and time and boundary condition times.
+# Initial date and time and boundary update times.
 #
 #-----------------------------------------------------------------------
 #
@@ -1316,7 +1387,7 @@ MM="$MM"
 DD="$DD"
 HH="$HH"
 YMD="$YMD"
-BC_times_hrs=(${BC_times_hrs[@]})  # BC_times_hrs is an array, even if it has only one element.
+BC_update_times_hrs=(${BC_update_times_hrs[@]})  # BC_update_times_hrs is an array, even if it has only one element.
 #
 #-----------------------------------------------------------------------
 #
@@ -1327,6 +1398,18 @@ BC_times_hrs=(${BC_times_hrs[@]})  # BC_times_hrs is an array, even if it has on
 ncores_per_node="$ncores_per_node"
 PE_MEMBER01="$PE_MEMBER01"
 EOM
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating successful completion of script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\
+
+========================================================================
+Setup script completed successfully!!!
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #

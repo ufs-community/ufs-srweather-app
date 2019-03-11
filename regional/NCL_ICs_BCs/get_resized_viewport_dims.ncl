@@ -1,6 +1,6 @@
 ; **********************************************************************
 ;
-; File name: get_resized_viewport.ncl
+; File name: get_resized_viewport_dims.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
@@ -9,9 +9,9 @@
 ;                                                                      *
 ; **********************************************************************
 
-undef("get_resized_viewport")
+undef("get_resized_viewport_dims")
 
-function get_resized_viewport( \
+function get_resized_viewport_dims( \
          plot:graphic, 
          bb_size_new:snumeric, \
          opts:logical)
@@ -43,7 +43,7 @@ begin
 ; The local variable "verbose" determines whether informational messag-
 ; es are printed out to the screen.  If the options argument opts has an
 ; attribute named verbose, then set the local variable verbose to this 
-; attribute.  Otherwise, set the local verbose variable to False.
+; attribute.  Otherwise, set verbose to False.
 ;                                                                      *
 ; **********************************************************************
 ;
@@ -55,7 +55,7 @@ begin
 
   if (verbose) then
     print("")
-    print("Start of output from function get_resized_viewport(...):")
+    print("Start of output from function get_resized_viewport_dims(...):")
     print("=======================================================")
   end if
 ;
@@ -97,7 +97,20 @@ begin
 ;
 ; **********************************************************************
 ;                                                                      *
-; Calculate the NDC width and height of the original plot.
+; Calculate the NDC width and height of the bounding box of the original
+; (old) plot.
+;
+; Note that a bounding box is the smallest rectangle in NDC space that
+; contains all of a particular object's attributes.  For a 2-D XY or 
+; contour plot (which is what we're considering here), this would in-
+; clude the area containing the tickmarks, tickmark labels, the main 
+; title, axis titles, legend, and anything else associated with the 
+; plot.  This is in contrast to the viewport (which we will also consi-
+; der below), which contains only the area within the axes.  See 
+;
+;   https://www.ncl.ucar.edu/Applications/viewport.shtml
+; 
+; for examples.
 ;                                                                      *
 ; **********************************************************************
 ;
@@ -106,26 +119,22 @@ begin
 ;
 ; **********************************************************************
 ;                                                                      *
-; Set or calculate the NDC width, height, and coordinates of the new re-
-; sized plot.
+; Set or calculate the NDC width, height, and coordinates of the bound-
+; ing box of the new resized plot.
 ;                                                                      *
 ; **********************************************************************
 ;
   if (bb_width_old .le. bb_height_old) then
     bb_height_new = bb_size_new
     bb_width_new = (bb_width_old/bb_height_old)*bb_height_new
-    bb_lft_new = (1 - bb_width_new)/2.0
-    bb_rgt_new = bb_lft_new + bb_width_new
-    bb_top_new = (1 + bb_height_new)/2.0
-    bb_bot_new = bb_top_new - bb_height_new
   else
     bb_width_new = bb_size_new
     bb_height_new = (bb_height_old/bb_width_old)*bb_width_new
-    bb_lft_new = (1 - bb_width_new)/2.0
-    bb_rgt_new = bb_lft_new + bb_width_new
-    bb_top_new = (1 + bb_height_new)/2.0
-    bb_bot_new = bb_top_new - bb_height_new
   end if
+  bb_lft_new = (1 - bb_width_new)/2.0
+  bb_rgt_new = bb_lft_new + bb_width_new
+  bb_top_new = (1 + bb_height_new)/2.0
+  bb_bot_new = bb_top_new - bb_height_new
 
   if (verbose) then
     print("")
@@ -163,6 +172,13 @@ begin
 ;                                                                      *
 ; Calculate the NDC coordinates of the top left point of the viewport of
 ; the new (resized) plot and the NDC width and height of the new plot.
+;
+; Recall that the bounding box is larger than the viewport; in particu-
+; lar, it includes the viewport as well as the axis titles, plot title, 
+; etc.  Thus, the variables dx_old and dy_old calculated below are the
+; horizontal and vertical offsets in the original plot from the bounda-
+; ries of the bounding box to those of the viewport, and dx_new and dy_-
+; new are the analogous quantities for the new (resized) plot.
 ;                                                                      *
 ; **********************************************************************
 ;

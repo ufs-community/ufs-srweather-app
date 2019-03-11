@@ -8,8 +8,9 @@
 # Set machine and queue parameters.  Definitions:
 #
 # MACHINE:
-# Machine on which we are running.  Must be one of "WCOSS_C", "WCOSS",
-# "DELL", "THEIA", "JET", "ODIN", and "CHEYENNE".
+# Machine on which the workflow will run.  Valid values are "WCOSS_C", 
+# "WCOSS", "DELL", "THEIA", "JET", "ODIN", and "CHEYENNE".  New values 
+# may be added as the workflow is ported to additional machines.
 #
 # ACCOUNT:
 # The account under which to submit jobs to the queue.

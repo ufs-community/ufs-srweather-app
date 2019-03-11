@@ -23,12 +23,12 @@ function set_file_param() {
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$#" -ne 4 ]; then
+  if [ "$#" -ne 3 ]; then
     print_err_msg_exit "\
 Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
 Usage:
 
-  ${FUNCNAME[0]} file_full_path param value verbose
+  ${FUNCNAME[0]} file_full_path param value
 
 where the arguments are defined as follows:
 
@@ -39,10 +39,8 @@ where the arguments are defined as follows:
   Name of the parameter whose value will be set.
 
   value:
-  Value to set the parameter to.
+  Value to set the parameter to."
 
-  verbose:
-  Whether to be verbose (\"true\" or \"false\")."
   fi
 #
 #-----------------------------------------------------------------------
@@ -54,7 +52,6 @@ where the arguments are defined as follows:
   local file_full_path="$1"
   local param="$2"
   local value="$3"
-  local verbose="$4"
 #
 #-----------------------------------------------------------------------
 #
@@ -66,7 +63,7 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-# If verbose is set to "true", print out an informational message.
+# If VERBOSE is set to "true", print out an informational message.
 #
 #-----------------------------------------------------------------------
 #
@@ -76,23 +73,27 @@ Setting parameter \"$param\" in file \"$file\"..."
 #-----------------------------------------------------------------------
 #
 # The procedure we use to set the value of the specified parameter de-
-# pends on the file the parameter is in.  Compare the file name to seve-
-# ral known file names and issue the appropriate sed command.  See the
-# configuration file for definitions of the known file names.
+# pends on the file the parameter is in.  Compare the file name to sev-
+# eral known file names and set the regular expression to search for
+# (regex_search) and the one to replace with (regex_replace) according-
+# ly.  See the default configuration file (config_defaults.sh) for defi-
+# nitions of the known file names.
 #
 #-----------------------------------------------------------------------
 #
-  local regex_orig=""
+  local regex_search=""
+  local regex_replace=""
+
   case $file in
 #
   "$WFLOW_XML_FN")
-    regex_orig="(^\s*<!ENTITY\s+$param\s*\")(.*)(\">.*)"
-    sed -i -r -e "s|$regex_orig|\1$value\3|g" $file_full_path
+    regex_search="(^\s*<!ENTITY\s+$param\s*\")(.*)(\">.*)"
+    regex_replace="\1$value\3"
     ;;
 #
   "$FV3_NAMELIST_FN")
-    regex_orig="^(\s*$param\s*=)(.*)"
-    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
+    regex_search="^(\s*$param\s*=)(.*)"
+    regex_replace="\1 $value"
     ;;
 #
   "$FV3_CCPP_NAMELIST_FN")
@@ -101,8 +102,8 @@ Setting parameter \"$param\" in file \"$file\"..."
     ;;
 #
   "$DIAG_TABLE_FN")
-    regex_orig="(.*)(<$param>)(.*)"
-    sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
+    regex_search="(.*)(<$param>)(.*)"
+    regex_replace="\1$value\3"
     ;;
 #
   "$DIAG_TABLE_CCPP_FN")
@@ -111,26 +112,19 @@ Setting parameter \"$param\" in file \"$file\"..."
     ;;
 #
   "$MODEL_CONFIG_FN")
-    regex_orig="^(\s*$param:\s*)(.*)"
-    sed -i -r -e "s|$regex_orig|\1$value|g" $file_full_path
+    regex_search="^(\s*$param:\s*)(.*)"
+    regex_replace="\1$value"
     ;;
 #
   "$SCRIPT_VAR_DEFNS_FN")
-#
-# In the following regex (regex_orig), we have to escape the pipe (|) 
-# (which acts as an "OR") because that's also the character we use as 
-# the delimiter in the following sed command.
-#
-    regex_orig="(^\s*$param=)(\".*\"\|[^ \"]*)(\s*[#].*)?"
-    sed -i -r -e "s|$regex_orig|\1\"$value\"\3|g" $file_full_path
+    regex_search="(^\s*$param=)(\".*\"|[^ \"]*)(\s*[#].*)?"
+    regex_replace="\1\"$value\"\3"
     ;;
 #
 #-----------------------------------------------------------------------
 #
-# If "file" is set to a disallowed value, we simply exit with a nonzero
-# status.  Note that "exit" is different than "return" because it will
-# cause the calling script (in which this file/function is sourced) to
-# stop execution.
+# If "file" is set to a disallowed value, print out an error message and
+# exit.
 #
 #-----------------------------------------------------------------------
 #
@@ -141,6 +135,28 @@ Function \"${FUNCNAME[0]}\":  Unkown file:
     ;;
 #
   esac
+#
+#-----------------------------------------------------------------------
+#
+# Use grep to determine whether regex_search exists in the specified 
+# file.  If so, perform the regex replacement using sed.  If not, print
+# out an error message and exit.
+#
+#-----------------------------------------------------------------------
+#
+  grep -q -E "$regex_search" $file_full_path
+
+  if [ $? -eq 0 ]; then
+    sed -i -r -e "s%$regex_search%$regex_replace%" $file_full_path
+  else
+    print_err_msg_exit "\
+Specified file (file_full_path) does not contain the searched-for regular 
+expression (regex_search):
+  file_full_path = \"$file_full_path\"
+  param = \"$param\"
+  value = \"$value\"
+  regex_search = \"$regex_search\""
+  fi
 #
 #-----------------------------------------------------------------------
 #
