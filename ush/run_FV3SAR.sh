@@ -56,10 +56,13 @@ case $MACHINE in
 
 if [ "$CCPP" = "true" ]; then
 
+  #Needed to change to the run directory to correctly load necessary modules for CCPP-version of FV3SAR in lines below
+  cd $RUNDIR
+
   set +x
-  source $RUNDIR/module-setup.sh
-  module use $( $RUNDIR -P )
-  module load $RUNDIR/modules.fv3
+  source ./module-setup.sh
+  module use $( pwd -P )
+  module load modules.fv3
   module list
   set -x
 
