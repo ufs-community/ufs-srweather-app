@@ -68,29 +68,37 @@ if [ "$CCPP" = "true" ]; then
 
    if [ "$CCPP_suite" = "GFS" ]; then
 
-   cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GFS_NAMELIST_FN $RUNDIR/input.nml
-   print_info_msg_verbose "\
-   Copying CCPP GFS physics namelist to the run directory..."
+     cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GFS_NAMELIST_FN $RUNDIR/input.nml
+     print_info_msg_verbose "\
+     Copying CCPP GFS physics namelist to the run directory..."
 
-   cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GFS_FN $RUNDIR/diag_table
-   print_info_msg_verbose "\
-   Copying CCPP-specific GFS physics diag_table to the run directory..."
+     cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GFS_FN $RUNDIR/diag_table
+     print_info_msg_verbose "\
+     Copying CCPP-specific GFS physics diag_table to the run directory..."
 
-   cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
+     cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
+
+     cp_vrfy $CCPPFIX/module-setup.sh $RUNDIR
+     print_info_msg_verbose "\
+     Copying CCPP module-setup.sh file to the run directory..."
 
    elif [ "$CCPP_suite" = "GSD" ]; then
 
-   cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GSD_NAMELIST_FN $RUNDIR/input.nml
-   print_info_msg_verbose "\
-   Copying CCPP GSD physics namelist to the run directory..."
+     cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GSD_NAMELIST_FN $RUNDIR/input.nml
+     print_info_msg_verbose "\
+     Copying CCPP GSD physics namelist to the run directory..."
 
-   cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/diag_table
-   print_info_msg_verbose "\
-   Copying CCPP-specific GSD physics diag_table to the run directory..."
+     cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/diag_table
+     print_info_msg_verbose "\
+     Copying CCPP-specific GSD physics diag_table to the run directory..."
  
-   cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $RUNDIR/field_table
-   print_info_msg_verbose "\
-   Copying CCPP-specific GSD physics field_table to the run directory..."
+     cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $RUNDIR/field_table
+     print_info_msg_verbose "\
+     Copying CCPP-specific GSD physics field_table to the run directory..."
+
+     cp_vrfy $CCPPFIX/module-setup.sh $RUNDIR
+     print_info_msg_verbose "\
+     Copying CCPP module-setup.sh file to the run directory..."
 
    else
 
@@ -212,11 +220,15 @@ set_file_param $DIAG_TABLE_FP "HH" $HH $VERBOSE
 set_file_param $DIAG_TABLE_FP "YYYYMMDD" $YMD $VERBOSE
 
 #
-#-----------------------------------------------------------------------
-# If CCPP=true, Copy correct CCPP suite file to run directory
-#-----------------------------------------------------------------------
+#----------------------------------------------------------------------------
+# If CCPP=true, Copy correct CCPP suite and modules.fv3 file to run directory
+#----------------------------------------------------------------------------
 #
 if [ "$CCPP" = "true" ]; then
+
+  cp_vrfy $CCPPDIR/modules.fv3_1 $RUNDIR/modules.fv3
+  print_info_msg_verbose "\ 
+  Copying CCPP modules.fv3 file to the run directory..."
 
    if [ "$CCPP_suite" = "GFS" ]; then
 
