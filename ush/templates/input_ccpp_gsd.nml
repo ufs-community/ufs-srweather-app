@@ -109,7 +109,7 @@
   target_lon = <target_lon>
   stretch_fac = <stretch_fac>
   regional = .true.
-  bc_update_interval = 3
+  bc_update_interval = <bc_update_interval>
   agrid_vel_rst = .false.
 
   full_zs_filter = .F. !unreleased feature

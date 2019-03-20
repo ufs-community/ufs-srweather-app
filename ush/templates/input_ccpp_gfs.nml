@@ -37,7 +37,7 @@
 /
 
  &fv_core_nml
-       layout   = <layout_x>,<layout_y>
+       layout   =  <layout_x>,<layout_y>
        io_layout = 1,1
        npx      = <npx>
        npy      = <npy>
@@ -110,7 +110,7 @@
 !!     nord_zs_filter = 4
        n_zs_filter = 0 
        regional = .true.
-       bc_update_interval = 3
+       bc_update_interval = <bc_update_interval>
 /
 
  &external_ic_nml
@@ -161,8 +161,7 @@
        debug          = .false.
        oz_phys        = .true.
        oz_phys_2015   = .false.
-       !nstf_name      = 1,1,1,0,5
-       nstf_name      = 2,1,1,0,5       
+       nstf_name      = 1,1,1,0,5
        cplflx         = .F.
        iau_delthrs    = 6
        iaufhrs        = 30
