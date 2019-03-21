@@ -231,7 +231,7 @@ print("(nx_all_grids, ny_all_grids) = " + \
   all_fields_missing := all(ismissing(field_unstruc))
 
   if (all_fields_missing) then
-    plot_opts@cnLevels := default_fillvalue(typeof(field_crnt_grid_unstruc))
+    plot_opts@cnLevels := default_fillvalue(typeof(field_unstruc))
     plot_opts@lbLabels := "No Valid Field Values"
   end if
 ;

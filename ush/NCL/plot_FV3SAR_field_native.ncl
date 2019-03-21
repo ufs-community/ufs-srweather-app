@@ -22,6 +22,11 @@
 ;run_dir = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL"
 run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C768_S1p5_RR3_EMCCONUS_UUUU"
 run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_RAP_no_quilting"
+;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S1p65_RR5_HRRR_new_chgres_fv3sar12"
+;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3sar_workflow/sorc/regional_grid"
+run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid"
+run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid05"
+;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid06"
 
 tile_inds := (/ 1, 7, 4 /)
 ;tile_inds := (/ 1, 4 /)
@@ -44,15 +49,16 @@ show_tile_grids = False
 
 file_basename = "atmos_static"
 ;file_basename = "fv3_history"
+file_basename = "fv3_history2d"
 
-field_name = "area"
-;field_name = "sqrt_area"
-;field_name = "dx"
-;field_name = "dy"
-;field_name = "dx_ovr_dy"
-;field_name = "min_dx_dy"
-;field_name = "angle_dx"
-;field_name = "angle_dy"
+field_name = "cell_area"
+field_name = "sqrt_cell_area"
+;field_name = "cell_dx"
+;field_name = "cell_dy"
+;field_name = "cell_dx_ovr_cell_dy"
+;field_name = "min_cell_dx_cell_dy"
+;field_name = "angle_cell_dx"
+;field_name = "angle_cell_dy"
 
 ;field_name = "orog_raw"
 ;field_name = "orog_filt"
@@ -63,15 +69,20 @@ field_name = "area"
 ;field_name = "ref3D"
 
 ;field_name = "spfh"
-field_name = "zsurf"
+field_name = "cnwat"
+;field_name = "zsurf"
 
 ;field_name = "none"
 
 
 map_proj = "cyln"
-;map_proj = "ortho"
-
-;map_proj_ctr = (/ -98.5, 30.0 /) ; This should be set to (0,0) for "cyln" map projection.
+map_proj = "ortho"
+;
+; This should be set to (0,0) for "cyln" map projection.
+;
+; map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map projection.
+map_proj_ctr = (/ -106.0, 54.0 /) ; RAP domain.
+;map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
 
 
 plot_subreg = True
@@ -98,7 +109,8 @@ subreg_limits := (/ -75, -60, 0, 15 /)
 ;subreg_limits := (/ -63, -58, -15, -10 /)
 ;subreg_limits := (/ 15, 30, 30, 45 /)
 ;subreg_limits := (/ 14, 16, 36, 38 /)
-subreg_limits := (/ -70, -55, -20, -5 /)
+;subreg_limits := (/ -70, -55, -20, -5 /)
+subreg_limits := (/ -125, -70, 0, 60 /)
 
 remove_rgnl_halo = True
 ;remove_rgnl_halo = False
@@ -107,7 +119,7 @@ remove_rgnl_halo = True
 
 
 show_RAP_bdy = True
-show_RAP_bdy = False
+;show_RAP_bdy = False
 
 RAP_bdy_color = "red"
 
@@ -117,9 +129,10 @@ show_RAP_grid = False
 plot_RAP_field = True
 plot_RAP_field = False
 
-field_name_RAP = "none"
-field_name_RAP = "area"
+field_name_RAP = "cell_area"
+field_name_RAP = "sqrt_cell_area"
 ;field_name_RAP = "MAPFAC_M"
+;field_name_RAP = "none"
 
 RAP_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 ;RAP_grid_fn = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL/plot_grid.ncl"
@@ -127,7 +140,7 @@ RAP_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 RAP_grid_fn = RAP_dir + "/geo_em.d01.RAP.nc"
 
 horiz_dist_units = "m"
-;horiz_dist_units = "km"
+horiz_dist_units = "km"
 
 
 
@@ -174,14 +187,17 @@ loadscript(lib_location + "set_cnLevels_lbLabels.ncl")
 
 load "process_plot_params.ncl"
 load "read_FV3SAR_grid_native.ncl"
+load "read_FV3SAR_gridfield_native.ncl"
 load "read_FV3SAR_field_native.ncl"
 load "read_FV3SAR_grid_wrtcomp.ncl"
 load "read_FV3SAR_field_wrtcomp.ncl"
 load "read_RAP_grid.ncl"
 load "read_RAP_field.ncl"
 load "plot_horiz_field.ncl"
+load "get_gridfield_info.ncl"
+load "set_file_field_names.ncl"
 
-load "check_var_existence_dims.ncl"
+load "check_filevar_existence_dims.ncl"
 
 begin
 ;
@@ -372,6 +388,8 @@ char_dq + "ncgm" + char_dq + "." + char_nl
   tile_bdy_color = plot_params@tile_bdy_color
   show_tile_grids = plot_params@show_tile_grids
   field_name = plot_params@field_name
+  is_gridfield = plot_params@is_gridfield
+  file_basename = plot_params@file_basename
 
   show_RAP_bdy = plot_params@show_RAP_bdy
   RAP_bdy_color = plot_params@RAP_bdy_color
@@ -408,14 +426,29 @@ char_dq + "ncgm" + char_dq + "." + char_nl
                remove_rgnl_halo)
 
   grid_files_tiles_to_plot = grid_info@grid_files
-  nx_tiles_to_plot = grid_info@nx_all_tiles
-  ny_tiles_to_plot = grid_info@ny_all_tiles
+
+  nhaloSG_tiles_to_plot = grid_info@nhaloSG_all_tiles
+  nxSG_with_halo_tiles_to_plot = grid_info@nxSG_with_halo_all_tiles
+  nySG_with_halo_tiles_to_plot = grid_info@nySG_with_halo_all_tiles
+  nxSG_no_halo_tiles_to_plot = grid_info@nxSG_no_halo_all_tiles
+  nySG_no_halo_tiles_to_plot = grid_info@nySG_no_halo_all_tiles
+
+  nhalo_tiles_to_plot = grid_info@nhalo_all_tiles
+  nx_with_halo_tiles_to_plot = grid_info@nx_with_halo_all_tiles
+  ny_with_halo_tiles_to_plot = grid_info@ny_with_halo_all_tiles
+  nx_no_halo_tiles_to_plot = grid_info@nx_no_halo_all_tiles
+  ny_no_halo_tiles_to_plot = grid_info@ny_no_halo_all_tiles
+
+  remove_halo_tiles_to_plot = grid_info@remove_halo_all_tiles
+
   lon_cntrs_unstruc = grid_info@lon_cntrs_all_tiles_unstruc
   lat_cntrs_unstruc = grid_info@lat_cntrs_all_tiles_unstruc
   lon_verts_unstruc = grid_info@lon_verts_all_tiles_unstruc
   lat_verts_unstruc = grid_info@lat_verts_all_tiles_unstruc
+
   lon_bdy = grid_info@lon_bdy_all_tiles
   lat_bdy = grid_info@lat_bdy_all_tiles
+
   coord_data_type_FV3SAR = grid_info@coord_data_type
 ;
 ; **********************************************************************
@@ -585,356 +618,40 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 ;
 ; **********************************************************************
 ;
-; Set the dimension names we expect to see in the file(s) from which we
-; will read in the FV3SAR field.  This depends on the file base name.  
-; These dimension names will be used to check the consistency of the di-
-; mensions of the specified field.
-;
-; **********************************************************************
-;
-  if (strcmp_exact(file_basename, "grid_spec")) then
-    x_filedim_names = (/ "grid_x", "grid_xt" /)
-    y_filedim_names = (/ "grid_y", "grid_yt" /)
-    z_filedim_names = (/ "phalf", "pfull" /)
-    t_filedim_names = (/ "time" /)
-  else if (strcmp_exact(file_basename, "atmos_static") .or. \
-           strcmp_exact(file_basename, "fv3_history") .or. \
-           strcmp_exact(file_basename, "fv3_history2d") .or. \
-           strcmp_exact(file_basename, "ref3D")) then
-    x_filedim_names = (/ "grid_xt" /)
-    y_filedim_names = (/ "grid_yt" /)
-    z_filedim_names = (/ "phalf", "pfull" /)
-    t_filedim_names = (/ "time" /)
-  else
-    msg := char_nl + \
-"Unknown file base name (file_basename) specified:" + char_nl + \
-"  file_basename = " + char_dq + file_basename + char_dq + char_nl + \
-"Stopping."
-    print("" + msg)
-    exit
-  end if
-  end if
-;
-; **********************************************************************
-;
-; Loop through the specified tiles and form the file name corresponding
-; to each tile.  Also, set the field name for each tile.  Note that the
-; reason for having a separate field name for each tile is that the 
-; files corresponding to certain tiles may not exist (e.g. if we're con-
-; sidering a tile other than tile 7 for a regional grid).  In that case,
-; the field on those tiles will not be available, so for those tiles, we
-; must setthe field name to "none" to obtain a field array filled with
-; missing/fill values.
-;
-; **********************************************************************
-;
-  file_names_by_tile = new((/ num_tiles_to_plot /), "string")
-  field_names_by_tile = new((/ num_tiles_to_plot /), "string")
-
-  print("")
-  print("" + separator_line)
-  msg := \
-"Setting file and field name for each specified tile ..." + char_nl + \
-"[The field name for a tile will be set to " + char_dq + "none" + char_dq + \
-" if a file for that tile " + char_nl + \
-"does not exist, e.g. if the tile in consideration is #5, but we are on a " + char_nl + \
-"regional grid (in which case files/fields are only available on tile #7).]"
-  print("" + msg)
-
-  do nn=0, num_tiles_to_plot-1
-
-    print("")
-    msg := "nn = " + nn
-    print("" + msg)
-    underline = repeat_str("-", strlen(msg))
-    print("" + underline)
-
-    n_tile = inds_tiles_to_plot(nn)
-    print("")
-    print("  n_tile = " + n_tile)
-;
-; **********************************************************************
-;
-; Generate the file name for the current tile.
-;
-; **********************************************************************
-;
-    file_name := run_dir + "/" + file_basename
-    if (.not. strcmp_exact(gtype, "regional")) then
-      file_name := file_name + ".tile" + tostring(n_tile)
-    end if
-    file_name := file_name + ".nc"
-    file_names_by_tile(nn) = file_name
-
-    print("  file_names_by_tile(" + nn + ") = " + \
-          char_dq + file_names_by_tile(nn) + char_dq) 
-;
-; **********************************************************************
-;
-; Generate the field name for the current tile.
-;
-; **********************************************************************
-;
-    field_names_by_tile(nn) = field_name
-    if (strcmp_exact(gtype, "regional") .and. (n_tile .ne. 7)) then
-      field_names_by_tile(nn) = "none"
-      msg := char_nl + \
-"  The specified field is not available on the current tile:" + char_nl + \
-"    n_tile = " + n_tile + char_nl + \
-"    field_name = " + char_dq + field_name + char_dq + char_nl + \
-"  Setting the field name for the current tile to " + char_dq + "none" + char_dq + ":" + char_nl + \
-"    field_names_by_tile(" + nn + ") = " + char_dq + field_names_by_tile(nn) + char_dq
-      print("" + msg)
-    else
-      print("  field_names_by_tile(" + nn + ") = " + \
-            char_dq + field_names_by_tile(nn) + char_dq)
-    end if
-;
-; **********************************************************************
-;
-; Call a function that runs various checks on the specified field.  This
-; function will:
-;
-; 1) Verify that the field exists as a as a variable in the file.
-; 2) Verify that its functional dependence on space and time is one of
-;    the following:
-;    a) Function of only the two horizontal directions but not the ver-
-;       tical direction or time.  In this case, the func_xy_only attrib-
-;       ute of the returned variable will be set to True. 
-;    b) Function of only the two horizontal directions and the vertical
-;       direction but not time.  In this case, the func_xyz_only attrib-
-;       ute of the returned variable will be set to True. 
-;    c) Function of only the two horizontal directions and time but not
-;       the vertical direction.  In this case, the func_xyt_only attrib-
-;       ute of the returned variable will be set to True. 
-;    d) Function of the two horizontal directions, the vertical direc-
-;       tion, and time.  In this case, the func_xyzt_only attribute of
-;       the returned variable will be set to True. 
-; 3) Verify that the specified vertical and/or time indices do not ex-
-;    ceed the array bounds of the variable that represents the specified
-;    field.
-; 4) Return:
-;    a) The rank, dimension names, and dimension sizes of the variable
-;       that represents the field.
-;    b) The functional dependence of the field on x, y, z, and t.
-;
-; **********************************************************************
 ;
 ;
 ; **********************************************************************
 ;
-; Perform checks on variable.
-;
-; **********************************************************************
-;
-    if (.not. strcmp_exact(field_names_by_tile(nn), "none")) then
+  file_field_info \
+  := set_file_field_names( \
+     gtype, \
+     inds_tiles_to_plot, \
+     field_name, \
+     is_gridfield, \
+\
+     grid_files_tiles_to_plot, \
+     nxSG_with_halo_tiles_to_plot, \
+     nySG_with_halo_tiles_to_plot, \
+\
+     run_dir, \
+     file_basename, \
+     nx_with_halo_tiles_to_plot, \
+     ny_with_halo_tiles_to_plot, \
+\
+     vert_inds_to_plot, \
+     time_inds_to_plot, \
+\
+     horiz_dist_units, \
+     horiz_area_units)
 
-      if ((nn .gt. 0) .and. isvar("var_info")) then
-        var_info_prev_tile := var_info
-      end if
-
-      var_info := check_var_existence_dims( \
-                  file_names_by_tile(nn), \
-                  field_names_by_tile(nn), \
-                  x_filedim_names, \
-                  y_filedim_names, \
-                  z_filedim_names, \
-                  t_filedim_names, \
-                  nx_tiles_to_plot(nn), ny_tiles_to_plot(nn), \
-                  vert_inds_to_plot, \
-                  time_inds_to_plot)
-
-      fp_field_file = var_info@fp  
-      var_rank = var_info@var_rank
-      var_dim_names = var_info@var_dim_names
-      var_dim_sizes = var_info@var_dim_sizes
-      func_xy_only = var_info@func_xy_only
-      func_xyz_only = var_info@func_xyz_only
-      func_xyt_only = var_info@func_xyt_only
-      func_xyzt_only = var_info@func_xyzt_only
-      average_in_x = var_info@average_in_x
-      average_in_y = var_info@average_in_y
-
-      if ((nn .gt. 0) .and. isvar("var_info_prev_tile")) then
-
-        n_tile_prev = inds_tiles_to_plot(nn-1)
-
-        var_rank_prev_tile := var_info_prev_tile@var_rank
-        var_dim_names_prev_tile := var_info_prev_tile@var_dim_names
-        var_dim_sizes_prev_tile := var_info_prev_tile@var_dim_sizes
-        func_xy_only_prev_tile := var_info_prev_tile@func_xy_only
-        func_xyz_only_prev_tile := var_info_prev_tile@func_xyz_only
-        func_xyt_only_prev_tile := var_info_prev_tile@func_xyt_only
-        func_xyzt_only_prev_tile := var_info_prev_tile@func_xyzt_only
-        average_in_x_prev_tile := var_info_prev_tile@average_in_x
-        average_in_y_prev_tile := var_info_prev_tile@average_in_y
-
-        if (var_rank .eq. var_rank_prev_tile) then
-          var_dim_names_differ := False
-          do i=0, var_rank_prev_tile-1
-            if (.not. strcmp_exact(var_dim_names, var_dim_names_prev_tile(i))) then
-              var_dim_names_differ := True
-              break
-            end if
-          end do
-        end if
-
-        if (var_rank .ne. var_rank_prev_tile) then
-
-          msg := char_nl + \
-"The variable's rank (var_rank) changed from tile " + n_tile_prev + \
-" to tile " + n_tile + ":" + char_nl + \
-"  var_rank_prev_tile = " + var_rank_prev_tile + char_nl + \
-"  var_rank = " + var_rank + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (var_dim_names_differ) then
-
-          var_dim_names_prev_tile_str \
-          := str_join(var_dim_names_prev_tile, char_dq + ", " + char_dq)
-          var_dim_names_prev_tile_str \
-          := "(" + char_dq + var_dim_names_prev_tile_str + char_dq + ")"
-
-          var_dim_names_str \
-          := str_join(var_dim_names, char_dq + ", " + char_dq)
-          var_dim_names_str \
-          := "(" + char_dq + var_dim_names_str + char_dq + ")"
-
-          msg := char_nl + \
-"The variable's dimension names (var_dim_names) changed from tile " + \
-n_tile_prev + " to " + char_nl + \
-"tile " + n_tile + ":" + char_nl + \
-"  var_dim_names_prev_tile = " + var_dim_names_prev_tile_str + char_nl + \
-"  var_dim_names = " + var_dim_names_str + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (any(var_dim_sizes .ne. var_dim_sizes_prev_tile)) then
-
-          var_dim_sizes_prev_tile_str \
-          := "(" + str_join(tostring(var_dim_sizes_prev_tile), ", ") + ")"
-          var_dim_sizes_str \
-          := "(" + str_join(tostring(var_dim_sizes), ", ") + ")"
-
-          msg := char_nl + \
-"The variable's dimension sizes (var_dim_sizes) changed from tile " + \
-n_tile_prev + " to " + char_nl + \
-"tile " + n_tile + ":" + char_nl + \
-"  var_dim_sizes_prev_tile = " + var_dim_sizes_prev_tile_str + char_nl + \
-"  var_dim_sizes = " + var_dim_sizes_str + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (func_xy_only .ne. func_xy_only_prev_tile) then
-
-          msg := char_nl + \
-"The variable's functional dependence status on only the horizontal " + char_nl + \
-"coordinates x and y (func_xy_only) changed from tile " + n_tile_prev + " to " + \
-"tile " + n_tile + ":" + char_nl + \
-"  func_xy_only_prev_tile = " + func_xy_only_prev_tile + char_nl + \
-"  func_xy_only = " + func_xy_only + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (func_xyz_only .ne. func_xyz_only_prev_tile) then
-
-          msg := char_nl + \
-"The variable's functional dependence status on only the horizontal " + char_nl + \
-"coordinates x and y and the vertical coordinate (func_xyz_only) " + char_nl + \
-"changed from tile " + n_tile_prev + " to tile " + n_tile + ":" + char_nl + \
-"  func_xyz_only_prev_tile = " + func_xyz_only_prev_tile + char_nl + \
-"  func_xyz_only = " + func_xyz_only + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (func_xyt_only .ne. func_xyt_only_prev_tile) then
-
-          msg := char_nl + \
-"The variable's functional dependence status on only the horizontal " + char_nl + \
-"coordinates x and y and time (func_xyt_only) changed from tile " + n_tile_prev + char_nl + \
-"to tile " + n_tile + ":" + char_nl + \
-"  func_xyt_only_prev_tile = " + func_xyt_only_prev_tile + char_nl + \
-"  func_xyt_only = " + func_xyt_only + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (func_xyzt_only .ne. func_xyzt_only_prev_tile) then
-
-          msg := char_nl + \
-"The variable's functional dependence status on the horizontal coordinates " + char_nl + \
-"x and y, the vertical coordinate, and time (func_xyzt_only) changed from " + char_nl + \
-"tile " + n_tile_prev + " to tile " + n_tile + ":" + char_nl + \
-"  func_xyzt_only_prev_tile = " + func_xyzt_only_prev_tile + char_nl + \
-"  func_xyzt_only = " + func_xyzt_only + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (average_in_x .ne. average_in_x_prev_tile) then
-
-          msg := char_nl + \
-"The averaging in the x direction needed to obtain the variable's values " + char_nl + \
-"at cell centers (average_in_x) changed from tile " + n_tile_prev + \
-" to tile " + n_tile + ":" + char_nl + \
-"  average_in_x_prev_tile = " + average_in_x_prev_tile + char_nl + \
-"  average_in_x = " + average_in_x + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (average_in_y .ne. average_in_y_prev_tile) then
-
-          msg := char_nl + \
-"The averaging in the x direction needed to obtain the variable's values " + char_nl + \
-"at cell centers (average_in_y) changed from tile " + n_tile_prev + \
-" to tile " + n_tile + ":" + char_nl + \
-"  average_in_y_prev_tile = " + average_in_y_prev_tile + char_nl + \
-"  average_in_y = " + average_in_y + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-
-      end if
-;
-; **********************************************************************
-;
-;
-;
-; **********************************************************************
-;
-    else
-
-      func_xy_only = False
-      func_xyz_only = False
-      func_xyt_only = False
-      func_xyzt_only = False
-      average_in_x = False
-      average_in_y = False
-
-    end if
-
-  end do
-
-  print("")
-  print("Done setting file and field name for each specified tile.")
-  print("" + separator_line)
+  file_names_by_tile := file_field_info@file_names_by_tile
+  field_names_by_tile := file_field_info@field_names_by_tile
+  func_xy_only := file_field_info@func_xy_only
+  func_xyz_only := file_field_info@func_xyz_only
+  func_xyt_only := file_field_info@func_xyt_only
+  func_xyzt_only := file_field_info@func_xyzt_only
+  average_in_x := file_field_info@average_in_x
+  average_in_y := file_field_info@average_in_y
 ;
 ; **********************************************************************
 ;
@@ -972,17 +689,39 @@ n_tile_prev + " to " + char_nl + \
 ;
 ; **********************************************************************
 ;
+;    nx_tiles_to_plot := nx_with_halo_tiles_to_plot
+;    ny_tiles_to_plot := ny_with_halo_tiles_to_plot
+;    if (strcmp_exact(gtype, "regional") .and. remove_rgnl_halo) then
+;      nx_tiles_to_plot := nx_no_halo_tiles_to_plot
+;      ny_tiles_to_plot := ny_no_halo_tiles_to_plot
+;    end if
+
+;if (True) then
+if (False) then
       field_info \
       := read_FV3SAR_field_native( \
          field_names_by_tile, \
          file_names_by_tile, \
-         gtype, \
-         inds_tiles_to_plot, nx_tiles_to_plot, ny_tiles_to_plot, \
+         gtype, inds_tiles_to_plot, \
+         nx_tiles_to_plot, ny_tiles_to_plot, \
          vert_indx, time_indx, \
          remove_rgnl_halo, nhalo_T7, \
          func_xy_only, func_xyz_only, func_xyt_only, func_xyzt_only, \
          average_in_x, average_in_y)
-
+else
+      field_info \
+      := read_FV3SAR_gridfield_native( \
+         field_names_by_tile, \
+         file_names_by_tile, \
+         gtype, inds_tiles_to_plot, \
+         nhalo_tiles_to_plot, \
+         nx_with_halo_tiles_to_plot, ny_with_halo_tiles_to_plot, \
+         nx_no_halo_tiles_to_plot, ny_no_halo_tiles_to_plot, \
+         remove_halo_tiles_to_plot, \
+         vert_indx, time_indx, \
+         horiz_dist_units, horiz_area_units \
+         )
+end if
 ;      fp_field_FV3SAR = field_info@fp  ; This would in general be an array or list of file pointers.
       field_desc := field_info@field_desc
       field_units := field_info@field_units
@@ -992,6 +731,16 @@ n_tile_prev + " to " + char_nl + \
       field_median_all_tiles := field_info@field_median_all_tiles
       field_mean_all_tiles := field_info@field_mean_all_tiles
       field_data_type_FV3SAR := field_info@field_data_type
+
+;field_unstruc := lat_cntrs_unstruc
+;field_unstruc := lon_cntrs_unstruc
+;field_crnt_tile_01 := field_info@field_crnt_tile_01
+;field_unstruc := ndtooned(field_crnt_tile_01)
+;temp := field_unstruc - ndtooned(field_crnt_tile_01)
+;print("")
+;print("min(temp) = " + min(temp))
+;print("max(temp) = " + max(temp))
+;pause
 ;
 ; **********************************************************************
 ;
@@ -1181,6 +930,9 @@ if (True) then
       inds_tiles_to_plot_str \
       := str_join(tostring(inds_tiles_to_plot), ",")
 
+;      func_code_zoom = "~Z100Q~"
+      func_code_zoom = "~Z75Q~"
+
       if (show_RAP_grid .or. plot_RAP_field) then
 
         main_str = ""
@@ -1217,6 +969,11 @@ if (True) then
 ; correct and some extra vertical space is needed.  Insert  that here.
           right_str = right_str + "~V-10~ "
         end if
+;
+; Prepend the function zoom code to adjust the font size.
+;
+        left_str := func_code_zoom + left_str
+        right_str := func_code_zoom + right_str
 ;
 ; **********************************************************************
 ;
@@ -1264,6 +1021,10 @@ if (True) then
         main_str(1:num_lines-1) = vert_offsets_str + main_str(1:num_lines-1)
 
         main_str := str_concat(main_str)
+;
+; Prepend the function zoom code to adjust the font size.
+;
+        main_str := func_code_zoom + main_str
 
       end if
 ;
@@ -1338,6 +1099,13 @@ if (True) then
 ;
 ; **********************************************************************
 ;
+      nx_tiles_to_plot \
+      := where(remove_halo_tiles_to_plot, \
+               nx_no_halo_tiles_to_plot, nx_with_halo_tiles_to_plot)
+      ny_tiles_to_plot \
+      := where(remove_halo_tiles_to_plot, \
+               ny_no_halo_tiles_to_plot, ny_with_halo_tiles_to_plot)
+
       nx_all_grids := nx_tiles_to_plot
       ny_all_grids := ny_tiles_to_plot
       if (show_RAP_grid .or. plot_RAP_field) then

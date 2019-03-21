@@ -79,40 +79,40 @@ begin
     field_desc = "Empty Field"
     field_units = "-"
   
-  else if (strcmp_exact(field_name, "area")) then
+  else if (strcmp_exact(field_name, "cell_area")) then
   
     calc_dx_cell_cntrs = True
     calc_dy_cell_cntrs = True
     field_desc = "Cell Area"
     field_units = horiz_area_units
   
-  else if (strcmp_exact(field_name, "sqrt_area")) then
+  else if (strcmp_exact(field_name, "sqrt_cell_area")) then
   
     calc_dx_cell_cntrs = True
     calc_dy_cell_cntrs = True
     field_desc = "Square Root of Cell Area"
     field_units = horiz_dist_units
   
-  else if (strcmp_exact(field_name, "dx")) then
+  else if (strcmp_exact(field_name, "cell_dx")) then
   
     calc_dx_cell_cntrs = True
     field_desc = "Cell Size in x-Direction Along Cell Centerline"
     field_units = horiz_dist_units
   
-  else if (strcmp_exact(field_name, "dy")) then
+  else if (strcmp_exact(field_name, "cell_dy")) then
   
     calc_dy_cell_cntrs = True
     field_desc = "Cell Size in y-Direction Along Cell Centerline"
     field_units = horiz_dist_units
   
-  else if (strcmp_exact(field_name, "dx_ovr_dy")) then
+  else if (strcmp_exact(field_name, "cell_dx_ovr_cell_dy")) then
   
     calc_dx_cell_cntrs = True
     calc_dy_cell_cntrs = True
     field_desc = "Ratio of dx to dy (dx/dy)"
     field_units = "-"
   
-  else if (strcmp_exact(field_name, "min_dx_dy")) then
+  else if (strcmp_exact(field_name, "min_cell_dx_cell_dy")) then
   
     calc_dx_cell_cntrs = True
     calc_dy_cell_cntrs = True
@@ -174,32 +174,32 @@ begin
 
     field := new((/ ny, nx /), field_data_type)
 
-  else if (strcmp_exact(field_name, "area")) then
+  else if (strcmp_exact(field_name, "cell_area")) then
 
     field := dx_cntr*dy_cntr
     delete([/ dx_cntr, dy_cntr /])
 
-  else if (strcmp_exact(field_name, "sqrt_area")) then
+  else if (strcmp_exact(field_name, "sqrt_cell_area")) then
 
     field := sqrt(dx_cntr*dy_cntr)
     delete([/ dx_cntr, dy_cntr /])
 
-  else if (strcmp_exact(field_name, "dx")) then
+  else if (strcmp_exact(field_name, "cell_dx")) then
 
     field := dx_cntr
     delete([/ dx_cntr /])
 
-  else if (strcmp_exact(field_name, "dy")) then
+  else if (strcmp_exact(field_name, "cell_dy")) then
 
     field := dy_cntr
     delete([/ dy_cntr /])
 
-  else if (strcmp_exact(field_name, "dx_ovr_dy")) then
+  else if (strcmp_exact(field_name, "cell_dx_ovr_cell_dy")) then
 
     field := dx_cntr/dy_cntr
     delete([/ dx_cntr, dy_cntr /])
 
-  else if (strcmp_exact(field_name, "min_dx_dy")) then
+  else if (strcmp_exact(field_name, "min_cell_dx_cell_dy")) then
 
     field := sqrt(dx_cntr*dy_cntr)
     delete([/ dx_cntr, dy_cntr /])
@@ -234,16 +234,16 @@ begin
 ;
 ; **********************************************************************
 ;
-  if (strcmp_exact(field_name, "area")) then
+  if (strcmp_exact(field_name, "cell_area")) then
 
     if (strcmp_exact(field_units, "km^2")) then
       field := field*totype(kms2_per_meter2, field_data_type)
     end if
 
-  else if (strcmp_exact(field_name, "sqrt_area") .or. \
-           strcmp_exact(field_name, "dx") .or. \
-           strcmp_exact(field_name, "dy") .or. \
-           strcmp_exact(field_name, "min_dx_dy"))
+  else if (strcmp_exact(field_name, "sqrt_cell_area") .or. \
+           strcmp_exact(field_name, "cell_dx") .or. \
+           strcmp_exact(field_name, "cell_dy") .or. \
+           strcmp_exact(field_name, "min_cell_dx_cell_dy"))
 
     if (strcmp_exact(field_units, "km")) then
       field := field*totype(kms_per_meter, field_data_type)

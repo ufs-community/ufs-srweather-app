@@ -1,7 +1,7 @@
 ;
 ; **********************************************************************
 ;
-; File name: read_FV3SAR_field_native.ncl
+; File name: read_FV3SAR_gridfield_native.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
@@ -11,29 +11,30 @@
 ; **********************************************************************
 ;
 loadscript(lib_location + "pause.ncl")
+loadscript(lib_location + "constants.ncl")
 loadscript(lib_location + "special_chars.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "calc_field_stats.ncl")
 
-load "check_var_existence_dims.ncl"
+load "get_gridfield_info.ncl"
 
-undef("read_FV3SAR_field_native")
+undef("read_FV3SAR_gridfield_native")
 
-function read_FV3SAR_field_native( \
-         field_name:string, \
-         horiz_dist_units:string, \
-         horiz_area_units:string, \
+function read_FV3SAR_gridfield_native( \
+         field_names_by_tile[*]:string, \
+         file_names_by_tile[*]:string, \
          gtype:string, \
-         grid_files[*]:string, \
          tile_inds[*]:integer, \
-         nx_by_tile[*]:integer, \
-         ny_by_tile[*]:integer, \
-         vert_inds_to_plot[*]:integer, \
-         time_inds_to_plot[*]:integer, \
+         nhalo_by_tile[*]:integer, \
+         nx_with_halo_by_tile[*]:integer, \
+         ny_with_halo_by_tile[*]:integer, \
+         nx_no_halo_by_tile[*]:integer, \
+         ny_no_halo_by_tile[*]:integer, \
+         remove_halo_by_tile[*]:logical, \
          vert_indx:integer, \
          time_indx:integer, \
-         remove_rgnl_halo:logical, \
-         nhalo_T7:integer \
+         horiz_dist_units:string, \
+         horiz_area_units:string \
          )
 
 local calc_dA_cell_cntrs, \
@@ -102,87 +103,12 @@ begin
 ;
 ; **********************************************************************
 ;
-; Set field-related parameters.
+; Create a string that can be used at the beginning of messages to iden-
+; tify this procedure/function as the one generating the messge.
 ;
 ; **********************************************************************
 ;
-  calc_dA_cell_cntrs = False
-  calc_dx_cell_cntrs = False
-  calc_dy_cell_cntrs = False
-  calc_dx_cell_faces = False
-  calc_dy_cell_faces = False
-  calc_angle_dx_cell_cntrs = False
-  calc_angle_dy_cell_cntrs = False
-
-  if (strcmp_exact(field_name, "none")) then
-
-    field_desc = "Empty Field"
-    field_units = "-"
-
-  else if (strcmp_exact(field_name, "area")) then
-
-    calc_dA_cell_cntrs = True
-    field_desc = "Cell Area"
-    field_units = horiz_area_units
-
-  else if (strcmp_exact(field_name, "sqrt_area")) then
-
-    calc_dA_cell_cntrs = True
-    field_desc = "Square Root of Cell Area"
-    field_units = horiz_dist_units
-
-  else if (strcmp_exact(field_name, "dx")) then
-
-    calc_dx_cell_cntrs = True
-    field_desc = "Cell Size in x-Direction Along Cell Centerline"
-    field_units = horiz_dist_units
-
-  else if (strcmp_exact(field_name, "dy")) then
-
-    calc_dy_cell_cntrs = True
-    field_desc = "Cell Size in y-Direction Along Cell Centerline"
-    field_units = horiz_dist_units
-
-  else if (strcmp_exact(field_name, "dx_ovr_dy")) then
-
-    calc_dx_cell_cntrs = True
-    calc_dy_cell_cntrs = True
-    field_desc = "Ratio of dx to dy (dx/dy)"
-    field_units = "-"
-
-  else if (strcmp_exact(field_name, "min_dx_dy")) then
-
-    calc_dx_cell_faces = True
-    calc_dy_cell_faces = True
-    field_desc = "MIN(dx, dy)"
-    field_units = horiz_dist_units
-
-  else if (strcmp_exact(field_name, "angle_dx")) then
-
-    calc_angle_dx_cell_cntrs = True
-    field_desc = "Grid Vertex x-Angle with Respect to Geographic East"
-    field_units = "deg east"
-
-  else if (strcmp_exact(field_name, "angle_dy")) then
-
-    calc_angle_dy_cell_cntrs = True
-    field_desc = "Grid Vertex y-Angle with Respect to Geographic North"
-    field_units = "deg north"
-
-;  else
-;
-;    field_desc = "Unknown Field"
-;    field_units = "?"
-
-  end if
-  end if
-  end if
-  end if
-  end if
-  end if
-  end if
-  end if
-  end if
+  id_str := "Message from procedure/function read_FV3SAR_gridfield_native():"
 ;
 ; **********************************************************************
 ;
@@ -194,9 +120,10 @@ begin
 ;
   num_tiles = dimsizes(tile_inds)
 
+  msg := "Looping over tiles to read field(s) from specified file(s) ..."
   print("")
   print("" + separator_line)
-  print("Reading field(s) from grid files ...")
+  print("" + msg)
 
   do nn=0, num_tiles-1
 
@@ -217,74 +144,60 @@ begin
 ;
 ; **********************************************************************
 ;
-    nx = nx_by_tile(nn)
-    ny = ny_by_tile(nn)
-
-    msg_adden = ""
-    if (strcmp_exact(gtype, "regional") .and. \
-        (n_tile .eq. 7) .and. remove_rgnl_halo) then
-      msg_adden = " (AFTER removing halo of " + nhalo_T7 + " cells)"
+    if (remove_halo_by_tile(nn)) then
+      nx = nx_no_halo_by_tile(nn)
+      ny = ny_no_halo_by_tile(nn)
+      msg_adden \
+      = "  (after removing halo of " + nhalo_by_tile(nn) + " cells)"
+    else
+      nx = nx_with_halo_by_tile(nn)
+      ny = ny_with_halo_by_tile(nn)
+      msg_adden = ""
     end if
 
     print("")
-    print("  Current tile's dimensions" + msg_adden + " are:")
+    print("  Current tile's grid dimensions" + msg_adden + " are:")
     print("    nx = " + nx)
     print("    ny = " + ny)
+;
+; **********************************************************************
+;
+; Get the file name and field name for the current tile.
+;
+; **********************************************************************
+;
+    file_name := file_names_by_tile(nn)
+    field_name := field_names_by_tile(nn)
+;
+; **********************************************************************
+;
+; Open the file for the current tile for reading.
+;
+; **********************************************************************
+;
+    fp = addfile(file_name, "r")
+;
+; **********************************************************************
+;
+; Set the logical variables that determine the field to be calculated
+; (or simply obtained from file).  Also, set the strings describing the
+; field (field_desc) and its units (field_units).
+;
+; **********************************************************************
+;
+    gridfield_info \
+    := get_gridfield_info(field_name, horiz_dist_units, horiz_area_units)
 
-
-
-
-;
-; **********************************************************************
-;
-;
-;
-; **********************************************************************
-;
-    x_filedim_names = (/ "grid_xt" /)
-    y_filedim_names = (/ "grid_yt" /)
-    z_filedim_names = (/ "pfull", "phalf" /)
-    t_filedim_names = (/ "time" /)
-  
-    var_info := check_var_existence_dims( \
-                grid_files, \
-                field_name, \
-                x_filedim_names, \
-                y_filedim_names, \
-                z_filedim_names, \
-                t_filedim_names, \
-                vert_inds_to_plot, \
-                time_inds_to_plot)
-  
-    var_rank = var_info@var_rank
-    var_dim_names = var_info@var_dim_names
-    var_dim_sizes = var_info@var_dim_sizes
-    func_xy_only = var_info@func_xy_only
-    func_xyz_only = var_info@func_xyz_only
-    func_xyt_only = var_info@func_xyt_only
-    func_xyzt_only = var_info@func_xyzt_only
-;
-; **********************************************************************
-;
-; Open the NetCDF file containing the grid specification for the current 
-; tile.  This file also includes certain grid-related fields (e.g. cell
-; area).
-;
-; **********************************************************************
-;
-    fp = addfile(grid_files(nn), "r")
-;
-; **********************************************************************
-;
-; Get the data type of the various fields in the grid file (i.e. float
-; or double).  We assume all fields in the file have the same data type.
-; Thus, we need to find the data type of only one such field.  Here, we
-; use the "area" field for this purpose.
-;
-; **********************************************************************
-;
-;    field_data_type = getfilevartypes(fp, "area")
-    field_data_type = getfilevartypes(fp, "ugrd")  ; The variable used here will depend on the file being opened.
+    field_desc := gridfield_info@gridfield_desc
+    field_units := gridfield_info@gridfield_units
+    filevar_names := gridfield_info@filevar_names
+    calc_dA_cell_cntrs := gridfield_info@calc_dA_cell_cntrs
+    calc_dx_cell_cntrs := gridfield_info@calc_dx_cell_cntrs
+    calc_dy_cell_cntrs := gridfield_info@calc_dy_cell_cntrs
+    calc_dx_cell_faces := gridfield_info@calc_dx_cell_faces
+    calc_dy_cell_faces := gridfield_info@calc_dy_cell_faces
+    calc_angle_dx_cell_cntrs := gridfield_info@calc_angle_dx_cell_cntrs
+    calc_angle_dy_cell_cntrs := gridfield_info@calc_angle_dy_cell_cntrs
 ;
 ; **********************************************************************
 ;
@@ -294,7 +207,7 @@ begin
 ;
     print("")
     print("  Reading field(s) from file:")
-    print("    grid_files(" + nn + ") = " + char_dq + grid_files(nn) + char_dq) 
+    print("    file_names_by_tile(" + nn + ") = " + char_dq + file_name + char_dq)
 ;
 ; **********************************************************************
 ;
@@ -321,6 +234,8 @@ begin
                 quarter_dA_rb_crnt_tile, \
                 quarter_dA_rt_crnt_tile, \
                 quarter_dA_lt_crnt_tile /])
+
+    end if
 ;
 ; **********************************************************************
 ;
@@ -328,7 +243,7 @@ begin
 ;
 ; **********************************************************************
 ;
-    else if (calc_dx_cell_cntrs) then
+    if (calc_dx_cell_cntrs) then
 
       dx_SG_crnt_tile := fp->dx(:,:)
 
@@ -341,6 +256,8 @@ begin
       delete([/ dx_SG_crnt_tile, \
                 half_dx_left_crnt_tile, \
                 half_dx_right_crnt_tile /])
+
+    end if
 ;
 ; **********************************************************************
 ;
@@ -348,7 +265,7 @@ begin
 ;
 ; **********************************************************************
 ;
-    else if (calc_dy_cell_cntrs) then
+    if (calc_dy_cell_cntrs) then
 
       dy_SG_crnt_tile := fp->dy(:,:)
 
@@ -361,6 +278,8 @@ begin
       delete([/ dy_SG_crnt_tile, \
                 half_dy_bot_crnt_tile, \
                 half_dy_top_crnt_tile /])
+
+    end if
 ;
 ; **********************************************************************
 ;
@@ -368,7 +287,7 @@ begin
 ;
 ; **********************************************************************
 ;
-    else if (calc_dx_cell_faces) then
+    if (calc_dx_cell_faces) then
 
       dx_SG_crnt_tile := fp->dx(:,:)
 
@@ -381,6 +300,8 @@ begin
       delete([/ dx_SG_crnt_tile, \
                 half_dx_left_crnt_tile, \
                 half_dx_right_crnt_tile /])
+
+    end if
 ;
 ; **********************************************************************
 ;
@@ -388,7 +309,7 @@ begin
 ;
 ; **********************************************************************
 ;
-    else if (calc_dy_cell_faces) then
+    if (calc_dy_cell_faces) then
 
       dy_SG_crnt_tile := fp->dy(:,:)
 
@@ -401,6 +322,8 @@ begin
       delete([/ dy_SG_crnt_tile, \
                 half_dy_bot_crnt_tile, \
                 half_dy_top_crnt_tile /])
+
+    end if
 ;
 ; **********************************************************************
 ;
@@ -408,11 +331,13 @@ begin
 ;
 ; **********************************************************************
 ;
-    else if (calc_angle_dx_cell_cntrs) then
+    if (calc_angle_dx_cell_cntrs) then
 
       angle_dx_SG_crnt_tile := fp->angle_dx(:,:)
       angle_dx_cntr_crnt_tile := angle_dx_SG_crnt_tile(1::2,1::2)
       delete([/ angle_dx_SG_crnt_tile /])
+
+    end if
 ;
 ; **********************************************************************
 ;
@@ -420,18 +345,12 @@ begin
 ;
 ; **********************************************************************
 ;
-    else if (calc_angle_dy_cell_cntrs) then
+    if (calc_angle_dy_cell_cntrs) then
 
       angle_dy_SG_crnt_tile := fp->angle_dy(:,:)
       angle_dy_cntr_crnt_tile := angle_dy_SG_crnt_tile(1::2,1::2)
       delete([/ angle_dy_SG_crnt_tile /])
 
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
     end if
 
     print("  Done reading field(s) from file.")
@@ -439,12 +358,9 @@ begin
 ; **********************************************************************
 ;
 ; Get or calculate the field to plot and store it in the array field_-
-; crnt_tile.  Also, set the strings describing the field (field_desc), 
-; its units (field_units), and the plot title (plot_title).
+; crnt_tile.
 ;
 ; **********************************************************************
-;
-    if (strcmp_exact(field_name, "none")) then
 ;
 ; If field_name is set to "none", we create a 2-D array of missing val-
 ; ues of whatever data type the fields are in the file.  Note that if 
@@ -453,48 +369,51 @@ begin
 ; regional, the current tile is tile 7, and remove_rgnl_halo is set to 
 ; True.
 ;
+    if (strcmp_exact(field_name, "none")) then
+
       dims_SG_with_halo = getfilevardimsizes(fp, "area")
       dims_with_halo = dims_SG_with_halo/2
-      field_crnt_tile := new(dims_with_halo, field_data_type)
+      field_data_type_default = getfilevartypes(fp, "area")
+      field_crnt_tile := new(dims_with_halo, field_data_type_default)
 
-    else if (strcmp_exact(field_name, "area")) then
+    else if (strcmp_exact(field_name, "cell_area")) then
 
       field_crnt_tile := dA_crnt_tile
       delete(dA_crnt_tile)
       if (strcmp_exact(field_units, "km^2")) then
-        field_crnt_tile := field_crnt_tile/1.0d+6
+        field_crnt_tile := field_crnt_tile*kms2_per_meter2
       end if
 
-    else if (strcmp_exact(field_name, "sqrt_area")) then
+    else if (strcmp_exact(field_name, "sqrt_cell_area")) then
 
       field_crnt_tile := sqrt(dA_crnt_tile)
       delete(dA_crnt_tile)
       if (strcmp_exact(field_units, "km")) then
-        field_crnt_tile := field_crnt_tile/1.0d+3
+        field_crnt_tile := field_crnt_tile*kms_per_meter
       end if
 
-    else if (strcmp_exact(field_name, "dx")) then
+    else if (strcmp_exact(field_name, "cell_dx")) then
 
       field_crnt_tile := dx_cntr_crnt_tile
       delete(dx_cntr_crnt_tile)
       if (strcmp_exact(field_units, "km")) then
-        field_crnt_tile := field_crnt_tile/1.0d+3
+        field_crnt_tile := field_crnt_tile*kms_per_meter
       end if
 
-    else if (strcmp_exact(field_name, "dy")) then
+    else if (strcmp_exact(field_name, "cell_dy")) then
 
       field_crnt_tile := dy_cntr_crnt_tile
       delete(dy_cntr_crnt_tile)
       if (strcmp_exact(field_units, "km")) then
-        field_crnt_tile := field_crnt_tile/1.0d+3
+        field_crnt_tile := field_crnt_tile*kms_per_meter
       end if
 
-    else if (strcmp_exact(field_name, "dx_ovr_dy")) then
+    else if (strcmp_exact(field_name, "cell_dx_ovr_cell_dy")) then
 
       field_crnt_tile := dx_cntr_crnt_tile/dy_cntr_crnt_tile
       delete([/ dx_cntr_crnt_tile, dy_cntr_crnt_tile /])
 
-    else if (strcmp_exact(field_name, "min_dx_dy")) then
+    else if (strcmp_exact(field_name, "min_cell_dx_cell_dy")) then
 
       dxmin_crnt_tile \
       := where(dx_face_crnt_tile(0:ny-1,:) .lt. dx_face_crnt_tile(1:,:), \
@@ -515,15 +434,15 @@ begin
                 min_dx_dy_crnt_tile /])
 
       if (strcmp_exact(field_units, "km")) then
-        field_crnt_tile := field_crnt_tile/1.0d+3
+        field_crnt_tile := field_crnt_tile*kms_per_meter
       end if
 
-    else if (strcmp_exact(field_name, "angle_dx")) then
+    else if (strcmp_exact(field_name, "angle_cell_dx")) then
 
       field_crnt_tile := angle_dx_cntr_crnt_tile
       delete(angle_dx_cntr_crnt_tile)
 
-    else if (strcmp_exact(field_name, "angle_dy")) then
+    else if (strcmp_exact(field_name, "angle_cell_dy")) then
 
       field_crnt_tile := angle_dy_cntr_crnt_tile
       delete(angle_dy_cntr_crnt_tile)
@@ -564,128 +483,23 @@ begin
 ;
 ; **********************************************************************
 ;
-; Consider fields in the orography file.
-;
-; **********************************************************************
-;
-if (False) then
-
-; The following works with tile 7 only!!
-;    else if (strcmp_exact(field_name, "orog_raw")) then
-    if (strcmp_exact(field_name, "orog_filt")) then
-
-;      orog_file = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/C384r0p7n3_regional_RAP/orog/oro.C384.tile7.nc"
-;      orog_file = grid_dir + "/oro_data.nc"
-;      orog_file = work_dir + "/filtered_topo/oro." + cres + ".tile" + n_tile + ".halo6.nc"
-      orog_file = work_dir + "/orog/oro." + cres + ".tile" + n_tile + ".halo6.nc"
-      f_orog = addfile(orog_file, "r")
-;      field_crnt_tile = f_orog->orog_raw
-      field_crnt_tile = f_orog->orog_filt
-
-      field_desc = "Raw Orography"
-      field_units = "m"
-      plot_title = field_desc + " [" + field_units + "]"
-
-      dims_with_halo = dimsizes(field_crnt_tile)
-      nx_with_halo = dims_with_halo(1)
-      ny_with_halo = dims_with_halo(0)
-hh = 2
-      field_crnt_tile \
-      := field_crnt_tile( \
-         hh:ny_with_halo-1-hh, \
-         hh:nx_with_halo-1-hh)
-
-; The following works with tile 7 only!!
-    else if (strcmp_exact(field_name, "orog_filt")) then
-
-      orog_file = grid_dir + "/oro_data.nc"
-      f_orog = addfile(orog_file, "r")
-      field_crnt_tile = f_orog->orog_filt
-
-      field_desc = "Filtered Orography"
-      field_units = "m"
-      plot_title = field_desc + " [" + field_units + "]"
-
-    else if (strcmp_exact(field_name, "PRESsfc")) then
-
-      file_name = grid_dir + "/../nggps2d.nc"
-      f_unit = addfile(file_name, "r")
-      field_crnt_tile = f_unit->$field_name$(fcst_hr-1,:,:)
-      pascals_per_millibar = 100.0d
-      field_crnt_tile := field_crnt_tile/pascals_per_millibar
-
-      field_desc = f_unit->$field_name$@long_name
-      field_units = f_unit->$field_name$@units
-      plot_title = field_desc + " [" + field_units + "]"
-
-    else if (strcmp_exact(field_name, "slp") .or. \
-             strcmp_exact(field_name, "u1000") .or. \
-             strcmp_exact(field_name, "v1000") .or. \
-             strcmp_exact(field_name, "t1000") .or. \
-             strcmp_exact(field_name, "q1000") .or. \
-             strcmp_exact(field_name, "rh1000") .or. \
-             strcmp_exact(field_name, "us") .or. \
-             strcmp_exact(field_name, "vs") .or. \
-             strcmp_exact(field_name, "vort850")) then
-
-      file_name = grid_dir + "/../atmos_4xdaily.nc"
-      f_unit = addfile(file_name, "r")
-      field_crnt_tile = f_unit->$field_name$(1,:,:)
-      field_desc = f_unit->$field_name$@long_name
-      field_units = f_unit->$field_name$@units
-      plot_title = field_desc + " [" + field_units + "]"
-
-    else if (strcmp_exact(field_name, "ucomp") .or. \
-             strcmp_exact(field_name, "vcomp") .or. \
-             strcmp_exact(field_name, "nhpres"))
-
-      file_name = grid_dir + "/../nggps3d_4xdaily.nc"
-      f_unit = addfile(file_name, "r")
-      k = 60
-      ref_pres_full = f_unit->pfull(:)
-      field_crnt_tile = f_unit->$field_name$(1,k,:,:)
-      field_desc = f_unit->$field_name$@long_name
-      field_units = f_unit->$field_name$@units
-      plot_title = field_desc + " at pref = " + ref_pres_full(k) + " mb [" + field_units + "]"
-
-    else
-
-      dims_SG_with_halo = getfilevardimsizes(fp, "area")
-      dims_with_halo = dims_SG_with_halo/2
-      field_crnt_tile := new(dims_with_halo, field_data_type)
-
-    end if
-    end if
-    end if
-    end if
-    end if
-
-end if
-;
-; **********************************************************************
-;
 ; If on a regional grid and on tile 7 and if remove_rgnl_halo is set to
 ; True, remove the halo from the field calculated above (field_crnt_-
 ; tile).
 ;
 ; **********************************************************************
 ;
-    if (strcmp_exact(gtype, "regional") .and. \
-        (n_tile .eq. 7) .and. remove_rgnl_halo) then
+    if (remove_halo_by_tile(nn)) then
 
       print("")
       print("  Removing halo cells from field (" + \
             char_dq + field_name + char_dq + \
             ") on tile " + n_tile + " ...")
 
-      dims_with_halo = dimsizes(field_crnt_tile)
-      nx_with_halo = dims_with_halo(1)
-      ny_with_halo = dims_with_halo(0)
-
       field_crnt_tile \
       := field_crnt_tile( \
-         nhalo_T7:ny_with_halo-1-nhalo_T7, \
-         nhalo_T7:nx_with_halo-1-nhalo_T7)
+         nhalo_by_tile(nn):ny_with_halo_by_tile(nn)-1-nhalo_by_tile(nn), \
+         nhalo_by_tile(nn):nx_with_halo_by_tile(nn)-1-nhalo_by_tile(nn))
 
       print("  Done removing halo cells from field on tile " + n_tile + ".")
 
@@ -702,11 +516,85 @@ end if
 ; **********************************************************************
 ;
     if (nn .eq. 0) then
+
       field_all_tiles_unstruc := ndtooned(field_crnt_tile)
+
     else
+
+      field_data_type_prev_tiles = typeof(field_all_tiles_unstruc)
+      field_data_type_crnt_tile = typeof(field_crnt_tile)
+;
+; If the data type of the field on the tiles considered thus far is not
+; the same as that of the field on the current tile, we either perform 
+; type conversions or exit with an error (depending on the inconsisten-
+; cy).
+;
+      if (.not. strcmp_exact(field_data_type_prev_tiles, \
+                             field_data_type_crnt_tile)) then
+
+        prev_tiles_all_missing := all(ismissing(field_all_tiles_unstruc))
+        crnt_tile_all_missing := all(ismissing(field_crnt_tile))
+
+        if (prev_tiles_all_missing .and. (.not. crnt_tile_all_missing)) then
+
+          field_all_tiles_unstruc \
+          := totype(field_all_tiles_unstruc, field_data_type_crnt_tile)
+
+        else if ((.not. prev_tiles_all_missing) .and. crnt_tile_all_missing) then
+
+          field_crnt_tile \
+          := totype(field_crnt_tile, field_data_type_prev_tiles)
+
+        else if (prev_tiles_all_missing .and. crnt_tile_all_missing) then
+
+          msg := char_nl + id_str + char_nl + \
+"The field on all previous tiles and on the current tile consists of all " + char_nl + \
+"missing values.  In this case, the data type of the missing values on " + char_nl + \
+"the previous tiles should be the same as the data type of the missing " + char_nl + \
+"values on the current tile but is not:" + char_nl + \
+"  prev_tiles_all_missing = " + prev_tiles_all_missing + char_nl + \
+"  crnt_tile_all_missing = " + crnt_tile_all_missing + char_nl + \
+"  field_data_type_prev_tiles = " + char_dq + field_data_type_prev_tiles + char_dq + char_nl + \
+"  field_data_type_crnt_tile = " + char_dq + field_data_type_crnt_tile + char_dq + char_nl + \
+"Stopping."
+          print("" + msg)
+          exit
+
+        else if ((.not. prev_tiles_all_missing) .and. \
+                 (.not. crnt_tile_all_missing)) then
+
+          msg := char_nl + id_str + char_nl + \
+"The field does not contain any missing values on any of the previous " + char_nl + \
+"tiles or on the current tile.  In this case, the data type of the values " + char_nl + \
+"on the previous tiles should be the same as the data type of the values " + char_nl + \
+"on current tiles but is not:" + char_nl + \
+"  prev_tiles_all_missing = " + prev_tiles_all_missing + char_nl + \
+"  crnt_tile_all_missing = " + crnt_tile_all_missing + char_nl + \
+"  field_data_type_prev_tiles = " + char_dq + field_data_type_prev_tiles + char_dq + char_nl + \
+"  field_data_type_crnt_tile = " + char_dq + field_data_type_crnt_tile + char_dq + char_nl + \
+"Stopping."
+          print("" + msg)
+          exit
+
+        end if
+        end if
+        end if
+        end if
+
+      end if
+
       field_all_tiles_unstruc \
       := array_append_record(field_all_tiles_unstruc, ndtooned(field_crnt_tile), 0)
+
     end if
+;
+; **********************************************************************
+;
+; Get the field's data type (usually "float" or "double").
+;
+; **********************************************************************
+;
+    field_data_type = typeof(field_all_tiles_unstruc)
 ;
 ; **********************************************************************
 ;
@@ -719,7 +607,6 @@ end if
     print("")
     print("" + msg)
 
-;    print_field_stats = True
     print_field_stats = False
     field_stat_info \
     := calc_field_stats( \
