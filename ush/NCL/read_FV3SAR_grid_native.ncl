@@ -76,7 +76,10 @@ function read_FV3SAR_grid_native( \
          nhalo_T7:integer, \
          remove_rgnl_halo:logical)
 
-local num_tiles_to_plot, nx_all_tiles, ny_all_tiles, grid_files, \
+local num_tiles_to_plot, \
+      nx_no_halo_all_tiles, ny_no_halo_all_tiles, \
+      nx_with_halo_all_tiles, ny_with_halo_all_tiles, \
+      grid_files, \
       nn, msg, underline, n_tile, grid_fn, fp, \
       tile_SG_dims, msg_adden, \
       lon_verts_SG_crnt_tile, lat_verts_SG_crnt_tile, \
@@ -115,21 +118,37 @@ begin
 ; fied in tile_inds and save the results in the array grid_files.  Also,
 ; set the horizontal dimensions of the grid corresponding to each tile
 ; (i.e. the number of cells in each of the two directions) and save the
-; results in the arrays nx_all_tiles and ny_all_tiles.
+; results in the arrays nx_with_halo_all_tiles and ny_all_tiles_with_ha-
+; lo.
 ;
 ; Note that for a regional grid, if one of the specified tiles is tile 7
 ; (which is the tile containing the regional domain/grid), then the halo
 ; cells that this tile includes will be removed if remove_rgnl_halo is 
-; set to True.  In this case, nx_all_tiles and ny_all_tiles for tile 7
-; will contain the number of cells AFTER removing the halo.
+; set to True.  In this case, nx_no_halo_all_tiles and ny_all_tiles_no_-
+; halo for tile 7 will contain the number of cells AFTER removing the 
+; halo.  If this is not the case, then nx_no_halo_all_tiles and ny_all_-
+; tiles_no_halo will be set equal to nx_with_halo_all_tiles and ny_all_-
+; tiles_with_halo.
 ;
 ; **********************************************************************
 ;
   num_tiles_to_plot = dimsizes(tile_inds)
 
-  nx_all_tiles = new((/ num_tiles_to_plot /), "integer")
-  ny_all_tiles = new((/ num_tiles_to_plot /), "integer")
-  grid_files = new((/ num_tiles_to_plot /), "string")
+  nhaloSG_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nxSG_with_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nySG_with_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nxSG_no_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nySG_no_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
+
+  nhalo_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nx_with_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  ny_with_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nx_no_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  ny_no_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
+
+  remove_halo_all_tiles := new((/ num_tiles_to_plot /), "logical")
+
+  grid_files := new((/ num_tiles_to_plot /), "string")
 
   print("")
   print("" + separator_line)
@@ -177,18 +196,6 @@ begin
 ;
 ; **********************************************************************
 ;
-; Read in the dimensions of the tile's supergrid (which has twice the 
-; resolution as the tile's grid).  From these, calculate the dimensions
-; of the grid.
-;
-; **********************************************************************
-;
-    tile_SG_dims := getfilevardimsizes(fp, "area") 
-    nx_all_tiles(nn) = tile_SG_dims(1)/2
-    ny_all_tiles(nn) = tile_SG_dims(0)/2
-;
-; **********************************************************************
-;
 ; If on a regional grid, if the current tile is tile 7 (the regional do-
 ; main/grid), and if remove_rgnl_halo is set to True, then reduce the 
 ; grid dimensions to ones corresponding to the tile 7 grid without a ha-
@@ -199,13 +206,88 @@ begin
     msg_adden = ""
     if (strcmp_exact(gtype, "regional") .and. \
         (n_tile .eq. 7) .and. remove_rgnl_halo) then
-      nx_all_tiles(nn) = nx_all_tiles(nn) - 2*nhalo_T7
-      ny_all_tiles(nn) = ny_all_tiles(nn) - 2*nhalo_T7
-      msg_adden = " (AFTER removing halo of " + nhalo_T7 + " cells)"
-    end if
 
-    print("  nx_all_tiles(" + nn + ") = " + nx_all_tiles(nn) + msg_adden)
-    print("  ny_all_tiles(" + nn + ") = " + ny_all_tiles(nn) + msg_adden)
+      nhaloSG_all_tiles(nn) = 2*nhalo_T7
+      nhalo_all_tiles(nn) = nhaloSG_all_tiles(nn)/2
+
+      msg_adden_SG \
+      = "  (after removing " + nhaloSG_all_tiles(nn) + "-cell-wide halo " + \
+        "from all four sides of the supergrid)"
+      msg_adden \
+      = "  (after removing " + nhalo_all_tiles(nn) + "-cell-wide halo " + \
+        "from all four sides of the grid)"
+
+      remove_halo_all_tiles(nn) = True
+
+    else
+
+      nhaloSG_all_tiles(nn) = 0
+      nhalo_all_tiles(nn) = nhaloSG_all_tiles(nn)/2
+      msg_adden_SG = "  (no halo removed from supergrid)"
+      msg_adden = "  (no halo removed from grid)"
+      remove_halo_all_tiles(nn) = False
+
+    end if
+;
+; **********************************************************************
+;
+; Read in the dimensions of the tile's supergrid (which has twice the 
+; resolution as the tile's grid).  From these, calculate the dimensions
+; of the grid.
+;
+; **********************************************************************
+;
+    tile_SG_dims := getfilevardimsizes(fp, "area") 
+    nxSG_with_halo_all_tiles(nn) = tile_SG_dims(1)
+    nySG_with_halo_all_tiles(nn) = tile_SG_dims(0)
+
+    print("")
+    print("  nhaloSG_all_tiles(" + nn + ") = " + nhaloSG_all_tiles(nn))
+;    print("")
+    print("  nxSG_with_halo_all_tiles(" + nn + ") = " + \
+          nxSG_with_halo_all_tiles(nn))
+    print("  nySG_with_halo_all_tiles(" + nn + ") = " + \
+          nySG_with_halo_all_tiles(nn))
+
+    nxSG_no_halo_all_tiles(nn) \
+    = nxSG_with_halo_all_tiles(nn) - 2*nhaloSG_all_tiles(nn)
+    nySG_no_halo_all_tiles(nn) \
+    = nySG_with_halo_all_tiles(nn) - 2*nhaloSG_all_tiles(nn)
+
+;    print("")
+    print("  nxSG_no_halo_all_tiles(" + nn + ") = " + \
+          nxSG_no_halo_all_tiles(nn) + msg_adden_SG)
+    print("  nySG_no_halo_all_tiles(" + nn + ") = " + \
+          nySG_no_halo_all_tiles(nn) + msg_adden_SG)
+;pause
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+; 
+    nx_with_halo_all_tiles(nn) = nxSG_with_halo_all_tiles(nn)/2
+    ny_with_halo_all_tiles(nn) = nySG_with_halo_all_tiles(nn)/2
+
+    print("")
+    print("  nhalo_all_tiles(" + nn + ") = " + nhalo_all_tiles(nn))
+;    print("")
+    print("  nx_with_halo_all_tiles(" + nn + ") = " + \
+          nx_with_halo_all_tiles(nn))
+    print("  ny_with_halo_all_tiles(" + nn + ") = " + \
+          ny_with_halo_all_tiles(nn))
+
+    nx_no_halo_all_tiles(nn) \
+    = nx_with_halo_all_tiles(nn) - 2*nhalo_all_tiles(nn)
+    ny_no_halo_all_tiles(nn) \
+    = ny_with_halo_all_tiles(nn) - 2*nhalo_all_tiles(nn)
+
+;    print("")
+    print("  nx_no_halo_all_tiles(" + nn + ") = " + \
+          nx_no_halo_all_tiles(nn) + msg_adden)
+    print("  ny_no_halo_all_tiles(" + nn + ") = " + \
+          ny_no_halo_all_tiles(nn) + msg_adden)
 ;
 ; **********************************************************************
 ;
@@ -267,16 +349,6 @@ begin
 ;
     if (strcmp_exact(gtype, "regional") .and. \
         (n_tile .eq. 7) .and. remove_rgnl_halo) then
-;
-; **********************************************************************
-;
-; Get grid dimensions before halo is removed.
-;
-; **********************************************************************
-;
-      dims_with_halo := dimsizes(lon_cntrs_crnt_tile)
-      nx_with_halo = dims_with_halo(1)
-      ny_with_halo = dims_with_halo(0)
 
       print("")
       print("  Removing halo cells from coordinate arrays of tile " + n_tile + " ...")
@@ -290,13 +362,13 @@ begin
 ;
       lon_cntrs_crnt_tile \
       := lon_cntrs_crnt_tile( \
-         nhalo_T7:ny_with_halo-1-nhalo_T7, \
-         nhalo_T7:nx_with_halo-1-nhalo_T7)
+         nhalo_T7:ny_with_halo_all_tiles(nn)-1-nhalo_T7, \
+         nhalo_T7:nx_with_halo_all_tiles(nn)-1-nhalo_T7)
 
       lat_cntrs_crnt_tile \
       := lat_cntrs_crnt_tile( \
-         nhalo_T7:ny_with_halo-1-nhalo_T7, \
-         nhalo_T7:nx_with_halo-1-nhalo_T7)
+         nhalo_T7:ny_with_halo_all_tiles(nn)-1-nhalo_T7, \
+         nhalo_T7:nx_with_halo_all_tiles(nn)-1-nhalo_T7)
 ;
 ; **********************************************************************
 ;
@@ -307,13 +379,13 @@ begin
 ;
       lon_verts_crnt_tile \
       := lon_verts_crnt_tile( \
-         nhalo_T7:ny_with_halo-nhalo_T7, \
-         nhalo_T7:nx_with_halo-nhalo_T7)
+         nhalo_T7:ny_with_halo_all_tiles(nn)-nhalo_T7, \
+         nhalo_T7:nx_with_halo_all_tiles(nn)-nhalo_T7)
 
       lat_verts_crnt_tile \
       := lat_verts_crnt_tile( \
-         nhalo_T7:ny_with_halo-nhalo_T7, \
-         nhalo_T7:nx_with_halo-nhalo_T7)
+         nhalo_T7:ny_with_halo_all_tiles(nn)-nhalo_T7, \
+         nhalo_T7:nx_with_halo_all_tiles(nn)-nhalo_T7)
 
       print("  Done removing halo cells from coordinate arrays of tile " + n_tile + ".")
 
@@ -351,8 +423,8 @@ begin
 ;
 ; **********************************************************************
 ;
-    nx = nx_all_tiles(nn)
-    ny = ny_all_tiles(nn)
+    nx = nx_no_halo_all_tiles(nn)
+    ny = ny_no_halo_all_tiles(nn)
 ;
 ; **********************************************************************
 ;
@@ -506,14 +578,29 @@ begin
 
   grid_info@fp = fp
   grid_info@grid_files = grid_files
-  grid_info@nx_all_tiles = nx_all_tiles
-  grid_info@ny_all_tiles = ny_all_tiles
+
+  grid_info@nhaloSG_all_tiles = nhaloSG_all_tiles
+  grid_info@nxSG_with_halo_all_tiles = nxSG_with_halo_all_tiles
+  grid_info@nySG_with_halo_all_tiles = nySG_with_halo_all_tiles
+  grid_info@nxSG_no_halo_all_tiles = nxSG_no_halo_all_tiles
+  grid_info@nySG_no_halo_all_tiles = nySG_no_halo_all_tiles
+
+  grid_info@nhalo_all_tiles = nhalo_all_tiles
+  grid_info@nx_with_halo_all_tiles = nx_with_halo_all_tiles
+  grid_info@ny_with_halo_all_tiles = ny_with_halo_all_tiles
+  grid_info@nx_no_halo_all_tiles = nx_no_halo_all_tiles
+  grid_info@ny_no_halo_all_tiles = ny_no_halo_all_tiles
+
+  grid_info@remove_halo_all_tiles = remove_halo_all_tiles
+
   grid_info@lon_cntrs_all_tiles_unstruc = lon_cntrs_all_tiles_unstruc
   grid_info@lat_cntrs_all_tiles_unstruc = lat_cntrs_all_tiles_unstruc
   grid_info@lon_verts_all_tiles_unstruc = lon_verts_all_tiles_unstruc
   grid_info@lat_verts_all_tiles_unstruc = lat_verts_all_tiles_unstruc
+
   grid_info@lon_bdy_all_tiles = lon_bdy_all_tiles
   grid_info@lat_bdy_all_tiles = lat_bdy_all_tiles
+
   grid_info@coord_data_type = coord_data_type
 
   return(grid_info)

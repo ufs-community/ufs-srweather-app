@@ -762,6 +762,83 @@ example_usage_and_help_str
 
 
 
+;
+; **********************************************************************
+;
+; Check whether the field name is one that is found in the grid specifi-
+; cation file(s).
+;
+; **********************************************************************
+;
+  valid_gridfield_names \
+  = (/ "cell_area", \
+       "sqrt_cell_area", \
+       "cell_dx", \
+       "cell_dy", \
+       "cell_dx_ovr_cell_dy", \
+       "min_cell_dx_cell_dy", \
+       "angle_cell_dx", \
+       "angle_cell_dy" /)
+
+  is_gridfield = False 
+  if (strcmp_exact(valid_gridfield_names, field_name)) then
+    is_gridfield = True
+  end if
+;
+; **********************************************************************
+;
+; If the base name of the file from which to read in fields is not spe-
+; cified, set it to a blank string.
+;
+; **********************************************************************
+;
+  if (.not. isvar("file_basename")) then
+
+    if (is_gridfield) then
+
+      file_basename = ""
+
+    else
+
+      msg := char_nl + \
+"When the field to be plotted is not a grid field [i.e. when is_gridfield " + char_nl + \
+"is False; a grid field is a field that is stored in the grid specification " + char_nl + \
+"file(s)], the base name of the file from which to read in the field [i.e. " + char_nl + \
+"file_basename; this is the file name without an extension (e.g. " + char_dq + ".nc" + char_dq + "), " + char_nl + \
+"the tile number (e.g. " + char_dq + ".tile6" + char_dq + "), and possibly also the halo width (e.g. " + char_nl + \
+char_dq + ".halo4" + char_dq + ")] must be specified:" + char_nl + \
+"  is_gridfield = " + is_gridfield + char_nl + \
+"  isvar(" + char_dq + "file_basename" + char_dq + ") = " + isvar("file_basename") + char_nl + \
+"Please rerun with a specified file base name.  " + \
+example_usage_and_help_str
+
+      print("" + msg)
+      exit
+
+    end if
+
+  else
+
+    if (is_gridfield) then
+
+      msg := char_nl + \
+"When the field to be plotted is a grid field [i.e. when is_gridfield is " + char_nl + \
+"True; a grid field is a field that is stored in the grid specification " + char_nl + \
+"file(s)], the base name of the file from which to read in the field [i.e. " + char_nl + \
+"file_basename; this is the file name without an extension (e.g. " + char_dq + ".nc" + char_dq + "), " + char_nl + \
+"the tile number (e.g. " + char_dq + ".tile6" + char_dq + "), and possibly also the halo width (e.g. " + char_nl + \
+char_dq + ".halo4" + char_dq + ")] should not be specified on the command line (this file name " + char_nl + \
+"will be formed internally):" + char_nl + \
+"  is_gridfield = " + is_gridfield + char_nl + \
+"  file_basename = " + char_dq + file_basename + char_dq + " (before resetting to empty string)" + char_nl + \
+"Resetting file_basename to an empty string."
+
+      print("" + msg)
+      file_basename = ""
+
+    end if
+
+  end if
 
 
 
@@ -784,7 +861,7 @@ example_usage_and_help_str
 ; **********************************************************************
 ;
     if (.not. isvar("field_name")) then
-;      field_name := "sqrt_area"
+;      field_name := "sqrt_cell_area"
       field_name := "none"
     end if
 ;
@@ -794,38 +871,20 @@ example_usage_and_help_str
 ;
 ; **********************************************************************
 ;
-if (False) then
-    valid_field_names \
-    = (/ "none", \
-         "area", \
-         "sqrt_area", \
-         "dx", \
-         "dy", \
-         "dx_ovr_dy", \
-         "min_dx_dy", \
-         "angle_dx", \
-         "angle_dy" /)
-  
-    if (.not. strcmp_exact(valid_field_names, field_name)) then
-  
-      valid_vals \
-      := char_dq \
-      + str_join(valid_field_names, char_dq + ", " + char_dq) \
-      + char_dq
-  
-      msg := char_nl + \
-"The field name (field_name) is not set to a valid value:" + char_nl + \
-"  field_name = " + char_dq + field_name + char_dq + char_nl + \
-"Valid values are:" + char_nl + \
-"  " + valid_vals + char_nl + \
-"Please rerun with a valid field name.  " + \
-example_usage_and_help_str
-  
-      print("" + msg)
-      exit
-  
+    valid_gridfield_names \
+    = (/ "cell_area", \
+         "sqrt_cell_area", \
+         "cell_dx", \
+         "cell_dy", \
+         "cell_dx_ovr_cell_dy", \
+         "min_cell_dx_cell_dy", \
+         "angle_cell_dx", \
+         "angle_cell_dy" /)
+ 
+    is_gridfield = False 
+    if (strcmp_exact(valid_gridfield_names, field_name)) then
+      is_gridfield = True
     end if
-end if
 ;
 ; **********************************************************************
 ;
@@ -949,6 +1008,8 @@ end if
   plot_params@tile_bdy_color = tile_bdy_color
   plot_params@show_tile_grids = show_tile_grids
   plot_params@field_name = field_name
+  plot_params@is_gridfield = is_gridfield
+  plot_params@file_basename = file_basename
 
   plot_params@show_RAP_bdy = show_RAP_bdy
   plot_params@RAP_bdy_color = RAP_bdy_color

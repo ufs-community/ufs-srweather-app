@@ -11,9 +11,12 @@
 ; **********************************************************************
 ;
 loadscript(lib_location + "pause.ncl")
+loadscript(lib_location + "constants.ncl")
 loadscript(lib_location + "special_chars.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "calc_field_stats.ncl")
+
+load "get_gridfield_info.ncl"
 
 undef("read_FV3SAR_field_native")
 
@@ -79,7 +82,7 @@ begin
 ;
   num_tiles = dimsizes(tile_inds)
 
-  msg := "Reading field from specified file(s) ..."
+  msg := "Looping over tiles to read field(s) from specified file(s) ..."
   print("")
   print("" + separator_line)
   print("" + msg)
@@ -109,17 +112,29 @@ begin
     msg_adden = ""
     if (strcmp_exact(gtype, "regional") .and. \
         (n_tile .eq. 7) .and. remove_rgnl_halo) then
-      msg_adden = " (WITHOUT a halo)"
+      msg_adden = " (AFTER removing halo of " + nhalo_T7 + " cells)"
     end if
 
     print("")
     print("  Current tile's grid dimensions" + msg_adden + " are:")
     print("    nx = " + nx)
     print("    ny = " + ny)
-
-    file_name = file_names_by_tile(nn)
-    field_name = field_names_by_tile(nn)
-
+;
+; **********************************************************************
+;
+; Get the file name and field name for the current tile.
+;
+; **********************************************************************
+;
+    file_name := file_names_by_tile(nn)
+    field_name := field_names_by_tile(nn)
+;
+; **********************************************************************
+;
+; Open the file for the current tile for reading.
+;
+; **********************************************************************
+;
     fp = addfile(file_name, "r")
 ;
 ; **********************************************************************
@@ -141,7 +156,7 @@ begin
 
       field_data_type_default = "float"
 
-      msg := char_nl + \
+      msg := char_nl + id_str + char_nl + \
 "  The field name (field_name) is set to " + char_dq + field_name + char_dq + "." + \
 "  Thus, the field will be " + char_nl + \
 "  set to an array of missing/fill values of specified default type (" + \
@@ -211,8 +226,9 @@ char_dq + field_data_type_default + char_dq + ") ..."
       field_data_type_crnt_tile = typeof(field_crnt_tile)
 ;
 ; If the data type of the field on the tiles considered thus far is not
-; the same as that of the current tile, we will need to perform type 
-; conversions (or exit with an error).
+; the same as that of the field on the current tile, we either perform 
+; type conversions or exit with an error (depending on the inconsisten-
+; cy).
 ;
       if (.not. strcmp_exact(field_data_type_prev_tiles, \
                              field_data_type_crnt_tile)) then
@@ -232,10 +248,11 @@ char_dq + field_data_type_default + char_dq + ") ..."
 
         else if (prev_tiles_all_missing .and. crnt_tile_all_missing) then
 
-          msg := \
-"The field on all previous tiles and on the current tile contains all " + char_nl + \
-"missing values.  In this case, the missing values on the previous tiles " + char_nl + \
-"on the current tile should be the same but is not:" + char_nl + \
+          msg := char_nl + id_str + char_nl + \
+"The field on all previous tiles and on the current tile consists of all " + char_nl + \
+"missing values.  In this case, the data type of the missing values on " + char_nl + \
+"the previous tiles should be the same as the data type of the missing " + char_nl + \
+"values on the current tile but is not:" + char_nl + \
 "  prev_tiles_all_missing = " + prev_tiles_all_missing + char_nl + \
 "  crnt_tile_all_missing = " + crnt_tile_all_missing + char_nl + \
 "  field_data_type_prev_tiles = " + char_dq + field_data_type_prev_tiles + char_dq + char_nl + \
@@ -247,10 +264,11 @@ char_dq + field_data_type_default + char_dq + ") ..."
         else if ((.not. prev_tiles_all_missing) .and. \
                  (.not. crnt_tile_all_missing)) then
 
-          msg := \
+          msg := char_nl + id_str + char_nl + \
 "The field does not contain any missing values on any of the previous " + char_nl + \
-"or on the current tile.  In this case, the data types on the previous " + char_nl + \
-"and current tiles should be the same but are not:" + char_nl + \
+"tiles or on the current tile.  In this case, the data type of the values " + char_nl + \
+"on the previous tiles should be the same as the data type of the values " + char_nl + \
+"on current tiles but is not:" + char_nl + \
 "  prev_tiles_all_missing = " + prev_tiles_all_missing + char_nl + \
 "  crnt_tile_all_missing = " + crnt_tile_all_missing + char_nl + \
 "  field_data_type_prev_tiles = " + char_dq + field_data_type_prev_tiles + char_dq + char_nl + \

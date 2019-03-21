@@ -1,7 +1,7 @@
 ;
 ; **********************************************************************
 ;
-; File name: check_var_existence_dims.ncl
+; File name: check_filevar_existence_dims.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
@@ -13,15 +13,11 @@
 loadscript(lib_location + "special_chars.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 
-undef("check_var_existence_dims")
+undef("check_filevar_existence_dims")
 
-function check_var_existence_dims( \
+function check_filevar_existence_dims( \
          file_name:string, \
          var_name:string, \
-         x_filedim_names[*]:string, \
-         y_filedim_names[*]:string, \
-         z_filedim_names[*]:string, \
-         t_filedim_names[*]:string, \
          nx:integer, ny:integer, \
          vert_inds[*]:integer, \
          time_inds[*]:integer)
@@ -29,6 +25,8 @@ function check_var_existence_dims( \
 local fp, \
       all_var_names, \
       var_dim_names, var_dim_sizes, var_rankj, \
+      x_filedim_names, y_filedim_names, \
+      z_filedim_names, t_filedim_names, \
       x_filedim_names_str, y_filedim_names_str, \
       z_filedim_names_str, t_filedim_names_str, \
       var_dim_names_str, var_dim_sizes_str, \
@@ -96,6 +94,20 @@ begin
   var_dim_names = getfilevardimnames(fp, var_name)
   var_dim_sizes = getfilevardimsizes(fp, var_name)
   var_rank = dimsizes(var_dim_sizes)
+;
+; **********************************************************************
+;
+; Set the dimension names we expect to see in the file(s) from which we
+; will read in the FV3SAR field.  This depends on the file base name.  
+; These dimension names will be used to check the consistency of the di-
+; mensions of the specified field.
+;
+; **********************************************************************
+;
+  x_filedim_names = (/ "grid_x", "grid_xt", "nx", "nxp" /)
+  y_filedim_names = (/ "grid_y", "grid_yt", "ny", "nyp" /)
+  z_filedim_names = (/ "phalf", "pfull" /)
+  t_filedim_names = (/ "time" /)
 ;
 ; **********************************************************************
 ;
@@ -217,19 +229,21 @@ begin
 ;
     if (.not. (func_x .and. func_y)) then
       msg := char_nl + \
-"For a variable of rank greater than or equal to 2, the last dimension must " + char_nl + \
-"represent the x horizontal direction [i.e. var_dim_names(var_rank-1) must be " + char_nl + \
-"equal to x_dim_name], and the next-to_last dimension must represent the y " + char_nl + \
-"horizontal direction [i.e. var_dim_names(var_rank-2) must be equal to y_dim_name]:" + char_nl + \
-"  var_name = " + var_name + char_nl + \
+"For a variable of rank greater than or equal to 2, the last dimension " + char_nl + \
+"must represent the x horizontal direction [i.e. var_dim_names(var_rank-1) " + char_nl + \
+"must be equal to one of the elements of x_filedim_names], and the next-" + char_nl + \
+"to-last dimension must represent the y horizontal direction [i.e. var_-" + char_nl + \
+"dim_names(var_rank-2) must be equal to one of the elements of y_filedim_-" + char_nl + \
+"names]:" + char_nl + \
+"  var_name = " + char_dq + var_name + char_dq + char_nl + \
 "  var_rank = " + var_rank + char_nl + \
 "  var_dim_names = " + var_dim_names_str + char_nl + \
 "  var_dim_names(var_rank-1) = var_dim_names(" + (var_rank-1) + ") = " + \
 char_dq + var_dim_names(var_rank-1) + char_dq + char_nl + \
-"  x_filedim_names = " + char_dq + x_filedim_names + char_dq + char_nl + \
+"  x_filedim_names = " + x_filedim_names_str + char_nl + \
 "  var_dim_names(var_rank-2) = var_dim_names(" + (var_rank-2) + ") = " + \
 char_dq + var_dim_names(var_rank-2) + char_dq + char_nl + \
-"  y_filedim_names = " + char_dq + y_filedim_names + char_dq + char_nl + \
+"  y_filedim_names = " + y_filedim_names_str + char_nl + \
 "Stopping."
       print("" + msg)
       exit
@@ -285,9 +299,10 @@ char_dq + var_dim_names(var_rank-2) + char_dq + char_nl + \
 ;
       if (.not. (func_xyt_only .or. func_xyz_only)) then
         msg := char_nl + \
-"For a variable of rank 3, the first dimension [i.e. var_dim_names(0)] must " + char_nl + \
-"represent either time (as specified by one of the elements of t_filedim_names) " + char_nl + \
-"or the vertical direction (as specified by one of the elements of z_filedim_names):" + char_nl + \
+"For a variable of rank 3, the first dimension [i.e. var_dim_names(0)] " + char_nl + \
+"must represent either time or the vertical direction [i.e. var_dim_names(0) " + char_nl + \
+"must be equal to either one of the elements of t_filedim_names or to one " + char_nl + \
+"of the elements of z_filedim_names]:" + char_nl + \
 "  var_name = " + var_name + char_nl + \
 "  var_rank = " + var_rank + char_nl + \
 "  var_dim_names = " + var_dim_names_str + char_nl + \
@@ -341,13 +356,16 @@ char_dq + var_dim_names(var_rank-2) + char_dq + char_nl + \
         func_xyzt_only = True
       else
         msg := char_nl + \
-"For a variable of rank 4, the zeroth dimension [i.e. var_dim_names(0)] must " + char_nl + \
-"represent time (as defined by one of the elements of t_filedim_names), the " + char_nl + \
-"first dimension [i.e. var_dim_names(1)] must represent the vertical direction " + char_nl + \
-"(as defined by one of the elements of z_filedim_names), the second dimension " + char_nl + \
-"[i.e. var_dim_names(2)] must represent the y horizontal direction (as defined " + char_nl + \
-"by one of the elements of y_filedim_names), and the third dimension must represent " + char_nl + \
-"the x horizontal direction (as defined by one of the elements of x_filedim_names):" + char_nl + \
+"For a variable of rank 4, the first dimension [i.e. var_dim_names(0)] " + char_nl + \
+"must represent time [i.e. var_dim_names(0) must be equal to t_filedim_-" + char_nl + \
+"names], the second dimension [i.e. var_dim_names(1)] must represent the " + char_nl + \
+"vertical direction [i.e. var_dim_names(1) must be equal to one of the " + char_nl + \
+"elements of z_filedim_names], the third dimension [i.e. var_dim_names(2)] " + char_nl + \
+"must represent the y horizontal direction [i.e. var_dim_names(2) must " + char_nl + \
+"be equal to one of the elements of y_filedim_names], and the fourth di-" + char_nl + \
+"mension [i.e. var_dim_names(3)] must represent the x horizontal direc-" + char_nl + \
+"tion [i.e. var_dim_names(3) must be equal to one of the elements of x_-" + char_nl + \
+"filedim_names]:" + char_nl + \
 "  var_name = " + var_name + char_nl + \
 "  var_rank = " + var_rank + char_nl + \
 "  var_dim_names = " + var_dim_names_str + char_nl + \
@@ -526,8 +544,8 @@ char_dq + var_dim_names(var_rank-2) + char_dq + char_nl + \
 "The horizontal dimensions of the variable read in from file [given by " + char_nl + \
 "var_dim_sizes(var_rank-1) in the x direction and var_dim_sizes(var_rank-2) " + char_nl + \
 "in the y direction] are not consistent with the dimensions (nx,ny) read " + char_nl + \
-"in form the grid file.  The variable dimension sizes must be (nx,ny), " + char_nl + \
-"(nx+1,ny), or (nx,ny+1):" + char_nl + \
+"in from the grid file.  The variable dimension sizes must be (nx,ny), " + char_nl + \
+"(nx+1,ny), (nx,ny+1), or (nx+1,ny+1):" + char_nl + \
 "  (nx, ny) = (" + nx + ", " + ny + ")  [These are the dimensions read from the grid file.]" + char_nl + \
 "  file_name = " + char_dq + file_name + char_dq + char_nl + \
 "  var_name = " + char_dq + var_name + char_dq + char_nl + \
