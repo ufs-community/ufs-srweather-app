@@ -91,6 +91,11 @@ Setting parameter \"$param\" in file \"$file\"..."
     regex_replace="\1$value\3"
     ;;
 #
+  "$REGIONAL_GRID_NAMELIST_FN")
+    regex_search="^(\s*$param\s*=)(.*)"
+    regex_replace="\1 $value"
+    ;;
+#
   "$FV3_NAMELIST_FN")
     regex_search="^(\s*$param\s*=)(.*)"
     regex_replace="\1 $value"
@@ -130,7 +135,9 @@ Setting parameter \"$param\" in file \"$file\"..."
 #
   *)
     print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Unkown file:
+Function \"${FUNCNAME[0]}\":
+The regular expressions for performing search and replace have not been 
+specified for this file:
   file = \"$file\""
     ;;
 #

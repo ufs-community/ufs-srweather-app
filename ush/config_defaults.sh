@@ -124,6 +124,7 @@ CCPPDIR="/path/to/CCPP/executable"
 #
 #-----------------------------------------------------------------------
 #
+REGIONAL_GRID_NAMELIST_FN="regional_grid.nml"
 FV3_NAMELIST_FN="input.nml"
 FV3_CCPP_NAMELIST_FN="input_ccpp.nml"
 DIAG_TABLE_FN="diag_table"
@@ -214,6 +215,69 @@ CCPP="true"
 #
 CCPP_suite="GFS"
 #CCPP_suite="GSD"
+#
+#-----------------------------------------------------------------------
+#
+# Set grid_gen_method.  This variable specifies the method to use to ge-
+# nerate a regional grid in the horizontal.  The values that grid_gen_-
+# method can take on are:
+#
+# * "GFDLgrid":
+#   This will generate a regional grid by first generating a parent glo-
+#   bal cubed-sphere grid using GFDL's grid generator.
+#
+# * "JPgrid":
+#   This will generate a regional grid using the map projection deve-
+#   loped by Jim Purser of EMC.
+#
+#-----------------------------------------------------------------------
+#
+grid_gen_method="GFDLgrid"
+#grid_gen_method="JPgrid"
+#
+#-----------------------------------------------------------------------
+#
+# Parameters for generating a grid for grid_gen_method set to "JPgrid".
+#
+# delx:
+# The cell size in the zonal direction of the regional grid (in meters).
+#
+# dely:
+# The cell size in the meridional direction of the regional grid (in me-
+# ters).
+#
+# nx_T7:
+# The number of cells in the zonal direction on the regional grid.
+#
+# ny_T7:
+# The number of cells in the meridional direction on the regional grid.
+#
+# nhw_T7:
+# The width of the wide halo (in units of number of cells) to create 
+# around the regional grid.  A grid with a halo of this width will first
+# be created and stored in a grid specification file.  This grid will 
+# then be shaved down to obtain grids with 3-cell-wide and 4-cell-wide
+# halos.
+#
+# a_grid_param:
+# The "a" parameter used in the Jim Purser map projection/grid genera-
+# tion method.
+#
+# k_grid_param:
+# The "k" parameter used in the Jim Purser map projection/grid genera-
+# tion method.
+#
+#-----------------------------------------------------------------------
+#
+delx="3000.0"  # In meters.
+dely="3000.0"  # In meters.
+nx_T7=1000
+ny_T7=1000
+nhw_T7=6
+
+a_grid_param="0.21423"
+k_grid_param="-0.23209"
+
 #
 #-----------------------------------------------------------------------
 #
@@ -405,8 +469,19 @@ VERBOSE="true"
 #
 #-----------------------------------------------------------------------
 #
-layout_x="20"  # One possibility: 14 for RAP, 20 for HRRR.
-layout_y="20"  # One possibility: 14 for RAP, 20 for HRRR.
+layout_x="20"
+layout_y="20"
+#
+#-----------------------------------------------------------------------
+#
+# Set the blocksize to use.  This is the amount of data that is passed
+# into the cache at a time.  The number of vertical columns per MPI task
+# needs to be divisible by the blocksize; otherwise, unexpected results
+# may occur.
+#
+#-----------------------------------------------------------------------
+#
+blocksize="24"
 #
 #-----------------------------------------------------------------------
 #
@@ -435,5 +510,5 @@ layout_y="20"  # One possibility: 14 for RAP, 20 for HRRR.
 #
 quilting=".true."
 write_groups="1"
-write_tasks_per_group="20"  # One possibility: 14 for RAP, 20 for HRRR.
+write_tasks_per_group="20"
 print_esmf=".false."

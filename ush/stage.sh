@@ -94,6 +94,7 @@ npy_T7=$(( $ny_T7 + 1 ))
 #
 # Set parameters.
 #
+set_file_param "$FV3_NAMELIST_FP" "blocksize" "$blocksize"
 set_file_param "$FV3_NAMELIST_FP" "layout" "$layout_x,$layout_y"
 set_file_param "$FV3_NAMELIST_FP" "npx" "$npx_T7"
 set_file_param "$FV3_NAMELIST_FP" "npy" "$npy_T7"

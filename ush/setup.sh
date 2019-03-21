@@ -318,6 +318,9 @@ YMD=${CDATE:0:8}
 # USHDIR:
 # Directory containing the shell scripts called by the workflow.
 #
+# SORCDIR:
+# Directory containing various source codes.
+#
 # TEMPLATE_DIR:
 # Directory in which templates of various FV3SAR input files are locat-
 # ed.
@@ -330,6 +333,7 @@ YMD=${CDATE:0:8}
 #
 FV3SAR_DIR="$BASEDIR/fv3sar_workflow"
 USHDIR="$FV3SAR_DIR/ush"
+SORCDIR="$FV3SAR_DIR/sorc"
 TEMPLATE_DIR="$USHDIR/templates"
 UPPFIX="$FV3SAR_DIR/fix/fix_upp"
 
@@ -720,7 +724,7 @@ fi
 #
 # Any regional model must be supplied lateral boundary conditions (in
 # addition to initial conditions) to be able to perform a forecast.  In
-# FV3SAR model, these boundary conditions (BCs) are supplied using a
+# the FV3SAR model, these boundary conditions (BCs) are supplied using a
 # "halo" of grid cells around the regional domain that extend beyond the
 # boundary of the domain.  The model is formulated such that along with
 # files containing these BCs, it needs as input the following files (in
@@ -754,6 +758,31 @@ fi
 nh0_T7=0
 nh3_T7=3
 nh4_T7=$(( $nh3_T7 + 1 ))
+#
+#-----------------------------------------------------------------------
+#
+# Make sure grid_gen_method is set to one of the allowed values.
+#
+#-----------------------------------------------------------------------
+#
+valid_grid_gen_methods=("GFDLgrid" "JPgrid")
+iselementof "$grid_gen_method" valid_grid_gen_methods || { \
+valid_grid_gen_methods_str=$(printf "\"%s\" " "${valid_grid_gen_methods[@]}");
+print_err_msg_exit "\
+The grid generation method specified in grid_gen_method is not supported:
+  grid_gen_method = \"$grid_gen_method\"
+grid_gen_method must be one of the following:  $valid_grid_gen_methods_str
+"; }
+#
+#-----------------------------------------------------------------------
+#
+# Set parameters according to the type of horizontal grid generation me-
+# thod specified.  First consider GFDL's global-parent-grid based me-
+# thod.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$grid_gen_method" = "GFDLgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
@@ -799,10 +828,10 @@ nh4_T7=$(( $nh3_T7 + 1 ))
 #
 #-----------------------------------------------------------------------
 #
-istart_rgnl_T6SG=$(( 2*$istart_rgnl_T6 - 1 ))
-iend_rgnl_T6SG=$(( 2*$iend_rgnl_T6 ))
-jstart_rgnl_T6SG=$(( 2*$jstart_rgnl_T6 - 1 ))
-jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
+  istart_rgnl_T6SG=$(( 2*$istart_rgnl_T6 - 1 ))
+  iend_rgnl_T6SG=$(( 2*$iend_rgnl_T6 ))
+  jstart_rgnl_T6SG=$(( 2*$jstart_rgnl_T6 - 1 ))
+  jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
 #
 #-----------------------------------------------------------------------
 #
@@ -870,8 +899,8 @@ jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
 #
 #-----------------------------------------------------------------------
 #
-nhw_T7=$(( $nh4_T7 + 1 ))
-nhw_T6SG=$(( (2*nhw_T7 + refine_ratio - 1)/refine_ratio ))
+  nhw_T7=$(( $nh4_T7 + 1 ))
+  nhw_T6SG=$(( (2*nhw_T7 + refine_ratio - 1)/refine_ratio ))
 #
 #-----------------------------------------------------------------------
 #
@@ -890,10 +919,10 @@ nhw_T6SG=$(( (2*nhw_T7 + refine_ratio - 1)/refine_ratio ))
 #
 #-----------------------------------------------------------------------
 #
-istart_rgnl_wide_halo_T6SG=$(( $istart_rgnl_T6SG - $nhw_T6SG ))
-iend_rgnl_wide_halo_T6SG=$(( $iend_rgnl_T6SG + $nhw_T6SG ))
-jstart_rgnl_wide_halo_T6SG=$(( $jstart_rgnl_T6SG - $nhw_T6SG ))
-jend_rgnl_wide_halo_T6SG=$(( $jend_rgnl_T6SG + $nhw_T6SG ))
+  istart_rgnl_wide_halo_T6SG=$(( $istart_rgnl_T6SG - $nhw_T6SG ))
+  iend_rgnl_wide_halo_T6SG=$(( $iend_rgnl_T6SG + $nhw_T6SG ))
+  jstart_rgnl_wide_halo_T6SG=$(( $jstart_rgnl_T6SG - $nhw_T6SG ))
+  jend_rgnl_wide_halo_T6SG=$(( $jend_rgnl_T6SG + $nhw_T6SG ))
 #
 #-----------------------------------------------------------------------
 #
@@ -911,19 +940,19 @@ jend_rgnl_wide_halo_T6SG=$(( $jend_rgnl_T6SG + $nhw_T6SG ))
 #
 #-----------------------------------------------------------------------
 #
-if [ $(( istart_rgnl_wide_halo_T6SG%2 )) -eq 0 ]; then
-  istart_rgnl_wide_halo_T6SG=$(( istart_rgnl_wide_halo_T6SG - 1 ))
-fi
-if [ $(( iend_rgnl_wide_halo_T6SG%2 )) -eq 1 ]; then
-  iend_rgnl_wide_halo_T6SG=$(( iend_rgnl_wide_halo_T6SG + 1 ))
-fi
-
-if [ $(( jstart_rgnl_wide_halo_T6SG%2 )) -eq 0 ]; then
-  jstart_rgnl_wide_halo_T6SG=$(( jstart_rgnl_wide_halo_T6SG - 1 ))
-fi
-if [ $(( jend_rgnl_wide_halo_T6SG%2 )) -eq 1 ]; then
-  jend_rgnl_wide_halo_T6SG=$(( jend_rgnl_wide_halo_T6SG + 1 ))
-fi
+  if [ $(( istart_rgnl_wide_halo_T6SG%2 )) -eq 0 ]; then
+    istart_rgnl_wide_halo_T6SG=$(( istart_rgnl_wide_halo_T6SG - 1 ))
+  fi
+  if [ $(( iend_rgnl_wide_halo_T6SG%2 )) -eq 1 ]; then
+    iend_rgnl_wide_halo_T6SG=$(( iend_rgnl_wide_halo_T6SG + 1 ))
+  fi
+  
+  if [ $(( jstart_rgnl_wide_halo_T6SG%2 )) -eq 0 ]; then
+    jstart_rgnl_wide_halo_T6SG=$(( jstart_rgnl_wide_halo_T6SG - 1 ))
+  fi
+  if [ $(( jend_rgnl_wide_halo_T6SG%2 )) -eq 1 ]; then
+    jend_rgnl_wide_halo_T6SG=$(( jend_rgnl_wide_halo_T6SG + 1 ))
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -932,7 +961,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set +x; } > /dev/null 2>&1
+  { save_shell_opts; set +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -949,18 +978,17 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-
-print_info_msg_verbose "\
+  print_info_msg_verbose "\
 Original values of the halo width on the tile 6 supergrid and on the 
 tile 7 grid are:
   nhw_T6SG = $nhw_T6SG
   nhw_T7   = $nhw_T7"
 
-nhw_T6SG=$(( $istart_rgnl_T6SG - $istart_rgnl_wide_halo_T6SG ))
-nhw_T6=$(( $nhw_T6SG/2 ))
-nhw_T7=$(( $nhw_T6*$refine_ratio ))
+  nhw_T6SG=$(( $istart_rgnl_T6SG - $istart_rgnl_wide_halo_T6SG ))
+  nhw_T6=$(( $nhw_T6SG/2 ))
+  nhw_T7=$(( $nhw_T6*$refine_ratio ))
 
-print_info_msg_verbose "\
+  print_info_msg_verbose "\
 Values of the halo width on the tile 6 supergrid and on the tile 7 grid 
 AFTER adjustments are:
   nhw_T6SG = $nhw_T6SG
@@ -975,25 +1003,25 @@ AFTER adjustments are:
 #
 #-----------------------------------------------------------------------
 #
-nx_rgnl_T6SG=$(( $iend_rgnl_T6SG - $istart_rgnl_T6SG + 1 ))
-nx_rgnl_T6=$(( $nx_rgnl_T6SG/2 ))
-nx_T7=$(( $nx_rgnl_T6*$refine_ratio ))
-
-ny_rgnl_T6SG=$(( $jend_rgnl_T6SG - $jstart_rgnl_T6SG + 1 ))
-ny_rgnl_T6=$(( $ny_rgnl_T6SG/2 ))
-ny_T7=$(( $ny_rgnl_T6*$refine_ratio ))
+  nx_rgnl_T6SG=$(( $iend_rgnl_T6SG - $istart_rgnl_T6SG + 1 ))
+  nx_rgnl_T6=$(( $nx_rgnl_T6SG/2 ))
+  nx_T7=$(( $nx_rgnl_T6*$refine_ratio ))
+  
+  ny_rgnl_T6SG=$(( $jend_rgnl_T6SG - $jstart_rgnl_T6SG + 1 ))
+  ny_rgnl_T6=$(( $ny_rgnl_T6SG/2 ))
+  ny_T7=$(( $ny_rgnl_T6*$refine_ratio ))
 #
 # The following are set only for informational purposes.
 #
-nx_T6=$RES
-ny_T6=$RES
-nx_T6SG=$(( $nx_T6*2 ))
-ny_T6SG=$(( $ny_T6*2 ))
-
-prime_factors_nx_T7=$( factor $nx_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
-prime_factors_ny_T7=$( factor $ny_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
-
-print_info_msg_verbose "\
+  nx_T6=$RES
+  ny_T6=$RES
+  nx_T6SG=$(( $nx_T6*2 ))
+  ny_T6SG=$(( $ny_T6*2 ))
+  
+  prime_factors_nx_T7=$( factor $nx_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
+  prime_factors_ny_T7=$( factor $ny_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
+  
+  print_info_msg_verbose "\
 The number of cells in the two horizontal directions (x and y) on the 
 parent tile's (tile 6) grid and supergrid are:
   nx_T6 = $nx_T6
@@ -1046,20 +1074,20 @@ task layout, i.e. layout_x and layout_y):
 #
 #-----------------------------------------------------------------------
 #
-nx_wide_halo_T6SG=$(( $iend_rgnl_wide_halo_T6SG - $istart_rgnl_wide_halo_T6SG + 1 ))
-nx_wide_halo_T6=$(( $nx_wide_halo_T6SG/2 ))
-nx_wide_halo_T7=$(( $nx_wide_halo_T6*$refine_ratio ))
+  nx_wide_halo_T6SG=$(( $iend_rgnl_wide_halo_T6SG - $istart_rgnl_wide_halo_T6SG + 1 ))
+  nx_wide_halo_T6=$(( $nx_wide_halo_T6SG/2 ))
+  nx_wide_halo_T7=$(( $nx_wide_halo_T6*$refine_ratio ))
+  
+  ny_wide_halo_T6SG=$(( $jend_rgnl_wide_halo_T6SG - $jstart_rgnl_wide_halo_T6SG + 1 ))
+  ny_wide_halo_T6=$(( $ny_wide_halo_T6SG/2 ))
+  ny_wide_halo_T7=$(( $ny_wide_halo_T6*$refine_ratio ))
 
-ny_wide_halo_T6SG=$(( $jend_rgnl_wide_halo_T6SG - $jstart_rgnl_wide_halo_T6SG + 1 ))
-ny_wide_halo_T6=$(( $ny_wide_halo_T6SG/2 ))
-ny_wide_halo_T7=$(( $ny_wide_halo_T6*$refine_ratio ))
-
-print_info_msg_verbose "\
+  print_info_msg_verbose "\
 nx_wide_halo_T7 = $nx_T7 \
 (istart_rgnl_wide_halo_T6SG = $istart_rgnl_wide_halo_T6SG, \
 iend_rgnl_wide_halo_T6SG = $iend_rgnl_wide_halo_T6SG)"
 
-print_info_msg_verbose "\
+  print_info_msg_verbose "\
 ny_wide_halo_T7 = $ny_T7 \
 (jstart_rgnl_wide_halo_T6SG = $jstart_rgnl_wide_halo_T6SG, \
 jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"
@@ -1070,7 +1098,52 @@ jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+  { restore_shell_opts; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Now consider Jim Purser's map projection/grid generation method.
+#
+#-----------------------------------------------------------------------
+#
+elif [ "$grid_gen_method" = "JPgrid" ]; then
+
+  pi_geom="3.14159265358979323846264338327"
+  degs_per_radian=$( bc -l <<< "360.0/(2.0*$pi_geom)" )
+  radius_Earth="6371000.0"  # In meters.
+  
+  echo
+  echo "degs_per_radian = $degs_per_radian"
+  echo "radius_Earth = $radius_Earth"
+  
+  del_angle_x_SG=$( bc -l <<< "($delx/(2.0*$radius_Earth))*$degs_per_radian" )
+  del_angle_x_SG=$( printf "%0.10f\n" $del_angle_x_SG )
+  
+  del_angle_y_SG=$( bc -l <<< "($dely/(2.0*$radius_Earth))*$degs_per_radian" )
+  del_angle_y_SG=$( printf "%0.10f\n" $del_angle_y_SG )
+  
+  echo "del_angle_x_SG = $del_angle_x_SG"
+  echo "del_angle_y_SG = $del_angle_y_SG"
+  
+  mns_nx_T7_pls_wide_halo=$( bc -l <<< "-($nx_T7 + 2*$nhw_T7)" )
+  mns_nx_T7_pls_wide_halo=$( printf "%.0f\n" $mns_nx_T7_pls_wide_halo )
+  echo "mns_nx_T7_pls_wide_halo = $mns_nx_T7_pls_wide_halo"
+  
+  mns_ny_T7_pls_wide_halo=$( bc -l <<< "-($ny_T7 + 2*$nhw_T7)" )
+  mns_ny_T7_pls_wide_halo=$( printf "%.0f\n" $mns_ny_T7_pls_wide_halo )
+  echo "mns_ny_T7_pls_wide_halo = $mns_ny_T7_pls_wide_halo"
+#
+# The following need to be defined in order for this script to not quit
+# with an "Undefined Variable" error, but they're not actually used for
+# needed for grid_gen_method set to "JPgrid".
+# type grid generation.
+#
+  istart_rgnl_wide_halo_T6SG=""
+  iend_rgnl_wide_halo_T6SG=""
+  jstart_rgnl_wide_halo_T6SG=""
+  jend_rgnl_wide_halo_T6SG=""
+
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1119,6 +1192,29 @@ print_info_msg_verbose "\
 The MPI task layout is:
   layout_x = $layout_x
   layout_y = $layout_y"
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that, for a given MPI task, the number columns (which is 
+# equal to the number of horizontal cells) is divisible by the blocksize.
+#
+#-----------------------------------------------------------------------
+#
+nx_per_task=$(( $nx_T7/$layout_x ))
+ny_per_task=$(( $ny_T7/$layout_y ))
+num_cols_per_task=$(( $nx_per_task*$ny_per_task ))
+
+rem=$(( $num_cols_per_task%$blocksize ))
+if [ $rem -ne 0 ]; then
+  print_err_msg_exit "\
+The number of columns assigned to a given MPI task must be divisible by
+the blocksize:
+  nx_per_task = nx_T7/layout_x = $nx_T7/$layout_x = $nx_per_task
+  ny_per_task = ny_T7/layout_y = $ny_T7/$layout_y = $ny_per_task
+  num_cols_per_task = nx_per_task*ny_per_task = $num_cols_per_task
+  blocksize = $blocksize
+  rem = num_cols_per_task%%blocksize = $rem"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1337,6 +1433,7 @@ cat << EOM >> $SCRIPT_VAR_DEFNS_FP
 #
 FV3SAR_DIR="$FV3SAR_DIR"
 USHDIR="$USHDIR"
+SORCDIR="$SORCDIR"
 TEMPLATE_DIR="$TEMPLATE_DIR"
 INIDIR="$INIDIR"
 RUNDIR="$RUNDIR"
@@ -1358,8 +1455,8 @@ WRTCMP_PARAMS_TEMPLATE_FP="$WRTCMP_PARAMS_TEMPLATE_FP"
 #
 #-----------------------------------------------------------------------
 #
-# Grid configuration parameters (these are in addition to the basic ones
-# defined above).
+# Grid configuration parameters for the cubed-sphere-based grid (these
+# are in addition to the basic ones defined above).
 #
 #-----------------------------------------------------------------------
 #
@@ -1375,6 +1472,19 @@ jstart_rgnl_wide_halo_T6SG="$jstart_rgnl_wide_halo_T6SG"
 jend_rgnl_wide_halo_T6SG="$jend_rgnl_wide_halo_T6SG"
 nx_T7="$nx_T7"
 ny_T7="$ny_T7"
+#
+#-----------------------------------------------------------------------
+#
+# Grid configuration parameterms for Jim Purser's map projection.
+#
+#-----------------------------------------------------------------------
+#
+del_angle_x_SG="$del_angle_x_SG"
+del_angle_y_SG="$del_angle_y_SG"
+mns_nx_T7_pls_wide_halo="$mns_nx_T7_pls_wide_halo"
+mns_ny_T7_pls_wide_halo="$mns_ny_T7_pls_wide_halo"
+a_grid_param="$a_grid_param"
+k_grid_param="$k_grid_param"
 #
 #-----------------------------------------------------------------------
 #
