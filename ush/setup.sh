@@ -338,12 +338,25 @@ YMD=${CDATE:0:8}
 # System directory from which to copy fixed files that are needed as in-
 # puts to the FV3SAR model.
 #
+# UPPFIX:
+# System directory from which to copy necessary fix files for UPP.
+#
+# GSDFIX:
+# System directory from which to copy GSD physics-related fixed files that are needed 
+# when running CCPP.
+#
+# CCPPFIX:
+# System directory from which to copy CCPP-related fixed files that are needed
+# for specific module loads when running the CCPP compiled version of the FV3SAR.
+#
 #-----------------------------------------------------------------------
 #
 FV3SAR_DIR="$BASEDIR/fv3sar_workflow"
 USHDIR="$FV3SAR_DIR/ush"
 TEMPLATE_DIR="$USHDIR/templates"
 UPPFIX="$FV3SAR_DIR/fix/fix_upp"
+GSDFIX="$FV3SAR_DIR/fix/fix_gsd"
+CCPPFIX="$FV3SAR_DIR/fix/fix_ccpp"
 
 case $MACHINE in
 #
@@ -687,6 +700,7 @@ transition_date_sec=$( date -d "2017-07-19 00 UTC" "+%s" )
 
 if [ "$IC_date_sec" -ge "$transition_date_sec" ]; then
   ictype="opsgfs"
+#  ictype="pfv3gfs"
 else
   ictype="oldgfs"
 fi
@@ -1271,6 +1285,8 @@ INIDIR="$INIDIR"
 RUNDIR="$RUNDIR"
 FIXgsm="$FIXgsm"
 UPPFIX="$UPPFIX"
+GSDFIX="$GSDFIX"
+CCPPFIX="$CCPPFIX"
 WORKDIR_GRID="$WORKDIR_GRID"
 WORKDIR_OROG="$WORKDIR_OROG"
 WORKDIR_FLTR="$WORKDIR_FLTR"

@@ -64,8 +64,8 @@ i=0
 FHR_STR=$( printf "%02d" "${FHR[i]}" )
 numel=${#FHR[@]}
 for i in $(seq 0 $(($numel-1)) ); do
-  HH=$( printf "%02d" "${FHR[i]}" )
-  FHR_STR="$FHR_STR $HH"
+  hour=$( printf "%02d" "${FHR[i]}" )
+  FHR_STR="$FHR_STR $hour"
 done
 FHR="$FHR_STR"
 #
@@ -86,6 +86,10 @@ set_file_param "$WFLOW_XML_FP" "QUEUE_RUN_FV3SAR" "$QUEUE_RUN_FV3SAR"
 set_file_param "$WFLOW_XML_FP" "USHDIR" "$USHDIR"
 set_file_param "$WFLOW_XML_FP" "RUNDIR" "$RUNDIR"
 set_file_param "$WFLOW_XML_FP" "PROC_RUN_FV3SAR" "$PROC_RUN_FV3SAR"
+set_file_param "$WFLOW_XML_FP" "YYYY" "$YYYY"
+set_file_param "$WFLOW_XML_FP" "MM" "$MM"
+set_file_param "$WFLOW_XML_FP" "DD" "$DD"
+set_file_param "$WFLOW_XML_FP" "HH" "$HH"
 set_file_param "$WFLOW_XML_FP" "FHR" "$FHR"
 #
 #-----------------------------------------------------------------------

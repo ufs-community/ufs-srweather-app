@@ -53,11 +53,28 @@ case $MACHINE in
 #
 "WCOSS_C" | "WCOSS" | "THEIA")
 #
+
+if [ "$CCPP" = "true" ]; then
+
+  #Needed to change to the run directory to correctly load necessary modules for CCPP-version of FV3SAR in lines below
+  cd $RUNDIR
+
+  set +x
+  source ./module-setup.sh
+  module use $( pwd -P )
+  module load modules.fv3
+  module list
+  set -x
+
+else
+
   . /apps/lmod/lmod/init/sh
   module purge
-  module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0
+  module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0 
   module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
   module list
+
+fi
 
   ulimit -s unlimited
   ulimit -a
