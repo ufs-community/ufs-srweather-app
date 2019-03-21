@@ -53,7 +53,24 @@ load "read_namelist.ncl"
 load "strcmp.ncl"
 
 begin
-
+;
+; **********************************************************************
+;
+; If not already defined, define the string (separator_line) that serves
+; as a separator line between different sections of printout.
+;
+; **********************************************************************
+;
+  if (.not. isvar("separator_line")) then
+    separator_line := repeat_str("=", 72)
+  end if
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+;
   pwd = systemfunc("pwd")
   check_files = (/"README"/)   ; Add files to check here
   nfiles = dimsizes(check_files)
@@ -69,21 +86,21 @@ begin
     end if
     end if
   end do
-
+;
 ; **********************************************************************
-;                                                                      *
+;
 ; Define special characters that can't be directly input into an NCL 
 ; string.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   char_dq = integertochar(34)
   char_nl = str_get_nl()
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Create usage message.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   usage_msg = \
@@ -108,10 +125,10 @@ begin
 "      'graphics_type=" + char_dq + "ncgm" + char_dq + "'" 
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; If the variable help is specified to be True on the command line, 
 ; print out the documentation and exit.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (isvar("help")) then
@@ -123,10 +140,10 @@ begin
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether grid_dir has been specified.  If not, set it to the cur-
 ; rent directory.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("grid_dir")) then
@@ -134,10 +151,10 @@ begin
   end if
 
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether the fcst_index has been specified on the command line.
 ; If not, print out a message and exit. If so, check for indices or 'all'
-;                                                                      *
+;
 ; **********************************************************************
   if (.not. isvar("fcst_index")) then
     print("")
@@ -161,10 +178,10 @@ begin
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether the cubed-sphere resolution (res) has been specified on
 ; the command line.  If not, print out a message and exit.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("res")) then
@@ -185,9 +202,9 @@ begin
   Cres := "C" + tostring_with_format(res, "%i")
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Get the version of NCL being used.  This may be needed later below.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   ncl_ver = get_ncl_version()
@@ -195,7 +212,7 @@ begin
   ncl_ver = tointeger(ncl_ver)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Open the grid mosaic file and read in the number of tiles for which a
 ; grid description file is available.  Then use that number (possibly 
 ; along with the options passed to the make_hgrid command used to gene-
@@ -206,7 +223,7 @@ begin
 ; a nested grid within tile 6), or "regional" (for a regional stand-
 ; alone grid).  Also, set valid_tile_inds, which is an array contain-
 ; ing the set of valid tile indices for a given gtype.
-;                                                                      *
+;
 ; **********************************************************************
 ;
 ;  fn_mosaic := grid_dir + "/" + Cres + "_mosaic.nc"
@@ -273,7 +290,7 @@ print("")
 print("========>>>> gtype = " + gtype)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether the indices of the tiles (on the cubed sphere) that are 
 ; to be plotted have been specified on the command line in the array 
 ; tile_inds. If so, for clarity, first change the name of the array to 
@@ -282,7 +299,7 @@ print("========>>>> gtype = " + gtype)
 ; valid indices in valid_tile_inds.  If the indices of the tiles to be 
 ; plotted have not been specified on the command line, set them to the
 ; contents of inds_valid_tiles.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (isvar("tile_inds")) then
@@ -321,10 +338,10 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether draw_tile_bdy has been specified on the command line.  
 ; If not, set it to True.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("draw_tile_bdy")) then
@@ -332,10 +349,10 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether draw_tile_grid has been specified on the command line.  
 ; If not, set it to False.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("draw_tile_grid")) then
@@ -343,10 +360,10 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether draw_RAP_domain has been specified on the command line.  
 ; If not, set it to False.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("draw_RAP_domain")) then
@@ -354,12 +371,12 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; If draw_RAP_domain has been specified to be True on the command line, 
 ; make sure that the name of the NetCDF file that describes the RAP grid
 ; (RAP_grid_fn) has also been specified.  If not, print a message and 
 ; exit.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (draw_RAP_domain .and. .not. isvar("RAP_grid_fn")) then
@@ -379,10 +396,10 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether draw_RAP_bdy has been specified on the command line.  If
 ; not, set it to True.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("draw_RAP_bdy")) then
@@ -390,10 +407,10 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether draw_RAP_grid has been specified on the command line.  
 ; If not, set it to False.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("draw_RAP_grid")) then
@@ -401,11 +418,11 @@ print("========>>>> gtype = " + gtype)
   end if
 
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether map_proj is specified, and if so, whether the specified
 ; value is valid.  Default is to use a cylindrical-equidistant project-
 ; ion.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("map_proj")) then
@@ -437,11 +454,11 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether map_proj_ctr is specified.  If not, set it according to
 ; the specified map projection.  Note that this variable is not used for
 ; the cylindrical-equidistant map projection.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("map_proj_ctr")) then
@@ -464,12 +481,12 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; If the array subreg is specified on the command line, it means we will
 ; plot only a subregion, not the whole globe.  In this case, get the 
 ; minimum and maximum values of the longitude and latitude for the sub-
 ; region to be plotted.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (isvar("subreg")) then
@@ -480,10 +497,10 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check whether graphics_type has been specified on the command line.  
 ; If not, set it to "ncgm".
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("graphics_type")) then
@@ -510,10 +527,10 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Check that the name of the data file has been specified on the command 
 ; line.  If not, print out a message and exit.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("base_name")) then
@@ -527,10 +544,10 @@ print("========>>>> gtype = " + gtype)
   end if
 
 ; **********************************************************************
-;                                                                      *
+;
 ; Check that the field(s) to plot has been specified on the command line.  
 ; If not, print out a message and exit.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (.not. isvar("fields")) then
@@ -549,12 +566,12 @@ print("========>>>> gtype = " + gtype)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Read in the coupler_nml namelist from the file input.nml.  From this
 ; namelist, get the starting date of the simulation and construct a date
 ; string out of it.  This string is needed in forming the names of the 
 ; data files.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   if (False) then  ; JLS keep for later
@@ -674,11 +691,11 @@ print("========>>>> gtype = " + gtype)
       tindex = time_inds(itime)
       print("Time loop " + itime + " tindex = " + tindex)
 ; **********************************************************************
-;                                                                      *
+;
 ; Loop through the specified tiles and read in the grid geometry (i.e.
 ; coordinates of the cell center and cell vertices) and the value of the
 ; specified field for each cell.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       field_min := new((/ num_tiles_to_plot /), "double")
@@ -691,7 +708,7 @@ print("========>>>> gtype = " + gtype)
       do nn=0, num_tiles_to_plot-1
 
         print("")
-        print("============================================================")
+        print("" + separator_line)
         print("")
         print("nn = " + nn)
 
@@ -1007,11 +1024,11 @@ print("========>>>> gtype = " + gtype)
         delete([/ abs_del_lon, is_greater /])
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; If draw_tile_bdy is specified as True, save in an array the coordi-
 ; nates of those cell vertices that lie on the boundary of the current
 ; tile.
-;                                                                      *
+;
 ; **********************************************************************
 ;
         if (draw_tile_bdy) then
@@ -1074,9 +1091,9 @@ print("========>>>> gtype = " + gtype)
         end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Print out the coordinates of the corners of the current tile.
-;                                                                      *
+;
 ; **********************************************************************
 ;
         corner_i_inds := (/ 0, nx, nx, 0 /)
@@ -1110,10 +1127,10 @@ print("========>>>> gtype = " + gtype)
       end do   ; End loop over tiles
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Done with loop over tiles.  Print out min and max values of the field
 ; being plotted.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       field_min := min(field_by_cell)
@@ -1122,7 +1139,7 @@ print("========>>>> gtype = " + gtype)
       field_mean := avg(field_by_cell)
 
       print("")
-      print("============================================================")
+      print("" + separator_line)
       print("")
       print("Field min and max values over all tiles to be plotted are:")
       print("  field_min = " + field_min)
@@ -1132,9 +1149,9 @@ print("========>>>> gtype = " + gtype)
       print("  dimsizes(field_by_cell) = " + dimsizes(field_by_cell))
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; RAP domain.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       field_RAP_fillvalue = default_fillvalue("double")
@@ -1152,7 +1169,7 @@ print("========>>>> gtype = " + gtype)
       if (draw_RAP_domain) then
 
         print("")
-        print("============================================================")
+        print("" + separator_line)
 ;
 ; Open the NetCDF file describing the RAP grid.
 ;
@@ -1313,11 +1330,11 @@ print("========>>>> gtype = " + gtype)
         delete([/ abs_del_lon, is_greater /])
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; If draw_RAP_bdy is set to True, save the coordinates of the RAP do-
 ; main's boundary in arrays that will be passed to the plotting rou-
 ; tines. 
-;                                                                      *
+;
 ; **********************************************************************
 ;
         if (draw_RAP_bdy) then
@@ -1378,9 +1395,9 @@ print("========>>>> gtype = " + gtype)
         end if  ; end if draw_RAP_bdy
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Print out the coordinates of the corners of the RAP domain.
-;                                                                      *
+;
 ; **********************************************************************
 ;
         nx = nx_RAP
@@ -1456,10 +1473,10 @@ print("========>>>> gtype = " + gtype)
       end if   ; end if draw_RAP_domain
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Open a workstation and specify the type of graphics file to generate.
 ; The type can be "ps", "pdf", "x11", "png", or "ncgm" (and maybe more).
-;                                                                      *
+;
 ; **********************************************************************
 ;
       if (.not. ismissing(idx_ncgm)) then
@@ -1481,9 +1498,9 @@ print("========>>>> gtype = " + gtype)
 
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Set contour plot resources and generate color contour plot.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       print("")
@@ -1619,9 +1636,9 @@ print("========>>>> gtype = " + gtype)
       map = gsn_csm_contour_map(wks, field_by_cell, rsrc)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; If draw_tile_bdy is specified as True, draw the boundary of each tile.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       if (draw_tile_bdy) then
@@ -1648,10 +1665,10 @@ print("========>>>> gtype = " + gtype)
       end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; If draw_RAP_domain is specified as True, draw a contour plot on the 
 ; RAP domain.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       if (draw_RAP_domain) then
@@ -1743,9 +1760,9 @@ print("========>>>> gtype = " + gtype)
       end if   ; end if draw_RAP_domain
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Draw the plot and advance the frame.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       draw(map)

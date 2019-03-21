@@ -1,20 +1,23 @@
+;
 ; **********************************************************************
 ;
-; File name: read_SARFV3_grid.ncl
+; File name: read_FV3SAR_grid_halo.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
 ; ^^^^^^^^^^^
-; This function reads in the SARFV3 regional grid from the specified
-; file.
-;                                                                      *
+; This function reads in the coordinates of the FV3SAR regional grid 
+; from the specified grid file and extracts from it the coordinates of
+; the halo.
+;
 ; **********************************************************************
 ;
+load "strcmp.ncl"
 load "adjust_longitude_range.ncl"
 
-undef("read_SARFV3_grid")
+undef("read_FV3SAR_grid_halo")
 
-function read_SARFV3_grid(grid_file:string, nh:integer)
+function read_FV3SAR_grid_halo(grid_file:string, nh:integer)
 
 local f_grid, \
       two_nx, two_ny, nx, ny, nxp, nyp, \
@@ -56,9 +59,9 @@ local f_grid, \
 begin
 ;
 ; **********************************************************************
-;                                                                      *
-; Open the SARFV3 grid file containing grid information.
-;                                                                      *
+;
+; Open the FV3SAR grid file containing grid information.
+;
 ; **********************************************************************
 ;
   f_grid = addfile(grid_file, "r")
@@ -69,7 +72,11 @@ begin
   two_nx = dim_sizes(1)
   two_ny = dim_sizes(2)
 ;
+; **********************************************************************
+;
 ; Calculate the dimensions of the tile 7 computational grid.
+;
+; **********************************************************************
 ;
   nx = two_nx/2
   ny = two_ny/2
@@ -410,9 +417,9 @@ if (False) then
 end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Return various output variables as attributes of the "out" variable.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   out = True

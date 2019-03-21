@@ -10,6 +10,7 @@
 ; **********************************************************************
 
 load "pause.ncl"
+load "special_chars.ncl"
 load "set_plot_header.ncl"
 load "plot_horiz_field.ncl"
 
@@ -26,7 +27,7 @@ function plot_model_field_generic( \
          draw_grid:logical, \
          plot_options:logical)
 
-local char_dq  ; Need to add all local variables.
+;local char_dq  ; Need to add all local variables.
 
 begin
 ;
@@ -36,8 +37,8 @@ begin
 ;                                                                      *
 ; **********************************************************************
 ;
-  char_dq = integertochar(34)
-  char_nl = str_get_nl()
+;  char_dq = integertochar(34)
+;  char_nl = str_get_nl()
 ;
 ; **********************************************************************
 ;                                                                      *

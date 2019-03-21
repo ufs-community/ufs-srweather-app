@@ -147,6 +147,7 @@ npy_T7=$(( $ny_T7 + 1 ))
 #
 # Set parameters.
 #
+set_file_param "$FV3_NAMELIST_FP" "blocksize" "$blocksize"
 set_file_param "$FV3_NAMELIST_FP" "layout" "$layout_x,$layout_y"
 set_file_param "$FV3_NAMELIST_FP" "npx" "$npx_T7"
 set_file_param "$FV3_NAMELIST_FP" "npy" "$npy_T7"
@@ -316,7 +317,7 @@ if [ -f $FV3SAR_EXEC ]; then
 
   print_info_msg_verbose "\
 Copying FV3SAR executable to the run directory..."
-  cp_vrfy $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
+  cp_vrfy $FV3SAR_EXEC $RUNDIR/fv3_gfs.x
 
 else
 

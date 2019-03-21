@@ -54,3 +54,13 @@ FUNCS_DIR=${USHDIR:-"."}
 #-----------------------------------------------------------------------
 #
 . ${FUNCS_DIR}/filesys_cmds_vrfy.sh
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing the function that searches an array for a
+# specified string.
+#
+#-----------------------------------------------------------------------
+#
+. ${FUNCS_DIR}/iselementof.sh
+
