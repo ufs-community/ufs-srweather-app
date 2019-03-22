@@ -64,10 +64,63 @@
 print_info_msg_verbose "\
 Copying templates of various input files to the run directory..."
 
+if [ "$CCPP" = "true" ]; then
+
+   if [ "$CCPP_suite" = "GFS" ]; then
+
+     cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GFS_NAMELIST_FN $RUNDIR/input.nml
+     print_info_msg_verbose "\
+     Copying CCPP GFS physics namelist to the run directory..."
+
+     cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
+     print_info_msg_verbose "\
+     Copying diag_table to the run directory..."
+
+     cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
+
+     cp_vrfy $CCPPFIX/module-setup.sh $RUNDIR
+     print_info_msg_verbose "\
+     Copying CCPP module-setup.sh file to the run directory..."
+
+   elif [ "$CCPP_suite" = "GSD" ]; then
+
+     cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GSD_NAMELIST_FN $RUNDIR/input.nml
+     print_info_msg_verbose "\
+     Copying CCPP-specific GSD physics namelist to the run directory..."
+
+     cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/diag_table
+     print_info_msg_verbose "\
+     Copying CCPP-specific GSD physics diag_table to the run directory..."
+ 
+     cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $RUNDIR/field_table
+     print_info_msg_verbose "\
+     Copying CCPP-specific GSD physics field_table to the run directory..."
+
+     cp_vrfy $CCPPFIX/module-setup.sh $RUNDIR
+     print_info_msg_verbose "\
+     Copying CCPP module-setup.sh file to the run directory..."
+
+   else
+
+   print_err_msg_exit "\
+   CCPP physics suite either doesn't exist or is not supported.  Exiting..."
+
+   fi
+
+elif [ "$CCPP" = "false" ]; then
+
 cp_vrfy $TEMPLATE_DIR/$FV3_NAMELIST_FN $RUNDIR
-cp_vrfy $TEMPLATE_DIR/$MODEL_CONFIG_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
+
+else
+
+   print_err_msg_exit "\
+   CCPP option must be set to either \"true\" or \"false.\"  Exiting..."
+
+fi
+
+cp_vrfy $TEMPLATE_DIR/$MODEL_CONFIG_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$DATA_TABLE_FN $RUNDIR
 cp_vrfy $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
 #
@@ -78,7 +131,7 @@ cp_vrfy $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
-FV3_NAMELIST_FP="$RUNDIR/$FV3_NAMELIST_FN"
+FV3_NAMELIST_FP="$RUNDIR/input.nml"
 
 print_info_msg_verbose "\
 Setting parameters in file:
@@ -94,13 +147,14 @@ npy_T7=$(( $ny_T7 + 1 ))
 #
 # Set parameters.
 #
-set_file_param $FV3_NAMELIST_FP "layout" "$layout_x,$layout_y" $VERBOSE
-set_file_param $FV3_NAMELIST_FP "npx" $npx_T7 $VERBOSE
-set_file_param $FV3_NAMELIST_FP "npy" $npy_T7 $VERBOSE
-set_file_param $FV3_NAMELIST_FP "target_lon" $lon_ctr_T6 $VERBOSE
-set_file_param $FV3_NAMELIST_FP "target_lat" $lat_ctr_T6 $VERBOSE
-set_file_param $FV3_NAMELIST_FP "stretch_fac" $stretch_fac $VERBOSE
-set_file_param $FV3_NAMELIST_FP "bc_update_interval" $BC_update_intvl_hrs $VERBOSE
+set_file_param "$FV3_NAMELIST_FP" "blocksize" "$blocksize"
+set_file_param "$FV3_NAMELIST_FP" "layout" "$layout_x,$layout_y"
+set_file_param "$FV3_NAMELIST_FP" "npx" "$npx_T7"
+set_file_param "$FV3_NAMELIST_FP" "npy" "$npy_T7"
+set_file_param "$FV3_NAMELIST_FP" "target_lon" "$lon_ctr_T6"
+set_file_param "$FV3_NAMELIST_FP" "target_lat" "$lat_ctr_T6"
+set_file_param "$FV3_NAMELIST_FP" "stretch_fac" "$stretch_fac"
+set_file_param "$FV3_NAMELIST_FP" "bc_update_interval" "$BC_update_intvl_hrs"
 #
 #-----------------------------------------------------------------------
 #
@@ -115,15 +169,16 @@ print_info_msg_verbose "\
 Setting parameters in file:
   MODEL_CONFIG_FP = \"$MODEL_CONFIG_FP\""
 
-set_file_param $MODEL_CONFIG_FP "PE_MEMBER01" $PE_MEMBER01 $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_year" $YYYY $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_month" $MM $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_day" $DD $VERBOSE
-set_file_param $MODEL_CONFIG_FP "start_hour" $HH $VERBOSE
-set_file_param $MODEL_CONFIG_FP "nhours_fcst" $fcst_len_hrs $VERBOSE
-set_file_param $MODEL_CONFIG_FP "ncores_per_node" $ncores_per_node $VERBOSE
-set_file_param $MODEL_CONFIG_FP "quilting" $quilting $VERBOSE
-set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
+set_file_param "$MODEL_CONFIG_FP" "PE_MEMBER01" "$PE_MEMBER01"
+set_file_param "$MODEL_CONFIG_FP" "dt_atmos" "$dt_atmos"
+set_file_param "$MODEL_CONFIG_FP" "start_year" "$YYYY"
+set_file_param "$MODEL_CONFIG_FP" "start_month" "$MM"
+set_file_param "$MODEL_CONFIG_FP" "start_day" "$DD"
+set_file_param "$MODEL_CONFIG_FP" "start_hour" "$HH"
+set_file_param "$MODEL_CONFIG_FP" "nhours_fcst" "$fcst_len_hrs"
+set_file_param "$MODEL_CONFIG_FP" "ncores_per_node" "$ncores_per_node"
+set_file_param "$MODEL_CONFIG_FP" "quilting" "$quilting"
+set_file_param "$MODEL_CONFIG_FP" "print_esmf" "$print_esmf"
 #
 #-----------------------------------------------------------------------
 #
@@ -141,8 +196,8 @@ set_file_param $MODEL_CONFIG_FP "print_esmf" $print_esmf $VERBOSE
 #
 if [ "$quilting" = ".true." ]; then
   cat $WRTCMP_PARAMS_TEMPLATE_FP >> $MODEL_CONFIG_FP
-  set_file_param $MODEL_CONFIG_FP "write_groups" $write_groups $VERBOSE
-  set_file_param $MODEL_CONFIG_FP "write_tasks_per_group" $write_tasks_per_group $VERBOSE
+  set_file_param "$MODEL_CONFIG_FP" "write_groups" "$write_groups"
+  set_file_param "$MODEL_CONFIG_FP" "write_tasks_per_group" "$write_tasks_per_group"
 fi
 #
 #-----------------------------------------------------------------------
@@ -158,12 +213,42 @@ print_info_msg_verbose "\
 Setting parameters in file:
   DIAG_TABLE_FP = \"$DIAG_TABLE_FP\""
 
-set_file_param $DIAG_TABLE_FP "CRES" $CRES $VERBOSE
-set_file_param $DIAG_TABLE_FP "YYYY" $YYYY $VERBOSE
-set_file_param $DIAG_TABLE_FP "MM" $MM $VERBOSE
-set_file_param $DIAG_TABLE_FP "DD" $DD $VERBOSE
-set_file_param $DIAG_TABLE_FP "HH" $HH $VERBOSE
-set_file_param $DIAG_TABLE_FP "YYYYMMDD" $YMD $VERBOSE
+set_file_param "$DIAG_TABLE_FP" "CRES" "$CRES"
+set_file_param "$DIAG_TABLE_FP" "YYYY" "$YYYY"
+set_file_param "$DIAG_TABLE_FP" "MM" "$MM"
+set_file_param "$DIAG_TABLE_FP" "DD" "$DD"
+set_file_param "$DIAG_TABLE_FP" "HH" "$HH"
+set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YMD"
+
+#
+#----------------------------------------------------------------------------
+# If CCPP=true, Copy correct CCPP suite and modules.fv3 file to run directory
+#----------------------------------------------------------------------------
+#
+if [ "$CCPP" = "true" ]; then
+
+  cp_vrfy $CCPPDIR/modules.fv3_1 $RUNDIR/modules.fv3
+  print_info_msg_verbose "\ 
+  Copying CCPP modules.fv3 file to the run directory..."
+
+   if [ "$CCPP_suite" = "GFS" ]; then
+
+   cp_vrfy $CCPPDIR/../ccpp/suites/suite_FV3_GFS_2017_updated_gfdlmp_regional.xml $RUNDIR/ccpp_suite.xml
+
+   print_info_msg_verbose "\
+   Copying GFS physics suite XML file to run directory as ccpp_suite.xml"
+
+   elif [ "$CCPP_suite" = "GSD" ]; then
+
+   cp_vrfy $CCPPDIR/../ccpp/suites/suite_FV3_GSD.xml $RUNDIR/ccpp_suite.xml
+   cp_vrfy $GSDFIX/CCN_ACTIVATE.BIN $RUNDIR
+  
+ print_info_msg_verbose "\
+   Copying GSD physics suite XML file and Thompson MP CCN fix file to the run directory"
+
+   fi
+
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -216,13 +301,24 @@ cp_vrfy $FIXgsm/co2monthlycyc.txt $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
+if [ "$CCPP" = "true" ]; then
+
+FV3SAR_EXEC="$CCPPDIR/fv3_1.exe"
+
+print_info_msg_verbose "\
+Setting CCPP FV3 executable to FV3SAR_EXEC"
+
+else
+
 FV3SAR_EXEC="$BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe"
+
+fi
 
 if [ -f $FV3SAR_EXEC ]; then
 
   print_info_msg_verbose "\
 Copying FV3SAR executable to the run directory..."
-  cp_vrfy $BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe $RUNDIR/fv3_gfs.x
+  cp_vrfy $FV3SAR_EXEC $RUNDIR/fv3_gfs.x
 
 else
 
@@ -249,7 +345,7 @@ Copying files from work directories into run directory and creating links..."
 #
 #-----------------------------------------------------------------------
 #
-cd $RUNDIR/INPUT
+cd_vrfy $RUNDIR/INPUT
 #
 #-----------------------------------------------------------------------
 #
@@ -271,7 +367,7 @@ cd $RUNDIR/INPUT
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_GRID/${CRES}_mosaic.nc .
-ln -sf ${CRES}_mosaic.nc grid_spec.nc
+ln_vrfy -sf ${CRES}_mosaic.nc grid_spec.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -286,7 +382,7 @@ ln -sf ${CRES}_mosaic.nc grid_spec.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc .
-ln -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
+ln_vrfy -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -301,7 +397,7 @@ ln -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc .
-ln -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
+ln_vrfy -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -316,7 +412,7 @@ ln -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc .
-ln -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
+ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -331,7 +427,7 @@ ln -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
-ln -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
+ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -345,7 +441,7 @@ ln -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_ICBC/gfs_data.tile7.nc .
-ln -sf gfs_data.tile7.nc gfs_data.nc
+ln_vrfy -sf gfs_data.tile7.nc gfs_data.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -359,7 +455,7 @@ ln -sf gfs_data.tile7.nc gfs_data.nc
 #-----------------------------------------------------------------------
 #
 cp_vrfy $WORKDIR_ICBC/sfc_data.tile7.nc .
-ln -sf sfc_data.tile7.nc sfc_data.nc
+ln_vrfy -sf sfc_data.tile7.nc sfc_data.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -382,11 +478,22 @@ cp_vrfy $WORKDIR_ICBC/gfs_ctrl.nc .
 #
 #-----------------------------------------------------------------------
 #
+# Print message indicating successful completion of script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\
+
+========================================================================
+All necessary files and links needed to launch a forecast copied/created
+successfully!!!
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
 # Restore the shell options saved at the beginning of this script/func-
 # tion.
 #
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-
-

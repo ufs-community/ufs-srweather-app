@@ -8,8 +8,9 @@
 # Set machine and queue parameters.  Definitions:
 #
 # MACHINE:
-# Machine on which we are running.  Must be one of "WCOSS_C", "WCOSS",
-# "DELL", "THEIA", "JET", "ODIN", and "CHEYENNE".
+# Machine on which the workflow will run.  Valid values are "WCOSS_C", 
+# "WCOSS", "DELL", "THEIA", "JET", "ODIN", and "CHEYENNE".  New values 
+# may be added as the workflow is ported to additional machines.
 #
 # ACCOUNT:
 # The account under which to submit jobs to the queue.
@@ -59,11 +60,16 @@ QUEUE_RUN_FV3SAR="production_queue"
 # that the ndate executable needs to be compiled in the community UPP
 # and copied into UPPDIR.
 #
+# CCPPDIR:
+# Directory in which the CCPP version executable of FV3 is located.  If
+# CCPP=false, this path is ignored.
+#
 #-----------------------------------------------------------------------
 #
 BASEDIR="/path/to/directory/of/fv3sar_workflow/and/NEMSfv3gfs/clones"
 TMPDIR="/path/to/temporary/work/directories"
 UPPDIR="/path/to/UPP/executable"
+CCPPDIR="/path/to/CCPP/executable"
 #
 #-----------------------------------------------------------------------
 #
@@ -72,11 +78,26 @@ UPPDIR="/path/to/UPP/executable"
 # FV3_NAMELIST_FN:
 # Name of file containing the FV3SAR namelist settings.
 #
+# FV3_CCPP_GFS_NAMELIST_FN:
+# Name of file containing the FV3SAR namelist settings for a CCPP run using GFS physics.
+#
+# FV3_CCPP_GSD_NAMELIST_FN:
+# Name of file containing the FV3SAR namelist settings for a CCPP run using GSD physics.
+#
 # DIAG_TABLE_FN:
 # Name of file that specifies the fields that the FV3SAR will output.
 #
+# DIAG_TABLE_CCPP_GFS_FN:
+# Required as current version of CCPP FV3 executable using GFS physics cannot handle refl_10cm variable in diag_table.
+#
+# DIAG_TABLE_CCPP_GSD_FN:
+# Uses specific variables for Thompson MP
+#
 # FIELD_TABLE_FN:
 # Name of file that specifies ???
+#
+# FIELD_TABLE_CCPP_GSD_FN:
+# Field table for a CCPP run using GSD physics
 #
 # DATA_TABLE_FN:
 # Name of file that specifies ???
@@ -112,9 +133,14 @@ UPPDIR="/path/to/UPP/executable"
 #
 #-----------------------------------------------------------------------
 #
+REGIONAL_GRID_NAMELIST_FN="regional_grid.nml"
 FV3_NAMELIST_FN="input.nml"
+FV3_CCPP_GFS_NAMELIST_FN="input_ccpp_gfs.nml"
+FV3_CCPP_GSD_NAMELIST_FN="input_ccpp_gsd.nml"
 DIAG_TABLE_FN="diag_table"
+DIAG_TABLE_CCPP_GSD_FN="diag_table_ccpp_gsd"
 FIELD_TABLE_FN="field_table"
+FIELD_TABLE_CCPP_GSD_FN="field_table_ccpp_gsd"
 DATA_TABLE_FN="data_table"
 MODEL_CONFIG_FN="model_configure"
 NEMS_CONFIG_FN="nems.configure"
@@ -179,6 +205,90 @@ ictype="opsgfs"
 #-----------------------------------------------------------------------
 #
 run_title="desc_str"
+#
+#-----------------------------------------------------------------------
+# Flag controlling whether a CCPP run will be executed.  Setting this
+# flag to true will cause the workflow to source the CCPP version of the
+# FV3 executable, based on the path defined in FV3_CCPP_NAMELIST_FN. For
+# now, a separate input.nml namelist will be used (input_ccpp.nml) that
+# corresponds with settings used in the EMC regional regression tests.
+#-----------------------------------------------------------------------
+#
+CCPP="false" # "true" or "false"
+#
+#-----------------------------------------------------------------------
+# If CCPP=true, the suite flag defines the physics package for which the
+# necessary suite XML file will be sourced from the CCPP directory defined
+# in CCPPDIR.  NOTE: It is up to the user to ensure that the CCPP FV3
+# executable is compiled with either the dynamic build or the static build
+# with the correct physics package.  The run will fail if there is a mismatch. 
+#-----------------------------------------------------------------------
+#
+CCPP_suite="GSD"
+#CCPP_suite="GFS"
+#
+#-----------------------------------------------------------------------
+#
+# Set grid_gen_method.  This variable specifies the method to use to ge-
+# nerate a regional grid in the horizontal.  The values that grid_gen_-
+# method can take on are:
+#
+# * "GFDLgrid":
+#   This will generate a regional grid by first generating a parent glo-
+#   bal cubed-sphere grid using GFDL's grid generator.
+#
+# * "JPgrid":
+#   This will generate a regional grid using the map projection deve-
+#   loped by Jim Purser of EMC.
+#
+#-----------------------------------------------------------------------
+#
+grid_gen_method="GFDLgrid"
+#grid_gen_method="JPgrid"
+#
+#-----------------------------------------------------------------------
+#
+# Parameters for generating a grid for grid_gen_method set to "JPgrid".
+#
+# delx:
+# The cell size in the zonal direction of the regional grid (in meters).
+#
+# dely:
+# The cell size in the meridional direction of the regional grid (in me-
+# ters).
+#
+# nx_T7:
+# The number of cells in the zonal direction on the regional grid.
+#
+# ny_T7:
+# The number of cells in the meridional direction on the regional grid.
+#
+# nhw_T7:
+# The width of the wide halo (in units of number of cells) to create 
+# around the regional grid.  A grid with a halo of this width will first
+# be created and stored in a grid specification file.  This grid will 
+# then be shaved down to obtain grids with 3-cell-wide and 4-cell-wide
+# halos.
+#
+# a_grid_param:
+# The "a" parameter used in the Jim Purser map projection/grid genera-
+# tion method.
+#
+# k_grid_param:
+# The "k" parameter used in the Jim Purser map projection/grid genera-
+# tion method.
+#
+#-----------------------------------------------------------------------
+#
+delx="3000.0"  # In meters.
+dely="3000.0"  # In meters.
+nx_T7=1000
+ny_T7=1000
+nhw_T7=6
+
+a_grid_param="0.21423"
+k_grid_param="-0.23209"
+
 #
 #-----------------------------------------------------------------------
 #
@@ -309,6 +419,11 @@ predef_domain=""
 # in either the x or y direction on the regional grid (tile 7) that abut
 # one cell on its parent tile (tile 6).
 #
+# dt_atmos:
+# Dynamics time step in model_configure.  This value is in turn used to 
+# set the physics time step in combination with k_split and n_split,
+# defined in input.nml
+#
 #-----------------------------------------------------------------------
 #
 RES="384"
@@ -320,6 +435,7 @@ iend_rgnl_T6=374
 jstart_rgnl_T6=10
 jend_rgnl_T6=374
 refine_ratio=3
+dt_atmos=18 #Preliminary values: 18 for 3-km runs, 90 for 13-km runs
 #
 #-----------------------------------------------------------------------
 #
@@ -370,8 +486,19 @@ VERBOSE="true"
 #
 #-----------------------------------------------------------------------
 #
-layout_x="20"  # One possibility: 14 for RAP, 20 for HRRR.
-layout_y="20"  # One possibility: 14 for RAP, 20 for HRRR.
+layout_x="20"
+layout_y="20"
+#
+#-----------------------------------------------------------------------
+#
+# Set the blocksize to use.  This is the amount of data that is passed
+# into the cache at a time.  The number of vertical columns per MPI task
+# needs to be divisible by the blocksize; otherwise, unexpected results
+# may occur.
+#
+#-----------------------------------------------------------------------
+#
+blocksize="24"
 #
 #-----------------------------------------------------------------------
 #
@@ -400,5 +527,5 @@ layout_y="20"  # One possibility: 14 for RAP, 20 for HRRR.
 #
 quilting=".true."
 write_groups="1"
-write_tasks_per_group="20"  # One possibility: 14 for RAP, 20 for HRRR.
+write_tasks_per_group="20"
 print_esmf=".false."

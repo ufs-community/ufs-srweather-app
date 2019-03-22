@@ -52,10 +52,10 @@
 # hours (this update interval is determined by the variable BC_update_-
 # intvl_hrs) and the forecast is to run for 24 hours (the forecast
 # length is determined by the variable fcst_len_hrs), then a file is ge-
-# nerated for forecast hours 3, 6, 9, 12, 15, 18, and 24 (but not hour
-# 0 since that is handled by the script that generates the initial con-
-# dition file).  All the generated NetCDF BC files are placed in the di-
-# rectory specified by WORKDIR_ICBC.
+# nerated for each of the forecast hours 3, 6, 9, 12, 15, 18, and 24 
+# (but not hour 0 since that is handled by the script that generates the
+# initial condition file).  All the generated NetCDF BC files are placed
+# in the directory specified by WORKDIR_ICBC.
 #
 #-----------------------------------------------------------------------
 #
@@ -261,11 +261,11 @@ esac
 #
 export HALO=${nh4_T7}
 
-ln -fs $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
-       $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
+            $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
 
-ln -fs $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
-       $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
+            $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -334,7 +334,9 @@ while (test "$curnt_hr" -le "$fcst_len_hrs"); do
 #
 # On theia, jet, and odin, run the BC generation sequentially for now.
 #
-    $USHDIR/$chgres_driver_scr
+    $USHDIR/$chgres_driver_scr || print_err_msg_exit "\
+Call to script that generates boundary condition files returned with
+nonzero exit code."
     ;;
 #
   "CHEYENNE")
@@ -381,6 +383,19 @@ case $MACHINE in
     ;;
 #
 esac
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating successful completion of script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\
+
+========================================================================
+Boundary condition files for first through last boundary update times
+(not including the initial forecast time) generated successfully!!!
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #

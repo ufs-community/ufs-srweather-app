@@ -279,11 +279,11 @@ esac
 #
 export HALO=${nh4_T7}
 
-ln -fs $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
-       $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
+            $GRID_OROG_INPUT_DIR/${CRES}_grid.tile7.nc
 
-ln -fs $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
-       $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
+            $GRID_OROG_INPUT_DIR/${CRES}_oro_data.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -302,7 +302,22 @@ export REGIONAL=1
 #
 #-----------------------------------------------------------------------
 #
-$USHDIR/$chgres_driver_scr
+$USHDIR/$chgres_driver_scr || print_err_msg_exit "\
+Call to script that generates surface, initial condition, and 0-th hour
+boundary condition files returned with nonzero exit code."
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating successful completion of script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\
+
+========================================================================
+Surface fields file, initial conditions file, and 0-th hour boundary 
+condition file generated successfully!!!
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #

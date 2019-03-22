@@ -1,3 +1,4 @@
+;
 ; **********************************************************************
 ;
 ; File name: read_namelist.ncl
@@ -20,9 +21,9 @@
 ;
 ; This function was inspired by the function "namelist" written by Den-
 ; nis Shea.  
-;                                                                      *
+;
 ; **********************************************************************
-
+;
 load "pause.ncl"
 
 undef ("read_namelist")
@@ -83,19 +84,19 @@ elem_delim_chars, \
 begin
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Create the output variable.  We will attach to this as attributes the 
 ; values read in from the specified file.  The variable itself is set 
 ; to the specified name of the namelist.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   nl = namelist
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Set special characters needed during processing of the namelist file.
-;                                                                      *
+;
 ; **********************************************************************
 ;
 ; Space (int 32).
@@ -132,11 +133,11 @@ begin
   null_char = integertochar(0)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Set the character to assume to be the comment character in the name-
 ; list file.  Also, set the character to assume to be the delimiter 
 ; between array elements in the namelist file.  
-;                                                                      *
+;
 ; **********************************************************************
 ;
   cmmnt_char = exclam_char
@@ -154,24 +155,24 @@ elem_delim_chars = (/ space_char, comma_char /)
 ;elem_delim_chars = (/ comma_char, comma_char /)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Read in the namelist file and save it as a 1-D array of strings.  
 ; Then get the number of lines in the file.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   all_lines = asciiread(filename, -1, "string")
   num_lines = dimsizes(all_lines)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Loop over lines in the file until we get the line on which the speci-
 ; fied namelist starts.  Such a line will start with optional white-
 ; space, then an @, then followed immediately by the name of the name-
 ; list, followed by additional optional whitespace and variable specifi-
 ; cations.  Here, we assume that there are no variable specifications
 ; following the whitespace after the name of the namelist.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   indx_line_start = -1
@@ -223,7 +224,7 @@ elem_delim_chars = (/ space_char, comma_char /)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Loop over lines in the file, starting with the one after the one that 
 ; that marks the start of the namelist, until we get the line on which 
 ; the specified namelist ends.  Such a line will be the first one after 
@@ -232,7 +233,7 @@ elem_delim_chars = (/ space_char, comma_char /)
 ; at the end of the line).  For simplicity, we assume here that the end-
 ; ing forward slash is on a line of its own (possibly preceded by white-
 ; space and followed by other characters).
-;                                                                      *
+;
 ; **********************************************************************
 ;
   indx_line_end = -1
@@ -282,16 +283,16 @@ elem_delim_chars = (/ space_char, comma_char /)
   end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Loop through those lines of the file that define the namelist and pro-
 ; cess each line.
-;                                                                      *
+;
 ; **********************************************************************
 ;
   do n=indx_line_start+1, indx_line_end-1
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Strip leading and trailing whitespace from the current line and con-
 ; vert the result to a 1-D array of characters.  
 ;
@@ -301,7 +302,7 @@ elem_delim_chars = (/ space_char, comma_char /)
 ; move it separately.  From trial-and-error, it seems that even the 
 ; last line in the file will have a newline at the end even if there is 
 ; no blank line after it.
-;                                                                      *
+;
 ; **********************************************************************
 ;
     line := stringtochar(str_strip(all_lines(n)))
@@ -315,14 +316,14 @@ elem_delim_chars = (/ space_char, comma_char /)
 
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Don't process the current line if any of the following is true:
 ;
 ; 1) The line is empty.
 ; 2) The line starts with the Fortran comment character.
 ;
 ; In these cases, simply move on to the next line.
-;                                                                      *
+;
 ; **********************************************************************
 ;
     if ((strlen(tostring(line)) .eq. 0) .or. \
@@ -331,13 +332,13 @@ elem_delim_chars = (/ space_char, comma_char /)
     end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Get the location of all equal signs in the line.  Then keep only the 
 ; location of the first one since this is the only one that can indi-
 ; cate the separation between the variable name (on the left of it) and 
 ; the value (on the right).  If there is no equal sign, print out a 
 ; warning and exit
-;                                                                      *
+;
 ; **********************************************************************
 ;
     inds_equals := ind(line .eq. equal_char)
@@ -352,22 +353,22 @@ elem_delim_chars = (/ space_char, comma_char /)
     end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Get the name of the variable from the portion of the current line be-
 ; fore the first equal sign (which we refer to as the left-hand side).  
 ; This will be the name of an attribute of the output variable of this
 ; function.
-;                                                                      *
+;
 ; **********************************************************************
 ;
     attr_name = str_strip(tostring(line(:indx_first_equal-1)))
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Extract the string to the right of the equal sign.  We refer to this
 ; as the right-hand side.  This right-hand side represents the value
 ; that the attribute on the left-hand side is to be assigned.
-;                                                                      *
+;
 ; **********************************************************************
 ;
     RHS := tochar(str_strip(tostring(line(indx_first_equal+1:))))
@@ -375,14 +376,14 @@ elem_delim_chars = (/ space_char, comma_char /)
 ;pause
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Get the first (non-whitespace) character on the right-hand side and 
 ; check if it has an allowed value.  Note that if this character is ei-
 ; ther a single or a double quote, it indicates that the right-hand side 
 ; represents a character value and that the single (double) quote is the
 ; quotation character used to denote character strings (either is valid 
 ; in Fortran, although not simultaneously).
-;                                                                      *
+;
 ; **********************************************************************
 ;
     first_char := RHS(0)
@@ -410,18 +411,18 @@ elem_delim_chars = (/ space_char, comma_char /)
     end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Consider the case of the right-hand side being of type string.
-;                                                                      *
+;
 ; **********************************************************************
 ;
     if (is_char_value) then
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Split the string containing the right-hand side into several sub-
 ; strings as determined by the array element delimiter character.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       RHS_str := tostring(RHS)
@@ -433,42 +434,42 @@ elem_delim_chars = (/ space_char, comma_char /)
       end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; The str_split_csv(...) function returns a 2-D array with the first di-
 ; mension equal to the number of strings in the input string array.  
 ; Since here we alway pass in a single line (a 1-D string array), this
 ; first dimension is degenerate (i.e. it is a singleton dimension).  
 ; Use the rm_single_dims(...) function to get rid of this dimension.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       rhs := rm_single_dims(rhs)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Remove leading and trailing whitespace (which, if present, will be 
 ; outside the quotation marks) and thus unimportant.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       rhs := str_strip(rhs)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Remove all elements of the string array rhs that are either blank or
 ; contain missing values.  The blank values show up if there are two ar-
 ; ray element delimiters separated by only whitespace, and the missing
 ; values show up if there are two delimiters without any other charac-
 ; ters between them.  In either case, there is no information to retain. 
-;                                                                      *
+;
 ; **********************************************************************
 ;
       rhs := rhs(ind(.not. ismissing(rhs) .and. .not. str_is_blank(rhs)))
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Process the strings in the rhs array.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       in_quotes = True
@@ -483,11 +484,11 @@ elem_delim_chars = (/ space_char, comma_char /)
         last_char := temp(num_chars-1)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; First, check whether the current string in rhs starts and ends with a
 ; quotation character.  If so, retain only the characters between the 
 ; quotes.
-;                                                                      *
+;
 ; **********************************************************************
 ;
         if ((first_char .eq. quote_char) .and. \
@@ -498,25 +499,25 @@ elem_delim_chars = (/ space_char, comma_char /)
           i = i + 1
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Next, check whether at least the first character is a quotation cha-
 ; racter.  If so, search for the second quote somewhere in the string.  
 ; If it exists and if the characters after it are optional whitespace 
 ; followed by a comment character, then we discard all characters after
 ; the second quote (and then we also discard the quotes).  Otherwise, 
 ; we print out a warning message and stop execution.
-;                                                                      *
+;
 ; **********************************************************************
 ;
         else if ((first_char .eq. quote_char) .and. \
                  (last_char .ne. quote_char)) then
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Find the index of the second occurrence of the quotation character, 
 ; if any.  Note that we know there will be at least one because the 
 ; first character is a quotation character.
-;                                                                      *
+;
 ; **********************************************************************
 ;
           temp := ind(tochar(rhs(i)) .eq. quote_char)
@@ -537,9 +538,9 @@ elem_delim_chars = (/ space_char, comma_char /)
           end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; If here, second quotation character exists.
-;                                                                      *
+;
 ; **********************************************************************
 ;
           temp := tochar(rhs(i))
@@ -565,12 +566,12 @@ elem_delim_chars = (/ space_char, comma_char /)
           end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; If the first character in the current string is a comment character, 
 ; it signals the end of the meaningful portion of the line, so we move
 ; on to the next line (i.e. no need to look at the remaining strings in 
 ; rhs).
-;                                                                      *
+;
 ; **********************************************************************
 ;
         else if (first_char .eq. cmmnt_char) then
@@ -579,11 +580,11 @@ elem_delim_chars = (/ space_char, comma_char /)
           break
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; If the first character is not a quotation or comment character, some-
 ; thing must be wrong.  In this case, print out a warning and stop exe-
 ; cution.
-;                                                                      *
+;
 ; **********************************************************************
 ;
         else
@@ -606,30 +607,30 @@ elem_delim_chars = (/ space_char, comma_char /)
       end do
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Keep only those strings in rhs that were processed as meaningful ele-
 ; ments of a string array (e.g. don't keep portions that are comments
 ; in the namelist file).
-;                                                                      *
+;
 ; **********************************************************************
 ;
       rhs := rhs(:i-1)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Consider the case of the right-hand side being of type logical, inte-
 ; ger, or float.
-;                                                                      *
+;
 ; **********************************************************************
 ;
     else
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Get the number of comment characters on the right-hand side.  If there
 ; is at least one comment character, keep as the right-hand side only 
 ; those characters before the first comment character.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       inds_cmmnts := ind(RHS .eq. cmmnt_char)
@@ -643,10 +644,10 @@ elem_delim_chars = (/ space_char, comma_char /)
       end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Squeeze out any extra (repeated) spaces and tabs, e.g. between array
 ; elements.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       RHS_str := str_squeeze(tostring(RHS))
@@ -654,9 +655,9 @@ elem_delim_chars = (/ space_char, comma_char /)
 ;print("HELLO 2222:  RHS = " + RHS)
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Consider the case of the right-hand side being of type logical.
-;                                                                      *
+;
 ; **********************************************************************
 ;
 ; The str_match_ic_regex(...) function is only available in NCL version
@@ -694,12 +695,12 @@ elem_delim_chars = (/ space_char, comma_char /)
         end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Consider the right-hand side being of type integer or float.  First,
 ; get the number of decimal points (periods) on the right-hand side.  If
 ; any are present, we will treat the right-hand side as of type float.  
 ; Otherwise, we will treat the right-hand side as of type integer.
-;                                                                      *
+;
 ; **********************************************************************
 ;
       else
@@ -776,9 +777,9 @@ elem_delim_chars = (/ space_char, comma_char /)
     end if
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Assign attribute to the value specified on the right-hand side.
-;                                                                      *
+;
 ; **********************************************************************
 ;
     nl@$attr_name$ = rhs
@@ -786,10 +787,10 @@ elem_delim_chars = (/ space_char, comma_char /)
   end do
 ;
 ; **********************************************************************
-;                                                                      *
+;
 ; Done with loop over lines in namelist file.  Now return the output va-
 ; riable.
-;                                                                      *
+;
 ; **********************************************************************
 ;
 ;list_vars()
