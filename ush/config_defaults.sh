@@ -137,7 +137,6 @@ FV3_CCPP_GFS_NAMELIST_FN="input_ccpp_gfs.nml"
 FV3_CCPP_GSD_NAMELIST_FN="input_ccpp_gsd.nml"
 DIAG_TABLE_FN="diag_table"
 DIAG_TABLE_CCPP_GSD_FN="diag_table_ccpp_gsd"
-DIAG_TABLE_CCPP_GFS_FN="diag_table_ccpp_gfs"
 FIELD_TABLE_FN="field_table"
 FIELD_TABLE_CCPP_GSD_FN="field_table_ccpp_gsd"
 DATA_TABLE_FN="data_table"
@@ -213,7 +212,7 @@ run_title="desc_str"
 # corresponds with settings used in the EMC regional regression tests.
 #-----------------------------------------------------------------------
 #
-CCPP="true" # "true" or "false"
+CCPP="false" # "true" or "false"
 #
 #-----------------------------------------------------------------------
 # If CCPP=true, the suite flag defines the physics package for which the
@@ -223,8 +222,8 @@ CCPP="true" # "true" or "false"
 # with the correct physics package.  The run will fail if there is a mismatch. 
 #-----------------------------------------------------------------------
 #
-CCPP_suite="GFS"
-#CCPP_suite="GSD"
+CCPP_suite="GSD"
+#CCPP_suite="GFS"
 #
 #-----------------------------------------------------------------------
 #
@@ -355,6 +354,11 @@ predef_domain=""
 # in either the x or y direction on the regional grid (tile 7) that abut
 # one cell on its parent tile (tile 6).
 #
+# dt_atmos:
+# Dynamics time step in model_configure.  This value is in turn used to 
+# set the physics time step in combination with k_split and n_split,
+# defined in input.nml
+#
 #-----------------------------------------------------------------------
 #
 RES="384"
@@ -366,6 +370,7 @@ iend_rgnl_T6=374
 jstart_rgnl_T6=10
 jend_rgnl_T6=374
 refine_ratio=3
+dt_atmos=18 #Preliminary values: 18 for 3-km runs, 90 for 13-km runs
 #
 #-----------------------------------------------------------------------
 #

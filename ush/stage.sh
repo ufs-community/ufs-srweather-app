@@ -72,9 +72,9 @@ if [ "$CCPP" = "true" ]; then
      print_info_msg_verbose "\
      Copying CCPP GFS physics namelist to the run directory..."
 
-     cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GFS_FN $RUNDIR/diag_table
+     cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
      print_info_msg_verbose "\
-     Copying CCPP-specific GFS physics diag_table to the run directory..."
+     Copying diag_table to the run directory..."
 
      cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
 
@@ -86,7 +86,7 @@ if [ "$CCPP" = "true" ]; then
 
      cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GSD_NAMELIST_FN $RUNDIR/input.nml
      print_info_msg_verbose "\
-     Copying CCPP GSD physics namelist to the run directory..."
+     Copying CCPP-specific GSD physics namelist to the run directory..."
 
      cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/diag_table
      print_info_msg_verbose "\
@@ -169,6 +169,7 @@ Setting parameters in file:
   MODEL_CONFIG_FP = \"$MODEL_CONFIG_FP\""
 
 set_file_param $MODEL_CONFIG_FP "PE_MEMBER01" $PE_MEMBER01 $VERBOSE
+set_file_param $MODEL_CONFIG_FP "dt_atmos" $dt_atmos $VERBOSE
 set_file_param $MODEL_CONFIG_FP "start_year" $YYYY $VERBOSE
 set_file_param $MODEL_CONFIG_FP "start_month" $MM $VERBOSE
 set_file_param $MODEL_CONFIG_FP "start_day" $DD $VERBOSE
