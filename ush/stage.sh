@@ -131,7 +131,7 @@ cp_vrfy $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
-FV3_NAMELIST_FP="$RUNDIR/input.nml"
+FV3_NAMELIST_FP="$RUNDIR/$FV3_NAMELIST_FN"
 
 print_info_msg_verbose "\
 Setting parameters in file:

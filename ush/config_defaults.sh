@@ -420,9 +420,9 @@ predef_domain=""
 # one cell on its parent tile (tile 6).
 #
 # dt_atmos:
-# Dynamics time step in model_configure.  This value is in turn used to 
-# set the physics time step in combination with k_split and n_split,
-# defined in input.nml
+# Time step for the largest atmosphere model loop, corresponding to the
+# frequency with which the top level routine in the dynamics is called 
+# as well as the frequency with which the physics is called.
 #
 #-----------------------------------------------------------------------
 #
