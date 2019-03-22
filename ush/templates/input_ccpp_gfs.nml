@@ -8,10 +8,10 @@
 /
 
  &atmos_model_nml
-     blocksize = 32
+     blocksize = <blocksize>
      chksum_debug = .false.
      dycore_only = .false.
-     fdiag = 3
+     fdiag = 1
      ccpp_suite = 'ccpp_suite.xml'
 /
 
