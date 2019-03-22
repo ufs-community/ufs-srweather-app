@@ -110,11 +110,6 @@ Setting parameter \"$param\" in file \"$file\"..."
     sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
     ;;
 #
-  "$DIAG_TABLE_CCPP_GFS_FN")
-    regex_orig="(.*)(<$param>)(.*)"
-    sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
-    ;;
-#
   "$DIAG_TABLE_CCPP_GSD_FN")
     regex_orig="(.*)(<$param>)(.*)"
     sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
