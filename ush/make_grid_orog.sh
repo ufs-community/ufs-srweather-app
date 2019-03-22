@@ -404,14 +404,60 @@ mkdir_vrfy -p "$WORKDIR_ICBC"
 #
 print_info_msg_verbose "Starting grid file generation..."
 
-$USHDIR/$grid_gen_scr \
-  $RES \
-  $WORKDIR_GRID \
-  $stretch_fac $lon_ctr_T6 $lat_ctr_T6 $refine_ratio \
-  $istart_rgnl_wide_halo_T6SG $jstart_rgnl_wide_halo_T6SG \
-  $iend_rgnl_wide_halo_T6SG $jend_rgnl_wide_halo_T6SG \
-  1 \
-  $USHDIR
+if [ "$grid_gen_method" = "GFDLgrid" ]; then
+
+  $USHDIR/$grid_gen_scr \
+    $RES \
+    $WORKDIR_GRID \
+    $stretch_fac $lon_ctr_T6 $lat_ctr_T6 $refine_ratio \
+    $istart_rgnl_wide_halo_T6SG $jstart_rgnl_wide_halo_T6SG \
+    $iend_rgnl_wide_halo_T6SG $jend_rgnl_wide_halo_T6SG \
+    1 $USHDIR || print_err_msg_exit "\
+  Call to script that generates grid files returned with nonzero exit code."
+
+elif [ "$grid_gen_method" = "JPgrid" ]; then
+#
+#-----------------------------------------------------------------------
+#
+# Set the full path to the namelist file for the executable that gene-
+# rates a regional grid using Jim Purser's method.  Then set parameters
+# in that file.
+#
+#-----------------------------------------------------------------------
+#
+  REGIONAL_GRID_NAMELIST_FP="$WORKDIR_GRID/$REGIONAL_GRID_NAMELIST_FN"
+  cp_vrfy $TEMPLATE_DIR/$REGIONAL_GRID_NAMELIST_FN $REGIONAL_GRID_NAMELIST_FP 
+
+  print_info_msg_verbose "\
+Setting parameters in file:
+  REGIONAL_GRID_NAMELIST_FP = \"$REGIONAL_GRID_NAMELIST_FP\""
+#
+# Set parameters.
+#
+  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "plon" "$lon_ctr_T6"
+  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "plat" "$lat_ctr_T6"
+  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "delx" "$del_angle_x_SG"
+  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "dely" "$del_angle_y_SG"
+  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "lx" "$mns_nx_T7_pls_wide_halo"
+  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "ly" "$mns_ny_T7_pls_wide_halo"
+  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "a" "$a_grid_param"
+  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "k" "$k_grid_param"
+
+  cd_vrfy $WORKDIR_GRID
+  $SORCDIR/regional_grid/regional_grid $REGIONAL_GRID_NAMELIST_FP $CRES || print_err_msg_exit "\ 
+Call to script that generates grid file (Jim Purser version) returned with nonzero exit code."
+#
+# Rename files to names expected by the FV3 code.  This requires using 
+# CRES in the file names even though CRES (or RES) is not used in the 
+# JPgrid grid generation method.
+#
+  tile_rgnl=7
+  mv_vrfy regional_grid.nc \
+          ${CRES}_grid.tile${tile_rgnl}.nc
+  mv_vrfy regional_mosaic.nc \
+          ${CRES}_mosaic.nc
+
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -422,12 +468,12 @@ $USHDIR/$grid_gen_scr \
 #-----------------------------------------------------------------------
 #
 tile=7
-cd $WORKDIR_GRID
+cd_vrfy $WORKDIR_GRID
 mv_vrfy ${CRES}_grid.tile${tile}.nc \
         ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc
-ln -sf ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc \
-       ${CRES}_grid.tile${tile}.nc
-cd -
+ln_vrfy -sf ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc \
+            ${CRES}_grid.tile${tile}.nc
+cd_vrfy -
 
 print_info_msg_verbose "Grid file generation complete."
 #
@@ -483,7 +529,11 @@ $TMPDIR" \
 #
 "THEIA" | "JET" | "ODIN")
 #
-  $USHDIR/$orog_gen_scr $RES $tile $WORKDIR_GRID $WORKDIR_OROG $USHDIR $topo_dir $TMPDIR
+  $USHDIR/$orog_gen_scr \
+    $RES $tile $WORKDIR_GRID $WORKDIR_OROG $USHDIR $topo_dir $TMPDIR || \
+  print_err_msg_exit "\
+Call to script that generates unfiltered orography file returned with 
+nonzero exit code."
   ;;
 #
 esac
@@ -497,12 +547,12 @@ esac
 #-----------------------------------------------------------------------
 #
 tile=7
-cd $WORKDIR_OROG
+cd_vrfy $WORKDIR_OROG
 mv_vrfy oro.${CRES}.tile${tile}.nc \
         oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
-ln -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
-       oro.${CRES}.tile${tile}.nc
-cd -
+ln_vrfy -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
+            oro.${CRES}.tile${tile}.nc
+cd_vrfy -
 
 print_info_msg_verbose "Orography file generation complete."
 #
@@ -566,7 +616,9 @@ $USHDIR/$orog_fltr_scr \
   $RES \
   $WORKDIR_GRID $WORKDIR_OROG $WORKDIR_FLTR \
   $cd4 $peak_fac $max_slope $n_del2_weak \
-  $USHDIR $gtype
+  $USHDIR $gtype || print_err_msg_exit "\
+Call to script that generates filtered orography file returned with non-
+zero exit code."
 #
 #-----------------------------------------------------------------------
 #
@@ -577,12 +629,12 @@ $USHDIR/$orog_fltr_scr \
 #-----------------------------------------------------------------------
 #
 tile=7
-cd $WORKDIR_FLTR
+cd_vrfy $WORKDIR_FLTR
 mv_vrfy oro.${CRES}.tile${tile}.nc \
         oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
-ln -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
-       oro.${CRES}.tile${tile}.nc
-cd -
+ln_vrfy -sf oro.${CRES}.tile${tile}.halo${nhw_T7}.nc \
+            oro.${CRES}.tile${tile}.nc
+cd_vrfy -
 
 print_info_msg_verbose "Filtering of orography complete."
 #
@@ -611,7 +663,7 @@ print_info_msg_verbose "\
 \"Shaving\" regional grid and filtered orography files to reduce them to
 required compute size..."
 
-cd $WORKDIR_SHVE
+cd_vrfy $WORKDIR_SHVE
 #
 # Create an input file for the shave executable to generate a grid file
 # with a halo of 3 cells.
@@ -657,16 +709,48 @@ printf "%s %s %s %s %s\n" \
   \'$WORKDIR_SHVE/${CRES}_oro_data.tile${tile}.halo${nh4_T7}.nc\' \
   > input.shave.orog.halo${nh4_T7}
 #
+#-----------------------------------------------------------------------
+#
 # Shave the grid and orography files.  Note that APRUN is defined dif-
 # ferently for each machine.
 #
-$APRUN $exec_dir/$shave_exec < input.shave.grid.halo${nh3_T7}
-$APRUN $exec_dir/$shave_exec < input.shave.grid.halo${nh4_T7}
-$APRUN $exec_dir/$shave_exec < input.shave.orog.halo${nh0_T7}
-$APRUN $exec_dir/$shave_exec < input.shave.orog.halo${nh4_T7}
+#-----------------------------------------------------------------------
+#
+$APRUN $exec_dir/$shave_exec < input.shave.grid.halo${nh3_T7} || \
+print_err_msg_exit "\
+Call to \"shave\" executable to generate grid file with a 3-cell wide
+halo returned with nonzero exit code."
+
+$APRUN $exec_dir/$shave_exec < input.shave.grid.halo${nh4_T7} || \
+print_err_msg_exit "\
+Call to \"shave\" executable to generate grid file with a 4-cell wide
+halo returned with nonzero exit code."
+
+$APRUN $exec_dir/$shave_exec < input.shave.orog.halo${nh0_T7} || \
+print_err_msg_exit "\
+Call to \"shave\" executable to generate (filtered) orography file with-
+out a halo returned with nonzero exit code."
+
+$APRUN $exec_dir/$shave_exec < input.shave.orog.halo${nh4_T7} || \
+print_err_msg_exit "\
+Call to \"shave\" executable to generate (filtered) orography file with
+a 4-cell wide halo returned with nonzero exit code."
 
 print_info_msg_verbose "\
 \"Shaving\" of regional grid and filtered orography files complete."
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating successful completion of script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\
+
+========================================================================
+Grid and filtered orography files with various halo widths generated 
+successfully!!!
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #

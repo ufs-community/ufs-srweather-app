@@ -1,11 +1,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# This is a generic function that executes the specified filesystem com-
-# mand (e.g. "cp", "mv", etc) with the specified options/arguments and
-# then verifies that the command executed without errors.  The
-# first argument to this function is the command to execute while the
-# remaining ones are the arguments to that command.
+# This is a generic function that executes the specified command (e.g. 
+# "cp", "mv", etc) with the specified options/arguments and then veri-
+# fies that the command executed without errors.  The first argument to
+# this function is the command to execute while the remaining ones are 
+# the options/arguments to be passed to that command.
 #
 #-----------------------------------------------------------------------
 #
@@ -78,25 +78,43 @@ arguments to pass to that command."
 #
 #-----------------------------------------------------------------------
 #
-# If exit_code is nonzero, print out an error message and exit.  Other-
-# wise, if output is not empty, print out whatever message it contains
-# (e.g. it might contain a warning or other informational message) and
-# continue execution.
+# If the exit code from the execution of cmd above is nonzero, print out
+# an error message and exit.
 #
 #-----------------------------------------------------------------------
 #
   if [ $exit_code -ne 0 ]; then
-
     print_err_msg_exit "\
 From function \"${FUNCNAME[0]}\":  \"$cmd\" operation failed:
 $output"
-
-  elif [ -n "$output" ]; then
-
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# If the exit code from the execution of cmd above is zero, continue.
+#
+# First, check if cmd is set to "cd".  If so, the execution of cmd above
+# in a separate subshell [which is what happens when using the $("$cmd")
+# construct above] will change directory in that subshell but not in the
+# current shell.  Thus, rerun the "cd" command in the current shell.
+#
+#-----------------------------------------------------------------------
+#
+  if [ "$cmd" = "cd" ]; then
+    "$cmd" "$@" 2>&1 > /dev/null
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# If output is not empty, print out whatever message it contains (e.g. 
+# it might contain a warning or other informational message).
+#
+#-----------------------------------------------------------------------
+#
+  if [ -n "$output" ]; then
     print_info_msg "\
 From function \"${FUNCNAME[0]}\":  Message from \"$cmd\" operation:
 $output"
-
   fi
 #
 #-----------------------------------------------------------------------
@@ -149,10 +167,21 @@ function rm_vrfy() {
   { restore_shell_opts; } > /dev/null 2>&1
 }
 
+function ln_vrfy() {
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  filesys_cmd_vrfy "ln" "$@"
+  { restore_shell_opts; } > /dev/null 2>&1
+}
+
 function mkdir_vrfy() {
   { save_shell_opts; set -u +x; } > /dev/null 2>&1
   filesys_cmd_vrfy "mkdir" "$@"
   { restore_shell_opts; } > /dev/null 2>&1
 }
 
+function cd_vrfy() {
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  filesys_cmd_vrfy "cd" "$@"
+  { restore_shell_opts; } > /dev/null 2>&1
+}
 

@@ -72,7 +72,7 @@
 #-----------------------------------------------------------------------
 #
 mkdir_vrfy -p "$INIDIR"
-cd $INIDIR || print_err_msg_exit "\
+cd_vrfy $INIDIR || print_err_msg_exit "\
 Could not change directory to INIDIR:
   INIDIR = \"$INIDIR\""
 #
@@ -357,7 +357,7 @@ anl_or_fcst="forecast"
 # Get the number of BC times.  This includes the initial time (i.e.
 # hour 0 of the forecast).
 #
-num_BC_times="${#BC_times_hrs[@]}"
+num_BC_times="${#BC_update_times_hrs[@]}"
 #
 # Calculate the number of needed forecast files.  This is equal to one
 # less than the number of BC times because the number of BC times in-
@@ -388,7 +388,7 @@ ARCHIVE_DIR="/${temp}.${YMD}"
 #
 files_to_copy=""
 files_to_extract=""
-for BC_time in "${BC_times_hrs[@]:1}"; do  # Note that the :1 causes the loop to start with the 2nd element of BC_times_hrs.
+for BC_time in "${BC_update_times_hrs[@]:1}"; do  # Note that the :1 causes the loop to start with the 2nd element of BC_update_times_hrs.
   fcst_HHH=$( printf "%03d" "$BC_time" )
   curnt_file="gfs.t${HH}z.atmf${fcst_HHH}.nemsio"
   files_to_copy="${files_to_copy} $INIDIR_SYS/$curnt_file"
@@ -560,6 +560,18 @@ for the list of files extracted."
   fi
 
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating successful completion of script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\
+
+========================================================================
+GFS analysis and forecast files obtained successfully!!!
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #
