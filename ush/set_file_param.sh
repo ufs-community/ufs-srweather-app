@@ -95,7 +95,22 @@ Setting parameter \"$param\" in file \"$file\"..."
     sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
     ;;
 #
+  "$FV3_CCPP_GFS_NAMELIST_FN")
+    regex_orig="^(\s*$param\s*=)(.*)"
+    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
+    ;;
+#
+  "$FV3_CCPP_GSD_NAMELIST_FN")
+    regex_orig="^(\s*$param\s*=)(.*)"
+    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
+    ;;
+#
   "$DIAG_TABLE_FN")
+    regex_orig="(.*)(<$param>)(.*)"
+    sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
+    ;;
+#
+  "$DIAG_TABLE_CCPP_GSD_FN")
     regex_orig="(.*)(<$param>)(.*)"
     sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
     ;;
