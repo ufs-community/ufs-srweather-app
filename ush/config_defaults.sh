@@ -243,83 +243,21 @@ CCPP_suite="GSD"
 #
 #-----------------------------------------------------------------------
 #
-grid_gen_method="GFDLgrid"
-#grid_gen_method="JPgrid"
-#
-#-----------------------------------------------------------------------
-#
-# Parameters for generating a grid for grid_gen_method set to "JPgrid".
-#
-# delx:
-# The cell size in the zonal direction of the regional grid (in meters).
-#
-# dely:
-# The cell size in the meridional direction of the regional grid (in me-
-# ters).
-#
-# nx_T7:
-# The number of cells in the zonal direction on the regional grid.
-#
-# ny_T7:
-# The number of cells in the meridional direction on the regional grid.
-#
-# nhw_T7:
-# The width of the wide halo (in units of number of cells) to create 
-# around the regional grid.  A grid with a halo of this width will first
-# be created and stored in a grid specification file.  This grid will 
-# then be shaved down to obtain grids with 3-cell-wide and 4-cell-wide
-# halos.
-#
-# a_grid_param:
-# The "a" parameter used in the Jim Purser map projection/grid genera-
-# tion method.
-#
-# k_grid_param:
-# The "k" parameter used in the Jim Purser map projection/grid genera-
-# tion method.
-#
-#-----------------------------------------------------------------------
-#
-delx="3000.0"  # In meters.
-dely="3000.0"  # In meters.
-nx_T7=1000
-ny_T7=1000
-nhw_T7=6
+grid_gen_method="JPgrid"
 
-a_grid_param="0.21423"
-k_grid_param="-0.23209"
+
+
+# For now, the following are needed for both types of grid generation 
+# methods below.
+RES="000"
+stretch_fac="1.0"
 
 #
 #-----------------------------------------------------------------------
 #
-# Set predef_domain.  This variable specifies a predefined (regional)
-# domain, as follows:
-#
-# * If predef_domain is set to an empty string, the grid configuration
-#   parameters set below are used to generate a grid.
-#
-# * If predef_domain is set to a valid non-empty string, the grid confi-
-#   guration parameters set below are overwritten by predefined values
-#   in order to generate a predefined grid.  Valid non-empty values for
-#   predef_domain currently consist of:
-#
-#     "RAP"
-#     "HRRR"
-#
-#   These result in regional grids that cover (as closely as possible)
-#   the domains used in the WRF/ARW-based RAP and HRRR models, respec-
-#   tively.  The run title string (run_title) set above is also modified
-#   to reflect the specified predefined domain.
-#
-#-----------------------------------------------------------------------
-#
-predef_domain=""
-#predef_domain="RAP"
-#predef_domain="HRRR"
-#
-#-----------------------------------------------------------------------
-#
-# Set parameters that determine the grid configuration.  Note that:
+# Set parameters specific to the method for generating a regional grid
+# WITH a global parent (i.e. for grid_gen_method set to "GFDLgrid").  
+# Note that for this method:
 #
 # * The regional grid is defined with respect to a global cubed-sphere
 #   grid.  Thus, the parameters for a global cubed-sphere grid must be
@@ -419,22 +357,115 @@ predef_domain=""
 # in either the x or y direction on the regional grid (tile 7) that abut
 # one cell on its parent tile (tile 6).
 #
-# dt_atmos:
-# Time step for the largest atmosphere model loop, corresponding to the
-# frequency with which the top level routine in the dynamics is called 
-# as well as the frequency with which the physics is called.
+#-----------------------------------------------------------------------
+#
+if [ "$grid_gen_method" = "GFDLgrid" ]; then
+
+#  RES="384"
+  lon_ctr_T6=-97.5
+  lat_ctr_T6=35.5
+#  stretch_fac=1.5
+  istart_rgnl_T6=10
+  iend_rgnl_T6=374
+  jstart_rgnl_T6=10
+  jend_rgnl_T6=374
+  refine_ratio=3
 #
 #-----------------------------------------------------------------------
 #
-RES="384"
-lon_ctr_T6=-97.5
-lat_ctr_T6=35.5
-stretch_fac=1.5
-istart_rgnl_T6=10
-iend_rgnl_T6=374
-jstart_rgnl_T6=10
-jend_rgnl_T6=374
-refine_ratio=3
+# Set parameters specific to the method for generating a regional grid
+# without a global parent (i.e. for grid_gen_method set to "JPgrid").  
+# These are:
+#
+# delx:
+# The cell size in the zonal direction of the regional grid (in meters).
+#
+# dely:
+# The cell size in the meridional direction of the regional grid (in me-
+# ters).
+#
+# nx_T7:
+# The number of cells in the zonal direction on the regional grid.
+#
+# ny_T7:
+# The number of cells in the meridional direction on the regional grid.
+#
+# nhw_T7:
+# The width of the wide halo (in units of number of cells) to create 
+# around the regional grid.  A grid with a halo of this width will first
+# be created and stored in a grid specification file.  This grid will 
+# then be shaved down to obtain grids with 3-cell-wide and 4-cell-wide
+# halos.
+#
+# a_grid_param:
+# The "a" parameter used in the Jim Purser map projection/grid genera-
+# tion method.
+#
+# k_grid_param:
+# The "k" parameter used in the Jim Purser map projection/grid genera-
+# tion method.
+#
+#-----------------------------------------------------------------------
+#
+elif [ "$grid_gen_method" = "JPgrid" ]; then
+
+  lon_rgnl_ctr=-97.5
+  lat_rgnl_ctr=35.5
+  delx="3000.0"
+  dely="3000.0"
+  nx_T7=1000
+  ny_T7=1000
+  nhw_T7=6
+  a_grid_param="0.21423"
+  k_grid_param="-0.23209"
+#
+# The following variables must be set in order to be able to use the 
+# same scripting machinary for the case of grid_gen_method set to "JP-
+# grid" as for grid_gen_method set to "GFDLgrid", but the need for this
+# variable for the case of grid_gen_method set to "JPgrid" should event-
+# ually be removed.
+#
+#  RES="000"
+#  CRES="C$RES"
+#  stretch_fac="1.0"
+
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Set predef_domain.  This variable specifies a predefined (regional)
+# domain, as follows:
+#
+# * If predef_domain is set to an empty string, the grid configuration
+#   parameters set below are used to generate a grid.
+#
+# * If predef_domain is set to a valid non-empty string, the grid confi-
+#   guration parameters set below are overwritten by predefined values
+#   in order to generate a predefined grid.  Valid non-empty values for
+#   predef_domain currently consist of:
+#
+#     "RAP"
+#     "HRRR"
+#     "EMCCONUS"
+#
+#   These result in regional grids that cover (as closely as possible)
+#   the domains used in the WRF/ARW-based RAP and HRRR models, respec-
+#   tively.  The run title string (run_title) set above is also modified
+#   to reflect the specified predefined domain.
+#
+#-----------------------------------------------------------------------
+#
+predef_domain=""
+#
+#-----------------------------------------------------------------------
+#
+# Set the model integraton time step dt_atmos.  This is the time step 
+# for the largest atmosphere model loop.  It corresponds to the frequen-
+# cy with which the top level routine in the dynamics is called as well
+# as the frequency with which the physics is called.
+#
+#-----------------------------------------------------------------------
+#
 dt_atmos=18 #Preliminary values: 18 for 3-km runs, 90 for 13-km runs
 #
 #-----------------------------------------------------------------------
