@@ -224,6 +224,12 @@ predef_domain must be set either to an empty string or to one of the following:
   $valid_predef_domains_str
 "; }
 fi
+
+
+
+
+
+if [ "$grid_gen_method" = "GFDLgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
@@ -232,24 +238,21 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-case $predef_domain in
+  case $predef_domain in
 #
-"RAP")        # The RAP domain.
+  "RAP")        # The RAP domain.
+    RES="384"
+    ;;
 #
-  RES="384"
-  ;;
+  "HRRR")       # The HRRR domain.
+    RES="384"
+    ;;
 #
-"HRRR")       # The HRRR domain.
+  "EMCCONUS")   # EMC's C768 domain over the CONUS.
+    RES="768"
+    ;;
 #
-  RES="384"
-  ;;
-#
-"EMCCONUS")   # EMC's C768 domain over the CONUS.
-#
-  RES="768"
-  ;;
-#
-esac
+  esac
 #
 #-----------------------------------------------------------------------
 #
@@ -257,10 +260,10 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-valid_RESES=("48" "96" "192" "384" "768" "1152" "3072")
-iselementof "$RES" valid_RESES || { \
-valid_RESES_str=$(printf "\"%s\" " "${valid_RESES[@]}");
-print_err_msg_exit "\
+  valid_RESES=("48" "96" "192" "384" "768" "1152" "3072")
+  iselementof "$RES" valid_RESES || { \
+  valid_RESES_str=$(printf "\"%s\" " "${valid_RESES[@]}");
+  print_err_msg_exit "\
 Number of grid cells per tile (in each horizontal direction) specified in
 RES is not supported:
   RES = \"$RES\"
@@ -274,7 +277,26 @@ RES must be one of the following:  $valid_RESES_str
 #
 #-----------------------------------------------------------------------
 #
-CRES="C${RES}"
+  CRES="C${RES}"
+#
+#-----------------------------------------------------------------------
+#
+# CRES is needed for now for the case of grid_gen_method set to "JP-
+# grid", but this need should be removed at some point since it is only
+# for convenience.
+#
+#-----------------------------------------------------------------------
+#
+elif [ "$grid_gen_method" = "JPgrid" ]; then
+
+  CRES="C${RES}"
+
+fi
+
+
+
+
+
 #
 #-----------------------------------------------------------------------
 #
@@ -520,25 +542,40 @@ case $predef_domain in
 # Prepend the string "_RAP" to run_title.
 #
   run_title="_RAP${run_title}"
-#
-# Reset grid parameters.
-#
-  lon_ctr_T6=-106.0
-  lat_ctr_T6=54.0
-  stretch_fac=0.63
-  refine_ratio=3
 
-  num_margin_cells_T6_left=10
-  istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+  if [ "$grid_gen_method" = "GFDLgrid" ]; then
 
-  num_margin_cells_T6_right=10
-  iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+    lon_ctr_T6=-106.0
+    lat_ctr_T6=54.0
+    stretch_fac=0.63
+    refine_ratio=3
+  
+    num_margin_cells_T6_left=10
+    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+  
+    num_margin_cells_T6_right=10
+    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+  
+    num_margin_cells_T6_bottom=10
+    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+  
+    num_margin_cells_T6_top=10
+    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 
-  num_margin_cells_T6_bottom=10
-  jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+  elif [ "$grid_gen_method" = "JPgrid" ]; then
 
-  num_margin_cells_T6_top=10
-  jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+    lon_rgnl_ctr=-106.0
+    lat_rgnl_ctr=54.0
+
+    delx="13000.0"
+    dely="13000.0"
+
+    nx_T7=960
+    ny_T7=960
+
+    nhw_T7=6
+
+  fi
 #
 # If the write-component is being used and the variable (WRTCMP_PARAMS_-
 # TEMPLATE_FN) containing the name of the template file that specifies
@@ -556,25 +593,42 @@ case $predef_domain in
 # Prepend the string "_HRRR" to run_title.
 #
   run_title="_HRRR${run_title}"
+
+  if [ "$grid_gen_method" = "GFDLgrid" ]; then
 #
 # Reset grid parameters.
 #
-  lon_ctr_T6=-97.5
-  lat_ctr_T6=38.5
-  stretch_fac=1.65
-  refine_ratio=5
+    lon_ctr_T6=-97.5
+    lat_ctr_T6=38.5
+    stretch_fac=1.65
+    refine_ratio=5
+  
+    num_margin_cells_T6_left=12
+    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+  
+    num_margin_cells_T6_right=12
+    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+  
+    num_margin_cells_T6_bottom=80
+    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+  
+    num_margin_cells_T6_top=80
+    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 
-  num_margin_cells_T6_left=12
-  istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+  elif [ "$grid_gen_method" = "JPgrid" ]; then
 
-  num_margin_cells_T6_right=12
-  iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+    lon_rgnl_ctr=-97.5
+    lat_rgnl_ctr=38.5
 
-  num_margin_cells_T6_bottom=80
-  jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+    delx="3000.0"
+    dely="3000.0"
 
-  num_margin_cells_T6_top=80
-  jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+    nx_T7=1800
+    ny_T7=1120
+
+    nhw_T7=6
+
+  fi
 #
 # If the write-component is being used and the variable (WRTCMP_PARAMS_-
 # TEMPLATE_FN) containing the name of the template file that specifies
@@ -592,25 +646,40 @@ case $predef_domain in
 # Prepend the string "_EMCCONUS" to run_title.
 #
   run_title="_EMCCONUS${run_title}"
-#
-# Reset grid parameters.
-#
-  lon_ctr_T6=-97.5
-  lat_ctr_T6=38.5
-  stretch_fac=1.5
-  refine_ratio=3
 
-  num_margin_cells_T6_left=61
-  istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+  if [ "$grid_gen_method" = "GFDLgrid" ]; then
 
-  num_margin_cells_T6_right=67
-  iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+    lon_ctr_T6=-97.5
+    lat_ctr_T6=38.5
+    stretch_fac=1.5
+    refine_ratio=3
+  
+    num_margin_cells_T6_left=61
+    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+  
+    num_margin_cells_T6_right=67
+    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+  
+    num_margin_cells_T6_bottom=165
+    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+  
+    num_margin_cells_T6_top=171
+    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 
-  num_margin_cells_T6_bottom=165
-  jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+  elif [ "$grid_gen_method" = "JPgrid" ]; then
 
-  num_margin_cells_T6_top=171
-  jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+    lon_rgnl_ctr=-97.5
+    lat_rgnl_ctr=38.5
+
+    delx="3000.0"
+    dely="3000.0"
+
+    nx_T7=960
+    ny_T7=960
+
+    nhw_T7=6
+
+  fi
 #
 # If the write-component is being used and the variable (WRTCMP_PARAMS_-
 # TEMPLATE_FN) containing the name of the template file that specifies
@@ -633,9 +702,17 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-stretch_str="_S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
-refine_str="_RR${refine_ratio}"
-RUN_SUBDIR=${CRES}${stretch_str}${refine_str}${run_title}
+if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  stretch_str="_S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
+  refine_str="_RR${refine_ratio}"
+  RUN_SUBDIR=${CRES}${stretch_str}${refine_str}${run_title}
+elif [ "$grid_gen_method" = "JPgrid" ]; then
+  nx_T7_str="NX$( printf "%s" "${nx_T7}" | sed "s|\.|p|" )"
+  ny_T7_str="NY$( printf "%s" "${ny_T7}" | sed "s|\.|p|" )"
+  a_grid_param_str="_A$( printf "%s" "${a_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
+  k_grid_param_str="_K$( printf "%s" "${k_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
+  RUN_SUBDIR=${nx_T7_str}_${ny_T7_str}${a_grid_param_str}${k_grid_param_str}${run_title}
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -808,322 +885,8 @@ grid_gen_method must be one of the following:  $valid_grid_gen_methods_str
 #-----------------------------------------------------------------------
 #
 if [ "$grid_gen_method" = "GFDLgrid" ]; then
-#
-#-----------------------------------------------------------------------
-#
-# The grid generation script grid_gen_scr called below in turn calls the
-# make_hgrid utility/executable to construct the regional grid.  make_-
-# hgrid accepts as arguments the index limits (i.e. starting and ending
-# indices) of the regional grid on the supergrid of the regional grid's
-# parent tile.  The regional grid's parent tile is tile 6, and the su-
-# pergrid of any given tile is defined as the grid obtained by doubling
-# the number of cells in each direction on that tile's grid.  We will
-# denote these index limits by
-#
-#   istart_rgnl_T6SG
-#   iend_rgnl_T6SG
-#   jstart_rgnl_T6SG
-#   jend_rgnl_T6SG
-#
-# The "_T6SG" suffix in these names is used to indicate that the indices
-# are on the supergrid of tile 6.  Recall, however, that we have as in-
-# puts the index limits of the regional grid on the tile 6 grid, not its
-# supergrid.  These are given by
-#
-#   istart_rgnl_T6
-#   iend_rgnl_T6
-#   jstart_rgnl_T6
-#   jend_rgnl_T6
-#
-# We can obtain the former from the latter by recalling that the super-
-# grid has twice the resolution of the original grid.  Thus,
-#
-#   istart_rgnl_T6SG = 2*istart_rgnl_T6 - 1
-#   iend_rgnl_T6SG = 2*iend_rgnl_T6
-#   jstart_rgnl_T6SG = 2*jstart_rgnl_T6 - 1
-#   jend_rgnl_T6SG = 2*jend_rgnl_T6
-#
-# These are obtained assuming that grid cells on tile 6 must either be
-# completely within the regional domain or completely outside of it,
-# i.e. the boundary of the regional grid must coincide with gridlines
-# on the tile 6 grid; it cannot cut through tile 6 cells.  (Note that
-# this implies that the starting indices on the tile 6 supergrid must be
-# odd while the ending indices must be even; the above expressions sa-
-# tisfy this requirement.)  We perfrom these calculations next.
-#
-#-----------------------------------------------------------------------
-#
-  istart_rgnl_T6SG=$(( 2*$istart_rgnl_T6 - 1 ))
-  iend_rgnl_T6SG=$(( 2*$iend_rgnl_T6 ))
-  jstart_rgnl_T6SG=$(( 2*$jstart_rgnl_T6 - 1 ))
-  jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
-#
-#-----------------------------------------------------------------------
-#
-# If we simply pass to make_hgrid the index limits of the regional grid
-# on the tile 6 supergrid calculated above, make_hgrid will generate a
-# regional grid without a halo.  To obtain a regional grid with a halo,
-# we must pass to make_hgrid the index limits (on the tile 6 supergrid)
-# of the regional grid including a halo.  We will let the variables
-#
-#   istart_rgnl_wide_halo_T6SG
-#   iend_rgnl_wide_halo_T6SG
-#   jstart_rgnl_wide_halo_T6SG
-#   jend_rgnl_wide_halo_T6SG
-#
-# denote these limits.  The reason we include "_wide_halo" in these va-
-# riable names is that the halo of the grid that we will first generate
-# will be wider than the halos that are actually needed as inputs to the
-# FV3SAR model (i.e. the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos
-# described above).  We will generate the grids with narrower halos that
-# the model needs later on by "shaving" layers of cells from this wide-
-# halo grid.  Next, we describe how to calculate the above indices.
-#
-# Let nhw_T7 denote the width of the "wide" halo in units of number of
-# grid cells on the regional grid (i.e. tile 7) that we'd like to have
-# along all four edges of the regional domain (left, right, bottom, and
-# top).  To obtain the corresponding halo width in units of number of
-# cells on the tile 6 grid -- which we denote by nhw_T6 -- we simply di-
-# vide nhw_T7 by the refinement ratio, i.e.
-#
-#   nhw_T6 = nhw_T7/refine_ratio
-#
-# The corresponding halo width on the tile 6 supergrid is then given by
-#
-#   nhw_T6SG = 2*nhw_T6
-#            = 2*nhw_T7/refine_ratio
-#
-# Note that nhw_T6SG must be an integer, but the expression for it de-
-# rived above may not yield an integer.  To ensure that the halo has a
-# width of at least nhw_T7 cells on the regional grid, we round up the
-# result of the expression above for nhw_T6SG, i.e. we redefine nhw_T6SG
-# to be
-#
-#   nhw_T6SG = ceil(2*nhw_T7/refine_ratio)
-#
-# where ceil(...) is the ceiling function, i.e. it rounds its floating
-# point argument up to the next larger integer.  Since in bash division
-# of two integers returns a truncated integer and since bash has no
-# built-in ceil(...) function, we perform the rounding-up operation by
-# adding the denominator (of the argument of ceil(...) above) minus 1 to
-# the original numerator, i.e. by redefining nhw_T6SG to be
-#
-#   nhw_T6SG = (2*nhw_T7 + refine_ratio - 1)/refine_ratio
-#
-# This trick works when dividing one positive integer by another.
-#
-# In order to calculate nhw_T6G using the above expression, we must
-# first specify nhw_T7.  Next, we specify an initial value for it by
-# setting it to one more than the largest-width halo that the model ac-
-# tually needs, which is nh4_T7.  We then calculate nhw_T6SG using the
-# above expression.  Note that these values of nhw_T7 and nhw_T6SG will
-# likely not be their final values; their final values will be calcula-
-# ted later below after calculating the starting and ending indices of
-# the regional grid with wide halo on the tile 6 supergrid and then ad-
-# justing the latter to satisfy certain conditions.
-#
-#-----------------------------------------------------------------------
-#
-  nhw_T7=$(( $nh4_T7 + 1 ))
-  nhw_T6SG=$(( (2*nhw_T7 + refine_ratio - 1)/refine_ratio ))
-#
-#-----------------------------------------------------------------------
-#
-# With an initial value of nhw_T6SG now available, we can obtain the
-# tile 6 supergrid index limits of the regional domain (including the
-# wide halo) from the index limits for the regional domain without a ha-
-# lo by simply subtracting nhw_T6SG from the lower index limits and add-
-# ing nhw_T6SG to the upper index limits, i.e.
-#
-#   istart_rgnl_wide_halo_T6SG = istart_rgnl_T6SG - nhw_T6SG
-#   iend_rgnl_wide_halo_T6SG = iend_rgnl_T6SG + nhw_T6SG
-#   jstart_rgnl_wide_halo_T6SG = jstart_rgnl_T6SG - nhw_T6SG
-#   jend_rgnl_wide_halo_T6SG = jend_rgnl_T6SG + nhw_T6SG
-#
-# We calculate these next.
-#
-#-----------------------------------------------------------------------
-#
-  istart_rgnl_wide_halo_T6SG=$(( $istart_rgnl_T6SG - $nhw_T6SG ))
-  iend_rgnl_wide_halo_T6SG=$(( $iend_rgnl_T6SG + $nhw_T6SG ))
-  jstart_rgnl_wide_halo_T6SG=$(( $jstart_rgnl_T6SG - $nhw_T6SG ))
-  jend_rgnl_wide_halo_T6SG=$(( $jend_rgnl_T6SG + $nhw_T6SG ))
-#
-#-----------------------------------------------------------------------
-#
-# As for the regional grid without a halo, the regional grid with a wide
-# halo that make_hgrid will generate must be such that grid cells on
-# tile 6 either lie completely within this grid or outside of it, i.e.
-# they cannot lie partially within/outside of it.  This implies that the
-# starting indices on the tile 6 supergrid of the grid with wide halo
-# must be odd while the ending indices must be even.  Thus, below, we
-# subtract 1 from the starting indices if they are even (which ensures
-# that there will be at least nhw_T7 halo cells along the left and bot-
-# tom boundaries), and we add 1 to the ending indices if they are odd
-# (which ensures that there will be at least nhw_T7 halo cells along the
-# right and top boundaries).
-#
-#-----------------------------------------------------------------------
-#
-  if [ $(( istart_rgnl_wide_halo_T6SG%2 )) -eq 0 ]; then
-    istart_rgnl_wide_halo_T6SG=$(( istart_rgnl_wide_halo_T6SG - 1 ))
-  fi
-  if [ $(( iend_rgnl_wide_halo_T6SG%2 )) -eq 1 ]; then
-    iend_rgnl_wide_halo_T6SG=$(( iend_rgnl_wide_halo_T6SG + 1 ))
-  fi
-  
-  if [ $(( jstart_rgnl_wide_halo_T6SG%2 )) -eq 0 ]; then
-    jstart_rgnl_wide_halo_T6SG=$(( jstart_rgnl_wide_halo_T6SG - 1 ))
-  fi
-  if [ $(( jend_rgnl_wide_halo_T6SG%2 )) -eq 1 ]; then
-    jend_rgnl_wide_halo_T6SG=$(( jend_rgnl_wide_halo_T6SG + 1 ))
-  fi
-#
-#-----------------------------------------------------------------------
-#
-# Save the current shell options and temporarily turn off the xtrace op-
-# tion to prevent clutter in stdout.
-#
-#-----------------------------------------------------------------------
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-#
-#-----------------------------------------------------------------------
-#
-# Now that the starting and ending tile 6 supergrid indices of the re-
-# gional grid with the wide halo have been calculated (and adjusted), we
-# recalculate the width of the wide halo on:
-#
-# 1) the tile 6 supergrid;
-# 2) the tile 6 grid; and
-# 3) the tile 7 grid.
-#
-# These are the final values of these quantities that are guaranteed to
-# correspond to the starting and ending indices on the tile 6 supergrid.
-#
-#-----------------------------------------------------------------------
-#
-  print_info_msg_verbose "\
-Original values of the halo width on the tile 6 supergrid and on the 
-tile 7 grid are:
-  nhw_T6SG = $nhw_T6SG
-  nhw_T7   = $nhw_T7"
 
-  nhw_T6SG=$(( $istart_rgnl_T6SG - $istart_rgnl_wide_halo_T6SG ))
-  nhw_T6=$(( $nhw_T6SG/2 ))
-  nhw_T7=$(( $nhw_T6*$refine_ratio ))
-
-  print_info_msg_verbose "\
-Values of the halo width on the tile 6 supergrid and on the tile 7 grid 
-AFTER adjustments are:
-  nhw_T6SG = $nhw_T6SG
-  nhw_T7   = $nhw_T7"
-#
-#-----------------------------------------------------------------------
-#
-# Calculate the number of cells that the regional domain (without halo)
-# has in each of the two horizontal directions (say x and y).  We denote
-# these by nx_T7 and ny_T7, respectively.  These will be needed in the
-# "shave" steps later below.
-#
-#-----------------------------------------------------------------------
-#
-  nx_rgnl_T6SG=$(( $iend_rgnl_T6SG - $istart_rgnl_T6SG + 1 ))
-  nx_rgnl_T6=$(( $nx_rgnl_T6SG/2 ))
-  nx_T7=$(( $nx_rgnl_T6*$refine_ratio ))
-  
-  ny_rgnl_T6SG=$(( $jend_rgnl_T6SG - $jstart_rgnl_T6SG + 1 ))
-  ny_rgnl_T6=$(( $ny_rgnl_T6SG/2 ))
-  ny_T7=$(( $ny_rgnl_T6*$refine_ratio ))
-#
-# The following are set only for informational purposes.
-#
-  nx_T6=$RES
-  ny_T6=$RES
-  nx_T6SG=$(( $nx_T6*2 ))
-  ny_T6SG=$(( $ny_T6*2 ))
-  
-  prime_factors_nx_T7=$( factor $nx_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
-  prime_factors_ny_T7=$( factor $ny_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
-  
-  print_info_msg_verbose "\
-The number of cells in the two horizontal directions (x and y) on the 
-parent tile's (tile 6) grid and supergrid are:
-  nx_T6 = $nx_T6
-  ny_T6 = $ny_T6
-  nx_T6SG = $nx_T6SG
-  ny_T6SG = $ny_T6SG
-
-The number of cells in the two horizontal directions on the tile 6 grid
-and supergrid that the regional domain (tile 7) WITHOUT A HALO encompasses
-are:
-  nx_rgnl_T6 = $nx_rgnl_T6
-  ny_rgnl_T6 = $ny_rgnl_T6
-  nx_rgnl_T6SG = $nx_rgnl_T6SG
-  ny_rgnl_T6SG = $ny_rgnl_T6SG
-
-The starting and ending i and j indices on the tile 6 grid used to 
-generate this regional grid are:
-  istart_rgnl_T6 = $istart_rgnl_T6
-  iend_rgnl_T6   = $iend_rgnl_T6
-  jstart_rgnl_T6 = $jstart_rgnl_T6
-  jend_rgnl_T6   = $jend_rgnl_T6
-
-The corresponding starting and ending i and j indices on the tile 6 
-supergrid are:
-  istart_rgnl_T6SG = $istart_rgnl_T6SG
-  iend_rgnl_T6SG   = $iend_rgnl_T6SG
-  jstart_rgnl_T6SG = $jstart_rgnl_T6SG
-  jend_rgnl_T6SG   = $jend_rgnl_T6SG
-
-The refinement ratio (ratio of the number of cells in tile 7 that abut
-a single cell in tile 6) is:
-  refine_ratio = $refine_ratio
-
-The number of cells in the two horizontal directions on the regional 
-tile's/domain's (tile 7) grid WITHOUT A HALO are:
-  nx_T7 = $nx_T7
-  ny_T7 = $ny_T7
-
-The prime factors of nx_T7 and ny_T7 are (useful for determining an MPI
-task layout, i.e. layout_x and layout_y):
-  prime_factors_nx_T7: $prime_factors_nx_T7
-  prime_factors_ny_T7: $prime_factors_ny_T7"
-#
-#-----------------------------------------------------------------------
-#
-# For informational purposes, calculate the number of cells in each di-
-# rection on the regional grid that includes the wide halo (of width
-# nhw_T7 cells).  We denote these by nx_wide_halo_T7 and ny_wide_halo_-
-# T7, respectively.
-#
-#-----------------------------------------------------------------------
-#
-  nx_wide_halo_T6SG=$(( $iend_rgnl_wide_halo_T6SG - $istart_rgnl_wide_halo_T6SG + 1 ))
-  nx_wide_halo_T6=$(( $nx_wide_halo_T6SG/2 ))
-  nx_wide_halo_T7=$(( $nx_wide_halo_T6*$refine_ratio ))
-  
-  ny_wide_halo_T6SG=$(( $jend_rgnl_wide_halo_T6SG - $jstart_rgnl_wide_halo_T6SG + 1 ))
-  ny_wide_halo_T6=$(( $ny_wide_halo_T6SG/2 ))
-  ny_wide_halo_T7=$(( $ny_wide_halo_T6*$refine_ratio ))
-
-  print_info_msg_verbose "\
-nx_wide_halo_T7 = $nx_T7 \
-(istart_rgnl_wide_halo_T6SG = $istart_rgnl_wide_halo_T6SG, \
-iend_rgnl_wide_halo_T6SG = $iend_rgnl_wide_halo_T6SG)"
-
-  print_info_msg_verbose "\
-ny_wide_halo_T7 = $ny_T7 \
-(jstart_rgnl_wide_halo_T6SG = $jstart_rgnl_wide_halo_T6SG, \
-jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"
-#
-#-----------------------------------------------------------------------
-#
-# Restore the shell options before turning off xtrace.
-#
-#-----------------------------------------------------------------------
-#
-  { restore_shell_opts; } > /dev/null 2>&1
+  . $USHDIR/set_gridparams_GFDLgrid.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -1133,40 +896,7 @@ jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"
 #
 elif [ "$grid_gen_method" = "JPgrid" ]; then
 
-  pi_geom="3.14159265358979323846264338327"
-  degs_per_radian=$( bc -l <<< "360.0/(2.0*$pi_geom)" )
-  radius_Earth="6371000.0"  # In meters.
-  
-  echo
-  echo "degs_per_radian = $degs_per_radian"
-  echo "radius_Earth = $radius_Earth"
-  
-  del_angle_x_SG=$( bc -l <<< "($delx/(2.0*$radius_Earth))*$degs_per_radian" )
-  del_angle_x_SG=$( printf "%0.10f\n" $del_angle_x_SG )
-  
-  del_angle_y_SG=$( bc -l <<< "($dely/(2.0*$radius_Earth))*$degs_per_radian" )
-  del_angle_y_SG=$( printf "%0.10f\n" $del_angle_y_SG )
-  
-  echo "del_angle_x_SG = $del_angle_x_SG"
-  echo "del_angle_y_SG = $del_angle_y_SG"
-  
-  mns_nx_T7_pls_wide_halo=$( bc -l <<< "-($nx_T7 + 2*$nhw_T7)" )
-  mns_nx_T7_pls_wide_halo=$( printf "%.0f\n" $mns_nx_T7_pls_wide_halo )
-  echo "mns_nx_T7_pls_wide_halo = $mns_nx_T7_pls_wide_halo"
-  
-  mns_ny_T7_pls_wide_halo=$( bc -l <<< "-($ny_T7 + 2*$nhw_T7)" )
-  mns_ny_T7_pls_wide_halo=$( printf "%.0f\n" $mns_ny_T7_pls_wide_halo )
-  echo "mns_ny_T7_pls_wide_halo = $mns_ny_T7_pls_wide_halo"
-#
-# The following need to be defined in order for this script to not quit
-# with an "Undefined Variable" error, but they're not actually used for
-# needed for grid_gen_method set to "JPgrid".
-# type grid generation.
-#
-  istart_rgnl_wide_halo_T6SG=""
-  iend_rgnl_wide_halo_T6SG=""
-  jstart_rgnl_wide_halo_T6SG=""
-  jend_rgnl_wide_halo_T6SG=""
+  . $USHDIR/set_gridparams_JPgrid.sh
 
 fi
 #
@@ -1231,6 +961,7 @@ num_cols_per_task=$(( $nx_per_task*$ny_per_task ))
 
 rem=$(( $num_cols_per_task%$blocksize ))
 if [ $rem -ne 0 ]; then
+  prime_factors_num_cols_per_task=$( factor $num_cols_per_task | sed -r -e 's/^[0-9]+: (.*)/\1/' )
   print_err_msg_exit "\
 The number of columns assigned to a given MPI task must be divisible by
 the blocksize:
@@ -1238,7 +969,10 @@ the blocksize:
   ny_per_task = ny_T7/layout_y = $ny_T7/$layout_y = $ny_per_task
   num_cols_per_task = nx_per_task*ny_per_task = $num_cols_per_task
   blocksize = $blocksize
-  rem = num_cols_per_task%%blocksize = $rem"
+  rem = num_cols_per_task%%blocksize = $rem
+The prime factors of num_cols_per_task are (useful for determining a valid
+blocksize): 
+  prime_factors_num_cols_per_task: $prime_factors_num_cols_per_task"
 fi
 #
 #-----------------------------------------------------------------------
@@ -1387,6 +1121,10 @@ str_to_insert=${str_to_insert//$'\n'/\\n}
 #
 REGEXP="(^#!.*)"
 sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
+
+
+
+
 #
 #-----------------------------------------------------------------------
 #
@@ -1405,7 +1143,7 @@ sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
 #    fault configuration script (which does not necessarily correspond
 #    to the current value of the variable).
 #
-# 2) Loop through each line of var_list.  For each line, extract the
+# 2) Loop through each line of var_list.  For each line, we extract the
 #    variable name (and save it in the variable var_name), get its value
 #    from the current environment (using bash indirection, i.e. 
 #    ${!var_name}), and use the set_file_param() function to replace the
@@ -1419,11 +1157,25 @@ var_list=$( sed -r \
             -e "/^#.*/d" \
             -e "/^$/d" \
             ${SCRIPT_VAR_DEFNS_FP} )
+echo 
+echo $var_list
+echo
 
 while read crnt_line; do
   var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p" )
-  var_value="${!var_name}"
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}"
+echo
+echo "var_name = $var_name"
+  if [ ! -z $var_name ]; then
+    if [ ! -z ${!var_name+x} ]; then
+#  if [ ! -z ${var_name} -a ! -z ${!var_name} ]; then
+    var_value="${!var_name}"
+echo "var_value = $var_value"
+    set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}"
+    fi
+  else
+    echo
+    echo "Variable \"$var_name\" is not defined.  Moving to next variable."
+  fi
 done <<< "${var_list}"
 #
 #-----------------------------------------------------------------------
@@ -1482,27 +1234,61 @@ WRTCMP_PARAMS_TEMPLATE_FP="$WRTCMP_PARAMS_TEMPLATE_FP"
 #
 #-----------------------------------------------------------------------
 #
-# Grid configuration parameters for the cubed-sphere-based grid (these
-# are in addition to the basic ones defined above).
+# Grid configuration parameters needed regardless of grid generation me-
+# thod used.
 #
 #-----------------------------------------------------------------------
 #
 gtype="$gtype"
-CRES="$CRES"
 nh0_T7="$nh0_T7"
 nh3_T7="$nh3_T7"
 nh4_T7="$nh4_T7"
 nhw_T7="$nhw_T7"
+nx_T7="$nx_T7"
+ny_T7="$ny_T7"
+CRES="$CRES"
+EOM
+#
+#-----------------------------------------------------------------------
+#
+# Save in str_to_insert a string containing defintions of grid parame-
+# ters that are specific to the grid generation method used.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$grid_gen_method" = "GFDLgrid" ]; then
+
+  read -r -d '' str_to_insert << EOM
+#
+#-----------------------------------------------------------------------
+#
+# Grid configuration parameters for a regional grid generated from a
+# global parent cubed-sphere grid.  This is the method originally sug-
+# gested by GFDL since it allows GFDL's nested grid generator to be used
+# to generate a regional grid.  However, for large regional domains, it
+# results in grids that have an unacceptably large range of cell sizes
+# (i.e. ratio of maximum to minimum cell size is not sufficiently close
+# to 1).
+#
+#-----------------------------------------------------------------------
+#
+#CRES="$CRES"
 istart_rgnl_wide_halo_T6SG="$istart_rgnl_wide_halo_T6SG"
 iend_rgnl_wide_halo_T6SG="$iend_rgnl_wide_halo_T6SG"
 jstart_rgnl_wide_halo_T6SG="$jstart_rgnl_wide_halo_T6SG"
 jend_rgnl_wide_halo_T6SG="$jend_rgnl_wide_halo_T6SG"
-nx_T7="$nx_T7"
-ny_T7="$ny_T7"
+EOM
+
+elif [ "$grid_gen_method" = "JPgrid" ]; then
+
+  read -r -d '' str_to_insert << EOM
 #
 #-----------------------------------------------------------------------
 #
-# Grid configuration parameterms for Jim Purser's map projection.
+# Grid configuration parameters for a regional grid generated indepen-
+# dently of a global parent grid.  This method was developed by Jim Pur-
+# ser of EMC and results in very uniform grids (i.e. ratio of maximum to
+# minimum cell size is very close to 1).
 #
 #-----------------------------------------------------------------------
 #
@@ -1510,8 +1296,20 @@ del_angle_x_SG="$del_angle_x_SG"
 del_angle_y_SG="$del_angle_y_SG"
 mns_nx_T7_pls_wide_halo="$mns_nx_T7_pls_wide_halo"
 mns_ny_T7_pls_wide_halo="$mns_ny_T7_pls_wide_halo"
-a_grid_param="$a_grid_param"
-k_grid_param="$k_grid_param"
+EOM
+
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Append the string containing grid parameter defintiions to the varia-
+# ble definitions file.  Then continue to append to that file the defi-
+# nitions of other parameters.
+#
+#-----------------------------------------------------------------------
+#
+cat << EOM >> $SCRIPT_VAR_DEFNS_FP 
+$str_to_insert
 #
 #-----------------------------------------------------------------------
 #
