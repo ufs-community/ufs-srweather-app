@@ -151,8 +151,20 @@ set_file_param "$FV3_NAMELIST_FP" "blocksize" "$blocksize"
 set_file_param "$FV3_NAMELIST_FP" "layout" "$layout_x,$layout_y"
 set_file_param "$FV3_NAMELIST_FP" "npx" "$npx_T7"
 set_file_param "$FV3_NAMELIST_FP" "npy" "$npy_T7"
-set_file_param "$FV3_NAMELIST_FP" "target_lon" "$lon_ctr_T6"
-set_file_param "$FV3_NAMELIST_FP" "target_lat" "$lat_ctr_T6"
+if [ "$grid_gen_method" = "GFDLgrid" ]; then
+# Question:
+# For a regional grid (i.e. one that only has a tile 7) should the co-
+# ordinates that target_lon and target_lat get set to be those of the 
+# center of tile 6 (of the parent grid) or those of tile 7?  These two
+# are not necessarily the same [although assuming there is only one re-
+# gional domain within tile 6, i.e. assuming there is no tile 8, 9, etc,
+# there is no reason not to center tile 7 with respect to tile 6].
+  set_file_param "$FV3_NAMELIST_FP" "target_lon" "$lon_ctr_T6"
+  set_file_param "$FV3_NAMELIST_FP" "target_lat" "$lat_ctr_T6"
+elif [ "$grid_gen_method" = "JPgrid" ]; then
+  set_file_param "$FV3_NAMELIST_FP" "target_lon" "$lon_rgnl_ctr"
+  set_file_param "$FV3_NAMELIST_FP" "target_lat" "$lat_rgnl_ctr"
+fi
 set_file_param "$FV3_NAMELIST_FP" "stretch_fac" "$stretch_fac"
 set_file_param "$FV3_NAMELIST_FP" "bc_update_interval" "$BC_update_intvl_hrs"
 #
