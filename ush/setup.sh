@@ -281,15 +281,22 @@ RES must be one of the following:  $valid_RESES_str
 #
 #-----------------------------------------------------------------------
 #
-# CRES is needed for now for the case of grid_gen_method set to "JP-
-# grid", but this need should be removed at some point since it is only
-# for convenience.
+# The following variables are needed for now for the case of grid_gen_-
+# method set to "JPgrid" in order to be able to run this case with the 
+# scripting machinary already present for the case of grid_gen_method 
+# set to "GFDLgrid", but the script(s) should be rewritten at some point
+# so that these variables are no longer needed when grid_gen_method is 
+# set to "JPgrid".
 #
 #-----------------------------------------------------------------------
 #
 elif [ "$grid_gen_method" = "JPgrid" ]; then
 
+#  RES="000"
+  RES="384"
   CRES="C${RES}"
+#  stretch_fac="1.0"
+  stretch_fac="0.99"
 
 fi
 
@@ -1158,23 +1165,48 @@ var_list=$( sed -r \
             -e "/^$/d" \
             ${SCRIPT_VAR_DEFNS_FP} )
 echo 
-echo $var_list
+echo "The variable \"var_list\" contains:"
+echo
+printf "%s\n" "${var_list}"
+#echo $var_list
+#exit
 echo
 
 while read crnt_line; do
+
   var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p" )
 echo
-echo "var_name = $var_name"
+echo "============================"
+echo "var_name = \"${var_name}\""
+
   if [ ! -z $var_name ]; then
+
     if [ ! -z ${!var_name+x} ]; then
-#  if [ ! -z ${var_name} -a ! -z ${!var_name} ]; then
-    var_value="${!var_name}"
+
+      var_value="${!var_name}"
+      set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}"
 echo "var_value = $var_value"
-    set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}"
+
+    else
+
+      print_info_msg "\
+The variable specified by \"var_name\" is not set in the current environment:
+  var_name = \"${var_name}\"
+Thus, \"${var_name}\" will not be set in the variable definitions file.
+Continuing to next line of \"var_list\"."
+
     fi
+
   else
-    echo
-    echo "Variable \"$var_name\" is not defined.  Moving to next variable."
+
+    print_info_msg "\
+Could not extract a variable name from the current line of \"var_list\"
+(probably because it does not contain an equal sign with no spaces on 
+either side):
+  crnt_line = \"${crnt_line}\"
+  var_name = \"${var_name}\"
+Continuing to next line of \"var_list\"."
+
   fi
 done <<< "${var_list}"
 #
@@ -1246,7 +1278,6 @@ nh4_T7="$nh4_T7"
 nhw_T7="$nhw_T7"
 nx_T7="$nx_T7"
 ny_T7="$ny_T7"
-CRES="$CRES"
 EOM
 #
 #-----------------------------------------------------------------------
@@ -1272,7 +1303,7 @@ if [ "$grid_gen_method" = "GFDLgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
-#CRES="$CRES"
+CRES="$CRES"
 istart_rgnl_wide_halo_T6SG="$istart_rgnl_wide_halo_T6SG"
 iend_rgnl_wide_halo_T6SG="$iend_rgnl_wide_halo_T6SG"
 jstart_rgnl_wide_halo_T6SG="$jstart_rgnl_wide_halo_T6SG"
@@ -1296,6 +1327,16 @@ del_angle_x_SG="$del_angle_x_SG"
 del_angle_y_SG="$del_angle_y_SG"
 mns_nx_T7_pls_wide_halo="$mns_nx_T7_pls_wide_halo"
 mns_ny_T7_pls_wide_halo="$mns_ny_T7_pls_wide_halo"
+#
+# The following variables are needed for now for the case of grid_gen_-
+# method set to "JPgrid" so that the scripting machinary used for the 
+# case of grid_gen_script set to "GFDLgrid" can still be used, but at
+# some point the scripts should be revised so that the following are no
+# longer needed for grid_gen_method set to "JPgrid".
+#
+RES="$RES"
+CRES="$CRES"
+stretch_fac="$stretch_fac"
 EOM
 
 fi
