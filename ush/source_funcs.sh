@@ -63,4 +63,14 @@ FUNCS_DIR=${USHDIR:-"."}
 #-----------------------------------------------------------------------
 #
 . ${FUNCS_DIR}/iselementof.sh
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing the function that interpolates (or extrapo-
+# lates) a grid cell size-dependent property to an arbitrary global 
+# cubed-sphere resolution.
+#
+#-----------------------------------------------------------------------
+#
+. ${FUNCS_DIR}/interpol_to_arbit_CRES.sh
 

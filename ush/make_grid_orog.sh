@@ -148,6 +148,15 @@
 #
 #-----------------------------------------------------------------------
 #
+# Source file containing definitions of mathematical and physical con-
+# stants.
+#
+#-----------------------------------------------------------------------
+#
+. ${USHDIR}/constants.sh
+#
+#-----------------------------------------------------------------------
+#
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
 #
@@ -413,7 +422,19 @@ if [ "$grid_gen_method" = "GFDLgrid" ]; then
     $istart_rgnl_wide_halo_T6SG $jstart_rgnl_wide_halo_T6SG \
     $iend_rgnl_wide_halo_T6SG $jend_rgnl_wide_halo_T6SG \
     1 $USHDIR || print_err_msg_exit "\
-  Call to script that generates grid files returned with nonzero exit code."
+Call to script that generates grid files returned with nonzero exit code."
+
+  tile_rgnl=7
+  grid_fn="${CRES}_grid.tile${tile_rgnl}.nc"
+  $SORCDIR/calc_RES_glob_equiv/calc_RES_glob_equiv "$WORKDIR_GRID/$grid_fn" || print_err_msg_exit "\ 
+Call to executable that calculates equivalent global uniform cubed sphere
+resolution returned with nonzero exit code."
+
+  RES_equiv=$( ncdump -h "$grid_fn" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
+  RES_equiv=${RES_equiv//$'\n'/}
+  printf "%s\n" "RES_equiv = $RES_equiv"
+  CRES_equiv="C${RES_equiv}"
+  printf "%s\n" "CRES_equiv = $CRES_equiv"
 
 elif [ "$grid_gen_method" = "JPgrid" ]; then
 #
@@ -434,8 +455,8 @@ Setting parameters in file:
 #
 # Set parameters.
 #
-  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "plon" "$lon_ctr_T6"
-  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "plat" "$lat_ctr_T6"
+  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "plon" "$lon_rgnl_ctr"
+  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "plat" "$lat_rgnl_ctr"
   set_file_param "$REGIONAL_GRID_NAMELIST_FP" "delx" "$del_angle_x_SG"
   set_file_param "$REGIONAL_GRID_NAMELIST_FP" "dely" "$del_angle_y_SG"
   set_file_param "$REGIONAL_GRID_NAMELIST_FP" "lx" "$mns_nx_T7_pls_wide_halo"
@@ -444,20 +465,52 @@ Setting parameters in file:
   set_file_param "$REGIONAL_GRID_NAMELIST_FP" "k" "$k_grid_param"
 
   cd_vrfy $WORKDIR_GRID
-  $SORCDIR/regional_grid/regional_grid $REGIONAL_GRID_NAMELIST_FP $CRES || print_err_msg_exit "\ 
-Call to script that generates grid file (Jim Purser version) returned with nonzero exit code."
-#
-# Rename files to names expected by the FV3 code.  This requires using 
-# CRES in the file names even though CRES (or RES) is not used in the 
-# JPgrid grid generation method.
-#
+
+  $SORCDIR/regional_grid/regional_grid $REGIONAL_GRID_NAMELIST_FP || print_err_msg_exit "\ 
+Call to executable that generates grid file (Jim Purser version) returned 
+with nonzero exit code."
+
   tile_rgnl=7
-  mv_vrfy regional_grid.nc \
-          ${CRES}_grid.tile${tile_rgnl}.nc
-  mv_vrfy regional_mosaic.nc \
-          ${CRES}_mosaic.nc
+  grid_fn="regional_grid.nc"
+  $SORCDIR/calc_RES_glob_equiv/calc_RES_glob_equiv "$WORKDIR_GRID/$grid_fn" || print_err_msg_exit "\ 
+Call to executable that calculates equivalent global uniform cubed sphere
+resolution returned with nonzero exit code."
+
+  RES_equiv=$( ncdump -h "$grid_fn" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
+  RES_equiv=${RES_equiv//$'\n'/}
+  printf "%s\n" "RES_equiv = $RES_equiv"
+  CRES_equiv="C${RES_equiv}"
+  printf "%s\n" "CRES_equiv = $CRES_equiv"
+
+  grid_fn_orig="$grid_fn"
+  grid_fn="${CRES_equiv}_grid.tile${tile_rgnl}.nc"
+  mv_vrfy $grid_fn_orig $grid_fn
+
+  $SORCDIR/create_grid_mosaic_file/create_grid_mosaic_file $CRES_equiv || print_err_msg_exit "\ 
+Call to executable that creates a grid mosaic file returned with nonzero
+exit code."
+#
+# RES and CRES need to be set here in order for the rest of the script
+# (that was originally written for a grid with grid_gen_method set to 
+# "GFDLgrid") to work for a grid with grid_gen_method set to "JPgrid".
+#
+  RES="$RES_equiv"
+  CRES="$CRES_equiv"
+
+  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "RES" "$RES"
+  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "CRES" "$CRES"
 
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Set the globally equivalent values of RES and CRES in the variable de-
+# finitions file.
+#
+#-----------------------------------------------------------------------
+#
+#set_file_param "${SCRIPT_VAR_DEFNS_FP}" "RES_equiv" "${RES_equiv}"
+#set_file_param "${SCRIPT_VAR_DEFNS_FP}" "CRES_equiv" "${CRES_equiv}"
 #
 #-----------------------------------------------------------------------
 #
@@ -564,6 +617,49 @@ print_info_msg_verbose "Orography file generation complete."
 #
 print_info_msg_verbose "Setting orography filtering parameters..."
 
+# Need to fix the following (also above).  Then redo to get cell_size_avg.
+#cd_vrfy $WORKDIR_GRID
+#$SORCDIR/regional_grid/regional_grid $REGIONAL_GRID_NAMELIST_FP $CRES || print_err_msg_exit "\ 
+#Call to script that generates grid file (Jim Purser version) returned with nonzero exit code."
+#${CRES}_grid.tile${tile}.halo${nhw_T7}.nc
+
+
+#if [ "$grid_gen_method" = "GFDLgrid" ]; then
+#  RES_eff=$( bc -l <<< "$RES*$refine_ratio" )
+#elif [ "$grid_gen_method" = "JPgrid" ]; then
+#  grid_size_eff=$( "($delx + $dely)/2" )
+#echo "grid_size_eff = $grid_size_eff"
+#  RES_eff=$( bc -l <<< "2*$pi_geom*$radius_Earth/(4*$grid_size_eff)" )
+#fi
+#RES_eff=$( printf "%.0f\n" $RES_eff )
+#echo
+#echo "RES_eff = $RES_eff"
+
+# Can also call it the "equivalent" global unstretched resolution.
+
+RES_array=(         "48"    "96"    "192"   "384"   "768"   "1152"  "3072")
+cd4_array=(         "0.12"  "0.12"  "0.15"  "0.15"  "0.15"  "0.15"  "0.15")
+max_slope_array=(   "0.12"  "0.12"  "0.12"  "0.12"  "0.12"  "0.16"  "0.30")
+n_del2_weak_array=( "4"     "8"     "12"    "12"    "16"    "20"    "24")
+peak_fac_array=(    "1.1"   "1.1"   "1.05"  "1.0"   "1.0"   "1.0"   "1.0")
+
+#
+cd4=$( interpol_to_arbit_CRES $RES_equiv RES_array cd4_array )
+echo "====>>>> cd4 = $cd4"
+#
+max_slope=$( interpol_to_arbit_CRES $RES_equiv RES_array max_slope_array )
+echo "====>>>> max_slope = $max_slope"
+#
+n_del2_weak=$( interpol_to_arbit_CRES $RES_equiv RES_array n_del2_weak_array )
+echo "====>>>> n_del2_weak = $n_del2_weak"
+#
+peak_fac=$( interpol_to_arbit_CRES $RES_equiv RES_array peak_fac_array )
+echo "====>>>> peak_fac = $peak_fac"
+#
+
+
+if [ 0 = 1 ]; then
+
 if [ $RES -eq 48 ]; then
   export cd4=0.12; export max_slope=0.12; export n_del2_weak=4;  export peak_fac=1.1
 elif [ $RES -eq 96 ]; then
@@ -578,7 +674,14 @@ elif [ $RES -eq 1152 ]; then
   export cd4=0.15; export max_slope=0.16; export n_del2_weak=20; export peak_fac=1.0
 elif [ $RES -eq 3072 ]; then
   export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
+else
+# This needs to be fixed - i.e. what to do about regional grids that are
+# not based on a parent global cubed-sphere grid.
+  export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
 fi
+
+fi
+
 #
 #-----------------------------------------------------------------------
 #
