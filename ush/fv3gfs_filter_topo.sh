@@ -6,9 +6,9 @@ if [ $# -ne 10 ]; then
    exit 1
 fi
 if [ $gtype = stretch ] || [ $gtype = regional ]; then
-stretch=$stretch_fac
+  stretch=$stretch_fac
 else
-stretch=1.0
+  stretch=1.0
 fi
 export res=$1 
 export griddir=$2
