@@ -119,8 +119,8 @@ begin
   else
 
     filevar_names := field_name
-    nxSG_or_nx_with_halo_by_tile := nx_no_halo_by_tile
-    nySG_or_ny_with_halo_by_tile := ny_no_halo_by_tile
+    nxSG_or_nx_with_halo_by_tile := nx_with_halo_by_tile
+    nySG_or_ny_with_halo_by_tile := ny_with_halo_by_tile
 
   end if
 

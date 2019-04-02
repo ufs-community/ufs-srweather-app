@@ -245,9 +245,14 @@ example_usage_and_help_str
 ; **********************************************************************
 ;
   cmd = "sed --silent --regexp-extended --expression " + \
-        "'s/(^RES=)([" + char_dq + "]*)([0-9]+)([" + char_dq + "]*)(.*)/\3/p' " + \
+        "'s/^[ ]*(RES=)([" + char_dq + "]*)([0-9]+)([" + char_dq + "]*)(.*)/\3/p' " + \
         var_defns_fn
-  res := tointeger(systemfunc(cmd))
+  res := systemfunc(cmd)
+res := res(0)
+print("==>> res = " + res)
+;  res := tointeger(systemfunc(cmd))
+;print("==>> res = " + res)
+pause
 ;
 ; **********************************************************************
 ;
@@ -255,7 +260,7 @@ example_usage_and_help_str
 ;
 ; **********************************************************************
 ;
-  valid_reses = (/ 48, 96, 192, 384, 768, 1152, 3072 /)
+  valid_reses = (/ "000", "48", "96", "192", "384", "768", "1152", "3072" /)
 
   if (.not. any(res .eq. valid_reses)) then
 
@@ -282,7 +287,10 @@ example_usage_and_help_str
 ;
 ; **********************************************************************
 ;
-  cres := "C" + tostring_with_format(res, "%i")
+;  cres := "C" + tostring_with_format(res, "%i")
+  cres := "C" + res
+print("==>> cres = " + char_dq + cres + char_dq)
+pause
 
 
 

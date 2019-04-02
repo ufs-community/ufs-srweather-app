@@ -26,7 +26,12 @@ run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run
 ;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3sar_workflow/sorc/regional_grid"
 run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid"
 run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid05"
-;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid06"
+run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid05"
+run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid06"
+;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/NX960_NY960_A0p21423_Kmns0p23209_HRRR_crap01"
+;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_crap01"
+;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_works"
+run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid05"
 
 tile_inds := (/ 1, 7, 4 /)
 ;tile_inds := (/ 1, 4 /)
@@ -69,7 +74,7 @@ field_name = "sqrt_cell_area"
 ;field_name = "ref3D"
 
 ;field_name = "spfh"
-field_name = "cnwat"
+;field_name = "cnwat"
 ;field_name = "zsurf"
 
 ;field_name = "none"
@@ -84,6 +89,7 @@ map_proj = "ortho"
 map_proj_ctr = (/ -106.0, 54.0 /) ; RAP domain.
 ;map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
 
+map_proj_ctr = (/ 6.0, 54.0 /) ; RAP domain.
 
 plot_subreg = True
 plot_subreg = False
@@ -110,7 +116,11 @@ subreg_limits := (/ -75, -60, 0, 15 /)
 ;subreg_limits := (/ 15, 30, 30, 45 /)
 ;subreg_limits := (/ 14, 16, 36, 38 /)
 ;subreg_limits := (/ -70, -55, -20, -5 /)
-subreg_limits := (/ -125, -70, 0, 60 /)
+;subreg_limits := (/ -125, -70, 0, 60 /)
+subreg_limits := (/ -125, -70, 15, 50 /)
+subreg_limits := (/ -125, -70, 20, 55 /)
+subreg_limits := (/ 10, 20, 30, 40 /)
+subreg_limits := (/ 15, 20, 30, 35 /)
 
 remove_rgnl_halo = True
 ;remove_rgnl_halo = False
@@ -138,6 +148,7 @@ RAP_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 ;RAP_grid_fn = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL/plot_grid.ncl"
 ;RAP_grid_fn = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.RAP.nc"
 RAP_grid_fn = RAP_dir + "/geo_em.d01.RAP.nc"
+;RAP_grid_fn = RAP_dir + "/geo_em.d01.HRRR.nc"
 
 horiz_dist_units = "m"
 horiz_dist_units = "km"
@@ -1078,14 +1089,23 @@ if (True) then
       print("")
       print("" + separator_line)
       print("" + msg)
-    
+
       num_cnLevels = 20
       opts := True
       opts@verbose = False
+; Numbers for custom plot for Jeff.
+;field_min = 2.65
+;field_max = 3.6
+;num_cnLevels = 23
+;field_min = 9.0
+;field_min = 8.0
+;field_min = 7.95
+;field_max = 15.5
+;num_cnLevels = 23
       contour_info := set_cnLevels_lbLabels( \
                       field_min, field_max, num_cnLevels, opts)
       copy_VarAtts(contour_info, plot_opts)
-    
+
       msg := \
 "Done calculating " + char_dq + "nice" + char_dq + " contour values."
       print("")
