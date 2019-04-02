@@ -281,22 +281,29 @@ RES must be one of the following:  $valid_RESES_str
 #
 #-----------------------------------------------------------------------
 #
-# The following variables are needed for now for the case of grid_gen_-
-# method set to "JPgrid" in order to be able to run this case with the 
-# scripting machinary already present for the case of grid_gen_method 
-# set to "GFDLgrid", but the script(s) should be rewritten at some point
-# so that these variables are no longer needed when grid_gen_method is 
-# set to "JPgrid".
+# For a grid with grid_gen_method set to "JPgrid", the orography filter-
+# is performed by passing to the orography filtering the parameters for
+# an "equivalent" global uniform cubed-sphere grid.  These are the para-
+# meters that a global uniform cubed-sphere grid needs to have in order
+# to have a nominal grid cell size equal to that of the (average) cell
+# size on the regional grid.  These globally-equivalent parameters in-
+# clude a resolution (in units of number of cells in each of the two ho-
+# rizontal directions) and a stretch factor.  The equivalent resolution
+# is calculated in the script that generates the grid and orography, and
+# the stretch factor needs to be set to 1 because we are considering an
+# equivalent globally UNIFORM grid.  However, it turns out that with a 
+# non-symmetric regional grid (one in which nx is not equal to ny), set-
+# ting stretch_fac to 1 fails because the orography filtering program is
+# designed for a global cubed-sphere grid and thus assumes that nx and 
+# ny for a given tile are equal when stretch_fac is exactly equal to 1.  <-- Why is this?  Seems like symmetry btwn x and y should still hold when stretch_fac is not equal to 1.  
+# It turns out that the program will work if we set stretch_fac that is
+# not exactly 1.  This is what we do below. 
 #
 #-----------------------------------------------------------------------
 #
 elif [ "$grid_gen_method" = "JPgrid" ]; then
 
-#  RES="000"
-  RES="384"
-  CRES="C${RES}"
-#  stretch_fac="1.0"
-  stretch_fac="0.99"
+  stretch_fac="0.999"
 
 fi
 
@@ -609,7 +616,7 @@ case $predef_domain in
     lat_ctr_T6=38.5
     stretch_fac=1.65
     refine_ratio=5
-  
+
     num_margin_cells_T6_left=12
     istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
   
@@ -709,16 +716,20 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-if [ "$grid_gen_method" = "GFDLgrid" ]; then
-  stretch_str="_S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
-  refine_str="_RR${refine_ratio}"
-  RUN_SUBDIR=${CRES}${stretch_str}${refine_str}${run_title}
-elif [ "$grid_gen_method" = "JPgrid" ]; then
-  nx_T7_str="NX$( printf "%s" "${nx_T7}" | sed "s|\.|p|" )"
-  ny_T7_str="NY$( printf "%s" "${ny_T7}" | sed "s|\.|p|" )"
-  a_grid_param_str="_A$( printf "%s" "${a_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
-  k_grid_param_str="_K$( printf "%s" "${k_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
-  RUN_SUBDIR=${nx_T7_str}_${ny_T7_str}${a_grid_param_str}${k_grid_param_str}${run_title}
+if [ -z "${RUN_SUBDIR}" ]; then  # If RUN_SUBDIR is not set or is set to an empty string.
+
+  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+    stretch_str="_S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
+    refine_str="_RR${refine_ratio}"
+    RUN_SUBDIR=${CRES}${stretch_str}${refine_str}${run_title}
+  elif [ "$grid_gen_method" = "JPgrid" ]; then
+    nx_T7_str="NX$( printf "%s" "${nx_T7}" | sed "s|\.|p|" )"
+    ny_T7_str="NY$( printf "%s" "${ny_T7}" | sed "s|\.|p|" )"
+    a_grid_param_str="_A$( printf "%s" "${a_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
+    k_grid_param_str="_K$( printf "%s" "${k_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
+    RUN_SUBDIR=${nx_T7_str}_${ny_T7_str}${a_grid_param_str}${k_grid_param_str}${run_title}
+  fi
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -783,7 +794,10 @@ WORKDIR_ICBC=$WORKDIR/ICs_BCs
 #
 #-----------------------------------------------------------------------
 #
-RUNDIR_BASE="${BASEDIR}/run_dirs"
+#if [ -z "${RUNDIR_BASE+x}" ]; then  # If RUNDIR_BASE is not set at all, not even to an empty string.
+if [ -z "${RUNDIR_BASE}" ]; then  # If RUNDIR_BASE is not set or is set to an empty string.
+  RUNDIR_BASE="${BASEDIR}/run_dirs"
+fi
 mkdir_vrfy -p "${RUNDIR_BASE}"
 
 RUNDIR="${RUNDIR_BASE}/${RUN_SUBDIR}"
@@ -1175,11 +1189,13 @@ echo
 while read crnt_line; do
 
   var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p" )
-echo
-echo "============================"
-echo "var_name = \"${var_name}\""
+#echo
+#echo "============================"
+#printf "%s\n" "var_name = \"${var_name}\""
 
   if [ ! -z $var_name ]; then
+
+    printf "\n%s\n" "var_name = \"${var_name}\""
 
     if [ ! -z ${!var_name+x} ]; then
 
@@ -1200,6 +1216,7 @@ Continuing to next line of \"var_list\"."
   else
 
     print_info_msg "\
+
 Could not extract a variable name from the current line of \"var_list\"
 (probably because it does not contain an equal sign with no spaces on 
 either side):
@@ -1219,7 +1236,7 @@ done <<< "${var_list}"
 #
 #-----------------------------------------------------------------------
 #
-cat << EOM >> $SCRIPT_VAR_DEFNS_FP
+{ cat << EOM >> $SCRIPT_VAR_DEFNS_FP
 
 #
 #-----------------------------------------------------------------------
@@ -1275,10 +1292,10 @@ gtype="$gtype"
 nh0_T7="$nh0_T7"
 nh3_T7="$nh3_T7"
 nh4_T7="$nh4_T7"
-nhw_T7="$nhw_T7"
-nx_T7="$nx_T7"
-ny_T7="$ny_T7"
 EOM
+} || print_err_msg_exit "\
+Heredoc (cat) command to append new variable definitions to variable 
+definitions file returned with a nonzero status."
 #
 #-----------------------------------------------------------------------
 #
@@ -1289,7 +1306,7 @@ EOM
 #
 if [ "$grid_gen_method" = "GFDLgrid" ]; then
 
-  read -r -d '' str_to_insert << EOM
+  { cat << EOM >> $SCRIPT_VAR_DEFNS_FP
 #
 #-----------------------------------------------------------------------
 #
@@ -1303,16 +1320,22 @@ if [ "$grid_gen_method" = "GFDLgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
-CRES="$CRES"
+nhw_T7="$nhw_T7"
+nx_T7="$nx_T7"
+ny_T7="$ny_T7"
 istart_rgnl_wide_halo_T6SG="$istart_rgnl_wide_halo_T6SG"
 iend_rgnl_wide_halo_T6SG="$iend_rgnl_wide_halo_T6SG"
 jstart_rgnl_wide_halo_T6SG="$jstart_rgnl_wide_halo_T6SG"
 jend_rgnl_wide_halo_T6SG="$jend_rgnl_wide_halo_T6SG"
+CRES="$CRES"
 EOM
+} || print_err_msg_exit "\
+Heredoc (cat) command to append grid parameters to variable definitions
+file returned with a nonzero status."
 
 elif [ "$grid_gen_method" = "JPgrid" ]; then
 
-  read -r -d '' str_to_insert << EOM
+  { cat << EOM >> $SCRIPT_VAR_DEFNS_FP
 #
 #-----------------------------------------------------------------------
 #
@@ -1328,29 +1351,28 @@ del_angle_y_SG="$del_angle_y_SG"
 mns_nx_T7_pls_wide_halo="$mns_nx_T7_pls_wide_halo"
 mns_ny_T7_pls_wide_halo="$mns_ny_T7_pls_wide_halo"
 #
-# The following variables are needed for now for the case of grid_gen_-
-# method set to "JPgrid" so that the scripting machinary used for the 
-# case of grid_gen_script set to "GFDLgrid" can still be used, but at
-# some point the scripts should be revised so that the following are no
-# longer needed for grid_gen_method set to "JPgrid".
+# The following variables must be set in order to be able to use the 
+# same scripting machinary for the case of grid_gen_method set to "JP-
+# grid" as for grid_gen_method set to "GFDLgrid".
 #
-RES="$RES"
-CRES="$CRES"
+RES=""   # This will be set after the grid generation task is complete.
+CRES=""  # This will be set after the grid generation task is complete.
 stretch_fac="$stretch_fac"
 EOM
+} || print_err_msg_exit "\
+Heredoc (cat) command to append grid parameters to variable definitions
+file returned with a nonzero status."
 
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Append the string containing grid parameter defintiions to the varia-
-# ble definitions file.  Then continue to append to that file the defi-
-# nitions of other parameters.
+# Continue appending variable defintions to the variable definitions 
+# file.
 #
 #-----------------------------------------------------------------------
 #
-cat << EOM >> $SCRIPT_VAR_DEFNS_FP 
-$str_to_insert
+{ cat << EOM >> $SCRIPT_VAR_DEFNS_FP 
 #
 #-----------------------------------------------------------------------
 #
@@ -1374,6 +1396,9 @@ BC_update_times_hrs=(${BC_update_times_hrs[@]})  # BC_update_times_hrs is an arr
 ncores_per_node="$ncores_per_node"
 PE_MEMBER01="$PE_MEMBER01"
 EOM
+} || print_err_msg_exit "\
+Heredoc (cat) command to append new variable definitions to variable 
+definitions file returned with a nonzero status."
 #
 #-----------------------------------------------------------------------
 #
