@@ -244,14 +244,6 @@ CCPP_suite="GSD"
 #-----------------------------------------------------------------------
 #
 grid_gen_method="JPgrid"
-
-
-
-# For now, the following are needed for both types of grid generation 
-# methods below.
-RES="000"
-stretch_fac="1.0"
-
 #
 #-----------------------------------------------------------------------
 #
@@ -361,10 +353,10 @@ stretch_fac="1.0"
 #
 if [ "$grid_gen_method" = "GFDLgrid" ]; then
 
-#  RES="384"
+  RES="384"
   lon_ctr_T6=-97.5
   lat_ctr_T6=35.5
-#  stretch_fac=1.5
+  stretch_fac=1.5
   istart_rgnl_T6=10
   iend_rgnl_T6=374
   jstart_rgnl_T6=10
@@ -376,6 +368,12 @@ if [ "$grid_gen_method" = "GFDLgrid" ]; then
 # Set parameters specific to the method for generating a regional grid
 # without a global parent (i.e. for grid_gen_method set to "JPgrid").  
 # These are:
+#
+# lon_rgnl_ctr:
+# The longitude of the center of the grid (in degrees).
+#
+# lat_rgnl_ctr:
+# The latitude of the center of the grid (in degrees).
 #
 # delx:
 # The cell size in the zonal direction of the regional grid (in meters).
@@ -418,16 +416,6 @@ elif [ "$grid_gen_method" = "JPgrid" ]; then
   nhw_T7=6
   a_grid_param="0.21423"
   k_grid_param="-0.23209"
-#
-# The following variables must be set in order to be able to use the 
-# same scripting machinary for the case of grid_gen_method set to "JP-
-# grid" as for grid_gen_method set to "GFDLgrid", but the need for this
-# variable for the case of grid_gen_method set to "JPgrid" should event-
-# ually be removed.
-#
-#  RES="000"
-#  CRES="C$RES"
-#  stretch_fac="1.0"
 
 fi
 #
