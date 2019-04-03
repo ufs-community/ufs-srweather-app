@@ -576,6 +576,11 @@ case $predef_domain in
     num_margin_cells_T6_top=10
     jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 
+    layout_x="14"
+    layout_y="14"
+    write_tasks_per_group="14"
+    blocksize="26"
+
   elif [ "$grid_gen_method" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-106.0
@@ -588,6 +593,11 @@ case $predef_domain in
     ny_T7=960
 
     nhw_T7=6
+
+    layout_x="16"
+    layout_y="16"
+    write_tasks_per_group="16"
+    blocksize="30"
 
   fi
 #
@@ -629,6 +639,11 @@ case $predef_domain in
     num_margin_cells_T6_top=80
     jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 
+    layout_x="20"
+    layout_y="20"
+    write_tasks_per_group="20"
+    blocksize="36"
+
   elif [ "$grid_gen_method" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-97.5
@@ -641,6 +656,11 @@ case $predef_domain in
     ny_T7=1120
 
     nhw_T7=6
+
+    layout_x="20"
+    layout_y="20"
+    write_tasks_per_group="20"
+    blocksize="36"
 
   fi
 #
@@ -679,6 +699,11 @@ case $predef_domain in
   
     num_margin_cells_T6_top=171
     jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+
+    layout_x="16"
+    layout_y="72"
+    write_tasks_per_group="72"
+    blocksize=32
 
   elif [ "$grid_gen_method" = "JPgrid" ]; then
 

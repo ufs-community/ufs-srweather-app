@@ -430,6 +430,8 @@ Call to script that generates grid files returned with nonzero exit code."
 Call to executable that calculates equivalent global uniform cubed sphere
 resolution returned with nonzero exit code."
 
+  cd_vrfy $WORKDIR_GRID
+
   RES_equiv=$( ncdump -h "$grid_fn" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
   RES_equiv=${RES_equiv//$'\n'/}
   printf "%s\n" "RES_equiv = $RES_equiv"
