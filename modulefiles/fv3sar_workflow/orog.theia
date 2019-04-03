@@ -7,7 +7,7 @@ module load intel/16.1.150
 
 module load netcdf/4.3.0
 
-# Loding nceplibs modules
+# Loading nceplibs modules
 module use -a $MOD_PATH
 module load ip/v2.0.0
 module load sp/v2.0.2

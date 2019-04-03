@@ -426,7 +426,7 @@ Call to script that generates grid files returned with nonzero exit code."
 
   tile_rgnl=7
   grid_fn="${CRES}_grid.tile${tile_rgnl}.nc"
-  $SORCDIR/global_equiv_resol.fd/global_equiv_resol "$WORKDIR_GRID/$grid_fn" || print_err_msg_exit "\ 
+  $exec_dir/global_equiv_resol "$WORKDIR_GRID/$grid_fn" || print_err_msg_exit "\ 
 Call to executable that calculates equivalent global uniform cubed sphere
 resolution returned with nonzero exit code."
 
@@ -466,13 +466,13 @@ Setting parameters in file:
 
   cd_vrfy $WORKDIR_GRID
 
-  $SORCDIR/regional_grid/regional_grid $REGIONAL_GRID_NAMELIST_FP || print_err_msg_exit "\ 
+  $exec_dir/regional_grid $REGIONAL_GRID_NAMELIST_FP || print_err_msg_exit "\ 
 Call to executable that generates grid file (Jim Purser version) returned 
 with nonzero exit code."
 
   tile_rgnl=7
   grid_fn="regional_grid.nc"
-  $SORCDIR/global_equiv_resol.fd/global_equiv_resol "$WORKDIR_GRID/$grid_fn" || print_err_msg_exit "\ 
+  $exec_dir/global_equiv_resol "$WORKDIR_GRID/$grid_fn" || print_err_msg_exit "\ 
 Call to executable that calculates equivalent global uniform cubed sphere
 resolution returned with nonzero exit code."
 
@@ -486,7 +486,7 @@ resolution returned with nonzero exit code."
   grid_fn="${CRES_equiv}_grid.tile${tile_rgnl}.nc"
   mv_vrfy $grid_fn_orig $grid_fn
 
-  $SORCDIR/mosaic_file.fd/mosaic_file $CRES_equiv || print_err_msg_exit "\ 
+  $exec_dir/mosaic_file $CRES_equiv || print_err_msg_exit "\ 
 Call to executable that creates a grid mosaic file returned with nonzero
 exit code."
 #
