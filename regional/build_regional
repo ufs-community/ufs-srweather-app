@@ -14,9 +14,17 @@ if [ ${SITE} == "cheyenne" ]; then
 fi
 
 cd ${FV3SAR_DIR}/sorc
-./build_fre-nctools.sh ${SITE} >& out.build_fre-nctools
-./build_orog.sh ${SITE}        >& out.build_orog
-./build_chgres.sh ${SITE}      >& out.build_chgres
+./build_fre-nctools.sh ${SITE}           >& out.build_fre-nctools
+./build_orog.sh ${SITE}                  >& out.build_orog
+./build_chgres.sh ${SITE}                >& out.build_chgres
+#
+# The following build several new utilities needed in order to use the 
+# new Jim Purser-type grid in the FV3SAR.  The following only works on
+# theia for now.  It needs to be ported to other platforms.
+#
+./build_regional_grid.sh ${SITE}         >& out.build_regional_grid
+./build_global_equiv_resol.sh ${SITE}    >& out.build_global_equiv_resol
+./build_mosaic_file.sh ${SITE}           >& out.build_mosaic_file
 
 
 # prepare fixed data directories
