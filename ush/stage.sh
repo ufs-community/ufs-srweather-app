@@ -66,57 +66,30 @@ Copying templates of various input files to the run directory..."
 
 if [ "$CCPP" = "true" ]; then
 
-   if [ "$CCPP_suite" = "GFS" ]; then
+   print_info_msg_verbose "\
+Copying the script that sets up modules for the CCPP-enabled version of
+the FV3SAR to the run directory..."
+   cp_vrfy $CCPPFIX/module-setup.sh $RUNDIR
 
-     cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GFS_NAMELIST_FN $RUNDIR/input.nml
-     print_info_msg_verbose "\
-     Copying CCPP GFS physics namelist to the run directory..."
+   if [ "$CCPP_phys_suite" = "GFS" ]; then
 
+     cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFS_FN $RUNDIR/$FV3_NML_FN
      cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
-     print_info_msg_verbose "\
-     Copying diag_table to the run directory..."
-
      cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
 
-     cp_vrfy $CCPPFIX/module-setup.sh $RUNDIR
-     print_info_msg_verbose "\
-     Copying CCPP module-setup.sh file to the run directory..."
+   elif [ "$CCPP_phys_suite" = "GSD" ]; then
 
-   elif [ "$CCPP_suite" = "GSD" ]; then
-
-     cp_vrfy $TEMPLATE_DIR/$FV3_CCPP_GSD_NAMELIST_FN $RUNDIR/input.nml
-     print_info_msg_verbose "\
-     Copying CCPP-specific GSD physics namelist to the run directory..."
-
-     cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/diag_table
-     print_info_msg_verbose "\
-     Copying CCPP-specific GSD physics diag_table to the run directory..."
- 
-     cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $RUNDIR/field_table
-     print_info_msg_verbose "\
-     Copying CCPP-specific GSD physics field_table to the run directory..."
-
-     cp_vrfy $CCPPFIX/module-setup.sh $RUNDIR
-     print_info_msg_verbose "\
-     Copying CCPP module-setup.sh file to the run directory..."
-
-   else
-
-   print_err_msg_exit "\
-   CCPP physics suite either doesn't exist or is not supported.  Exiting..."
+     cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GSD_FN $RUNDIR/$FV3_NML_FN
+     cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/$DIAG_TABLE_FN
+     cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $RUNDIR/$FIELD_TABLE_FN
 
    fi
 
 elif [ "$CCPP" = "false" ]; then
 
-cp_vrfy $TEMPLATE_DIR/$FV3_NAMELIST_FN $RUNDIR
-cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
-cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
-
-else
-
-   print_err_msg_exit "\
-   CCPP option must be set to either \"true\" or \"false.\"  Exiting..."
+  cp_vrfy $TEMPLATE_DIR/$FV3_NML_FN $RUNDIR
+  cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
+  cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
 
 fi
 
@@ -131,11 +104,11 @@ cp_vrfy $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
 #
 #-----------------------------------------------------------------------
 #
-FV3_NAMELIST_FP="$RUNDIR/$FV3_NAMELIST_FN"
+FV3_NML_FP="$RUNDIR/$FV3_NML_FN"
 
 print_info_msg_verbose "\
 Setting parameters in file:
-  FV3_NAMELIST_FP = \"$FV3_NAMELIST_FP\""
+  FV3_NML_FP = \"$FV3_NML_FP\""
 #
 # Set npx_T7 and npy_T7, which are just nx_T7 plus 1 and ny_T7 plus 1,
 # respectively.  These need to be set in the FV3SAR Fortran namelist
@@ -147,10 +120,10 @@ npy_T7=$(( $ny_T7 + 1 ))
 #
 # Set parameters.
 #
-set_file_param "$FV3_NAMELIST_FP" "blocksize" "$blocksize"
-set_file_param "$FV3_NAMELIST_FP" "layout" "$layout_x,$layout_y"
-set_file_param "$FV3_NAMELIST_FP" "npx" "$npx_T7"
-set_file_param "$FV3_NAMELIST_FP" "npy" "$npy_T7"
+set_file_param "$FV3_NML_FP" "blocksize" "$blocksize"
+set_file_param "$FV3_NML_FP" "layout" "$layout_x,$layout_y"
+set_file_param "$FV3_NML_FP" "npx" "$npx_T7"
+set_file_param "$FV3_NML_FP" "npy" "$npy_T7"
 if [ "$grid_gen_method" = "GFDLgrid" ]; then
 # Question:
 # For a regional grid (i.e. one that only has a tile 7) should the co-
@@ -159,14 +132,14 @@ if [ "$grid_gen_method" = "GFDLgrid" ]; then
 # are not necessarily the same [although assuming there is only one re-
 # gional domain within tile 6, i.e. assuming there is no tile 8, 9, etc,
 # there is no reason not to center tile 7 with respect to tile 6].
-  set_file_param "$FV3_NAMELIST_FP" "target_lon" "$lon_ctr_T6"
-  set_file_param "$FV3_NAMELIST_FP" "target_lat" "$lat_ctr_T6"
+  set_file_param "$FV3_NML_FP" "target_lon" "$lon_ctr_T6"
+  set_file_param "$FV3_NML_FP" "target_lat" "$lat_ctr_T6"
 elif [ "$grid_gen_method" = "JPgrid" ]; then
-  set_file_param "$FV3_NAMELIST_FP" "target_lon" "$lon_rgnl_ctr"
-  set_file_param "$FV3_NAMELIST_FP" "target_lat" "$lat_rgnl_ctr"
+  set_file_param "$FV3_NML_FP" "target_lon" "$lon_rgnl_ctr"
+  set_file_param "$FV3_NML_FP" "target_lat" "$lat_rgnl_ctr"
 fi
-set_file_param "$FV3_NAMELIST_FP" "stretch_fac" "$stretch_fac"
-set_file_param "$FV3_NAMELIST_FP" "bc_update_interval" "$BC_update_intvl_hrs"
+set_file_param "$FV3_NML_FP" "stretch_fac" "$stretch_fac"
+set_file_param "$FV3_NML_FP" "bc_update_interval" "$BC_update_intvl_hrs"
 #
 #-----------------------------------------------------------------------
 #
@@ -233,30 +206,33 @@ set_file_param "$DIAG_TABLE_FP" "HH" "$HH"
 set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YMD"
 
 #
-#----------------------------------------------------------------------------
-# If CCPP=true, Copy correct CCPP suite and modules.fv3 file to run directory
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------
+#
+# If CCPP is set to "true", copy the appropriate CCPP physics suite de-
+# finition file (an XML file) and modules.fv3 file to run directory
+#
+#-----------------------------------------------------------------------
 #
 if [ "$CCPP" = "true" ]; then
 
-  cp_vrfy $CCPPDIR/modules.fv3_1 $RUNDIR/modules.fv3
   print_info_msg_verbose "\ 
-  Copying CCPP modules.fv3 file to the run directory..."
+Copying the module file for the CCPP-enabled version of the FV3SAR to the 
+run directory..."
+  cp_vrfy $NEMSfv3gfs_DIR/tests/modules.fv3 $RUNDIR/modules.fv3
 
-   if [ "$CCPP_suite" = "GFS" ]; then
+   if [ "$CCPP_phys_suite" = "GFS" ]; then
 
-   cp_vrfy $CCPPDIR/../ccpp/suites/suite_FV3_GFS_2017_updated_gfdlmp_regional.xml $RUNDIR/ccpp_suite.xml
+     print_info_msg_verbose "\
+Copying the GFS physics suite XML file to the run directory..."
+     cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GFS_2017_updated_gfdlmp_regional.xml $RUNDIR/ccpp_suite.xml
 
-   print_info_msg_verbose "\
-   Copying GFS physics suite XML file to run directory as ccpp_suite.xml"
+   elif [ "$CCPP_phys_suite" = "GSD" ]; then
 
-   elif [ "$CCPP_suite" = "GSD" ]; then
-
-   cp_vrfy $CCPPDIR/../ccpp/suites/suite_FV3_GSD.xml $RUNDIR/ccpp_suite.xml
-   cp_vrfy $GSDFIX/CCN_ACTIVATE.BIN $RUNDIR
-  
- print_info_msg_verbose "\
-   Copying GSD physics suite XML file and Thompson MP CCN fix file to the run directory"
+     print_info_msg_verbose "\
+Copying the GSD physics suite XML file and the Thompson microphysics CCN 
+fixed file to the run directory..."
+     cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GSD.xml $RUNDIR/ccpp_suite.xml
+     cp_vrfy $GSDFIX/CCN_ACTIVATE.BIN $RUNDIR
 
    fi
 
@@ -314,31 +290,20 @@ cp_vrfy $FIXgsm/co2monthlycyc.txt $RUNDIR
 #-----------------------------------------------------------------------
 #
 if [ "$CCPP" = "true" ]; then
-
-FV3SAR_EXEC="$CCPPDIR/fv3_1.exe"
-
-print_info_msg_verbose "\
-Setting CCPP FV3 executable to FV3SAR_EXEC"
-
+  FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3.exe"
 else
-
-FV3SAR_EXEC="$BASEDIR/NEMSfv3gfs/tests/fv3_32bit.exe"
-
+  FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3_32bit.exe"
 fi
 
 if [ -f $FV3SAR_EXEC ]; then
-
   print_info_msg_verbose "\
-Copying FV3SAR executable to the run directory..."
+Copying the FV3SAR executable to the run directory..."
   cp_vrfy $FV3SAR_EXEC $RUNDIR/fv3_gfs.x
-
 else
-
   print_err_msg_exit "\
 The FV3SAR executable specified in FV3SAR_EXEC does not exist:
   FV3SAR_EXEC = \"$FV3SAR_EXEC\"
 Build FV3SAR and rerun."
-
 fi
 #
 #-----------------------------------------------------------------------

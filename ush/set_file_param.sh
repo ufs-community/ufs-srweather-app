@@ -91,50 +91,40 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
     regex_replace="\1$value\3"
     ;;
 #
-  "$REGIONAL_GRID_NAMELIST_FN")
+  "$RGNL_GRID_NML_FN")
     regex_search="^(\s*$param\s*=)(.*)"
     regex_replace="\1 $value"
     ;;
 #
-  "$FV3_NAMELIST_FN")
+  "$FV3_NML_FN" | "$FV3_NML_CCPP_GFS_FN" | "$FV3_NML_CCPP_GSD_FN")
     regex_search="^(\s*$param\s*=)(.*)"
     regex_replace="\1 $value"
     ;;
 #
-  "$FV3_CCPP_GFS_NAMELIST_FN")
-    regex_orig="^(\s*$param\s*=)(.*)"
-    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
-    ;;
+#  "$FV3_NML_CCPP_GFS_FN")
+#    regex_orig="^(\s*$param\s*=)(.*)"
+#    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
+#    ;;
 #
-  "$FV3_CCPP_GSD_NAMELIST_FN")
-    regex_orig="^(\s*$param\s*=)(.*)"
-    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
-    ;;
+#  "$FV3_NML_CCPP_GSD_FN")
+#    regex_orig="^(\s*$param\s*=)(.*)"
+#    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
+#    ;;
 #
-  "$FV3_CCPP_GFS_NAMELIST_FN")
-    regex_orig="^(\s*$param\s*=)(.*)"
-    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
-    ;;
-#
-  "$FV3_CCPP_GSD_NAMELIST_FN")
-    regex_orig="^(\s*$param\s*=)(.*)"
-    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
-    ;;
-#
-  "$DIAG_TABLE_FN")
+  "$DIAG_TABLE_FN" | "$DIAG_TABLE_CCPP_GSD_FN" | "$DIAG_TABLE_CCPP_GSD_FN")
     regex_search="(.*)(<$param>)(.*)"
     regex_replace="\1$value\3"
     ;;
 #
-  "$DIAG_TABLE_CCPP_GSD_FN")
-    regex_orig="(.*)(<$param>)(.*)"
-    sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
-    ;;
-#
-  "$DIAG_TABLE_CCPP_GSD_FN")
-    regex_orig="(.*)(<$param>)(.*)"
-    sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
-    ;;
+#  "$DIAG_TABLE_CCPP_GSD_FN")
+#    regex_orig="(.*)(<$param>)(.*)"
+#    sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
+#    ;;
+##
+#  "$DIAG_TABLE_CCPP_GSD_FN")
+#    regex_orig="(.*)(<$param>)(.*)"
+#    sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
+#    ;;
 #
   "$MODEL_CONFIG_FN")
     regex_search="^(\s*$param:\s*)(.*)"

@@ -60,10 +60,6 @@ QUEUE_RUN_FV3SAR="production_queue"
 # that the ndate executable needs to be compiled in the community UPP
 # and copied into UPPDIR.
 #
-# CCPPDIR:
-# Directory in which the CCPP version executable of FV3 is located.  If
-# CCPP=false, this path is ignored.
-#
 # RUNDIR_BASE:
 # The base directory in which the run (sub)directory will be created.  
 # If this is not specified or if it is set to an empty string, it will
@@ -84,37 +80,49 @@ QUEUE_RUN_FV3SAR="production_queue"
 BASEDIR="/path/to/directory/of/fv3sar_workflow/and/NEMSfv3gfs/clones"
 TMPDIR="/path/to/temporary/work/directories"
 UPPDIR="/path/to/UPP/executable"
-CCPPDIR="/path/to/CCPP/executable"
-RUN_SUBDIR=""
 RUNDIR_BASE=""
+RUN_SUBDIR=""
 #
 #-----------------------------------------------------------------------
 #
 # File names.  Definitions:
 #
-# FV3_NAMELIST_FN:
+# RGNL_GRID_NML_FN:
+# Name of file containing the namelist settings for the utility that ge-
+# nerates a "JPgrid" type of regional grid.
+#
+# FV3_NML_FN:
 # Name of file containing the FV3SAR namelist settings.
 #
-# FV3_CCPP_GFS_NAMELIST_FN:
-# Name of file containing the FV3SAR namelist settings for a CCPP run using GFS physics.
+# FV3_NML_CCPP_GFS_FN:
+# Name of file containing the FV3SAR namelist settings for a CCPP-
+# enabled forecast that uses GFS physics.
 #
-# FV3_CCPP_GSD_NAMELIST_FN:
-# Name of file containing the FV3SAR namelist settings for a CCPP run using GSD physics.
+# FV3_NML_CCPP_GSD_FN:
+# Name of file containing the FV3SAR namelist settings for a CCPP-
+# enabled forecast that uses GSD physics.
 #
 # DIAG_TABLE_FN:
 # Name of file that specifies the fields that the FV3SAR will output.
 #
 # DIAG_TABLE_CCPP_GFS_FN:
-# Required as current version of CCPP FV3 executable using GFS physics cannot handle refl_10cm variable in diag_table.
+# Name of file that specifies the fields that the FV3SAR will output for
+# a CCPP-enabled forecast that uses GFS physics.  This is needed because
+# the current version of the CCPP-enabled FV3SAR executable using GFS 
+# physics cannot handle refl_10cm variable in diag_table.
 #
 # DIAG_TABLE_CCPP_GSD_FN:
-# Uses specific variables for Thompson MP
+# Name of file that specifies the fields that the FV3SAR will output for
+# a CCPP-enabled forecast that uses GSD physics.  This includes varia-
+# bles specific to Thompson microphysics.
 #
 # FIELD_TABLE_FN:
-# Name of file that specifies ???
+# Name of file that specifies the traces that the FV3SAR will read in
+# from the IC/BC files.
 #
 # FIELD_TABLE_CCPP_GSD_FN:
-# Field table for a CCPP run using GSD physics
+# Name of file that specifies the traces that the FV3SAR will read in
+# from the IC/BC files for a CCPP-enabled run that uses GSD physics.
 #
 # DATA_TABLE_FN:
 # Name of file that specifies ???
@@ -150,10 +158,10 @@ RUNDIR_BASE=""
 #
 #-----------------------------------------------------------------------
 #
-REGIONAL_GRID_NAMELIST_FN="regional_grid.nml"
-FV3_NAMELIST_FN="input.nml"
-FV3_CCPP_GFS_NAMELIST_FN="input_ccpp_gfs.nml"
-FV3_CCPP_GSD_NAMELIST_FN="input_ccpp_gsd.nml"
+RGNL_GRID_NML_FN="regional_grid.nml"
+FV3_NML_FN="input.nml"
+FV3_NML_CCPP_GFS_FN="input_ccpp_gfs.nml"
+FV3_NML_CCPP_GSD_FN="input_ccpp_gsd.nml"
 DIAG_TABLE_FN="diag_table"
 DIAG_TABLE_CCPP_GSD_FN="diag_table_ccpp_gsd"
 FIELD_TABLE_FN="field_table"
@@ -224,25 +232,47 @@ ictype="opsgfs"
 run_title="desc_str"
 #
 #-----------------------------------------------------------------------
-# Flag controlling whether a CCPP run will be executed.  Setting this
-# flag to true will cause the workflow to source the CCPP version of the
-# FV3 executable, based on the path defined in FV3_CCPP_NAMELIST_FN. For
-# now, a separate input.nml namelist will be used (input_ccpp.nml) that
-# corresponds with settings used in the EMC regional regression tests.
+#
+# Flag controlling whether or not a CCPP-enabled version of the FV3SAR
+# will be run.  This must be set to "true" or "false".  Setting this 
+# flag to "true" will cause the workflow to stage the appropriate CCPP-
+# enabled versions of the FV3SAR executable and various input files 
+# (e.g. the FV3SAR namelist file, the diagnostics table file, the field
+# table file, etc) that have settings that correspond to EMC's CCPP-ena-
+# bled FV3SAR regression test.  It will also cause additional files 
+# (i.e. in addition to the ones for the non-CCPP enabled version of the
+# FV3SAR) to be staged to the run directory (e.g. module setup scripts,
+# module load files).
+#
 #-----------------------------------------------------------------------
 #
-CCPP="false" # "true" or "false"
+CCPP="false"
 #
 #-----------------------------------------------------------------------
-# If CCPP=true, the suite flag defines the physics package for which the
-# necessary suite XML file will be sourced from the CCPP directory defined
-# in CCPPDIR.  NOTE: It is up to the user to ensure that the CCPP FV3
-# executable is compiled with either the dynamic build or the static build
-# with the correct physics package.  The run will fail if there is a mismatch. 
+#
+# If CCPP has been set to "true", the CCPP_phys_suite flag defines the 
+# physics suite that will run using CCPP.  This affects the FV3SAR name-
+# list file, the diagnostics table file, the field table file, and the 
+# XML physics suite definition file that are staged in the run directo-
+# ry.  As of 4/4/2019, valid values for this parameter are:
+#
+#   "GFS" - to run with the GFS physics suite
+#   "GSD" - to run with the GSD physics suite
+#
+# Note that with CCPP set to "false", the only physics suite that can be
+# run is the GFS.
+#
+# IMPORTANT NOTE: 
+# It is up to the user to ensure that the CCPP FV3 executable is com-
+# piled with either the dynamic build or the static build with the cor-
+# rect physics package.  If using a static build, the run will fail if 
+# there is a mismatch between the physics package specified in this con-
+# figuration file and the physics package used for the static build. 
+#
 #-----------------------------------------------------------------------
 #
-CCPP_suite="GSD"
-#CCPP_suite="GFS"
+CCPP_phys_suite="GSD"
+#CCPP_phys_suite="GFS"
 #
 #-----------------------------------------------------------------------
 #

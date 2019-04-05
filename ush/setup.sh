@@ -227,6 +227,47 @@ fi
 
 
 
+#
+#-----------------------------------------------------------------------
+#
+# Make sure CCPP is set to one of the allowed values.
+#
+#-----------------------------------------------------------------------
+#
+valid_CCPP=("true" "false")
+if [ ! -z ${CCPP} ]; then
+  iselementof "$CCPP" valid_CCPP || { \
+  valid_CCPP_str=$(printf "\"%s\" " "${valid_CCPP[@]}");
+  print_err_msg_exit "\
+The value specified for the CCPP flag is not supported:
+  CCPP = \"$CCPP\"
+CCPP must be set to one of the following:
+  $valid_CCPP
+"; }
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If CCPP is set to "true", make sure CCPP_phys_suite is set to one of 
+# the allowed values.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$CCPP" = "true" ]; then
+
+  valid_CCPP_phys_suites=("GFS" "GSD")
+  if [ ! -z ${CCPP_phys_suite} ]; then
+    iselementof "$CCPP_phys_suite" valid_CCPP_phys_suites || { \
+    valid_CCPP_phys_suites_str=$(printf "\"%s\" " "${valid_CCPP_phys_suites[@]}");
+    print_err_msg_exit "\
+The CCPP physics suite specified in CCPP_phys_suite is not supported:
+  CCPP_phys_suite = \"$CCPP_phys_suite\"
+CCPP_phys_suite must be set to one of the following:
+    $valid_CCPP_phys_suites
+  "; }
+  fi
+
+fi
 
 
 if [ "$grid_gen_method" = "GFDLgrid" ]; then
@@ -361,31 +402,27 @@ YMD=${CDATE:0:8}
 # Directory in which templates of various FV3SAR input files are locat-
 # ed.
 #
+# NEMSfv3gfs_DIR:
+# Directory in which the (NEMS-enabled) FV3SAR application is located.
+# This directory includes subdirectories for FV3, NEMS, and FMS.  If
+# CCPP is set to "true", it also includes a subdirectory for CCPP.  Note
+# that this directory depends on whether or not we are using CCPP.
+#
 # FIXgsm:
 # System directory in which the fixed (i.e. time-independent) files that
 # are needed to run the FV3SAR model are located.
 #
 # UPPFIX:
-# System directory from which to copy necessary fix files for UPP.
+# System directory from which to copy necessary fixed files for UPP.
 #
 # GSDFIX:
-# System directory from which to copy GSD physics-related fixed files that are needed 
-# when running CCPP.
+# System directory from which to copy GSD physics-related fixed files 
+# needed when running CCPP.
 #
 # CCPPFIX:
-# System directory from which to copy CCPP-related fixed files that are needed
-# for specific module loads when running the CCPP compiled version of the FV3SAR.
-#
-# UPPFIX:
-# System directory from which to copy necessary fix files for UPP.
-#
-# GSDFIX:
-# System directory from which to copy GSD physics-related fixed files that are needed 
-# when running CCPP.
-#
-# CCPPFIX:
-# System directory from which to copy CCPP-related fixed files that are needed
-# for specific module loads when running the CCPP compiled version of the FV3SAR.
+# System directory from which to copy CCPP-related fixed files needed
+# for specific module loads when running the CCPP-enabled version of the
+# FV3SAR.
 #
 #-----------------------------------------------------------------------
 #
@@ -393,6 +430,24 @@ FV3SAR_DIR="$BASEDIR/fv3sar_workflow"
 USHDIR="$FV3SAR_DIR/ush"
 SORCDIR="$FV3SAR_DIR/sorc"
 TEMPLATE_DIR="$USHDIR/templates"
+
+if [ "$CCPP" = "true" ]; then
+  NEMSfv3gfs_DIR="$BASEDIR/NEMSfv3gfs-CCPP"
+else
+  NEMSfv3gfs_DIR="$BASEDIR/NEMSfv3gfs"
+fi
+#
+# Make sure that the NEMSfv3gfs_DIR directory exists.
+#
+if [ ! -d "$NEMSfv3gfs_DIR" ]; then
+  print_err_msg_exit "\
+The NEMSfv3gfs directory specified by NEMSfv3gfs_DIR that should contain
+the FV3 source code does not exist:
+  NEMSfv3gfs_DIR = \"$NEMSfv3gfs_DIR\"
+Please clone the NEMSfv3gfs repository in this directory, build the FV3
+executable, and then rerun the workflow."
+fi
+
 UPPFIX="$FV3SAR_DIR/fix/fix_upp"
 GSDFIX="$FV3SAR_DIR/fix/fix_gsd"
 CCPPFIX="$FV3SAR_DIR/fix/fix_ccpp"
@@ -576,6 +631,8 @@ case $predef_domain in
     num_margin_cells_T6_top=10
     jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 
+    dt_atmos="90"
+
     layout_x="14"
     layout_y="14"
     write_tasks_per_group="14"
@@ -593,6 +650,8 @@ case $predef_domain in
     ny_T7=960
 
     nhw_T7=6
+
+    dt_atmos="90"
 
     layout_x="16"
     layout_y="16"
@@ -639,6 +698,8 @@ case $predef_domain in
     num_margin_cells_T6_top=80
     jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 
+    dt_atmos="18"
+
     layout_x="20"
     layout_y="20"
     write_tasks_per_group="20"
@@ -656,6 +717,8 @@ case $predef_domain in
     ny_T7=1120
 
     nhw_T7=6
+
+    dt_atmos="18"
 
     layout_x="20"
     layout_y="20"
@@ -700,6 +763,8 @@ case $predef_domain in
     num_margin_cells_T6_top=171
     jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 
+    dt_atmos="18"
+
     layout_x="16"
     layout_y="72"
     write_tasks_per_group="72"
@@ -724,7 +789,7 @@ case $predef_domain in
 # TEMPLATE_FN) containing the name of the template file that specifies
 # various write-component parameters has not been specified or has been
 # set to an empty string, reset it to the preexisting template file for
-# the RAP domain.
+# the EMCCONUS domain.
 #
   if [ "$quilting" = ".true." ]; then
     WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcomp_EMCCONUS"}
@@ -1286,6 +1351,7 @@ FV3SAR_DIR="$FV3SAR_DIR"
 USHDIR="$USHDIR"
 SORCDIR="$SORCDIR"
 TEMPLATE_DIR="$TEMPLATE_DIR"
+NEMSfv3gfs_DIR="$NEMSfv3gfs_DIR"
 INIDIR="$INIDIR"
 RUNDIR="$RUNDIR"
 FIXgsm="$FIXgsm"

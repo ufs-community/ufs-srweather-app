@@ -448,27 +448,27 @@ elif [ "$grid_gen_method" = "JPgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
-  REGIONAL_GRID_NAMELIST_FP="$WORKDIR_GRID/$REGIONAL_GRID_NAMELIST_FN"
-  cp_vrfy $TEMPLATE_DIR/$REGIONAL_GRID_NAMELIST_FN $REGIONAL_GRID_NAMELIST_FP 
+  RGNL_GRID_NML_FP="$WORKDIR_GRID/$RGNL_GRID_NML_FN"
+  cp_vrfy $TEMPLATE_DIR/$RGNL_GRID_NML_FN $RGNL_GRID_NML_FP 
 
   print_info_msg_verbose "\
 Setting parameters in file:
-  REGIONAL_GRID_NAMELIST_FP = \"$REGIONAL_GRID_NAMELIST_FP\""
+  RGNL_GRID_NML_FP = \"$RGNL_GRID_NML_FP\""
 #
 # Set parameters.
 #
-  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "plon" "$lon_rgnl_ctr"
-  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "plat" "$lat_rgnl_ctr"
-  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "delx" "$del_angle_x_SG"
-  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "dely" "$del_angle_y_SG"
-  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "lx" "$mns_nx_T7_pls_wide_halo"
-  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "ly" "$mns_ny_T7_pls_wide_halo"
-  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "a" "$a_grid_param"
-  set_file_param "$REGIONAL_GRID_NAMELIST_FP" "k" "$k_grid_param"
+  set_file_param "$RGNL_GRID_NML_FP" "plon" "$lon_rgnl_ctr"
+  set_file_param "$RGNL_GRID_NML_FP" "plat" "$lat_rgnl_ctr"
+  set_file_param "$RGNL_GRID_NML_FP" "delx" "$del_angle_x_SG"
+  set_file_param "$RGNL_GRID_NML_FP" "dely" "$del_angle_y_SG"
+  set_file_param "$RGNL_GRID_NML_FP" "lx" "$mns_nx_T7_pls_wide_halo"
+  set_file_param "$RGNL_GRID_NML_FP" "ly" "$mns_ny_T7_pls_wide_halo"
+  set_file_param "$RGNL_GRID_NML_FP" "a" "$a_grid_param"
+  set_file_param "$RGNL_GRID_NML_FP" "k" "$k_grid_param"
 
   cd_vrfy $WORKDIR_GRID
 
-  $exec_dir/regional_grid $REGIONAL_GRID_NAMELIST_FP || print_err_msg_exit "\ 
+  $exec_dir/regional_grid $RGNL_GRID_NML_FP || print_err_msg_exit "\ 
 Call to executable that generates grid file (Jim Purser version) returned 
 with nonzero exit code."
 
@@ -621,7 +621,7 @@ print_info_msg_verbose "Setting orography filtering parameters..."
 
 # Need to fix the following (also above).  Then redo to get cell_size_avg.
 #cd_vrfy $WORKDIR_GRID
-#$SORCDIR/regional_grid/regional_grid $REGIONAL_GRID_NAMELIST_FP $CRES || print_err_msg_exit "\ 
+#$SORCDIR/regional_grid/regional_grid $RGNL_GRID_NML_FP $CRES || print_err_msg_exit "\ 
 #Call to script that generates grid file (Jim Purser version) returned with nonzero exit code."
 #${CRES}_grid.tile${tile}.halo${nhw_T7}.nc
 

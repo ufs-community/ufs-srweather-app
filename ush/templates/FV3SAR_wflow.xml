@@ -46,7 +46,7 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY PROC_MAKE_SURF_IC_BC0  "1:ppn=24">
 <!ENTITY PROC_MAKE_BC1_TO_BCEND "1:ppn=24">
 <!ENTITY PROC_STAGE             "1:ppn=1">
-<!ENTITY PROC_RUN_FV3SAR        "">
+<!ENTITY PROC_RUN_FV3SAR        "">   <!-- Move this up to SECTION 1?? -->
 <!ENTITY PROC_POST              "2:ppn=24">
 
 <!ENTITY RSRC_MAKE_GRID_OROG    "<walltime>00:15:00</walltime>">
@@ -54,8 +54,8 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY RSRC_MAKE_SURF_IC_BC0  "<walltime>00:10:00</walltime>">
 <!ENTITY RSRC_MAKE_BC1_TO_BCEND "<walltime>00:20:00</walltime>">
 <!ENTITY RSRC_STAGE             "<walltime>00:10:00</walltime>">
-<!ENTITY RSRC_RUN_FV3SAR        "<walltime>03:00:00</walltime>">
-<!ENTITY RSRC_POST              "<walltime>00:15:00</walltime>">
+<!ENTITY RSRC_RUN_FV3SAR        "<walltime>06:00:00</walltime>">
+<!ENTITY RSRC_POST              "<walltime>00:30:00</walltime>">
 
 <!ENTITY RSRV_DEFAULT    "<native>-W umask=022 -m n</native><queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
 <!ENTITY RSRV_HPSS       "<native>-W umask=022 -m n</native><queue>&QUEUE_HPSS;</queue><account>&ACCOUNT;</account>"> 
