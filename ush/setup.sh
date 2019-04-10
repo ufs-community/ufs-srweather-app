@@ -419,11 +419,6 @@ YMD=${CDATE:0:8}
 # System directory from which to copy GSD physics-related fixed files 
 # needed when running CCPP.
 #
-# CCPPFIX:
-# System directory from which to copy CCPP-related fixed files needed
-# for specific module loads when running the CCPP-enabled version of the
-# FV3SAR.
-#
 #-----------------------------------------------------------------------
 #
 FV3SAR_DIR="$BASEDIR/fv3sar_workflow"
@@ -450,7 +445,6 @@ fi
 
 UPPFIX="$FV3SAR_DIR/fix/fix_upp"
 GSDFIX="$FV3SAR_DIR/fix/fix_gsd"
-CCPPFIX="$FV3SAR_DIR/fix/fix_ccpp"
 
 case $MACHINE in
 #
@@ -1357,7 +1351,6 @@ RUNDIR="$RUNDIR"
 FIXgsm="$FIXgsm"
 UPPFIX="$UPPFIX"
 GSDFIX="$GSDFIX"
-CCPPFIX="$CCPPFIX"
 WORKDIR_GRID="$WORKDIR_GRID"
 WORKDIR_OROG="$WORKDIR_OROG"
 WORKDIR_FLTR="$WORKDIR_FLTR"

@@ -66,24 +66,58 @@ Copying templates of various input files to the run directory..."
 
 if [ "$CCPP" = "true" ]; then
 
-   print_info_msg_verbose "\
-Copying the script that sets up modules for the CCPP-enabled version of
-the FV3SAR to the run directory..."
-   cp_vrfy $CCPPFIX/module-setup.sh $RUNDIR
+  print_info_msg_verbose "\
+Copying the script that initializes the Lmod (Lua-based module) system/
+software for handling modules... 
 
-   if [ "$CCPP_phys_suite" = "GFS" ]; then
+This script:
+1) Detects the shell in which it is being invoked (i.e. the shell of the
+   \"parent\" script in which it is being sourced).
+2) Detects the machine it is running on and and calls the appropriate 
+   (shell- and machine-dependent) initalization script to initialize 
+   Lmod.
+3) Purges all modules.
+4) Uses the \"module use ...\" command to prepend or append paths to 
+   Lmod's search path (MODULEPATH).
+"
+# The following might have to be made shell-dependent, e.g. if using csh 
+# or tcsh, copy over the file module-setup.csh.inc??.
+#
+# It may be convenient to also copy over this script when running the 
+# non-CCPP version of the FV3SAR and try to simplify the run script 
+# (run_FV3SAR.sh) so that it doesn't depend on whether CCPP is set to
+# "true" or "false".  We can do that, but currently 
+  cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $RUNDIR/module-setup.sh
+#
+# Append the command that adds the path to the CCPP libraries (via the
+# shell variable LD_LIBRARY_PATH) to the Lmod initialization script in 
+# the run directory.  This is needed if running the dynamic build of the
+# CCPP-enabled version of the FV3SAR.
+#
+  { cat << EOM >> $RUNDIR/module-setup.sh
+#
+# Add path to libccpp.so and libccpphys.so to LD_LIBRARY_PATH"
+#
+export LD_LIBRARY_PATH="${NEMSfv3gfs_DIR}/ccpp/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+EOM
+} || print_err_msg_exit "\
+Heredoc (cat) command to append command to add path to CCPP libraries to
+the Lmod initialization script in the run directory returned with a non-
+zero status."
 
-     cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFS_FN $RUNDIR/$FV3_NML_FN
-     cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
-     cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
+  if [ "$CCPP_phys_suite" = "GFS" ]; then
 
-   elif [ "$CCPP_phys_suite" = "GSD" ]; then
+    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFS_FN $RUNDIR/$FV3_NML_FN
+    cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
+    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
 
-     cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GSD_FN $RUNDIR/$FV3_NML_FN
-     cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/$DIAG_TABLE_FN
-     cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $RUNDIR/$FIELD_TABLE_FN
+  elif [ "$CCPP_phys_suite" = "GSD" ]; then
 
-   fi
+    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GSD_FN $RUNDIR/$FV3_NML_FN
+    cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/$DIAG_TABLE_FN
+    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $RUNDIR/$FIELD_TABLE_FN
+
+  fi
 
 elif [ "$CCPP" = "false" ]; then
 
@@ -204,37 +238,58 @@ set_file_param "$DIAG_TABLE_FP" "MM" "$MM"
 set_file_param "$DIAG_TABLE_FP" "DD" "$DD"
 set_file_param "$DIAG_TABLE_FP" "HH" "$HH"
 set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YMD"
-
 #
 #-----------------------------------------------------------------------
 #
-# If CCPP is set to "true", copy the appropriate CCPP physics suite de-
-# finition file (an XML file) and modules.fv3 file to run directory
+# If CCPP is set to "true", copy the appropriate modulefile, the CCPP
+# physics suite definition file (an XML file), and possibly other suite-
+# dependent files to run directory.
 #
 #-----------------------------------------------------------------------
 #
 if [ "$CCPP" = "true" ]; then
 
   print_info_msg_verbose "\ 
-Copying the module file for the CCPP-enabled version of the FV3SAR to the 
-run directory..."
-  cp_vrfy $NEMSfv3gfs_DIR/tests/modules.fv3 $RUNDIR/modules.fv3
+Copying to the run directory the modulefile required for running the 
+CCPP-enabled version of the FV3SAR under NEMS...
 
-   if [ "$CCPP_phys_suite" = "GFS" ]; then
+A modulefile is a file whose first line is the \"magic cookie\" '#%Module'
+that is interpreted by the \"module load ...\" command).  It sets envi-
+ronment variables (including prepending/appending to paths) and loads 
+modules."
+#  cp_vrfy $NEMSfv3gfs_DIR/tests/modules.fv3 $RUNDIR/modules.fv3
+#
+# It seems like the file modules.nems in the directory
+#
+#   $NEMSfv3gfs_DIR/NEMS/src/conf
+#
+# is generated during the FV3 build process and this is configured pro-
+# perly for the machine, shell environment, etc.  Thus, we can just copy
+# it to the run directory without worrying about what machine we're on, 
+# but this still needs to be confirmed.
+#
+# Why don't we do this for the non-CCPP version of FV3??
+# Because for that case, we load different versions of intel and impi 
+# (compare modules.nems to the modules loaded for CCPP set to "false" in
+# run_FV3SAR.sh).  Maybe these can be combined at some point??
+#
+  cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/modules.nems $RUNDIR/modules.fv3
 
-     print_info_msg_verbose "\
+  if [ "$CCPP_phys_suite" = "GFS" ]; then
+
+    print_info_msg_verbose "\
 Copying the GFS physics suite XML file to the run directory..."
-     cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GFS_2017_updated_gfdlmp_regional.xml $RUNDIR/ccpp_suite.xml
+    cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GFS_2017_updated_gfdlmp_regional.xml $RUNDIR/ccpp_suite.xml
 
-   elif [ "$CCPP_phys_suite" = "GSD" ]; then
+  elif [ "$CCPP_phys_suite" = "GSD" ]; then
 
-     print_info_msg_verbose "\
+    print_info_msg_verbose "\
 Copying the GSD physics suite XML file and the Thompson microphysics CCN 
 fixed file to the run directory..."
-     cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GSD.xml $RUNDIR/ccpp_suite.xml
-     cp_vrfy $GSDFIX/CCN_ACTIVATE.BIN $RUNDIR
+    cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GSD.xml $RUNDIR/ccpp_suite.xml
+    cp_vrfy $GSDFIX/CCN_ACTIVATE.BIN $RUNDIR
 
-   fi
+  fi
 
 fi
 #
