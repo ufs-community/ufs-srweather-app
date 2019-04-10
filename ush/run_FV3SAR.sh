@@ -70,8 +70,8 @@ else
 
   . /apps/lmod/lmod/init/sh
   module purge
-  module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0 
   module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
+  module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0 
   module list
 
 fi
