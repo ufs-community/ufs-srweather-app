@@ -18,5 +18,6 @@ use_hyper_thread:        .false.
 ncores_per_node:         <ncores_per_node>
 debug_affinity:          .true.
 restart_interval:        0
+output_1st_tstep_rst:    .false.
 quilting:                <quilting>
 print_esmf:              <print_esmf>
