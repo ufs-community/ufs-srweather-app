@@ -1,7 +1,6 @@
 #!/bin/sh -l
 
 set -u
-#. ./print_msg.sh
 . ./source_funcs.sh
 #set -x
 #
@@ -118,9 +117,10 @@ elif [ "$CCPP" = "false" ]; then
 
   case $head_or_hash in
 #
-  "head") 
-    branch_NEMSfv3gfs="regional_fv3_nemsfv3gfs"
-    branch_FV3="regional_fv3"
+  "head")
+#    branch_NEMSfv3gfs="regional_fv3_nemsfv3gfs"
+    branch_NEMSfv3gfs="master"
+    branch_FV3="master"
     branch_FMS="GFS-FMS"
     branch_NEMS="master"
     ;;
@@ -140,13 +140,19 @@ fi
 #
 # Create the directory in which to clone the repository.  Note that this 
 # will fail if the directory already exists.  Then recursively clone the
-# appropriate FV3GFS repository.
+# appropriate branch of the appropriate FV3GFS repository into that di-
+# rectory.
 #
 #-----------------------------------------------------------------------
 #
 mkdir_vrfy $local_dir
 cd_vrfy $local_dir
-git clone --recursive $remote_path .
+git clone -b ${branch_NEMSfv3gfs} --recursive $remote_path .
+#if [ "$CCPP" = "true" ]; then
+#  git clone -b ${branch_NEMSfv3gfs} --recursive $remote_path .
+#else
+#  git clone --recursive $remote_path .
+#fi
 #
 #-----------------------------------------------------------------------
 #

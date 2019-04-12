@@ -1,5 +1,6 @@
 #!/bin/sh -l
 
+set -u
 #
 #-----------------------------------------------------------------------
 #
@@ -7,19 +8,16 @@
 #
 #-----------------------------------------------------------------------
 #
-if [ "$#" -ne 8 ]; then
+if [ "$#" -ne 7 ]; then
 
   printf "\
 
 Script \"$0\":  Incorrect number of arguments specified.
 Usage:
 
-  $0  BASEDIR  predef_domain  grid_gen_method  CCPP  CCPP_phys_suite  CDATE  fcst_len_hrs  quilting
+  $0  predef_domain  grid_gen_method  CCPP  phys_suite  CDATE  fcst_len_hrs  quilting
 
 where the arguments are defined as follows:
-
-  BASEDIR:
-  The directory in which the FV3SAR workflow repository was cloned.
 
   predef_domain:
   The predefined domain to use.
@@ -30,7 +28,7 @@ where the arguments are defined as follows:
   CCPP
   Whether or not to run a CCPP-enabled verson of the FV3SAR.
 
-  CCPP_phys_suite
+  phys_suite
   The physics suite to use.
 
   CDATE
@@ -57,7 +55,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-BASEDIR=${1:-}
+BASEDIR="$(pwd)/../.."
 USHDIR="$BASEDIR/fv3sar_workflow/ush"
 #
 #-----------------------------------------------------------------------
@@ -74,13 +72,13 @@ USHDIR="$BASEDIR/fv3sar_workflow/ush"
 #
 #-----------------------------------------------------------------------
 #
-predef_domain=${2:-}
-grid_gen_method=${3:-}
-CCPP=${4:-}
-CCPP_phys_suite=${5:-}
-CDATE=${6:-}
-fcst_len_hrs=${7:-}
-quilting="${8:-}"
+predef_domain=${1:-}
+grid_gen_method=${2:-}
+CCPP=${3:-}
+phys_suite=${4:-}
+CDATE=${5:-}
+fcst_len_hrs=${6:-}
+quilting="${7:-}"
 
 dot_quilting=".${quilting}."
 
@@ -90,7 +88,7 @@ User-specified forecast parameters:
   predef_domain = \"${predef_domain}\"
   grid_gen_method = \"${grid_gen_method}\"
   CCPP = \"${CCPP}\"
-  CCPP_phys_suite = \"${CCPP_phys_suite}\"
+  phys_suite = \"${phys_suite}\"
   CDATE = \"${CDATE}\"
   fcst_len_hrs = \"${fcst_len_hrs}\"
   quilting = \"${quilting}\""
@@ -101,20 +99,14 @@ User-specified forecast parameters:
 #
 #-----------------------------------------------------------------------
 #
-#BASEDIR="/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM"
-#USHDIR="$BASEDIR/fv3sar_workflow/ush"
 CONFIG_FN="config.sh"
 CONFIG_FP="${USHDIR}/${CONFIG_FN}"
-REGR_TEST_BASEDIR="$BASEDIR/regr_tests"
 
-TEST_NAME="${predef_domain}_${grid_gen_method}_CCPP${CCPP}_${CCPP_phys_suite}phys_${CDATE}_FCST${fcst_len_hrs}hrs_QUILT$quilting"
+EXPT_NAME="${predef_domain}_${grid_gen_method}_CCPP${CCPP}_${phys_suite}phys_${CDATE}_FCST${fcst_len_hrs}hrs_QUILT$quilting"
 #TEST_DATE=$( date "+%Y%m%d-%H_%M" )
 TEST_DATE=$( date "+%Y%m%d" )
-#RUNDIR_BASE="${REGR_TEST_BASEDIR}/tested_on_${TEST_DATE}"
-#RUNDIR_BASE="$BASEDIR/run_dirs/test_date_${TEST_DATE}"
-#RUN_SUBDIR="$TEST_NAME"
 RUNDIR_BASE="$BASEDIR/run_dirs"
-RUN_SUBDIR="test_date_${TEST_DATE}/$TEST_NAME"
+RUN_SUBDIR="test_date_${TEST_DATE}/$EXPT_NAME"
 TMPDIR="$BASEDIR/work_dirs"
 
 print_info_msg "\
@@ -124,12 +116,28 @@ Variables constructed from user-specified forecast parameters:
   USHDIR = \"${USHDIR}\"
   CONFIG_FN = \"${CONFIG_FN}\"
   CONFIG_FP = \"${CONFIG_FP}\"
-  REGR_TEST_BASEDIR = \"${REGR_TEST_BASEDIR}\"
 
-  TEST_NAME = \"${TEST_NAME}\"
+  EXPT_NAME = \"${EXPT_NAME}\"
   TEST_DATE = \"${TEST_DATE}\"
   RUNDIR_BASE = \"${RUNDIR_BASE}\"
   RUN_SUBDIR = \"${RUN_SUBDIR}\""
+#
+#-----------------------------------------------------------------------
+#
+# The GSD physics suite cannot be run without CCPP.  Check for this and
+# issue an error message if found.
+#
+#-----------------------------------------------------------------------
+#
+if [ $CCPP = "false" ] && [ $phys_suite = "GSD" ]; then
+
+  print_err_msg_exit "\
+The GSD physics suite cannot be run without CCPP:
+  CCPP = \"${CCPP}\"
+  phys_suite = \"${phys_suite}\"
+Not generating a workflow for this set of experiment parameters."
+
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -174,7 +182,7 @@ preexisting_dir_method="delete"
 quilting="$dot_quilting"
 #
 CCPP="$CCPP"
-CCPP_phys_suite="$CCPP_phys_suite"
+CCPP_phys_suite="$phys_suite"
 EOM
 }
 #
@@ -245,18 +253,15 @@ Copying contents of user cron table to backup file:
 crontab -l > $CRONTAB_ORIG
 
 crontab_line="*/5 * * * * cd $RUNDIR && ./$RELAUNCH_SCR" 
-#echo "$crontab_line"
 #
-# Below, we will use "grep" to determine whether the above crontab line
-# is already present in the cron table.  For that purpose, we need to 
-# escape the asterisks in the crontab line with backslashes.  Do this
+# Below, we use "grep" to determine whether the above crontab line is 
+# already present in the cron table.  For that purpose, we need to es-
+# cape the asterisks in the crontab line with backslashes.  Do this 
 # next.
 #
 crontab_line_esc_astr=$( echo "$crontab_line" | sed -r -e "s![*]!\\\\*!g" )
 grep_output=$( crontab -l | grep "$crontab_line_esc_astr" )
 exit_status=$?
-#echo "grep_output = $grep_output"
-#echo "exit_status = $exit_status"
 
 if [ "$exit_status" -eq 0 ]; then
 

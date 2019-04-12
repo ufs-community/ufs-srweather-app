@@ -1,0 +1,7 @@
+all_vals_predef_domain=( "HRRR" )
+all_vals_grid_gen_method=( "JPgrid" )
+all_vals_CCPP=( "true" )
+all_vals_phys_suite=( "GSD" )
+all_vals_CDATE=( "2017090700" )
+all_vals_fcst_len_hrs=( "6" )
+all_vals_quilting=( "true" )

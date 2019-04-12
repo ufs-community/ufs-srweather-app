@@ -65,28 +65,33 @@ print_info_msg_verbose "\
 Copying templates of various input files to the run directory..."
 
 if [ "$CCPP" = "true" ]; then
-
+#
+# Copy the shell script that initializes the Lmod (Lua-based module) 
+# system/software for handling modules.  This script:
+#
+# 1) Detects the shell in which it is being invoked (i.e. the shell of
+#    the "parent" script in which it is being sourced).
+# 2) Detects the machine it is running on and and calls the appropriate 
+#    (shell- and machine-dependent) initalization script to initialize 
+#    Lmod.
+# 3) Purges all modules.
+# 4) Uses the "module use ..." command to prepend or append paths to 
+#    Lmod's search path (MODULEPATH).
+#
   print_info_msg_verbose "\
-Copying the script that initializes the Lmod (Lua-based module) system/
-software for handling modules... 
-
-This script:
-1) Detects the shell in which it is being invoked (i.e. the shell of the
-   \"parent\" script in which it is being sourced).
-2) Detects the machine it is running on and and calls the appropriate 
-   (shell- and machine-dependent) initalization script to initialize 
-   Lmod.
-3) Purges all modules.
-4) Uses the \"module use ...\" command to prepend or append paths to 
-   Lmod's search path (MODULEPATH).
-"
+Copying the shell script that initializes the Lmod (Lua-based module) 
+system/software for handling modules..."
+#
 # The following might have to be made shell-dependent, e.g. if using csh 
 # or tcsh, copy over the file module-setup.csh.inc??.
 #
 # It may be convenient to also copy over this script when running the 
 # non-CCPP version of the FV3SAR and try to simplify the run script 
 # (run_FV3SAR.sh) so that it doesn't depend on whether CCPP is set to
-# "true" or "false".  We can do that, but currently 
+# "true" or "false".  We can do that, but currently the non-CCPP and 
+# CCPP-enabled versions of the FV3SAR code use different versions of
+# intel and impi, so module-setup.sh must account for this.
+#
   cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $RUNDIR/module-setup.sh
 #
 # Append the command that adds the path to the CCPP libraries (via the
@@ -245,21 +250,7 @@ set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YMD"
 # physics suite definition file (an XML file), and possibly other suite-
 # dependent files to run directory.
 #
-#-----------------------------------------------------------------------
-#
-if [ "$CCPP" = "true" ]; then
-
-  print_info_msg_verbose "\ 
-Copying to the run directory the modulefile required for running the 
-CCPP-enabled version of the FV3SAR under NEMS...
-
-A modulefile is a file whose first line is the \"magic cookie\" '#%Module'
-that is interpreted by the \"module load ...\" command).  It sets envi-
-ronment variables (including prepending/appending to paths) and loads 
-modules."
-#  cp_vrfy $NEMSfv3gfs_DIR/tests/modules.fv3 $RUNDIR/modules.fv3
-#
-# It seems like the file modules.nems in the directory
+# The modulefile modules.nems in the directory
 #
 #   $NEMSfv3gfs_DIR/NEMS/src/conf
 #
@@ -268,11 +259,33 @@ modules."
 # it to the run directory without worrying about what machine we're on, 
 # but this still needs to be confirmed.
 #
-# Why don't we do this for the non-CCPP version of FV3??
-# Because for that case, we load different versions of intel and impi 
-# (compare modules.nems to the modules loaded for CCPP set to "false" in
-# run_FV3SAR.sh).  Maybe these can be combined at some point??
+# Note that a modulefile is a file whose first line is the "magic coo-
+# kie" '#%Module'.  It is interpreted by the "module load ..." command.  
+# It sets environment variables (including prepending/appending to 
+# paths) and loads modules.
 #
+# QUESTION:
+# Why don't we do this for the non-CCPP version of FV3?
+#
+# ANSWER:
+# Because for that case, we load different versions of intel and impi 
+# (compare modules.nems to the modules loaded for the case of CCPP set 
+# to "false" in run_FV3SAR.sh).  Maybe these can be combined at some 
+# point.  Note that a modules.nems file is generated in the same rela-
+# tive location in the non-CCPP-enabled version of NEMSfv3gfs, so maybe
+# that can be used and the run_FV3SAR.sh script modified to accomodate
+# such a change.  That way the below can be performed for both the CCPP-
+# enabled and non-CCPP-enabled versions of NEMSfv3gfs.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$CCPP" = "true" ]; then
+
+  print_info_msg_verbose "\ 
+Copying to the run directory the modulefile required for running the 
+CCPP-enabled version of the FV3SAR under NEMS..."
+
+#  cp_vrfy $NEMSfv3gfs_DIR/tests/modules.fv3 $RUNDIR/modules.fv3
   cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/modules.nems $RUNDIR/modules.fv3
 
   if [ "$CCPP_phys_suite" = "GFS" ]; then
