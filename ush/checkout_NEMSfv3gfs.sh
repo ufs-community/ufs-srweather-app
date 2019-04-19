@@ -26,14 +26,19 @@ where:
 
   head_or_hash:
   Optional flag that determines whether to check out the head or speci-
-  fic hashes of the non-CCPP-enabled version of FV3.  If specified, it
-  must be set to either \"head\" (to check out heads of branches) or 
-  \"hash\" (to check out specific commits).  If not specified, it de-
-  faults to \"head\".  Note that this has no effect if CCPP is set to
-  \"false\".
+  fic commits whose hashes are hard-coded in this script.  If specified,
+  it must be set to either \"head\" (to check out the heads of branches)
+  or \"hash\" (to check out the specific commits).  If not specified, it
+  defaults to \"head\".  The commits that head_or_hash=\"hash\" will 
+  check out comprise a set that is known to result in a successful end-
+  to-end run of the workflow.  The hard-coded hashes corresponding to
+  these commits may be updated from time to time.
  
 "
 )
+# of the non-CCPP-enabled version of FV3.  
+# Note that this has no effect if CCPP is set to
+#  \"false\".
 #
 #-----------------------------------------------------------------------
 #
@@ -110,26 +115,52 @@ if [ "$CCPP" = "true" ]; then
   branch_ccpp_framework="master"
   branch_ccpp_physics="master"
 
+  case $head_or_hash in
+#
+  "head")
+    hash_NEMSfv3gfs="${branch_NEMSfv3gfs}"
+    hash_FV3="${branch_FV3}"
+    hash_FMS="${branch_FMS}"
+    hash_NEMS="${branch_NEMS}"
+    hash_ccpp_framework="${branch_ccpp_framework}"
+    hash_ccpp_physics="${branch_ccpp_physics}"
+    ;;
+#
+  "hash")
+    hash_NEMSfv3gfs="6712a95"
+    hash_FV3="e98172b"
+    hash_FMS="d4937c8"
+    hash_NEMS="e909ca1"
+    hash_ccpp_framework="ec6498f"
+    hash_ccpp_physics="16a0b6a"
+    ;;
+#
+  esac
+  
 elif [ "$CCPP" = "false" ]; then
 
   remote_path="ssh://${USER}@vlab.ncep.noaa.gov:29418/$repo_name"
   local_dir="$BASEDIR/${repo_name}"
 
+  branch_NEMSfv3gfs="master"
+  branch_FV3="master"
+  branch_FMS="GFS-FMS"
+  branch_NEMS="master"
+
   case $head_or_hash in
 #
   "head")
-#    branch_NEMSfv3gfs="regional_fv3_nemsfv3gfs"
-    branch_NEMSfv3gfs="master"
-    branch_FV3="master"
-    branch_FMS="GFS-FMS"
-    branch_NEMS="master"
+    hash_NEMSfv3gfs="${branch_NEMSfv3gfs}"
+    hash_FV3="${branch_FV3}"
+    hash_FMS="${branch_FMS}"
+    hash_NEMS="${branch_NEMS}"
     ;;
 #
   "hash")
-    branch_NEMSfv3gfs="8c97373"
-    branch_FV3="3ef9be7"
-    branch_FMS="d4937c8"
-    branch_NEMS="10325d4"
+    hash_NEMSfv3gfs="8c97373"
+    hash_FV3="3ef9be7"
+    hash_FMS="d4937c8"
+    hash_NEMS="10325d4"
     ;;
 #
   esac
@@ -145,6 +176,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+set -x
 mkdir_vrfy $local_dir
 cd_vrfy $local_dir
 git clone -b ${branch_NEMSfv3gfs} --recursive $remote_path .
@@ -160,25 +192,27 @@ git clone -b ${branch_NEMSfv3gfs} --recursive $remote_path .
 #
 #-----------------------------------------------------------------------
 #
+
 cd_vrfy $local_dir
-git checkout ${branch_NEMSfv3gfs}
+git remote -v
+git checkout ${hash_NEMSfv3gfs}
 
 cd_vrfy $local_dir/FV3
-git checkout ${branch_FV3}
+git checkout ${hash_FV3}
 
 cd_vrfy $local_dir/FMS
-git checkout ${branch_FMS}
+git checkout ${hash_FMS}
 
 cd_vrfy $local_dir/NEMS
-git checkout ${branch_NEMS}
+git checkout ${hash_NEMS}
 
 if [ "$CCPP" = "true" ]; then
 
   cd_vrfy $local_dir/ccpp/framework
-  git checkout ${branch_ccpp_framework}
+  git checkout ${hash_ccpp_framework}
 
   cd_vrfy $local_dir/ccpp/physics
-  git checkout ${branch_ccpp_physics}
+  git checkout ${hash_ccpp_physics}
 
 fi
 
