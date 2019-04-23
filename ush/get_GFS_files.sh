@@ -233,6 +233,7 @@ else
 #
   { save_shell_opts; set +x; } > /dev/null 2>&1
   module load hpss
+  module load slurm
   { restore_shell_opts; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------

@@ -51,7 +51,7 @@
 #
 case $MACHINE in
 #
-"WCOSS_C" | "WCOSS" | "THEIA")
+"WCOSS_C" | "WCOSS")
 #
 
 if [ "$CCPP" = "true" ]; then
@@ -78,8 +78,41 @@ fi
 
   ulimit -s unlimited
   ulimit -a
-  APRUN="mpirun -l -np"
+  APRUN="mpirun -l -np $PE_MEMBER01"
   ;;
+#
+"THEIA")
+#
+
+if [ "$CCPP" = "true" ]; then
+
+  #Needed to change to the run directory to correctly load necessary modules for CCPP-version of FV3SAR in lines below
+  cd $RUNDIR
+
+  set +x
+  source ./module-setup.sh
+  module use $( pwd -P )
+  module load modules.fv3
+  module list
+  module load slurm
+  set -x
+
+else
+
+  . /apps/lmod/lmod/init/sh
+  module purge
+  module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
+  module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0 
+  module list
+  module load slurm
+
+fi
+
+  ulimit -s unlimited
+  ulimit -a
+  APRUN="srun"
+  ;;
+
 #
 "JET")
 #
@@ -95,7 +128,7 @@ fi
 
 #  . $USHDIR/set_stack_limit_jet.sh
   ulimit -a
-  APRUN="mpirun -np"
+  APRUN="mpirun -np $PE_MEMBER01"
   ;;
 #
 "ODIN")
@@ -104,7 +137,7 @@ fi
 
   ulimit -s unlimited
   ulimit -a
-  APRUN="srun -n"
+  APRUN="srun -n $PE_MEMBER01"
   ;;
 #
 esac
@@ -154,7 +187,7 @@ rm_vrfy -f RESTART/*
 #
 #-----------------------------------------------------------------------
 #
-$APRUN $PE_MEMBER01 fv3_gfs.x || print_err_msg_exit "\
+$APRUN ./fv3_gfs.x || print_err_msg_exit "\
 Call to executable to run FV3SAR forecast returned with nonzero exit code."
 #
 #-----------------------------------------------------------------------
