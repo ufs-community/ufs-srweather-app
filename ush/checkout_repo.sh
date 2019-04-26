@@ -135,7 +135,6 @@ Input values are:
 #
 #-----------------------------------------------------------------------
 #
-#set -x
 BASEDIR="$( cd ../..; pwd; )"
 
 if [ "$software_name" = "NEMSfv3gfs" ]; then
@@ -175,7 +174,8 @@ elif [ "$software_name" = "UPP" ]; then
   repo_name="EMC_post"
   remote_URL="ssh://${USER}@vlab.ncep.noaa.gov:29418/$repo_name"
 
-  clone_path="$BASEDIR/${repo_name}"
+#  clone_path="$BASEDIR/${repo_name}"
+  clone_path="$BASEDIR/fv3sar_workflow/sorc/gfs_post.fd"
   branch_name="master"
 
   submod_subdirs=()
@@ -239,7 +239,9 @@ cd_vrfy $clone_path
 
 print_info_msg "\
 In directory \"${clone_path}\".
-Cloning repository \"${remote_URL}\" and recursively checking out branch \"${branch_name}\" ...
+Cloning repository 
+  \"${remote_URL}\" 
+and recursively checking out branch \"${branch_name}\" ...
  
 "
 git clone -b ${branch_name} --recursive $remote_URL .
@@ -252,9 +254,15 @@ git clone -b ${branch_name} --recursive $remote_URL .
 #-----------------------------------------------------------------------
 #
 print_info_msg "\
-In directory \"${clone_path}\".
-Checking out commit \"${branch_hash}\" of branch \"${branch_name}\" from repository \"${remote_URL}\" ..."
-git checkout ${branch_hash}
+In directory \"${clone_path}\".  
+Checking out commit \"${branch_hash}\" of branch \"${branch_name}\" in repository 
+  ${remote_URL} ..."
+
+git checkout ${branch_hash} || print_err_msg_exit "\
+Checkout of commit \"${branch_hash}\" of branch \"${branch_name}\" in repository 
+  ${remote_URL} 
+failed.  Please verify that \"${branch_hash}\" is a valid hash/commit in this
+repository."
 #
 #-----------------------------------------------------------------------
 #
@@ -264,12 +272,21 @@ git checkout ${branch_hash}
 #-----------------------------------------------------------------------
 #
 for i in "${!submod_subdirs[@]}"; do 
+
   cd_vrfy $clone_path/${submod_subdirs[$i]}
   submod_remote_URL=$( git remote -v | sed -r -n -e "s/^(origin\s)(.*)\s\(fetch\)/\2/p" )
-print_info_msg "\
-In directory \"$clone_path/${submod_subdirs[$i]}\".
-Checking out commit \"${submod_branch_hashes[$i]}\" of branch \"${submod_branch_names[$i]}\" from repository \"${submod_remote_URL}\" ..."
-  git checkout ${submod_branch_hashes[$i]}
+
+  print_info_msg "\
+In directory \"$clone_path/${submod_subdirs[$i]}\".  
+Checking out commit \"${submod_branch_hashes[$i]}\" of branch \"${submod_branch_names[$i]}\" in repository
+  ${submod_remote_URL} ..."
+
+  git checkout ${submod_branch_hashes[$i]} || print_err_msg_exit "\
+Checkout of commit \"${submod_branch_hashes[$i]}\" of branch \"${submod_branch_names[$i]}\" in repository
+  ${submod_remote_URL} 
+failed.  Please verify that \"${submod_branch_hashes[$i]}\" is a valid hash/commit in this
+repository."
+
 done
 
 print_info_msg "\
