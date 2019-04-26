@@ -164,7 +164,7 @@ Then remove this message and rerun."
 "JET")
 #
   ncores_per_node=24
-  SCHED="moabtorque"
+  SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
   QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-"batch"}
@@ -692,7 +692,7 @@ case $predef_domain in
     num_margin_cells_T6_top=80
     jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 
-    dt_atmos="18"
+    dt_atmos="50"
 
     layout_x="20"
     layout_y="20"
@@ -712,7 +712,7 @@ case $predef_domain in
 
     nhw_T7=6
 
-    dt_atmos="18"
+    dt_atmos="50"
 
     layout_x="20"
     layout_y="20"

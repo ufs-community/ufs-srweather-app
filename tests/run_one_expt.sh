@@ -225,7 +225,7 @@ RELAUNCH_SCR="relaunch_wflow.sh"
 { cat << EOM > ${RELAUNCH_SCR}
 #!/bin/sh -l
 
-module load rocoto/1.3.0-RC3
+module load rocoto/1.3.0-RC5
 cd $RUNDIR
 {
 ${ROCOTO_EXEC_DIR}/rocotorun -w ${XML_BASENAME}.xml -d ${XML_BASENAME}.db -v 10 ;
