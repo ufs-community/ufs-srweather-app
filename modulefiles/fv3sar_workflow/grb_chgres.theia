@@ -28,6 +28,8 @@ export CCMP=mpiicc
 
 export NETCDF_INCLUDE="-I${NETCDF}/include"
 export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdf -lnetcdff -L${HDF5}/lib -lhdf5 -lhdf5_fortran"
+
+#Local wgrib2 API
 export WGRIB2API_LIB="/scratch3/BMC/det/beck/FV3-CAM/grib2/lib/libwgrib2_api.a"
 export WGRIB2API_INC="/scratch3/BMC/det/beck/FV3-CAM/grib2/lib"
 export WGRIB2_LIB="/scratch3/BMC/det/beck/FV3-CAM/grib2/lib/libwgrib2.a"
