@@ -1,0 +1,14 @@
+    12
+dzdt                dzdt      set_to_fill   0
+delta_p             delp      skip          0
+sphum               sphum     set_to_fill   1E-7
+liq_wat             liq_wat   set_to_fill   0
+o3mr                o3mr      set_to_fill   1E-7
+vtype               vtype     skip          0
+sotype              stype     skip          0
+vfrac               vfrac     skip          0
+fricv               uustar    skip          0
+sfcr                zorl      skip          0
+soilw               smc       stop          0
+soilt               stc       stop          0
+       	
