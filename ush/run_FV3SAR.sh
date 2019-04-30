@@ -12,7 +12,8 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs the FV3SAR model from the run directory (RUNDIR).
+# This script runs one forecast with the FV3SAR model from the external-
+# ly specified run directory (RUNDIR).
 #
 #-----------------------------------------------------------------------
 #
@@ -42,6 +43,9 @@
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; set -u -x; } > /dev/null 2>&1
+
+
+RUNDIR="$EXPTDIR/$CDATE"
 #
 #-----------------------------------------------------------------------
 #
@@ -57,7 +61,7 @@ case $MACHINE in
 if [ "$CCPP" = "true" ]; then
 
   #Needed to change to the run directory to correctly load necessary modules for CCPP-version of FV3SAR in lines below
-  cd $RUNDIR
+  cd_vrfy $RUNDIR
 
   set +x
   source ./module-setup.sh

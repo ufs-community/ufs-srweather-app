@@ -101,30 +101,10 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
     regex_replace="\1 $value"
     ;;
 #
-#  "$FV3_NML_CCPP_GFS_FN")
-#    regex_orig="^(\s*$param\s*=)(.*)"
-#    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
-#    ;;
-#
-#  "$FV3_NML_CCPP_GSD_FN")
-#    regex_orig="^(\s*$param\s*=)(.*)"
-#    sed -i -r -e "s|$regex_orig|\1 $value|g" $file_full_path
-#    ;;
-#
   "$DIAG_TABLE_FN" | "$DIAG_TABLE_CCPP_GSD_FN" | "$DIAG_TABLE_CCPP_GSD_FN")
     regex_search="(.*)(<$param>)(.*)"
     regex_replace="\1$value\3"
     ;;
-#
-#  "$DIAG_TABLE_CCPP_GSD_FN")
-#    regex_orig="(.*)(<$param>)(.*)"
-#    sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
-#    ;;
-##
-#  "$DIAG_TABLE_CCPP_GSD_FN")
-#    regex_orig="(.*)(<$param>)(.*)"
-#    sed -i -r -e "s|(.*)(<$param>)(.*)|\1$value\3|g" $file_full_path
-#    ;;
 #
   "$MODEL_CONFIG_FN")
     regex_search="^(\s*$param:\s*)(.*)"
@@ -132,8 +112,14 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
     ;;
 #
   "$SCRIPT_VAR_DEFNS_FN")
-    regex_search="(^\s*$param=)(\".*\"|[^ \"]*)(\s*[#].*)?"
-    regex_replace="\1\"$value\"\3"
+    regex_search="(^\s*$param=)(\".*\"|[^ \"]*)(\s*[#].*)?$"  # Whole line with regex_replace=\1.
+#    regex_search="(^\s*$param=)(\".*\"|[^ \"]*)(\s*[#].*)?"
+    regex_search="(^\s*$param=)(\".*\")?([^ \"]*)?(\(.*\))?(\s*[#].*)?"
+#    regex_replace="\1\"$value\"\3"
+#    regex_replace="\1$value\3"
+#    regex_replace="\1\3"
+    regex_replace="\1AAAA\2BBBB\3CCCC\4DDDD\5"
+    regex_replace="\1$value\5"
     ;;
 #
 #-----------------------------------------------------------------------
@@ -172,7 +158,7 @@ expression (regex_search):
   file_full_path = \"$file_full_path\"
   param = \"$param\"
   value = \"$value\"
-  regex_search = \"$regex_search\""
+  regex_search = $regex_search"
   fi
 #
 #-----------------------------------------------------------------------

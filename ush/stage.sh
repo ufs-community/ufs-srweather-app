@@ -22,9 +22,9 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script copies files from various directories into the run direc-
-# tory, creates links to some of them, and modifies others (e.g. temp-
-# lates) to customize them for the current run.
+# This script copies files from various directories into the experiment
+# directory, creates links to some of them, and modifies others (e.g. 
+# templates) to customize them for the current experiment setup.
 #
 #-----------------------------------------------------------------------
 #
@@ -57,128 +57,219 @@
 #
 #-----------------------------------------------------------------------
 #
-# Copy templates of various input files to the run directory.
+# Set and create the run directory for the current cycle.  Then create
+# the INPUT and RESTART subdirectories under it.
+#
+#-----------------------------------------------------------------------
+#
+RUNDIR="$EXPTDIR/$CDATE"
+check_for_preexist_dir $RUNDIR $preexisting_dir_method
+mkdir_vrfy $RUNDIR
+
+mkdir_vrfy $RUNDIR/INPUT
+mkdir_vrfy $RUNDIR/RESTART
+
+
+
+#
+#-----------------------------------------------------------------------
+#
+# Change location to the input subdirectory of the run directory for the
+# current cycle.
+#
+#-----------------------------------------------------------------------
+#
+cd_vrfy $RUNDIR/INPUT
+
+
+
+print_info_msg_verbose "\
+Creating links in the INPUT subdirectory of the run directory to grid 
+and orography files ..."
+
+filename="${CRES}_mosaic.nc"
+ln_vrfy -sf -t $RUNDIR/INPUT ../../INPUT/$filename
+ln_vrfy -sf $filename grid_spec.nc
+
+filename="${CRES}_grid.tile7.halo${nh3_T7}.nc"
+ln_vrfy -sf -t $RUNDIR/INPUT ../../INPUT/$filename
+ln_vrfy -sf $filename ${CRES}_grid.tile7.nc
+
+filename="${CRES}_grid.tile7.halo${nh4_T7}.nc"
+ln_vrfy -sf -t $RUNDIR/INPUT ../../INPUT/$filename
+ln_vrfy -sf $filename grid.tile7.halo${nh4_T7}.nc
+
+filename="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
+ln_vrfy -sf -t $RUNDIR/INPUT ../../INPUT/$filename
+ln_vrfy -sf $filename oro_data.tile7.halo${nh4_T7}.nc
+
+filename="${CRES}_oro_data.tile7.halo${nh0_T7}.nc"
+ln_vrfy -sf -t $RUNDIR/INPUT ../../INPUT/$filename
+ln_vrfy -sf $filename oro_data.nc
+#
+#-----------------------------------------------------------------------
+#
+# Copy files from various work directories into the experiment directory
+# and create necesary links.
 #
 #-----------------------------------------------------------------------
 #
 print_info_msg_verbose "\
-Copying templates of various input files to the run directory..."
+Copying files from work directories into run directory and creating links..."
+
+WORKDIR_ICBC_CDATE="$WORKDIR_ICBC/$CDATE"
+#
+#-----------------------------------------------------------------------
+#
+# The FV3SAR model looks for a file named "gfs_data.nc" from which to
+# read in the initial conditions with a 4-cell-wide halo.  This data is
+# created by the preprocessing but is placed in a file with a different
+# name ("gfs_data.tile7.nc").  Thus, we first copy the file created by
+# the preprocessing to the INPUT subdirectory of the run directory and
+# then create a symlink named "gfs_data.nc" that points to it.
+#
+#-----------------------------------------------------------------------
+#
+cp_vrfy $WORKDIR_ICBC_CDATE/gfs_data.tile7.nc .
+ln_vrfy -sf gfs_data.tile7.nc gfs_data.nc
+#
+#-----------------------------------------------------------------------
+#
+# The FV3SAR model looks for a file named "gfs_data.nc" from which to
+# read in the surface without a halo.  This data is created by the pre-
+# processing but is placed in a file with a different name ("sfc_data.-
+# tile7.nc").  Thus, we first copy the file created by the preprocessing
+# to the INPUT subdirectory of the run directory and then create a sym-
+# link named "sfc_data.nc" that points to it.
+#
+#-----------------------------------------------------------------------
+#
+cp_vrfy $WORKDIR_ICBC_CDATE/sfc_data.tile7.nc .
+ln_vrfy -sf sfc_data.tile7.nc sfc_data.nc
+#
+#-----------------------------------------------------------------------
+#
+# Copy the boundary files (one per boundary update time) to the INPUT
+# subdirectory of the run directory.
+#
+#-----------------------------------------------------------------------
+#
+cp_vrfy $WORKDIR_ICBC_CDATE/gfs_bndy*.nc .
+#
+#-----------------------------------------------------------------------
+#
+# Copy the file gfs_ctrl.nc containing information about the vertical
+# coordinate and the number of tracers from its temporary location to
+# the INPUT subdirectory of the run directory.
+#
+#-----------------------------------------------------------------------
+#
+cp_vrfy $WORKDIR_ICBC_CDATE/gfs_ctrl.nc .
+
+
+
+#
+#-----------------------------------------------------------------------
+#
+# Create links in run directory to files in the experiment directory.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg_verbose "\
+Creating links in run directory to static files in the experiment di-
+rectory..."
+
+cd_vrfy $RUNDIR
+
+ln_vrfy -sf -t $RUNDIR ../CFSR.SEAICE.1982.2012.monthly.clim.grb
+ln_vrfy -sf -t $RUNDIR ../RTGSST.1982.2012.monthly.clim.grb
+ln_vrfy -sf -t $RUNDIR ../seaice_newland.grb
+ln_vrfy -sf -t $RUNDIR ../aerosol.dat
+ln_vrfy -sf -t $RUNDIR ../global_albedo4.1x1.grb
+ln_vrfy -sf -t $RUNDIR ../global_glacier.2x2.grb
+ln_vrfy -sf -t $RUNDIR ../global_h2oprdlos.f77
+ln_vrfy -sf -t $RUNDIR ../global_maxice.2x2.grb
+ln_vrfy -sf -t $RUNDIR ../global_mxsnoalb.uariz.t126.384.190.rg.grb
+ln_vrfy -sf -t $RUNDIR ../global_o3prdlos.f77
+ln_vrfy -sf -t $RUNDIR ../global_shdmax.0.144x0.144.grb
+ln_vrfy -sf -t $RUNDIR ../global_shdmin.0.144x0.144.grb
+ln_vrfy -sf -t $RUNDIR ../global_slope.1x1.grb
+ln_vrfy -sf -t $RUNDIR ../global_snoclim.1.875.grb
+ln_vrfy -sf -t $RUNDIR ../global_snowfree_albedo.bosu.t126.384.190.rg.grb
+ln_vrfy -sf -t $RUNDIR ../global_soilmgldas.t126.384.190.grb
+ln_vrfy -sf -t $RUNDIR ../global_soiltype.statsgo.t126.384.190.rg.grb
+ln_vrfy -sf -t $RUNDIR ../global_tg3clim.2.6x1.5.grb
+ln_vrfy -sf -t $RUNDIR ../global_vegfrac.0.144.decpercent.grb
+ln_vrfy -sf -t $RUNDIR ../global_vegtype.igbp.t126.384.190.rg.grb
+ln_vrfy -sf -t $RUNDIR ../global_zorclim.1x1.grb
+ln_vrfy -sf -t $RUNDIR ../sfc_emissivity_idx.txt
+ln_vrfy -sf -t $RUNDIR ../solarconstant_noaa_an.txt
+ln_vrfy -sf -t $RUNDIR ../co2historicaldata_2010.txt
+ln_vrfy -sf -t $RUNDIR ../co2historicaldata_2011.txt
+ln_vrfy -sf -t $RUNDIR ../co2historicaldata_2012.txt
+ln_vrfy -sf -t $RUNDIR ../co2historicaldata_2013.txt
+ln_vrfy -sf -t $RUNDIR ../co2historicaldata_2014.txt
+ln_vrfy -sf -t $RUNDIR ../co2historicaldata_2015.txt
+ln_vrfy -sf -t $RUNDIR ../co2historicaldata_2016.txt
+ln_vrfy -sf -t $RUNDIR ../co2historicaldata_2017.txt
+ln_vrfy -sf -t $RUNDIR ../co2historicaldata_2018.txt
+ln_vrfy -sf -t $RUNDIR ../co2historicaldata_glob.txt
+ln_vrfy -sf -t $RUNDIR ../co2monthlycyc.txt
+#
+#-----------------------------------------------------------------------
+#
+# Create links in the run directory to model input files in the experi-
+# ment directory that do not depend on the forecast start time.
+#
+#-----------------------------------------------------------------------
+#
+#ln_vrfy -sf -t $RUNDIR ../INPUT
+
+ln_vrfy -sf -t $RUNDIR ../${FV3_NML_FN}
+ln_vrfy -sf -t $RUNDIR ../${DATA_TABLE_FN}
+ln_vrfy -sf -t $RUNDIR ../${FIELD_TABLE_FN}
+ln_vrfy -sf -t $RUNDIR ../${NEMS_CONFIG_FN}
 
 if [ "$CCPP" = "true" ]; then
-#
-# Copy the shell script that initializes the Lmod (Lua-based module) 
-# system/software for handling modules.  This script:
-#
-# 1) Detects the shell in which it is being invoked (i.e. the shell of
-#    the "parent" script in which it is being sourced).
-# 2) Detects the machine it is running on and and calls the appropriate 
-#    (shell- and machine-dependent) initalization script to initialize 
-#    Lmod.
-# 3) Purges all modules.
-# 4) Uses the "module use ..." command to prepend or append paths to 
-#    Lmod's search path (MODULEPATH).
-#
-  print_info_msg_verbose "\
-Copying the shell script that initializes the Lmod (Lua-based module) 
-system/software for handling modules..."
-#
-# The following might have to be made shell-dependent, e.g. if using csh 
-# or tcsh, copy over the file module-setup.csh.inc??.
-#
-# It may be convenient to also copy over this script when running the 
-# non-CCPP version of the FV3SAR and try to simplify the run script 
-# (run_FV3SAR.sh) so that it doesn't depend on whether CCPP is set to
-# "true" or "false".  We can do that, but currently the non-CCPP and 
-# CCPP-enabled versions of the FV3SAR code use different versions of
-# intel and impi, so module-setup.sh must account for this.
-#
-  cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $RUNDIR/module-setup.sh
-#
-# Append the command that adds the path to the CCPP libraries (via the
-# shell variable LD_LIBRARY_PATH) to the Lmod initialization script in 
-# the run directory.  This is needed if running the dynamic build of the
-# CCPP-enabled version of the FV3SAR.
-#
-  { cat << EOM >> $RUNDIR/module-setup.sh
-#
-# Add path to libccpp.so and libccpphys.so to LD_LIBRARY_PATH"
-#
-export LD_LIBRARY_PATH="${NEMSfv3gfs_DIR}/ccpp/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
-EOM
-} || print_err_msg_exit "\
-Heredoc (cat) command to append command to add path to CCPP libraries to
-the Lmod initialization script in the run directory returned with a non-
-zero status."
-
-  if [ "$CCPP_phys_suite" = "GFS" ]; then
-
-    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFS_FN $RUNDIR/$FV3_NML_FN
-    cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
-    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
-
-  elif [ "$CCPP_phys_suite" = "GSD" ]; then
-
-    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GSD_FN $RUNDIR/$FV3_NML_FN
-    cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/$DIAG_TABLE_FN
-    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $RUNDIR/$FIELD_TABLE_FN
-
+  ln_vrfy -sf -t $RUNDIR ../module-setup.sh
+  ln_vrfy -sf -t $RUNDIR ../modules.fv3
+  ln_vrfy -sf -t $RUNDIR ../ccpp_suite.xml
+  if [ "$CCPP_phys_suite" = "GSD" ]; then
+    ln_vrfy -sf -t $RUNDIR ../CCN_ACTIVATE.BIN
   fi
-
-elif [ "$CCPP" = "false" ]; then
-
-  cp_vrfy $TEMPLATE_DIR/$FV3_NML_FN $RUNDIR
-  cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
-  cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $RUNDIR
-
 fi
-
+#
+#-----------------------------------------------------------------------
+#
+# Copy to the run directory templates of files that need to be modified
+# based on the forecast start time.
+#
+#-----------------------------------------------------------------------
+#
 cp_vrfy $TEMPLATE_DIR/$MODEL_CONFIG_FN $RUNDIR
-cp_vrfy $TEMPLATE_DIR/$DATA_TABLE_FN $RUNDIR
-cp_vrfy $TEMPLATE_DIR/$NEMS_CONFIG_FN $RUNDIR
-#
-#-----------------------------------------------------------------------
-#
-# Set the full path to the FV3SAR namelist file.  Then set parameters in
-# that file.
-#
-#-----------------------------------------------------------------------
-#
-FV3_NML_FP="$RUNDIR/$FV3_NML_FN"
 
-print_info_msg_verbose "\
-Setting parameters in file:
-  FV3_NML_FP = \"$FV3_NML_FP\""
-#
-# Set npx_T7 and npy_T7, which are just nx_T7 plus 1 and ny_T7 plus 1,
-# respectively.  These need to be set in the FV3SAR Fortran namelist
-# file.  They represent the number of cell vertices in the x and y di-
-# rections on the regional grid (tile 7).
-#
-npx_T7=$(( $nx_T7 + 1 ))
-npy_T7=$(( $ny_T7 + 1 ))
-#
-# Set parameters.
-#
-set_file_param "$FV3_NML_FP" "blocksize" "$blocksize"
-set_file_param "$FV3_NML_FP" "layout" "$layout_x,$layout_y"
-set_file_param "$FV3_NML_FP" "npx" "$npx_T7"
-set_file_param "$FV3_NML_FP" "npy" "$npy_T7"
-if [ "$grid_gen_method" = "GFDLgrid" ]; then
-# Question:
-# For a regional grid (i.e. one that only has a tile 7) should the co-
-# ordinates that target_lon and target_lat get set to be those of the 
-# center of tile 6 (of the parent grid) or those of tile 7?  These two
-# are not necessarily the same [although assuming there is only one re-
-# gional domain within tile 6, i.e. assuming there is no tile 8, 9, etc,
-# there is no reason not to center tile 7 with respect to tile 6].
-  set_file_param "$FV3_NML_FP" "target_lon" "$lon_ctr_T6"
-  set_file_param "$FV3_NML_FP" "target_lat" "$lat_ctr_T6"
-elif [ "$grid_gen_method" = "JPgrid" ]; then
-  set_file_param "$FV3_NML_FP" "target_lon" "$lon_rgnl_ctr"
-  set_file_param "$FV3_NML_FP" "target_lat" "$lat_rgnl_ctr"
+if [ "$CCPP" = "true" ]; then
+  if [ "$CCPP_phys_suite" = "GFS" ]; then
+    cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
+  elif [ "$CCPP_phys_suite" = "GSD" ]; then
+    cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_CCPP_GSD_FN $RUNDIR/$DIAG_TABLE_FN
+  fi
+elif [ "$CCPP" = "false" ]; then
+  cp_vrfy $TEMPLATE_DIR/$DIAG_TABLE_FN $RUNDIR
 fi
-set_file_param "$FV3_NML_FP" "stretch_fac" "$stretch_fac"
-set_file_param "$FV3_NML_FP" "bc_update_interval" "$BC_update_intvl_hrs"
+#
+#-----------------------------------------------------------------------
+#
+# Extract from CDATE the starting year, month, day, and hour of the
+# forecast.  These are needed below for various operations.
+#
+#-----------------------------------------------------------------------
+#
+YYYY=${CDATE:0:4}
+MM=${CDATE:4:2}
+DD=${CDATE:6:2}
+HH=${CDATE:8:2}
+YYYYMMDD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
@@ -242,114 +333,7 @@ set_file_param "$DIAG_TABLE_FP" "YYYY" "$YYYY"
 set_file_param "$DIAG_TABLE_FP" "MM" "$MM"
 set_file_param "$DIAG_TABLE_FP" "DD" "$DD"
 set_file_param "$DIAG_TABLE_FP" "HH" "$HH"
-set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YMD"
-#
-#-----------------------------------------------------------------------
-#
-# If CCPP is set to "true", copy the appropriate modulefile, the CCPP
-# physics suite definition file (an XML file), and possibly other suite-
-# dependent files to run directory.
-#
-# The modulefile modules.nems in the directory
-#
-#   $NEMSfv3gfs_DIR/NEMS/src/conf
-#
-# is generated during the FV3 build process and this is configured pro-
-# perly for the machine, shell environment, etc.  Thus, we can just copy
-# it to the run directory without worrying about what machine we're on, 
-# but this still needs to be confirmed.
-#
-# Note that a modulefile is a file whose first line is the "magic coo-
-# kie" '#%Module'.  It is interpreted by the "module load ..." command.  
-# It sets environment variables (including prepending/appending to 
-# paths) and loads modules.
-#
-# QUESTION:
-# Why don't we do this for the non-CCPP version of FV3?
-#
-# ANSWER:
-# Because for that case, we load different versions of intel and impi 
-# (compare modules.nems to the modules loaded for the case of CCPP set 
-# to "false" in run_FV3SAR.sh).  Maybe these can be combined at some 
-# point.  Note that a modules.nems file is generated in the same rela-
-# tive location in the non-CCPP-enabled version of NEMSfv3gfs, so maybe
-# that can be used and the run_FV3SAR.sh script modified to accomodate
-# such a change.  That way the below can be performed for both the CCPP-
-# enabled and non-CCPP-enabled versions of NEMSfv3gfs.
-#
-#-----------------------------------------------------------------------
-#
-if [ "$CCPP" = "true" ]; then
-
-  print_info_msg_verbose "\ 
-Copying to the run directory the modulefile required for running the 
-CCPP-enabled version of the FV3SAR under NEMS..."
-
-#  cp_vrfy $NEMSfv3gfs_DIR/tests/modules.fv3 $RUNDIR/modules.fv3
-  cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/modules.nems $RUNDIR/modules.fv3
-
-  if [ "$CCPP_phys_suite" = "GFS" ]; then
-
-    print_info_msg_verbose "\
-Copying the GFS physics suite XML file to the run directory..."
-    cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GFS_2017_updated_gfdlmp_regional.xml $RUNDIR/ccpp_suite.xml
-
-  elif [ "$CCPP_phys_suite" = "GSD" ]; then
-
-    print_info_msg_verbose "\
-Copying the GSD physics suite XML file and the Thompson microphysics CCN 
-fixed file to the run directory..."
-    cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GSD.xml $RUNDIR/ccpp_suite.xml
-    cp_vrfy $GSDFIX/CCN_ACTIVATE.BIN $RUNDIR
-
-  fi
-
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Copy fixed files from system directory to run directory.  Note that
-# some of these files get renamed.
-#
-#-----------------------------------------------------------------------
-#
-print_info_msg_verbose "\
-Copying fixed files from system directory to run directory..."
-
-cp_vrfy $FIXgsm/CFSR.SEAICE.1982.2012.monthly.clim.grb $RUNDIR
-cp_vrfy $FIXgsm/RTGSST.1982.2012.monthly.clim.grb $RUNDIR
-cp_vrfy $FIXgsm/seaice_newland.grb $RUNDIR
-cp_vrfy $FIXgsm/global_climaeropac_global.txt $RUNDIR/aerosol.dat
-cp_vrfy $FIXgsm/global_albedo4.1x1.grb $RUNDIR
-cp_vrfy $FIXgsm/global_glacier.2x2.grb $RUNDIR
-cp_vrfy $FIXgsm/global_h2o_pltc.f77 $RUNDIR/global_h2oprdlos.f77
-cp_vrfy $FIXgsm/global_maxice.2x2.grb $RUNDIR
-cp_vrfy $FIXgsm/global_mxsnoalb.uariz.t126.384.190.rg.grb $RUNDIR
-cp_vrfy $FIXgsm/global_o3prdlos.f77 $RUNDIR
-cp_vrfy $FIXgsm/global_shdmax.0.144x0.144.grb $RUNDIR
-cp_vrfy $FIXgsm/global_shdmin.0.144x0.144.grb $RUNDIR
-cp_vrfy $FIXgsm/global_slope.1x1.grb $RUNDIR
-cp_vrfy $FIXgsm/global_snoclim.1.875.grb $RUNDIR
-cp_vrfy $FIXgsm/global_snowfree_albedo.bosu.t126.384.190.rg.grb $RUNDIR
-cp_vrfy $FIXgsm/global_soilmgldas.t126.384.190.grb $RUNDIR
-cp_vrfy $FIXgsm/global_soiltype.statsgo.t126.384.190.rg.grb $RUNDIR
-cp_vrfy $FIXgsm/global_tg3clim.2.6x1.5.grb $RUNDIR
-cp_vrfy $FIXgsm/global_vegfrac.0.144.decpercent.grb $RUNDIR
-cp_vrfy $FIXgsm/global_vegtype.igbp.t126.384.190.rg.grb $RUNDIR
-cp_vrfy $FIXgsm/global_zorclim.1x1.grb $RUNDIR
-cp_vrfy $FIXgsm/global_sfc_emissivity_idx.txt $RUNDIR/sfc_emissivity_idx.txt
-cp_vrfy $FIXgsm/global_solarconstant_noaa_an.txt $RUNDIR/solarconstant_noaa_an.txt
-cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2010.txt $RUNDIR/co2historicaldata_2010.txt
-cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2011.txt $RUNDIR/co2historicaldata_2011.txt
-cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2012.txt $RUNDIR/co2historicaldata_2012.txt
-cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2013.txt $RUNDIR/co2historicaldata_2013.txt
-cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2014.txt $RUNDIR/co2historicaldata_2014.txt
-cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2015.txt $RUNDIR/co2historicaldata_2015.txt
-cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2016.txt $RUNDIR/co2historicaldata_2016.txt
-cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2017.txt $RUNDIR/co2historicaldata_2017.txt
-cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2018.txt $RUNDIR/co2historicaldata_2018.txt
-cp_vrfy $FIXgsm/global_co2historicaldata_glob.txt $RUNDIR/co2historicaldata_glob.txt
-cp_vrfy $FIXgsm/co2monthlycyc.txt $RUNDIR
+set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YYYYMMDD"
 #
 #-----------------------------------------------------------------------
 #
@@ -376,153 +360,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Copy files from various work directories into the run directory and
-# create necesary links.
-#
-#-----------------------------------------------------------------------
-#
-print_info_msg_verbose "\
-Copying files from work directories into run directory and creating links..."
-#
-#-----------------------------------------------------------------------
-#
-# Change location to the INPUT subdirectory of the run directory.
-#
-#-----------------------------------------------------------------------
-#
-cd_vrfy $RUNDIR/INPUT
-#
-#-----------------------------------------------------------------------
-#
-# Copy the grid mosaic file (which describes the connectivity of the va-
-# rious tiles) to the INPUT subdirectory of the run directory.  In the
-# regional case, this file doesn't have much information because the
-# regional grid is not connected to any other tiles.  However, a mosaic
-# file (with a different name; see below) must still be read in by the
-# FV3SAR code.
-#
-# Note that the FV3 code (specifically the FMS code) looks for a file
-# named "grid_spec.nc" in the INPUT subdirectory of the run directory
-# as the grid mosaic file.  Assuming it finds this file, it then reads
-# in the variable "gridfiles" in this file that contains the names of
-# the grid files for each of the tiles of the grid.  In the regional
-# case, "gridfiles" will contain only one file name, that of the file
-# describing the grid on tile 7.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_GRID/${CRES}_mosaic.nc .
-ln_vrfy -sf ${CRES}_mosaic.nc grid_spec.nc
-#
-#-----------------------------------------------------------------------
-#
-# The FV3SAR model looks for a file named "${CRES}_grid.tile7.nc" from
-# which to read in the grid with a 3-cell-wide halo.  This data is crea-
-# ted by the preprocessing but is placed in a file with a different name
-# ("${CRES}_grid.tile7.halo3.nc").  Thus, we first copy the file created
-# by the preprocessing to the INPUT subdirectory of the run directory
-# and then create a symlink named "${CRES}_grid.tile7.nc" that points to
-# it.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc .
-ln_vrfy -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
-#
-#-----------------------------------------------------------------------
-#
-# The FV3SAR model looks for a file named "grid.tile7.halo4.nc" from
-# which to read in the grid with a 4-cell-wide halo.  This data is crea-
-# ted by the preprocessing but is placed in a file with a different name
-# ("${CRES}_grid.tile7.halo4.nc").  Thus, we first copy the file created
-# by the preprocessing to the INPUT subdirectory of the run directory
-# and then create a symlink named "grid.tile7.halo4.nc" that points to
-# it.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc .
-ln_vrfy -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
-#
-#-----------------------------------------------------------------------
-#
-# The FV3SAR model looks for a file named "oro_data.tile7.halo4.nc" from
-# which to read in the orogrpahy with a 4-cell-wide halo.  This data is
-# created by the preprocessing but is placed in a file with a different
-# name ("${CRES}_oro_data.tile7.halo4.nc").  Thus, we first copy the
-# file created by the preprocessing to the INPUT subdirectory of the run
-# directory and then create a symlink named "oro_data.tile7.halo4.nc"
-# that points to it.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc .
-ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
-#
-#-----------------------------------------------------------------------
-#
-# The FV3SAR model looks for a file named "oro_data.nc" from which to
-# read in the orogrpahy without a halo.  This data is created by the
-# preprocessing but is placed in a file with a different name
-# ("${CRES}_oro_data.tile7.halo0.nc").  Thus, we first copy the file
-# created by the preprocessing to the INPUT subdirectory of the run di-
-# rectory and then create a symlink named "oro_data.nc" that points to
-# it.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
-ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
-#
-#-----------------------------------------------------------------------
-#
-# The FV3SAR model looks for a file named "gfs_data.nc" from which to
-# read in the initial conditions with a 4-cell-wide halo.  This data is
-# created by the preprocessing but is placed in a file with a different
-# name ("gfs_data.tile7.nc").  Thus, we first copy the file created by
-# the preprocessing to the INPUT subdirectory of the run directory and
-# then create a symlink named "gfs_data.nc" that points to it.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_ICBC/gfs_data.tile7.nc .
-ln_vrfy -sf gfs_data.tile7.nc gfs_data.nc
-#
-#-----------------------------------------------------------------------
-#
-# The FV3SAR model looks for a file named "gfs_data.nc" from which to
-# read in the surface without a halo.  This data is created by the pre-
-# processing but is placed in a file with a different name ("sfc_data.-
-# tile7.nc").  Thus, we first copy the file created by the preprocessing
-# to the INPUT subdirectory of the run directory and then create a sym-
-# link named "sfc_data.nc" that points to it.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_ICBC/sfc_data.tile7.nc .
-ln_vrfy -sf sfc_data.tile7.nc sfc_data.nc
-#
-#-----------------------------------------------------------------------
-#
-# Copy the boundary files (one per boundary update time) to the INPUT
-# subdirectory of the run directory.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_ICBC/gfs_bndy*.nc .
-#
-#-----------------------------------------------------------------------
-#
-# Copy the file gfs_ctrl.nc containing information about the vertical
-# coordinate and the number of tracers from its temporary location to
-# the INPUT subdirectory of the run directory.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_ICBC/gfs_ctrl.nc .
-#
-#-----------------------------------------------------------------------
-#
 # Print message indicating successful completion of script.
 #
 #-----------------------------------------------------------------------
@@ -530,8 +367,8 @@ cp_vrfy $WORKDIR_ICBC/gfs_ctrl.nc .
 print_info_msg "\
 
 ========================================================================
-All necessary files and links needed to launch a forecast copied/created
-successfully!!!
+All necessary files and links needed to launch a forecast successfully
+copied to or created in the run directory!!!
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -542,3 +379,4 @@ successfully!!!
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
+

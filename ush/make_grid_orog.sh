@@ -295,30 +295,24 @@ export exec_dir="$FV3SAR_DIR/exec"
 #
 #-----------------------------------------------------------------------
 #
-# Create the various directories needed by the various steps/substeps in
-# this script.
-#
-# Note that there may be preexisting versions of these directories from
-# previous runs of this script (e.g. from the workflow task that runs
-# this script failing and then being called again).  Thus, we first make
-# sure preexisting versions are deleted.
+# Create the (cycle-independent) subdirectories under the work directory
+# (WORKDIR) that are needed by the various steps and substeps in this
+# script.  Note that the workflow generation script creates the work di-
+# rectory (WORKDIR), so we do not need to create it here.
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir $WORKDIR_GRID "delete"
+check_for_preexist_dir $WORKDIR_GRID $preexisting_dir_method
 mkdir_vrfy -p "$WORKDIR_GRID"
 
-check_for_preexist_dir $WORKDIR_OROG "delete"
+check_for_preexist_dir $WORKDIR_OROG $preexisting_dir_method
 mkdir_vrfy -p "$WORKDIR_OROG"
 
-check_for_preexist_dir $WORKDIR_FLTR "delete"
+check_for_preexist_dir $WORKDIR_FLTR $preexisting_dir_method
 mkdir_vrfy -p "$WORKDIR_FLTR"
 
-check_for_preexist_dir $WORKDIR_SHVE "delete"
+check_for_preexist_dir $WORKDIR_SHVE $preexisting_dir_method
 mkdir_vrfy -p "$WORKDIR_SHVE"
-
-check_for_preexist_dir $WORKDIR_ICBC "delete"
-mkdir_vrfy -p "$WORKDIR_ICBC"
 #
 #-----------------------------------------------------------------------
 #

@@ -28,7 +28,7 @@
 # format) needed to generate NetCDF files containing the initial atmo-
 # spheric fields, the surface fields, and the boundary conditions that
 # are needed to run a forecast with the FV3SAR.  It places these files
-# in a directory specified by INIDIR.
+# in a directory specified by EXTRN_MDL_FILES_DIR.
 #
 #-----------------------------------------------------------------------
 #
@@ -61,20 +61,48 @@
 #
 #-----------------------------------------------------------------------
 #
-# Create the directory INIDIR if it doesn't already exist.  This is the
-# directory in which we will store the analysis (at the initial time
-# specified in CDATE) files (which consist of the atmospheric analysis
-# file, the surface analysis file, and the near-surface temperature ana-
-# lysis file) and the forecasts files (which are needed at each boundary
-# condition time except at the initial time since that is in the atmo-
-# spheric analysis file).  Then change location to INIDIR.
+# This comment block needs to be updated.
+#
+# Create the directory EXTRN_MDL_FILES_BASEDIR if it doesn't already ex-
+# ist.  This is the directory in which we will create subdirectories for
+# each forecast (i.e. for each CDATE) in which to store the analysis and
+# forecast files from the specified external model.  The analysis filesi
+# are valid at at the initial time specified in CDATE and consist of the
+# atmospheric analysis file, the surface analysis file, and the near-
+# surface temperature analysis file.  The forecast files are needed at
+# each boundary update time (except at the initial time since that is in
+# the atmospheric analysis file).  
 #
 #-----------------------------------------------------------------------
 #
-mkdir_vrfy -p "$INIDIR"
-cd_vrfy $INIDIR || print_err_msg_exit "\
-Could not change directory to INIDIR:
-  INIDIR = \"$INIDIR\""
+mkdir_vrfy -p "$EXTRN_MDL_FILES_BASEDIR"
+#
+#-----------------------------------------------------------------------
+#
+# Create the directory specific to the current forecast (whose starting
+# date and time is specified in CDATE) in which to store the GFS analy-
+# sis and forecast files.  Then change location to that directory.
+#
+#-----------------------------------------------------------------------
+#
+EXTRN_MDL_FILES_DIR="$EXTRN_MDL_FILES_BASEDIR/$CDATE"
+mkdir_vrfy -p "$EXTRN_MDL_FILES_DIR"
+cd_vrfy $EXTRN_MDL_FILES_DIR || print_err_msg_exit "\
+Could not change directory to EXTRN_MDL_FILES_DIR:
+  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\""
+#
+#-----------------------------------------------------------------------
+#
+# Extract from CDATE the starting year, month, day, and hour of the
+# forecast.  These are needed below for various operations.
+#
+#-----------------------------------------------------------------------
+#
+YYYY=${CDATE:0:4}
+MM=${CDATE:4:2}
+DD=${CDATE:6:2}
+HH=${CDATE:8:2}
+YYYYMMDD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
@@ -84,7 +112,7 @@ Could not change directory to INIDIR:
 #
 #-----------------------------------------------------------------------
 #
-HPSS_DIR="/NCEPPROD/hpssprod/runhistory/rh${YYYY}/${YYYY}${MM}/${YMD}"
+HPSS_DIR="/NCEPPROD/hpssprod/runhistory/rh${YYYY}/${YYYY}${MM}/${YYYYMMDD}"
 prefix_tar_files="gpfs_hps_nco_ops_com_gfs_prod_gfs"
 #
 #-----------------------------------------------------------------------
@@ -98,10 +126,10 @@ prefix_tar_files="gpfs_hps_nco_ops_com_gfs_prod_gfs"
 #
 # If the starting date of the forecast (CDATE) is within this time win-
 # dow (i.e. two days on theia and two weeks on WCOSS), the needed files
-# may simply be copied over from these system directories to INIDIR.  If
+# may simply be copied over from these system directories to EXTRN_MDL_FILES_DIR.  If
 # CDATE is a time that is outside (i.e. older than) this time window,
 # then the needed files must be obtained from the mass store (HPSS) and
-# placed into INIDIR.
+# placed into EXTRN_MDL_FILES_DIR.
 #
 #-----------------------------------------------------------------------
 #
@@ -109,7 +137,7 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
-  export INIDIR_SYS="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
+  export INIDIR_SYS="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YYYYMMDD"
   ;;
 #
 "WCOSS")
@@ -119,24 +147,24 @@ case $MACHINE in
 #
 "THEIA")
 #
-  export INIDIR_SYS="/scratch4/NCEPDEV/rstprod/com/gfs/prod/gfs.$YMD"
+  export INIDIR_SYS="/scratch4/NCEPDEV/rstprod/com/gfs/prod/gfs.$YYYYMMDD"
   ;;
 #
 "JET")
 #
-  export INIDIR_SYS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs/$YMD"
+  export INIDIR_SYS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs/$YYYYMMDD"
   ;;
 #
 "ODIN")
 #
-  export INIDIR_SYS="/scratch/ywang/test_runs/FV3_regional/gfs/$YMD"
+  export INIDIR_SYS="/scratch/ywang/test_runs/FV3_regional/gfs/$YYYYMMDD"
   ;;
 #
 esac
 #
 #-----------------------------------------------------------------------
 #
-# First, obtain (i.e. place into INIDIR) the analysis files needed to
+# First, obtain (i.e. place into EXTRN_MDL_FILES_DIR) the analysis files needed to
 # run a forecast with the FV3SAR.  These files are needed in order to
 # generate the initial condition (IC), surface, and 0th hour boundary
 # condtion (BC) files (in NetCDF format) that are inputs to the FV3SAR.
@@ -191,10 +219,10 @@ done
 # exist in INIDIR_SYS (num_files_found).  If that number is equal to the
 # number of needed analysis files (num_files_needed), it means all the
 # needed analysis files exist in INIDIR_SYS.  In this case, we will sim-
-# ply copy them from INIDIR_SYS to INIDIR.  If the number of files found
+# ply copy them from INIDIR_SYS to EXTRN_MDL_FILES_DIR.  If the number of files found
 # is not equal to the number needed, then all the needed analysis files
 # are not in INIDIR_SYS.  In this case, we will have to get them from
-# HPSS and place them in INIDIR.
+# HPSS and place them in EXTRN_MDL_FILES_DIR.
 #
 #-----------------------------------------------------------------------
 #
@@ -208,18 +236,18 @@ done
 #-----------------------------------------------------------------------
 #
 # Check whether the needed analysis files all exist in the system di-
-# rectory INIDIR_SYS.  If so, copy them over to INIDIR.
+# rectory INIDIR_SYS.  If so, copy them over to EXTRN_MDL_FILES_DIR.
 #
 #-----------------------------------------------------------------------
 #
 if [ "$num_files_found" -eq "$num_files_needed" ]; then
 
-  cp_vrfy $files_to_copy $INIDIR
+  cp_vrfy $files_to_copy $EXTRN_MDL_FILES_DIR
 #
 #-----------------------------------------------------------------------
 #
 # If the needed analysis files are not all found in INIDIR_SYS, try to
-# extract them from HPSS and into INIDIR.
+# extract them from HPSS and into EXTRN_MDL_FILES_DIR.
 #
 #-----------------------------------------------------------------------
 #
@@ -342,7 +370,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Next, obtain (i.e. place into INIDIR) the forecast files needed to run
+# Next, obtain (i.e. place into EXTRN_MDL_FILES_DIR) the forecast files needed to run
 # a simulation.  These are needed to generate the boundary condition
 # (BC) files at BC times after the 0th forecast hour (e.g. hour 3, hour
 # 6, etc).
@@ -380,7 +408,7 @@ SIGMA_TAR_FILE="${prefix_tar_files}.${CDATE}.sigma.tar"
 # forecast files should be located.
 #
 temp=$( printf "%s" "${prefix_tar_files}" | sed -r 's|_|\/|g' )  # Use sed to replace underscores with forward slashes.
-ARCHIVE_DIR="/${temp}.${YMD}"
+ARCHIVE_DIR="/${temp}.${YYYYMMDD}"
 #
 # Set variables containing the forecast file names with the appropriate
 # paths that can be used below to either copy the forecast files from
@@ -403,7 +431,7 @@ done
 # exist in INIDIR_SYS (num_files_found).  If that number is the same as
 # the number of needed forecast files (num_files_needed), it means all
 # the needed forecast files exist in INIDIR_SYS (in which case we will
-# simply copy them over to INIDIR).  If that number is different, then
+# simply copy them over to EXTRN_MDL_FILES_DIR).  If that number is different, then
 # all the needed forecast files are not in INIDIR_SYS (in which case we
 # will have to get them from HPSS.
 #
@@ -419,18 +447,18 @@ done
 #-----------------------------------------------------------------------
 #
 # Check whether the needed forecast files all exist in the system di-
-# rectory INIDIR_SYS.  If so, copy them over to INIDIR.
+# rectory INIDIR_SYS.  If so, copy them over to EXTRN_MDL_FILES_DIR.
 #
 #-----------------------------------------------------------------------
 #
 if [ "$num_files_found" -eq "$num_files_needed" ]; then
 
-  cp_vrfy $files_to_copy $INIDIR
+  cp_vrfy $files_to_copy $EXTRN_MDL_FILES_DIR
 #
 #-----------------------------------------------------------------------
 #
 # If the needed forecast files are not found in INIDIR_SYS, try to ex-
-# tract them from HPSS and into INIDIR.
+# tract them from HPSS and into EXTRN_MDL_FILES_DIR.
 #
 #-----------------------------------------------------------------------
 #

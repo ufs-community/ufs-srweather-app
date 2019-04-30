@@ -222,12 +222,12 @@ zero exit code."
 #
 #-----------------------------------------------------------------------
 
-# If run_title is set to an empty string in config.sh, I think TITLE 
+# If expt_title is set to an empty string in config.sh, I think TITLE 
 # will also be empty.  Must try out that case...
 if [ -n ${predef_domain} ]; then 
   TITLE=${predef_domain}
 else 
-  TITLE=${run_title:1}
+  TITLE=${expt_title:1}
 fi
 
 mv_vrfy BGDAWP.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}

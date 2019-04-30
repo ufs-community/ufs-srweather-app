@@ -40,7 +40,7 @@
 #-----------------------------------------------------------------------
 #
 TEMPLATE_XML_FP="$TEMPLATE_DIR/$WFLOW_XML_FN"
-WFLOW_XML_FP="$RUNDIR/$WFLOW_XML_FN"
+WFLOW_XML_FP="$EXPTDIR/$WFLOW_XML_FN"
 #
 #-----------------------------------------------------------------------
 #
@@ -63,7 +63,7 @@ FHR=( $( seq 0 1 $fcst_len_hrs ) )
 i=0
 FHR_STR=$( printf "%02d" "${FHR[i]}" )
 numel=${#FHR[@]}
-for i in $(seq 0 $(($numel-1)) ); do
+for i in $(seq 1 $(($numel-1)) ); do
   hour=$( printf "%02d" "${FHR[i]}" )
   FHR_STR="$FHR_STR $hour"
 done
@@ -84,13 +84,63 @@ set_file_param "$WFLOW_XML_FP" "QUEUE_DEFAULT" "$QUEUE_DEFAULT"
 set_file_param "$WFLOW_XML_FP" "QUEUE_HPSS" "$QUEUE_HPSS"
 set_file_param "$WFLOW_XML_FP" "QUEUE_RUN_FV3SAR" "$QUEUE_RUN_FV3SAR"
 set_file_param "$WFLOW_XML_FP" "USHDIR" "$USHDIR"
-set_file_param "$WFLOW_XML_FP" "RUNDIR" "$RUNDIR"
+set_file_param "$WFLOW_XML_FP" "EXPTDIR" "$EXPTDIR"
 set_file_param "$WFLOW_XML_FP" "PROC_RUN_FV3SAR" "$PROC_RUN_FV3SAR"
-set_file_param "$WFLOW_XML_FP" "YYYY" "$YYYY"
-set_file_param "$WFLOW_XML_FP" "MM" "$MM"
-set_file_param "$WFLOW_XML_FP" "DD" "$DD"
-set_file_param "$WFLOW_XML_FP" "HH" "$HH"
+#set_file_param "$WFLOW_XML_FP" "CDATE_FIRST_CYCL" "$CDATE_FIRST_CYCL"
+#set_file_param "$WFLOW_XML_FP" "CDATE_LAST_CYCL" "$CDATE_LAST_CYCL"
+#set_file_param "$WFLOW_XML_FP" "YYYY_FIRST_CYCL" "$YYYY_FIRST_CYCL"
+#set_file_param "$WFLOW_XML_FP" "MM_FIRST_CYCL" "$MM_FIRST_CYCL"
+#set_file_param "$WFLOW_XML_FP" "DD_FIRST_CYCL" "$DD_FIRST_CYCL"
+#set_file_param "$WFLOW_XML_FP" "HH_FIRST_CYCL" "$HH_FIRST_CYCL"
 set_file_param "$WFLOW_XML_FP" "FHR" "$FHR"
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+regex_search="(^\s*<cycledef\s+group=\"at_start\">00)\s*(&HH_FIRST_CYCL;)\s*(&DD_FIRST_CYCL;)\s*(&MM_FIRST_CYCL;)\s*(&YYYY_FIRST_CYCL;)\s*(.*</cycledef>)(.*)"
+regex_replace="\1 ${HH_FIRST_CYCL} ${DD_FIRST_CYCL} ${MM_FIRST_CYCL} ${YYYY_FIRST_CYCL} \6"
+sed -i -r -e "s|${regex_search}|${regex_replace}|g" "$WFLOW_XML_FP"
+
+
+
+regex_search="(^\s*<cycledef\s+group=\"at_)(CC)(Z\">)(&CDATE_FIRST_CYCL;)(CC)( )(&CDATE_LAST_CYCL;)(CC)(.*</cycledef>)(.*)"
+
+i=0
+for cycl in "${CYCL_HRS[@]}"; do
+  regex_replace="\1$cycl\3${CDATE_FIRST_CYCL}${cycl}00\6${CDATE_FIRST_CYCL}${cycl}00\9"
+  crnt_line=$( sed -n -r -e "s%$regex_search%$regex_replace%p" "$WFLOW_XML_FP" )
+  if [ "$i" -eq "0" ]; then
+    all_cycledefs="${crnt_line}"
+  else
+    all_cycledefs=$( printf "%s\n%s" "${all_cycledefs}" "${crnt_line}" )
+  fi
+  i=$(( $i+1 ))
+done
+
+#echo
+#echo "$all_cycledefs"
+
+#
+# Replace all actual newlines in the variable all_cycledefs with back-
+# slash-n's.  This is needed in order for the sed command below to work
+# properly (i.e. to avoid it failing with an unterminated `s' command"
+# message).
+#
+all_cycledefs=${all_cycledefs//$'\n'/\\n}
+#
+# Replace all ampersands in the variable all_cycledefs with backslash-
+# ampersands.  This is needed in order for the sed command below to per-
+# form the substitution properly.
+#
+all_cycledefs=${all_cycledefs//&/\\\&}
+#echo
+#echo "$all_cycledefs"
+
+sed -i -r -e "s|${regex_search}|${all_cycledefs}|g" "$WFLOW_XML_FP"
+
 #
 #-----------------------------------------------------------------------
 #
@@ -135,9 +185,9 @@ Workflow generation completed.
 ========================================================================
 ========================================================================
 
-The run directory and work directory for this experiment are:
+The experiment and work directories for this experiment are:
 
-  RUNDIR=\"$RUNDIR\"
+  EXPTDIR=\"$EXPTDIR\"
   WORKDIR=\"$WORKDIR\"
 
 To launch the workflow, change location to the run directory and issue the following 
@@ -162,7 +212,7 @@ For automatic resubmission of the workflow (say every 3 minutes), the following
 line can be added to the user's crontab (use \"crontab -e\" to edit the cron 
 table): 
 
-*/3 * * * * cd $RUNDIR && $rocotorun_cmd
+*/3 * * * * cd $EXPTDIR && $rocotorun_cmd
 
 Done."
 #

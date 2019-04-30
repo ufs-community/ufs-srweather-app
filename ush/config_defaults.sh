@@ -60,28 +60,29 @@ QUEUE_RUN_FV3SAR="production_queue"
 # that the ndate executable needs to be compiled in the community UPP
 # and copied into UPPDIR.
 #
-# RUNDIR_BASE:
-# The base directory in which the run (sub)directory will be created.  
+# EXPT_BASEDIR:
+# The base directory in which the experiment directory will be created.  
 # If this is not specified or if it is set to an empty string, it will
-# default to$BASEDIR/run_dirs.  The full path to the run directory, 
-# which we will denote by RUNDIR, will be set to $RUNDIR_BASE/$RUN_SU-
-# BDIR (also see definition of RUN_SUBDIR).
+# default to $BASEDIR/expt_dirs.  The full path to the experiment di-
+# rectory, which we will denote by EXPTDIR, will be set to $EXPT_BASEDIR
+# /$EXPT_SUBDIR (also see definition of EXPT_SUBDIR).
 #
-# RUN_SUBDIR:
-# The name that the run directory (without the full path) will have.  If
-# this is not specified, it will default to a string containing the grid
-# parameters followed by "_$run_title", where run_title is a descriptive
-# string for the run (see below).  The full path to the run directory, 
-# which we will denote by RUNDIR, will be set to $RUNDIR_BASE/$RUN_SU-
-# BDIR (also see definition of RUNDIR_BASE).
+# EXPT_SUBDIR:
+# The name that the experiment directory (without the full path) will 
+# have.  If this is not specified, it will default to a string contain-
+# ing the grid parameters followed by "_$expt_title", where expt_title
+# is a descriptive string for the experiment (see below).  The full path
+# to the experiment directory, which we will denote by EXPTDIR, will be
+# set to $EXPT_BASEDIR/$EXPT_SUBDIR (also see definition of EXPT_BASE-
+# DIR).
 #
 #-----------------------------------------------------------------------
 #
 BASEDIR="/path/to/directory/of/fv3sar_workflow/and/NEMSfv3gfs/clones"
 TMPDIR="/path/to/temporary/work/directories"
 UPPDIR="/path/to/UPP/executable"
-RUNDIR_BASE=""
-RUN_SUBDIR=""
+EXPT_BASEDIR=""
+EXPT_SUBDIR=""
 #
 #-----------------------------------------------------------------------
 #
@@ -122,7 +123,8 @@ RUN_SUBDIR=""
 #
 # FIELD_TABLE_CCPP_GSD_FN:
 # Name of file that specifies the traces that the FV3SAR will read in
-# from the IC/BC files for a CCPP-enabled run that uses GSD physics.
+# from the IC/BC files for a CCPP-enabled forecast that uses GSD phys-
+# ics.
 #
 # DATA_TABLE_FN:
 # Name of file that specifies ???
@@ -177,8 +179,20 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 #
 # Set forecast parameters.  Definitions:
 #
-# CDATE:
-# Starting date of the forecast.  Format is "YYYYMMDDHH".
+# CDATE_FIRST_CYCL:
+# Starting date of the first forecast in the cycle (set of forecasts).  
+# Format is "YYYYMMDD".  Note that this does not include the hour-of-
+# day.
+#
+# CDATE_LAST_CYCL:
+# Starting date of the last forecast in the cycle (set of forecasts).  
+# Format is "YYYYMMDD".  Note that this does not include the hour-of-
+# day.
+#
+# CYCL_HRS:
+# An array containing the hour-of-day for each cycle hour to run.  Each
+# element of this array must be a two-digit string representing an inte-
+# ger that is less than or equal to 23, e.g. "00", "03", "12", "23".
 #
 # fcst_len_hrs:
 #`The length of the forecast in integer hours.
@@ -193,7 +207,9 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 #
 #-----------------------------------------------------------------------
 #
-CDATE="YYYYMMDDHH"
+CDATE_FIRST_CYCL="YYYYMMDD"
+CDATE_LAST_CYCL="YYYYMMDD"
+CYCL_HRS=( "HH1" "HH2" )
 fcst_len_hrs="24"
 BC_update_intvl_hrs="6"
 #
@@ -220,16 +236,16 @@ ictype="opsgfs"
 #
 #-----------------------------------------------------------------------
 #
-# Set run_title.  This variable contains a descriptive string for the
-# current run/forecast that is used in forming the names of the run and
-# work (temporary) directories that will be created.  It should be used
-# to distinguish these directories from the run and work directories ge-
-# nerated by other FV3SAR runs.  Note that since it will be used in di-
-# rectory names, it should not contain spaces.
+# Set expt_title.  This variable contains a descriptive string for the
+# current experiment that is used in forming the names of the experiment
+# and work (temporary) directories that will be created.  It should be
+# used to distinguish these directories from the experiment and work di-
+# rectories generated for other FV3SAR experiments.  Note that since it
+# will be used in directory names, it should not contain spaces.
 #
 #-----------------------------------------------------------------------
 #
-run_title="desc_str"
+expt_title="desc_str"
 #
 #-----------------------------------------------------------------------
 #
@@ -241,8 +257,8 @@ run_title="desc_str"
 # table file, etc) that have settings that correspond to EMC's CCPP-ena-
 # bled FV3SAR regression test.  It will also cause additional files 
 # (i.e. in addition to the ones for the non-CCPP enabled version of the
-# FV3SAR) to be staged to the run directory (e.g. module setup scripts,
-# module load files).
+# FV3SAR) to be staged in the experiment directory (e.g. module setup
+# scripts, module load files).
 #
 #-----------------------------------------------------------------------
 #
@@ -253,8 +269,9 @@ CCPP="false"
 # If CCPP has been set to "true", the CCPP_phys_suite flag defines the 
 # physics suite that will run using CCPP.  This affects the FV3SAR name-
 # list file, the diagnostics table file, the field table file, and the 
-# XML physics suite definition file that are staged in the run directo-
-# ry.  As of 4/4/2019, valid values for this parameter are:
+# XML physics suite definition file that are staged in the experiment 
+# directory and/or the run directories under it.  As of 4/4/2019, valid
+# values for this parameter are:
 #
 #   "GFS" - to run with the GFS physics suite
 #   "GSD" - to run with the GSD physics suite
@@ -485,8 +502,8 @@ fi
 #
 #   These result in regional grids that cover (as closely as possible)
 #   the domains used in the WRF/ARW-based RAP and HRRR models, respec-
-#   tively.  The run title string (run_title) set above is also modified
-#   to reflect the specified predefined domain.
+#   tively.  The experiment title string (expt_title) set above is also
+#   modified to reflect the specified predefined domain.
 #
 #-----------------------------------------------------------------------
 #
@@ -506,12 +523,12 @@ dt_atmos=18 #Preliminary values: 18 for 3-km runs, 90 for 13-km runs
 #-----------------------------------------------------------------------
 #
 # Set preexisting_dir_method.  This variable determines the strategy to
-# use to deal with preexisting run and/or work directories (e.g ones
-# generated by previous forecasts; such directories may be encountered
-# if the value of run_title specified above does not result in unique
-# direcotry names).  This variable must be set to one of "delete", "re-
-# name", and "quit".  The resulting behavior for each of these values is
-# as follows:
+# use to deal with preexisting experiment and/or work directories (e.g
+# ones generated by previous experiments; such directories may be en-
+# countered if the value of expt_title specified above does not result
+# in unique direcotry names).  This variable must be set to one of "de-
+# lete", "rename", and "quit".  The resulting behavior for each of these
+# values is as follows:
 #
 # * "delete":
 #   The preexisting directory is deleted and a new directory (having the

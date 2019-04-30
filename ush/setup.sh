@@ -361,7 +361,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# GSK 20190429:
+# The following needs to be modified to check that CDATE_FIRST_CYCL and
+# CDATE_LAST_CYCL have the proper forms (not including the cycle hour).
 #
+if [ 0 = 1 ]; then
 CDATE_OR_NULL=$( printf "%s" "$CDATE" | sed -n -r -e "s/^([0-9]{10})$/\1/p" )
 
 if [ -z "${CDATE_OR_NULL}" ]; then
@@ -371,6 +375,8 @@ where YYYY is the 4-digit year, MM is the 2-digit month, DD is the 2-digit day-
 of-month, and HH is the 2-digit hour-of-day.
   CDATE = \"$CDATE\""
 fi
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -379,11 +385,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-YYYY=${CDATE:0:4}
-MM=${CDATE:4:2}
-DD=${CDATE:6:2}
-HH=${CDATE:8:2}
-YMD=${CDATE:0:8}
+YYYY_FIRST_CYCL=${CDATE_FIRST_CYCL:0:4}
+MM_FIRST_CYCL=${CDATE_FIRST_CYCL:4:2}
+DD_FIRST_CYCL=${CDATE_FIRST_CYCL:6:2}
+HH_FIRST_CYCL=${CYCL_HRS[0]}
 #
 #-----------------------------------------------------------------------
 #
@@ -549,19 +554,19 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If run_title is set to a non-empty value [i.e. it is neither unset nor
-# null, where null means an empty string], prepend an underscore to it.
-# Otherwise, set it to null.
+# If expt_title is set to a non-empty value [i.e. it is neither unset 
+# nor null, where null means an empty string], prepend an underscore to
+# it.  Otherwise, set it to null.
 #
 #-----------------------------------------------------------------------
 #
-run_title=${run_title:+_$run_title}
+expt_title=${expt_title:+_$expt_title}
 #
 #-----------------------------------------------------------------------
 #
 # Check if predef_domain is set to a valid (non-empty) value.  If so:
 #
-# 1) Reset the run title (run_title).
+# 1) Reset the experiment title (expt_title).
 # 2) Reset the grid parameters.
 # 3) If the write component is to be used (i.e. quilting is set to
 #    ".true.") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the
@@ -602,9 +607,9 @@ case $predef_domain in
 #
 "RAP")  # The RAP domain.
 #
-# Prepend the string "_RAP" to run_title.
+# Prepend the string "_RAP" to expt_title.
 #
-  run_title="_RAP${run_title}"
+  expt_title="_RAP${expt_title}"
 
   if [ "$grid_gen_method" = "GFDLgrid" ]; then
 
@@ -667,9 +672,9 @@ case $predef_domain in
 #
 "HRRR")  # The HRRR domain.
 #
-# Prepend the string "_HRRR" to run_title.
+# Prepend the string "_HRRR" to expt_title.
 #
-  run_title="_HRRR${run_title}"
+  expt_title="_HRRR${expt_title}"
 
   if [ "$grid_gen_method" = "GFDLgrid" ]; then
 #
@@ -692,7 +697,7 @@ case $predef_domain in
     num_margin_cells_T6_top=80
     jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
 
-    dt_atmos="18"
+    dt_atmos="50"
 
     layout_x="20"
     layout_y="20"
@@ -712,7 +717,7 @@ case $predef_domain in
 
     nhw_T7=6
 
-    dt_atmos="18"
+    dt_atmos="50"
 
     layout_x="20"
     layout_y="20"
@@ -734,9 +739,9 @@ case $predef_domain in
 #
 "EMCCONUS")  # EMC's C768 domain over the CONUS.
 #
-# Prepend the string "_EMCCONUS" to run_title.
+# Prepend the string "_EMCCONUS" to expt_title.
 #
-  run_title="_EMCCONUS${run_title}"
+  expt_title="_EMCCONUS${expt_title}"
 
   if [ "$grid_gen_method" = "GFDLgrid" ]; then
 
@@ -794,24 +799,24 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Construct a name (RUN_SUBDIR) that we will used for the run directory
-# as well as the work directory (which will be created under the speci-
-# fied TMPDIR).
+# Construct a name (EXPT_SUBDIR) that we will used for the experiment
+# directory as well as the work directory (which will be created under
+# the specified TMPDIR).
 #
 #-----------------------------------------------------------------------
 #
-if [ -z "${RUN_SUBDIR}" ]; then  # If RUN_SUBDIR is not set or is set to an empty string.
+if [ -z "${EXPT_SUBDIR}" ]; then  # If EXPT_SUBDIR is not set or is set to an empty string.
 
   if [ "$grid_gen_method" = "GFDLgrid" ]; then
     stretch_str="_S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
     refine_str="_RR${refine_ratio}"
-    RUN_SUBDIR=${CRES}${stretch_str}${refine_str}${run_title}
+    EXPT_SUBDIR=${CRES}${stretch_str}${refine_str}${expt_title}
   elif [ "$grid_gen_method" = "JPgrid" ]; then
     nx_T7_str="NX$( printf "%s" "${nx_T7}" | sed "s|\.|p|" )"
     ny_T7_str="NY$( printf "%s" "${ny_T7}" | sed "s|\.|p|" )"
     a_grid_param_str="_A$( printf "%s" "${a_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
     k_grid_param_str="_K$( printf "%s" "${k_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
-    RUN_SUBDIR=${nx_T7_str}_${ny_T7_str}${a_grid_param_str}${k_grid_param_str}${run_title}
+    EXPT_SUBDIR=${nx_T7_str}_${ny_T7_str}${a_grid_param_str}${k_grid_param_str}${expt_title}
   fi
 
 fi
@@ -829,7 +834,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-WORKDIR=$TMPDIR/$RUN_SUBDIR
+WORKDIR=$TMPDIR/$EXPT_SUBDIR
 check_for_preexist_dir $WORKDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
@@ -866,37 +871,40 @@ WORKDIR_ICBC=$WORKDIR/ICs_BCs
 #
 #-----------------------------------------------------------------------
 #
-# Define the full path of the run directory.  This is the directory in
-# which most of the input files to the FV3SAR as well as most of the
-# output files that it generates will be placed.  Then call the function
-# that checks whether the run directory already exists and if so, moves
-# it, deletes it, or quits out of this script (the action taken depends
-# on the value of the variable preexisting_dir_method).  Note that we do
-# not yet create a new run directory; we will do that later below once
+# Define the full path to the experiment directory.  This is the direct-
+# ory in which the static input files to the FV3SAR are placed.  Then
+# call the function that checks whether the experiment directory already
+# exists and if so, moves it, deletes it, or quits out of this script 
+# (the action taken depends on the value of the variable preexisting_-
+# dir_method).  Note that we do not yet create a new experiment directory; we will do that later below once
 # the workflow/experiment configuration parameters pass the various 
 # checks.
 #
 #-----------------------------------------------------------------------
 #
-#if [ -z "${RUNDIR_BASE+x}" ]; then  # If RUNDIR_BASE is not set at all, not even to an empty string.
-if [ -z "${RUNDIR_BASE}" ]; then  # If RUNDIR_BASE is not set or is set to an empty string.
-  RUNDIR_BASE="${BASEDIR}/run_dirs"
+#if [ -z "${EXPT_BASEDIR+x}" ]; then  # If EXPT_BASEDIR is not set at all, not even to an empty string.
+if [ -z "${EXPT_BASEDIR}" ]; then  # If EXPT_BASEDIR is not set or is set to an empty string.
+  EXPT_BASEDIR="${BASEDIR}/expt_dirs"
 fi
-mkdir_vrfy -p "${RUNDIR_BASE}"
+mkdir_vrfy -p "${EXPT_BASEDIR}"
 
-RUNDIR="${RUNDIR_BASE}/${RUN_SUBDIR}"
-check_for_preexist_dir $RUNDIR $preexisting_dir_method
+EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
+check_for_preexist_dir $EXPTDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
 #
-# Set the directory INIDIR in which we will store the analysis (at the
-# initial time CDATE) and forecast (at the boundary update times) files.  
-# These are the files that will be used to generate surface fields and 
-# initial and boundary conditions for the FV3SAR.
+# Set the variable EXTRN_MDL_FILES_BASEDIR that will contain the loca-
+# tion of the directory in which we will create subdirectories for each
+# forecast (i.e. for each CDATE) in which to store the analysis and
+# forecast files from the specified external model.  The analysis file
+# will be used to generate initial conditions files for the FV3SAR as 
+# well as surface fields and a boundary conditions file at the forecast
+# start time.  The forecast files will be used to generate boundary con-
+# ditions files for the FV3SAR at each boundary update time.
 #
 #-----------------------------------------------------------------------
 #
-INIDIR="${WORKDIR}/gfs"
+EXTRN_MDL_FILES_BASEDIR="${WORKDIR}/gfs"
 #
 #-----------------------------------------------------------------------
 #
@@ -1149,17 +1157,14 @@ NUM_NODES=$(( ($PE_MEMBER01 + $ncores_per_node - 1)/$ncores_per_node ))
 #
 #-----------------------------------------------------------------------
 #
-# Create a new work directory.  Then create a new run directory as well
-# as the subdirectories INPUT and RESTART under it.  Note that at this
-# point we are guaranteed that there are no preexisting work or run di-
-# rectories.
+# Create a new work directory and a new experiment directory.  Note that
+# at this point we are guaranteed that there are no preexisting work or
+# experiment directories.
 #
 #-----------------------------------------------------------------------
 #
 mkdir_vrfy -p "$WORKDIR"
-mkdir_vrfy -p "$RUNDIR"
-mkdir_vrfy "$RUNDIR/INPUT"
-mkdir_vrfy "$RUNDIR/RESTART"
+mkdir_vrfy -p "$EXPTDIR"
 #
 #-----------------------------------------------------------------------
 #
@@ -1189,7 +1194,7 @@ mkdir_vrfy "$RUNDIR/RESTART"
 #
 #-----------------------------------------------------------------------
 #
-SCRIPT_VAR_DEFNS_FP="$RUNDIR/$SCRIPT_VAR_DEFNS_FN"
+SCRIPT_VAR_DEFNS_FP="$EXPTDIR/$SCRIPT_VAR_DEFNS_FN"
 cp_vrfy ./${DEFAULT_CONFIG_FN} ${SCRIPT_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -1233,6 +1238,10 @@ sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
 #
 #-----------------------------------------------------------------------
 #
+# The following comment block needs to be updated because now line_list
+# may contain lines that are not assignment statements (e.g. it may con-
+# tain if-statements).  Such lines are ignored in the while-loop below.
+#
 # Reset each of the variables in the variable definitions file to its 
 # value in the current environment.  To accomplish this, we:
 #
@@ -1240,7 +1249,7 @@ sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
 #    lines, extraneous leading whitespace, etc from the variable defini-
 #    tions file (which is currently identical to the default workflow/
 #    experiment configuration script) and saving the result in the vari-
-#    able var_list.  Each line of var_list will have the form
+#    able line_list.  Each line of line_list will have the form
 #
 #      VAR=...
 #
@@ -1248,7 +1257,7 @@ sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
 #    fault configuration script (which does not necessarily correspond
 #    to the current value of the variable).
 #
-# 2) Loop through each line of var_list.  For each line, we extract the
+# 2) Loop through each line of line_list.  For each line, we extract the
 #    variable name (and save it in the variable var_name), get its value
 #    from the current environment (using bash indirection, i.e. 
 #    ${!var_name}), and use the set_file_param() function to replace the
@@ -1257,59 +1266,130 @@ sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
 #
 #-----------------------------------------------------------------------
 #
-var_list=$( sed -r \
-            -e "s/^([ ]*)([^ ]+.*)/\2/g" \
-            -e "/^#.*/d" \
-            -e "/^$/d" \
-            ${SCRIPT_VAR_DEFNS_FP} )
+line_list=$( sed -r \
+             -e "s/^([ ]*)([^ ]+.*)/\2/g" \
+             -e "/^#.*/d" \
+             -e "/^$/d" \
+             ${SCRIPT_VAR_DEFNS_FP} )
 echo 
-echo "The variable \"var_list\" contains:"
+echo "The variable \"line_list\" contains:"
 echo
-printf "%s\n" "${var_list}"
-#echo $var_list
-#exit
+printf "%s\n" "${line_list}"
 echo
-
+#
+# Loop through the lines in line_list.
+#
 while read crnt_line; do
-
+#
+# Try to obtain the name of the variable being set on the current line.
+# This will be successful only if the line consists of one or more char-
+# acters representing the name of a variable (recall that in generating
+# the variable line_list, all leading spaces in the lines in the file 
+# have been stripped out), followed by an equal sign, followed by zero
+# or more characters representing the value that the variable is being
+# set to.
+#
   var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p" )
 #echo
 #echo "============================"
 #printf "%s\n" "var_name = \"${var_name}\""
-
+#
+# If var_name is not empty, then a variable name was found in the cur-
+# rent line in line_list.
+#
   if [ ! -z $var_name ]; then
 
     printf "\n%s\n" "var_name = \"${var_name}\""
-
+#
+# If the variable specified in var_name is set in the current environ-
+# ment (to either an empty or non-empty string), get its value and in-
+# sert it in the variable definitions file on the line where that varia-
+# ble is defined.  Note that 
+#
+#   ${!var_name+x}
+#
+# will retrun the string "x" if the variable specified in var_name is 
+# set (to either an empty or non-empty string), and it will return an
+# empty string if the variable specified in var_name is unset (i.e. un-
+# defined).
+#
     if [ ! -z ${!var_name+x} ]; then
-
-      var_value="${!var_name}"
-      set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}"
-echo "var_value = $var_value"
-
+#
+# The variable may be a scalar or an array.  Thus, we first treat it as
+# an array and obtain the number of elements that it contains.
+#
+      array_name_at="${var_name}[@]"
+      array=("${!array_name_at}")
+      num_elems="${#array[@]}"
+#
+# We will now set the variable var_value to the string that needs to be
+# placed on the right-hand side of the assignment operator (=) on the 
+# appropriate line in variable definitions file.  How this is done de-
+# pends on whether the variable is a scalar or an array.
+#
+# If the variable contains only one element, then it is a scalar.  (It
+# could be a 1-element array, but it is simpler to treat it as a sca-
+# lar.)  In this case, we enclose its value in double quotes and save
+# the result in var_value.
+#
+      if [ "$num_elems" -eq 1 ]; then
+        var_value="${!var_name}"
+        var_value="\"${var_value}\""
+#
+# If the variable contains more than one element, then it is an array.
+# In this case, we build var_value in two steps as follows:
+#
+# 1) Generate a string containing each element of the array in double
+#    quotes and followed by a space.
+#
+# 2) Place parentheses around the double-quoted list of array elements
+#    generated in the first step.  Note that there is no need to put a
+#    space before the closing parenthesis because in step 1, we have al-
+#    ready placed a space after the last element.
+#
+      else
+        var_value=$(printf "\"%s\" " "${!array_name_at}")
+        var_value="( $var_value)"
+      fi
+#
+# If the variable specified in var_name is no set in the current envi-
+# ron ment,  (to either an empty or non-empty string), get its value and in-
+# sert it in the variable definitions file on the line where that varia-
+# ble is defined.
+#
     else
 
       print_info_msg "\
-The variable specified by \"var_name\" is not set in the current environment:
+The variable specified by \"var_name\" is not set in the current envi-
+ronment:
   var_name = \"${var_name}\"
-Thus, \"${var_name}\" will not be set in the variable definitions file.
-Continuing to next line of \"var_list\"."
-
+Setting its value in the variable definitions file to an empty string."
+      var_value="\"\""
     fi
-
+#
+# Now place var_value on the right-hand side of the assignment statement
+# on the appropriate line in variable definitions file.
+#
+    set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}"
+#
+# If var_name is empty, then a variable name was not found in the cur-
+# rent line in line_list.  In this case, print out a warning and move on
+# to the next line.
+#
   else
 
     print_info_msg "\
 
-Could not extract a variable name from the current line of \"var_list\"
+Could not extract a variable name from the current line in \"line_list\"
 (probably because it does not contain an equal sign with no spaces on 
 either side):
   crnt_line = \"${crnt_line}\"
   var_name = \"${var_name}\"
-Continuing to next line of \"var_list\"."
+Continuing to next line in \"line_list\"."
 
   fi
-done <<< "${var_list}"
+
+done <<< "${line_list}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1346,8 +1426,8 @@ USHDIR="$USHDIR"
 SORCDIR="$SORCDIR"
 TEMPLATE_DIR="$TEMPLATE_DIR"
 NEMSfv3gfs_DIR="$NEMSfv3gfs_DIR"
-INIDIR="$INIDIR"
-RUNDIR="$RUNDIR"
+EXTRN_MDL_FILES_BASEDIR="$EXTRN_MDL_FILES_BASEDIR"
+EXPTDIR="$EXPTDIR"
 FIXgsm="$FIXgsm"
 UPPFIX="$UPPFIX"
 GSDFIX="$GSDFIX"
@@ -1383,7 +1463,7 @@ definitions file returned with a nonzero status."
 #
 #-----------------------------------------------------------------------
 #
-# Save in str_to_insert a string containing defintions of grid parame-
+# Append to the variable definitions file the defintions of grid parame-
 # ters that are specific to the grid generation method used.
 #
 #-----------------------------------------------------------------------
@@ -1464,11 +1544,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-YYYY="$YYYY"
-MM="$MM"
-DD="$DD"
-HH="$HH"
-YMD="$YMD"
+YYYY_FIRST_CYCL="$YYYY_FIRST_CYCL"
+MM_FIRST_CYCL="$MM_FIRST_CYCL"
+DD_FIRST_CYCL="$DD_FIRST_CYCL"
+HH_FIRST_CYCL="$HH_FIRST_CYCL"
 BC_update_times_hrs=(${BC_update_times_hrs[@]})  # BC_update_times_hrs is an array, even if it has only one element.
 #
 #-----------------------------------------------------------------------
