@@ -4,21 +4,11 @@
 
 # Loading Intel Compiler Suite
 
-  module load intel/18.0.5.274
-  module load impi/2018.4.274
-  module load szip/2.1
-  module load hdf5/1.8.9
-  module load netcdf/4.2.1.1
-  #module load slurm/18.08.6
-  #  module load contrib anaconda
-
-#module unload intel
-#module load intel/15.0.3.187
-
-#module load impi/5.1.1.109
-#module load szip
-#module load hdf5
-#module load netcdf4/4.2.1.1
+module load intel/18.0.5.274
+module load impi/2018.4.274
+module load szip/2.1
+module load hdf5/1.8.9
+module load netcdf/4.2.1.1
 
 ## this one is missing from nwprod/lib (compiled locally)
 #module use lib/modulefiles
@@ -49,9 +39,16 @@ module load gfsio-intel-sandybridge
 module use /lfs3/projects/hpc-wof1/ywang/regional_fv3/modulefiles
 module load landsfcutil-intel-sandybridge/2.1.0
 
+#Local ESMF
+export ESMFMKFILE=/lfs3/projects/rtwbl/beck/esmf/lib/libO/Linux.intel.64.intelmpi.default/esmf.mk
 
 export NETCDF_INCLUDE="-I${NETCDF}/include"
 export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdf -lnetcdff -L${HDF5}/lib -lhdf5 -lhdf5_fortran"
 
-set FCMP ifort
-set CCMP icc
+#Local wgrib2 API
+export WGRIB2API_LIB="/lfs3/projects/rtwbl/beck/grib2/lib/libwgrib2_api.a"
+export WGRIB2API_INC="/lfs3/projects/rtwbl/beck/grib2/lib"
+export WGRIB2_LIB="/lfs3/projects/rtwbl/beck/grib2/lib/libwgrib2.a"
+
+export FCMP=mpiifort
+export CCMP=mpiicc

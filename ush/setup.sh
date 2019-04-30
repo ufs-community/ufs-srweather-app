@@ -155,7 +155,7 @@ Then remove this message and rerun."
 "THEIA")
 #
   ncores_per_node=24
-  SCHED="moabtorque"
+  SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
   QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
@@ -164,7 +164,7 @@ Then remove this message and rerun."
 "JET")
 #
   ncores_per_node=24
-  SCHED="moabtorque"
+  SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
   QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-"batch"}

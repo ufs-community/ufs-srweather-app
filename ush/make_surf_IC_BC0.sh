@@ -231,6 +231,7 @@ case $MACHINE in
   . /apps/lmod/lmod/init/sh
   module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
   module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
+  module load slurm
   module list
 
   { restore_shell_opts; } > /dev/null 2>&1

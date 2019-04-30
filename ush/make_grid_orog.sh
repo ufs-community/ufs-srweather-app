@@ -240,6 +240,7 @@ case $MACHINE in
   module load impi
   module load hdf5/1.8.14
   module load netcdf/4.3.0
+  module load slurm
   module list
 
   { restore_shell_opts; } > /dev/null 2>&1
@@ -837,6 +838,15 @@ a 4-cell wide halo returned with nonzero exit code."
 
 print_info_msg_verbose "\
 \"Shaving\" of regional grid and filtered orography files complete."
+
+# Add link from grid directory to shave directory to allow chgres_cube
+# to find grid file - Need to modify chgres to read in halo files names
+
+print_info_msg_verbose "\
+Linking grid file for chgres."
+
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile${tile}.halo${nh4_T7}.nc \
+            $WORKDIR_SHVE/${CRES}_grid.tile${tile}.nc
 #
 #-----------------------------------------------------------------------
 #

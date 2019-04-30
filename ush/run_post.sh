@@ -75,11 +75,11 @@ case $MACHINE in
 #
   { save_shell_opts; set +x; } > /dev/null 2>&1
   module purge
-  module load intel impi netcdf #mvapich2 netcdf
+  module load intel impi netcdf slurm #mvapich2 netcdf
   { restore_shell_opts; } > /dev/null 2>&1
 
   np=$( cat $PBS_NODEFILE | wc -l )
-  APRUN="mpirun -l -np $np"
+  APRUN="srun"
   ;;
 #
 "JET")
