@@ -85,9 +85,13 @@ set_file_param "$WFLOW_XML_FP" "QUEUE_HPSS" "$QUEUE_HPSS"
 set_file_param "$WFLOW_XML_FP" "QUEUE_RUN_FV3SAR" "$QUEUE_RUN_FV3SAR"
 set_file_param "$WFLOW_XML_FP" "USHDIR" "$USHDIR"
 set_file_param "$WFLOW_XML_FP" "EXPTDIR" "$EXPTDIR"
+set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_NAME_ICS_SURF" "$EXTRN_MDL_NAME_ICS_SURF"
+set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_NAME_LBCS" "$EXTRN_MDL_NAME_LBCS"
+set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF" "$EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF"
+set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_FILES_SYSBASEDIR_LBCS" "$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
 set_file_param "$WFLOW_XML_FP" "PROC_RUN_FV3SAR" "$PROC_RUN_FV3SAR"
-#set_file_param "$WFLOW_XML_FP" "CDATE_FIRST_CYCL" "$CDATE_FIRST_CYCL"
-#set_file_param "$WFLOW_XML_FP" "CDATE_LAST_CYCL" "$CDATE_LAST_CYCL"
+#set_file_param "$WFLOW_XML_FP" "DATE_FIRST_CYCL" "$DATE_FIRST_CYCL"
+#set_file_param "$WFLOW_XML_FP" "DATE_LAST_CYCL" "$DATE_LAST_CYCL"
 #set_file_param "$WFLOW_XML_FP" "YYYY_FIRST_CYCL" "$YYYY_FIRST_CYCL"
 #set_file_param "$WFLOW_XML_FP" "MM_FIRST_CYCL" "$MM_FIRST_CYCL"
 #set_file_param "$WFLOW_XML_FP" "DD_FIRST_CYCL" "$DD_FIRST_CYCL"
@@ -96,21 +100,33 @@ set_file_param "$WFLOW_XML_FP" "FHR" "$FHR"
 #
 #-----------------------------------------------------------------------
 #
+# Extract from CDATE the starting year, month, day, and hour of the
+# forecast.  These are needed below for various operations.
+#
+#-----------------------------------------------------------------------
+#
+YYYY_FIRST_CYCL=${DATE_FIRST_CYCL:0:4}
+MM_FIRST_CYCL=${DATE_FIRST_CYCL:4:2}
+DD_FIRST_CYCL=${DATE_FIRST_CYCL:6:2}
+HH_FIRST_CYCL=${CYCL_HRS[0]}
+#
+#-----------------------------------------------------------------------
+#
 #
 #
 #-----------------------------------------------------------------------
 #
-regex_search="(^\s*<cycledef\s+group=\"at_start\">00)\s*(&HH_FIRST_CYCL;)\s*(&DD_FIRST_CYCL;)\s*(&MM_FIRST_CYCL;)\s*(&YYYY_FIRST_CYCL;)\s*(.*</cycledef>)(.*)"
+regex_search="(^\s*<cycledef\s+group=\"at_start\">00)\s+(&HH_FIRST_CYCL;)\s+(&DD_FIRST_CYCL;)\s+(&MM_FIRST_CYCL;)\s+(&YYYY_FIRST_CYCL;)\s+(.*</cycledef>)(.*)"
 regex_replace="\1 ${HH_FIRST_CYCL} ${DD_FIRST_CYCL} ${MM_FIRST_CYCL} ${YYYY_FIRST_CYCL} \6"
 sed -i -r -e "s|${regex_search}|${regex_replace}|g" "$WFLOW_XML_FP"
 
 
 
-regex_search="(^\s*<cycledef\s+group=\"at_)(CC)(Z\">)(&CDATE_FIRST_CYCL;)(CC)( )(&CDATE_LAST_CYCL;)(CC)(.*</cycledef>)(.*)"
+regex_search="(^\s*<cycledef\s+group=\"at_)(CC)(Z\">)(&DATE_FIRST_CYCL;)(CC)(\s+)(&DATE_LAST_CYCL;)(CC)(.*</cycledef>)(.*)"
 
 i=0
 for cycl in "${CYCL_HRS[@]}"; do
-  regex_replace="\1$cycl\3${CDATE_FIRST_CYCL}${cycl}00\6${CDATE_FIRST_CYCL}${cycl}00\9"
+  regex_replace="\1$cycl\3${DATE_FIRST_CYCL}${cycl}00\6${DATE_FIRST_CYCL}${cycl}00\9"
   crnt_line=$( sed -n -r -e "s%$regex_search%$regex_replace%p" "$WFLOW_XML_FP" )
   if [ "$i" -eq "0" ]; then
     all_cycledefs="${crnt_line}"
@@ -140,6 +156,57 @@ all_cycledefs=${all_cycledefs//&/\\\&}
 #echo "$all_cycledefs"
 
 sed -i -r -e "s|${regex_search}|${all_cycledefs}|g" "$WFLOW_XML_FP"
+
+#
+#-----------------------------------------------------------------------
+#
+# Set the system directory (i.e. location on disk, not on HPSS) in which
+# to look for the GFS analysis and forecast files for the specified 
+# forecast start date and time (CDATE).  These files are needed in gene-
+# rating the IC, BC, and other input files for the FV3SAR.  These files
+# may be found in this system directory if CDATE is not too far in the
+# past (e.g. more than two weeks ago on WCOSS, more than 2 days ago on 
+# theia, etc).  If they are not found in this system directory, then we
+# will look for them in the mass store (HPSS).
+#
+#-----------------------------------------------------------------------
+#
+case $MACHINE in
+"WCOSS_C")
+  ATMANL_SYSFP="\&EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF;/gfs.@Y@m@d/gfs.t@Hz.atmanl.nemsio"
+  SFCANL_SYSFP="\&EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF;/gfs.@Y@m@d/gfs.t@Hz.sfcanl.nemsio"
+  ;;
+"THEIA")
+  ATMANL_SYSFP="\&EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF;/gfs.@Y@m@d/gfs.t@Hz.atmanl.nemsio"
+  SFCANL_SYSFP="\&EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF;/gfs.@Y@m@d/gfs.t@Hz.sfcanl.nemsio"
+  ;;
+"JET")
+  ATMANL_SYSFP="\&EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF;/@Y@m@d/gfs.t@Hz.atmanl.nemsio"
+  SFCANL_SYSFP="\&EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF;/@Y@m@d/gfs.t@Hz.sfcanl.nemsio"
+  ;;
+"ODIN")
+  ATMANL_SYSFP="\&EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF;/@Y@m@d/gfs.t@Hz.atmanl.nemsio"
+  SFCANL_SYSFP="\&EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF;/@Y@m@d/gfs.t@Hz.sfcanl.nemsio"
+  ;;
+*)
+  print_err_msg_exit "\
+The system directory in which to look for the GFS analysis and forecast
+files has not been specified for this machine:
+  MACHINE = \"$MACHINE\"
+"
+  ;;
+esac
+
+regex_search="(^\s*<datadep\s+age=\"00:00:05:00\"><cyclstr>)(ATMANL_SYSFP)(</cyclstr></datadep>)(.*)$"
+regex_replace="\1${ATMANL_SYSFP}\3"
+sed -i -r -e "s|${regex_search}|${regex_replace}|g" "$WFLOW_XML_FP"
+
+regex_search="(^\s*<datadep\s+age=\"00:00:05:00\"><cyclstr>)(SFCANL_SYSFP)(</cyclstr></datadep>)(.*)$"
+regex_replace="\1${SFCANL_SYSFP}\3"
+sed -i -r -e "s|${regex_search}|${regex_replace}|g" "$WFLOW_XML_FP"
+
+echo "BYE"
+exit
 
 #
 #-----------------------------------------------------------------------

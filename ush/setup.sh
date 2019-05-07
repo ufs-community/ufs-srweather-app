@@ -85,33 +85,43 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Make sure VERBOSE is set to either "true" or "false".
+# Source the script defining the valid values of experiment variables.
 #
 #-----------------------------------------------------------------------
 #
-if [ "$VERBOSE" != "true" ] && [ "$VERBOSE" != "false" ]; then
-  print_err_msg_exit "\
-The verbosity flag VERBOSE must be set to either \"true\" or \"false\":
-  VERBOSE = \"$VERBOSE\""
-fi
+. ./valid_param_vals.sh
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that VERBOSE is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$VERBOSE" valid_vals_VERBOSE || { \
+valid_vals_VERBOSE_str=$(printf "\"%s\" " "${valid_vals_VERBOSE[@]}");
+print_err_msg_exit "\
+Value specified in VERBOSE is not supported:
+  VERBOSE = \"$VERBOSE\"
+VERBOSE must be set to one of the following:
+  $valid_vals_VERBOSE_str
+"; }
 #
 #-----------------------------------------------------------------------
 #
 # Convert machine name to upper case if necessary.  Then make sure that
-# MACHINE is set to one of the allowed values.
+# MACHINE is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
 MACHINE=$( printf "%s" "$MACHINE" | sed -e 's/\(.*\)/\U\1/' )
 
-valid_MACHINES=("WCOSS_C" "WCOSS" "DELL" "THEIA" "JET" "ODIN" "CHEYENNE")
-iselementof "$MACHINE" valid_MACHINES || { \
-valid_MACHINES_str=$(printf "\"%s\" " "${valid_MACHINES[@]}");
+iselementof "$MACHINE" valid_vals_MACHINE || { \
+valid_vals_MACHINE_str=$(printf "\"%s\" " "${valid_vals_MACHINE[@]}");
 print_err_msg_exit "\
 Machine specified in MACHINE is not supported:
   MACHINE = \"$MACHINE\"
 MACHINE must be set to one of the following:
-  $valid_MACHINES_str
+  $valid_vals_MACHINE_str
 "; }
 #
 #-----------------------------------------------------------------------
@@ -129,8 +139,7 @@ case $MACHINE in
   print_err_msg_exit "\
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
-Then remove this message and rerun."
-
+Then remove this message and rerun." 
   ncores_per_node=""
   SCHED=""
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
@@ -209,19 +218,18 @@ gtype="regional"
 #
 #-----------------------------------------------------------------------
 #
-# Make sure predef_domain is set to one of the allowed values.
+# Make sure predef_domain is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-valid_predef_domains=("RAP" "HRRR" "EMCCONUS")
 if [ ! -z ${predef_domain} ]; then
-  iselementof "$predef_domain" valid_predef_domains || { \
-  valid_predef_domains_str=$(printf "\"%s\" " "${valid_predef_domains[@]}");
+  iselementof "$predef_domain" valid_vals_predef_domain || { \
+  valid_vals_predef_domain_str=$(printf "\"%s\" " "${valid_vals_predef_domain[@]}");
   print_err_msg_exit "\
 Predefined regional domain specified in predef_domain is not supported:
   predef_domain = \"$predef_domain\"
 predef_domain must be set either to an empty string or to one of the following:
-  $valid_predef_domains_str
+  $valid_vals_predef_domain_str
 "; }
 fi
 
@@ -230,40 +238,38 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Make sure CCPP is set to one of the allowed values.
+# Make sure CCPP is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-valid_CCPP=("true" "false")
 if [ ! -z ${CCPP} ]; then
-  iselementof "$CCPP" valid_CCPP || { \
-  valid_CCPP_str=$(printf "\"%s\" " "${valid_CCPP[@]}");
+  iselementof "$CCPP" valid_vals_CCPP || { \
+  valid_vals_CCPP_str=$(printf "\"%s\" " "${valid_vals_CCPP[@]}");
   print_err_msg_exit "\
 The value specified for the CCPP flag is not supported:
   CCPP = \"$CCPP\"
 CCPP must be set to one of the following:
-  $valid_CCPP
+  $valid_vals_CCPP_str
 "; }
 fi
 #
 #-----------------------------------------------------------------------
 #
-# If CCPP is set to "true", make sure CCPP_phys_suite is set to one of 
-# the allowed values.
+# If CCPP is set to "true", make sure CCPP_phys_suite is set to a valid
+# value.
 #
 #-----------------------------------------------------------------------
 #
 if [ "$CCPP" = "true" ]; then
 
-  valid_CCPP_phys_suites=("GFS" "GSD")
   if [ ! -z ${CCPP_phys_suite} ]; then
-    iselementof "$CCPP_phys_suite" valid_CCPP_phys_suites || { \
-    valid_CCPP_phys_suites_str=$(printf "\"%s\" " "${valid_CCPP_phys_suites[@]}");
+    iselementof "$CCPP_phys_suite" valid_vals_CCPP_phys_suite || { \
+    valid_vals_CCPP_phys_suite_str=$(printf "\"%s\" " "${valid_vals_CCPP_phys_suite[@]}");
     print_err_msg_exit "\
 The CCPP physics suite specified in CCPP_phys_suite is not supported:
   CCPP_phys_suite = \"$CCPP_phys_suite\"
 CCPP_phys_suite must be set to one of the following:
-    $valid_CCPP_phys_suites
+  $valid_vals_CCPP_phys_suite_str
   "; }
   fi
 
@@ -297,18 +303,18 @@ if [ "$grid_gen_method" = "GFDLgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
-# Make sure RES is set to one of the allowed values.
+# Make sure RES is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-  valid_RESES=("48" "96" "192" "384" "768" "1152" "3072")
-  iselementof "$RES" valid_RESES || { \
-  valid_RESES_str=$(printf "\"%s\" " "${valid_RESES[@]}");
+  iselementof "$RES" valid_vals_RES || { \
+  valid_vals_RES_str=$(printf "\"%s\" " "${valid_vals_RES[@]}");
   print_err_msg_exit "\
 Number of grid cells per tile (in each horizontal direction) specified in
 RES is not supported:
   RES = \"$RES\"
-RES must be one of the following:  $valid_RESES_str
+RES must be one of the following:
+  $valid_vals_RES_str
 "; }
 #
 #-----------------------------------------------------------------------
@@ -355,40 +361,69 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Check that CDATE is a string consisting of exactly 10 digits.  The 
-# temporary variable CDATE_OR_NULL will be empty if CDATE is not a 
-# string of exactly 10 digits.
+# Check that DATE_FIRST_CYCL and DATE_LAST_CYCL are strings consisting 
+# of exactly 8 digits.
 #
 #-----------------------------------------------------------------------
 #
-# GSK 20190429:
-# The following needs to be modified to check that CDATE_FIRST_CYCL and
-# CDATE_LAST_CYCL have the proper forms (not including the cycle hour).
-#
-if [ 0 = 1 ]; then
-CDATE_OR_NULL=$( printf "%s" "$CDATE" | sed -n -r -e "s/^([0-9]{10})$/\1/p" )
-
-if [ -z "${CDATE_OR_NULL}" ]; then
+DATE_OR_NULL=$( printf "%s" "$DATE_FIRST_CYCL" | sed -n -r -e "s/^([0-9]{8})$/\1/p" )
+if [ -z "${DATE_OR_NULL}" ]; then
   print_err_msg_exit "\
-CDATE must be a string consisting of exactly 10 digits of the form \"YYYYMMDDHH\",
-where YYYY is the 4-digit year, MM is the 2-digit month, DD is the 2-digit day-
-of-month, and HH is the 2-digit hour-of-day.
-  CDATE = \"$CDATE\""
-fi
+DATE_FIRST_CYCL must be a string consisting of exactly 8 digits of the 
+form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
+month, DD is the 2-digit day-of-month, and HH is the 2-digit hour-of-
+day.
+  DATE_FIRST_CYCL = \"$DATE_FIRST_CYCL\""
 fi
 
+DATE_OR_NULL=$( printf "%s" "$DATE_LAST_CYCL" | sed -n -r -e "s/^([0-9]{8})$/\1/p" )
+if [ -z "${DATE_OR_NULL}" ]; then
+  print_err_msg_exit "\
+DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the 
+form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
+month, DD is the 2-digit day-of-month, and HH is the 2-digit hour-of-
+day.
+  DATE_LAST_CYCL = \"$DATE_LAST_CYCL\""
+fi
 #
 #-----------------------------------------------------------------------
 #
-# Extract from CDATE the starting year, month, day, and hour of the
-# forecast.  These are needed below for various operations.
+# Check that all elements of CYCL_HRS are strings consisting of exactly
+# 2 digits that are between "00" and "23", inclusive.
 #
 #-----------------------------------------------------------------------
 #
-YYYY_FIRST_CYCL=${CDATE_FIRST_CYCL:0:4}
-MM_FIRST_CYCL=${CDATE_FIRST_CYCL:4:2}
-DD_FIRST_CYCL=${CDATE_FIRST_CYCL:6:2}
-HH_FIRST_CYCL=${CYCL_HRS[0]}
+CYCL_HRS_str=$(printf "\"%s\" " "${CYCL_HRS[@]}")
+CYCL_HRS_str="( $CYCL_HRS_str)"
+
+i=0
+for CYCL in "${CYCL_HRS[@]}"; do
+
+  CYCL_OR_NULL=$( printf "%s" "$CYCL" | sed -n -r -e "s/^([0-9]{2})$/\1/p" )
+
+  if [ -z "${CYCL_OR_NULL}" ]; then
+    print_err_msg_exit "\
+Each element of CYCL_HRS must be a string consisting of exactly 2 digits
+(including a leading \"0\", if necessary) specifying an hour-of-day.  Ele-
+ment #$i of CYCL_HRS (where the index of the first element is 0) does not
+have this form:
+  CYCL_HRS = $CYCL_HRS_str
+  CYCL_HRS[$i] = \"${CYCL_HRS[$i]}\""
+  fi
+
+  if [ "${CYCL_OR_NULL}" -lt "0" ] || [ "${CYCL_OR_NULL}" -gt "23" ]; then
+    print_err_msg_exit "\
+Each element of CYCL_HRS must be an integer between \"00\" and \"23\", in-
+clusive (including a leading \"0\", if necessary), specifying an hour-of-
+day.  Element #$i of CYCL_HRS (where the index of the first element is 0) 
+does not have this form:
+  CYCL_HRS = $CYCL_HRS_str
+  CYCL_HRS[$i] = \"${CYCL_HRS[$i]}\""
+  fi
+
+  i=$(( $i+1 ))
+
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -893,18 +928,248 @@ check_for_preexist_dir $EXPTDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
 #
-# Set the variable EXTRN_MDL_FILES_BASEDIR that will contain the loca-
-# tion of the directory in which we will create subdirectories for each
-# forecast (i.e. for each CDATE) in which to store the analysis and
-# forecast files from the specified external model.  The analysis file
-# will be used to generate initial conditions files for the FV3SAR as 
-# well as surface fields and a boundary conditions file at the forecast
-# start time.  The forecast files will be used to generate boundary con-
-# ditions files for the FV3SAR at each boundary update time.
+# Make sure EXTRN_MDL_NAME_ICS_SURF is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_FILES_BASEDIR="${WORKDIR}/gfs"
+iselementof "$EXTRN_MDL_NAME_ICS_SURF" valid_vals_EXTRN_MDL_NAME_ICS_SURF || { \
+valid_vals_EXTRN_MDL_NAME_ICS_SURF_str=$(printf "\"%s\" " "${valid_vals_EXTRN_MDL_NAME_ICS_SURF[@]}");
+print_err_msg_exit "\
+The external model specified in EXTRN_MDL_NAME_ICS_SURF that provides 
+initial conditions (ICs) and surface fields to the FV3SAR is not support-
+ed:
+  EXTRN_MDL_NAME_ICS_SURF = \"$EXTRN_MDL_NAME_ICS_SURF\"
+EXTRN_MDL_NAME_ICS_SURF must be one of the following:
+  $valid_vals_EXTRN_MDL_NAME_ICS_SURF_str
+"; }
+#
+#-----------------------------------------------------------------------
+#
+# Make sure EXTRN_MDL_NAME_LBCS is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$EXTRN_MDL_NAME_LBCS" valid_vals_EXTRN_MDL_NAME_LBCS || { \
+valid_vals_EXTRN_MDL_NAME_LBCS_str=$(printf "\"%s\" " "${valid_vals_EXTRN_MDL_NAME_LBCS[@]}");
+print_err_msg_exit "\
+The external model specified in EXTRN_MDL_NAME_LBCS that provides later-
+al boundary conditions (LBCs) to the FV3SAR is not supported:
+  EXTRN_MDL_NAME_LBCS = \"$EXTRN_MDL_NAME_LBCS\"
+EXTRN_MDL_NAME_LBCS must be one of the following:
+  $valid_vals_EXTRN_MDL_NAME_LBCS_str
+"; }
+#
+#-----------------------------------------------------------------------
+#
+# Set the variable EXTRN_MDL_FILES_BASEDIR_ICS_SURF that will contain 
+# the location of the directory in which we will create subdirectories
+# for each forecast (i.e. for each CDATE) in which to store the analysis
+# and/or surface files generated by the external model specified in EX-
+# TRN_MDL_NAME_ICS_SURF.  These files will be used to generate input 
+# initial condition and surface files for the FV3SAR.
+#
+#-----------------------------------------------------------------------
+#
+case $EXTRN_MDL_NAME_ICS_SURF in
+"GFS")
+  EXTRN_MDL_FILES_BASEDIR_ICS_SURF="${WORKDIR}/GFS/ICS_SURF"
+  ;;
+"RAPX")
+  EXTRN_MDL_FILES_BASEDIR_ICS_SURF="${WORKDIR}/RAPX/ICS_SURF"
+  ;;
+"HRRRX")
+  EXTRN_MDL_FILES_BASEDIR_ICS_SURF="${WORKDIR}/HRRRX/ICS_SURF"
+  ;;
+esac
+#
+#-----------------------------------------------------------------------
+#
+# Set the variable EXTRN_MDL_FILES_BASEDIR_LBCS that will contain the 
+# location of the directory in which we will create subdirectories for 
+# each forecast (i.e. for each CDATE) in which to store the forecast 
+# files generated by the external model specified in EXTRN_MDL_NAME_-
+# LBCS.  These files will be used to generate input lateral boundary 
+# condition files for the FV3SAR (one per boundary update time).
+#
+#-----------------------------------------------------------------------
+#
+case $EXTRN_MDL_NAME_LBCS in
+"GFS")
+  EXTRN_MDL_FILES_BASEDIR_LBCS="${WORKDIR}/GFS/LBCS"
+  ;;
+"RAPX")
+  EXTRN_MDL_FILES_BASEDIR_LBCS="${WORKDIR}/RAPX/LBCS"
+  ;;
+"HRRRX")
+  EXTRN_MDL_FILES_BASEDIR_LBCS="${WORKDIR}/HRRRX/LBCS"
+  ;;
+esac
+#
+#-----------------------------------------------------------------------
+#
+# Set the system directory (i.e. location on disk, not on HPSS) in which
+# the files generated by the external model specified by EXTRN_MDL_-
+# NAME_ICS_SURF that are necessary for generating initial condition (IC)
+# and surface files for the FV3SAR are stored (usually for a limited 
+# time, e.g. for the GFS external model, 2 weeks on WCOSS and 2 days on
+# theia).  If for a given forecast start date and time these files are
+# available in this system directory, they will be copied over to EX-
+# TRN_MDL_FILES_DIR, which is the location where the preprocessing tasks
+# that generate the IC and surface files look for these files.  If these
+# files are not available in the system directory, then we search for 
+# them elsewhere, e.g. in the mass store (HPSS).
+#
+#-----------------------------------------------------------------------
+#
+case $EXTRN_MDL_NAME_ICS_SURF in
+#
+"GFS")
+#
+  case $MACHINE in
+  "WCOSS_C")
+    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/gpfs/hps/nco/ops/com/gfs/prod"
+    ;;
+  "THEIA")
+    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/scratch4/NCEPDEV/rstprod/com/gfs/prod"
+    ;;
+  "JET")
+    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
+    ;;
+  "ODIN")
+    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/scratch/ywang/test_runs/FV3_regional/gfs"
+    ;;
+  *)
+    print_err_msg_exit "\
+The system directory in which to look for the files generated by the ex-
+ternal model specified by EXTRN_MDL_NAME_ICS_SURF has not been specified
+for this machine and external model combination:
+  MACHINE = \"$MACHINE\"
+  EXTRN_MDL_NAME_ICS_SURF = \"$EXTRN_MDL_NAME_ICS_SURF\"
+"
+    ;;
+  esac
+  ;;
+#
+"RAPX")
+#
+  case $MACHINE in
+  "THEIA")
+    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/scratch4/BMC/public/data/gsd/rr/full/wrfnat"
+    ;;
+  *)
+    print_err_msg_exit "\
+The system directory in which to look for the files generated by the ex-
+ternal model specified by EXTRN_MDL_NAME_ICS_SURF has not been specified
+for this machine and external model combination:
+  MACHINE = \"$MACHINE\"
+  EXTRN_MDL_NAME_ICS_SURF = \"$EXTRN_MDL_NAME_ICS_SURF\"
+"
+    ;;
+  esac
+  ;;
+#
+"HRRRX")
+#
+  case $MACHINE in
+  "THEIA")
+    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/scratch4/BMC/public/data/gsd/hrrr/conus/wrfnat"
+    ;;
+  *)
+    print_err_msg_exit "\
+The system directory in which to look for the files generated by the ex-
+ternal model specified by EXTRN_MDL_NAME_ICS_SURF has not been specified
+for this machine and external model combination:
+  MACHINE = \"$MACHINE\"
+  EXTRN_MDL_NAME_ICS_SURF = \"$EXTRN_MDL_NAME_ICS_SURF\"
+"
+    ;;
+  esac
+  ;;
+#
+esac
+#
+#-----------------------------------------------------------------------
+#
+# Set the system directory (i.e. location on disk, not on HPSS) in which
+# the files generated by the external model specified by EXTRN_MDL_-
+# NAME_LBCS that are necessary for generating lateral boundary condition
+# (LBC) files for the FV3SAR are stored (usually for a limited time, 
+# e.g. for the GFS external model, 2 weeks on WCOSS and 2 days on the-
+# ia).  If for a given forecast start date and time these files are
+# available in this system directory, they will be copied over to EX-
+# TRN_MDL_FILES_DIR, which is the location where the preprocessing tasks
+# that generate the LBC files look for these files.  If these files are
+# not available in the system directory, then we search for them else-
+# where, e.g. in the mass store (HPSS).
+#
+#-----------------------------------------------------------------------
+#
+case $EXTRN_MDL_NAME_LBCS in
+#
+"GFS")
+#
+  case $MACHINE in
+  "WCOSS_C")
+    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/gpfs/hps/nco/ops/com/gfs/prod"
+    ;;
+  "THEIA")
+    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch4/NCEPDEV/rstprod/com/gfs/prod"
+    ;;
+  "JET")
+    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
+    ;;
+  "ODIN")
+    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch/ywang/test_runs/FV3_regional/gfs"
+    ;;
+  *)
+    print_err_msg_exit "\
+The system directory in which to look for the files generated by the ex-
+ternal model specified by EXTRN_MDL_NAME_LBCS has not been specified for
+this machine and external model combination:
+  MACHINE = \"$MACHINE\"
+  EXTRN_MDL_NAME_LBCS = \"$EXTRN_MDL_NAME_LBCS\"
+"
+    ;;
+  esac
+  ;;
+#
+"RAPX")
+#
+  case $MACHINE in
+  "THEIA")
+    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch4/BMC/public/data/gsd/rr/full/wrfnat"
+    ;;
+  *)
+    print_err_msg_exit "\
+The system directory in which to look for the files generated by the ex-
+ternal model specified by EXTRN_MDL_NAME_LBCS has not been specified for
+this machine and external model combination:
+  MACHINE = \"$MACHINE\"
+  EXTRN_MDL_NAME_LBCS = \"$EXTRN_MDL_NAME_LBCS\"
+"
+    ;;
+  esac
+  ;;
+#
+"HRRRX")
+#
+  case $MACHINE in
+  "THEIA")
+    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch4/BMC/public/data/gsd/hrrr/conus/wrfnat"
+    ;;
+  *)
+    print_err_msg_exit "\
+The system directory in which to look for the files generated by the ex-
+ternal model specified by EXTRN_MDL_NAME_LBCS has not been specified for
+this machine and external model combination:
+  MACHINE = \"$MACHINE\"
+  EXTRN_MDL_NAME_LBCS = \"$EXTRN_MDL_NAME_LBCS\"
+"
+    ;;
+  esac
+  ;;
+#
+esac
 #
 #-----------------------------------------------------------------------
 #
@@ -976,17 +1241,17 @@ nh4_T7=$(( $nh3_T7 + 1 ))
 #
 #-----------------------------------------------------------------------
 #
-# Make sure grid_gen_method is set to one of the allowed values.
+# Make sure grid_gen_method is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-valid_grid_gen_methods=("GFDLgrid" "JPgrid")
-iselementof "$grid_gen_method" valid_grid_gen_methods || { \
-valid_grid_gen_methods_str=$(printf "\"%s\" " "${valid_grid_gen_methods[@]}");
+iselementof "$grid_gen_method" valid_vals_grid_gen_method || { \
+valid_vals_grid_gen_method_str=$(printf "\"%s\" " "${valid_vals_grid_gen_method[@]}");
 print_err_msg_exit "\
 The grid generation method specified in grid_gen_method is not supported:
   grid_gen_method = \"$grid_gen_method\"
-grid_gen_method must be one of the following:  $valid_grid_gen_methods_str
+grid_gen_method must be one of the following:
+  $valid_vals_grid_gen_method_str
 "; }
 #
 #-----------------------------------------------------------------------
@@ -1027,8 +1292,8 @@ if [ "$quilting" = ".true." ]; then
 fi
 
 print_info_msg_verbose "\
-The number of MPI tasks for the forecast (including those for the write component
-if it is being used) are:
+The number of MPI tasks for the forecast (including those for the write
+component if it is being used) are:
   PE_MEMBER01 = $PE_MEMBER01"
 #
 #-----------------------------------------------------------------------
@@ -1426,7 +1691,8 @@ USHDIR="$USHDIR"
 SORCDIR="$SORCDIR"
 TEMPLATE_DIR="$TEMPLATE_DIR"
 NEMSfv3gfs_DIR="$NEMSfv3gfs_DIR"
-EXTRN_MDL_FILES_BASEDIR="$EXTRN_MDL_FILES_BASEDIR"
+EXTRN_MDL_FILES_BASEDIR_ICS_SURF="$EXTRN_MDL_FILES_BASEDIR_ICS_SURF"
+EXTRN_MDL_FILES_BASEDIR_LBCS="$EXTRN_MDL_FILES_BASEDIR_LBCS"
 EXPTDIR="$EXPTDIR"
 FIXgsm="$FIXgsm"
 UPPFIX="$UPPFIX"
@@ -1540,14 +1806,32 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Initial date and time and boundary update times.
+# System directory in which to look for the files generated by the ex-
+# ternal model specified in EXTRN_MDL_NAME_ICS_SURF.  These files will
+# be used to generate the input initial condition and surface files for
+# the FV3SAR.
 #
 #-----------------------------------------------------------------------
 #
-YYYY_FIRST_CYCL="$YYYY_FIRST_CYCL"
-MM_FIRST_CYCL="$MM_FIRST_CYCL"
-DD_FIRST_CYCL="$DD_FIRST_CYCL"
-HH_FIRST_CYCL="$HH_FIRST_CYCL"
+EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="$EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF"
+#
+#-----------------------------------------------------------------------
+#
+# System directory in which to look for the files generated by the ex-
+# ternal model specified in EXTRN_MDL_NAME_LBCS.  These files will be 
+# used to generate the input lateral boundary condition files for the 
+# FV3SAR.
+#
+#-----------------------------------------------------------------------
+#
+EXTRN_MDL_FILES_SYSBASEDIR_LBCS="$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
+#
+#-----------------------------------------------------------------------
+#
+# Boundary condition update times (in units of forecast hours).
+#
+#-----------------------------------------------------------------------
+#
 BC_update_times_hrs=(${BC_update_times_hrs[@]})  # BC_update_times_hrs is an array, even if it has only one element.
 #
 #-----------------------------------------------------------------------

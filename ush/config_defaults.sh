@@ -179,23 +179,47 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 #
 # Set forecast parameters.  Definitions:
 #
-# CDATE_FIRST_CYCL:
-# Starting date of the first forecast in the cycle (set of forecasts).  
+# DATE_FIRST_CYCL:
+# Starting date of the first forecast in the set of forecasts to run.  
 # Format is "YYYYMMDD".  Note that this does not include the hour-of-
 # day.
 #
-# CDATE_LAST_CYCL:
-# Starting date of the last forecast in the cycle (set of forecasts).  
+# DATE_LAST_CYCL:
+# Starting date of the last forecast in the set of forecasts to run.
 # Format is "YYYYMMDD".  Note that this does not include the hour-of-
 # day.
 #
 # CYCL_HRS:
-# An array containing the hour-of-day for each cycle hour to run.  Each
-# element of this array must be a two-digit string representing an inte-
-# ger that is less than or equal to 23, e.g. "00", "03", "12", "23".
+# An array containing the hours of the day at which to launch forecasts.
+# Forecasts are launched at these hours on each day from DATE_FIRST_CYCL
+# to DATE_LAST_CYCL, inclusive.  Each element of this array must be a 
+# two-digit string representing an integer that is less than or equal to
+# 23, e.g. "00", "03", "12", "23".
 #
 # fcst_len_hrs:
-#`The length of the forecast in integer hours.
+#`The length of each forecast, in integer hours.
+#
+#-----------------------------------------------------------------------
+#
+DATE_FIRST_CYCL="YYYYMMDD"
+DATE_LAST_CYCL="YYYYMMDD"
+CYCL_HRS=( "HH1" "HH2" )
+fcst_len_hrs="24"
+#
+#-----------------------------------------------------------------------
+#
+# Set initial and boundary condition generation parameters.  Defini-
+# tions:
+#
+# EXTRN_MDL_NAME_ICS_SURF
+#`The name of the external model that will provide fields from which 
+# initial condition (IC) and surface files will be generated for input
+# into the FV3SAR.
+#
+# EXTRN_MDL_NAME_LBCS
+#`The name of the external model that will provide fields from which 
+# lateral boundary condition (LBC) files will be generated for input in-
+# to the FV3SAR.
 #
 # BC_update_intvl_hrs:
 # The frequency (in integer hours) with which boundary data will be pro-
@@ -207,10 +231,8 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 #
 #-----------------------------------------------------------------------
 #
-CDATE_FIRST_CYCL="YYYYMMDD"
-CDATE_LAST_CYCL="YYYYMMDD"
-CYCL_HRS=( "HH1" "HH2" )
-fcst_len_hrs="24"
+EXTRN_MDL_NAME_ICS_SURF="GFS"
+EXTRN_MDL_NAME_LBCS="GFS"
 BC_update_intvl_hrs="6"
 #
 #-----------------------------------------------------------------------

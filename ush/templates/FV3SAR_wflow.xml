@@ -18,17 +18,15 @@ the workflow XML.
 <!ENTITY QUEUE_HPSS       "">
 <!ENTITY QUEUE_RUN_FV3SAR "">
 
-<!ENTITY USHDIR "">
+<!ENTITY USHDIR  "">
 <!ENTITY EXPTDIR "">
 
-<!--
-<!ENTITY CDATE_FIRST_CYCL "">
-<!ENTITY CDATE_LAST_CYCL "">
-<!ENTITY YYYY_FIRST_CYCL "">
-<!ENTITY MM_FIRST_CYCL   "">
-<!ENTITY DD_FIRST_CYCL   "">
-<!ENTITY HH_FIRST_CYCL   "">
--->
+<!ENTITY EXTRN_MDL_NAME_ICS_SURF "">
+<!ENTITY EXTRN_MDL_NAME_LBCS     "">
+
+<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF "">
+<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_LBCS     "">
+
 <!ENTITY FHR "">
 
 <!--
@@ -75,7 +73,6 @@ Variables that are not modified by the workflow generation script.
     <cyclestr>&LOG_DIR;/FV3SAR_wflow.log</cyclestr>
   </log>
 
-
   <task name="make_grid_orog" cycledefs="at_start" maxtries="4">
 
     &RSRC_MAKE_GRID_OROG;
@@ -89,7 +86,6 @@ Variables that are not modified by the workflow generation script.
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
 
   </task>
-
 
   <task name="stage_static" cycledefs="at_start" maxtries="2">
 
@@ -109,30 +105,63 @@ Variables that are not modified by the workflow generation script.
 
   </task>
 
-  <task name="get_GFS_files" maxtries="3">
+  <task name="get_GFS_ICS_SURF_files_HPSS" maxtries="3">
 
     &RSRC_GET_GFS_FILES;
     &RSRV_HPSS;
 
-    <command>&USHDIR;/get_GFS_files.sh</command>
+    <command>&USHDIR;/get_GFS_ICS_SURF_files_HPSS.sh</command>
     <nodes>&PROC_GET_GFS_FILES;</nodes>
-    <jobname>get_GFS_files</jobname>
-    <join><cyclestr>&LOG_DIR;/get_GFS_files_@Y@m@d@H.log</cyclestr></join>
+    <jobname>get_GFS_ICS_SURF_files_HPSS</jobname>
+    <join><cyclestr>&LOG_DIR;/get_GFS_ICS_SURF_files_HPSS_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
     <dependency>
-      <datadep age="00:00:00:05">&EXPTDIR;/stage_static_task_complete.txt</datadep>
-    </dependency>
-<!--
-    <dependency>
       <and>
-        <taskdep task="make_grid_orog"/>
-        <taskdep task="stage_static"/>
+        <streq><left>&EXTRN_MDL_NAME_ICS_SURF;</left><right>GFS</right></streq>
+        <datadep age="00:00:00:05">&EXPTDIR;/stage_static_task_complete.txt</datadep>
+<!-- 
+Don't launch this task if both the atmosphere and surface analysis files
+are already available on the system disk.
+-->
+        <not>
+          <and>
+            <datadep age="00:00:05:00"><cyclstr>ATMANL_SYSFP</cyclstr></datadep>
+            <datadep age="00:00:05:00"><cyclstr>SFCANL_SYSFP</cyclstr></datadep>
+          </and>
+        </not>
       </and>
     </dependency>
+
+  </task> 
+
+  <task name="get_GFS_ICS_SURF_files_sysdir" maxtries="3">
+
+    &RSRC_GET_GFS_FILES;
+    &RSRV_HPSS;
+
+    <command>&USHDIR;/get_GFS_ICS_SURF_files_sysdir.sh</command>
+    <nodes>&PROC_GET_GFS_FILES;</nodes>
+    <jobname>get_GFS_ICS_SURF_files_sysdir</jobname>
+    <join><cyclestr>&LOG_DIR;/get_GFS_ICS_SURF_files_sysdir_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <streq><left>&EXTRN_MDL_NAME_ICS_SURF;</left><right>GFS</right></streq>
+        <datadep age="00:00:00:05">&EXPTDIR;/stage_static_task_complete.txt</datadep>
+<!-- 
+Launch this task only if both the atmosphere and surface analysis files
+are available on the system disk.
 -->
+        <datadep age="00:00:05:00"><cyclstr>ATMANL_SYSFP</cyclstr></datadep>
+        <datadep age="00:00:05:00"><cyclstr>SFCANL_SYSFP</cyclstr></datadep>
+      </and>
+    </dependency>
 
   </task> 
 
@@ -186,7 +215,6 @@ Variables that are not modified by the workflow generation script.
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
-<!--    <envar><name>RUNDIR</name><value><cyclestr>&EXPTDIR;/@Y@m@d@H</cyclestr></value></envar> -->
 
     <dependency>
       <and>

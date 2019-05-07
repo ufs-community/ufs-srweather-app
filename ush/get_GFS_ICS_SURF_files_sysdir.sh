@@ -106,17 +106,6 @@ YYYYMMDD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
-# Set the directory on mass store (HPSS) in which the archived (tar)
-# files from which we may need to extract the necessary files are loca-
-# ted.  Also, set a prefix that appears in the names of these tar files.
-#
-#-----------------------------------------------------------------------
-#
-HPSS_DIR="/NCEPPROD/hpssprod/runhistory/rh${YYYY}/${YYYY}${MM}/${YYYYMMDD}"
-prefix_tar_files="gpfs_hps_nco_ops_com_gfs_prod_gfs"
-#
-#-----------------------------------------------------------------------
-#
 # Set the system directory (i.e. location on disk, not on HPSS) in which
 # to look for the GFS analysis and forecast files for the specified 
 # forecast start date and time (CDATE).  These files are needed in gene-
@@ -130,16 +119,16 @@ prefix_tar_files="gpfs_hps_nco_ops_com_gfs_prod_gfs"
 #
 case $MACHINE in
 "WCOSS_C")
-  SYSDIR="$SYS_EXTRN_MDL_FILES_BASEDIR/gfs.$YYYYMMDD"
+  SYSDIR="$EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF/gfs.$YYYYMMDD"
   ;;
 "THEIA")
-  SYSDIR="$SYS_EXTRN_MDL_FILES_BASEDIR/gfs.$YYYYMMDD"
+  SYSDIR="$EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF/gfs.$YYYYMMDD"
   ;;
 "JET")
-  SYSDIR="$SYS_EXTRN_MDL_FILES_BASEDIR/$YYYYMMDD"
+  SYSDIR="$EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF/$YYYYMMDD"
   ;;
 "ODIN")
-  SYSDIR="$SYS_EXTRN_MDL_FILES_BASEDIR/$YYYYMMDD"
+  SYSDIR="$EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF/$YYYYMMDD"
   ;;
 *)
   print_err_msg_exit "\
@@ -176,27 +165,13 @@ anl_files=( ${temp}atmanl.nemsio ${temp}sfcanl.nemsio )
 #
 num_files_needed="${#anl_files[@]}"
 #
-# Set the name of the tar file in HPSS that is supposed to contain the
-# needed analysis files.  This file will only be needed if the analysis
-# files cannot be found on disk.
-#
-ANL_TAR_FILE="${prefix_tar_files}.${CDATE}.anl.tar"
-#
-# Set the name of the directory within the tar in which the needed ana-
-# lysis files should be located.  This will only be used if the analysis
-# files aren't already available on disk.
-#
-ARCHIVE_DIR="."
-#
 # Set variables containing the analysis file names (including paths)
 # that can be used below to either copy the analysis files from SYSDIR
 # or to extract them from a tar file in HPSS.
 #
 files_to_copy=""
-files_to_extract=""
 for anl_file in "${anl_files[@]}"; do
   files_to_copy="${files_to_copy} $SYSDIR/$anl_file"
-  files_to_extract="${files_to_extract} $ARCHIVE_DIR/$anl_file"
 done
 #
 #-----------------------------------------------------------------------
@@ -356,6 +331,15 @@ for the list of files extracted."
   fi
 
 fi
+
+
+
+
+
+
+
+
+
 #
 #-----------------------------------------------------------------------
 #

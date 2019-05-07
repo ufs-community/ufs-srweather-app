@@ -97,7 +97,7 @@ case $MACHINE in
   { restore_shell_opts; } > /dev/null 2>&1
   
   set libdir /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-  
+
   export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
 
   { save_shell_opts; set +x; } > /dev/null 2>&1

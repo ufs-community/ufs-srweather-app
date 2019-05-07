@@ -75,7 +75,7 @@
 #
 #-----------------------------------------------------------------------
 #
-mkdir_vrfy -p "$EXTRN_MDL_FILES_BASEDIR"
+mkdir_vrfy -p "$EXTRN_MDL_FILES_BASEDIR_ICS_SURF"
 #
 #-----------------------------------------------------------------------
 #
@@ -85,7 +85,7 @@ mkdir_vrfy -p "$EXTRN_MDL_FILES_BASEDIR"
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_FILES_DIR="$EXTRN_MDL_FILES_BASEDIR/$CDATE"
+EXTRN_MDL_FILES_DIR="$EXTRN_MDL_FILES_BASEDIR_ICS_SURF/$CDATE"
 mkdir_vrfy -p "$EXTRN_MDL_FILES_DIR"
 cd_vrfy $EXTRN_MDL_FILES_DIR || print_err_msg_exit "\
 Could not change directory to EXTRN_MDL_FILES_DIR:
@@ -117,41 +117,6 @@ prefix_tar_files="gpfs_hps_nco_ops_com_gfs_prod_gfs"
 #
 #-----------------------------------------------------------------------
 #
-# Set the system directory (i.e. location on disk, not on HPSS) in which
-# to look for the GFS analysis and forecast files for the specified 
-# forecast start date and time (CDATE).  These files are needed in gene-
-# rating the IC, BC, and other input files for the FV3SAR.  These files
-# may be found in this system directory if CDATE is not too far in the
-# past (e.g. more than two weeks ago on WCOSS, more than 2 days ago on 
-# theia, etc).  If they are not found in this system directory, then we
-# will look for them in the mass store (HPSS).
-#
-#-----------------------------------------------------------------------
-#
-case $MACHINE in
-"WCOSS_C")
-  SYSDIR="$SYS_EXTRN_MDL_FILES_BASEDIR/gfs.$YYYYMMDD"
-  ;;
-"THEIA")
-  SYSDIR="$SYS_EXTRN_MDL_FILES_BASEDIR/gfs.$YYYYMMDD"
-  ;;
-"JET")
-  SYSDIR="$SYS_EXTRN_MDL_FILES_BASEDIR/$YYYYMMDD"
-  ;;
-"ODIN")
-  SYSDIR="$SYS_EXTRN_MDL_FILES_BASEDIR/$YYYYMMDD"
-  ;;
-*)
-  print_err_msg_exit "\
-The system directory in which to look for the GFS analysis and forecast
-files has not been specified for this machine:
-  MACHINE = \"$MACHINE\"
-"
-  ;;
-esac
-#
-#-----------------------------------------------------------------------
-#
 # First, obtain (i.e. place into EXTRN_MDL_FILES_DIR) the analysis files needed to
 # run a forecast with the FV3SAR.  These files are needed in order to
 # generate the initial condition (IC), surface, and 0th hour boundary
@@ -169,8 +134,8 @@ anl_or_fcst="analysis"
 #
 temp="gfs.t${HH}z."
 # For now, don't get analysis file for near-surface temperature.
-#anl_files=( ${temp}atmanl.nemsio ${temp}nstanl.nemsio ${temp}sfcanl.nemsio )
-anl_files=( ${temp}atmanl.nemsio ${temp}sfcanl.nemsio )
+#anl_files=( "gfs.t${HH}z.atmanl.nemsio" "gfs.t${HH}z.nstanl.nemsio" "gfs.t${HH}z.sfcanl.nemsio" )
+anl_files=( "gfs.t${HH}z.atmanl.nemsio" "gfs.t${HH}z.sfcanl.nemsio" )
 #
 # Set the number of needed analysis files.
 #
