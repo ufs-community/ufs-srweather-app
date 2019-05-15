@@ -12,7 +12,7 @@
      chksum_debug = .false.
      dycore_only = .false.
      fdiag = 1
-     ccpp_suite = 'ccpp_suite.xml'
+     ccpp_suite = 'FV3_GSD'
 /
 
 &diag_manager_nml
@@ -148,7 +148,7 @@
        ncld           = 2
        imp_physics    = 8
        ltaerosol      = .F.
-       lradar         = .F.
+       lradar         = .T.
 	ttendlim=0.005
        pdfcld         = .false.
        fhswr          = 3600.
@@ -202,6 +202,10 @@
 
   &interpolator_nml
        interp_method = 'conserve_great_circle'
+/
+
+&fv_diagnostic_nml
+       do_hailcast = .true.
 /
 
 &namsfc

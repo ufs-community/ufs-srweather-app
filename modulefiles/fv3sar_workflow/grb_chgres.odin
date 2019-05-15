@@ -23,7 +23,7 @@ module load nemsiogfs/v2.0.1
 #module load gfsio/v1.1.0
 #module load landsfcutil/v2.1.0
 module load bacio/v2.0.2
-module load esmf/7.1.0rp1
+module load esmf/8.0.0.bs1
 
 export FCMP=ftn
 export CCMP=cc

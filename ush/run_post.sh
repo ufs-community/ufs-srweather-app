@@ -49,7 +49,8 @@ case $MACHINE in
 #
 "WCOSS_C" | "WCOSS" )
 #
-  { save_shell_opts; set +x; } > /dev/null 2>&1
+#  { save_shell_opts; set +x; } > /dev/null 2>&1
+  module purge
   . $MODULESHOME/init/ksh
   module load PrgEnv-intel ESMF-intel-haswell/3_1_0rp5 cfp-intel-sandybridge iobuf craype-hugepages2M craype-haswell
 #  module load cfp-intel-sandybridge/1.1.0
@@ -60,7 +61,7 @@ case $MACHINE in
   module load grib_util/1.0.3
   module load crtm-intel/2.2.5
   module list
-  { restore_shell_opts; } > /dev/null 2>&1
+#  { restore_shell_opts; } > /dev/null 2>&1
 
 # Specify computational resources.
   export NODES=8
@@ -77,16 +78,18 @@ case $MACHINE in
 #
   { save_shell_opts; set +x; } > /dev/null 2>&1
   module purge
-  module load intel impi netcdf slurm #mvapich2 netcdf
+  module load intel
+  module load impi 
+  module load netcdf
   { restore_shell_opts; } > /dev/null 2>&1
 
-  np=$( cat $PBS_NODEFILE | wc -l )
   APRUN="srun"
   ;;
 #
 "JET")
 #
   { save_shell_opts; set +x; } > /dev/null 2>&1
+  module purge 
   . /apps/lmod/lmod/init/sh 
   module load newdefaults
   module load intel/15.0.3.187
@@ -94,13 +97,11 @@ case $MACHINE in
   module load szip
   module load hdf5
   module load netcdf4/4.2.1.1
-  { restore_shell_opts; } > /dev/null 2>&1
   
   set libdir /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-
+  
   export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
 
-  { save_shell_opts; set +x; } > /dev/null 2>&1
   module use /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib/modulefiles
   module load bacio-intel-sandybridge
   module load sp-intel-sandybridge
@@ -119,7 +120,7 @@ case $MACHINE in
   module load esmf/7.1.0r_impi_optim
   { restore_shell_opts; } > /dev/null 2>&1
 
-  APRUN="mpirun -l -np $PBS_NP"
+  APRUN="srun"
   ;;
 #
 "ODIN")
@@ -235,6 +236,13 @@ fi
 
 mv_vrfy BGDAWP.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
 mv_vrfy BGRD3D.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
+
+#Link output for transfer to Jet
+
+START_DATE=`echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/'`
+basetime=`date +%y%j%H%M -d "${START_DATE}"`
+ln -s ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark} ${POSTPRD_DIR}/BGDAWP_${basetime}${fhr}00
+ln -s ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark} ${POSTPRD_DIR}/BGRD3D_${basetime}${fhr}00
 
 rm_vrfy -rf ${FHR_DIR}
 #

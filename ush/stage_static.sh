@@ -304,14 +304,13 @@ the CCPP-enabled version of the FV3SAR under NEMS..."
 
     print_info_msg_verbose "\
 Copying the GFS physics suite XML file to the experiment directory..."
-    cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GFS_2017_updated_gfdlmp_regional.xml $EXPTDIR/ccpp_suite.xml
+    cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GFS_2017_gfdlmp.xml $EXPTDIR/suite_FV3_GFS_2017_gfdlmp.xml
 
   elif [ "$CCPP_phys_suite" = "GSD" ]; then
 
     print_info_msg_verbose "\
-Copying the GSD physics suite XML file and the Thompson microphysics CCN 
-fixed file to the experiment directory..."
-    cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GSD.xml $EXPTDIR/ccpp_suite.xml
+Copying the GSD physics suite XML file and the Thompson microphysics CCN fixed file to the experiment directory..."
+    cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GSD.xml $EXPTDIR/suite_FV3_GSD.xml
     cp_vrfy $GSDFIX/CCN_ACTIVATE.BIN $EXPTDIR
 
   fi

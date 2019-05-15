@@ -98,7 +98,6 @@ if [ "$CCPP" = "true" ]; then
   module use $( pwd -P )
   module load modules.fv3
   module list
-  module load slurm
   set -x
 
 else
@@ -108,7 +107,6 @@ else
   module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
   module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0 
   module list
-  module load slurm
 
 fi
 
@@ -122,7 +120,6 @@ fi
 #
   . /apps/lmod/lmod/init/sh
   module purge
-  module load newdefaults
   module load intel/15.0.3.187
   module load impi/5.1.1.109
   module load szip
@@ -131,8 +128,9 @@ fi
   module list
 
 #  . $USHDIR/set_stack_limit_jet.sh
+  ulimit -s unlimited
   ulimit -a
-  APRUN="mpirun -np $PE_MEMBER01"
+  APRUN="srun"
   ;;
 #
 "ODIN")

@@ -233,7 +233,11 @@ ln_vrfy -sf -t $RUNDIR ../${NEMS_CONFIG_FN}
 if [ "$CCPP" = "true" ]; then
   ln_vrfy -sf -t $RUNDIR ../module-setup.sh
   ln_vrfy -sf -t $RUNDIR ../modules.fv3
-  ln_vrfy -sf -t $RUNDIR ../ccpp_suite.xml
+  if [ "$CCPP_phys_suite" = "GSD" ]; then
+    ln_vrfy -sf -t $RUNDIR ../suite_FV3_GSD.xml
+  elif [ "$CCPP_phys_suite" = "GFS" ]; then
+    ln_vrfy -sf -t $RUNDIR ../suite_FV3_GFS_2017_gfdlmp.xml
+  fi
   if [ "$CCPP_phys_suite" = "GSD" ]; then
     ln_vrfy -sf -t $RUNDIR ../CCN_ACTIVATE.BIN
   fi

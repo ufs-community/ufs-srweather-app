@@ -197,7 +197,7 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 # 23, e.g. "00", "03", "12", "23".
 #
 # fcst_len_hrs:
-#`The length of each forecast, in integer hours.
+# The length of each forecast, in integer hours.
 #
 #-----------------------------------------------------------------------
 #

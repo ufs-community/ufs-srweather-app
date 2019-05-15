@@ -18,7 +18,11 @@ vtype               vtype     skip          0
 sotype              stype     skip          0
 vfrac               vfrac     skip          0
 fricv               uustar    skip          0
-sfcr                zorl      skip          0
+sfcr                zorl      set_to_fill   0.01
 soilw               smc       stop          0
 soilt               stc       stop          0
+cnwat               cnwat     set_to_fill   0.0
+icetk               icetk     set_to_fill   265.0
+weasd               weasd     set_to_fill   0.0
+snod                snod      set_to_fill   0.0
        	
