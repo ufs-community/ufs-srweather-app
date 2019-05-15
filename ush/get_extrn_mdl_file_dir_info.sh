@@ -255,31 +255,34 @@ anl_or_fcst must be set to one of the following:
 #
 #-----------------------------------------------------------------------
 #
-# Set lbc_update_fhrs to the array of forecast hours at which the later-
-# al boundary conditions (LBCs) are to be updated, starting with the 2nd
-# such time (i.e. the one having array index 1).  We do not include the
-# first hour (hour zero) because at this initial time, the LBCs are ob-
-# tained from the analysis fields provided by the external model (as op-
-# posed to a forecast field).
+# Initialize lbc_update_fhrs to an empty array.  Then, if considering a
+# forecast, reset lbc_update_fhrs to the array of forecast hours at 
+# which the lateral boundary conditions (LBCs) are to be updated, start-
+# ing with the 2nd such time (i.e. the one having array index 1).  We do
+# not include the first hour (hour zero) because at this initial time, 
+# the LBCs are obtained from the analysis fields provided by the exter-
+# nal model (as opposed to a forecast field).
 #
 #-----------------------------------------------------------------------
 #
-  lbc_update_fhrs=( "${LBC_UPDATE_FCST_HRS[@]:1}" )
-#
-#-----------------------------------------------------------------------
+  lbc_update_fhrs=( "" )
+
+  if [ "$ANL_OR_FCST" = "FCST" ]; then
+
+    lbc_update_fhrs=( "${LBC_UPDATE_FCST_HRS[@]:1}" )
 #
 # Add the temporal offset specified in time_offset_hrs (assumed to be in 
 # units of hours) to the the array of LBC update forecast hours to make
 # up for shifting the starting hour back in time.  After this addition,
-# lbc_update_fhrs will contain the LBC update forecast hours
-# relative to the start time of the external model run.
+# lbc_update_fhrs will contain the LBC update forecast hours relative to
+# the start time of the external model run.
 #
-#-----------------------------------------------------------------------
-#
-  num_fhrs=${#lbc_update_fhrs[@]}
-  for (( i=0; i<=$(( $num_fhrs - 1 )); i++ )); do
-    lbc_update_fhrs[$i]=$(( ${lbc_update_fhrs[$i]} + time_offset_hrs ))
-  done
+    num_fhrs=${#lbc_update_fhrs[@]}
+    for (( i=0; i<=$(( $num_fhrs - 1 )); i++ )); do
+      lbc_update_fhrs[$i]=$(( ${lbc_update_fhrs[$i]} + time_offset_hrs ))
+    done
+
+  fi
 #
 #-----------------------------------------------------------------------
 #

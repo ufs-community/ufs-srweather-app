@@ -105,34 +105,45 @@ Could not change directory to EXTRN_MDL_FILES_DIR:
 #
 #-----------------------------------------------------------------------
 #
-output_fn="extrn_mdl_info.sh"
-output_var_names=( \
-"EXTRN_MDL_CDATE" \
-"EXTRN_MDL_LBC_UPDATE_FHRS" \
-"EXTRN_MDL_FNS" \
-"EXTRN_MDL_FILES_SYSDIR" \
-"ARCV_FILE_FMT" \
-"ARCV_FN" \
-"ARCV_FP" \
-"ARCVREL_DIR" \
-)
 echo "SSSSSSSSSSSSSSSSSSSSSSSSS"
 pwd
 ls -alF
 echo "TTTTTTTTTTTTTTTTTTTTTTTTT"
-get_extrn_mdl_file_dir_info \
-  "$EXTRN_MDL_NAME" "$ANL_OR_FCST" "$CDATE" "$TIME_OFFSET_HRS" \
-  "$output_fn" ${output_var_names[@]}
+
+if [ -f "${EXTRN_MDL_INFO_FN}" ]; then
+  print_err_msg_exit "\
+File defining external model parameters (EXTRN_MDL_INFO_FN) already ex-
+ists in directory EXTRN_MDL_FILES_DIR:
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+  EXTRN_MDL_INFO_FN = \"${EXTRN_MDL_INFO_FN}\"
+"
+else
+  get_extrn_mdl_file_dir_info \
+    "$EXTRN_MDL_NAME" "$ANL_OR_FCST" "$CDATE" "$TIME_OFFSET_HRS" \
+    "$EXTRN_MDL_INFO_FN" ${EXTRN_MDL_INFO_VAR_NAMES[@]}
+fi
+
 echo "UUUUUUUUUUUUUUUUUUUUUUUUU"
 pwd
 ls -alF
 echo "VVVVVVVVVVVVVVVVVVVVVVVVV"
-. $output_fn
+
+if [ ! -f "${EXTRN_MDL_INFO_FN}" ]; then
+  print_err_msg_exit "\
+File defining external model parameters (EXTRN_MDL_INFO_FN) does not ex-
+ist in directory EXTRN_MDL_FILES_DIR:
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+  EXTRN_MDL_INFO_FN = \"${EXTRN_MDL_INFO_FN}\"
+"
+else
+  . ${EXTRN_MDL_INFO_FN}
+fi
+
 echo "WWWWWWWWWWWWWWWWWWWWWWWWW"
 pwd
 ls -alF
 echo "XXXXXXXXXXXXXXXXXXXXXXXXX"
-#rm_vrfy $output_fn
+#rm_vrfy ${EXTRN_MDL_INFO_FN}
 #echo "YYYYYYYYYYYYYYYYYYYYYYYYY"
 #pwd
 #ls -alF

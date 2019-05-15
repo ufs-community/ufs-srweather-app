@@ -208,8 +208,8 @@ fcst_len_hrs="24"
 #
 #-----------------------------------------------------------------------
 #
-# Set initial and boundary condition generation parameters.  Defini-
-# tions:
+# Set initial and lateral boundary condition generation parameters.  De-
+# finitions:
 #
 # EXTRN_MDL_NAME_ICSSURF
 #`The name of the external model that will provide fields from which 
@@ -229,11 +229,46 @@ fcst_len_hrs="24"
 # DATE_INTVL_HRS must be greater than or equal to 6 because these fore-
 # cast files are available only every 6 hours.
 #
+# EXTRN_MDL_INFO_FN:
+# Name of sourceable file (not including the full path) defining the va-
+# riables specified in EXTRN_MDL_INFO_VAR_NAMES (see below).  
+#
+# EXTRN_MDL_INFO_VAR_NAMES:
+# Names to use for the following parameters (for a given cycle of the 
+# FV3SAR):
+# * The date and hour-of-day (in YYYYMMDDHH format) of the start time of
+#   the external model.
+# * Array containing the forecast hours (relative to the 
+# * Array containing the names of the external model output files.
+# * The system directory in which the external model output files may be
+#   found (if the cycle start time is not too old).
+# * The format of the archive file (e.g. "tar", "zip", etc) on HPSS that
+#   may contain the external model output files.  Note that this archive
+#   file will exist only if the cycle start time is old enough.
+# * The name of the archive file on HPSS that may contain the external
+#   model output files.
+# * The full path to the archive file on HPSS that may contain the ex-
+#   ternal model output files.
+# * The directory "within" the archive file in which the external model 
+#   output files are stored.
+#
 #-----------------------------------------------------------------------
 #
 EXTRN_MDL_NAME_ICSSURF="GFS"
 EXTRN_MDL_NAME_LBCS="GFS"
 LBC_UPDATE_INTVL_HRS="6"
+EXTRN_MDL_INFO_FN="extrn_mdl_info.sh"
+#EXTRN_MDL_INFO_VAR_NAMES=( \
+#"EXTRN_MDL_CDATE" \
+#"EXTRN_MDL_LBC_UPDATE_FHRS" \
+#"EXTRN_MDL_FNS" \
+#"EXTRN_MDL_FILES_SYSDIR" \
+#"EXTRN_MDL_ARCV_FILE_FMT" \
+#"EXTRN_MDL_ARCV_FN" \
+#"EXTRN_MDL_ARCV_FP" \
+#"EXTRN_MDL_ARCVREL_DIR" \
+#)
+EXTRN_MDL_INFO_VAR_NAMES=( "EXTRN_MDL_CDATE" "EXTRN_MDL_LBC_UPDATE_FHRS" "EXTRN_MDL_FNS" "EXTRN_MDL_FILES_SYSDIR" "EXTRN_MDL_ARCV_FILE_FMT" "EXTRN_MDL_ARCV_FN" "EXTRN_MDL_ARCV_FP" "EXTRN_MDL_ARCVREL_DIR" )
 #
 #-----------------------------------------------------------------------
 #
