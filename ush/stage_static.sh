@@ -80,8 +80,8 @@ mkdir_vrfy "$EXPTDIR/INPUT"
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir $WORKDIR_ICBC $preexisting_dir_method
-mkdir_vrfy -p "$WORKDIR_ICBC"
+check_for_preexist_dir $WORKDIR_ICSLBCS $preexisting_dir_method
+mkdir_vrfy -p "$WORKDIR_ICSLBCS"
 #
 #-----------------------------------------------------------------------
 #
@@ -248,7 +248,7 @@ elif [ "$grid_gen_method" = "JPgrid" ]; then
   set_file_param "$FV3_NML_FP" "target_lat" "$lat_rgnl_ctr"
 fi
 set_file_param "$FV3_NML_FP" "stretch_fac" "$stretch_fac"
-set_file_param "$FV3_NML_FP" "bc_update_interval" "$BC_update_intvl_hrs"
+set_file_param "$FV3_NML_FP" "bc_update_interval" "$LBC_UPDATE_INTVL_HRS"
 
 
 #

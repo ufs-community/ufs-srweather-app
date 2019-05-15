@@ -21,11 +21,18 @@ the workflow XML.
 <!ENTITY USHDIR  "">
 <!ENTITY EXPTDIR "">
 
-<!ENTITY EXTRN_MDL_NAME_ICS_SURF "">
-<!ENTITY EXTRN_MDL_NAME_LBCS     "">
+<!ENTITY EXTRN_MDL_NAME_ICSSURF "">
+<!ENTITY EXTRN_MDL_NAME_LBCS    "">
 
-<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF "">
-<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_LBCS     "">
+<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF "">
+<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_LBCS    "">
+
+<!ENTITY DATE_FIRST_CYCL "">
+<!ENTITY DATE_LAST_CYCL "">
+<!ENTITY YYYY_FIRST_CYCL "">
+<!ENTITY MM_FIRST_CYCL "">
+<!ENTITY DD_FIRST_CYCL "">
+<!ENTITY HH_FIRST_CYCL "">
 
 <!ENTITY FHR "">
 
@@ -42,21 +49,21 @@ Variables that are not modified by the workflow generation script.
 -->
 <!ENTITY LOG_DIR "&EXPTDIR;/log">
 
-<!ENTITY PROC_MAKE_GRID_OROG    "1:ppn=24">
-<!ENTITY PROC_GET_GFS_FILES     "1:ppn=1">
-<!ENTITY PROC_MAKE_SURF_IC_BC0  "1:ppn=24">
-<!ENTITY PROC_MAKE_BC1_TO_BCEND "1:ppn=24">
-<!ENTITY PROC_STAGE             "1:ppn=1">
-<!ENTITY PROC_RUN_FV3SAR        "">
-<!ENTITY PROC_POST              "2:ppn=24">
+<!ENTITY PROC_MAKE_GRID_OROG      "1:ppn=24">
+<!ENTITY PROC_GET_EXTRN_MDL_FILES "1:ppn=1">
+<!ENTITY PROC_MAKE_SURF_IC_BC0    "1:ppn=24">
+<!ENTITY PROC_MAKE_BC1_TO_BCEND   "1:ppn=24">
+<!ENTITY PROC_STAGE               "1:ppn=1">
+<!ENTITY PROC_RUN_FV3SAR          "">
+<!ENTITY PROC_POST                "2:ppn=24">
 
-<!ENTITY RSRC_MAKE_GRID_OROG    "<walltime>00:15:00</walltime>">
-<!ENTITY RSRC_GET_GFS_FILES     "<walltime>00:20:00</walltime>">
-<!ENTITY RSRC_MAKE_SURF_IC_BC0  "<walltime>00:10:00</walltime>">
-<!ENTITY RSRC_MAKE_BC1_TO_BCEND "<walltime>00:20:00</walltime>">
-<!ENTITY RSRC_STAGE             "<walltime>00:10:00</walltime>">
-<!ENTITY RSRC_RUN_FV3SAR        "<walltime>06:00:00</walltime>">
-<!ENTITY RSRC_POST              "<walltime>00:30:00</walltime>">
+<!ENTITY RSRC_MAKE_GRID_OROG      "<walltime>00:15:00</walltime>">
+<!ENTITY RSRC_GET_EXTRN_MDL_FILES "<walltime>00:20:00</walltime>">
+<!ENTITY RSRC_MAKE_SURF_IC_BC0    "<walltime>00:10:00</walltime>">
+<!ENTITY RSRC_MAKE_BC1_TO_BCEND   "<walltime>00:20:00</walltime>">
+<!ENTITY RSRC_STAGE               "<walltime>00:10:00</walltime>">
+<!ENTITY RSRC_RUN_FV3SAR          "<walltime>06:00:00</walltime>">
+<!ENTITY RSRC_POST                "<walltime>00:30:00</walltime>">
 
 <!ENTITY RSRV_DEFAULT    "<queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
 <!ENTITY RSRV_HPSS       "<partition>&QUEUE_HPSS;</partition><account>&ACCOUNT;</account>"> 
@@ -67,12 +74,15 @@ Variables that are not modified by the workflow generation script.
 <workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20">
 
   <cycledef group="at_start">00 &HH_FIRST_CYCL; &DD_FIRST_CYCL; &MM_FIRST_CYCL; &YYYY_FIRST_CYCL; *</cycledef>
-  <cycledef group="at_CCZ">&CDATE_FIRST_CYCL;CC &CDATE_LAST_CYCL;CC 24:00:00</cycledef>  <!-- This line will be replaced with one or more lines with "CC" replaced by actual cycle hours, e.g. "00". -->
+  <cycledef group="at_CCZ">&DATE_FIRST_CYCL;CC00 &DATE_LAST_CYCL;CC00 24:00:00</cycledef>  <!-- This line will be replaced with one or more lines with "CC" replaced by actual cycle hours, e.g. "00". -->
 
   <log>
     <cyclestr>&LOG_DIR;/FV3SAR_wflow.log</cyclestr>
   </log>
-
+<!--
+************************************************************************
+************************************************************************
+-->
   <task name="make_grid_orog" cycledefs="at_start" maxtries="4">
 
     &RSRC_MAKE_GRID_OROG;
@@ -86,7 +96,10 @@ Variables that are not modified by the workflow generation script.
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
 
   </task>
-
+<!--
+************************************************************************
+************************************************************************
+-->
   <task name="stage_static" cycledefs="at_start" maxtries="2">
 
     &RSRC_STAGE;
@@ -104,105 +117,122 @@ Variables that are not modified by the workflow generation script.
     </dependency>
 
   </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="get_files_ICSSURF" maxtries="3">
 
-  <task name="get_GFS_ICS_SURF_files_HPSS" maxtries="3">
-
-    &RSRC_GET_GFS_FILES;
+    &RSRC_GET_EXTRN_MDL_FILES;
     &RSRV_HPSS;
 
-    <command>&USHDIR;/get_GFS_ICS_SURF_files_HPSS.sh</command>
-    <nodes>&PROC_GET_GFS_FILES;</nodes>
-    <jobname>get_GFS_ICS_SURF_files_HPSS</jobname>
-    <join><cyclestr>&LOG_DIR;/get_GFS_ICS_SURF_files_HPSS_@Y@m@d@H.log</cyclestr></join>
+    <command>&USHDIR;/get_extrn_mdl_files.sh</command>
+    <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
+    <jobname>get_files_ICSSURF</jobname>
+    <join><cyclestr>&LOG_DIR;/get_files_ICSSURF_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_ICSSURF;</value></envar>
+    <envar><name>ICSSURF_OR_LBCS</name><value>ICSSURF</value></envar>
 
     <dependency>
       <and>
-        <streq><left>&EXTRN_MDL_NAME_ICS_SURF;</left><right>GFS</right></streq>
-        <datadep age="00:00:00:05">&EXPTDIR;/stage_static_task_complete.txt</datadep>
-<!-- 
-Don't launch this task if both the atmosphere and surface analysis files
-are already available on the system disk.
+<!--
+Launch this task only if the stage_static task is complete.  We cannot
+use a taskdep to check for completion of the state_static task because 
+rocoto then assumes that stage_static must be run for each cycle, in-
+cluding the current cycle (despite the fact that cycledefs is set to 
+"at_start" for that task), before running this task for the current cy-
+cle.
 -->
-        <not>
-          <and>
-            <datadep age="00:00:05:00"><cyclstr>ATMANL_SYSFP</cyclstr></datadep>
-            <datadep age="00:00:05:00"><cyclstr>SFCANL_SYSFP</cyclstr></datadep>
-          </and>
-        </not>
+        <datadep age="00:00:00:05">&EXPTDIR;/stage_static_task_complete.txt</datadep>
       </and>
     </dependency>
 
   </task> 
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="get_files_LBCS" maxtries="3">
 
-  <task name="get_GFS_ICS_SURF_files_sysdir" maxtries="3">
-
-    &RSRC_GET_GFS_FILES;
+    &RSRC_GET_EXTRN_MDL_FILES;
     &RSRV_HPSS;
 
-    <command>&USHDIR;/get_GFS_ICS_SURF_files_sysdir.sh</command>
-    <nodes>&PROC_GET_GFS_FILES;</nodes>
-    <jobname>get_GFS_ICS_SURF_files_sysdir</jobname>
-    <join><cyclestr>&LOG_DIR;/get_GFS_ICS_SURF_files_sysdir_@Y@m@d@H.log</cyclestr></join>
+    <command>&USHDIR;/get_extrn_mdl_files.sh</command>
+    <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
+    <jobname>get_files_LBCS</jobname>
+    <join><cyclestr>&LOG_DIR;/get_files_LBCS_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_LBCS;</value></envar>
+    <envar><name>ICSSURF_OR_LBCS</name><value>LBCS</value></envar>
 
     <dependency>
       <and>
-        <streq><left>&EXTRN_MDL_NAME_ICS_SURF;</left><right>GFS</right></streq>
-        <datadep age="00:00:00:05">&EXPTDIR;/stage_static_task_complete.txt</datadep>
-<!-- 
-Launch this task only if both the atmosphere and surface analysis files
-are available on the system disk.
+<!--
+Launch this task only if the stage_static task is complete.  We cannot
+use a taskdep to check for completion of the state_static task because 
+rocoto then assumes that stage_static must be run for each cycle, in-
+cluding the current cycle (despite the fact that cycledefs is set to 
+"at_start" for that task), before running this task for the current cy-
+cle.
 -->
-        <datadep age="00:00:05:00"><cyclstr>ATMANL_SYSFP</cyclstr></datadep>
-        <datadep age="00:00:05:00"><cyclstr>SFCANL_SYSFP</cyclstr></datadep>
+        <datadep age="00:00:00:05">&EXPTDIR;/stage_static_task_complete.txt</datadep>
       </and>
     </dependency>
 
   </task> 
-
-  <task name="make_surf_IC_BC0" maxtries="3">
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="make_ICS_surf_LBC0" maxtries="3">
 
     &RSRC_MAKE_SURF_IC_BC0;
     &RSRV_DEFAULT;
 
-    <command>&USHDIR;/make_surf_IC_BC0.sh</command>
+    <command>&USHDIR;/make_ICS_surf_LBC0.sh</command>
     <nodes>&PROC_MAKE_SURF_IC_BC0;</nodes>
-    <jobname>make_surf_IC_BC0</jobname>
-    <join><cyclestr>&LOG_DIR;/make_surf_IC_BC0_@Y@m@d@H.log</cyclestr></join>
+    <jobname>make_ICS_surf_LBC0</jobname>
+    <join><cyclestr>&LOG_DIR;/make_ICS_surf_LBC0_@Y@m@d@H.log</cyclestr></join>
     
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
     <dependency>
-      <taskdep task="get_GFS_files"/>
+      <taskdep task="get_files_ICSSURF"/>
     </dependency>
 
   </task>
-
-  <task name="make_BC1_to_BCend" maxtries="3">
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="make_LBC1_to_LBClast" maxtries="3">
 
     &RSRC_MAKE_BC1_TO_BCEND;
     &RSRV_DEFAULT;
 
-    <command>&USHDIR;/make_BC1_to_BCend.sh</command>
+    <command>&USHDIR;/make_LBC1_to_LBClast.sh</command>
     <nodes>&PROC_MAKE_BC1_TO_BCEND;</nodes>
-    <jobname>make_BC1_to_BCend</jobname>
-    <join><cyclestr>&LOG_DIR;/make_BC1_to_BCend_@Y@m@d@H.log</cyclestr></join>
+    <jobname>make_LBC1_to_LBClast</jobname>
+    <join><cyclestr>&LOG_DIR;/make_LBC1_to_LBClast_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
     <dependency>
-      <taskdep task="get_GFS_files"/>
+      <taskdep task="get_files_LBCS"/>
     </dependency>
 
   </task>
-
+<!--
+************************************************************************
+************************************************************************
+-->
   <task name="stage" maxtries="2">
 
     &RSRC_STAGE;
@@ -218,13 +248,16 @@ are available on the system disk.
 
     <dependency>
       <and>
-        <taskdep task="make_surf_IC_BC0"/>
-        <taskdep task="make_BC1_to_BCend"/>
+        <taskdep task="make_ICS_surf_LBC0"/>
+        <taskdep task="make_LBC1_to_LBClast"/>
       </and>
     </dependency>
 
   </task>
-
+<!--
+************************************************************************
+************************************************************************
+-->
   <task name="run_FV3SAR" maxtries="3">
 
     &RSRC_RUN_FV3SAR;
@@ -243,7 +276,10 @@ are available on the system disk.
     </dependency>
 
   </task>
-
+<!--
+************************************************************************
+************************************************************************
+-->
   <metatask name="post">
     
     <var name="fhr">&FHR;</var>

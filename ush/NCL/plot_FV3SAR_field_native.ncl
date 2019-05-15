@@ -32,6 +32,11 @@ run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run
 ;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_crap01"
 ;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_works"
 run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid05"
+run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1700_NY1056_A0p21423_Kmns0p23209_HRRR_test_HRRRgrid"
+run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1700_NY1056_A0p21423_Kmns0p23209_HRRR_test_HRRRgrid02"
+run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1768_NY1032_A0p21423_Kmns0p23209_HRRR_test_HRRRgrid02"
+run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1734_NY1008_A0p21423_Kmns0p23209_HRRR_test_HRRRgrid02"
+
 
 tile_inds := (/ 1, 7, 4 /)
 ;tile_inds := (/ 1, 4 /)
@@ -87,21 +92,21 @@ map_proj = "ortho"
 ;
 ; map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map projection.
 map_proj_ctr = (/ -106.0, 54.0 /) ; RAP domain.
-;map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
+map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
 
-map_proj_ctr = (/ 6.0, 54.0 /) ; RAP domain.
+;map_proj_ctr = (/ 6.0, 54.0 /) ; RAP domain corner.
 
 plot_subreg = True
-plot_subreg = False
+;plot_subreg = False
 
 ;subreg_limits := (/ -180, 180, -90, 90 /)
 ;subreg_limits := (/ -75, -45, 30, 60 /)
-;subreg_limits := (/ -145, -90, 30, 60 /)
-;subreg_limits := (/ -120, -115, 30, 35 /)
+subreg_limits := (/ -145, -90, 30, 60 /) ; Northwest corner of HRRR domain.
+subreg_limits := (/ -120, -115, 30, 35 /)
 ;subreg_limits := (/ -15, 0, 0, 15 /)
 ;subreg_limits := (/ -30, 0, 0, 30 /)
 ;subreg_limits := (/ -60, -30, 0, 30 /)
-subreg_limits := (/ -75, -60, 0, 15 /)
+;subreg_limits := (/ -75, -60, 0, 15 /)
 ;subreg_limits := (/ -70, -65, 5, 10 /)
 ;subreg_limits := (/ -55, -40, 45, 60 /)
 ;subreg_limits := (/ -50, -45, 50, 55 /)
@@ -116,11 +121,9 @@ subreg_limits := (/ -75, -60, 0, 15 /)
 ;subreg_limits := (/ 15, 30, 30, 45 /)
 ;subreg_limits := (/ 14, 16, 36, 38 /)
 ;subreg_limits := (/ -70, -55, -20, -5 /)
-;subreg_limits := (/ -125, -70, 0, 60 /)
-subreg_limits := (/ -125, -70, 15, 50 /)
-subreg_limits := (/ -125, -70, 20, 55 /)
-subreg_limits := (/ 10, 20, 30, 40 /)
-subreg_limits := (/ 15, 20, 30, 35 /)
+subreg_limits := (/ -125, -70, 20, 55 /) ; HRRR domain.
+;subreg_limits := (/ 10, 20, 30, 40 /)
+;subreg_limits := (/ 15, 20, 30, 35 /)
 
 remove_rgnl_halo = True
 ;remove_rgnl_halo = False
@@ -147,8 +150,8 @@ field_name_RAP = "sqrt_cell_area"
 RAP_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 ;RAP_grid_fn = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL/plot_grid.ncl"
 ;RAP_grid_fn = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.RAP.nc"
-RAP_grid_fn = RAP_dir + "/geo_em.d01.RAP.nc"
-;RAP_grid_fn = RAP_dir + "/geo_em.d01.HRRR.nc"
+;RAP_grid_fn = RAP_dir + "/geo_em.d01.RAP.nc"
+RAP_grid_fn = RAP_dir + "/geo_em.d01.HRRR.nc"
 
 horiz_dist_units = "m"
 horiz_dist_units = "km"

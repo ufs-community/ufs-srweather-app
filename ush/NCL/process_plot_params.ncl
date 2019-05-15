@@ -148,7 +148,7 @@ example_usage_and_help_str
 ;
 ; **********************************************************************
 ;
-  work_dir = str_sub_str(run_dir, "run_dirs", "work_dirs")
+  work_dir = str_sub_str(run_dir, "expt_dirs", "work_dirs")
 
 
 
@@ -260,6 +260,8 @@ pause
 ;
 ; **********************************************************************
 ;
+; Note:  Can't use this for JPgrid because that has no such standard values.
+if (False) then
   valid_reses = (/ "000", "48", "96", "192", "384", "768", "1152", "3072" /)
 
   if (.not. any(res .eq. valid_reses)) then
@@ -278,6 +280,7 @@ example_usage_and_help_str
     exit
 
   end if
+end if
 ;
 ; **********************************************************************
 ;

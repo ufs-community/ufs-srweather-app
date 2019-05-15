@@ -56,17 +56,16 @@
 #
 #-----------------------------------------------------------------------
 #
-#EXTRN_MDL_NAME="$1"
-#ANL_OR_FCST="$2"
-
 if [ "$ICSSURF_OR_LBCS" = "ICSSURF" ]; then
-  ANL_OR_FCST="anl"
+  ANL_OR_FCST="ANL"
+  TIME_OFFSET_HRS="0"
 elif [ "$ICSSURF_OR_LBCS" = "LBCS" ]; then
-  ANL_OR_FCST="fcst"
+  ANL_OR_FCST="FCST"
+  TIME_OFFSET_HRS="$EXTRN_MDL_LBCS_OFFSET_HRS"
 else
   print_err_msg_exit "\
-Bad value for ANL_OR_FCST:
-  ANL_OR_FCST = \"$ANL_OR_FCST\"
+Bad value for ICSSURF_OR_LBCS:
+  ICSSURF_OR_LBCS = \"$ICSSURF_OR_LBCS\"
 "
 fi
 #
@@ -79,10 +78,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$ANL_OR_FCST" = "anl" ]; then
+if [ "$ANL_OR_FCST" = "ANL" ]; then
   mkdir_vrfy -p "$EXTRN_MDL_FILES_BASEDIR_ICSSURF"
   EXTRN_MDL_FILES_DIR="$EXTRN_MDL_FILES_BASEDIR_ICSSURF/$CDATE"
-elif [ "$ANL_OR_FCST" = "fcst" ]; then
+elif [ "$ANL_OR_FCST" = "FCST" ]; then
   mkdir_vrfy -p "$EXTRN_MDL_FILES_BASEDIR_LBCS"
   EXTRN_MDL_FILES_DIR="$EXTRN_MDL_FILES_BASEDIR_LBCS/$CDATE"
 fi
@@ -106,15 +105,38 @@ Could not change directory to EXTRN_MDL_FILES_DIR:
 #
 #-----------------------------------------------------------------------
 #
-output_fn="output_vars.sh"
+output_fn="extrn_mdl_info.sh"
 output_var_names=( \
-"EXTRN_MDL_FNS" "ARCV_FILE_FMT" "ARCV_FP" "ARCVREL_DIR" "EXTRN_MDL_FILES_SYSDIR" \
+"EXTRN_MDL_CDATE" \
+"EXTRN_MDL_LBC_UPDATE_FHRS" \
+"EXTRN_MDL_FNS" \
+"EXTRN_MDL_FILES_SYSDIR" \
+"ARCV_FILE_FMT" \
+"ARCV_FN" \
+"ARCV_FP" \
+"ARCVREL_DIR" \
 )
+echo "SSSSSSSSSSSSSSSSSSSSSSSSS"
+pwd
+ls -alF
+echo "TTTTTTTTTTTTTTTTTTTTTTTTT"
 get_extrn_mdl_file_dir_info \
-  "$EXTRN_MDL_NAME" "$ANL_OR_FCST" "$CDATE" \
+  "$EXTRN_MDL_NAME" "$ANL_OR_FCST" "$CDATE" "$TIME_OFFSET_HRS" \
   "$output_fn" ${output_var_names[@]}
+echo "UUUUUUUUUUUUUUUUUUUUUUUUU"
+pwd
+ls -alF
+echo "VVVVVVVVVVVVVVVVVVVVVVVVV"
 . $output_fn
-rm_vrfy $output_fn
+echo "WWWWWWWWWWWWWWWWWWWWWWWWW"
+pwd
+ls -alF
+echo "XXXXXXXXXXXXXXXXXXXXXXXXX"
+#rm_vrfy $output_fn
+#echo "YYYYYYYYYYYYYYYYYYYYYYYYY"
+#pwd
+#ls -alF
+#echo "ZZZZZZZZZZZZZZZZZZZZZZZZZ"
 #
 # As a check, print out the variables and their values set by the above 
 # function call.
@@ -151,13 +173,13 @@ for FP in "${EXTRN_MDL_FPS[@]}"; do
   if [ -f "$FP" ]; then
     printf "File \"%s\" exists on system disk..." "$FP"
     if [ $( find "$FP" -mmin +5 ) ]; then
-      printf " and is older than $min_age minutes!"
+      printf " and is older than $min_age minutes!\n"
       num_files_found_on_disk=$(( num_files_found_on_disk+1 ))
     else
-      printf " but is NOT older than $min_age minutes!"
+      printf " but is NOT older than $min_age minutes!\n"
     fi
   else
-    printf "File \"%s\" does NOT exist on system disk!" "$FP"
+    printf "File \"%s\" does NOT exist on system disk!\n" "$FP"
   fi
 done
 
@@ -219,14 +241,23 @@ fields for the FV3SAR successfully copied from system disk!!!
 elif [ "$DATA_SRC" = "HPSS" ]; then
 
   print_info_msg "
-Fetching model output files (EXTRN_MDL_FNS) from archive file on HPSS 
-(ARCV_FP) to local directory (EXTRN_MDL_FILES_DIR):
-  ARCV_FP = \"$ARCV_FP\"
+Fetching model output files from HPSS.  The model output files (EXTRN_-
+MDL_FNS), the archive file on HPSS in which output files are stored (AR-
+CV_FP), and the local directory into which they will be copied (EXTRN_-
+MDL_FILES_DIR) are:
   EXTRN_MDL_FNS = $EXTRN_MDL_FNS_str
+  ARCV_FP = \"$ARCV_FP\"
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
 "
-
-  prefix="$ARCVREL_DIR/"
+#
+#-----------------------------------------------------------------------
+#
+# Reset EXTRN_MDL_FPS to the full paths within the archive file to the
+# external model output files.
+#
+#-----------------------------------------------------------------------
+#
+  prefix=${ARCVREL_DIR:+$ARCVREL_DIR/}
   EXTRN_MDL_FPS=( "${EXTRN_MDL_FNS[@]/#/$prefix}" )
 #
 #-----------------------------------------------------------------------
@@ -275,10 +306,10 @@ HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #
 # Check that the log file from the htar command above contains the name
 # of each external model output file.  If any are missing, then the cor-
-# responding files are not in the tar file (and thus cannot be extract-
-# ed).  In that case, print out a message and exit the script because 
-# initial condition and surface field files for the FV3SAR cannot be 
-# generated without all the external model output files.
+# responding files are not in the tar file and thus cannot be extracted.  
+# In that case, print out a message and exit the script because initial
+# condition and surface field files for the FV3SAR cannot be generated
+# without all the external model output files.
 #
 #-----------------------------------------------------------------------
 #
@@ -400,7 +431,13 @@ The current script must be modified to account for this case.
 #-----------------------------------------------------------------------
 #
   elif [ "$ARCV_FILE_FMT" = "zip" ]; then
-  
+#
+#-----------------------------------------------------------------------
+#
+# Fetch the zip archive file from HPSS.
+#
+#-----------------------------------------------------------------------
+#
     HSI_LOG_FN="log.hsi_get"
     hsi get ${ARCV_FP} >& ${HSI_LOG_FN} || \
     print_err_msg_exit "\
@@ -409,7 +446,86 @@ HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
   HSI_LOG_FN = \"$HSI_LOG_FN\"
 "
-  
+#
+#-----------------------------------------------------------------------
+#
+# List the contents of the zip archive file and save the result in a log
+# file.
+#
+#-----------------------------------------------------------------------
+#
+    UNZIP_LOG_FN="log.unzip_lv"
+    unzip -l -v ${ARCV_FN} >& ${UNZIP_LOG_FN} || \
+    print_err_msg_exit "\
+Operation to list contents of the zip archive file ARCV_FN in the direc-
+rectory EXTRN_MDL_FILES_DIR failed.  Check the log file UNZIP_LOG_FN in 
+that directory for contents of the zip archive:
+  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
+  ARCV_FN = \"$ARCV_FN\"
+  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
+"
+#
+#-----------------------------------------------------------------------
+#
+# Check that the log file from the unzip command above contains the name
+# of each external model output file.  If any are missing, then the cor-
+# responding files are not in the zip file and thus cannot be extracted.
+# In that case, print out a message and exit the script because initial
+# condition and surface field files for the FV3SAR cannot be generated
+# without all the external model output files.
+#
+#-----------------------------------------------------------------------
+#
+    for FP in "${EXTRN_MDL_FPS[@]}"; do
+      grep -n "${FP}" "${UNZIP_LOG_FN}" > /dev/null 2>&1 || \
+      print_err_msg_exit "\
+External model output file FP does not exist in the zip archive file 
+ARCV_FP in the directory EXTRN_MDL_FILES_DIR.  Check the log file UN-
+ZIP_LOG_FN in that directory for contents of the zip archive:
+  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
+  ARCV_FP = \"$ARCV_FP\"
+  FP = \"$FP\"
+  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
+"
+    done
+#
+#-----------------------------------------------------------------------
+#
+# Extract the external model output files from the zip file on HPSS.
+# Note that the -o flag to unzip is needed to overwrite existing files.  
+# Otherwise, unzip will wait for user input as to whether the existing
+# files should be overwritten.
+#
+#-----------------------------------------------------------------------
+#
+echo "AAAA"
+pwd
+ls -alF
+echo "BBBB"
+    UNZIP_LOG_FN="log.unzip"
+    unzip -o "${ARCV_FN}" ${EXTRN_MDL_FPS[@]} >& ${UNZIP_LOG_FN} || \
+    print_err_msg_exit "\
+unzip file extract operation (\"unzip -o ...\") failed.  Check the log 
+file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
+  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
+  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
+"
+echo "CCCC"
+pwd
+ls -alF
+echo "DDDD"
+#
+# NOTE:
+# If ARCVREL_DIR is not empty, the unzip command above will create a 
+# subdirectory under EXTRN_MDL_FILES_DIR and place the external model 
+# output files there.  We have not encoutntered this for the RAPX and
+# HRRRX models, but it may happen for other models in the future.  In 
+# that case, extra code must be included here to move the external model
+# output files from the subdirectory up to EXTRN_MDL_FILES_DIR and then
+# the subdirectory (analogous to what is done above for the case of 
+# ARCV_FILE_FMT set to "tar".
+#
+ 
   fi
 #
 #-----------------------------------------------------------------------

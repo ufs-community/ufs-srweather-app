@@ -427,6 +427,18 @@ done
 #
 #-----------------------------------------------------------------------
 #
+# Extract from CDATE the starting year, month, day, and hour of the
+# forecast.  These are needed below for various operations.
+#
+#-----------------------------------------------------------------------
+#
+YYYY_FIRST_CYCL=${DATE_FIRST_CYCL:0:4}
+MM_FIRST_CYCL=${DATE_FIRST_CYCL:4:2}
+DD_FIRST_CYCL=${DATE_FIRST_CYCL:6:2}
+HH_FIRST_CYCL=${CYCL_HRS[0]}
+#
+#-----------------------------------------------------------------------
+#
 # Set various directories.
 #
 # FV3SAR_DIR:
@@ -565,25 +577,26 @@ fi
 #-----------------------------------------------------------------------
 #
 # Check whether the forecast length (fcst_len_hrs) is evenly divisible
-# by the BC update interval (BC_update_intvl_hrs).  If not, print out a
+# by the BC update interval (LBC_UPDATE_INTVL_HRS).  If not, print out a
 # warning and exit this script.  If so, generate an array of forecast
 # hours at which the boundary values will be updated.
 #
 #-----------------------------------------------------------------------
 #
-rem=$(( $fcst_len_hrs % $BC_update_intvl_hrs ))
+rem=$(( $fcst_len_hrs % $LBC_UPDATE_INTVL_HRS ))
 
 if [ "$rem" -ne "0" ]; then
 
   print_err_msg_exit "\
-The forecast length is not evenly divisible by the BC update interval:
+The forecast length (fcst_len_hrs) is not evenly divisible by the later-
+al boundary conditions update interval (LBC_UPDATE_INTVL_HRS):
   fcst_len_hrs = $fcst_len_hrs
-  BC_update_intvl_hrs = $BC_update_intvl_hrs
-  rem = fcst_len_hrs % BC_update_intvl_hrs = $rem"
+  LBC_UPDATE_INTVL_HRS = $LBC_UPDATE_INTVL_HRS
+  rem = fcst_len_hrs % LBC_UPDATE_INTVL_HRS = $rem"
 
 else
 
-  BC_update_times_hrs=($( seq 0 $BC_update_intvl_hrs $fcst_len_hrs ))
+  LBC_UPDATE_FCST_HRS=($( seq 0 $LBC_UPDATE_INTVL_HRS $fcst_len_hrs ))
 
 fi
 #
@@ -747,6 +760,12 @@ case $predef_domain in
     delx="3000.0"
     dely="3000.0"
 
+#
+# This is the old HRRR-like grid that is slightly larger than the WRF-
+# ARW HRRR grid.
+#
+if [ 0 = 1 ]; then
+
     nx_T7=1800
     ny_T7=1120
 
@@ -758,6 +777,26 @@ case $predef_domain in
     layout_y="20"
     write_tasks_per_group="20"
     blocksize="36"
+#
+# This is the new HRRR-like grid that is slightly smaller than the WRF-
+# ARW HRRR grid (so that it can be initialized off the latter).
+#
+else
+
+    nx_T7=1734
+    ny_T7=1008
+
+    nhw_T7=6
+
+    dt_atmos="50"
+
+    layout_x="34"
+    layout_y="24"
+    write_tasks_per_group="24"
+    blocksize="34"
+
+fi
+
 
   fi
 #
@@ -891,18 +930,18 @@ check_for_preexist_dir $WORKDIR $preexisting_dir_method
 # Work directory for the preprocessing step that "shaves" the grid and
 # filtered orography files.
 #
-# WORKDIR_ICBC:
+# WORKDIR_ICSLBCS:
 # Work directory for the preprocessing steps that generate the files
-# containing the surface fields as well as the initial and boundary con-
-# ditions.
+# containing the surface fields as well as the initial and lateral 
+# boundary conditions.
 #
-#-----------------------------------------------------------------------
+#----------------------------------------------------------------------
 #
 WORKDIR_GRID=$WORKDIR/grid
 WORKDIR_OROG=$WORKDIR/orog
 WORKDIR_FLTR=$WORKDIR/filtered_topo
 WORKDIR_SHVE=$WORKDIR/shave
-WORKDIR_ICBC=$WORKDIR/ICs_BCs
+WORKDIR_ICSLBCS=$WORKDIR/ICs_BCs
 #
 #-----------------------------------------------------------------------
 #
@@ -928,19 +967,19 @@ check_for_preexist_dir $EXPTDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
 #
-# Make sure EXTRN_MDL_NAME_ICS_SURF is set to a valid value.
+# Make sure EXTRN_MDL_NAME_ICSSURF is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$EXTRN_MDL_NAME_ICS_SURF" valid_vals_EXTRN_MDL_NAME_ICS_SURF || { \
-valid_vals_EXTRN_MDL_NAME_ICS_SURF_str=$(printf "\"%s\" " "${valid_vals_EXTRN_MDL_NAME_ICS_SURF[@]}");
+iselementof "$EXTRN_MDL_NAME_ICSSURF" valid_vals_EXTRN_MDL_NAME_ICSSURF || { \
+valid_vals_EXTRN_MDL_NAME_ICSSURF_str=$(printf "\"%s\" " "${valid_vals_EXTRN_MDL_NAME_ICSSURF[@]}");
 print_err_msg_exit "\
-The external model specified in EXTRN_MDL_NAME_ICS_SURF that provides 
+The external model specified in EXTRN_MDL_NAME_ICSSURF that provides 
 initial conditions (ICs) and surface fields to the FV3SAR is not support-
 ed:
-  EXTRN_MDL_NAME_ICS_SURF = \"$EXTRN_MDL_NAME_ICS_SURF\"
-EXTRN_MDL_NAME_ICS_SURF must be one of the following:
-  $valid_vals_EXTRN_MDL_NAME_ICS_SURF_str
+  EXTRN_MDL_NAME_ICSSURF = \"$EXTRN_MDL_NAME_ICSSURF\"
+EXTRN_MDL_NAME_ICSSURF must be one of the following:
+  $valid_vals_EXTRN_MDL_NAME_ICSSURF_str
 "; }
 #
 #-----------------------------------------------------------------------
@@ -961,24 +1000,24 @@ EXTRN_MDL_NAME_LBCS must be one of the following:
 #
 #-----------------------------------------------------------------------
 #
-# Set the variable EXTRN_MDL_FILES_BASEDIR_ICS_SURF that will contain 
-# the location of the directory in which we will create subdirectories
-# for each forecast (i.e. for each CDATE) in which to store the analysis
-# and/or surface files generated by the external model specified in EX-
-# TRN_MDL_NAME_ICS_SURF.  These files will be used to generate input 
-# initial condition and surface files for the FV3SAR.
+# Set the variable EXTRN_MDL_FILES_BASEDIR_ICSSURF that will contain the
+# location of the directory in which we will create subdirectories for 
+# each forecast (i.e. for each CDATE) in which to store the analysis and
+# /or surface files generated by the external model specified in EXTRN_-
+# MDL_NAME_ICSSURF.  These files will be used to generate input initial
+# condition and surface files for the FV3SAR.
 #
 #-----------------------------------------------------------------------
 #
-case $EXTRN_MDL_NAME_ICS_SURF in
+case $EXTRN_MDL_NAME_ICSSURF in
 "GFS")
-  EXTRN_MDL_FILES_BASEDIR_ICS_SURF="${WORKDIR}/GFS/ICS_SURF"
+  EXTRN_MDL_FILES_BASEDIR_ICSSURF="${WORKDIR}/GFS/ICSSURF"
   ;;
 "RAPX")
-  EXTRN_MDL_FILES_BASEDIR_ICS_SURF="${WORKDIR}/RAPX/ICS_SURF"
+  EXTRN_MDL_FILES_BASEDIR_ICSSURF="${WORKDIR}/RAPX/ICSSURF"
   ;;
 "HRRRX")
-  EXTRN_MDL_FILES_BASEDIR_ICS_SURF="${WORKDIR}/HRRRX/ICS_SURF"
+  EXTRN_MDL_FILES_BASEDIR_ICSSURF="${WORKDIR}/HRRRX/ICSSURF"
   ;;
 esac
 #
@@ -991,17 +1030,24 @@ esac
 # LBCS.  These files will be used to generate input lateral boundary 
 # condition files for the FV3SAR (one per boundary update time).
 #
+# Also, set EXTRN_MDL_LBCS_OFFSET_HRS, which is the number of hours to
+# shift the starting time of the external model that provides lateral
+# boundary conditions.
+#
 #-----------------------------------------------------------------------
 #
 case $EXTRN_MDL_NAME_LBCS in
 "GFS")
   EXTRN_MDL_FILES_BASEDIR_LBCS="${WORKDIR}/GFS/LBCS"
+  EXTRN_MDL_LBCS_OFFSET_HRS="0"
   ;;
 "RAPX")
   EXTRN_MDL_FILES_BASEDIR_LBCS="${WORKDIR}/RAPX/LBCS"
+  EXTRN_MDL_LBCS_OFFSET_HRS="3"
   ;;
 "HRRRX")
   EXTRN_MDL_FILES_BASEDIR_LBCS="${WORKDIR}/HRRRX/LBCS"
+  EXTRN_MDL_LBCS_OFFSET_HRS="0"
   ;;
 esac
 #
@@ -1009,7 +1055,7 @@ esac
 #
 # Set the system directory (i.e. location on disk, not on HPSS) in which
 # the files generated by the external model specified by EXTRN_MDL_-
-# NAME_ICS_SURF that are necessary for generating initial condition (IC)
+# NAME_ICSSURF that are necessary for generating initial condition (IC)
 # and surface files for the FV3SAR are stored (usually for a limited 
 # time, e.g. for the GFS external model, 2 weeks on WCOSS and 2 days on
 # theia).  If for a given forecast start date and time these files are
@@ -1021,30 +1067,30 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-case $EXTRN_MDL_NAME_ICS_SURF in
+case $EXTRN_MDL_NAME_ICSSURF in
 #
 "GFS")
 #
   case $MACHINE in
   "WCOSS_C")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/gpfs/hps/nco/ops/com/gfs/prod"
+    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/gpfs/hps/nco/ops/com/gfs/prod"
     ;;
   "THEIA")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/scratch4/NCEPDEV/rstprod/com/gfs/prod"
+    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch4/NCEPDEV/rstprod/com/gfs/prod"
     ;;
   "JET")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
+    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
     ;;
   "ODIN")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/scratch/ywang/test_runs/FV3_regional/gfs"
+    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch/ywang/test_runs/FV3_regional/gfs"
     ;;
   *)
     print_err_msg_exit "\
 The system directory in which to look for the files generated by the ex-
-ternal model specified by EXTRN_MDL_NAME_ICS_SURF has not been specified
+ternal model specified by EXTRN_MDL_NAME_ICSSURF has not been specified
 for this machine and external model combination:
   MACHINE = \"$MACHINE\"
-  EXTRN_MDL_NAME_ICS_SURF = \"$EXTRN_MDL_NAME_ICS_SURF\"
+  EXTRN_MDL_NAME_ICSSURF = \"$EXTRN_MDL_NAME_ICSSURF\"
 "
     ;;
   esac
@@ -1054,15 +1100,15 @@ for this machine and external model combination:
 #
   case $MACHINE in
   "THEIA")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/scratch4/BMC/public/data/gsd/rr/full/wrfnat"
+    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch4/BMC/public/data/gsd/rr/full/wrfnat"
     ;;
   *)
     print_err_msg_exit "\
 The system directory in which to look for the files generated by the ex-
-ternal model specified by EXTRN_MDL_NAME_ICS_SURF has not been specified
+ternal model specified by EXTRN_MDL_NAME_ICSSURF has not been specified
 for this machine and external model combination:
   MACHINE = \"$MACHINE\"
-  EXTRN_MDL_NAME_ICS_SURF = \"$EXTRN_MDL_NAME_ICS_SURF\"
+  EXTRN_MDL_NAME_ICSSURF = \"$EXTRN_MDL_NAME_ICSSURF\"
 "
     ;;
   esac
@@ -1072,15 +1118,15 @@ for this machine and external model combination:
 #
   case $MACHINE in
   "THEIA")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="/scratch4/BMC/public/data/gsd/hrrr/conus/wrfnat"
+    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch4/BMC/public/data/gsd/hrrr/conus/wrfnat"
     ;;
   *)
     print_err_msg_exit "\
 The system directory in which to look for the files generated by the ex-
-ternal model specified by EXTRN_MDL_NAME_ICS_SURF has not been specified
+ternal model specified by EXTRN_MDL_NAME_ICSSURF has not been specified
 for this machine and external model combination:
   MACHINE = \"$MACHINE\"
-  EXTRN_MDL_NAME_ICS_SURF = \"$EXTRN_MDL_NAME_ICS_SURF\"
+  EXTRN_MDL_NAME_ICSSURF = \"$EXTRN_MDL_NAME_ICSSURF\"
 "
     ;;
   esac
@@ -1691,7 +1737,7 @@ USHDIR="$USHDIR"
 SORCDIR="$SORCDIR"
 TEMPLATE_DIR="$TEMPLATE_DIR"
 NEMSfv3gfs_DIR="$NEMSfv3gfs_DIR"
-EXTRN_MDL_FILES_BASEDIR_ICS_SURF="$EXTRN_MDL_FILES_BASEDIR_ICS_SURF"
+EXTRN_MDL_FILES_BASEDIR_ICSSURF="$EXTRN_MDL_FILES_BASEDIR_ICSSURF"
 EXTRN_MDL_FILES_BASEDIR_LBCS="$EXTRN_MDL_FILES_BASEDIR_LBCS"
 EXPTDIR="$EXPTDIR"
 FIXgsm="$FIXgsm"
@@ -1701,7 +1747,7 @@ WORKDIR_GRID="$WORKDIR_GRID"
 WORKDIR_OROG="$WORKDIR_OROG"
 WORKDIR_FLTR="$WORKDIR_FLTR"
 WORKDIR_SHVE="$WORKDIR_SHVE"
-WORKDIR_ICBC="$WORKDIR_ICBC"
+WORKDIR_ICSLBCS="$WORKDIR_ICSLBCS"
 #
 #-----------------------------------------------------------------------
 #
@@ -1807,13 +1853,13 @@ fi
 #-----------------------------------------------------------------------
 #
 # System directory in which to look for the files generated by the ex-
-# ternal model specified in EXTRN_MDL_NAME_ICS_SURF.  These files will
-# be used to generate the input initial condition and surface files for
-# the FV3SAR.
+# ternal model specified in EXTRN_MDL_NAME_ICSSURF.  These files will be
+# used to generate the input initial condition and surface files for the
+# FV3SAR.
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF="$EXTRN_MDL_FILES_SYSBASEDIR_ICS_SURF"
+EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="$EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF"
 #
 #-----------------------------------------------------------------------
 #
@@ -1828,11 +1874,20 @@ EXTRN_MDL_FILES_SYSBASEDIR_LBCS="$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
 #
 #-----------------------------------------------------------------------
 #
+# Shift back in time (in units of hours) of the starting time of the ex-
+# ternal model specified in EXTRN_MDL_NAME_LBCS.
+#
+#-----------------------------------------------------------------------
+#
+EXTRN_MDL_LBCS_OFFSET_HRS="$EXTRN_MDL_LBCS_OFFSET_HRS"
+#
+#-----------------------------------------------------------------------
+#
 # Boundary condition update times (in units of forecast hours).
 #
 #-----------------------------------------------------------------------
 #
-BC_update_times_hrs=(${BC_update_times_hrs[@]})  # BC_update_times_hrs is an array, even if it has only one element.
+LBC_UPDATE_FCST_HRS=(${LBC_UPDATE_FCST_HRS[@]})  # LBC_UPDATE_FCST_HRS is an array, even if it has only one element.
 #
 #-----------------------------------------------------------------------
 #

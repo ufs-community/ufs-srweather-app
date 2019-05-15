@@ -77,8 +77,8 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-# Loop through the array elements and look for $match in the array.  Re-
-# turn 0 if it is found and 1 otherwise.
+# Loop through the array elements and look for $match in the array.  If
+# it is found, set contains to 0.  Otherwise, set it to 1.
 #
 #-----------------------------------------------------------------------
 #
@@ -90,8 +90,6 @@ where the arguments are defined as follows:
       break
     fi
   done
-
-  return $contains
 #
 #-----------------------------------------------------------------------
 #
@@ -101,5 +99,13 @@ where the arguments are defined as follows:
 #-----------------------------------------------------------------------
 #
   { restore_shell_opts; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Return the variable "contains".
+#
+#-----------------------------------------------------------------------
+#
+  return $contains
 }
 

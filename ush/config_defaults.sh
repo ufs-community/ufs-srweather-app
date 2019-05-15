@@ -211,7 +211,7 @@ fcst_len_hrs="24"
 # Set initial and boundary condition generation parameters.  Defini-
 # tions:
 #
-# EXTRN_MDL_NAME_ICS_SURF
+# EXTRN_MDL_NAME_ICSSURF
 #`The name of the external model that will provide fields from which 
 # initial condition (IC) and surface files will be generated for input
 # into the FV3SAR.
@@ -221,19 +221,19 @@ fcst_len_hrs="24"
 # lateral boundary condition (LBC) files will be generated for input in-
 # to the FV3SAR.
 #
-# BC_update_intvl_hrs:
-# The frequency (in integer hours) with which boundary data will be pro-
-# vided to the FV3SAR model.  We will refer to this as the boundary up-
-# date interval.  As of 11/12/2018, the boundary data is obtained from 
-# GFS forecast files in nemsio format, which are stored in mass storage
-# (HPSS).  Since these forecast files are available only every 6 hours, 
-# BC_update_intvl_hrs must be greater than or equal to 6.
+# LBC_UPDATE_INTVL_HRS:
+# The frequency (in integer hours) with which lateral boundary data will
+# be provided to the FV3SAR model.  We will refer to this as the bound-
+# ary update interval.  If the boundary data is obtained from GFS fore-
+# cast files in nemsio format stored in HPSS (mass store), then LBC_UP-
+# DATE_INTVL_HRS must be greater than or equal to 6 because these fore-
+# cast files are available only every 6 hours.
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_NAME_ICS_SURF="GFS"
+EXTRN_MDL_NAME_ICSSURF="GFS"
 EXTRN_MDL_NAME_LBCS="GFS"
-BC_update_intvl_hrs="6"
+LBC_UPDATE_INTVL_HRS="6"
 #
 #-----------------------------------------------------------------------
 #

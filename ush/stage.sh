@@ -117,7 +117,7 @@ ln_vrfy -sf $filename oro_data.nc
 print_info_msg_verbose "\
 Copying files from work directories into run directory and creating links..."
 
-WORKDIR_ICBC_CDATE="$WORKDIR_ICBC/$CDATE"
+WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
 #
 #-----------------------------------------------------------------------
 #
@@ -130,7 +130,7 @@ WORKDIR_ICBC_CDATE="$WORKDIR_ICBC/$CDATE"
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy $WORKDIR_ICBC_CDATE/gfs_data.tile7.nc .
+cp_vrfy $WORKDIR_ICSLBCS_CDATE/gfs_data.tile7.nc .
 ln_vrfy -sf gfs_data.tile7.nc gfs_data.nc
 #
 #-----------------------------------------------------------------------
@@ -144,7 +144,7 @@ ln_vrfy -sf gfs_data.tile7.nc gfs_data.nc
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy $WORKDIR_ICBC_CDATE/sfc_data.tile7.nc .
+cp_vrfy $WORKDIR_ICSLBCS_CDATE/sfc_data.tile7.nc .
 ln_vrfy -sf sfc_data.tile7.nc sfc_data.nc
 #
 #-----------------------------------------------------------------------
@@ -154,7 +154,7 @@ ln_vrfy -sf sfc_data.tile7.nc sfc_data.nc
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy $WORKDIR_ICBC_CDATE/gfs_bndy*.nc .
+cp_vrfy $WORKDIR_ICSLBCS_CDATE/gfs_bndy*.nc .
 #
 #-----------------------------------------------------------------------
 #
@@ -164,7 +164,7 @@ cp_vrfy $WORKDIR_ICBC_CDATE/gfs_bndy*.nc .
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy $WORKDIR_ICBC_CDATE/gfs_ctrl.nc .
+cp_vrfy $WORKDIR_ICSLBCS_CDATE/gfs_ctrl.nc .
 
 
 

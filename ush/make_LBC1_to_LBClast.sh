@@ -55,9 +55,9 @@
 # nerated for each of the forecast hours 3, 6, 9, 12, 15, 18, and 24 
 # (but not hour 0 since that is handled by the script that generates the
 # initial condition file).  All the generated NetCDF BC files are placed
-# in the directory WORKDIR_ICBC_CDATE, defined as
+# in the directory WORKDIR_ICSLBCS_CDATE, defined as
 #
-#   WORKDIR_ICBC_CDATE="$WORKDIR_ICBC/$CDATE"
+#   WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
 #
 # where CDATE is the externally specified starting date and cycle hour
 # of the current forecast.
@@ -99,8 +99,8 @@
 #
 export BASEDIR
 # Set and export the variable that determines the directory in which 
-# chgres looks for the input nemsio files.
-export INIDIR="$EXTRN_MDL_FILES_BASEDIR/$CDATE"
+# chgres looks for the external model files.
+export INIDIR="$EXTRN_MDL_FILES_BASEDIR_LBCS/$CDATE"
 export gtype
 export ictype
 #
@@ -119,8 +119,8 @@ chgres_driver_scr="global_chgres_driver.sh"
 #
 #-----------------------------------------------------------------------
 #
-WORKDIR_ICBC_CDATE="$WORKDIR_ICBC/$CDATE"
-mkdir_vrfy -p "$WORKDIR_ICBC_CDATE"
+WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
+mkdir_vrfy -p "$WORKDIR_ICSLBCS_CDATE"
 #
 #-----------------------------------------------------------------------
 #
@@ -135,7 +135,7 @@ export LSOIL=4
 export NTRAC=7
 export FIXfv3=${FV3SAR_DIR}/fix/fix_fv3
 export GRID_OROG_INPUT_DIR=$WORKDIR_SHVE  # Directory in which input grid and orography files are located.
-export OUTDIR=$WORKDIR_ICBC_CDATE         # Directory in which output from chgres_driver_scr is placed.
+export OUTDIR=$WORKDIR_ICSLBCS_CDATE      # Directory in which output from chgres_driver_scr is placed.
 export HOMEgfs=$FV3SAR_DIR                # Directory in which the "superstructure" fv3sar_workflow code is located.
 export nst_anl=.false.                    # false or true to include NST analysis
 #
@@ -222,7 +222,7 @@ case $MACHINE in
 
   { restore_shell_opts; } > /dev/null 2>&1
 
-  export DATA="$WORKDIR_ICBC_CDATE/BCs_work"
+  export DATA="$WORKDIR_ICSLBCS_CDATE/BCs_work"
   export APRUNC="time"
   ulimit -s unlimited
   ulimit -a
@@ -244,7 +244,7 @@ case $MACHINE in
 
   { restore_shell_opts; } > /dev/null 2>&1
 
-  export DATA="$WORKDIR_ICBC_CDATE/BCs_work"
+  export DATA="$WORKDIR_ICSLBCS_CDATE/BCs_work"
   export APRUNC="time"
 #  . $USHDIR/set_stack_limit_jet.sh
   ulimit -a
@@ -252,7 +252,7 @@ case $MACHINE in
 #
 "ODIN")
 #
-  export DATA="$WORKDIR_ICBC_CDATE/BCs_work"
+  export DATA="$WORKDIR_ICSLBCS_CDATE/BCs_work"
   export APRUNC="srun -n 1"
   ulimit -s unlimited
   ulimit -a
@@ -298,7 +298,7 @@ export REGIONAL=2
 #
 #-----------------------------------------------------------------------
 #
-curnt_hr=$BC_update_intvl_hrs
+curnt_hr=$LBC_UPDATE_INTVL_HRS
 
 while (test "$curnt_hr" -le "$fcst_len_hrs"); do
 
@@ -358,7 +358,7 @@ message and rerun."
 #
 # Increment the current BC update time.
 #
-  curnt_hr=$(( $curnt_hr + BC_update_intvl_hrs ))
+  curnt_hr=$(( $curnt_hr + LBC_UPDATE_INTVL_HRS ))
 
 done
 #
