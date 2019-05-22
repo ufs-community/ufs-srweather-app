@@ -75,7 +75,7 @@ cd ${WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK}
 #
 #-----------------------------------------------------------------------
 #
-case $MACHINE in
+case "$MACHINE" in
 #
 "WCOSS_C")
 #
@@ -248,12 +248,39 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of the file ???
-# What to do about GFS?  Which file (atmanl, sfcanl, nstanl) contains the input grid definition?
+# Set external model output file name(s) and file type/format.  Note 
+# that these are now inputs into chgres.
 #
 #-----------------------------------------------------------------------
 #
-fn="${EXTRN_MDL_FNS[0]}"
+fn_atm_nemsio=""
+fn_sfc_nemsio=""
+fn_grib2=""
+input_type=""
+
+case "$EXTRN_MDL_NAME_ICSSURF" in
+"GFS")
+  fn_atm_nemsio="${EXTRN_MDL_FNS[0]}"
+  fn_sfc_nemsio="${EXTRN_MDL_FNS[1]}"
+  input_type="gfs_gaussian" # For spectral GFS Gaussian grid in nemsio format.
+#  input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
+  ;;
+"RAPX")
+  fn_grib2="${EXTRN_MDL_FNS[0]}"
+  input_type="grib2"
+  ;;
+"HRRRX")
+  fn_grib2="${EXTRN_MDL_FNS[0]}"
+  input_type="grib2"
+  ;;
+*)
+  print_err_msg_exit "\
+The external model output file name(s) and file type/format to use in the
+chgres FORTRAN namelist file are not specified for this external model:
+  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
+"
+  ;;
+esac
 #
 #-----------------------------------------------------------------------
 #
@@ -273,7 +300,9 @@ cat > fort.41 <<EOF
  base_install_dir="${SORCDIR}/chgres_cube.fd"
  wgrib2_path="${WGRIB2_DIR}"
  data_dir_input_grid="${EXTRN_MDL_FILES_DIR}"
- grib2_file_input_grid="${fn}"
+ atm_files_input_grid="${fn_atm_nemsio}"
+ sfc_files_input_grid="${fn_sfc_nemsio}"
+ grib2_file_input_grid="${fn_grib2}"
  cycle_mon=${mm}
  cycle_day=${dd}
  cycle_hour=${hh}
@@ -281,7 +310,7 @@ cat > fort.41 <<EOF
  convert_sfc=.true.
  convert_nst=.false.
  regional=1
- input_type="grib2"
+ input_type="${input_type}"
  external_model="${external_model}"
  phys_suite="${phys_suite}"
 /
