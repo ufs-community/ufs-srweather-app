@@ -153,7 +153,8 @@ echo "XXXXXXXXXXXXXXXXXXXXXXXXX"
 # function call.
 #
 printf "\n"
-for output_var_name in "${output_var_names[@]}"; do
+#for output_var_name in "${output_var_names[@]}"; do
+for output_var_name in "${EXTRN_MDL_INFO_VAR_NAMES[@]}"; do
   tmp="$output_var_name[@]"
   elems=$( printf "\"%s\" " "${!tmp}" )
   printf "$output_var_name = $elems\n"

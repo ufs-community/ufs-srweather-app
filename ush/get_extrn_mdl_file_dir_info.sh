@@ -42,7 +42,7 @@ function get_extrn_mdl_file_dir_info () {
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$#" -ne 14 ]; then
+  if [ "$#" -ne "13" ]; then
     print_err_msg_exit "\
 Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
 Usage:
