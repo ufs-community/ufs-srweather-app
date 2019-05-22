@@ -118,7 +118,7 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
 #    regex_replace="\1\"$value\"\3"
 #    regex_replace="\1$value\3"
 #    regex_replace="\1\3"
-    regex_replace="\1AAAA\2BBBB\3CCCC\4DDDD\5"
+#    regex_replace="\1AAAA\2BBBB\3CCCC\4DDDD\5"
     regex_replace="\1$value\5"
     ;;
 #

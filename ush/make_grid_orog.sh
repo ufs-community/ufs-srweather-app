@@ -240,7 +240,6 @@ case $MACHINE in
   module load impi
   module load hdf5/1.8.14
   module load netcdf/4.3.0
-  module load slurm
   module list
 
   { restore_shell_opts; } > /dev/null 2>&1
