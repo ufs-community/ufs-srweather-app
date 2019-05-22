@@ -111,8 +111,11 @@ case "$MACHINE" in
    module load netcdf/4.3.0
    module load hdf5/1.8.14
    module load wgrib2/2.0.8
+   module load contrib wrap-mpi
+   module list
 
-   APRUN="srun"
+  np=${SLURM_NTASKS}
+  APRUN="mpirun -np ${np}"
 
   { restore_shell_opts; } > /dev/null 2>&1
   ;;
@@ -144,11 +147,11 @@ esac
 # Are these still needed for chgres_cube?
 #export HALO=${nh4_T7}
 #
-#ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
-#            $WORKDIR_SHVE/${CRES}_grid.tile7.nc
-#
-#ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
-#            $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
+            $WORKDIR_SHVE/${CRES}_grid.tile7.nc
+
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
+            $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
