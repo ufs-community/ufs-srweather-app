@@ -67,7 +67,7 @@ cd ${WORKDIR_ICSLBCS_CDATE_LBCS_WORK}
 #
 #-----------------------------------------------------------------------
 #
-case $MACHINE in
+case "$MACHINE" in
 #
 "WCOSS_C")
 #
@@ -230,13 +230,44 @@ esac
 #
 #-----------------------------------------------------------------------
 #
+fn_sfc_nemsio=""
+
 num_fhrs="${#EXTRN_MDL_LBC_UPDATE_FHRS[@]}"
 for (( i=0; i<=$(( $num_fhrs - 1 )); i++ )); do
 #
-# Get the forecast hour and file name of the external model.
+# Get the forecast hour of the external model.
 #
-  fhr=${EXTRN_MDL_LBC_UPDATE_FHRS[$i]}"
-  fn=${EXTRN_MDL_FNS[$i]}"
+  fhr="${EXTRN_MDL_LBC_UPDATE_FHRS[$i]}"
+#
+# Set external model output file name and file type/format.  Note that
+# these are now inputs into chgres.
+#
+  fn_atm_nemsio=""
+  fn_grib2=""
+  input_type=""
+
+  case "$EXTRN_MDL_NAME_LBCS" in
+  "GFS")
+    fn_atm_nemsio="${EXTRN_MDL_FNS[$i]}"
+    input_type="gfs_gaussian" # For spectral GFS Gaussian grid in nemsio format.
+#    input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
+    ;;
+  "RAPX")
+    fn_grib2="${EXTRN_MDL_FNS[$i]}"
+    input_type="grib2"
+    ;;
+  "HRRRX")
+    fn_grib2="${EXTRN_MDL_FNS[$i]}"
+    input_type="grib2"
+    ;;
+  *)
+    print_err_msg_exit "\
+The external model output file name and input file type to use in the 
+chgres FORTRAN namelist file are not specified for this external model:
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
+"
+    ;;
+  esac
 #
 # Get the starting year, month, day, and hour of the the external model
 # run.  Then add the forecast hour to it to get a date and time corres-
@@ -272,7 +303,9 @@ for (( i=0; i<=$(( $num_fhrs - 1 )); i++ )); do
  base_install_dir="${SORCDIR}/chgres_cube.fd"
  wgrib2_path="${WGRIB2_DIR}"
  data_dir_input_grid="${EXTRN_MDL_FILES_DIR}"
- grib2_file_input_grid="${fn}"
+ atm_files_input_grid="${fn_atm_nemsio}"
+ sfc_files_input_grid="${fn_sfc_nemsio}"
+ grib2_file_input_grid="${fn_grib2}"
  cycle_mon=${mm}
  cycle_day=${dd}
  cycle_hour=${hh}
@@ -280,7 +313,7 @@ for (( i=0; i<=$(( $num_fhrs - 1 )); i++ )); do
  convert_sfc=.false.
  convert_nst=.false.
  regional=2
- input_type="grib2"
+ input_type="${input_type}"
  external_model="${external_model}"
  phys_suite="${phys_suite}"
 /
