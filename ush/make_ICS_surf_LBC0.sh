@@ -145,12 +145,11 @@ esac
 #-----------------------------------------------------------------------
 #
 # Are these still needed for chgres_cube?
-#export HALO=${nh4_T7}
 #
-ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${HALO}.nc \
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
             $WORKDIR_SHVE/${CRES}_grid.tile7.nc
 
-ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${HALO}.nc \
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
             $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
 #
 #-----------------------------------------------------------------------
