@@ -97,6 +97,7 @@ if [ "$CCPP" = "true" ]; then
   source ./module-setup.sh
   module use $( pwd -P )
   module load modules.fv3
+  module load contrib wrap-mpi
   module list
   set -x
 
@@ -106,13 +107,15 @@ else
   module purge
   module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
   module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0 
+  module load contrib wrap-mpi 
   module list
 
 fi
 
   ulimit -s unlimited
   ulimit -a
-  APRUN="srun"
+  np=${SLURM_NTASKS}
+  APRUN="mpirun -np ${np}"
   ;;
 
 #
@@ -125,12 +128,14 @@ fi
   module load szip
   module load hdf5
   module load netcdf4/4.2.1.1
+  module load contrib wrap-mpi
   module list
 
 #  . $USHDIR/set_stack_limit_jet.sh
   ulimit -s unlimited
   ulimit -a
-  APRUN="srun"
+  np=${SLURM_NTASKS}
+  APRUN="mpirun -np ${np}"
   ;;
 #
 "ODIN")
@@ -182,6 +187,8 @@ rm_vrfy -f nemsusage.xml
 rm_vrfy -f fort.*
 rm_vrfy -f regional_*.tile7.nc
 rm_vrfy -f RESTART/*
+rm_vrfy -f qr*
+rm_vrfy -f freeze*
 #
 #-----------------------------------------------------------------------
 #

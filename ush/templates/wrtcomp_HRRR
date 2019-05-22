@@ -12,10 +12,14 @@ cen_lon:                 -97.5   # central longitude
 cen_lat:                  38.5   # central latitude
 stdlat1:                  38.5
 stdlat2:                  38.5
-nx:                       1800   # Number of points along x-axis.
-ny:                       1060   # Number of points along y-axis.
-lon1:                    -122.7195  # longitude of first grid point (lower-left) (in degrees)
-lat1:                     21.13812  # latitude of first grid point (lower-left) (in degrees)
+nx:                       1643 #1800   # Number of points along x-axis.
+ny:                       814  #1060   # Number of points along y-axis.
+lon1:                    -122.0  # Lon goes from -122 to -73
+lat1:                     25.0   # Lat goes from 25 to 47
+#nx:                       1800   # Number of points along x-axis.
+#ny:                       1060   # Number of points along y-axis.
+#lon1:                    -122.7195  # longitude of first grid point (lower-left) (in degrees)
+#lat1:                     21.13812  # latitude of first grid point (lower-left) (in degrees)
 dx:                       3000.0 # x-direction grid length
 dy:                       3000.0 # y-direction grid length
 

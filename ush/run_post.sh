@@ -81,9 +81,11 @@ case $MACHINE in
   module load intel
   module load impi 
   module load netcdf
+  module load contrib wrap-mpi
   { restore_shell_opts; } > /dev/null 2>&1
 
-  APRUN="srun"
+  np=${SLURM_NTASKS}
+  APRUN="mpirun -np ${np}"
   ;;
 #
 "JET")
@@ -118,9 +120,11 @@ case $MACHINE in
   
   module use /lfs3/projects/hfv3gfs/emc.nemspara/soft/modulefiles
   module load esmf/7.1.0r_impi_optim
+  module load contrib wrap-mpi
   { restore_shell_opts; } > /dev/null 2>&1
 
-  APRUN="srun"
+  np=${SLURM_NTASKS}
+  APRUN="mpirun -np ${np}"
   ;;
 #
 "ODIN")

@@ -141,21 +141,23 @@
        fhzero         = 6.
        h2o_phys       = .true.
        ldiag3d        = .false.
-       fhcyc          = 24.
+       fhcyc          = 0.
        nst_anl        = .true.
        use_ufo        = .true.
        pre_rad        = .false.
-       ncld           = 2
+       ncld           = 5
        imp_physics    = 8
-       ltaerosol      = .F.
+       ttendlim       = 0.005
+       !ttendlim       = 0.008
+       ltaerosol      = .T.
        lradar         = .T.
-	ttendlim=0.005
+       make_number_concentrations = .true.
        pdfcld         = .false.
        fhswr          = 3600.
        fhlwr          = 3600.
        ialb           = 1
        iems           = 1
-       IAER           = 111
+       iaer           = 111
        ico2           = 2
        isubc_sw       = 2
        isubc_lw       = 2
@@ -169,43 +171,40 @@
        dspheat        = .true.
        hybedmf        = .false.
        satmedmf       = .false.
+       lheatstrg      = .F.
        do_mynnedmf    = .true.
        do_mynnsfclay  = .false.
        random_clds    = .false.
-       trans_trac     = .false.
+       trans_trac     = .true.
        cnvcld         = .true.
-       imfshalcnv     = -1
+       imfshalcnv     = 3
        imfdeepcnv     = 3
        cdmbgwd        = 3.5,0.25
        prslrd0        = 0.
        ivegsrc        = 1
        isot           = 1
        debug          = .false.
-       oz_phys        = .true.
-       oz_phys_2015   = .false.
-       nstf_name      = 1,1,1,0,5
-       cplflx         = .false.
+       oz_phys        = .false.
+       oz_phys_2015   = .true.
+       nstf_name      = 2,1,1,0,5
+       cplflx         = .F.
        iau_delthrs    = 6
        iaufhrs        = 30
        iau_inc_files  = ''
-       do_sppt        = .false.
-       do_shum        = .false.
-       do_skeb        = .false.
-       do_sfcperts    = .false.
+       do_sppt        = .F.
+       do_shum        = .F.
+       do_skeb        = .F.
+       do_sfcperts    = .F.
        lsm            = 2
        lsoil_lsm      = 9
-       icloud_bl = 1
+       icloud_bl         = 1
        bl_mynn_tkeadvect = .true.
-       bl_mynn_edmf = 1
-       bl_mynn_edmf_mom = 1
+       bl_mynn_edmf      = 1 
+       bl_mynn_edmf_mom  = 1
 /
 
   &interpolator_nml
        interp_method = 'conserve_great_circle'
-/
-
-&fv_diagnostic_nml
-       do_hailcast = .true.
 /
 
 &namsfc
@@ -231,7 +230,7 @@
        FNVMXC   = "global_shdmax.0.144x0.144.grb",
        FNSLPC   = "global_slope.1x1.grb",
        FNABSC   = "global_mxsnoalb.uariz.t126.384.190.rg.grb",
-       LDEBUG   =.true.,
+       LDEBUG   =.false.,
        FSMCL(2) = 99999
        FSMCL(3) = 99999
        FSMCL(4) = 99999
