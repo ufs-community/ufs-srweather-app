@@ -28,9 +28,13 @@ where:
     To clone the CCPP-enabled version of the FV3 model code (run under 
     NEMS) from the appropriate github repository.
 
-    \"UFS_UTILS\"
+    \"UFS_UTILS_gridgen_sfc\"
     To clone the UFS_UTILS (UFS common utilities) code from the appro-
-    priate VLab repository.
+    priate VLab repository and check out the feature/gridgen_sfc branch.
+
+    \"UFS_UTILS_chgres_grib2\"
+    To clone the UFS_UTILS (UFS common utilities) code from the appro-
+    priate VLab repository and check out the feature/chgres_grib2 branch.
 
     \"UPP\"
     To clone the UPP (Unified Post Processor) model code from the appro-
@@ -74,7 +78,13 @@ else
   software_name="$1"
   head_or_hash=${2:-"head"}
 
-  valid_vals_software_name=( "NEMSfv3gfs" "NEMSfv3gfs-CCPP" "UFS_UTILS" "UPP" )
+  valid_vals_software_name=( \
+"NEMSfv3gfs" \
+"NEMSfv3gfs-CCPP" \
+"UFS_UTILS_gridgen_sfc" \
+"UFS_UTILS_chgres_grib2" \
+"UPP" \
+  )
   iselementof "$software_name" valid_vals_software_name || { \
   valid_vals_software_name_str=$(printf "\"%s\" " "${valid_vals_software_name[@]}");
   print_err_msg_exit "\
@@ -173,12 +183,46 @@ elif [ "$software_name" = "NEMSfv3gfs-CCPP" ]; then
     submod_branch_hashes=( "e98172b" "d4937c8" "e909ca1" "ec6498f" "16a0b6a" )
   fi 
 
-elif [ "$software_name" = "UFS_UTILS" ]; then
+elif [ "$software_name" = "UFS_UTILS_gridgen_sfc" ]; then
 
   repo_name="UFS_UTILS"
   remote_URL="ssh://${USER}@vlab.ncep.noaa.gov:29418/$repo_name"
 
-  clone_path="$BASEDIR/${repo_name}"
+  clone_path="$BASEDIR/${repo_name}_gridgen_sfc"
+#
+# How to get just the chgres_cube code, not the rest of the codes in 
+# UFS_UTILS?  Also, want to put the chgres_cube code under 
+#   ${BASEDIR}/fv3sar_workflow/sorc/chgres_cube.fd.
+# How to do that?
+#
+#  clone_path="$BASEDIR/fv3sar_workflow/sorc/UFS_UTILS.fd"
+  branch_name="feature/gridgen_sfc"
+
+  submod_subdirs=()
+  submod_branch_names=()
+
+  if [ "$head_or_hash" = "hash" ]; then
+    branch_hash=""
+    submod_branch_hashes=()
+    print_err_msg_exit "\
+Hashes corresponding to previous (i.e. before HEAD) commits that are 
+known to work with the FV3SAR workflow have not yet been specified for 
+this repository:
+  repo_name = \"${repo_name}\"
+  branch_name = \"${branch_name}\"
+  branch_hash = \"${branch_hash}\"
+Please specify hash values for \"branch_hash\" (and, if the repository 
+contains submodules, for the elements of the array \"submod_branch_hash-
+es\") in the script and rerun.
+"
+  fi
+
+elif [ "$software_name" = "UFS_UTILS_chgres_grib2" ]; then
+
+  repo_name="UFS_UTILS"
+  remote_URL="ssh://${USER}@vlab.ncep.noaa.gov:29418/$repo_name"
+
+  clone_path="$BASEDIR/${repo_name}_chgres_grib2"
 #
 # How to get just the chgres_cube code, not the rest of the codes in 
 # UFS_UTILS?  Also, want to put the chgres_cube code under 
