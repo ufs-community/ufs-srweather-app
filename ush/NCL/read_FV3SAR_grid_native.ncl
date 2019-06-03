@@ -62,8 +62,10 @@
 ;
 loadscript(lib_location + "special_chars.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
+loadscript(lib_location + "strpad.ncl")
 loadscript(lib_location + "get_rect_grid_bdy.ncl")
 loadscript(lib_location + "get_rect_grid_corners.ncl")
+loadscript(lib_location + "adjust_longitude_range.ncl")
 
 undef("read_FV3SAR_grid_native")
 
@@ -77,33 +79,56 @@ function read_FV3SAR_grid_native( \
          remove_rgnl_halo:logical)
 
 local num_tiles_to_plot, \
-      nx_no_halo_all_tiles, ny_no_halo_all_tiles, \
-      nx_with_halo_all_tiles, ny_with_halo_all_tiles, \
-      grid_files, \
+\
+      grid_fn_all_tiles, remove_halo_all_tiles, \
+\
+      nhSG_all_tiles, nxSG_all_tiles, nySG_all_tiles, \
+      nxhSG_all_tiles, nyhSG_all_tiles, \
+      nh_all_tiles, nx_all_tiles, ny_all_tiles, \
+      nxh_all_tiles, nyh_all_tiles, \
+\
+      coord_data_type_all_tiles, \
+\
       nn, msg, underline, n_tile, grid_fn, fp, \
-      tile_SG_dims, msg_adden, \
+      msg_adden_SG, msg_adden, tile_SG_dims, \
+\
+      coord_data_type, match_found, exact_match, \
+\
+      lon_cntrs_all_tiles_unstruc, lat_cntrs_all_tiles_unstruc, \
+      lon_verts_all_tiles_unstruc, lat_verts_all_tiles_unstruc, \
+      lon_bdy_all_tiles, lat_bdy_all_tiles, \
+      lon_tile_cntr_all_tiles, lat_tile_cntr_all_tiles, \
+      lon_tile_corners_face_midpts_all_tiles, \
+      lat_tile_corners_face_midpts_all_tiles, \
+\
+      remove_halo, \
+      nhSG, nxhSG, nyhSG, nxSG, nySG, \
+      nh, nxh, nyh, nx, ny, \
+\
       lon_verts_SG_crnt_tile, lat_verts_SG_crnt_tile, \
-      coord_data_type, \
       lon_verts_crnt_tile, lat_verts_crnt_tile, \
       lon_cntrs_crnt_tile, lat_cntrs_crnt_tile, \
-      dims_with_halo, nx_with_halo, ny_with_halo, \
+\
       x_is_longitude, opts, corner_info, corner_lons, corner_lats, \
       fmt_str, lon_str, lat_str, \
-      nx, ny, \
+      i_left, i_cntr, i_rght, j_bot, j_mid, j_top, \
+      loc_names, i, \
+\
       lon_cntrs_crnt_tile_unstruc, lat_cntrs_crnt_tile_unstruc, \
       lon_verts_crnt_tile_unstruc, lat_verts_crnt_tile_unstruc, \
       lon_cntrs_all_tiles_unstruc, lat_cntrs_all_tiles_unstruc, \
       lon_verts_all_tiles_unstruc, lat_verts_all_tiles_unstruc, \
-      repeat_lat_point, array_order, bdy_info, \
+\
+      repeat_last_point, array_order, bdy_info, \
       lon_bdy_crnt_tile, lat_bdy_crnt_tile, \
-      lon_bdy_all_tiles, lat_bdy_all_tiles, \
+\
       grid_info
 
 begin
 ;
 ; **********************************************************************
 ;
-; If not already defined, define the string (separator_line) that serves
+; If not already defined, define the string separator_line that serves
 ; as a separator line between different sections of printout.
 ;
 ; **********************************************************************
@@ -115,44 +140,46 @@ begin
 ; **********************************************************************
 ;
 ; Set the full path to the grid file corresponding to each tile speci-
-; fied in tile_inds and save the results in the array grid_files.  Also,
+; fied in tile_inds and save the results in the array grid_fn_all_tiles.  Also,
 ; set the horizontal dimensions of the grid corresponding to each tile
 ; (i.e. the number of cells in each of the two directions) and save the
-; results in the arrays nx_with_halo_all_tiles and ny_all_tiles_with_ha-
+; results in the arrays nxh_all_tiles and ny_all_tiles_with_ha-
 ; lo.
 ;
 ; Note that for a regional grid, if one of the specified tiles is tile 7
 ; (which is the tile containing the regional domain/grid), then the halo
 ; cells that this tile includes will be removed if remove_rgnl_halo is 
-; set to True.  In this case, nx_no_halo_all_tiles and ny_all_tiles_no_-
+; set to True.  In this case, nx_all_tiles and ny_all_tiles_no_-
 ; halo for tile 7 will contain the number of cells AFTER removing the 
-; halo.  If this is not the case, then nx_no_halo_all_tiles and ny_all_-
-; tiles_no_halo will be set equal to nx_with_halo_all_tiles and ny_all_-
+; halo.  If this is not the case, then nx_all_tiles and ny_all_-
+; tiles_no_halo will be set equal to nxh_all_tiles and ny_all_-
 ; tiles_with_halo.
 ;
 ; **********************************************************************
 ;
   num_tiles_to_plot = dimsizes(tile_inds)
 
-  nhaloSG_all_tiles := new((/ num_tiles_to_plot /), "integer")
-  nxSG_with_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
-  nySG_with_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
-  nxSG_no_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
-  nySG_no_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
-
-  nhalo_all_tiles := new((/ num_tiles_to_plot /), "integer")
-  nx_with_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
-  ny_with_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
-  nx_no_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
-  ny_no_halo_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  grid_fn_all_tiles := new((/ num_tiles_to_plot /), "string")
 
   remove_halo_all_tiles := new((/ num_tiles_to_plot /), "logical")
 
-  grid_files := new((/ num_tiles_to_plot /), "string")
+  nhSG_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nxhSG_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nyhSG_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nxSG_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nySG_all_tiles := new((/ num_tiles_to_plot /), "integer")
+
+  nh_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nxh_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nyh_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  nx_all_tiles := new((/ num_tiles_to_plot /), "integer")
+  ny_all_tiles := new((/ num_tiles_to_plot /), "integer")
+
+  coord_data_type_all_tiles := new((/ num_tiles_to_plot /), "string")
 
   print("")
   print("" + separator_line)
-  print("Reading in tile grid coordinates of each specified tile from file ...")
+  print("Setting grid file name and dimensions of each specified tile ...")
 
   do nn=0, num_tiles_to_plot-1
 
@@ -169,7 +196,7 @@ begin
 ; **********************************************************************
 ;
 ; Set the file name (including path) for the current tile.  Then save
-; the resut in the grid_files array for later use.
+; the resut in the grid_fn_all_tiles array for later use.
 ;
 ; **********************************************************************
 ;
@@ -182,8 +209,8 @@ begin
       grid_fn = work_dir + "/grid/" + grid_fn
     end if
 
-    grid_files(nn) = grid_fn
-    print("  grid_files(" + nn + ") = " + char_dq + grid_files(nn) + char_dq)
+    grid_fn_all_tiles(nn) = grid_fn
+    print("  grid_fn_all_tiles(" + nn + ") = " + char_dq + grid_fn_all_tiles(nn) + char_dq)
 ;
 ; **********************************************************************
 ;
@@ -192,7 +219,7 @@ begin
 ;
 ; **********************************************************************
 ;
-    fp = addfile(grid_files(nn), "r")
+    fp = addfile(grid_fn_all_tiles(nn), "r")
 ;
 ; **********************************************************************
 ;
@@ -203,29 +230,29 @@ begin
 ;
 ; **********************************************************************
 ;
+    msg_adden_SG = ""
     msg_adden = ""
+
     if (strcmp_exact(gtype, "regional") .and. \
         (n_tile .eq. 7) .and. remove_rgnl_halo) then
 
-      nhaloSG_all_tiles(nn) = 2*nhalo_T7
-      nhalo_all_tiles(nn) = nhaloSG_all_tiles(nn)/2
-
+      remove_halo_all_tiles(nn) = True
+      nhSG_all_tiles(nn) = 2*nhalo_T7
+      nh_all_tiles(nn) = nhSG_all_tiles(nn)/2
       msg_adden_SG \
-      = "  (after removing " + nhaloSG_all_tiles(nn) + "-cell-wide halo " + \
+      = "  (after removing " + nhSG_all_tiles(nn) + "-cell-wide halo " + \
         "from all four sides of the supergrid)"
       msg_adden \
-      = "  (after removing " + nhalo_all_tiles(nn) + "-cell-wide halo " + \
+      = "  (after removing " + nh_all_tiles(nn) + "-cell-wide halo " + \
         "from all four sides of the grid)"
-
-      remove_halo_all_tiles(nn) = True
 
     else
 
-      nhaloSG_all_tiles(nn) = 0
-      nhalo_all_tiles(nn) = nhaloSG_all_tiles(nn)/2
+      remove_halo_all_tiles(nn) = False
+      nhSG_all_tiles(nn) = 0
+      nh_all_tiles(nn) = nhSG_all_tiles(nn)/2
       msg_adden_SG = "  (no halo removed from supergrid)"
       msg_adden = "  (no halo removed from grid)"
-      remove_halo_all_tiles(nn) = False
 
     end if
 ;
@@ -238,56 +265,160 @@ begin
 ; **********************************************************************
 ;
     tile_SG_dims := getfilevardimsizes(fp, "area") 
-    nxSG_with_halo_all_tiles(nn) = tile_SG_dims(1)
-    nySG_with_halo_all_tiles(nn) = tile_SG_dims(0)
+
+    nxhSG_all_tiles(nn) = tile_SG_dims(1)
+    nyhSG_all_tiles(nn) = tile_SG_dims(0)
+    nxSG_all_tiles(nn) = nxhSG_all_tiles(nn) - 2*nhSG_all_tiles(nn)
+    nySG_all_tiles(nn) = nyhSG_all_tiles(nn) - 2*nhSG_all_tiles(nn)
 
     print("")
-    print("  nhaloSG_all_tiles(" + nn + ") = " + nhaloSG_all_tiles(nn))
-;    print("")
-    print("  nxSG_with_halo_all_tiles(" + nn + ") = " + \
-          nxSG_with_halo_all_tiles(nn))
-    print("  nySG_with_halo_all_tiles(" + nn + ") = " + \
-          nySG_with_halo_all_tiles(nn))
-
-    nxSG_no_halo_all_tiles(nn) \
-    = nxSG_with_halo_all_tiles(nn) - 2*nhaloSG_all_tiles(nn)
-    nySG_no_halo_all_tiles(nn) \
-    = nySG_with_halo_all_tiles(nn) - 2*nhaloSG_all_tiles(nn)
-
-;    print("")
-    print("  nxSG_no_halo_all_tiles(" + nn + ") = " + \
-          nxSG_no_halo_all_tiles(nn) + msg_adden_SG)
-    print("  nySG_no_halo_all_tiles(" + nn + ") = " + \
-          nySG_no_halo_all_tiles(nn) + msg_adden_SG)
-;pause
+    print("  nhSG_all_tiles(" + nn + ") = " + nhSG_all_tiles(nn))
+    print("  nxhSG_all_tiles(" + nn + ") = " + nxhSG_all_tiles(nn))
+    print("  nyhSG_all_tiles(" + nn + ") = " + nyhSG_all_tiles(nn))
+    print("  nxSG_all_tiles(" + nn + ") = " + nxSG_all_tiles(nn) + msg_adden_SG)
+    print("  nySG_all_tiles(" + nn + ") = " + nySG_all_tiles(nn) + msg_adden_SG)
 ;
 ; **********************************************************************
 ;
 ;
 ;
 ; **********************************************************************
-; 
-    nx_with_halo_all_tiles(nn) = nxSG_with_halo_all_tiles(nn)/2
-    ny_with_halo_all_tiles(nn) = nySG_with_halo_all_tiles(nn)/2
+;
+    nxh_all_tiles(nn) = nxhSG_all_tiles(nn)/2
+    nyh_all_tiles(nn) = nyhSG_all_tiles(nn)/2
+    nx_all_tiles(nn) = nxh_all_tiles(nn) - 2*nh_all_tiles(nn)
+    ny_all_tiles(nn) = nyh_all_tiles(nn) - 2*nh_all_tiles(nn)
 
     print("")
-    print("  nhalo_all_tiles(" + nn + ") = " + nhalo_all_tiles(nn))
-;    print("")
-    print("  nx_with_halo_all_tiles(" + nn + ") = " + \
-          nx_with_halo_all_tiles(nn))
-    print("  ny_with_halo_all_tiles(" + nn + ") = " + \
-          ny_with_halo_all_tiles(nn))
+    print("  nh_all_tiles(" + nn + ") = " + nh_all_tiles(nn))
+    print("  nxh_all_tiles(" + nn + ") = " + nxh_all_tiles(nn))
+    print("  nyh_all_tiles(" + nn + ") = " + nyh_all_tiles(nn))
+    print("  nx_all_tiles(" + nn + ") = " + nx_all_tiles(nn) + msg_adden)
+    print("  ny_all_tiles(" + nn + ") = " + ny_all_tiles(nn) + msg_adden)
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+;
+    coord_data_type_all_tiles(nn) = getfilevartypes(fp, "x") 
 
-    nx_no_halo_all_tiles(nn) \
-    = nx_with_halo_all_tiles(nn) - 2*nhalo_all_tiles(nn)
-    ny_no_halo_all_tiles(nn) \
-    = ny_with_halo_all_tiles(nn) - 2*nhalo_all_tiles(nn)
+    print("")
+    print("  coord_data_type_all_tiles(" + nn + ") = " + \
+          char_dq + coord_data_type_all_tiles(nn) + char_dq)
 
-;    print("")
-    print("  nx_no_halo_all_tiles(" + nn + ") = " + \
-          nx_no_halo_all_tiles(nn) + msg_adden)
-    print("  ny_no_halo_all_tiles(" + nn + ") = " + \
-          ny_no_halo_all_tiles(nn) + msg_adden)
+  end do
+
+  print("")
+  print("Done setting grid file name and dimensions of each specified tile.")
+  print("" + separator_line)
+;
+; **********************************************************************
+;
+; Get the data type (i.e. float or double) of the arrays holding the 
+; tile grid coordinates.
+; Check that the data types of the 
+;
+; **********************************************************************
+;
+  coord_data_type := coord_data_type_all_tiles(0)
+
+  if (num_tiles_to_plot .gt. 1) then
+
+    match_found \
+    := strcmp_exact( \
+       coord_data_type_all_tiles(1:num_tiles_to_plot-1), \
+       coord_data_type)
+    exact_match = match_found@exact_match
+
+    if (.not. all(exact_match)) then
+
+      msg := \
+"  coord_data_type_all_tiles(" + ispan(0, num_tiles_to_plot-1, 1) + \
+") = " + char_dq + coord_data_type_all_tiles + char_dq
+      msg := str_join(msg, char_nl)
+
+      msg := char_nl + \
+"For simplicity, we require that the coordinate arrays in the files cor-" + char_nl + \
+"responding to the specified tiles all be the same data type.  In this " + char_nl + \
+"case, they are not:" + char_nl + \
+msg + char_nl + \
+"Stopping."
+
+      print("" + msg)
+      exit
+
+    end if
+
+  end if
+
+  msg := char_nl + \
+"The data type of the coordinates in all the tile/grid specification" + char_nl + \
+"files is:" + char_nl + \
+"  coord_data_type = " + char_dq + coord_data_type + char_dq
+  print("" + msg)
+;
+; **********************************************************************
+;
+; Define arrays of type coord_data_type and of length one containing athe coordinates of so that 
+;
+;
+; **********************************************************************
+;
+  lon_cntrs_all_tiles_unstruc := new(1, coord_data_type)
+  lat_cntrs_all_tiles_unstruc := new(1, coord_data_type)
+  lon_verts_all_tiles_unstruc := new((/1,4/), coord_data_type)
+  lat_verts_all_tiles_unstruc := new((/1,4/), coord_data_type)
+  lon_bdy_all_tiles := new(1, coord_data_type)
+  lat_bdy_all_tiles := new(1, coord_data_type)
+
+  lon_tile_cntr_all_tiles := new((/ num_tiles_to_plot /), coord_data_type)
+  lat_tile_cntr_all_tiles := new((/ num_tiles_to_plot /), coord_data_type)
+
+  lon_tile_corners_face_midpts_all_tiles \
+  := new((/ num_tiles_to_plot, 8 /), coord_data_type)
+  lat_tile_corners_face_midpts_all_tiles \
+  := new((/ num_tiles_to_plot, 8 /), coord_data_type)
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+;
+  print("")
+  print("" + separator_line)
+  print("Reading in tile coordinates of each specified tile from file ...")
+
+  do nn=0, num_tiles_to_plot-1
+
+    n_tile = tile_inds(nn)
+    print("")
+    print("  n_tile = " + n_tile)
+
+    nhSG = nhSG_all_tiles(nn)
+    nxhSG = nxhSG_all_tiles(nn)
+    nyhSG = nyhSG_all_tiles(nn)
+    nxSG = nxSG_all_tiles(nn)
+    nySG = nySG_all_tiles(nn)
+
+    nh = nh_all_tiles(nn)
+    nxh = nxh_all_tiles(nn)
+    nyh = nyh_all_tiles(nn)
+    nx = nx_all_tiles(nn)
+    ny = ny_all_tiles(nn)
+
+    remove_halo = remove_halo_all_tiles(nn)
+;
+; **********************************************************************
+;
+; Open the NetCDF file containing the grid specification for the current 
+; tile.
+;
+; **********************************************************************
+;
+    fp = addfile(grid_fn_all_tiles(nn), "r")
 ;
 ; **********************************************************************
 ;
@@ -300,15 +431,9 @@ begin
 ; 
     lon_verts_SG_crnt_tile := fp->x(:,:)
     lat_verts_SG_crnt_tile := fp->y(:,:)
-;
-; **********************************************************************
-;
-; Get the data type (i.e. float or double) of the arrays holding the 
-; tile grid coordinates.
-;
-; **********************************************************************
-;
-    coord_data_type = typeof(lon_verts_SG_crnt_tile)
+
+    lon_verts_SG_crnt_tile \
+    := adjust_longitude_range(lon_verts_SG_crnt_tile, -180.0d+0, "degs")
 ;
 ; **********************************************************************
 ;
@@ -332,26 +457,29 @@ begin
 ;
 ; **********************************************************************
 ;
-; Delete the supergrid coordinates to save memory.
-;
-; **********************************************************************
-;
-    delete([/ lon_verts_SG_crnt_tile, \
-              lat_verts_SG_crnt_tile /])
-;
-; **********************************************************************
-;
 ; If on a regional grid, if the current tile is tile 7 (the regional do-
-; main/grid), and if remove_rgnl_halo is set to True, then remove a ha-
-; lo of width nhalo_T7 from each of the coordinate arrays.
+; main/grid), and if remove_rgnl_halo is set to True, then remove a halo
+; of width nhalo_T7 cells from each of the coordinate arrays.
 ;
 ; **********************************************************************
 ;
-    if (strcmp_exact(gtype, "regional") .and. \
-        (n_tile .eq. 7) .and. remove_rgnl_halo) then
+    if (remove_halo) then
 
       print("")
-      print("  Removing halo cells from coordinate arrays of tile " + n_tile + " ...")
+      print("  Removing halo cells from coordinate arrays of tile " + \
+            n_tile + " ...")
+;
+; **********************************************************************
+;
+; Remove halo cells from the arrays containing coordinates of the cell
+; vertices on the supergrid.
+;
+; **********************************************************************
+;
+      lon_verts_SG_crnt_tile \
+      := lon_verts_SG_crnt_tile(nhSG:nyhSG-nhSG, nhSG:nxhSG-nhSG)
+      lat_verts_SG_crnt_tile \
+      := lat_verts_SG_crnt_tile(nhSG:nyhSG-nhSG, nhSG:nxhSG-nhSG)
 ;
 ; **********************************************************************
 ;
@@ -361,14 +489,9 @@ begin
 ; **********************************************************************
 ;
       lon_cntrs_crnt_tile \
-      := lon_cntrs_crnt_tile( \
-         nhalo_T7:ny_with_halo_all_tiles(nn)-1-nhalo_T7, \
-         nhalo_T7:nx_with_halo_all_tiles(nn)-1-nhalo_T7)
-
+      := lon_cntrs_crnt_tile(nh:nyh-1-nh, nh:nxh-1-nh)
       lat_cntrs_crnt_tile \
-      := lat_cntrs_crnt_tile( \
-         nhalo_T7:ny_with_halo_all_tiles(nn)-1-nhalo_T7, \
-         nhalo_T7:nx_with_halo_all_tiles(nn)-1-nhalo_T7)
+      := lat_cntrs_crnt_tile(nh:nyh-1-nh, nh:nxh-1-nh)
 ;
 ; **********************************************************************
 ;
@@ -377,54 +500,13 @@ begin
 ;
 ; **********************************************************************
 ;
-      lon_verts_crnt_tile \
-      := lon_verts_crnt_tile( \
-         nhalo_T7:ny_with_halo_all_tiles(nn)-nhalo_T7, \
-         nhalo_T7:nx_with_halo_all_tiles(nn)-nhalo_T7)
+      lon_verts_crnt_tile := lon_verts_crnt_tile(nh:nyh-nh, nh:nxh-nh)
+      lat_verts_crnt_tile := lat_verts_crnt_tile(nh:nyh-nh, nh:nxh-nh)
 
-      lat_verts_crnt_tile \
-      := lat_verts_crnt_tile( \
-         nhalo_T7:ny_with_halo_all_tiles(nn)-nhalo_T7, \
-         nhalo_T7:nx_with_halo_all_tiles(nn)-nhalo_T7)
-
-      print("  Done removing halo cells from coordinate arrays of tile " + n_tile + ".")
+      print("  Done removing halo cells from coordinate arrays of " + \
+            "tile " + n_tile + ".")
 
     end if
-;
-; **********************************************************************
-;
-; Find and print out the coordinates of the corners of the current tile.
-;
-; **********************************************************************
-;
-    x_is_longitude = True
-    opts := True
-    opts@verbose = False
-    corner_info := get_rect_grid_corners( \
-                   lon_verts_crnt_tile, lat_verts_crnt_tile, \
-                   "deg", "deg", x_is_longitude, opts)
-    corner_lons := corner_info@x_corners
-    corner_lats := corner_info@y_corners
-
-    print("")
-    print("  Tile corner lon/lat coordinates are:")
-    fmt_str = "%7.2f"
-    do c=0, dimsizes(corner_lons)-1
-      lon_str = sprintf(fmt_str, corner_lons(c))
-      lat_str = sprintf(fmt_str, corner_lats(c))
-      print("    Corner " + (c+1) + ":  lon = " + lon_str + " deg;  " + \
-            "lat = " + lat_str + " deg")
-    end do
-;
-; **********************************************************************
-;
-; For convenience, define nx and ny as the number of grid points in each
-; of the two directions on the current tile.
-;
-; **********************************************************************
-;
-    nx = nx_no_halo_all_tiles(nn)
-    ny = ny_no_halo_all_tiles(nn)
 ;
 ; **********************************************************************
 ;
@@ -471,41 +553,25 @@ begin
 ;
 ; **********************************************************************
 ;
-; Initialize (if on the first specified tile) or append to (if on the 
-; second, third, etc, specified tiles) the unstructured arrays that will 
-; contain the coordinates of the cell centers and cell vertices on all
-; specified tiles.  We refer to these as the "all-tiles" arrays.  If 
-; initializing, we set these "all-tiles" arrays to the unstructured ar-
-; rays containing these same coordinates on the first tile.  Otherwise, 
-; we append to them the coordinates on the current tile.
+; Append to the unstructured arrays that will contain the coordinates of
+; the cell centers and cell vertices on all specified tiles.  We refer 
+; to these as the "all-tiles" arrays.
 ;
 ; **********************************************************************
 ;
-    if (nn .eq. 0) then
+    lon_cntrs_all_tiles_unstruc \
+    := array_append_record( \
+       lon_cntrs_all_tiles_unstruc, lon_cntrs_crnt_tile_unstruc, 0)
+    lat_cntrs_all_tiles_unstruc \
+    := array_append_record( \
+       lat_cntrs_all_tiles_unstruc, lat_cntrs_crnt_tile_unstruc, 0)
 
-      lon_cntrs_all_tiles_unstruc := lon_cntrs_crnt_tile_unstruc
-      lat_cntrs_all_tiles_unstruc := lat_cntrs_crnt_tile_unstruc
-
-      lon_verts_all_tiles_unstruc := lon_verts_crnt_tile_unstruc
-      lat_verts_all_tiles_unstruc := lat_verts_crnt_tile_unstruc
-
-    else
-
-      lon_cntrs_all_tiles_unstruc \
-      := array_append_record( \
-         lon_cntrs_all_tiles_unstruc, lon_cntrs_crnt_tile_unstruc, 0)
-      lat_cntrs_all_tiles_unstruc \
-      := array_append_record( \
-         lat_cntrs_all_tiles_unstruc, lat_cntrs_crnt_tile_unstruc, 0)
-
-      lon_verts_all_tiles_unstruc \
-      := array_append_record( \
-         lon_verts_all_tiles_unstruc, lon_verts_crnt_tile_unstruc, 0)
-      lat_verts_all_tiles_unstruc \
-      := array_append_record( \
-         lat_verts_all_tiles_unstruc, lat_verts_crnt_tile_unstruc, 0)
-
-    end if
+    lon_verts_all_tiles_unstruc \
+    := array_append_record( \
+       lon_verts_all_tiles_unstruc, lon_verts_crnt_tile_unstruc, 0)
+    lat_verts_all_tiles_unstruc \
+    := array_append_record( \
+       lat_verts_all_tiles_unstruc, lat_verts_crnt_tile_unstruc, 0)
 ;
 ; **********************************************************************
 ;
@@ -528,45 +594,181 @@ begin
       lon_bdy_crnt_tile := bdy_info@x_bdy
       lat_bdy_crnt_tile := bdy_info@y_bdy
 ;
-; Now either initialize (if on the first specified tile) or append to 
-; (if on the second, third, etc, specified tiles) the arrays that will 
-; contain the coordinates of the boundary points on all specified tiles.  
-; We refer to these as the "all-tiles" arrays.  If initializing, we set
-; these "all-tiles" arrays to the arrays containing the boundary point
-; coordinates for the first tile.  Otherwise, we append to them the 
-; boundary point coordinates for the current tile.
+; Append to the arrays that will contain the coordinates of the boundary
+; points on all specified tiles.  We refer to these as the "all-tiles" 
+; arrays.
 ;
-      if (nn .eq. 0) then
-        lon_bdy_all_tiles := lon_bdy_crnt_tile
-        lat_bdy_all_tiles := lat_bdy_crnt_tile
-      else
-        lon_bdy_all_tiles \
-        := array_append_record(lon_bdy_all_tiles, lon_bdy_crnt_tile, 0)
-        lat_bdy_all_tiles \
-        := array_append_record(lat_bdy_all_tiles, lat_bdy_crnt_tile, 0)
-      end if
-;
-; **********************************************************************
-;
-; If get_tile_bdies is False, set the "all-tiles" boundary coordinate 
-; arrays to default missing scalar values.  This is needed so that we
-; do not get "undefined variable" errors later on when trying to return
-; these arrays as attributes of the return variable.
-;
-; **********************************************************************
-;
-    else
-
-      lon_bdy_all_tiles := default_fillvalue(coord_data_type)
-      lat_bdy_all_tiles := default_fillvalue(coord_data_type)
+      lon_bdy_all_tiles \
+      := array_append_record(lon_bdy_all_tiles, lon_bdy_crnt_tile, 0)
+      lat_bdy_all_tiles \
+      := array_append_record(lat_bdy_all_tiles, lat_bdy_crnt_tile, 0)
 
     end if
+;
+; **********************************************************************
+;
+; Find and print out the coordinates of the corners of the current tile.
+;
+; **********************************************************************
+;
+    x_is_longitude = True
+    opts := True
+    opts@verbose = False
+    corner_info := get_rect_grid_corners( \
+                   lon_verts_crnt_tile, lat_verts_crnt_tile, \
+                   "deg", "deg", x_is_longitude, opts)
+    corner_lons := corner_info@x_corners
+    corner_lats := corner_info@y_corners
+
+    print("")
+    print("  Tile corner lon/lat coordinates are:")
+    fmt_str = "%7.2f"
+    do c=0, dimsizes(corner_lons)-1
+      lon_str = sprintf(fmt_str, corner_lons(c))
+      lat_str = sprintf(fmt_str, corner_lats(c))
+      print("    Corner " + (c+1) + ":  lon = " + lon_str + " deg;  " + \
+            "lat = " + lat_str + " deg")
+    end do
+;
+; **********************************************************************
+;
+; Set the i-indices of the domain's left (west) boundary, center, and 
+; right (east) boundary and the j-indices of the bottom (south) bounda-
+; ry, middle (center), and top (north) boundary in the arrays containing
+; the coordinates of the supergrid.
+;
+; **********************************************************************
+;
+    if (remove_halo) then
+
+      i_left = 0
+      i_cntr = nxSG/2
+      i_rght = nxSG
+
+      j_bot = 0
+      j_mid = nySG/2
+      j_top = nySG
+
+    else
+
+      i_left = 0
+      i_cntr = nxhSG/2
+      i_rght = nxhSG
+
+      j_bot = 0
+      j_mid = nyhSG/2
+      j_top = nyhSG
+
+    end if
+;
+; **********************************************************************
+;
+; Calculate the coordinates of the center of the current tile as well as
+; the coordinates of the tile corners and the midpoints of the four tile
+; faces.
+;
+; **********************************************************************
+;
+    lon_tile_cntr_all_tiles(nn) = lon_verts_SG_crnt_tile(j_mid, i_cntr)
+    lat_tile_cntr_all_tiles(nn) = lat_verts_SG_crnt_tile(j_mid, i_cntr)
+
+    loc_names := new(8, "string")
+
+    i = 0
+    loc_names(i) = "SW_corner"
+    lon_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lon_verts_SG_crnt_tile(j_bot, i_left)
+    lat_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lat_verts_SG_crnt_tile(j_bot, i_left)
+
+    i = i + 1
+    loc_names(i) = "S_face_midpt"
+    lon_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lon_verts_SG_crnt_tile(j_bot, i_cntr)
+    lat_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lat_verts_SG_crnt_tile(j_bot, i_cntr)
+
+    i = i + 1
+    loc_names(i) = "SE_corner"
+    lon_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lon_verts_SG_crnt_tile(j_bot, i_rght)
+    lat_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lat_verts_SG_crnt_tile(j_bot, i_rght)
+
+    i = i + 1
+    loc_names(i) = "E_face_midpt"
+    lon_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lon_verts_SG_crnt_tile(j_mid, i_rght)
+    lat_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lat_verts_SG_crnt_tile(j_mid, i_rght)
+
+    i = i + 1
+    loc_names(i) = "NE_corner"
+    lon_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lon_verts_SG_crnt_tile(j_top, i_rght)
+    lat_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lat_verts_SG_crnt_tile(j_top, i_rght)
+
+    i = i + 1
+    loc_names(i) = "N_face_midpt"
+    lon_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lon_verts_SG_crnt_tile(j_top, i_cntr)
+    lat_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lat_verts_SG_crnt_tile(j_top, i_cntr)
+
+    i = i + 1
+    loc_names(i) = "NW_corner"
+    lon_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lon_verts_SG_crnt_tile(j_top, i_left)
+    lat_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lat_verts_SG_crnt_tile(j_top, i_left)
+
+    i = i + 1
+    loc_names(i) = "W_face_midpt"
+    lon_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lon_verts_SG_crnt_tile(j_mid, i_left)
+    lat_tile_corners_face_midpts_all_tiles(nn,i) \
+    = lat_verts_SG_crnt_tile(j_mid, i_left)
+;
+; **********************************************************************
+;
+; Print out coordinates of grid corners and face midpoints.
+;
+; **********************************************************************
+;
+    lon_str := sprintf("%10.6f", lon_tile_corners_face_midpts_all_tiles(nn,:))
+    lat_str := sprintf("%10.6f", lat_tile_corners_face_midpts_all_tiles(nn,:))
+    
+    loc_names := strpad(loc_names + ":", " ", "right")
+    lon_str := strpad(lon_str + " deg", " ", "left")
+    lat_str := strpad(lat_str + " deg", " ", "left")
+    msg := loc_names + "  lon = " + lon_str + ";  lat = " + lat_str
+    msg := array_append_record( \
+"Longitudes and latitudes of the tile corners and tile face midpoints are:", \
+           "  " + msg, 0)
+    msg := "  " + msg
+    msg := str_join(msg, char_nl)
+    print("")
+    print("" + msg)
 
   end do
 
   print("")
-  print("Done reading in tile grid coordinates of each specified tile.")
+  print("Done reading in grid coordinates of each specified tile.")
   print("" + separator_line)
+;
+; **********************************************************************
+;
+; Remove the first
+;
+; **********************************************************************
+;
+  lon_cntrs_all_tiles_unstruc := lon_cntrs_all_tiles_unstruc(1:)
+  lat_cntrs_all_tiles_unstruc := lat_cntrs_all_tiles_unstruc(1:)
+  lon_verts_all_tiles_unstruc := lon_verts_all_tiles_unstruc(1:,:)
+  lat_verts_all_tiles_unstruc := lat_verts_all_tiles_unstruc(1:,:)
+  lon_bdy_all_tiles := lon_bdy_all_tiles(1:)
+  lat_bdy_all_tiles := lat_bdy_all_tiles(1:)
 ;
 ; **********************************************************************
 ;
@@ -577,19 +779,19 @@ begin
   grid_info := True
 
   grid_info@fp = fp
-  grid_info@grid_files = grid_files
+  grid_info@grid_fn_all_tiles = grid_fn_all_tiles
 
-  grid_info@nhaloSG_all_tiles = nhaloSG_all_tiles
-  grid_info@nxSG_with_halo_all_tiles = nxSG_with_halo_all_tiles
-  grid_info@nySG_with_halo_all_tiles = nySG_with_halo_all_tiles
-  grid_info@nxSG_no_halo_all_tiles = nxSG_no_halo_all_tiles
-  grid_info@nySG_no_halo_all_tiles = nySG_no_halo_all_tiles
+  grid_info@nhSG_all_tiles = nhSG_all_tiles
+  grid_info@nxhSG_all_tiles = nxhSG_all_tiles
+  grid_info@nyhSG_all_tiles = nyhSG_all_tiles
+  grid_info@nxSG_all_tiles = nxSG_all_tiles
+  grid_info@nySG_all_tiles = nySG_all_tiles
 
-  grid_info@nhalo_all_tiles = nhalo_all_tiles
-  grid_info@nx_with_halo_all_tiles = nx_with_halo_all_tiles
-  grid_info@ny_with_halo_all_tiles = ny_with_halo_all_tiles
-  grid_info@nx_no_halo_all_tiles = nx_no_halo_all_tiles
-  grid_info@ny_no_halo_all_tiles = ny_no_halo_all_tiles
+  grid_info@nh_all_tiles = nh_all_tiles
+  grid_info@nxh_all_tiles = nxh_all_tiles
+  grid_info@nyh_all_tiles = nyh_all_tiles
+  grid_info@nx_all_tiles = nx_all_tiles
+  grid_info@ny_all_tiles = ny_all_tiles
 
   grid_info@remove_halo_all_tiles = remove_halo_all_tiles
 
@@ -601,6 +803,14 @@ begin
   grid_info@lon_bdy_all_tiles = lon_bdy_all_tiles
   grid_info@lat_bdy_all_tiles = lat_bdy_all_tiles
 
+  grid_info@lon_tile_cntr_all_tiles = lon_tile_cntr_all_tiles
+  grid_info@lat_tile_cntr_all_tiles = lat_tile_cntr_all_tiles
+
+  grid_info@lon_tile_corners_face_midpts_all_tiles \
+  = lon_tile_corners_face_midpts_all_tiles
+  grid_info@lat_tile_corners_face_midpts_all_tiles \
+  = lat_tile_corners_face_midpts_all_tiles
+ 
   grid_info@coord_data_type = coord_data_type
 
   return(grid_info)
