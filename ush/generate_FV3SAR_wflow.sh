@@ -117,9 +117,12 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 #
 #-----------------------------------------------------------------------
 #
-regex_search="(^\s*<cycledef\s+group=\"at_start\">00)\s+(&HH_FIRST_CYCL;)\s+(&DD_FIRST_CYCL;)\s+(&MM_FIRST_CYCL;)\s+(&YYYY_FIRST_CYCL;)\s+(.*</cycledef>)(.*)"
-regex_replace="\1 ${HH_FIRST_CYCL} ${DD_FIRST_CYCL} ${MM_FIRST_CYCL} ${YYYY_FIRST_CYCL} \6"
-sed -i -r -e "s|${regex_search}|${regex_replace}|g" "$WFLOW_XML_FP"
+# With new approach of defining ENTITIES for HH_FIRST_CYCL, etc in the 
+# workflow template XML itself, don't need the following.  Remove these
+# at some point.
+#regex_search="(^\s*<cycledef\s+group=\"at_start\">00)\s+(&HH_FIRST_CYCL;)\s+(&DD_FIRST_CYCL;)\s+(&MM_FIRST_CYCL;)\s+(&YYYY_FIRST_CYCL;)\s+(.*</cycledef>)(.*)"
+#regex_replace="\1 ${HH_FIRST_CYCL} ${DD_FIRST_CYCL} ${MM_FIRST_CYCL} ${YYYY_FIRST_CYCL} \6"
+#sed -i -r -e "s|${regex_search}|${regex_replace}|g" "$WFLOW_XML_FP"
 #
 #-----------------------------------------------------------------------
 #
@@ -167,7 +170,7 @@ sed -i -r -e "s|${regex_search}|${all_cycledefs}|g" "$WFLOW_XML_FP"
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; set +x; } > /dev/null 2>&1
-module load rocoto/1.3.0-RC5
+module load rocoto/1.3.0
 { restore_shell_opts; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
