@@ -86,13 +86,13 @@ field_name = "sqrt_cell_area"
 
 
 map_proj = "cyln"
-map_proj = "ortho"
+;map_proj = "ortho"
 ;
 ; This should be set to (0,0) for "cyln" map projection.
 ;
-; map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map projection.
-map_proj_ctr = (/ -106.0, 54.0 /) ; RAP domain.
-map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
+map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map projection.
+;map_proj_ctr = (/ -106.0, 54.0 /) ; RAP domain.
+;map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
 
 ;map_proj_ctr = (/ 6.0, 54.0 /) ; RAP domain corner.
 
@@ -101,8 +101,13 @@ plot_subreg = True
 
 ;subreg_limits := (/ -180, 180, -90, 90 /)
 ;subreg_limits := (/ -75, -45, 30, 60 /)
-subreg_limits := (/ -145, -90, 30, 60 /) ; Northwest corner of HRRR domain.
-subreg_limits := (/ -120, -115, 30, 35 /)
+
+subreg_limits := (/ -135, -60, 20, 55 /) ; HRRR domain if using "cyln" map projection.
+;subreg_limits := (/ -125, -70, 20, 55 /) ; HRRR domain if using "ortho" map projection.
+;subreg_limits := (/ -145, -90, 30, 60 /) ; Northwest corner of HRRR domain.
+;subreg_limits := (/ -120, -115, 30, 35 /)
+;subreg_limits := (/ -125, -120, 15, 25 /) ; Southwest corner of HRRR domain.
+
 ;subreg_limits := (/ -15, 0, 0, 15 /)
 ;subreg_limits := (/ -30, 0, 0, 30 /)
 ;subreg_limits := (/ -60, -30, 0, 30 /)
@@ -121,7 +126,6 @@ subreg_limits := (/ -120, -115, 30, 35 /)
 ;subreg_limits := (/ 15, 30, 30, 45 /)
 ;subreg_limits := (/ 14, 16, 36, 38 /)
 ;subreg_limits := (/ -70, -55, -20, -5 /)
-subreg_limits := (/ -125, -70, 20, 55 /) ; HRRR domain.
 ;subreg_limits := (/ 10, 20, 30, 40 /)
 ;subreg_limits := (/ 15, 20, 30, 35 /)
 
@@ -188,8 +192,8 @@ separator_line \
 ;
 ; **********************************************************************
 ;
-;lib_location = "lib/"
-lib_location = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3sar_workflow/ush/NCL/lib/"
+lib_location = "lib/"
+;lib_location = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3sar_workflow/ush/NCL/lib/"
 
 loadscript(lib_location + "special_chars.ncl")
 loadscript(lib_location + "pause.ncl")
@@ -210,6 +214,8 @@ load "read_RAP_field.ncl"
 load "plot_horiz_field.ncl"
 load "get_gridfield_info.ncl"
 load "set_file_field_names.ncl"
+load "get_wrtcmp_grid.ncl"
+load "calc_wrtcmp_grid_params_lambert_cnfrml.ncl"
 
 load "check_filevar_existence_dims.ncl"
 
@@ -439,19 +445,19 @@ char_dq + "ncgm" + char_dq + "." + char_nl
                nhalo_T7, \
                remove_rgnl_halo)
 
-  grid_files_tiles_to_plot = grid_info@grid_files
+  grid_fn_tiles_to_plot = grid_info@grid_fn_all_tiles
 
-  nhaloSG_tiles_to_plot = grid_info@nhaloSG_all_tiles
-  nxSG_with_halo_tiles_to_plot = grid_info@nxSG_with_halo_all_tiles
-  nySG_with_halo_tiles_to_plot = grid_info@nySG_with_halo_all_tiles
-  nxSG_no_halo_tiles_to_plot = grid_info@nxSG_no_halo_all_tiles
-  nySG_no_halo_tiles_to_plot = grid_info@nySG_no_halo_all_tiles
+  nhSG_tiles_to_plot = grid_info@nhSG_all_tiles
+  nxhSG_tiles_to_plot = grid_info@nxhSG_all_tiles
+  nyhSG_tiles_to_plot = grid_info@nyhSG_all_tiles
+  nxSG_tiles_to_plot = grid_info@nxSG_all_tiles
+  nySG_tiles_to_plot = grid_info@nySG_all_tiles
 
-  nhalo_tiles_to_plot = grid_info@nhalo_all_tiles
-  nx_with_halo_tiles_to_plot = grid_info@nx_with_halo_all_tiles
-  ny_with_halo_tiles_to_plot = grid_info@ny_with_halo_all_tiles
-  nx_no_halo_tiles_to_plot = grid_info@nx_no_halo_all_tiles
-  ny_no_halo_tiles_to_plot = grid_info@ny_no_halo_all_tiles
+  nh_tiles_to_plot = grid_info@nh_all_tiles
+  nxh_tiles_to_plot = grid_info@nxh_all_tiles
+  nyh_tiles_to_plot = grid_info@nyh_all_tiles
+  nx_tiles_to_plot = grid_info@nx_all_tiles
+  ny_tiles_to_plot = grid_info@ny_all_tiles
 
   remove_halo_tiles_to_plot = grid_info@remove_halo_all_tiles
 
@@ -462,6 +468,14 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 
   lon_bdy = grid_info@lon_bdy_all_tiles
   lat_bdy = grid_info@lat_bdy_all_tiles
+
+  lon_tile_cntr_tiles_to_plot = grid_info@lon_tile_cntr_all_tiles
+  lat_tile_cntr_tiles_to_plot = grid_info@lat_tile_cntr_all_tiles
+
+  lon_tile_corners_face_midpts_tiles_to_plot \
+  = grid_info@lon_tile_corners_face_midpts_all_tiles
+  lat_tile_corners_face_midpts_tiles_to_plot \
+  = grid_info@lat_tile_corners_face_midpts_all_tiles
 
   coord_data_type_FV3SAR = grid_info@coord_data_type
 ;
@@ -498,6 +512,88 @@ char_dq + "ncgm" + char_dq + "." + char_nl
     print("")
     print("lon_grid_cntr_RAP = " + lon_grid_cntr_RAP + " deg")
     print("lat_grid_cntr_RAP = " + lat_grid_cntr_RAP + " deg")
+
+  end if
+;
+; **********************************************************************
+;
+; Get/construct the write-component grid.
+;
+; **********************************************************************
+;
+;  show_wrtcmp_grid = True
+  show_wrtcmp_grid = False
+
+  show_wrtcmp_bdy = True
+;  show_wrtcmp_bdy = False
+
+  wrtcmp_bdy_color = "green"
+
+
+  rd := "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01/2017090700"
+  wrtcmp_config_fn := rd + "/model_configure"
+  wrtcmp_config_tmpl_fn = wrtcmp_config_fn + ".tmpl"
+
+if (True) then
+;if (False) then
+
+  sys_output = systemfunc("cp " + wrtcmp_config_tmpl_fn + " " + wrtcmp_config_fn) 
+
+;lon_bdy := where(lon_bdy .le. -180.0, lon_bdy + 360.0d+0, lon_bdy)
+;lon_bdy := where(lon_bdy .gt. 180.0, lon_bdy - 360.0d+0, lon_bdy)
+;print("")
+;print("nx_tiles_to_plot = " + nx_tiles_to_plot)
+;print("nxh_tiles_to_plot = " + nxh_tiles_to_plot)
+;print("")
+;print("ny_tiles_to_plot = " + ny_tiles_to_plot)
+;print("nyh_tiles_to_plot = " + nyh_tiles_to_plot)
+;print("")
+;print("dimsizes(lon_bdy) = " + dimsizes(lon_bdy))
+;pause
+
+
+  nn = 0
+  lon_grid_cntr_native = lon_tile_cntr_tiles_to_plot(nn)
+  lat_grid_cntr_native = lat_tile_cntr_tiles_to_plot(nn)
+  lon_tile_corners_face_midpts_native := lon_tile_corners_face_midpts_tiles_to_plot(nn,:)
+  lat_tile_corners_face_midpts_native := lat_tile_corners_face_midpts_tiles_to_plot(nn,:)
+
+  dx_native = 3.0d+3
+  dy_native = 3.0d+3
+  angle_units = "deg"
+
+  out := calc_wrtcmp_grid_params_lambert_cnfrml( \
+         wrtcmp_config_fn, \
+         lon_grid_cntr_native, lat_grid_cntr_native, \
+         lon_tile_corners_face_midpts_native, \
+         lat_tile_corners_face_midpts_native, \
+         dx_native, dy_native, \
+         angle_units)
+
+print("HELLO")
+pause
+end if
+
+  if (show_wrtcmp_grid .or. show_wrtcmp_bdy) then
+
+    grid_info := get_wrtcmp_grid(wrtcmp_config_fn, show_wrtcmp_bdy)
+
+    nx_wrtcmp = grid_info@nx
+    ny_wrtcmp = grid_info@ny
+    lon_cntrs_unstruc_wrtcmp = grid_info@lon_cntrs_unstruc
+    lat_cntrs_unstruc_wrtcmp = grid_info@lat_cntrs_unstruc
+    lon_verts_unstruc_wrtcmp = grid_info@lon_verts_unstruc
+    lat_verts_unstruc_wrtcmp = grid_info@lat_verts_unstruc
+    lon_bdy_wrtcmp = grid_info@lon_bdy
+    lat_bdy_wrtcmp = grid_info@lat_bdy
+    lon_grid_cntr_wrtcmp = grid_info@lon_grid_cntr
+    lat_grid_cntr_wrtcmp = grid_info@lat_grid_cntr
+    coord_data_type_wrtcmp = grid_info@coord_data_type
+
+    print("")
+    print("lon_grid_cntr_wrtcmp = " + lon_grid_cntr_wrtcmp + " deg")
+    print("lat_grid_cntr_wrtcmp = " + lat_grid_cntr_wrtcmp + " deg")
+pause
 
   end if
 ;
@@ -583,6 +679,68 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 ;
 ; **********************************************************************
 ;
+; 
+;
+; **********************************************************************
+;
+  if (show_wrtcmp_grid) then
+;
+; **********************************************************************
+;
+; If the RAP coordinate arrays are not of the same data type as the FV3-
+; SAR coordinate arrays, convert the data type of the former to that of
+; the latter.
+;
+; **********************************************************************
+;
+    if (.not. strcmp_exact(coord_data_type_FV3SAR, coord_data_type_wrtcmp)) then
+
+      lon_cntrs_unstruc_wrtcmp \
+      := totype(lon_cntrs_unstruc_wrtcmp, coord_data_type_FV3SAR)
+
+      lat_cntrs_unstruc_wrtcmp \
+      := totype(lat_cntrs_unstruc_wrtcmp, coord_data_type_FV3SAR)
+
+      lon_verts_unstruc_wrtcmp \
+      := totype(lon_verts_unstruc_wrtcmp, coord_data_type_FV3SAR)
+
+      lat_verts_unstruc_wrtcmp \
+      := totype(lat_verts_unstruc_wrtcmp, coord_data_type_FV3SAR)
+
+    end if
+;
+; **********************************************************************
+;
+; Prepend write-component coordinates to the corresponding arrays for the FV3SAR.
+; This is done for plotting convenience.  Note that the write-component coordinates
+; are prepended insted of appended so that the write-component grid (and any field
+; associated with it) is drawn first and the FV3SAR tiles (and any 
+; fields on them) are then drawn on top.
+;
+; **********************************************************************
+;
+    lon_cntrs_unstruc_all_grids \
+    := array_append_record( \
+       lon_cntrs_unstruc_wrtcmp, lon_cntrs_unstruc_all_grids, 0)
+
+    lat_cntrs_unstruc_all_grids \
+    := array_append_record( \
+       lat_cntrs_unstruc_wrtcmp, lat_cntrs_unstruc_all_grids, 0)
+
+    lon_verts_unstruc_all_grids \
+    := array_append_record( \
+       lon_verts_unstruc_wrtcmp, lon_verts_unstruc_all_grids, 0)
+
+    lat_verts_unstruc_all_grids \
+    := array_append_record( \
+       lat_verts_unstruc_wrtcmp, lat_verts_unstruc_all_grids, 0)
+
+  end if
+
+
+;
+; **********************************************************************
+;
 ; If the plots will show the RAP domain's boundary, then prepend the RAP
 ; boundary coordinate arrays to the boundary coordinate arrays that will
 ; contain coordinate information for all grids.
@@ -632,6 +790,57 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 ;
 ; **********************************************************************
 ;
+; If the plots will show the _write-component domain's boundary, then prepend the _write-component
+;num_bdy_pts_all_bdies(0) boundary coordinate arrays to the boundary coordinate arrays that will
+; contain coordinate information for all grids.
+;
+; **********************************************************************
+;
+  if (show_wrtcmp_bdy) then
+;
+; If the write-component boundary coordinates are not the same data type
+; as the FV3SAR coordinates, convert the type of the former to that of 
+; the latter.
+;
+    if (.not. strcmp_exact(coord_data_type_FV3SAR, coord_data_type_wrtcmp)) then
+      lon_bdy_wrtcmp := totype(lon_bdy_wrtcmp, coord_data_type_FV3SAR)
+      lat_bdy_wrtcmp := totype(lat_bdy_wrtcmp, coord_data_type_FV3SAR)
+    end if
+;
+; If show_tile_bdies is set to True, then the arrays lon_bdy_all_bdies
+; and lat_bdy_all_bdies will already contain the boundary coordinates of
+; all the FV3 grid tiles to be plotted.  In this case, prepend the _write-component
+; boundary coordinates to those of the FV3SAR and store the results in
+; lon_bdy_all_bdies and lat_bdy_all_bdies.  We prepend instead of append
+; in order to be consistent with the way the grid point coordinates of
+; the FV3SAR and _write-component grids are combined.
+;
+;    if (show_tile_bdies) then
+    if (show_tile_bdies .or. show_RAP_bdy) then
+
+      lon_bdy_all_bdies \
+      := array_append_record(lon_bdy_wrtcmp, lon_bdy_all_bdies, 0)
+
+      lat_bdy_all_bdies \
+      := array_append_record(lat_bdy_wrtcmp, lat_bdy_all_bdies, 0)
+;
+; If show_tile_bdies is set to False, then the arrays lon_bdy_all_bdies
+; and lat_bdy_all_bdies will not contain the boundary coordinates of the
+; FV3SAR tiles but instead will contain single missing values.  In this
+; case, redefine them to be equal to the boundary coordinates of the _write-component
+; grid.
+;
+    else
+
+      lon_bdy_all_bdies := lon_bdy_wrtcmp
+      lat_bdy_all_bdies := lat_bdy_wrtcmp
+
+    end if
+
+  end if
+;
+; **********************************************************************
+;
 ;
 ;
 ; **********************************************************************
@@ -643,14 +852,14 @@ char_dq + "ncgm" + char_dq + "." + char_nl
      field_name, \
      is_gridfield, \
 \
-     grid_files_tiles_to_plot, \
-     nxSG_with_halo_tiles_to_plot, \
-     nySG_with_halo_tiles_to_plot, \
+     grid_fn_tiles_to_plot, \
+     nxhSG_tiles_to_plot, \
+     nyhSG_tiles_to_plot, \
 \
      run_dir, \
      file_basename, \
-     nx_with_halo_tiles_to_plot, \
-     ny_with_halo_tiles_to_plot, \
+     nxh_tiles_to_plot, \
+     nyh_tiles_to_plot, \
 \
      vert_inds_to_plot, \
      time_inds_to_plot, \
@@ -703,11 +912,11 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 ;
 ; **********************************************************************
 ;
-;    nx_tiles_to_plot := nx_with_halo_tiles_to_plot
-;    ny_tiles_to_plot := ny_with_halo_tiles_to_plot
+;    nx_tiles_to_plot := nxh_tiles_to_plot
+;    ny_tiles_to_plot := nyh_tiles_to_plot
 ;    if (strcmp_exact(gtype, "regional") .and. remove_rgnl_halo) then
-;      nx_tiles_to_plot := nx_no_halo_tiles_to_plot
-;      ny_tiles_to_plot := ny_no_halo_tiles_to_plot
+;      nx_tiles_to_plot := nx_tiles_to_plot
+;      ny_tiles_to_plot := ny_tiles_to_plot
 ;    end if
 
 ;if (True) then
@@ -728,9 +937,9 @@ else
          field_names_by_tile, \
          file_names_by_tile, \
          gtype, inds_tiles_to_plot, \
-         nhalo_tiles_to_plot, \
-         nx_with_halo_tiles_to_plot, ny_with_halo_tiles_to_plot, \
-         nx_no_halo_tiles_to_plot, ny_no_halo_tiles_to_plot, \
+         nh_tiles_to_plot, \
+         nxh_tiles_to_plot, nyh_tiles_to_plot, \
+         nx_tiles_to_plot, ny_tiles_to_plot, \
          remove_halo_tiles_to_plot, \
          vert_indx, time_indx, \
          horiz_dist_units, horiz_area_units \
@@ -740,10 +949,10 @@ end if
       field_desc := field_info@field_desc
       field_units := field_info@field_units
       field_unstruc := field_info@field_all_tiles_unstruc
-      field_min_all_tiles := field_info@field_min_all_tiles
-      field_max_all_tiles := field_info@field_max_all_tiles
-      field_median_all_tiles := field_info@field_median_all_tiles
-      field_mean_all_tiles := field_info@field_mean_all_tiles
+      field_min_tiles_to_plot := field_info@field_min_all_tiles
+      field_max_tiles_to_plot := field_info@field_max_all_tiles
+      field_median_tiles_to_plot := field_info@field_median_all_tiles
+      field_mean_tiles_to_plot := field_info@field_mean_all_tiles
       field_data_type_FV3SAR := field_info@field_data_type
 
 ;field_unstruc := lat_cntrs_unstruc
@@ -784,7 +993,8 @@ inds_tiles_to_plot_str + " ..."
       print("")
       print("" + msg)
      
-      msg := "Done calculating statistics of field over all FV3 tiles to be plotted."
+      msg := \
+"Done calculating statistics of field over all FV3 tiles to be plotted."
       print("")
       print("" + msg)
       print("" + separator_line)
@@ -957,7 +1167,7 @@ if (True) then
         + " [" + field_units + "]" + "~C~" \
         + "Tile(s) shown: " + inds_tiles_to_plot_str
         if (show_tile_bdies) then
-          left_str = left_str + "~C~" + "Tile boundaries in blue"
+          left_str = left_str + "~C~" + "Tile boundaries in " + tile_bdy_color
         end if
         num_newlines_FV3SAR \
         = dimsizes(str_index_of_substr(left_str, "~C~", 0))
@@ -967,7 +1177,7 @@ if (True) then
         + "~F29~" + field_desc_RAP + " (" + char_dq + field_name_RAP + char_dq + ")" \
         + " [" + field_units_RAP + "]"
         if (show_RAP_bdy) then
-          right_str = right_str + "~C~" + "RAP boundary in red"
+          right_str = right_str + "~C~" + "RAP boundary in " + RAP_bdy_color
         end if
         num_newlines_RAP \
         = dimsizes(str_index_of_substr(right_str, "~C~", 0))
@@ -1011,7 +1221,7 @@ if (True) then
         main_str := array_append_record(main_str, line, 0)
 
         if (show_tile_bdies) then
-          line := "Tile boundaries in blue"
+          line := "Tile boundaries in " + tile_bdy_color
           main_str := array_append_record(main_str, line, 0)
         end if
 
@@ -1124,16 +1334,20 @@ if (True) then
 ;
       nx_tiles_to_plot \
       := where(remove_halo_tiles_to_plot, \
-               nx_no_halo_tiles_to_plot, nx_with_halo_tiles_to_plot)
+               nx_tiles_to_plot, nxh_tiles_to_plot)
       ny_tiles_to_plot \
       := where(remove_halo_tiles_to_plot, \
-               ny_no_halo_tiles_to_plot, ny_with_halo_tiles_to_plot)
+               ny_tiles_to_plot, nyh_tiles_to_plot)
 
       nx_all_grids := nx_tiles_to_plot
       ny_all_grids := ny_tiles_to_plot
       if (show_RAP_grid .or. plot_RAP_field) then
         nx_all_grids := array_append_record(nx_RAP, nx_all_grids, 0)
         ny_all_grids := array_append_record(ny_RAP, ny_all_grids, 0)
+      end if
+      if (show_wrtcmp_grid) then
+        nx_all_grids := array_append_record(nx_wrtcmp, nx_all_grids, 0)
+        ny_all_grids := array_append_record(ny_wrtcmp, ny_all_grids, 0)
       end if
 ;
 ; **********************************************************************
@@ -1149,6 +1363,10 @@ if (True) then
         num_grids_to_plot = num_grids_to_plot + 1
       end if
 
+      if (show_wrtcmp_grid) then
+        num_grids_to_plot = num_grids_to_plot + 1
+      end if
+
       if (num_grids_to_plot .gt. 0) then
 
         plot_grid := new(num_grids_to_plot, "logical")
@@ -1159,6 +1377,11 @@ if (True) then
         if (show_RAP_grid .or. plot_RAP_field) then
           plot_grid(0) = show_RAP_grid
           gridline_colors(0) = "red"
+        end if
+
+        if (show_wrtcmp_grid) then
+          plot_grid(1) = show_wrtcmp_grid
+          gridline_colors(1) = "green"
         end if
 
         grid_opts := True
@@ -1180,11 +1403,17 @@ if (True) then
 ; **********************************************************************
 ;
       num_bdies_to_plot = 0
-      nx_all_bdies := default_fillvalue("integer")
-      ny_all_bdies := default_fillvalue("integer")
+
+      nx_all_bdies := 0
+      nx_all_bdies@_FillValue = default_fillvalue("integer")
+      nx_all_bdies = nx_all_bdies@_FillValue
+
+      ny_all_bdies := 0
+      ny_all_bdies@_FillValue = default_fillvalue("integer")
+      ny_all_bdies = ny_all_bdies@_FillValue
 
       if (show_tile_bdies) then
-        num_bdies_to_plot = num_tiles_to_plot
+        num_bdies_to_plot = num_bdies_to_plot + num_tiles_to_plot
         nx_all_bdies := nx_tiles_to_plot
         ny_all_bdies := ny_tiles_to_plot
       end if
@@ -1195,7 +1424,14 @@ if (True) then
         ny_all_bdies := array_append_record(ny_RAP, ny_all_bdies, 0)
       end if
 
+      if (show_wrtcmp_bdy) then
+        num_bdies_to_plot = num_bdies_to_plot + 1
+        nx_all_bdies := array_append_record(nx_wrtcmp, nx_all_bdies, 0)
+        ny_all_bdies := array_append_record(ny_wrtcmp, ny_all_bdies, 0)
+      end if
+
       num_bdy_pts_all_bdies := 2*(nx_all_bdies + ny_all_bdies) + 1      
+      num_bdy_pts_all_bdies := num_bdy_pts_all_bdies(0:num_bdies_to_plot-1)
 ;
 ; **********************************************************************
 ;
@@ -1211,16 +1447,30 @@ if (True) then
         bdy_line_thicknesses = new(num_bdies_to_plot, "float")
         bdy_dash_patterns = new(num_bdies_to_plot, "integer")
 
-        plot_bdy = show_tile_bdies
-        bdy_colors = tile_bdy_color
-        bdy_line_thicknesses = 4.0
-        bdy_dash_patterns = 0
-  
+        nbdy = 0
+
+        if (show_tile_bdies) then
+          plot_bdy(nbdy:num_tiles_to_plot-1) = show_tile_bdies
+          bdy_colors(nbdy:num_tiles_to_plot-1) = tile_bdy_color
+          bdy_line_thicknesses(nbdy:num_tiles_to_plot-1) = 4.0
+          bdy_dash_patterns(nbdy:num_tiles_to_plot-1) = 0
+          nbdy = num_tiles_to_plot
+        end if
+
         if (show_RAP_bdy) then
-          plot_bdy(0) = show_RAP_bdy
-          bdy_colors(0) = RAP_bdy_color
-          bdy_line_thicknesses(0) = 4.0
-          bdy_dash_patterns(0) = 1
+          plot_bdy(nbdy) = show_RAP_bdy
+          bdy_colors(nbdy) = RAP_bdy_color
+          bdy_line_thicknesses(nbdy) = 4.0
+          bdy_dash_patterns(nbdy) = 1
+          nbdy = nbdy + 1
+        end if
+
+        if (show_wrtcmp_bdy) then
+          plot_bdy(nbdy) = show_wrtcmp_bdy
+          bdy_colors(nbdy) = wrtcmp_bdy_color
+          bdy_line_thicknesses(nbdy) = 4.0
+          bdy_dash_patterns(nbdy) = 1
+          nbdy = nbdy + 1
         end if
 
         bdy_opts := True
@@ -1244,6 +1494,10 @@ if (True) then
 ;
 ; **********************************************************************
 ;
+field_unstruc_all_grids@_FillValue = default_fillvalue(typeof(field_unstruc))
+; Temporarily make the field all missing/fill values, so we can see grids/boundaries.
+field_unstruc_all_grids = field_unstruc_all_grids@_FillValue
+
       plot_info := plot_horiz_field( \
                    fn_graphics, \
                    nx_all_grids, ny_all_grids, \
