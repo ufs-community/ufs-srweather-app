@@ -258,7 +258,7 @@ MDL_FNS), the archive file on HPSS in which output files are stored (AR-
 CV_FP), and the local directory into which they will be copied (EXTRN_-
 MDL_FILES_DIR) are:
   EXTRN_MDL_FNS = $EXTRN_MDL_FNS_str
-  ARCV_FP = \"$ARCV_FP\"
+  EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
 "
 #
@@ -289,7 +289,7 @@ MDL_FILES_DIR) are:
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$ARCV_FILE_FMT" = "tar" ]; then
+  if [ "$EXTRN_MDL_ARCV_FILE_FMT" = "tar" ]; then
 #
 #-----------------------------------------------------------------------
 #
@@ -306,7 +306,7 @@ MDL_FILES_DIR) are:
 #-----------------------------------------------------------------------
 #
     HTAR_LOG_FN="log.htar_tvf"
-    htar -tvf ${ARCV_FP} ${EXTRN_MDL_FPS[@]} >& ${HTAR_LOG_FN} || \
+    htar -tvf ${EXTRN_MDL_ARCV_FP} ${EXTRN_MDL_FPS[@]} >& ${HTAR_LOG_FN} || \
     print_err_msg_exit "\
 htar file list operation (\"htar -tvf ...\") failed.  Check the log file 
 HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
@@ -328,8 +328,9 @@ HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
     for FP in "${EXTRN_MDL_FPS[@]}"; do
       grep -n "${FP}" "${HTAR_LOG_FN}" > /dev/null 2>&1 || \
       print_err_msg_exit "\
-External model output file FP not found in tar archive file ARCV_FP:
-  ARCV_FP = \"$ARCV_FP\"
+External model output file FP not found in tar archive file EXTRN_MDL_-
+ARCV_FP:
+  EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
   FP = \"$FP\"
 Check the log file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for 
 details:
@@ -345,7 +346,7 @@ details:
 #-----------------------------------------------------------------------
 #
     HTAR_LOG_FN="log.htar_xvf"
-    htar -xvf ${ARCV_FP} ${EXTRN_MDL_FPS[@]} >& ${HTAR_LOG_FN} || \
+    htar -xvf ${EXTRN_MDL_ARCV_FP} ${EXTRN_MDL_FPS[@]} >& ${HTAR_LOG_FN} || \
     print_err_msg_exit "\
 htar file extract operation (\"htar -xvf ...\") failed.  Check the log 
 file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
@@ -378,8 +379,9 @@ file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 
       grep -n "${FP}" "${HTAR_LOG_FN}" > /dev/null 2>&1 || \
       print_err_msg_exit "\
-External model output file FP not extracted from tar archive file ARCV_FP:
-  ARCV_FP = \"$ARCV_FP\"
+External model output file FP not extracted from tar archive file EX-
+TRN_MDL_ARCV_FP:
+  EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
   FP = \"$FP\"
 Check the log file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for 
 details:
@@ -425,9 +427,9 @@ details:
 
         print_err_msg_exit "\
 The archive-relative directory (i.e. the directory \"within\" the tar file
-ARCV_FP specified by ARCVREL_DIR is not the current directory (i.e. it 
-is not \".\"), and it does not start with a \"/\":
-  ARCV_FP = \"$ARCV_FP\"
+EXTRN_MDL_ARCV_FP specified by ARCVREL_DIR is not the current directory 
+(i.e. it is not \".\"), and it does not start with a \"/\":
+  EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
   ARCVREL_DIR = \"$ARCVREL_DIR\"
 The current script must be modified to account for this case.
 "
@@ -442,7 +444,7 @@ The current script must be modified to account for this case.
 #
 #-----------------------------------------------------------------------
 #
-  elif [ "$ARCV_FILE_FMT" = "zip" ]; then
+  elif [ "$EXTRN_MDL_ARCV_FILE_FMT" = "zip" ]; then
 #
 #-----------------------------------------------------------------------
 #
@@ -451,7 +453,7 @@ The current script must be modified to account for this case.
 #-----------------------------------------------------------------------
 #
     HSI_LOG_FN="log.hsi_get"
-    hsi get ${ARCV_FP} >& ${HSI_LOG_FN} || \
+    hsi get ${EXTRN_MDL_ARCV_FP} >& ${HSI_LOG_FN} || \
     print_err_msg_exit "\
 hsi file get operation (\"hsi get ...\") failed.  Check the log file 
 HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
@@ -467,13 +469,13 @@ HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #-----------------------------------------------------------------------
 #
     UNZIP_LOG_FN="log.unzip_lv"
-    unzip -l -v ${ARCV_FN} >& ${UNZIP_LOG_FN} || \
+    unzip -l -v ${EXTRN_MDL_ARCV_FN} >& ${UNZIP_LOG_FN} || \
     print_err_msg_exit "\
-Operation to list contents of the zip archive file ARCV_FN in the direc-
-rectory EXTRN_MDL_FILES_DIR failed.  Check the log file UNZIP_LOG_FN in 
-that directory for contents of the zip archive:
+Operation to list contents of the zip archive file EXTRN_MDL_ARCV_FN in
+the directory EXTRN_MDL_FILES_DIR failed.  Check the log file UNZIP_-
+LOG_FN in that directory for contents of the zip archive:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  ARCV_FN = \"$ARCV_FN\"
+  EXTRN_MDL_ARCV_FN = \"$EXTRN_MDL_ARCV_FN\"
   UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
 "
 #
@@ -491,11 +493,11 @@ that directory for contents of the zip archive:
     for FP in "${EXTRN_MDL_FPS[@]}"; do
       grep -n "${FP}" "${UNZIP_LOG_FN}" > /dev/null 2>&1 || \
       print_err_msg_exit "\
-External model output file FP does not exist in the zip archive file 
-ARCV_FP in the directory EXTRN_MDL_FILES_DIR.  Check the log file UN-
-ZIP_LOG_FN in that directory for contents of the zip archive:
+External model output file FP does not exist in the zip archive file EX-
+TRN_MDL_ARCV_FP in the directory EXTRN_MDL_FILES_DIR.  Check the log 
+file UNZIP_LOG_FN in that directory for contents of the zip archive:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  ARCV_FP = \"$ARCV_FP\"
+  EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
   FP = \"$FP\"
   UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
 "
@@ -515,7 +517,7 @@ pwd
 ls -alF
 echo "BBBB"
     UNZIP_LOG_FN="log.unzip"
-    unzip -o "${ARCV_FN}" ${EXTRN_MDL_FPS[@]} >& ${UNZIP_LOG_FN} || \
+    unzip -o "${EXTRN_MDL_ARCV_FN}" ${EXTRN_MDL_FPS[@]} >& ${UNZIP_LOG_FN} || \
     print_err_msg_exit "\
 unzip file extract operation (\"unzip -o ...\") failed.  Check the log 
 file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
@@ -535,7 +537,7 @@ echo "DDDD"
 # that case, extra code must be included here to move the external model
 # output files from the subdirectory up to EXTRN_MDL_FILES_DIR and then
 # the subdirectory (analogous to what is done above for the case of 
-# ARCV_FILE_FMT set to "tar".
+# EXTRN_MDL_ARCV_FILE_FMT set to "tar".
 #
  
   fi
