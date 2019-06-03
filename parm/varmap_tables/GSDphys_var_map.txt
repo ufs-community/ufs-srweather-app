@@ -1,4 +1,4 @@
-    22
+    26
 dzdt                dzdt      set_to_fill   0
 delta_p             delp      skip          0
 sphum               sphum     set_to_fill   1E-7
@@ -11,8 +11,8 @@ graupel             graupel   stop          0
 ice_nc              ice_nc    set_to_fill   -1.0
 rain_nc             rain_nc   set_to_fill   -1.0  
 water_nc            water_nc  set_to_fill   -1.0
-liq_aero            liq_aero  stop          0
-ice_aero            ice_aero  stop          0
+liq_aero            liq_aero  set_to_fill   0
+ice_aero            ice_aero  set_to_fill   0
 sgs_tke             sgs_tke   stop          0
 vtype               vtype     skip          0
 sotype              stype     skip          0
