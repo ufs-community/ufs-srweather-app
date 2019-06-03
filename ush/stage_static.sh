@@ -102,7 +102,6 @@ cp_vrfy $FIXgsm/global_glacier.2x2.grb                          $EXPTDIR
 cp_vrfy $FIXgsm/global_h2o_pltc.f77                             $EXPTDIR/global_h2oprdlos.f77
 cp_vrfy $FIXgsm/global_maxice.2x2.grb                           $EXPTDIR
 cp_vrfy $FIXgsm/global_mxsnoalb.uariz.t126.384.190.rg.grb       $EXPTDIR
-cp_vrfy $FIXgsm/global_o3prdlos.f77                             $EXPTDIR
 cp_vrfy $FIXgsm/global_shdmax.0.144x0.144.grb                   $EXPTDIR
 cp_vrfy $FIXgsm/global_shdmin.0.144x0.144.grb                   $EXPTDIR
 cp_vrfy $FIXgsm/global_slope.1x1.grb                            $EXPTDIR
@@ -127,6 +126,12 @@ cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2017.txt  $EXPTDIR/co2hist
 cp_vrfy $FIXgsm/fix_co2_proj/global_co2historicaldata_2018.txt  $EXPTDIR/co2historicaldata_2018.txt
 cp_vrfy $FIXgsm/global_co2historicaldata_glob.txt               $EXPTDIR/co2historicaldata_glob.txt
 cp_vrfy $FIXgsm/co2monthlycyc.txt                               $EXPTDIR
+#
+# Why is file ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77 not in FIXgsm
+# directory?
+#cp_vrfy $FIXgsm/global_o3prdlos.f77                             $EXPTDIR
+cp_vrfy /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/RT/NEMSfv3gfs/trunk-20190424/FV3_input_data/ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77 $EXPTDIR/global_o3prdlos.f77
+
 #
 #-----------------------------------------------------------------------
 #
@@ -431,6 +436,8 @@ cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc .
 #
 cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc .
 #ln_vrfy -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
+# Is the following needed?  If so, by which code?  Try commenting it out.
+#ln_vrfy -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc ${CRES}_grid.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
