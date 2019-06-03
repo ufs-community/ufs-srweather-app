@@ -324,24 +324,22 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-${APRUN} ${exec_dir}/global_chgres.exe || print_err_msg_exit "\
+${APRUN} ${EXECDIR}/global_chgres.exe || print_err_msg_exit "\
 Call to executable to generate surface and initial conditions files for
 the FV3SAR failed:
+  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-  fn = \"$fn\"
 "
 #
 #-----------------------------------------------------------------------
-#--------------------------------------------------------------
 #
 # Move surface, control, and boundary file to ICs_BCs directory 
 #
 #-----------------------------------------------------------------------
 #
 mv_vrfy gfs_bndy.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_bndy.tile7.000.nc
-mv_vrfy gfs_ctrl.nc ${WORKDIR_ICSLBCS_CDATE}/
-# The surface file name will be changed to say "tile7" at some point.
-mv_vrfy out.sfc.tile1.nc ${WORKDIR_ICSLBCS_CDATE}/sfc_data.tile7.nc
+mv_vrfy gfs_ctrl.nc ${WORKDIR_ICSLBCS_CDATE}
+mv_vrfy out.sfc.tile7.nc ${WORKDIR_ICSLBCS_CDATE}/sfc_data.tile7.nc
 #
 #-----------------------------------------------------------------------
 #

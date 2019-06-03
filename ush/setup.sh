@@ -450,6 +450,9 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 # SORCDIR:
 # Directory containing various source codes.
 #
+# EXECDIR:
+# Directory containing various executable files.
+#
 # TEMPLATE_DIR:
 # Directory in which templates of various FV3SAR input files are locat-
 # ed.
@@ -476,6 +479,7 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 FV3SAR_DIR="$BASEDIR/fv3sar_workflow"
 USHDIR="$FV3SAR_DIR/ush"
 SORCDIR="$FV3SAR_DIR/sorc"
+EXECDIR="$FV3SAR_DIR/exec"
 TEMPLATE_DIR="$USHDIR/templates"
 
 if [ "$CCPP" = "true" ]; then

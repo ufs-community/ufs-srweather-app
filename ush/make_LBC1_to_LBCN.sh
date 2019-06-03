@@ -324,12 +324,12 @@ EOF
 #
 # Run chgres_cube.
 #
-  ${APRUN} ${exec_dir}/global_chgres.exe || print_err_msg_exit "\
+  ${APRUN} ${EXECDIR}/global_chgres.exe || print_err_msg_exit "\
 Call to executable to generate lateral boundary conditions file for the
 the FV3SAR failed:
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-  fhr = $fhr
-  fn = \"$fn\"
+  fhr = \"$fhr\"
 "
 #
 # Move LBCs file for the current lateral boundary update time to the ICs
