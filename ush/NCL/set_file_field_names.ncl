@@ -203,7 +203,18 @@ begin
 ; **********************************************************************
 ;
     field_names_by_tile(nn) = field_name
-    if (strcmp_exact(gtype, "regional") .and. (n_tile .ne. 7)) then
+;
+; If we're dealing with a regional grid (for which physical fiels are
+; available only on tile 7), and if we're not on tile 7 (i.e. we are on
+; one of the "parent" global tiles 1 through 6), then only grid-related
+; fields (such as horizontal area of cells) will be available on this 
+; tile.  Thus, if we're not considering a grid-rleated field, we must
+; set the field name on this tile to "none".
+;
+    if ((strcmp_exact(gtype, "regional") .and. \
+        (n_tile .ne. 7) .and. \
+        (.not. is_gridfield)) then
+
       field_names_by_tile(nn) = "none"
       msg := char_nl + \
 "  The specified field is not available on the current tile:" + char_nl + \
@@ -212,9 +223,12 @@ begin
 "  Setting the field name for the current tile to " + char_dq + "none" + char_dq + ":" + char_nl + \
 "    field_names_by_tile(" + nn + ") = " + char_dq + field_names_by_tile(nn) + char_dq
       print("" + msg)
+
     else
+
       print("  field_names_by_tile(" + nn + ") = " + \
             char_dq + field_names_by_tile(nn) + char_dq)
+
     end if
 
   end do
