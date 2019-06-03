@@ -318,6 +318,39 @@ Copying the GSD physics suite XML file and the Thompson microphysics CCN fixed f
 fi
 
 
+#
+#-----------------------------------------------------------------------
+#
+# Add link in shave directory to the grid file with a 4-cell wide halo 
+# such that the link name doesn't contain the halo size.  This is needed
+# by the sfc_chgres.
+#
+# NOTE: It would be nice to modify the chgres code to read in files that
+# have the halo size in their names.
+#
+#-----------------------------------------------------------------------
+#
+cd_vrfy $WORKDIR_SHVE
+print_info_msg_verbose "\
+Creating link needed by chgres code to 4-halo grid file..."
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile${tile}.halo${nh4_T7}.nc \
+            ${CRES}_grid.tile${tile}.nc
+#
+#-----------------------------------------------------------------------
+#
+# Add link in shave directory to the orography file with a 4-cell wide
+# halo such that the link name doesn't contain the halo size.  This is 
+# needed by the sfc_climo_gen code.
+#
+# NOTE: It would be nice to modify the sfc_climo_gen_code to read in 
+# files that have the halo size in their names.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg_verbose "\
+Creating link needed by sfc_climo_gen code to 4-halo orography file..."
+ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
+            ${CRES}_oro_data.tile7.nc
 
 
 
@@ -430,10 +463,16 @@ cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
 #ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
 
 
+#
+#-----------------------------------------------------------------------
+#
 # GSK 20190430:
 # This is to make rocoto aware that the stage_static task has completed
 # (so that other tasks can be launched).  This should be done through 
 # rocoto's dependencies, but not sure how to do it yet.
+#
+#-----------------------------------------------------------------------
+#
 cd_vrfy $EXPTDIR
 touch "stage_static_task_complete.txt"
 
