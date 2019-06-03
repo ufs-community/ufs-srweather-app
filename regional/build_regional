@@ -16,7 +16,8 @@ fi
 cd ${FV3SAR_DIR}/sorc
 ./build_fre-nctools.sh ${SITE}           >& out.build_fre-nctools
 ./build_orog.sh ${SITE}                  >& out.build_orog
-./build_chgres.sh ${SITE}                >& out.build_chgres
+# Don't build the old chgres any more.  Build chgres_cube instead (below).
+#./build_chgres.sh ${SITE}                >& out.build_chgres
 #
 # The following build several new utilities needed in order to use the 
 # new Jim Purser-type grid in the FV3SAR.  The following only works on
@@ -25,7 +26,18 @@ cd ${FV3SAR_DIR}/sorc
 ./build_regional_grid.sh ${SITE}         >& out.build_regional_grid
 ./build_global_equiv_resol.sh ${SITE}    >& out.build_global_equiv_resol
 ./build_mosaic_file.sh ${SITE}           >& out.build_mosaic_file
-
+#
+# Build sfc_climo_gen.
+#
+cd ${FV3SAR_DIR}/../UFS_UTILS_gridgen_sfc/sorc
+./build_sfc_climo_gen.sh >& out.build_sfc_climo_gen
+cp ../exec/sfc_climo_gen ${FV3SAR_DIR}/exec
+#
+# Build chgres_cube.
+#
+cd ${FV3SAR_DIR}/../UFS_UTILS_chgres_grib2/sorc/chgres_cube.fd/sorc
+./make.sh >& out.build_chgres_cube
+cp ../exec/global_chgres.exe ${FV3SAR_DIR}/exec
 
 # prepare fixed data directories
 
