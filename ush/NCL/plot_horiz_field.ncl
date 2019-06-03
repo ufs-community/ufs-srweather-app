@@ -364,7 +364,7 @@ print("indx_end(i) = " + indx_end(i))
 ; "transparent", but we repeat it here for clarity.
 ;
     rsrc@cnMissingValFillColor = "transparent"
-    rsrc@cnMissingValFillColor = "yellow" ; This seems to make no difference.
+    rsrc@cnMissingValFillColor = "yellow" ; This has an effect only if not all values in the field are missing.
 ;
 ; Specify opacity of cell colors.
 ;
@@ -980,10 +980,6 @@ print("indx_end(i) = " + indx_end(i))
       := bdy_indx_start + bdy_opts@num_bdy_pts_all_bdies(i) - 1
 
       if (show_grid_bdy(i)) then
-print("") 
-print("i = " + i) 
-print("bdy_indx_start = " + bdy_indx_start)
-print("bdy_indx_end = " + bdy_indx_end)
 
         resp := True
         resp@gsLineColor = bdy_opts@bdy_colors(i)

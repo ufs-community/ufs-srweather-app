@@ -220,8 +220,8 @@ begin
   if ((rem_nx .eq. 0) .and. (rem_ny .eq. 0)) then
     i_cntr = nx/2
     j_cntr = ny/2
-    lon_grid_cntr = lon_verts(j_cntr,i_cntr)
-    lat_grid_cntr = lat_verts(j_cntr,i_cntr)
+    lon_grid_cntr := lon_verts(j_cntr,i_cntr)
+    lat_grid_cntr := lat_verts(j_cntr,i_cntr)
   else if ((rem_nx .eq. 1) .and. (rem_ny .eq. 0)) then
     i_cntr = (nx - 1)/2
     j_cntr = ny/2
@@ -235,8 +235,8 @@ begin
   else if ((rem_nx .eq. 1) .and. (rem_ny .eq. 1)) then
     i_cntr = (nx - 1)/2
     j_cntr = (ny - 1)/2
-    lon_grid_cntr = lon_cntrs(j_cntr,i_cntr)
-    lat_grid_cntr = lat_cntrs(j_cntr,i_cntr)
+    lon_grid_cntr := lon_cntrs(j_cntr,i_cntr)
+    lat_grid_cntr := lat_cntrs(j_cntr,i_cntr)
   end if
   end if
   end if

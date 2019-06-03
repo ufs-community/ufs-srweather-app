@@ -261,6 +261,8 @@ pause
 ; **********************************************************************
 ;
 ; Note:  Can't use this for JPgrid because that has no such standard values.
+; At some point, change this if-statement so that it's entered only for 
+; GFDLgrid.
 if (False) then
   valid_reses = (/ "000", "48", "96", "192", "384", "768", "1152", "3072" /)
 
