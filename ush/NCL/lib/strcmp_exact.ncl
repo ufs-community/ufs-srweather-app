@@ -115,7 +115,7 @@ begin
 ;
 ; **********************************************************************
 ;
-; Return results as attributes of the logical variable grid_info.
+; Return result as an attribute of the logical variable match_found.
 ;
 ; **********************************************************************
 ;
