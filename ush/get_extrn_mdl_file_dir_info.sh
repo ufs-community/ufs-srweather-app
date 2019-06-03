@@ -546,7 +546,7 @@ has not been specified for this external model:
     ;;
 
   "RAPX")
-    arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/hrrr/conus/wrfnat"
+    arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/rap/full/wrfnat"
     arcv_file_fmt="zip"
     arcv_filename="${yyyy}${mm}${dd}${hh}00.${arcv_file_fmt}"
     arcv_fullpath="$arcv_dir/$arcv_filename"
