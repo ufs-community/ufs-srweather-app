@@ -50,6 +50,8 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY LOG_DIR "&EXPTDIR;/log">
 
 <!ENTITY PROC_MAKE_GRID_OROG      "1:ppn=24">
+<!ENTITY PROC_STAGE_STATIC        "1:ppn=1">
+<!ENTITY PROC_MAKE_SFC_CLIMO      "1:ppn=24">
 <!ENTITY PROC_GET_EXTRN_MDL_FILES "1:ppn=1">
 <!ENTITY PROC_MAKE_ICS_SURF_LBC0  "2:ppn=6">
 <!ENTITY PROC_MAKE_LBC1_TO_LBCN   "36:ppn=1">
@@ -58,6 +60,8 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY PROC_POST                "2:ppn=24">
 
 <!ENTITY RSRC_MAKE_GRID_OROG      "<walltime>00:10:00</walltime>">
+<!ENTITY RSRC_STAGE_STATIC        "<walltime>00:10:00</walltime>">
+<!ENTITY RSRC_MAKE_SFC_CLIMO      "<walltime>01:00:00</walltime>">
 <!ENTITY RSRC_GET_EXTRN_MDL_FILES "<walltime>00:20:00</walltime>">
 <!ENTITY RSRC_MAKE_ICS_SURF_LBC0  "<walltime>00:45:00</walltime>">
 <!ENTITY RSRC_MAKE_LBC1_TO_LBCN   "<walltime>00:30:00</walltime>">
@@ -100,20 +104,41 @@ Variables that are not modified by the workflow generation script.
 ************************************************************************
 ************************************************************************
 -->
+  <task name="make_sfc_climo" cycledefs="at_start" maxtries="2">
+
+    &RSRC_MAKE_SFC_CLIMO;
+    &RSRV_DEFAULT;
+
+    <command>&USHDIR;/make_sfc_climo.sh</command>
+    <nodes>&PROC_MAKE_SFC_CLIMO;</nodes>
+    <jobname>make_sfc_climo</jobname>
+    <join><cyclestr>&LOG_DIR;/make_sfc_climo.log</cyclestr></join>
+
+    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+
+    <dependency>
+      <taskdep task="make_grid_orog"/>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
   <task name="stage_static" cycledefs="at_start" maxtries="2">
 
-    &RSRC_STAGE;
+    &RSRC_STAGE_STATIC;
     &RSRV_DEFAULT;
 
     <command>&USHDIR;/stage_static.sh</command>
-    <nodes>&PROC_STAGE;</nodes>
+    <nodes>&PROC_STAGE_STATIC;</nodes>
     <jobname>stage_static</jobname>
     <join><cyclestr>&LOG_DIR;/stage_static.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
 
     <dependency>
-      <taskdep task="make_grid_orog"/>
+      <taskdep task="make_sfc_climo"/>
     </dependency>
 
   </task>

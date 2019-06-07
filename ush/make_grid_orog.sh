@@ -510,13 +510,20 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Define the tile number for the regional grid.
+#
+#-----------------------------------------------------------------------
+#
+tile=7
+#
+#-----------------------------------------------------------------------
+#
 # For clarity, rename the tile 7 grid file such that its new name con-
 # tains the halo size.  Then create a link whose name doesn't contain
 # the halo size that points to this file.
 #
 #-----------------------------------------------------------------------
 #
-tile=7
 cd_vrfy $WORKDIR_GRID
 mv_vrfy ${CRES}_grid.tile${tile}.nc \
         ${CRES}_grid.tile${tile}.halo${nhw_T7}.nc
@@ -545,7 +552,6 @@ print_info_msg_verbose "Grid file generation complete."
 #
 print_info_msg_verbose "Starting orography file generation..."
 
-tile=7
 #
 # We need to export WORKDIR_OROG so that orog_gen_scr sets its internal
 # work directory correctly for the regional case.
@@ -595,7 +601,6 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-tile=7
 cd_vrfy $WORKDIR_OROG
 mv_vrfy oro.${CRES}.tile${tile}.nc \
         oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
@@ -727,7 +732,6 @@ zero exit code."
 #
 #-----------------------------------------------------------------------
 #
-tile=7
 cd_vrfy $WORKDIR_FLTR
 mv_vrfy oro.${CRES}.tile${tile}.nc \
         oro.${CRES}.tile${tile}.halo${nhw_T7}.nc
@@ -837,6 +841,28 @@ a 4-cell wide halo returned with nonzero exit code."
 
 print_info_msg_verbose "\
 \"Shaving\" of regional grid and filtered orography files complete."
+#
+#-----------------------------------------------------------------------
+#
+# Add links in shave directory to the grid and orography files with 4-
+# cell-wide halos such that the link names do not contain the halo 
+# width.  These links are needed by the make_sfc_climo task (which uses
+# the sfc_climo_gen code).
+#
+# NOTE: It would be nice to modify the sfc_climo_gen_code to read in
+# files that have the halo size in their names.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg_verbose "\
+Creating links needed by the make_sfc_climo task to the 4-halo grid and
+orography files..."
+
+cd_vrfy $WORKDIR_SHVE
+ln_vrfy -sf ${CRES}_grid.tile${tile}.halo${nh4_T7}.nc \
+            ${CRES}_grid.tile${tile}.nc
+ln_vrfy -sf ${CRES}_oro_data.tile${tile}.halo${nh4_T7}.nc \
+            ${CRES}_oro_data.tile${tile}.nc
 #
 #-----------------------------------------------------------------------
 #

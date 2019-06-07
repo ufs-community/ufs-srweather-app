@@ -467,6 +467,10 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 # System directory in which the fixed (i.e. time-independent) files that
 # are needed to run the FV3SAR model are located.
 #
+# SFC_CLIMO_INPUT_DIR:
+# Directory in which the sfc_climo_gen code looks for surface climatolo-
+# gy input files.
+#
 # UPPFIX:
 # System directory from which to copy necessary fixed files for UPP.
 #
@@ -503,9 +507,8 @@ UPPFIX="$FV3SAR_DIR/fix/fix_upp"
 GSDFIX="$FV3SAR_DIR/fix/fix_gsd"
 
 case $MACHINE in
-#
+
 "WCOSS_C")
-#
   FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
 
 #  if [ "$ictype" = "pfv3gfs" ]; then
@@ -514,9 +517,8 @@ case $MACHINE in
 #    export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
 #  fi
   ;;
-#
+
 "WCOSS")
-#
   FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
 
 #  if [ "$ictype" = "pfv3gfs" ]; then
@@ -525,9 +527,8 @@ case $MACHINE in
 #    export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
 #  fi
   ;;
-#
+
 "DELL")
-#
   FIXgsm="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
 
 #  if [ "$ictype" = "pfv3gfs" ]; then
@@ -536,10 +537,10 @@ case $MACHINE in
 #    export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
 #  fi
   ;;
-#
+
 "THEIA")
-#
   FIXgsm="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am"
+  SFC_CLIMO_INPUT_DIR="/scratch4/NCEPDEV/da/noscrub/George.Gayno/climo_fields_netcdf"
 
 #  if [ "$ictype" = "pfv3gfs" ]; then
 #    export INIDIR="/scratch4/NCEPDEV/fv3-cam/noscrub/Eric.Rogers/prfv3rt1/gfs.$YMD/$HH"
@@ -548,17 +549,22 @@ case $MACHINE in
 #    export INIDIR="$COMROOTp2/gfs/prod/gfs.$YMD"
 #  fi
   ;;
-#
+
 "JET")
-#
-  export FIXgsm="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_am"
+  FIXgsm="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_am"
   ;;
-#
+
 "ODIN")
-#
-  export FIXgsm="/scratch/ywang/external/fix_am"
+  FIXgsm="/scratch/ywang/external/fix_am"
   ;;
-#
+
+*)
+  print_err_msg_exit "\
+Directories have not been specified for this machine:
+  MACHINE = \"$MACHINE\"
+"
+  ;;
+
 esac
 #
 #-----------------------------------------------------------------------
@@ -939,6 +945,10 @@ check_for_preexist_dir $WORKDIR $preexisting_dir_method
 # containing the surface fields as well as the initial and lateral 
 # boundary conditions.
 #
+# WORKDIR_SFC_CLIMO:
+# Work directory for the preprocessing step that generates surface files
+# from climatology.
+#
 #----------------------------------------------------------------------
 #
 WORKDIR_GRID=$WORKDIR/grid
@@ -946,6 +956,7 @@ WORKDIR_OROG=$WORKDIR/orog
 WORKDIR_FLTR=$WORKDIR/filtered_topo
 WORKDIR_SHVE=$WORKDIR/shave
 WORKDIR_ICSLBCS=$WORKDIR/ICs_BCs
+WORKDIR_SFC_CLIMO=$WORKDIR/sfc_climo
 #
 #-----------------------------------------------------------------------
 #
@@ -1746,6 +1757,7 @@ EXTRN_MDL_FILES_BASEDIR_ICSSURF="$EXTRN_MDL_FILES_BASEDIR_ICSSURF"
 EXTRN_MDL_FILES_BASEDIR_LBCS="$EXTRN_MDL_FILES_BASEDIR_LBCS"
 EXPTDIR="$EXPTDIR"
 FIXgsm="$FIXgsm"
+SFC_CLIMO_INPUT_DIR="$SFC_CLIMO_INPUT_DIR"
 UPPFIX="$UPPFIX"
 GSDFIX="$GSDFIX"
 WORKDIR_GRID="$WORKDIR_GRID"
@@ -1753,6 +1765,7 @@ WORKDIR_OROG="$WORKDIR_OROG"
 WORKDIR_FLTR="$WORKDIR_FLTR"
 WORKDIR_SHVE="$WORKDIR_SHVE"
 WORKDIR_ICSLBCS="$WORKDIR_ICSLBCS"
+WORKDIR_SFC_CLIMO="$WORKDIR_SFC_CLIMO"
 #
 #-----------------------------------------------------------------------
 #
