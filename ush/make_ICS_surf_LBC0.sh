@@ -290,16 +290,18 @@ esac
 #
 #-----------------------------------------------------------------------
 #
+# fix_dir_target_grid="${BASEDIR}/JP_grid_HRRR_like_fix_files_chgres_cube"
+# base_install_dir="${SORCDIR}/chgres_cube.fd"
 cat > fort.41 <<EOF
 &config
- fix_dir_target_grid="${BASEDIR}/JP_grid_HRRR_like_fix_files_chgres_cube"
+ fix_dir_target_grid="${WORKDIR_SFC_CLIMO}"
  mosaic_file_target_grid="${EXPTDIR}/INPUT/${CRES}_mosaic.nc"
  orog_dir_target_grid="${EXPTDIR}/INPUT"
  orog_files_target_grid="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
  vcoord_file_target_grid="${FV3SAR_DIR}/fix/fix_am/global_hyblev.l64.txt"
  mosaic_file_input_grid=""
  orog_dir_input_grid=""
- base_install_dir="${SORCDIR}/chgres_cube.fd"
+ base_install_dir="${BASEDIR}/UFS_UTILS_chgres_grib2"
  wgrib2_path="${WGRIB2_DIR}"
  data_dir_input_grid="${EXTRN_MDL_FILES_DIR}"
  atm_files_input_grid="${fn_atm_nemsio}"
@@ -324,7 +326,9 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-${APRUN} ${EXECDIR}/global_chgres.exe || print_err_msg_exit "\
+#${APRUN} ${EXECDIR}/global_chgres.exe || print_err_msg_exit "\
+#${APRUN} ${EXECDIR}/chgres_cube.exe || print_err_msg_exit "\
+${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || print_err_msg_exit "\
 Call to executable to generate surface and initial conditions files for
 the FV3SAR failed:
   EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
