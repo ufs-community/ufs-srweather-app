@@ -974,7 +974,7 @@ print("indx_end(i) = " + indx_end(i))
     bdy_indx_end := -1
 
     do i=0, num_bdies-1
- 
+
       bdy_indx_start := bdy_indx_end + 1
       bdy_indx_end \
       := bdy_indx_start + bdy_opts@num_bdy_pts_all_bdies(i) - 1

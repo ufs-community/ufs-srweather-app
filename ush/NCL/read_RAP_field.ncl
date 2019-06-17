@@ -53,7 +53,10 @@ begin
   print("")
   print("  RAP_fn = " + char_dq + RAP_fn + char_dq)
 
-  fp = addfile(RAP_grid_fn, "r")
+; Modify for grib2 file.
+RAP_fn = RAP_fn + ".grb2"
+
+  fp = addfile(RAP_fn, "r")
 ;
 ; **********************************************************************
 ;
@@ -63,7 +66,9 @@ begin
 ;
 ; **********************************************************************
 ;
-  field_data_type = getfilevartypes(fp, "MAPFAC_M") 
+;  field_data_type = getfilevartypes(fp, "MAPFAC_M")
+; Modify for grib2 file.
+  field_data_type = getfilevartypes(fp, field_name)
 ;
 ; **********************************************************************
 ;
@@ -119,11 +124,17 @@ begin
     field_desc = "MIN(dx, dy)"
     field_units = horiz_dist_units
 
+  else if (strcmp_exact(field_name, "VGTYP_P0_L1_GLC0")) then
+  
+    field_desc = "Vegetation type"
+    field_units = "-"
+
   else
   
     field_desc = "Unknown Field"
     field_units = "?"
   
+  end if
   end if
   end if
   end if
@@ -218,7 +229,9 @@ begin
 
   else
 
-    field := new((/ ny, nx /), field_data_type)
+;    field := new((/ ny, nx /), field_data_type)
+; Modify for HRRR grib2 file.
+    field := fp->$field_name$
 
   end if
   end if

@@ -21,15 +21,15 @@
 ; then this function returns True in match_found as well as its attri-
 ; bute match_found@str_array (which in this case will be a scalar).  If
 ; the two strings are not identical, then match_found and match_found@-
-; exact_match will both be False.
+; match_by_elem will both be False.
 ;
 ; **********************************************************************
 ;
 undef("strcmp_exact")
 
-function strcmp_exact(str_array:string, str[1]:string)
+function strcmp_exact(str_array[*]:string, str[1]:string)
 
-local match_found, dims, exact_match, \
+local match_found, dims, match_by_elem, \
       lens_str_array, len_str, same_num_chars, \
       substr_found, match_found
 
@@ -38,28 +38,28 @@ begin
 ; **********************************************************************
 ;
 ; Initialize the return variable (match_found) to False.  Also, create a
-; logical array (exact_match) of the same size as str_array and set all
-; its elements to False.  
+; logical array (match_by_elem) of the same size as str_array and set 
+; all its elements to False.  
 ;
-; Note that ideally, we would like exact_match to be an attribute of 
-; match_found, i.e. match_found@exact_match, but apparently NCL doesn't
-; allow arrays that are attributes of another variable to be set to the
-; same value everywhere by setting them to a scalar value.  Thus, we 
-; cannot to the following:
+; Note that ideally, we would like match_by_elem to be an attribute of 
+; match_found, i.e. match_found@match_by_elem, but apparently NCL does
+; not allow arrays that are attributes of another variable to be set to
+; the same value everywhere by setting them to a scalar value.  Thus, we 
+; cannot do the following:
 ;
-;   match_found@exact_match = new(dims, logical)
-;   match_found@exact_match = False
+;   match_found@match_by_elem = new(dims, logical)
+;   match_found@match_by_elem = False
 ;   
 ; The second line will generate an error.  For this reason, below we in-
-; stead first work with the non-attribute array exact_match and then set
-; it to an attribute of match_found later on.
+; stead first work with the non-attribute array match_by_elem and then 
+; set it to an attribute of match_found later on.
 ;
 ; **********************************************************************
 ;
   match_found = False
   dims = dimsizes(str_array)
-  exact_match = new(dims, logical)
-  exact_match = False
+  match_by_elem = new(dims, logical)
+  match_by_elem = False
 ;
 ; **********************************************************************
 ;
@@ -96,19 +96,17 @@ begin
 ;
 ; **********************************************************************
 ;
-; Generate a logical array (exact_match) of the same dimensions as str_-
-; array that is True for those elements of str_array that (1) contain 
-; str as a substring and (2) have the same number of characters as str 
-; (in which case those elements are exact matches to str) and False eve-
-; rywhere else.
+; Set match_by_elem to True for those elements of str_array that are 
+; identical to str [or, equivalently, for those elements of str_array 
+; that (1) contain str as a substring and (2) have the same number of 
+; characters as str] and False everywhere else.
 ;
 ; **********************************************************************
 ;
-    exact_match = where(substr_found .and. same_num_chars, True, False)
-
-    if (any(exact_match)) then
+    match_by_elem \
+    = where(substr_found .and. same_num_chars, True, False)
+    if (any(match_by_elem)) then
       match_found = True
-      match_found@exact_match = exact_match
     end if
 
   end if
@@ -119,7 +117,7 @@ begin
 ;
 ; **********************************************************************
 ;
-  match_found@exact_match = exact_match
+  match_found@match_by_elem = match_by_elem
 
   return(match_found)
 

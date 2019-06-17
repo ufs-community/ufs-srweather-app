@@ -25,11 +25,11 @@ function read_FV3SAR_gridfield_native( \
          file_names_by_tile[*]:string, \
          gtype:string, \
          tile_inds[*]:integer, \
-         nhalo_by_tile[*]:integer, \
-         nx_with_halo_by_tile[*]:integer, \
-         ny_with_halo_by_tile[*]:integer, \
-         nx_no_halo_by_tile[*]:integer, \
-         ny_no_halo_by_tile[*]:integer, \
+         nh_by_tile[*]:integer, \
+         nxh_by_tile[*]:integer, \
+         nyh_by_tile[*]:integer, \
+         nx_by_tile[*]:integer, \
+         ny_by_tile[*]:integer, \
          remove_halo_by_tile[*]:logical, \
          vert_indx:integer, \
          time_indx:integer, \
@@ -48,8 +48,8 @@ local calc_dA_cell_cntrs, \
       field_desc, field_units, \
 ;
       num_tiles, \
-      field_min_all_tiles, field_max_all_tiles, \
-      field_median_all_tiles, field_mean_all_tiles, \
+      field_min_by_tile, field_max_by_tile, \
+      field_median_by_tile, field_mean_by_tile, \
       nn, msg, underline, n_tile, nx, ny, msg_adden, \
       fp, \
       field_data_type, \
@@ -82,7 +82,7 @@ local calc_dA_cell_cntrs, \
 ;
       dims_with_halo, nx_with_halo, ny_with_halo, \
 ;
-      field_all_tiles_unstruc, \
+      field_by_tile_unstruc, \
 ;
       print_field_stats, field_stat_info, msg, \
 ;
@@ -145,13 +145,13 @@ begin
 ; **********************************************************************
 ;
     if (remove_halo_by_tile(nn)) then
-      nx = nx_no_halo_by_tile(nn)
-      ny = ny_no_halo_by_tile(nn)
+      nx = nx_by_tile(nn)
+      ny = ny_by_tile(nn)
       msg_adden \
-      = "  (after removing halo of " + nhalo_by_tile(nn) + " cells)"
+      = "  (after removing halo of " + nh_by_tile(nn) + " cells)"
     else
-      nx = nx_with_halo_by_tile(nn)
-      ny = ny_with_halo_by_tile(nn)
+      nx = nxh_by_tile(nn)
+      ny = nyh_by_tile(nn)
       msg_adden = ""
     end if
 
@@ -498,8 +498,8 @@ begin
 
       field_crnt_tile \
       := field_crnt_tile( \
-         nhalo_by_tile(nn):ny_with_halo_by_tile(nn)-1-nhalo_by_tile(nn), \
-         nhalo_by_tile(nn):nx_with_halo_by_tile(nn)-1-nhalo_by_tile(nn))
+         nh_by_tile(nn):nyh_by_tile(nn)-1-nh_by_tile(nn), \
+         nh_by_tile(nn):nxh_by_tile(nn)-1-nh_by_tile(nn))
 
       print("  Done removing halo cells from field on tile " + n_tile + ".")
 
@@ -517,11 +517,11 @@ begin
 ;
     if (nn .eq. 0) then
 
-      field_all_tiles_unstruc := ndtooned(field_crnt_tile)
+      field_by_tile_unstruc := ndtooned(field_crnt_tile)
 
     else
 
-      field_data_type_prev_tiles = typeof(field_all_tiles_unstruc)
+      field_data_type_prev_tiles = typeof(field_by_tile_unstruc)
       field_data_type_crnt_tile = typeof(field_crnt_tile)
 ;
 ; If the data type of the field on the tiles considered thus far is not
@@ -532,13 +532,13 @@ begin
       if (.not. strcmp_exact(field_data_type_prev_tiles, \
                              field_data_type_crnt_tile)) then
 
-        prev_tiles_all_missing := all(ismissing(field_all_tiles_unstruc))
+        prev_tiles_all_missing := all(ismissing(field_by_tile_unstruc))
         crnt_tile_all_missing := all(ismissing(field_crnt_tile))
 
         if (prev_tiles_all_missing .and. (.not. crnt_tile_all_missing)) then
 
-          field_all_tiles_unstruc \
-          := totype(field_all_tiles_unstruc, field_data_type_crnt_tile)
+          field_by_tile_unstruc \
+          := totype(field_by_tile_unstruc, field_data_type_crnt_tile)
 
         else if ((.not. prev_tiles_all_missing) .and. crnt_tile_all_missing) then
 
@@ -583,8 +583,8 @@ begin
 
       end if
 
-      field_all_tiles_unstruc \
-      := array_append_record(field_all_tiles_unstruc, ndtooned(field_crnt_tile), 0)
+      field_by_tile_unstruc \
+      := array_append_record(field_by_tile_unstruc, ndtooned(field_crnt_tile), 0)
 
     end if
 ;
@@ -594,7 +594,7 @@ begin
 ;
 ; **********************************************************************
 ;
-    field_data_type = typeof(field_all_tiles_unstruc)
+    field_data_type = typeof(field_by_tile_unstruc)
 ;
 ; **********************************************************************
 ;
@@ -627,22 +627,33 @@ begin
 ; **********************************************************************
 ;
     if (nn .eq. 0) then
-      field_min_all_tiles := new((/ num_tiles /), field_data_type)
-      field_max_all_tiles := new((/ num_tiles /), field_data_type)
-      field_median_all_tiles := new((/ num_tiles /), field_data_type)
-      field_mean_all_tiles := new((/ num_tiles /), field_data_type)
+      field_min_by_tile := new((/ num_tiles /), field_data_type)
+      field_max_by_tile := new((/ num_tiles /), field_data_type)
+      field_median_by_tile := new((/ num_tiles /), field_data_type)
+      field_mean_by_tile := new((/ num_tiles /), field_data_type)
     end if
 
-    field_min_all_tiles(nn) = field_stat_info@field_min
-    field_max_all_tiles(nn) = field_stat_info@field_max
-    field_median_all_tiles(nn) = field_stat_info@field_median
-    field_mean_all_tiles(nn) = field_stat_info@field_mean
+    field_min_by_tile(nn) = field_stat_info@field_min
+    field_max_by_tile(nn) = field_stat_info@field_max
+    field_median_by_tile(nn) = field_stat_info@field_median
+    field_mean_by_tile(nn) = field_stat_info@field_mean
 
   end do
 
   print("")
   print("Done reading field(s) from grid files.")
   print("" + separator_line)
+;
+; **********************************************************************
+;
+; Set to missing values the variables containing the vertical and time
+; dimensions of the field on each tile.  These need to be returned only
+; for consistency with the read_FV3SAR_field_native(...) function.
+;
+; **********************************************************************
+;
+  nz_by_tile := new(num_tiles, "integer")
+  nt_by_tile := new(num_tiles, "integer")
 ;
 ; **********************************************************************
 ;
@@ -654,11 +665,13 @@ begin
 
   field_info@field_desc = field_desc
   field_info@field_units = field_units
-  field_info@field_all_tiles_unstruc = field_all_tiles_unstruc
-  field_info@field_min_all_tiles = field_min_all_tiles
-  field_info@field_max_all_tiles = field_max_all_tiles
-  field_info@field_median_all_tiles = field_median_all_tiles
-  field_info@field_mean_all_tiles = field_mean_all_tiles
+  field_info@field_by_tile_unstruc = field_by_tile_unstruc
+  field_info@nz_by_tile = nz_by_tile
+  field_info@nt_by_tile = nt_by_tile
+  field_info@field_min_by_tile = field_min_by_tile
+  field_info@field_max_by_tile = field_max_by_tile
+  field_info@field_median_by_tile = field_median_by_tile
+  field_info@field_mean_by_tile = field_mean_by_tile
   field_info@field_data_type = field_data_type
 
   return(field_info)

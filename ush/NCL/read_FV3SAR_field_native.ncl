@@ -25,12 +25,14 @@ function read_FV3SAR_field_native( \
          file_names_by_tile[*]:string, \
          gtype:string, \
          tile_inds[*]:integer, \
+         nh_by_tile[*]:integer, \
+         nxh_by_tile[*]:integer, \
+         nyh_by_tile[*]:integer, \
          nx_by_tile[*]:integer, \
          ny_by_tile[*]:integer, \
+         remove_halo_by_tile[*]:logical, \
          vert_indx:integer, \
          time_indx:integer, \
-         remove_rgnl_halo:logical, \
-         nhalo_T7:integer, \
          func_xy_only:logical, \
          func_xyz_only:logical, \
          func_xyt_only:logical, \
@@ -43,11 +45,11 @@ local num_tiles, \
       file_name, field_name, \
       fp, \
       field_crnt_tile, field_desc, field_units, \
-      field_all_tiles_unstruc, \
+      field_by_tile_unstruc, \
       field_data_type, \
       print_field_stats, field_stat_info, \
-      field_min_all_tiles, field_max_all_tiles, \
-      field_median_all_tiles, field_mean_all_tiles, \
+      field_min_by_tile, field_max_by_tile, \
+      field_median_by_tile, field_mean_by_tile, \
       field_info
 
 begin
@@ -82,6 +84,9 @@ begin
 ;
   num_tiles = dimsizes(tile_inds)
 
+  nz_by_tile := new(num_tiles, "integer")
+  nt_by_tile := new(num_tiles, "integer")
+
   msg := "Looping over tiles to read field(s) from specified file(s) ..."
   print("")
   print("" + separator_line)
@@ -106,13 +111,15 @@ begin
 ;
 ; **********************************************************************
 ;
-    nx = nx_by_tile(nn)
-    ny = ny_by_tile(nn)
-
-    msg_adden = ""
-    if (strcmp_exact(gtype, "regional") .and. \
-        (n_tile .eq. 7) .and. remove_rgnl_halo) then
-      msg_adden = " (AFTER removing halo of " + nhalo_T7 + " cells)"
+    if (remove_halo_by_tile(nn)) then
+      nx = nx_by_tile(nn)
+      ny = ny_by_tile(nn)
+      msg_adden \
+      = "  (after removing halo of " + nh_by_tile(nn) + " cells)"
+    else
+      nx = nxh_by_tile(nn)
+      ny = nyh_by_tile(nn)
+      msg_adden = ""
     end if
 
     print("")
@@ -185,13 +192,18 @@ char_dq + field_data_type_default + char_dq + ") ..."
 "    file_name = " + char_dq + file_name + char_dq
       print("" + msg)
 
+      dim_sizes = getfilevardimsizes(fp, field_name)
       if (func_xy_only) then
         field_crnt_tile := fp->$field_name$(:,:)
       else if (func_xyz_only) then
+        nz_by_tile(nn) = dim_sizes(0)
         field_crnt_tile := fp->$field_name$(vert_indx,:,:)
       else if (func_xyt_only) then
+        nt_by_tile(nn) = dim_sizes(0)
         field_crnt_tile := fp->$field_name$(time_indx,:,:)
       else if (func_xyzt_only) then
+        nz_by_tile(nn) = dim_sizes(1)
+        nt_by_tile(nn) = dim_sizes(0)
         field_crnt_tile := fp->$field_name$(time_indx,vert_indx,:,:)
       end if
       end if
@@ -218,11 +230,11 @@ char_dq + field_data_type_default + char_dq + ") ..."
 ;
     if (nn .eq. 0) then
 
-      field_all_tiles_unstruc := ndtooned(field_crnt_tile)
+      field_by_tile_unstruc := ndtooned(field_crnt_tile)
 
     else
 
-      field_data_type_prev_tiles = typeof(field_all_tiles_unstruc)
+      field_data_type_prev_tiles = typeof(field_by_tile_unstruc)
       field_data_type_crnt_tile = typeof(field_crnt_tile)
 ;
 ; If the data type of the field on the tiles considered thus far is not
@@ -233,13 +245,13 @@ char_dq + field_data_type_default + char_dq + ") ..."
       if (.not. strcmp_exact(field_data_type_prev_tiles, \
                              field_data_type_crnt_tile)) then
 
-        prev_tiles_all_missing := all(ismissing(field_all_tiles_unstruc))
+        prev_tiles_all_missing := all(ismissing(field_by_tile_unstruc))
         crnt_tile_all_missing := all(ismissing(field_crnt_tile))
 
         if (prev_tiles_all_missing .and. (.not. crnt_tile_all_missing)) then
 
-          field_all_tiles_unstruc \
-          := totype(field_all_tiles_unstruc, field_data_type_crnt_tile)
+          field_by_tile_unstruc \
+          := totype(field_by_tile_unstruc, field_data_type_crnt_tile)
 
         else if ((.not. prev_tiles_all_missing) .and. crnt_tile_all_missing) then
 
@@ -284,8 +296,8 @@ char_dq + field_data_type_default + char_dq + ") ..."
 
       end if
 
-      field_all_tiles_unstruc \
-      := array_append_record(field_all_tiles_unstruc, ndtooned(field_crnt_tile), 0)
+      field_by_tile_unstruc \
+      := array_append_record(field_by_tile_unstruc, ndtooned(field_crnt_tile), 0)
 
     end if
 ;
@@ -295,7 +307,7 @@ char_dq + field_data_type_default + char_dq + ") ..."
 ;
 ; **********************************************************************
 ;
-    field_data_type = typeof(field_all_tiles_unstruc)
+    field_data_type = typeof(field_by_tile_unstruc)
 ;
 ; **********************************************************************
 ;
@@ -303,8 +315,8 @@ char_dq + field_data_type_default + char_dq + ") ..."
 ;
 ; **********************************************************************
 ;
-    msg := "  Calculating statistics of field on the tile " + n_tile \
-         + " grid ..."
+    msg := \
+"  Calculating statistics of field on the tile " + n_tile + " grid ..."
     print("")
     print("" + msg)
 
@@ -316,8 +328,8 @@ char_dq + field_data_type_default + char_dq + ") ..."
     print("")
     print("" + msg)
 
-    msg := "  Done calculating statistics of field on the tile " + n_tile \
-         + " grid."
+    msg := \
+"  Done calculating statistics of field on the tile " + n_tile + " grid."
     print("")
     print("" + msg)
 ;
@@ -328,16 +340,16 @@ char_dq + field_data_type_default + char_dq + ") ..."
 ; **********************************************************************
 ;
     if (nn .eq. 0) then
-      field_min_all_tiles := new((/ num_tiles /), field_data_type)
-      field_max_all_tiles := new((/ num_tiles /), field_data_type)
-      field_median_all_tiles := new((/ num_tiles /), field_data_type)
-      field_mean_all_tiles := new((/ num_tiles /), field_data_type)
+      field_min_by_tile := new((/ num_tiles /), field_data_type)
+      field_max_by_tile := new((/ num_tiles /), field_data_type)
+      field_median_by_tile := new((/ num_tiles /), field_data_type)
+      field_mean_by_tile := new((/ num_tiles /), field_data_type)
     end if
 
-    field_min_all_tiles(nn) = field_stat_info@field_min
-    field_max_all_tiles(nn) = field_stat_info@field_max
-    field_median_all_tiles(nn) = field_stat_info@field_median
-    field_mean_all_tiles(nn) = field_stat_info@field_mean
+    field_min_by_tile(nn) = field_stat_info@field_min
+    field_max_by_tile(nn) = field_stat_info@field_max
+    field_median_by_tile(nn) = field_stat_info@field_median
+    field_mean_by_tile(nn) = field_stat_info@field_mean
 
   end do
 
@@ -355,20 +367,17 @@ char_dq + field_data_type_default + char_dq + ") ..."
 
   field_info@field_desc = field_desc
   field_info@field_units = field_units
-  field_info@field_all_tiles_unstruc = field_all_tiles_unstruc
-  field_info@field_min_all_tiles = field_min_all_tiles
-  field_info@field_max_all_tiles = field_max_all_tiles
-  field_info@field_median_all_tiles = field_median_all_tiles
-  field_info@field_mean_all_tiles = field_mean_all_tiles
+  field_info@nz_by_tile = nz_by_tile
+  field_info@nt_by_tile = nt_by_tile
+  field_info@field_by_tile_unstruc = field_by_tile_unstruc
+  field_info@field_min_by_tile = field_min_by_tile
+  field_info@field_max_by_tile = field_max_by_tile
+  field_info@field_median_by_tile = field_median_by_tile
+  field_info@field_mean_by_tile = field_mean_by_tile
   field_info@field_data_type = field_data_type
 
   return(field_info)
 
 end
-
-
-
-
-
 
 

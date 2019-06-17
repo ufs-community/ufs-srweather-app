@@ -131,7 +131,9 @@ pause
 ;
   dx = dx_native 
   dy = dy_native 
-  num_margin_cells = 1
+;  num_margin_cells = 1
+  num_margin_cells = 5
+;  num_margin_cells = 100
 ;
 ; **********************************************************************
 ;

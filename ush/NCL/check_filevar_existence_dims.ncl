@@ -6,7 +6,7 @@
 ;
 ; Description:
 ; ^^^^^^^^^^^
-; This function returns 
+; This function 
 ;
 ; **********************************************************************
 ;
@@ -56,11 +56,11 @@ begin
 ;
 ; **********************************************************************
 ;
-;  print("")
-;  print("" + separator_line)
-;  print("Opening file for reading:")
-;  print("")
-;  print("  file_name = " + char_dq + file_name + char_dq)
+  print("")
+  print("" + separator_line)
+  print("Opening file for reading:")
+  print("")
+  print("  file_name = " + char_dq + file_name + char_dq)
 
   fp = addfile(file_name, "r")
 ;
@@ -104,10 +104,18 @@ begin
 ;
 ; **********************************************************************
 ;
-  x_filedim_names = (/ "grid_x", "grid_xt", "nx", "nxp" /)
-  y_filedim_names = (/ "grid_y", "grid_yt", "ny", "nyp" /)
-  z_filedim_names = (/ "phalf", "pfull" /)
-  t_filedim_names = (/ "time" /)
+;  x_filedim_names = (/ "grid_x", "grid_xt", "nx", "nxp" /)
+;  y_filedim_names = (/ "grid_y", "grid_yt", "ny", "nyp" /)
+;  z_filedim_names = (/ "phalf", "pfull" /)
+;  t_filedim_names = (/ "time" /)
+; The following are temporary to be able to process ICs and surface files.
+; Either make these permanent or change the gfs_data.tile7.nc and 
+; sfc_data.tile7.nc files to have dimension names that are consistent 
+; with other files (e.g. instead of xaxis_1 and lon, should have nx).
+  x_filedim_names = (/ "grid_x", "grid_xt", "nx", "nxp", "xaxis_1", "lon" /)
+  y_filedim_names = (/ "grid_y", "grid_yt", "ny", "nyp", "yaxis_1", "lat" /)
+  z_filedim_names = (/ "phalf", "pfull", "zaxis_1", "lev" /)
+  t_filedim_names = (/ "time", "Time" /)
 ;
 ; **********************************************************************
 ;
@@ -201,8 +209,8 @@ begin
 ; **********************************************************************
 ;
 ; Check whether the last dimension represents the x horizontal direction
-; (as defined by the string array x_filedim_names; this direction may be, 
-; for example, longitude).
+; (as defined by the string array x_filedim_names; this direction may 
+; be, for example, longitude).
 ;
     func_x = False
     do i=0, dimsizes(x_filedim_names)-1
@@ -213,8 +221,8 @@ begin
     end do
 ;
 ; Check whether the next-to-last dimension represents the y horizontal
-; direction (as defined by the string array y_filedim_names; this direction
-; may be, for example, latitude).
+; direction (as defined by the string array y_filedim_names; this direc-
+; tion may be, for example, latitude).
 ;
     func_y = False
     do i=0, dimsizes(y_filedim_names)-1
@@ -324,8 +332,8 @@ char_dq + var_dim_names(var_rank-2) + char_dq + char_nl + \
 ;
     else if (var_rank .eq. 4) then
 ;
-; Check whether the zeroth dimension represents t.  If so, set the temp-
-; orary variable func_t to True.
+; Check whether the zeroth dimension represents t.  If so, set the tem-
+; porary variable func_t to True.
 ;
       func_t = False
       do i=0, dimsizes(t_filedim_names)-1
@@ -426,7 +434,7 @@ char_dq + var_dim_names(var_rank-2) + char_dq + char_nl + \
 
     if (vert_inds_min .lt. 0) then
       msg := char_nl + \
-"The minimum vertical index must be greater than or equal to 0:" + char_nl + \
+"The minimum specified vertical index must be greater than or equal to 0:" + char_nl + \
 "  vert_inds_min = " + vert_inds_min + char_nl + \
 "Stopping."
       print("" + msg)
@@ -435,7 +443,7 @@ char_dq + var_dim_names(var_rank-2) + char_dq + char_nl + \
 
     if (vert_inds_max .ge. nz) then
       msg := char_nl + \
-"The maximum vertical index must be less than the specified variable's " + char_nl + \
+"The maximum specified vertical index must be less than the variable's " + char_nl + \
 "vertical dimension size (nz):" + char_nl + \
 "  var_name = " + char_dq + var_name + char_dq + char_nl + \
 "  nz = " + nz + char_nl + \
@@ -464,7 +472,7 @@ char_dq + var_dim_names(var_rank-2) + char_dq + char_nl + \
 
     if (time_inds_min .lt. 0) then
       msg := char_nl + \
-"The minimum time index must be greater than or equal to 0:" + char_nl + \
+"The minimum specified time index must be greater than or equal to 0:" + char_nl + \
 "  time_inds_min = " + time_inds_min + char_nl + \
 "Stopping."
       print("" + msg)
@@ -473,7 +481,7 @@ char_dq + var_dim_names(var_rank-2) + char_dq + char_nl + \
 
     if (time_inds_max .ge. nt) then
       msg := char_nl + \
-"The maximum time index must be less than the specified variable's time " + char_nl + \
+"The maximum specified time index must be less than the variable's time " + char_nl + \
 "dimension size (nt):" + char_nl + \
 "  var_name = " + char_dq + var_name + char_dq + char_nl + \
 "  nt = " + nt + char_nl + \

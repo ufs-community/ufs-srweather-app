@@ -82,32 +82,36 @@ local num_tiles_to_plot, \
 \
       grid_fn_all_tiles, remove_halo_all_tiles, \
 \
-      nhSG_all_tiles, nxSG_all_tiles, nySG_all_tiles, \
-      nxhSG_all_tiles, nyhSG_all_tiles, \
-      nh_all_tiles, nx_all_tiles, ny_all_tiles, \
-      nxh_all_tiles, nyh_all_tiles, \
+      nhSG_all_tiles, nxhSG_all_tiles, nyhSG_all_tiles, \
+      nxSG_all_tiles, nySG_all_tiles, \
+      nh_all_tiles, nxh_all_tiles, nyh_all_tiles, \
+      nx_all_tiles, ny_all_tiles, \
 \
       coord_data_type_all_tiles, \
 \
       nn, msg, underline, n_tile, grid_fn, fp, \
-      msg_adden_SG, msg_adden, tile_SG_dims, \
+      tile_SG_dims, \
 \
-      coord_data_type, match_found, exact_match, \
+      coord_data_type, match_found, match_by_elem, \
 \
       lon_cntrs_all_tiles_unstruc, lat_cntrs_all_tiles_unstruc, \
       lon_verts_all_tiles_unstruc, lat_verts_all_tiles_unstruc, \
       lon_bdy_all_tiles, lat_bdy_all_tiles, \
+\
       lon_tile_cntr_all_tiles, lat_tile_cntr_all_tiles, \
       lon_tile_corners_face_midpts_all_tiles, \
       lat_tile_corners_face_midpts_all_tiles, \
 \
-      remove_halo, \
       nhSG, nxhSG, nyhSG, nxSG, nySG, \
       nh, nxh, nyh, nx, ny, \
+      remove_halo, \
 \
       lon_verts_SG_crnt_tile, lat_verts_SG_crnt_tile, \
       lon_verts_crnt_tile, lat_verts_crnt_tile, \
       lon_cntrs_crnt_tile, lat_cntrs_crnt_tile, \
+\
+      repeat_last_point, array_order, bdy_info, \
+      lon_bdy_crnt_tile, lat_bdy_crnt_tile, \
 \
       x_is_longitude, opts, corner_info, corner_lons, corner_lats, \
       fmt_str, lon_str, lat_str, \
@@ -118,9 +122,6 @@ local num_tiles_to_plot, \
       lon_verts_crnt_tile_unstruc, lat_verts_crnt_tile_unstruc, \
       lon_cntrs_all_tiles_unstruc, lat_cntrs_all_tiles_unstruc, \
       lon_verts_all_tiles_unstruc, lat_verts_all_tiles_unstruc, \
-\
-      repeat_last_point, array_order, bdy_info, \
-      lon_bdy_crnt_tile, lat_bdy_crnt_tile, \
 \
       grid_info
 
@@ -139,21 +140,47 @@ begin
 ;
 ; **********************************************************************
 ;
-; Set the full path to the grid file corresponding to each tile speci-
-; fied in tile_inds and save the results in the array grid_fn_all_tiles.  Also,
-; set the horizontal dimensions of the grid corresponding to each tile
-; (i.e. the number of cells in each of the two directions) and save the
-; results in the arrays nxh_all_tiles and ny_all_tiles_with_ha-
-; lo.
+; Loop through the tiles and set the following arrays:
 ;
-; Note that for a regional grid, if one of the specified tiles is tile 7
-; (which is the tile containing the regional domain/grid), then the halo
-; cells that this tile includes will be removed if remove_rgnl_halo is 
-; set to True.  In this case, nx_all_tiles and ny_all_tiles_no_-
-; halo for tile 7 will contain the number of cells AFTER removing the 
-; halo.  If this is not the case, then nx_all_tiles and ny_all_-
-; tiles_no_halo will be set equal to nxh_all_tiles and ny_all_-
-; tiles_with_halo.
+; grid_fn_all_tiles:
+; Full path to the grid file corresponding to each tile.  Note that the
+; grid file contains information (coordinates, etc) on the supergrid of
+; a given tile, where the supergrid is a grid having twice the resolu-
+; tion of the actual (i.e. computational) grid.
+;
+; remove_halo_all_tiles:
+; Logical array that specifies whether the halo cells around a given 
+; tile should be removed before plotting or other processing.
+;
+; nhSG_all_tiles:
+; Halo width on the supergrid of each tile, in units of supergrid cells.
+; Normally, only tile 7 of a regional or nexted grid has a halo, so this
+; will be zero for tiles 1 through 6.
+;
+; nxhSG_all_tiles, nyhSG_all_tiles:
+; Number of cells, including the halo, in the x and y directions, res-
+; pectively, on the supergrid of each tile.
+;
+; nxSG_all_tiles, nySG_all_tiles:
+; Number of cells, excluding the halo, in the x and y directions, res-
+; pectively, on the supergrid of each tile.
+;
+; nh_all_tiles:
+; Halo width on the computational grid of each tile, in units of grid 
+; cells.  Normally, only tile 7 of a regional or nexted grid has a halo,
+; so this will be zero for tiles 1 through 6.
+;
+; nxh_all_tiles, nyh_all_tiles:
+; Number of cells, including the halo, in the x and y directions, res-
+; pectively, on the computational grid of each tile.
+;
+; nx_all_tiles, ny_all_tiles:
+; Number of cells, excluding the halo, in the x and y directions, res-
+; pectively, on the computational grid of each tile.
+;
+; coord_data_type_all_tiles:
+; The data type of the coordinate arrays in the grid file corresponding
+; to each tile. 
 ;
 ; **********************************************************************
 ;
@@ -210,7 +237,8 @@ begin
     end if
 
     grid_fn_all_tiles(nn) = grid_fn
-    print("  grid_fn_all_tiles(" + nn + ") = " + char_dq + grid_fn_all_tiles(nn) + char_dq)
+    print("  grid_fn_all_tiles(" + nn + ") = " + \
+          char_dq + grid_fn_all_tiles(nn) + char_dq)
 ;
 ; **********************************************************************
 ;
@@ -223,44 +251,37 @@ begin
 ;
 ; **********************************************************************
 ;
-; If on a regional grid, if the current tile is tile 7 (the regional do-
-; main/grid), and if remove_rgnl_halo is set to True, then reduce the 
-; grid dimensions to ones corresponding to the tile 7 grid without a ha-
-; lo of width nhalo_T7.
+; Set the halo width (in units of cells).  Note that this is zero unless
+; we're on a regional or nested grid and and the current tile is tile 7
+; (the regional or nested domain/grid).  Also, set the logical variable
+; that determines whether the halo should be removed from the current 
+; tile before any processing is performed.  This is set to True only if
+; we're on tile 7 of a regional or nested grid and remove_rgnl_halo is
+; set to True.
 ;
 ; **********************************************************************
 ;
-    msg_adden_SG = ""
-    msg_adden = ""
+    nhSG_all_tiles(nn) = 0
+    remove_halo_all_tiles(nn) = False
 
-    if (strcmp_exact(gtype, "regional") .and. \
-        (n_tile .eq. 7) .and. remove_rgnl_halo) then
+    if ((strcmp_exact(gtype, "regional") .or. \
+         strcmp_exact(gtype, "nest")) .and. \
+        (n_tile .eq. 7)) then
 
-      remove_halo_all_tiles(nn) = True
       nhSG_all_tiles(nn) = 2*nhalo_T7
-      nh_all_tiles(nn) = nhSG_all_tiles(nn)/2
-      msg_adden_SG \
-      = "  (after removing " + nhSG_all_tiles(nn) + "-cell-wide halo " + \
-        "from all four sides of the supergrid)"
-      msg_adden \
-      = "  (after removing " + nh_all_tiles(nn) + "-cell-wide halo " + \
-        "from all four sides of the grid)"
-
-    else
-
-      remove_halo_all_tiles(nn) = False
-      nhSG_all_tiles(nn) = 0
-      nh_all_tiles(nn) = nhSG_all_tiles(nn)/2
-      msg_adden_SG = "  (no halo removed from supergrid)"
-      msg_adden = "  (no halo removed from grid)"
+      if (remove_rgnl_halo) then
+        remove_halo_all_tiles(nn) = True
+      end if
 
     end if
+
+    nh_all_tiles(nn) = nhSG_all_tiles(nn)/2
 ;
 ; **********************************************************************
 ;
 ; Read in the dimensions of the tile's supergrid (which has twice the 
 ; resolution as the tile's grid).  From these, calculate the dimensions
-; of the grid.
+; of the supergrid.
 ;
 ; **********************************************************************
 ;
@@ -275,12 +296,12 @@ begin
     print("  nhSG_all_tiles(" + nn + ") = " + nhSG_all_tiles(nn))
     print("  nxhSG_all_tiles(" + nn + ") = " + nxhSG_all_tiles(nn))
     print("  nyhSG_all_tiles(" + nn + ") = " + nyhSG_all_tiles(nn))
-    print("  nxSG_all_tiles(" + nn + ") = " + nxSG_all_tiles(nn) + msg_adden_SG)
-    print("  nySG_all_tiles(" + nn + ") = " + nySG_all_tiles(nn) + msg_adden_SG)
+    print("  nxSG_all_tiles(" + nn + ") = " + nxSG_all_tiles(nn))
+    print("  nySG_all_tiles(" + nn + ") = " + nySG_all_tiles(nn))
 ;
 ; **********************************************************************
 ;
-;
+; Calculate the dimensions of the computational grid.
 ;
 ; **********************************************************************
 ;
@@ -293,12 +314,13 @@ begin
     print("  nh_all_tiles(" + nn + ") = " + nh_all_tiles(nn))
     print("  nxh_all_tiles(" + nn + ") = " + nxh_all_tiles(nn))
     print("  nyh_all_tiles(" + nn + ") = " + nyh_all_tiles(nn))
-    print("  nx_all_tiles(" + nn + ") = " + nx_all_tiles(nn) + msg_adden)
-    print("  ny_all_tiles(" + nn + ") = " + ny_all_tiles(nn) + msg_adden)
+    print("  nx_all_tiles(" + nn + ") = " + nx_all_tiles(nn))
+    print("  ny_all_tiles(" + nn + ") = " + ny_all_tiles(nn))
 ;
 ; **********************************************************************
 ;
-;
+; Get the data type of the x coordinate in the grid specification file.
+; We assume here that the x and y coordinates have the same data type.
 ;
 ; **********************************************************************
 ;
@@ -316,9 +338,9 @@ begin
 ;
 ; **********************************************************************
 ;
-; Get the data type (i.e. float or double) of the arrays holding the 
-; tile grid coordinates.
-; Check that the data types of the 
+; Compare the coordinate data types of all tiles.  For simplicity, we
+; will require that all tiles have the same coordinate data type.  If 
+; this is not the case, print out an error message and exit.
 ;
 ; **********************************************************************
 ;
@@ -330,18 +352,18 @@ begin
     := strcmp_exact( \
        coord_data_type_all_tiles(1:num_tiles_to_plot-1), \
        coord_data_type)
-    exact_match = match_found@exact_match
+    match_by_elem = match_found@match_by_elem
 
-    if (.not. all(exact_match)) then
+    if (.not. all(match_by_elem)) then
 
-      msg := \
-"  coord_data_type_all_tiles(" + ispan(0, num_tiles_to_plot-1, 1) + \
-") = " + char_dq + coord_data_type_all_tiles + char_dq
+      msg := "  coord_data_type_all_tiles(" \
+           + ispan(0, num_tiles_to_plot-1, 1) \
+           + ") = " + char_dq + coord_data_type_all_tiles + char_dq
       msg := str_join(msg, char_nl)
 
       msg := char_nl + \
 "For simplicity, we require that the coordinate arrays in the files cor-" + char_nl + \
-"responding to the specified tiles all be the same data type.  In this " + char_nl + \
+"responding to the specified tiles all have the same data type.  In this " + char_nl + \
 "case, they are not:" + char_nl + \
 msg + char_nl + \
 "Stopping."
@@ -354,15 +376,19 @@ msg + char_nl + \
   end if
 
   msg := char_nl + \
-"The data type of the coordinates in all the tile/grid specification" + char_nl + \
-"files is:" + char_nl + \
+"The data type of the coordinates in the grid specification files for " + char_nl + \
+"all tiles is:" + char_nl + \
 "  coord_data_type = " + char_dq + coord_data_type + char_dq
   print("" + msg)
 ;
 ; **********************************************************************
 ;
-; Define arrays of type coord_data_type and of length one containing athe coordinates of so that 
-;
+; Initialize the arrays that will contain the grid and boundary coordi-
+; nates of all specified tiles to 1-element arrays containing missing
+; values of type coord_data_type.  After the coordinates are appended to
+; these arrays in the loop below, the first elements of these arrays
+; will be stripped away (since they are created here only to make it 
+; convenient to append to the arrays).
 ;
 ; **********************************************************************
 ;
@@ -372,7 +398,15 @@ msg + char_nl + \
   lat_verts_all_tiles_unstruc := new((/1,4/), coord_data_type)
   lon_bdy_all_tiles := new(1, coord_data_type)
   lat_bdy_all_tiles := new(1, coord_data_type)
-
+;
+; **********************************************************************
+;
+; Initialize the arrays that will contain the coorinates of the tile 
+; centers and the tile corners and midpoints to missing values of type
+; coord_data_type.
+;
+; **********************************************************************
+;
   lon_tile_cntr_all_tiles := new((/ num_tiles_to_plot /), coord_data_type)
   lat_tile_cntr_all_tiles := new((/ num_tiles_to_plot /), coord_data_type)
 
@@ -383,20 +417,27 @@ msg + char_nl + \
 ;
 ; **********************************************************************
 ;
-;
+; Loop through the specified tiles and read in and process coordinate 
+; arrays.
 ;
 ; **********************************************************************
 ;
   print("")
   print("" + separator_line)
-  print("Reading in tile coordinates of each specified tile from file ...")
+  print("Reading in grid coordinates of each specified tile from file ...")
 
   do nn=0, num_tiles_to_plot-1
 
     n_tile = tile_inds(nn)
     print("")
     print("  n_tile = " + n_tile)
-
+;
+; **********************************************************************
+;
+; Get grid dimensions of current tile.
+;
+; **********************************************************************
+;
     nhSG = nhSG_all_tiles(nn)
     nxhSG = nxhSG_all_tiles(nn)
     nyhSG = nyhSG_all_tiles(nn)
@@ -472,7 +513,7 @@ msg + char_nl + \
 ; **********************************************************************
 ;
 ; Remove halo cells from the arrays containing coordinates of the cell
-; vertices on the supergrid.
+; vertices of the supergrid.
 ;
 ; **********************************************************************
 ;
@@ -484,7 +525,7 @@ msg + char_nl + \
 ; **********************************************************************
 ;
 ; Remove halo cells from the arrays containing the coordinates of cell
-; centers.
+; centers of the computational grid.
 ;
 ; **********************************************************************
 ;
@@ -496,7 +537,7 @@ msg + char_nl + \
 ; **********************************************************************
 ;
 ; Remove halo cells from the arrays containing coordinates of the cell
-; vertices.
+; vertices of the computational grid.
 ;
 ; **********************************************************************
 ;
@@ -513,10 +554,10 @@ msg + char_nl + \
 ; Create arrays in unstructured format that contain the coordinates of
 ; the center of each cell on the current tile.  Note that these are 1-D
 ; arrays, and their size (i.e. the number of elements they contain) is 
-; equal to the number of cells on the current tile's grid (i.e. nx*ny).  
-; This unstructured format is useful in generating color-contour plots 
-; of fields on the grid that have one value per cell represented by a 
-; flat color in that cell.
+; equal to the number of cells on the current tile's grid (i.e. nxh*nyh
+; or nx*ny).  This unstructured format is useful for generating color-
+; contour plots of fields on the grid that have one value per cell re-
+; presented by a flat color in that cell.
 ;
 ; **********************************************************************
 ;
@@ -528,10 +569,10 @@ msg + char_nl + \
 ; Create arrays in unstructured format that contain the coordinates of
 ; the vertices of each cell on the current tile.  Note that these are 
 ; 2-D arrays whose first dimension size is the number of cells on the 
-; current tile's grid (i.e. nx*ny) and whose second dimension size is 4
-; (since each cell has 4 vertices).  This unstructured format is useful
-; in generating color-contour plots of fields on the grid that have one
-; value per cell represented by a flat color in that cell.
+; current tile's grid (i.e. nxh*nyh or nx*ny) and whose second dimension
+; size is 4 (since each cell has 4 vertices).  This unstructured format
+; is useful for generating color-contour plots of fields on the grid 
+; that have one value per cell represented by a flat color in that cell.
 ;
 ; **********************************************************************
 ;
@@ -732,7 +773,7 @@ msg + char_nl + \
 ;
 ; **********************************************************************
 ;
-; Print out coordinates of grid corners and face midpoints.
+; Print out the coordinates of grid corners and face midpoints.
 ;
 ; **********************************************************************
 ;
@@ -759,7 +800,11 @@ msg + char_nl + \
 ;
 ; **********************************************************************
 ;
-; Remove the first
+; Remove the first elements in the unstructured arrays containing the
+; coordinates of the grid cells and tile boundaries.  Recall that these
+; first elements were defined to make it convenient to append the coor-
+; dinates of each consecutive tile; they contain missing values of type
+; coord_data_type.
 ;
 ; **********************************************************************
 ;
@@ -767,8 +812,10 @@ msg + char_nl + \
   lat_cntrs_all_tiles_unstruc := lat_cntrs_all_tiles_unstruc(1:)
   lon_verts_all_tiles_unstruc := lon_verts_all_tiles_unstruc(1:,:)
   lat_verts_all_tiles_unstruc := lat_verts_all_tiles_unstruc(1:,:)
-  lon_bdy_all_tiles := lon_bdy_all_tiles(1:)
-  lat_bdy_all_tiles := lat_bdy_all_tiles(1:)
+  if (get_tile_bdies) then
+    lon_bdy_all_tiles := lon_bdy_all_tiles(1:)
+    lat_bdy_all_tiles := lat_bdy_all_tiles(1:)
+  end if
 ;
 ; **********************************************************************
 ;

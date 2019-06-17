@@ -23,14 +23,20 @@ function set_file_field_names( \
          field_name:string, \
          is_gridfield:logical, \
 ;
+         remove_halo_by_tile[*]:logical, \
+;
          grid_files_by_tile[*]:string, \
-         nxSG_with_halo_by_tile[*]:integer, \
-         nySG_with_halo_by_tile[*]:integer, \
+         nxhSG_by_tile[*]:integer, \
+         nyhSG_by_tile[*]:integer, \
+         nxSG_by_tile[*]:integer, \
+         nySG_by_tile[*]:integer, \
 ;
          run_dir:string, \
          file_basename:string, \
-         nx_with_halo_by_tile[*]:integer, \
-         ny_with_halo_by_tile[*]:integer, \
+         nxh_by_tile[*]:integer, \
+         nyh_by_tile[*]:integer, \
+         nx_by_tile[*]:integer, \
+         ny_by_tile[*]:integer, \
 ;
          vert_inds[*]:integer, \
          time_inds[*]:integer, \
@@ -49,8 +55,8 @@ local num_tiles, \
       file_name, \
       gridfield_info, \
       filevar_names, \
-      nxSG_or_nx_with_halo_by_tile, \
-      nySG_or_ny_with_halo_by_tile, \
+      nxhSG_or_nxh_by_tile, \
+      nyhSG_or_nyh_by_tile, \
       filevar_names_str, \
       num_filevars, \
       indx_fv, \
@@ -113,23 +119,34 @@ begin
     gridfield_info \
     := get_gridfield_info(field_name, horiz_dist_units, horiz_area_units)
     filevar_names := gridfield_info@filevar_names
-    nxSG_or_nx_with_halo_by_tile := nxSG_with_halo_by_tile
-    nySG_or_ny_with_halo_by_tile := nySG_with_halo_by_tile
+
+    xdim_by_tile \
+    := where(remove_halo_by_tile, nxSG_by_tile, nxhSG_by_tile)
+    ydim_by_tile \
+    := where(remove_halo_by_tile, nySG_by_tile, nyhSG_by_tile)
 
   else
 
     filevar_names := field_name
-    nxSG_or_nx_with_halo_by_tile := nx_with_halo_by_tile
-    nySG_or_ny_with_halo_by_tile := ny_with_halo_by_tile
+
+    xdim_by_tile \
+    := where(remove_halo_by_tile, nx_by_tile, nxh_by_tile)
+    ydim_by_tile \
+    := where(remove_halo_by_tile, ny_by_tile, nyh_by_tile)
 
   end if
+
+print("")
+print("xdim_by_tile = " + xdim_by_tile)
+print("")
+print("ydim_by_tile = " + ydim_by_tile)
 
   filevar_names_str \
   := "(" + char_dq \
   + str_join(filevar_names, char_dq + ", " + char_dq) \
   + char_dq + ")"
   print("  filevar_names = " + filevar_names_str)
-;pause
+pause
 ;
 ; **********************************************************************
 ;
@@ -204,14 +221,14 @@ begin
 ;
     field_names_by_tile(nn) = field_name
 ;
-; If we're dealing with a regional grid (for which physical fiels are
+; If we're dealing with a regional grid (for which physical fields are
 ; available only on tile 7), and if we're not on tile 7 (i.e. we are on
 ; one of the "parent" global tiles 1 through 6), then only grid-related
 ; fields (such as horizontal area of cells) will be available on this 
 ; tile.  Thus, if we're not considering a grid-rleated field, we must
 ; set the field name on this tile to "none".
 ;
-    if ((strcmp_exact(gtype, "regional") .and. \
+    if (strcmp_exact(gtype, "regional") .and. \
         (n_tile .ne. 7) .and. \
         (.not. is_gridfield)) then
 
@@ -279,8 +296,8 @@ begin
 ;
 ; **********************************************************************
 ;
-  msg \
-:= "Checking existence and dimensions of all variables in all specified tiles..."
+  msg := \
+"Checking existence and dimensions of all variables in all specified tiles..."
   print("")
   print("" + separator_line)
   print("" + msg)
@@ -319,8 +336,8 @@ print("filevar_names(indx_fv) = " + char_dq + filevar_names(indx_fv) + char_dq)
         var_info := check_filevar_existence_dims( \
                     file_names_by_tile(nn), \
                     filevar_names(indx_fv), \
-                    nxSG_or_nx_with_halo_by_tile(nn), \
-                    nySG_or_ny_with_halo_by_tile(nn), \
+                    xdim_by_tile(nn), \
+                    ydim_by_tile(nn), \
                     vert_inds_to_plot, \
                     time_inds_to_plot)
   
@@ -398,7 +415,17 @@ n_tile_prev + " to " + char_nl + \
 "Stopping."
             print("" + msg)
             exit
-  
+;
+; The following check may have to be removed since for a nested grid, 
+; the global tiles will not have the same dimensions as the nested tile,
+; so requiring them to be the same doesn't make sense.  Not sure why I
+; put this in...  I think for a given tile, the fields in filevar_names
+; all need to have the same dimensions since they may be used together
+; to calculate a new variable (e.g. filevar_names may contain dx and dy,
+; and we may want to plot dy/dx).  In that case, this check has to be
+; fixed so that it compares fields within a tile, not a field between
+; tiles.  So, need to fix this...
+; 
           else if (any(var_dim_sizes .ne. var_dim_sizes_prev_tile)) then
   
             var_dim_sizes_prev_tile_str \
@@ -513,6 +540,9 @@ n_tile_prev + " to " + char_nl + \
 ;
       else
   
+;        var_rank = default_fillvalue("integer")
+;        var_dim_names = default_fillvalue("integer")
+;        var_dim_sizes = default_fillvalue("integer")
         func_xy_only = False
         func_xyz_only = False
         func_xyt_only = False
@@ -526,8 +556,9 @@ n_tile_prev + " to " + char_nl + \
 
   end do
 
-  msg \
-:= "Done checking existence and dimensions of all variables in all specified tiles."
+  msg := \
+"Done checking existence and dimensions of all variables in all speci-" + char_nl + \
+"fied tiles."
   print("")
   print("" + msg)
   print("" + separator_line)
