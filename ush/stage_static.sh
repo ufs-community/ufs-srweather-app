@@ -483,7 +483,7 @@ cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy ${WORKDIR_SFC_CLIMO}/*.nc ${EXPT_DIR}/INPUT
+cp_vrfy ${WORKDIR_SFC_CLIMO}/*.nc ${EXPTDIR}/INPUT
 #
 #-----------------------------------------------------------------------
 #
@@ -494,7 +494,7 @@ cp_vrfy ${WORKDIR_SFC_CLIMO}/*.nc ${EXPT_DIR}/INPUT
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${EXPT_DIR}/INPUT
+cd_vrfy ${EXPTDIR}/INPUT
 suffix=".halo${nh4_T7}.nc"
 
 for fn in *${suffix}; do
