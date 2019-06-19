@@ -105,10 +105,6 @@ Could not change directory to EXTRN_MDL_FILES_DIR:
 #
 #-----------------------------------------------------------------------
 #
-echo "SSSSSSSSSSSSSSSSSSSSSSSSS"
-pwd
-ls -alF
-echo "TTTTTTTTTTTTTTTTTTTTTTTTT"
 
 #if [ -f "${EXTRN_MDL_INFO_FN}" ]; then
 #  print_err_msg_exit "\
@@ -123,10 +119,6 @@ echo "TTTTTTTTTTTTTTTTTTTTTTTTT"
     "$EXTRN_MDL_INFO_FN" ${EXTRN_MDL_INFO_VAR_NAMES[@]}
 #fi
 
-echo "UUUUUUUUUUUUUUUUUUUUUUUUU"
-pwd
-ls -alF
-echo "VVVVVVVVVVVVVVVVVVVVVVVVV"
 
 if [ ! -f "${EXTRN_MDL_INFO_FN}" ]; then
   print_err_msg_exit "\
@@ -138,16 +130,6 @@ ist in directory EXTRN_MDL_FILES_DIR:
 else
   . ${EXTRN_MDL_INFO_FN}
 fi
-
-echo "WWWWWWWWWWWWWWWWWWWWWWWWW"
-pwd
-ls -alF
-echo "XXXXXXXXXXXXXXXXXXXXXXXXX"
-#rm_vrfy ${EXTRN_MDL_INFO_FN}
-#echo "YYYYYYYYYYYYYYYYYYYYYYYYY"
-#pwd
-#ls -alF
-#echo "ZZZZZZZZZZZZZZZZZZZZZZZZZ"
 #
 # As a check, print out the variables and their values set by the above 
 # function call.
@@ -194,10 +176,6 @@ for FP in "${EXTRN_MDL_FPS[@]}"; do
     printf "File \"%s\" does NOT exist on system disk!\n" "$FP"
   fi
 done
-
-#echo
-#echo "num_files_to_copy = $num_files_to_copy"
-#echo "num_files_found_on_disk = $num_files_found_on_disk"
 #
 #-----------------------------------------------------------------------
 #
@@ -238,11 +216,26 @@ Copying model output files (EXTRN_MDL_FNS) from system directory on disk
 #
 #-----------------------------------------------------------------------
 #
-  print_info_msg "
+  if [ "$ICSSURF_OR_LBCS" = "ICSSURF" ]; then
+
+    print_info_msg "
+
 ========================================================================
 External model files needed for generating initial condition and surface 
 fields for the FV3SAR successfully copied from system disk!!!
 ========================================================================"
+
+  elif [ "$ICSSURF_OR_LBCS" = "LBCS" ]; then
+
+    print_info_msg "
+
+========================================================================
+External model files needed for generating lateral boundary conditions
+on the halo of the FV3SAR's regional grid successfully copied from sys-
+tem disk!!!
+========================================================================"
+
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -264,12 +257,12 @@ MDL_FILES_DIR) are:
 #
 #-----------------------------------------------------------------------
 #
-# Reset EXTRN_MDL_FPS to the full paths within the archive file to the
+# Reset EXTRN_MDL_FPS to the full paths within the archive file of the
 # external model output files.
 #
 #-----------------------------------------------------------------------
 #
-  prefix=${ARCVREL_DIR:+$ARCVREL_DIR/}
+  prefix=${EXTRN_MDL_ARCVREL_DIR:+$EXTRN_MDL_ARCVREL_DIR/}
   EXTRN_MDL_FPS=( "${EXTRN_MDL_FNS[@]/#/$prefix}" )
 #
 #-----------------------------------------------------------------------
@@ -393,44 +386,45 @@ details:
 #
 #-----------------------------------------------------------------------
 #
-# If ARCVREL_DIR is not set to the current directory (i.e. it is not 
-# equal to "."), then the htar command will have created the subdirecto-
-# ry "./${ARCVREL_DIR}" under the current directory and placed the ex-
-# tracted files there.  In that case, we move these extracted files back
-# to the current directory and then remove the subdirectory created by 
-# htar.
+# If EXTRN_MDL_ARCVREL_DIR is not set to the current directory (i.e. it
+# is not equal to "."), then the htar command will have created the sub-
+# directory "./${EXTRN_MDL_ARCVREL_DIR}" under the current directory and
+# placed the extracted files there.  In that case, we move these ex-
+# tracted files back to the current directory and then remove the subdi-
+# rectory created by htar.
 #
 #-----------------------------------------------------------------------
 #
-    if [ "$ARCVREL_DIR" != "." ]; then
+    if [ "$EXTRN_MDL_ARCVREL_DIR" != "." ]; then
 #
-# The code below works if the first character of ARCVREL_DIR is a "/",
-# which is the only case encountered thus far.  The code may have to be
-# modified to accomodate the case of the first character of ARCVREL_DIR
-# not being a "/".
+# The code below works if the first character of EXTRN_MDL_ARCVREL_DIR 
+# is a "/", which is the only case encountered thus far.  The code may
+# have to be modified to accomodate the case of the first character of
+# EXTRN_MDL_ARCVREL_DIR not being a "/".
 #
-      if [ "${ARCVREL_DIR:0:1}" = "/" ]; then
+      if [ "${EXTRN_MDL_ARCVREL_DIR:0:1}" = "/" ]; then
 
-        mv_vrfy .$ARCVREL_DIR/* .
+        mv_vrfy .$EXTRN_MDL_ARCVREL_DIR/* .
 #
-# Get the first subdirectory in ARCVREL_DIR, i.e. the directory after
-# the first forward slash.  This is the subdirectory that we want to re-
-# move.
+# Get the first subdirectory in EXTRN_MDL_ARCVREL_DIR, i.e. the directo-
+# ry after the first forward slash.  This is the subdirectory that we 
+# want to remove.
 #
-        subdir_to_remove=$( printf "%s" "${ARCVREL_DIR}" | sed -r 's|^\/([^/]*).*|\1|' )
+        subdir_to_remove=$( printf "%s" "${EXTRN_MDL_ARCVREL_DIR}" | \
+                            sed -r 's|^\/([^/]*).*|\1|' )
         rm_vrfy -rf ./$subdir_to_remove
 #
-# If ARCVREL_DIR does not start with a "/" (and it is not equal to "."), 
-# then print out an error message and exit.
+# If EXTRN_MDL_ARCVREL_DIR does not start with a "/" (and it is not 
+# equal to "."), then print out an error message and exit.
 #
       else
 
         print_err_msg_exit "\
 The archive-relative directory (i.e. the directory \"within\" the tar file
-EXTRN_MDL_ARCV_FP specified by ARCVREL_DIR is not the current directory 
-(i.e. it is not \".\"), and it does not start with a \"/\":
+EXTRN_MDL_ARCV_FP specified by EXTRN_MDL_ARCVREL_DIR is not the current 
+directory (i.e. it is not \".\"), and it does not start with a \"/\":
   EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
-  ARCVREL_DIR = \"$ARCVREL_DIR\"
+  EXTRN_MDL_ARCVREL_DIR = \"$EXTRN_MDL_ARCVREL_DIR\"
 The current script must be modified to account for this case.
 "
       fi
@@ -512,10 +506,6 @@ file UNZIP_LOG_FN in that directory for contents of the zip archive:
 #
 #-----------------------------------------------------------------------
 #
-echo "AAAA"
-pwd
-ls -alF
-echo "BBBB"
     UNZIP_LOG_FN="log.unzip"
     unzip -o "${EXTRN_MDL_ARCV_FN}" ${EXTRN_MDL_FPS[@]} >& ${UNZIP_LOG_FN} || \
     print_err_msg_exit "\
@@ -524,19 +514,15 @@ file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
   UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
 "
-echo "CCCC"
-pwd
-ls -alF
-echo "DDDD"
 #
 # NOTE:
-# If ARCVREL_DIR is not empty, the unzip command above will create a 
-# subdirectory under EXTRN_MDL_FILES_DIR and place the external model 
-# output files there.  We have not encoutntered this for the RAPX and
-# HRRRX models, but it may happen for other models in the future.  In 
-# that case, extra code must be included here to move the external model
-# output files from the subdirectory up to EXTRN_MDL_FILES_DIR and then
-# the subdirectory (analogous to what is done above for the case of 
+# If EXTRN_MDL_ARCVREL_DIR is not empty, the unzip command above will 
+# create a subdirectory under EXTRN_MDL_FILES_DIR and place the external 
+# model output files there.  We have not encoutntered this for the RAPX 
+# and HRRRX models, but it may happen for other models in the future.  
+# In that case, extra code must be included here to move the external 
+# model output files from the subdirectory up to EXTRN_MDL_FILES_DIR and 
+# then the subdirectory (analogous to what is done above for the case of 
 # EXTRN_MDL_ARCV_FILE_FMT set to "tar".
 #
  
@@ -548,12 +534,26 @@ echo "DDDD"
 #
 #-----------------------------------------------------------------------
 #
-  print_info_msg "\
+  if [ "$ICSSURF_OR_LBCS" = "ICSSURF" ]; then
+
+    print_info_msg "
 
 ========================================================================
 External model files needed for generating initial condition and surface 
 fields for the FV3SAR successfully fetched from HPSS!!!
 ========================================================================"
+
+  elif [ "$ICSSURF_OR_LBCS" = "LBCS" ]; then
+
+    print_info_msg "
+
+========================================================================
+External model files needed for generating lateral boundary conditions
+on the halo of the FV3SAR's regional grid successfully fetched from 
+HPSS!!!
+========================================================================"
+
+  fi
 
 fi
 #
