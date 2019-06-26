@@ -434,7 +434,7 @@ or_fcst):
       sysdir="$sysbasedir/gfs.${yyyymmdd}"
       ;;
     "THEIA")
-      sysdir="$sysbasedir/gfs.${yyyymmdd}"
+      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
       ;;
     "JET")
       sysdir="$sysbasedir/${yyyymmdd}"
