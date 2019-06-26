@@ -304,7 +304,7 @@ chgres FORTRAN namelist file are not specified for this external model:
  mosaic_file_target_grid="${EXPTDIR}/INPUT/${CRES}_mosaic.nc"
  orog_dir_target_grid="${EXPTDIR}/INPUT"
  orog_files_target_grid="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
- vcoord_file_target_grid="${FV3SAR_DIR}/fix/fix_am/global_hyblev.l64.txt"
+ vcoord_file_target_grid="${FV3SAR_DIR}/fix/fix_am/global_hyblev.l65.txt"
  mosaic_file_input_grid=""
  orog_dir_input_grid=""
  base_install_dir="${BASEDIR}/UFS_UTILS_chgres_grib2"
