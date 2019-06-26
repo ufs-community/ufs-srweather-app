@@ -321,48 +321,6 @@ Copying the GSD physics suite XML file and the Thompson microphysics CCN fixed f
   fi
 
 fi
-
-
-#
-#-----------------------------------------------------------------------
-#
-# Add link in shave directory to the grid file with a 4-cell wide halo 
-# such that the link name doesn't contain the halo size.  This is needed
-# by the sfc_chgres.
-#
-# NOTE: It would be nice to modify the chgres code to read in files that
-# have the halo size in their names.
-#
-#-----------------------------------------------------------------------
-#
-# Moved this to make_grid_orog.sh script since it must be done before 
-# call to make_sfc_climo task, which now comes before stage_static task.
-#cd_vrfy $WORKDIR_SHVE
-#print_info_msg_verbose "\
-#Creating link needed by chgres code to 4-halo grid file..."
-#ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
-#            ${CRES}_grid.tile7.nc
-#
-#-----------------------------------------------------------------------
-#
-# Add link in shave directory to the orography file with a 4-cell wide
-# halo such that the link name doesn't contain the halo size.  This is 
-# needed by the sfc_climo_gen code.
-#
-# NOTE: It would be nice to modify the sfc_climo_gen_code to read in 
-# files that have the halo size in their names.
-#
-#-----------------------------------------------------------------------
-#
-# Moved this to make_grid_orog.sh script since it must be done before 
-# call to make_sfc_climo task, which now comes before stage_static task.
-#print_info_msg_verbose "\
-#Creating link needed by sfc_climo_gen code to 4-halo orography file..."
-#ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
-#            ${CRES}_oro_data.tile7.nc
-
-
-
 #
 #-----------------------------------------------------------------------
 #
@@ -490,39 +448,19 @@ cp_vrfy ${WORKDIR_SFC_CLIMO}/*.nc ${EXPTDIR}/INPUT
 # Create links to the halo-4 fix files in the INPUT subdirectory of the
 # experiment directory such that the link names do not include a string
 # specifying the halo width (e.g. "halo##", where ## is the halo width).
-# These links are needed by the chgres code.
+# These links are needed by the chgres_cube code.
 #
 #-----------------------------------------------------------------------
 #
 cd_vrfy ${EXPTDIR}/INPUT
 
-
-# The following is needed for the current (as of 2019-06-21) version of
-# sfc_climo_gen because it generates files that start with "${CRES}_",
-# but the chgres_cube code is looiking for files that have a dot instead
-# of an underscore (i.e. start wit "${CRES}.").  Once both of these code
-# bases are updated, they should be consistent, and this should no long-
-# er be needed.
-prefix_find="${CRES}_"
-prefix_repl="${CRES}."
-for fn in ${prefix_find}*; do
-  fn_remainder="${fn#${prefix_find}}"
-  mv_vrfy $fn ${prefix_repl}${fn_remainder}
-done
-
-
-
-
-
 suffix=".halo${nh4_T7}.nc"
-
 for fn in *${suffix}; do
 # Set bn to the base name of the file, i.e. the name without the suffix 
 # "halo${nh4_T7}.nc".
   bn="${fn%.halo${nh4_T7}.nc}"
   ln_vrfy -fs ${bn}${suffix} ${bn}.nc
 done
-
 #
 #-----------------------------------------------------------------------
 #
@@ -535,7 +473,6 @@ done
 #
 cd_vrfy $EXPTDIR
 touch "stage_static_task_complete.txt"
-
 #
 #-----------------------------------------------------------------------
 #
