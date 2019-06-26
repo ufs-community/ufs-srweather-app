@@ -107,7 +107,7 @@ case "$MACHINE" in
    module list
 
   np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"   
+  APRUN="mpirun -np ${np}"
 
   { restore_shell_opts; } > /dev/null 2>&1
   ;;
@@ -136,7 +136,8 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Are these still needed for chgres_cube???
+# Are these still needed for chgres_cube?
+#
 ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
             $WORKDIR_SHVE/${CRES}_grid.tile7.nc
 
@@ -294,16 +295,19 @@ chgres FORTRAN namelist file are not specified for this external model:
 #
 # Build the FORTRAN namelist file that chgres_cube will read in.
 #
-  cat > fort.41 <<EOF
+# QUESTION:
+# Do numsoil_out, ..., tg3_from_soil need to be in this namelist (as 
+# they are for the ICs namelist)?
+  { cat > fort.41 <<EOF
 &config
- fix_dir_target_grid="${BASEDIR}/JP_grid_HRRR_like_fix_files_chgres_cube"
+ fix_dir_target_grid="${WORKDIR_SFC_CLIMO}"
  mosaic_file_target_grid="${EXPTDIR}/INPUT/${CRES}_mosaic.nc"
  orog_dir_target_grid="${EXPTDIR}/INPUT"
  orog_files_target_grid="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
  vcoord_file_target_grid="${FV3SAR_DIR}/fix/fix_am/global_hyblev.l64.txt"
  mosaic_file_input_grid=""
  orog_dir_input_grid=""
- base_install_dir="${SORCDIR}/chgres_cube.fd"
+ base_install_dir="${BASEDIR}/UFS_UTILS_chgres_grib2"
  wgrib2_path="${WGRIB2_DIR}"
  data_dir_input_grid="${EXTRN_MDL_FILES_DIR}"
  atm_files_input_grid="${fn_atm_nemsio}"
@@ -321,10 +325,16 @@ chgres FORTRAN namelist file are not specified for this external model:
  phys_suite="${phys_suite}"
 /
 EOF
+  } || print_err_msg_exit "\
+\"cat\" command to create a namelist file for chgres_cube to generate LBCs
+for all boundary update times (except the 0-th forecast hour) returned 
+with nonzero status."
 #
 # Run chgres_cube.
 #
-  ${APRUN} ${EXECDIR}/global_chgres.exe || print_err_msg_exit "\
+#  ${APRUN} ${EXECDIR}/global_chgres.exe || print_err_msg_exit "\
+  ${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || \
+  print_err_msg_exit "\
 Call to executable to generate lateral boundary conditions file for the
 the FV3SAR failed:
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
@@ -337,7 +347,7 @@ the FV3SAR failed:
 # hour of the FV3SAR (which is not necessarily the same as that of the 
 # external model since their start times may be offset).
 #
-  fcst_hhh_FV3SAR=$( printf "%03d " "${LBC_UPDATE_FCST_HRS[$i]}" )
+  fcst_hhh_FV3SAR=$( printf "%03d" "${LBC_UPDATE_FCST_HRS[$i]}" )
   mv_vrfy gfs_bndy.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_bndy.tile7.${fcst_hhh_FV3SAR}.nc
 
 done
