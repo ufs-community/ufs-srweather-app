@@ -61,12 +61,8 @@ mkdir_vrfy -p "${WORKDIR_SFC_CLIMO}"
 #-----------------------------------------------------------------------
 #
 WORKDIR_LOCAL="${WORKDIR_SFC_CLIMO}/tmp"
-#if [ 0 -eq 1 ]; then
 check_for_preexist_dir ${WORKDIR_LOCAL} "delete"
 mkdir_vrfy ${WORKDIR_LOCAL}
-#else
-#mkdir_vrfy -p ${WORKDIR_LOCAL}
-#fi
 #
 #-----------------------------------------------------------------------
 #
@@ -161,14 +157,10 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-#if [ 0 -eq 1 ]; then
 $APRUN_SFC ${EXECDIR}/sfc_climo_gen || print_err_msg_exit "\
 Call to executable that generates surface climatology files returned 
 with nonzero exit code.
 "
-#else
-#cp_vrfy ../../sfc_climo_orig/tmp/*.nc .
-#fi
 #
 #-----------------------------------------------------------------------
 #
@@ -200,32 +192,26 @@ case "$gtype" in
 # Move all files ending with ".halo.nc" (which are the files for a grid
 # that includes the specified non-zero-width halo) to the WORKDIR_SFC_-
 # CLIMO directory.  In the process, rename them so that the file names
-# start with the C-resolution (followed by an underscore) and contain
-# the (non-zero) halo width (in units of number of grid cells).
+# start with the C-resolution (followed by a dot) and contain the (non-
+# zero) halo width (in units of number of grid cells).
 #
   for fn in *.halo.nc; do
-echo
-echo "fn = \"$fn\""
     if [[ -f $fn ]]; then
       bn="${fn%.halo.nc}"
-echo "bn = \"$bn\""
-      mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}_${bn}.halo${nh4_T7}.nc
+      mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}.${bn}.halo${nh4_T7}.nc
     fi
   done
 #
 # Move all remaining files ending with ".nc" (which are the files for a
 # grid that doesn't include a halo) to the WORKDIR_SFC_CLIMO directory.  
 # In the process, rename them so that the file names start with the C-
-# resolution (followed by an underscore) and contain the string "halo0"
-# to indicate that the grids in these files do not contain a halo.
+# resolution (followed by a dot) and contain the string "halo0" to indi-
+# cate that the grids in these files do not contain a halo.
 #
   for fn in *.nc; do
-echo
-echo "fn = \"$fn\""
     if [[ -f $fn ]]; then
       bn="${fn%.nc}"
-echo "bn = \"$bn\""
-      mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}_${bn}.halo${nh0_T7}.nc
+      mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}.${bn}.halo${nh0_T7}.nc
     fi
   done
   ;;
@@ -243,23 +229,9 @@ cd_vrfy ${WORKDIR_SFC_CLIMO}
 
 suffix=".halo${nh4_T7}.nc"
 for fn in *${suffix}; do
-echo
-echo "fn = \"$fn\""
   bn="${fn%.halo${nh4_T7}.nc}"
-echo "bn = \"$bn\""
   ln_vrfy -fs ${bn}${suffix} ${bn}.nc
 done
-
-if [ 0 -eq 1 ]; then
-ln_vrfy -fs ${CRES}.facsf.tile7.halo4.nc ${CRES}.facsf.tile7.nc
-ln_vrfy -fs ${CRES}.maximum_snow_albedo.tile7.halo4.nc ${CRES}.maximum_snow_albedo.tile7.nc
-ln_vrfy -fs ${CRES}.slope_type.tile7.halo4.nc ${CRES}.slope_type.tile7.nc
-ln_vrfy -fs ${CRES}.snowfree_albedo.tile7.halo4.nc ${CRES}.snowfree_albedo.tile7.nc
-ln_vrfy -fs ${CRES}.soil_type.tile7.halo4.nc ${CRES}.soil_type.tile7.nc
-ln_vrfy -fs ${CRES}.substrate_temperature.tile7.halo4.nc ${CRES}.substrate_temperature.tile7.nc
-ln_vrfy -fs ${CRES}.vegetation_greenness.tile7.halo4.nc ${CRES}.vegetation_greenness.tile7.nc
-ln_vrfy -fs ${CRES}.vegetation_type.tile7.halo4.nc ${CRES}.vegetation_type.tile7.nc
-fi
 #
 #-----------------------------------------------------------------------
 #
