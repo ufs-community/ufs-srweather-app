@@ -1,7 +1,7 @@
 ;
 ; **********************************************************************
 ;
-; File name: read_FV3SAR_field_wrtcomp.ncl
+; File name: read_FV3SAR_field_wrtcmp.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
@@ -15,13 +15,13 @@ loadscript(lib_location + "special_chars.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "calc_field_stats.ncl")
 
-undef("read_FV3SAR_field_wrtcomp")
+undef("read_FV3SAR_field_wrtcmp")
 
-function read_FV3SAR_field_wrtcomp( \
+function read_FV3SAR_field_wrtcmp( \
          field_name:string, \
          horiz_dist_units:string, \
          horiz_area_units:string, \
-         wrtcomp_fn:string, \
+         wrtcmp_fn:string, \
          nx:integer, \
          ny:integer, \
          vert_indx:integer, \
@@ -53,9 +53,9 @@ begin
   print("" + separator_line)
   print("Reading write-component field from file:")
   print("")
-  print("  wrtcomp_fn = " + char_dq + wrtcomp_fn + char_dq)
+  print("  wrtcmp_fn = " + char_dq + wrtcmp_fn + char_dq)
 
-  fp = addfile(wrtcomp_fn, "r")
+  fp = addfile(wrtcmp_fn, "r")
 ;
 ; **********************************************************************
 ;

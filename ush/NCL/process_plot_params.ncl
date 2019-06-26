@@ -162,6 +162,10 @@ example_usage_and_help_str
 ;
   var_defns_fn = run_dir + "/var_defns.sh"
 
+; Need to change this to go up one level since we changed the directory 
+; structure for cycling.
+;  var_defns_fn = run_dir + "/../var_defns.sh"
+
 
 
 ;
@@ -914,10 +918,29 @@ char_dq + ".halo4" + char_dq + ")] should not be specified on the command line (
 ;
 ; **********************************************************************
 ;
-    cmd = "sed --silent --regexp-extended --expression " + \
-          "'s/(^CDATE=)([" + char_dq + "]*)([0-9]+)([" + char_dq + "]*)(.*)/\3/p' " + \
-          var_defns_fn
-    CDATE := systemfunc(cmd)
+
+; We cannot read this in from the variable definitions file any longer
+; because we chagned from specifying a specific CDATE in that file to 
+; specifying a range of dates and cycles.  Thus, CDATE will have to be
+; specified from now on.  Check that it is.
+
+;    cmd = "sed --silent --regexp-extended --expression " + \
+;          "'s/(^CDATE=)([" + char_dq + "]*)([0-9]+)([" + char_dq + "]*)(.*)/\3/p' " + \
+;          var_defns_fn
+;    CDATE := systemfunc(cmd)
+
+    if (.not. isvar("CDATE")) then
+
+      print("")
+      print("ERROR: CDATE has not been specified on the command line:")
+      print("")
+      print("Please rerun with a specified starting date and hour-of-day.  Example:")
+      print("")
+      print("" + usage_msg)
+      print("")
+
+    end if
+
 ;print("CDATE = " + char_dq + CDATE + char_dq)
 ;exit
 ;

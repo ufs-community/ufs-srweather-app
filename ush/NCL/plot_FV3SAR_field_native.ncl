@@ -36,8 +36,10 @@ run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs
 run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1700_NY1056_A0p21423_Kmns0p23209_HRRR_test_HRRRgrid02"
 run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1768_NY1032_A0p21423_Kmns0p23209_HRRR_test_HRRRgrid02"
 run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1734_NY1008_A0p21423_Kmns0p23209_HRRR_test_HRRRgrid02"
-run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_chgres_cube/expt_dirs/test2"
+;run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_chgres_cube/expt_dirs/test2"
 
+run_dir = "/scratch4/BMC/gmtb/Linlin.Pan/ice/Linlin.Pan/rtgen.112531/tmp/fv3_regional_control"
+run_dir = "/scratch3/BMC/det/beck/FV3-CAM/run_dirs/real_time/2019062300"
 
 tile_inds := (/ 1, 7, 4 /)
 ;tile_inds := (/ 1, 4 /)
@@ -62,8 +64,10 @@ file_basename = "atmos_static"
 ;file_basename = "fv3_history"
 file_basename = "fv3_history2d"
 
+file_basename = "phyf000"
+
 ; This is a temporary change for plotting ICs.
-file_basename = "sfc_data.tile7"
+;file_basename = "sfc_data.tile7"
 ;file_basename = "gfs_data.tile7"
 
 
@@ -87,7 +91,8 @@ field_name = "sqrt_cell_area"
 ;field_name = "spfh"
 ;field_name = "cnwat"
 ;field_name = "zsurf"
-field_name = "slc"
+field_name = "sltyp"
+;field_name = "slc"
 ;field_name = "smc"
 ;field_name = "stc"
 ;field_name = "f10m"
@@ -97,7 +102,7 @@ field_name = "slc"
 
 ;field_name = "rainwat"
 
-field_name = "none"
+;field_name = "none"
 
 
 map_proj = "cyln"
@@ -161,7 +166,7 @@ show_RAP_grid = True
 show_RAP_grid = False
 
 plot_RAP_field = True
-;plot_RAP_field = False
+plot_RAP_field = False
 
 field_name_RAP = "cell_area"
 field_name_RAP = "sqrt_cell_area"
@@ -217,7 +222,6 @@ separator_line \
 ; **********************************************************************
 ;
 lib_location = "lib/"
-;lib_location = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3sar_workflow/ush/NCL/lib/"
 
 loadscript(lib_location + "special_chars.ncl")
 loadscript(lib_location + "pause.ncl")
@@ -231,8 +235,8 @@ load "process_plot_params.ncl"
 load "read_FV3SAR_grid_native.ncl"
 load "read_FV3SAR_gridfield_native.ncl"
 load "read_FV3SAR_field_native.ncl"
-load "read_FV3SAR_grid_wrtcomp.ncl"
-load "read_FV3SAR_field_wrtcomp.ncl"
+load "read_FV3SAR_grid_wrtcmp.ncl"
+load "read_FV3SAR_field_wrtcmp.ncl"
 load "read_RAP_grid.ncl"
 load "read_RAP_field.ncl"
 load "plot_horiz_field.ncl"
@@ -516,6 +520,35 @@ end if
                 ; or be a requird input that gets processed along with the other
                 ; command linea arguments?
 
+; If the following variable is permanently going to be part of this 
+; script, then the name of the script should be changed to NOT include
+; "native", since then it will have the flexibility to plot fields on
+; either the native or the wrtcmp grid.
+
+;  read_FV3SAR_wrtcmp = True
+  read_FV3SAR_wrtcmp = False
+
+  if (read_FV3SAR_wrtcmp) then
+
+  FV3SAR_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "dynf000.nc"
+  get_domain_bdy = True
+  grid_info := read_FV3SAR_grid_wrtcmp( \
+               FV3SAR_wrtcmp_fn, \
+               get_domain_bdy)
+
+  fp_wrtcmp = grid_info@fp
+  nx = grid_info@nx
+  ny = grid_info@ny
+  lon_cntrs_unstruc = grid_info@lon_cntrs_unstruc
+  lat_cntrs_unstruc = grid_info@lat_cntrs_unstruc
+  lon_verts_unstruc = grid_info@lon_verts_unstruc
+  lat_verts_unstruc = grid_info@lat_verts_unstruc
+  lon_bdy = grid_info@lon_bdy
+  lat_bdy = grid_info@lat_bdy
+  coord_data_type_FV3SAR = grid_info@coord_data_type
+
+  else
+
   grid_info := read_FV3SAR_grid_native( \
                work_dir, \
                gtype, \
@@ -558,6 +591,8 @@ end if
   = grid_info@lat_tile_corners_face_midpts_all_tiles
 
   coord_data_type_FV3SAR = grid_info@coord_data_type
+
+  end if
 ;
 ; **********************************************************************
 ;
@@ -610,6 +645,9 @@ end if
 ;
 ; **********************************************************************
 ;
+
+; These should be at the top and go through the process_...() function.
+
 ;  show_wrtcmp_grid = True
   show_wrtcmp_grid = False
 
@@ -1337,16 +1375,16 @@ inds_tiles_to_plot_str + " ..."
         plot_grid := new(num_grids_to_plot, "logical")
         plot_grid = show_tile_grids
         gridline_colors := new(num_grids_to_plot, "string")
-        gridline_colors = "blue"
+        gridline_colors = tile_bdy_color
   
         if (show_RAP_grid .or. plot_RAP_field) then
           plot_grid(0) = show_RAP_grid
-          gridline_colors(0) = "red"
+          gridline_colors(0) = RAP_bdy_color
         end if
 
         if (show_wrtcmp_grid) then
           plot_grid(1) = show_wrtcmp_grid
-          gridline_colors(1) = "green"
+          gridline_colors(1) = wrtcmp_bdy_color
         end if
 
         grid_opts := True

@@ -1,7 +1,7 @@
 ;
 ; **********************************************************************
 ;
-; File name: read_FV3SAR_grid_wrtcomp.ncl
+; File name: read_FV3SAR_grid_wrtcmp.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
@@ -9,7 +9,7 @@
 ; This function returns the dimensions, cell center coordinates, and
 ; cell vertex coordinates of the grid that discretizes the FV3SAR's 
 ; write-component output domain.  The file to read is specified by 
-; FV3SAR_wrtcomp_fn.  If get_domain_bdy is set to True, this function
+; FV3SAR_wrtcmp_fn.  If get_domain_bdy is set to True, this function
 ; also returns the coordinates of the cell vertices lying on the bounda-
 ; ry of the domain.
 ;
@@ -20,10 +20,10 @@ loadscript(lib_location + "constants.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "get_rect_grid_bdy.ncl")
 
-undef("read_FV3SAR_grid_wrtcomp")
+undef("read_FV3SAR_grid_wrtcmp")
 
-function read_FV3SAR_grid_wrtcomp( \
-         FV3SAR_wrtcomp_fn:string, \
+function read_FV3SAR_grid_wrtcmp( \
+         FV3SAR_wrtcmp_fn:string, \
          get_domain_bdy:logical)
 
 local fp, \
@@ -54,7 +54,7 @@ begin
 ;
 ; **********************************************************************
 ;
-; Open the specified FV3SAR wrtcomp-generated output file for reading.
+; Open the specified FV3SAR wrtcmp-generated output file for reading.
 ;
 ; **********************************************************************
 ;
@@ -62,9 +62,9 @@ begin
   print("" + separator_line)
   print("Reading in FV3SAR's write-component grid coordinates from file ...")
   print("")
-  print("  FV3SAR_wrtcomp_fn = " + char_dq + FV3SAR_wrtcomp_fn + char_dq)
+  print("  FV3SAR_wrtcmp_fn = " + char_dq + FV3SAR_wrtcmp_fn + char_dq)
 
-  fp = addfile(FV3SAR_wrtcomp_fn, "r")
+  fp = addfile(FV3SAR_wrtcmp_fn, "r")
 ;
 ; **********************************************************************
 ;
@@ -91,7 +91,8 @@ begin
 ; 
 ; **********************************************************************
 ; 
-  if (strcmp_exact(coord_sys, "rotated_latlon")) then
+  if (strcmp_exact(coord_sys, "rotated_latlon") .or. \
+      strcmp_exact(coord_sys, "lambert_conformal")) then
 
     lon_verts := fp->grid_xt(:,:)
     lat_verts := fp->grid_yt(:,:)
@@ -103,7 +104,7 @@ lat_verts = lat_verts*degs_per_rad
 
     print("")
     print("This function does not yet support this coordinate system:")
-    print("  coord_sys = " + coord_sys)
+    print("  coord_sys = " + char_dq + coord_sys + char_dq)
     print("Stopping.")
     exit
 
@@ -134,14 +135,14 @@ lat_verts = lat_verts*degs_per_rad
             + lon_verts(0:ny-1,1:nx) \
             + lon_verts(1:ny,1:nx) \
             + lon_verts(1:ny,0:nx-1)
-  lon_cntrs = 0.25*lon_cntrs
+  lon_cntrs = 0.25d+0*lon_cntrs
 
 ;  lat_cntrs := new((/ ny, nx /), coord_data_type)
   lat_cntrs = lat_verts(0:ny-1,0:nx-1) \
             + lat_verts(0:ny-1,1:nx) \
             + lat_verts(1:ny,1:nx) \
             + lat_verts(1:ny,0:nx-1)
-  lat_cntrs = 0.25*lat_cntrs
+  lat_cntrs = 0.25d+0*lat_cntrs
 ;
 ; **********************************************************************
 ;

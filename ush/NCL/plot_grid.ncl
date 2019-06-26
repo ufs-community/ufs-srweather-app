@@ -22,6 +22,11 @@
 ;run_dir = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL"
 run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C768_S1p5_RR3_EMCCONUS_UUUU"
 run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_RAP_no_quilting"
+run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1734_NY1008_A0p21423_Kmns0p23209_HRRR_test_HRRRgrid02"
+run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01"
+
+CDATE="2017090712"
+
 
 tile_inds := (/ 1, 7, 4 /)
 ;tile_inds := (/ 1, 4 /)
@@ -50,18 +55,66 @@ tile_inds := (/ 5, 7 /)
 remove_rgnl_halo = True
 ;remove_rgnl_halo = False
 
-;draw_RAP_domain = True
-draw_RAP_domain = False
+;plot_RAP_field = True
+plot_RAP_field = False
+
+RAP_bdy_color = "red"
 
 RAP_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 ;RAP_grid_fn = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL/plot_grid.ncl"
 ;RAP_grid_fn = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.RAP.nc"
 RAP_grid_fn = RAP_dir + "/geo_em.d01.RAP.nc"
 
+
 ;map_proj = "cyln"
 map_proj = "ortho"
+;
+; This should be set to (0,0) for "cyln" map projection.
+;
+;map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map projection.
+;map_proj_ctr = (/ -106.0, 54.0 /) ; RAP domain.
+map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
+;map_proj_ctr = (/ 6.0, 54.0 /) ; RAP domain corner.
 
-map_proj_ctr = (/ -98.5, 30.0 /)
+
+;map_proj_ctr = (/ -98.5, 30.0 /)
+
+
+plot_subreg = True
+;plot_subreg = False
+
+;subreg_limits := (/ -180, 180, -90, 90 /)
+;subreg_limits := (/ -75, -45, 30, 60 /)
+
+subreg_limits := (/ -135, -60, 20, 55 /) ; HRRR domain if using "cyln" map projection.
+;subreg_limits := (/ -125, -70, 20, 55 /) ; HRRR domain if using "ortho" map projection.
+;subreg_limits := (/ -145, -90, 30, 60 /) ; Northwest corner of HRRR domain.
+;subreg_limits := (/ -135, -125, 40, 50 /) ; Northwest corner of HRRR domain, zoomed.
+;subreg_limits := (/ -123, -121, 48, 50 /) ; Northwest corner of HRRR domain, zoomed more.
+;subreg_limits := (/ -120, -115, 30, 35 /)
+;subreg_limits := (/ -125, -120, 15, 25 /) ; Southwest corner of HRRR domain.
+
+;subreg_limits := (/ -15, 0, 0, 15 /)
+;subreg_limits := (/ -30, 0, 0, 30 /)
+;subreg_limits := (/ -60, -30, 0, 30 /)
+;subreg_limits := (/ -75, -60, 0, 15 /)
+;subreg_limits := (/ -70, -65, 5, 10 /)
+;subreg_limits := (/ -55, -40, 45, 60 /)
+;subreg_limits := (/ -50, -45, 50, 55 /)
+;subreg_limits := (/ -10, 5, 0, 15 /)
+;subreg_limits := (/ -2, 2, 0, 4 /)
+;subreg_limits := (/ -90, -60, -20, 10 /)
+;subreg_limits := (/ -80, -70, -10, 0 /)
+;subreg_limits := (/ -85, -70, -15, 0 /)
+;subreg_limits := (/ -76, -72, -12, -8 /)
+;subreg_limits := (/ -75, -45, -15, 0 /)
+;subreg_limits := (/ -63, -58, -15, -10 /)
+;subreg_limits := (/ 15, 30, 30, 45 /)
+;subreg_limits := (/ 14, 16, 36, 38 /)
+;subreg_limits := (/ -70, -55, -20, -5 /)
+;subreg_limits := (/ 10, 20, 30, 40 /)
+;subreg_limits := (/ 15, 20, 30, 35 /)
+
 
 horiz_dist_units = "m"
 horiz_dist_units = "km"
@@ -86,13 +139,28 @@ field_name = "area"
 ;field_name = "ref3D"
 
 field_name = "spfh"
+field_name = "sltyp"
 
 
-draw_tile_bdy = True
-;draw_tile_bdy = False
+show_tile_bdies = True
+;show_tile_bdies = False
 
-;draw_tile_gridlines = True
-draw_tile_gridlines = False
+;show_tile_grids = True
+show_tile_grids = False
+
+
+file_basename = "atmos_static"
+;file_basename = "fv3_history"
+file_basename = "fv3_history2d"
+
+
+;show_wrtcmp_grid = True
+show_wrtcmp_grid = False
+
+show_wrtcmp_bdy = True
+;show_wrtcmp_bdy = False
+
+wrtcmp_bdy_color = "green"
 
 
 separator_line \
@@ -107,8 +175,7 @@ separator_line \
 ;
 ; **********************************************************************
 ;
-;lib_location = "lib/"
-lib_location = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3sar_workflow/ush/NCL/lib/"
+lib_location = "lib/"
 
 loadscript(lib_location + "special_chars.ncl")
 loadscript(lib_location + "pause.ncl")
@@ -121,13 +188,13 @@ loadscript(lib_location + "set_cnLevels_lbLabels.ncl")
 load "process_plot_params.ncl"
 load "read_FV3SAR_grid_native.ncl"
 load "read_FV3SAR_field_native.ncl"
-load "read_FV3SAR_grid_wrtcomp.ncl"
-load "read_FV3SAR_field_wrtcomp.ncl"
+load "read_FV3SAR_grid_wrtcmp.ncl"
+load "read_FV3SAR_field_wrtcmp.ncl"
 load "read_RAP_grid.ncl"
 load "read_RAP_field.ncl"
 load "plot_horiz_field.ncl"
 
-load "check_var_existence_dims.ncl"
+load "check_filevar_existence_dims.ncl"
 
 begin
 ;
@@ -143,11 +210,11 @@ begin
 "      'grid_dir=" + char_dq + "./some_dir/grid" + char_dq + "' \" + char_nl + \
 "      'res=96' \" + char_nl + \
 "      'tile_inds=(/1,2,3/)' \" + char_nl + \
-"      'draw_tile_bdy=True' \" + char_nl + \
-"      'draw_tile_gridlines=True' \" + char_nl + \
-"      'draw_RAP_domain=True' \" + char_nl + \
+"      'show_tile_bdies=True' \" + char_nl + \
+"      'show_tile_grids=True' \" + char_nl + \
+"      'plot_RAP_field=True' \" + char_nl + \
 "      'RAP_grid_fn=" + char_dq + "./some_dir/RAP_grid.nc" + char_dq + "' \" + char_nl + \
-"      'draw_RAP_bdy=True' \" + char_nl + \
+"      'show_RAP_bdy=True' \" + char_nl + \
 "      'draw_RAP_grid=True' \" + char_nl + \
 "      'map_proj=" + char_dq + "cyln" + char_dq + "' \" + char_nl + \
 "      'map_proj_ctr=(/0,90/)' \" + char_nl + \
@@ -217,11 +284,11 @@ char_nl + \
 char_dq + "available" + char_dq + ", we mean all tiles for which there exists a grid file in" + char_nl + \
 "grid_dir)." + char_nl + \
 char_nl + \
-"draw_tile_bdy:" + char_nl + \
+"show_tile_bdies:" + char_nl + \
 "This argument specifies whether or not to draw the boundary of each " + char_nl + \
 "specified tile.  It is either True or False.  Default is True." + char_nl + \
 char_nl + \
-"draw_tile_gridlines:" + char_nl + \
+"show_tile_grids:" + char_nl + \
 "This argument specifies whether or not to draw the boundaries of all" + char_nl + \
 "grid cells on each tile that is being plotted.  It is either True or " + char_nl + \
 "False.  Default is False.  For a high-resolution grid, this can make" + char_nl + \
@@ -229,7 +296,7 @@ char_nl + \
 "graphics file (because there would be many grid lines drawn very close" + char_nl + \
 "together)." + char_nl + \
 char_nl + \
-"draw_RAP_domain:" + char_nl + \
+"plot_RAP_field:" + char_nl + \
 "This argument specifies whether or not to draw the original [i.e. pre-" + char_nl + \
 "FV3 RAP (RAPid Refresh) domain].  It is either True or False.  Default" + char_nl + \
 "is False.  If this is set to True, the RAP domain is added to the plot" + char_nl + \
@@ -239,20 +306,20 @@ char_nl + \
 "RAP_grid_fn:" + char_nl + \
 "This argument specifies the full (i.e. including directory) file name" + char_nl + \
 "of the NetCDF file that describes the RAP grid.  This is used only if" + char_nl + \
-"draw_RAP_domain is set to True." + char_nl + \
+"plot_RAP_field is set to True." + char_nl + \
 "" + char_nl + \
-"draw_RAP_bdy:" + char_nl + \
+"show_RAP_bdy:" + char_nl + \
 "This argument specifies whether or not to draw the boundary of the RAP" + char_nl + \
 "domain.  It is either True or False.  Default is True.  This has no" + char_nl + \
-"effect if draw_RAP_domain is set to False." + char_nl + \
+"effect if plot_RAP_field is set to False." + char_nl + \
 char_nl + \
-"draw_RAP_gridlines:" + char_nl + \
+"show_RAP_grid:" + char_nl + \
 "This argument specifies whether or not to draw the boundaries of all" + char_nl + \
 "grid cells on the RAP domain.  It is either True or False.  Default is" + char_nl + \
 "False.  For a high-resolution RAP grid, setting this to True can make" + char_nl + \
 "it difficult to see the underlying color of the RAP domain in the out-" + char_nl + \
 "put graphics file (because there would be many grid lines drawn very" + char_nl + \
-"close together.  This has no effect if draw_RAP_domain is set to" + char_nl + \
+"close together.  This has no effect if plot_RAP_field is set to" + char_nl + \
 "False." +  char_nl + \
 char_nl + \
 "map_proj:" + char_nl + \
@@ -310,19 +377,33 @@ char_dq + "ncgm" + char_dq + "." + char_nl
   cres = plot_params@cres
   run_dir = plot_params@run_dir
   work_dir = plot_params@work_dir
+
   horiz_dist_units = plot_params@horiz_dist_units
   horiz_area_units = plot_params@horiz_area_units
-  draw_tile_bdy = plot_params@draw_tile_bdy
-  draw_tile_gridlines = plot_params@draw_tile_gridlines
-  draw_RAP_domain = plot_params@draw_RAP_domain
-  draw_RAP_bdy = plot_params@draw_RAP_bdy
-  draw_RAP_gridlines = plot_params@draw_RAP_gridlines
+
+  show_tile_bdies = plot_params@show_tile_bdies
+  tile_bdy_color = plot_params@tile_bdy_color
+  show_tile_grids = plot_params@show_tile_grids
+  field_name = plot_params@field_name
+  is_gridfield = plot_params@is_gridfield
+  file_basename = plot_params@file_basename
+
+  show_RAP_bdy = plot_params@show_RAP_bdy
+  RAP_bdy_color = plot_params@RAP_bdy_color
+  show_RAP_grid = plot_params@show_RAP_grid
+  plot_RAP_field = plot_params@plot_RAP_field
+  field_name_RAP = plot_params@field_name_RAP
+
   graphics_type = plot_params@graphics_type
   map_proj = plot_params@map_proj
   map_proj_ctr = plot_params@map_proj_ctr
+
   remove_rgnl_halo = plot_params@remove_rgnl_halo
+
+  plot_subreg = plot_params@plot_subreg
   subreg_limits = plot_params@subreg_limits
-  field_name = plot_params@field_name
+
+
 ;
 ; **********************************************************************
 ;
@@ -330,19 +411,21 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 ;
 ; **********************************************************************
 ;
-;read_FV3SAR_wrtcomp = True
-read_FV3SAR_wrtcomp = False
+read_FV3SAR_wrtcmp = True
+;read_FV3SAR_wrtcmp = False
 
+print("AAAAAAAAAA read_FV3SAR_wrtcmp = " + read_FV3SAR_wrtcmp)
+pause
 
-if (read_FV3SAR_wrtcomp) then
+if (read_FV3SAR_wrtcmp) then
 
-  FV3SAR_wrtcomp_fn = run_dir + "/dynf000.nc"
+  FV3SAR_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "dynf000.nc"
   get_domain_bdy = True
-  grid_info := read_FV3SAR_grid_wrtcomp( \
-               FV3SAR_wrtcomp_fn, \
+  grid_info := read_FV3SAR_grid_wrtcmp( \
+               FV3SAR_wrtcmp_fn, \
                get_domain_bdy)
 
-  fp_wrtcomp = grid_info@fp
+  fp_wrtcmp = grid_info@fp
   nx = grid_info@nx
   ny = grid_info@ny
   lon_cntrs_unstruc = grid_info@lon_cntrs_unstruc
@@ -364,19 +447,42 @@ else
                gtype, \
                cres, \
                inds_tiles_to_plot, \
-               draw_tile_bdy, \
+               show_tile_bdies, \
                nhalo_T7, \
                remove_rgnl_halo)
 
-  grid_files_tiles_to_plot = grid_info@grid_files
+  grid_fn_tiles_to_plot = grid_info@grid_fn_all_tiles
+
+  nhSG_tiles_to_plot = grid_info@nhSG_all_tiles
+  nxhSG_tiles_to_plot = grid_info@nxhSG_all_tiles
+  nyhSG_tiles_to_plot = grid_info@nyhSG_all_tiles
+  nxSG_tiles_to_plot = grid_info@nxSG_all_tiles
+  nySG_tiles_to_plot = grid_info@nySG_all_tiles
+
+  nh_tiles_to_plot = grid_info@nh_all_tiles
+  nxh_tiles_to_plot = grid_info@nxh_all_tiles
+  nyh_tiles_to_plot = grid_info@nyh_all_tiles
   nx_tiles_to_plot = grid_info@nx_all_tiles
   ny_tiles_to_plot = grid_info@ny_all_tiles
+
+  remove_halo_tiles_to_plot = grid_info@remove_halo_all_tiles
+
   lon_cntrs_unstruc = grid_info@lon_cntrs_all_tiles_unstruc
   lat_cntrs_unstruc = grid_info@lat_cntrs_all_tiles_unstruc
   lon_verts_unstruc = grid_info@lon_verts_all_tiles_unstruc
   lat_verts_unstruc = grid_info@lat_verts_all_tiles_unstruc
+
   lon_bdy = grid_info@lon_bdy_all_tiles
   lat_bdy = grid_info@lat_bdy_all_tiles
+
+  lon_tile_cntr_tiles_to_plot = grid_info@lon_tile_cntr_all_tiles
+  lat_tile_cntr_tiles_to_plot = grid_info@lat_tile_cntr_all_tiles
+
+  lon_tile_corners_face_midpts_tiles_to_plot \
+  = grid_info@lon_tile_corners_face_midpts_all_tiles
+  lat_tile_corners_face_midpts_tiles_to_plot \
+  = grid_info@lat_tile_corners_face_midpts_all_tiles
+
   coord_data_type_FV3SAR = grid_info@coord_data_type
 
 end if
@@ -387,23 +493,34 @@ end if
 ;
 ; **********************************************************************
 ;
-time_inds_to_plot = (/ 0, 2 /) ; This must be specified on the command line.
+time_inds_to_plot := (/ 0, 2 /) ; This must be specified on the command line.
+time_inds_to_plot := (/ 0 /) ; This must be specified on the command line.
 
 
 fcst_output_hrs := (/ 0, 1, 2, 3, 4, 5, 6 /)  ; Read this in from file, e.g. var_defns.sh.
 ;fcst_output_hrs := (/ 0, 2, 4, 6 /)  ; Read this in from file, e.g. var_defns.sh.
-fcst_hrs_to_plot = fcst_output_hrs(time_inds_to_plot)
-;print("" + time_inds_to_plot)
-;print("" + fcst_hrs_to_plot)
-;pause
+fcst_output_hrs := (/ 0 /)  ; Read this in from file, e.g. var_defns.sh.
 
-vert_inds_to_plot = (/ 0, 10 /)
-
+fcst_hrs_to_plot := fcst_output_hrs(time_inds_to_plot)
 num_fcst_hrs = dimsizes(fcst_hrs_to_plot)
+
+print("")
+print("" + time_inds_to_plot)
+print("" + fcst_hrs_to_plot)
+print("num_fcst_hrs = " + num_fcst_hrs)
+pause
+
+vert_inds_to_plot := (/ 0, 10 /)
+vert_inds_to_plot := (/ 0 /)
 num_vert = dimsizes(vert_inds_to_plot)
 
+print("")
+print("num_vert = " + num_vert)
+pause
+
+
 ; Must set to 0 for write-component files since those each contain output for only one time.
-if (read_FV3SAR_wrtcomp) then
+if (read_FV3SAR_wrtcmp) then
   time_inds_to_plot = 0*time_inds_to_plot
 end if
 
@@ -444,14 +561,17 @@ do n=0, num_fcst_hrs-1
 ;
 ; **********************************************************************
 ;
-if (read_FV3SAR_wrtcomp) then
+print("read_FV3SAR_wrtcmp = " + read_FV3SAR_wrtcmp)
+pause
+if (read_FV3SAR_wrtcmp) then
 ;
 ; Set the file name.  This depends on the time index/ forecast output hour.
 ;
 
-;  FV3SAR_wrtcomp_fn = run_dir + "/dynf000.nc"
-;  FV3SAR_wrtcomp_fn = run_dir + "/phyf000.nc"
-  FV3SAR_wrtcomp_fn = run_dir + "/phyf" + fcst_hr_str + ".nc"
+;  FV3SAR_wrtcmp_fn = run_dir + "/dynf000.nc"
+;  FV3SAR_wrtcmp_fn = run_dir + "/phyf000.nc"
+;  FV3SAR_wrtcmp_fn = run_dir + "/phyf" + fcst_hr_str + ".nc"
+  FV3SAR_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "phyf" + fcst_hr_str + ".nc"
 
 ;
 ; **********************************************************************
@@ -484,21 +604,22 @@ if (read_FV3SAR_wrtcomp) then
 ;
 ; **********************************************************************
 ;
-  x_filedim_names = (/ "grid_xt" /)
-  y_filedim_names = (/ "grid_yt" /)
-  z_filedim_names = (/ "pfull", "phalf" /)
-  t_filedim_names = (/ "time" /)
 
-  var_info := check_var_existence_dims( \
-              FV3SAR_wrtcomp_fn, \
+;  x_filedim_names = (/ "grid_xt" /)
+;  y_filedim_names = (/ "grid_yt" /)
+;  z_filedim_names = (/ "pfull", "phalf" /)
+;  t_filedim_names = (/ "time" /)
+
+  var_info := check_filevar_existence_dims( \
+              FV3SAR_wrtcmp_fn, \
               field_name, \
-              x_filedim_names, \
-              y_filedim_names, \
-              z_filedim_names, \
-              t_filedim_names, \
               nx, ny, \
               vert_inds_to_plot, \
               time_inds_to_plot)
+;              x_filedim_names, \
+;              y_filedim_names, \
+;              z_filedim_names, \
+;              t_filedim_names, \
 
   var_rank = var_info@var_rank
   var_dim_names = var_info@var_dim_names
@@ -522,10 +643,10 @@ if (read_FV3SAR_wrtcomp) then
 ; **********************************************************************
 ;
   field_info \
-  := read_FV3SAR_field_wrtcomp( \
+  := read_FV3SAR_field_wrtcmp( \
      field_name, \
      horiz_dist_units, horiz_area_units, \
-     FV3SAR_wrtcomp_fn, \
+     FV3SAR_wrtcmp_fn, \
      nx, ny, \
      vert_indx, time_indx, \
      func_xy_only, func_xyz_only, func_xyt_only, func_xyzt_only)
@@ -570,27 +691,29 @@ else
 ;
 ; **********************************************************************
 ;
-  if (strcmp_exact(file_name_base, "grid_spec")) then
-    x_filedim_names = (/ "grid_x", "grid_xt" /)
-    y_filedim_names = (/ "grid_y", "grid_yt" /)
-    z_filedim_names = (/ "phalf", "pfull" /)
-    t_filedim_names = (/ "time" /)
-  else if (strcmp_exact(file_name_base, "atmos_static") .or. \
-           strcmp_exact(file_name_base, "fv3_history") .or. \
-           strcmp_exact(file_name_base, "fv3_history2d") .or. \
-           strcmp_exact(file_name_base, "ref3D")) then
-    x_filedim_names = (/ "grid_xt" /)
-    y_filedim_names = (/ "grid_yt" /)
-    z_filedim_names = (/ "phalf", "pfull" /)
-    t_filedim_names = (/ "time" /)
-  else
-    msg := char_nl + \
-"Unknown file base name (file_name_base) specified:" + char_nl + \
-"  file_name_base = " + char_dq + file_name_base + char_dq + char_nl + \
-"Stopping."
-    exit
-  end if
-  end if
+
+;  if (strcmp_exact(file_name_base, "grid_spec")) then
+;    x_filedim_names = (/ "grid_x", "grid_xt" /)
+;    y_filedim_names = (/ "grid_y", "grid_yt" /)
+;    z_filedim_names = (/ "phalf", "pfull" /)
+;    t_filedim_names = (/ "time" /)
+;  else if (strcmp_exact(file_name_base, "atmos_static") .or. \
+;           strcmp_exact(file_name_base, "fv3_history") .or. \
+;           strcmp_exact(file_name_base, "fv3_history2d") .or. \
+;           strcmp_exact(file_name_base, "ref3D")) then
+;    x_filedim_names = (/ "grid_xt" /)
+;    y_filedim_names = (/ "grid_yt" /)
+;    z_filedim_names = (/ "phalf", "pfull" /)
+;    t_filedim_names = (/ "time" /)
+;  else
+;    msg := char_nl + \
+;"Unknown file base name (file_name_base) specified:" + char_nl + \
+;"  file_name_base = " + char_dq + file_name_base + char_dq + char_nl + \
+;"Stopping."
+;    exit
+;  end if
+;  end if
+
 ;
 ; **********************************************************************
 ;
@@ -673,16 +796,16 @@ else
         var_info_prev_tile := var_info
       end if
 
-      var_info := check_var_existence_dims( \
+      var_info := check_filevar_existence_dims( \
                   file_names_by_tile(nn), \
                   field_names_by_tile(nn), \
-                  x_filedim_names, \
-                  y_filedim_names, \
-                  z_filedim_names, \
-                  t_filedim_names, \
                   nx_tiles_to_plot(nn), ny_tiles_to_plot(nn), \
                   vert_inds_to_plot, \
                   time_inds_to_plot)
+;                  x_filedim_names, \
+;                  y_filedim_names, \
+;                  z_filedim_names, \
+;                  t_filedim_names, \
 
       fp_field_file = var_info@fp  
       var_rank = var_info@var_rank
@@ -874,13 +997,14 @@ n_tile_prev + " to " + char_nl + \
   := read_FV3SAR_field_native( \
      field_names_by_tile, \
      file_names_by_tile, \
-     gtype, \
-     inds_tiles_to_plot, nx_tiles_to_plot, ny_tiles_to_plot, \
+     gtype, inds_tiles_to_plot, \
+     nh_tiles_to_plot, \
+     nxh_tiles_to_plot, nyh_tiles_to_plot, \
+     nx_tiles_to_plot, ny_tiles_to_plot, \
+     remove_halo_tiles_to_plot, \
      vert_indx, time_indx, \
-     remove_rgnl_halo, nhalo_T7, \
-     "float", \
-;     "double", \
-     func_xy_only, func_xyz_only, func_xyt_only, func_xyzt_only)
+     func_xy_only, func_xyz_only, func_xyt_only, func_xyzt_only, \
+     average_in_x, average_in_y)
 
 ;  fp_field_FV3SAR = field_info@fp  ; This would in general be an array or list of file pointers.
   field_desc = field_info@field_desc
@@ -946,12 +1070,14 @@ end if
 ;
 ; **********************************************************************
 ;
-; If draw_RAP_domain is set to True, read in the coordinates of the RAP
+; If plot_RAP_field is set to True, read in the coordinates of the RAP
 ; grid and possibly also a field on that grid.
 ;
 ; **********************************************************************
 ;
-  if (draw_RAP_domain) then
+print("BBBBBBBBB  plot_RAP_field = " + plot_RAP_field)
+pause
+  if (plot_RAP_field) then
 ;
 ; **********************************************************************
 ;
@@ -959,7 +1085,7 @@ end if
 ;
 ; **********************************************************************
 ;
-    grid_info := read_RAP_grid(RAP_grid_fn, draw_RAP_bdy)
+    grid_info := read_RAP_grid(RAP_grid_fn, show_RAP_bdy)
   
 ;    fp_RAP_grid = grid_info@fp
     nx_RAP = grid_info@nx
@@ -1078,12 +1204,12 @@ if (True) then
 ;
 ; **********************************************************************
 ;
-; If draw_RAP_domain is set to True, combine the coordinate arrays for
+; If plot_RAP_field is set to True, combine the coordinate arrays for
 ; the FV3SAR and the RAP into a single set of arrays for plotting.
 ;
 ; **********************************************************************
 ;
-  if (draw_RAP_domain) then
+  if (plot_RAP_field) then
 ;
 ; **********************************************************************
 ;
@@ -1179,12 +1305,12 @@ if (True) then
 ;
 ; **********************************************************************
 ;
-; If draw_RAP_bdy is set to True, prepend the RAP boundary coordinates
+; If show_RAP_bdy is set to True, prepend the RAP boundary coordinates
 ; to those for the FV3SAR tiles.
 ;
 ; **********************************************************************
 ;
-    if (draw_RAP_bdy) then
+    if (show_RAP_bdy) then
 ;
 ; Perform data conversion if necessary.
 ;
@@ -1193,7 +1319,7 @@ if (True) then
         lat_bdy_RAP := totype(lat_bdy_RAP, coord_data_type_FV3SAR)
       end if
 
-      if (.not. draw_tile_bdy) then
+      if (.not. show_tile_bdies) then
 
         lon_bdy := lon_bdy_RAP
         lat_bdy := lat_bdy_RAP
@@ -1216,19 +1342,15 @@ if (True) then
 ;
 ; **********************************************************************
 ;
-;
+; Set general plotting options that will be passed to the plotting func-
+; tion.
 ;
 ; **********************************************************************
 ;
-  plot_options := True
+      plot_opts := True
 
-  plot_options@map_proj = map_proj
-  plot_options@map_proj_ctr = map_proj_ctr
-  plot_options@draw_grid = draw_tile_gridlines
-  plot_options@draw_tile_bdy = draw_tile_bdy
-;;  plot_options@gtype = gtype
-;;  plot_options@inds_tiles_to_plot = inds_tiles_to_plot
-
+      plot_opts@map_proj = map_proj
+      plot_opts@map_proj_ctr = map_proj_ctr
 ;
 ; Set the flag that determines whether plots will be resized (e.g. to a
 ; larger area than the default).  This would generally be done using the
@@ -1237,25 +1359,26 @@ if (True) then
 ; are the plot titles).  Thus, we perform the resizing/maximization man-
 ; ually.
 ;
-  plot_options@resize_plot = True
+      plot_opts@resize_plot = True
 ;
 ; Set the size (either width or height) of the bounding box which the 
 ; resized plot will have.  Note that this is in NDC (non-dimensional co-
 ; ordinate, aka page) coordinates.  This value must be between 0 and 1.
 ;
-  plot_options@bounding_box_size_NDC = 0.98
+      plot_opts@bounding_box_size_NDC = 0.98
 
-  if (.not. any(ismissing(subreg_limits))) then
-    plot_options@lon_min = subreg_limits(0)
-    plot_options@lon_max = subreg_limits(1)
-    plot_options@lat_min = subreg_limits(2)
-    plot_options@lat_max = subreg_limits(3)
-  end if
+      if (plot_subreg) then
+        plot_opts@plot_subreg = plot_subreg
+        plot_opts@subreg_limits = subreg_limits
+      end if
 
-;  plot_options@left_str = ""
-  plot_options@main_str = plot_title
-;  plot_options@right_str = ""
+left_str = "AAA"
+main_str = "BBB"
+right_str = "CCC"
 
+      plot_opts@left_str = left_str
+      plot_opts@main_str = main_str
+      plot_opts@right_str = right_str
 ;
 ; **********************************************************************
 ;
@@ -1277,11 +1400,43 @@ if (True) then
   opts@verbose = False
   contour_info := set_cnLevels_lbLabels( \
                   field_min, field_max, num_cnLevels, opts)
-  copy_VarAtts(contour_info, plot_options)
+  copy_VarAtts(contour_info, plot_opts)
 
   print("")
   print("Done calculating " + char_dq + "nice" + char_dq + " contour values.")
   print("" + separator_line)
+
+
+;
+; **********************************************************************
+;
+; Set the arrays containing the number of grid points in the x and y di-
+; rections for all tiles and grids to be plotted.
+;
+; **********************************************************************
+;
+;nx_all_grids := nx
+;ny_all_grids := ny
+
+;      nx_all_grids \
+;      := where(remove_halo_tiles_to_plot, \
+;               nx_tiles_to_plot, nxh_tiles_to_plot)
+;      ny_all_grids \
+;      := where(remove_halo_tiles_to_plot, \
+;               ny_tiles_to_plot, nyh_tiles_to_plot)
+
+;      if (show_RAP_grid .or. plot_RAP_field) then
+;        nx_all_grids := array_append_record(nx_RAP, nx_all_grids, 0)
+;        ny_all_grids := array_append_record(ny_RAP, ny_all_grids, 0)
+;      end if
+
+;      if (show_wrtcmp_grid) then
+;        nx_all_grids := array_append_record(nx_wrtcmp, nx_all_grids, 0)
+;        ny_all_grids := array_append_record(ny_wrtcmp, ny_all_grids, 0)
+;      end if
+
+
+
 ;
 ; **********************************************************************
 ;
@@ -1289,13 +1444,56 @@ if (True) then
 ;
 ; **********************************************************************
 ;
+
+grid_opts := True
+;grid_opts@num_grids = num_grids_to_plot
+grid_opts@num_grids = 1
+;grid_opts@plot_grid = plot_grid
+grid_opts@plot_grid = show_wrtcmp_grid
+;grid_opts@gridline_colors = gridline_colors
+grid_opts@gridline_colors = wrtcmp_bdy_color
+
+
+bdy_opts := True
+;bdy_opts@num_bdies = num_bdies_to_plot
+bdy_opts@num_bdies = 1
+;bdy_opts@num_bdy_pts_all_bdies = num_bdy_pts_all_bdies
+bdy_opts@num_bdy_pts_all_bdies = 2*(nx + ny) + 1
+;bdy_opts@plot_bdy = plot_bdy
+bdy_opts@plot_bdy = show_wrtcmp_bdy
+;bdy_opts@bdy_colors = bdy_colors
+bdy_opts@bdy_colors = wrtcmp_bdy_color
+;bdy_opts@bdy_line_thicknesses = bdy_line_thicknesses
+bdy_opts@bdy_line_thicknesses = 4.0
+;bdy_opts@bdy_dash_patterns = bdy_dash_patterns
+bdy_opts@bdy_dash_patterns = 1
+
+
+; Old way of calling plot_horiz_field + changes to get it to work with
+; new way, but doesn't work.  Use the new call further below, but some
+; input arguments not yet defined.  Should be defined as in file 
+; plot_FV3SAR_field_native.ncl.
+;  plot_info := plot_horiz_field( \
+;               fn_graphics, \
+;               lon_cntrs_unstruc, lat_cntrs_unstruc, \
+;               lon_verts_unstruc, lat_verts_unstruc, \
+;               lon_bdy, lat_bdy, \
+;               field_unstruc, \
+;               plot_options)
+
+
   plot_info := plot_horiz_field( \
+               fn_graphics, \
+               nx, ny, \
                lon_cntrs_unstruc, lat_cntrs_unstruc, \
                lon_verts_unstruc, lat_verts_unstruc, \
                lon_bdy, lat_bdy, \
                field_unstruc, \
-               fn_graphics, \
-               plot_options)
+               grid_opts, \
+               bdy_opts, \
+               plot_opts)
+
+
 
 print("BYE!!!!!!!!!!!!!!!!!!!!!!!")
 
@@ -1381,8 +1579,8 @@ else
 ; Set sfDataArray to the field (which has one value per cell).
   rsrc@sfDataArray = field_unstruc
 
-; If draw_tile_gridlines is True, then draw the cell faces.
-  if (draw_tile_gridlines) then
+; If show_tile_grids is True, then draw the cell faces.
+  if (show_tile_grids) then
     rsrc@cnCellFillEdgeColor = "black"
 ;    rsrc@cnCellFillMissingValEdgeColor = "red"  ; This seems to have no effect.
   end if
@@ -1576,11 +1774,11 @@ end if
 ;
 ; **********************************************************************
 ;
-; If draw_tile_bdy is specified as True, draw the boundary of each tile.
+; If show_tile_bdies is specified as True, draw the boundary of each tile.
 ;
 ; **********************************************************************
 ;
-  if (draw_tile_bdy) then
+  if (show_tile_bdies) then
 
     resp := True
     resp@gsLineColor = "blue"
@@ -1641,12 +1839,12 @@ end if
 ;
 ; **********************************************************************
 ;
-; If draw_RAP_domain is specified as True, draw a contour plot on the 
+; If plot_RAP_field is specified as True, draw a contour plot on the 
 ; RAP domain.
 ;
 ; **********************************************************************
 ;
-  if (draw_RAP_domain) then
+  if (plot_RAP_field) then
 
 if (False) then
 getvalues map ; Get plot size for use in 
@@ -1741,8 +1939,8 @@ end if
 ; Set sfDataArray to the field (which has one value per cell).
     rsrc_RAP@sfDataArray = field_unstruc_RAP
 
-; If draw_RAP_gridlines is True, then draw the cell faces.
-    if (draw_RAP_gridlines) then
+; If show_RAP_grid is True, then draw the cell faces.
+    if (show_RAP_grid) then
 ;      rsrc_RAP@cnCellFillEdgeColor = "black"
 ;      rsrc_RAP@cnCellFillEdgeColor = "green"
       rsrc_RAP@cnCellFillEdgeColor = "red"
@@ -1797,8 +1995,8 @@ print("Turning off LabelBar (color bar) for the RAP contour plot.")
 ; drawn above while generating the FV3 tiles).
     map_RAP = gsn_csm_contour(wks, field_unstruc_RAP, rsrc_RAP)
 
-; If draw_RAP_bdy is set to True, draw a boundary around the RAP domain.
-    if (draw_RAP_bdy) then
+; If show_RAP_bdy is set to True, draw a boundary around the RAP domain.
+    if (show_RAP_bdy) then
       resp := True
       resp@gsLineColor = "red"
       resp@gsLineThicknessF = 4.0
