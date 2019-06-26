@@ -495,6 +495,25 @@ cp_vrfy ${WORKDIR_SFC_CLIMO}/*.nc ${EXPTDIR}/INPUT
 #-----------------------------------------------------------------------
 #
 cd_vrfy ${EXPTDIR}/INPUT
+
+
+# The following is needed for the current (as of 2019-06-21) version of
+# sfc_climo_gen because it generates files that start with "${CRES}_",
+# but the chgres_cube code is looiking for files that have a dot instead
+# of an underscore (i.e. start wit "${CRES}.").  Once both of these code
+# bases are updated, they should be consistent, and this should no long-
+# er be needed.
+prefix_find="${CRES}_"
+prefix_repl="${CRES}."
+for fn in ${prefix_find}*; do
+  fn_remainder="${fn#${prefix_find}}"
+  mv_vrfy $fn ${prefix_repl}${fn_remainder}
+done
+
+
+
+
+
 suffix=".halo${nh4_T7}.nc"
 
 for fn in *${suffix}; do
@@ -503,6 +522,7 @@ for fn in *${suffix}; do
   bn="${fn%.halo${nh4_T7}.nc}"
   ln_vrfy -fs ${bn}${suffix} ${bn}.nc
 done
+
 #
 #-----------------------------------------------------------------------
 #
