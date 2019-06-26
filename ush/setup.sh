@@ -596,19 +596,25 @@ fi
 rem=$(( $fcst_len_hrs % $LBC_UPDATE_INTVL_HRS ))
 
 if [ "$rem" -ne "0" ]; then
-
   print_err_msg_exit "\
 The forecast length (fcst_len_hrs) is not evenly divisible by the later-
 al boundary conditions update interval (LBC_UPDATE_INTVL_HRS):
   fcst_len_hrs = $fcst_len_hrs
   LBC_UPDATE_INTVL_HRS = $LBC_UPDATE_INTVL_HRS
   rem = fcst_len_hrs % LBC_UPDATE_INTVL_HRS = $rem"
-
-else
-
-  LBC_UPDATE_FCST_HRS=($( seq 0 $LBC_UPDATE_INTVL_HRS $fcst_len_hrs ))
-
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Set the array containing the forecast hours at which the lateral 
+# boundary conditions (LBCs) need to be updated.  Note that this array
+# does not include the 0-th hour (initial time).
+#
+#-----------------------------------------------------------------------
+#
+LBC_UPDATE_FCST_HRS=($( seq ${LBC_UPDATE_INTVL_HRS} \
+                            ${LBC_UPDATE_INTVL_HRS} \
+                            ${fcst_len_hrs} ))
 #
 #-----------------------------------------------------------------------
 #
