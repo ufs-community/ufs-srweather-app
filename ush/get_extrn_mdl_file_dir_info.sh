@@ -269,7 +269,7 @@ anl_or_fcst must be set to one of the following:
 
   if [ "$ANL_OR_FCST" = "FCST" ]; then
 
-    lbc_update_fhrs=( "${LBC_UPDATE_FCST_HRS[@]:1}" )
+    lbc_update_fhrs=( "${LBC_UPDATE_FCST_HRS[@]}" )
 #
 # Add the temporal offset specified in time_offset_hrs (assumed to be in 
 # units of hours) to the the array of LBC update forecast hours to make
