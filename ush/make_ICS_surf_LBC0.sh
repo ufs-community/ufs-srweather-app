@@ -286,13 +286,69 @@ esac
 #
 #-----------------------------------------------------------------------
 #
+# Set various external model-dependent namelist options to chgres_cube.
+#
+#-----------------------------------------------------------------------
+#
+case "$EXTRN_MDL_NAME_ICSSURF" in
+
+"GFS")
+  numsoil_out="4"
+  geogrid_file_input_grid=""  # How to get this to not be used???
+  replace_vgtyp=".true."
+  replace_sotyp=".true."
+  replace_vgfrc=".true."
+  tg3_from_soil=".false."
+  ;;
+
+"HRRRX")
+  numsoil_out="9"
+  geogrid_file_input_grid="/scratch3/BMC/det/beck/FV3-CAM/geo_em.d01.nc"  # As of 2019-06-19, this parameter is only used if reading in HRRR grib2 files.
+  replace_vgtyp=".false."
+  replace_sotyp=".false."
+  replace_vgfrc=".false."
+  tg3_from_soil=".true."
+  ;;
+
+*)
+  print_err_msg_exit "\
+One or more chgres_cube namelist variables have not been specified for
+the specifed external model used to generate ICs, surface fields, and
+the first LBC:
+
+  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
+
+Unspecified namelist variables:
+
+  numsoil_out
+  geogrid_file_input_grid
+  replace_vgtyp
+  replace_sotyp
+  replace_vgfrc
+  tg3_from_soil
+"
+  ;;
+
+esac
+#
+#-----------------------------------------------------------------------
+#
 # Build the FORTRAN namelist file that chgres_cube will read in.
 #
 #-----------------------------------------------------------------------
 #
+
 # fix_dir_target_grid="${BASEDIR}/JP_grid_HRRR_like_fix_files_chgres_cube"
 # base_install_dir="${SORCDIR}/chgres_cube.fd"
-cat > fort.41 <<EOF
+
+#
+# As an alternative to the cat command below, we can have a template for
+# the namelist file and use the set_file_param(.sh) function to set 
+# namelist entries in it.  The set_file_param function will print out a
+# message and exit if it fails to set a variable in the file.
+#
+
+{ cat > fort.41 <<EOF
 &config
  fix_dir_target_grid="${WORKDIR_SFC_CLIMO}"
  mosaic_file_target_grid="${EXPTDIR}/INPUT/${CRES}_mosaic.nc"
@@ -317,8 +373,21 @@ cat > fort.41 <<EOF
  input_type="${input_type}"
  external_model="${external_model}"
  phys_suite="${phys_suite}"
+ numsoil_out=${numsoil_out}
+ geogrid_file_input_grid="${geogrid_file_input_grid}"
+ replace_vgtyp=${replace_vgtyp}
+ replace_sotyp=${replace_sotyp}
+ replace_vgfrc=${replace_vgfrc}
+ tg3_from_soil=${tg3_from_soil}
+ tracers_input= "sphum","liq_wat","o3mr"
 /
 EOF
+} || print_err_msg_exit "\
+\"cat\" command to create a namelist file for chgres_cube to generate ICs,
+surface fields, and the 0-th hour (initial) LBCs returned with nonzero 
+status."
+
+# tracers_input= "spfh","clwmr","o3mr"
 #
 #-----------------------------------------------------------------------
 #
@@ -337,13 +406,15 @@ the FV3SAR failed:
 #
 #-----------------------------------------------------------------------
 #
-# Move surface, control, and boundary file to ICs_BCs directory 
+# Move initial condition, surface, control, and 0-th hour lateral bound-
+# ary files to ICs_BCs directory. 
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy gfs_bndy.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_bndy.tile7.000.nc
-mv_vrfy gfs_ctrl.nc ${WORKDIR_ICSLBCS_CDATE}
+mv_vrfy out.atm.tile7.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_data.tile7.nc
 mv_vrfy out.sfc.tile7.nc ${WORKDIR_ICSLBCS_CDATE}/sfc_data.tile7.nc
+mv_vrfy gfs_ctrl.nc ${WORKDIR_ICSLBCS_CDATE}
+mv_vrfy gfs_bndy.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_bndy.tile7.000.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -354,7 +425,8 @@ mv_vrfy out.sfc.tile7.nc ${WORKDIR_ICSLBCS_CDATE}/sfc_data.tile7.nc
 print_info_msg "\
 
 ========================================================================
-Surface and initial condition (IC) files generated successfully!!!
+Initial condition, surface, and 0-th hour lateral boundary condition
+files (in NetCDF format) generated successfully!!!
 ========================================================================"
 #
 #-----------------------------------------------------------------------
