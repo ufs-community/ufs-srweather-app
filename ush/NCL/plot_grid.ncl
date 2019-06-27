@@ -66,14 +66,14 @@ RAP_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 RAP_grid_fn = RAP_dir + "/geo_em.d01.RAP.nc"
 
 
-;map_proj = "cyln"
-map_proj = "ortho"
+map_proj = "cyln"
+;map_proj = "ortho"
 ;
 ; This should be set to (0,0) for "cyln" map projection.
 ;
-;map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map projection.
+map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map projection.
 ;map_proj_ctr = (/ -106.0, 54.0 /) ; RAP domain.
-map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
+;map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
 ;map_proj_ctr = (/ 6.0, 54.0 /) ; RAP domain corner.
 
 
@@ -93,6 +93,7 @@ subreg_limits := (/ -135, -60, 20, 55 /) ; HRRR domain if using "cyln" map proje
 ;subreg_limits := (/ -123, -121, 48, 50 /) ; Northwest corner of HRRR domain, zoomed more.
 ;subreg_limits := (/ -120, -115, 30, 35 /)
 ;subreg_limits := (/ -125, -120, 15, 25 /) ; Southwest corner of HRRR domain.
+subreg_limits := (/ -120, -75, 20, 55 /) ; Center of HRRR domain.
 
 ;subreg_limits := (/ -15, 0, 0, 15 /)
 ;subreg_limits := (/ -30, 0, 0, 30 /)
@@ -138,8 +139,8 @@ field_name = "area"
 ;field_name = "vflx_ave"
 ;field_name = "ref3D"
 
-field_name = "spfh"
 field_name = "sltyp"
+field_name = "dswrf"
 
 
 show_tile_bdies = True
@@ -414,9 +415,6 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 read_FV3SAR_wrtcmp = True
 ;read_FV3SAR_wrtcmp = False
 
-print("AAAAAAAAAA read_FV3SAR_wrtcmp = " + read_FV3SAR_wrtcmp)
-pause
-
 if (read_FV3SAR_wrtcmp) then
 
   FV3SAR_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "dynf000.nc"
@@ -500,23 +498,14 @@ time_inds_to_plot := (/ 0 /) ; This must be specified on the command line.
 fcst_output_hrs := (/ 0, 1, 2, 3, 4, 5, 6 /)  ; Read this in from file, e.g. var_defns.sh.
 ;fcst_output_hrs := (/ 0, 2, 4, 6 /)  ; Read this in from file, e.g. var_defns.sh.
 fcst_output_hrs := (/ 0 /)  ; Read this in from file, e.g. var_defns.sh.
+fcst_output_hrs := (/ 5 /)  ; Read this in from file, e.g. var_defns.sh.
 
 fcst_hrs_to_plot := fcst_output_hrs(time_inds_to_plot)
 num_fcst_hrs = dimsizes(fcst_hrs_to_plot)
 
-print("")
-print("" + time_inds_to_plot)
-print("" + fcst_hrs_to_plot)
-print("num_fcst_hrs = " + num_fcst_hrs)
-pause
-
 vert_inds_to_plot := (/ 0, 10 /)
 vert_inds_to_plot := (/ 0 /)
 num_vert = dimsizes(vert_inds_to_plot)
-
-print("")
-print("num_vert = " + num_vert)
-pause
 
 
 ; Must set to 0 for write-component files since those each contain output for only one time.
@@ -535,7 +524,6 @@ do n=0, num_fcst_hrs-1
     print("n = " + n + "; k = " + k)
     print("" + separator_line)
     print("" + separator_line)
-;pause
 
     vert_indx = vert_inds_to_plot(k)
     time_indx = time_inds_to_plot(n)
@@ -561,8 +549,6 @@ do n=0, num_fcst_hrs-1
 ;
 ; **********************************************************************
 ;
-print("read_FV3SAR_wrtcmp = " + read_FV3SAR_wrtcmp)
-pause
 if (read_FV3SAR_wrtcmp) then
 ;
 ; Set the file name.  This depends on the time index/ forecast output hour.
@@ -1075,8 +1061,6 @@ end if
 ;
 ; **********************************************************************
 ;
-print("BBBBBBBBB  plot_RAP_field = " + plot_RAP_field)
-pause
   if (plot_RAP_field) then
 ;
 ; **********************************************************************
@@ -1195,9 +1179,6 @@ end if
 ;
 ; **********************************************************************
 ;
-if (True) then
-;if (False) then
-
   fn_graphics = cres + "_grid_f" + fcst_hr_str + "_k" + vert_indx_str
 
   coord_fill_val := default_fillvalue(typeof(lon_cntrs_unstruc))
@@ -1394,7 +1375,8 @@ right_str = "CCC"
 "values ..."
   print("" + msg)
 
-  num_cnLevels = 20
+;  num_cnLevels = 20
+  num_cnLevels = 250
   opts := True
 ;  opts@verbose = True
   opts@verbose = False
@@ -1498,532 +1480,6 @@ bdy_opts@bdy_dash_patterns = 1
 print("BYE!!!!!!!!!!!!!!!!!!!!!!!")
 
 
-
-else
-
-
-
-
-
-
-
-
-
-
-; **********************************************************************
-;
-; Open a workstation and specify the type of graphics file to generate.
-; The type can be "ps", "pdf", "x11", "png", or "ncgm" (and maybe more).
-;
-; **********************************************************************
-;
-  fn_graphics = cres + "_grid"
-
-  if (strcmp_exact(graphics_type, "png")) then
-    wks_type := "png"
-    wks_type@wkWidth = 1000
-    wks_type@wkHeight = 750
-  else if (strcmp_exact(graphics_type, "ncgm")) then
-    wks_type := "ncgm"
-  end if
-  end if
-
-  wks := gsn_open_wks(wks_type, fn_graphics)
-
-; Set the colormap.  To see the various colormaps, go to:
-;
-; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
-;
-  gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
-;  gsn_define_colormap(wks, "BlAqGrYeOrReVi100")
-
-;
-; **********************************************************************
-;
-; Set contour plot resources and generate color contour plot.
-;
-; **********************************************************************
-;
-  print("")
-  print("#############################################################")
-  print("")
-  print("Generating plot in file:")
-  print("  " + fn_graphics + "." + graphics_type)
-
-; Specify resources.
-  rsrc = True
-
-; Maximize size of plot in frame.
-  rsrc@gsnMaximize = True
-
-; Use full colormap, but start at color index 24.
-  rsrc@gsnSpreadColors = True
-  rsrc@gsnSpreadColorStart = 24
-
-; Turn on contour fill.
-  rsrc@cnFillOn = True
-; Set the fill mode to "CellFill".  This means each cell has a single 
-; color that represents the field value for that cell, and no interopla-
-; tion is performed.  Other values for this resource can be "AreaFill" 
-; and "RasterFill", but those require interoplation.
-  rsrc@cnFillMode = "CellFill"
-
-; Set sfXArray and sfYArray to the cell center coordinates.
-  rsrc@sfXArray = lon_cntrs_unstruc
-  rsrc@sfYArray = lat_cntrs_unstruc
-
-; Set sfXCellBounds and sfYCellBounds to the cell vertex coordinates.
-  rsrc@sfXCellBounds = lon_verts_unstruc
-  rsrc@sfYCellBounds = lat_verts_unstruc
-
-; Set sfDataArray to the field (which has one value per cell).
-  rsrc@sfDataArray = field_unstruc
-
-; If show_tile_grids is True, then draw the cell faces.
-  if (show_tile_grids) then
-    rsrc@cnCellFillEdgeColor = "black"
-;    rsrc@cnCellFillMissingValEdgeColor = "red"  ; This seems to have no effect.
-  end if
-
-; Set the color for cells containing missing values.  This is by default
-; "transparent", but we repeat it here for clarity.
-  rsrc@cnMissingValFillColor = "transparent"
-
-; Specify opacity of cell colors.
-;  rsrc@cnFillOpacityF = 0.0 ; Transparent.
-;  rsrc@cnFillOpacityF = 0.1
-;  rsrc@cnFillOpacityF = 0.35
-  rsrc@cnFillOpacityF = 1.0 ; Opaque.
-
-; Turn off contour lines (we just want to see colors).
-  rsrc@cnLinesOn = False
-; Turn off contour line labels.
-  rsrc@cnLineLabelsOn = False
-
-  if (rsrc@cnFillOpacityF .eq. 0.0) then
-print("Turning off LabelBar (color bar) for the FV3 contour plot.")
-;pause
-    rsrc@lbLabelBarOn = False
-  end if
-  rsrc@lbLabelBarOn = True
-
-;  rsrc@lbBoxLinesOn = False
-  rsrc@lbBoxSeparatorLinesOn = False
-
-; Turn off text box that says "CONTOUR FROM AAA TO BBB BY CCC".
-  rsrc@cnInfoLabelOn = False
-
-;  rsrc@lbLabelAlignment = "BoxCenters"
-  rsrc@lbOverrideFillOpacity = True
-
-; Prevent overlap of labelbar labels.  Actually, the default value of 
-; lbLabelAutoStride is already True for NCL V6.1.0 and later.
-;  rsrc@lbLabelAutoStride = True
-; Turn off labelbar box lines.
-;  rsrc@lbBoxLinesOn = False
-
-; Output interval in hours.  This should be read in from the namelist 
-; file (fdiag), although FV3 seems to always use 6 hours (4xdaily) 
-; regardless of the namelist value
-output_interval = 6.0
-; Set the plot title.
-field_desc = "VVVVVVVVVVVVVV"
-field_units = "VVVVVVVVVVVVVV"
-
-  rsrc@tiMainString = field_desc + " [" + field_units + "]"
-;  rsrc@tiMainString = "Sample Stretched Grid (one color per tile)"
-;  rsrc@tiMainString = "SAR-FV3 (Orange) and RAP (Red Outline) Domains/Grids"
-;  rsrc@tiMainString = "Grid Size (km) for CRES = " + cres
-;  rsrc@tiMainString = "Grid Size (km)"
-  rsrc@tiMainString = plot_title
-
-; Set the title font size.
-  rsrc@tiMainFontHeightF = 0.015
-
-; Set the latitude and longitude of the center of the map projection co-
-; ordinate system.
-  rsrc@mpCenterLonF = map_proj_ctr(0)
-  rsrc@mpCenterLatF = map_proj_ctr(1)
-
-; Set the map projection to use.  For the Lambert equal-area projection, 
-; we rotate the projection such that it is centered at the North Pole.
-  if (strcmp_exact(map_proj, "cyln")) then
-    rsrc@mpProjection = "CylindricalEquidistant"
-  else if (strcmp_exact(map_proj, "ortho")) then
-    rsrc@mpProjection = "Orthographic"
-  else if (strcmp_exact(map_proj, "lamb")) then
-;    rsrc@mpProjection = "LambertEqualArea"
-    rsrc@mpProjection = "LambertConformal"
-  end if
-  end if
-  end if
-
-; Improve the resolution of the map outlines.  Default is "LowRes".
-  rsrc@mpDataBaseVersion = "MediumRes"
-;  rsrc@mpDataBaseVersion = "HighRes"
-
-; Turn on map tickmarks.
-  rsrc@pmTickMarkDisplayMode = "Always"
-
-; Plot curves of constant longitude and latitude (regardless of the plot
-; projection).
-  rsrc@mpGridAndLimbOn = True
-
-; If "subreg_limits" is specified, plot only a subregion.  Note that this has
-; an effect only for the cylindrical-equidistant map projection.
-
-  if (.not. any(ismissing(subreg_limits))) then
-
-    rsrc@mpMinLonF = subreg_limits(0)
-    rsrc@mpMaxLonF = subreg_limits(1)
-    rsrc@mpMinLatF = subreg_limits(2)
-    rsrc@mpMaxLatF = subreg_limits(3)
-
-    rsrc@mpLimitMode = "LatLon"
-
-    if (strcmp_exact(map_proj, "lamb")) then
-
-      rsrc@mpLimitMode = "LatLon"
-;      rsrc@mpMinLonF = -128
-;      rsrc@mpMaxLonF = -70
-;      rsrc@mpMinLatF = 20
-;      rsrc@mpMaxLatF = 53
-
-      rsrc@mpLambertParallel1F = 38.5
-      rsrc@mpLambertParallel2F = 38.5
-      rsrc@mpLambertMeridianF = -97.5
-
-;      rsrc@mpLimitMode = "Corners"
-;      rsrc@mpLeftCornerLonF = lon_min
-;      rsrc@mpLeftCornerLatF = lat_min
-;      rsrc@mpRightCornerLonF = lon_max
-;      rsrc@mpRightCornerLatF = lat_max
-      rsrc@mpLeftCornerLonF = -122
-      rsrc@mpLeftCornerLatF = 15
-      rsrc@mpRightCornerLonF = -65
-      rsrc@mpRightCornerLatF = 55
-
-    end if
-
-  end if
-
-; Set the minimum and maximum countour levels to plot manually.
-if (True) then
-;if (False) then
-  factor = 10
-
-  cplot_min = floor(min(factor*(/ field_min_all_tiles, field_min_RAP /)))/factor
-;  cplot_min = min((/ field_min_all_tiles, field_min_RAP /))
-print("field_min_all_tiles = " + field_min_all_tiles)
-print("field_min_RAP = " + field_min_RAP)
-print("cplot_min = " + cplot_min)
-
-
-  cplot_max = ceil(max(factor*(/ field_max_all_tiles, field_max_RAP /)))/factor
-;  cplot_max = max((/ field_max_all_tiles, field_max_RAP /))
-print("")
-print("field_max_all_tiles = " + field_max_all_tiles)
-print("field_max_RAP = " + field_max_RAP)
-print("cplot_max = " + cplot_max)
-
-  num_levels = 20
-  rsrc@cnLevelSelectionMode = "ManualLevels"
-  rsrc@cnMinLevelValF = cplot_min
-  rsrc@cnMaxLevelValF = cplot_max
-  rsrc@cnLevelSpacingF = (cplot_max - cplot_min)/num_levels
-
-end if
-
-; Allow for spatially constant fields to be plotted.
-  rsrc@cnConstFEnableFill = True
-  rsrc@cnConstFLabelOn = False
-
-; Do not immediately draw the contour plot nor advance the frame because
-; other objects might still need to be added to the plot.
-  rsrc@gsnDraw = False
-  rsrc@gsnFrame = False
-
-; Draw the color contour plot (along with a map).
-  map = gsn_csm_contour_map(wks, field_unstruc, rsrc)
-
-
-;
-; Retrieve contour levels.
-;
-  getvalues map@contour
-    "cnLevels" : levels
-  end getvalues
-
-;  print("")
-;  print("levels = " + levels)
-;  pause
-
-;  rsrc@lbLabelStrings = sprintf("%3.1f",levels)   ; Format the labels
-  rsrc@lbLabelStrings = sprintf("%4.2f",levels)   ; Format the labels
-;  print("")
-;  print("rsrc@lbLabelStrings = " + rsrc@lbLabelStrings)
-;  pause
-
-;  rsrc@lbLabelStrings = sprintf("%4.2g",levels)   ; Format the labels
-;  print("")
-;  print("rsrc@lbLabelStrings = " + rsrc@lbLabelStrings)
-;  pause
-
-  map = gsn_csm_contour_map(wks, field_unstruc, rsrc)
-
-;
-; **********************************************************************
-;
-; If show_tile_bdies is specified as True, draw the boundary of each tile.
-;
-; **********************************************************************
-;
-  if (show_tile_bdies) then
-
-    resp := True
-    resp@gsLineColor = "blue"
-    resp@gsLineThicknessF = 4.0
-;
-; Note that the graphical id returned by the gsn_add_polyline(...) for
-; each tile must be saved at least until the plot is drawn.  If it is 
-; overwritten by the id for the next tile, then the polyline that the 
-; overwritted graphical id represents will not be drawn.  For that rea-
-; son, we first define an array of graphical ids and then save the id
-; for each tile in an element of the array.
-;
-    id_tile_bdy := new((/ num_tiles_to_plot /), graphic)
-    print("")
-    do nn=0, num_tiles_to_plot-1
-      n_tile = inds_tiles_to_plot(nn)
-;      print("Drawing boundary of tile #" + n_tile + " ...")
-      print("Adding boundary of tile #" + n_tile + " to array of boundary coordinates ...")
-      lon_bdy_crnt_tile := lon_bdy_by_tile[nn]
-      lat_bdy_crnt_tile := lat_bdy_by_tile[nn]
-
-      if (nn .eq. 0) then
-        lon_bdy := lon_bdy_crnt_tile
-        lat_bdy := lat_bdy_crnt_tile
-      else
-
-        lon_bdy := array_append_record( \
-                   lon_bdy, default_fillvalue(typeof(lon_bdy)), 0)
-        lon_bdy := array_append_record(lon_bdy, lon_bdy_crnt_tile, 0)
-
-        lat_bdy := array_append_record( \
-                   lat_bdy, default_fillvalue(typeof(lat_bdy)), 0)
-        lat_bdy := array_append_record(lat_bdy, lat_bdy_crnt_tile, 0)
-
-      end if
-
-;      id_tile_bdy(nn) \
-;      = gsn_add_polyline( \
-;        wks, map, \
-;        lon_bdy_crnt_tile, lat_bdy_crnt_tile, \
-;        resp)
-
-    end do
-
-    id_tile_bdies \
-    = gsn_add_polyline(wks, map, lon_bdy, lat_bdy, resp)
-
-  end if
-
-
-
-
-
-
-
-
-
-;
-; **********************************************************************
-;
-; If plot_RAP_field is specified as True, draw a contour plot on the 
-; RAP domain.
-;
-; **********************************************************************
-;
-  if (plot_RAP_field) then
-
-if (False) then
-getvalues map ; Get plot size for use in 
-   "vpHeightF" : vph ; creating labelbar. 
-   "vpWidthF" : vpw 
-end getvalues 
-
-print("")
-print(map@contour)
-pause
-
-print("")
-print(map)
-pause
-
-print("")
-printVarSummary(map)
-pause
-
-;print("")
-;printVarSummary(map@contour)
-;pause
-
-getvalues map@contour 
-   "cnMinLevelValF" : lb0 ; low label value 
-   "cnMinLevelValF" : lb1 ; high label value 
-   "cnLevelSpacingF" : spcF ; 
-   "lbLabelStride" : strd ; 
-;   "lbFillColors"   : colors
-;   "lbLabelStrings" : labels
-;   "lbBoxCount" : boxcount
-end getvalues 
-print("")
-print("vph = " + vph)
-print("vpw = " + vpw)
-print("lb0 = " + lb0)
-print("lb1 = " + lb1)
-print("spcF = " + spcF)
-print("strd = " + strd)
-;print("colors = " + colors)
-;print("labels = " + labels)
-;print("boxcount = " + boxcount)
-pause
-
-;  getvalues plt
-;    "pmAnnoViews" : anno_ids
-;  end getvalues
-;
-;;---Find the labelbar, and reverse it.
-;  do i=0,dimsizes(anno_ids)-1
-;    if(NhlClassName(anno_ids(i)).eq."labelBarClass") then
-;
-;;---Get the colors and the strings
-;      getvalues anno_ids(i)
-;        "lbFillColors"   : colors
-;        "lbLabelStrings" : labels
-;      end getvalues
-end if
-
-
-; Specify resources.
-    rsrc_RAP = True
-
-; Maximize size of plot in frame.
-    rsrc_RAP@gsnMaximize = True
-
-; Use full colormap, but start at color index 24.
-    rsrc_RAP@gsnSpreadColors = True
-    rsrc_RAP@gsnSpreadColorStart = 24
-
-; Turn on contour fill.
-    rsrc_RAP@cnFillOn = True
-; Set the fill mode to "CellFill".  This means each cell has a single 
-; color that represents the field value for that cell, and no interopla-
-; tion is performed.  Other values for this resource can be "AreaFill" 
-; and "RasterFill", but those require interoplation.
-    rsrc_RAP@cnFillMode = "CellFill"
-
-; Specify opacity of cell colors.
-    rsrc_RAP@cnFillOpacityF = 0.0 ; Transparent.
-;    rsrc_RAP@cnFillOpacityF = 0.35
-;    rsrc_RAP@cnFillOpacityF = 1.0 ; Opaque.
-
-; Set sfXArray and sfYArray to the cell center coordinates.
-    rsrc_RAP@sfXArray = lon_cntrs_unstruc_RAP
-    rsrc_RAP@sfYArray = lat_cntrs_unstruc_RAP
-
-; Set sfXCellBounds and sfYCellBounds to the cell vertex coordinates.
-    rsrc_RAP@sfXCellBounds = lon_verts_unstruc_RAP
-    rsrc_RAP@sfYCellBounds = lat_verts_unstruc_RAP
-
-; Set sfDataArray to the field (which has one value per cell).
-    rsrc_RAP@sfDataArray = field_unstruc_RAP
-
-; If show_RAP_grid is True, then draw the cell faces.
-    if (show_RAP_grid) then
-;      rsrc_RAP@cnCellFillEdgeColor = "black"
-;      rsrc_RAP@cnCellFillEdgeColor = "green"
-      rsrc_RAP@cnCellFillEdgeColor = "red"
-    end if
-
-; Turn off contour lines (we just want to see colors).
-    rsrc_RAP@cnLinesOn = False
-; Turn off contour line labels.
-    rsrc_RAP@cnLineLabelsOn = False
-
-; Prevent overlap of labelbar labels.  Actually, the default value of 
-; lbLabelAutoStride is already True for NCL V6.1.0 and later.
-    rsrc_RAP@lbLabelAutoStride = True
-; Turn off labelbar box lines.
-;    rsrc_RAP@lbBoxLinesOn = False
-
-
-
-;    rsrc_RAP@lbBoxCount = 5
-
-; Turn on map tickmarks.
-    rsrc_RAP@pmTickMarkDisplayMode = "Always"
-
-; Allow for spatially constant fields to be plotted.
-    rsrc_RAP@cnConstFEnableFill = True
-    rsrc_RAP@cnConstFLabelOn = False
-
-; Turn off text box that says "CONTOUR FROM AAA TO BBB BY CCC".
-    rsrc_RAP@cnInfoLabelOn = False
-
-; Set the title font size.
-    rsrc_RAP@tiMainFontHeightF = rsrc@tiMainFontHeightF
-
-    rsrc_RAP@lbLabelBarOn = False
-; Set the minimum and maximum countour levels to plot manually.
-    if (rsrc_RAP@cnFillOpacityF .eq. 0.0) then
-print("Turning off LabelBar (color bar) for the RAP contour plot.")
-;pause
-      rsrc_RAP@lbLabelBarOn = False
-    end if
-    rsrc_RAP@cnLevelSelectionMode = "ManualLevels"
-    rsrc_RAP@cnMinLevelValF = cplot_min
-    rsrc_RAP@cnMaxLevelValF = cplot_max
-;    rsrc_RAP@cnLevelSpacingF = rsrc@cnLevelSpacingF
-
-; Do not immediately draw the contour plot nor advance the frame because
-; other objects might still need to be added to the plot.
-    rsrc_RAP@gsnDraw = False
-    rsrc_RAP@gsnFrame = False
-
-; Draw the color contour plot (without a map since that has already been
-; drawn above while generating the FV3 tiles).
-    map_RAP = gsn_csm_contour(wks, field_unstruc_RAP, rsrc_RAP)
-
-; If show_RAP_bdy is set to True, draw a boundary around the RAP domain.
-    if (show_RAP_bdy) then
-      resp := True
-      resp@gsLineColor = "red"
-      resp@gsLineThicknessF = 4.0
-      id_RAP_bdy \
-      = gsn_add_polyline(wks, map, lon_bdy_RAP, lat_bdy_RAP, resp)
-    end if
-
-; Overlay the contour plot of the RAP domain on top of the one for the
-; cubed-sphere tile(s).
-    overlay(map, map_RAP)
-
-  end if
-;
-; **********************************************************************
-;
-; Draw the plot and advance the frame.
-;
-; **********************************************************************
-;
-  draw(map)
-  frame(wks)
-
-  print("")
-  print("Done generating plot in file:")
-  print("  " + fn_graphics + "." + graphics_type)
-
-end if
 
 
   end do
