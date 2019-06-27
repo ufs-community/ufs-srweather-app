@@ -212,7 +212,8 @@ print("(nx_all_grids, ny_all_grids) = " + \
 ;
 ; **********************************************************************
 ;
-  gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
+;  gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
+  gsn_define_colormap(wks, "3gauss")
 
   print("")
   print("" + separator_line)
@@ -436,6 +437,11 @@ print("indx_end(i) = " + indx_end(i))
 ; projection).
 ;
       rsrc@mpGridAndLimbOn = True
+      rsrc@mpGridAndLimbOn = False
+      if (rsrc@mpGridAndLimbOn) then
+        rsrc@mpGridLonSpacingF = 5.0
+        rsrc@mpGridLatSpacingF = 5.0
+      end if
 ;
 ; If plot_opts@plot_subreg is set to True, plot only a subregion.  Note
 ; that this has an effect only for the cylindrical-equidistant map pro-

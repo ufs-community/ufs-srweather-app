@@ -216,7 +216,7 @@ begin
 "      'plot_RAP_field=True' \" + char_nl + \
 "      'RAP_grid_fn=" + char_dq + "./some_dir/RAP_grid.nc" + char_dq + "' \" + char_nl + \
 "      'show_RAP_bdy=True' \" + char_nl + \
-"      'draw_RAP_grid=True' \" + char_nl + \
+"      'show_RAP_grid=True' \" + char_nl + \
 "      'map_proj=" + char_dq + "cyln" + char_dq + "' \" + char_nl + \
 "      'map_proj_ctr=(/0,90/)' \" + char_nl + \
 "      'subreg_limits=(/-30,30,-25,25/)' \" + char_nl + \
