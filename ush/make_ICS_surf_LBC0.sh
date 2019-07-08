@@ -325,6 +325,10 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
 # RAP/HRRR.
 #
 
+# A non-prognostic variable that appears in the field_table for GSD physics 
+# is cld_amt.  Why is that in the field_table at all (since it is a non-
+# prognostic field), and how should we handle it here??
+
 # I guess this works for spectral GFS but not for FV3GFS since the nemsio
 # output files of those have different variable names (see below).
   tracers_input="\"spfh\",\"o3mr\",\"clwmr\""
