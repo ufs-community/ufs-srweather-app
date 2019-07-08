@@ -11,7 +11,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script.                                                                                                         
+# Source the variable definitions script.
 #
 #-----------------------------------------------------------------------
 #
@@ -86,6 +86,7 @@ else
 fi
 
 prefix="\"${CRES}_oro_data.tile"
+#prefix="\"${CRES}.oro_data.tile"
 orog_fns=( "${tiles[@]/#/$prefix}" )
 suffix=".nc\""
 orog_fns=( "${orog_fns[@]/%/$suffix}" )
@@ -139,6 +140,9 @@ case $MACHINE in
   ;;
 
 "THEIA")
+# Need to load intel/15.1.133.  This and all other module loads should go into a module file.
+module load intel/15.1.133
+module list
   APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
   ;;
 
@@ -169,6 +173,7 @@ with nonzero exit code.
 #-----------------------------------------------------------------------
 #
 case "$gtype" in
+
 #
 # Consider, global, stetched, and nested grids.
 #
@@ -184,6 +189,7 @@ case "$gtype" in
     fi
   done
   ;;
+
 #
 # Consider regional grids.
 #
