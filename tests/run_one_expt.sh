@@ -218,19 +218,18 @@ mv_vrfy log.generate_FV3SAR_wflow $RUNDIR
 #
 cd_vrfy $RUNDIR
 
-ROCOTO_EXEC_DIR="/apps/rocoto/1.2.4/bin"
 XML_BASENAME="FV3SAR_wflow"
 RELAUNCH_SCR="relaunch_wflow.sh"
 
 { cat << EOM > ${RELAUNCH_SCR}
 #!/bin/sh -l
 
-module load rocoto/1.3.0-RC5
+module load rocoto/1.3.0
 cd $RUNDIR
 {
-${ROCOTO_EXEC_DIR}/rocotorun -w ${XML_BASENAME}.xml -d ${XML_BASENAME}.db -v 10 ;
+rocotorun -w ${XML_BASENAME}.xml -d ${XML_BASENAME}.db -v 10 ;
 echo ;
-${ROCOTO_EXEC_DIR}/rocotostat -w ${XML_BASENAME}.xml -d ${XML_BASENAME}.db -v 10 ; 
+rocotostat -w ${XML_BASENAME}.xml -d ${XML_BASENAME}.db -v 10 ; 
 } >> log.rocotostat 2>&1
 EOM
 }
