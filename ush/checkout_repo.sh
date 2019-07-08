@@ -230,10 +230,16 @@ elif [ "$software_name" = "UFS_UTILS_chgres_grib2" ]; then
 # How to do that?
 #
 #  clone_path="$BASEDIR/fv3sar_workflow/sorc/UFS_UTILS.fd"
-  branch_name="feature/chgres_grib2"
+#  branch_name="feature/chgres_grib2"
+  branch_name="feature/chgres_grib2_gsk"
 
   submod_subdirs=()
   submod_branch_names=()
+
+#  if [ "$head_or_hash" = "hash" ]; then
+#    branch_hash="27b1ec5"
+#    submod_branch_hashes=()
+#  fi
 
   if [ "$head_or_hash" = "hash" ]; then
     branch_hash=""

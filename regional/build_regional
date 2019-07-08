@@ -38,7 +38,7 @@ cp ../exec/sfc_climo_gen ${FV3SAR_DIR}/exec
 # The first case is using Larissa's make.sh script, the second case uses
 # the more formal way also used by the other codes in UFS_UTILS.
 if [ 0 = 1 ]; then
-  cd ${FV3SAR_DIR}/../UFS_UTILS_chgres_grib2/sorc/chgres_cube.fd/sorc
+  cd ${FV3SAR_DIR}/../UFS_UTILS_chgres_grib2/sorc/chgres_cube.fd
   ./make.sh >& out.build_chgres_cube
 # Is the following needed?  The version of the global_chgres.exe execu-
 # table used by the tasks that use chgres_cube (the ICs/surf/LBC0 and 
@@ -46,13 +46,13 @@ if [ 0 = 1 ]; then
 # UTILS_chgres_grib2 directory, not in ${FV3SAR_DIR}/exec.
   cp ../exec/global_chgres.exe ${FV3SAR_DIR}/exec
 else
-  cd ${FV3SAR_DIR}/../UFS_UTILS_chgres_grib2/sorc/chgres_cube.fd
+  cd ${FV3SAR_DIR}/../UFS_UTILS_chgres_grib2/sorc
   ./build_chgres_cube.sh >& out.build_chgres_cube
 # Is the following needed?  The version of the global_chgres.exe execu-
 # table used by the tasks that use chgres_cube (the ICs/surf/LBC0 and 
 # LBC1_to_LBCN tasks) is located in the exec directory under the UFS_-
 # UTILS_chgres_grib2 directory, not in ${FV3SAR_DIR}/exec.
-  cp ../exec/global_chgres.exe ${FV3SAR_DIR}/exec
+  cp ../exec/chgres_cube.exe ${FV3SAR_DIR}/exec
 fi
 
 
