@@ -210,13 +210,15 @@ esac
 #-----------------------------------------------------------------------
 #
 case "$CCPP_phys_suite" in
-#
+
 "GFS")
   phys_suite="GFS"
   ;;
+
 "GSD")
   phys_suite="GSD"
   ;;
+
 *)
   print_err_msg_exit "\
 The physics suite name to use in the chgres FORTRAN namelist file is not
@@ -224,8 +226,49 @@ specified for this physics suite:
   CCPP_phys_suite = \"${CCPP_phys_suite}\"
 "
   ;;
-#
+
 esac
+#
+#-----------------------------------------------------------------------
+#
+# Set various external model-dependent namelist options to chgres_cube.
+#
+#-----------------------------------------------------------------------
+#
+case "$EXTRN_MDL_NAME_ICSSURF" in
+
+"GFS")
+  tracers_input="\"spfh\",\"o3mr\",\"clwmr\""
+#  tracers_input="\"sphum\",\"liq_wat\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"o3mr\""
+#
+  tracers="\"sphum\",\"o3mr\",\"liq_wat\""
+#  tracers="\"sphum\",\"liq_wat\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"o3mr\""
+  ;;
+
+"RAPX")
+# Don't set these; tracers(:) won't get used, and tracers_input(:) will
+# get set to the value specified in the varmap table.
+#  tracers_input="\"\""
+#  tracers="\"\""
+  ;;
+
+*)
+  print_err_msg_exit "\
+One or more chgres_cube namelist variables have not been specified for
+the specifed external model used to generate ICs, surface fields, and
+the first LBC:
+
+  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
+
+Unspecified namelist variables:
+
+  tracers_input
+  tracers
+"
+  ;;
+
+esac
+
 #
 #-----------------------------------------------------------------------
 #
@@ -320,8 +363,11 @@ chgres FORTRAN namelist file are not specified for this external model:
  convert_sfc=.false.
  convert_nst=.false.
  regional=2
+ halo_bndy=${nh4_T7}
  input_type="${input_type}"
  external_model="${external_model}"
+ tracers_input=${tracers_input}
+ tracers=${tracers}
  phys_suite="${phys_suite}"
 /
 EOF

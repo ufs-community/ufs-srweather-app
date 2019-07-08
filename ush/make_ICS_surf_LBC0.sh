@@ -264,6 +264,8 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
 "GFS")
   fn_atm_nemsio="${EXTRN_MDL_FNS[0]}"
   fn_sfc_nemsio="${EXTRN_MDL_FNS[1]}"
+# This has to be fixed to that for EXTRN_MDL_NAME_ICSSURF, there is a "GFS_GAUSSIAN" (or better yet, spectral)
+# and a "GFS-FV3" option!!!
   input_type="gfs_gaussian" # For spectral GFS Gaussian grid in nemsio format.
 #  input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
   ;;
@@ -293,6 +295,49 @@ esac
 case "$EXTRN_MDL_NAME_ICSSURF" in
 
 "GFS")
+#
+# The following are the three atmsopheric tracers that are in the atmo-
+# spheric analysis (atmanl) nemsio file for CDATE=2017100700:
+#
+#   "spfh","o3mr","clwmr"
+#
+# Note also that these are hardcoded in the code (file input_data.F90, 
+# subroutine read_input_atm_gfs_spectral_file), so that subroutine will
+# break if tracers_input(:) is not specified as above.
+#
+# Note that there are other fields too ["hgt" (surface height (togography?)), 
+# pres (surface pressure), ugrd, vgrd, and tmp (temperature)] in the atmanl file, but those
+# are not considered tracers (they're categorized as dynamics variables,
+# I guess).
+#
+# Another note:  The way things are set up now, tracers_input(:) and 
+# tracers(:) are assumed to have the same number of elements (just the
+# atmospheric tracer names in the input and output files may be differ-
+# ent).  There needs to be a check for this in the chgres_cube code!!
+# If there was a varmap table that specifies how to handle missing 
+# fields, that would solve this problem.
+#
+# Also, it seems like the order of tracers in tracers_input(:) and 
+# tracers(:) must match, e.g. if ozone mixing ratio is 3rd in 
+# tracers_input(:), it must also be 3rd in tracers(:).  How can this be checked?
+#
+# NOTE: Really should use a varmap table for GFS, just like we do for 
+# RAP/HRRR.
+#
+
+# I guess this works for spectral GFS but not for FV3GFS since the nemsio
+# output files of those have different variable names (see below).
+  tracers_input="\"spfh\",\"o3mr\",\"clwmr\""
+# I guess this works for FV3GFS but not for the spectral GFS since these
+# variables won't exist in the spectral GFS atmanl files.
+#  tracers_input="\"sphum\",\"liq_wat\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"o3mr\""
+#
+# Not sure if tracers(:) should include "cld_amt" since that is also in
+# the field_table for CDATE=2017100700 but is a non-prognostic variable.
+#
+#  tracers="\"sphum\",\"liq_wat\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"o3mr\""
+  tracers="\"sphum\",\"o3mr\",\"liq_wat\""
+#
   numsoil_out="4"
   geogrid_file_input_grid=""  # How to get this to not be used???
   replace_vgtyp=".true."
@@ -302,6 +347,12 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
   ;;
 
 "HRRRX")
+# Don't set these; tracers(:) won't get used, and tracers_input(:) will
+# get set to the value specified in the varmap table.
+# Maybe better to set them to blank?  Not sure...
+  tracers_input="\"\""
+  tracers="\"\""
+#
   numsoil_out="9"
   geogrid_file_input_grid="/scratch3/BMC/det/beck/FV3-CAM/geo_em.d01.nc"  # As of 2019-06-19, this parameter is only used if reading in HRRR grib2 files.
   replace_vgtyp=".false."
@@ -320,6 +371,8 @@ the first LBC:
 
 Unspecified namelist variables:
 
+  tracers_input
+  tracers
   numsoil_out
   geogrid_file_input_grid
   replace_vgtyp
@@ -337,6 +390,45 @@ esac
 #
 #-----------------------------------------------------------------------
 #
+
+# For GFS physics, the character arrays tracers_input(:) and tracers(:)
+# must be specified in the namelist file.  tracers_input(:) contains the
+# tracer name to look for in the external model file(s), while tracers(:)
+# contains the names to use for the tracers in the output NetCDF files 
+# that chgres creates (that will be read in by FV3).  Since when FV3 
+# reads these NetCDF files it looks for atmospheric traces as specified
+# in the file field_table, tracers(:) should be set to the names in 
+# field_table.
+#
+# NOTE: This process should be automated where the set of elements that
+# tracers(:) should be set to is obtained from reading in field_table.
+#
+# To know how to set tracers_input(:), you have to know the names of the
+# variables in the input atmospheric nemsio file (usually this file is 
+# named gfs.t00z.atmanl.nemsio).
+#
+# It is not quite clear how these should be specified.  Here are a list
+# of examples:
+#
+# [Gerard.Ketefian@tfe05] /scratch3/.../chgres_cube.fd/run (feature/chgres_grib2_gsk)
+# $ grep -n -i "tracers" * | grep theia
+# config.C1152.l91.atm.theia.nml:24: tracers="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
+# config.C1152.l91.atm.theia.nml:25: tracers_input="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
+# config.C48.gaussian.theia.nml:20: tracers="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
+# config.C48.gaussian.theia.nml:21: tracers_input="spfh","clwmr","o3mr","icmr","rwmr","snmr","grle"
+# config.C48.gfs.gaussian.theia.nml:21: tracers="sphum","liq_wat","o3mr"
+# config.C48.gfs.gaussian.theia.nml:22: tracers_input="spfh","clwmr","o3mr"
+# config.C48.gfs.spectral.theia.nml:21: tracers_input="spfh","o3mr","clwmr"
+# config.C48.gfs.spectral.theia.nml:22: tracers="sphum","o3mr","liq_wat"
+# config.C48.theia.nml:21: tracers="sphum","liq_wat","o3mr"
+# config.C48.theia.nml:22: tracers_input="spfh","clwmr","o3mr"
+# config.C768.atm.theia.nml:24: tracers="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
+# config.C768.atm.theia.nml:25: tracers_input="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
+# config.C768.l91.atm.theia.nml:24: tracers="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
+# config.C768.l91.atm.theia.nml:25: tracers_input="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
+# config.C768.nest.atm.theia.nml:22: tracers="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
+# config.C768.nest.atm.theia.nml:23: tracers_input="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
+
 
 # fix_dir_target_grid="${BASEDIR}/JP_grid_HRRR_like_fix_files_chgres_cube"
 # base_install_dir="${SORCDIR}/chgres_cube.fd"
@@ -370,8 +462,11 @@ esac
  convert_sfc=.true.
  convert_nst=.false.
  regional=1
+ halo_bndy=${nh4_T7}
  input_type="${input_type}"
  external_model="${external_model}"
+ tracers_input=${tracers_input}
+ tracers=${tracers}
  phys_suite="${phys_suite}"
  numsoil_out=${numsoil_out}
  geogrid_file_input_grid="${geogrid_file_input_grid}"
@@ -379,7 +474,6 @@ esac
  replace_sotyp=${replace_sotyp}
  replace_vgfrc=${replace_vgfrc}
  tg3_from_soil=${tg3_from_soil}
- tracers_input= "sphum","liq_wat","o3mr"
 /
 EOF
 } || print_err_msg_exit "\
@@ -387,6 +481,7 @@ EOF
 surface fields, and the 0-th hour (initial) LBCs returned with nonzero 
 status."
 
+# tracers_input= "sphum","liq_wat","o3mr"
 # tracers_input= "spfh","clwmr","o3mr"
 #
 #-----------------------------------------------------------------------
