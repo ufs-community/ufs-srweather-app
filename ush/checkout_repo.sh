@@ -192,10 +192,10 @@ elif [ "$software_name" = "UFS_UTILS_gridgen_sfc" ]; then
 #
 # How to get just the chgres_cube code, not the rest of the codes in 
 # UFS_UTILS?  Also, want to put the chgres_cube code under 
-#   ${BASEDIR}/fv3sar_workflow/sorc/chgres_cube.fd.
+#   ${BASEDIR}/regional_workflow/sorc/chgres_cube.fd.
 # How to do that?
 #
-#  clone_path="$BASEDIR/fv3sar_workflow/sorc/UFS_UTILS.fd"
+#  clone_path="$BASEDIR/regional_workflow/sorc/UFS_UTILS.fd"
   branch_name="feature/gridgen_sfc"
 
   submod_subdirs=()
@@ -226,10 +226,10 @@ elif [ "$software_name" = "UFS_UTILS_chgres_grib2" ]; then
 #
 # How to get just the chgres_cube code, not the rest of the codes in 
 # UFS_UTILS?  Also, want to put the chgres_cube code under 
-#   ${BASEDIR}/fv3sar_workflow/sorc/chgres_cube.fd.
+#   ${BASEDIR}/regional_workflow/sorc/chgres_cube.fd.
 # How to do that?
 #
-#  clone_path="$BASEDIR/fv3sar_workflow/sorc/UFS_UTILS.fd"
+#  clone_path="$BASEDIR/regional_workflow/sorc/UFS_UTILS.fd"
 #  branch_name="feature/chgres_grib2"
   branch_name="feature/chgres_grib2_gsk"
 
@@ -263,7 +263,7 @@ elif [ "$software_name" = "UPP" ]; then
   remote_URL="ssh://${USER}@vlab.ncep.noaa.gov:29418/$repo_name"
 
 #  clone_path="$BASEDIR/${repo_name}"
-  clone_path="$BASEDIR/fv3sar_workflow/sorc/gfs_post.fd"
+  clone_path="$BASEDIR/regional_workflow/sorc/gfs_post.fd"
   branch_name="master"
 
   submod_subdirs=()

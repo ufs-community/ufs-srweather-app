@@ -48,8 +48,8 @@ QUEUE_RUN_FV3SAR="production_queue"
 # Set directories.  Definitions:
 #
 # BASEDIR:
-# Directory in which the git clones of the fv3sar_workflow and 
-# NEMSfv3gfs repositories are located.
+# Directory in which the regional_workflow, NEMSfv3gfs, and other repo-
+# sitories are cloned.
 #
 # TMPDIR:
 # Temporary work directory.  A subdirectory for the current run will be
@@ -78,7 +78,7 @@ QUEUE_RUN_FV3SAR="production_queue"
 #
 #-----------------------------------------------------------------------
 #
-BASEDIR="/path/to/directory/of/fv3sar_workflow/and/NEMSfv3gfs/clones"
+BASEDIR="/path/to/directory/of/regional_workflow/and/NEMSfv3gfs/clones"
 TMPDIR="/path/to/temporary/work/directories"
 UPPDIR="/path/to/UPP/executable"
 EXPT_BASEDIR=""
