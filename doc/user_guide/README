@@ -1,0 +1,15 @@
+These steps assume you have sphinx installed on your machine.
+
+Steps to build the regional workflow User's Guide:
+  
+To build html:
+
+From the directory above source and build, the sphinx project directory:
+
+make html
+
+Sphinx uses Latex to export the documentation as a PDF file.  To build pdf:
+
+make latexpdf
+
+It will generate a PDF file in ./build/latex/<sphinx-project-name>.pdf
