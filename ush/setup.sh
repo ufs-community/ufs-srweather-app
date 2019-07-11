@@ -1422,20 +1422,33 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the full path to the template file that defines the write-compo-
-# nent parameters.  This file is assumed/expected to be in the templates
-# directory (TEMPLATE_DIR).  Then, if the write component is going to be
-# used to write output files (i.e. quilting is set to ".true."), make
-# sure that this template file exists.
+# If the write component is going to be used to write output files (i.e.
+# if quilting is set to ".true."), first make sure that a name is speci-
+# filed for the template file containing the write-component output grid
+# parameters.  (This template file will be concatenated to the NEMS con-
+# figuration file specified in MODEL_CONFIG_FN.)  If so, set the full 
+# path to the file and make sure that the file exists.  
 #
 #-----------------------------------------------------------------------
 #
-WRTCMP_PARAMS_TEMPLATE_FP="$TEMPLATE_DIR/$WRTCMP_PARAMS_TEMPLATE_FN"
-if [ \( "$quilting" = ".true." \) -a \
-     \( ! -f "$WRTCMP_PARAMS_TEMPLATE_FP" \) ]; then
-  print_err_msg_exit "\
-The write-component template file does not exist:
+if [ "$quilting" = ".true." ]; then
+
+  if [ -z "$WRTCMP_PARAMS_TEMPLATE_FN" ]; then
+    print_err_msg_exit "\
+The write-component template file name (WRTCMP_PARAMS_TEMPLATE_FN) must
+be set to a non-empty value when quilting (i.e. the write-component) is 
+enabled:
+  quilting = \"$quilting\"
+  WRTCMP_PARAMS_TEMPLATE_FN = \"$WRTCMP_PARAMS_TEMPLATE_FN\""
+  fi
+
+  WRTCMP_PARAMS_TEMPLATE_FP="$TEMPLATE_DIR/$WRTCMP_PARAMS_TEMPLATE_FN"
+  if [ ! -f "$WRTCMP_PARAMS_TEMPLATE_FP" ]; then
+    print_err_msg_exit "\
+The write-component template file does not exist or is not a file:
   WRTCMP_PARAMS_TEMPLATE_FP = \"$WRTCMP_PARAMS_TEMPLATE_FP\""
+  fi
+
 fi
 #
 #-----------------------------------------------------------------------
