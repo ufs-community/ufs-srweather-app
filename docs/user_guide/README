@@ -1,9 +1,15 @@
-This is a latex templet for DTC user's guide originally created by Tim Brown, but heavily modified since then.
+These steps assume you have sphinx installed on your machine.
 
-The style file used by this templet (dtcdoc.sty) requires the CTAN LaTex extensions. Since these are not typically included in standard Linux installations, it is necessary to in install a more modern LaTex distribution inorder to compile this document.
+Steps to build the regional workflow User's Guide:
+  
+To build html:
 
-For Windows users install the MiKTEX (http://www.miktex.org) distribution of LaTex.
+From the directory above source and build, the sphinx project directory:
 
-For Mac users install the TEX Live (http://tug.org/texlive/) installation and the TexShop(https://pages.uoregon.edu/koch/texshop/) front end GUI. Links and instructions for both, should be available from the TexShop page.
+make html
 
-To format the LaTex document process the main file main.tex. It constists of include statements for the title, preface, appendices, chapters, etc. whos content is contined in separate tex files such as forward.tex or dtc_ch1.tex. These files can't be compiled alone because they lack certain formatting statements which are only contained within the main.tex.  
+Sphinx uses Latex to export the documentation as a PDF file.  To build pdf:
+
+make latexpdf
+
+It will generate a PDF file in ./build/latex/<sphinx-project-name>.pdf
