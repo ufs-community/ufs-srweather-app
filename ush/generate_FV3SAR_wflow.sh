@@ -161,15 +161,6 @@ module load rocoto/1.3.0
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the various rocoto commands.
-#
-#-----------------------------------------------------------------------
-#
-ROCOTO_EXEC_FP=$( which rocotorun )
-ROCOTO_EXEC_DIR=${ROCOTO_EXEC_FP%/rocotorun}
-#
-#-----------------------------------------------------------------------
-#
 # For convenience, print out the commands that needs to be issued on the 
 # command line in order to launch the workflow and to check its status.  
 # Also, print out the command that should be placed in the user's cron-
@@ -178,9 +169,9 @@ ROCOTO_EXEC_DIR=${ROCOTO_EXEC_FP%/rocotorun}
 #-----------------------------------------------------------------------
 #
 WFLOW_DB_FN="${WFLOW_XML_FN%.xml}.db"
-
-rocotorun_cmd="${ROCOTO_EXEC_DIR}/rocotorun -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
-rocotostat_cmd="${ROCOTO_EXEC_DIR}/rocotostat -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
+load_rocoto_cmd="module load rocoto/1.3.0"
+rocotorun_cmd="rocotorun -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
+rocotostat_cmd="rocotostat -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
 
 print_info_msg "\
 ========================================================================
@@ -191,32 +182,43 @@ Workflow generation completed.
 ========================================================================
 ========================================================================
 
-The experiment and work directories for this experiment are:
+The experiment and work directories for this experiment configuration 
+are:
 
-  EXPTDIR=\"$EXPTDIR\"
-  WORKDIR=\"$WORKDIR\"
+  > EXPTDIR=\"$EXPTDIR\"
+  > WORKDIR=\"$WORKDIR\"
 
-To launch the workflow, change location to the run directory and issue the following 
-command:
+To launch the workflow, first ensure that you have a compatible version
+of rocoto loaded.  For example, on theia, the following version has been
+tested and works:
 
-  $rocotorun_cmd
+  > $load_rocoto_cmd
 
-To check on the status of the workflow, issue the following command (from the 
-run directory):
+(Later versions may also work but have not been tested.)  To launch the 
+workflow, change location to the experiment directory (EXPTDIR) and is-
+sue the rocotrun command, as follows:
 
-  $rocotostat_cmd
+  > cd $EXPTDIR
+  > $rocotorun_cmd
 
-Note that the rocotorun command above must be issued after the completion of 
-each task in the workflow in order for the workflow to submit the next task to
-the queue.  
+To check on the status of the workflow, issue the rocotostat command 
+(also from the experiment directory):
 
-Note also that in order for the output of the rocotostat command above to be 
-up-to-date, the rocotorun command must be issued immediately before the rocotostat 
-command.
+  > $rocotostat_cmd
 
-For automatic resubmission of the workflow (say every 3 minutes), the following 
-line can be added to the user's crontab (use \"crontab -e\" to edit the cron 
-table): 
+Note that:
+
+1) The rocotorun command must be issued after the completion of each 
+   task in the workflow in order for the workflow to submit the next 
+   task(s) to the queue.
+
+2) In order for the output of the rocotostat command to be up-to-date,
+   the rocotorun command must be issued immediately before the rocoto-
+   stat command.
+
+For automatic resubmission of the workflow (say every 3 minutes), the 
+following line can be added to the user's crontab (use \"crontab -e\" to
+edit the cron table): 
 
 */3 * * * * cd $EXPTDIR && $rocotorun_cmd
 
