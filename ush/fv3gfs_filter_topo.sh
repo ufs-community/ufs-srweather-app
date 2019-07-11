@@ -33,8 +33,8 @@ if [ $gtype = regional ]; then
 #
 #  cp $griddir/$mosaic_grid .
 #  cp $griddir/C${res}_grid.tile7.nc .
-  ln -fs $griddir/$mosaic_grid $outdir/$mosaic_grid
-  ln -fs $griddir/C${res}_grid.tile7.nc $outdir/C${res}_grid.tile7.nc
+  ln -fs --relative $griddir/$mosaic_grid $outdir/$mosaic_grid
+  ln -fs --relative $griddir/C${res}_grid.tile7.nc $outdir/C${res}_grid.tile7.nc
 #
 # Don't link to the input orography file containing the data that is go-
 # ing to be filtered because filter_topo will overwrite its input (un-
