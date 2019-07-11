@@ -5,6 +5,7 @@
 #
 #-----------------------------------------------------------------------
 #
+# mach_doc_start
 # Set machine and queue parameters.  Definitions:
 #
 # MACHINE:
@@ -35,6 +36,8 @@
 # the forecast.  If this is not set or set to an empty string, it will
 # be reset to a machine-dependent value in the setup script (setup.sh).
 #
+# mach_doc_end
+#
 #-----------------------------------------------------------------------
 #
 MACHINE="BIG_COMPUTER"
@@ -45,6 +48,7 @@ QUEUE_RUN_FV3SAR="production_queue"
 #
 #-----------------------------------------------------------------------
 #
+# dir_doc_start
 # Set directories.  Definitions:
 #
 # BASEDIR:
@@ -75,6 +79,7 @@ QUEUE_RUN_FV3SAR="production_queue"
 # to the experiment directory, which we will denote by EXPTDIR, will be
 # set to $EXPT_BASEDIR/$EXPT_SUBDIR (also see definition of EXPT_BASE-
 # DIR).
+# dir_doc_end
 #
 #-----------------------------------------------------------------------
 #
