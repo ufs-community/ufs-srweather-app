@@ -51,7 +51,7 @@ Variables that are not modified by the workflow generation script.
 
 <!ENTITY PROC_MAKE_GRID_OROG      "1:ppn=24">
 <!ENTITY PROC_STAGE_STATIC        "1:ppn=1">
-<!ENTITY PROC_MAKE_SFC_CLIMO      "1:ppn=24">
+<!ENTITY PROC_MAKE_SFC_CLIMO      "12:ppn=24">
 <!ENTITY PROC_GET_EXTRN_MDL_FILES "1:ppn=1">
 <!ENTITY PROC_MAKE_ICS_SURF_LBC0  "4:ppn=12">
 <!ENTITY PROC_MAKE_LBC1_TO_LBCN   "4:ppn=12">
