@@ -235,7 +235,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-case "$EXTRN_MDL_NAME_ICSSURF" in
+case "$EXTRN_MDL_NAME_LBCS" in
 
 "GFS")
   tracers_input="\"spfh\",\"o3mr\",\"clwmr\""
@@ -248,17 +248,16 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
 "RAPX")
 # Don't set these; tracers(:) won't get used, and tracers_input(:) will
 # get set to the value specified in the varmap table.
-#  tracers_input="\"\""
-#  tracers="\"\""
+  tracers_input="\"\""
+  tracers="\"\""
   ;;
 
 *)
   print_err_msg_exit "\
 One or more chgres_cube namelist variables have not been specified for
-the specifed external model used to generate ICs, surface fields, and
-the first LBC:
+the external model used to generate LBCs:
 
-  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
 
 Unspecified namelist variables:
 
