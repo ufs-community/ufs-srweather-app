@@ -564,20 +564,20 @@ has not been specified for this external model:
 #    ;;
 
 #  "FV3GFS")
-   "GSM")
+   "GFS") #"GSMGFS")
     arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
     arcv_file_fmt="tar"
-    arcv_filename="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${cdate}_${hh}."
+    arcv_filename="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}."
     if [ "$anl_or_fcst" = "ANL" ]; then
       arcv_filename="${arcv_filename}gfs_nemsioa"
-      arcvrel_dir="."
+      arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
     elif [ "$anl_or_fcst" = "FCST" ]; then
        if [ "$hh" -le "39" ]; then
          arcv_filename="${arcv_filename}gfs_nemsioa"
        else
          arcv_filename="${arcv_filename}gfs_nemsiob"
-       fi.
-      arcvrel_dir="/gfs.${yyyymmdd}/${hh}"
+       fi
+      arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
     fi
     arcv_filename="${arcv_filename}.${arcv_file_fmt}"
     arcv_fullpath="$arcv_dir/$arcv_filename"
