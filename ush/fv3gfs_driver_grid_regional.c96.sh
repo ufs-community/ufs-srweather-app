@@ -1,11 +1,15 @@
 #!/bin/sh
+#
+# ----IMPORTANT INFORMATION FOR RUNNING THIS SCRIPT----
+# On Theia all other batch commands must be commented out.
+#
 #----WCOSS DELL JOBCARD
 #BSUB /bin/sh
 #BSUB -P FV3GFS-T2O
 #BSUB -n 1
 #BSUB -R span[ptile=1]
-#BSUB -o log.grid_96.%J
-#BSUB -e log.grid_96.%J
+#BSUB -o log.grid.regional_C96.%J
+#BSUB -e log.grid.regional_C96.%J
 #BSUB -J grid_fv3
 #BSUB -q debug
 #BSUB -W 00:30
@@ -19,23 +23,17 @@
 ##BSUB -M 2400
 ##BSUB -W 00:30
 ##BSUB -extsched 'CRAYLINUX[]'
-#----THEIA JOBCARD
-#PBS -N fv3_grid_driver
-#PBS -A gsd-fv3
-#PBS -o log.grid.regional.$PBS_JOBID
-#PBS -e log.grid.regional.$PBS_JOBID
-#PBS -l nodes=1:ppn=24
-#PBS -q debug
-#PBS -l walltime=00:30:00
-##----Cheyenne JOBCARD
-##PBS -N fv3_grid_driver
-##PBS -A fv3-cpu
-##PBS -o log.grid.regional.$PBS_JOBID
-##PBS -e log.grid.regional.$PBS_JOBID
-##PBS -l nodes=1:ppn=24
-##PBS -q debug
-##PBS -l walltime=00:30:00
-
+#
+#----THEIA SLURM JOBCARD
+#SBATCH -N 1 --ntasks-per-node=24
+#SBATCH -t 0:30:00
+#SBATCH -A fv3-cam
+#SBATCH -J fv3_grid_driver
+#SBATCH -q debug
+#SBATCH -o log.grid.regional_C96.%j
+#SBATCH -e log.grid.regional_C96.%j
+#SBATCH --exclusive
+#SBATCH -D.
 set -ax
 
 machine=DELL
@@ -51,7 +49,14 @@ ulimit -s unlimited
 #----------------------------------------------------------------
 
 export USER=$LOGNAME 
-export res=96	 	   # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
+export res=96	 	   # resolution of tile: 48, 96, 192, 384, 96, 1152, 3072
+#
+# Even though the name of this script suggests creating the grid and orography
+# for a regional run, it can be used for any gype below. If the gtype is nest
+# then for running on the Dell,change #BSUB -n 1 to #BSUB -n 4. This allows the
+# generation of the orography for the nest to run multiple copies at the same 
+# time
+#
 export gtype=regional      # grid type: uniform, stretch, nest or regional
 
 #----------------------------------------------------------------
@@ -59,7 +64,6 @@ export gtype=regional      # grid type: uniform, stretch, nest or regional
 # optimized for six threads.  Do not change.
 #----------------------------------------------------------------
 
-export OMP_NUM_THREADS=6
 export OMP_STACKSIZE=2048m
 
 if [ $machine = WCOSS_C ]; then
@@ -72,18 +76,19 @@ if [ $machine = WCOSS_C ]; then
  export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
  export KMP_AFFINITY=disabled
  export home_dir=$LS_SUBCWD/..
- export topo=/gpfs/hps/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog
+ export topo=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog
  export TMPDIR=/gpfs/hps3/ptmp/$LOGNAME/fv3_grid.$gtype
 elif [ $machine = DELL ]; then
  set +x
  . /usrx/local/prod/lmod/lmod/init/sh
- module load EnvVars/1.0.2 lmod/7.7 settarg/7.7 lsf/10.1 prod_envir/1.0.2 mktgs/1.0
+ module load EnvVars/1.0.2 settarg/7.7 lsf/10.1 prod_envir/1.0.2 mktgs/1.0
  module use -a /usrx/local/dev/modulefiles
  module load git/2.14.3
  module load ips/18.0.1.163
  module load impi/18.0.1
  module load NetCDF/4.5.0
  module load HDF5-serial/1.10.1
+ module load CFP/2.0.1
  module list
  set -x
  export KMP_AFFINITY=disabled
@@ -102,27 +107,14 @@ elif [ $machine = THEIA ]; then
  module list
  export APRUN=time
  export home_dir=$PBS_O_WORKDIR/..
+ export home_dir=$SLURM_SUBMIT_DIR/..
  export topo=/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_orog
  export TMPDIR=/scratch3/NCEPDEV/stmp1/$LOGNAME/fv3_grid.$gtype
  set -x
-elif [ $machine = CHEYENNE ]; then
- source /glade/u/apps/ch/modulefiles/default/localinit/localinit.sh
- export TMPDIR=/glade/scratch/${USER}/tmp
- module load ncarenv
- module load intel/18.0.1
- module load ncarcompilers
- module load impi
- module load netcdf
- module list
- export APRUN=time
- export home_dir=$FV3GFS_DIR
- export topo=/glade/p/ral/jntp/GMTB/FV3GFS_V1_RELEASE/fix/fix_orog
-else
-  echo "UNKNOWN MACHINE"
-  exit 4
 fi
 #----------------------------------------------------------------
 
+export OMP_NUM_THREADS=6
 export script_dir=$home_dir/ush
 export exec_dir=$home_dir/exec
 export out_dir=$home_dir/fix/fix_fv3/C${res}
@@ -145,6 +137,7 @@ elif [ $gtype = stretch ]; then
   echo "creating stretched grid"
 elif [ $gtype = nest ] || [ $gtype = regional ]; then
   export stetch_fac=1.5          # Stretching factor for the grid
+  export stretch_fac=1.5          # Stretching factor for the grid
   export target_lon=-97.5        # center longitude of the highest resolution tile
   export target_lat=35.5         # center latitude of the highest resolution tile
   export refine_ratio=3          # Specify the refinement ratio for nest grid
@@ -166,7 +159,7 @@ else
 fi
 
 #----------------------------------------------------------------
-#filter_topo parameters. C192->50km, C384->25km, C768->13km, C1152->8.5km, C3072->3.2km
+#filter_topo parameters. C192->50km, C384->25km, C96->13km, C1152->8.5km, C3072->3.2km
 if [ $res -eq 48 ]; then 
  export cd4=0.12;  export max_slope=0.12; export n_del2_weak=4;   export peak_fac=1.1  
 elif [ $res -eq 96 ]; then 
@@ -225,12 +218,6 @@ elif [ $machine = THEIA ]; then
     echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
     $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
   done
-elif [ $machine = CHEYENNE ]; then
-  for tile in 1 2 3 4 5 6 ; do
-    echo
-    echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
-    $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
-  done
 fi
   echo "End uniform orography generation at `date`"
 #
@@ -241,7 +228,7 @@ fi
 
 elif [ $gtype = stretch ]; then
   export ntiles=6
-  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+  export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
   export name=C${res}r${rn}_${title}
   export grid_dir=$TMPDIR/${name}/grid
   export orog_dir=$TMPDIR/$name/orog
@@ -250,7 +237,7 @@ elif [ $gtype = stretch ]; then
 
   echo 
   echo "............ execute fv3gfs_make_grid.sh ................."
-  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stetch_fac $target_lon $target_lat $script_dir
+  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stretch_fac $target_lon $target_lat $script_dir
 #
   echo "Begin stretch orography generation at `date`"
 #
@@ -276,12 +263,6 @@ elif [ $machine = THEIA ]; then
     echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
     $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
   done
-elif [ $machine = CHEYENNE ]; then
-  for tile in 1 2 3 4 5 6 ; do
-    echo
-    echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
-    $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
-  done
 fi
   echo "End stretch orography generation at `date`"
 #
@@ -292,7 +273,7 @@ fi
 
 elif [ $gtype = nest ]; then
   export ntiles=7
-  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+  export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
   export name=C${res}r${rn}n${refine_ratio}_${title}
   export grid_dir=$TMPDIR/${name}/grid
   export orog_dir=$TMPDIR/$name/orog
@@ -301,7 +282,7 @@ elif [ $gtype = nest ]; then
 
   echo 
   echo "............ execute fv3gfs_make_grid.sh ................."
-  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stetch_fac $target_lon $target_lat $refine_ratio $istart_nest $jstart_nest $iend_nest $jend_nest $halo $script_dir
+  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stretch_fac $target_lon $target_lat $refine_ratio $istart_nest $jstart_nest $iend_nest $jend_nest $halo $script_dir
 
   echo "Begin stretch nest orography generation at `date`"
 #
@@ -322,19 +303,23 @@ if [ $machine = WCOSS_C ]; then
 
   aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
   rm $TMPDIR/orog.file1
-elif [ $machine = THEIA ]; then
- for tile in 1 2 3 4 5 6 7; do
+ elif [ $machine = DELL ]; then
+  echo "$script_dir/fv3gfs_make_orog.sh $res 1 $grid_dir $orog_dir $script_dir $topo $TMPDIR " >$TMPDIR/orog.file1
+  echo "$script_dir/fv3gfs_make_orog.sh $res 3 $grid_dir $orog_dir $script_dir $topo $TMPDIR " >>$TMPDIR/orog.file1
+  echo "$script_dir/fv3gfs_make_orog.sh $res 4 $grid_dir $orog_dir $script_dir $topo $TMPDIR " >>$TMPDIR/orog.file1
+  echo "$script_dir/fv3gfs_make_orog.sh $res 2 $grid_dir $orog_dir $script_dir $topo $TMPDIR " >>$TMPDIR/orog.file1
+  echo "$script_dir/fv3gfs_make_orog.sh $res 5 $grid_dir $orog_dir $script_dir $topo $TMPDIR " >>$TMPDIR/orog.file1
+  echo "$script_dir/fv3gfs_make_orog.sh $res 6 $grid_dir $orog_dir $script_dir $topo $TMPDIR " >>$TMPDIR/orog.file1
+  echo "$script_dir/fv3gfs_make_orog.sh $res 7 $grid_dir $orog_dir $script_dir $topo $TMPDIR " >>$TMPDIR/orog.file1
+  mpirun cfp $TMPDIR/orog.file1
+  rm $TMPDIR/orog.file1
+ elif [ $machine = THEIA ]; then
+  for tile in 1 2 3 4 5 6 7; do
     echo
     echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
     $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
   done
-elif [ $machine = CHEYENNE ]; then
- for tile in 1 2 3 4 5 6 7; do
-    echo
-    echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
-    $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
-  done
-fi
+ fi
   echo "Grid and orography files are now prepared for nested grid"
 elif [ $gtype = regional ]; then
 #
@@ -386,7 +371,7 @@ set -x
 #
   export ntiles=1
   tile=7
-  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
+  export rn=$( echo "$stretch_fac * 10" | bc | cut -c1-2 )
   export name=C${res}r${rn}n${refine_ratio}_${title}
   export grid_dir=$TMPDIR/${name}/grid
   export orog_dir=$TMPDIR/$name/orog
@@ -395,7 +380,7 @@ set -x
 
   echo
   echo "............ execute fv3gfs_make_grid.sh ................."
-  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stetch_fac $target_lon $target_lat $refine_ratio $istart_nest_halo $jstart_nest_halo $iend_nest_halo $jend_nest_halo $halo $script_dir
+  $script_dir/fv3gfs_make_grid.sh $res $grid_dir $stretch_fac $target_lon $target_lat $refine_ratio $istart_nest_halo $jstart_nest_halo $iend_nest_halo $jend_nest_halo $halo $script_dir
 
   echo "Begin regional orography generation at `date`"
 #
@@ -421,10 +406,6 @@ elif [ $machine = THEIA ]; then
     echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
     $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
 ######################  done
-elif [ $machine = CHEYENNE ]; then
-    echo
-    echo "............ execute fv3gfs_make_orog.sh for tile $tile .................."
-    $script_dir/fv3gfs_make_orog.sh $res $tile $grid_dir $orog_dir $script_dir $topo $TMPDIR
 fi
   echo
   echo "............ execute fv3gfs_filter_topo.sh .............."
@@ -443,9 +424,6 @@ if [ $machine = WCOSS_C ]; then
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.orog
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.grid
 elif [ $machine = THEIA ] || [ $machine = DELL ]; then
-  time $exec_dir/shave.x <input.shave.orog
-  time $exec_dir/shave.x <input.shave.grid
-elif [ $machine = CHEYENNE ]; then
   time $exec_dir/shave.x <input.shave.orog
   time $exec_dir/shave.x <input.shave.grid
 fi
@@ -468,9 +446,6 @@ if [ $machine = WCOSS_C ]; then
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.orog.halo$halo0
   aprun -n 1 -N 1 -j 1 -d 1 -cc depth $exec_dir/shave.x <input.shave.grid.halo$halo
 elif [ $machine = THEIA ] || [ $machine = DELL ]; then
-  time $exec_dir/shave.x <input.shave.orog.halo$halo0
-  time $exec_dir/shave.x <input.shave.grid.halo$halo
-elif [ $machine = CHEYENNE ]; then
   time $exec_dir/shave.x <input.shave.orog.halo$halo0
   time $exec_dir/shave.x <input.shave.grid.halo$halo
 fi
