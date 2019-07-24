@@ -12,7 +12,7 @@
      chksum_debug = .false.
      dycore_only = .false.
      fdiag = 1
-     ccpp_suite = 'FV3_GSD'
+     ccpp_suite = 'FV3_GSD_v0'
 /
 
 &diag_manager_nml

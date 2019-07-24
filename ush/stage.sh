@@ -234,7 +234,7 @@ if [ "$CCPP" = "true" ]; then
   ln_vrfy -sf -t $RUNDIR ../module-setup.sh
   ln_vrfy -sf -t $RUNDIR ../modules.fv3
   if [ "$CCPP_phys_suite" = "GSD" ]; then
-    ln_vrfy -sf -t $RUNDIR ../suite_FV3_GSD.xml
+    ln_vrfy -sf -t $RUNDIR ../suite_FV3_GSD_v0.xml
   elif [ "$CCPP_phys_suite" = "GFS" ]; then
     ln_vrfy -sf -t $RUNDIR ../suite_FV3_GFS_2017_gfdlmp.xml
   fi

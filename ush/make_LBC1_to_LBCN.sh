@@ -238,11 +238,10 @@ esac
 case "$EXTRN_MDL_NAME_LBCS" in
 
 "GFS")
-  tracers_input="\"spfh\",\"o3mr\",\"clwmr\""
-#  tracers_input="\"sphum\",\"liq_wat\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"o3mr\""
-#
-  tracers="\"sphum\",\"o3mr\",\"liq_wat\""
-#  tracers="\"sphum\",\"liq_wat\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"o3mr\""
+#Last three tracers (number concentrations) only for GSD physics
+ tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
+ tracers_input="\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\""
+
   ;;
 
 "RAPX")

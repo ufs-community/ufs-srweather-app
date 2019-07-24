@@ -402,16 +402,18 @@ details:
 # have to be modified to accomodate the case of the first character of
 # EXTRN_MDL_ARCVREL_DIR not being a "/".
 #
-      if [ "${EXTRN_MDL_ARCVREL_DIR:0:1}" = "/" ]; then
+      if [ "${EXTRN_MDL_ARCVREL_DIR:0:1}" = "/" -o \
+           "${EXTRN_MDL_ARCVREL_DIR:0:2}" = "./" ]; then
 
-        mv_vrfy .$EXTRN_MDL_ARCVREL_DIR/* .
+        #mv_vrfy .$EXTRN_MDL_ARCVREL_DIR/* .
+        mv_vrfy $EXTRN_MDL_ARCVREL_DIR/* .
 #
 # Get the first subdirectory in EXTRN_MDL_ARCVREL_DIR, i.e. the directo-
 # ry after the first forward slash.  This is the subdirectory that we 
 # want to remove.
 #
         subdir_to_remove=$( printf "%s" "${EXTRN_MDL_ARCVREL_DIR}" | \
-                            sed -r 's|^\/([^/]*).*|\1|' )
+                           sed -r 's%^(\/|\.\/)([^/]*).*%\2%' ) 
         rm_vrfy -rf ./$subdir_to_remove
 #
 # If EXTRN_MDL_ARCVREL_DIR does not start with a "/" (and it is not 

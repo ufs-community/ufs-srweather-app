@@ -328,15 +328,24 @@ anl_or_fcst must be set to one of the following:
 
     case "$extrn_mdl" in
 
+    #"GSMGFS")
+##      filenames=( "atm" "sfc" "nst" )
+#      filenames=( "atm" "sfc" )
+#      prefix="gfs.t${hh}z."
+#      filenames=( "${filenames[@]/#/$prefix}" )
+#      suffix="anl.nemsio"
+#      filenames=( "${filenames[@]/%/$suffix}" )
+#      ;;
+
+  # "FV3GFS"
     "GFS")
-#      filenames=( "atm" "sfc" "nst" )
       filenames=( "atm" "sfc" )
       prefix="gfs.t${hh}z."
       filenames=( "${filenames[@]/#/$prefix}" )
       suffix="anl.nemsio"
       filenames=( "${filenames[@]/%/$suffix}" )
       ;;
-
+  
     "RAPX")
       filenames=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
       ;;
@@ -370,6 +379,15 @@ or_fcst):
 
     case "$extrn_mdl" in
 
+  #  "GSMGFS")
+  #    fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
+  #    prefix="gfs.t${hh}z.atmf"
+  #    filenames=( "${fcst_hhh[@]/#/$prefix}" )
+  #    suffix=".nemsio"
+  #    filenames=( "${filenames[@]/%/$suffix}" )
+  #    ;;
+
+    #"FV3GFS")
     "GFS")
       fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
       prefix="gfs.t${hh}z.atmf"
@@ -530,16 +548,36 @@ has not been specified for this external model:
 #
   case "$extrn_mdl" in
 
-  "GFS")
+#  "GFS")
+#    arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+#    arcv_file_fmt="tar"
+#    arcv_filename="gpfs_hps_nco_ops_com_gfs_prod_gfs.${cdate}."
+#    if [ "$anl_or_fcst" = "ANL" ]; then
+#      arcv_filename="${arcv_filename}anl"
+#      arcvrel_dir="."
+#    elif [ "$anl_or_fcst" = "FCST" ]; then
+#      arcv_filename="${arcv_filename}sigma"
+#      arcvrel_dir="/gpfs/hps/nco/ops/com/gfs/prod/gfs.${yyyymmdd}"
+#    fi
+#    arcv_filename="${arcv_filename}.${arcv_file_fmt}"
+#    arcv_fullpath="$arcv_dir/$arcv_filename"
+#    ;;
+
+#  "FV3GFS")
+   "GSM")
     arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
     arcv_file_fmt="tar"
-    arcv_filename="gpfs_hps_nco_ops_com_gfs_prod_gfs.${cdate}."
+    arcv_filename="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${cdate}_${hh}."
     if [ "$anl_or_fcst" = "ANL" ]; then
-      arcv_filename="${arcv_filename}anl"
+      arcv_filename="${arcv_filename}gfs_nemsioa"
       arcvrel_dir="."
     elif [ "$anl_or_fcst" = "FCST" ]; then
-      arcv_filename="${arcv_filename}sigma"
-      arcvrel_dir="/gpfs/hps/nco/ops/com/gfs/prod/gfs.${yyyymmdd}"
+       if [ "$hh" -le "39" ]; then
+         arcv_filename="${arcv_filename}gfs_nemsioa"
+       else
+         arcv_filename="${arcv_filename}gfs_nemsiob"
+       fi.
+      arcvrel_dir="/gfs.${yyyymmdd}/${hh}"
     fi
     arcv_filename="${arcv_filename}.${arcv_file_fmt}"
     arcv_fullpath="$arcv_dir/$arcv_filename"

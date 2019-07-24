@@ -144,13 +144,17 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Are these still needed for chgres_cube?
+# Are these still needed for chgres_cube?  Probably not since they're 
+# created elsewhere, but may need them again if stage scripts are removed
+# to comply with NCO format.
 #
-ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
-            $WORKDIR_SHVE/${CRES}_grid.tile7.nc
-
-ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
-            $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
+#ln_vrfy -sf --relative 
+#        $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
+#        $WORKDIR_SHVE/${CRES}_grid.tile7.nc
+#
+#ln_vrfy -sf --relative
+#        $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
+#        $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -266,8 +270,8 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
   fn_sfc_nemsio="${EXTRN_MDL_FNS[1]}"
 # This has to be fixed to that for EXTRN_MDL_NAME_ICSSURF, there is a "GFS_GAUSSIAN" (or better yet, spectral)
 # and a "GFS-FV3" option!!!
-  input_type="gfs_gaussian" # For spectral GFS Gaussian grid in nemsio format.
-#  input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
+#  input_type="gfs_gaussian" # For spectral GFS Gaussian grid in nemsio format.
+  input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
   ;;
 "RAPX")
   fn_grib2="${EXTRN_MDL_FNS[0]}"
@@ -329,19 +333,18 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
 # is cld_amt.  Why is that in the field_table at all (since it is a non-
 # prognostic field), and how should we handle it here??
 
-# I guess this works for spectral GFS but not for FV3GFS since the nemsio
-# output files of those have different variable names (see below).
-  tracers_input="\"spfh\",\"o3mr\",\"clwmr\""
 # I guess this works for FV3GFS but not for the spectral GFS since these
 # variables won't exist in the spectral GFS atmanl files.
 #  tracers_input="\"sphum\",\"liq_wat\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"o3mr\""
 #
 # Not sure if tracers(:) should include "cld_amt" since that is also in
 # the field_table for CDATE=2017100700 but is a non-prognostic variable.
-#
-#  tracers="\"sphum\",\"liq_wat\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"o3mr\""
-  tracers="\"sphum\",\"o3mr\",\"liq_wat\""
-#
+
+#Last three tracers (number concentrations) only for GSD physics
+ tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
+ tracers_input="\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\""
+
+
   numsoil_out="4"
   geogrid_file_input_grid=""  # How to get this to not be used???
   replace_vgtyp=".true."

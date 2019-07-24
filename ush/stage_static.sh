@@ -315,7 +315,7 @@ Copying the GFS physics suite XML file to the experiment directory..."
 
     print_info_msg_verbose "\
 Copying the GSD physics suite XML file and the Thompson microphysics CCN fixed file to the experiment directory..."
-    cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GSD_v0.xml $EXPTDIR/suite_FV3_GSD.xml
+    cp_vrfy $NEMSfv3gfs_DIR/ccpp/suites/suite_FV3_GSD_v0.xml $EXPTDIR/suite_FV3_GSD_v0.xml
     cp_vrfy $GSDFIX/CCN_ACTIVATE.BIN $EXPTDIR
 
   fi
