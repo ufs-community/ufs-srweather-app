@@ -98,6 +98,7 @@ Variables that are not modified by the workflow generation script.
     <join><cyclestr>&LOG_DIR;/make_grid_orog.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
   </task>
 <!--
@@ -115,6 +116,7 @@ Variables that are not modified by the workflow generation script.
     <join><cyclestr>&LOG_DIR;/make_sfc_climo.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
       <taskdep task="make_grid_orog"/>
@@ -136,6 +138,7 @@ Variables that are not modified by the workflow generation script.
     <join><cyclestr>&LOG_DIR;/stage_static.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
       <taskdep task="make_sfc_climo"/>
@@ -158,6 +161,7 @@ Variables that are not modified by the workflow generation script.
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_ICSSURF;</value></envar>
     <envar><name>ICSSURF_OR_LBCS</name><value>ICSSURF</value></envar>
 
@@ -190,6 +194,7 @@ cle.
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_LBCS;</value></envar>
     <envar><name>ICSSURF_OR_LBCS</name><value>LBCS</value></envar>
 
@@ -222,6 +227,7 @@ cle.
     
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
       <taskdep task="get_files_ICSSURF"/>
@@ -244,6 +250,7 @@ cle.
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
       <taskdep task="get_files_LBCS"/>
@@ -266,6 +273,7 @@ cle.
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
       <and>
@@ -291,6 +299,7 @@ cle.
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
       <taskdep task="stage"/>
@@ -317,6 +326,7 @@ cle.
 
       <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
       <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+      <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
 
       <dependency>
