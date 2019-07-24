@@ -144,13 +144,17 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Are these still needed for chgres_cube?
+# Are these still needed for chgres_cube?  Probably not since they're 
+# created elsewhere, but may need them again if stage scripts are removed
+# to comply with NCO format.
 #
-ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
-            $WORKDIR_SHVE/${CRES}_grid.tile7.nc
-
-ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
-            $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
+#ln_vrfy -sf --relative 
+#        $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
+#        $WORKDIR_SHVE/${CRES}_grid.tile7.nc
+#
+#ln_vrfy -sf --relative
+#        $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
+#        $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
 #
 #-----------------------------------------------------------------------
 #

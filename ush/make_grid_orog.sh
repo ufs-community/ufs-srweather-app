@@ -716,6 +716,9 @@ fi
 #
 print_info_msg_verbose "Starting filtering of orography..."
 
+# The script below creates absolute symlinks in $WORKDIR_FLTR.  That's 
+# probably necessary for NCO but probably better to create relative 
+# links for the community workflow.
 $USHDIR/$orog_fltr_scr \
   $RES \
   $WORKDIR_GRID $WORKDIR_OROG $WORKDIR_FLTR \
