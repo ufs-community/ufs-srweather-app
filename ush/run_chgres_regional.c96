@@ -1,15 +1,17 @@
 #!/bin/sh
-#!/bin/sh
+#
+# ----IMPORTANT INFORMATION FOR RUNNING THIS SCRIPT----
+# On Theia all other batch commands must be commented out.
+#
 #----WCOSS DELL JOBCARD
 #BSUB /bin/sh
 #BSUB -P FV3GFS-T2O
 #BSUB -n 1
 #BSUB -R span[ptile=1]
-#BSUB -o log.chgres_96.%J
-#BSUB -e log.chgres_96.%J
+#BSUB -o log.chgres_C96.%J
+#BSUB -e log.chgres_C96.%J
 #BSUB -J grid_fv3
 #BSUB -q debug
-##BSUB -M 2400
 #BSUB -W 00:30
 #----WCOSS_CRAY JOBCARD
 ##BSUB -L /bin/sh
@@ -32,18 +34,28 @@
 ##BSUB -a openmp
 ##BSUB -n 24
 ##BSUB -R span[ptile=24]
-#----THEIA JOBCARD
-#PBS -l nodes=1:ppn=24
-#PBS -l walltime=0:30:00
-#PBS -A gsd-fv3
-#PBS -N chgres_fv3
-#PBS -q debug
-#PBS -o log.chgres.$PBS_JOBID
-#PBS -e log.chgres.$PBS_JOBID
+#----THEIA MOAB JOBCARD
+##PBS -l nodes=1:ppn=24
+##PBS -l walltime=0:30:00
+##PBS -A fv3-cpu
+##PBS -N chgres_fv3
+##PBS -q debug
+##PBS -o log.chgres_c96.$PBS_JOBID
+##PBS -e log.chgres_c96.$PBS_JOBID
 #
+#----THEIA SLURM JOBCARD
+#SBATCH -N 1 --ntasks-per-node=24
+#SBATCH -t 0:30:00
+#SBATCH -A fv3-cam
+#SBATCH -J chgres_fv3_bc
+#SBATCH -q debug
+#SBATCH -o log.chgres_C96.%j
+#SBATCH -e log.chgres_C96.%j
+#SBATCH --exclusive
+#SBATCH -D.
 set -x
 
-export NODES=2
+export NODES=1
 
 #
 # the following exports can all be set or just will default to what is in global_chgres_driver.sh
@@ -52,12 +64,13 @@ export gtype=regional        # grid type = uniform, stretch, nest, or regional
 export OMP_NUM_THREADS_CH=24 #default for openMP threads
 export machine=DELL          #WCOSS_C,WCOSS,THEIA,DELL
 export CASE=C96             # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
-export CDATE=2018091700      # format yyyymmddhh yyyymmddhh ...
+export CDATE=2019041000      # format yyyymmddhh yyyymmddhh ...
 export LEVS=64
 export LSOIL=4
 export NTRAC=7
 export ictype=pfv3gfs        # opsgfs for q3fy17 gfs with new land datasets; oldgfs for q2fy16 gfs, pfv3gfs for parallel fv3 input
 export nst_anl=.false.       # false or true to include NST analysis
+export NSTANL=NULL
 #
 # NOTE: we have added ictype=pfv3gfs to allow for use of the FV3 parallel run data for chgres. In this job it is used to
 #       define the location of the data on theia and luna/surge. The job runs global_chgres_driver.sh. That script sets 
@@ -71,14 +84,14 @@ if [ $machine = WCOSS_C ]; then
  . $MODULESHOME/init/sh 2>>/dev/null
  module load PrgEnv-intel prod_envir cfp-intel-sandybridge/1.1.0 2>>/dev/null
  module list
- export BASE_GSM=/gpfs/hps3/emc/meso/noscrub/${LOGNAME}/fv3gfs
+ export BASE_GSM=/gpfs/hps3/emc/meso/noscrub/${LOGNAME}/fv3sar_workflow
  export KMP_AFFINITY=disabled
  export FIXgsm=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am
  export DATA=/gpfs/hps/ptmp/${LOGNAME}/wrk.chgres
  export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
  if [ $ictype = pfv3gfs ]; then
   hour=`echo $CDATE | cut -c 9-10`
-  export INIDIR=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$ymd/$hour
+  export INIDIR=/gpfs/dell1/nco/ops/com/gfs/para/gfs.$ymd/$hour
  else
   export INIDIR=/gpfs/hps/nco/ops/com/gfs/prod/gfs.$ymd
  fi
@@ -90,12 +103,12 @@ elif [ $machine = WCOSS ]; then
  module list
  set -x
  export APRUNC="time"
- export BASE_GSM=/gpfs/gd3/ibm/noscrub/${LOGNAME}/fv3gfs
+ export BASE_GSM=/gpfs/gd3/ibm/noscrub/${LOGNAME}/fv3sar_workflow
  export FIXgsm=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am
  export DATA=/ptmpp2/${LOGNAME}/wrk.chgres
  if [ $ictype = pfv3gfs ]; then
   hour=`echo $CDATE | cut -c 9-10`
-  export INIDIR=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$ymd/$hour
+  export INIDIR=/gpfs/dell1/nco/ops/com/gfs/para/gfs.$ymd/$hour
  else
   export INIDIR=/gpfs/hps/nco/ops/com/gfs/prod/gfs.$ymd
  fi
@@ -107,8 +120,8 @@ elif [ $machine = THEIA ]; then
  module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
  module list
  set -x
- export BASE_GSM=/scratch4/NCEPDEV/fv3-cam/noscrub/${LOGNAME}/fv3gfs
- export FIXgsm=/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am
+ export BASE_GSM=/scratch4/NCEPDEV/fv3-cam/noscrub/${LOGNAME}/fv3sar_workflow
+ export FIXgsm=$BASE_GSM/fix/fix_am
  export DATA=/scratch4/NCEPDEV/stmp4/${LOGNAME}/wrk.chgres
  export APRUNC="time"
  export ymd=`echo $CDATE | cut -c 1-8`
@@ -120,15 +133,14 @@ elif [ $machine = THEIA ]; then
   export INIDIR=$COMROOTp2/gfs/prod/gfs.$ymd
  fi
  export HOMEgfs=$PBS_O_WORKDIR/..
+ export HOMEgfs=$SLURM_SUBMIT_DIR/..
  ulimit -a
  ulimit -s unlimited
  export APRUNC="time"
 elif [ $machine = DELL ]; then
  set +x
  . /usrx/local/prod/lmod/lmod/init/sh
- module load EnvVars/1.0.2 lmod/7.7 settarg/7.7 lsf/10.1 prod_envir/1.0.2
- module use -a /usrx/local/dev/modulefiles
- module load git/2.14.3
+ module load EnvVars/1.0.2 settarg/7.7 lsf/10.1 prod_envir/1.0.2
  module load ips/18.0.1.163
  module load impi/18.0.1
  module load NetCDF/4.5.0
@@ -136,13 +148,14 @@ elif [ $machine = DELL ]; then
  module list
  set -x
  export DATA=/gpfs/dell3/ptmp/${LOGNAME}/wrk.chgres
- export BASE_GSM=/gpfs/dell2/emc/modeling/noscrub/${LOGNAME}/fv3gfs
- export FIXgsm==/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am
+ export BASE_GSM=/gpfs/dell2/emc/modeling/noscrub/${LOGNAME}/fv3sar_workflow
+ export FIXgsm=$BASE_GSM/fix/fix_am
  export KMP_AFFINITY=disabled
  export home_dir=$LS_SUBCWD/..
   if [ $ictype = pfv3gfs ]; then
   hour=`echo $CDATE | cut -c 9-10`
-  export INIDIR=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$ymd/$hour
+  export INIDIR=/gpfs/dell1/nco/ops/com/gfs/para/gfs.$ymd/$hour
+#/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$ymd/$hour
  else
   export INIDIR=/gpfs/hps/nco/ops/com/gfs/prod/gfs.$ymd
  fi

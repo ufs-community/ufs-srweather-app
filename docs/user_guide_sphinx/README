@@ -1,0 +1,29 @@
+Steps to build and use the Sphinx documentation tool:
+
+1) Get Sphinx and sphinxcontrib-bibtex installed on your desktop from
+    http://www.sphinx-doc.org/en/master/usage/installation.html
+    https://sphinxcontrib-bibtex.readthedocs.io/en/latest/quickstart.html#installation
+
+2) Create a Sphinx documentation root directory:
+   % mkdir docs
+   % cd docs
+
+3) Initialize your Sphinx project (set up an initial directory structure) using
+   % sphinx-quickstart
+
+   See http://www.sphinx-doc.org/en/master/usage/quickstart.html or
+       https://sphinx-rtd-tutorial.readthedocs.io/en/latest/sphinx-quickstart.html
+
+    for help.  You can answer (ENTER) to most of the questions.
+        
+To build html:
+
+From the directory above source and build, the sphinx project directory:
+
+make html
+
+Sphinx uses Latex to export the documentation as a PDF file.  To build pdf:
+
+make latexpdf
+
+It will generate a PDF file in ./build/latex/<sphinx-project-name>.pdf
