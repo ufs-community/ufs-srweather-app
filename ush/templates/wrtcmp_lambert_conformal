@@ -1,0 +1,25 @@
+
+write_groups:            <write_groups>
+write_tasks_per_group:   <write_tasks_per_group>
+num_files:               2
+filename_base:           'dyn''phy'
+output_file:             'netcdf'
+write_nemsioflip:        .false.
+write_fsyncflag:         .false.
+
+output_grid:             <output_grid>     # Coordinate system of output grid.
+cen_lon:                 <cen_lon>         # central longitude
+cen_lat:                 <cen_lat>         # central latitude
+stdlat1:                 <stdlat1>
+stdlat2:                 <stdlat2>
+nx:                      <nx>              # Number of points along x-axis.
+ny:                      <ny>              # Number of points along y-axis.
+lon1:                    <lon1>
+lat1:                    <lat1>
+dx:                      <dx>              # x-direction grid cell size.
+dy:                      <dy>              # y-direction grid cell size.
+
+nfhout:                  1
+nfhmax_hf:               60
+nfhout_hf:               1
+nsout:                   -1

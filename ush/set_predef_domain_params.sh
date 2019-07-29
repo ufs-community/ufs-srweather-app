@@ -1,7 +1,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# Check if predef_domain is set to a valid (non-empty) value.  If so:
+# Set grid and other parameters according to the value of the predefined
+# domain (predef_domain).  Note that the code will enter this script on-
+# ly if predef_domain has a valid (and non-empty) value.
+#
+# The following needs to be updated:
 #
 # 1) Reset the experiment title (expt_title).
 # 2) Reset the grid parameters.
@@ -76,8 +80,21 @@ case $predef_domain in
 
     layout_x="14"
     layout_y="14"
-    write_tasks_per_group="14"
     blocksize="26"
+
+    if [ "$quilting" = ".true." ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group="14"
+      WRTCMP_output_grid="rotated_latlon"
+      WRTCMP_cen_lon="${lon_rgnl_ctr}"
+      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_lon_lwr_left="-57.9926"
+      WRTCMP_lat_lwr_left="-50.74344"
+      WRTCMP_lon_upr_rght="57.99249"
+      WRTCMP_lat_upr_rght="50.74344"
+      WRTCMP_dlon="0.1218331"
+      WRTCMP_dlat="0.121833"
+    fi
 
   elif [ "$grid_gen_method" = "JPgrid" ]; then
 
@@ -96,13 +113,22 @@ case $predef_domain in
 
     layout_x="16"
     layout_y="16"
-    write_tasks_per_group="16"
     blocksize="30"
 
-  fi
+    if [ "$quilting" = ".true." ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group="16"
+      WRTCMP_output_grid="rotated_latlon"
+      WRTCMP_cen_lon="${lon_rgnl_ctr}"
+      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_lon_lwr_left="-57.9926"
+      WRTCMP_lat_lwr_left="-50.74344"
+      WRTCMP_lon_upr_rght="57.99249"
+      WRTCMP_lat_upr_rght="50.74344"
+      WRTCMP_dlon="0.1218331"
+      WRTCMP_dlat="0.121833"
+    fi
 
-  if [ "$quilting" = ".true." ]; then
-    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcmp_GSD_RAP"}
   fi
   ;;
 #
@@ -140,8 +166,24 @@ case $predef_domain in
 
     layout_x="20"
     layout_y="20"
-    write_tasks_per_group="20"
     blocksize="36"
+
+# The following needs to be tested.
+    if [ "$quilting" = ".true." ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group="20"
+      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_cen_lon="${lon_ctr_T6}"
+      WRTCMP_cen_lat="${lat_ctr_T6}"
+      WRTCMP_stdlat1="${lat_ctr_T6}"
+      WRTCMP_stdlat2="${lat_ctr_T6}"
+      WRTCMP_nx="1738"
+      WRTCMP_ny="974"
+      WRTCMP_lon_lwr_left="-122.21414225"
+      WRTCMP_lat_lwr_left="22.41403305"
+      WRTCMP_dx="3000.0"
+      WRTCMP_dy="3000.0"
+    fi
 
   elif [ "$grid_gen_method" = "JPgrid" ]; then
 
@@ -150,29 +192,6 @@ case $predef_domain in
 
     delx="3000.0"
     dely="3000.0"
-
-#
-# This is the old HRRR-like grid that is slightly larger than the WRF-
-# ARW HRRR grid.
-#
-if [ 0 = 1 ]; then
-
-    nx_T7=1800
-    ny_T7=1120
-
-    nhw_T7=6
-
-    dt_atmos="50"
-
-    layout_x="20"
-    layout_y="20"
-    write_tasks_per_group="20"
-    blocksize="36"
-#
-# This is the new HRRR-like grid that is slightly smaller than the WRF-
-# ARW HRRR grid (so that it can be initialized off the latter).
-#
-else
 
     nx_T7=1734
     ny_T7=1008
@@ -183,16 +202,24 @@ else
 
     layout_x="34"
     layout_y="24"
-    write_tasks_per_group="24"
     blocksize="34"
 
-fi
+    if [ "$quilting" = ".true." ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group="24"
+      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_cen_lon="${lon_rgnl_ctr}"
+      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_stdlat1="${lat_rgnl_ctr}"
+      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_nx="1738"
+      WRTCMP_ny="974"
+      WRTCMP_lon_lwr_left="-122.21414225"
+      WRTCMP_lat_lwr_left="22.41403305"
+      WRTCMP_dx="$delx"
+      WRTCMP_dy="$dely"
+    fi
 
-
-  fi
-
-  if [ "$quilting" = ".true." ]; then
-    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcmp_HRRR"}
   fi
   ;;
 #
@@ -281,10 +308,6 @@ fi
 
     nhw_T7=6
 
-  fi
-
-  if [ "$quilting" = ".true." ]; then
-    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcmp_EMC_CONUS"}
   fi
   ;;
 #
@@ -377,10 +400,36 @@ predefined domain:
 "
 
   fi
-
-  if [ "$quilting" = ".true." ]; then
-    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcmp_EMC_AK"}
-  fi
   ;;
 #
 esac
+#
+#-----------------------------------------------------------------------
+#
+# Set the name of the template file containing placeholder values for
+# write-component parameters (if this file name is not already set).  
+# This file will be appended to the model_configure file, and place-
+# holder values will be replaced with actual ones.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$quilting" = ".true." ]; then
+#
+# First, make sure that WRTCMP_output_grid is set to a valid value.
+#
+  iselementof "$WRTCMP_output_grid" valid_vals_WRTCMP_output_grid || { \
+  valid_vals_WRTCMP_output_grid_str=$(printf "\"%s\" " "${valid_vals_WRTCMP_output_grid[@]}");
+  print_err_msg_exit "\
+The write-component coordinate system specified in WRTCMP_output_grid is 
+not supported:
+  WRTCMP_output_grid = \"$WRTCMP_output_grid\"
+WRTCMP_output_grid must be set to one of the following:
+  $valid_vals_WRTCMP_output_grid_str
+"; }
+#
+# Now set the name of the write-component template file.
+#
+  WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcmp_${WRTCMP_output_grid}"}
+
+fi
+

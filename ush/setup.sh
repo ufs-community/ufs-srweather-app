@@ -917,7 +917,7 @@ fi
 #
 PE_MEMBER01=$(( $layout_x*$layout_y ))
 if [ "$quilting" = ".true." ]; then
-  PE_MEMBER01=$(( $PE_MEMBER01 + $write_groups*$write_tasks_per_group ))
+  PE_MEMBER01=$(( $PE_MEMBER01 + ${WRTCMP_write_groups}*${WRTCMP_write_tasks_per_group} ))
 fi
 
 print_info_msg_verbose "\
@@ -1028,7 +1028,7 @@ fi
 #
 if [ "$quilting" = ".true." ]; then
 
-  rem=$(( $ny_T7%$write_tasks_per_group ))
+  rem=$(( $ny_T7%${WRTCMP_write_tasks_per_group} ))
 
   if [ $rem -ne 0 ]; then
     print_err_msg_exit "\
