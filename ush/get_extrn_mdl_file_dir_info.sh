@@ -328,17 +328,17 @@ anl_or_fcst must be set to one of the following:
 
     case "$extrn_mdl" in
 
-    #"GSMGFS")
-##      filenames=( "atm" "sfc" "nst" )
-#      filenames=( "atm" "sfc" )
-#      prefix="gfs.t${hh}z."
-#      filenames=( "${filenames[@]/#/$prefix}" )
-#      suffix="anl.nemsio"
-#      filenames=( "${filenames[@]/%/$suffix}" )
-#      ;;
+    "GSMGFS")
+#      filenames=( "atm" "sfc" "nst" )
+      filenames=( "atm" "sfc" )
+      prefix="gfs.t${hh}z."
+      filenames=( "${filenames[@]/#/$prefix}" )
+      suffix="anl.nemsio"
+      filenames=( "${filenames[@]/%/$suffix}" )
+      ;;
 
-  # "FV3GFS"
-    "GFS")
+    "FV3GFS")
+#      filenames=( "atm" "sfc" "nst" )
       filenames=( "atm" "sfc" )
       prefix="gfs.t${hh}z."
       filenames=( "${filenames[@]/#/$prefix}" )
@@ -379,16 +379,15 @@ or_fcst):
 
     case "$extrn_mdl" in
 
-  #  "GSMGFS")
-  #    fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
-  #    prefix="gfs.t${hh}z.atmf"
-  #    filenames=( "${fcst_hhh[@]/#/$prefix}" )
-  #    suffix=".nemsio"
-  #    filenames=( "${filenames[@]/%/$suffix}" )
-  #    ;;
+    "GSMGFS")
+      fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
+      prefix="gfs.t${hh}z.atmf"
+      filenames=( "${fcst_hhh[@]/#/$prefix}" )
+      suffix=".nemsio"
+      filenames=( "${filenames[@]/%/$suffix}" )
+      ;;
 
-    #"FV3GFS")
-    "GFS")
+    "FV3GFS")
       fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
       prefix="gfs.t${hh}z.atmf"
       filenames=( "${fcst_hhh[@]/#/$prefix}" )
@@ -446,7 +445,37 @@ or_fcst):
 
   case "$extrn_mdl" in
 
-  "GFS")
+#
+# It is not clear which, if any, systems the (old) spectral GFS model is 
+# available on, so set sysdir for this external model to a null string.
+#
+  "GSMGFS")
+    case "$MACHINE" in
+    "WCOSS_C")
+      sysdir=""
+      ;;
+    "THEIA")
+      sysdir=""
+      ;;
+    "JET")
+      sysdir=""
+      ;;
+    "ODIN")
+      sysdir=""
+      ;;
+    *)
+      print_err_msg_exit "\
+The system directory in which to look for external model output files 
+has not been specified for this external model and machine combination:
+  extrn_mdl = \"$extrn_mdl\"
+  MACHINE = \"$MACHINE\"
+"
+      ;;
+    esac
+    ;;
+
+
+  "FV3GFS")
     case "$MACHINE" in
     "WCOSS_C")
       sysdir="$sysbasedir/gfs.${yyyymmdd}"
@@ -470,6 +499,7 @@ has not been specified for this external model and machine combination:
       ;;
     esac
     ;;
+
 
   "RAPX")
     case "$MACHINE" in
@@ -496,6 +526,7 @@ has not been specified for this external model and machine combination:
     esac
     ;;
 
+
   "HRRRX")
     case "$MACHINE" in
     "WCOSS_C")
@@ -520,6 +551,7 @@ has not been specified for this external model and machine combination:
       ;;
     esac
     ;;
+
 
   *)
     print_err_msg_exit "\
@@ -548,23 +580,22 @@ has not been specified for this external model:
 #
   case "$extrn_mdl" in
 
-#  "GFS")
-#    arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
-#    arcv_file_fmt="tar"
-#    arcv_filename="gpfs_hps_nco_ops_com_gfs_prod_gfs.${cdate}."
-#    if [ "$anl_or_fcst" = "ANL" ]; then
-#      arcv_filename="${arcv_filename}anl"
-#      arcvrel_dir="."
-#    elif [ "$anl_or_fcst" = "FCST" ]; then
-#      arcv_filename="${arcv_filename}sigma"
-#      arcvrel_dir="/gpfs/hps/nco/ops/com/gfs/prod/gfs.${yyyymmdd}"
-#    fi
-#    arcv_filename="${arcv_filename}.${arcv_file_fmt}"
-#    arcv_fullpath="$arcv_dir/$arcv_filename"
-#    ;;
+  "GSMGFS")
+    arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+    arcv_file_fmt="tar"
+    arcv_filename="gpfs_hps_nco_ops_com_gfs_prod_gfs.${cdate}."
+    if [ "$anl_or_fcst" = "ANL" ]; then
+      arcv_filename="${arcv_filename}anl"
+      arcvrel_dir="."
+    elif [ "$anl_or_fcst" = "FCST" ]; then
+      arcv_filename="${arcv_filename}sigma"
+      arcvrel_dir="/gpfs/hps/nco/ops/com/gfs/prod/gfs.${yyyymmdd}"
+    fi
+    arcv_filename="${arcv_filename}.${arcv_file_fmt}"
+    arcv_fullpath="$arcv_dir/$arcv_filename"
+    ;;
 
-#  "FV3GFS")
-   "GFS") #"GSMGFS")
+  "FV3GFS")
     arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
     arcv_file_fmt="tar"
     arcv_filename="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}."
@@ -619,7 +650,8 @@ echo "HELLO1111"
 pwd
 ls -alF
 echo "HELLO2222"
-  { cat << EOM > $output_fn
+# Change output_fn to output_fp???
+  { pwd; cat << EOM > $output_fn
 $glob_var_name_cdate="$cdate"
 $glob_var_name_lbc_update_fhrs=( $( printf "\"%s\" " "${lbc_update_fhrs[@]}" ))
 $glob_var_name_filenames=( $( printf "\"%s\" " "${filenames[@]}" ))

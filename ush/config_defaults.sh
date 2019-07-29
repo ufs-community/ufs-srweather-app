@@ -259,8 +259,8 @@ fcst_len_hrs="24"
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_NAME_ICSSURF="GFS"
-EXTRN_MDL_NAME_LBCS="GFS"
+EXTRN_MDL_NAME_ICSSURF="FV3GFS"
+EXTRN_MDL_NAME_LBCS="FV3GFS"
 LBC_UPDATE_INTVL_HRS="6"
 EXTRN_MDL_INFO_FN="extrn_mdl_info.sh"
 #EXTRN_MDL_INFO_VAR_NAMES=( \
