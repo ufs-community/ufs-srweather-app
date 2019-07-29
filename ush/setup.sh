@@ -234,7 +234,21 @@ predef_domain must be set either to an empty string or to one of the following:
 fi
 
 
-
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that preexisting_dir_method is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$preexisting_dir_method" valid_vals_preexisting_dir_method || { \
+valid_vals_preexisting_dir_method_str=$(printf "\"%s\" " "${valid_vals_preexisting_dir_method[@]}");
+print_err_msg_exit "\
+Value specified in preexisting_dir_method is not supported:
+  preexisting_dir_method = \"$preexisting_dir_method\"
+preexisting_dir_method must be set to one of the following:
+  $valid_vals_preexisting_dir_method_str
+"; }
 #
 #-----------------------------------------------------------------------
 #

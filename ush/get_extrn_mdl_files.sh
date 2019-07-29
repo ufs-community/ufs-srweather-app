@@ -105,30 +105,30 @@ Could not change directory to EXTRN_MDL_FILES_DIR:
 #
 #-----------------------------------------------------------------------
 #
+EXTRN_MDL_INFO_FP="${EXTRN_MDL_FILES_DIR}/${EXTRN_MDL_INFO_FN}"
 
-#if [ -f "${EXTRN_MDL_INFO_FN}" ]; then
+#if [ -f "${EXTRN_MDL_INFO_FP}" ]; then
 #  print_err_msg_exit "\
-#File defining external model parameters (EXTRN_MDL_INFO_FN) already ex-
+#File defining external model parameters (EXTRN_MDL_INFO_FP) already ex-
 #ists in directory EXTRN_MDL_FILES_DIR:
 #  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-#  EXTRN_MDL_INFO_FN = \"${EXTRN_MDL_INFO_FN}\"
+#  EXTRN_MDL_INFO_FP = \"${EXTRN_MDL_INFO_FP}\"
 #"
 #else
   get_extrn_mdl_file_dir_info \
     "$EXTRN_MDL_NAME" "$ANL_OR_FCST" "$CDATE" "$TIME_OFFSET_HRS" \
-    "$EXTRN_MDL_INFO_FN" ${EXTRN_MDL_INFO_VAR_NAMES[@]}
+    "$EXTRN_MDL_INFO_FP" ${EXTRN_MDL_INFO_VAR_NAMES[@]}
 #fi
 
 
-if [ ! -f "${EXTRN_MDL_INFO_FN}" ]; then
+if [ ! -f "${EXTRN_MDL_INFO_FP}" ]; then
   print_err_msg_exit "\
-File defining external model parameters (EXTRN_MDL_INFO_FN) does not ex-
-ist in directory EXTRN_MDL_FILES_DIR:
-  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-  EXTRN_MDL_INFO_FN = \"${EXTRN_MDL_INFO_FN}\"
+File defining external model parameters (EXTRN_MDL_INFO_FP) does not ex-
+ist:
+  EXTRN_MDL_INFO_FP = \"${EXTRN_MDL_INFO_FP}\"
 "
 else
-  . ${EXTRN_MDL_INFO_FN}
+  . ${EXTRN_MDL_INFO_FP}
 fi
 #
 # As a check, print out the variables and their values set by the above 
