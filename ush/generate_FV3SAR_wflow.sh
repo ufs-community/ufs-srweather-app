@@ -156,7 +156,7 @@ sed -i -r -e "s|${regex_search}|${all_cycledefs}|g" "$WFLOW_XML_FP"
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; set +x; } > /dev/null 2>&1
-module load rocoto/1.3.0
+module load rocoto/1.3.1
 { restore_shell_opts; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
@@ -169,7 +169,7 @@ module load rocoto/1.3.0
 #-----------------------------------------------------------------------
 #
 WFLOW_DB_FN="${WFLOW_XML_FN%.xml}.db"
-load_rocoto_cmd="module load rocoto/1.3.0"
+load_rocoto_cmd="module load rocoto/1.3.1"
 rocotorun_cmd="rocotorun -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
 rocotostat_cmd="rocotostat -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
 
