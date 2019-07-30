@@ -121,6 +121,21 @@ VERBOSE must be set to one of the following:
   $valid_vals_VERBOSE_str
 "; }
 #
+# Set VERBOSE to either "TRUE" or "FALSE" so we don't have to consider
+# other valid values later on.
+#
+if [ "$VERBOSE" = "TRUE" ] || \
+   [ "$VERBOSE" = "true" ] || \
+   [ "$VERBOSE" = "YES" ] || \
+   [ "$VERBOSE" = "yes" ]; then
+  VERBOSE="TRUE"
+elif [ "$VERBOSE" = "FALSE" ] || \
+     [ "$VERBOSE" = "false" ] || \
+     [ "$VERBOSE" = "NO" ] || \
+     [ "$VERBOSE" = "no" ]; then
+  VERBOSE="FALSE"
+fi
+#
 #-----------------------------------------------------------------------
 #
 # Convert machine name to upper case if necessary.  Then make sure that

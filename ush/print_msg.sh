@@ -125,13 +125,11 @@ where msg is the message to print."
 #
 #-----------------------------------------------------------------------
 #
-# Print the message only if VERBOSE is set to "TRUE", "true", "YES", or
-# "yes".
+# Print the message only if VERBOSE is set to "TRUE".
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$VERBOSE" = "TRUE" ] || [ "$VERBOSE" = "true" ] || \
-     [ "$VERBOSE" = "YES" ] || [ "$VERBOSE" = "yes" ]; then
+  if [ "$VERBOSE" = "TRUE" ]; then
     print_info_msg "$1"
   fi
 #
