@@ -29,7 +29,8 @@ cd ${FV3SAR_DIR}/sorc
 #
 # Build sfc_climo_gen.
 #
-cd ${FV3SAR_DIR}/../UFS_UTILS_gridgen_sfc/sorc
+#cd ${FV3SAR_DIR}/../UFS_UTILS_gridgen_sfc/sorc
+cd ${FV3SAR_DIR}/../UFS_UTILS_develop/sorc
 ./build_sfc_climo_gen.sh >& out.build_sfc_climo_gen
 cp ../exec/sfc_climo_gen ${FV3SAR_DIR}/exec
 #

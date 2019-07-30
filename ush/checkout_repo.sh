@@ -28,9 +28,9 @@ where:
     To clone the CCPP-enabled version of the FV3 model code (run under 
     NEMS) from the appropriate github repository.
 
-    \"UFS_UTILS_gridgen_sfc\"
+    \"UFS_UTILS_develop\"
     To clone the UFS_UTILS (UFS common utilities) code from the appro-
-    priate VLab repository and check out the feature/gridgen_sfc branch.
+    priate VLab repository and check out the develop branch.
 
     \"UFS_UTILS_chgres_grib2\"
     To clone the UFS_UTILS (UFS common utilities) code from the appro-
@@ -81,7 +81,7 @@ else
   valid_vals_software_name=( \
 "NEMSfv3gfs" \
 "NEMSfv3gfs-CCPP" \
-"UFS_UTILS_gridgen_sfc" \
+"UFS_UTILS_develop" \
 "UFS_UTILS_chgres_grib2" \
 "UPP" \
   )
@@ -183,12 +183,12 @@ elif [ "$software_name" = "NEMSfv3gfs-CCPP" ]; then
     submod_branch_hashes=( "e98172b" "d4937c8" "e909ca1" "ec6498f" "16a0b6a" )
   fi 
 
-elif [ "$software_name" = "UFS_UTILS_gridgen_sfc" ]; then
+elif [ "$software_name" = "UFS_UTILS_develop" ]; then
 
   repo_name="UFS_UTILS"
   remote_URL="ssh://${USER}@vlab.ncep.noaa.gov:29418/$repo_name"
 
-  clone_path="$BASEDIR/${repo_name}_gridgen_sfc"
+  clone_path="$BASEDIR/${repo_name}_develop"
 #
 # How to get just the chgres_cube code, not the rest of the codes in 
 # UFS_UTILS?  Also, want to put the chgres_cube code under 
@@ -196,7 +196,7 @@ elif [ "$software_name" = "UFS_UTILS_gridgen_sfc" ]; then
 # How to do that?
 #
 #  clone_path="$BASEDIR/regional_workflow/sorc/UFS_UTILS.fd"
-  branch_name="feature/gridgen_sfc"
+  branch_name="develop"
 
   submod_subdirs=()
   submod_branch_names=()
