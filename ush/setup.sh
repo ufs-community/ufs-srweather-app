@@ -93,6 +93,21 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that RUN_ENVIR is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$RUN_ENVIR" valid_vals_RUN_ENVIR || { \
+valid_vals_RUN_ENVIR_str=$(printf "\"%s\" " "${valid_vals_RUN_ENVIR[@]}");
+print_err_msg_exit "\
+Value specified in RUN_ENVIR is not supported:
+  RUN_ENVIR = \"$RUN_ENVIR\"
+RUN_ENVIR must be set to one of the following:
+  $valid_vals_RUN_ENVIR_str
+"; }
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that VERBOSE is set to a valid value.
 #
 #-----------------------------------------------------------------------

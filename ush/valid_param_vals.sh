@@ -1,3 +1,4 @@
+valid_vals_RUN_ENVIR=("nco" "community")
 valid_vals_VERBOSE=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_MACHINE=("WCOSS_C" "WCOSS" "DELL" "THEIA" "JET" "ODIN" "CHEYENNE")
 valid_vals_predef_domain=("GSD_RAP" "GSD_HRRR" "EMC_CONUS" "EMC_AK")
