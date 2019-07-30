@@ -254,8 +254,6 @@ elif [ "$grid_gen_method" = "JPgrid" ]; then
 fi
 set_file_param "$FV3_NML_FP" "stretch_fac" "$stretch_fac"
 set_file_param "$FV3_NML_FP" "bc_update_interval" "$LBC_UPDATE_INTVL_HRS"
-
-
 #
 #-----------------------------------------------------------------------
 #

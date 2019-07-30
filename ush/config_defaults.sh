@@ -259,8 +259,8 @@ fcst_len_hrs="24"
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_NAME_ICSSURF="GFS"
-EXTRN_MDL_NAME_LBCS="GFS"
+EXTRN_MDL_NAME_ICSSURF="FV3GFS"
+EXTRN_MDL_NAME_LBCS="FV3GFS"
 LBC_UPDATE_INTVL_HRS="6"
 EXTRN_MDL_INFO_FN="extrn_mdl_info.sh"
 #EXTRN_MDL_INFO_VAR_NAMES=( \
@@ -671,6 +671,34 @@ blocksize="24"
 #-----------------------------------------------------------------------
 #
 quilting=".true."
-write_groups="1"
-write_tasks_per_group="20"
 print_esmf=".false."
+
+WRTCMP_write_groups="1"
+WRTCMP_write_tasks_per_group="20"
+WRTCMP_output_grid="''"
+WRTCMP_cen_lon=""
+WRTCMP_cen_lat=""
+WRTCMP_lon_lwr_left=""
+WRTCMP_lat_lwr_left=""
+#
+# The following are used only for the case of WRTCMP_output_grid set to
+# "'rotated_latlon'".
+#
+WRTCMP_lon_upr_rght=""
+WRTCMP_lat_upr_rght=""
+WRTCMP_dlon=""
+WRTCMP_dlat=""
+#
+# The following are used only for the case of WRTCMP_output_grid set to
+# "'lambert_conformal'".
+#
+WRTCMP_cen_lon=""
+WRTCMP_cen_lat=""
+WRTCMP_stdlat1=""
+WRTCMP_stdlat2=""
+WRTCMP_nx=""
+WRTCMP_ny=""
+WRTCMP_dx=""
+WRTCMP_dy=""
+
+

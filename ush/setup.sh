@@ -218,6 +218,21 @@ gtype="regional"
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that gtype is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$gtype" valid_vals_gtype || { \
+valid_vals_gtype_str=$(printf "\"%s\" " "${valid_vals_gtype[@]}");
+print_err_msg_exit "\
+Value specified in gtype is not supported:
+  gtype = \"$gtype\"
+gtype must be set to one of the following:
+  $valid_vals_gtype_str
+"; }
+#
+#-----------------------------------------------------------------------
+#
 # Make sure predef_domain is set to a valid value.
 #
 #-----------------------------------------------------------------------
@@ -290,83 +305,7 @@ CCPP_phys_suite must be set to one of the following:
 fi
 
 
-if [ "$grid_gen_method" = "GFDLgrid" ]; then
-#
-#-----------------------------------------------------------------------
-#
-# If predef_domain is set to a non-empty string, reset RES to the appro-
-# priate value.
-#
-#-----------------------------------------------------------------------
-#
-  case $predef_domain in
-#
-  "RAP")        # The RAP domain.
-    RES="384"
-    ;;
-#
-  "HRRR")       # The HRRR domain.
-    RES="384"
-    ;;
-#
-  "EMCCONUS")   # EMC's C768 domain over the CONUS.
-    RES="768"
-    ;;
-#
-  esac
-#
-#-----------------------------------------------------------------------
-#
-# Make sure RES is set to a valid value.
-#
-#-----------------------------------------------------------------------
-#
-  iselementof "$RES" valid_vals_RES || { \
-  valid_vals_RES_str=$(printf "\"%s\" " "${valid_vals_RES[@]}");
-  print_err_msg_exit "\
-Number of grid cells per tile (in each horizontal direction) specified in
-RES is not supported:
-  RES = \"$RES\"
-RES must be one of the following:
-  $valid_vals_RES_str
-"; }
-#
-#-----------------------------------------------------------------------
-#
-# Set the C-resolution.  This is just a convenience variable containing
-# the character "C" followed by the tile resolution.
-#
-#-----------------------------------------------------------------------
-#
-  CRES="C${RES}"
-#
-#-----------------------------------------------------------------------
-#
-# For a grid with grid_gen_method set to "JPgrid", the orography filter-
-# is performed by passing to the orography filtering the parameters for
-# an "equivalent" global uniform cubed-sphere grid.  These are the para-
-# meters that a global uniform cubed-sphere grid needs to have in order
-# to have a nominal grid cell size equal to that of the (average) cell
-# size on the regional grid.  These globally-equivalent parameters in-
-# clude a resolution (in units of number of cells in each of the two ho-
-# rizontal directions) and a stretch factor.  The equivalent resolution
-# is calculated in the script that generates the grid and orography, and
-# the stretch factor needs to be set to 1 because we are considering an
-# equivalent globally UNIFORM grid.  However, it turns out that with a 
-# non-symmetric regional grid (one in which nx is not equal to ny), set-
-# ting stretch_fac to 1 fails because the orography filtering program is
-# designed for a global cubed-sphere grid and thus assumes that nx and 
-# ny for a given tile are equal when stretch_fac is exactly equal to 1.  <-- Why is this?  Seems like symmetry btwn x and y should still hold when stretch_fac is not equal to 1.  
-# It turns out that the program will work if we set stretch_fac that is
-# not exactly 1.  This is what we do below. 
-#
-#-----------------------------------------------------------------------
-#
-elif [ "$grid_gen_method" = "JPgrid" ]; then
 
-  stretch_fac="0.999"
-
-fi
 
 
 
@@ -464,6 +403,9 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 # SORCDIR:
 # Directory containing various source codes.
 #
+# PARMDIR:
+# Directory containing parameter files, template files, etc.
+#
 # EXECDIR:
 # Directory containing various executable files.
 #
@@ -497,6 +439,7 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 FV3SAR_DIR="$BASEDIR/regional_workflow"
 USHDIR="$FV3SAR_DIR/ush"
 SORCDIR="$FV3SAR_DIR/sorc"
+PARMDIR="$FV3SAR_DIR/parm"
 EXECDIR="$FV3SAR_DIR/exec"
 TEMPLATE_DIR="$USHDIR/templates"
 
@@ -642,264 +585,63 @@ expt_title=${expt_title:+_$expt_title}
 #
 #-----------------------------------------------------------------------
 #
-# Check if predef_domain is set to a valid (non-empty) value.  If so:
-#
-# 1) Reset the experiment title (expt_title).
-# 2) Reset the grid parameters.
-# 3) If the write component is to be used (i.e. quilting is set to
-#    ".true.") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the
-#    name of the write-component template file is unset or empty, set
-#    that filename variable to the appropriate preexisting template
-#    file.
-#
-# For the predefined domains, we determine the starting and ending indi-
-# ces of the regional grid within tile 6 by specifying margins (in units
-# of number of cells on tile 6) between the boundary of tile 6 and that
-# of the regional grid (tile 7) along the left, right, bottom, and top
-# portions of these boundaries.  Note that we do not use "west", "east",
-# "south", and "north" here because the tiles aren't necessarily orient-
-# ed such that the left boundary segment corresponds to the west edge,
-# etc.  The widths of these margins (in units of number of cells on tile
-# 6) are specified via the parameters
-#
-#   num_margin_cells_T6_left
-#   num_margin_cells_T6_right
-#   num_margin_cells_T6_bottom
-#   num_margin_cells_T6_top
-#
-# where the "_T6" in these names is used to indicate that the cell count
-# is on tile 6, not tile 7.
-#
-# Note that we must make the margins wide enough (by making the above
-# four parameters large enough) such that a region of halo cells around
-# the boundary of the regional grid fits into the margins, i.e. such
-# that the halo does not overrun the boundary of tile 6.  (The halo is
-# added later in another script; its function is to feed in boundary
-# conditions to the regional grid.)  Currently, a halo of 5 regional
-# grid cells is used around the regional grid.  Setting num_margin_-
-# cells_T6_... to at least 10 leaves enough room for this halo.
+# If predef_domain is set to a non-empty string, set or reset parameters
+# according to the predefined domain specified.
 #
 #-----------------------------------------------------------------------
 #
-case $predef_domain in
+if [ ! -z "${predef_domain}" ]; then
+  . $USHDIR/set_predef_domain_params.sh
+fi
 #
-"RAP")  # The RAP domain.
+#-----------------------------------------------------------------------
 #
-# Prepend the string "_RAP" to expt_title.
+# For a "GFDLgrid" type of grid, make sure RES is set to a valid value.
+# Then set the C-resolution (CRES).
 #
-  expt_title="_RAP${expt_title}"
-
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
-
-    lon_ctr_T6=-106.0
-    lat_ctr_T6=54.0
-    stretch_fac=0.63
-    refine_ratio=3
-  
-    num_margin_cells_T6_left=10
-    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
-  
-    num_margin_cells_T6_right=10
-    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
-  
-    num_margin_cells_T6_bottom=10
-    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
-  
-    num_margin_cells_T6_top=10
-    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
-
-    dt_atmos="90"
-
-    layout_x="14"
-    layout_y="14"
-    write_tasks_per_group="14"
-    blocksize="26"
-
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
-
-    lon_rgnl_ctr=-106.0
-    lat_rgnl_ctr=54.0
-
-    delx="13000.0"
-    dely="13000.0"
-
-    nx_T7=960
-    ny_T7=960
-
-    nhw_T7=6
-
-    dt_atmos="90"
-
-    layout_x="16"
-    layout_y="16"
-    write_tasks_per_group="16"
-    blocksize="30"
-
-  fi
+#-----------------------------------------------------------------------
 #
-# If the write-component is being used and the variable (WRTCMP_PARAMS_-
-# TEMPLATE_FN) containing the name of the template file that specifies
-# various write-component parameters has not been specified or has been
-# set to an empty string, reset it to the preexisting template file for
-# the RAP domain.
-#
-  if [ "$quilting" = ".true." ]; then
-    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcomp_RAP"}
-  fi
-  ;;
-#
-"HRRR")  # The HRRR domain.
-#
-# Prepend the string "_HRRR" to expt_title.
-#
-  expt_title="_HRRR${expt_title}"
+if [ "$grid_gen_method" = "GFDLgrid" ]; then
 
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
-#
-# Reset grid parameters.
-#
-    lon_ctr_T6=-97.5
-    lat_ctr_T6=38.5
-    stretch_fac=1.65
-    refine_ratio=5
+  iselementof "$RES" valid_vals_RES || { \
+  valid_vals_RES_str=$(printf "\"%s\" " "${valid_vals_RES[@]}");
+  print_err_msg_exit "\
+Number of grid cells per tile (in each horizontal direction) specified in
+RES is not supported:
+  RES = \"$RES\"
+RES must be one of the following:
+  $valid_vals_RES_str
+"; }
 
-    num_margin_cells_T6_left=12
-    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
-  
-    num_margin_cells_T6_right=12
-    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
-  
-    num_margin_cells_T6_bottom=80
-    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
-  
-    num_margin_cells_T6_top=80
-    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
-
-    dt_atmos="50"
-
-    layout_x="20"
-    layout_y="20"
-    write_tasks_per_group="20"
-    blocksize="36"
-
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
-
-    lon_rgnl_ctr=-97.5
-    lat_rgnl_ctr=38.5
-
-    delx="3000.0"
-    dely="3000.0"
-
-#
-# This is the old HRRR-like grid that is slightly larger than the WRF-
-# ARW HRRR grid.
-#
-if [ 0 = 1 ]; then
-
-    nx_T7=1800
-    ny_T7=1120
-
-    nhw_T7=6
-
-    dt_atmos="50"
-
-    layout_x="20"
-    layout_y="20"
-    write_tasks_per_group="20"
-    blocksize="36"
-#
-# This is the new HRRR-like grid that is slightly smaller than the WRF-
-# ARW HRRR grid (so that it can be initialized off the latter).
-#
-else
-
-    nx_T7=1734
-    ny_T7=1008
-
-    nhw_T7=6
-
-    dt_atmos="50"
-
-    layout_x="34"
-    layout_y="24"
-    write_tasks_per_group="24"
-    blocksize="34"
+  CRES="C${RES}"
 
 fi
-
-
-  fi
 #
-# If the write-component is being used and the variable (WRTCMP_PARAMS_-
-# TEMPLATE_FN) containing the name of the template file that specifies
-# various write-component parameters has not been specified or has been
-# set to an empty string, reset it to the preexisting template file for
-# the HRRR domain.
+#-----------------------------------------------------------------------
 #
-  if [ "$quilting" = ".true." ]; then
-    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcomp_HRRR"}
-  fi
-  ;;
+# For a grid with grid_gen_method set to "JPgrid", the orography filter-
+# is performed by passing to the orography filtering the parameters for
+# an "equivalent" global uniform cubed-sphere grid.  These are the para-
+# meters that a global uniform cubed-sphere grid needs to have in order
+# to have a nominal grid cell size equal to that of the (average) cell
+# size on the regional grid.  These globally-equivalent parameters in-
+# clude a resolution (in units of number of cells in each of the two ho-
+# rizontal directions) and a stretch factor.  The equivalent resolution
+# is calculated in the script that generates the grid and orography, and
+# the stretch factor needs to be set to 1 because we are considering an
+# equivalent globally UNIFORM grid.  However, it turns out that with a 
+# non-symmetric regional grid (one in which nx is not equal to ny), set-
+# ting stretch_fac to 1 fails because the orography filtering program is
+# designed for a global cubed-sphere grid and thus assumes that nx and 
+# ny for a given tile are equal when stretch_fac is exactly equal to 1.  <-- Why is this?  Seems like symmetry btwn x and y should still hold when stretch_fac is not equal to 1.  
+# It turns out that the program will work if we set stretch_fac that is
+# not exactly 1.  This is what we do below. 
 #
-"EMCCONUS")  # EMC's C768 domain over the CONUS.
+#-----------------------------------------------------------------------
 #
-# Prepend the string "_EMCCONUS" to expt_title.
-#
-  expt_title="_EMCCONUS${expt_title}"
-
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
-
-    lon_ctr_T6=-97.5
-    lat_ctr_T6=38.5
-    stretch_fac=1.5
-    refine_ratio=3
-  
-    num_margin_cells_T6_left=61
-    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
-  
-    num_margin_cells_T6_right=67
-    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
-  
-    num_margin_cells_T6_bottom=165
-    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
-  
-    num_margin_cells_T6_top=171
-    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
-
-    dt_atmos="18"
-
-    layout_x="16"
-    layout_y="72"
-    write_tasks_per_group="72"
-    blocksize=32
-
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
-
-    lon_rgnl_ctr=-97.5
-    lat_rgnl_ctr=38.5
-
-    delx="3000.0"
-    dely="3000.0"
-
-    nx_T7=960
-    ny_T7=960
-
-    nhw_T7=6
-
-  fi
-#
-# If the write-component is being used and the variable (WRTCMP_PARAMS_-
-# TEMPLATE_FN) containing the name of the template file that specifies
-# various write-component parameters has not been specified or has been
-# set to an empty string, reset it to the preexisting template file for
-# the EMCCONUS domain.
-#
-  if [ "$quilting" = ".true." ]; then
-    WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcomp_EMCCONUS"}
-  fi
-  ;;
-#
-esac
+if [ "$grid_gen_method" = "JPgrid" ]; then
+  stretch_fac="0.999"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1035,222 +777,28 @@ EXTRN_MDL_NAME_LBCS must be one of the following:
 #
 #-----------------------------------------------------------------------
 #
-# Set the variable EXTRN_MDL_FILES_BASEDIR_ICSSURF that will contain the
-# location of the directory in which we will create subdirectories for 
-# each forecast (i.e. for each CDATE) in which to store the analysis and
-# /or surface files generated by the external model specified in EXTRN_-
-# MDL_NAME_ICSSURF.  These files will be used to generate input initial
-# condition and surface files for the FV3SAR.
+# Set cycle-independent parameters associated with the external models
+# from which we will obtain the ICs and LBCs.
 #
 #-----------------------------------------------------------------------
 #
-case $EXTRN_MDL_NAME_ICSSURF in
-"GFS")
-  EXTRN_MDL_FILES_BASEDIR_ICSSURF="${WORKDIR}/GFS/ICSSURF"
-  ;;
-"RAPX")
-  EXTRN_MDL_FILES_BASEDIR_ICSSURF="${WORKDIR}/RAPX/ICSSURF"
-  ;;
-"HRRRX")
-  EXTRN_MDL_FILES_BASEDIR_ICSSURF="${WORKDIR}/HRRRX/ICSSURF"
-  ;;
-esac
-#
-#-----------------------------------------------------------------------
-#
-# Set the variable EXTRN_MDL_FILES_BASEDIR_LBCS that will contain the 
-# location of the directory in which we will create subdirectories for 
-# each forecast (i.e. for each CDATE) in which to store the forecast 
-# files generated by the external model specified in EXTRN_MDL_NAME_-
-# LBCS.  These files will be used to generate input lateral boundary 
-# condition files for the FV3SAR (one per boundary update time).
-#
-# Also, set EXTRN_MDL_LBCS_OFFSET_HRS, which is the number of hours to
-# shift the starting time of the external model that provides lateral
-# boundary conditions.
-#
-#-----------------------------------------------------------------------
-#
-case $EXTRN_MDL_NAME_LBCS in
-"GFS")
-  EXTRN_MDL_FILES_BASEDIR_LBCS="${WORKDIR}/GFS/LBCS"
-  EXTRN_MDL_LBCS_OFFSET_HRS="0"
-  ;;
-"RAPX")
-  EXTRN_MDL_FILES_BASEDIR_LBCS="${WORKDIR}/RAPX/LBCS"
-  EXTRN_MDL_LBCS_OFFSET_HRS="3"
-  ;;
-"HRRRX")
-  EXTRN_MDL_FILES_BASEDIR_LBCS="${WORKDIR}/HRRRX/LBCS"
-  EXTRN_MDL_LBCS_OFFSET_HRS="0"
-  ;;
-esac
-#
-#-----------------------------------------------------------------------
-#
-# Set the system directory (i.e. location on disk, not on HPSS) in which
-# the files generated by the external model specified by EXTRN_MDL_-
-# NAME_ICSSURF that are necessary for generating initial condition (IC)
-# and surface files for the FV3SAR are stored (usually for a limited 
-# time, e.g. for the GFS external model, 2 weeks on WCOSS and 2 days on
-# theia).  If for a given forecast start date and time these files are
-# available in this system directory, they will be copied over to EX-
-# TRN_MDL_FILES_DIR, which is the location where the preprocessing tasks
-# that generate the IC and surface files look for these files.  If these
-# files are not available in the system directory, then we search for 
-# them elsewhere, e.g. in the mass store (HPSS).
-#
-#-----------------------------------------------------------------------
-#
-case $EXTRN_MDL_NAME_ICSSURF in
-#
-"GFS")
-#
-  case $MACHINE in
-  "WCOSS_C")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/gpfs/hps/nco/ops/com/gfs/prod"
-    ;;
-  "THEIA")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch4/NCEPDEV/rstprod/com/gfs/prod"
-    ;;
-  "JET")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
-    ;;
-  "ODIN")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch/ywang/test_runs/FV3_regional/gfs"
-    ;;
-  *)
-    print_err_msg_exit "\
-The system directory in which to look for the files generated by the ex-
-ternal model specified by EXTRN_MDL_NAME_ICSSURF has not been specified
-for this machine and external model combination:
-  MACHINE = \"$MACHINE\"
-  EXTRN_MDL_NAME_ICSSURF = \"$EXTRN_MDL_NAME_ICSSURF\"
-"
-    ;;
-  esac
-  ;;
-#
-"RAPX")
-#
-  case $MACHINE in
-  "THEIA")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch4/BMC/public/data/gsd/rr/full/wrfnat"
-    ;;
-  *)
-    print_err_msg_exit "\
-The system directory in which to look for the files generated by the ex-
-ternal model specified by EXTRN_MDL_NAME_ICSSURF has not been specified
-for this machine and external model combination:
-  MACHINE = \"$MACHINE\"
-  EXTRN_MDL_NAME_ICSSURF = \"$EXTRN_MDL_NAME_ICSSURF\"
-"
-    ;;
-  esac
-  ;;
-#
-"HRRRX")
-#
-  case $MACHINE in
-  "THEIA")
-    EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch4/BMC/public/data/gsd/hrrr/conus/wrfnat"
-    ;;
-  *)
-    print_err_msg_exit "\
-The system directory in which to look for the files generated by the ex-
-ternal model specified by EXTRN_MDL_NAME_ICSSURF has not been specified
-for this machine and external model combination:
-  MACHINE = \"$MACHINE\"
-  EXTRN_MDL_NAME_ICSSURF = \"$EXTRN_MDL_NAME_ICSSURF\"
-"
-    ;;
-  esac
-  ;;
-#
-esac
-#
-#-----------------------------------------------------------------------
-#
-# Set the system directory (i.e. location on disk, not on HPSS) in which
-# the files generated by the external model specified by EXTRN_MDL_-
-# NAME_LBCS that are necessary for generating lateral boundary condition
-# (LBC) files for the FV3SAR are stored (usually for a limited time, 
-# e.g. for the GFS external model, 2 weeks on WCOSS and 2 days on the-
-# ia).  If for a given forecast start date and time these files are
-# available in this system directory, they will be copied over to EX-
-# TRN_MDL_FILES_DIR, which is the location where the preprocessing tasks
-# that generate the LBC files look for these files.  If these files are
-# not available in the system directory, then we search for them else-
-# where, e.g. in the mass store (HPSS).
-#
-#-----------------------------------------------------------------------
-#
-case $EXTRN_MDL_NAME_LBCS in
-#
-"GFS")
-#
-  case $MACHINE in
-  "WCOSS_C")
-    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/gpfs/hps/nco/ops/com/gfs/prod"
-    ;;
-  "THEIA")
-    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch4/NCEPDEV/rstprod/com/gfs/prod"
-    ;;
-  "JET")
-    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
-    ;;
-  "ODIN")
-    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch/ywang/test_runs/FV3_regional/gfs"
-    ;;
-  *)
-    print_err_msg_exit "\
-The system directory in which to look for the files generated by the ex-
-ternal model specified by EXTRN_MDL_NAME_LBCS has not been specified for
-this machine and external model combination:
-  MACHINE = \"$MACHINE\"
-  EXTRN_MDL_NAME_LBCS = \"$EXTRN_MDL_NAME_LBCS\"
-"
-    ;;
-  esac
-  ;;
-#
-"RAPX")
-#
-  case $MACHINE in
-  "THEIA")
-    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch4/BMC/public/data/gsd/rr/full/wrfnat"
-    ;;
-  *)
-    print_err_msg_exit "\
-The system directory in which to look for the files generated by the ex-
-ternal model specified by EXTRN_MDL_NAME_LBCS has not been specified for
-this machine and external model combination:
-  MACHINE = \"$MACHINE\"
-  EXTRN_MDL_NAME_LBCS = \"$EXTRN_MDL_NAME_LBCS\"
-"
-    ;;
-  esac
-  ;;
-#
-"HRRRX")
-#
-  case $MACHINE in
-  "THEIA")
-    EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch4/BMC/public/data/gsd/hrrr/conus/wrfnat"
-    ;;
-  *)
-    print_err_msg_exit "\
-The system directory in which to look for the files generated by the ex-
-ternal model specified by EXTRN_MDL_NAME_LBCS has not been specified for
-this machine and external model combination:
-  MACHINE = \"$MACHINE\"
-  EXTRN_MDL_NAME_LBCS = \"$EXTRN_MDL_NAME_LBCS\"
-"
-    ;;
-  esac
-  ;;
-#
-esac
+. ./set_extrn_mdl_params.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #
 #-----------------------------------------------------------------------
 #
@@ -1369,7 +917,7 @@ fi
 #
 PE_MEMBER01=$(( $layout_x*$layout_y ))
 if [ "$quilting" = ".true." ]; then
-  PE_MEMBER01=$(( $PE_MEMBER01 + $write_groups*$write_tasks_per_group ))
+  PE_MEMBER01=$(( $PE_MEMBER01 + ${WRTCMP_write_groups}*${WRTCMP_write_tasks_per_group} ))
 fi
 
 print_info_msg_verbose "\
@@ -1480,7 +1028,7 @@ fi
 #
 if [ "$quilting" = ".true." ]; then
 
-  rem=$(( $ny_T7%$write_tasks_per_group ))
+  rem=$(( $ny_T7%${WRTCMP_write_tasks_per_group} ))
 
   if [ $rem -ne 0 ]; then
     print_err_msg_exit "\
@@ -1558,6 +1106,48 @@ cp_vrfy ./${DEFAULT_CONFIG_FN} ${SCRIPT_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
+# The following comment block needs to be updated because now line_list
+# may contain lines that are not assignment statements (e.g. it may con-
+# tain if-statements).  Such lines are ignored in the while-loop below.
+#
+# Reset each of the variables in the variable definitions file to its 
+# value in the current environment.  To accomplish this, we:
+#
+# 1) Create a list of variable settings by stripping out comments, blank
+#    lines, extraneous leading whitespace, etc from the variable defini-
+#    tions file (which is currently identical to the default workflow/
+#    experiment configuration script) and saving the result in the vari-
+#    able line_list.  Each line of line_list will have the form
+#
+#      VAR=...
+#
+#    where the VAR is a variable name and ... is the value from the de-
+#    fault configuration script (which does not necessarily correspond
+#    to the current value of the variable).
+#
+# 2) Loop through each line of line_list.  For each line, we extract the
+#    variable name (and save it in the variable var_name), get its value
+#    from the current environment (using bash indirection, i.e. 
+#    ${!var_name}), and use the set_file_param() function to replace the
+#    value of the variable in the variable definitions script (denoted 
+#    above by ...) with its current value. 
+#
+#-----------------------------------------------------------------------
+#
+# Also should remove trailing whitespace...
+line_list=$( sed -r \
+             -e "s/^([ ]*)([^ ]+.*)/\2/g" \
+             -e "/^#.*/d" \
+             -e "/^$/d" \
+             ${SCRIPT_VAR_DEFNS_FP} )
+echo 
+echo "The variable \"line_list\" contains:"
+echo
+printf "%s\n" "${line_list}"
+echo
+#
+#-----------------------------------------------------------------------
+#
 # Add a comment at the beginning of the variable definitions file that
 # indicates that the first section of that file is (mostly) the same as
 # the configuration file.
@@ -1594,47 +1184,8 @@ sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
 
 
 
-#
-#-----------------------------------------------------------------------
-#
-# The following comment block needs to be updated because now line_list
-# may contain lines that are not assignment statements (e.g. it may con-
-# tain if-statements).  Such lines are ignored in the while-loop below.
-#
-# Reset each of the variables in the variable definitions file to its 
-# value in the current environment.  To accomplish this, we:
-#
-# 1) Create a list of variable settings by stripping out comments, blank
-#    lines, extraneous leading whitespace, etc from the variable defini-
-#    tions file (which is currently identical to the default workflow/
-#    experiment configuration script) and saving the result in the vari-
-#    able line_list.  Each line of line_list will have the form
-#
-#      VAR=...
-#
-#    where the VAR is a variable name and ... is the value from the de-
-#    fault configuration script (which does not necessarily correspond
-#    to the current value of the variable).
-#
-# 2) Loop through each line of line_list.  For each line, we extract the
-#    variable name (and save it in the variable var_name), get its value
-#    from the current environment (using bash indirection, i.e. 
-#    ${!var_name}), and use the set_file_param() function to replace the
-#    value of the variable in the variable definitions script (denoted 
-#    above by ...) with its current value. 
-#
-#-----------------------------------------------------------------------
-#
-line_list=$( sed -r \
-             -e "s/^([ ]*)([^ ]+.*)/\2/g" \
-             -e "/^#.*/d" \
-             -e "/^$/d" \
-             ${SCRIPT_VAR_DEFNS_FP} )
-echo 
-echo "The variable \"line_list\" contains:"
-echo
-printf "%s\n" "${line_list}"
-echo
+
+
 #
 # Loop through the lines in line_list.
 #
@@ -1707,14 +1258,30 @@ while read crnt_line; do
 #    ready placed a space after the last element.
 #
       else
-        var_value=$(printf "\"%s\" " "${!array_name_at}")
+
+        arrays_on_one_line="true"
+        arrays_on_one_line="false"
+
+        if [ "${arrays_on_one_line}" = "true" ]; then
+          var_value=$(printf "\"%s\" " "${!array_name_at}")
+#          var_value=$(printf "\"%s\" \\\\\\ \\\n" "${!array_name_at}")
+        else
+#          var_value=$(printf "%s" "\\\\\\n")
+          var_value="\\\\\n"
+          for (( i=0; i<${num_elems}; i++)); do
+#            var_value=$(printf "%s\"%s\" %s" "${var_value}" "${array[$i]}" "\\\\\\n")
+            var_value="${var_value}\"${array[$i]}\" \\\\\n"
+#            var_value="${var_value}\"${array[$i]}\" "
+          done
+        fi
         var_value="( $var_value)"
+
       fi
 #
-# If the variable specified in var_name is no set in the current envi-
-# ron ment,  (to either an empty or non-empty string), get its value and in-
-# sert it in the variable definitions file on the line where that varia-
-# ble is defined.
+# If the variable specified in var_name is not set in the current envi-
+# ronment (to either an empty or non-empty string), get its value and 
+# insert it in the variable definitions file on the line where that va-
+# riable is defined.
 #
     else
 
@@ -1724,6 +1291,7 @@ ronment:
   var_name = \"${var_name}\"
 Setting its value in the variable definitions file to an empty string."
       var_value="\"\""
+
     fi
 #
 # Now place var_value on the right-hand side of the assignment statement

@@ -314,9 +314,32 @@ set_file_param "$MODEL_CONFIG_FP" "print_esmf" "$print_esmf"
 #-----------------------------------------------------------------------
 #
 if [ "$quilting" = ".true." ]; then
+
   cat $WRTCMP_PARAMS_TEMPLATE_FP >> $MODEL_CONFIG_FP
-  set_file_param "$MODEL_CONFIG_FP" "write_groups" "$write_groups"
-  set_file_param "$MODEL_CONFIG_FP" "write_tasks_per_group" "$write_tasks_per_group"
+
+  set_file_param "$MODEL_CONFIG_FP" "write_groups" "$WRTCMP_write_groups"
+  set_file_param "$MODEL_CONFIG_FP" "write_tasks_per_group" "$WRTCMP_write_tasks_per_group"
+
+  set_file_param "$MODEL_CONFIG_FP" "output_grid" "\'$WRTCMP_output_grid\'"
+  set_file_param "$MODEL_CONFIG_FP" "cen_lon" "$WRTCMP_cen_lon"
+  set_file_param "$MODEL_CONFIG_FP" "cen_lat" "$WRTCMP_cen_lat"
+  set_file_param "$MODEL_CONFIG_FP" "lon1" "$WRTCMP_lon_lwr_left"
+  set_file_param "$MODEL_CONFIG_FP" "lat1" "$WRTCMP_lat_lwr_left"
+
+  if [ "${WRTCMP_output_grid}" = "rotated_latlon" ]; then
+    set_file_param "$MODEL_CONFIG_FP" "lon2" "$WRTCMP_lon_upr_rght"
+    set_file_param "$MODEL_CONFIG_FP" "lat2" "$WRTCMP_lat_upr_rght"
+    set_file_param "$MODEL_CONFIG_FP" "dlon" "$WRTCMP_dlon"
+    set_file_param "$MODEL_CONFIG_FP" "dlat" "$WRTCMP_dlat"
+  elif [ "${WRTCMP_output_grid}" = "lambert_conformal" ]; then
+    set_file_param "$MODEL_CONFIG_FP" "stdlat1" "$WRTCMP_stdlat1"
+    set_file_param "$MODEL_CONFIG_FP" "stdlat2" "$WRTCMP_stdlat2"
+    set_file_param "$MODEL_CONFIG_FP" "nx" "$WRTCMP_nx"
+    set_file_param "$MODEL_CONFIG_FP" "ny" "$WRTCMP_ny"
+    set_file_param "$MODEL_CONFIG_FP" "dx" "$WRTCMP_dx"
+    set_file_param "$MODEL_CONFIG_FP" "dy" "$WRTCMP_dy"
+  fi
+
 fi
 #
 #-----------------------------------------------------------------------
