@@ -8,7 +8,7 @@
 #}
 #module-whatis "orog"
 
-module use /scratch/ywang/external/modulefiles
+module use /oldscratch/ywang/external/modulefiles
 
 # Load ncep environment
 #module load ncep/1.0

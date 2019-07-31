@@ -1,0 +1,25 @@
+
+write_groups:            <write_groups>
+write_tasks_per_group:   <write_tasks_per_group>
+num_files:               2
+filename_base:           'dyn''phy'
+output_file:             'netcdf'
+write_nemsioflip:        .false.
+write_fsyncflag:         .false.
+
+output_grid: 'lambert_conformal'
+cen_lon:     -97.5
+cen_lat:     38.5
+stdlat1:     38.5
+stdlat2:     38.5
+nx:          1620
+ny:          1120
+lon1:        -120.109
+lat1:        20.971
+dx:          3000.0
+dy:          3000.0
+
+nfhout:                  1
+nfhmax_hf:               60
+nfhout_hf:               1
+nsout:                   -1
