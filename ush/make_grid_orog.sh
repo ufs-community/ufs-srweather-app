@@ -652,6 +652,9 @@ max_slope=$( interpol_to_arbit_CRES $RES_equiv RES_array max_slope_array )
 echo "====>>>> max_slope = $max_slope"
 #
 n_del2_weak=$( interpol_to_arbit_CRES $RES_equiv RES_array n_del2_weak_array )
+# n_del2_weak is defined to be of integer type in the filter_topo code 
+# that uses it, so round it to the nearest integer.  Otherwise, the code
+# might break on some machines/compilers.
 n_del2_weak=$( printf "%.0f" ${n_del2_weak} )   # cast to integer, Y. Wang
 echo "====>>>> n_del2_weak = $n_del2_weak"
 #
