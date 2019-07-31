@@ -319,6 +319,8 @@ Copying the GSD physics suite XML file and the Thompson microphysics CCN fixed f
   fi
 
 fi
+
+
 #
 #-----------------------------------------------------------------------
 #
@@ -339,96 +341,256 @@ Copying files from work directories into run directory and creating links..."
 #
 #-----------------------------------------------------------------------
 #
-# Change location to the INPUT subdirectory of the experiment directory.
+#
 #
 #-----------------------------------------------------------------------
+#
+if [ "${RUN_TASK_MAKE_GRID_OROG}" = "TRUE" ]; then
+  target_dir=${WORKDIR_SHVE}
+else
+  target_dir=${PREGEN_GRID_OROG_DIR}
+fi
+#
+# Get the (equivalent) C-resolution of the grid.  This is stored in the
+# grid file as a global attribute.
+#
+cd_vrfy ${target_dir}
+fn_pattern="C*_grid.tile7.halo${nh4_T7}.nc"
+grid_fn=$( ls -1 $fn_pattern ) || \
+print_err_msg_exit "\
+The \"ls\" command returned with a nonzero exit status.
+"
+
+num_files=$( printf "%s\n" "${grid_fn}" | wc -l )
+if [ "${num_files}" -gt "1" ]; then
+  print_err_msg_exit "\
+More than one file was found in directory PREGEN_GRID_OROG_DIR matching
+the globbing pattern fn_pattern:
+  PREGEN_GRID_OROG_DIR = \"$PREGEN_GRID_OROG_DIR\"
+  fn_pattern = \"$fn_pattern\"
+  num_files = \"$num_files\"
+"
+fi
+
+RES_equiv=$( ncdump -h "$grid_fn" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
+RES_equiv=${RES_equiv//$'\n'/}
+printf "%s\n" "RES_equiv = $RES_equiv"
+CRES_equiv="C${RES_equiv}"
+printf "%s\n" "CRES_equiv = $CRES_equiv"
+#
+# Set the global variables RES and CRES.
+#
+RES="$RES_equiv"
+CRES="$CRES_equiv"
+#
+#if [ "${RUN_TASK_MAKE_GRID_OROG}" = "TRUE" ]; then
+#  cp_vrfy $WORKDIR_GRID/${CRES}_mosaic.nc $WORKDIR_SHVE
+#fi
+#
+# Create array of files to which we will create symlinks.
+#
+file_list=( "${CRES}_mosaic.nc" \
+            "${CRES}_grid.tile7.halo${nh3_T7}.nc" \
+            "${CRES}_grid.tile7.halo${nh4_T7}.nc" \
+            "${CRES}_oro_data.tile7.halo${nh4_T7}.nc" \
+            "${CRES}_oro_data.tile7.halo${nh0_T7}.nc" \
+          )
+#
+# Create symlinks in the INPUT subdirectory of the experiment directory
+# to the grid files.
 #
 cd_vrfy $EXPTDIR/INPUT
+for fn in "${file_list[@]}"; do
 #
-#-----------------------------------------------------------------------
+# Check that each target file exists before attempting to create sym-
+# links.  This is because the "ln" command will create symlinks to non-
+# existent targets without returning with a nonzero exit code.
 #
-# Copy the grid mosaic file (which describes the connectivity of the va-
-# rious tiles) to the INPUT subdirectory of the run directory.  In the
-# regional case, this file doesn't have much information because the
-# regional grid is not connected to any other tiles.  However, a mosaic
-# file (with a different name; see below) must still be read in by the
-# FV3SAR code.
-#
-# Note that the FV3 code (specifically the FMS code) looks for a file
-# named "grid_spec.nc" in the INPUT subdirectory of the run directory
-# as the grid mosaic file.  Assuming it finds this file, it then reads
-# in the variable "gridfiles" in this file that contains the names of
-# the grid files for each of the tiles of the grid.  In the regional
-# case, "gridfiles" will contain only one file name, that of the file
-# describing the grid on tile 7.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_GRID/${CRES}_mosaic.nc .
-#ln_vrfy -sf ${CRES}_mosaic.nc grid_spec.nc
-#
-#-----------------------------------------------------------------------
-#
-# The FV3SAR model looks for a file named "${CRES}_grid.tile7.nc" from
-# which to read in the grid with a 3-cell-wide halo.  This data is crea-
-# ted by the preprocessing but is placed in a file with a different name
-# ("${CRES}_grid.tile7.halo3.nc").  Thus, we first copy the file created
-# by the preprocessing to the INPUT subdirectory of the run directory
-# and then create a symlink named "${CRES}_grid.tile7.nc" that points to
-# it.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc .
-#ln_vrfy -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
-#
-#-----------------------------------------------------------------------
-#
-# The FV3SAR model looks for a file named "grid.tile7.halo4.nc" from
-# which to read in the grid with a 4-cell-wide halo.  This data is crea-
-# ted by the preprocessing but is placed in a file with a different name
-# ("${CRES}_grid.tile7.halo4.nc").  Thus, we first copy the file created
-# by the preprocessing to the INPUT subdirectory of the run directory
-# and then create a symlink named "grid.tile7.halo4.nc" that points to
-# it.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc .
-#ln_vrfy -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
-#
-#-----------------------------------------------------------------------
-#
-# The FV3SAR model looks for a file named "oro_data.tile7.halo4.nc" from
-# which to read in the orogrpahy with a 4-cell-wide halo.  This data is
-# created by the preprocessing but is placed in a file with a different
-# name ("${CRES}_oro_data.tile7.halo4.nc").  Thus, we first copy the
-# file created by the preprocessing to the INPUT subdirectory of the run
-# directory and then create a symlink named "oro_data.tile7.halo4.nc"
-# that points to it.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc .
-#ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
-#
-#-----------------------------------------------------------------------
-#
-# The FV3SAR model looks for a file named "oro_data.nc" from which to
-# read in the orogrpahy without a halo.  This data is created by the
-# preprocessing but is placed in a file with a different name
-# ("${CRES}_oro_data.tile7.halo0.nc").  Thus, we first copy the file
-# created by the preprocessing to the INPUT subdirectory of the run di-
-# rectory and then create a symlink named "oro_data.nc" that points to
-# it.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
-#ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
+  if [ -f "${target_dir}/$fn" ]; then
+# Should links be made relative or absolute?  Maybe relative in community
+# mode and absolute in nco mode?
+    if [ "$RUN_ENVIR" = "nco" ]; then
+      ln_vrfy -sf ${target_dir}/$fn .
+    else
+      ln_vrfy -sf --relative ${target_dir}/$fn .
+    fi
+  else
+    print_err_msg_exit "\
+Cannot create symlink because target file (fn) in directory target_dir
+does not exist:
+  target_dir = \"${target_dir}\"
+  fn = \"${fn}\"
+"
+  fi
+
+done
 
 
-
+#if [ "${RUN_TASK_MAKE_GRID_OROG}" = "TRUE" ]; then
+##
+##-----------------------------------------------------------------------
+##
+## Change location to the INPUT subdirectory of the experiment directory.
+##
+##-----------------------------------------------------------------------
+##
+#cd_vrfy $EXPTDIR/INPUT
+##
+##-----------------------------------------------------------------------
+##
+## Copy the grid mosaic file (which describes the connectivity of the va-
+## rious tiles) to the INPUT subdirectory of the run directory.  In the
+## regional case, this file doesn't have much information because the
+## regional grid is not connected to any other tiles.  However, a mosaic
+## file (with a different name; see below) must still be read in by the
+## FV3SAR code.
+##
+## Note that the FV3 code (specifically the FMS code) looks for a file
+## named "grid_spec.nc" in the INPUT subdirectory of the run directory
+## as the grid mosaic file.  Assuming it finds this file, it then reads
+## in the variable "gridfiles" in this file that contains the names of
+## the grid files for each of the tiles of the grid.  In the regional
+## case, "gridfiles" will contain only one file name, that of the file
+## describing the grid on tile 7.
+##
+##-----------------------------------------------------------------------
+##
+##cp_vrfy $WORKDIR_GRID/${CRES}_mosaic.nc .
+##ln_vrfy -sf ${CRES}_mosaic.nc grid_spec.nc
+#ln_vrfy -sf --relative $WORKDIR_GRID/${CRES}_mosaic.nc .
+##
+##-----------------------------------------------------------------------
+##
+## The FV3SAR model looks for a file named "${CRES}_grid.tile7.nc" from
+## which to read in the grid with a 3-cell-wide halo.  This data is crea-
+## ted by the preprocessing but is placed in a file with a different name
+## ("${CRES}_grid.tile7.halo3.nc").  Thus, we first copy the file created
+## by the preprocessing to the INPUT subdirectory of the run directory
+## and then create a symlink named "${CRES}_grid.tile7.nc" that points to
+## it.
+##
+##-----------------------------------------------------------------------
+##
+##cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc .
+##ln_vrfy -sf ${CRES}_grid.tile7.halo${nh3_T7}.nc ${CRES}_grid.tile7.nc
+#ln_vrfy -sf --relative $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh3_T7}.nc .
+##
+##-----------------------------------------------------------------------
+##
+## The FV3SAR model looks for a file named "grid.tile7.halo4.nc" from
+## which to read in the grid with a 4-cell-wide halo.  This data is crea-
+## ted by the preprocessing but is placed in a file with a different name
+## ("${CRES}_grid.tile7.halo4.nc").  Thus, we first copy the file created
+## by the preprocessing to the INPUT subdirectory of the run directory
+## and then create a symlink named "grid.tile7.halo4.nc" that points to
+## it.
+##
+##-----------------------------------------------------------------------
+##
+##cp_vrfy $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc .
+##ln_vrfy -sf ${CRES}_grid.tile7.halo${nh4_T7}.nc grid.tile7.halo${nh4_T7}.nc
+#ln_vrfy -sf --relative $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc .
+##
+##-----------------------------------------------------------------------
+##
+## The FV3SAR model looks for a file named "oro_data.tile7.halo4.nc" from
+## which to read in the orogrpahy with a 4-cell-wide halo.  This data is
+## created by the preprocessing but is placed in a file with a different
+## name ("${CRES}_oro_data.tile7.halo4.nc").  Thus, we first copy the
+## file created by the preprocessing to the INPUT subdirectory of the run
+## directory and then create a symlink named "oro_data.tile7.halo4.nc"
+## that points to it.
+##
+##-----------------------------------------------------------------------
+##
+##cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc .
+##ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh4_T7}.nc oro_data.tile7.halo${nh4_T7}.nc
+#ln_vrfy -sf --relative $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc .
+##
+##-----------------------------------------------------------------------
+##
+## The FV3SAR model looks for a file named "oro_data.nc" from which to
+## read in the orogrpahy without a halo.  This data is created by the
+## preprocessing but is placed in a file with a different name
+## ("${CRES}_oro_data.tile7.halo0.nc").  Thus, we first copy the file
+## created by the preprocessing to the INPUT subdirectory of the run di-
+## rectory and then create a symlink named "oro_data.nc" that points to
+## it.
+##
+##-----------------------------------------------------------------------
+##
+##cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
+##ln_vrfy -sf ${CRES}_oro_data.tile7.halo${nh0_T7}.nc oro_data.nc
+#ln_vrfy -sf --relative $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
+##
+##-----------------------------------------------------------------------
+##
+##
+##
+##-----------------------------------------------------------------------
+##
+#else
+#
+#  cd_vrfy ${PREGEN_GRID_OROG_DIR}
+#
+##  fn_pattern="C*"
+#  fn_pattern="C*_grid.tile7.halo${nh4_T7}.nc"
+#  grid_fn=$( ls -1 $fn_pattern ) || \
+#  print_err_msg_exit "\
+#The \"ls\" command returned with a nonzero exit status.
+#"
+#
+#  num_files=$( printf "%s\n" "${grid_fn}" | wc -l )
+#  if [ "${num_files}" -gt "1" ]; then
+#    print_err_msg_exit "\
+#More than one file was found in directory PREGEN_GRID_OROG_DIR matching
+#the globbing pattern fn_pattern:
+#  PREGEN_GRID_OROG_DIR = \"$PREGEN_GRID_OROG_DIR\"
+#  fn_pattern = \"$fn_pattern\"
+#  num_files = \"$num_files\"
+#"
+#  fi
+#
+#  RES_equiv=$( ncdump -h "$grid_fn" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
+#  RES_equiv=${RES_equiv//$'\n'/}
+#  printf "%s\n" "RES_equiv = $RES_equiv"
+#  CRES_equiv="C${RES_equiv}"
+#  printf "%s\n" "CRES_equiv = $CRES_equiv"
+#
+#
+#  RES="$RES_equiv"
+#  CRES="$CRES_equiv"
+##
+## Create symlinks.
+##
+#  grid_files=( "${CRES}_mosaic.nc" \
+#               "${CRES}_grid.tile7.halo${nh3_T7}.nc" \
+#               "${CRES}_grid.tile7.halo${nh4_T7}.nc" \
+#               "${CRES}_oro_data.tile7.halo${nh4_T7}.nc" \
+#               "${CRES}_oro_data.tile7.halo${nh0_T7}.nc" \
+#             )
+#
+#  cd_vrfy $EXPTDIR/INPUT
+#  for fn in "${grid_files[@]}"; do
+##
+## Check that each target file exists before attempting to create sym-
+## links.  This is because the "ln" command will create symlinks to non-
+## existent targets without returning with a nonzero exit code.
+##
+#    if [ -f "${PREGEN_GRID_OROG_DIR}/$fn" ]; then
+#      ln_vrfy -sf ${PREGEN_GRID_OROG_DIR}/$fn .
+#    else
+#      print_err_msg_exit "\
+#Cannot create symlink because target file (fn) in directory PREGEN_-
+#GRID_OROG_DIR does not exist:
+#  PREGEN_GRID_OROG_DIR = \"${PREGEN_GRID_OROG_DIR}\"
+#  fn = \"${fn}\"
+#"
+#    fi
+#
+#  done
+#
+#fi
 #
 #-----------------------------------------------------------------------
 #
@@ -437,7 +599,105 @@ cp_vrfy $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh0_T7}.nc .
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy ${WORKDIR_SFC_CLIMO}/*.nc ${EXPTDIR}/INPUT
+if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ]; then
+  target_dir=${WORKDIR_SFC_CLIMO}
+else
+  target_dir=${PREGEN_SFC_CLIMO_DIR}
+fi
+
+cd_vrfy ${target_dir}
+fn_pattern="${CRES}.*.nc"
+sfc_climo_files=$( ls -1 $fn_pattern ) || \
+print_err_msg_exit "\
+The \"ls\" command returned with a nonzero exit status.
+"
+#
+# Place the list of surface climatology files in an array.
+#
+file_list=()
+i=0
+while read crnt_file; do
+  file_list[$i]="${crnt_file}"
+  i=$((i+1))
+done <<< "${sfc_climo_files}"
+#
+# Create symlinks in the INPUT subdirectory of the experiment directory
+# to the surface climatology files.
+#
+cd_vrfy $EXPTDIR/INPUT
+for fn in "${file_list[@]}"; do
+#
+# Check that each target file exists before attempting to create sym-
+# links.  This is because the "ln" command will create symlinks to non-
+# existent targets without returning with a nonzero exit code.
+#
+  if [ -f "${target_dir}/$fn" ]; then
+# Should links be made relative or absolute?  Maybe relative in community
+# mode and absolute in nco mode?
+    if [ "$RUN_ENVIR" = "nco" ]; then
+      ln_vrfy -sf ${target_dir}/$fn .
+    else
+      ln_vrfy -sf --relative ${target_dir}/$fn .
+    fi
+  else
+    print_err_msg_exit "\
+Cannot create symlink because target file (fn) in directory target_dir
+does not exist:
+  target_dir = \"${target_dir}\"
+  fn = \"${fn}\"
+"
+  fi
+
+done
+
+
+#if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ]; then
+#
+##  cp_vrfy ${WORKDIR_SFC_CLIMO}/*.nc ${EXPTDIR}/INPUT
+#  ln_vrfy -sf --relative ${WORKDIR_SFC_CLIMO}/*.nc ${EXPTDIR}/INPUT
+#
+#else
+#
+#  cd_vrfy ${PREGEN_SFC_CLIMO_DIR}
+#
+#  fn_pattern="${CRES}.*.nc"
+#  sfc_climo_files=$( ls -1 $fn_pattern ) || \
+#  print_err_msg_exit "\
+#The \"ls\" command returned with a nonzero exit status.
+#"
+#
+#  file_list=()
+#  i=0
+#  while read crnt_file; do
+##    printf "\n%s\n" "crnt_file = \"${crnt_file}\""
+#    file_list[$i]="${crnt_file}"
+#    i=$((i+1))
+#  done <<< "${sfc_climo_files}"
+##
+## Create symlinks.
+##
+#  cd_vrfy $EXPTDIR/INPUT
+#  for fn in "${file_list[@]}"; do
+##
+## Check that each target file exists before attempting to create sym-
+## links.  This is because the "ln" command will create symlinks to non-
+## existent targets without returning with a nonzero exit code.
+##
+#    if [ -f "${PREGEN_SFC_CLIMO_DIR}/$fn" ]; then
+#      ln_vrfy -sf ${PREGEN_SFC_CLIMO_DIR}/$fn .
+#    else
+#      print_err_msg_exit "\
+#Cannot create symlink because target file (fn) in directory PREGEN_-
+#SFC_CLIMO_DIR does not exist:
+#  PREGEN_SFC_CLIMO_DIR = \"${PREGEN_SFC_CLIMO_DIR}\"
+#  fn = \"${fn}\"
+#"
+#    fi
+#
+#  done
+#
+#
+#fi
 #
 #-----------------------------------------------------------------------
 #
@@ -453,8 +713,6 @@ cd_vrfy $EXPTDIR/INPUT
 
 suffix=".halo${nh4_T7}.nc"
 for fn in *${suffix}; do
-# Set bn to the base name of the file, i.e. the name without the suffix 
-# "halo${nh4_T7}.nc".
   bn="${fn%.halo${nh4_T7}.nc}"
   ln_vrfy -fs ${bn}${suffix} ${bn}.nc
 done

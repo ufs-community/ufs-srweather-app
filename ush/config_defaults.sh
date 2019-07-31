@@ -710,3 +710,23 @@ WRTCMP_dx=""
 WRTCMP_dy=""
 
 
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+RUN_TASK_MAKE_GRID_OROG="TRUE"
+PREGEN_GRID_OROG_DIR="/path/to/pregenerated/grid/and/filtered/orog/files"
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+RUN_TASK_MAKE_SFC_CLIMO="TRUE"
+PREGEN_SFC_CLIMO_DIR="/path/to/pregenerated/surface/climo/files"
+
+

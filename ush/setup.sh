@@ -138,6 +138,92 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that RUN_TASK_MAKE_GRID_OROG is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$RUN_TASK_MAKE_GRID_OROG" valid_vals_RUN_TASK_MAKE_GRID_OROG || { \
+valid_vals_RUN_TASK_MAKE_GRID_OROG_str=$(printf "\"%s\" " "${valid_vals_RUN_TASK_MAKE_GRID_OROG[@]}");
+print_err_msg_exit "\
+Value specified in RUN_TASK_MAKE_GRID_OROG is not supported:
+  RUN_TASK_MAKE_GRID_OROG = \"$RUN_TASK_MAKE_GRID_OROG\"
+RUN_TASK_MAKE_GRID_OROG must be set to one of the following:
+  $valid_vals_RUN_TASK_MAKE_GRID_OROG_str
+"; }
+#
+# Set RUN_TASK_MAKE_GRID_OROG to either "TRUE" or "FALSE" so we don't
+# have to consider other valid values later on.
+#
+if [ "$RUN_TASK_MAKE_GRID_OROG" = "TRUE" ] || \
+   [ "$RUN_TASK_MAKE_GRID_OROG" = "true" ] || \
+   [ "$RUN_TASK_MAKE_GRID_OROG" = "YES" ] || \
+   [ "$RUN_TASK_MAKE_GRID_OROG" = "yes" ]; then
+  RUN_TASK_MAKE_GRID_OROG="TRUE"
+elif [ "$RUN_TASK_MAKE_GRID_OROG" = "FALSE" ] || \
+     [ "$RUN_TASK_MAKE_GRID_OROG" = "false" ] || \
+     [ "$RUN_TASK_MAKE_GRID_OROG" = "NO" ] || \
+     [ "$RUN_TASK_MAKE_GRID_OROG" = "no" ]; then
+  RUN_TASK_MAKE_GRID_OROG="FALSE"
+fi
+#
+# If RUN_TASK_MAKE_GRID_OROG is set to "FALSE", make sure that the di-
+# rectory PREGEN_GRID_OROG_DIR that should contain the pre-generated 
+# grid and orography files exists.
+#
+if [ "$RUN_TASK_MAKE_GRID_OROG" = "FALSE" ] && \
+   [ ! -d "$PREGEN_GRID_OROG_DIR" ]; then
+  print_err_msg_exit "\
+The directory (PREGEN_GRID_OROG_DIR) that should contain the pre-genera-
+ted grid and orography files does not exist:
+  PREGEN_GRID_OROG_DIR = \"$PREGEN_GRID_OROG_DIR\"
+"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that RUN_TASK_MAKE_SFC_CLIMO is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$RUN_TASK_MAKE_SFC_CLIMO" valid_vals_RUN_TASK_MAKE_SFC_CLIMO || { \
+valid_vals_RUN_TASK_MAKE_SFC_CLIMO_str=$(printf "\"%s\" " "${valid_vals_RUN_TASK_MAKE_SFC_CLIMO[@]}");
+print_err_msg_exit "\
+Value specified in RUN_TASK_MAKE_SFC_CLIMO is not supported:
+  RUN_TASK_MAKE_SFC_CLIMO = \"$RUN_TASK_MAKE_SFC_CLIMO\"
+RUN_TASK_MAKE_SFC_CLIMO must be set to one of the following:
+  $valid_vals_RUN_TASK_MAKE_SFC_CLIMO_str
+"; }
+#
+# Set RUN_TASK_MAKE_SFC_CLIMO to either "TRUE" or "FALSE" so we don't
+# have to consider other valid values later on.
+#
+if [ "$RUN_TASK_MAKE_SFC_CLIMO" = "TRUE" ] || \
+   [ "$RUN_TASK_MAKE_SFC_CLIMO" = "true" ] || \
+   [ "$RUN_TASK_MAKE_SFC_CLIMO" = "YES" ] || \
+   [ "$RUN_TASK_MAKE_SFC_CLIMO" = "yes" ]; then
+  RUN_TASK_MAKE_SFC_CLIMO="TRUE"
+elif [ "$RUN_TASK_MAKE_SFC_CLIMO" = "FALSE" ] || \
+     [ "$RUN_TASK_MAKE_SFC_CLIMO" = "false" ] || \
+     [ "$RUN_TASK_MAKE_SFC_CLIMO" = "NO" ] || \
+     [ "$RUN_TASK_MAKE_SFC_CLIMO" = "no" ]; then
+  RUN_TASK_MAKE_SFC_CLIMO="FALSE"
+fi
+#
+# If RUN_TASK_MAKE_SFC_CLIMO is set to "FALSE", make sure that the di-
+# rectory PREGEN_SFC_CLIMO_DIR that should contain the pre-generated 
+# surface climatology files exists.
+#
+if [ "$RUN_TASK_MAKE_SFC_CLIMO" = "FALSE" ] && \
+   [ ! -d "$PREGEN_SFC_CLIMO_DIR" ]; then
+  print_err_msg_exit "\
+The directory (PREGEN_SFC_CLIMO_DIR) that should contain the pre-genera-
+ted surface climatology files does not exist:
+  PREGEN_SFC_CLIMO_DIR = \"$PREGEN_SFC_CLIMO_DIR\"
+"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Convert machine name to upper case if necessary.  Then make sure that
 # MACHINE is set to a valid value.
 #

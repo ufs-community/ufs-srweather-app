@@ -36,6 +36,9 @@ the workflow XML.
 
 <!ENTITY FHR "">
 
+<!ENTITY RUN_TASK_MAKE_GRID_OROG "">
+<!ENTITY RUN_TASK_MAKE_SFC_CLIMO "">
+
 <!--
 The following are variables that are passed to the shell scripts that 
 execute the various workflow tasks but are not otherwise used in the 
@@ -100,6 +103,10 @@ Variables that are not modified by the workflow generation script.
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
+    <dependency>
+      <streq><left>&RUN_TASK_MAKE_GRID_OROG;</left><right>TRUE</right></streq>
+    </dependency>
+
   </task>
 <!--
 ************************************************************************
@@ -119,7 +126,13 @@ Variables that are not modified by the workflow generation script.
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
-      <taskdep task="make_grid_orog"/>
+      <and>
+        <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>TRUE</right></streq>
+        <or>
+          <streq><left>&RUN_TASK_MAKE_GRID_OROG;</left><right>FALSE</right></streq>
+          <taskdep task="make_grid_orog"/>
+        </or>
+      </and>
     </dependency>
 
   </task>
@@ -141,7 +154,10 @@ Variables that are not modified by the workflow generation script.
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
-      <taskdep task="make_sfc_climo"/>
+      <or>
+        <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
+        <taskdep task="make_sfc_climo"/>
+      </or>
     </dependency>
 
   </task>
