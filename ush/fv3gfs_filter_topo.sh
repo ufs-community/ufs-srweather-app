@@ -65,7 +65,6 @@ cat > input.nml <<EOF
   peak_fac =  $6              ! 1.0
   max_slope = $7              ! 0.12
   n_del2_weak = $8            ! 16
-  n_del2_weak = $8            ! 16
   regional = $regional 
   stretch_fac = $stretch
   /

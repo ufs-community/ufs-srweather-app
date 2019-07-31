@@ -276,7 +276,7 @@ case $MACHINE in
 "ODIN")
 #
   export APRUN="srun -n 1"
-  export topo_dir="/scratch/ywang/external/fix_am/fix_orog"
+  export topo_dir="/scratch/ywang/fix/theia_fix/fix_orog"
 
   ulimit -s unlimited
   ulimit -a
@@ -652,6 +652,7 @@ max_slope=$( interpol_to_arbit_CRES $RES_equiv RES_array max_slope_array )
 echo "====>>>> max_slope = $max_slope"
 #
 n_del2_weak=$( interpol_to_arbit_CRES $RES_equiv RES_array n_del2_weak_array )
+n_del2_weak=$( printf "%.0f" ${n_del2_weak} )   # cast to integer, Y. Wang
 echo "====>>>> n_del2_weak = $n_del2_weak"
 #
 peak_fac=$( interpol_to_arbit_CRES $RES_equiv RES_array peak_fac_array )
