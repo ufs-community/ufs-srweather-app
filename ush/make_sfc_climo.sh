@@ -228,16 +228,17 @@ esac
 #
 # Can these be moved to stage_static if this script is called before
 # stage_static.sh????
+# These have been moved.  Can delete the following after testing.
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${WORKDIR_SFC_CLIMO}
-
-suffix=".halo${nh4_T7}.nc"
-for fn in *${suffix}; do
-  bn="${fn%.halo${nh4_T7}.nc}"
-  ln_vrfy -fs ${bn}${suffix} ${bn}.nc
-done
+#cd_vrfy ${WORKDIR_SFC_CLIMO}
+#
+#suffix=".halo${nh4_T7}.nc"
+#for fn in *${suffix}; do
+#  bn="${fn%.halo${nh4_T7}.nc}"
+#  ln_vrfy -fs ${bn}${suffix} ${bn}.nc
+#done
 #
 #-----------------------------------------------------------------------
 #

@@ -441,14 +441,15 @@ cp_vrfy ${WORKDIR_SFC_CLIMO}/*.nc ${EXPTDIR}/INPUT
 #
 #-----------------------------------------------------------------------
 #
-# Create links to the halo-4 fix files in the INPUT subdirectory of the
-# experiment directory such that the link names do not include a string
-# specifying the halo width (e.g. "halo##", where ## is the halo width).
-# These links are needed by the chgres_cube code.
+# Create symlinks in the INPUT subdirectory of the experiment directory 
+# to the halo-4 surface climatology files such that the link names do 
+# not include a string specifying the halo width (e.g. "halo##", where 
+# ## is the halo width in units of grid cells).  These links may be 
+# needed by the chgres_cube code.
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${EXPTDIR}/INPUT
+cd_vrfy $EXPTDIR/INPUT
 
 suffix=".halo${nh4_T7}.nc"
 for fn in *${suffix}; do
