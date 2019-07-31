@@ -699,6 +699,28 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Define the full path to the experiment directory.  This is the direct-
+# ory in which the static input files to the FV3SAR are placed.  Then
+# call the function that checks whether the experiment directory already
+# exists and if so, moves it, deletes it, or quits out of this script 
+# (the action taken depends on the value of the variable preexisting_-
+# dir_method).  Note that we do not yet create a new experiment directory; we will do that later below once
+# the workflow/experiment configuration parameters pass the various 
+# checks.
+#
+#-----------------------------------------------------------------------
+#
+#if [ -z "${EXPT_BASEDIR+x}" ]; then  # If EXPT_BASEDIR is not set at all, not even to an empty string.
+if [ -z "${EXPT_BASEDIR}" ]; then  # If EXPT_BASEDIR is not set or is set to an empty string.
+  EXPT_BASEDIR="${BASEDIR}/expt_dirs"
+fi
+mkdir_vrfy -p "${EXPT_BASEDIR}"
+
+EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
+check_for_preexist_dir $EXPTDIR $preexisting_dir_method
+#
+#-----------------------------------------------------------------------
+#
 # Define the full path to the work directory.  This is the directory in
 # which the prepocessing steps create their input and/or place their
 # output.  Then call the function that checks whether the work directory
@@ -710,7 +732,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-WORKDIR=$TMPDIR/$EXPT_SUBDIR
+#WORKDIR=$TMPDIR/$EXPT_SUBDIR
+WORKDIR="$EXPTDIR"
 check_for_preexist_dir $WORKDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
@@ -749,28 +772,6 @@ WORKDIR_FLTR=$WORKDIR/filtered_topo
 WORKDIR_SHVE=$WORKDIR/shave
 WORKDIR_ICSLBCS=$WORKDIR/ICs_BCs
 WORKDIR_SFC_CLIMO=$WORKDIR/sfc_climo
-#
-#-----------------------------------------------------------------------
-#
-# Define the full path to the experiment directory.  This is the direct-
-# ory in which the static input files to the FV3SAR are placed.  Then
-# call the function that checks whether the experiment directory already
-# exists and if so, moves it, deletes it, or quits out of this script 
-# (the action taken depends on the value of the variable preexisting_-
-# dir_method).  Note that we do not yet create a new experiment directory; we will do that later below once
-# the workflow/experiment configuration parameters pass the various 
-# checks.
-#
-#-----------------------------------------------------------------------
-#
-#if [ -z "${EXPT_BASEDIR+x}" ]; then  # If EXPT_BASEDIR is not set at all, not even to an empty string.
-if [ -z "${EXPT_BASEDIR}" ]; then  # If EXPT_BASEDIR is not set or is set to an empty string.
-  EXPT_BASEDIR="${BASEDIR}/expt_dirs"
-fi
-mkdir_vrfy -p "${EXPT_BASEDIR}"
-
-EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
-check_for_preexist_dir $EXPTDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
 #
