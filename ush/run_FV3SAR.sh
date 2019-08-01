@@ -91,7 +91,7 @@ fi
 if [ "$CCPP" = "true" ]; then
 
   #Needed to change to the run directory to correctly load necessary modules for CCPP-version of FV3SAR in lines below
-  cd $RUNDIR
+  cd_vrfy $RUNDIR
 
   set +x
   source ./module-setup.sh

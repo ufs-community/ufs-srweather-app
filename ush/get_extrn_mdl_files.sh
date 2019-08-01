@@ -56,6 +56,84 @@
 #
 #-----------------------------------------------------------------------
 #
+# Check whether output files from the specified external model (EXTRN_-
+# MDL_NAME) are available on the specified cycle date and time (CDATE).
+#
+#-----------------------------------------------------------------------
+#
+case $EXTRN_MDL_NAME in
+
+"GSMGFS")
+# The transition date from the GSMGFS to the FV3GFS was 2019061212, i.e.
+# this was the first official forecast with the FV3GFS.  So we set the
+# last CDATE for the GSMGFS to the one 6 hours before this.
+  CDATE_max="2019061206"
+  if [ "$CDATE" -gt "$CDATE_max" ]; then
+    print_err_msg_exit "\
+Output from the specified external model (EXTRN_MDL_NAME) is not availa-
+ble for the specified cycle date and time (CDATE) because the latter is
+later than the last forecast date and time (CDATE_max) with this model:
+  EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
+  CDATE_max = \"${CDATE_max}\"
+  CDATE = \"${CDATE}\"
+"
+  fi
+  ;;
+
+"FV3GFS")
+# The transition date from the GSMGFS to the FV3GFS was 2019061212, i.e.
+# this was the first official forecast with the FV3GFS.  So we set the
+# first CDATE for the FV3GFS to this date and time.
+  CDATE_min="2019061212"
+  if [ "$CDATE" -lt "$CDATE_min" ]; then
+    print_err_msg_exit "\
+Output from the specified external model (EXTRN_MDL_NAME) is not availa-
+ble for the specified cycle date and time (CDATE) because the latter is
+earlier than the implementation date of this model:
+  EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
+  CDATE_min = \"${CDATE_min}\"
+  CDATE = \"${CDATE}\"
+"
+  fi
+  ;;
+
+"RAPX")
+# Examination of the HPSS archives shows that the RAP data goes back to
+# July 01, 2015.
+  CDATE_min="2015070100"
+  if [ "$CDATE" -lt "$CDATE_min" ]; then
+    print_err_msg_exit "\
+Output from the specified external model (EXTRN_MDL_NAME) is not availa-
+ble for the specified cycle date and time (CDATE) because the latter is
+earlier than the implementation date of this model:
+  EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
+  CDATE_min = \"${CDATE_min}\"
+  CDATE = \"${CDATE}\"
+"
+  fi
+  ;;
+
+"HRRRX")
+# From the HRRR home page (https://rapidrefresh.noaa.gov/hrrr), the im-
+# plementation of the first version of the operational HRRR was Septem-
+# ber 30, 2014.
+  CDATE_min="2014103000"
+  if [ "$CDATE" -lt "$CDATE_min" ]; then
+    print_err_msg_exit "\
+Output from the specified external model (EXTRN_MDL_NAME) is not availa-
+ble for the specified cycle date and time (CDATE) because the latter is
+earlier than the implementation date of this model:
+  EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
+  CDATE_min = \"${CDATE_min}\"
+  CDATE = \"${CDATE}\"
+"
+  fi
+  ;;
+
+esac
+#
+#-----------------------------------------------------------------------
+#
 # Set the parameter that determines whether we want to get analysis or
 # forecast files.  This depends on whether we want these files to gene-
 # rate initial condition and surface field files or lateral boundary 

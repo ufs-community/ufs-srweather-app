@@ -59,7 +59,7 @@
 WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
 WORKDIR_ICSLBCS_CDATE_LBCS_WORK="$WORKDIR_ICSLBCS_CDATE/LBCS_work"
 mkdir_vrfy -p "$WORKDIR_ICSLBCS_CDATE_LBCS_WORK"
-cd ${WORKDIR_ICSLBCS_CDATE_LBCS_WORK}
+cd_vrfy ${WORKDIR_ICSLBCS_CDATE_LBCS_WORK}
 #
 #-----------------------------------------------------------------------
 #
@@ -138,11 +138,11 @@ esac
 #
 # Are these still needed for chgres_cube?
 #
-ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
-            $WORKDIR_SHVE/${CRES}_grid.tile7.nc
-
-ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
-            $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
+#ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
+#            $WORKDIR_SHVE/${CRES}_grid.tile7.nc
+#
+#ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
+#            $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -421,7 +421,6 @@ for (( i=0; i<=$(( $num_fhrs - 1 )); i++ )); do
 #
   fn_atm_nemsio=""
   fn_grib2=""
-  input_type=""
 
   case "$EXTRN_MDL_NAME_LBCS" in
   "GSMGFS")
@@ -469,7 +468,7 @@ list file has not specified for this external model:
 # they are for the ICs namelist)?
   { cat > fort.41 <<EOF
 &config
- fix_dir_target_grid="${WORKDIR_SFC_CLIMO}"
+ fix_dir_target_grid="${EXPTDIR}/INPUT"
  mosaic_file_target_grid="${EXPTDIR}/INPUT/${CRES}_mosaic.nc"
  orog_dir_target_grid="${EXPTDIR}/INPUT"
  orog_files_target_grid="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"

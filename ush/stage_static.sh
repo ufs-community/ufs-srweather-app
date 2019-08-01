@@ -371,17 +371,28 @@ the globbing pattern fn_pattern:
   num_files = \"$num_files\"
 "
 fi
+#
+# If the grid (and orography) generation task of the workflow was skip-
+# ped (because pregenerated files are available), we need to calculate
+# the global variables RES and CRES (and set them in the variable defi-
+# nitions file) because these variables are normally calculated in that 
+# task.  
+#
+if [ "${RUN_TASK_MAKE_GRID_OROG}" != "TRUE" ]; then
 
-RES_equiv=$( ncdump -h "$grid_fn" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
-RES_equiv=${RES_equiv//$'\n'/}
+  RES_equiv=$( ncdump -h "$grid_fn" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
+  RES_equiv=${RES_equiv//$'\n'/}
 printf "%s\n" "RES_equiv = $RES_equiv"
-CRES_equiv="C${RES_equiv}"
+  CRES_equiv="C${RES_equiv}"
 printf "%s\n" "CRES_equiv = $CRES_equiv"
-#
-# Set the global variables RES and CRES.
-#
-RES="$RES_equiv"
-CRES="$CRES_equiv"
+
+  RES="$RES_equiv"
+  CRES="$CRES_equiv"
+
+  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "RES_equiv" "${RES_equiv}"
+  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "CRES_equiv" "${CRES_equiv}"
+
+fi
 #
 #if [ "${RUN_TASK_MAKE_GRID_OROG}" = "TRUE" ]; then
 #  cp_vrfy $WORKDIR_GRID/${CRES}_mosaic.nc $WORKDIR_SHVE
