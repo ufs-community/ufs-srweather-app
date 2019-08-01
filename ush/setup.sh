@@ -628,7 +628,8 @@ case $MACHINE in
   ;;
 
 "ODIN")
-  FIXgsm="/scratch/ywang/external/fix_am"
+  FIXgsm="/scratch/ywang/fix/theia_fix/fix_am"
+  SFC_CLIMO_INPUT_DIR="/scratch/ywang/fix/theia_fix/climo_fields_netcdf"
   ;;
 
 *)

@@ -19,7 +19,7 @@ cd ${FV3SAR_DIR}/sorc
 # Don't build the old chgres any more.  Build chgres_cube instead (below).
 #./build_chgres.sh ${SITE}                >& out.build_chgres
 #
-# The following build several new utilities needed in order to use the 
+# The following build several new utilities needed in order to use the
 # new Jim Purser-type grid in the FV3SAR.  The following only works on
 # theia for now.  It needs to be ported to other platforms.
 #
@@ -42,7 +42,7 @@ if [ 0 = 1 ]; then
   cd ${FV3SAR_DIR}/../UFS_UTILS_chgres_grib2/sorc/chgres_cube.fd
   ./make.sh >& out.build_chgres_cube
 # Is the following needed?  The version of the global_chgres.exe execu-
-# table used by the tasks that use chgres_cube (the ICs/surf/LBC0 and 
+# table used by the tasks that use chgres_cube (the ICs/surf/LBC0 and
 # LBC1_to_LBCN tasks) is located in the exec directory under the UFS_-
 # UTILS_chgres_grib2 directory, not in ${FV3SAR_DIR}/exec.
   cp ../exec/global_chgres.exe ${FV3SAR_DIR}/exec
@@ -50,7 +50,7 @@ else
   cd ${FV3SAR_DIR}/../UFS_UTILS_chgres_grib2/sorc
   ./build_chgres_cube.sh >& out.build_chgres_cube
 # Is the following needed?  The version of the global_chgres.exe execu-
-# table used by the tasks that use chgres_cube (the ICs/surf/LBC0 and 
+# table used by the tasks that use chgres_cube (the ICs/surf/LBC0 and
 # LBC1_to_LBCN tasks) is located in the exec directory under the UFS_-
 # UTILS_chgres_grib2 directory, not in ${FV3SAR_DIR}/exec.
   cp ../exec/chgres_cube.exe ${FV3SAR_DIR}/exec
@@ -78,7 +78,7 @@ elif [ ${SITE} == "wcoss_cray" ]; then
 
 elif [ ${SITE} == "odin" ]; then
 
-    ln -sfn /scratch/ywang/test_runs/C768_nest/fv3-fix fix_am
+    ln -sfn /scratch/ywang/fix/theia_fix/fix_am fix_am
 
 elif [ ${SITE} == "cheyenne" ]; then
 
