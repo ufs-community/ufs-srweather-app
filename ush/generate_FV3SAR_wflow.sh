@@ -97,6 +97,8 @@ set_file_param "$WFLOW_XML_FP" "MM_FIRST_CYCL" "$MM_FIRST_CYCL"
 set_file_param "$WFLOW_XML_FP" "DD_FIRST_CYCL" "$DD_FIRST_CYCL"
 set_file_param "$WFLOW_XML_FP" "HH_FIRST_CYCL" "$HH_FIRST_CYCL"
 set_file_param "$WFLOW_XML_FP" "FHR" "$FHR"
+set_file_param "$WFLOW_XML_FP" "RUN_TASK_MAKE_GRID_OROG" "$RUN_TASK_MAKE_GRID_OROG"
+set_file_param "$WFLOW_XML_FP" "RUN_TASK_MAKE_SFC_CLIMO" "$RUN_TASK_MAKE_SFC_CLIMO"
 #
 #-----------------------------------------------------------------------
 #

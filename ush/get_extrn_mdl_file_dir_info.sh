@@ -52,7 +52,7 @@ Usage:
     anl_or_fcst \
     cdate_FV3SAR \
     time_offset_hrs \
-    output_fn \
+    output_fp \
     glob_var_name_filenames \
     glob_var_name_filenames \
     glob_var_name_arcv_file_fmt \
@@ -93,14 +93,14 @@ where the arguments are defined as follows:
   order to make up for the backward-in-time shift in the starting time
   of the external model.
  
-  output_fn:
-  Name of the file in which output from this function will be stored, 
-  including the names of the output variables (specified as inputs to 
-  this function; see below) and the values calculated for them.  This
-  output file is written in such a way that it can be sourced by the 
-  calling script.  We write output to this file and then have the call-
-  ing script read it in because there is no straightforward way in bash
-  to return values from a function to the calling script.
+  output_fp:
+  Full path to the file in which output from this function will be 
+  stored.  This output includes the names of the output variables (spe-
+  cified as inputs to this function; see below) and the values calculat-
+  ed for them.  This output file is written in such a way that it can be
+  sourced by the calling script.  We write output to this file and then
+  have the calling script read it in because there is no straightforward
+  way in bash to return values from a function to the calling script.
  
   glob_var_name_cdate:
   Name of the global variable that will contain the starting date and 
@@ -161,7 +161,7 @@ where the arguments are defined as follows:
   local time_offset_hrs="${!iarg}"
 
   iarg=$(( iarg+1 ))
-  local output_fn="${!iarg}"
+  local output_fp="${!iarg}"
   iarg=$(( iarg+1 ))
   local glob_var_name_cdate="${!iarg}"
   iarg=$(( iarg+1 ))
@@ -646,12 +646,8 @@ Archive file information has not been specified for this external model:
 #
 #-----------------------------------------------------------------------
 #
-echo "HELLO1111"
-pwd
-ls -alF
-echo "HELLO2222"
-# Change output_fn to output_fp???
-  { pwd; cat << EOM > $output_fn
+# Get rid of output file and just set global variables?
+  { pwd; cat << EOM > $output_fp
 $glob_var_name_cdate="$cdate"
 $glob_var_name_lbc_update_fhrs=( $( printf "\"%s\" " "${lbc_update_fhrs[@]}" ))
 $glob_var_name_filenames=( $( printf "\"%s\" " "${filenames[@]}" ))
@@ -665,10 +661,6 @@ EOM
 Heredoc (cat) command to store output variable values to file returned 
 with a nonzero status.
 "
-echo "HELLO3333"
-pwd
-ls -alF
-echo "HELLO4444"
 #
 #-----------------------------------------------------------------------
 #

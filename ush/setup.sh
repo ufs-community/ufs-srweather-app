@@ -93,6 +93,21 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that RUN_ENVIR is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$RUN_ENVIR" valid_vals_RUN_ENVIR || { \
+valid_vals_RUN_ENVIR_str=$(printf "\"%s\" " "${valid_vals_RUN_ENVIR[@]}");
+print_err_msg_exit "\
+Value specified in RUN_ENVIR is not supported:
+  RUN_ENVIR = \"$RUN_ENVIR\"
+RUN_ENVIR must be set to one of the following:
+  $valid_vals_RUN_ENVIR_str
+"; }
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that VERBOSE is set to a valid value.
 #
 #-----------------------------------------------------------------------
@@ -105,6 +120,107 @@ Value specified in VERBOSE is not supported:
 VERBOSE must be set to one of the following:
   $valid_vals_VERBOSE_str
 "; }
+#
+# Set VERBOSE to either "TRUE" or "FALSE" so we don't have to consider
+# other valid values later on.
+#
+if [ "$VERBOSE" = "TRUE" ] || \
+   [ "$VERBOSE" = "true" ] || \
+   [ "$VERBOSE" = "YES" ] || \
+   [ "$VERBOSE" = "yes" ]; then
+  VERBOSE="TRUE"
+elif [ "$VERBOSE" = "FALSE" ] || \
+     [ "$VERBOSE" = "false" ] || \
+     [ "$VERBOSE" = "NO" ] || \
+     [ "$VERBOSE" = "no" ]; then
+  VERBOSE="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that RUN_TASK_MAKE_GRID_OROG is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$RUN_TASK_MAKE_GRID_OROG" valid_vals_RUN_TASK_MAKE_GRID_OROG || { \
+valid_vals_RUN_TASK_MAKE_GRID_OROG_str=$(printf "\"%s\" " "${valid_vals_RUN_TASK_MAKE_GRID_OROG[@]}");
+print_err_msg_exit "\
+Value specified in RUN_TASK_MAKE_GRID_OROG is not supported:
+  RUN_TASK_MAKE_GRID_OROG = \"$RUN_TASK_MAKE_GRID_OROG\"
+RUN_TASK_MAKE_GRID_OROG must be set to one of the following:
+  $valid_vals_RUN_TASK_MAKE_GRID_OROG_str
+"; }
+#
+# Set RUN_TASK_MAKE_GRID_OROG to either "TRUE" or "FALSE" so we don't
+# have to consider other valid values later on.
+#
+if [ "$RUN_TASK_MAKE_GRID_OROG" = "TRUE" ] || \
+   [ "$RUN_TASK_MAKE_GRID_OROG" = "true" ] || \
+   [ "$RUN_TASK_MAKE_GRID_OROG" = "YES" ] || \
+   [ "$RUN_TASK_MAKE_GRID_OROG" = "yes" ]; then
+  RUN_TASK_MAKE_GRID_OROG="TRUE"
+elif [ "$RUN_TASK_MAKE_GRID_OROG" = "FALSE" ] || \
+     [ "$RUN_TASK_MAKE_GRID_OROG" = "false" ] || \
+     [ "$RUN_TASK_MAKE_GRID_OROG" = "NO" ] || \
+     [ "$RUN_TASK_MAKE_GRID_OROG" = "no" ]; then
+  RUN_TASK_MAKE_GRID_OROG="FALSE"
+fi
+#
+# If RUN_TASK_MAKE_GRID_OROG is set to "FALSE", make sure that the di-
+# rectory PREGEN_GRID_OROG_DIR that should contain the pre-generated 
+# grid and orography files exists.
+#
+if [ "$RUN_TASK_MAKE_GRID_OROG" = "FALSE" ] && \
+   [ ! -d "$PREGEN_GRID_OROG_DIR" ]; then
+  print_err_msg_exit "\
+The directory (PREGEN_GRID_OROG_DIR) that should contain the pre-genera-
+ted grid and orography files does not exist:
+  PREGEN_GRID_OROG_DIR = \"$PREGEN_GRID_OROG_DIR\"
+"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that RUN_TASK_MAKE_SFC_CLIMO is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$RUN_TASK_MAKE_SFC_CLIMO" valid_vals_RUN_TASK_MAKE_SFC_CLIMO || { \
+valid_vals_RUN_TASK_MAKE_SFC_CLIMO_str=$(printf "\"%s\" " "${valid_vals_RUN_TASK_MAKE_SFC_CLIMO[@]}");
+print_err_msg_exit "\
+Value specified in RUN_TASK_MAKE_SFC_CLIMO is not supported:
+  RUN_TASK_MAKE_SFC_CLIMO = \"$RUN_TASK_MAKE_SFC_CLIMO\"
+RUN_TASK_MAKE_SFC_CLIMO must be set to one of the following:
+  $valid_vals_RUN_TASK_MAKE_SFC_CLIMO_str
+"; }
+#
+# Set RUN_TASK_MAKE_SFC_CLIMO to either "TRUE" or "FALSE" so we don't
+# have to consider other valid values later on.
+#
+if [ "$RUN_TASK_MAKE_SFC_CLIMO" = "TRUE" ] || \
+   [ "$RUN_TASK_MAKE_SFC_CLIMO" = "true" ] || \
+   [ "$RUN_TASK_MAKE_SFC_CLIMO" = "YES" ] || \
+   [ "$RUN_TASK_MAKE_SFC_CLIMO" = "yes" ]; then
+  RUN_TASK_MAKE_SFC_CLIMO="TRUE"
+elif [ "$RUN_TASK_MAKE_SFC_CLIMO" = "FALSE" ] || \
+     [ "$RUN_TASK_MAKE_SFC_CLIMO" = "false" ] || \
+     [ "$RUN_TASK_MAKE_SFC_CLIMO" = "NO" ] || \
+     [ "$RUN_TASK_MAKE_SFC_CLIMO" = "no" ]; then
+  RUN_TASK_MAKE_SFC_CLIMO="FALSE"
+fi
+#
+# If RUN_TASK_MAKE_SFC_CLIMO is set to "FALSE", make sure that the di-
+# rectory PREGEN_SFC_CLIMO_DIR that should contain the pre-generated 
+# surface climatology files exists.
+#
+if [ "$RUN_TASK_MAKE_SFC_CLIMO" = "FALSE" ] && \
+   [ ! -d "$PREGEN_SFC_CLIMO_DIR" ]; then
+  print_err_msg_exit "\
+The directory (PREGEN_SFC_CLIMO_DIR) that should contain the pre-genera-
+ted surface climatology files does not exist:
+  PREGEN_SFC_CLIMO_DIR = \"$PREGEN_SFC_CLIMO_DIR\"
+"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -670,6 +786,28 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Define the full path to the experiment directory.  This is the direct-
+# ory in which the static input files to the FV3SAR are placed.  Then
+# call the function that checks whether the experiment directory already
+# exists and if so, moves it, deletes it, or quits out of this script 
+# (the action taken depends on the value of the variable preexisting_-
+# dir_method).  Note that we do not yet create a new experiment directory; we will do that later below once
+# the workflow/experiment configuration parameters pass the various 
+# checks.
+#
+#-----------------------------------------------------------------------
+#
+#if [ -z "${EXPT_BASEDIR+x}" ]; then  # If EXPT_BASEDIR is not set at all, not even to an empty string.
+if [ -z "${EXPT_BASEDIR}" ]; then  # If EXPT_BASEDIR is not set or is set to an empty string.
+  EXPT_BASEDIR="${BASEDIR}/expt_dirs"
+fi
+mkdir_vrfy -p "${EXPT_BASEDIR}"
+
+EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
+check_for_preexist_dir $EXPTDIR $preexisting_dir_method
+#
+#-----------------------------------------------------------------------
+#
 # Define the full path to the work directory.  This is the directory in
 # which the prepocessing steps create their input and/or place their
 # output.  Then call the function that checks whether the work directory
@@ -681,7 +819,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-WORKDIR=$TMPDIR/$EXPT_SUBDIR
+#WORKDIR=$TMPDIR/$EXPT_SUBDIR
+WORKDIR="$EXPTDIR"
 check_for_preexist_dir $WORKDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
@@ -720,28 +859,6 @@ WORKDIR_FLTR=$WORKDIR/filtered_topo
 WORKDIR_SHVE=$WORKDIR/shave
 WORKDIR_ICSLBCS=$WORKDIR/ICs_BCs
 WORKDIR_SFC_CLIMO=$WORKDIR/sfc_climo
-#
-#-----------------------------------------------------------------------
-#
-# Define the full path to the experiment directory.  This is the direct-
-# ory in which the static input files to the FV3SAR are placed.  Then
-# call the function that checks whether the experiment directory already
-# exists and if so, moves it, deletes it, or quits out of this script 
-# (the action taken depends on the value of the variable preexisting_-
-# dir_method).  Note that we do not yet create a new experiment directory; we will do that later below once
-# the workflow/experiment configuration parameters pass the various 
-# checks.
-#
-#-----------------------------------------------------------------------
-#
-#if [ -z "${EXPT_BASEDIR+x}" ]; then  # If EXPT_BASEDIR is not set at all, not even to an empty string.
-if [ -z "${EXPT_BASEDIR}" ]; then  # If EXPT_BASEDIR is not set or is set to an empty string.
-  EXPT_BASEDIR="${BASEDIR}/expt_dirs"
-fi
-mkdir_vrfy -p "${EXPT_BASEDIR}"
-
-EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
-check_for_preexist_dir $EXPTDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
 #

@@ -67,7 +67,7 @@
 WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
 WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK="$WORKDIR_ICSLBCS_CDATE/ICSSURF_work"
 mkdir_vrfy -p "$WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK"
-cd ${WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK}
+cd_vrfy ${WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK}
 #
 #-----------------------------------------------------------------------
 #
@@ -495,7 +495,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 
 { cat > fort.41 <<EOF
 &config
- fix_dir_target_grid="${WORKDIR_SFC_CLIMO}"
+ fix_dir_target_grid="${EXPTDIR}/INPUT"
  mosaic_file_target_grid="${EXPTDIR}/INPUT/${CRES}_mosaic.nc"
  orog_dir_target_grid="${EXPTDIR}/INPUT"
  orog_files_target_grid="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"

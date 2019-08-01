@@ -52,9 +52,9 @@ case $predef_domain in
 #
 #-----------------------------------------------------------------------
 #
-"GSD_RAP")
+"GSD_RAP13km")
 
-  expt_title="_GSD_RAP${expt_title}"
+  expt_title="_GSD_RAP13km${expt_title}"
 
   if [ "$grid_gen_method" = "GFDLgrid" ]; then
 
@@ -134,56 +134,79 @@ case $predef_domain in
 #
 #-----------------------------------------------------------------------
 #
-# Emulation of GSD's HRRR grid.
+# GSD's CONUS domain with ~13km cells.
 #
 #-----------------------------------------------------------------------
 #
-"GSD_HRRR")
+"GSD_HRRR13km")
 
-  expt_title="_GSD_HRRR${expt_title}"
+  expt_title="_GSD_HRRR13km${expt_title}"
 
   if [ "$grid_gen_method" = "GFDLgrid" ]; then
 
-    lon_ctr_T6=-97.5
-    lat_ctr_T6=38.5
-    stretch_fac=1.65
-    RES="384"
-    refine_ratio=5
+    print_err_msg_exit "\
+The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+predefined domain:
+  predef_domain = \"$predef_domain\"
+  grid_gen_method = \"$grid_gen_method\"
+"
 
-    num_margin_cells_T6_left=12
-    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
-  
-    num_margin_cells_T6_right=12
-    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
-  
-    num_margin_cells_T6_bottom=80
-    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
-  
-    num_margin_cells_T6_top=80
-    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+  elif [ "$grid_gen_method" = "JPgrid" ]; then
 
-    dt_atmos="50"
+    lon_rgnl_ctr=-97.5
+    lat_rgnl_ctr=38.5
 
-    layout_x="20"
-    layout_y="20"
-    blocksize="36"
+    delx="13000.0"
+    dely="13000.0"
 
-# The following needs to be tested.
+    nx_T7=400
+    ny_T7=232
+
+    nhw_T7=6
+
+    dt_atmos="10"
+
+    layout_x="40"
+    layout_y="29"
+    blocksize="40"
+
     if [ "$quilting" = ".true." ]; then
       WRTCMP_write_groups="1"
-      WRTCMP_write_tasks_per_group="20"
+      WRTCMP_write_tasks_per_group="29"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_ctr_T6}"
-      WRTCMP_cen_lat="${lat_ctr_T6}"
-      WRTCMP_stdlat1="${lat_ctr_T6}"
-      WRTCMP_stdlat2="${lat_ctr_T6}"
-      WRTCMP_nx="1738"
-      WRTCMP_ny="974"
+      WRTCMP_cen_lon="${lon_rgnl_ctr}"
+      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_stdlat1="${lat_rgnl_ctr}"
+      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_nx="400"
+      WRTCMP_ny="224"
       WRTCMP_lon_lwr_left="-122.21414225"
       WRTCMP_lat_lwr_left="22.41403305"
-      WRTCMP_dx="3000.0"
-      WRTCMP_dy="3000.0"
+      WRTCMP_dx="$delx"
+      WRTCMP_dy="$dely"
     fi
+
+  fi
+  ;;
+#
+#-----------------------------------------------------------------------
+#
+# GSD's CONUS domain with ~3km cells.
+#
+#-----------------------------------------------------------------------
+#
+"GSD_HRRR3km")
+
+  expt_title="_GSD_HRRR3km${expt_title}"
+
+  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+predefined domain:
+  predef_domain = \"$predef_domain\"
+  grid_gen_method = \"$grid_gen_method\"
+"
 
   elif [ "$grid_gen_method" = "JPgrid" ]; then
 

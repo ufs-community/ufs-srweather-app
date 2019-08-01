@@ -873,6 +873,16 @@ ln_vrfy -sf ${CRES}_oro_data.tile${tile}.halo${nh4_T7}.nc \
 #
 #-----------------------------------------------------------------------
 #
+# For convenience (in later tasks), copy the mosaic file created in the 
+# grid generation step above from the grid directory to the shave di-
+# rectory (it's a very small file, so duplicate copies are ok).
+#
+#-----------------------------------------------------------------------
+#
+cp_vrfy $WORKDIR_GRID/${CRES}_mosaic.nc $WORKDIR_SHVE
+#
+#-----------------------------------------------------------------------
+#
 # Print message indicating successful completion of script.
 #
 #-----------------------------------------------------------------------
