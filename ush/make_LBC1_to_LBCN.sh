@@ -316,7 +316,7 @@ replace_vgfrc=""
 tg3_from_soil=""
 
 
-case "$EXTRN_MDL_NAME_ICSSURF" in
+case "$EXTRN_MDL_NAME_LBCS" in
 
 
 "GSMGFS")
@@ -395,7 +395,7 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
   print_err_msg_exit "\
 External-model-dependent namelist variables have not yet been specified 
 for this external model:
-  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
 "
   ;;
 
