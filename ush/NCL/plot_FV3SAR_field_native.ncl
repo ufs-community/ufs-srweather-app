@@ -41,6 +41,8 @@ run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs
 run_dir = "/scratch4/BMC/gmtb/Linlin.Pan/ice/Linlin.Pan/rtgen.112531/tmp/fv3_regional_control"
 run_dir = "/scratch3/BMC/det/beck/FV3-CAM/run_dirs/real_time/2019062300"
 
+run_dir = "/scratch3/BMC/det/Gerard.Ketefian/FV3SAR_demo_PASPBL_20190725/expt_dirs/FFFFF"
+
 tile_inds := (/ 1, 7, 4 /)
 ;tile_inds := (/ 1, 4 /)
 ;tile_inds := (/ 5, 6 /)
@@ -418,8 +420,8 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 ;
 ; **********************************************************************
 ;
-if (True) then
-;if (False) then
+;if (True) then
+if (False) then
 
   fn := "1916021000000"
   fp := addfile(fn + ".grb2", "r")
@@ -674,6 +676,10 @@ if (True) then
 
   dx_native = 3.0d+3
   dy_native = 3.0d+3
+
+  dx_native = 13.0d+3
+  dy_native = 13.0d+3
+
   angle_units = "deg"
 
   out := calc_wrtcmp_grid_params_lambert_cnfrml( \

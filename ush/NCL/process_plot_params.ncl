@@ -148,7 +148,10 @@ example_usage_and_help_str
 ;
 ; **********************************************************************
 ;
-  work_dir = str_sub_str(run_dir, "expt_dirs", "work_dirs")
+; Don't need this line since we got rid of work_dirs and put all prepro-
+; cessing output in subdirectories in the experiment directory.
+;  work_dir = str_sub_str(run_dir, "expt_dirs", "work_dirs")
+  work_dir = run_dir
 
 
 

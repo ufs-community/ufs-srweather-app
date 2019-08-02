@@ -231,19 +231,19 @@ begin
     if (strcmp_exact(gtype, "regional") .and. (n_tile .eq. 7)) then
       grid_fn = grid_fn + ".halo" + tostring(nhalo_T7) + ".nc"
 
-;      grid_fn = work_dir + "/shave/" + grid_fn
+      grid_fn = work_dir + "/shave/" + grid_fn
 
-;The following is just a temporary fix to get plots for Jeff's real_time 
-;runs which don't use the latest directory structure.  The above is still
-; the correct way to do it in general
-temp_dir := str_sub_str(run_dir, "run_dirs", "work_dirs")
-;temp_dir := str_sub_str(temp_dir, "2019062300", "shave")
-indx := str_index_of_substr(temp_dir, "/", -1)
-temp_dir := str_get_cols(temp_dir, 0, indx-1)
-print("run_dir = " + char_dq + run_dir + char_dq)
-print("temp_dir = " + char_dq + temp_dir + char_dq)
-pause
-grid_fn = temp_dir + "/shave/" + grid_fn
+;;The following is just a temporary fix to get plots for Jeff's real_time 
+;;runs which don't use the latest directory structure.  The above is still
+;; the correct way to do it in general
+;temp_dir := str_sub_str(run_dir, "run_dirs", "work_dirs")
+;;temp_dir := str_sub_str(temp_dir, "2019062300", "shave")
+;indx := str_index_of_substr(temp_dir, "/", -1)
+;temp_dir := str_get_cols(temp_dir, 0, indx-1)
+;print("run_dir = " + char_dq + run_dir + char_dq)
+;print("temp_dir = " + char_dq + temp_dir + char_dq)
+;pause
+;grid_fn = temp_dir + "/shave/" + grid_fn
 
     else
       grid_fn = grid_fn + ".nc"
