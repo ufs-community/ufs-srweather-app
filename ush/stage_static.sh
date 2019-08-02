@@ -389,8 +389,8 @@ printf "%s\n" "CRES_equiv = $CRES_equiv"
   RES="$RES_equiv"
   CRES="$CRES_equiv"
 
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "RES_equiv" "${RES_equiv}"
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "CRES_equiv" "${CRES_equiv}"
+  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "RES" "${RES}"
+  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "CRES" "${CRES}"
 
 fi
 #
