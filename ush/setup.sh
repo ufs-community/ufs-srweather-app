@@ -516,6 +516,12 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 # USHDIR:
 # Directory containing the shell scripts called by the workflow.
 #
+# SCRIPTSDIR:
+# Directory containing the ex scripts called by the workflow.
+#
+# JOBSSDIR:
+# Directory containing the jjobs scripts called by the workflow.
+#
 # SORCDIR:
 # Directory containing various source codes.
 #
@@ -554,6 +560,8 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 #
 FV3SAR_DIR="$BASEDIR/regional_workflow"
 USHDIR="$FV3SAR_DIR/ush"
+SCRIPTSDIR="$FV3SAR_DIR/scripts"
+JOBSDIR="$FV3SAR_DIR/jobs"
 SORCDIR="$FV3SAR_DIR/sorc"
 PARMDIR="$FV3SAR_DIR/parm"
 EXECDIR="$FV3SAR_DIR/exec"
@@ -1468,6 +1476,8 @@ done <<< "${line_list}"
 #
 FV3SAR_DIR="$FV3SAR_DIR"
 USHDIR="$USHDIR"
+SCRIPTSDIR="$SCRIPTSDIR"
+JOBSDIR="$JOBSDIR"
 SORCDIR="$SORCDIR"
 EXECDIR="$EXECDIR"
 TEMPLATE_DIR="$TEMPLATE_DIR"
