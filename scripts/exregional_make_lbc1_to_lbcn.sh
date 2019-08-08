@@ -1,29 +1,11 @@
 #!/bin/bash -l
-#
-#-----------------------------------------------------------------------
-#
-# This script generates NetCDF lateral boundary condition (LBC) files 
-# that contain data for the halo region of a regional grid.  One file is
-# generated for each lateral boundary update time -- not including the 
-# initial (i.e. model start) time -- up to the end of the model run.  
-# For example, if the lateral boundary fields are to be updated every 3
-# hours (this update interval is determined by the variable LBC_UPDATE_-
-# INTVL_HRS) and the FV3SAR forecast is to run for 24 hours (the fore-
-# cast length is determined by the variable fcst_len_hrs), then a file 
-# is generated for each of the forecast hours 3, 6, 9, 12, 15, 18, and
-# 24 (but not hour 0 since that is handled by the script that generates 
-# the initial conditions file).  All the generated NetCDF LBC files are
-# placed in the directory WORKDIR_ICSLBCS_CDATE, defined as
-#
-#   WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
-#
-# where CDATE is the externally specified starting date and hour-of-day
-# of the current FV3SAR cycle.
-#
-#-----------------------------------------------------------------------
-#
+#####################################################################
+echo "--------------------------------------------------------------------------"
+echo " exregional_make_lbc1_to_lbcn.sh" 
+echo " Generate lateral boundary condition (LBC) files for all LBC update hours."
+echo "--------------------------------------------------------------------------"
+#####################################################################
 
-#
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions script.
@@ -39,7 +21,24 @@
 #-----------------------------------------------------------------------
 #
 . $USHDIR/source_funcs.sh
-#
+
+#-----------------------------------------------------------------------
+# Proess variables passed in from j-job script
+#-----------------------------------------------------------------------
+. $USHDIR/process_args.sh
+
+valid_args=("EXTRN_MDL_FNS" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_CDATE" "WGRIB2_DIR" \
+            "APRUN" "WORKDIR_ICSLBCS_CDATE" "EXTRN_MDL_LBC_UPDATE_FHRS")
+
+process_args valid_args "$@"  # The double quotes around $@ are required!
+
+declare -p EXTRN_MDL_FNS
+declare -p EXTRN_MDL_FILES_DIR
+declare -p EXTRN_MDL_CDATE
+declare -p WGRIB2_DIR
+declare -p APRUN
+declare -p WORKDIR_ICSLBCS_CDATE
+declare -p EXTRN_MDL_LBC_UPDATE_FHRS
 #-----------------------------------------------------------------------
 #
 # Save current shell options (in a global array).  Then set new options
@@ -48,132 +47,7 @@
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; set -u -x; } > /dev/null 2>&1
-#
-#-----------------------------------------------------------------------
-#
-# Set the name of and create the directory in which the output from this
-# script will be placed (if it doesn't already exist).
-#
-#-----------------------------------------------------------------------
-#
-WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
-WORKDIR_ICSLBCS_CDATE_LBCS_WORK="$WORKDIR_ICSLBCS_CDATE/LBCS_work"
-mkdir_vrfy -p "$WORKDIR_ICSLBCS_CDATE_LBCS_WORK"
-cd_vrfy ${WORKDIR_ICSLBCS_CDATE_LBCS_WORK}
-#
-#-----------------------------------------------------------------------
-#
-# Load modules and set machine-dependent parameters.
-#
-#-----------------------------------------------------------------------
-#
-case "$MACHINE" in
-#
-"WCOSS_C")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
 
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"WCOSS")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"DELL")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"THEIA")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-   ulimit -s unlimited
-   ulimit -a
-
-   module purge
-   module load intel/18.1.163
-   module load impi/5.1.1.109
-   module load netcdf/4.3.0
-   module load hdf5/1.8.14
-   module load wgrib2/2.0.8
-   module load contrib wrap-mpi
-   module list
-
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
-
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"JET")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"ODIN")
-#
-  ;;
-#
-"CHEYENNE")
-#
-  ;;
-#
-esac
-#
-#-----------------------------------------------------------------------
-#
-# Create links to the grid and orography files with 4 halo cells.  These
-# are needed by chgres_cube to create the boundary data.
-#
-#-----------------------------------------------------------------------
-#
-# Are these still needed for chgres_cube?
-#
-#ln_vrfy -sf $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
-#            $WORKDIR_SHVE/${CRES}_grid.tile7.nc
-#
-#ln_vrfy -sf $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
-#            $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
-#
-#-----------------------------------------------------------------------
-#
-# Find the directory in which the wgrib2 executable is located.
-#
-#-----------------------------------------------------------------------
-#
-WGRIB2_DIR=$( which wgrib2 ) || print_err_msg_exit "\
-Directory in which the wgrib2 executable is located not found:
-  WGRIB2_DIR = \"${WGRIB2_DIR}\"
-"
-#
-#-----------------------------------------------------------------------
-#
-# Set the directory containing the external model output files.
-#
-#-----------------------------------------------------------------------
-#
-EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_BASEDIR_LBCS}/${CDATE}"
-#
-#-----------------------------------------------------------------------
-#
-# Source the file (generated by a previous task) that contains variable
-# definitions (e.g. forecast hours, file and directory names, etc) re-
-# lated to the exteranl model run that is providing fields from which
-# we will generate LBC files for the FV3SAR.
-#
-#-----------------------------------------------------------------------
-#
-. ${EXTRN_MDL_FILES_DIR}/${EXTRN_MDL_INFO_FN}
-#
 #-----------------------------------------------------------------------
 #
 # Set physics-suite-dependent variables that are needed in the FORTRAN
