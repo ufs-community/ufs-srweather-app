@@ -1,7 +1,7 @@
 #!/bin/sh -l
 #####################################################################
 echo "-----------------------------------------------------"
-echo " exregional_get_files_ics.sh.ecf" 
+echo " exregional_get_files_ics.sh" 
 echo " Get IC files from disk or HPSS for regional model."
 echo "-----------------------------------------------------"
 #####################################################################
@@ -31,6 +31,9 @@ echo "-----------------------------------------------------"
 #
 . $USHDIR/get_extrn_mdl_file_dir_info.sh
 
+#-----------------------------------------------------------------------
+# Proess variables passed in from j-job script
+#-----------------------------------------------------------------------
 . $USHDIR/process_args.sh
 
 valid_args=("EXTRN_MDL_FNS" "EXTRN_MDL_FILES_SYSDIR" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_ARCV_FP" \

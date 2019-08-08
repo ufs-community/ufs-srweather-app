@@ -237,7 +237,7 @@ cle.
     &RSRC_MAKE_ICS_SURF_LBC0;
     &RSRV_DEFAULT;
 
-    <command>&USHDIR;/make_ICS_surf_LBC0.sh</command>
+    <command>&JOBSDIR;/JREGIONAL_MAKE_IC_LOWBC</command>
     <nodes>&PROC_MAKE_ICS_SURF_LBC0;</nodes>
     <jobname>make_ICS_surf_LBC0</jobname>
     <join><cyclestr>&LOG_DIR;/make_ICS_surf_LBC0_@Y@m@d@H.log</cyclestr></join>
@@ -260,7 +260,7 @@ cle.
     &RSRC_MAKE_LBC1_TO_LBCN;
     &RSRV_DEFAULT;
 
-    <command>&USHDIR;/make_LBC1_to_LBCN.sh</command>
+    <command>&JOBSDIR;/JREGIONAL_MAKE_LBC1_TO_LBCN</command>
     <nodes>&PROC_MAKE_LBC1_TO_LBCN;</nodes>
     <jobname>make_LBC1_to_LBCN</jobname>
     <join><cyclestr>&LOG_DIR;/make_LBC1_to_LBCN_@Y@m@d@H.log</cyclestr></join>

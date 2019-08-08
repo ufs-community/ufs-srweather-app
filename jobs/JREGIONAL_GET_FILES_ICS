@@ -232,7 +232,7 @@ done
 
 EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
 
-$SCRIPTSDIR/exregional_get_files_ics.sh.ecf \
+$SCRIPTSDIR/exregional_get_files_ics.sh \
          EXTRN_MDL_FNS="${EXTRN_MDL_FNS_str}" \
          EXTRN_MDL_FILES_SYSDIR="${EXTRN_MDL_FILES_SYSDIR}" \
          EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_DIR}" \
