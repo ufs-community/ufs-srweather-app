@@ -1,37 +1,11 @@
 #!/bin/bash -l
-#
-#-----------------------------------------------------------------------
-#
-# This script generates:
-#
-# 1) A NetCDF initial condition (IC) file on a regional grid for the
-#    date/time on which the analysis files in the directory specified by
-#    INIDIR are valid.  Note that this file does not include data in the
-#    halo of this regional grid (that data is found in the boundary con-
-#    dition (BC) files).
-#
-# 2) A NetCDF surface file on the regional grid.  As with the IC file,
-#    this file does not include data in the halo.
-#
-# 3) A NetCDF boundary condition (BC) file containing data on the halo
-#    of the regional grid at the initial time (i.e. at the same time as
-#    the one at which the IC file is valid).
-#
-# 4) A NetCDF "control" file named gfs_ctrl.nc that contains infor-
-#    mation on the vertical coordinate and the number of tracers for
-#    which initial and boundary conditions are provided.
-#
-# All four of these NetCDF files are placed in the directory specified
-# by WORKDIR_ICSLBCS_CDATE, defined as
-#
-#   WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
-#
-# where CDATE is the externally specified starting date and cycle hour
-# of the current forecast.
-#
-#-----------------------------------------------------------------------
+#####################################################################
+echo "-----------------------------------------------------"
+echo " exregional_make_ic_lowbc.sh" 
+echo " Generate netCDF IC, surface and 0-th hour LBC files."
+echo "-----------------------------------------------------"
+#####################################################################
 
-#
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions script.
@@ -47,6 +21,23 @@
 #-----------------------------------------------------------------------
 #
 . $USHDIR/source_funcs.sh
+
+#-----------------------------------------------------------------------
+# Proess variables passed in from j-job script
+#-----------------------------------------------------------------------
+. $USHDIR/process_args.sh
+
+valid_args=("EXTRN_MDL_FNS" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_CDATE" "WGRIB2_DIR" "APRUN" \
+            "WORKDIR_ICSLBCS_CDATE")
+
+process_args valid_args "$@"  # The double quotes around $@ are required!
+
+declare -p EXTRN_MDL_FNS
+declare -p EXTRN_MDL_FILES_DIR
+declare -p EXTRN_MDL_CDATE
+declare -p WGRIB2_DIR
+declare -p APRUN
+declare -p WORKDIR_ICSLBCS_CDATE
 #
 #-----------------------------------------------------------------------
 #
@@ -56,135 +47,6 @@
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; set -u -x; } > /dev/null 2>&1
-#
-#-----------------------------------------------------------------------
-#
-# Set the name of and create the directory in which the output from this
-# script will be placed (if it doesn't already exist).
-#
-#-----------------------------------------------------------------------
-#
-WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
-WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK="$WORKDIR_ICSLBCS_CDATE/ICSSURF_work"
-mkdir_vrfy -p "$WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK"
-cd_vrfy ${WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK}
-#
-#-----------------------------------------------------------------------
-#
-# Load modules and set machine-dependent parameters.
-#
-#-----------------------------------------------------------------------
-#
-case "$MACHINE" in
-#
-"WCOSS_C")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"WCOSS")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"DELL")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"THEIA")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-   ulimit -s unlimited
-   ulimit -a
-
-   module purge
-   module load intel/18.1.163
-   module load impi/5.1.1.109
-   module load netcdf/4.3.0
-   module load hdf5/1.8.14
-   module load wgrib2/2.0.8
-   module load contrib wrap-mpi
-   module list
-
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
-
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"JET")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"ODIN")
-#
-  ;;
-#
-"CHEYENNE")
-#
-  ;;
-#
-esac
-#
-#-----------------------------------------------------------------------
-#
-# Create links to the grid and orography files with 4 halo cells.  These
-# are needed by chgres_cube to create the boundary data.
-#
-#-----------------------------------------------------------------------
-#
-# Are these still needed for chgres_cube?  Probably not since they're 
-# created elsewhere, but may need them again if stage scripts are removed
-# to comply with NCO format.
-#
-#ln_vrfy -sf --relative 
-#        $WORKDIR_SHVE/${CRES}_grid.tile7.halo${nh4_T7}.nc \
-#        $WORKDIR_SHVE/${CRES}_grid.tile7.nc
-#
-#ln_vrfy -sf --relative
-#        $WORKDIR_SHVE/${CRES}_oro_data.tile7.halo${nh4_T7}.nc \
-#        $WORKDIR_SHVE/${CRES}_oro_data.tile7.nc
-#
-#-----------------------------------------------------------------------
-#
-# Find the directory in which the wgrib2 executable is located.
-#
-#-----------------------------------------------------------------------
-#
-WGRIB2_DIR=$( which wgrib2 ) || print_err_msg_exit "\
-Directory in which the wgrib2 executable is located not found:
-  WGRIB2_DIR = \"${WGRIB2_DIR}\"
-"
-#
-#-----------------------------------------------------------------------
-#
-# Set the directory containing the external model output files.
-#
-#-----------------------------------------------------------------------
-#
-EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_BASEDIR_ICSSURF}/${CDATE}"
-#
-#-----------------------------------------------------------------------
-#
-# Source the file (generated by a previous task) that contains variable
-# definitions (e.g. forecast hours, file and directory names, etc) re-
-# lated to the exteranl model run that is providing fields from which
-# we will generate LBC files for the FV3SAR.
-#
-#-----------------------------------------------------------------------
-#
-. ${EXTRN_MDL_FILES_DIR}/${EXTRN_MDL_INFO_FN}
 #
 #-----------------------------------------------------------------------
 #
@@ -305,7 +167,6 @@ esac
 # NOTE: Really should use a varmap table for GFS, just like we do for 
 # RAP/HRRR.
 #
-
 # A non-prognostic variable that appears in the field_table for GSD physics 
 # is cld_amt.  Why is that in the field_table at all (since it is a non-
 # prognostic field), and how should we handle it here??
@@ -333,8 +194,6 @@ tg3_from_soil=""
 
 
 case "$EXTRN_MDL_NAME_ICSSURF" in
-
-
 "GSMGFS")
 
   external_model="GSMGFS"
@@ -386,7 +245,6 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
   else
     tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
   fi
-
   numsoil_out="4"
   replace_vgtyp=".true."
   replace_sotyp=".true."
@@ -443,7 +301,6 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 #
 #-----------------------------------------------------------------------
 #
-
 # For GFS physics, the character arrays tracers_input(:) and tracers(:)
 # must be specified in the namelist file.  tracers_input(:) contains the
 # tracer name to look for in the external model file(s), while tracers(:)
@@ -533,6 +390,21 @@ EOF
 \"cat\" command to create a namelist file for chgres_cube to generate ICs,
 surface fields, and the 0-th hour (initial) LBCs returned with nonzero 
 status."
+#
+#-----------------------------------------------------------------------
+#
+# Run chgres_cube.
+#
+#-----------------------------------------------------------------------
+#
+#${APRUN} ${EXECDIR}/global_chgres.exe || print_err_msg_exit "\
+#${APRUN} ${EXECDIR}/chgres_cube.exe || print_err_msg_exit "\
+${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || print_err_msg_exit "\
+Call to executable to generate surface and initial conditions files for
+the FV3SAR failed:
+  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+"
 #
 #-----------------------------------------------------------------------
 #
