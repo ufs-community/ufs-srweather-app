@@ -156,7 +156,7 @@ esac
 #-----------------------------------------------------------------------
 #
 export KMP_AFFINITY=scatter
-export OMP_NUM_THREADS=2
+export OMP_NUM_THREADS=1 #Needs to be 1 for dynamic build of CCPP with GFDL fast physics, was 2 before.
 export OMP_STACKSIZE=1024m
 #
 #-----------------------------------------------------------------------

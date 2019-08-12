@@ -27,7 +27,7 @@
 
  &fms_nml
        clock_grain = 'ROUTINE',
-       domains_stack_size = 2000200,
+       domains_stack_size = 3000000,
        print_memory_usage = .false.
 /
 
@@ -151,7 +151,6 @@
        !ttendlim       = 0.008
        ltaerosol      = .T.
        lradar         = .T.
-       make_number_concentrations = .true.
        pdfcld         = .false.
        fhswr          = 3600.
        fhlwr          = 3600.
