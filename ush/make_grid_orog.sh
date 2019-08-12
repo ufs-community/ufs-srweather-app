@@ -210,7 +210,8 @@ export OMP_STACKSIZE=2048m
 #-----------------------------------------------------------------------
 #
 case $MACHINE in
-#
+
+
 "WCOSS_C" | "WCOSS")
 #
   { save_shell_opts; set +x; } > /dev/null 2>&1
@@ -229,7 +230,8 @@ case $MACHINE in
   ulimit -s unlimited
   ulimit -a
   ;;
-#
+
+
 "THEIA")
 #
   { save_shell_opts; set +x; } > /dev/null 2>&1
@@ -250,7 +252,8 @@ case $MACHINE in
   ulimit -s unlimited
   ulimit -a
   ;;
-#
+
+
 "JET")
 #
   { save_shell_opts; set +x; } > /dev/null 2>&1
@@ -272,7 +275,8 @@ case $MACHINE in
 #  . $USHDIR/set_stack_limit_jet.sh
   ulimit -a
   ;;
-#
+
+
 "ODIN")
 #
   export APRUN="srun -n 1"
@@ -281,7 +285,8 @@ case $MACHINE in
   ulimit -s unlimited
   ulimit -a
   ;;
-#
+
+
 esac
 #
 #-----------------------------------------------------------------------
@@ -428,9 +433,9 @@ resolution returned with nonzero exit code."
 
   RES_equiv=$( ncdump -h "$grid_fn" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
   RES_equiv=${RES_equiv//$'\n'/}
-  printf "%s\n" "RES_equiv = $RES_equiv"
+printf "%s\n" "RES_equiv = $RES_equiv"
   CRES_equiv="C${RES_equiv}"
-  printf "%s\n" "CRES_equiv = $CRES_equiv"
+printf "%s\n" "CRES_equiv = $CRES_equiv"
 
 elif [ "$grid_gen_method" = "JPgrid" ]; then
 #
@@ -474,9 +479,9 @@ resolution returned with nonzero exit code."
 
   RES_equiv=$( ncdump -h "$grid_fn" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
   RES_equiv=${RES_equiv//$'\n'/}
-  printf "%s\n" "RES_equiv = $RES_equiv"
+printf "%s\n" "RES_equiv = $RES_equiv"
   CRES_equiv="C${RES_equiv}"
-  printf "%s\n" "CRES_equiv = $CRES_equiv"
+printf "%s\n" "CRES_equiv = $CRES_equiv"
 
   grid_fn_orig="$grid_fn"
   grid_fn="${CRES_equiv}_grid.tile${tile_rgnl}.nc"
@@ -559,7 +564,8 @@ print_info_msg_verbose "Starting orography file generation..."
 export WORKDIR_OROG
 
 case $MACHINE in
-#
+
+
 "WCOSS_C" | "WCOSS")
 #
 # On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for
@@ -581,16 +587,17 @@ $TMPDIR" \
   aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp $TMPDIR/orog.file1
   rm_vrfy $TMPDIR/orog.file1
   ;;
-#
+
+
 "THEIA" | "JET" | "ODIN")
-#
   $USHDIR/$orog_gen_scr \
     $RES $tile $WORKDIR_GRID $WORKDIR_OROG $USHDIR $topo_dir $TMPDIR || \
   print_err_msg_exit "\
 Call to script that generates unfiltered orography file returned with 
 nonzero exit code."
   ;;
-#
+
+
 esac
 #
 #-----------------------------------------------------------------------
