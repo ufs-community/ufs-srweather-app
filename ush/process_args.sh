@@ -31,8 +31,20 @@
 # set to the string "hello", arg3 will be set to the string "goodby", 
 # and arg2 and arg4 will be set to the null string, i.e. "".
 #
-# The purpose of this function is for a script to use it to process a 
-# set of name-value pairs passed to it by a calling function.  For exam-
+# The purpose of this function is to allow a script to process a set of
+# arguments passed to it as variable name-and-value pairs by another 
+# script (aka the calling script) such that:
+#
+# 1) The calling script can only pass one of a restricted set of varia-
+#    bles to the child script.  This set is specified within the child
+#    script and is known as the
+#
+# 2) The calling script can specify a subset of the allowed variables in
+#    the child script.  Variables that are not specified are set to the
+#    null string.
+# 
+# 1) The "export" feature doesn't have to be used
+#.  For exam-
 # ple, assume the script outer_script.sh calls a second script named in-
 # ner_script.sh as follows:
 #
@@ -75,8 +87,6 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/source_funcs.sh
-
 function process_args() {
 #
 #-----------------------------------------------------------------------
@@ -135,7 +145,6 @@ where the arguments are defined as follows:
   valid_var_names=("${!valid_var_names_at}")
   valid_var_names_str=$(printf "\"%s\" " "${valid_var_names[@]}");
   num_valid_var_names=${#valid_var_names[@]}
-echo "num_valid_var_names = \"$num_valid_var_names\""
 #
 #-----------------------------------------------------------------------
 #
@@ -146,7 +155,6 @@ echo "num_valid_var_names = \"$num_valid_var_names\""
 #-----------------------------------------------------------------------
 #
   num_name_val_pairs=$(( $#-1 ))
-echo "num_name_val_pairs = \"$num_name_val_pairs\""
 #
 #-----------------------------------------------------------------------
 #
@@ -229,17 +237,11 @@ var_name must be set to one of the following:
 
         if [ "${valid_var_specified[$i]}" = "false" ]; then
           valid_var_specified[$i]="true"
-echo
-echo "valid_var_name = \"${valid_var_name}\""
-echo "var_value = ${var_value}"
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
           if [ "${is_array}" = "true" ]; then
             eval ${var_name}=${var_value}
           else
-#            eval ${var_name}=\${var_value}
             eval ${var_name}=\"${var_value}\"
           fi
-{ restore_shell_opts; } > /dev/null 2>&1
         else
           cmd_line=$( printf "\'%s\' " "${@:1}" )
           print_err_msg_exit "\

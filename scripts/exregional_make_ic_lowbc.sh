@@ -1,45 +1,54 @@
-#!/bin/bash -l
-#####################################################################
-echo "-----------------------------------------------------"
-echo " exregional_make_ic_lowbc.sh" 
-echo " Generate netCDF IC, surface and 0-th hour LBC files."
-echo "-----------------------------------------------------"
-#####################################################################
+#!/bin/bash
 
+#
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script.
+# Source the variable definitions script and the function definitions
+# file.
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
-#
-#-----------------------------------------------------------------------
-#
-# Source function definition files.
-#
-#-----------------------------------------------------------------------
-#
 . $USHDIR/source_funcs.sh
-
+#
 #-----------------------------------------------------------------------
-# Proess variables passed in from j-job script
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
 #-----------------------------------------------------------------------
-. $USHDIR/process_args.sh
-
-valid_args=("EXTRN_MDL_FNS" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_CDATE" "WGRIB2_DIR" "APRUN" \
-            "WORKDIR_ICSLBCS_CDATE")
-
-process_args valid_args "$@"  # The double quotes around $@ are required!
-
-declare -p EXTRN_MDL_FNS
-declare -p EXTRN_MDL_FILES_DIR
-declare -p EXTRN_MDL_CDATE
-declare -p WGRIB2_DIR
-declare -p APRUN
-declare -p WORKDIR_ICSLBCS_CDATE
+#
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 
 script_name=$( basename "$0" )
+print_info_msg "\n\
+========================================================================
+Entering script:  \"${script_name}\"
+This script will generate initial condition (IC), surface, and zeroth
+hour lateral boundary condition (LBC0) files in NetCDF format.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Specify the set of valid argument names for this script/function.  
+# Then process the arguments provided to this script/function (which 
+# should consist of a set of name-value pairs of the form arg1="value1",
+# etc).
+#
+#-----------------------------------------------------------------------
+#
+valid_args=("EXTRN_MDL_FNS" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_CDATE" "WGRIB2_DIR" "APRUN" \
+            "WORKDIR_ICSLBCS_CDATE")
+process_args valid_args "$@"
+
+# If VERBOSE is set to TRUE, print out what each valid argument has been
+# set to.
+if [ "$VERBOSE" = "TRUE" ]; then
+  num_valid_args="${#valid_args[@]}"
+  for (( i=0; i<$num_valid_args; i++ )); do
+    declare -p "${valid_args[$i]}"
+  done
+fi
 #
 #-----------------------------------------------------------------------
 #
