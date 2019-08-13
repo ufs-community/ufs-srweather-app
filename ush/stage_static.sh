@@ -49,6 +49,8 @@
 #-----------------------------------------------------------------------
 #
 . $USHDIR/source_funcs.sh
+
+script_name=$( basename "$0" )
 #
 #-----------------------------------------------------------------------
 #
@@ -183,7 +185,7 @@ system/software for handling modules..."
 #
 export LD_LIBRARY_PATH="${NEMSfv3gfs_DIR}/ccpp/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
 EOM
-} || print_err_msg_exit "\
+} || print_err_msg_exit "${script_name}" "\
 Heredoc (cat) command to append command to add path to CCPP libraries to
 the Lmod initialization script in the experiment directory returned with
 a nonzero status."
@@ -357,26 +359,24 @@ fi
 cd_vrfy ${target_dir}
 fn_pattern="C*_grid.tile7.halo${nh4_T7}.nc"
 grid_fn=$( ls -1 $fn_pattern ) || \
-print_err_msg_exit "\
-The \"ls\" command returned with a nonzero exit status.
-"
+print_err_msg_exit "${script_name}" "\
+The \"ls\" command returned with a nonzero exit status."
 
 num_files=$( printf "%s\n" "${grid_fn}" | wc -l )
 if [ "${num_files}" -gt "1" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 More than one file was found in directory PREGEN_GRID_OROG_DIR matching
 the globbing pattern fn_pattern:
   PREGEN_GRID_OROG_DIR = \"$PREGEN_GRID_OROG_DIR\"
   fn_pattern = \"$fn_pattern\"
-  num_files = \"$num_files\"
-"
+  num_files = \"$num_files\""
 fi
 #
 # If the grid (and orography) generation task of the workflow was skip-
 # ped (because pregenerated files are available), we need to calculate
 # the global variables RES and CRES (and set them in the variable defi-
 # nitions file) because these variables are normally calculated in that 
-# task.  
+# task.
 #
 if [ "${RUN_TASK_MAKE_GRID_OROG}" != "TRUE" ]; then
 
@@ -426,12 +426,11 @@ for fn in "${file_list[@]}"; do
       ln_vrfy -sf --relative ${target_dir}/$fn .
     fi
   else
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 Cannot create symlink because target file (fn) in directory target_dir
 does not exist:
   target_dir = \"${target_dir}\"
-  fn = \"${fn}\"
-"
+  fn = \"${fn}\""
   fi
 
 done
@@ -618,10 +617,8 @@ fi
 
 cd_vrfy ${target_dir}
 fn_pattern="${CRES}.*.nc"
-sfc_climo_files=$( ls -1 $fn_pattern ) || \
-print_err_msg_exit "\
-The \"ls\" command returned with a nonzero exit status.
-"
+sfc_climo_files=$( ls -1 $fn_pattern ) || print_err_msg_exit "${script_name}" "\
+The \"ls\" command returned with a nonzero exit status."
 #
 # Place the list of surface climatology files in an array.
 #
@@ -651,12 +648,11 @@ for fn in "${file_list[@]}"; do
       ln_vrfy -sf --relative ${target_dir}/$fn .
     fi
   else
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 Cannot create symlink because target file (fn) in directory target_dir
 does not exist:
   target_dir = \"${target_dir}\"
-  fn = \"${fn}\"
-"
+  fn = \"${fn}\""
   fi
 
 done
@@ -747,7 +743,6 @@ touch "stage_static_task_complete.txt"
 #-----------------------------------------------------------------------
 #
 print_info_msg "\
-
 ========================================================================
 All necessary STATIC files and links successfully copied to or created
 in the experiment directory!!!

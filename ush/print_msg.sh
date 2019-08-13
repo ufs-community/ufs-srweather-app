@@ -74,7 +74,7 @@ $info_msg
 #
 #-----------------------------------------------------------------------
 #
-  printf '\n%s\n' "$MSG"
+  printf '%s\n' "$MSG"
 #
 #-----------------------------------------------------------------------
 #
@@ -204,12 +204,47 @@ ERROR.  Exiting script or function with nonzero status.
     local MSG=$(printf "\
 ERROR:
 $err_msg
-Exiting script or function with nonzero status.
+Exiting script/function with nonzero status.
 ")
 #
 #-----------------------------------------------------------------------
 #
-# If more than one argument is supplied, print out a usage error mes-
+# If two arguments are supplied, we assume the first argument is the 
+# name of the script or function from which this function is being 
+# called while the second argument is the message to print out between 
+# informational lines that are always printed.
+#
+#-----------------------------------------------------------------------
+#
+  elif [ "$#" -eq 2 ]; then
+
+    local script_func_name="$1"
+    local err_msg="$2"
+#
+#-----------------------------------------------------------------------
+#
+# Remove trailing newlines from err_msg.  Command substitution [i.e. the
+# $( ... )] will do this automatically.
+#
+#-----------------------------------------------------------------------
+#
+    err_msg=$( printf '%s' "${err_msg}" )
+#
+#-----------------------------------------------------------------------
+#
+# Add informational lines at the beginning and end of the message.
+#
+#-----------------------------------------------------------------------
+#
+    local MSG=$(printf "\
+ERROR from script/function \"${script_func_name}\":
+$err_msg
+Exiting script/function with nonzero status.
+")
+#
+#-----------------------------------------------------------------------
+#
+# If more than two arguments are supplied, print out a usage error mes-
 # sage.
 #
 #-----------------------------------------------------------------------

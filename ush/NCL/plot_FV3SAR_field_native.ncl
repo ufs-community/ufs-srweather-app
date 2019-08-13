@@ -42,6 +42,7 @@ run_dir = "/scratch4/BMC/gmtb/Linlin.Pan/ice/Linlin.Pan/rtgen.112531/tmp/fv3_reg
 run_dir = "/scratch3/BMC/det/beck/FV3-CAM/run_dirs/real_time/2019062300"
 
 run_dir = "/scratch3/BMC/det/Gerard.Ketefian/FV3SAR_demo_PASPBL_20190725/expt_dirs/FFFFF"
+run_dir = "/scratch3/BMC/det/beck/CAM_chgres/run_dirs/test_HRRR25km_FV3GFSICBCs_GFSphysics"
 
 tile_inds := (/ 1, 7, 4 /)
 ;tile_inds := (/ 1, 4 /)
@@ -659,7 +660,9 @@ end if
   wrtcmp_bdy_color = "green"
 
 
-  rd := "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01/2017090700"
+;  rd := "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01/2017090700"
+  rd := "/scratch3/BMC/det/Gerard.Ketefian"
+
   wrtcmp_config_fn := rd + "/model_configure"
   wrtcmp_config_tmpl_fn = wrtcmp_config_fn + ".tmpl"
 
@@ -679,6 +682,9 @@ if (True) then
 
   dx_native = 13.0d+3
   dy_native = 13.0d+3
+
+  dx_native = 25.0d+3
+  dy_native = 25.0d+3
 
   angle_units = "deg"
 

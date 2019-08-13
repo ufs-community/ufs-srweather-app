@@ -39,6 +39,10 @@ declare -p WGRIB2_DIR
 declare -p APRUN
 declare -p WORKDIR_ICSLBCS_CDATE
 declare -p EXTRN_MDL_LBC_UPDATE_FHRS
+
+script_name=$( basename "$0" )
+
+#
 #-----------------------------------------------------------------------
 #
 # Save current shell options (in a global array).  Then set new options
@@ -66,11 +70,10 @@ case "$CCPP_phys_suite" in
   ;;
 
 *)
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Physics-suite-dependent namelist variables have not yet been specified 
 for this physics suite:
-  CCPP_phys_suite = \"${CCPP_phys_suite}\"
-"
+  CCPP_phys_suite = \"${CCPP_phys_suite}\""
   ;;
 
 esac
@@ -266,11 +269,10 @@ case "$EXTRN_MDL_NAME_LBCS" in
 
 
 *)
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 External-model-dependent namelist variables have not yet been specified 
 for this external model:
-  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
-"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
   ;;
 
 
@@ -307,11 +309,10 @@ for (( i=0; i<$num_fhrs; i++ )); do
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
   *)
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 The external model output file name to use in the chgres FORTRAN name-
 list file has not specified for this external model:
-  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
-"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
     ;;
   esac
 #
@@ -370,22 +371,20 @@ list file has not specified for this external model:
  phys_suite="${phys_suite}"
 /
 EOF
-  } || print_err_msg_exit "\
+  } || print_err_msg_exit "${script_name}" "\
 \"cat\" command to create a namelist file for chgres_cube to generate LBCs
 for all boundary update times (except the 0-th forecast hour) returned 
 with nonzero status."
 #
 # Run chgres_cube.
 #
-#  ${APRUN} ${EXECDIR}/global_chgres.exe || print_err_msg_exit "\
   ${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || \
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Call to executable to generate lateral boundary conditions file for the
 the FV3SAR failed:
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-  fhr = \"$fhr\"
-"
+  fhr = \"$fhr\""
 #
 # Move LBCs file for the current lateral boundary update time to the ICs
 # /LBCs work directory.  Note that we rename the file using the forecast
@@ -403,11 +402,10 @@ done
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\
-
+print_info_msg "\n\
 ========================================================================
-Lateral boundary condition (LBC) files generated successfully for all 
-LBC update hours!!!
+Lateral boundary condition (LBC) files (in NetCDF format) generated suc-
+cessfully for all LBC update hours (except hour zero)!!!
 ========================================================================"
 #
 #-----------------------------------------------------------------------

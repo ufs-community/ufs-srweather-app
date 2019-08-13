@@ -38,6 +38,8 @@ declare -p EXTRN_MDL_CDATE
 declare -p WGRIB2_DIR
 declare -p APRUN
 declare -p WORKDIR_ICSLBCS_CDATE
+
+script_name=$( basename "$0" )
 #
 #-----------------------------------------------------------------------
 #
@@ -66,11 +68,10 @@ case "$CCPP_phys_suite" in
   ;;
 
 *)
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Physics-suite-dependent namelist variables have not yet been specified 
 for this physics suite:
-  CCPP_phys_suite = \"${CCPP_phys_suite}\"
-"
+  CCPP_phys_suite = \"${CCPP_phys_suite}\""
   ;;
 
 esac
@@ -272,11 +273,10 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
 
 
 *)
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 External-model-dependent namelist variables have not yet been specified 
 for this external model:
-  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
-"
+  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\""
   ;;
 
 
@@ -386,7 +386,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
  tg3_from_soil=${tg3_from_soil}
 /
 EOF
-} || print_err_msg_exit "\
+} || print_err_msg_exit "${script_name}" "\
 \"cat\" command to create a namelist file for chgres_cube to generate ICs,
 surface fields, and the 0-th hour (initial) LBCs returned with nonzero 
 status."
@@ -397,29 +397,12 @@ status."
 #
 #-----------------------------------------------------------------------
 #
-#${APRUN} ${EXECDIR}/global_chgres.exe || print_err_msg_exit "\
-#${APRUN} ${EXECDIR}/chgres_cube.exe || print_err_msg_exit "\
-${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || print_err_msg_exit "\
+#${APRUN} ${EXECDIR}/chgres_cube.exe || print_err_msg_exit "${script_name}" "\
+${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || print_err_msg_exit "${script_name}" "\
 Call to executable to generate surface and initial conditions files for
 the FV3SAR failed:
   EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
-  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-"
-#
-#-----------------------------------------------------------------------
-#
-# Run chgres_cube.
-#
-#-----------------------------------------------------------------------
-#
-#${APRUN} ${EXECDIR}/global_chgres.exe || print_err_msg_exit "\
-#${APRUN} ${EXECDIR}/chgres_cube.exe || print_err_msg_exit "\
-${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || print_err_msg_exit "\
-Call to executable to generate surface and initial conditions files for
-the FV3SAR failed:
-  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
-  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-"
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\""
 #
 #-----------------------------------------------------------------------
 #
@@ -439,10 +422,9 @@ mv_vrfy gfs_bndy.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_bndy.tile7.000.nc
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\
-
+print_info_msg "\n\
 ========================================================================
-Initial condition, surface, and 0-th hour lateral boundary condition
+Initial condition, surface, and zeroth hour lateral boundary condition
 files (in NetCDF format) generated successfully!!!
 ========================================================================"
 #
