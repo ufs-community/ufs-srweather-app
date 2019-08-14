@@ -118,7 +118,7 @@ Variables that are not modified by the workflow generation script.
     &RSRC_MAKE_SFC_CLIMO;
     &RSRV_DEFAULT;
 
-    <command>&USHDIR;/make_sfc_climo.sh</command>
+    <command>&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO</command>
     <nodes>&PROC_MAKE_SFC_CLIMO;</nodes>
     <jobname>make_sfc_climo</jobname>
     <join><cyclestr>&LOG_DIR;/make_sfc_climo.log</cyclestr></join>
