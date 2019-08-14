@@ -74,4 +74,14 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #-----------------------------------------------------------------------
 #
 . ${FUNCS_DIR}/interpol_to_arbit_CRES.sh
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing the function that processes a list of argu-
+# ments to a script or function, where the list is comprised of a set of
+# argument name-value pairs, e.g. arg1="value1", ...
+#
+#-----------------------------------------------------------------------
+#
+. ${FUNCS_DIR}/process_args.sh
 

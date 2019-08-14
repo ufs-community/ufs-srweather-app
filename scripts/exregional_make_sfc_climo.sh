@@ -1,28 +1,14 @@
-#!/bin/sh -l
+#!/bin/bash
 
 #
 #-----------------------------------------------------------------------
 #
-# This script generates the 
-#
-#-----------------------------------------------------------------------
-#
-
-#
-#-----------------------------------------------------------------------
-#
-# Source the variable definitions script.
+# Source the variable definitions script and the function definitions
+# file.
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
-#
-#-----------------------------------------------------------------------
-#
-# Source function definition files.
-#
-#-----------------------------------------------------------------------
-#
 . $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
@@ -32,7 +18,36 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+
+script_name=$( basename "$0" )
+print_info_msg "\
+========================================================================
+Entering script:  \"${script_name}\"
+This script will generate surface fields on the FV3 native grid based on
+climatology.
+========================================================================\n"
+#
+#-----------------------------------------------------------------------
+#
+# Specify the set of valid argument names for this script/function.  
+# Then process the arguments provided to this script/function (which 
+# should consist of a set of name-value pairs of the form arg1="value1",
+# etc).
+#
+#-----------------------------------------------------------------------
+#
+valid_args=( "WORKDIR_LOCAL" )
+process_args valid_args "$@"
+
+# If VERBOSE is set to TRUE, print out what each valid argument has been
+# set to.
+if [ "$VERBOSE" = "TRUE" ]; then
+  num_valid_args="${#valid_args[@]}"
+  for (( i=0; i<$num_valid_args; i++ )); do
+    declare -p "${valid_args[$i]}"
+  done
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -42,27 +57,6 @@
 #
 ulimit -s unlimited
 ulimit -a
-#
-#-----------------------------------------------------------------------
-#
-# Create the work(??) directory for the surface climatology files.  If   <<-- Should call this "work" directory, since there is a subdirectory that's the true work directory.  Should rename WORKDIR_SFC_CLIMO (and also WORKDIR_GRID, WORKDIR_SHVE, etc).
-# it already exists, deal with it as specified by the variable pre-
-# existing_dir_method.
-#
-#-----------------------------------------------------------------------
-#
-check_for_preexist_dir ${WORKDIR_SFC_CLIMO} $preexisting_dir_method
-mkdir_vrfy -p "${WORKDIR_SFC_CLIMO}"
-#
-#-----------------------------------------------------------------------
-#
-# Create a (true) work directory.  If it already exists, delete it.
-#
-#-----------------------------------------------------------------------
-#
-WORKDIR_LOCAL="${WORKDIR_SFC_CLIMO}/tmp"
-check_for_preexist_dir ${WORKDIR_LOCAL} "delete"
-mkdir_vrfy ${WORKDIR_LOCAL}
 #
 #-----------------------------------------------------------------------
 #
@@ -147,11 +141,11 @@ module list
   ;;
 
 *)
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Run command has not been specified for this machine:
   MACHINE = \"$MACHINE\"
-  APRUN_SFC = \"$APRUN_SFC\"
-"
+  APRUN_SFC = \"$APRUN_SFC\""
+  ;;
 
 esac
 #
@@ -161,10 +155,9 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-$APRUN_SFC ${EXECDIR}/sfc_climo_gen || print_err_msg_exit "\
+$APRUN_SFC ${EXECDIR}/sfc_climo_gen || print_err_msg_exit "${script_name}" "\
 Call to executable that generates surface climatology files returned 
-with nonzero exit code.
-"
+with nonzero exit code."
 #
 #-----------------------------------------------------------------------
 #
@@ -258,8 +251,7 @@ touch "make_sfc_climo_files_task_complete.txt"
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\
-
+print_info_msg "\n\
 ========================================================================
 All surface climatology files generated successfully!!!
 ========================================================================"
