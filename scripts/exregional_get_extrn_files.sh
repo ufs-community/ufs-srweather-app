@@ -1,52 +1,15 @@
-#!/bin/sh -l
-#####################################################################
-echo "-----------------------------------------------------"
-echo " exregional_get_files_ics.sh" 
-echo " Get IC files from disk or HPSS for regional model."
-echo "-----------------------------------------------------"
-#####################################################################
+#!/bin/bash
 
+#
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script.
+# Source the variable definitions script and the function definitions
+# file.
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
-#
-#-----------------------------------------------------------------------
-#
-# Source function definition files.
-#
-#-----------------------------------------------------------------------
-#
 . $USHDIR/source_funcs.sh
-#
-#-----------------------------------------------------------------------
-#
-# Source function that sets the output file names needed from the exter-
-# nal model and, if relevant, the full path to the archive file on HPSS. 
-#
-#-----------------------------------------------------------------------
-#
-. $USHDIR/get_extrn_mdl_file_dir_info.sh
-
-#-----------------------------------------------------------------------
-# Proess variables passed in from j-job script
-#-----------------------------------------------------------------------
-. $USHDIR/process_args.sh
-
-valid_args=("EXTRN_MDL_FNS" "EXTRN_MDL_FILES_SYSDIR" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_ARCV_FP" \
-            "EXTRN_MDL_ARCV_FILE_FMT" "EXTRN_MDL_ARCVREL_DIR")
-
-process_args valid_args "$@"  # The double quotes around $@ are required!
-
-declare -p EXTRN_MDL_FNS
-declare -p EXTRN_MDL_FILES_SYSDIR
-declare -p EXTRN_MDL_FILES_DIR
-declare -p EXTRN_MDL_ARCV_FP
-declare -p EXTRN_MDL_ARCV_FILE_FMT
-declare -p EXTRN_MDL_ARCVREL_DIR
 #
 #-----------------------------------------------------------------------
 #
@@ -55,14 +18,57 @@ declare -p EXTRN_MDL_ARCVREL_DIR
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
-# We will first check whether the external model output files exist on
-# the system disk (and are older than a certain age).  If so, we will 
-# simply copy them from the system disk to the location specified by 
-# EXTRN_MDL_FILES_DIR.  If not, we will look for them on HPSS.
+# Set the script name and print out an informational message informing
+# the user that we've entered this script.
+#
+#-----------------------------------------------------------------------
+#
+script_name=$( basename "$0" )
+print_info_msg "\n\
+========================================================================
+Entering script:  \"${script_name}\"
+This is the ex-script for the task that copies/fetches to a local direc-
+tory (either from disk or HPSS) the external model files from which ini-
+tial or boundary condition files for the FV3 will be generated.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Specify the set of valid argument names for this script/function.  
+# Then process the arguments provided to this script/function (which 
+# should consist of a set of name-value pairs of the form arg1="value1",
+# etc).
+#
+#-----------------------------------------------------------------------
+#
+valid_args=( "EXTRN_MDL_FNS" "EXTRN_MDL_SYSDIR" "EXTRN_MDL_FILES_DIR" \
+             "EXTRN_MDL_ARCV_FPS" "EXTRN_MDL_ARCV_FMT" "EXTRN_MDL_ARCVREL_DIR")
+process_args valid_args "$@"
+
+# If VERBOSE is set to TRUE, print out what each valid argument has been
+# set to.
+if [ "$VERBOSE" = "TRUE" ]; then
+  num_valid_args="${#valid_args[@]}"
+  print_info_msg "\n\
+The arguments to script/function \"${script_name}\" have been set as 
+follows:
+"
+  for (( i=0; i<$num_valid_args; i++ )); do
+    line=$( declare -p "${valid_args[$i]}" )
+    printf "  $line\n"
+  done
+fi
+#
+#-----------------------------------------------------------------------
+#
+# We first check whether the external model output files exist on the 
+# system disk (and are older than a certain age).  If so, we simply copy
+# them from the system disk to the location specified by EXTRN_MDL_-
+# FILES_DIR.  If not, we try to fetch them from HPSS.
 #
 # Start by setting EXTRN_MDL_FPS to the full paths that the external mo-
 # del output files would have if they existed on the system disk.  Then
@@ -73,32 +79,54 @@ declare -p EXTRN_MDL_ARCVREL_DIR
 #-----------------------------------------------------------------------
 #
 num_files_to_copy="${#EXTRN_MDL_FNS[@]}"
-prefix="$EXTRN_MDL_FILES_SYSDIR/"
+prefix="$EXTRN_MDL_SYSDIR/"
 EXTRN_MDL_FPS=( "${EXTRN_MDL_FNS[@]/#/$prefix}" )
 
 num_files_found_on_disk="0"
-min_age="5"  # Minimum file age in minutes.
+min_age="5"  # Minimum file age, in minutes.
 for FP in "${EXTRN_MDL_FPS[@]}"; do
+
   if [ -f "$FP" ]; then
-    printf "File \"%s\" exists on system disk..." "$FP"
-    if [ $( find "$FP" -mmin +5 ) ]; then
-      printf " and is older than $min_age minutes!\n"
+
+    if [ $( find "$FP" -mmin +${min_age} ) ]; then
       num_files_found_on_disk=$(( num_files_found_on_disk+1 ))
+      print_info_msg "\n\
+File FP exists on system disk and is older than the minimum required age
+of min_age minutes:
+  FP = \"$FP\"
+  min_age = ${min_age} min"
     else
-      printf " but is NOT older than $min_age minutes!\n"
+      print_info_msg "\n\
+File FP exists on system disk and but is NOT older than the minumum re-
+quired age of min_age minutes:
+  FP = \"$FP\"
+  min_age = ${min_age} min
+Will try fetching all external model files from HPSS.  Not checking pre-
+sence and age of remaining external model files on system disk."
+      break
     fi
+
   else
-    printf "File \"%s\" does NOT exist on system disk!\n" "$FP"
+
+    print_info_msg "\n\
+File FP does NOT exist on system disk:
+  FP = \"$FP\"
+Will try fetching all external model files from HPSS.  Not checking pre-
+sence and age of remaining external model files on system disk."
+    break
+
   fi
+
 done
 #
 #-----------------------------------------------------------------------
 #
-#
+# Set the variable (DATA_SRC) that determines the source of the external
+# model files (either disk or HPSS).
 #
 #-----------------------------------------------------------------------
 #
-if [ "$num_files_found_on_disk" -eq "$num_files_to_copy" ]; then
+if [ "${num_files_found_on_disk}" -eq "${num_files_to_copy}" ]; then
   DATA_SRC="disk"
 else
   DATA_SRC="HPSS"
@@ -106,19 +134,19 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-#
+# If the source of the external model files is "disk", copy the files
+# from the system disk to a local directory.
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_FNS_str=$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )
-EXTRN_MDL_FNS_str="( $EXTRN_MDL_FNS_str)"
+EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
 
 if [ "$DATA_SRC" = "disk" ]; then
 
   print_info_msg "
 Copying model output files (EXTRN_MDL_FNS) from system directory on disk 
-(EXTRN_MDL_FILES_SYSDIR) to local directory (EXTRN_MDL_FILES_DIR):
-  EXTRN_MDL_FILES_SYSDIR = \"$EXTRN_MDL_FILES_SYSDIR\"
+(EXTRN_MDL_SYSDIR) to local directory (EXTRN_MDL_FILES_DIR):
+  EXTRN_MDL_SYSDIR = \"$EXTRN_MDL_SYSDIR\"
   EXTRN_MDL_FNS = $EXTRN_MDL_FNS_str
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
 "
@@ -133,52 +161,55 @@ Copying model output files (EXTRN_MDL_FNS) from system directory on disk
 #
   if [ "$ICSSURF_OR_LBCS" = "ICSSURF" ]; then
 
-    print_info_msg "
-
+    print_info_msg "\n\
 ========================================================================
 External model files needed for generating initial condition and surface 
 fields for the FV3SAR successfully copied from system disk!!!
+Exiting script:  \"${script_name}\"
 ========================================================================"
 
   elif [ "$ICSSURF_OR_LBCS" = "LBCS" ]; then
 
-    print_info_msg "
-
+    print_info_msg "\n\
 ========================================================================
 External model files needed for generating lateral boundary conditions
 on the halo of the FV3SAR's regional grid successfully copied from sys-
 tem disk!!!
+Exiting script:  \"${script_name}\"
 ========================================================================"
 
   fi
 #
 #-----------------------------------------------------------------------
 #
-#
+# If the source of the external model files is "HPSS", fetch them from
+# HPSS.
 #
 #-----------------------------------------------------------------------
 #
 elif [ "$DATA_SRC" = "HPSS" ]; then
-
-  print_info_msg "
-Fetching model output files from HPSS.  The model output files (EXTRN_-
-MDL_FNS), the archive file on HPSS in which output files are stored (AR-
-CV_FP), and the local directory into which they will be copied (EXTRN_-
-MDL_FILES_DIR) are:
-  EXTRN_MDL_FNS = $EXTRN_MDL_FNS_str
-  EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-"
 #
 #-----------------------------------------------------------------------
 #
-# Reset EXTRN_MDL_FPS to the full paths within the archive file of the
+# Reset EXTRN_MDL_FPS to the full paths within the archive files of the
 # external model output files.
 #
 #-----------------------------------------------------------------------
 #
   prefix=${EXTRN_MDL_ARCVREL_DIR:+$EXTRN_MDL_ARCVREL_DIR/}
   EXTRN_MDL_FPS=( "${EXTRN_MDL_FNS[@]/#/$prefix}" )
+
+  EXTRN_MDL_FPS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FPS[@]}" )")"
+  EXTRN_MDL_ARCV_FPS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_ARCV_FPS[@]}" )")"
+
+  print_info_msg "\n\
+Fetching model output files from HPSS.  The model output files (EXTRN_-
+MDL_FPS), the archive files on HPSS in which these output files are 
+stored (EXTRN_MDL_ARCV_FPS), and the local directory into which they 
+will be copied (EXTRN_MDL_FILES_DIR) are:
+  EXTRN_MDL_FPS = $EXTRN_MDL_FPS_str
+  EXTRN_MDL_ARCV_FPS = $EXTRN_MDL_ARCV_FPS_str
+  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\""
 #
 #-----------------------------------------------------------------------
 #
@@ -192,110 +223,134 @@ MDL_FILES_DIR) are:
 #
 #-----------------------------------------------------------------------
 #
+# Get the number of archive files to consider.
+#
+#-----------------------------------------------------------------------
+#
+  num_arcv_files="${#EXTRN_MDL_ARCV_FPS[@]}"
+#
+#-----------------------------------------------------------------------
+#
 # Consider the case of the archive file to be fetched from HPSS being 
 # in tar format.
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$EXTRN_MDL_ARCV_FILE_FMT" = "tar" ]; then
+  if [ "$EXTRN_MDL_ARCV_FMT" = "tar" ]; then
 #
 #-----------------------------------------------------------------------
 #
-# Before trying to extract the external model output files from the tar
-# file on HPSS, check that the tar file contains all the output files 
-# (and indirectly check that the tar file exists on HPSS).  The follow-
-# ing htar command lists in the log file HTAR_LOG_FN the names of those 
-# output files that exist in the tar file.  Note that the command will 
-# fail if the tar file itself doesn't exist on HPSS, but it won't fail
-# if any of the output files don't exist in the tar file.  In the latter
-# case, the missing files' names simply won't appear in the log file 
-# (which is checked for later below).
+# Loop through the set of archive files specified in EXTRN_MDL_ARCV_FPS
+# and extract a subset of the specified external model files from each.
 #
 #-----------------------------------------------------------------------
 #
-    HTAR_LOG_FN="log.htar_tvf"
-    htar -tvf ${EXTRN_MDL_ARCV_FP} ${EXTRN_MDL_FPS[@]} >& ${HTAR_LOG_FN} || \
-    print_err_msg_exit "\
+    num_files_to_extract="${#EXTRN_MDL_FPS[@]}"
+
+    for (( narcv=0; narcv<$num_arcv_files; narcv++ )); do
+
+      narcv_formatted=$( printf "%02d" $narcv )
+      ARCV_FP="${EXTRN_MDL_ARCV_FPS[$narcv]}"
+      HTARtvf_LOG_FN="log.htar_tvf.${narcv_formatted}"
+      HTARxvf_LOG_FN="log.htar_xvf.${narcv_formatted}"
+#
+# Before trying to extract (a subset of) the external model output files
+# from the current tar archive file (which is on HPSS), create a list of
+# those external model files that are stored in the current tar archive 
+# file.  For this purpose, we first use the "htar -tvf" command to list
+# all the external model files that are in the current archive file and
+# store the result in a log file.  (This command also indirectly checks
+# whether the archive file exists on HPSS.)  We then grep this log file
+# for each external model file and create a list containing only those
+# external model files that exist in the current archive.
+#
+# Note that the "htar -tvf" command will fail if the tar archive file 
+# itself doesn't exist on HPSS, but it won't fail if any of the external
+# model file names passed to it don't exist in the archive file.  In the
+# latter case, the missing files' names simply won't appear in the log
+# file.
+#
+      htar -tvf ${ARCV_FP} ${EXTRN_MDL_FPS[@]} >& ${HTARtvf_LOG_FN} || \
+      print_err_msg_exit "${script_name}" "\
 htar file list operation (\"htar -tvf ...\") failed.  Check the log file 
-HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
+HTARtvf_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HTAR_LOG_FN = \"$HTAR_LOG_FN\"
+  HTARtvf_LOG_FN = \"$HTARtvf_LOG_FN\"
 "
+
+      i=0
+      files_in_crnt_arcv=()
+      for (( nfile=0; nfile<$num_files_to_extract; nfile++ )); do
+        extrn_mdl_fp="${EXTRN_MDL_FPS[$nfile]}"
+#        grep -n ${extrn_mdl_fp} ${HTARtvf_LOG_FN} 2>&1 && { \
+        grep -n ${extrn_mdl_fp} ${HTARtvf_LOG_FN} > /dev/null 2>&1 && { \
+          files_in_crnt_arcv[$i]="${extrn_mdl_fp}"; \
+          i=$((i+1)); \
+        }
+      done
 #
-#-----------------------------------------------------------------------
+# If none of the external model files were found in the current archive
+# file, print out an error message and exit.
 #
-# Check that the log file from the htar command above contains the name
-# of each external model output file.  If any are missing, then the cor-
-# responding files are not in the tar file and thus cannot be extracted.  
-# In that case, print out a message and exit the script because initial
-# condition and surface field files for the FV3SAR cannot be generated
-# without all the external model output files.
-#
-#-----------------------------------------------------------------------
-#
-    for FP in "${EXTRN_MDL_FPS[@]}"; do
-      grep -n "${FP}" "${HTAR_LOG_FN}" > /dev/null 2>&1 || \
-      print_err_msg_exit "\
-External model output file FP not found in tar archive file EXTRN_MDL_-
-ARCV_FP:
-  EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
-  FP = \"$FP\"
-Check the log file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for 
-details:
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HTAR_LOG_FN = \"$HTAR_LOG_FN\"
+      num_files_in_crnt_arcv=${#files_in_crnt_arcv}
+      if [ ${num_files_in_crnt_arcv} -eq 0 ]; then
+        EXTRN_MDL_FPS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FPS[@]}" )")"
+        print_err_msg_exit "${script_name}" "\
+The current archive file (ARCV_FP) does not contain any of the external 
+model files listed in EXTRN_MDL_FPS:
+  ARCV_FP = \"$ARCV_FP\"
+  EXTRN_MDL_FPS = $EXTRN_MDL_FPS_str
+The archive file should contain at least one external model file; other-
+wise, it would not be needed.
 "
-    done
+      fi
 #
-#-----------------------------------------------------------------------
+# Extract from the current tar archive file on HPSS all the external mo-
+# del output files that exist in that archive file.  Also, save the out-
+# put of the "htar -xvf" command in a log file for debugging (if neces-
+# sary).
 #
-# Extract the external model output files from the tar file on HPSS.
-#
-#-----------------------------------------------------------------------
-#
-    HTAR_LOG_FN="log.htar_xvf"
-    htar -xvf ${EXTRN_MDL_ARCV_FP} ${EXTRN_MDL_FPS[@]} >& ${HTAR_LOG_FN} || \
-    print_err_msg_exit "\
+      htar -xvf ${ARCV_FP} ${files_in_crnt_arcv[@]} >& ${HTARxvf_LOG_FN} || \
+      print_err_msg_exit "${script_name}" "\
 htar file extract operation (\"htar -xvf ...\") failed.  Check the log 
-file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
+file HTARxvf_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HTAR_LOG_FN = \"$HTAR_LOG_FN\"
+  HTARxvf_LOG_FN = \"$HTARxvf_LOG_FN\"
 "
-#
-#-----------------------------------------------------------------------
 #
 # Note that the htar file extract operation above may return with a 0 
 # exit code (success) even if one or more (or all) external model output
-# files were not extracted.  The names of those files that were not ex-
-# tracted will not be listed in the log file.  Thus, we now check that 
-# the log file from the htar command above contains the name of each 
-# output file.  If any are missing, we print out a message and exit the 
-# script because initial condition and surface field files for the FV3-
-# SAR cannot be generated without all the external model output files.
+# files that it is supposed to contain were not extracted.  The names of
+# those files that were not extracted will not be listed in the log 
+# file.  Thus, we now check whether the log file contains the name of 
+# each external model file that should have been extracted.  If any are
+# missing, we print out a message and exit the script because initial 
+# condition and surface field files needed by FV3 cannot be generated
+# without all the external model output files.
 #
-#-----------------------------------------------------------------------
-#
-    for FP in "${EXTRN_MDL_FPS[@]}"; do
+      for FP in "${files_in_crnt_arcv[@]}"; do
 #
 # If the file path is absolute (i.e. starts with a "/"), then drop the
 # leading "/" because htar strips it before writing the file path to the
 # log file.
 #
-      if [ "${FP:0:1}" = "/" ]; then
-        FP=${FP:1}
-      fi
+        if [ "${FP:0:1}" = "/" ]; then
+          FP=${FP:1}
+        fi
 
-      grep -n "${FP}" "${HTAR_LOG_FN}" > /dev/null 2>&1 || \
-      print_err_msg_exit "\
-External model output file FP not extracted from tar archive file EX-
-TRN_MDL_ARCV_FP:
-  EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
+        grep -n "${FP}" "${HTARxvf_LOG_FN}" > /dev/null 2>&1 || \
+        print_err_msg_exit "${script_name}" "\
+External model output file FP not extracted from tar archive file ARCV_-
+FP:
+  ARCV_FP = \"$ARCV_FP\"
   FP = \"$FP\"
-Check the log file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for 
-details:
+Check the log file HTARxvf_LOG_FN in the directory EXTRN_MDL_FILES_DIR
+for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HTAR_LOG_FN = \"$HTAR_LOG_FN\"
+  HTARxvf_LOG_FN = \"$HTARxvf_LOG_FN\"
 "
+
+      done
 
     done
 #
@@ -320,7 +375,6 @@ details:
       if [ "${EXTRN_MDL_ARCVREL_DIR:0:1}" = "/" -o \
            "${EXTRN_MDL_ARCVREL_DIR:0:2}" = "./" ]; then
 
-        #mv_vrfy .$EXTRN_MDL_ARCVREL_DIR/* .
         mv_vrfy $EXTRN_MDL_ARCVREL_DIR/* .
 #
 # Get the first subdirectory in EXTRN_MDL_ARCVREL_DIR, i.e. the directo-
@@ -328,7 +382,7 @@ details:
 # want to remove.
 #
         subdir_to_remove=$( printf "%s" "${EXTRN_MDL_ARCVREL_DIR}" | \
-                           sed -r 's%^(\/|\.\/)([^/]*).*%\2%' ) 
+                            sed -r 's%^(\/|\.\/)([^/]*).*%\2%' ) 
         rm_vrfy -rf ./$subdir_to_remove
 #
 # If EXTRN_MDL_ARCVREL_DIR does not start with a "/" (and it is not 
@@ -336,13 +390,14 @@ details:
 #
       else
 
-        print_err_msg_exit "\
-The archive-relative directory (i.e. the directory \"within\" the tar file
-EXTRN_MDL_ARCV_FP specified by EXTRN_MDL_ARCVREL_DIR is not the current 
-directory (i.e. it is not \".\"), and it does not start with a \"/\":
-  EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
+        print_err_msg_exit "${script_name}" "\
+The archive-relative directory specified by EXTRN_MDL_ARCVREL_DIR [i.e. 
+the directory \"within\" the tar file(s) listed in EXTRN_MDL_ARCV_FPS] is
+not the current directory (i.e. it is not \".\"), and it does not start 
+with a \"/\":
   EXTRN_MDL_ARCVREL_DIR = \"$EXTRN_MDL_ARCVREL_DIR\"
-The current script must be modified to account for this case.
+  EXTRN_MDL_ARCV_FPS = $EXTRN_MDL_ARCV_FPS_str
+This script (\"${script_name}\) must be modified to account for this case.
 "
       fi
 
@@ -355,17 +410,41 @@ The current script must be modified to account for this case.
 #
 #-----------------------------------------------------------------------
 #
-  elif [ "$EXTRN_MDL_ARCV_FILE_FMT" = "zip" ]; then
+  elif [ "$EXTRN_MDL_ARCV_FMT" = "zip" ]; then
 #
 #-----------------------------------------------------------------------
 #
-# Fetch the zip archive file from HPSS.
+# For archive files that are in "zip" format files, the array EXTRN_-
+# MDL_ARCV_FPS containing the list of archive files should contain only
+# one element, i.e. there should be only one archive file to consider.  
+# Check for this.  If this ever changes (e.g. due to the way an external 
+# model that uses the "zip" format stores its output files on HPSS), the
+# code below must be modified to loop over all archive files.
+#
+#-----------------------------------------------------------------------
+#
+    if [ "$num_arcv_files" -gt 1 ]; then
+      print_err_msg_exit "${script_name}" "\
+Currently, this script is coded to handle only one archive file if the 
+archive file format is specified to be \"zip\", but the number of archive 
+files (num_arcv_files) passed to this script is greater than 1:
+  EXTRN_MDL_ARCV_FMT = \"$EXTRN_MDL_ARCV_FMT\"
+  num_arcv_files = $num_arcv_files
+Please modify the script to handle more than one \"zip\" archive file.
+Note that code already exists in this script that can handle multiple
+archive files if the archive file format is specified to be \"tar\", so 
+that can be used as a guide for the \"zip\" case."
+    fi
+#
+#-----------------------------------------------------------------------
+#
+# Fetch the zip archive file from HPSS.  
 #
 #-----------------------------------------------------------------------
 #
     HSI_LOG_FN="log.hsi_get"
-    hsi get ${EXTRN_MDL_ARCV_FP} >& ${HSI_LOG_FN} || \
-    print_err_msg_exit "\
+    hsi get ${EXTRN_MDL_ARCV_FPS[@]} >& ${HSI_LOG_FN} || \
+    print_err_msg_exit "${script_name}" "\
 hsi file get operation (\"hsi get ...\") failed.  Check the log file 
 HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
@@ -381,7 +460,7 @@ HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #
     UNZIP_LOG_FN="log.unzip_lv"
     unzip -l -v ${EXTRN_MDL_ARCV_FN} >& ${UNZIP_LOG_FN} || \
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 Operation to list contents of the zip archive file EXTRN_MDL_ARCV_FN in
 the directory EXTRN_MDL_FILES_DIR failed.  Check the log file UNZIP_-
 LOG_FN in that directory for contents of the zip archive:
@@ -403,12 +482,12 @@ LOG_FN in that directory for contents of the zip archive:
 #
     for FP in "${EXTRN_MDL_FPS[@]}"; do
       grep -n "${FP}" "${UNZIP_LOG_FN}" > /dev/null 2>&1 || \
-      print_err_msg_exit "\
+      print_err_msg_exit "${script_name}" "\
 External model output file FP does not exist in the zip archive file EX-
-TRN_MDL_ARCV_FP in the directory EXTRN_MDL_FILES_DIR.  Check the log 
+TRN_MDL_ARCV_FPS in the directory EXTRN_MDL_FILES_DIR.  Check the log 
 file UNZIP_LOG_FN in that directory for contents of the zip archive:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  EXTRN_MDL_ARCV_FP = \"$EXTRN_MDL_ARCV_FP\"
+  EXTRN_MDL_ARCV_FPS = $EXTRN_MDL_ARCV_FPS_str
   FP = \"$FP\"
   UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
 "
@@ -425,7 +504,7 @@ file UNZIP_LOG_FN in that directory for contents of the zip archive:
 #
     UNZIP_LOG_FN="log.unzip"
     unzip -o "${EXTRN_MDL_ARCV_FN}" ${EXTRN_MDL_FPS[@]} >& ${UNZIP_LOG_FN} || \
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 unzip file extract operation (\"unzip -o ...\") failed.  Check the log 
 file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
@@ -440,7 +519,7 @@ file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 # In that case, extra code must be included here to move the external 
 # model output files from the subdirectory up to EXTRN_MDL_FILES_DIR and 
 # then the subdirectory (analogous to what is done above for the case of 
-# EXTRN_MDL_ARCV_FILE_FMT set to "tar".
+# EXTRN_MDL_ARCV_FMT set to "tar".
 #
  
   fi
@@ -453,21 +532,21 @@ file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #
   if [ "$ICSSURF_OR_LBCS" = "ICSSURF" ]; then
 
-    print_info_msg "
-
+    print_info_msg "\n\
 ========================================================================
 External model files needed for generating initial condition and surface 
 fields for the FV3SAR successfully fetched from HPSS!!!
+Exiting script:  \"${script_name}\"
 ========================================================================"
 
   elif [ "$ICSSURF_OR_LBCS" = "LBCS" ]; then
 
-    print_info_msg "
-
+    print_info_msg "\n\
 ========================================================================
 External model files needed for generating lateral boundary conditions
 on the halo of the FV3SAR's regional grid successfully fetched from 
 HPSS!!!
+Exiting script:  \"${script_name}\"
 ========================================================================"
 
   fi

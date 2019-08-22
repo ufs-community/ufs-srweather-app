@@ -19,14 +19,21 @@
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; set -u +x; } > /dev/null 2>&1
-
+#
+#-----------------------------------------------------------------------
+#
+# Set the script name and print out an informational message informing
+# the user that we've entered this script.
+#
+#-----------------------------------------------------------------------
+#
 script_name=$( basename "$0" )
-print_info_msg "\
+print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
-This script will generate surface fields on the FV3 native grid based on
+This is the ex-script for the task that generates surface fields from
 climatology.
-========================================================================\n"
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #
@@ -44,8 +51,13 @@ process_args valid_args "$@"
 # set to.
 if [ "$VERBOSE" = "TRUE" ]; then
   num_valid_args="${#valid_args[@]}"
+  print_info_msg "\n\
+The arguments to script/function \"${script_name}\" have been set as 
+follows:
+"
   for (( i=0; i<$num_valid_args; i++ )); do
-    declare -p "${valid_args[$i]}"
+    line=$( declare -p "${valid_args[$i]}" )
+    printf "  $line\n"
   done
 fi
 #
@@ -56,7 +68,7 @@ fi
 #-----------------------------------------------------------------------
 #
 ulimit -s unlimited
-ulimit -a
+#ulimit -a
 #
 #-----------------------------------------------------------------------
 #
@@ -195,7 +207,7 @@ case "$gtype" in
 # zero) halo width (in units of number of grid cells).
 #
   for fn in *.halo.nc; do
-    if [[ -f $fn ]]; then
+    if [ -f $fn ]; then
       bn="${fn%.halo.nc}"
       mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}.${bn}.halo${nh4_T7}.nc
     fi
@@ -208,7 +220,7 @@ case "$gtype" in
 # cate that the grids in these files do not contain a halo.
 #
   for fn in *.nc; do
-    if [[ -f $fn ]]; then
+    if [ -f $fn ]; then
       bn="${fn%.nc}"
       mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}.${bn}.halo${nh0_T7}.nc
     fi
@@ -254,6 +266,7 @@ touch "make_sfc_climo_files_task_complete.txt"
 print_info_msg "\n\
 ========================================================================
 All surface climatology files generated successfully!!!
+Exiting script:  \"${script_name}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

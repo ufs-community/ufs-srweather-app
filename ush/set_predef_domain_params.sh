@@ -164,7 +164,7 @@ predefined domain:
 
     nhw_T7=6
 
-    dt_atmos="10"
+    dt_atmos="300"
 
     layout_x="2"
     layout_y="2"
@@ -235,10 +235,10 @@ predefined domain:
       WRTCMP_cen_lat="${lat_rgnl_ctr}"
       WRTCMP_stdlat1="${lat_rgnl_ctr}"
       WRTCMP_stdlat2="${lat_rgnl_ctr}"
-      WRTCMP_nx="400"
-      WRTCMP_ny="224"
-      WRTCMP_lon_lwr_left="-122.21414225"
-      WRTCMP_lat_lwr_left="22.41403305"
+      WRTCMP_nx="383"
+      WRTCMP_ny="195"
+      WRTCMP_lon_lwr_left="-121.58647982"
+      WRTCMP_lat_lwr_left="24.36006861"
       WRTCMP_dx="$delx"
       WRTCMP_dy="$dely"
     fi
