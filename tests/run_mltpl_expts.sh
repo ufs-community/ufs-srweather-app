@@ -9,7 +9,7 @@ set -u
 #-----------------------------------------------------------------------
 #
 BASEDIR="$(pwd)/../.."
-FV3SAR_WFLOW_DIR="$BASEDIR/fv3sar_workflow"
+FV3SAR_WFLOW_DIR="$BASEDIR/regional_workflow"
 USHDIR="$FV3SAR_WFLOW_DIR/ush"
 TESTSDIR="$FV3SAR_WFLOW_DIR/tests"
 #

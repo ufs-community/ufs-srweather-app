@@ -3,9 +3,12 @@
 
 "grid_spec",              -1,  "months",   1, "days",  "time"
 "atmos_static",           -1,  "hours",    1, "hours", "time"
-"atmos_4xdaily",           6,  "hours",    1, "days",  "time"
-"fv3_history",             3,  "hours",    1, "hours", "time"
-"fv3_history2d",           3,  "hours",    1, "hours", "time"
+#"atmos_4xdaily",           6,  "hours",    1, "days",  "time"
+"atmos_4xdaily",           1,  "hours",    1, "days",  "time"
+#"fv3_history",             3,  "hours",    1, "hours", "time"
+"fv3_history",             1,  "hours",    1, "hours", "time"
+#"fv3_history2d",           3,  "hours",    1, "hours", "time"
+"fv3_history2d",           1,  "hours",    1, "hours", "time"
 
 #
 #=======================
@@ -117,6 +120,7 @@
 "gfs_dyn",     "graupel",     "grle",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "ps",          "pressfc",   "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "hs",          "hgtsfc",    "fv3_history",    "all",  .false.,  "none",  2
+"gfs_phys",    "refl_10cm"    "refl_10cm"  "fv3_history",    "all",  .false.,  "none",  2
 #"gfs_dyn",     "ice_nc",      "nicp",      "fv3_history",  "all",  .false.,  "none",  2
 #"gfs_dyn",     "rain_nc",     "ntrnc",     "fv3_history",  "all",  .false.,  "none",  2
 
@@ -174,7 +178,6 @@
 "gfs_phys",  "dusfc",         "uflx_ave",    "fv3_history2d",         "all",  .false.,  "none",  2
 "gfs_phys",  "dvsfc",         "vflx_ave",    "fv3_history2d",         "all",  .false.,  "none",  2
 #"gfs_phys",  "cnvw",          "cnvcldwat",   "fv3_history2d",         "all",  .false.,  "none",  2
-"gfs_phys",  "refl_10cm",     "refl10cm",    "fv3_history2d",         "all",  .false.,  "none",  2
 
 "gfs_phys",    "psurf",       "pressfc",   "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "u10m",        "ugrd10m",   "fv3_history2d",  "all",  .false.,  "none",  2

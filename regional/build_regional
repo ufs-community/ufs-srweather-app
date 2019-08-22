@@ -8,19 +8,19 @@ fi
 
 SITE=${1}
 
-FV3SAR_DIR=$( pwd )/..
+RGNL_WFLOW_DIR=$( pwd )/..
 if [ ${SITE} == "cheyenne" ]; then
   export NCEPLIB_DIR=/glade/p/ral/jntp/GMTB/tools/NCEPlibs/20180717/intel-18.0.1/
 fi
 
-cd ${FV3SAR_DIR}/sorc
+cd ${RGNL_WFLOW_DIR}/sorc
 ./build_fre-nctools.sh ${SITE}           >& out.build_fre-nctools
 ./build_orog.sh ${SITE}                  >& out.build_orog
 # Don't build the old chgres any more.  Build chgres_cube instead (below).
 #./build_chgres.sh ${SITE}                >& out.build_chgres
 #
 # The following build several new utilities needed in order to use the
-# new Jim Purser-type grid in the FV3SAR.  The following only works on
+# new Jim Purser-type grid in the SAR.  The following only works on
 # theia for now.  It needs to be ported to other platforms.
 #
 ./build_regional_grid.sh ${SITE}         >& out.build_regional_grid
@@ -29,41 +29,41 @@ cd ${FV3SAR_DIR}/sorc
 #
 # Build sfc_climo_gen.
 #
-#cd ${FV3SAR_DIR}/../UFS_UTILS_gridgen_sfc/sorc
-cd ${FV3SAR_DIR}/../UFS_UTILS_develop/sorc
+#cd ${RGNL_WFLOW_DIR}/../UFS_UTILS_gridgen_sfc/sorc
+cd ${RGNL_WFLOW_DIR}/../UFS_UTILS_develop/sorc
 ./build_sfc_climo_gen.sh >& out.build_sfc_climo_gen
-cp ../exec/sfc_climo_gen ${FV3SAR_DIR}/exec
+cp ../exec/sfc_climo_gen ${RGNL_WFLOW_DIR}/exec
 #
 # Build chgres_cube.
 #
 # The first case is using Larissa's make.sh script, the second case uses
 # the more formal way also used by the other codes in UFS_UTILS.
 if [ 0 = 1 ]; then
-  cd ${FV3SAR_DIR}/../UFS_UTILS_chgres_grib2/sorc/chgres_cube.fd
+  cd ${RGNL_WFLOW_DIR}/../UFS_UTILS_chgres_grib2/sorc/chgres_cube.fd
   ./make.sh >& out.build_chgres_cube
 # Is the following needed?  The version of the global_chgres.exe execu-
 # table used by the tasks that use chgres_cube (the ICs/surf/LBC0 and
 # LBC1_to_LBCN tasks) is located in the exec directory under the UFS_-
-# UTILS_chgres_grib2 directory, not in ${FV3SAR_DIR}/exec.
-  cp ../exec/global_chgres.exe ${FV3SAR_DIR}/exec
+# UTILS_chgres_grib2 directory, not in ${RGNL_WFLOW_DIR}/exec.
+  cp ../exec/global_chgres.exe ${RGNL_WFLOW_DIR}/exec
 else
-  cd ${FV3SAR_DIR}/../UFS_UTILS_chgres_grib2/sorc
+  cd ${RGNL_WFLOW_DIR}/../UFS_UTILS_chgres_grib2/sorc
   ./build_chgres_cube.sh >& out.build_chgres_cube
 # Is the following needed?  The version of the global_chgres.exe execu-
 # table used by the tasks that use chgres_cube (the ICs/surf/LBC0 and
 # LBC1_to_LBCN tasks) is located in the exec directory under the UFS_-
-# UTILS_chgres_grib2 directory, not in ${FV3SAR_DIR}/exec.
-  cp ../exec/chgres_cube.exe ${FV3SAR_DIR}/exec
+# UTILS_chgres_grib2 directory, not in ${RGNL_WFLOW_DIR}/exec.
+  cp ../exec/chgres_cube.exe ${RGNL_WFLOW_DIR}/exec
 fi
 
 
 # prepare fixed data directories
 
-cd ${FV3SAR_DIR}
+cd ${RGNL_WFLOW_DIR}
 mkdir -p fix/fix_fv3
 cd fix
 
-if [ ${SITE} == "theia" ]; then
+if [ ${SITE} == "theia" || ${SITE} == "hera" ]; then
 
     ln -sfn /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am fix_am
 

@@ -80,7 +80,7 @@ if [ $machine = WCOSS_C ]; then
  . $MODULESHOME/init/sh 2>>/dev/null
  module load PrgEnv-intel prod_envir  cfp-intel-sandybridge/1.1.0 2>>/dev/null
  module list
- export BASE_GSM=/gpfs/hps3/emc/meso/noscrub/${LOGNAME}/fv3sar_workflow
+ export BASE_GSM=/gpfs/hps3/emc/meso/noscrub/${LOGNAME}/regional_workflow
  export KMP_AFFINITY=disabled
  export FIXgsm=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am
  export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
@@ -96,7 +96,7 @@ elif [ $machine = WCOSS ]; then
  module load ics/12.1 ibmpe cfp NetCDF/4.2/serial 2>>/dev/null
  module list
  export APRUNC="time"
- export BASE_GSM=/gpfs/gd3/ibm/noscrub/${LOGNAME}/fv3sar_workflow
+ export BASE_GSM=/gpfs/gd3/ibm/noscrub/${LOGNAME}/regional_workflow
  export FIXgsm=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am
  export DATA=/ptmpp2/${LOGNAME}/wrk.chgres
  export ymd=`echo $CDATE | cut -c 1-8`
@@ -119,7 +119,7 @@ elif [ $machine = DELL ]; then
  module list
  set -x
  export APRUNC="time"
- export BASE_GSM=/gpfs/dell2/emc/modeling/noscrub/${LOGNAME}/fv3sar_workflow
+ export BASE_GSM=/gpfs/dell2/emc/modeling/noscrub/${LOGNAME}/regional_workflow
  export FIXgsm=$BASE_GSM/fix/fix_am
  export KMP_AFFINITY=disabled
  export DATA=/gpfs/dell3/ptmp/${LOGNAME}/wrk.chgres
@@ -137,7 +137,7 @@ elif [ $machine = THEIA ]; then
  module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
  module load intel/16.1.150 netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
  module list
- export BASE_GSM=/scratch4/NCEPDEV/fv3-cam/noscrub/${LOGNAME}/fv3sar_workflow
+ export BASE_GSM=/scratch4/NCEPDEV/fv3-cam/noscrub/${LOGNAME}/regional_workflow
  export FIXgsm=$BASE_GSM/fix/fix_am
  export DATA=/scratch4/NCEPDEV/stmp4/${LOGNAME}/wrk.chgres
  export APRUNC="time"
