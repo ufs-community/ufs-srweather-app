@@ -24,8 +24,9 @@ script_name=$( basename "$0" )
 print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
-This script will generate lateral boundary condition (LBC) files for all
-LBC update hours except hour zero in NetCDF format.
+This is the ex-script for the task that generates lateral boundary con-
+dition (LBC) files (in NetCDF format) for all LBC update hours (except 
+hour zero). 
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -45,8 +46,13 @@ process_args valid_args "$@"
 # set to.
 if [ "$VERBOSE" = "TRUE" ]; then
   num_valid_args="${#valid_args[@]}"
+  print_info_msg "\n\
+The arguments to script/function \"${script_name}\" have been set as 
+follows:
+"
   for (( i=0; i<$num_valid_args; i++ )); do
-    declare -p "${valid_args[$i]}"
+    line=$( declare -p "${valid_args[$i]}" )
+    printf "  $line\n"
   done
 fi
 #
@@ -404,6 +410,7 @@ print_info_msg "\n\
 ========================================================================
 Lateral boundary condition (LBC) files (in NetCDF format) generated suc-
 cessfully for all LBC update hours (except hour zero)!!!
+Exiting script:  \"${script_name}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

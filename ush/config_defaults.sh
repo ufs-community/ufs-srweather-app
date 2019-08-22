@@ -27,7 +27,7 @@ RUN_ENVIR="nco"
 # QUEUE_DEFAULT:
 # The default queue to which workflow tasks are submitted.  If a task
 # does not have a specific variable in which its queue is defined (e.g.
-# QUEUE_HPSS, QUEUE_RUN_FV3SAR; see below), it is submitted to this
+# QUEUE_HPSS, QUEUE_RUN_FV3; see below), it is submitted to this
 # queue.  If this is not set or set to an empty string, it will be reset
 # to a machine-dependent value in the setup script (setup.sh).
 #
@@ -39,8 +39,8 @@ RUN_ENVIR="nco"
 # string, it will be reset to a machine-dependent value in the setup
 # script (setup.sh).
 #
-# QUEUE_RUN_FV3SAR:
-# The queue to which the run_FV3SAR task is submitted.  This task runs
+# QUEUE_RUN_FV3:
+# The queue to which the run_FV3 task is submitted.  This task runs
 # the forecast.  If this is not set or set to an empty string, it will
 # be reset to a machine-dependent value in the setup script (setup.sh).
 #
@@ -52,7 +52,7 @@ MACHINE="BIG_COMPUTER"
 ACCOUNT="project_name"
 QUEUE_DEFAULT="batch_queue"
 QUEUE_HPSS="hpss_queue"
-QUEUE_RUN_FV3SAR="production_queue"
+QUEUE_RUN_FV3="production_queue"
 #
 #-----------------------------------------------------------------------
 #
@@ -92,7 +92,7 @@ QUEUE_RUN_FV3SAR="production_queue"
 #-----------------------------------------------------------------------
 #
 BASEDIR="/path/to/directory/of/regional_workflow/and/NEMSfv3gfs/clones"
-TMPDIR="/path/to/temporary/work/directories"
+TMPDIR="/path/to/temporary/work/directories"  # Eventually get rid of this??
 UPPDIR="/path/to/UPP/executable"
 EXPT_BASEDIR=""
 EXPT_SUBDIR=""
@@ -270,7 +270,7 @@ fcst_len_hrs="24"
 EXTRN_MDL_NAME_ICSSURF="FV3GFS"
 EXTRN_MDL_NAME_LBCS="FV3GFS"
 LBC_UPDATE_INTVL_HRS="6"
-EXTRN_MDL_INFO_FN="extrn_mdl_info.sh"
+#EXTRN_MDL_INFO_FN="extrn_mdl_info.sh"
 #EXTRN_MDL_INFO_VAR_NAMES=( \
 #"EXTRN_MDL_CDATE" \
 #"EXTRN_MDL_LBC_UPDATE_FHRS" \
@@ -281,7 +281,7 @@ EXTRN_MDL_INFO_FN="extrn_mdl_info.sh"
 #"EXTRN_MDL_ARCV_FP" \
 #"EXTRN_MDL_ARCVREL_DIR" \
 #)
-EXTRN_MDL_INFO_VAR_NAMES=( "EXTRN_MDL_CDATE" "EXTRN_MDL_LBC_UPDATE_FHRS" "EXTRN_MDL_FNS" "EXTRN_MDL_FILES_SYSDIR" "EXTRN_MDL_ARCV_FILE_FMT" "EXTRN_MDL_ARCV_FN" "EXTRN_MDL_ARCV_FP" "EXTRN_MDL_ARCVREL_DIR" )
+#EXTRN_MDL_INFO_VAR_NAMES=( "EXTRN_MDL_CDATE" "EXTRN_MDL_LBC_UPDATE_FHRS" "EXTRN_MDL_FNS" "EXTRN_MDL_FILES_SYSDIR" "EXTRN_MDL_ARCV_FILE_FMT" "EXTRN_MDL_ARCV_FN" "EXTRN_MDL_ARCV_FP" "EXTRN_MDL_ARCVREL_DIR" )
 #
 #-----------------------------------------------------------------------
 #

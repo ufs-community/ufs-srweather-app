@@ -12,14 +12,14 @@ The following are variables that are not passed to the shell scripts
 that execute the various worklflow tasks but are used in other ways by
 the workflow XML.
 -->
-<!ENTITY ACCOUNT          "">
-<!ENTITY SCHED            ""> 
-<!ENTITY QUEUE_DEFAULT    "">
-<!ENTITY QUEUE_HPSS       "">
-<!ENTITY QUEUE_RUN_FV3SAR "">
+<!ENTITY ACCOUNT       "">
+<!ENTITY SCHED         ""> 
+<!ENTITY QUEUE_DEFAULT "">
+<!ENTITY QUEUE_HPSS    "">
+<!ENTITY QUEUE_RUN_FV3 "">
 
 <!ENTITY USHDIR  "">
-<!ENTITY JOBSDIR  "">
+<!ENTITY JOBSDIR "">
 <!ENTITY EXPTDIR "">
 
 <!ENTITY EXTRN_MDL_NAME_ICSSURF "">
@@ -29,11 +29,11 @@ the workflow XML.
 <!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_LBCS    "">
 
 <!ENTITY DATE_FIRST_CYCL "">
-<!ENTITY DATE_LAST_CYCL "">
+<!ENTITY DATE_LAST_CYCL  "">
 <!ENTITY YYYY_FIRST_CYCL "">
-<!ENTITY MM_FIRST_CYCL "">
-<!ENTITY DD_FIRST_CYCL "">
-<!ENTITY HH_FIRST_CYCL "">
+<!ENTITY MM_FIRST_CYCL   "">
+<!ENTITY DD_FIRST_CYCL   "">
+<!ENTITY HH_FIRST_CYCL   "">
 
 <!ENTITY FHR "">
 
@@ -60,7 +60,7 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY PROC_MAKE_ICS_SURF_LBC0  "4:ppn=12">
 <!ENTITY PROC_MAKE_LBC1_TO_LBCN   "4:ppn=12">
 <!ENTITY PROC_STAGE               "1:ppn=1">
-<!ENTITY PROC_RUN_FV3SAR          "">
+<!ENTITY PROC_RUN_FV3             "">
 <!ENTITY PROC_POST                "2:ppn=24">
 
 <!ENTITY RSRC_MAKE_GRID_OROG      "<walltime>00:10:00</walltime>">
@@ -70,12 +70,12 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY RSRC_MAKE_ICS_SURF_LBC0  "<walltime>00:15:00</walltime>">
 <!ENTITY RSRC_MAKE_LBC1_TO_LBCN   "<walltime>00:30:00</walltime>">
 <!ENTITY RSRC_STAGE               "<walltime>00:10:00</walltime>">
-<!ENTITY RSRC_RUN_FV3SAR          "<walltime>07:30:00</walltime>">
+<!ENTITY RSRC_RUN_FV3             "<walltime>07:30:00</walltime>">
 <!ENTITY RSRC_POST                "<walltime>00:30:00</walltime>">
 
-<!ENTITY RSRV_DEFAULT    "<queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
-<!ENTITY RSRV_HPSS       "<partition>&QUEUE_HPSS;</partition><account>&ACCOUNT;</account>"> 
-<!ENTITY RSRV_RUN_FV3SAR "<queue>&QUEUE_RUN_FV3SAR;</queue><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_DEFAULT "<queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_HPSS    "<partition>&QUEUE_HPSS;</partition><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_RUN_FV3 "<queue>&QUEUE_RUN_FV3;</queue><account>&ACCOUNT;</account>"> 
 
 ]>
 
@@ -85,7 +85,7 @@ Variables that are not modified by the workflow generation script.
   <cycledef group="at_CCZ">&DATE_FIRST_CYCL;CC00 &DATE_LAST_CYCL;CC00 24:00:00</cycledef>  <!-- This line will be replaced with one or more lines with "CC" replaced by actual cycle hours, e.g. "00". -->
 
   <log>
-    <cyclestr>&LOG_DIR;/FV3SAR_wflow.log</cyclestr>
+    <cyclestr>&LOG_DIR;/FV3_wflow.log</cyclestr>
   </log>
 <!--
 ************************************************************************
@@ -278,15 +278,15 @@ cle.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="stage" maxtries="2">
+  <task name="run_FV3" maxtries="3">
 
-    &RSRC_STAGE;
-    &RSRV_DEFAULT;
+    &RSRC_RUN_FV3;
+    &RSRV_RUN_FV3;
 
-    <command>&USHDIR;/stage.sh</command>
-    <nodes>&PROC_STAGE;</nodes>
-    <jobname>stage</jobname>
-    <join><cyclestr>&LOG_DIR;/stage_@Y@m@d@H.log</cyclestr></join>
+    <command>&JOBSDIR;/JREGIONAL_RUN_FV3</command>
+    <nodes>&PROC_RUN_FV3;</nodes>
+    <jobname>run_FV3</jobname>
+    <join><cyclestr>&LOG_DIR;/run_FV3_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
@@ -297,29 +297,6 @@ cle.
         <taskdep task="make_ICS_surf_LBC0"/>
         <taskdep task="make_LBC1_to_LBCN"/>
       </and>
-    </dependency>
-
-  </task>
-<!--
-************************************************************************
-************************************************************************
--->
-  <task name="run_FV3SAR" maxtries="3">
-
-    &RSRC_RUN_FV3SAR;
-    &RSRV_RUN_FV3SAR;
-
-    <command>&USHDIR;/run_FV3SAR.sh</command>
-    <nodes>&PROC_RUN_FV3SAR;</nodes>
-    <jobname>run_FV3SAR</jobname>
-    <join><cyclestr>&LOG_DIR;/run_FV3SAR_@Y@m@d@H.log</cyclestr></join>
-
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
-    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
-    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-
-    <dependency>
-      <taskdep task="stage"/>
     </dependency>
 
   </task>

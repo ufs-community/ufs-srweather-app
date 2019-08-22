@@ -19,13 +19,21 @@
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; set -u +x; } > /dev/null 2>&1
-
+#
+#-----------------------------------------------------------------------
+#
+# Set the script name and print out an informational message informing
+# the user that we've entered this script.
+#
+#-----------------------------------------------------------------------
+#
 script_name=$( basename "$0" )
 print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
-This script will generate initial condition (IC), surface, and zeroth
-hour lateral boundary condition (LBC0) files in NetCDF format.
+This is the ex-script for the task that generates initial condition 
+(IC), surface, and zeroth hour lateral boundary condition (LBC0) files 
+for FV3 (in NetCDF format).
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -37,27 +45,23 @@ hour lateral boundary condition (LBC0) files in NetCDF format.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=("EXTRN_MDL_FNS" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_CDATE" "WGRIB2_DIR" "APRUN" \
-            "WORKDIR_ICSLBCS_CDATE")
+valid_args=( "EXTRN_MDL_FNS" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_CDATE" \
+             "WGRIB2_DIR" "APRUN" "WORKDIR_ICSLBCS_CDATE" )
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
 # set to.
 if [ "$VERBOSE" = "TRUE" ]; then
   num_valid_args="${#valid_args[@]}"
+  print_info_msg "\n\
+The arguments to script/function \"${script_name}\" have been set as 
+follows:
+"
   for (( i=0; i<$num_valid_args; i++ )); do
-    declare -p "${valid_args[$i]}"
+    line=$( declare -p "${valid_args[$i]}" )
+    printf "  $line\n"
   done
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -204,6 +208,8 @@ tg3_from_soil=""
 
 
 case "$EXTRN_MDL_NAME_ICSSURF" in
+
+
 "GSMGFS")
 
   external_model="GSMGFS"
@@ -434,7 +440,8 @@ mv_vrfy gfs_bndy.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_bndy.tile7.000.nc
 print_info_msg "\n\
 ========================================================================
 Initial condition, surface, and zeroth hour lateral boundary condition
-files (in NetCDF format) generated successfully!!!
+files (in NetCDF format) for FV3 generated successfully!!!
+Exiting script:  \"${script_name}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

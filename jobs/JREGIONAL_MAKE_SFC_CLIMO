@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash
 
 #
 #-----------------------------------------------------------------------
@@ -10,6 +10,30 @@
 #
 . $SCRIPT_VAR_DEFNS_FP
 . $USHDIR/source_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Set the script name and print out an informational message informing
+# the user that we've entered this script.
+#
+#-----------------------------------------------------------------------
+#
+script_name=$( basename "$0" )
+print_info_msg "\n\
+========================================================================
+Entering script:  \"${script_name}\"
+This is the J-job script for the task that generates surface fields from
+climatology.
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #
@@ -34,11 +58,22 @@ mkdir_vrfy ${WORKDIR_LOCAL}
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script.
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
 #
 #-----------------------------------------------------------------------
 #
 ${SCRIPTSDIR}/exregional_make_sfc_climo.sh \
   WORKDIR_LOCAL="${WORKDIR_LOCAL}"
-
+#
+#-----------------------------------------------------------------------
+#
+# Print exit message.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\n\
+========================================================================
+Exiting script:  \"${script_name}\"
+========================================================================"
 

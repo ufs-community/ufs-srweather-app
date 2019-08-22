@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash
 
 #
 #-----------------------------------------------------------------------
@@ -17,18 +17,12 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script.                                                                                                         
+# Source the variable definitions script and the function definitions
+# file.
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
-#
-#-----------------------------------------------------------------------
-#
-# Source function definition files.
-#
-#-----------------------------------------------------------------------
-#
 . $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
@@ -39,6 +33,21 @@
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; set -u -x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Set the script name and print out an informational message informing
+# the user that we've entered this script.
+#
+#-----------------------------------------------------------------------
+#
+script_name=$( basename "$0" )
+print_info_msg "\n\
+========================================================================
+Entering script:  \"${script_name}\"
+This script stages static files and creates links to static files, all
+in the main experiment directory.
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #
@@ -513,6 +522,7 @@ print_info_msg "\
 ========================================================================
 All necessary STATIC files and links successfully copied to or created
 in the experiment directory!!!
+Exiting script:  \"${script_name}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

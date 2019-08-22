@@ -1,33 +1,6 @@
 #!/bin/sh -l
 
 #
-#----WCOSS_CRAY JOBCARD
-#
-#BSUB -L /bin/sh
-#BSUB -P FV3GFS-T2O
-#BSUB -oo log.grid.%J
-#BSUB -eo log.grid.%J
-#BSUB -J grid_fv3
-#BSUB -q debug
-#BSUB -M 2400
-#BSUB -W 00:30
-#BSUB -extsched 'CRAYLINUX[]'
-#
-#----THEIA JOBCARD
-#
-#PBS -N make_grid_orog_rgnl
-#PBS -A gsd-fv3
-#PBS -o out.$PBS_JOBNAME.$PBS_JOBID
-#PBS -e err.$PBS_JOBNAME.$PBS_JOBID
-#PBS -l nodes=1:ppn=24
-#PBS -q debug
-#PBS -l walltime=00:30:00
-#PBS -W umask=022
-#
-
-
-
-#
 #-----------------------------------------------------------------------
 #
 # This script generates grid and orography files in NetCDF format that
@@ -590,6 +563,7 @@ $TMPDIR" \
 
 
 "THEIA" | "JET" | "ODIN")
+# NOTE:  We undefined TMPDIR, but things still seem to work.  WHY???
   $USHDIR/$orog_gen_scr \
     $RES $tile $WORKDIR_GRID $WORKDIR_OROG $USHDIR $topo_dir $TMPDIR || \
   print_err_msg_exit "\

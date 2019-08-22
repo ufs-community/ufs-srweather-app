@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash
 
 #
 #-----------------------------------------------------------------------
@@ -32,8 +32,8 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source function that sets the output file names needed from the exter-
-# nal model and, if relevant, the full path to the archive file on HPSS. 
+# Source the file defining the function that will be used to set various
+# external-model-related variables.
 #
 #-----------------------------------------------------------------------
 #
@@ -46,7 +46,23 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Set the script name and print out an informational message informing
+# the user that we've entered this script.
+#
+#-----------------------------------------------------------------------
+#
+script_name=$( basename "$0" )
+print_info_msg "\n\
+========================================================================
+Entering script:  \"${script_name}\"
+This is the J-job script for the task that copies/fetches to a local di-
+rectory (either from disk or HPSS) the external model files from which
+initial or boundary condition files for the FV3 will be generated.
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #
@@ -63,7 +79,7 @@ case $EXTRN_MDL_NAME in
 # last CDATE for the GSMGFS to the one 6 hours before this.
   CDATE_max="2019061206"
   if [ "$CDATE" -gt "$CDATE_max" ]; then
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 Output from the specified external model (EXTRN_MDL_NAME) is not availa-
 ble for the specified cycle date and time (CDATE) because the latter is
 later than the last forecast date and time (CDATE_max) with this model:
@@ -80,7 +96,7 @@ later than the last forecast date and time (CDATE_max) with this model:
 # first CDATE for the FV3GFS to this date and time.
   CDATE_min="2019061212"
   if [ "$CDATE" -lt "$CDATE_min" ]; then
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 Output from the specified external model (EXTRN_MDL_NAME) is not availa-
 ble for the specified cycle date and time (CDATE) because the latter is
 earlier than the implementation date of this model:
@@ -96,7 +112,7 @@ earlier than the implementation date of this model:
 # July 01, 2015.
   CDATE_min="2015070100"
   if [ "$CDATE" -lt "$CDATE_min" ]; then
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 Output from the specified external model (EXTRN_MDL_NAME) is not availa-
 ble for the specified cycle date and time (CDATE) because the latter is
 earlier than the implementation date of this model:
@@ -113,7 +129,7 @@ earlier than the implementation date of this model:
 # ber 30, 2014.
   CDATE_min="2014103000"
   if [ "$CDATE" -lt "$CDATE_min" ]; then
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 Output from the specified external model (EXTRN_MDL_NAME) is not availa-
 ble for the specified cycle date and time (CDATE) because the latter is
 earlier than the implementation date of this model:
@@ -130,11 +146,14 @@ esac
 #
 # Set the parameter that determines whether we want to get analysis or
 # forecast files.  This depends on whether we want these files to gene-
-# rate initial condition and surface field files or lateral boundary 
-# condition files for the FV3SAR.
+# rate initial condition (IC) and surface field files or lateral bounda-
+# ry condition (LBC) files for the SAR-FV3.  Also, set TIME_OFFSET_HRS,
+# which is the offset (in hours) between the current cycle's starting 
+# time and the starting time of the external model providing the LBCs.
 #
 #-----------------------------------------------------------------------
 #
+valid_vals_ICSSURF_OR_LBCS=( "ICSSURF" "LBCS" )
 if [ "$ICSSURF_OR_LBCS" = "ICSSURF" ]; then
   ANL_OR_FCST="ANL"
   TIME_OFFSET_HRS="0"
@@ -142,9 +161,12 @@ elif [ "$ICSSURF_OR_LBCS" = "LBCS" ]; then
   ANL_OR_FCST="FCST"
   TIME_OFFSET_HRS="$EXTRN_MDL_LBCS_OFFSET_HRS"
 else
-  print_err_msg_exit "\
-Bad value for ICSSURF_OR_LBCS:
+  valid_vals_ICSSURF_OR_LBCS_str=$( printf "\"%s\" " "${valid_vals_ICSSURF_OR_LBCS[@]}" )
+  print_err_msg_exit "${script_name}" "\
+Invalid value specified for ICSSURF_OR_LBCS:
   ICSSURF_OR_LBCS = \"$ICSSURF_OR_LBCS\"
+Valid values are:
+  ${valid_vals_ICSSURF_OR_LBCS_str}
 "
 fi
 #
@@ -174,65 +196,57 @@ fi
 #-----------------------------------------------------------------------
 #
 mkdir_vrfy -p "$EXTRN_MDL_FILES_DIR"
-cd_vrfy $EXTRN_MDL_FILES_DIR || print_err_msg_exit "\
+cd_vrfy $EXTRN_MDL_FILES_DIR || print_err_msg_exit "${script_name}" "\
 Could not change directory to EXTRN_MDL_FILES_DIR:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\""
 #
 #-----------------------------------------------------------------------
 #
-#
+# Call the function that sets various external-model-related variables.
+# See the function defintion file for the definitions of these varia-
+# bles.
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_INFO_FP="${EXTRN_MDL_FILES_DIR}/${EXTRN_MDL_INFO_FN}"
-
-#if [ -f "${EXTRN_MDL_INFO_FP}" ]; then
-#  print_err_msg_exit "\
-#File defining external model parameters (EXTRN_MDL_INFO_FP) already ex-
-#ists in directory EXTRN_MDL_FILES_DIR:
-#  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-#  EXTRN_MDL_INFO_FP = \"${EXTRN_MDL_INFO_FP}\"
-#"
-#else
-  get_extrn_mdl_file_dir_info \
-    "$EXTRN_MDL_NAME" "$ANL_OR_FCST" "$CDATE" "$TIME_OFFSET_HRS" \
-    "$EXTRN_MDL_INFO_FP" ${EXTRN_MDL_INFO_VAR_NAMES[@]}
-#fi
-
-
-if [ ! -f "${EXTRN_MDL_INFO_FP}" ]; then
-  print_err_msg_exit "\
-File defining external model parameters (EXTRN_MDL_INFO_FP) does not ex-
-ist:
-  EXTRN_MDL_INFO_FP = \"${EXTRN_MDL_INFO_FP}\"
-"
-else
-  . ${EXTRN_MDL_INFO_FP}
-fi
+get_extrn_mdl_file_dir_info \
+  extrn_mdl_name="${EXTRN_MDL_NAME}" \
+  anl_or_fcst="${ANL_OR_FCST}" \
+  cdate_FV3SAR="${CDATE}" \
+  time_offset_hrs="${TIME_OFFSET_HRS}" \
+  varname_extrn_mdl_cdate="EXTRN_MDL_CDATE" \
+  varname_extrn_mdl_lbc_update_fhrs="EXTRN_MDL_LBC_UPDATE_FHRS" \
+  varname_extrn_mdl_fns="EXTRN_MDL_FNS" \
+  varname_extrn_mdl_sysdir="EXTRN_MDL_SYSDIR" \
+  varname_extrn_mdl_arcv_fmt="EXTRN_MDL_ARCV_FMT" \
+  varname_extrn_mdl_arcv_fns="EXTRN_MDL_ARCV_FNS" \
+  varname_extrn_mdl_arcv_fps="EXTRN_MDL_ARCV_FPS" \
+  varname_extrn_mdl_arcvrel_dir="EXTRN_MDL_ARCVREL_DIR"
 #
-# As a check, print out the variables and their values set by the above 
-# function call.
+#-----------------------------------------------------------------------
 #
-printf "\n"
-#for output_var_name in "${output_var_names[@]}"; do
-for output_var_name in "${EXTRN_MDL_INFO_VAR_NAMES[@]}"; do
-  tmp="$output_var_name[@]"
-  elems=$( printf "\"%s\" " "${!tmp}" )
-  printf "$output_var_name = $elems\n"
-done
-
-#------------------------------------------------------------------
-# Run relevant exregional script 
-
-# Pass variables into exregional script
-
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
+#
+#-----------------------------------------------------------------------
+#
 EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
+EXTRN_MDL_ARCV_FPS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_ARCV_FPS[@]}" )")"
 
 $SCRIPTSDIR/exregional_get_extrn_files.sh \
-         EXTRN_MDL_FNS="${EXTRN_MDL_FNS_str}" \
-         EXTRN_MDL_FILES_SYSDIR="${EXTRN_MDL_FILES_SYSDIR}" \
-         EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_DIR}" \
-         EXTRN_MDL_ARCV_FP="${EXTRN_MDL_ARCV_FP}" \
-         EXTRN_MDL_ARCV_FILE_FMT="${EXTRN_MDL_ARCV_FILE_FMT}" \
-         EXTRN_MDL_ARCVREL_DIR="${EXTRN_MDL_ARCVREL_DIR}"
-
+  EXTRN_MDL_FNS="${EXTRN_MDL_FNS_str}" \
+  EXTRN_MDL_SYSDIR="${EXTRN_MDL_SYSDIR}" \
+  EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_DIR}" \
+  EXTRN_MDL_ARCV_FPS="${EXTRN_MDL_ARCV_FPS_str}" \
+  EXTRN_MDL_ARCV_FMT="${EXTRN_MDL_ARCV_FMT}" \
+  EXTRN_MDL_ARCVREL_DIR="${EXTRN_MDL_ARCVREL_DIR}"
+#
+#-----------------------------------------------------------------------
+#
+# Print exit message.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\n\
+========================================================================
+Exiting script:  \"${script_name}\"
+========================================================================"

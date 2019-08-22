@@ -43,6 +43,8 @@ run_dir = "/scratch3/BMC/det/beck/FV3-CAM/run_dirs/real_time/2019062300"
 
 run_dir = "/scratch3/BMC/det/Gerard.Ketefian/FV3SAR_demo_PASPBL_20190725/expt_dirs/FFFFF"
 run_dir = "/scratch3/BMC/det/beck/CAM_chgres/run_dirs/test_HRRR25km_FV3GFSICBCs_GFSphysics"
+run_dir = "/scratch3/BMC/det/Gerard.Ketefian/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
+
 
 tile_inds := (/ 1, 7, 4 /)
 ;tile_inds := (/ 1, 4 /)
@@ -683,8 +685,8 @@ if (True) then
   dx_native = 13.0d+3
   dy_native = 13.0d+3
 
-  dx_native = 25.0d+3
-  dy_native = 25.0d+3
+;  dx_native = 25.0d+3
+;  dy_native = 25.0d+3
 
   angle_units = "deg"
 

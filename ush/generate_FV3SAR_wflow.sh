@@ -57,7 +57,7 @@ cp_vrfy $TEMPLATE_XML_FP $WFLOW_XML_FP
 #
 #-----------------------------------------------------------------------
 #
-PROC_RUN_FV3SAR="${NUM_NODES}:ppn=${ncores_per_node}"
+PROC_RUN_FV3="${NUM_NODES}:ppn=${ncores_per_node}"
 
 FHR=( $( seq 0 1 $fcst_len_hrs ) )
 i=0
@@ -82,7 +82,7 @@ set_file_param "$WFLOW_XML_FP" "ACCOUNT" "$ACCOUNT"
 set_file_param "$WFLOW_XML_FP" "SCHED" "$SCHED"
 set_file_param "$WFLOW_XML_FP" "QUEUE_DEFAULT" "$QUEUE_DEFAULT"
 set_file_param "$WFLOW_XML_FP" "QUEUE_HPSS" "$QUEUE_HPSS"
-set_file_param "$WFLOW_XML_FP" "QUEUE_RUN_FV3SAR" "$QUEUE_RUN_FV3SAR"
+set_file_param "$WFLOW_XML_FP" "QUEUE_RUN_FV3" "$QUEUE_RUN_FV3"
 set_file_param "$WFLOW_XML_FP" "USHDIR" "$USHDIR"
 set_file_param "$WFLOW_XML_FP" "JOBSDIR" "$JOBSDIR"
 set_file_param "$WFLOW_XML_FP" "EXPTDIR" "$EXPTDIR"
@@ -90,7 +90,7 @@ set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_NAME_ICSSURF" "$EXTRN_MDL_NAME_ICSSURF
 set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_NAME_LBCS" "$EXTRN_MDL_NAME_LBCS"
 set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF" "$EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF"
 set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_FILES_SYSBASEDIR_LBCS" "$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
-set_file_param "$WFLOW_XML_FP" "PROC_RUN_FV3SAR" "$PROC_RUN_FV3SAR"
+set_file_param "$WFLOW_XML_FP" "PROC_RUN_FV3" "$PROC_RUN_FV3"
 set_file_param "$WFLOW_XML_FP" "DATE_FIRST_CYCL" "$DATE_FIRST_CYCL"
 set_file_param "$WFLOW_XML_FP" "DATE_LAST_CYCL" "$DATE_LAST_CYCL"
 set_file_param "$WFLOW_XML_FP" "YYYY_FIRST_CYCL" "$YYYY_FIRST_CYCL"

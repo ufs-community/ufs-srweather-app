@@ -67,6 +67,15 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
+# Source the file containing the function that determines whether or not
+# a specified variable is an array.
+#
+#-----------------------------------------------------------------------
+#
+. ${FUNCS_DIR}/is_array.sh
+#
+#-----------------------------------------------------------------------
+#
 # Source the file containing the function that interpolates (or extrapo-
 # lates) a grid cell size-dependent property to an arbitrary global 
 # cubed-sphere resolution.
