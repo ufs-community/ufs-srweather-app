@@ -568,9 +568,9 @@ EXECDIR="$FV3SAR_DIR/exec"
 TEMPLATE_DIR="$USHDIR/templates"
 
 if [ "$CCPP" = "true" ]; then
-  NEMSfv3gfs_DIR="$BASEDIR/NEMSfv3gfs-CCPP"
+  NEMSfv3gfs_DIR="$BASEDIR/regional_workflow/sorc/NEMSfv3gfs"
 else
-  NEMSfv3gfs_DIR="$BASEDIR/NEMSfv3gfs"
+  NEMSfv3gfs_DIR="$BASEDIR/regional_workflow/sorc/NEMSfv3gfs"
 fi
 #
 # Make sure that the NEMSfv3gfs_DIR directory exists.

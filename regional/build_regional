@@ -30,7 +30,7 @@ cd ${RGNL_WFLOW_DIR}/sorc
 # Build sfc_climo_gen.
 #
 #cd ${RGNL_WFLOW_DIR}/../UFS_UTILS_gridgen_sfc/sorc
-cd ${RGNL_WFLOW_DIR}/../UFS_UTILS_develop/sorc
+cd ${RGNL_WFLOW_DIR}/sorc/UFS_UTILS_develop/sorc
 ./build_sfc_climo_gen.sh >& out.build_sfc_climo_gen
 cp ../exec/sfc_climo_gen ${RGNL_WFLOW_DIR}/exec
 #
@@ -39,7 +39,7 @@ cp ../exec/sfc_climo_gen ${RGNL_WFLOW_DIR}/exec
 # The first case is using Larissa's make.sh script, the second case uses
 # the more formal way also used by the other codes in UFS_UTILS.
 if [ 0 = 1 ]; then
-  cd ${RGNL_WFLOW_DIR}/../UFS_UTILS_chgres_grib2/sorc/chgres_cube.fd
+  cd ${RGNL_WFLOW_DIR}/sorc/UFS_UTILS_chgres_grib2/sorc/chgres_cube.fd
   ./make.sh >& out.build_chgres_cube
 # Is the following needed?  The version of the global_chgres.exe execu-
 # table used by the tasks that use chgres_cube (the ICs/surf/LBC0 and
@@ -47,7 +47,7 @@ if [ 0 = 1 ]; then
 # UTILS_chgres_grib2 directory, not in ${RGNL_WFLOW_DIR}/exec.
   cp ../exec/global_chgres.exe ${RGNL_WFLOW_DIR}/exec
 else
-  cd ${RGNL_WFLOW_DIR}/../UFS_UTILS_chgres_grib2/sorc
+  cd ${RGNL_WFLOW_DIR}/sorc/UFS_UTILS_chgres_grib2/sorc
   ./build_chgres_cube.sh >& out.build_chgres_cube
 # Is the following needed?  The version of the global_chgres.exe execu-
 # table used by the tasks that use chgres_cube (the ICs/surf/LBC0 and
