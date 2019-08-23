@@ -1,4 +1,4 @@
-.. _config_fv3sar_workflow:
+.. _config_regional_workflow:
 
 ***************************************
 Configuring the FV3SAR Workflow
@@ -8,11 +8,11 @@ The following steps describe how to create a user-specific configuration
 file in order to un your experiment in a given environment.
 
 1. Create a user-specific configuration file named ``config.sh`` in the subdirectory
-   ``ush`` under the ``$BASEDIR/fv3sar_workflow`` directory containing appropriate
+   ``ush`` under the ``$BASEDIR/regional_workflow`` directory containing appropriate
    variable settings for your environment, experiment, etc.
 
    A configuration file named ``config_defaults.sh`` containing default values already
-   exists in the ``ush`` subdirectory (this file is part of the ``fv3sar_workflow`` 
+   exists in the ``ush`` subdirectory (this file is part of the ``regional_workflow`` 
    repository).  The setup script (called ``setup.sh`` and located in ``ush``) that
    will be called in the workflow generation step below first sources ``config_defaults.sh``
    and then sources ``config.sh`` if the latter exists.  Thus, any settings in ``config.sh``
@@ -20,7 +20,7 @@ file in order to un your experiment in a given environment.
 
    Instead of creating a ``config.sh`` script with custom settings, a user can directly
    modify the variable settings in ``config_defaults.sh``.  However, we do not recommend
-   this approach because if this file is then pushed to the remote ``fv3sar_workflow``
+   this approach because if this file is then pushed to the remote ``regional_workflow``
    repository, that repository will contain in its copy of ``config_defaults.sh`` variable
    settings that are specific to your environment and/or experiment.  If others then pull
    from this repository, they will inherit these settings, but these settings will likely
@@ -44,7 +44,7 @@ file in order to un your experiment in a given environment.
    QUEUE_HPSS="service"
    QUEUE_RUN_FV3SAR="batch"
    #
-   BASEDIR="/path/to/directory/of/fv3sar_workflow/and/NEMSfv3gfs/clones"
+   BASEDIR="/path/to/directory/of/regional_workflow/and/NEMSfv3gfs/clones"
    TMPDIR="/path/to/temporary/work/directories"
    UPPDIR="/scratch3/BMC/det/beck/FV3-CAM/EMC_post/sorc/ncep_post.fd"
    CCPP="false"

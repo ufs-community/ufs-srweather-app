@@ -1,11 +1,11 @@
-.. _running_fv3sar_workflow:
+.. _running_regional_workflow:
 
 ****************************
 Running the FV3SAR Workflow
 ****************************
 The steps described in this section assume the config.sh file
 has been created following the steps outlined in 
-section :ref:`config_fv3sar_workflow`.  In this section, the run and
+section :ref:`config_regional_workflow`.  In this section, the run and
 work directories will be created and a script to run the rocoto
 workflow will be generated to run the FV3SAR.
 
@@ -15,7 +15,7 @@ workflow will be generated to run the FV3SAR.
 
 .. code-block:: console
 
-   % cd $BASEDIR/fv3sar_workflow/ush
+   % cd $BASEDIR/regional_workflow/ush
    % generate_FV3SAR_wflow.sh
 
 This will create a run directory and a work directory, and it will
@@ -137,7 +137,7 @@ files in two specified run directories and their ``INPUT`` subdirectories.  Run 
 
 .. code-block:: console
 
-   % cd $BASEDIR/fv3sar_workflow/ush
+   % cd $BASEDIR/regional_workflow/ush
    % ./cmp_rundirs_ncfiles.sh "$rundir1" "$rundir2"
 
 Here, ``rundir1`` and ``rundir2`` are the two run directories you want to compare.
