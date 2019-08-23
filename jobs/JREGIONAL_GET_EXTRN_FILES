@@ -230,12 +230,14 @@ get_extrn_mdl_file_dir_info \
 #-----------------------------------------------------------------------
 #
 EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
+EXTRN_MDL_ARCV_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_ARCV_FNS[@]}" )")"
 EXTRN_MDL_ARCV_FPS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_ARCV_FPS[@]}" )")"
 
 $SCRIPTSDIR/exregional_get_extrn_files.sh \
   EXTRN_MDL_FNS="${EXTRN_MDL_FNS_str}" \
   EXTRN_MDL_SYSDIR="${EXTRN_MDL_SYSDIR}" \
   EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_DIR}" \
+  EXTRN_MDL_ARCV_FNS="${EXTRN_MDL_ARCV_FNS_str}" \
   EXTRN_MDL_ARCV_FPS="${EXTRN_MDL_ARCV_FPS_str}" \
   EXTRN_MDL_ARCV_FMT="${EXTRN_MDL_ARCV_FMT}" \
   EXTRN_MDL_ARCVREL_DIR="${EXTRN_MDL_ARCVREL_DIR}"

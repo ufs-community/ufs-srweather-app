@@ -46,7 +46,8 @@ tial or boundary condition files for the FV3 will be generated.
 #-----------------------------------------------------------------------
 #
 valid_args=( "EXTRN_MDL_FNS" "EXTRN_MDL_SYSDIR" "EXTRN_MDL_FILES_DIR" \
-             "EXTRN_MDL_ARCV_FPS" "EXTRN_MDL_ARCV_FMT" "EXTRN_MDL_ARCVREL_DIR")
+             "EXTRN_MDL_ARCV_FNS" "EXTRN_MDL_ARCV_FPS" "EXTRN_MDL_ARCV_FMT" \
+             "EXTRN_MDL_ARCVREL_DIR" )
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -251,8 +252,6 @@ will be copied (EXTRN_MDL_FILES_DIR) are:
 
       narcv_formatted=$( printf "%02d" $narcv )
       ARCV_FP="${EXTRN_MDL_ARCV_FPS[$narcv]}"
-      HTARtvf_LOG_FN="log.htar_tvf.${narcv_formatted}"
-      HTARxvf_LOG_FN="log.htar_xvf.${narcv_formatted}"
 #
 # Before trying to extract (a subset of) the external model output files
 # from the current tar archive file (which is on HPSS), create a list of
@@ -270,20 +269,21 @@ will be copied (EXTRN_MDL_FILES_DIR) are:
 # latter case, the missing files' names simply won't appear in the log
 # file.
 #
-      htar -tvf ${ARCV_FP} ${EXTRN_MDL_FPS[@]} >& ${HTARtvf_LOG_FN} || \
+      HTAR_LOG_FN="log.htar_tvf.${narcv_formatted}"
+      htar -tvf ${ARCV_FP} ${EXTRN_MDL_FPS[@]} >& ${HTAR_LOG_FN} || \
       print_err_msg_exit "${script_name}" "\
 htar file list operation (\"htar -tvf ...\") failed.  Check the log file 
-HTARtvf_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
+HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HTARtvf_LOG_FN = \"$HTARtvf_LOG_FN\"
+  HTAR_LOG_FN = \"$HTAR_LOG_FN\"
 "
 
       i=0
       files_in_crnt_arcv=()
       for (( nfile=0; nfile<$num_files_to_extract; nfile++ )); do
         extrn_mdl_fp="${EXTRN_MDL_FPS[$nfile]}"
-#        grep -n ${extrn_mdl_fp} ${HTARtvf_LOG_FN} 2>&1 && { \
-        grep -n ${extrn_mdl_fp} ${HTARtvf_LOG_FN} > /dev/null 2>&1 && { \
+#        grep -n ${extrn_mdl_fp} ${HTAR_LOG_FN} 2>&1 && { \
+        grep -n ${extrn_mdl_fp} ${HTAR_LOG_FN} > /dev/null 2>&1 && { \
           files_in_crnt_arcv[$i]="${extrn_mdl_fp}"; \
           i=$((i+1)); \
         }
@@ -310,12 +310,13 @@ wise, it would not be needed.
 # put of the "htar -xvf" command in a log file for debugging (if neces-
 # sary).
 #
-      htar -xvf ${ARCV_FP} ${files_in_crnt_arcv[@]} >& ${HTARxvf_LOG_FN} || \
+      HTAR_LOG_FN="log.htar_xvf.${narcv_formatted}"
+      htar -xvf ${ARCV_FP} ${files_in_crnt_arcv[@]} >& ${HTAR_LOG_FN} || \
       print_err_msg_exit "${script_name}" "\
 htar file extract operation (\"htar -xvf ...\") failed.  Check the log 
-file HTARxvf_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
+file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HTARxvf_LOG_FN = \"$HTARxvf_LOG_FN\"
+  HTAR_LOG_FN = \"$HTAR_LOG_FN\"
 "
 #
 # Note that the htar file extract operation above may return with a 0 
@@ -338,16 +339,16 @@ file HTARxvf_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
           FP=${FP:1}
         fi
 
-        grep -n "${FP}" "${HTARxvf_LOG_FN}" > /dev/null 2>&1 || \
+        grep -n "${FP}" "${HTAR_LOG_FN}" > /dev/null 2>&1 || \
         print_err_msg_exit "${script_name}" "\
 External model output file FP not extracted from tar archive file ARCV_-
 FP:
   ARCV_FP = \"$ARCV_FP\"
   FP = \"$FP\"
-Check the log file HTARxvf_LOG_FN in the directory EXTRN_MDL_FILES_DIR
-for details:
+Check the log file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for 
+details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HTARxvf_LOG_FN = \"$HTARxvf_LOG_FN\"
+  HTAR_LOG_FN = \"$HTAR_LOG_FN\"
 "
 
       done
@@ -435,6 +436,7 @@ Note that code already exists in this script that can handle multiple
 archive files if the archive file format is specified to be \"tar\", so 
 that can be used as a guide for the \"zip\" case."
     else
+      ARCV_FN="${EXTRN_MDL_ARCV_FNS[0]}"
       ARCV_FP="${EXTRN_MDL_ARCV_FPS[0]}"
     fi
 #
@@ -460,13 +462,15 @@ HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #
 #-----------------------------------------------------------------------
 #
-    UNZIPlv_LOG_FN="log.unzip_lv"
-    unzip -l -v ${ARCV_FP} >& ${UNZIPlv_LOG_FN} || \
+    UNZIP_LOG_FN="log.unzip_lv"
+    unzip -l -v ${ARCV_FN} >& ${UNZIP_LOG_FN} || \
     print_err_msg_exit "${script_name}" "\
-unzip file list operation (\"unzip -l -v ...\") failed.  Check the log
-file UNZIPlv_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details: 
+unzip operation to list the contents of the zip archive file ARCV_FN in
+the directory EXTRN_MDL_FILES_DIR failed.  Check the log file UNZIP_-
+LOG_FN in that directory for details:
+  ARCV_FN = \"$ARCV_FN\"
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  UNZIPlv_LOG_FN = \"$UNZIPlv_LOG_FN\"
+  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
 "
 #
 #-----------------------------------------------------------------------
@@ -481,15 +485,15 @@ file UNZIPlv_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #-----------------------------------------------------------------------
 #
     for FP in "${EXTRN_MDL_FPS[@]}"; do
-      grep -n "${FP}" "${UNZIPlv_LOG_FN}" > /dev/null 2>&1 || \
+      grep -n "${FP}" "${UNZIP_LOG_FN}" > /dev/null 2>&1 || \
       print_err_msg_exit "${script_name}" "\
 External model output file FP does not exist in the zip archive file 
-ARCV_FP in the directory EXTRN_MDL_FILES_DIR.  Check the log file UN-
-ZIPlv_LOG_FN in that directory for contents of the zip archive:
+ARCV_FN in the directory EXTRN_MDL_FILES_DIR.  Check the log file UN-
+ZIP_LOG_FN in that directory for the contents of the zip archive:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  ARCV_FP = \"$ARCV_FP\"
+  ARCV_FN = \"$ARCV_FN\"
   FP = \"$FP\"
-  UNZIPlv_LOG_FN = \"$UNZIPlv_LOG_FN\"
+  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
 "
     done
 #
@@ -502,13 +506,13 @@ ZIPlv_LOG_FN in that directory for contents of the zip archive:
 #
 #-----------------------------------------------------------------------
 #
-    UNZIPo_LOG_FN="log.unzip_o"
-    unzip -o "${ARCV_FP}" ${EXTRN_MDL_FPS[@]} >& ${UNZIPo_LOG_FN} || \
+    UNZIP_LOG_FN="log.unzip"
+    unzip -o "${ARCV_FN}" ${EXTRN_MDL_FPS[@]} >& ${UNZIP_LOG_FN} || \
     print_err_msg_exit "${script_name}" "\
 unzip file extract operation (\"unzip -o ...\") failed.  Check the log 
-file UNZIPo_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
+file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  UNZIPo_LOG_FN = \"$UNZIPo_LOG_FN\"
+  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
 "
 #
 # NOTE:
