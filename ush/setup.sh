@@ -538,8 +538,7 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 # NEMSfv3gfs_DIR:
 # Directory in which the (NEMS-enabled) FV3SAR application is located.
 # This directory includes subdirectories for FV3, NEMS, and FMS.  If
-# CCPP is set to "true", it also includes a subdirectory for CCPP.  Note
-# that this directory depends on whether or not we are using CCPP.
+# CCPP is set to "true", it also includes a subdirectory for CCPP.
 #
 # FIXgsm:
 # System directory in which the fixed (i.e. time-independent) files that
@@ -566,12 +565,7 @@ SORCDIR="$FV3SAR_DIR/sorc"
 PARMDIR="$FV3SAR_DIR/parm"
 EXECDIR="$FV3SAR_DIR/exec"
 TEMPLATE_DIR="$USHDIR/templates"
-
-if [ "$CCPP" = "true" ]; then
-  NEMSfv3gfs_DIR="$BASEDIR/regional_workflow/sorc/NEMSfv3gfs"
-else
-  NEMSfv3gfs_DIR="$BASEDIR/regional_workflow/sorc/NEMSfv3gfs"
-fi
+NEMSfv3gfs_DIR="$FV3SAR_DIR/sorc/NEMSfv3gfs"
 #
 # Make sure that the NEMSfv3gfs_DIR directory exists.
 #
