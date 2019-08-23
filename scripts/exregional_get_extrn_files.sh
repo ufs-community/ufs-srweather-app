@@ -434,6 +434,8 @@ Please modify the script to handle more than one \"zip\" archive file.
 Note that code already exists in this script that can handle multiple
 archive files if the archive file format is specified to be \"tar\", so 
 that can be used as a guide for the \"zip\" case."
+    else
+      ARCV_FP="${EXTRN_MDL_ARCV_FPS[0]}"
     fi
 #
 #-----------------------------------------------------------------------
@@ -443,7 +445,7 @@ that can be used as a guide for the \"zip\" case."
 #-----------------------------------------------------------------------
 #
     HSI_LOG_FN="log.hsi_get"
-    hsi get ${EXTRN_MDL_ARCV_FPS[@]} >& ${HSI_LOG_FN} || \
+    hsi get "${ARCV_FP}" >& ${HSI_LOG_FN} || \
     print_err_msg_exit "${script_name}" "\
 hsi file get operation (\"hsi get ...\") failed.  Check the log file 
 HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
@@ -458,15 +460,13 @@ HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #
 #-----------------------------------------------------------------------
 #
-    UNZIP_LOG_FN="log.unzip_lv"
-    unzip -l -v ${EXTRN_MDL_ARCV_FN} >& ${UNZIP_LOG_FN} || \
+    UNZIPlv_LOG_FN="log.unzip_lv"
+    unzip -l -v ${ARCV_FP} >& ${UNZIPlv_LOG_FN} || \
     print_err_msg_exit "${script_name}" "\
-Operation to list contents of the zip archive file EXTRN_MDL_ARCV_FN in
-the directory EXTRN_MDL_FILES_DIR failed.  Check the log file UNZIP_-
-LOG_FN in that directory for contents of the zip archive:
+unzip file list operation (\"unzip -l -v ...\") failed.  Check the log
+file UNZIPlv_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details: 
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  EXTRN_MDL_ARCV_FN = \"$EXTRN_MDL_ARCV_FN\"
-  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
+  UNZIPlv_LOG_FN = \"$UNZIPlv_LOG_FN\"
 "
 #
 #-----------------------------------------------------------------------
@@ -481,15 +481,15 @@ LOG_FN in that directory for contents of the zip archive:
 #-----------------------------------------------------------------------
 #
     for FP in "${EXTRN_MDL_FPS[@]}"; do
-      grep -n "${FP}" "${UNZIP_LOG_FN}" > /dev/null 2>&1 || \
+      grep -n "${FP}" "${UNZIPlv_LOG_FN}" > /dev/null 2>&1 || \
       print_err_msg_exit "${script_name}" "\
-External model output file FP does not exist in the zip archive file EX-
-TRN_MDL_ARCV_FPS in the directory EXTRN_MDL_FILES_DIR.  Check the log 
-file UNZIP_LOG_FN in that directory for contents of the zip archive:
+External model output file FP does not exist in the zip archive file 
+ARCV_FP in the directory EXTRN_MDL_FILES_DIR.  Check the log file UN-
+ZIPlv_LOG_FN in that directory for contents of the zip archive:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  EXTRN_MDL_ARCV_FPS = $EXTRN_MDL_ARCV_FPS_str
+  ARCV_FP = \"$ARCV_FP\"
   FP = \"$FP\"
-  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
+  UNZIPlv_LOG_FN = \"$UNZIPlv_LOG_FN\"
 "
     done
 #
@@ -502,13 +502,13 @@ file UNZIP_LOG_FN in that directory for contents of the zip archive:
 #
 #-----------------------------------------------------------------------
 #
-    UNZIP_LOG_FN="log.unzip"
-    unzip -o "${EXTRN_MDL_ARCV_FN}" ${EXTRN_MDL_FPS[@]} >& ${UNZIP_LOG_FN} || \
+    UNZIPo_LOG_FN="log.unzip_o"
+    unzip -o "${ARCV_FP}" ${EXTRN_MDL_FPS[@]} >& ${UNZIPo_LOG_FN} || \
     print_err_msg_exit "${script_name}" "\
 unzip file extract operation (\"unzip -o ...\") failed.  Check the log 
-file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
+file UNZIPo_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
+  UNZIPo_LOG_FN = \"$UNZIPo_LOG_FN\"
 "
 #
 # NOTE:
