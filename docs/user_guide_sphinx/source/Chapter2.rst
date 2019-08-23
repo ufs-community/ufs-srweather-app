@@ -96,8 +96,8 @@ directory called ``${BASEDIR}``, clone the repository and check out the
 
    % mkdir ${BASEDIR}
    % cd ${BASEDIR}
-   % git clone ssh://${USER}@vlab.ncep.noaa.gov:29418/fv3sar_workflow
-   % cd fv3sar_workflow
+   % git clone ssh://${USER}@vlab.ncep.noaa.gov:29418/regional_workflow
+   % cd regional_workflow
    % git checkout community
 
 The model source code is located in the NEMSfv3gfs repository, which includes
@@ -164,14 +164,14 @@ successful run.  The hash numbers of these commits are shown in :numref:`Table %
    +-----------------+------------------+
 
 For convenience, a script named ``checkout_NEMSfv3gfs.sh`` has been created in
-the directory ``$BASEDIR/fv3sar_workflow/ush`` to perform these clone and checkout
+the directory ``$BASEDIR/regional_workflow/ush`` to perform these clone and checkout
 steps. This script can check out either the heads of the above branches or the
 specific commits listed above (the commit hashes are hard-coded into the script).
 To have it check out the commits, call this script as follows:
 
 .. code-block:: console
 
-   % cd ${BASEDIR}/fv3sar_workflow/ush
+   % cd ${BASEDIR}/regional_workflow/ush
    % ./checkout_NEMSfv3gfs.sh "hash"
 
 To have the script check out the branch heads, change the first argument from
@@ -190,15 +190,15 @@ To build the FV3SAR pre-processing utilities on theia:
 
 .. code-block:: console
 
-   % cd ${BASEDIR}/fv3sar_workflow/regional
+   % cd ${BASEDIR}/regional_workflow/regional
    % ./build_regional theia >& out.build_regional
 
 Other supported build platforms are ``"cheyenne``, ``wcoss_cray``, or ``odin``.
-When the build completes, there should be 9 executables under ``${BASEDIR}/fv3sar_workflow/exec``:
+When the build completes, there should be 9 executables under ``${BASEDIR}/regional_workflow/exec``:
 
 .. code-block:: console
 
-   % ls ${BASEDIR}/fv3sar_workflow/exec
+   % ls ${BASEDIR}/regional_workflow/exec
    filter_topo        global_chgres         make_solo_mosaic
    fregrid            make_hgrid            ml01rg2.x       
    fregrid_parallel   make_hgrid_parallel   shave.x         
