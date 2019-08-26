@@ -52,6 +52,63 @@ case $predef_domain in
 #
 #-----------------------------------------------------------------------
 #
+"GSD_HAFSV0.A")
+
+  expt_title="_GSD_HAFSV0.A${expt_title}"
+
+  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+predefined domain:
+  predef_domain = \"$predef_domain\"
+  grid_gen_method = \"$grid_gen_method\"
+"
+
+  elif [ "$grid_gen_method" = "JPgrid" ]; then
+
+    lon_rgnl_ctr=-62.0
+    lat_rgnl_ctr=22.0
+
+    delx="3000.0"
+    dely="3000.0"
+
+    nx_T7=2880
+    ny_T7=1920
+
+    nhw_T7=6
+
+    dt_atmos="50"
+
+    layout_x="32"
+    layout_y="24"
+    blocksize="32"
+
+    if [ "$quilting" = ".true." ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group="32"
+      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_cen_lon="${lon_rgnl_ctr}"
+      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_stdlat1="${lat_rgnl_ctr}"
+      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_nx="383"
+      WRTCMP_ny="195"
+      WRTCMP_lon_lwr_left="-121.58647982"
+      WRTCMP_lat_lwr_left="24.36006861"
+      WRTCMP_dx="$delx"
+      WRTCMP_dy="$dely"
+    fi
+
+  fi
+  ;;
+#
+#-----------------------------------------------------------------------
+#
+# Emulation of GSD's RAP grid.
+#
+#-----------------------------------------------------------------------
+#
 "GSD_RAP13km")
 
   expt_title="_GSD_RAP13km${expt_title}"
