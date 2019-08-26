@@ -64,7 +64,9 @@ mkdir_vrfy ${WORKDIR_LOCAL}
 #-----------------------------------------------------------------------
 #
 ${SCRIPTSDIR}/exregional_make_sfc_climo.sh \
-  WORKDIR_LOCAL="${WORKDIR_LOCAL}"
+  WORKDIR_LOCAL="${WORKDIR_LOCAL}" \
+  || print_err_msg_exit "${script_name}" "\
+Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------
 #

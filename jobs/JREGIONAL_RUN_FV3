@@ -290,7 +290,9 @@ fi
 #-----------------------------------------------------------------------
 #
 $SCRIPTSDIR/exregional_run_fv3.sh \
-  RUNDIR="${RUNDIR}"
+  RUNDIR="${RUNDIR}" \
+  || print_err_msg_exit "${script_name}" "\
+Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------
 #

@@ -240,7 +240,9 @@ $SCRIPTSDIR/exregional_get_extrn_files.sh \
   EXTRN_MDL_ARCV_FNS="${EXTRN_MDL_ARCV_FNS_str}" \
   EXTRN_MDL_ARCV_FPS="${EXTRN_MDL_ARCV_FPS_str}" \
   EXTRN_MDL_ARCV_FMT="${EXTRN_MDL_ARCV_FMT}" \
-  EXTRN_MDL_ARCVREL_DIR="${EXTRN_MDL_ARCVREL_DIR}"
+  EXTRN_MDL_ARCVREL_DIR="${EXTRN_MDL_ARCVREL_DIR}" \
+  || print_err_msg_exit "${script_name}" "\
+Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------
 #

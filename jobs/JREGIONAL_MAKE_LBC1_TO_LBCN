@@ -207,7 +207,9 @@ $SCRIPTSDIR/exregional_make_lbc1_to_lbcn.sh \
   WGRIB2_DIR="${WGRIB2_DIR}" \
   APRUN="${APRUN}" \
   WORKDIR_ICSLBCS_CDATE="${WORKDIR_ICSLBCS_CDATE}" \
-  EXTRN_MDL_LBC_UPDATE_FHRS="${EXTRN_MDL_LBC_UPDATE_FHRS_str}"
+  EXTRN_MDL_LBC_UPDATE_FHRS="${EXTRN_MDL_LBC_UPDATE_FHRS_str}" \
+  || print_err_msg_exit "${script_name}" "\
+Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------
 #
