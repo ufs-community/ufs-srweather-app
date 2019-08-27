@@ -179,6 +179,16 @@ ted grid and orography files does not exist:
 "
 fi
 #
+# If RUN_TASK_MAKE_GRID_OROG is set to "TRUE" and the variable specify-
+# ing the directory in which to look for pregenerated grid and orography
+# files (i.e. PREGEN_GRID_OROG_DIR) is not empty, then for clarity reset
+# the latter to an empty string (because it will not be used).
+#
+if [ "$RUN_TASK_MAKE_GRID_OROG" = "TRUE" ] && \
+   [ -n "${PREGEN_GRID_OROG_DIR}" ]; then
+  PREGEN_GRID_OROG_DIR=""
+fi
+#
 #-----------------------------------------------------------------------
 #
 # Make sure that RUN_TASK_MAKE_SFC_CLIMO is set to a valid value.
@@ -220,6 +230,16 @@ The directory (PREGEN_SFC_CLIMO_DIR) that should contain the pre-genera-
 ted surface climatology files does not exist:
   PREGEN_SFC_CLIMO_DIR = \"$PREGEN_SFC_CLIMO_DIR\"
 "
+fi
+#
+# If RUN_TASK_MAKE_SFC_CLIMO is set to "TRUE" and the variable specify-
+# ing the directory in which to look for pregenerated grid and orography
+# files (i.e. PREGEN_SFC_CLIMO_DIR) is not empty, then for clarity reset
+# the latter to an empty string (because it will not be used).
+#
+if [ "$RUN_TASK_MAKE_SFC_CLIMO" = "TRUE" ] && \
+   [ -n "${PREGEN_SFC_CLIMO_DIR}" ]; then
+  PREGEN_SFC_CLIMO_DIR=""
 fi
 #
 #-----------------------------------------------------------------------
@@ -1685,7 +1705,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="$EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF"
+EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="${EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1696,7 +1716,7 @@ EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="$EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF"
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_FILES_SYSBASEDIR_LBCS="$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
+EXTRN_MDL_FILES_SYSBASEDIR_LBCS="${EXTRN_MDL_FILES_SYSBASEDIR_LBCS}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1705,7 +1725,7 @@ EXTRN_MDL_FILES_SYSBASEDIR_LBCS="$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_LBCS_OFFSET_HRS="$EXTRN_MDL_LBCS_OFFSET_HRS"
+EXTRN_MDL_LBCS_OFFSET_HRS="${EXTRN_MDL_LBCS_OFFSET_HRS}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1747,5 +1767,7 @@ Setup script completed successfully!!!
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
+
+
 
 
