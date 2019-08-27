@@ -1,0 +1,115 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# This script runs the post-processor (UPP) on the NetCDF output files
+# of the write component of the FV3SAR model.
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions script and the function definitions
+# file.
+#
+#-----------------------------------------------------------------------
+#
+. $SCRIPT_VAR_DEFNS_FP
+. $USHDIR/source_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Set the script name and print out an informational message informing
+# the user that we've entered this script.
+#
+#-----------------------------------------------------------------------
+#
+script_name=$( basename "$0" )
+print_info_msg "\n\
+========================================================================
+Entering script:  \"${script_name}\"
+This is the J-job script for the task that runs the post-processor (UPP)
+on the output files corresponding to a specified forecast hour.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+RUNDIR="$EXPTDIR/$CDATE"
+#
+#-----------------------------------------------------------------------
+#
+# If it doesn't already exist, create the directory (POSTPRD_DIR) in 
+# which to store post-processing output.  (Note that POSTPRD_DIR may al-
+# ready have been created by this post-processing script run for a dif-
+# ferent forecast hour.)  Also, create a temporary work directory (FHR_-
+# DIR) for the current forecast hour being processed.  FHR_DIR will be 
+# deleted later after the processing for the current forecast hour is 
+# complete.  Then change location to FHR_DIR.
+#
+# Note that there may be a preexisting version of FHR_DIR from previous 
+# runs of this script for the current forecast hour (e.g. from the work-
+# flow task that runs this script failing and then being called again).  
+# Thus, we first make sure preexisting versions are deleted.
+#
+#-----------------------------------------------------------------------
+#
+POSTPRD_DIR="$RUNDIR/postprd"
+mkdir_vrfy -p "${POSTPRD_DIR}"
+
+FHR_DIR="${POSTPRD_DIR}/$fhr"
+check_for_preexist_dir $FHR_DIR "delete"
+mkdir_vrfy -p "${FHR_DIR}"
+
+cd_vrfy ${FHR_DIR}
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles. 
+#
+#-----------------------------------------------------------------------
+#
+$SCRIPTSDIR/exregional_run_post.sh \
+  RUNDIR="${RUNDIR}" \
+  POSTPRD_DIR="${POSTPRD_DIR}" \
+  FHR_DIR="${FHR_DIR}" \
+  fhr="${fhr}" \
+  || print_err_msg_exit "${script_name}" "\
+Call to ex-script corresponding to J-job \"${script_name}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Print exit message.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "\n\
+========================================================================
+Exiting script:  \"${script_name}\"
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+

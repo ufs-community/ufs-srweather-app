@@ -313,7 +313,7 @@ cle.
       &RSRC_POST;
       &RSRV_DEFAULT;
 
-      <command>&USHDIR;/run_post.sh</command>
+      <command>&JOBSDIR;/JREGIONAL_RUN_POST</command>
       <nodes>&PROC_POST;</nodes>
       <jobname>run_post_#fhr#</jobname>
       <join><cyclestr>&LOG_DIR;/run_post_#fhr#_@Y@m@d@H.log</cyclestr></join>

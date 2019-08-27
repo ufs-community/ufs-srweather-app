@@ -1,29 +1,14 @@
-#!/bin/sh -l
+#!/bin/bash
 
 #
 #-----------------------------------------------------------------------
 #
-# This script runs the post-processor (UPP) on the NetCDF output files
-# of the write component of the FV3SAR model.
-#
-#-----------------------------------------------------------------------
-#
-
-#
-#-----------------------------------------------------------------------
-#
-# Source the variable definitions script.
+# Source the variable definitions script and the function definitions
+# file.
 #
 #-----------------------------------------------------------------------
 #
 . $SCRIPT_VAR_DEFNS_FP
-#
-#-----------------------------------------------------------------------
-#
-# Source function definition files.
-#
-#-----------------------------------------------------------------------
-#
 . $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
@@ -33,9 +18,48 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Set the script name and print out an informational message informing
+# the user that we've entered this script.
+#
+#-----------------------------------------------------------------------
+#
+script_name=$( basename "$0" )
+print_info_msg "\n\
+========================================================================
+Entering script:  \"${script_name}\"
+This is the ex-script for the task that runs the post-processor (UPP) on
+the output files corresponding to a specified forecast hour.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Specify the set of valid argument names for this script/function.  
+# Then process the arguments provided to this script/function (which 
+# should consist of a set of name-value pairs of the form arg1="value1",
+# etc).
+#
+#-----------------------------------------------------------------------
+#
+valid_args=( "RUNDIR" "POSTPRD_DIR" "FHR_DIR" "fhr" )
+process_args valid_args "$@"
 
-RUNDIR="$EXPTDIR/$CDATE"
+# If VERBOSE is set to TRUE, print out what each valid argument has been
+# set to.
+if [ "$VERBOSE" = "TRUE" ]; then
+  num_valid_args="${#valid_args[@]}"
+  print_info_msg "\n\
+The arguments to script/function \"${script_name}\" have been set as 
+follows:
+"
+  for (( i=0; i<$num_valid_args; i++ )); do
+    line=$( declare -p "${valid_args[$i]}" )
+    printf "  $line\n"
+  done
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -46,9 +70,9 @@ RUNDIR="$EXPTDIR/$CDATE"
 print_info_msg_verbose "Starting post-processing for fhr = $fhr hr..."
 
 case $MACHINE in
-#
+
+
 "WCOSS_C" | "WCOSS" )
-#
 #  { save_shell_opts; set +x; } > /dev/null 2>&1
   module purge
   . $MODULESHOME/init/ksh
@@ -73,9 +97,9 @@ case $MACHINE in
 
   APRUN="aprun -j 1 -n${ntasks} -N${ptile} -d${threads} -cc depth"
   ;;
-#
+
+
 "THEIA")
-#
   { save_shell_opts; set +x; } > /dev/null 2>&1
   module purge
   module load intel
@@ -83,13 +107,12 @@ case $MACHINE in
   module load netcdf
   module load contrib wrap-mpi
   { restore_shell_opts; } > /dev/null 2>&1
-
   np=${SLURM_NTASKS}
   APRUN="mpirun -np ${np}"
   ;;
-#
+
+
 "JET")
-#
   { save_shell_opts; set +x; } > /dev/null 2>&1
   module purge 
   . /apps/lmod/lmod/init/sh 
@@ -126,58 +149,45 @@ case $MACHINE in
   np=${SLURM_NTASKS}
   APRUN="mpirun -np ${np}"
   ;;
-#
+
+
 "ODIN")
-#
   APRUN="srun -n 1"
   ;;
-#
+
+
 esac
-
-#-----------------------------------------------------------------------
-#
-# If it doesn't already exist, create the directory (POSTPRD_DIR) in 
-# which to store post-processing output.  (Note that POSTPRD_DIR may al-
-# ready have been created by this post-processing script run for a dif-
-# ferent forecast hour.)  Also, create a temporary work directory (FHR_-
-# DIR) for the current forecast hour being processed.  FHR_DIR will be 
-# deleted later after the processing for the current forecast hour is 
-# complete.  Then change location to FHR_DIR.
-#
-# Note that there may be a preexisting version of FHR_DIR from previous 
-# runs of this script for the current forecast hour (e.g. from the work-
-# flow task that runs this script failing and then being called again).  
-# Thus, we first make sure preexisting versions are deleted.
 #
 #-----------------------------------------------------------------------
-
-POSTPRD_DIR="$RUNDIR/postprd"
-mkdir_vrfy -p "${POSTPRD_DIR}"
-
-FHR_DIR="${POSTPRD_DIR}/$fhr"
-check_for_preexist_dir $FHR_DIR "delete"
-mkdir_vrfy -p "${FHR_DIR}"
-
-cd_vrfy ${FHR_DIR}
-
+#
+# Remove any files from previous runs and stage necessary files in FHR_DIR.
+#
+#-----------------------------------------------------------------------
+#
+rm_vrfy -f fort.*
+cp_vrfy $UPPFIX/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp_vrfy $UPPFIX/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
+cp_vrfy $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
+cp_vrfy ${UPPDIR}/ncep_post .
+#
 #-----------------------------------------------------------------------
 #
 # Get the cycle hour.  This is just the variable HH set in the setup.sh
 # script.
 #
 #-----------------------------------------------------------------------
-
+#
 HH=${CDATE:8:2}
 cyc=$HH
 tmmark="tm$HH"
-
+#
 #-----------------------------------------------------------------------
 #
 # Create a text file (itag) containing arguments to pass to the post-
 # processing executable.
 #
 #-----------------------------------------------------------------------
-
+#
 dyn_file=${RUNDIR}/dynf0${fhr}.nc
 phy_file=${RUNDIR}/phyf0${fhr}.nc
 
@@ -199,37 +209,24 @@ ${phy_file}
  KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,
  /
 EOF
-
-#-----------------------------------------------------------------------
 #
-# Stage files in FHR_DIR.
-#
-#-----------------------------------------------------------------------
-
-rm_vrfy -f fort.*
-
-cp_vrfy $UPPFIX/nam_micro_lookup.dat ./eta_micro_lookup.dat
-cp_vrfy $UPPFIX/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
-cp_vrfy $UPPFIX/params_grib2_tbl_new ./params_grib2_tbl_new
-
 #-----------------------------------------------------------------------
 #
 # Copy the UPP executable to FHR_DIR and run the post-processor.
 #
 #-----------------------------------------------------------------------
-
-cp_vrfy ${UPPDIR}/ncep_post .
+#
 ${APRUN} ./ncep_post < itag || print_err_msg_exit "\
 Call to executable to run post for forecast hour $fhr returned with non-
 zero exit code."
-
+#
 #-----------------------------------------------------------------------
 #
 # Move (and rename) the output files from the work directory to their
 # final location (POSTPRD_DIR).  Then delete the work directory. 
 #
 #-----------------------------------------------------------------------
-
+#
 # If expt_title is set to an empty string in config.sh, I think TITLE 
 # will also be empty.  Must try out that case...
 if [ -n ${predef_domain} ]; then 
@@ -245,8 +242,10 @@ mv_vrfy BGRD3D.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark
 
 START_DATE=`echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/'`
 basetime=`date +%y%j%H%M -d "${START_DATE}"`
-ln -s ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark} ${POSTPRD_DIR}/BGDAWP_${basetime}${fhr}00
-ln -s ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark} ${POSTPRD_DIR}/BGRD3D_${basetime}${fhr}00
+ln_vrfy -fs ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark} \
+            ${POSTPRD_DIR}/BGDAWP_${basetime}${fhr}00
+ln_vrfy -fs ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark} \
+            ${POSTPRD_DIR}/BGRD3D_${basetime}${fhr}00
 
 rm_vrfy -rf ${FHR_DIR}
 #
@@ -256,18 +255,18 @@ rm_vrfy -rf ${FHR_DIR}
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\
-
+print_info_msg "\n\
 ========================================================================
 Post-processing for forecast hour $fhr completed successfully.
+Exiting script:  \"${script_name}\"
 ========================================================================"
-
+#
 #-----------------------------------------------------------------------
 #
 # Restore the shell options saved at the beginning of this script/func-
 # tion.
 #
 #-----------------------------------------------------------------------
-
+#
 { restore_shell_opts; } > /dev/null 2>&1
 
