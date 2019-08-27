@@ -412,8 +412,9 @@ status."
 #
 #-----------------------------------------------------------------------
 #
-#${APRUN} ${EXECDIR}/chgres_cube.exe || print_err_msg_exit "${script_name}" "\
-${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || print_err_msg_exit "${script_name}" "\
+#${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || print_err_msg_exit "${script_name}" "\
+${APRUN} ${EXECDIR}/chgres_cube.exe || \
+print_err_msg_exit "${script_name}" "\
 Call to executable to generate surface and initial conditions files for
 the FV3SAR failed:
   EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"

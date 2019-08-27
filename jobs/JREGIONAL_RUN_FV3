@@ -52,10 +52,17 @@ the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-RUNDIR="$EXPTDIR/$CDATE"
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  DOMAIN=${predef_domain}
+  YYMMDDHH=...
+  DATA="$STMP/tmpnwprd/regional_forecast_tm00_${DOMAIN}_${YYMMDDHH}"
+  RUNDIR=$DATA
+else
+  RUNDIR="$EXPTDIR/$CDATE"
+fi
+
 check_for_preexist_dir $RUNDIR ${preexisting_dir_method}
 mkdir_vrfy $RUNDIR
-
 mkdir_vrfy $RUNDIR/INPUT
 mkdir_vrfy $RUNDIR/RESTART
 #
@@ -290,7 +297,9 @@ fi
 #-----------------------------------------------------------------------
 #
 $SCRIPTSDIR/exregional_run_fv3.sh \
-  RUNDIR="${RUNDIR}"
+  RUNDIR="${RUNDIR}" \
+  || print_err_msg_exit "${script_name}" "\
+Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------
 #

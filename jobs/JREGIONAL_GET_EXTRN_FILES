@@ -179,12 +179,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$ANL_OR_FCST" = "ANL" ]; then
-  mkdir_vrfy -p "$EXTRN_MDL_FILES_BASEDIR_ICSSURF"
+if [ "${RUN_ENVIR}" = "nco" ]; then
+
+  COMINGFS=COMINgfs=/scratch3/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS
+  COMINgfs=/scratch3/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS
   EXTRN_MDL_FILES_DIR="$EXTRN_MDL_FILES_BASEDIR_ICSSURF/$CDATE"
-elif [ "$ANL_OR_FCST" = "FCST" ]; then
-  mkdir_vrfy -p "$EXTRN_MDL_FILES_BASEDIR_LBCS"
-  EXTRN_MDL_FILES_DIR="$EXTRN_MDL_FILES_BASEDIR_LBCS/$CDATE"
+   
+else
+
+  if [ "$ANL_OR_FCST" = "ANL" ]; then
+    mkdir_vrfy -p "$EXTRN_MDL_FILES_BASEDIR_ICSSURF"
+    EXTRN_MDL_FILES_DIR="$EXTRN_MDL_FILES_BASEDIR_ICSSURF/$CDATE"
+  elif [ "$ANL_OR_FCST" = "FCST" ]; then
+    mkdir_vrfy -p "$EXTRN_MDL_FILES_BASEDIR_LBCS"
+    EXTRN_MDL_FILES_DIR="$EXTRN_MDL_FILES_BASEDIR_LBCS/$CDATE"
+  fi
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -240,7 +250,9 @@ $SCRIPTSDIR/exregional_get_extrn_files.sh \
   EXTRN_MDL_ARCV_FNS="${EXTRN_MDL_ARCV_FNS_str}" \
   EXTRN_MDL_ARCV_FPS="${EXTRN_MDL_ARCV_FPS_str}" \
   EXTRN_MDL_ARCV_FMT="${EXTRN_MDL_ARCV_FMT}" \
-  EXTRN_MDL_ARCVREL_DIR="${EXTRN_MDL_ARCVREL_DIR}"
+  EXTRN_MDL_ARCVREL_DIR="${EXTRN_MDL_ARCVREL_DIR}" \
+  || print_err_msg_exit "${script_name}" "\
+Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------
 #

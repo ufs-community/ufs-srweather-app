@@ -382,7 +382,8 @@ with nonzero status."
 #
 # Run chgres_cube.
 #
-  ${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || \
+#  ${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || \
+  ${APRUN} ${EXECDIR}/chgres_cube.exe || \
   print_err_msg_exit "${script_name}" "\
 Call to executable to generate lateral boundary conditions file for the
 the FV3SAR failed:

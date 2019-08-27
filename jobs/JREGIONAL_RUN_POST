@@ -3,6 +3,15 @@
 #
 #-----------------------------------------------------------------------
 #
+# This script runs the post-processor (UPP) on the NetCDF output files
+# of the write component of the FV3SAR model.
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions script and the function definitions
 # file.
 #
@@ -18,7 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -31,40 +40,56 @@ script_name=$( basename "$0" )
 print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
-This is the J-job script for the task that generates surface fields from
-climatology.
+This is the J-job script for the task that runs the post-processor (UPP)
+on the output files corresponding to a specified forecast hour.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Create the work(??) directory for the surface climatology files.  If   <<-- Should call this "work" directory, since there is a subdirectory that's the true work directory.  Should rename WORKDIR_SFC_CLIMO (and also WORKDIR_GRID, WORKDIR_SHVE, etc).
-# it already exists, deal with it as specified by the variable pre-
-# existing_dir_method.
+#
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir ${WORKDIR_SFC_CLIMO} $preexisting_dir_method
-mkdir_vrfy -p "${WORKDIR_SFC_CLIMO}"
+RUNDIR="$EXPTDIR/$CDATE"
 #
 #-----------------------------------------------------------------------
 #
-# Create a (true) work directory.  If it already exists, delete it.
+# If it doesn't already exist, create the directory (POSTPRD_DIR) in 
+# which to store post-processing output.  (Note that POSTPRD_DIR may al-
+# ready have been created by this post-processing script run for a dif-
+# ferent forecast hour.)  Also, create a temporary work directory (FHR_-
+# DIR) for the current forecast hour being processed.  FHR_DIR will be 
+# deleted later after the processing for the current forecast hour is 
+# complete.  Then change location to FHR_DIR.
+#
+# Note that there may be a preexisting version of FHR_DIR from previous 
+# runs of this script for the current forecast hour (e.g. from the work-
+# flow task that runs this script failing and then being called again).  
+# Thus, we first make sure preexisting versions are deleted.
 #
 #-----------------------------------------------------------------------
 #
-WORKDIR_LOCAL="${WORKDIR_SFC_CLIMO}/tmp"
-check_for_preexist_dir ${WORKDIR_LOCAL} "delete"
-mkdir_vrfy ${WORKDIR_LOCAL}
+POSTPRD_DIR="$RUNDIR/postprd"
+mkdir_vrfy -p "${POSTPRD_DIR}"
+
+FHR_DIR="${POSTPRD_DIR}/$fhr"
+check_for_preexist_dir $FHR_DIR "delete"
+mkdir_vrfy -p "${FHR_DIR}"
+
+cd_vrfy ${FHR_DIR}
 #
 #-----------------------------------------------------------------------
 #
 # Call the ex-script for this J-job and pass to it the necessary varia-
-# bles.
+# bles. 
 #
 #-----------------------------------------------------------------------
 #
-${SCRIPTSDIR}/exregional_make_sfc_climo.sh \
-  WORKDIR_LOCAL="${WORKDIR_LOCAL}" \
+$SCRIPTSDIR/exregional_run_post.sh \
+  RUNDIR="${RUNDIR}" \
+  POSTPRD_DIR="${POSTPRD_DIR}" \
+  FHR_DIR="${FHR_DIR}" \
+  fhr="${fhr}" \
   || print_err_msg_exit "${script_name}" "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #

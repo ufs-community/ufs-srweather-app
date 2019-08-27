@@ -214,7 +214,9 @@ $SCRIPTSDIR/exregional_make_ic_lowbc.sh \
   EXTRN_MDL_CDATE="${EXTRN_MDL_CDATE}" \
   WGRIB2_DIR="${WGRIB2_DIR}" \
   APRUN="${APRUN}" \
-  WORKDIR_ICSLBCS_CDATE="${WORKDIR_ICSLBCS_CDATE}"
+  WORKDIR_ICSLBCS_CDATE="${WORKDIR_ICSLBCS_CDATE}" \
+  || print_err_msg_exit "${script_name}" "\
+Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------
 #
