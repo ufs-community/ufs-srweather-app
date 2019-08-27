@@ -408,7 +408,7 @@ for fn in "${file_list[@]}"; do
   if [ -f "${target_dir}/$fn" ]; then
 # Should links be made relative or absolute?  Maybe relative in community
 # mode and absolute in nco mode?
-    if [ "$RUN_ENVIR" = "nco" ]; then
+    if [ "${RUN_ENVIR}" = "nco" ]; then
       ln_vrfy -sf ${target_dir}/$fn .
     else
       ln_vrfy -sf --relative ${target_dir}/$fn .
@@ -465,7 +465,7 @@ for fn in "${file_list[@]}"; do
   if [ -f "${target_dir}/$fn" ]; then
 # Should links be made relative or absolute?  Maybe relative in community
 # mode and absolute in nco mode?
-    if [ "$RUN_ENVIR" = "nco" ]; then
+    if [ "${RUN_ENVIR}" = "nco" ]; then
       ln_vrfy -sf ${target_dir}/$fn .
     else
       ln_vrfy -sf --relative ${target_dir}/$fn .

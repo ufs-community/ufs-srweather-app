@@ -645,6 +645,20 @@ esac
 #
 #-----------------------------------------------------------------------
 #
+#
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  HOMEfv3=${FV3SAR_DIR}
+  FIXfv3=${HOMEfv3}/fix
+  FIXsar=${FIXfv3}/fix_sar
+  FIXam=${FIXfv3}/fix_am
+  COMINgfs=/scratch3/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS
+fi
+#
+#-----------------------------------------------------------------------
+#
 # The forecast length (in integer hours) cannot contain more than 3 cha-
 # racters.  Thus, its maximum value is 999.  Check whether the specified
 # forecast length exceeds this maximum value.  If so, print out a warn-
@@ -844,23 +858,94 @@ check_for_preexist_dir $WORKDIR $preexisting_dir_method
 # Work directory for the preprocessing step that "shaves" the grid and
 # filtered orography files.
 #
+# WORKDIR_SFC_CLIMO:
+# Work directory for the preprocessing step that generates surface files
+# from climatology.
+#
 # WORKDIR_ICSLBCS:
 # Work directory for the preprocessing steps that generate the files
 # containing the surface fields as well as the initial and lateral 
 # boundary conditions.
 #
-# WORKDIR_SFC_CLIMO:
-# Work directory for the preprocessing step that generates surface files
-# from climatology.
-#
 #----------------------------------------------------------------------
 #
-WORKDIR_GRID=$WORKDIR/grid
-WORKDIR_OROG=$WORKDIR/orog
-WORKDIR_FLTR=$WORKDIR/filtered_topo
-WORKDIR_SHVE=$WORKDIR/shave
-WORKDIR_ICSLBCS=$WORKDIR/ICs_BCs
-WORKDIR_SFC_CLIMO=$WORKDIR/sfc_climo
+if [ "${RUN_ENVIR}" = "nco" ]; then
+
+  WORKDIR_GRID=""
+  WORKDIR_OROG=""
+  WORKDIR_FLTR=""
+  WORKDIR_SHVE="$FV3sar"
+  WORKDIR_SFC_CLIMO=""
+  WORKDIR_ICSLBCS=""
+
+  if [ "${RUN_TASK_MAKE_GRID_OROG}" = "TRUE" ] || \
+     [ "${RUN_TASK_MAKE_GRID_OROG}" = "FALSE" -a \
+       "${PREGEN_GRID_OROG_DIR}" != "$FIXsar" ]; then
+
+    msg="\
+When RUN_ENVIR is set to \"nco\", it is assumed that grid and orography
+files already exist in the directory specified by FIXsar.  Thus, the 
+grid and orography generation task must not be run (i.e. RUN_TASK_MAKE_-
+GRID_OROG must be set to FALSE), and the directory in which to look for 
+the grid and orography files (i.e. PREGEN_GRID_OROG_DIR) must be set to
+FIXsar.  Current values for these quantities are:
+  RUN_TASK_MAKE_GRID_OROG = \"${RUN_TASK_MAKE_GRID_OROG}\"
+  PREGEN_GRID_OROG_DIR = \"${PREGEN_GRID_OROG_DIR}\"
+Resetting RUN_TASK_MAKE_GRID_OROG to \"FALSE\" and PREGEN_GRID_OROG_DIR to
+the contents of FIXsar.  Reset values are:
+"
+
+    RUN_TASK_MAKE_GRID_OROG="FALSE"
+    PREGEN_GRID_OROG_DIR="$FIXsar"
+
+    msg="$msg""
+  RUN_TASK_MAKE_GRID_OROG = \"${RUN_TASK_MAKE_GRID_OROG}\"
+  PREGEN_GRID_OROG_DIR = \"${PREGEN_GRID_OROG_DIR}\"
+"
+
+    print_info_msg "$msg"
+  
+  fi
+
+  if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] || \
+     [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" -a \
+       "${PREGEN_SFC_CLIMO_DIR}" != "$FIXsar" ]; then
+
+    msg="\
+When RUN_ENVIR is set to \"nco\", it is assumed that grid and orography
+files already exist in the directory specified by FIXsar.  Thus, the 
+grid and orography generation task must not be run (i.e. RUN_TASK_MAKE_-
+SFC_CLIMO must be set to FALSE), and the directory in which to look for 
+the grid and orography files (i.e. PREGEN_SFC_CLIMO_DIR) must be set to
+FIXsar.  Current values for these quantities are:
+  RUN_TASK_MAKE_SFC_CLIMO = \"${RUN_TASK_MAKE_SFC_CLIMO}\"
+  PREGEN_SFC_CLIMO_DIR = \"${PREGEN_SFC_CLIMO_DIR}\"
+Resetting RUN_TASK_MAKE_SFC_CLIMO to \"FALSE\" and PREGEN_SFC_CLIMO_DIR to
+the contents of FIXsar.  Reset values are:
+"
+
+    RUN_TASK_MAKE_SFC_CLIMO="FALSE"
+    PREGEN_SFC_CLIMO_DIR="$FIXsar"
+
+    msg="$msg""
+  RUN_TASK_MAKE_SFC_CLIMO = \"${RUN_TASK_MAKE_SFC_CLIMO}\"
+  PREGEN_SFC_CLIMO_DIR = \"${PREGEN_SFC_CLIMO_DIR}\"
+"
+
+    print_info_msg "$msg"
+  
+  fi
+
+else
+
+  WORKDIR_GRID=$WORKDIR/grid
+  WORKDIR_OROG=$WORKDIR/orog
+  WORKDIR_FLTR=$WORKDIR/filtered_topo
+  WORKDIR_SHVE=$WORKDIR/shave
+  WORKDIR_SFC_CLIMO=$WORKDIR/sfc_climo
+  WORKDIR_ICSLBCS=$WORKDIR/ICs_BCs
+
+fi
 #
 #-----------------------------------------------------------------------
 #
