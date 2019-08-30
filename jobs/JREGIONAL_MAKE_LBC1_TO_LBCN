@@ -3,30 +3,6 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script generates NetCDF lateral boundary condition (LBC) files 
-# that contain data for the halo region of a regional grid.  One file is
-# generated for each lateral boundary update time -- not including the 
-# initial (i.e. model start) time -- up to the end of the model run.  
-# For example, if the lateral boundary fields are to be updated every 3
-# hours (this update interval is determined by the variable LBC_UPDATE_-
-# INTVL_HRS) and the FV3SAR forecast is to run for 24 hours (the fore-
-# cast length is determined by the variable fcst_len_hrs), then a file 
-# is generated for each of the forecast hours 3, 6, 9, 12, 15, 18, and
-# 24 (but not hour 0 since that is handled by the script that generates 
-# the initial conditions file).  All the generated NetCDF LBC files are
-# placed in the directory WORKDIR_ICSLBCS_CDATE, defined as
-#
-#   WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
-#
-# where CDATE is the externally specified starting date and hour-of-day
-# of the current FV3SAR cycle.
-#
-#-----------------------------------------------------------------------
-#
-
-#
-#-----------------------------------------------------------------------
-#
 # Source the variable definitions script and the function definitions
 # file.
 #
