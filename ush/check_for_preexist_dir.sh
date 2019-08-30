@@ -38,7 +38,8 @@ where the arguments are defined as follows:
 
   preexisting_dir_method:
   String specifying the action to take if a preexisting version of dir
-  is found.  Valid values are \"delete\", \"rename\", and \"quit\"."
+  is found.  Valid values are \"delete\", \"rename\", and \"quit\".
+"
   fi
 #
 #-----------------------------------------------------------------------

@@ -80,7 +80,7 @@ fi
 #-----------------------------------------------------------------------
 #
 num_files_to_copy="${#EXTRN_MDL_FNS[@]}"
-prefix="$EXTRN_MDL_SYSDIR/"
+prefix="${EXTRN_MDL_SYSDIR}/"
 EXTRN_MDL_FPS=( "${EXTRN_MDL_FNS[@]/#/$prefix}" )
 
 num_files_found_on_disk="0"

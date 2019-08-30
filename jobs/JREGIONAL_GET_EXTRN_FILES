@@ -175,7 +175,7 @@ fi
 # Create the directory EXTRN_MDL_FILES_BASEDIR_ICSSURF if it doesn't al-
 # ready exist.  This is the directory in which we will create a subdi-
 # rectory for each cycle (i.e. for each CDATE) in which to store the 
-# output files from the external model .
+# files from the external model.
 #
 #-----------------------------------------------------------------------
 #
@@ -250,8 +250,8 @@ $SCRIPTSDIR/exregional_get_extrn_files.sh \
   EXTRN_MDL_ARCV_FNS="${EXTRN_MDL_ARCV_FNS_str}" \
   EXTRN_MDL_ARCV_FPS="${EXTRN_MDL_ARCV_FPS_str}" \
   EXTRN_MDL_ARCV_FMT="${EXTRN_MDL_ARCV_FMT}" \
-  EXTRN_MDL_ARCVREL_DIR="${EXTRN_MDL_ARCVREL_DIR}" \
-  || print_err_msg_exit "${script_name}" "\
+  EXTRN_MDL_ARCVREL_DIR="${EXTRN_MDL_ARCVREL_DIR}" || \
+  print_err_msg_exit "${script_name}" "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------

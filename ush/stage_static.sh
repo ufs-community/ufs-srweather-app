@@ -60,7 +60,7 @@ in the main experiment directory.
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir $EXPTDIR/INPUT $preexisting_dir_method
+check_for_preexist_dir "$EXPTDIR/INPUT" "$preexisting_dir_method"
 mkdir_vrfy "$EXPTDIR/INPUT"
 #
 #-----------------------------------------------------------------------
@@ -70,7 +70,7 @@ mkdir_vrfy "$EXPTDIR/INPUT"
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir $WORKDIR_ICSLBCS $preexisting_dir_method
+check_for_preexist_dir "$WORKDIR_ICSLBCS" "$preexisting_dir_method"
 mkdir_vrfy -p "$WORKDIR_ICSLBCS"
 #
 #-----------------------------------------------------------------------
