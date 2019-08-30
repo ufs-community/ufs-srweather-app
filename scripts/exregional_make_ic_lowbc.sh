@@ -46,7 +46,7 @@ for FV3 (in NetCDF format).
 #-----------------------------------------------------------------------
 #
 valid_args=( "EXTRN_MDL_FNS" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_CDATE" \
-             "WGRIB2_DIR" "APRUN" "WORKDIR_ICSLBCS_CDATE" )
+             "WGRIB2_DIR" "APRUN" "ICS_DIR" )
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -62,6 +62,16 @@ follows:
     printf "  $line\n"
   done
 fi
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+workdir="${ICS_DIR}/work_ICS"
+mkdir_vrfy -p "$workdir"
+cd_vrfy $workdir
 #
 #-----------------------------------------------------------------------
 #
@@ -207,7 +217,7 @@ replace_vgfrc=""
 tg3_from_soil=""
 
 
-case "$EXTRN_MDL_NAME_ICSSURF" in
+case "$EXTRN_MDL_NAME_ICS" in
 
 
 "GSMGFS")
@@ -291,7 +301,7 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
   print_err_msg_exit "${script_name}" "\
 External-model-dependent namelist variables have not yet been specified 
 for this external model:
-  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\""
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
   ;;
 
 
@@ -309,6 +319,7 @@ mm="${EXTRN_MDL_CDATE:4:2}"
 dd="${EXTRN_MDL_CDATE:6:2}"
 hh="${EXTRN_MDL_CDATE:8:2}"
 #yyyymmdd="${EXTRN_MDL_CDATE:0:8}"
+
 #
 #-----------------------------------------------------------------------
 #
@@ -416,7 +427,7 @@ ${APRUN} ${EXECDIR}/chgres_cube.exe || \
 print_err_msg_exit "${script_name}" "\
 Call to executable to generate surface and initial conditions files for
 the FV3SAR failed:
-  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\""
 #
 #-----------------------------------------------------------------------
@@ -426,10 +437,10 @@ the FV3SAR failed:
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy out.atm.tile7.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_data.tile7.nc
-mv_vrfy out.sfc.tile7.nc ${WORKDIR_ICSLBCS_CDATE}/sfc_data.tile7.nc
-mv_vrfy gfs_ctrl.nc ${WORKDIR_ICSLBCS_CDATE}
-mv_vrfy gfs_bndy.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_bndy.tile7.000.nc
+mv_vrfy out.atm.tile7.nc ${ICS_DIR}/gfs_data.tile7.nc
+mv_vrfy out.sfc.tile7.nc ${ICS_DIR}/sfc_data.tile7.nc
+mv_vrfy gfs_ctrl.nc ${ICS_DIR}
+mv_vrfy gfs_bndy.nc ${ICS_DIR}/gfs_bndy.tile7.000.nc
 #
 #-----------------------------------------------------------------------
 #

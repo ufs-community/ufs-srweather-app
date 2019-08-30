@@ -44,7 +44,7 @@ the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "RUNDIR" "POSTPRD_DIR" "FHR_DIR" "fhr" )
+valid_args=( "CYCLE_DIR" "POSTPRD_DIR" "FHR_DIR" "fhr" )
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -188,8 +188,8 @@ tmmark="tm$HH"
 #
 #-----------------------------------------------------------------------
 #
-dyn_file=${RUNDIR}/dynf0${fhr}.nc
-phy_file=${RUNDIR}/phyf0${fhr}.nc
+dyn_file=${CYCLE_DIR}/dynf0${fhr}.nc
+phy_file=${CYCLE_DIR}/phyf0${fhr}.nc
 
 POST_TIME=$( ${UPPDIR}/ndate.exe +${fhr} ${CDATE} )
 POST_YYYY=${POST_TIME:0:4}

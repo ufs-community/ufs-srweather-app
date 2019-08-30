@@ -65,16 +65,6 @@ mkdir_vrfy "$EXPTDIR/INPUT"
 #
 #-----------------------------------------------------------------------
 #
-# Create the directory in which to place the results of the initial and
-# boundary condition tasks.  
-#
-#-----------------------------------------------------------------------
-#
-check_for_preexist_dir "$WORKDIR_ICSLBCS" "$preexisting_dir_method"
-mkdir_vrfy -p "$WORKDIR_ICSLBCS"
-#
-#-----------------------------------------------------------------------
-#
 # Copy fixed files from system directory to experiment directory.  Note
 # that some of these files get renamed.
 #

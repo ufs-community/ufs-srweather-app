@@ -95,7 +95,7 @@ Exiting script with nonzero return code.
     exit 1
   fi
   baseline_dir="${baseline_dir}/${CCPP_phys_suite}phys"
-  baseline_dir="${baseline_dir}/ICs-${EXTRN_MDL_NAME_ICSSURF}_LBCs-${EXTRN_MDL_NAME_LBCS}"
+  baseline_dir="${baseline_dir}/ICs-${EXTRN_MDL_NAME_ICS}_LBCs-${EXTRN_MDL_NAME_LBCS}"
   baseline_dir="${baseline_dir}/$CDATE"
 
 fi
@@ -136,7 +136,7 @@ subdirs=( "grid" \
           "filtered_topo" \
           "shave" \
           "sfc_climo" \
-          "${EXTRN_MDL_NAME_ICSSURF}/ICSSURF/$CDATE" \
+          "${EXTRN_MDL_NAME_ICS}/ICS/$CDATE" \
           "${EXTRN_MDL_NAME_LBCS}/LBCS/$CDATE" \
           "ICs_BCs/$CDATE" \
           "INPUT" \

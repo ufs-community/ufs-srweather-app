@@ -44,7 +44,7 @@ specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "RUNDIR" )
+valid_args=( "CYCLE_DIR" )
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -81,7 +81,7 @@ case $MACHINE in
 # Needed to change to the run directory to correctly load necessary mo-
 # dules for CCPP-version of FV3SAR in lines below
 
-    cd_vrfy $RUNDIR
+    cd_vrfy ${CYCLE_DIR}
   
     set +x
     source ./module-setup.sh
@@ -112,7 +112,7 @@ case $MACHINE in
   
 # Needed to change to the run directory to correctly load necessary mo-
 # dules for CCPP-version of FV3SAR in lines below
-    cd_vrfy $RUNDIR
+    cd_vrfy ${CYCLE_DIR}
   
     set +x
     source ./module-setup.sh
@@ -189,7 +189,7 @@ export OMP_STACKSIZE=1024m
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy $RUNDIR
+cd_vrfy ${CYCLE_DIR}
 
 #
 #-----------------------------------------------------------------------
@@ -212,7 +212,7 @@ YYYYMMDD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
-MODEL_CONFIG_FP="$RUNDIR/$MODEL_CONFIG_FN"
+MODEL_CONFIG_FP="${CYCLE_DIR}/${MODEL_CONFIG_FN}"
 
 print_info_msg_verbose "\
 Setting parameters in file:
@@ -279,7 +279,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DIAG_TABLE_FP="$RUNDIR/$DIAG_TABLE_FN"
+DIAG_TABLE_FP="${CYCLE_DIR}/${DIAG_TABLE_FN}"
 
 print_info_msg_verbose "\
 Setting parameters in file:
@@ -307,7 +307,7 @@ fi
 if [ -f $FV3SAR_EXEC ]; then
   print_info_msg_verbose "\
 Copying the FV3SAR executable to the run directory..."
-  cp_vrfy $FV3SAR_EXEC $RUNDIR/fv3_gfs.x
+  cp_vrfy ${FV3SAR_EXEC} ${CYCLE_DIR}/fv3_gfs.x
 else
   print_err_msg_exit "\
 The FV3SAR executable specified in FV3SAR_EXEC does not exist:

@@ -76,10 +76,9 @@ cept hour zero).
 #
 #-----------------------------------------------------------------------
 #
-WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
-WORKDIR_ICSLBCS_CDATE_LBCS_WORK="$WORKDIR_ICSLBCS_CDATE/LBCS_work"
-mkdir_vrfy -p "$WORKDIR_ICSLBCS_CDATE_LBCS_WORK"
-cd_vrfy ${WORKDIR_ICSLBCS_CDATE_LBCS_WORK}
+CYCLE_DIR="$EXPTDIR/$CDATE"
+LBCS_DIR="${CYCLE_DIR}/INPUT"
+mkdir_vrfy -p "${LBCS_DIR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -188,7 +187,7 @@ Directory in which the wgrib2 executable is located not found:
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_BASEDIR_LBCS}/${CDATE}"
+EXTRN_MDL_FILES_DIR="${CYCLE_DIR}/${EXTRN_MDL_NAME_LBCS}/LBCS"
 #
 #-----------------------------------------------------------------------
 #
@@ -206,7 +205,7 @@ $SCRIPTSDIR/exregional_make_lbc1_to_lbcn.sh \
   EXTRN_MDL_CDATE="${EXTRN_MDL_CDATE}" \
   WGRIB2_DIR="${WGRIB2_DIR}" \
   APRUN="${APRUN}" \
-  WORKDIR_ICSLBCS_CDATE="${WORKDIR_ICSLBCS_CDATE}" \
+  LBCS_DIR="${LBCS_DIR}" \
   EXTRN_MDL_LBC_UPDATE_FHRS="${EXTRN_MDL_LBC_UPDATE_FHRS_str}" || \
   print_err_msg_exit "${script_name}" "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."

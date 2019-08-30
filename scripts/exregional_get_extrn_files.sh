@@ -160,7 +160,7 @@ Copying model output files (EXTRN_MDL_FNS) from system directory on disk
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$ICSSURF_OR_LBCS" = "ICSSURF" ]; then
+  if [ "$ICS_OR_LBCS" = "ICS" ]; then
 
     print_info_msg "\n\
 ========================================================================
@@ -169,7 +169,7 @@ fields for the FV3SAR successfully copied from system disk!!!
 Exiting script:  \"${script_name}\"
 ========================================================================"
 
-  elif [ "$ICSSURF_OR_LBCS" = "LBCS" ]; then
+  elif [ "$ICS_OR_LBCS" = "LBCS" ]; then
 
     print_info_msg "\n\
 ========================================================================
@@ -534,7 +534,7 @@ file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$ICSSURF_OR_LBCS" = "ICSSURF" ]; then
+  if [ "$ICS_OR_LBCS" = "ICS" ]; then
 
     print_info_msg "\n\
 ========================================================================
@@ -543,7 +543,7 @@ fields for the FV3SAR successfully fetched from HPSS!!!
 Exiting script:  \"${script_name}\"
 ========================================================================"
 
-  elif [ "$ICSSURF_OR_LBCS" = "LBCS" ]; then
+  elif [ "$ICS_OR_LBCS" = "LBCS" ]; then
 
     print_info_msg "\n\
 ========================================================================

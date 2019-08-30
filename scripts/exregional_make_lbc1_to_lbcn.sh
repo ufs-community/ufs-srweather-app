@@ -39,7 +39,7 @@ hour zero).
 #-----------------------------------------------------------------------
 #
 valid_args=("EXTRN_MDL_FNS" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_CDATE" "WGRIB2_DIR" \
-            "APRUN" "WORKDIR_ICSLBCS_CDATE" "EXTRN_MDL_LBC_UPDATE_FHRS")
+            "APRUN" "LBCS_DIR" "EXTRN_MDL_LBC_UPDATE_FHRS")
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -55,6 +55,16 @@ follows:
     printf "  $line\n"
   done
 fi
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+workdir="${LBCS_DIR}/work_LBCS"
+mkdir_vrfy -p "$workdir"
+cd_vrfy $workdir
 #
 #-----------------------------------------------------------------------
 #
@@ -397,7 +407,7 @@ the FV3SAR failed:
 # external model since their start times may be offset).
 #
   fcst_hhh_FV3SAR=$( printf "%03d" "${LBC_UPDATE_FCST_HRS[$i]}" )
-  mv_vrfy gfs_bndy.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_bndy.tile7.${fcst_hhh_FV3SAR}.nc
+  mv_vrfy gfs_bndy.nc ${LBCS_DIR}/gfs_bndy.tile7.${fcst_hhh_FV3SAR}.nc
 
 done
 #

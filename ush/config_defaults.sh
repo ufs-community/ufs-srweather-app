@@ -224,7 +224,7 @@ fcst_len_hrs="24"
 # Set initial and lateral boundary condition generation parameters.  De-
 # finitions:
 #
-# EXTRN_MDL_NAME_ICSSURF
+# EXTRN_MDL_NAME_ICS
 #`The name of the external model that will provide fields from which 
 # initial condition (IC) and surface files will be generated for input
 # into the FV3SAR.
@@ -267,7 +267,7 @@ fcst_len_hrs="24"
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_NAME_ICSSURF="FV3GFS"
+EXTRN_MDL_NAME_ICS="FV3GFS"
 EXTRN_MDL_NAME_LBCS="FV3GFS"
 LBC_UPDATE_INTVL_HRS="6"
 #EXTRN_MDL_INFO_FN="extrn_mdl_info.sh"

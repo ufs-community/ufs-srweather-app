@@ -22,11 +22,11 @@ the workflow XML.
 <!ENTITY JOBSDIR "">
 <!ENTITY EXPTDIR "">
 
-<!ENTITY EXTRN_MDL_NAME_ICSSURF "">
-<!ENTITY EXTRN_MDL_NAME_LBCS    "">
+<!ENTITY EXTRN_MDL_NAME_ICS  "">
+<!ENTITY EXTRN_MDL_NAME_LBCS "">
 
-<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF "">
-<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_LBCS    "">
+<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_ICS  "">
+<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_LBCS "">
 
 <!ENTITY DATE_FIRST_CYCL "">
 <!ENTITY DATE_LAST_CYCL  "">
@@ -166,21 +166,21 @@ Variables that are not modified by the workflow generation script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="get_files_ICSSURF" maxtries="3">
+  <task name="get_files_ICS" maxtries="3">
 
     &RSRC_GET_EXTRN_MDL_FILES;
     &RSRV_HPSS;
 
     <command>&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES</command>
     <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
-    <jobname>get_files_ICSSURF</jobname>
-    <join><cyclestr>&LOG_DIR;/get_files_ICSSURF_@Y@m@d@H.log</cyclestr></join>
+    <jobname>get_files_ICS</jobname>
+    <join><cyclestr>&LOG_DIR;/get_files_ICS_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-    <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_ICSSURF;</value></envar>
-    <envar><name>ICSSURF_OR_LBCS</name><value>ICSSURF</value></envar>
+    <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_ICS;</value></envar>
+    <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
 
     <dependency>
 <!--
@@ -213,7 +213,7 @@ cle.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_LBCS;</value></envar>
-    <envar><name>ICSSURF_OR_LBCS</name><value>LBCS</value></envar>
+    <envar><name>ICS_OR_LBCS</name><value>LBCS</value></envar>
 
     <dependency>
 <!--
@@ -247,7 +247,7 @@ cle.
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
-      <taskdep task="get_files_ICSSURF"/>
+      <taskdep task="get_files_ICS"/>
     </dependency>
 
   </task>

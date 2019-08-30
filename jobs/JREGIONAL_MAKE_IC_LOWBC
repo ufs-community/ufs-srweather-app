@@ -60,7 +60,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -85,10 +85,9 @@ for the FV3 (in NetCDF format).
 #
 #-----------------------------------------------------------------------
 #
-WORKDIR_ICSLBCS_CDATE="$WORKDIR_ICSLBCS/$CDATE"
-WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK="$WORKDIR_ICSLBCS_CDATE/ICSSURF_work"
-mkdir_vrfy -p "$WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK"
-cd_vrfy ${WORKDIR_ICSLBCS_CDATE_ICSSURF_WORK}
+CYCLE_DIR="$EXPTDIR/$CDATE"
+ICS_DIR="${CYCLE_DIR}/INPUT"
+mkdir_vrfy -p "${ICS_DIR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -167,7 +166,7 @@ esac
 #-----------------------------------------------------------------------
 #
 get_extrn_mdl_file_dir_info \
-  extrn_mdl_name="${EXTRN_MDL_NAME_ICSSURF}" \
+  extrn_mdl_name="${EXTRN_MDL_NAME_ICS}" \
   anl_or_fcst="ANL" \
   cdate_FV3SAR="${CDATE}" \
   time_offset_hrs="0" \
@@ -197,7 +196,7 @@ Directory in which the wgrib2 executable is located not found:
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_BASEDIR_ICSSURF}/${CDATE}"
+EXTRN_MDL_FILES_DIR="${CYCLE_DIR}/${EXTRN_MDL_NAME_ICS}/ICS"
 #
 #-----------------------------------------------------------------------
 #
@@ -212,9 +211,9 @@ $SCRIPTSDIR/exregional_make_ic_lowbc.sh \
   EXTRN_MDL_FNS="${EXTRN_MDL_FNS_str}" \
   EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_DIR}" \
   EXTRN_MDL_CDATE="${EXTRN_MDL_CDATE}" \
+  ICS_DIR="${ICS_DIR}" \
   WGRIB2_DIR="${WGRIB2_DIR}" \
-  APRUN="${APRUN}" \
-  WORKDIR_ICSLBCS_CDATE="${WORKDIR_ICSLBCS_CDATE}" || \
+  APRUN="${APRUN}" || \
   print_err_msg_exit "${script_name}" "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #

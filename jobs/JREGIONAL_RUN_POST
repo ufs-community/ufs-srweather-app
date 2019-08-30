@@ -50,7 +50,7 @@ on the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-RUNDIR="$EXPTDIR/$CDATE"
+CYCLE_DIR="$EXPTDIR/$CDATE"
 #
 #-----------------------------------------------------------------------
 #
@@ -69,7 +69,7 @@ RUNDIR="$EXPTDIR/$CDATE"
 #
 #-----------------------------------------------------------------------
 #
-POSTPRD_DIR="$RUNDIR/postprd"
+POSTPRD_DIR="${CYCLE_DIR}/postprd"
 mkdir_vrfy -p "${POSTPRD_DIR}"
 
 FHR_DIR="${POSTPRD_DIR}/$fhr"
@@ -86,7 +86,7 @@ cd_vrfy ${FHR_DIR}
 #-----------------------------------------------------------------------
 #
 $SCRIPTSDIR/exregional_run_post.sh \
-  RUNDIR="${RUNDIR}" \
+  CYCLE_DIR="${CYCLE_DIR}" \
   POSTPRD_DIR="${POSTPRD_DIR}" \
   FHR_DIR="${FHR_DIR}" \
   fhr="${fhr}" || \
