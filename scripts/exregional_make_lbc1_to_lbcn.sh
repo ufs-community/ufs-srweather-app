@@ -18,7 +18,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 
 script_name=$( basename "$0" )
 print_info_msg "\n\

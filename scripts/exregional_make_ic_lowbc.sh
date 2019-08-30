@@ -18,7 +18,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -422,6 +422,14 @@ status."
 # Run chgres_cube.
 #
 #-----------------------------------------------------------------------
+#
+# NOTE:
+# Often when the chgres_cube.exe run fails, it still returns a zero re-
+# turn code, so the failure isn't picked up the the logical OR (||) be-
+# low.  That should be fixed.  This might be due to the APRUN command -
+# maybe that is returning a zero exit code even though the exit code 
+# of chgres_cube is nonzero.
+# A similar thing happens in the forecast task.
 #
 ${APRUN} ${EXECDIR}/chgres_cube.exe || \
 print_err_msg_exit "${script_name}" "\
