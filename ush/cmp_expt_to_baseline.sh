@@ -131,16 +131,22 @@ The experiment and baseline directories are:
 #
 #-----------------------------------------------------------------------
 #
-subdirs=( "grid" \
+# This list should also include $CDATE/postprd since that contains the 
+# post-processed grib files, but those files' names don't end in a 
+# standard file extension, e.g. .grb, etc.  Must look into this more.
+subdirs=( "." \
+          "grid" \
           "orog" \
           "filtered_topo" \
           "shave" \
           "sfc_climo" \
-          "${EXTRN_MDL_NAME_ICS}/ICS/$CDATE" \
-          "${EXTRN_MDL_NAME_LBCS}/LBCS/$CDATE" \
-          "ICs_BCs/$CDATE" \
           "INPUT" \
-          "." )
+          "$CDATE/${EXTRN_MDL_NAME_ICS}/ICS" \
+          "$CDATE/${EXTRN_MDL_NAME_LBCS}/LBCS" \
+          "$CDATE/INPUT" \
+          "$CDATE/RESTART" \
+          "$CDATE" \
+          )
 #
 #-----------------------------------------------------------------------
 #
@@ -149,8 +155,8 @@ subdirs=( "grid" \
 #
 #-----------------------------------------------------------------------
 #
-declare -a file_extensions=( "nc" "nemsio" "grb" )
-#declare -a file_extensions=( "nc" "grb" )
+#declare -a file_extensions=( "nc" "nemsio" "grb" )
+declare -a file_extensions=( "nc" "grb" )
 #declare -a file_extensions=( "nc" )
 #
 #-----------------------------------------------------------------------
