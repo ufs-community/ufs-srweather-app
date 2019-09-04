@@ -106,9 +106,9 @@ case $MACHINE in
 
   if [ "$CCPP" = "true" ]; then
   
-# Needed to change to the run directory to correctly load necessary mo-
-# dules for CCPP-version of FV3SAR in lines below
-    cd_vrfy ${CYCLE_DIR}
+# Need to change to the experiment directory to correctly load necessary 
+# modules for CCPP-version of FV3SAR in lines below
+    cd_vrfy ${EXPTDIR}
   
     set +x
     source ./module-setup.sh
