@@ -882,11 +882,6 @@ check_for_preexist_dir $WORKDIR $preexisting_dir_method
 # Work directory for the preprocessing step that generates surface files
 # from climatology.
 #
-# WORKDIR_ICSLBCS:
-# Work directory for the preprocessing steps that generate the files
-# containing the surface fields as well as the initial and lateral 
-# boundary conditions.
-#
 #----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
@@ -894,9 +889,8 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
   WORKDIR_GRID=""
   WORKDIR_OROG=""
   WORKDIR_FLTR=""
-  WORKDIR_SHVE="$FV3sar"
+  WORKDIR_SHVE="$FIXsar"
   WORKDIR_SFC_CLIMO=""
-#  WORKDIR_ICSLBCS=""
 
   if [ "${RUN_TASK_MAKE_GRID_OROG}" = "TRUE" ] || \
      [ "${RUN_TASK_MAKE_GRID_OROG}" = "FALSE" -a \
@@ -905,15 +899,14 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     msg="\
 When RUN_ENVIR is set to \"nco\", it is assumed that grid and orography
 files already exist in the directory specified by FIXsar.  Thus, the 
-grid and orography generation task must not be run (i.e. RUN_TASK_MAKE_-
-GRID_OROG must be set to FALSE), and the directory in which to look for 
-the grid and orography files (i.e. PREGEN_GRID_OROG_DIR) must be set to
-FIXsar.  Current values for these quantities are:
+grid and orography file generation task must not be run (i.e. RUN_TASK_-
+MAKE_GRID_OROG must be set to FALSE), and the directory in which to look 
+for the grid and orography files (i.e. PREGEN_GRID_OROG_DIR) must be set 
+to FIXsar.  Current values for these quantities are:
   RUN_TASK_MAKE_GRID_OROG = \"${RUN_TASK_MAKE_GRID_OROG}\"
   PREGEN_GRID_OROG_DIR = \"${PREGEN_GRID_OROG_DIR}\"
 Resetting RUN_TASK_MAKE_GRID_OROG to \"FALSE\" and PREGEN_GRID_OROG_DIR to
-the contents of FIXsar.  Reset values are:
-"
+the contents of FIXsar.  Reset values are:"
 
     RUN_TASK_MAKE_GRID_OROG="FALSE"
     PREGEN_GRID_OROG_DIR="$FIXsar"
@@ -921,6 +914,7 @@ the contents of FIXsar.  Reset values are:
     msg="$msg""
   RUN_TASK_MAKE_GRID_OROG = \"${RUN_TASK_MAKE_GRID_OROG}\"
   PREGEN_GRID_OROG_DIR = \"${PREGEN_GRID_OROG_DIR}\"
+ 
 "
 
     print_info_msg "$msg"
@@ -932,24 +926,24 @@ the contents of FIXsar.  Reset values are:
        "${PREGEN_SFC_CLIMO_DIR}" != "$FIXsar" ]; then
 
     msg="\
-When RUN_ENVIR is set to \"nco\", it is assumed that grid and orography
+When RUN_ENVIR is set to \"nco\", it is assumed that surface climatology
 files already exist in the directory specified by FIXsar.  Thus, the 
-grid and orography generation task must not be run (i.e. RUN_TASK_MAKE_-
-SFC_CLIMO must be set to FALSE), and the directory in which to look for 
-the grid and orography files (i.e. PREGEN_SFC_CLIMO_DIR) must be set to
-FIXsar.  Current values for these quantities are:
+surface climatology file generation task must not be run (i.e. RUN_-
+TASK_MAKE_SFC_CLIMO must be set to FALSE), and the directory in which to
+look for the surface climatology files (i.e. PREGEN_SFC_CLIMO_DIR) must 
+be set to FIXsar.  Current values for these quantities are:
   RUN_TASK_MAKE_SFC_CLIMO = \"${RUN_TASK_MAKE_SFC_CLIMO}\"
   PREGEN_SFC_CLIMO_DIR = \"${PREGEN_SFC_CLIMO_DIR}\"
 Resetting RUN_TASK_MAKE_SFC_CLIMO to \"FALSE\" and PREGEN_SFC_CLIMO_DIR to
-the contents of FIXsar.  Reset values are:
-"
+the contents of FIXsar.  Reset values are:"
 
     RUN_TASK_MAKE_SFC_CLIMO="FALSE"
     PREGEN_SFC_CLIMO_DIR="$FIXsar"
 
     msg="$msg""
   RUN_TASK_MAKE_SFC_CLIMO = \"${RUN_TASK_MAKE_SFC_CLIMO}\"
-  PREGEN_SFC_CLIMO_DIR = \"${PREGEN_SFC_CLIMO_DIR}\"
+  PREGEN_SFC_CLIMO_DIR = \"${PREGEN_SFC_CLIMO_DIR}\"\n
+ 
 "
 
     print_info_msg "$msg"
@@ -963,7 +957,6 @@ else
   WORKDIR_FLTR=$WORKDIR/filtered_topo
   WORKDIR_SHVE=$WORKDIR/shave
   WORKDIR_SFC_CLIMO=$WORKDIR/sfc_climo
-#  WORKDIR_ICSLBCS=$WORKDIR/ICs_BCs
 
 fi
 #
@@ -998,6 +991,37 @@ al boundary conditions (LBCs) to the FV3SAR is not supported:
 EXTRN_MDL_NAME_LBCS must be one of the following:
   $valid_vals_EXTRN_MDL_NAME_LBCS_str
 "; }
+#
+#-----------------------------------------------------------------------
+#
+# If the run environment is "nco", the external model for both the ICs
+# and the LBCs should be either the FV3GFS or the GSMGFS.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+
+  if [ "${EXTRN_MDL_NAME_ICS}" != "FV3GFS" ] && \
+     [ "${EXTRN_MDL_NAME_ICS}" != "GSMGFS" ]; then
+    print_err_msg_exit "${script_name}" "\
+When RUN_ENVIR set to \"nco\", the external model used for the initial
+conditions and surface fields must be either \"FV3GFS\" or \"GSMGFS\":
+  RUN_ENVIR = \"${RUN_ENVIR}\"
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
+"
+  fi
+
+  if [ "${EXTRN_MDL_NAME_LBCS}" != "FV3GFS" ] && \
+     [ "${EXTRN_MDL_NAME_LBCS}" != "GSMGFS" ]; then
+    print_err_msg_exit "${script_name}" "\
+When RUN_ENVIR set to \"nco\", the external model used for the initial
+conditions and surface fields must be either \"FV3GFS\" or \"GSMGFS\":
+  RUN_ENVIR = \"${RUN_ENVIR}\"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
+"
+  fi
+
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1580,8 +1604,6 @@ SORCDIR="$SORCDIR"
 EXECDIR="$EXECDIR"
 TEMPLATE_DIR="$TEMPLATE_DIR"
 NEMSfv3gfs_DIR="$NEMSfv3gfs_DIR"
-EXTRN_MDL_FILES_BASEDIR_ICS="$EXTRN_MDL_FILES_BASEDIR_ICS"
-EXTRN_MDL_FILES_BASEDIR_LBCS="$EXTRN_MDL_FILES_BASEDIR_LBCS"
 EXPTDIR="$EXPTDIR"
 FIXgsm="$FIXgsm"
 SFC_CLIMO_INPUT_DIR="$SFC_CLIMO_INPUT_DIR"
