@@ -634,9 +634,14 @@ has not been specified for this external model:
     ;;
 
   "FV3GFS")
-    arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+    if [ "${cdate_FV3SAR}" -le "2019061206" ]; then
+      arcv_dir="/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_C/Q2FY19/prfv3rt3/${cdate_FV3SAR}"
+      arcv_fns=""
+    else
+      arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+      arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}."
+    fi
     arcv_fmt="tar"
-    arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}."
     if [ "$anl_or_fcst" = "ANL" ]; then
       arcv_fns="${arcv_fns}gfs_nemsioa"
       arcvrel_dir="./gfs.${yyyymmdd}/${hh}"

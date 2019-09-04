@@ -92,9 +92,11 @@ later than the last forecast date and time (CDATE_max) with this model:
 
 "FV3GFS")
 # The transition date from the GSMGFS to the FV3GFS was 2019061212, i.e.
-# this was the first official forecast with the FV3GFS.  So we set the
-# first CDATE for the FV3GFS to this date and time.
-  CDATE_min="2019061212"
+# this was the first official forecast with the FV3GFS.  However, paral-
+# lel runs with the FV3GFS go back to 2018121500.  So we set the first 
+# CDATE for the FV3GFS to this date and time.
+#  CDATE_min="2019061212"
+  CDATE_min="2018121500"
   if [ "$CDATE" -lt "$CDATE_min" ]; then
     print_err_msg_exit "${script_name}" "\
 Output from the specified external model (EXTRN_MDL_NAME) is not availa-
