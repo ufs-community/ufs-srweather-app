@@ -152,18 +152,6 @@ module list
   APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
   ;;
 
-"HERA")
-module purge
-module load intel/18.0.5.274
-module load impi/2018.0.4
-module load netcdf/4.6.1
-module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-module load esmf/7.1.0r
-module contrib wrap-mpi
-module list
-  APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
-  ;;
-
 *)
   print_err_msg_exit "${script_name}" "\
 Run command has not been specified for this machine:

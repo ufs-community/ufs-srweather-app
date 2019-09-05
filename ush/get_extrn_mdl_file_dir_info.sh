@@ -495,9 +495,6 @@ bination of external model (extrn_mdl_name) and analysis or forecast
     "THEIA")
       sysdir=""
       ;;
-    "HERA")
-      sysdir=""
-      ;;
     "JET")
       sysdir=""
       ;;
@@ -522,9 +519,6 @@ has not been specified for this external model and machine combination:
       sysdir="$sysbasedir/gfs.${yyyymmdd}"
       ;;
     "THEIA")
-      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
-      ;;
-    "HERA")
       sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
       ;;
     "JET")
@@ -553,9 +547,6 @@ has not been specified for this external model and machine combination:
     "THEIA")
       sysdir="$sysbasedir"
       ;;
-    "HERA")
-      sysdir="$sysbasedir"
-      ;;
     "JET")
       sysdir="$sysbasedir"
       ;;
@@ -580,9 +571,6 @@ has not been specified for this external model and machine combination:
       sysdir="$sysbasedir"
       ;;
     "THEIA")
-      sysdir="$sysbasedir"
-      ;;
-    "HERA")
       sysdir="$sysbasedir"
       ;;
     "JET")

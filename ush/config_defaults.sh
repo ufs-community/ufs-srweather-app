@@ -18,7 +18,7 @@ RUN_ENVIR="nco"
 #
 # MACHINE:
 # Machine on which the workflow will run.  Valid values are "WCOSS_C", 
-# "WCOSS", "DELL", "THEIA","HERA","JET", "ODIN", and "CHEYENNE".  New values 
+# "WCOSS", "DELL", "THEIA", "JET", "ODIN", and "CHEYENNE".  New values 
 # may be added as the workflow is ported to additional machines.
 #
 # ACCOUNT:

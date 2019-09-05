@@ -4,6 +4,7 @@
 # Loading Intel Compiler Suite
 module purge
 module load intel/18.0.5.274
+
 module load netcdf/4.6.1
 
 # Loading nceplibs modules

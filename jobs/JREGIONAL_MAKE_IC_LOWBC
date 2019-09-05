@@ -141,39 +141,6 @@ case "$MACHINE" in
   { restore_shell_opts; } > /dev/null 2>&1
   ;;
 #
-"HERA")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  ulimit -s unlimited
-#  ulimit -a
-
-  module purge
-  module load intel/18.0.5.274
-  module load impi/2018.0.4
-  module load netcdf/4.6.1
-
-  module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-  module load esmf/8.0.0bs21
-
-  module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-  module load w3nco
-  module load nemsio
-  module load bacio
-  module load sp
-  module load sfcio
-  module load sigio
-  
-  module contrib wrap-mpi
-
-  module list
-
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
-
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
 "JET")
 #
   { save_shell_opts; set +x; } > /dev/null 2>&1
