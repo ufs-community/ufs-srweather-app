@@ -306,6 +306,15 @@ Then remove this message and rerun."
   QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
   ;;
 #
+"HERA")
+#
+  ncores_per_node=24
+  SCHED="slurm"
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
+  QUEUE_HPSS=${QUEUE_HPSS:-"service"}
+  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
+  ;;
+#
 "JET")
 #
   ncores_per_node=24
@@ -643,6 +652,11 @@ case $MACHINE in
 #    export COMROOTp2="/scratch4/NCEPDEV/rstprod/com"
 #    export INIDIR="$COMROOTp2/gfs/prod/gfs.$YMD"
 #  fi
+  ;;
+
+"HERA")
+  FIXgsm="/scratch1/NCEPDEV/global/glopara/fix/fix_am"
+  SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/climo_fields_netcdf"
   ;;
 
 "JET")
