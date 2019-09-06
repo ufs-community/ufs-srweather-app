@@ -644,7 +644,7 @@ case $MACHINE in
 
 "THEIA")
   FIXgsm="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/scratch4/NCEPDEV/da/noscrub/George.Gayno/ufs_utils.git/climo_fields_netcdf"
+  SFC_CLIMO_INPUT_DIR="/scratch4/NCEPDEV/da/noscrub/George.Gayno/climo_fields_netcdf"
 
 #  if [ "$ictype" = "pfv3gfs" ]; then
 #    export INIDIR="/scratch4/NCEPDEV/fv3-cam/noscrub/Eric.Rogers/prfv3rt1/gfs.$YMD/$HH"
@@ -656,7 +656,7 @@ case $MACHINE in
 
 "HERA")
   FIXgsm="/scratch1/NCEPDEV/global/glopara/fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"
+  SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/climo_fields_netcdf"
   ;;
 
 "JET")
