@@ -656,7 +656,7 @@ case $MACHINE in
 
 "HERA")
   FIXgsm="/scratch1/NCEPDEV/global/glopara/fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/climo_fields_netcdf"
+  SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"
   ;;
 
 "JET")
@@ -665,7 +665,7 @@ case $MACHINE in
 
 "ODIN")
   FIXgsm="/scratch/ywang/fix/theia_fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/scratch/ywang/fix/theia_fix/climo_fields_netcdf"
+  SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"
   ;;
 
 *)
