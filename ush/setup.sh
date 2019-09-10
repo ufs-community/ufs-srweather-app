@@ -586,7 +586,7 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 #
 #-----------------------------------------------------------------------
 #
-FV3SAR_DIR="$BASEDIR/regional_workflow"
+FV3SAR_DIR="$BASEDIR"
 USHDIR="$FV3SAR_DIR/ush"
 SCRIPTSDIR="$FV3SAR_DIR/scripts"
 JOBSDIR="$FV3SAR_DIR/jobs"
