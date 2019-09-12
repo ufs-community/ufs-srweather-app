@@ -243,7 +243,7 @@ EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_BASEDIR_ICSSURF}/${CDATE}"
 #
 EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
 
-$SCRIPTSDIR/exregional_make_ic_lowbc.sh \
+$SCRIPTSDIR/exregional_make_ic_lbc0.sh \
   EXTRN_MDL_FNS="${EXTRN_MDL_FNS_str}" \
   EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_DIR}" \
   EXTRN_MDL_CDATE="${EXTRN_MDL_CDATE}" \
