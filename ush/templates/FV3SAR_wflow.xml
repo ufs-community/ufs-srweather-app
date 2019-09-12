@@ -237,7 +237,7 @@ cle.
     &RSRC_MAKE_ICS_SURF_LBC0;
     &RSRV_DEFAULT;
 
-    <command>&JOBSDIR;/JREGIONAL_MAKE_IC_LOWBC</command>
+    <command>&JOBSDIR;/JREGIONAL_MAKE_IC_LBC0</command>
     <nodes>&PROC_MAKE_ICS_SURF_LBC0;</nodes>
     <jobname>make_ICS_surf_LBC0</jobname>
     <join><cyclestr>&LOG_DIR;/make_ICS_surf_LBC0_@Y@m@d@H.log</cyclestr></join>
