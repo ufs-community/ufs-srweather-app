@@ -354,7 +354,7 @@ list file has not specified for this external model:
  vcoord_file_target_grid="${FV3SAR_DIR}/fix/fix_am/global_hyblev.l65.txt"
  mosaic_file_input_grid=""
  orog_dir_input_grid=""
- base_install_dir="${BASEDIR}/UFS_UTILS_chgres_grib2"
+ base_install_dir="${BASEDIR}/sorc/UFS_UTILS_chgres_grib2"
  wgrib2_path="${WGRIB2_DIR}"
  data_dir_input_grid="${EXTRN_MDL_FILES_DIR}"
  atm_files_input_grid="${fn_atm_nemsio}"
@@ -382,7 +382,6 @@ with nonzero status."
 #
 # Run chgres_cube.
 #
-#  ${APRUN} ${BASEDIR}/UFS_UTILS_chgres_grib2/exec/chgres_cube.exe || \
   ${APRUN} ${EXECDIR}/chgres_cube.exe || \
   print_err_msg_exit "${script_name}" "\
 Call to executable to generate lateral boundary conditions file for the
