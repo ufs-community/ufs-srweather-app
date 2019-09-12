@@ -161,8 +161,7 @@ system/software for handling modules..."
 # intel and impi, so module-setup.sh must account for this.
 #
 
-#JB
-#  cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $EXPTDIR/module-setup.sh
+  cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $EXPTDIR/module-setup.sh
 #
 # Append the command that adds the path to the CCPP libraries (via the
 # shell variable LD_LIBRARY_PATH) to the Lmod initialization script in 
@@ -293,8 +292,7 @@ if [ "$CCPP" = "true" ]; then
 Copying to the experiment directory the modulefile required for running
 the CCPP-enabled version of the FV3SAR under NEMS..."
 
-#JB
-#  cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/modules.nems $EXPTDIR/modules.fv3
+  cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/modules.nems $EXPTDIR/modules.fv3
 
   if [ "$CCPP_phys_suite" = "GFS" ]; then
 

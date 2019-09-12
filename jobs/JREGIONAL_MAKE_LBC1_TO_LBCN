@@ -149,12 +149,14 @@ case "$MACHINE" in
 
   module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
   module load w3nco
-  module load nemsio
+  module load nemsio/2.2.3
   module load bacio
   module load sp
   module load sfcio
   module load sigio
-  
+ 
+  module load wgrib2
+ 
   module contrib wrap-mpi
 
   module list
