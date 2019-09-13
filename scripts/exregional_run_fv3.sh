@@ -340,8 +340,8 @@ else
   FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3_32bit.exe"
 fi
 
-cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $EXPTDIR/module-setup.sh
-cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/modules.nems $EXPTDIR/modules.fv3
+#cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $EXPTDIR/module-setup.sh
+#cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/modules.nems $EXPTDIR/modules.fv3
 
 if [ -f $FV3SAR_EXEC ]; then
   print_info_msg_verbose "\
