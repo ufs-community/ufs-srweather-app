@@ -150,6 +150,7 @@ system/software for handling modules..."
 # CCPP-enabled versions of the FV3SAR code use different versions of
 # intel and impi, so module-setup.sh must account for this.
 #
+
   cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $EXPTDIR/module-setup.sh
 #
 # Append the command that adds the path to the CCPP libraries (via the

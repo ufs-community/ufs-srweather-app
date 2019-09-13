@@ -306,6 +306,15 @@ Then remove this message and rerun."
   QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
   ;;
 #
+"HERA")
+#
+  ncores_per_node=24
+  SCHED="slurm"
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
+  QUEUE_HPSS=${QUEUE_HPSS:-"service"}
+  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
+  ;;
+#
 "JET")
 #
   ncores_per_node=24
@@ -577,7 +586,7 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 #
 #-----------------------------------------------------------------------
 #
-FV3SAR_DIR="$BASEDIR/regional_workflow"
+FV3SAR_DIR="$BASEDIR"
 USHDIR="$FV3SAR_DIR/ush"
 SCRIPTSDIR="$FV3SAR_DIR/scripts"
 JOBSDIR="$FV3SAR_DIR/jobs"
@@ -645,13 +654,18 @@ case $MACHINE in
 #  fi
   ;;
 
+"HERA")
+  FIXgsm="/scratch1/NCEPDEV/global/glopara/fix/fix_am"
+  SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"
+  ;;
+
 "JET")
   FIXgsm="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_am"
   ;;
 
 "ODIN")
   FIXgsm="/scratch/ywang/fix/theia_fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/scratch/ywang/fix/theia_fix/climo_fields_netcdf"
+  SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"
   ;;
 
 *)

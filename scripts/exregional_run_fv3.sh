@@ -134,7 +134,43 @@ case $MACHINE in
   np=${SLURM_NTASKS}
   APRUN="mpirun -np ${np}"
   ;;
+#
+"HERA")
+#
 
+  if [ "$CCPP" = "true" ]; then
+  
+# Needed to change to the run directory to correctly load necessary mo-
+# dules for CCPP-version of FV3SAR in lines below
+    cd_vrfy $RUNDIR
+  
+    set +x
+    source ./module-setup.sh
+    module use $( pwd -P )
+    module load modules.fv3
+    module load contrib wrap-mpi
+    module list
+    set -x
+  
+  else
+  
+    . /apps/lmod/lmod/init/sh
+    module purge
+    module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles    
+    module load intel/18.0.5.274
+    module load impi/2018.0.4
+    module load netcdf/4.6.1
+    module load pnetcdf/1.10.0
+    module load contrib wrap-mpi 
+    module list
+  
+  fi
+
+  ulimit -s unlimited
+  ulimit -a
+  np=${SLURM_NTASKS}
+  APRUN="mpirun -np ${np}"
+  ;;
 #
 "JET")
 #
@@ -440,6 +476,9 @@ if [ "$CCPP" = "true" ]; then
 else
   FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3_32bit.exe"
 fi
+
+#cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $EXPTDIR/module-setup.sh
+#cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/modules.nems $EXPTDIR/modules.fv3
 
 if [ -f $FV3SAR_EXEC ]; then
   print_info_msg_verbose "\
