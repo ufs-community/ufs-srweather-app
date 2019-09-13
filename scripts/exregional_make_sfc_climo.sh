@@ -147,20 +147,20 @@ case $MACHINE in
 
 "THEIA")
 # Need to load intel/15.1.133.  This and all other module loads should go into a module file.
-module load intel/15.1.133
-module list
+  module load intel/15.1.133
+  module list
   APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
   ;;
 
 "HERA")
-module purge
-module load intel/18.0.5.274
-module load impi/2018.0.4
-module load netcdf/4.6.1
-module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-module load esmf/7.1.0r
-module contrib wrap-mpi
-module list
+  module purge
+  module load intel/18.0.5.274
+  module load impi/2018.0.4
+  module load netcdf/4.6.1
+  module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
+  module load esmf/7.1.0r
+  module contrib wrap-mpi
+  module list
   APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
   ;;
 
