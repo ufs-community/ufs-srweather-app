@@ -32,8 +32,9 @@ RUN_ENVIR="nco"
 # to a machine-dependent value in the setup script (setup.sh).
 #
 # QUEUE_HPSS:
-# The queue to which the get_GFS_files task is submitted.  This task
-# either copies the GFS analysis and forecast files from a system direc-
+# The queue to which the tasks that get or link to external model files
+# (needed to generate ICs and LBCs) are submitted.  This task either co-
+# pies the GFS analysis and forecast files from a system direc-
 # tory or fetches them from HPSS.  In either case, it places the files
 # in a temporary directory.  If this is not set or set to an empty
 # string, it will be reset to a machine-dependent value in the setup
@@ -91,7 +92,7 @@ QUEUE_RUN_FV3="production_queue"
 #
 #-----------------------------------------------------------------------
 #
-BASEDIR="/path/to/directory/of/regional_workflow/and/NEMSfv3gfs/clones"
+BASEDIR="/path/to/directory/of/regional_workflow/clone"
 TMPDIR="/path/to/temporary/work/directories"  # Eventually get rid of this??
 UPPDIR="/path/to/UPP/executable"
 EXPT_BASEDIR=""
