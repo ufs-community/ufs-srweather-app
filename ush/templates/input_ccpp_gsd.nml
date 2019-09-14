@@ -138,7 +138,7 @@
 /
 
  &gfs_physics_nml
-       fhzero         = 6.
+       fhzero         = 1.
        h2o_phys       = .true.
        ldiag3d        = .false.
        fhcyc          = 0.
