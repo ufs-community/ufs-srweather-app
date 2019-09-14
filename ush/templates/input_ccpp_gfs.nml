@@ -123,7 +123,7 @@
 /
 
 &gfs_physics_nml
-       fhzero         = 6.
+       fhzero         = 1.
        ldiag3d        = .false.
        ldiag_ugwp     = .F.
        do_ugwp        = .F.
