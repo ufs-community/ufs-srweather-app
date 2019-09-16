@@ -152,7 +152,7 @@ case $MACHINE in
     source ./module-setup.sh
     module use $( pwd -P )
     module load modules.fv3
-    module load contrib wrap-mpi
+    #module load contrib wrap-mpi
     module list
     set -x
   
@@ -172,8 +172,9 @@ case $MACHINE in
 
   ulimit -s unlimited
   ulimit -a
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
+  #np=${SLURM_NTASKS}
+  #APRUN="mpirun -np ${np}"
+  APRUN="srun"
   ;;
 #
 "JET")

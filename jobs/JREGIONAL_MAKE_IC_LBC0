@@ -166,12 +166,13 @@ case "$MACHINE" in
 
   module load wgrib2 
  
-  module contrib wrap-mpi
+  #module contrib wrap-mpi
 
   module list
 
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
+  #np=${SLURM_NTASKS}
+  #APRUN="mpirun -np ${np}"
+  APRUN="srun"
 
   { restore_shell_opts; } > /dev/null 2>&1
   ;;
