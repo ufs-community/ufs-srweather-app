@@ -111,6 +111,16 @@ case $MACHINE in
   APRUN="mpirun -np ${np}"
   ;;
 
+"HERA")
+  { save_shell_opts; set +x; } > /dev/null 2>&1
+  module purge
+  module load intel
+  module load impi
+  module load netcdf
+  { restore_shell_opts; } > /dev/null 2>&1
+  APRUN="srun"
+  ;;
+
 
 "JET")
   { save_shell_opts; set +x; } > /dev/null 2>&1
