@@ -278,7 +278,7 @@ predefined domain:
 
     nhw_T7=6
 
-    dt_atmos="170"
+    dt_atmos="180"
 
     layout_x="10"
     layout_y="10"
