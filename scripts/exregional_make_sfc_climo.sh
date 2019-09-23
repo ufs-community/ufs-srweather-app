@@ -161,7 +161,8 @@ module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
 module load esmf/7.1.0r
 module contrib wrap-mpi
 module list
-  APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
+  #APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
+  APRUN_SFC="srun"
   ;;
 
 *)
