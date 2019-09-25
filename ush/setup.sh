@@ -124,69 +124,40 @@ VERBOSE must be set to one of the following:
 # Set VERBOSE to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
 #
+VERBOSE=${VERBOSE^^}
 if [ "$VERBOSE" = "TRUE" ] || \
-   [ "$VERBOSE" = "true" ] || \
-   [ "$VERBOSE" = "YES" ] || \
-   [ "$VERBOSE" = "yes" ]; then
+   [ "$VERBOSE" = "YES" ]; then
   VERBOSE="TRUE"
 elif [ "$VERBOSE" = "FALSE" ] || \
-     [ "$VERBOSE" = "false" ] || \
-     [ "$VERBOSE" = "NO" ] || \
-     [ "$VERBOSE" = "no" ]; then
+     [ "$VERBOSE" = "NO" ]; then
   VERBOSE="FALSE"
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Make sure that RUN_TASK_MAKE_GRID_OROG is set to a valid value.
+# Make sure that RUN_TASK_MAKE_GRID is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$RUN_TASK_MAKE_GRID_OROG" valid_vals_RUN_TASK_MAKE_GRID_OROG || { \
-valid_vals_RUN_TASK_MAKE_GRID_OROG_str=$(printf "\"%s\" " "${valid_vals_RUN_TASK_MAKE_GRID_OROG[@]}");
+iselementof "${RUN_TASK_MAKE_GRID}" valid_vals_RUN_TASK_MAKE_GRID || { \
+valid_vals_RUN_TASK_MAKE_GRID_str=$(printf "\"%s\" " "${valid_vals_RUN_TASK_MAKE_GRID[@]}");
 print_err_msg_exit "\
-Value specified in RUN_TASK_MAKE_GRID_OROG is not supported:
-  RUN_TASK_MAKE_GRID_OROG = \"$RUN_TASK_MAKE_GRID_OROG\"
-RUN_TASK_MAKE_GRID_OROG must be set to one of the following:
-  $valid_vals_RUN_TASK_MAKE_GRID_OROG_str
+Value specified in RUN_TASK_MAKE_GRID is not supported:
+  RUN_TASK_MAKE_GRID = \"${RUN_TASK_MAKE_GRID}\"
+RUN_TASK_MAKE_GRID must be set to one of the following:
+  ${valid_vals_RUN_TASK_MAKE_GRID_str}
 "; }
 #
-# Set RUN_TASK_MAKE_GRID_OROG to either "TRUE" or "FALSE" so we don't
-# have to consider other valid values later on.
+# Set RUN_TASK_MAKE_GRID to either "TRUE" or "FALSE" so we don't have to
+# consider other valid values later on.
 #
-if [ "$RUN_TASK_MAKE_GRID_OROG" = "TRUE" ] || \
-   [ "$RUN_TASK_MAKE_GRID_OROG" = "true" ] || \
-   [ "$RUN_TASK_MAKE_GRID_OROG" = "YES" ] || \
-   [ "$RUN_TASK_MAKE_GRID_OROG" = "yes" ]; then
-  RUN_TASK_MAKE_GRID_OROG="TRUE"
-elif [ "$RUN_TASK_MAKE_GRID_OROG" = "FALSE" ] || \
-     [ "$RUN_TASK_MAKE_GRID_OROG" = "false" ] || \
-     [ "$RUN_TASK_MAKE_GRID_OROG" = "NO" ] || \
-     [ "$RUN_TASK_MAKE_GRID_OROG" = "no" ]; then
-  RUN_TASK_MAKE_GRID_OROG="FALSE"
-fi
-#
-# If RUN_TASK_MAKE_GRID_OROG is set to "FALSE", make sure that the di-
-# rectory PREGEN_GRID_OROG_DIR that should contain the pre-generated 
-# grid and orography files exists.
-#
-if [ "$RUN_TASK_MAKE_GRID_OROG" = "FALSE" ] && \
-   [ ! -d "$PREGEN_GRID_OROG_DIR" ]; then
-  print_err_msg_exit "\
-The directory (PREGEN_GRID_OROG_DIR) that should contain the pre-genera-
-ted grid and orography files does not exist:
-  PREGEN_GRID_OROG_DIR = \"$PREGEN_GRID_OROG_DIR\"
-"
-fi
-#
-# If RUN_TASK_MAKE_GRID_OROG is set to "TRUE" and the variable specify-
-# ing the directory in which to look for pregenerated grid and orography
-# files (i.e. PREGEN_GRID_OROG_DIR) is not empty, then for clarity reset
-# the latter to an empty string (because it will not be used).
-#
-if [ "$RUN_TASK_MAKE_GRID_OROG" = "TRUE" ] && \
-   [ -n "${PREGEN_GRID_OROG_DIR}" ]; then
-  PREGEN_GRID_OROG_DIR=""
+RUN_TASK_MAKE_GRID=${RUN_TASK_MAKE_GRID^^}
+if [ "${RUN_TASK_MAKE_GRID}" = "TRUE" ] || \
+   [ "${RUN_TASK_MAKE_GRID}" = "YES" ]; then
+  RUN_TASK_MAKE_GRID="TRUE"
+elif [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ] || \
+     [ "${RUN_TASK_MAKE_GRID}" = "NO" ]; then
+  RUN_TASK_MAKE_GRID="FALSE"
 fi
 #
 #-----------------------------------------------------------------------
@@ -207,39 +178,36 @@ RUN_TASK_MAKE_SFC_CLIMO must be set to one of the following:
 # Set RUN_TASK_MAKE_SFC_CLIMO to either "TRUE" or "FALSE" so we don't
 # have to consider other valid values later on.
 #
-if [ "$RUN_TASK_MAKE_SFC_CLIMO" = "TRUE" ] || \
-   [ "$RUN_TASK_MAKE_SFC_CLIMO" = "true" ] || \
-   [ "$RUN_TASK_MAKE_SFC_CLIMO" = "YES" ] || \
-   [ "$RUN_TASK_MAKE_SFC_CLIMO" = "yes" ]; then
+RUN_TASK_MAKE_SFC_CLIMO=${RUN_TASK_MAKE_SFC_CLIMO^^}
+if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] || \
+   [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "YES" ]; then
   RUN_TASK_MAKE_SFC_CLIMO="TRUE"
-elif [ "$RUN_TASK_MAKE_SFC_CLIMO" = "FALSE" ] || \
-     [ "$RUN_TASK_MAKE_SFC_CLIMO" = "false" ] || \
-     [ "$RUN_TASK_MAKE_SFC_CLIMO" = "NO" ] || \
-     [ "$RUN_TASK_MAKE_SFC_CLIMO" = "no" ]; then
+elif [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ] || \
+     [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "NO" ]; then
   RUN_TASK_MAKE_SFC_CLIMO="FALSE"
 fi
 #
 # If RUN_TASK_MAKE_SFC_CLIMO is set to "FALSE", make sure that the di-
-# rectory PREGEN_SFC_CLIMO_DIR that should contain the pre-generated 
-# surface climatology files exists.
+# rectory SFC_CLIMO_DIR that should contain the pre-generated surface 
+# climatology files exists.
 #
-if [ "$RUN_TASK_MAKE_SFC_CLIMO" = "FALSE" ] && \
-   [ ! -d "$PREGEN_SFC_CLIMO_DIR" ]; then
+if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ] && \
+   [ ! -d "${SFC_CLIMO_DIR}" ]; then
   print_err_msg_exit "\
-The directory (PREGEN_SFC_CLIMO_DIR) that should contain the pre-genera-
-ted surface climatology files does not exist:
-  PREGEN_SFC_CLIMO_DIR = \"$PREGEN_SFC_CLIMO_DIR\"
+The directory (SFC_CLIMO_DIR) that should contain the pre-generated sur-
+face climatology files does not exist:
+  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"
 "
 fi
 #
 # If RUN_TASK_MAKE_SFC_CLIMO is set to "TRUE" and the variable specify-
 # ing the directory in which to look for pregenerated grid and orography
-# files (i.e. PREGEN_SFC_CLIMO_DIR) is not empty, then for clarity reset
-# the latter to an empty string (because it will not be used).
+# files (i.e. SFC_CLIMO_DIR) is not empty, then for clarity reset the 
+# latter to an empty string (because it will not be used).
 #
-if [ "$RUN_TASK_MAKE_SFC_CLIMO" = "TRUE" ] && \
-   [ -n "${PREGEN_SFC_CLIMO_DIR}" ]; then
-  PREGEN_SFC_CLIMO_DIR=""
+if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
+   [ -n "${SFC_CLIMO_DIR}" ]; then
+  SFC_CLIMO_DIR=""
 fi
 #
 #-----------------------------------------------------------------------
@@ -594,6 +562,7 @@ SORCDIR="$FV3SAR_DIR/sorc"
 PARMDIR="$FV3SAR_DIR/parm"
 EXECDIR="$FV3SAR_DIR/exec"
 TEMPLATE_DIR="$USHDIR/templates"
+UFS_UTILS_DIR="$FV3SAR_DIR/sorc/UFS_UTILS_develop"
 NEMSfv3gfs_DIR="$FV3SAR_DIR/sorc/NEMSfv3gfs"
 #
 # Make sure that the NEMSfv3gfs_DIR directory exists.
@@ -614,44 +583,19 @@ case $MACHINE in
 
 "WCOSS_C")
   FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
-
-#  if [ "$ictype" = "pfv3gfs" ]; then
-#    export INIDIR="/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$YMD/$HH"
-#  else
-#    export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
-#  fi
   ;;
 
 "WCOSS")
   FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
-
-#  if [ "$ictype" = "pfv3gfs" ]; then
-#    export INIDIR="/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$YMD/$HH"
-#  else
-#    export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
-#  fi
   ;;
 
 "DELL")
   FIXgsm="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
-
-#  if [ "$ictype" = "pfv3gfs" ]; then
-#    export INIDIR="/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.$YMD/$HH"
-#  else
-#    export INIDIR="/gpfs/hps/nco/ops/com/gfs/prod/gfs.$YMD"
-#  fi
   ;;
 
 "THEIA")
   FIXgsm="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am"
   SFC_CLIMO_INPUT_DIR="/scratch4/NCEPDEV/da/noscrub/George.Gayno/climo_fields_netcdf"
-
-#  if [ "$ictype" = "pfv3gfs" ]; then
-#    export INIDIR="/scratch4/NCEPDEV/fv3-cam/noscrub/Eric.Rogers/prfv3rt1/gfs.$YMD/$HH"
-#  else
-#    export COMROOTp2="/scratch4/NCEPDEV/rstprod/com"
-#    export INIDIR="$COMROOTp2/gfs/prod/gfs.$YMD"
-#  fi
   ;;
 
 "HERA")
@@ -683,13 +627,18 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  HOMEfv3=${FV3SAR_DIR}
-  FIXfv3=${HOMEfv3}/fix
-  FIXsar=${FIXfv3}/fix_sar
-  FIXam=${FIXfv3}/fix_am
-  COMINgfs=/scratch3/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS
-fi
+#if [ "${RUN_ENVIR}" = "nco" ]; then
+#  HOMEfv3=${FV3SAR_DIR}
+#  FIXfv3=${HOMEfv3}/fix
+#  FIXsar=${FIXfv3}/fix_sar
+#  FIXam=${FIXfv3}/fix_am
+#  COMINgfs=/scratch3/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS
+#else
+#
+#  FIXsar=$EXPTDIR/fix_sar
+#  check_for_preexist_dir $FIXsar $preexisting_dir_method 
+#
+#fi
 #
 #-----------------------------------------------------------------------
 #
@@ -812,9 +761,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Construct a name (EXPT_SUBDIR) that we will used for the experiment
-# directory as well as the work directory (which will be created under
-# the specified TMPDIR).
+# Construct the name (EXPT_SUBDIR) that we will used for the experiment
+# directory
 #
 #-----------------------------------------------------------------------
 #
@@ -858,6 +806,25 @@ check_for_preexist_dir $EXPTDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
 #
+#
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  HOMEfv3=${FV3SAR_DIR}
+  FIXfv3=${HOMEfv3}/fix
+  FIXsar=${FIXfv3}/fix_sar
+  FIXam=${FIXfv3}/fix_am
+  COMINgfs=/scratch3/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS
+else
+
+  FIXsar=$EXPTDIR/fix_sar
+  check_for_preexist_dir $FIXsar $preexisting_dir_method 
+
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Define the full path to the work directory.  This is the directory in
 # which the prepocessing steps create their input and/or place their
 # output.  Then call the function that checks whether the work directory
@@ -869,9 +836,8 @@ check_for_preexist_dir $EXPTDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
 #
-#WORKDIR=$TMPDIR/$EXPT_SUBDIR
-WORKDIR="$EXPTDIR"
-check_for_preexist_dir $WORKDIR $preexisting_dir_method
+#WORKDIR="$EXPTDIR"
+#check_for_preexist_dir $WORKDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
 #
@@ -879,55 +845,76 @@ check_for_preexist_dir $WORKDIR $preexisting_dir_method
 # Each of these corresponds to a different step/substep/task in the pre-
 # processing, as follows:
 #
-# WORKDIR_GRID:
-# Work directory for the grid generation preprocessing step.
+# GRID_DIR:
+# Directory in which the grid files will be placed (if RUN_TASK_MAKE_-
+# GRID is set to "TRUE") or searched for (if RUN_TASK_MAKE_GRID is set
+# to "FALSE").
 #
-# WORKDIR_OROG:
-# Work directory for the orography generation preprocessing step.
+# OROG_DIR:
+# Directory in which the orography files will be placed (if RUN_TASK_-
+# MAKE_OROG is set to "TRUE") or searched for (if RUN_TASK_MAKE_OROG is
+# set to "FALSE").
 #
-# WORKDIR_FLTR:
-# Work directory for the orography filtering preprocessing step.
-#
-# WORKDIR_SHVE:
-# Work directory for the preprocessing step that "shaves" the grid and
-# filtered orography files.
-#
-# WORKDIR_SFC_CLIMO:
-# Work directory for the preprocessing step that generates surface files
-# from climatology.
+# SFC_CLIMO_DIR:
+# Directory in which the surface climatology files will be placed (if
+# RUN_TASK_MAKE_SFC_CLIMO is set to "TRUE") or searched for (if RUN_-
+# TASK_MAKE_SFC_CLIMO is set to "FALSE").
 #
 #----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
 
-  WORKDIR_GRID=""
-  WORKDIR_OROG=""
-  WORKDIR_FLTR=""
-  WORKDIR_SHVE="$FIXsar"
-  WORKDIR_SFC_CLIMO=""
-
-  if [ "${RUN_TASK_MAKE_GRID_OROG}" = "TRUE" ] || \
-     [ "${RUN_TASK_MAKE_GRID_OROG}" = "FALSE" -a \
-       "${PREGEN_GRID_OROG_DIR}" != "$FIXsar" ]; then
+  if [ "${RUN_TASK_MAKE_GRID}" = "TRUE" ] || \
+     [ "${RUN_TASK_MAKE_GRID}" = "FALSE" -a \
+       "${GRID_DIR}" != "$FIXsar" ]; then
 
     msg="\
-When RUN_ENVIR is set to \"nco\", it is assumed that grid and orography
-files already exist in the directory specified by FIXsar.  Thus, the 
-grid and orography file generation task must not be run (i.e. RUN_TASK_-
-MAKE_GRID_OROG must be set to FALSE), and the directory in which to look 
-for the grid and orography files (i.e. PREGEN_GRID_OROG_DIR) must be set 
-to FIXsar.  Current values for these quantities are:
-  RUN_TASK_MAKE_GRID_OROG = \"${RUN_TASK_MAKE_GRID_OROG}\"
-  PREGEN_GRID_OROG_DIR = \"${PREGEN_GRID_OROG_DIR}\"
-Resetting RUN_TASK_MAKE_GRID_OROG to \"FALSE\" and PREGEN_GRID_OROG_DIR to
-the contents of FIXsar.  Reset values are:"
+When RUN_ENVIR is set to \"nco\", it is assumed that grid files already
+exist in the directory specified by FIXsar.  Thus, the grid file genera-
+tion task must not be run (i.e. RUN_TASK_MAKE_GRID must be set to 
+FALSE), and the directory in which to look for the grid files (i.e. 
+GRID_DIR) must be set to FIXsar.  Current values for these quantities
+are:
+  RUN_TASK_MAKE_GRID = \"${RUN_TASK_MAKE_GRID}\"
+  GRID_DIR = \"${GRID_DIR}\"
+Resetting RUN_TASK_MAKE_GRID to \"FALSE\" and GRID_DIR to the contents
+of FIXsar.  Reset values are:"
 
-    RUN_TASK_MAKE_GRID_OROG="FALSE"
-    PREGEN_GRID_OROG_DIR="$FIXsar"
+    RUN_TASK_MAKE_GRID="FALSE"
+    GRID_DIR="$FIXsar"
 
     msg="$msg""
-  RUN_TASK_MAKE_GRID_OROG = \"${RUN_TASK_MAKE_GRID_OROG}\"
-  PREGEN_GRID_OROG_DIR = \"${PREGEN_GRID_OROG_DIR}\"
+  RUN_TASK_MAKE_GRID = \"${RUN_TASK_MAKE_GRID}\"
+  GRID_DIR = \"${GRID_DIR}\"
+ 
+"
+
+    print_info_msg "$msg"
+  
+  fi
+
+  if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ] || \
+     [ "${RUN_TASK_MAKE_OROG}" = "FALSE" -a \
+       "${OROG_DIR}" != "$FIXsar" ]; then
+
+    msg="\
+When RUN_ENVIR is set to \"nco\", it is assumed that orography files al-
+ready exist in the directory specified by FIXsar.  Thus, the orography 
+file generation task must not be run (i.e. RUN_TASK_MAKE_OROG must be 
+set to FALSE), and the directory in which to look for the orography 
+files (i.e. OROG_DIR) must be set to FIXsar.  Current values for these
+quantities are:
+  RUN_TASK_MAKE_OROG = \"${RUN_TASK_MAKE_OROG}\"
+  OROG_DIR = \"${OROG_DIR}\"
+Resetting RUN_TASK_MAKE_OROG to \"FALSE\" and OROG_DIR to the contents
+of FIXsar.  Reset values are:"
+
+    RUN_TASK_MAKE_OROG="FALSE"
+    OROG_DIR="$FIXsar"
+
+    msg="$msg""
+  RUN_TASK_MAKE_OROG = \"${RUN_TASK_MAKE_OROG}\"
+  OROG_DIR = \"${OROG_DIR}\"
  
 "
 
@@ -937,26 +924,26 @@ the contents of FIXsar.  Reset values are:"
 
   if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] || \
      [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" -a \
-       "${PREGEN_SFC_CLIMO_DIR}" != "$FIXsar" ]; then
+       "${SFC_CLIMO_DIR}" != "$FIXsar" ]; then
 
     msg="\
 When RUN_ENVIR is set to \"nco\", it is assumed that surface climatology
 files already exist in the directory specified by FIXsar.  Thus, the 
 surface climatology file generation task must not be run (i.e. RUN_-
 TASK_MAKE_SFC_CLIMO must be set to FALSE), and the directory in which to
-look for the surface climatology files (i.e. PREGEN_SFC_CLIMO_DIR) must 
-be set to FIXsar.  Current values for these quantities are:
+look for the surface climatology files (i.e. SFC_CLIMO_DIR) must be set
+to FIXsar.  Current values for these quantities are:
   RUN_TASK_MAKE_SFC_CLIMO = \"${RUN_TASK_MAKE_SFC_CLIMO}\"
-  PREGEN_SFC_CLIMO_DIR = \"${PREGEN_SFC_CLIMO_DIR}\"
-Resetting RUN_TASK_MAKE_SFC_CLIMO to \"FALSE\" and PREGEN_SFC_CLIMO_DIR to
-the contents of FIXsar.  Reset values are:"
+  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"
+Resetting RUN_TASK_MAKE_SFC_CLIMO to \"FALSE\" and SFC_CLIMO_DIR to the
+contents of FIXsar.  Reset values are:"
 
     RUN_TASK_MAKE_SFC_CLIMO="FALSE"
-    PREGEN_SFC_CLIMO_DIR="$FIXsar"
+    SFC_CLIMO_DIR="$FIXsar"
 
     msg="$msg""
   RUN_TASK_MAKE_SFC_CLIMO = \"${RUN_TASK_MAKE_SFC_CLIMO}\"
-  PREGEN_SFC_CLIMO_DIR = \"${PREGEN_SFC_CLIMO_DIR}\"\n
+  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"\n
  
 "
 
@@ -965,12 +952,75 @@ the contents of FIXsar.  Reset values are:"
   fi
 
 else
+#
+#-----------------------------------------------------------------------
+#
+# If RUN_TASK_MAKE_GRID is set to "FALSE", the workflow will look for 
+# the pre-generated grid files in GRID_DIR.  In this case, make sure 
+# that GRID_DIR exists.  Otherwise, set it to a predefined location un-
+# der the experiment directory (EXPTDIR).
+#
+#-----------------------------------------------------------------------
+#
+  if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
 
-  WORKDIR_GRID=$WORKDIR/grid
-  WORKDIR_OROG=$WORKDIR/orog
-  WORKDIR_FLTR=$WORKDIR/filtered_topo
-  WORKDIR_SHVE=$WORKDIR/shave
-  WORKDIR_SFC_CLIMO=$WORKDIR/sfc_climo
+    if [ ! -d "${GRID_DIR}" ]; then
+  print_err_msg_exit "\
+The directory (GRID_DIR) that should contain the pre-generated grid 
+files does not exist:
+  GRID_DIR = \"${GRID_DIR}\"
+"
+    fi
+
+  else
+    GRID_DIR="$EXPTDIR/grid"
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# If RUN_TASK_MAKE_OROG is set to "FALSE", the workflow will look for 
+# the pre-generated orography files in OROG_DIR.  In this case, make 
+# sure that OROG_DIR exists.  Otherwise, set it to a predefined location
+# under the experiment directory (EXPTDIR).
+#
+#-----------------------------------------------------------------------
+#
+  if [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ]; then
+
+    if [ ! -d "${OROG_DIR}" ]; then
+  print_err_msg_exit "\
+The directory (OROG_DIR) that should contain the pre-generated orography
+files does not exist:
+  OROG_DIR = \"${OROG_DIR}\"
+"
+    fi
+
+  else
+    OROG_DIR="$EXPTDIR/orog"
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# If RUN_TASK_MAKE_SFC_CLIMO is set to "FALSE", the workflow will look 
+# for the pre-generated surface climatology files in SFC_CLIMO_DIR.  In
+# this case, make sure that SFC_CLIMO_DIR exists.  Otherwise, set it to
+# a predefined location under the experiment directory (EXPTDIR).
+#
+#-----------------------------------------------------------------------
+#
+  if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
+
+    if [ ! -d "${SFC_CLIMO_DIR}" ]; then
+  print_err_msg_exit "\
+The directory (SFC_CLIMO_DIR) that should contain the pre-generated orography
+files does not exist:
+  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"
+"
+    fi
+
+  else
+    SFC_CLIMO_DIR="$EXPTDIR/sfc_climo"
+  fi
 
 fi
 #
@@ -1061,35 +1111,6 @@ fi
 
 
 
-#
-#-----------------------------------------------------------------------
-#
-# The following may not be necessary since global_chgres_driver.sh resets ictype.  But it was in the original version of this script, so we keep it here for now.
-#
-# Set the type (ictype) of GFS analysis file we will be reading in to
-# obtain the ICs.  This type (or format) must be either "opsgfs" (the
-# current operational GFS format; used for dates on and after the tran-
-# sition date of July 19, 2017) or "oldgfs" (old GFS format; for dates
-# before the transition date).
-#
-# Calculate the duration in seconds from some default date (see man page
-# of "date" command) to the specified CDATE and the duration from that
-# default date to the transition date.  Then compare these two durations
-# to determine the ictype.
-#
-#-----------------------------------------------------------------------
-#
-if [ 0 = 1 ]; then
-IC_date_sec=$( date -d "${YYYY}-${MM}-${DD} ${HH} UTC" "+%s" )
-transition_date_sec=$( date -d "2017-07-19 00 UTC" "+%s" )
-
-if [ "$IC_date_sec" -ge "$transition_date_sec" ]; then
-  ictype="opsgfs"
-#  ictype="pfv3gfs"
-else
-  ictype="oldgfs"
-fi
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1332,7 +1353,7 @@ NUM_NODES=$(( ($PE_MEMBER01 + $ncores_per_node - 1)/$ncores_per_node ))
 #
 #-----------------------------------------------------------------------
 #
-mkdir_vrfy -p "$WORKDIR"
+#mkdir_vrfy -p "$WORKDIR"
 mkdir_vrfy -p "$EXPTDIR"
 #
 #-----------------------------------------------------------------------
@@ -1617,17 +1638,16 @@ JOBSDIR="$JOBSDIR"
 SORCDIR="$SORCDIR"
 EXECDIR="$EXECDIR"
 TEMPLATE_DIR="$TEMPLATE_DIR"
+UFS_UTILS_DIR="$UFS_UTILS_DIR"
 NEMSfv3gfs_DIR="$NEMSfv3gfs_DIR"
 EXPTDIR="$EXPTDIR"
 FIXgsm="$FIXgsm"
 SFC_CLIMO_INPUT_DIR="$SFC_CLIMO_INPUT_DIR"
 UPPFIX="$UPPFIX"
 GSDFIX="$GSDFIX"
-WORKDIR_GRID="$WORKDIR_GRID"
-WORKDIR_OROG="$WORKDIR_OROG"
-WORKDIR_FLTR="$WORKDIR_FLTR"
-WORKDIR_SHVE="$WORKDIR_SHVE"
-WORKDIR_SFC_CLIMO="$WORKDIR_SFC_CLIMO"
+GRID_DIR="${GRID_DIR}"
+OROG_DIR="${OROG_DIR}"
+SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
 #
 #-----------------------------------------------------------------------
 #

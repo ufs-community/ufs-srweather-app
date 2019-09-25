@@ -682,8 +682,8 @@ if (True) then
   dx_native = 3.0d+3
   dy_native = 3.0d+3
 
-  dx_native = 13.0d+3
-  dy_native = 13.0d+3
+;  dx_native = 13.0d+3
+;  dy_native = 13.0d+3
 
 ;  dx_native = 25.0d+3
 ;  dy_native = 25.0d+3

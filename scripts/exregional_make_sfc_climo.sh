@@ -44,7 +44,7 @@ climatology.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "WORKDIR_LOCAL" )
+valid_args=( "workdir" )
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -76,7 +76,7 @@ ulimit -s unlimited
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${WORKDIR_LOCAL}
+cd_vrfy $workdir
 #
 #-----------------------------------------------------------------------
 #
@@ -99,14 +99,52 @@ orog_fns=( "${orog_fns[@]/%/$suffix}" )
 #
 #-----------------------------------------------------------------------
 #
+# In the directory specified for the namelist variable orog_dir_mdl 
+# (which here is set to ${OROG_DIR}; see below), the make_sfc_climo code
+# expects there to be a grid file named 
+#
+#   ${CRES}_grid.tile${tile_num}.nc
+#
+# for each orography file in that directory named
+#
+#   ${CRES}_oro_data.tile${tile_num}.nc
+#
+# where tile_num is the tile number (in our case, tile_num = 7 only).
+# Thus, we now create a link in OROG_DIR pointing to the corresponding
+# grid file in GRID_DIR.  Note that we the sfc_climo code will be work-
+# ing with halo-4 files only.
+#
+#-----------------------------------------------------------------------
+#
+grid_fn="${CRES}_grid.tile7.nc"
+ln_vrfy -fs --relative ${GRID_DIR}/${grid_fn} ${OROG_DIR}/${grid_fn} 
+
+# Add links in shave directory to the grid and orography files with 4-
+# cell-wide halos such that the link names do not contain the halo
+# width.  These links are needed by the make_sfc_climo task (which uses
+# the sfc_climo_gen code).
+#
+# NOTE: It would be nice to modify the sfc_climo_gen_code to read in
+# files that have the halo size in their names.
+
+tile=7
+
+#ln_vrfy -sf --relative \
+#  ${GRID_DIR}/${CRES}_grid.tile${tile}.halo${nh4_T7}.nc \
+#  ${OROG_DIR}/${CRES}_grid.tile${tile}.nc
+
+ln_vrfy -fs --relative \
+  ${OROG_DIR}/${CRES}_oro_data.tile${tile}.halo${nh4_T7}.nc \
+  ${OROG_DIR}/${CRES}_oro_data.tile${tile}.nc
+#
+#-----------------------------------------------------------------------
+#
 # Create the namelist that the sfc_climo_gen code will read in.
 #
 # Question: Should this instead be created from a template file?
 #
 #-----------------------------------------------------------------------
 #
-mosaic_file="${WORKDIR_GRID}/${CRES}_mosaic.nc"
-
 cat << EOF > ./fort.41
 &config
 input_facsf_file="${SFC_CLIMO_INPUT_DIR}/facsf.1.0.nc"
@@ -117,8 +155,8 @@ input_slope_type_file="${SFC_CLIMO_INPUT_DIR}/slope_type.1.0.nc"
 input_soil_type_file="${SFC_CLIMO_INPUT_DIR}/soil_type.statsgo.0.05.nc"
 input_vegetation_type_file="${SFC_CLIMO_INPUT_DIR}/vegetation_type.igbp.0.05.nc"
 input_vegetation_greenness_file="${SFC_CLIMO_INPUT_DIR}/vegetation_greenness.0.144.nc"
-mosaic_file_mdl="${mosaic_file}"
-orog_dir_mdl="${WORKDIR_SHVE}"
+mosaic_file_mdl="${GRID_DIR}/${CRES}_mosaic.nc"
+orog_dir_mdl="${OROG_DIR}"
 orog_files_mdl=${orog_fns}
 halo=${nh4_T7}
 maximum_snow_albedo_method="bilinear"
@@ -196,13 +234,13 @@ case "$gtype" in
 #
 "global" | "stretch" | "nested")
 #
-# Move all files ending with ".nc" to the WORKDIR_SFC_CLIMO directory.
+# Move all files ending with ".nc" to the SFC_CLIMO_DIR directory.
 # In the process, rename them so that the file names start with the C-
 # resolution (followed by an underscore).
 #
   for fn in *.nc; do
     if [[ -f $fn ]]; then
-      mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}_${fn}
+      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}_${fn}
     fi
   done
   ;;
@@ -221,12 +259,12 @@ case "$gtype" in
   for fn in *.halo.nc; do
     if [ -f $fn ]; then
       bn="${fn%.halo.nc}"
-      mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}.${bn}.halo${nh4_T7}.nc
+      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${nh4_T7}.nc
     fi
   done
 #
 # Move all remaining files ending with ".nc" (which are the files for a
-# grid that doesn't include a halo) to the WORKDIR_SFC_CLIMO directory.  
+# grid that doesn't include a halo) to the SFC_CLIMO_DIR directory.  
 # In the process, rename them so that the file names start with the C-
 # resolution (followed by a dot) and contain the string "halo0" to indi-
 # cate that the grids in these files do not contain a halo.
@@ -234,7 +272,7 @@ case "$gtype" in
   for fn in *.nc; do
     if [ -f $fn ]; then
       bn="${fn%.nc}"
-      mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}.${bn}.halo${nh0_T7}.nc
+      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${nh0_T7}.nc
     fi
   done
   ;;
@@ -249,13 +287,78 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-#cd_vrfy ${WORKDIR_SFC_CLIMO}
+#cd_vrfy ${SFC_CLIMO_DIR}
 #
 #suffix=".halo${nh4_T7}.nc"
 #for fn in *${suffix}; do
 #  bn="${fn%.halo${nh4_T7}.nc}"
 #  ln_vrfy -fs ${bn}${suffix} ${bn}.nc
 #done
+#
+#-----------------------------------------------------------------------
+#
+# 
+#
+#-----------------------------------------------------------------------
+#
+cd_vrfy ${SFC_CLIMO_DIR}
+fn_pattern="${CRES}.*.nc"
+sfc_climo_files=$( ls -1 $fn_pattern ) || print_err_msg_exit "${script_name}" "\
+The \"ls\" command returned with a nonzero exit status."
+#
+# Place the list of surface climatology files in an array.
+#
+file_list=()
+i=0
+while read crnt_file; do
+  file_list[$i]="${crnt_file}"
+  i=$((i+1))
+done <<< "${sfc_climo_files}"
+#
+# Create symlinks in the FIXsar directory to the surface climatology files.
+#
+#cd $FIXsar
+for fn in "${file_list[@]}"; do
+#
+# Check that each target file exists before attempting to create sym-
+# links.  This is because the "ln" command will create symlinks to non-
+# existent targets without returning with a nonzero exit code.
+#
+  if [ -f "${SFC_CLIMO_DIR}/$fn" ]; then
+# Should links be made relative or absolute?  Maybe relative in community
+# mode and absolute in nco mode?
+    if [ "${RUN_ENVIR}" = "nco" ]; then
+      ln_vrfy -sf ${SFC_CLIMO_DIR}/$fn $FIXsar
+    else
+      ln_vrfy --relative -sf ${SFC_CLIMO_DIR}/$fn $FIXsar
+    fi
+  else
+    print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target file (fn) in directory SFC_CLIMO_DIR
+does not exist:
+  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"
+  fn = \"${fn}\""
+  fi
+
+done
+#
+#-----------------------------------------------------------------------
+#
+# Create symlinks in the INPUT subdirectory of the experiment directory 
+# to the halo-4 surface climatology files such that the link names do 
+# not include a string specifying the halo width (e.g. "halo##", where 
+# ## is the halo width in units of grid cells).  These links may be 
+# needed by the chgres_cube code.
+#
+#-----------------------------------------------------------------------
+#
+cd_vrfy $FIXsar
+suffix=".halo${nh4_T7}.nc"
+for fn in *${suffix}; do
+  bn="${fn%.halo${nh4_T7}.nc}"
+  ln_vrfy -fs ${bn}${suffix} ${bn}.nc
+done
+
 #
 #-----------------------------------------------------------------------
 #

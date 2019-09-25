@@ -223,24 +223,29 @@ Creating links in the INPUT subdirectory of the current cycle's run di-
 rectory to the grid and (filtered) orography files ..."
 
 filename="${CRES}_mosaic.nc"
-ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
+#ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
+ln_vrfy --relative -sf ${GRID_DIR}/$filename $filename 
 ln_vrfy -sf $filename grid_spec.nc
 
 filename="${CRES}_grid.tile7.halo${nh3_T7}.nc"
-ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
+#ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
+ln_vrfy --relative -sf ${GRID_DIR}/$filename $filename 
 ln_vrfy -sf $filename ${CRES}_grid.tile7.nc
 
 filename="${CRES}_grid.tile7.halo${nh4_T7}.nc"
-ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
+#ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
+ln_vrfy --relative -sf ${GRID_DIR}/$filename $filename 
 ln_vrfy -sf $filename grid.tile7.halo${nh4_T7}.nc
 
-filename="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
-ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
-ln_vrfy -sf $filename oro_data.tile7.halo${nh4_T7}.nc
-
 filename="${CRES}_oro_data.tile7.halo${nh0_T7}.nc"
-ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
+#ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
+ln_vrfy --relative -sf ${OROG_DIR}/$filename $filename 
 ln_vrfy -sf $filename oro_data.nc
+
+filename="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
+#ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
+ln_vrfy --relative -sf ${OROG_DIR}/$filename $filename 
+ln_vrfy -sf $filename oro_data.tile7.halo${nh4_T7}.nc
 #
 #-----------------------------------------------------------------------
 #

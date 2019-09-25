@@ -37,7 +37,8 @@ the workflow XML.
 
 <!ENTITY FHR "">
 
-<!ENTITY RUN_TASK_MAKE_GRID_OROG "">
+<!ENTITY RUN_TASK_MAKE_GRID      "">
+<!ENTITY RUN_TASK_MAKE_OROG      "">
 <!ENTITY RUN_TASK_MAKE_SFC_CLIMO "">
 
 <!--
@@ -53,7 +54,8 @@ Variables that are not modified by the workflow generation script.
 -->
 <!ENTITY LOG_DIR "&EXPTDIR;/log">
 
-<!ENTITY PROC_MAKE_GRID_OROG      "1:ppn=24">
+<!ENTITY PROC_MAKE_GRID           "1:ppn=24">
+<!ENTITY PROC_MAKE_OROG           "1:ppn=24">
 <!ENTITY PROC_STAGE_STATIC        "1:ppn=1">
 <!ENTITY PROC_MAKE_SFC_CLIMO      "2:ppn=24">
 <!ENTITY PROC_GET_EXTRN_MDL_FILES "1:ppn=1">
@@ -63,7 +65,8 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY PROC_RUN_FV3             "">
 <!ENTITY PROC_POST                "2:ppn=24">
 
-<!ENTITY RSRC_MAKE_GRID_OROG      "<walltime>00:10:00</walltime>">
+<!ENTITY RSRC_MAKE_GRID           "<walltime>00:10:00</walltime>">
+<!ENTITY RSRC_MAKE_OROG           "<walltime>00:10:00</walltime>">
 <!ENTITY RSRC_STAGE_STATIC        "<walltime>00:10:00</walltime>">
 <!ENTITY RSRC_MAKE_SFC_CLIMO      "<walltime>00:25:00</walltime>">
 <!ENTITY RSRC_GET_EXTRN_MDL_FILES "<walltime>00:45:00</walltime>">
@@ -91,21 +94,49 @@ Variables that are not modified by the workflow generation script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="make_grid_orog" cycledefs="at_start" maxtries="4">
+  <task name="make_grid" cycledefs="at_start" maxtries="4">
 
-    &RSRC_MAKE_GRID_OROG;
+    &RSRC_MAKE_GRID;
     &RSRV_DEFAULT;
 
-    <command>&USHDIR;/make_grid_orog.sh</command>
-    <nodes>&PROC_MAKE_GRID_OROG;</nodes>
-    <jobname>make_grid_orog</jobname>
-    <join><cyclestr>&LOG_DIR;/make_grid_orog.log</cyclestr></join>
+    <command>&JOBSDIR;/JREGIONAL_MAKE_GRID</command>
+    <nodes>&PROC_MAKE_GRID;</nodes>
+    <jobname>make_grid</jobname>
+    <join><cyclestr>&LOG_DIR;/make_grid.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
-      <streq><left>&RUN_TASK_MAKE_GRID_OROG;</left><right>TRUE</right></streq>
+      <streq><left>&RUN_TASK_MAKE_GRID;</left><right>TRUE</right></streq>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="make_orog" cycledefs="at_start" maxtries="4">
+
+    &RSRC_MAKE_OROG;
+    &RSRV_DEFAULT;
+
+    <command>&JOBSDIR;/JREGIONAL_MAKE_OROG</command>
+    <nodes>&PROC_MAKE_OROG;</nodes>
+    <jobname>make_orog</jobname>
+    <join><cyclestr>&LOG_DIR;/make_orog.log</cyclestr></join>
+
+    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <streq><left>&RUN_TASK_MAKE_OROG;</left><right>TRUE</right></streq>
+        <or>
+          <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+          <taskdep task="make_grid"/>
+        </or>
+      </and>
     </dependency>
 
   </task>
@@ -130,8 +161,12 @@ Variables that are not modified by the workflow generation script.
       <and>
         <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>TRUE</right></streq>
         <or>
-          <streq><left>&RUN_TASK_MAKE_GRID_OROG;</left><right>FALSE</right></streq>
-          <taskdep task="make_grid_orog"/>
+          <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+          <taskdep task="make_grid"/>
+        </or>
+        <or>
+          <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
+          <taskdep task="make_orog"/>
         </or>
       </and>
     </dependency>

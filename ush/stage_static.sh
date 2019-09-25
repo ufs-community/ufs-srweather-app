@@ -322,42 +322,34 @@ Copying files from work directories into run directory and creating links..."
 #
 #-----------------------------------------------------------------------
 #
-#
+# Calculate the equivalent global C-resolution of the regional grid.  
+# This is stored in the grid file as a global attribute.
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_TASK_MAKE_GRID_OROG}" = "TRUE" ]; then
-  target_dir=${WORKDIR_SHVE}
-else
-  target_dir=${PREGEN_GRID_OROG_DIR}
-fi
 #
-# Get the (equivalent) C-resolution of the grid.  This is stored in the
-# grid file as a global attribute.
+# If the grid generation task of the workflow was skipped (because pre-
+# generated files are available), we need to calculate the global varia-
+# bles RES and CRES (and set them in the variable definitions file) be-
+# cause these variables are normally calculated in that task.
 #
-cd_vrfy ${target_dir}
-fn_pattern="C*_grid.tile7.halo${nh4_T7}.nc"
-grid_fn=$( ls -1 $fn_pattern ) || \
-print_err_msg_exit "${script_name}" "\
+if [ "${RUN_TASK_MAKE_GRID}" != "TRUE" ]; then
+
+  cd_vrfy ${GRID_DIR}
+  fn_pattern="C*_grid.tile7.halo${nh4_T7}.nc"
+  grid_fn=$( ls -1 $fn_pattern ) || \
+    print_err_msg_exit "${script_name}" "\
 The \"ls\" command returned with a nonzero exit status."
 
-num_files=$( printf "%s\n" "${grid_fn}" | wc -l )
-if [ "${num_files}" -gt "1" ]; then
-  print_err_msg_exit "${script_name}" "\
-More than one file was found in directory PREGEN_GRID_OROG_DIR matching
-the globbing pattern fn_pattern:
-  PREGEN_GRID_OROG_DIR = \"$PREGEN_GRID_OROG_DIR\"
-  fn_pattern = \"$fn_pattern\"
-  num_files = \"$num_files\""
-fi
-#
-# If the grid (and orography) generation task of the workflow was skip-
-# ped (because pregenerated files are available), we need to calculate
-# the global variables RES and CRES (and set them in the variable defi-
-# nitions file) because these variables are normally calculated in that 
-# task.
-#
-if [ "${RUN_TASK_MAKE_GRID_OROG}" != "TRUE" ]; then
+  num_files=$( printf "%s\n" "${grid_fn}" | wc -l )
+  if [ "${num_files}" -gt "1" ]; then
+    print_err_msg_exit "${script_name}" "\
+More than one file was found in directory GRID_DIR matching the globbing
+pattern fn_pattern:
+  GRID_DIR = \"${GRID_DIR}\"
+  fn_pattern = \"${fn_pattern}\"
+  num_files = \"${num_files}\""
+  fi
 
   RES_equiv=$( ncdump -h "$grid_fn" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
   RES_equiv=${RES_equiv//$'\n'/}
@@ -373,17 +365,23 @@ printf "%s\n" "CRES_equiv = $CRES_equiv"
 
 fi
 #
-#if [ "${RUN_TASK_MAKE_GRID_OROG}" = "TRUE" ]; then
-#  cp_vrfy $WORKDIR_GRID/${CRES}_mosaic.nc $WORKDIR_SHVE
-#fi
+#-----------------------------------------------------------------------
 #
-# Create array of files to which we will create symlinks.
+# Create links to grid and orography files.
+#
+#-----------------------------------------------------------------------
+#
+
+if [ 0 = 1 ]; then
+
+# Create array of grid and orography files to which we will create sym-
+# links.
 #
 file_list=( "${CRES}_mosaic.nc" \
             "${CRES}_grid.tile7.halo${nh3_T7}.nc" \
             "${CRES}_grid.tile7.halo${nh4_T7}.nc" \
-            "${CRES}_oro_data.tile7.halo${nh4_T7}.nc" \
             "${CRES}_oro_data.tile7.halo${nh0_T7}.nc" \
+            "${CRES}_oro_data.tile7.halo${nh4_T7}.nc" \
           )
 #
 # Create symlinks in the INPUT subdirectory of the experiment directory
@@ -414,6 +412,7 @@ does not exist:
 
 done
 
+fi
 
 #
 #-----------------------------------------------------------------------
@@ -423,13 +422,9 @@ done
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ]; then
-  target_dir=${WORKDIR_SFC_CLIMO}
-else
-  target_dir=${PREGEN_SFC_CLIMO_DIR}
-fi
+if [ 0 = 1 ]; then
 
-cd_vrfy ${target_dir}
+cd_vrfy ${SFC_CLIMO_DIR}
 fn_pattern="${CRES}.*.nc"
 sfc_climo_files=$( ls -1 $fn_pattern ) || print_err_msg_exit "${script_name}" "\
 The \"ls\" command returned with a nonzero exit status."
@@ -471,7 +466,6 @@ does not exist:
 
 done
 
-
 #
 #-----------------------------------------------------------------------
 #
@@ -490,6 +484,8 @@ for fn in *${suffix}; do
   bn="${fn%.halo${nh4_T7}.nc}"
   ln_vrfy -fs ${bn}${suffix} ${bn}.nc
 done
+
+fi
 #
 #-----------------------------------------------------------------------
 #

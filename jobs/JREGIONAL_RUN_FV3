@@ -53,10 +53,12 @@ the specified cycle.
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  DOMAIN=${predef_domain}
-  YYMMDDHH=...
-  DATA="$STMP/tmpnwprd/regional_forecast_tm00_${DOMAIN}_${YYMMDDHH}"
-  CYCLE_DIR=$DATA
+#  DOMAIN="${predef_domain}"
+#  STMP="/scratch4/NCEPDEV/stmp3/Benjamin.Blake/${expt_title}"
+#  DATA="$STMP/tmpnwprd/regional_forecast_tm00_${DOMAIN}_${PDY}"
+  STMP="${EXPTDIR}"
+  DATA="$STMP/$CDATE"
+  CYCLE_DIR="$DATA"
 else
   CYCLE_DIR="$EXPTDIR/$CDATE"
 fi

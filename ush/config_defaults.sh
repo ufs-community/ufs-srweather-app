@@ -64,10 +64,6 @@ QUEUE_RUN_FV3="production_queue"
 # Directory in which the regional_workflow, NEMSfv3gfs, and other repo-
 # sitories are cloned.
 #
-# TMPDIR:
-# Temporary work directory.  A subdirectory for the current run will be
-# created under this.
-#
 # UPPDIR:
 # Directory in which the NCEP post (UPP) executable is located.  Note 
 # that the ndate executable needs to be compiled in the community UPP
@@ -92,8 +88,7 @@ QUEUE_RUN_FV3="production_queue"
 #
 #-----------------------------------------------------------------------
 #
-BASEDIR="/path/to/directory/of/regional_workflow/clone"
-TMPDIR="/path/to/temporary/work/directories"  # Eventually get rid of this??
+BASEDIR="/path/to/directory/of/regional_workflow/and/NEMSfv3gfs/clones"
 UPPDIR="/path/to/UPP/executable"
 EXPT_BASEDIR=""
 EXPT_SUBDIR=""
@@ -271,39 +266,6 @@ fcst_len_hrs="24"
 EXTRN_MDL_NAME_ICS="FV3GFS"
 EXTRN_MDL_NAME_LBCS="FV3GFS"
 LBC_UPDATE_INTVL_HRS="6"
-#EXTRN_MDL_INFO_FN="extrn_mdl_info.sh"
-#EXTRN_MDL_INFO_VAR_NAMES=( \
-#"EXTRN_MDL_CDATE" \
-#"EXTRN_MDL_LBC_UPDATE_FHRS" \
-#"EXTRN_MDL_FNS" \
-#"EXTRN_MDL_FILES_SYSDIR" \
-#"EXTRN_MDL_ARCV_FILE_FMT" \
-#"EXTRN_MDL_ARCV_FN" \
-#"EXTRN_MDL_ARCV_FP" \
-#"EXTRN_MDL_ARCVREL_DIR" \
-#)
-#EXTRN_MDL_INFO_VAR_NAMES=( "EXTRN_MDL_CDATE" "EXTRN_MDL_LBC_UPDATE_FHRS" "EXTRN_MDL_FNS" "EXTRN_MDL_FILES_SYSDIR" "EXTRN_MDL_ARCV_FILE_FMT" "EXTRN_MDL_ARCV_FN" "EXTRN_MDL_ARCV_FP" "EXTRN_MDL_ARCVREL_DIR" )
-#
-#-----------------------------------------------------------------------
-#
-# Set the parameter (ictype) that determines the source model for the 
-# initial and boundary conditions.  The values that ictype can take on
-# are:
-#
-# * "oldgfs":
-#   Old GFS output.  This is for Quarter 2 of FY2016 (should this be 
-#   2017?) and earlier.
-#
-# * "opsgfs":
-#   Operational GFS.  This is for Quarter 3 of FY2017 and later.  It 
-#   uses new land datasets.
-#
-# * "pfv3gfs":
-#   The FV3 "parallels".
-#
-#-----------------------------------------------------------------------
-#
-ictype="opsgfs"
 #
 #-----------------------------------------------------------------------
 #
@@ -718,8 +680,11 @@ WRTCMP_dy=""
 #
 #-----------------------------------------------------------------------
 #
-RUN_TASK_MAKE_GRID_OROG="TRUE"
-PREGEN_GRID_OROG_DIR="/path/to/pregenerated/grid/and/filtered/orog/files"
+RUN_TASK_MAKE_GRID="TRUE"
+GRID_DIR="/path/to/pregenerated/grid/files"
+
+RUN_TASK_MAKE_OROG="TRUE"
+OROG_DIR="/path/to/pregenerated/orog/files"
 #
 #-----------------------------------------------------------------------
 #
@@ -728,5 +693,5 @@ PREGEN_GRID_OROG_DIR="/path/to/pregenerated/grid/and/filtered/orog/files"
 #-----------------------------------------------------------------------
 #
 RUN_TASK_MAKE_SFC_CLIMO="TRUE"
-PREGEN_SFC_CLIMO_DIR="/path/to/pregenerated/surface/climo/files"
+SFC_CLIMO_DIR="/path/to/pregenerated/surface/climo/files"
 

@@ -69,7 +69,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-workdir="${ICS_DIR}/work_ICS"
+workdir="${ICS_DIR}/tmp"
 mkdir_vrfy -p "$workdir"
 cd_vrfy $workdir
 #
@@ -377,9 +377,9 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 
 { cat > fort.41 <<EOF
 &config
- fix_dir_target_grid="${EXPTDIR}/INPUT"
- mosaic_file_target_grid="${EXPTDIR}/INPUT/${CRES}_mosaic.nc"
- orog_dir_target_grid="${EXPTDIR}/INPUT"
+ fix_dir_target_grid="${FIXsar}"
+ mosaic_file_target_grid="${FIXsar}/${CRES}_mosaic.nc"
+ orog_dir_target_grid="${FIXsar}"
  orog_files_target_grid="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
  vcoord_file_target_grid="${FV3SAR_DIR}/fix/fix_am/global_hyblev.l65.txt"
  mosaic_file_input_grid=""

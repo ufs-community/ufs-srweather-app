@@ -98,7 +98,8 @@ set_file_param "$WFLOW_XML_FP" "MM_FIRST_CYCL" "$MM_FIRST_CYCL"
 set_file_param "$WFLOW_XML_FP" "DD_FIRST_CYCL" "$DD_FIRST_CYCL"
 set_file_param "$WFLOW_XML_FP" "HH_FIRST_CYCL" "$HH_FIRST_CYCL"
 set_file_param "$WFLOW_XML_FP" "FHR" "$FHR"
-set_file_param "$WFLOW_XML_FP" "RUN_TASK_MAKE_GRID_OROG" "$RUN_TASK_MAKE_GRID_OROG"
+set_file_param "$WFLOW_XML_FP" "RUN_TASK_MAKE_GRID" "$RUN_TASK_MAKE_GRID"
+set_file_param "$WFLOW_XML_FP" "RUN_TASK_MAKE_OROG" "$RUN_TASK_MAKE_OROG"
 set_file_param "$WFLOW_XML_FP" "RUN_TASK_MAKE_SFC_CLIMO" "$RUN_TASK_MAKE_SFC_CLIMO"
 #
 #-----------------------------------------------------------------------
@@ -185,29 +186,27 @@ Workflow generation completed.
 ========================================================================
 ========================================================================
 
-The experiment and work directories for this experiment configuration 
-are:
+The experiment directory is:
 
   > EXPTDIR=\"$EXPTDIR\"
-  > WORKDIR=\"$WORKDIR\"
 
 To launch the workflow, first ensure that you have a compatible version
 of rocoto loaded.  For example, on theia, the following version has been
 tested and works:
 
-  > $load_rocoto_cmd
+  > ${load_rocoto_cmd}
 
 (Later versions may also work but have not been tested.)  To launch the 
 workflow, change location to the experiment directory (EXPTDIR) and is-
 sue the rocotrun command, as follows:
 
   > cd $EXPTDIR
-  > $rocotorun_cmd
+  > ${rocotorun_cmd}
 
 To check on the status of the workflow, issue the rocotostat command 
 (also from the experiment directory):
 
-  > $rocotostat_cmd
+  > ${rocotostat_cmd}
 
 Note that:
 
