@@ -539,63 +539,6 @@ predefined domain:
   fi
   ;;
 #
-#-----------------------------------------------------------------------
-#
-# EMC's 3km Hawaii domain.
-#
-#-----------------------------------------------------------------------
-#
-"EMC_HI3km")
-
-  expt_title="_EMC_HI3km${expt_title}"
-
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
-
-    print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
-predefined domain:
-  predef_domain = \"$predef_domain\"
-  grid_gen_method = \"$grid_gen_method\"
-"
-
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
-
-    lon_rgnl_ctr=-157.0
-    lat_rgnl_ctr=20.0
-
-    delx="3000.0"
-    dely="3000.0"
-
-    nx_T7=440
-    ny_T7=368
-
-    nhw_T7=6
-
-    dt_atmos="50"
-
-    layout_x="11"
-    layout_y="8"
-    blocksize="40"
-
-    if [ "$quilting" = ".true." ]; then
-      WRTCMP_write_groups="1"
-      WRTCMP_write_tasks_per_group="8"
-      WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
-      WRTCMP_nx="1738"
-      WRTCMP_ny="974"
-      WRTCMP_lon_lwr_left="-122.21414225"
-      WRTCMP_lat_lwr_left="22.41403305"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
-    fi
-
-  fi
-  ;;
-#
 esac
 #
 #-----------------------------------------------------------------------

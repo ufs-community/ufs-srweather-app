@@ -74,8 +74,8 @@ case $MACHINE in
 
   if [ "$CCPP" = "true" ]; then
   
-# Needed to change to the run directory to correctly load necessary mo-
-# dules for CCPP-version of FV3SAR in lines below
+# Needed to change to the experiment directory because the module files
+# for the CCPP-enabled version of FV3 have been copied to there.
 
     cd_vrfy ${CYCLE_DIR}
   
@@ -140,9 +140,9 @@ case $MACHINE in
 
   if [ "$CCPP" = "true" ]; then
   
-# Needed to change to the run directory to correctly load necessary mo-
-# dules for CCPP-version of FV3SAR in lines below
-    cd_vrfy $RUNDIR
+# Need to change to the experiment directory to correctly load necessary 
+# modules for CCPP-version of FV3SAR in lines below
+    cd_vrfy ${EXPTDIR}
   
     set +x
     source ./module-setup.sh
@@ -161,15 +161,13 @@ case $MACHINE in
     module load impi/2018.0.4
     module load netcdf/4.6.1
     module load pnetcdf/1.10.0
-    module load contrib wrap-mpi 
     module list
   
   fi
 
   ulimit -s unlimited
   ulimit -a
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
+  APRUN="srun"
   ;;
 #
 "JET")
@@ -209,7 +207,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${CYCLE_DIR}/INPUT
+#cd_vrfy ${CYCLE_DIR}/INPUT
 #
 #-----------------------------------------------------------------------
 #
@@ -222,30 +220,98 @@ print_info_msg_verbose "\
 Creating links in the INPUT subdirectory of the current cycle's run di-
 rectory to the grid and (filtered) orography files ..."
 
-filename="${CRES}_mosaic.nc"
-#ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
-ln_vrfy --relative -sf ${GRID_DIR}/$filename $filename 
-ln_vrfy -sf $filename grid_spec.nc
 
-filename="${CRES}_grid.tile7.halo${nh3_T7}.nc"
-#ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
-ln_vrfy --relative -sf ${GRID_DIR}/$filename $filename 
-ln_vrfy -sf $filename ${CRES}_grid.tile7.nc
+# Create links to fix files in the FIXsar directory.
 
-filename="${CRES}_grid.tile7.halo${nh4_T7}.nc"
-#ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
-ln_vrfy --relative -sf ${GRID_DIR}/$filename $filename 
-ln_vrfy -sf $filename grid.tile7.halo${nh4_T7}.nc
 
-filename="${CRES}_oro_data.tile7.halo${nh0_T7}.nc"
-#ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
-ln_vrfy --relative -sf ${OROG_DIR}/$filename $filename 
-ln_vrfy -sf $filename oro_data.nc
+cd_vrfy ${CYCLE_DIR}/INPUT
 
-filename="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
-#ln_vrfy -sf -t ${CYCLE_DIR}/INPUT ../../INPUT/$filename
-ln_vrfy --relative -sf ${OROG_DIR}/$filename $filename 
-ln_vrfy -sf $filename oro_data.tile7.halo${nh4_T7}.nc
+relative_or_null=""
+if [ "${RUN_TASK_MAKE_GRID}" = "TRUE" ]; then
+  relative_or_null="--relative"
+fi
+
+# Symlink to mosaic file with a completely different name.
+target="${FIXsar}/${CRES}_mosaic.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf ${relative_or_null} $target grid_spec.nc
+else
+  print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+# Symlink to halo-3 grid file with "halo4" stripped from name.
+target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${nh3_T7}.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf ${relative_or_null} $target ${CRES}_grid.tile${TILE_RGNL}.nc
+else
+  print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+# Symlink to halo-4 grid file with "${CRES}_" stripped from name.
+#
+# If this link is not created, then the code hangs with an error message
+# like this:
+#
+#   check netcdf status=           2
+#  NetCDF error No such file or directory
+# Stopped
+#
+# Note that even though the message says "Stopped", the task still con-
+# sumes core-hours.
+#
+target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf $target ${relative_or_null} grid.tile${TILE_RGNL}.halo${nh4_T7}.nc
+else
+  print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+
+
+relative_or_null=""
+if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ]; then
+  relative_or_null="--relative"
+fi
+
+# Symlink to halo-0 orography file with "${CRES}_" and "halo0" stripped from name.
+target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh0_T7}.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf ${relative_or_null} $target oro_data.nc
+else
+  print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+#
+# Symlink to halo-4 orography file with "${CRES}_" stripped from name.
+#
+# If this link is not created, then the code hangs with an error message
+# like this:
+#
+#   check netcdf status=           2
+#  NetCDF error No such file or directory
+# Stopped
+#
+# Note that even though the message says "Stopped", the task still con-
+# sumes core-hours.
+#
+target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf $target ${relative_or_null} oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc
+else
+  print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+
 #
 #-----------------------------------------------------------------------
 #
@@ -267,8 +333,9 @@ print_info_msg_verbose "\
 Creating links with names that FV3 looks for in the INPUT subdirectory
 of the current cycle's run directory (CYCLE_DIR)..."
 
-ln_vrfy -sf gfs_data.tile7.nc gfs_data.nc
-ln_vrfy -sf sfc_data.tile7.nc sfc_data.nc
+cd_vrfy ${CYCLE_DIR}/INPUT
+ln_vrfy -sf gfs_data.tile${TILE_RGNL}.halo${nh0_T7}.nc gfs_data.nc
+ln_vrfy -sf sfc_data.tile${TILE_RGNL}.halo${nh0_T7}.nc sfc_data.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -281,42 +348,47 @@ cd_vrfy ${CYCLE_DIR}
 
 print_info_msg_verbose "\
 Creating links in the current cycle's run directory to static (fix) 
-files in the main experiment directory..."
+files in the FIXam directory..."
+#
+# If running in "nco" mode, FIXam is simply a symlink under the workflow
+# directory that points to the system directory containing the fix 
+# files.  The files in this system directory are named as listed in the
+# FIXam_FILES_SYSDIR array.  Thus, that is the array to use to form the
+# names of the link targets, but the names of the symlinks themselves
+# must be as specified in the FIXam_FILES_EXPTDIR array (because that 
+# array contains the file names that FV3 looks for).
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
 
-ln_vrfy -sf -t ${CYCLE_DIR} ../CFSR.SEAICE.1982.2012.monthly.clim.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../RTGSST.1982.2012.monthly.clim.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../seaice_newland.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../aerosol.dat
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_albedo4.1x1.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_glacier.2x2.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_h2oprdlos.f77
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_maxice.2x2.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_mxsnoalb.uariz.t126.384.190.rg.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_o3prdlos.f77
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_shdmax.0.144x0.144.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_shdmin.0.144x0.144.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_slope.1x1.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_snoclim.1.875.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_snowfree_albedo.bosu.t126.384.190.rg.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_soilmgldas.t126.384.190.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_soiltype.statsgo.t126.384.190.rg.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_tg3clim.2.6x1.5.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_vegfrac.0.144.decpercent.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_vegtype.igbp.t126.384.190.rg.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../global_zorclim.1x1.grb
-ln_vrfy -sf -t ${CYCLE_DIR} ../sfc_emissivity_idx.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../solarconstant_noaa_an.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2historicaldata_2010.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2historicaldata_2011.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2historicaldata_2012.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2historicaldata_2013.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2historicaldata_2014.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2historicaldata_2015.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2historicaldata_2016.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2historicaldata_2017.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2historicaldata_2018.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2historicaldata_glob.txt
-ln_vrfy -sf -t ${CYCLE_DIR} ../co2monthlycyc.txt
+  for (( i=0; i<${NUM_FIXam_FILES}; i++ )); do
+    ln_vrfy -sf $FIXam/${FIXam_FILES_SYSDIR[$i]} ${CYCLE_DIR}/${FIXam_FILES_EXPTDIR[$i]}
+  done
+#
+# If not running in "nco" mode, FIXam is an actual directory (not a sym-
+# link) in the experiment directory that contains the same files as the
+# system fix directory except that the files have renamed to the file
+# names that FV3 looks for.  Thus, when creating links to the files in
+# this directory, both the target and symlink names should be the ones
+# specified in the FIXam_FILES_EXPTDIR array (because that array con-
+# tains the file names that FV3 looks for).
+#
+else
+
+  for (( i=0; i<${NUM_FIXam_FILES}; i++ )); do
+    ln_vrfy -sf --relative $FIXam/${FIXam_FILES_EXPTDIR[$i]} ${CYCLE_DIR}
+  done
+
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If running this cycle more than once (e.g. using rocotoboot), remove
+# any time stamp file that may exist from the previous attempt.
+#
+#-----------------------------------------------------------------------
+#
+cd_vrfy ${CYCLE_DIR}
+rm_vrfy -f time_stamp.out
 #
 #-----------------------------------------------------------------------
 #
@@ -329,21 +401,21 @@ print_info_msg_verbose "\
 Creating links in the current cycle's run directory to cycle-independent
 model input files in the main experiment directory..."
 
-ln_vrfy -sf -t ${CYCLE_DIR} ../${FV3_NML_FN}
-ln_vrfy -sf -t ${CYCLE_DIR} ../${DATA_TABLE_FN}
-ln_vrfy -sf -t ${CYCLE_DIR} ../${FIELD_TABLE_FN}
-ln_vrfy -sf -t ${CYCLE_DIR} ../${NEMS_CONFIG_FN}
+ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${FV3_NML_FN}
+ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${DATA_TABLE_FN}
+ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${FIELD_TABLE_FN}
+ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${NEMS_CONFIG_FN}
 
 if [ "$CCPP" = "true" ]; then
-  ln_vrfy -sf -t ${CYCLE_DIR} ../module-setup.sh
-  ln_vrfy -sf -t ${CYCLE_DIR} ../modules.fv3
+  ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/module-setup.sh
+  ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/modules.fv3
   if [ "$CCPP_phys_suite" = "GSD" ]; then
-    ln_vrfy -sf -t ${CYCLE_DIR} ../suite_FV3_GSD_v0.xml
+    ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/suite_FV3_GSD_v0.xml
   elif [ "$CCPP_phys_suite" = "GFS" ]; then
-    ln_vrfy -sf -t ${CYCLE_DIR} ../suite_FV3_GFS_2017_gfdlmp.xml
+    ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/suite_FV3_GFS_2017_gfdlmp.xml
   fi
   if [ "$CCPP_phys_suite" = "GSD" ]; then
-    ln_vrfy -sf -t ${CYCLE_DIR} ../CCN_ACTIVATE.BIN
+    ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/CCN_ACTIVATE.BIN
   fi
 fi
 #
@@ -481,9 +553,6 @@ if [ "$CCPP" = "true" ]; then
 else
   FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3_32bit.exe"
 fi
-
-#cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $EXPTDIR/module-setup.sh
-#cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/modules.nems $EXPTDIR/modules.fv3
 
 if [ -f $FV3SAR_EXEC ]; then
   print_info_msg_verbose "\

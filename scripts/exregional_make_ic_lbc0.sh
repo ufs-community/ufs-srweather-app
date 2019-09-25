@@ -69,7 +69,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-workdir="${ICS_DIR}/tmp"
+workdir="${ICS_DIR}/tmp_ICS"
 mkdir_vrfy -p "$workdir"
 cd_vrfy $workdir
 #
@@ -380,8 +380,8 @@ hh="${EXTRN_MDL_CDATE:8:2}"
  fix_dir_target_grid="${FIXsar}"
  mosaic_file_target_grid="${FIXsar}/${CRES}_mosaic.nc"
  orog_dir_target_grid="${FIXsar}"
- orog_files_target_grid="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
- vcoord_file_target_grid="${FV3SAR_DIR}/fix/fix_am/global_hyblev.l65.txt"
+ orog_files_target_grid="${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+ vcoord_file_target_grid="${FIXam}/global_hyblev.l65.txt"
  mosaic_file_input_grid=""
  orog_dir_input_grid=""
  base_install_dir="${SORCDIR}/UFS_UTILS_chgres_grib2"
@@ -444,10 +444,15 @@ the FV3SAR failed:
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy out.atm.tile7.nc ${ICS_DIR}/gfs_data.tile7.nc
-mv_vrfy out.sfc.tile7.nc ${ICS_DIR}/sfc_data.tile7.nc
+mv_vrfy out.atm.tile${TILE_RGNL}.nc \
+        ${ICS_DIR}/gfs_data.tile${TILE_RGNL}.halo${nh0_T7}.nc
+
+mv_vrfy out.sfc.tile${TILE_RGNL}.nc \
+        ${ICS_DIR}/sfc_data.tile${TILE_RGNL}.halo${nh0_T7}.nc
+
 mv_vrfy gfs_ctrl.nc ${ICS_DIR}
-mv_vrfy gfs_bndy.nc ${ICS_DIR}/gfs_bndy.tile7.000.nc
+
+mv_vrfy gfs_bndy.nc ${ICS_DIR}/gfs_bndy.tile${TILE_RGNL}.000.nc
 #
 #-----------------------------------------------------------------------
 #

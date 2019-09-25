@@ -328,6 +328,7 @@ esac
 #-----------------------------------------------------------------------
 #
 gtype="regional"
+TILE_RGNL="7"
 #
 #-----------------------------------------------------------------------
 #
@@ -507,7 +508,7 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 #
 # Set various directories.
 #
-# FV3SAR_DIR:
+# HOMErrfs:
 # Top directory of the clone of the FV3SAR workflow git repository.
 #
 # USHDIR:
@@ -545,25 +546,29 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 # Directory in which the sfc_climo_gen code looks for surface climatolo-
 # gy input files.
 #
-# UPPFIX:
+# FIXupp:
 # System directory from which to copy necessary fixed files for UPP.
 #
-# GSDFIX:
+# FIXgsd:
 # System directory from which to copy GSD physics-related fixed files 
 # needed when running CCPP.
 #
 #-----------------------------------------------------------------------
 #
-FV3SAR_DIR="$BASEDIR"
-USHDIR="$FV3SAR_DIR/ush"
-SCRIPTSDIR="$FV3SAR_DIR/scripts"
-JOBSDIR="$FV3SAR_DIR/jobs"
-SORCDIR="$FV3SAR_DIR/sorc"
-PARMDIR="$FV3SAR_DIR/parm"
-EXECDIR="$FV3SAR_DIR/exec"
+HOMErrfs="$BASEDIR/regional_workflow"
+USHDIR="$HOMErrfs/ush"
+SCRIPTSDIR="$HOMErrfs/scripts"
+JOBSDIR="$HOMErrfs/jobs"
+SORCDIR="$HOMErrfs/sorc"
+PARMDIR="$HOMErrfs/parm"
+EXECDIR="$HOMErrfs/exec"
+FIXrrfs="$HOMErrfs/fix"
+#FIXam="$FIXrrfs/fix_am"
+FIXupp="$FIXrrfs/fix_upp"
+FIXgsd="$FIXrrfs/fix_gsd"
 TEMPLATE_DIR="$USHDIR/templates"
-UFS_UTILS_DIR="$FV3SAR_DIR/sorc/UFS_UTILS_develop"
-NEMSfv3gfs_DIR="$FV3SAR_DIR/sorc/NEMSfv3gfs"
+UFS_UTILS_DIR="$SORCDIR/UFS_UTILS_develop"
+NEMSfv3gfs_DIR="$SORCDIR/NEMSfv3gfs"
 #
 # Make sure that the NEMSfv3gfs_DIR directory exists.
 #
@@ -576,8 +581,6 @@ Please clone the NEMSfv3gfs repository in this directory, build the FV3
 executable, and then rerun the workflow."
 fi
 
-UPPFIX="$FV3SAR_DIR/fix/fix_upp"
-GSDFIX="$FV3SAR_DIR/fix/fix_gsd"
 
 case $MACHINE in
 
@@ -620,25 +623,6 @@ Directories have not been specified for this machine:
   ;;
 
 esac
-#
-#-----------------------------------------------------------------------
-#
-#
-#
-#-----------------------------------------------------------------------
-#
-#if [ "${RUN_ENVIR}" = "nco" ]; then
-#  HOMEfv3=${FV3SAR_DIR}
-#  FIXfv3=${HOMEfv3}/fix
-#  FIXsar=${FIXfv3}/fix_sar
-#  FIXam=${FIXfv3}/fix_am
-#  COMINgfs=/scratch3/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS
-#else
-#
-#  FIXsar=$EXPTDIR/fix_sar
-#  check_for_preexist_dir $FIXsar $preexisting_dir_method 
-#
-#fi
 #
 #-----------------------------------------------------------------------
 #
@@ -811,33 +795,12 @@ check_for_preexist_dir $EXPTDIR $preexisting_dir_method
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  HOMEfv3=${FV3SAR_DIR}
-  FIXfv3=${HOMEfv3}/fix
-  FIXsar=${FIXfv3}/fix_sar
-  FIXam=${FIXfv3}/fix_am
-  COMINgfs=/scratch3/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS
+  FIXam="${FIXrrfs}/fix_am"
+  FIXsar="${FIXrrfs}/fix_sar"
 else
-
-  FIXsar=$EXPTDIR/fix_sar
-  check_for_preexist_dir $FIXsar $preexisting_dir_method 
-
+  FIXam="${EXPTDIR}/fix_am"
+  FIXsar="${EXPTDIR}/fix_sar"
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Define the full path to the work directory.  This is the directory in
-# which the prepocessing steps create their input and/or place their
-# output.  Then call the function that checks whether the work directory
-# already exists and if so, moves it, deletes it, or quits out of this
-# script (the action taken depends on the value of the variable preex-
-# isting_dir_method).  Note that we do not yet create a new work direc-
-# tory; we will do that later below once the workflow/experiment config-
-# uration parameters pass the various checks.
-#
-#-----------------------------------------------------------------------
-#
-#WORKDIR="$EXPTDIR"
-#check_for_preexist_dir $WORKDIR $preexisting_dir_method
 #
 #-----------------------------------------------------------------------
 #
@@ -1347,14 +1310,42 @@ NUM_NODES=$(( ($PE_MEMBER01 + $ncores_per_node - 1)/$ncores_per_node ))
 #
 #-----------------------------------------------------------------------
 #
-# Create a new work directory and a new experiment directory.  Note that
-# at this point we are guaranteed that there are no preexisting work or
-# experiment directories.
+# Ensure that the number of fixed files listed in the array FIXam_FILES_-
+# SYSDIR (which lists the files to be copied from the system directory)
+# is equal to the number of fixed files listed in the array FIXam_FILES_-
+# EXPTDIR (which lists the files to be copied into the experiment di-
+# rectory; we need this array because the files may be renamed as they
+# are copied).
 #
 #-----------------------------------------------------------------------
 #
-#mkdir_vrfy -p "$WORKDIR"
+num_fixam_files_sysdir="${#FIXam_FILES_SYSDIR[@]}"
+num_fixam_files_exptdir="${#FIXam_FILES_EXPTDIR[@]}"
+if [ "${num_fixam_files_sysdir}" -ne "${num_fixam_files_exptdir}" ]; then
+  print_err_msg_exit "\
+The number of fixed files specified in FIXam_FILES_SYSDIR must be equal 
+to that specified in FIXam_FILES_EXPTDIR:
+  num_fixam_files_sysdir = ${num_fixam_files_sysdir}
+  num_fixam_files_exptdir = ${num_fixam_files_exptdir}
+"
+else
+  NUM_FIXam_FILES="${num_fixam_files_sysdir}"
+fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Create a new experiment directory.  Note that at this point we are 
+# guaranteed that there is no preexisting experiment directory.
+#
+#-----------------------------------------------------------------------
+#
 mkdir_vrfy -p "$EXPTDIR"
+
+# Maybe do the following later?  Not sure yet...
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  mkdir_vrfy -p $FIXsar
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1386,6 +1377,23 @@ mkdir_vrfy -p "$EXPTDIR"
 #
 SCRIPT_VAR_DEFNS_FP="$EXPTDIR/$SCRIPT_VAR_DEFNS_FN"
 cp_vrfy ./${DEFAULT_CONFIG_FN} ${SCRIPT_VAR_DEFNS_FP}
+#
+#-----------------------------------------------------------------------
+#
+#
+#-----------------------------------------------------------------------
+#
+
+# Read all lines of SCRIPT_VAR_DEFNS file into the variable line_list.
+line_list=$( sed -r -e "s/(.*)/\1/g" ${SCRIPT_VAR_DEFNS_FP} )
+#
+# Loop through the lines in line_list and concatenate lines ending with
+# the line bash continuation character "\".
+#
+rm_vrfy ${SCRIPT_VAR_DEFNS_FP}
+while read crnt_line; do
+  printf "%s\n" "${crnt_line}" >> ${SCRIPT_VAR_DEFNS_FP}
+done <<< "${line_list}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1631,20 +1639,25 @@ done <<< "${line_list}"
 #
 #-----------------------------------------------------------------------
 #
-FV3SAR_DIR="$FV3SAR_DIR"
+HOMErrfs="$HOMErrfs"
 USHDIR="$USHDIR"
 SCRIPTSDIR="$SCRIPTSDIR"
 JOBSDIR="$JOBSDIR"
 SORCDIR="$SORCDIR"
+PARMDIR="$PARMDIR"
 EXECDIR="$EXECDIR"
-TEMPLATE_DIR="$TEMPLATE_DIR"
-UFS_UTILS_DIR="$UFS_UTILS_DIR"
-NEMSfv3gfs_DIR="$NEMSfv3gfs_DIR"
-EXPTDIR="$EXPTDIR"
+FIXrrfs="$FIXrrfs"
+FIXam="$FIXam"
+FIXsar="$FIXsar"
 FIXgsm="$FIXgsm"
-SFC_CLIMO_INPUT_DIR="$SFC_CLIMO_INPUT_DIR"
-UPPFIX="$UPPFIX"
-GSDFIX="$GSDFIX"
+FIXupp="$FIXupp"
+FIXgsd="$FIXgsd"
+TEMPLATE_DIR="${TEMPLATE_DIR}"
+UFS_UTILS_DIR="${UFS_UTILS_DIR}"
+NEMSfv3gfs_DIR="${NEMSfv3gfs_DIR}"
+SFC_CLIMO_INPUT_DIR="${SFC_CLIMO_INPUT_DIR}"
+
+EXPTDIR="$EXPTDIR"
 GRID_DIR="${GRID_DIR}"
 OROG_DIR="${OROG_DIR}"
 SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
@@ -1655,7 +1668,8 @@ SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
 #
 #-----------------------------------------------------------------------
 #
-WRTCMP_PARAMS_TEMPLATE_FP="$WRTCMP_PARAMS_TEMPLATE_FP"
+SCRIPT_VAR_DEFNS_FP="${SCRIPT_VAR_DEFNS_FP}"
+WRTCMP_PARAMS_TEMPLATE_FP="${WRTCMP_PARAMS_TEMPLATE_FP}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1665,6 +1679,7 @@ WRTCMP_PARAMS_TEMPLATE_FP="$WRTCMP_PARAMS_TEMPLATE_FP"
 #-----------------------------------------------------------------------
 #
 gtype="$gtype"
+TILE_RGNL="${TILE_RGNL}"
 nh0_T7="$nh0_T7"
 nh3_T7="$nh3_T7"
 nh4_T7="$nh4_T7"
@@ -1749,6 +1764,14 @@ fi
 #-----------------------------------------------------------------------
 #
 { cat << EOM >> $SCRIPT_VAR_DEFNS_FP 
+#
+#-----------------------------------------------------------------------
+#
+# Number of files expected in the FIXam directory.
+#
+#-----------------------------------------------------------------------
+#
+NUM_FIXam_FILES="${NUM_FIXam_FILES}"
 #
 #-----------------------------------------------------------------------
 #

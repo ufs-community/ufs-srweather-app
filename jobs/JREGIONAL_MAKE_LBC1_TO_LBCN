@@ -52,7 +52,6 @@ cept hour zero).
 #
 #-----------------------------------------------------------------------
 #
-CYCLE_DIR="$EXPTDIR/$CDATE"
 LBCS_DIR="${CYCLE_DIR}/INPUT"
 mkdir_vrfy -p "${LBCS_DIR}"
 #
@@ -132,12 +131,9 @@ case "$MACHINE" in
  
   module load wgrib2
  
-  module contrib wrap-mpi
-
   module list
 
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
+  APRUN="srun"
 
   { restore_shell_opts; } > /dev/null 2>&1
   ;;

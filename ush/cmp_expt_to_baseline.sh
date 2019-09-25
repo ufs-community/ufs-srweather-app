@@ -16,6 +16,7 @@
 #                Script has only been tested on theia
 #-----------------------------------------------------------------------
 
+module load intel
 module load nccmp
 #
 #-----------------------------------------------------------------------
@@ -134,13 +135,11 @@ The experiment and baseline directories are:
 # This list should also include $CDATE/postprd since that contains the 
 # post-processed grib files, but those files' names don't end in a 
 # standard file extension, e.g. .grb, etc.  Must look into this more.
+#          "grid" \
+#          "orog" \
+#          "sfc_climo" \
 subdirs=( "." \
-          "grid" \
-          "orog" \
-          "filtered_topo" \
-          "shave" \
-          "sfc_climo" \
-          "INPUT" \
+          "fix_sar" \
           "$CDATE/${EXTRN_MDL_NAME_ICS}/ICS" \
           "$CDATE/${EXTRN_MDL_NAME_LBCS}/LBCS" \
           "$CDATE/INPUT" \

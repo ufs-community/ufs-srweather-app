@@ -272,7 +272,7 @@ where msg is an optional error message to print.  Exiting with nonzero status.
 #
 #-----------------------------------------------------------------------
 #
-  printf '\n%s\n' "$MSG"
+  printf '\n%s\n' "$MSG" 1>&2
   exit 1
 #
 #-----------------------------------------------------------------------
@@ -287,3 +287,4 @@ where msg is an optional error message to print.  Exiting with nonzero status.
 #
   { restore_shell_opts; } > /dev/null 2>&1
 }
+

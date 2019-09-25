@@ -32,7 +32,7 @@ else
       EXTRN_MDL_FILES_SYSBASEDIR_ICS=""
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF=""
+      EXTRN_MDL_FILES_SYSBASEDIR_ICS=""
       ;;
     "JET")
       EXTRN_MDL_FILES_SYSBASEDIR_ICS=""
@@ -62,7 +62,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch4/NCEPDEV/rstprod/com/gfs/prod"
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch1/NCEPDEV/rstprod/com/gfs/prod"
+      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch1/NCEPDEV/rstprod/com/gfs/prod"
       ;;
     "JET")
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
@@ -89,7 +89,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch4/BMC/public/data/gsd/rr/full/wrfnat"
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
+      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
       ;;
     *)
       print_err_msg_exit "\
@@ -110,7 +110,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch4/BMC/public/data/gsd/hrrr/conus/wrfnat"
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
+      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
       ;;
     *)
       print_err_msg_exit "\

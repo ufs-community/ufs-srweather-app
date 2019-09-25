@@ -3,16 +3,6 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script copies files from various directories into the experiment
-# directory, creates links to some of them, and modifies others (e.g. 
-# templates) to customize them for the current experiment setup.
-#
-#-----------------------------------------------------------------------
-#
-
-#
-#-----------------------------------------------------------------------
-#
 # Source the variable definitions script and the function definitions
 # file.
 #
@@ -41,18 +31,8 @@ script_name=$( basename "$0" )
 print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
-This is the J-job script for the task that runs a forecast with FV3 for 
-the specified cycle.
+This is the J-job script for the task that generates orography files.
 ========================================================================"
-#
-#-----------------------------------------------------------------------
-#
-# Create the INPUT and RESTART directories under the cycle directory.
-#
-#-----------------------------------------------------------------------
-#
-mkdir_vrfy -p ${CYCLE_DIR}/INPUT
-mkdir_vrfy -p ${CYCLE_DIR}/RESTART
 #
 #-----------------------------------------------------------------------
 #
@@ -61,8 +41,8 @@ mkdir_vrfy -p ${CYCLE_DIR}/RESTART
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_run_fv3.sh \
-  CYCLE_DIR="${CYCLE_DIR}" || \
+${SCRIPTSDIR}/exregional_make_orog.sh \
+  WORKDIR_LOCAL="ABCD" || \
   print_err_msg_exit "${script_name}" "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #

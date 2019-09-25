@@ -19,7 +19,14 @@
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; set -u -x; } > /dev/null 2>&1
-
+#
+#-----------------------------------------------------------------------
+#
+# Set the script name and print out an informational message informing
+# the user that we've entered this script.
+#
+#-----------------------------------------------------------------------
+#
 script_name=$( basename "$0" )
 print_info_msg "\n\
 ========================================================================
@@ -62,7 +69,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-workdir="${LBCS_DIR}/work_LBCS"
+workdir="${LBCS_DIR}/tmp_LBCS"
 mkdir_vrfy -p "$workdir"
 cd_vrfy $workdir
 #
@@ -357,11 +364,11 @@ list file has not specified for this external model:
 # they are for the ICs namelist)?
   { cat > fort.41 <<EOF
 &config
- fix_dir_target_grid="${EXPTDIR}/INPUT"
- mosaic_file_target_grid="${EXPTDIR}/INPUT/${CRES}_mosaic.nc"
- orog_dir_target_grid="${EXPTDIR}/INPUT"
+ fix_dir_target_grid="${FIXsar}"
+ mosaic_file_target_grid="${FIXsar}/${CRES}_mosaic.nc"
+ orog_dir_target_grid="${FIXsar}"
  orog_files_target_grid="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
- vcoord_file_target_grid="${FV3SAR_DIR}/fix/fix_am/global_hyblev.l65.txt"
+ vcoord_file_target_grid="${FIXam}/global_hyblev.l65.txt"
  mosaic_file_input_grid=""
  orog_dir_input_grid=""
  base_install_dir="${SORCDIR}/UFS_UTILS_chgres_grib2"
