@@ -148,7 +148,6 @@ case $MACHINE in
     source ./module-setup.sh
     module use $( pwd -P )
     module load modules.fv3
-    module load contrib wrap-mpi
     module list
     set -x
   
