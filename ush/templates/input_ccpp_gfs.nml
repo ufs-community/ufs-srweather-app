@@ -92,7 +92,7 @@
        hord_dp =  -6
        hord_tr = 8
        adjust_dry_mass = .F.
-       consv_te = 1.
+       consv_te = 0.
        do_sat_adj = .T.
        consv_am = .F.
        fill = .T.
@@ -123,7 +123,7 @@
 /
 
 &gfs_physics_nml
-       fhzero         = 6.
+       fhzero         = 1.
        ldiag3d        = .false.
        ldiag_ugwp     = .F.
        do_ugwp        = .F.

@@ -3,12 +3,9 @@
 
 "grid_spec",              -1,  "months",   1, "days",  "time"
 "atmos_static",           -1,  "hours",    1, "hours", "time"
-#"atmos_4xdaily",           6,  "hours",    1, "days",  "time"
-"atmos_4xdaily",           1,  "hours",    1, "days",  "time"
-#"fv3_history",             3,  "hours",    1, "hours", "time"
-"fv3_history",             1,  "hours",    1, "hours", "time"
-#"fv3_history2d",           3,  "hours",    1, "hours", "time"
-"fv3_history2d",           1,  "hours",    1, "hours", "time"
+#"atmos_4xdaily",           1,  "hours",    1, "days",  "time"
+"fv3_history",             0,  "hours",    1, "hours", "time"
+"fv3_history2d",           0,  "hours",    1, "hours", "time"
 
 #
 #=======================
@@ -25,75 +22,75 @@
 ###
 # 4x daily output
 ###
- "dynamics",  "slp",         "slp",        "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "vort850",     "vort850",    "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "vort200",     "vort200",    "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "us",          "us",         "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "u1000",       "u1000",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "u850",        "u850",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "u700",        "u700",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "u500",        "u500",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "u200",        "u200",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "u100",        "u100",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "u50",         "u50",        "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "u10",         "u10",        "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "vs",          "vs",         "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "v1000",       "v1000",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "v850",        "v850",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "v700",        "v700",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "v500",        "v500",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "v200",        "v200",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "v100",        "v100",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "v50",         "v50",        "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "v10",         "v10",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "slp",         "slp",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "vort850",     "vort850",    "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "vort200",     "vort200",    "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "us",          "us",         "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "u1000",       "u1000",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "u850",        "u850",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "u700",        "u700",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "u500",        "u500",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "u200",        "u200",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "u100",        "u100",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "u50",         "u50",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "u10",         "u10",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "vs",          "vs",         "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "v1000",       "v1000",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "v850",        "v850",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "v700",        "v700",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "v500",        "v500",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "v200",        "v200",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "v100",        "v100",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "v50",         "v50",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "v10",         "v10",        "atmos_4xdaily", "all", .false.,  "none", 2
 ####
- "dynamics",  "tm",          "tm",         "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "t1000",       "t1000",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "t850",        "t850",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "t700",        "t700",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "t500",        "t500",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "t200",        "t200",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "t100",        "t100",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "t50",         "t50",        "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "t10",         "t10",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "tm",          "tm",         "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "t1000",       "t1000",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "t850",        "t850",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "t700",        "t700",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "t500",        "t500",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "t200",        "t200",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "t100",        "t100",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "t50",         "t50",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "t10",         "t10",        "atmos_4xdaily", "all", .false.,  "none", 2
 ####
- "dynamics",  "z1000",       "z1000",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "z850",        "z850",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "z700",        "z700",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "z500",        "z500",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "z200",        "z200",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "z100",        "z100",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "z50",         "z50",        "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "z10",         "z10",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "z1000",       "z1000",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "z850",        "z850",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "z700",        "z700",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "z500",        "z500",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "z200",        "z200",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "z100",        "z100",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "z50",         "z50",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "z10",         "z10",        "atmos_4xdaily", "all", .false.,  "none", 2
 ####
-#"dynamics",  "w1000",       "w1000",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "w850",        "w850",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "w700",        "w700",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "w500",        "w500",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "w200",        "w200",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "w1000",       "w1000",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "w850",        "w850",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "w700",        "w700",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "w500",        "w500",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "w200",        "w200",       "atmos_4xdaily", "all", .false.,  "none", 2
 ####
- "dynamics",  "q1000",       "q1000",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "q850",        "q850",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "q700",        "q700",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "q500",        "q500",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "q200",        "q200",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "q100",        "q100",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "q50",         "q50",        "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "q10",         "q10",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "q1000",       "q1000",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "q850",        "q850",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "q700",        "q700",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "q500",        "q500",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "q200",        "q200",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "q100",        "q100",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "q50",         "q50",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "q10",         "q10",        "atmos_4xdaily", "all", .false.,  "none", 2
 ####
- "dynamics",  "rh1000",      "rh1000",     "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "rh850",       "rh850",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "rh700",       "rh700",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "rh500",       "rh500",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "rh200",       "rh200",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "omg1000",     "omg1000",    "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "omg850",      "omg850",     "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "omg700",      "omg700",     "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "omg500",      "omg500",     "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "omg200",      "omg200",     "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "omg100",      "omg100",     "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "omg50",       "omg50",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "omg10",       "omg10",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "rh1000",      "rh1000",     "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "rh850",       "rh850",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "rh700",       "rh700",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "rh500",       "rh500",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "rh200",       "rh200",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "omg1000",     "omg1000",    "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "omg850",      "omg850",     "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "omg700",      "omg700",     "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "omg500",      "omg500",     "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "omg200",      "omg200",     "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "omg100",      "omg100",     "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "omg50",       "omg50",      "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "omg10",       "omg10",      "atmos_4xdaily", "all", .false.,  "none", 2
 ###
 # gfs static data
 ###
