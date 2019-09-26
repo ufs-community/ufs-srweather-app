@@ -280,7 +280,14 @@ case "$EXTRN_MDL_NAME_LBCS" in
 
   input_type="grib2"
 
-  numsoil_out="9"
+  if [ "$CCPP" = "true" ]; then
+    if [ "$CCPP_phys_suite" = "GFS" ]; then
+      numsoil_out="4"
+    elif [ "$CCPP_phys_suite" = "GSD" ]; then
+      numsoil_out="9"
+    fi
+  fi
+
   replace_vgtyp=".false."
   replace_sotyp=".false."
   replace_vgfrc=".false."

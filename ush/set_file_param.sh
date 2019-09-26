@@ -96,7 +96,7 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
     regex_replace="\1 $value"
     ;;
 #
-  "$FV3_NML_FN" | "$FV3_NML_CCPP_GFS_FN" | "$FV3_NML_CCPP_GSD_FN")
+  "$FV3_NML_FN" | "$FV3_NML_CCPP_GFSEXTERN_GFSPHYS_FN" | "$FV3_NML_CCPP_GFSEXTERN_GSDPHYS_FN" | "$FV3_NML_CCPP_RAPHRRREXTERN_GSDPHYS_FN")
     regex_search="^(\s*$param\s*=)(.*)"
     regex_replace="\1 $value"
     ;;

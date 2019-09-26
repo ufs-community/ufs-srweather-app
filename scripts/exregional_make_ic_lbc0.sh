@@ -230,7 +230,7 @@ case "$EXTRN_MDL_NAME_ICS" in
 
   tracers_input="\"spfh\",\"clwmr\",\"o3mr\""
   tracers="\"sphum\",\"liq_wat\",\"o3mr\""
-
+ 
   numsoil_out="4"
   replace_vgtyp=".true."
   replace_sotyp=".true."
@@ -287,7 +287,14 @@ case "$EXTRN_MDL_NAME_ICS" in
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
 
-  numsoil_out="9"
+  if [ "$CCPP" = "true" ]; then
+    if [ "$CCPP_phys_suite" = "GFS" ]; then
+      numsoil_out="4"
+    elif [ "$CCPP_phys_suite" = "GSD" ]; then
+      numsoil_out="9"
+    fi
+  fi
+  
   geogrid_file_input_grid="/scratch3/BMC/det/beck/FV3-CAM/geo_em.d01.nc"  # Maybe make this a fix file?
   replace_vgtyp=".false."
   replace_sotyp=".false."
