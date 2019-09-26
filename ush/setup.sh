@@ -650,7 +650,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-rem=$(( $fcst_len_hrs % $LBC_UPDATE_INTVL_HRS ))
+rem=$(( ${fcst_len_hrs}%${LBC_UPDATE_INTVL_HRS} ))
 
 if [ "$rem" -ne "0" ]; then
   print_err_msg_exit "\

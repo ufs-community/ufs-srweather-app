@@ -684,11 +684,29 @@ has not been specified for this external model:
     ;;
 
   "RAPX")
+#
+# The zip archive files for RAPX are named such that the forecast files
+# for odd-numbered starting hours (e.g. 01, 03, ..., 23) are stored to-
+# gether with the forecast files for the corresponding preceding even-
+# numbered starting hours (e.g. 00, 02, ..., 22, respectively), in an 
+# archive file whose name contains only the even-numbered hour.  Thus, 
+# in forming the name of the archive file, if the starting hour (hh) is
+# odd, we reduce it by one to get the corresponding even-numbered hour 
+# and use that to form the archive file name.
+#
+    if [ $(($hh%2)) = 1 ]; then
+      hh_orig=$hh
+      hh=$((hh-1))
+    fi
     arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/rap/full/wrfnat"
     arcv_fmt="zip"
     arcv_fns="${yyyy}${mm}${dd}${hh}00.${arcv_fmt}"
     arcv_fps="$arcv_dir/$arcv_fns"
     arcvrel_dir=""
+#
+# Reset hh to its original value in case it is used again later below.
+#
+    hh=${hh_orig}
     ;;
 
   "HRRRX")
