@@ -449,12 +449,20 @@ CCPP_phys_suite must be set to one of the following:
 
 fi
 
+#
+#-----------------------------------------------------------------------
+#
+# Do not allow the option of running with RAP or HRRR external model data and
+# GFS physics.  This option is currently untested.
+#
+#-----------------------------------------------------------------------
+#
 
-
-
-
-
-
+if [ "$EXTRN_MDL_NAME_ICSSURF" = "HRRRX" -o "$EXTRN_MDL_NAME_LBCS" = "RAPX" ] && [ "$CCPP_phys_suite" = "GFS" ]; then
+  print_err_msg_exit "\
+Using $EXTRN_MDL_NAME_ICSSURF external model data and $CCPP_phys_suite physics through CCPP is
+untested and not currently an option in the community SAR workflow."
+fi
 
 #
 #-----------------------------------------------------------------------
