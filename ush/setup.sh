@@ -426,10 +426,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$EXTRN_MDL_NAME_ICSSURF" = "HRRRX" -o "$EXTRN_MDL_NAME_LBCS" = "RAPX" ] && \
+if [ "$EXTRN_MDL_NAME_ICS" = "HRRRX" -o "$EXTRN_MDL_NAME_LBCS" = "RAPX" ] && \
    [ "$CCPP_phys_suite" = "GFS" ]; then
   print_err_msg_exit "\
-Using $EXTRN_MDL_NAME_ICSSURF external model data and $CCPP_phys_suite physics through CCPP is
+Using $EXTRN_MDL_NAME_ICS external model data and $CCPP_phys_suite physics through CCPP is
 untested and not currently an option in the community SAR workflow."
 fi
 #

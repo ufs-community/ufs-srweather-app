@@ -486,8 +486,12 @@ the FV3SAR under NEMS to the experiment directory..."
     print_info_msg_verbose "
 Copying the FV3 namelist file for the GFS physics suite to the experi-
 ment directory..."
-    cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GFS_FN} \
-            $EXPTDIR/${FV3_NML_FN}
+#    cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GFS_FN} \
+#            $EXPTDIR/${FV3_NML_FN}
+    if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
+      cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GFSEXTERN_GFSPHYS_FN} \
+              $EXPTDIR/${FV3_NML_FN}
+    fi
 
     print_info_msg_verbose "
 Copying the field table file for the GFS physics suite to the experiment
@@ -512,8 +516,16 @@ directory..."
     print_info_msg_verbose "
 Copying the FV3 namelist file for the GSD physics suite to the experi-
 ment directory..."
-    cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GSD_FN} \
-            $EXPTDIR/${FV3_NML_FN}
+#    cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GSD_FN} \
+#            $EXPTDIR/${FV3_NML_FN}
+
+    if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
+      cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GFSEXTERN_GSDPHYS_FN} \
+              $EXPTDIR/${FV3_NML_FN}
+    elif [ "${EXTRN_MDL_NAME_ICS}" = "HRRRX" ]; then
+      cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_RAPHRRREXTERN_GSDPHYS_FN} \
+              $EXPTDIR/${FV3_NML_FN}
+    fi
 
     print_info_msg_verbose "
 Copying the field table file for the GSD physics suite to the experiment
@@ -533,6 +545,24 @@ GSD suite) to the experiment directory..."
     cp_vrfy $FIXgsd/CCN_ACTIVATE.BIN $EXPTDIR
 
   fi
+
+# Original changes in stage_static.sh by Jeff:
+#  if [ "$CCPP_phys_suite" = "GFS" ] && [ "$EXTRN_MDL_NAME_ICS" = "FV3GFS" ]; then
+#
+#    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFSEXTERN_GFSPHYS_FN $EXPTDIR/$FV3_NML_FN
+#    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $EXPTDIR
+#
+#  elif [ "$CCPP_phys_suite" = "GSD" ] && [ "$EXTRN_MDL_NAME_ICS" = "FV3GFS" ]; then
+#
+#    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFSEXTERN_GSDPHYS_FN $EXPTDIR/$FV3_NML_FN
+#    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $EXPTDIR/$FIELD_TABLE_FN
+#
+#  elif [ "$CCPP_phys_suite" = "GSD" ] && [ "$EXTRN_MDL_NAME_ICS" = "HRRRX" ]; then
+#
+#    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_RAPHRRREXTERN_GSDPHYS_FN $EXPTDIR/$FV3_NML_FN
+#    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $EXPTDIR/$FIELD_TABLE_FN
+#
+#  fi
 #
 #-----------------------------------------------------------------------
 #
