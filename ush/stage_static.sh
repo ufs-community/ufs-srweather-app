@@ -179,14 +179,19 @@ Heredoc (cat) command to append command to add path to CCPP libraries to
 the Lmod initialization script in the experiment directory returned with
 a nonzero status."
 
-  if [ "$CCPP_phys_suite" = "GFS" ]; then
+  if [ "$CCPP_phys_suite" = "GFS" ] && [ "$EXTRN_MDL_NAME_ICSSURF" = "FV3GFS" ]; then
 
-    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFS_FN $EXPTDIR/$FV3_NML_FN
+    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFSEXTERN_GFSPHYS_FN $EXPTDIR/$FV3_NML_FN
     cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $EXPTDIR
 
-  elif [ "$CCPP_phys_suite" = "GSD" ]; then
+  elif [ "$CCPP_phys_suite" = "GSD" ] && [ "$EXTRN_MDL_NAME_ICSSURF" = "FV3GFS" ]; then
 
-    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GSD_FN $EXPTDIR/$FV3_NML_FN
+    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFSEXTERN_GSDPHYS_FN $EXPTDIR/$FV3_NML_FN
+    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $EXPTDIR/$FIELD_TABLE_FN
+ 
+  elif [ "$CCPP_phys_suite" = "GSD" ] && [ "$EXTRN_MDL_NAME_ICSSURF" = "HRRRX" ]; then
+
+    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_RAPHRRREXTERN_GSDPHYS_FN $EXPTDIR/$FV3_NML_FN
     cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $EXPTDIR/$FIELD_TABLE_FN
 
   fi
