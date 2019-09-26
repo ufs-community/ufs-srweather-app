@@ -725,7 +725,7 @@ The forecast length (fcst_len_hrs) is not evenly divisible by the later-
 al boundary conditions update interval (LBC_UPDATE_INTVL_HRS):
   fcst_len_hrs = $fcst_len_hrs
   LBC_UPDATE_INTVL_HRS = $LBC_UPDATE_INTVL_HRS
-  rem = fcst_len_hrs % LBC_UPDATE_INTVL_HRS = $rem"
+  rem = fcst_len_hrs %% LBC_UPDATE_INTVL_HRS = $rem"
 fi
 #
 #-----------------------------------------------------------------------
