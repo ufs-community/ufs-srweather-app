@@ -44,6 +44,12 @@ run_dir = "/scratch3/BMC/det/beck/FV3-CAM/run_dirs/real_time/2019062300"
 run_dir = "/scratch3/BMC/det/Gerard.Ketefian/FV3SAR_demo_PASPBL_20190725/expt_dirs/FFFFF"
 run_dir = "/scratch3/BMC/det/beck/CAM_chgres/run_dirs/test_HRRR25km_FV3GFSICBCs_GFSphysics"
 run_dir = "/scratch3/BMC/det/Gerard.Ketefian/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
+run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_get_RAP_arcv_01"
+
+run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR25km"
+run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
+run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR3km"
+run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HAFSV0.A"
 
 
 tile_inds := (/ 1, 7, 4 /)
@@ -676,8 +682,10 @@ if (True) then
   nn = 0
   lon_grid_cntr_native = lon_tile_cntr_tiles_to_plot(nn)
   lat_grid_cntr_native = lat_tile_cntr_tiles_to_plot(nn)
-  lon_tile_corners_face_midpts_native := lon_tile_corners_face_midpts_tiles_to_plot(nn,:)
-  lat_tile_corners_face_midpts_native := lat_tile_corners_face_midpts_tiles_to_plot(nn,:)
+  lon_tile_corners_face_midpts_native \
+  := lon_tile_corners_face_midpts_tiles_to_plot(nn,:)
+  lat_tile_corners_face_midpts_native \
+  := lat_tile_corners_face_midpts_tiles_to_plot(nn,:)
 
   dx_native = 3.0d+3
   dy_native = 3.0d+3
@@ -698,7 +706,7 @@ if (True) then
          dx_native, dy_native, \
          angle_units)
 
-print("HELLO")
+print("DONE calculating write-component grid parameters.")
 pause
 end if
 ;
