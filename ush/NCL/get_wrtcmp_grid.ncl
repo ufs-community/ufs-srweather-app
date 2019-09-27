@@ -273,21 +273,6 @@ begin
 
   x_min = x_cell_cntr_SW - 0.5d+0*dx
   y_min = y_cell_cntr_SW - 0.5d+0*dy
-
-print("")
-print("x_cell_cntr_SW = " + x_cell_cntr_SW)
-print("x_min = " + x_min)
-print("dx = " + dx)
-print("nx = " + nx)
-;print("2*x_min/dx = " + 2*x_min/dx)
-
-print("")
-print("y_cell_cntr_SW = " + y_cell_cntr_SW)
-print("y_min = " + y_min)
-print("dy = " + dy)
-print("ny = " + ny)
-;print("2*y_min/dy = " + 2*y_min/dy)
-pause
 ;
 ; **********************************************************************
 ;
@@ -302,19 +287,6 @@ pause
 
   x_verts_vec := dx*i_vec + x_min
   y_verts_vec := dy*j_vec + y_min
-
-print("")
-;print("x_verts_vec = " + x_verts_vec)
-print("x_verts_vec(0) = " + x_verts_vec(0))
-print("x_verts_vec(nx) = " + x_verts_vec(nx))
-print("(x_verts_vec(nx) - x_verts_vec(0))/dx = " + (x_verts_vec(nx) - x_verts_vec(0))/dx)
-pause
-print("")
-;print("y_verts_vec = " + y_verts_vec)
-print("y_verts_vec(0) = " + y_verts_vec(0))
-print("y_verts_vec(ny) = " + y_verts_vec(ny))
-print("(y_verts_vec(ny) - y_verts_vec(0))/dy = " + (y_verts_vec(ny) - y_verts_vec(0))/dy)
-pause
 ;
 ; **********************************************************************
 ;
@@ -377,10 +349,6 @@ pause
 ;
 ; **********************************************************************
 ;
-;print("")
-;print("x_cntrs = " + x_cntrs)
-;pause
-
   sphr_coords := calc_sphr_coords_from_lambert_cnfrml( \
                  lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
                  x_cntrs, y_cntrs)
@@ -471,10 +439,6 @@ pause
 ;
   rem_nx = mod(nx, 2)
   rem_ny = mod(ny, 2)
-print("")
-print("rem_nx = " + rem_nx)
-print("rem_ny = " + rem_ny)
-pause
 
   if ((rem_nx .eq. 0) .and. (rem_ny .eq. 0)) then
     i_cntr = nx/2
@@ -500,17 +464,6 @@ pause
   end if
   end if
   end if
-print("")
-print("lon_cntrs(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2) = " + lon_cntrs(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2))
-print("")
-print("lon_verts(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2) = " + lon_verts(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2))
-pause
-
-print("")
-print("lat_cntrs(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2) = " + lat_cntrs(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2))
-print("")
-print("lat_verts(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2) = " + lat_verts(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2))
-pause
 ;
 ; **********************************************************************
 ;
