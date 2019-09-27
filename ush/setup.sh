@@ -594,7 +594,7 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 #
 #-----------------------------------------------------------------------
 #
-FV3SAR_DIR="$BASEDIR"
+FV3SAR_DIR="$BASEDIR/regional_workflow"
 USHDIR="$FV3SAR_DIR/ush"
 SCRIPTSDIR="$FV3SAR_DIR/scripts"
 JOBSDIR="$FV3SAR_DIR/jobs"
@@ -733,7 +733,7 @@ The forecast length (fcst_len_hrs) is not evenly divisible by the later-
 al boundary conditions update interval (LBC_UPDATE_INTVL_HRS):
   fcst_len_hrs = $fcst_len_hrs
   LBC_UPDATE_INTVL_HRS = $LBC_UPDATE_INTVL_HRS
-  rem = fcst_len_hrs % LBC_UPDATE_INTVL_HRS = $rem"
+  rem = fcst_len_hrs %% LBC_UPDATE_INTVL_HRS = $rem"
 fi
 #
 #-----------------------------------------------------------------------
@@ -1280,10 +1280,10 @@ if [ "$quilting" = ".true." ]; then
   if [ $rem -ne 0 ]; then
     print_err_msg_exit "\
 The number of grid points in the y direction on the regional grid (ny_T7) must
-be evenly divisible by the number of tasks per write group (write_tasks_per_group):
+be evenly divisible by the number of tasks per write group (WRTCMP_write_tasks_per_group):
   ny_T7 = $ny_T7
-  write_tasks_per_group = $write_tasks_per_group
-  ny_T7 % write_tasks_per_group = $rem"
+  WRTCMP_write_tasks_per_group = $WRTCMP_write_tasks_per_group
+  ny_T7 %% WRTCMP_write_tasks_per_group = $rem"
   fi
 
 fi
