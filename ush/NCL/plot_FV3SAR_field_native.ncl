@@ -687,14 +687,31 @@ if (True) then
   lat_tile_corners_face_midpts_native \
   := lat_tile_corners_face_midpts_tiles_to_plot(nn,:)
 
-  dx_native = 3.0d+3
-  dy_native = 3.0d+3
+;
+; Read in the native grid parameters from the variable defintions file 
+; in the experiment directory.
+;
+  var_defns_fp = run_dir + "/var_defns.sh"
+  param_names = (/ "delx", "dely" /)
+  num_params = dimsizes(param_names)
+  do np=0, num_params-1
 
-;  dx_native = 13.0d+3
-;  dy_native = 13.0d+3
+    param_name = param_names(np)
+    regex_search = "^\s*" + param_name + "=(" + char_dq + "([^" \
+                 + char_dq + "]+)" + char_dq + "|([^ " + char_dq + "]+))$"
+    regex_print = "\2\3"
+    sed_cmd = "sed -r -n -e " + char_sq + "s/" + regex_search + "/" \
+          + regex_print + "/p" + char_sq + " " + var_defns_fp
+    sed_output = systemfunc(sed_cmd)
 
-;  dx_native = 25.0d+3
-;  dy_native = 25.0d+3
+    if (strcmp_exact(param_name, "delx")) then
+      dx_native = todouble(sed_output)
+    else if (strcmp_exact(param_name, "dely")) then
+      dy_native = todouble(sed_output)
+    end if
+    end if                                                                                                 
+
+  end do
 
   angle_units = "deg"
 
