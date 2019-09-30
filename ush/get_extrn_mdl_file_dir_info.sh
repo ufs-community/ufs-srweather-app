@@ -694,10 +694,8 @@ has not been specified for this external model:
 # odd, we reduce it by one to get the corresponding even-numbered hour 
 # and use that to form the archive file name.
 #
-
-      hh_orig=$hh
+    hh_orig=$hh
     if [ $(($hh%2)) = 1 ]; then
-      #hh_orig=$hh
       hh=$((hh-1))
     fi
     arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/rap/full/wrfnat"
