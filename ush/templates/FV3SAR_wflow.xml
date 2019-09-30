@@ -16,7 +16,7 @@ the workflow XML.
 <!ENTITY SCHED         ""> 
 <!ENTITY QUEUE_DEFAULT "">
 <!ENTITY QUEUE_HPSS    "">
-<!ENTITY QUEUE_RUN_FV3 "">
+<!ENTITY QUEUE_FCST    "">
 
 <!ENTITY USHDIR  "">
 <!ENTITY JOBSDIR "">
@@ -77,7 +77,7 @@ Variables that are not modified by the workflow generation script.
 
 <!ENTITY RSRV_DEFAULT "<queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
 <!ENTITY RSRV_HPSS    "<partition>&QUEUE_HPSS;</partition><account>&ACCOUNT;</account>"> 
-<!ENTITY RSRV_RUN_FV3 "<queue>&QUEUE_RUN_FV3;</queue><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_RUN_FV3 "<queue>&QUEUE_FCST;</queue><account>&ACCOUNT;</account>"> 
 
 ]>
 

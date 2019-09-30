@@ -27,7 +27,7 @@ RUN_ENVIR="nco"
 # QUEUE_DEFAULT:
 # The default queue to which workflow tasks are submitted.  If a task
 # does not have a specific variable in which its queue is defined (e.g.
-# QUEUE_HPSS, QUEUE_RUN_FV3; see below), it is submitted to this
+# QUEUE_HPSS, QUEUE_FCST; see below), it is submitted to this
 # queue.  If this is not set or set to an empty string, it will be reset
 # to a machine-dependent value in the setup script (setup.sh).
 #
@@ -40,7 +40,7 @@ RUN_ENVIR="nco"
 # string, it will be reset to a machine-dependent value in the setup
 # script (setup.sh).
 #
-# QUEUE_RUN_FV3:
+# QUEUE_FCST:
 # The queue to which the run_FV3 task is submitted.  This task runs
 # the forecast.  If this is not set or set to an empty string, it will
 # be reset to a machine-dependent value in the setup script (setup.sh).
@@ -53,7 +53,7 @@ MACHINE="BIG_COMPUTER"
 ACCOUNT="project_name"
 QUEUE_DEFAULT="batch_queue"
 QUEUE_HPSS="hpss_queue"
-QUEUE_RUN_FV3="production_queue"
+QUEUE_FCST="production_queue"
 #
 #-----------------------------------------------------------------------
 #

@@ -248,7 +248,7 @@ Then remove this message and rerun."
   SCHED=""
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
-  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
+  QUEUE_FCST=${QUEUE_FCST:-""}
   ;;
 #
 "WCOSS")
@@ -262,7 +262,7 @@ Then remove this message and rerun."
   SCHED=""
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
-  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
+  QUEUE_FCST=${QUEUE_FCST:-""}
   ;;
 #
 "THEIA")
@@ -271,7 +271,7 @@ Then remove this message and rerun."
   SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
-  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
+  QUEUE_FCST=${QUEUE_FCST:-""}
   ;;
 #
 "HERA")
@@ -280,7 +280,7 @@ Then remove this message and rerun."
   SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
-  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
+  QUEUE_FCST=${QUEUE_FCST:-""}
   ;;
 #
 "JET")
@@ -289,7 +289,7 @@ Then remove this message and rerun."
   SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
-  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-"batch"}
+  QUEUE_FCST=${QUEUE_FCST:-"batch"}
   ;;
 #
 "ODIN")
@@ -298,7 +298,7 @@ Then remove this message and rerun."
   SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
-  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
+  QUEUE_FCST=${QUEUE_FCST:-""}
   ;;
 #
 "CHEYENNE")
@@ -312,7 +312,7 @@ Then remove this message and rerun."
   SCHED=""
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
-  QUEUE_RUN_FV3SAR=${QUEUE_RUN_FV3SAR:-""}
+  QUEUE_FCST=${QUEUE_FCST:-""}
 #
 esac
 #
