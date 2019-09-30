@@ -25,7 +25,7 @@ module load nccmp
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "$0" )
+script_name=$( basename "${BASH_SOURCE[0]}" )
 if [ $# -ne 1 ] && [ $# -ne 2 ]; then
 
   printf "
