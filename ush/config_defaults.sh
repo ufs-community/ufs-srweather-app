@@ -64,11 +64,6 @@ QUEUE_RUN_FV3="production_queue"
 # Directory in which the regional_workflow, NEMSfv3gfs, and other repo-
 # sitories are cloned.
 #
-# UPPDIR:
-# Directory in which the NCEP post (UPP) executable is located.  Note 
-# that the ndate executable needs to be compiled in the community UPP
-# and copied into UPPDIR.
-#
 # EXPT_BASEDIR:
 # The base directory in which the experiment directory will be created.  
 # If this is not specified or if it is set to an empty string, it will
@@ -90,7 +85,6 @@ QUEUE_RUN_FV3="production_queue"
 #
 #BASEDIR="/path/to/directory/to/regional_workflow/clone"
 BASEDIR="/path/to/directory/above/regional_workflow/clone"
-UPPDIR="/path/to/UPP/executable"
 EXPT_BASEDIR=""
 EXPT_SUBDIR=""
 

@@ -114,9 +114,36 @@ case $MACHINE in
 "HERA")
   { save_shell_opts; set +x; } > /dev/null 2>&1
   module purge
-  module load intel
-  module load impi
-  module load netcdf
+  
+  module load intel/19.0.4.243
+  module load impi/2019.0.4
+
+  #module use /contrib/modulefiles
+  module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
+
+  # Loding nceplibs modules
+  module load sigio/2.1.1
+  module load jasper/1.900.1
+  module load png/1.2.44
+  module load z/1.2.11
+  module load sfcio/1.1.1
+  module load nemsio/2.2.4
+  module load bacio/2.0.3
+  module load g2/3.1.1
+  #module load xmlparse/v2.0.0
+  module load gfsio/1.1.0
+  module load ip/3.0.2
+  module load sp/2.0.3
+  module load w3emc/2.3.1
+  module load w3nco/2.0.7
+  module load crtm/2.2.5
+  module load netcdf/3.6.3
+  #module load netcdf/4.7.0
+  module load g2tmpl/1.5.1
+  module load wrfio/1.1.1
+
+  export NDATE=/scratch3/NCEPDEV/nwprod/lib/prod_util/v1.1.0/exec/ndate
+
   { restore_shell_opts; } > /dev/null 2>&1
   APRUN="srun"
   ;;
@@ -160,11 +187,9 @@ case $MACHINE in
   APRUN="mpirun -np ${np}"
   ;;
 
-
 "ODIN")
   APRUN="srun -n 1"
   ;;
-
 
 esac
 #
@@ -178,7 +203,7 @@ rm_vrfy -f fort.*
 cp_vrfy $FIXupp/nam_micro_lookup.dat ./eta_micro_lookup.dat
 cp_vrfy $FIXupp/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
 cp_vrfy $FIXupp/params_grib2_tbl_new ./params_grib2_tbl_new
-cp_vrfy ${UPPDIR}/ncep_post .
+cp_vrfy ${EXECDIR}/ncep_post .
 #
 #-----------------------------------------------------------------------
 #
@@ -201,7 +226,7 @@ tmmark="tm$HH"
 dyn_file=${CYCLE_DIR}/dynf0${fhr}.nc
 phy_file=${CYCLE_DIR}/phyf0${fhr}.nc
 
-POST_TIME=$( ${UPPDIR}/ndate.exe +${fhr} ${CDATE} )
+POST_TIME=$( ${NDATE} +${fhr} ${CDATE} )
 POST_YYYY=${POST_TIME:0:4}
 POST_MM=${POST_TIME:4:2}
 POST_DD=${POST_TIME:6:2}
