@@ -605,14 +605,17 @@ case $MACHINE in
 
 "WCOSS_C")
   FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
+  SFC_CLIMO_INPUT_DIR=""
   ;;
 
 "WCOSS")
   FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
+  SFC_CLIMO_INPUT_DIR=""
   ;;
 
 "DELL")
   FIXgsm="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
+  SFC_CLIMO_INPUT_DIR=""
   ;;
 
 "THEIA")
@@ -627,6 +630,7 @@ case $MACHINE in
 
 "JET")
   FIXgsm="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_am"
+  SFC_CLIMO_INPUT_DIR=""
   ;;
 
 "ODIN")

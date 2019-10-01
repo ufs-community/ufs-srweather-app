@@ -83,7 +83,7 @@ if [ $# -eq 2 ]; then
 
 else
 
-  baseline_dir="/scratch3/BMC/det/regional_FV3/regr_baselines"
+  baseline_dir="/scratch2/BMC/det/regional_FV3/regr_baselines"
   if [ -n ${PREDEF_GRID_NAME} ]; then
     baseline_dir="${baseline_dir}/${PREDEF_GRID_NAME}"
   else
