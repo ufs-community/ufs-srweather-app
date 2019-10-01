@@ -61,7 +61,6 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY PROC_GET_EXTRN_MDL_FILES "1:ppn=1">
 <!ENTITY PROC_MAKE_ICS_SURF_LBC0  "4:ppn=12">
 <!ENTITY PROC_MAKE_LBC1_TO_LBCN   "4:ppn=12">
-<!ENTITY PROC_STAGE               "1:ppn=1">
 <!ENTITY PROC_RUN_FV3             "">
 <!ENTITY PROC_POST                "2:ppn=24">
 
@@ -71,7 +70,6 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY RSRC_GET_EXTRN_MDL_FILES "<walltime>00:45:00</walltime>">
 <!ENTITY RSRC_MAKE_ICS_SURF_LBC0  "<walltime>00:30:00</walltime>">
 <!ENTITY RSRC_MAKE_LBC1_TO_LBCN   "<walltime>00:30:00</walltime>">
-<!ENTITY RSRC_STAGE               "<walltime>00:10:00</walltime>">
 <!ENTITY RSRC_RUN_FV3             "<walltime>07:30:00</walltime>">
 <!ENTITY RSRC_POST                "<walltime>00:30:00</walltime>">
 
@@ -246,8 +244,8 @@ Variables that are not modified by the workflow generation script.
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
-          <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
           <taskdep task="make_sfc_climo"/>
+          <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
     </dependency>
@@ -284,8 +282,8 @@ Variables that are not modified by the workflow generation script.
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
-          <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
           <taskdep task="make_sfc_climo"/>
+          <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
     </dependency>
