@@ -3,7 +3,7 @@
 #
 # This file defines a function that checks for a preexisting version of
 # the specified directory and, if present, deals with it according to 
-# the method specified in the variable preexisting_dir_method.
+# the method specified by the argument preexisting_dir_method.
 #
 #-----------------------------------------------------------------------
 #

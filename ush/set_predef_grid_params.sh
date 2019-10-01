@@ -56,16 +56,16 @@ case ${PREDEF_GRID_NAME} in
 
   expt_title="_GSD_HAFSV0.A${expt_title}"
 
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  grid_gen_method = \"$grid_gen_method\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-62.0
     lat_rgnl_ctr=22.0
@@ -113,7 +113,7 @@ predefined domain:
 
   expt_title="_GSD_RAP13km${expt_title}"
 
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     lon_ctr_T6=-106.0
     lat_ctr_T6=54.0
@@ -153,7 +153,7 @@ predefined domain:
       WRTCMP_dlat="0.121833"
     fi
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-106.0
     lat_rgnl_ctr=54.0
@@ -199,16 +199,16 @@ predefined domain:
 
   expt_title="_GSD_HRRR25km${expt_title}"
 
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  grid_gen_method = \"$grid_gen_method\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-97.5
     lat_rgnl_ctr=38.5
@@ -256,16 +256,16 @@ predefined domain:
 
   expt_title="_GSD_HRRR13km${expt_title}"
 
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  grid_gen_method = \"$grid_gen_method\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-97.5
     lat_rgnl_ctr=38.5
@@ -313,16 +313,16 @@ predefined domain:
 
   expt_title="_GSD_HRRR3km${expt_title}"
 
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  grid_gen_method = \"$grid_gen_method\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-97.5
     lat_rgnl_ctr=38.5
@@ -370,7 +370,7 @@ predefined domain:
 
   expt_title="_EMC_CONUS${expt_title}"
 
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # Values from an EMC script.
 
 ### rocoto items
@@ -432,7 +432,7 @@ predefined domain:
     blocksize=32
 
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-97.5
     lat_rgnl_ctr=38.5
@@ -458,13 +458,13 @@ predefined domain:
 
   expt_title="_EMC_AK${expt_title}"
 
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  grid_gen_method = \"$grid_gen_method\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
 # Values from an EMC script.
@@ -527,13 +527,13 @@ predefined domain:
     write_tasks_per_group="24"
     blocksize=32
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  grid_gen_method = \"$grid_gen_method\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
   fi

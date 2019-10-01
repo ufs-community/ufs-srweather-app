@@ -95,7 +95,7 @@ Exiting script with nonzero return code.
 "
     exit 1
   fi
-  baseline_dir="${baseline_dir}/${CCPP_phys_suite}phys"
+  baseline_dir="${baseline_dir}/${CCPP_PHYS_SUITE}phys"
   baseline_dir="${baseline_dir}/ICs-${EXTRN_MDL_NAME_ICS}_LBCs-${EXTRN_MDL_NAME_LBCS}"
   baseline_dir="${baseline_dir}/$CDATE"
 

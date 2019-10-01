@@ -43,7 +43,7 @@ climatology.
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir ${SFC_CLIMO_DIR} $preexisting_dir_method
+check_for_preexist_dir ${SFC_CLIMO_DIR} ${PREEXISTING_DIR_METHOD}
 mkdir_vrfy -p "${SFC_CLIMO_DIR}"
 #
 #-----------------------------------------------------------------------

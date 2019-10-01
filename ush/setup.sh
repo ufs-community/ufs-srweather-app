@@ -368,17 +368,17 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Make sure that preexisting_dir_method is set to a valid value.
+# Make sure that PREEXISTING_DIR_METHOD is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$preexisting_dir_method" valid_vals_preexisting_dir_method || { \
-valid_vals_preexisting_dir_method_str=$(printf "\"%s\" " "${valid_vals_preexisting_dir_method[@]}");
+iselementof "${PREEXISTING_DIR_METHOD}" valid_vals_PREEXISTING_DIR_METHOD || { \
+valid_vals_PREEXISTING_DIR_METHOD_str=$(printf "\"%s\" " "${valid_vals_PREEXISTING_DIR_METHOD[@]}");
 print_err_msg_exit "\
-Value specified in preexisting_dir_method is not supported:
-  preexisting_dir_method = \"$preexisting_dir_method\"
-preexisting_dir_method must be set to one of the following:
-  $valid_vals_preexisting_dir_method_str
+Value specified in PREEXISTING_DIR_METHOD is not supported:
+  PREEXISTING_DIR_METHOD = \"${PREEXISTING_DIR_METHOD}\"
+PREEXISTING_DIR_METHOD must be set to one of the following:
+  $valid_vals_PREEXISTING_DIR_METHOD_str
 "; }
 #
 #-----------------------------------------------------------------------
@@ -410,21 +410,21 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If USE_CCPP is set to "TRUE", make sure CCPP_phys_suite is set to a 
+# If USE_CCPP is set to "TRUE", make sure CCPP_PHYS_SUITE is set to a 
 # valid value.
 #
 #-----------------------------------------------------------------------
 #
 if [ "${USE_CCPP}" = "TRUE" ]; then
 
-  if [ ! -z ${CCPP_phys_suite} ]; then
-    iselementof "$CCPP_phys_suite" valid_vals_CCPP_phys_suite || { \
-    valid_vals_CCPP_phys_suite_str=$(printf "\"%s\" " "${valid_vals_CCPP_phys_suite[@]}");
+  if [ ! -z ${CCPP_PHYS_SUITE} ]; then
+    iselementof "${CCPP_PHYS_SUITE}" valid_vals_CCPP_PHYS_SUITE || { \
+    valid_vals_CCPP_PHYS_SUITE_str=$(printf "\"%s\" " "${valid_vals_CCPP_PHYS_SUITE[@]}");
     print_err_msg_exit "\
-The CCPP physics suite specified in CCPP_phys_suite is not supported:
-  CCPP_phys_suite = \"$CCPP_phys_suite\"
-CCPP_phys_suite must be set to one of the following:
-  $valid_vals_CCPP_phys_suite_str
+The CCPP physics suite specified in CCPP_PHYS_SUITE is not supported:
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
+CCPP_PHYS_SUITE must be set to one of the following:
+  $valid_vals_CCPP_PHYS_SUITE_str
   "; }
   fi
 
@@ -439,9 +439,9 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "$EXTRN_MDL_NAME_ICS" = "HRRRX" -o "$EXTRN_MDL_NAME_LBCS" = "RAPX" ] && \
-   [ "$CCPP_phys_suite" = "GFS" ]; then
+   [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
   print_err_msg_exit "\
-Using $EXTRN_MDL_NAME_ICS external model data and $CCPP_phys_suite physics through CCPP is
+Using $EXTRN_MDL_NAME_ICS external model data and ${CCPP_PHYS_SUITE} physics through CCPP is
 untested and not currently an option in the community SAR workflow."
 fi
 #
@@ -720,7 +720,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$grid_gen_method" = "GFDLgrid" ]; then
+if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
   iselementof "$RES" valid_vals_RES || { \
   valid_vals_RES_str=$(printf "\"%s\" " "${valid_vals_RES[@]}");
@@ -738,7 +738,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# For a grid with grid_gen_method set to "JPgrid", the orography filter-
+# For a grid with GRID_GEN_METHOD set to "JPgrid", the orography filter-
 # is performed by passing to the orography filtering the parameters for
 # an "equivalent" global uniform cubed-sphere grid.  These are the para-
 # meters that a global uniform cubed-sphere grid needs to have in order
@@ -758,7 +758,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$grid_gen_method" = "JPgrid" ]; then
+if [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
   stretch_fac="0.999"
 fi
 #
@@ -771,11 +771,11 @@ fi
 #
 if [ -z "${EXPT_SUBDIR}" ]; then  # If EXPT_SUBDIR is not set or is set to an empty string.
 
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
     stretch_str="_S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
     refine_str="_RR${refine_ratio}"
     EXPT_SUBDIR=${CRES}${stretch_str}${refine_str}${expt_title}
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
     nx_T7_str="NX$( printf "%s" "${nx_T7}" | sed "s|\.|p|" )"
     ny_T7_str="NY$( printf "%s" "${ny_T7}" | sed "s|\.|p|" )"
     a_grid_param_str="_A$( printf "%s" "${a_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
@@ -805,7 +805,7 @@ fi
 mkdir_vrfy -p "${EXPT_BASEDIR}"
 
 EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
-check_for_preexist_dir $EXPTDIR $preexisting_dir_method
+check_for_preexist_dir $EXPTDIR ${PREEXISTING_DIR_METHOD}
 #
 #-----------------------------------------------------------------------
 #
@@ -1135,17 +1135,17 @@ nh4_T7=$(( $nh3_T7 + 1 ))
 #
 #-----------------------------------------------------------------------
 #
-# Make sure grid_gen_method is set to a valid value.
+# Make sure GRID_GEN_METHOD is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$grid_gen_method" valid_vals_grid_gen_method || { \
-valid_vals_grid_gen_method_str=$(printf "\"%s\" " "${valid_vals_grid_gen_method[@]}");
+iselementof "${GRID_GEN_METHOD}" valid_vals_GRID_GEN_METHOD || { \
+valid_vals_GRID_GEN_METHOD_str=$(printf "\"%s\" " "${valid_vals_GRID_GEN_METHOD[@]}");
 print_err_msg_exit "\
-The grid generation method specified in grid_gen_method is not supported:
-  grid_gen_method = \"$grid_gen_method\"
-grid_gen_method must be one of the following:
-  $valid_vals_grid_gen_method_str
+The grid generation method specified in GRID_GEN_METHOD is not supported:
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
+GRID_GEN_METHOD must be one of the following:
+  $valid_vals_GRID_GEN_METHOD_str
 "; }
 #
 #-----------------------------------------------------------------------
@@ -1156,7 +1156,7 @@ grid_gen_method must be one of the following:
 #
 #-----------------------------------------------------------------------
 #
-if [ "$grid_gen_method" = "GFDLgrid" ]; then
+if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
   . $USHDIR/set_gridparams_GFDLgrid.sh
 #
@@ -1166,7 +1166,7 @@ if [ "$grid_gen_method" = "GFDLgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
-elif [ "$grid_gen_method" = "JPgrid" ]; then
+elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
   . $USHDIR/set_gridparams_JPgrid.sh
 
@@ -1742,7 +1742,7 @@ definitions file returned with a nonzero status."
 #
 #-----------------------------------------------------------------------
 #
-if [ "$grid_gen_method" = "GFDLgrid" ]; then
+if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
   { cat << EOM >> $SCRIPT_VAR_DEFNS_FP
 #
@@ -1771,7 +1771,7 @@ EOM
 Heredoc (cat) command to append grid parameters to variable definitions
 file returned with a nonzero status."
 
-elif [ "$grid_gen_method" = "JPgrid" ]; then
+elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
   { cat << EOM >> $SCRIPT_VAR_DEFNS_FP
 #
@@ -1790,8 +1790,8 @@ mns_nx_T7_pls_wide_halo="$mns_nx_T7_pls_wide_halo"
 mns_ny_T7_pls_wide_halo="$mns_ny_T7_pls_wide_halo"
 #
 # The following variables must be set in order to be able to use the 
-# same scripting machinary for the case of grid_gen_method set to "JP-
-# grid" as for grid_gen_method set to "GFDLgrid".
+# same scripting machinary for the case of GRID_GEN_METHOD set to "JP-
+# grid" as for GRID_GEN_METHOD set to "GFDLgrid".
 #
 RES=""   # This will be set after the grid generation task is complete.
 CRES=""  # This will be set after the grid generation task is complete.

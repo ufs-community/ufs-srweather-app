@@ -408,12 +408,12 @@ ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${NEMS_CONFIG_FN}
 if [ "$CCPP" = "true" ]; then
   ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/module-setup.sh
   ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/modules.fv3
-  if [ "$CCPP_phys_suite" = "GSD" ]; then
+  if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
     ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/suite_FV3_GSD_v0.xml
-  elif [ "$CCPP_phys_suite" = "GFS" ]; then
+  elif [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
     ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/suite_FV3_GFS_2017_gfdlmp.xml
   fi
-  if [ "$CCPP_phys_suite" = "GSD" ]; then
+  if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
     ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/CCN_ACTIVATE.BIN
   fi
 fi
@@ -432,9 +432,9 @@ to the current cycle's run directory..."
 cp_vrfy ${TEMPLATE_DIR}/${MODEL_CONFIG_FN} ${CYCLE_DIR}
 
 if [ "$CCPP" = "true" ]; then
-  if [ "${CCPP_phys_suite}" = "GFS" ]; then
+  if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
     cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_FN} ${CYCLE_DIR}
-  elif [ "$CCPP_phys_suite" = "GSD" ]; then
+  elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
     cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_CCPP_GSD_FN} ${CYCLE_DIR}/${DIAG_TABLE_FN}
   fi
 elif [ "$CCPP" = "false" ]; then

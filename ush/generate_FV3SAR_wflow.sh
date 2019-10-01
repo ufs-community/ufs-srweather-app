@@ -481,7 +481,7 @@ the FV3SAR under NEMS to the experiment directory..."
 #
 #-----------------------------------------------------------------------
 #
-  if [ "${CCPP_phys_suite}" = "GFS" ]; then
+  if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
 
     print_info_msg_verbose "
 Copying the FV3 namelist file for the GFS physics suite to the experi-
@@ -511,7 +511,7 @@ directory..."
 #
 #-----------------------------------------------------------------------
 #
-  elif [ "${CCPP_phys_suite}" = "GSD" ]; then
+  elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
 
     print_info_msg_verbose "
 Copying the FV3 namelist file for the GSD physics suite to the experi-
@@ -547,17 +547,17 @@ GSD suite) to the experiment directory..."
   fi
 
 # Original changes in stage_static.sh by Jeff:
-#  if [ "$CCPP_phys_suite" = "GFS" ] && [ "$EXTRN_MDL_NAME_ICS" = "FV3GFS" ]; then
+#  if [ "${CCPP_PHYS_SUITE}" = "GFS" ] && [ "$EXTRN_MDL_NAME_ICS" = "FV3GFS" ]; then
 #
 #    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFSEXTERN_GFSPHYS_FN $EXPTDIR/$FV3_NML_FN
 #    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $EXPTDIR
 #
-#  elif [ "$CCPP_phys_suite" = "GSD" ] && [ "$EXTRN_MDL_NAME_ICS" = "FV3GFS" ]; then
+#  elif [ "${CCPP_PHYS_SUITE}" = "GSD" ] && [ "$EXTRN_MDL_NAME_ICS" = "FV3GFS" ]; then
 #
 #    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFSEXTERN_GSDPHYS_FN $EXPTDIR/$FV3_NML_FN
 #    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $EXPTDIR/$FIELD_TABLE_FN
 #
-#  elif [ "$CCPP_phys_suite" = "GSD" ] && [ "$EXTRN_MDL_NAME_ICS" = "HRRRX" ]; then
+#  elif [ "${CCPP_PHYS_SUITE}" = "GSD" ] && [ "$EXTRN_MDL_NAME_ICS" = "HRRRX" ]; then
 #
 #    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_RAPHRRREXTERN_GSDPHYS_FN $EXPTDIR/$FV3_NML_FN
 #    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $EXPTDIR/$FIELD_TABLE_FN
@@ -608,7 +608,7 @@ set_file_param "${FV3_NML_FP}" "layout" "${layout_x},${layout_y}"
 set_file_param "${FV3_NML_FP}" "npx" "${npx_T7}"
 set_file_param "${FV3_NML_FP}" "npy" "${npy_T7}"
 
-if [ "$grid_gen_method" = "GFDLgrid" ]; then
+if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # Question:
 # For a regional grid (i.e. one that only has a tile 7) should the co-
 # ordinates that target_lon and target_lat get set to be those of the 
@@ -618,7 +618,7 @@ if [ "$grid_gen_method" = "GFDLgrid" ]; then
 # there is no reason not to center tile 7 with respect to tile 6].
   set_file_param "${FV3_NML_FP}" "target_lon" "${lon_ctr_T6}"
   set_file_param "${FV3_NML_FP}" "target_lat" "${lat_ctr_T6}"
-elif [ "$grid_gen_method" = "JPgrid" ]; then
+elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
   set_file_param "${FV3_NML_FP}" "target_lon" "${lon_rgnl_ctr}"
   set_file_param "${FV3_NML_FP}" "target_lat" "${lat_rgnl_ctr}"
 fi

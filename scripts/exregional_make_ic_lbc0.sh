@@ -80,7 +80,7 @@ cd_vrfy $workdir
 #
 #-----------------------------------------------------------------------
 #
-case "$CCPP_phys_suite" in
+case "${CCPP_PHYS_SUITE}" in
 
 "GFS")
   phys_suite="GFS"
@@ -94,7 +94,7 @@ case "$CCPP_phys_suite" in
   print_err_msg_exit "${script_name}" "\
 Physics-suite-dependent namelist variables have not yet been specified 
 for this physics suite:
-  CCPP_phys_suite = \"${CCPP_phys_suite}\""
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
   ;;
 
 esac
@@ -257,9 +257,9 @@ case "$EXTRN_MDL_NAME_ICS" in
 # external model file type, and physics suite).
 #
   if [ "$CCPP" = "true" ]; then
-    if [ "$CCPP_phys_suite" = "GFS" ]; then
+    if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
       tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
-    elif [ "$CCPP_phys_suite" = "GSD" ]; then
+    elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
       tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
@@ -288,9 +288,9 @@ case "$EXTRN_MDL_NAME_ICS" in
   input_type="grib2"
 
   if [ "$CCPP" = "true" ]; then
-    if [ "$CCPP_phys_suite" = "GFS" ]; then
+    if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
       numsoil_out="4"
-    elif [ "$CCPP_phys_suite" = "GSD" ]; then
+    elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
       numsoil_out="9"
     fi
   fi

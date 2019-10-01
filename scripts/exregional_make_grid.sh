@@ -223,7 +223,7 @@ export exec_dir="$EXECDIR"
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir ${GRID_DIR} $preexisting_dir_method
+check_for_preexist_dir ${GRID_DIR} ${PREEXISTING_DIR_METHOD}
 mkdir_vrfy -p "${GRID_DIR}"
 
 tmpdir="${GRID_DIR}/tmp"
@@ -322,7 +322,7 @@ mkdir_vrfy -p "$tmpdir"
 #
 print_info_msg_verbose "Starting grid file generation..."
 
-if [ "$grid_gen_method" = "GFDLgrid" ]; then
+if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
   $USHDIR/$grid_gen_scr \
     $RES \
@@ -347,7 +347,7 @@ printf "%s\n" "RES_equiv = $RES_equiv"
   CRES_equiv="C${RES_equiv}"
 printf "%s\n" "CRES_equiv = $CRES_equiv"
 
-elif [ "$grid_gen_method" = "JPgrid" ]; then
+elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
@@ -405,8 +405,8 @@ Call to executable that creates a grid mosaic file returned with nonzero
 exit code."
 #
 # RES and CRES need to be set here in order for the rest of the script
-# (that was originally written for a grid with grid_gen_method set to 
-# "GFDLgrid") to work for a grid with grid_gen_method set to "JPgrid".
+# (that was originally written for a grid with GRID_GEN_METHOD set to 
+# "GFDLgrid") to work for a grid with GRID_GEN_METHOD set to "JPgrid".
 #
   RES="$RES_equiv"
   CRES="$CRES_equiv"

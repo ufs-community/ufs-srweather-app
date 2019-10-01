@@ -79,7 +79,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir ${OROG_DIR} $preexisting_dir_method
+check_for_preexist_dir ${OROG_DIR} ${PREEXISTING_DIR_METHOD}
 mkdir_vrfy -p "${OROG_DIR}"
 
 raw_dir="${OROG_DIR}/raw_topo"
@@ -334,9 +334,9 @@ print_info_msg_verbose "Setting orography filtering parameters..."
 #${CRES}_grid.tile${TILE_RGNL}.halo${nhw_T7}.nc
 
 
-#if [ "$grid_gen_method" = "GFDLgrid" ]; then
+#if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #  RES_eff=$( bc -l <<< "$RES*$refine_ratio" )
-#elif [ "$grid_gen_method" = "JPgrid" ]; then
+#elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 #  grid_size_eff=$( "($delx + $dely)/2" )
 #echo "grid_size_eff = $grid_size_eff"
 #  RES_eff=$( bc -l <<< "2*$pi_geom*$radius_Earth/(4*$grid_size_eff)" )
