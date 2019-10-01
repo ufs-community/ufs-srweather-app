@@ -347,18 +347,20 @@ gtype must be set to one of the following:
 #
 #-----------------------------------------------------------------------
 #
-# Make sure predef_domain is set to a valid value.
+# Make sure PREDEF_GRID_NAME is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-if [ ! -z ${predef_domain} ]; then
-  iselementof "$predef_domain" valid_vals_predef_domain || { \
-  valid_vals_predef_domain_str=$(printf "\"%s\" " "${valid_vals_predef_domain[@]}");
+if [ ! -z ${PREDEF_GRID_NAME} ]; then
+  iselementof "$PREDEF_GRID_NAME" valid_vals_PREDEF_GRID_NAME || { \
+  valid_vals_PREDEF_GRID_NAME_str=$(printf "\"%s\" " "${valid_vals_PREDEF_GRID_NAME[@]}");
   print_err_msg_exit "\
-Predefined regional domain specified in predef_domain is not supported:
-  predef_domain = \"$predef_domain\"
-predef_domain must be set either to an empty string or to one of the following:
-  $valid_vals_predef_domain_str
+The predefined regional domain specified in PREDEF_GRID_NAME is not sup-
+ported:
+  PREDEF_GRID_NAME = \"$PREDEF_GRID_NAME\"
+PREDEF_GRID_NAME must be set either to an empty string or to one of the
+following:
+  $valid_vals_PREDEF_GRID_NAME_str
 "; }
 fi
 
@@ -381,29 +383,39 @@ preexisting_dir_method must be set to one of the following:
 #
 #-----------------------------------------------------------------------
 #
-# Make sure CCPP is set to a valid value.
+# Make sure USE_CCPP is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-if [ ! -z ${CCPP} ]; then
-  iselementof "$CCPP" valid_vals_CCPP || { \
-  valid_vals_CCPP_str=$(printf "\"%s\" " "${valid_vals_CCPP[@]}");
-  print_err_msg_exit "\
-The value specified for the CCPP flag is not supported:
-  CCPP = \"$CCPP\"
-CCPP must be set to one of the following:
+iselementof "${USE_CCPP}" valid_vals_USE_CCPP || { \
+valid_vals_USE_CCPP_str=$(printf "\"%s\" " "${valid_vals_USE_CCPP[@]}");
+print_err_msg_exit "\
+The value specified for the USE_CCPP flag is not supported:
+  USE_CCPP = \"${USE_CCPP}\"
+USE_CCPP must be set to one of the following:
   $valid_vals_CCPP_str
 "; }
+#
+# Set USE_CCPP to either "TRUE" or "FALSE" so we don't have to consider
+# other valid values later on.
+#
+USE_CCPP=${USE_CCPP^^}
+if [ "$USE_CCPP" = "TRUE" ] || \
+   [ "$USE_CCPP" = "YES" ]; then
+  USE_CCPP="TRUE"
+elif [ "$USE_CCPP" = "FALSE" ] || \
+     [ "$USE_CCPP" = "NO" ]; then
+  USE_CCPP="FALSE"
 fi
 #
 #-----------------------------------------------------------------------
 #
-# If CCPP is set to "true", make sure CCPP_phys_suite is set to a valid
-# value.
+# If USE_CCPP is set to "TRUE", make sure CCPP_phys_suite is set to a 
+# valid value.
 #
 #-----------------------------------------------------------------------
 #
-if [ "$CCPP" = "true" ]; then
+if [ "${USE_CCPP}" = "TRUE" ]; then
 
   if [ ! -z ${CCPP_phys_suite} ]; then
     iselementof "$CCPP_phys_suite" valid_vals_CCPP_phys_suite || { \
@@ -543,7 +555,7 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 # NEMSfv3gfs_DIR:
 # Directory in which the (NEMS-enabled) FV3SAR application is located.
 # This directory includes subdirectories for FV3, NEMS, and FMS.  If
-# CCPP is set to "true", it also includes a subdirectory for CCPP.
+# USE_CCPP is set to "TRUE", it also includes a subdirectory for CCPP.
 #
 # FIXgsm:
 # System directory in which the fixed (i.e. time-independent) files that
@@ -640,32 +652,32 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-fcst_len_hrs_max=999
-if [ "$fcst_len_hrs" -gt "$fcst_len_hrs_max" ]; then
+FCST_LEN_HRS_MAX="999"
+if [ "$FCST_LEN_HRS" -gt "$FCST_LEN_HRS_MAX" ]; then
   print_err_msg_exit "\
 Forecast length is greater than maximum allowed length:
-  fcst_len_hrs = $fcst_len_hrs
-  fcst_len_hrs_max = $fcst_len_hrs_max"
+  FCST_LEN_HRS = $FCST_LEN_HRS
+  FCST_LEN_HRS_MAX = $FCST_LEN_HRS_MAX"
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Check whether the forecast length (fcst_len_hrs) is evenly divisible
+# Check whether the forecast length (FCST_LEN_HRS) is evenly divisible
 # by the BC update interval (LBC_UPDATE_INTVL_HRS).  If not, print out a
 # warning and exit this script.  If so, generate an array of forecast
 # hours at which the boundary values will be updated.
 #
 #-----------------------------------------------------------------------
 #
-rem=$(( ${fcst_len_hrs}%${LBC_UPDATE_INTVL_HRS} ))
+rem=$(( ${FCST_LEN_HRS}%${LBC_UPDATE_INTVL_HRS} ))
 
 if [ "$rem" -ne "0" ]; then
   print_err_msg_exit "\
-The forecast length (fcst_len_hrs) is not evenly divisible by the later-
+The forecast length (FCST_LEN_HRS) is not evenly divisible by the later-
 al boundary conditions update interval (LBC_UPDATE_INTVL_HRS):
-  fcst_len_hrs = $fcst_len_hrs
+  FCST_LEN_HRS = $FCST_LEN_HRS
   LBC_UPDATE_INTVL_HRS = $LBC_UPDATE_INTVL_HRS
-  rem = fcst_len_hrs%%LBC_UPDATE_INTVL_HRS = $rem"
+  rem = FCST_LEN_HRS%%LBC_UPDATE_INTVL_HRS = $rem"
 fi
 #
 #-----------------------------------------------------------------------
@@ -678,7 +690,7 @@ fi
 #
 LBC_UPDATE_FCST_HRS=($( seq ${LBC_UPDATE_INTVL_HRS} \
                             ${LBC_UPDATE_INTVL_HRS} \
-                            ${fcst_len_hrs} ))
+                            ${FCST_LEN_HRS} ))
 #
 #-----------------------------------------------------------------------
 #
@@ -692,13 +704,13 @@ expt_title=${expt_title:+_$expt_title}
 #
 #-----------------------------------------------------------------------
 #
-# If predef_domain is set to a non-empty string, set or reset parameters
-# according to the predefined domain specified.
+# If PREDEF_GRID_NAME is set to a non-empty string, set or reset parame-
+# ters according to the predefined domain specified.
 #
 #-----------------------------------------------------------------------
 #
-if [ ! -z "${predef_domain}" ]; then
-  . $USHDIR/set_predef_domain_params.sh
+if [ ! -z "${PREDEF_GRID_NAME}" ]; then
+  . $USHDIR/set_predef_grid_params.sh
 fi
 #
 #-----------------------------------------------------------------------
@@ -1162,14 +1174,41 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that QUILTING is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$QUILTING" valid_vals_QUILTING || { \
+valid_vals_QUILTING_str=$(printf "\"%s\" " "${valid_vals_QUILTING[@]}");
+print_err_msg_exit "\
+Value specified in QUILTING is not supported:
+  QUILTING = \"$QUILTING\"
+QUILTING must be set to one of the following:
+  $valid_vals_QUILTING_str
+"; }
+#
+# Set QUILTING to either "TRUE" or "FALSE" so we don't have to consider
+# other valid values later on.
+#
+QUILTING=${QUILTING^^}
+if [ "$QUILTING" = "TRUE" ] || \
+   [ "$QUILTING" = "YES" ]; then
+  QUILTING="TRUE"
+elif [ "$QUILTING" = "FALSE" ] || \
+     [ "$QUILTING" = "NO" ]; then
+  QUILTING="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Calculate PE_MEMBER01.  This is the number of MPI tasks used for the
-# forecast, including those for the write component if quilting is set
-# to true.
+# forecast, including those for the write component if QUILTING is set
+# to "TRUE".
 #
 #-----------------------------------------------------------------------
 #
 PE_MEMBER01=$(( $layout_x*$layout_y ))
-if [ "$quilting" = ".true." ]; then
+if [ "$QUILTING" = "TRUE" ]; then
   PE_MEMBER01=$(( $PE_MEMBER01 + ${WRTCMP_write_groups}*${WRTCMP_write_tasks_per_group} ))
 fi
 
@@ -1238,22 +1277,22 @@ fi
 #-----------------------------------------------------------------------
 #
 # If the write component is going to be used to write output files (i.e.
-# if quilting is set to ".true."), first make sure that a name is speci-
-# filed for the template file containing the write-component output grid
+# if QUILTING is set to "TRUE"), first make sure that a name is speci-
+# fied for the template file containing the write-component output grid
 # parameters.  (This template file will be concatenated to the NEMS con-
 # figuration file specified in MODEL_CONFIG_FN.)  If so, set the full 
 # path to the file and make sure that the file exists.  
 #
 #-----------------------------------------------------------------------
 #
-if [ "$quilting" = ".true." ]; then
+if [ "$QUILTING" = "TRUE" ]; then
 
   if [ -z "$WRTCMP_PARAMS_TEMPLATE_FN" ]; then
     print_err_msg_exit "\
 The write-component template file name (WRTCMP_PARAMS_TEMPLATE_FN) must
 be set to a non-empty value when quilting (i.e. the write-component) is 
 enabled:
-  quilting = \"$quilting\"
+  QUILTING = \"$QUILTING\"
   WRTCMP_PARAMS_TEMPLATE_FN = \"$WRTCMP_PARAMS_TEMPLATE_FN\""
   fi
 
@@ -1279,7 +1318,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$quilting" = ".true." ]; then
+if [ "$QUILTING" = "TRUE" ]; then
 
   rem=$(( $ny_T7%${WRTCMP_write_tasks_per_group} ))
 

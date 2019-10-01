@@ -2,15 +2,15 @@
 #-----------------------------------------------------------------------
 #
 # Set grid and other parameters according to the value of the predefined
-# domain (predef_domain).  Note that the code will enter this script on-
-# ly if predef_domain has a valid (and non-empty) value.
+# domain (PREDEF_GRID_NAME).  Note that the code will enter this script on-
+# ly if PREDEF_GRID_NAME has a valid (and non-empty) value.
 #
 # The following needs to be updated:
 #
 # 1) Reset the experiment title (expt_title).
 # 2) Reset the grid parameters.
-# 3) If the write component is to be used (i.e. quilting is set to
-#    ".true.") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the
+# 3) If the write component is to be used (i.e. QUILTING is set to
+#    "TRUE") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the
 #    name of the write-component template file is unset or empty, set
 #    that filename variable to the appropriate preexisting template
 #    file.
@@ -44,7 +44,7 @@
 #
 #-----------------------------------------------------------------------
 #
-case $predef_domain in
+case ${PREDEF_GRID_NAME} in
 #
 #-----------------------------------------------------------------------
 #
@@ -61,7 +61,7 @@ case $predef_domain in
     print_err_msg_exit "\
 The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
   grid_gen_method = \"$grid_gen_method\"
 "
 
@@ -84,7 +84,7 @@ predefined domain:
     layout_y="24"
     blocksize="32"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="32"
       WRTCMP_output_grid="lambert_conformal"
@@ -139,7 +139,7 @@ predefined domain:
     layout_y="14"
     blocksize="26"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="14"
       WRTCMP_output_grid="rotated_latlon"
@@ -172,7 +172,7 @@ predefined domain:
     layout_y="16"
     blocksize="30"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="16"
       WRTCMP_output_grid="rotated_latlon"
@@ -204,7 +204,7 @@ predefined domain:
     print_err_msg_exit "\
 The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
   grid_gen_method = \"$grid_gen_method\"
 "
 
@@ -227,7 +227,7 @@ predefined domain:
     layout_y="2"
     blocksize="2"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="2"
       WRTCMP_output_grid="lambert_conformal"
@@ -261,7 +261,7 @@ predefined domain:
     print_err_msg_exit "\
 The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
   grid_gen_method = \"$grid_gen_method\"
 "
 
@@ -284,7 +284,7 @@ predefined domain:
     layout_y="10"
     blocksize="39"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="10"
       WRTCMP_output_grid="lambert_conformal"
@@ -318,7 +318,7 @@ predefined domain:
     print_err_msg_exit "\
 The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
   grid_gen_method = \"$grid_gen_method\"
 "
 
@@ -341,7 +341,7 @@ predefined domain:
     layout_y="24"
     blocksize="34"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="24"
       WRTCMP_output_grid="lambert_conformal"
@@ -463,7 +463,7 @@ predefined domain:
     print_err_msg_exit "\
 The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
   grid_gen_method = \"$grid_gen_method\"
 "
 
@@ -532,7 +532,7 @@ predefined domain:
     print_err_msg_exit "\
 The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
   grid_gen_method = \"$grid_gen_method\"
 "
 
@@ -550,7 +550,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-if [ "$quilting" = ".true." ]; then
+if [ "$QUILTING" = "TRUE" ]; then
 #
 # First, make sure that WRTCMP_output_grid is set to a valid value.
 #

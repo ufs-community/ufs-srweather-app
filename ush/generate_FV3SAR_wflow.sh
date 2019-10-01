@@ -66,7 +66,7 @@ cp_vrfy $TEMPLATE_XML_FP $WFLOW_XML_FP
 #
 PROC_RUN_FV3="${NUM_NODES}:ppn=${ncores_per_node}"
 
-FHR=( $( seq 0 1 $fcst_len_hrs ) )
+FHR=( $( seq 0 1 ${FCST_LEN_HRS} ) )
 i=0
 FHR_STR=$( printf "%02d" "${FHR[i]}" )
 numel=${#FHR[@]}
@@ -86,7 +86,7 @@ FHR="$FHR_STR"
 #
 CDATE_generic="@Y@m@d@H"
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  CYCLE_DIR="$STMP/tmpnwprd/${predef_domain}_${CDATE_generic}"
+  CYCLE_DIR="$STMP/tmpnwprd/${PREDEF_GRID_NAME}_${CDATE_generic}"
 else
   CYCLE_DIR="$EXPTDIR/${CDATE_generic}"
 fi
@@ -389,9 +389,9 @@ Copying templates of various input files to the experiment directory..."
 #
 # If using CCPP...
 #
-# If CCPP is set to "true", copy the appropriate modulefile, the CCPP
-# physics suite definition file (an XML file), and possibly other suite-
-# dependent files to the experiment directory.
+# If USE_CCPP is set to "TRUE", copy the appropriate modulefile, the 
+# CCPP physics suite definition file (an XML file), and possibly other 
+# suite-dependent files to the experiment directory.
 #
 # The modulefile modules.nems in the directory
 #
@@ -412,8 +412,8 @@ Copying templates of various input files to the experiment directory..."
 #
 # ANSWER:
 # Because for that case, we load different versions of intel and impi 
-# (compare modules.nems to the modules loaded for the case of CCPP set 
-# to "false" in run_FV3SAR.sh).  Maybe these can be combined at some 
+# (compare modules.nems to the modules loaded for the case of USE_CCPP
+# set to "false" in run_FV3SAR.sh).  Maybe these can be combined at some 
 # point.  Note that a modules.nems file is generated in the same rela-
 # tive location in the non-CCPP-enabled version of NEMSfv3gfs, so maybe
 # that can be used and the run_FV3SAR.sh script modified to accomodate
@@ -422,7 +422,7 @@ Copying templates of various input files to the experiment directory..."
 #
 #-----------------------------------------------------------------------
 #
-if [ "$CCPP" = "true" ]; then
+if [ "${USE_CCPP}" = "TRUE" ]; then
 #
 # Copy the shell script that initializes the Lmod (Lua-based module) 
 # system/software for handling modules.  This script:
@@ -445,8 +445,8 @@ system/software for handling modules..."
 #
 # It may be convenient to also copy over this script when running the 
 # non-CCPP version of the FV3SAR and try to simplify the run script 
-# (run_FV3SAR.sh) so that it doesn't depend on whether CCPP is set to
-# "true" or "false".  We can do that, but currently the non-CCPP and 
+# (run_FV3SAR.sh) so that it doesn't depend on whether USE_CCPP is set 
+# to "true" or "false".  We can do that, but currently the non-CCPP and 
 # CCPP-enabled versions of the FV3SAR code use different versions of
 # intel and impi, so module-setup.sh must account for this.
 #
@@ -570,7 +570,7 @@ GSD suite) to the experiment directory..."
 #
 #-----------------------------------------------------------------------
 #
-elif [ "$CCPP" = "false" ]; then
+elif [ "${USE_CCPP}" = "FALSE" ]; then
 
   cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_FN} $EXPTDIR
   cp_vrfy ${TEMPLATE_DIR}/${FIELD_TABLE_FN} $EXPTDIR

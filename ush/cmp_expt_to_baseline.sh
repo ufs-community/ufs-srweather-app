@@ -84,13 +84,13 @@ if [ $# -eq 2 ]; then
 else
 
   baseline_dir="/scratch3/BMC/det/regional_FV3/regr_baselines"
-  if [ -n ${predef_domain} ]; then
-    baseline_dir="${baseline_dir}/${predef_domain}"
+  if [ -n ${PREDEF_GRID_NAME} ]; then
+    baseline_dir="${baseline_dir}/${PREDEF_GRID_NAME}"
   else
     printf "\
 The experiment must be run on one of the predefined domains.  Thus, 
-predef_domain cannot be empty:
-  predef_domain = \"${predef_domain}\"
+PREDEF_GRID_NAME cannot be empty:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
 Exiting script with nonzero return code.
 "
     exit 1

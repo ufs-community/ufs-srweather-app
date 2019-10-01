@@ -467,6 +467,8 @@ print_info_msg_verbose "\
 Setting parameters in file:
   MODEL_CONFIG_FP = \"$MODEL_CONFIG_FP\""
 
+dot_quilting_dot="."${QUILTING,,}"."
+
 set_file_param "$MODEL_CONFIG_FP" "PE_MEMBER01" "$PE_MEMBER01"
 set_file_param "$MODEL_CONFIG_FP" "dt_atmos" "$dt_atmos"
 set_file_param "$MODEL_CONFIG_FP" "start_year" "$YYYY"
@@ -475,7 +477,7 @@ set_file_param "$MODEL_CONFIG_FP" "start_day" "$DD"
 set_file_param "$MODEL_CONFIG_FP" "start_hour" "$HH"
 set_file_param "$MODEL_CONFIG_FP" "nhours_fcst" "$fcst_len_hrs"
 set_file_param "$MODEL_CONFIG_FP" "ncores_per_node" "$ncores_per_node"
-set_file_param "$MODEL_CONFIG_FP" "quilting" "$quilting"
+set_file_param "$MODEL_CONFIG_FP" "quilting" "${dot_quilting_dot}"
 set_file_param "$MODEL_CONFIG_FP" "print_esmf" "$print_esmf"
 #
 #-----------------------------------------------------------------------
@@ -492,7 +494,7 @@ set_file_param "$MODEL_CONFIG_FP" "print_esmf" "$print_esmf"
 #
 #-----------------------------------------------------------------------
 #
-if [ "$quilting" = ".true." ]; then
+if [ "$QUILTING" = "TRUE" ]; then
 
   cat $WRTCMP_PARAMS_TEMPLATE_FP >> $MODEL_CONFIG_FP
 

@@ -156,14 +156,14 @@ STMP="/path/to/temporary/directory/stmp"
 #
 # WRTCMP_PARAMS_TEMPLATE_FN:
 # Name of the template file that needs to be appended to the model con-
-# figuration file (MODEL_CONFIG_FN) if the write component (quilting) is
+# figuration file (MODEL_CONFIG_FN) if the write component (QUILTING) is
 # going to be used to write output files.  This file contains defini-
 # tions (either in terms of actual values or placeholders) of the para-
 # meters that the write component needs.  If the write component is go-
 # ing to be used, this file is first appended to MODEL_CONFIG_FN, and
 # any placeholder values in the variable definitions in the new MODEL_-
 # CONFIG_FN file are subsequently replaced by actual values.  If a pre-
-# defined domain is being used (see predef_domain below), WRTCMP_PA-
+# defined domain is being used (see PREDEF_GRID_NAME below), WRTCMP_PA-
 # RAMS_TEMPLATE_FN may be set to an empty string.  In this case, it will
 # be reset to the name of the existing template file for that predefined
 # domain.  It is assumed that the file specified by WRTCMP_PARAMS_TEMP-
@@ -209,7 +209,7 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 # two-digit string representing an integer that is less than or equal to
 # 23, e.g. "00", "03", "12", "23".
 #
-# fcst_len_hrs:
+# FCST_LEN_HRS:
 # The length of each forecast, in integer hours.
 #
 #-----------------------------------------------------------------------
@@ -217,7 +217,7 @@ WRTCMP_PARAMS_TEMPLATE_FN=""
 DATE_FIRST_CYCL="YYYYMMDD"
 DATE_LAST_CYCL="YYYYMMDD"
 CYCL_HRS=( "HH1" "HH2" )
-fcst_len_hrs="24"
+FCST_LEN_HRS="24"
 #
 #-----------------------------------------------------------------------
 #
@@ -299,7 +299,7 @@ expt_title="desc_str"
 #
 #-----------------------------------------------------------------------
 #
-CCPP="false"
+USE_CCPP="false"
 #
 #-----------------------------------------------------------------------
 #
@@ -522,16 +522,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set predef_domain.  This variable specifies a predefined (regional)
+# Set PREDEF_GRID_NAME.  This variable specifies a predefined (regional)
 # domain, as follows:
 #
-# * If predef_domain is set to an empty string, the grid configuration
+# * If PREDEF_GRID_NAME is set to an empty string, the grid configuration
 #   parameters set below are used to generate a grid.
 #
-# * If predef_domain is set to a valid non-empty string, the grid confi-
+# * If PREDEF_GRID_NAME is set to a valid non-empty string, the grid confi-
 #   guration parameters set below are overwritten by predefined values
 #   in order to generate a predefined grid.  Valid non-empty values for
-#   predef_domain currently consist of:
+#   PREDEF_GRID_NAME currently consist of:
 #
 #     "RAP"
 #     "HRRR"
@@ -544,7 +544,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-predef_domain=""
+PREDEF_GRID_NAME=""
 #
 #-----------------------------------------------------------------------
 #
@@ -622,11 +622,10 @@ blocksize="24"
 #
 #-----------------------------------------------------------------------
 #
-# Set write-component (aka quilting) parameters.  Definitions:
+# Set write-component (quilting) parameters.  Definitions:
 #
-# quilting:
-# Flag for whether or not to use the write component for output.  Must
-# be ".true." or ".false.".
+# QUILTING:
+# Flag for whether or not to use the write component for output.
 #
 # write_groups:
 # The number of write groups (i.e. groups of MPI tasks) to use in the
@@ -645,7 +644,7 @@ blocksize="24"
 #
 #-----------------------------------------------------------------------
 #
-quilting=".true."
+QUILTING="TRUE"
 print_esmf=".false."
 
 WRTCMP_write_groups="1"
