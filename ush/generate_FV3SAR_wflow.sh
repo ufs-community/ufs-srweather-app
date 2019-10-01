@@ -413,7 +413,7 @@ Copying templates of various input files to the experiment directory..."
 # ANSWER:
 # Because for that case, we load different versions of intel and impi 
 # (compare modules.nems to the modules loaded for the case of USE_CCPP
-# set to "false" in run_FV3SAR.sh).  Maybe these can be combined at some 
+# set to "FALSE" in run_FV3SAR.sh).  Maybe these can be combined at some 
 # point.  Note that a modules.nems file is generated in the same rela-
 # tive location in the non-CCPP-enabled version of NEMSfv3gfs, so maybe
 # that can be used and the run_FV3SAR.sh script modified to accomodate
@@ -446,7 +446,7 @@ system/software for handling modules..."
 # It may be convenient to also copy over this script when running the 
 # non-CCPP version of the FV3SAR and try to simplify the run script 
 # (run_FV3SAR.sh) so that it doesn't depend on whether USE_CCPP is set 
-# to "true" or "false".  We can do that, but currently the non-CCPP and 
+# to "TRUE" or "FALSE".  We can do that, but currently the non-CCPP and 
 # CCPP-enabled versions of the FV3SAR code use different versions of
 # intel and impi, so module-setup.sh must account for this.
 #

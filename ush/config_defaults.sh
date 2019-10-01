@@ -287,8 +287,8 @@ expt_title="desc_str"
 #-----------------------------------------------------------------------
 #
 # Flag controlling whether or not a CCPP-enabled version of the FV3SAR
-# will be run.  This must be set to "true" or "false".  Setting this 
-# flag to "true" will cause the workflow to stage the appropriate CCPP-
+# will be run.  This must be set to "TRUE" or "FALSE".  Setting this 
+# flag to "TRUE" will cause the workflow to stage the appropriate CCPP-
 # enabled versions of the FV3SAR executable and various input files 
 # (e.g. the FV3SAR namelist file, the diagnostics table file, the field
 # table file, etc) that have settings that correspond to EMC's CCPP-ena-
@@ -299,11 +299,11 @@ expt_title="desc_str"
 #
 #-----------------------------------------------------------------------
 #
-USE_CCPP="false"
+USE_CCPP="FALSE"
 #
 #-----------------------------------------------------------------------
 #
-# If CCPP has been set to "true", the CCPP_PHYS_SUITE variable defines 
+# If CCPP has been set to "TRUE", the CCPP_PHYS_SUITE variable defines 
 # the physics suite that will run using CCPP.  This affects the FV3SAR
 # namelist file, the diagnostics table file, the field table file, and
 # the XML physics suite definition file that are staged in the experi-
@@ -313,7 +313,7 @@ USE_CCPP="false"
 #   "GFS" - to run with the GFS physics suite
 #   "GSD" - to run with the GSD physics suite
 #
-# Note that with CCPP set to "false", the only physics suite that can be
+# Note that with CCPP set to "FALSE", the only physics suite that can be
 # run is the GFS.
 #
 # IMPORTANT NOTE: 
@@ -593,12 +593,12 @@ PREEXISTING_DIR_METHOD="delete"
 #-----------------------------------------------------------------------
 #
 # Set the flag that determines whether or not the workflow scripts tend
-# to be more verbose.  This must be set to "true" or "false".
+# to be more verbose.  This must be set to "TRUE" or "FALSE".
 #
 #-----------------------------------------------------------------------
 #
-VERBOSE="true"
-#VERBOSE="false"
+VERBOSE="TRUE"
+#VERBOSE="FALSE"
 #
 #-----------------------------------------------------------------------
 #

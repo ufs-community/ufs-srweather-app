@@ -256,7 +256,7 @@ case "$EXTRN_MDL_NAME_ICS" in
 # table (which should be specific to each combination of external model,
 # external model file type, and physics suite).
 #
-  if [ "$CCPP" = "true" ]; then
+  if [ "${USE_CCPP}" = "TRUE" ]; then
     if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
       tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
     elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
@@ -287,7 +287,7 @@ case "$EXTRN_MDL_NAME_ICS" in
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
 
-  if [ "$CCPP" = "true" ]; then
+  if [ "${USE_CCPP}" = "TRUE" ]; then
     if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then

@@ -92,7 +92,7 @@ $info_msg
 #-----------------------------------------------------------------------
 #
 # Function to print informational messages using printf, but only if the
-# VERBOSE flag is set to "true".
+# VERBOSE flag is set to "TRUE".
 #
 #-----------------------------------------------------------------------
 #

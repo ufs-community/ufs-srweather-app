@@ -1597,10 +1597,10 @@ while read crnt_line; do
 #
       else
 
-        arrays_on_one_line="true"
-        arrays_on_one_line="false"
+        arrays_on_one_line="TRUE"
+        arrays_on_one_line="FALSE"
 
-        if [ "${arrays_on_one_line}" = "true" ]; then
+        if [ "${arrays_on_one_line}" = "TRUE" ]; then
           var_value=$(printf "\"%s\" " "${!array_name_at}")
 #          var_value=$(printf "\"%s\" \\\\\\ \\\n" "${!array_name_at}")
         else

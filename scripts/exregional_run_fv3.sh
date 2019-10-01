@@ -72,7 +72,7 @@ case $MACHINE in
 "WCOSS_C" | "WCOSS")
 #
 
-  if [ "$CCPP" = "true" ]; then
+  if [ "${USE_CCPP}" = "TRUE" ]; then
   
 # Needed to change to the experiment directory because the module files
 # for the CCPP-enabled version of FV3 have been copied to there.
@@ -104,7 +104,7 @@ case $MACHINE in
 "THEIA")
 #
 
-  if [ "$CCPP" = "true" ]; then
+  if [ "${USE_CCPP}" = "TRUE" ]; then
   
 # Need to change to the experiment directory to correctly load necessary 
 # modules for CCPP-version of FV3SAR in lines below
@@ -138,7 +138,7 @@ case $MACHINE in
 "HERA")
 #
 
-  if [ "$CCPP" = "true" ]; then
+  if [ "${USE_CCPP}" = "TRUE" ]; then
   
 # Need to change to the experiment directory to correctly load necessary 
 # modules for CCPP-version of FV3SAR in lines below
@@ -405,7 +405,7 @@ ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${DATA_TABLE_FN}
 ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${FIELD_TABLE_FN}
 ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${NEMS_CONFIG_FN}
 
-if [ "$CCPP" = "true" ]; then
+if [ "${USE_CCPP}" = "TRUE" ]; then
   ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/module-setup.sh
   ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/modules.fv3
   if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
@@ -431,13 +431,13 @@ to the current cycle's run directory..."
 
 cp_vrfy ${TEMPLATE_DIR}/${MODEL_CONFIG_FN} ${CYCLE_DIR}
 
-if [ "$CCPP" = "true" ]; then
+if [ "${USE_CCPP}" = "TRUE" ]; then
   if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
     cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_FN} ${CYCLE_DIR}
   elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
     cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_CCPP_GSD_FN} ${CYCLE_DIR}/${DIAG_TABLE_FN}
   fi
-elif [ "$CCPP" = "false" ]; then
+elif [ "${USE_CCPP}" = "false" ]; then
   cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_FN} ${CYCLE_DIR}
 fi
 #
@@ -549,7 +549,7 @@ set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YYYYMMDD"
 #
 #-----------------------------------------------------------------------
 #
-if [ "$CCPP" = "true" ]; then
+if [ "${USE_CCPP}" = "TRUE" ]; then
   FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3.exe"
 else
   FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3_32bit.exe"
