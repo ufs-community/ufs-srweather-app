@@ -137,8 +137,8 @@ case $MACHINE in
   module load w3emc/2.3.1
   module load w3nco/2.0.7
   module load crtm/2.2.5
-  module load netcdf/3.6.3
-  #module load netcdf/4.7.0
+#  module load netcdf/3.6.3
+  module load netcdf/4.7.0
   module load g2tmpl/1.5.1
   module load wrfio/1.1.1
 
@@ -264,8 +264,8 @@ zero exit code."
 #
 # If expt_title is set to an empty string in config.sh, I think TITLE 
 # will also be empty.  Must try out that case...
-if [ -n ${predef_domain} ]; then 
-  TITLE=${predef_domain}
+if [ -n "${PREDEF_GRID_NAME}" ]; then 
+  TITLE="${PREDEF_GRID_NAME}"
 else 
   TITLE=${expt_title:1}
 fi
