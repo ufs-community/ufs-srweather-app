@@ -54,29 +54,29 @@ CYCLE_DIR="$EXPTDIR/$CDATE"
 #
 #-----------------------------------------------------------------------
 #
-# If it doesn't already exist, create the directory (POSTPRD_DIR) in 
-# which to store post-processing output.  (Note that POSTPRD_DIR may al-
+# If it doesn't already exist, create the directory (postprd_dir) in 
+# which to store post-processing output.  (Note that postprd_dir may al-
 # ready have been created by this post-processing script run for a dif-
 # ferent forecast hour.)  Also, create a temporary work directory (FHR_-
-# DIR) for the current forecast hour being processed.  FHR_DIR will be 
+# DIR) for the current forecast hour being processed.  fhr_dir will be 
 # deleted later after the processing for the current forecast hour is 
-# complete.  Then change location to FHR_DIR.
+# complete.  Then change location to fhr_dir.
 #
-# Note that there may be a preexisting version of FHR_DIR from previous 
+# Note that there may be a preexisting version of fhr_dir from previous 
 # runs of this script for the current forecast hour (e.g. from the work-
 # flow task that runs this script failing and then being called again).  
 # Thus, we first make sure preexisting versions are deleted.
 #
 #-----------------------------------------------------------------------
 #
-POSTPRD_DIR="${CYCLE_DIR}/postprd"
-mkdir_vrfy -p "${POSTPRD_DIR}"
+postprd_dir="${CYCLE_DIR}/postprd"
+mkdir_vrfy -p "${postprd_dir}"
 
-FHR_DIR="${POSTPRD_DIR}/$fhr"
-check_for_preexist_dir $FHR_DIR "delete"
-mkdir_vrfy -p "${FHR_DIR}"
+fhr_dir="${postprd_dir}/$fhr"
+check_for_preexist_dir "${fhr_dir}" "delete"
+mkdir_vrfy -p "${fhr_dir}"
 
-cd_vrfy ${FHR_DIR}
+cd_vrfy "${fhr_dir}"
 #
 #-----------------------------------------------------------------------
 #
@@ -86,9 +86,9 @@ cd_vrfy ${FHR_DIR}
 #-----------------------------------------------------------------------
 #
 $SCRIPTSDIR/exregional_run_post.sh \
-  CYCLE_DIR="${CYCLE_DIR}" \
-  POSTPRD_DIR="${POSTPRD_DIR}" \
-  FHR_DIR="${FHR_DIR}" \
+  cycle_dir="${CYCLE_DIR}" \
+  postprd_dir="${postprd_dir}" \
+  fhr_dir="${fhr_dir}" \
   fhr="${fhr}" || \
   print_err_msg_exit "${script_name}" "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."

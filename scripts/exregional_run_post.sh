@@ -44,7 +44,7 @@ the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "CYCLE_DIR" "POSTPRD_DIR" "FHR_DIR" "fhr" )
+valid_args=( "cycle_dir" "postprd_dir" "fhr_dir" "fhr" )
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -111,6 +111,7 @@ case $MACHINE in
   APRUN="mpirun -np ${np}"
   ;;
 
+
 "HERA")
   { save_shell_opts; set +x; } > /dev/null 2>&1
   module purge
@@ -118,10 +119,10 @@ case $MACHINE in
   module load intel/19.0.4.243
   module load impi/2019.0.4
 
-  #module use /contrib/modulefiles
+#  module use /contrib/modulefiles
   module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
 
-  # Loding nceplibs modules
+# Loading nceplibs modules
   module load sigio/2.1.1
   module load jasper/1.900.1
   module load png/1.2.44
@@ -130,7 +131,7 @@ case $MACHINE in
   module load nemsio/2.2.4
   module load bacio/2.0.3
   module load g2/3.1.1
-  #module load xmlparse/v2.0.0
+#  module load xmlparse/v2.0.0
   module load gfsio/1.1.0
   module load ip/3.0.2
   module load sp/2.0.3
@@ -187,15 +188,17 @@ case $MACHINE in
   APRUN="mpirun -np ${np}"
   ;;
 
+
 "ODIN")
   APRUN="srun -n 1"
   ;;
+
 
 esac
 #
 #-----------------------------------------------------------------------
 #
-# Remove any files from previous runs and stage necessary files in FHR_DIR.
+# Remove any files from previous runs and stage necessary files in fhr_dir.
 #
 #-----------------------------------------------------------------------
 #
@@ -223,8 +226,8 @@ tmmark="tm$HH"
 #
 #-----------------------------------------------------------------------
 #
-dyn_file=${CYCLE_DIR}/dynf0${fhr}.nc
-phy_file=${CYCLE_DIR}/phyf0${fhr}.nc
+dyn_file="${cycle_dir}/dynf0${fhr}.nc"
+phy_file="${cycle_dir}/phyf0${fhr}.nc"
 
 POST_TIME=$( ${NDATE} +${fhr} ${CDATE} )
 POST_YYYY=${POST_TIME:0:4}
@@ -247,7 +250,7 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-# Copy the UPP executable to FHR_DIR and run the post-processor.
+# Copy the UPP executable to fhr_dir and run the post-processor.
 #
 #-----------------------------------------------------------------------
 #
@@ -258,31 +261,45 @@ zero exit code."
 #-----------------------------------------------------------------------
 #
 # Move (and rename) the output files from the work directory to their
-# final location (POSTPRD_DIR).  Then delete the work directory. 
+# final location (postprd_dir).  Then delete the work directory. 
 #
 #-----------------------------------------------------------------------
 #
-# If expt_title is set to an empty string in config.sh, I think TITLE 
-# will also be empty.  Must try out that case...
 if [ -n "${PREDEF_GRID_NAME}" ]; then 
-  TITLE="${PREDEF_GRID_NAME}"
+
+  grid_name="${PREDEF_GRID_NAME}"
+
 else 
-  TITLE=${expt_title:1}
+
+  grid_name="${GRID_GEN_METHOD}"
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+    stretch_str="S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
+    refine_str="RR${refine_ratio}"
+    grid_name="${grid_name}_${CRES}_${stretch_str}_${refine_str}"
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+    nx_T7_str="NX$( printf "%s" "${nx_T7}" | sed "s|\.|p|" )"
+    ny_T7_str="NY$( printf "%s" "${ny_T7}" | sed "s|\.|p|" )"
+    a_grid_param_str="A$( printf "%s" "${a_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
+    k_grid_param_str="K$( printf "%s" "${k_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
+    grid_name="${grid_name}_${nx_T7_str}_${ny_T7_str}_${a_grid_param_str}_${k_grid_param_str}"
+  fi
+
 fi
 
-mv_vrfy BGDAWP.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark}
-mv_vrfy BGRD3D.GrbF${fhr} ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark}
+mv_vrfy BGDAWP.GrbF${fhr} ${postprd_dir}/${grid_name}.t${cyc}z.bgdawp${fhr}.${tmmark}
+mv_vrfy BGRD3D.GrbF${fhr} ${postprd_dir}/${grid_name}.t${cyc}z.bgrd3d${fhr}.${tmmark}
 
 #Link output for transfer to Jet
 
 START_DATE=`echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/'`
 basetime=`date +%y%j%H%M -d "${START_DATE}"`
-ln_vrfy -fs ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgdawp${fhr}.${tmmark} \
-            ${POSTPRD_DIR}/BGDAWP_${basetime}${fhr}00
-ln_vrfy -fs ${POSTPRD_DIR}/${TITLE}.t${cyc}z.bgrd3d${fhr}.${tmmark} \
-            ${POSTPRD_DIR}/BGRD3D_${basetime}${fhr}00
+ln_vrfy -fs ${postprd_dir}/${grid_name}.t${cyc}z.bgdawp${fhr}.${tmmark} \
+            ${postprd_dir}/BGDAWP_${basetime}${fhr}00
+ln_vrfy -fs ${postprd_dir}/${grid_name}.t${cyc}z.bgrd3d${fhr}.${tmmark} \
+            ${postprd_dir}/BGRD3D_${basetime}${fhr}00
 
-rm_vrfy -rf ${FHR_DIR}
+rm_vrfy -rf ${fhr_dir}
 #
 #-----------------------------------------------------------------------
 #
