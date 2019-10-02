@@ -81,9 +81,12 @@ QUEUE_FCST="production_queue"
 EXPT_BASEDIR=""
 EXPT_SUBDIR=""
 
-HOMErrfs="/path/to/directory/of/regional_workflow/clone"
+NET="rrfs"
+envir="para"
+RUN="experiment_name"
 COMINgfs="/path/to/directory/containing/gfs/input/files"
 STMP="/path/to/temporary/directory/stmp"
+PTMP="/path/to/temporary/directory/ptmp"
 #
 #-----------------------------------------------------------------------
 #

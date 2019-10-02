@@ -823,9 +823,11 @@ check_for_preexist_dir $EXPTDIR ${PREEXISTING_DIR_METHOD}
 if [ "${RUN_ENVIR}" = "nco" ]; then
   FIXam="${FIXrrfs}/fix_am"
   FIXsar="${FIXrrfs}/fix_sar"
+  COMROOT="$PTMP/com"
 else
   FIXam="${EXPTDIR}/fix_am"
   FIXsar="${EXPTDIR}/fix_sar"
+  COMROOT=""
 fi
 #
 #-----------------------------------------------------------------------
@@ -1706,6 +1708,7 @@ FIXsar="$FIXsar"
 FIXgsm="$FIXgsm"
 FIXupp="$FIXupp"
 FIXgsd="$FIXgsd"
+COMROOT="$COMROOT"
 TEMPLATE_DIR="${TEMPLATE_DIR}"
 UFS_UTILS_DIR="${UFS_UTILS_DIR}"
 NEMSfv3gfs_DIR="${NEMSfv3gfs_DIR}"
