@@ -46,14 +46,6 @@ on the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-#
-#
-#-----------------------------------------------------------------------
-#
-CYCLE_DIR="$EXPTDIR/$CDATE"
-#
-#-----------------------------------------------------------------------
-#
 # If it doesn't already exist, create the directory (postprd_dir) in 
 # which to store post-processing output.  (Note that postprd_dir may al-
 # ready have been created by this post-processing script run for a dif-
@@ -69,7 +61,12 @@ CYCLE_DIR="$EXPTDIR/$CDATE"
 #
 #-----------------------------------------------------------------------
 #
-postprd_dir="${CYCLE_DIR}/postprd"
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  COMOUT="$COMROOT/$NET/$envir/$RUN.$PDY/$cyc"
+  postprd_dir="$COMOUT"
+else
+  postprd_dir="${CYCLE_DIR}/postprd"
+fi
 mkdir_vrfy -p "${postprd_dir}"
 
 fhr_dir="${postprd_dir}/$fhr"
