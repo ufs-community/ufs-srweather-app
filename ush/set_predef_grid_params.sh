@@ -54,8 +54,6 @@ case ${PREDEF_GRID_NAME} in
 #
 "GSD_HAFSV0.A")
 
-  expt_title="_GSD_HAFSV0.A${expt_title}"
-
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
@@ -110,8 +108,6 @@ predefined domain:
 #-----------------------------------------------------------------------
 #
 "GSD_RAP13km")
-
-  expt_title="_GSD_RAP13km${expt_title}"
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
@@ -197,8 +193,6 @@ predefined domain:
 #
 "GSD_HRRR25km")
 
-  expt_title="_GSD_HRRR25km${expt_title}"
-
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
@@ -253,8 +247,6 @@ predefined domain:
 #-----------------------------------------------------------------------
 #
 "GSD_HRRR13km")
-
-  expt_title="_GSD_HRRR13km${expt_title}"
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
@@ -311,8 +303,6 @@ predefined domain:
 #
 "GSD_HRRR3km")
 
-  expt_title="_GSD_HRRR3km${expt_title}"
-
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
@@ -367,8 +357,6 @@ predefined domain:
 #-----------------------------------------------------------------------
 #
 "EMC_CONUS")
-
-  expt_title="_EMC_CONUS${expt_title}"
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # Values from an EMC script.
@@ -455,8 +443,6 @@ predefined domain:
 #-----------------------------------------------------------------------
 #
 "EMC_AK")
-
-  expt_title="_EMC_AK${expt_title}"
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 

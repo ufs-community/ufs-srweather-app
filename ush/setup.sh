@@ -709,16 +709,6 @@ LBC_UPDATE_FCST_HRS=($( seq ${LBC_UPDATE_INTVL_HRS} \
 #
 #-----------------------------------------------------------------------
 #
-# If expt_title is set to a non-empty value [i.e. it is neither unset 
-# nor null, where null means an empty string], prepend an underscore to
-# it.  Otherwise, set it to null.
-#
-#-----------------------------------------------------------------------
-#
-expt_title=${expt_title:+_$expt_title}
-#
-#-----------------------------------------------------------------------
-#
 # If PREDEF_GRID_NAME is set to a non-empty string, set or reset parame-
 # ters according to the predefined domain specified.
 #
@@ -785,19 +775,10 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ -z "${EXPT_SUBDIR}" ]; then  # If EXPT_SUBDIR is not set or is set to an empty string.
-
-  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-    stretch_str="_S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
-    refine_str="_RR${refine_ratio}"
-    EXPT_SUBDIR=${CRES}${stretch_str}${refine_str}${expt_title}
-  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-    nx_T7_str="NX$( printf "%s" "${nx_T7}" | sed "s|\.|p|" )"
-    ny_T7_str="NY$( printf "%s" "${ny_T7}" | sed "s|\.|p|" )"
-    a_grid_param_str="_A$( printf "%s" "${a_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
-    k_grid_param_str="_K$( printf "%s" "${k_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
-    EXPT_SUBDIR=${nx_T7_str}_${ny_T7_str}${a_grid_param_str}${k_grid_param_str}${expt_title}
-  fi
-
+  print_err_msg_exit "${script_name}" "\
+The name of the experiment subdirectory (EXPT_SUBDIR) cannot be empty:
+  EXPT_SUBDIR = \"${EXPT_SUBDIR}\"
+"
 fi
 #
 #-----------------------------------------------------------------------
