@@ -695,9 +695,18 @@ has not been specified for this external model:
 # and use that to form the archive file name.
 #
     hh_orig=$hh
+# Convert hh to a decimal (i.e. base-10) number.  We need this because 
+# if it starts with a 0 (e.g. 00, 01, ..., 09), bash will treat it as an
+# octal number, and 08 and 09 are illegal ocatal numbers for which the
+# arithmetic operations below will fail.
+    hh=$((10#$hh))
     if [ $(($hh%2)) = 1 ]; then
       hh=$((hh-1))
     fi
+# Now that the arithmetic is done, recast hh as a two-digit string be-
+# cause that is needed in constructing the names below.
+    hh=$( printf "%02d\n" $hh )
+
     arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/rap/full/wrfnat"
     arcv_fmt="zip"
     arcv_fns="${yyyy}${mm}${dd}${hh}00.${arcv_fmt}"
