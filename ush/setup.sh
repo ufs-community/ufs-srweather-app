@@ -14,6 +14,17 @@
 #-----------------------------------------------------------------------
 #
 
+
+#
+#-----------------------------------------------------------------------
+#
+# Set the current script's name and the directory in which it is loca-
+# ted.
+#
+#-----------------------------------------------------------------------
+#
+script_name=$( basename "${BASH_SOURCE[0]}" )
+script_dir=$( dirname ${BASH_SOURCE[0]} )
 #
 #-----------------------------------------------------------------------
 #
@@ -99,7 +110,7 @@ fi
 #
 iselementof "$RUN_ENVIR" valid_vals_RUN_ENVIR || { \
 valid_vals_RUN_ENVIR_str=$(printf "\"%s\" " "${valid_vals_RUN_ENVIR[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 Value specified in RUN_ENVIR is not supported:
   RUN_ENVIR = \"$RUN_ENVIR\"
 RUN_ENVIR must be set to one of the following:
@@ -114,7 +125,7 @@ RUN_ENVIR must be set to one of the following:
 #
 iselementof "$VERBOSE" valid_vals_VERBOSE || { \
 valid_vals_VERBOSE_str=$(printf "\"%s\" " "${valid_vals_VERBOSE[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 Value specified in VERBOSE is not supported:
   VERBOSE = \"$VERBOSE\"
 VERBOSE must be set to one of the following:
@@ -141,7 +152,7 @@ fi
 #
 iselementof "${RUN_TASK_MAKE_GRID}" valid_vals_RUN_TASK_MAKE_GRID || { \
 valid_vals_RUN_TASK_MAKE_GRID_str=$(printf "\"%s\" " "${valid_vals_RUN_TASK_MAKE_GRID[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 Value specified in RUN_TASK_MAKE_GRID is not supported:
   RUN_TASK_MAKE_GRID = \"${RUN_TASK_MAKE_GRID}\"
 RUN_TASK_MAKE_GRID must be set to one of the following:
@@ -168,7 +179,7 @@ fi
 #
 iselementof "$RUN_TASK_MAKE_SFC_CLIMO" valid_vals_RUN_TASK_MAKE_SFC_CLIMO || { \
 valid_vals_RUN_TASK_MAKE_SFC_CLIMO_str=$(printf "\"%s\" " "${valid_vals_RUN_TASK_MAKE_SFC_CLIMO[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 Value specified in RUN_TASK_MAKE_SFC_CLIMO is not supported:
   RUN_TASK_MAKE_SFC_CLIMO = \"$RUN_TASK_MAKE_SFC_CLIMO\"
 RUN_TASK_MAKE_SFC_CLIMO must be set to one of the following:
@@ -193,7 +204,7 @@ fi
 #
 if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ] && \
    [ ! -d "${SFC_CLIMO_DIR}" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The directory (SFC_CLIMO_DIR) that should contain the pre-generated sur-
 face climatology files does not exist:
   SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"
@@ -221,7 +232,7 @@ MACHINE=$( printf "%s" "$MACHINE" | sed -e 's/\(.*\)/\U\1/' )
 
 iselementof "$MACHINE" valid_vals_MACHINE || { \
 valid_vals_MACHINE_str=$(printf "\"%s\" " "${valid_vals_MACHINE[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 Machine specified in MACHINE is not supported:
   MACHINE = \"$MACHINE\"
 MACHINE must be set to one of the following:
@@ -240,7 +251,7 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
 Then remove this message and rerun." 
@@ -253,7 +264,7 @@ Then remove this message and rerun."
 #
 "WCOSS")
 #
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
 Then remove this message and rerun."
@@ -303,7 +314,7 @@ Then remove this message and rerun."
 #
 "CHEYENNE")
 #
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
 Then remove this message and rerun."
@@ -338,7 +349,7 @@ TILE_RGNL="7"
 #
 iselementof "$gtype" valid_vals_gtype || { \
 valid_vals_gtype_str=$(printf "\"%s\" " "${valid_vals_gtype[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 Value specified in gtype is not supported:
   gtype = \"$gtype\"
 gtype must be set to one of the following:
@@ -354,7 +365,7 @@ gtype must be set to one of the following:
 if [ ! -z ${PREDEF_GRID_NAME} ]; then
   iselementof "$PREDEF_GRID_NAME" valid_vals_PREDEF_GRID_NAME || { \
   valid_vals_PREDEF_GRID_NAME_str=$(printf "\"%s\" " "${valid_vals_PREDEF_GRID_NAME[@]}");
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The predefined regional domain specified in PREDEF_GRID_NAME is not sup-
 ported:
   PREDEF_GRID_NAME = \"$PREDEF_GRID_NAME\"
@@ -374,7 +385,7 @@ fi
 #
 iselementof "${PREEXISTING_DIR_METHOD}" valid_vals_PREEXISTING_DIR_METHOD || { \
 valid_vals_PREEXISTING_DIR_METHOD_str=$(printf "\"%s\" " "${valid_vals_PREEXISTING_DIR_METHOD[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 Value specified in PREEXISTING_DIR_METHOD is not supported:
   PREEXISTING_DIR_METHOD = \"${PREEXISTING_DIR_METHOD}\"
 PREEXISTING_DIR_METHOD must be set to one of the following:
@@ -389,7 +400,7 @@ PREEXISTING_DIR_METHOD must be set to one of the following:
 #
 iselementof "${USE_CCPP}" valid_vals_USE_CCPP || { \
 valid_vals_USE_CCPP_str=$(printf "\"%s\" " "${valid_vals_USE_CCPP[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 The value specified for the USE_CCPP flag is not supported:
   USE_CCPP = \"${USE_CCPP}\"
 USE_CCPP must be set to one of the following:
@@ -420,7 +431,7 @@ if [ "${USE_CCPP}" = "TRUE" ]; then
   if [ ! -z ${CCPP_PHYS_SUITE} ]; then
     iselementof "${CCPP_PHYS_SUITE}" valid_vals_CCPP_PHYS_SUITE || { \
     valid_vals_CCPP_PHYS_SUITE_str=$(printf "\"%s\" " "${valid_vals_CCPP_PHYS_SUITE[@]}");
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 The CCPP physics suite specified in CCPP_PHYS_SUITE is not supported:
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
 CCPP_PHYS_SUITE must be set to one of the following:
@@ -440,7 +451,7 @@ fi
 #
 if [ "$EXTRN_MDL_NAME_ICS" = "HRRRX" -o "$EXTRN_MDL_NAME_LBCS" = "RAPX" ] && \
    [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Using $EXTRN_MDL_NAME_ICS external model data and ${CCPP_PHYS_SUITE} physics through CCPP is
 untested and not currently an option in the community SAR workflow."
 fi
@@ -454,7 +465,7 @@ fi
 #
 DATE_OR_NULL=$( printf "%s" "$DATE_FIRST_CYCL" | sed -n -r -e "s/^([0-9]{8})$/\1/p" )
 if [ -z "${DATE_OR_NULL}" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 DATE_FIRST_CYCL must be a string consisting of exactly 8 digits of the 
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
 month, DD is the 2-digit day-of-month, and HH is the 2-digit hour-of-
@@ -464,7 +475,7 @@ fi
 
 DATE_OR_NULL=$( printf "%s" "$DATE_LAST_CYCL" | sed -n -r -e "s/^([0-9]{8})$/\1/p" )
 if [ -z "${DATE_OR_NULL}" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the 
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
 month, DD is the 2-digit day-of-month, and HH is the 2-digit hour-of-
@@ -488,7 +499,7 @@ for CYCL in "${CYCL_HRS[@]}"; do
   CYCL_OR_NULL=$( printf "%s" "$CYCL" | sed -n -r -e "s/^([0-9]{2})$/\1/p" )
 
   if [ -z "${CYCL_OR_NULL}" ]; then
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 Each element of CYCL_HRS must be a string consisting of exactly 2 digits
 (including a leading \"0\", if necessary) specifying an hour-of-day.  Ele-
 ment #$i of CYCL_HRS (where the index of the first element is 0) does not
@@ -498,7 +509,7 @@ have this form:
   fi
 
   if [ "${CYCL_OR_NULL}" -lt "0" ] || [ "${CYCL_OR_NULL}" -gt "23" ]; then
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 Each element of CYCL_HRS must be an integer between \"00\" and \"23\", in-
 clusive (including a leading \"0\", if necessary), specifying an hour-of-
 day.  Element #$i of CYCL_HRS (where the index of the first element is 0) 
@@ -592,7 +603,7 @@ NEMSfv3gfs_DIR="$SORCDIR/NEMSfv3gfs"
 # Make sure that the NEMSfv3gfs_DIR directory exists.
 #
 if [ ! -d "$NEMSfv3gfs_DIR" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The NEMSfv3gfs directory specified by NEMSfv3gfs_DIR that should contain
 the FV3 source code does not exist:
   NEMSfv3gfs_DIR = \"$NEMSfv3gfs_DIR\"
@@ -639,7 +650,7 @@ case $MACHINE in
   ;;
 
 *)
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Directories have not been specified for this machine:
   MACHINE = \"$MACHINE\"
 "
@@ -658,7 +669,7 @@ esac
 #
 FCST_LEN_HRS_MAX="999"
 if [ "$FCST_LEN_HRS" -gt "$FCST_LEN_HRS_MAX" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Forecast length is greater than maximum allowed length:
   FCST_LEN_HRS = $FCST_LEN_HRS
   FCST_LEN_HRS_MAX = $FCST_LEN_HRS_MAX"
@@ -676,7 +687,7 @@ fi
 rem=$(( ${FCST_LEN_HRS}%${LBC_UPDATE_INTVL_HRS} ))
 
 if [ "$rem" -ne "0" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The forecast length (FCST_LEN_HRS) is not evenly divisible by the later-
 al boundary conditions update interval (LBC_UPDATE_INTVL_HRS):
   FCST_LEN_HRS = $FCST_LEN_HRS
@@ -728,7 +739,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
   iselementof "$RES" valid_vals_RES || { \
   valid_vals_RES_str=$(printf "\"%s\" " "${valid_vals_RES[@]}");
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 Number of grid cells per tile (in each horizontal direction) specified in
 RES is not supported:
   RES = \"$RES\"
@@ -951,7 +962,7 @@ else
   if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
 
     if [ ! -d "${GRID_DIR}" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The directory (GRID_DIR) that should contain the pre-generated grid 
 files does not exist:
   GRID_DIR = \"${GRID_DIR}\"
@@ -974,7 +985,7 @@ files does not exist:
   if [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ]; then
 
     if [ ! -d "${OROG_DIR}" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The directory (OROG_DIR) that should contain the pre-generated orography
 files does not exist:
   OROG_DIR = \"${OROG_DIR}\"
@@ -997,7 +1008,7 @@ files does not exist:
   if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
 
     if [ ! -d "${SFC_CLIMO_DIR}" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The directory (SFC_CLIMO_DIR) that should contain the pre-generated orography
 files does not exist:
   SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"
@@ -1018,7 +1029,7 @@ fi
 #
 iselementof "$EXTRN_MDL_NAME_ICS" valid_vals_EXTRN_MDL_NAME_ICS || { \
 valid_vals_EXTRN_MDL_NAME_ICS_str=$(printf "\"%s\" " "${valid_vals_EXTRN_MDL_NAME_ICS[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 The external model specified in EXTRN_MDL_NAME_ICS that provides initial
 conditions (ICs) and surface fields to the FV3SAR is not supported:
   EXTRN_MDL_NAME_ICS = \"$EXTRN_MDL_NAME_ICS\"
@@ -1034,7 +1045,7 @@ EXTRN_MDL_NAME_ICS must be one of the following:
 #
 iselementof "$EXTRN_MDL_NAME_LBCS" valid_vals_EXTRN_MDL_NAME_LBCS || { \
 valid_vals_EXTRN_MDL_NAME_LBCS_str=$(printf "\"%s\" " "${valid_vals_EXTRN_MDL_NAME_LBCS[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 The external model specified in EXTRN_MDL_NAME_LBCS that provides later-
 al boundary conditions (LBCs) to the FV3SAR is not supported:
   EXTRN_MDL_NAME_LBCS = \"$EXTRN_MDL_NAME_LBCS\"
@@ -1145,7 +1156,7 @@ nh4_T7=$(( $nh3_T7 + 1 ))
 #
 iselementof "${GRID_GEN_METHOD}" valid_vals_GRID_GEN_METHOD || { \
 valid_vals_GRID_GEN_METHOD_str=$(printf "\"%s\" " "${valid_vals_GRID_GEN_METHOD[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 The grid generation method specified in GRID_GEN_METHOD is not supported:
   GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 GRID_GEN_METHOD must be one of the following:
@@ -1184,7 +1195,7 @@ fi
 #
 iselementof "$QUILTING" valid_vals_QUILTING || { \
 valid_vals_QUILTING_str=$(printf "\"%s\" " "${valid_vals_QUILTING[@]}");
-print_err_msg_exit "\
+print_err_msg_exit "${script_name}" "\
 Value specified in QUILTING is not supported:
   QUILTING = \"$QUILTING\"
 QUILTING must be set to one of the following:
@@ -1230,7 +1241,7 @@ component if it is being used) are:
 #
 rem=$(( $nx_T7%$layout_x ))
 if [ $rem -ne 0 ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The number of grid cells in the x direction (nx_T7) is not evenly divisible
 by the number of MPI tasks in the x direction (layout_x):
   nx_T7 = $nx_T7
@@ -1239,7 +1250,7 @@ fi
 
 rem=$(( $ny_T7%$layout_y ))
 if [ $rem -ne 0 ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The number of grid cells in the y direction (ny_T7) is not evenly divisible
 by the number of MPI tasks in the y direction (layout_y):
   ny_T7 = $ny_T7
@@ -1265,7 +1276,7 @@ num_cols_per_task=$(( $nx_per_task*$ny_per_task ))
 rem=$(( $num_cols_per_task%$blocksize ))
 if [ $rem -ne 0 ]; then
   prime_factors_num_cols_per_task=$( factor $num_cols_per_task | sed -r -e 's/^[0-9]+: (.*)/\1/' )
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The number of columns assigned to a given MPI task must be divisible by
 the blocksize:
   nx_per_task = nx_T7/layout_x = $nx_T7/$layout_x = $nx_per_task
@@ -1292,7 +1303,7 @@ fi
 if [ "$QUILTING" = "TRUE" ]; then
 
   if [ -z "$WRTCMP_PARAMS_TEMPLATE_FN" ]; then
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 The write-component template file name (WRTCMP_PARAMS_TEMPLATE_FN) must
 be set to a non-empty value when quilting (i.e. the write-component) is 
 enabled:
@@ -1302,7 +1313,7 @@ enabled:
 
   WRTCMP_PARAMS_TEMPLATE_FP="$TEMPLATE_DIR/$WRTCMP_PARAMS_TEMPLATE_FN"
   if [ ! -f "$WRTCMP_PARAMS_TEMPLATE_FP" ]; then
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 The write-component template file does not exist or is not a file:
   WRTCMP_PARAMS_TEMPLATE_FP = \"$WRTCMP_PARAMS_TEMPLATE_FP\""
   fi
@@ -1327,7 +1338,7 @@ if [ "$QUILTING" = "TRUE" ]; then
   rem=$(( $ny_T7%${WRTCMP_write_tasks_per_group} ))
 
   if [ $rem -ne 0 ]; then
-    print_err_msg_exit "\
+    print_err_msg_exit "${script_name}" "\
 The number of grid points in the y direction on the regional grid (ny_-
 T7) must be evenly divisible by the number of tasks per write group 
 (WRTCMP_write_tasks_per_group):
@@ -1373,7 +1384,7 @@ NUM_NODES=$(( ($PE_MEMBER01 + $ncores_per_node - 1)/$ncores_per_node ))
 num_fixam_files_sysdir="${#FIXam_FILES_SYSDIR[@]}"
 num_fixam_files_exptdir="${#FIXam_FILES_EXPTDIR[@]}"
 if [ "${num_fixam_files_sysdir}" -ne "${num_fixam_files_exptdir}" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit "${script_name}" "\
 The number of fixed files specified in FIXam_FILES_SYSDIR must be equal 
 to that specified in FIXam_FILES_EXPTDIR:
   num_fixam_files_sysdir = ${num_fixam_files_sysdir}
@@ -1735,7 +1746,7 @@ nh0_T7="$nh0_T7"
 nh3_T7="$nh3_T7"
 nh4_T7="$nh4_T7"
 EOM
-} || print_err_msg_exit "\
+} || print_err_msg_exit "${script_name}" "\
 Heredoc (cat) command to append new variable definitions to variable 
 definitions file returned with a nonzero status."
 #
@@ -1771,7 +1782,7 @@ jstart_rgnl_wide_halo_T6SG="$jstart_rgnl_wide_halo_T6SG"
 jend_rgnl_wide_halo_T6SG="$jend_rgnl_wide_halo_T6SG"
 CRES="$CRES"
 EOM
-} || print_err_msg_exit "\
+} || print_err_msg_exit "${script_name}" "\
 Heredoc (cat) command to append grid parameters to variable definitions
 file returned with a nonzero status."
 
@@ -1801,7 +1812,7 @@ RES=""   # This will be set after the grid generation task is complete.
 CRES=""  # This will be set after the grid generation task is complete.
 stretch_fac="$stretch_fac"
 EOM
-} || print_err_msg_exit "\
+} || print_err_msg_exit "${script_name}" "\
 Heredoc (cat) command to append grid parameters to variable definitions
 file returned with a nonzero status."
 
@@ -1872,7 +1883,7 @@ LBC_UPDATE_FCST_HRS=(${LBC_UPDATE_FCST_HRS[@]})  # LBC_UPDATE_FCST_HRS is an arr
 ncores_per_node="$ncores_per_node"
 PE_MEMBER01="$PE_MEMBER01"
 EOM
-} || print_err_msg_exit "\
+} || print_err_msg_exit "${script_name}" "\
 Heredoc (cat) command to append new variable definitions to variable 
 definitions file returned with a nonzero status."
 #
