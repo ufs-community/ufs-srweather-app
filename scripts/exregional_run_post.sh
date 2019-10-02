@@ -210,14 +210,15 @@ cp_vrfy ${EXECDIR}/ncep_post .
 #
 #-----------------------------------------------------------------------
 #
-# Get the cycle hour.  This is just the variable HH set in the setup.sh
-# script.
+# Get the cycle date and hour (in formats of yyyymmdd and hh, respect-
+# ively) from CDATE.
 #
 #-----------------------------------------------------------------------
 #
-HH=${CDATE:8:2}
-cyc=$HH
-tmmark="tm$HH"
+yyyymmdd=${CDATE:0:8}
+hh=${CDATE:8:2}
+cyc=$hh
+tmmark="tm$hh"
 #
 #-----------------------------------------------------------------------
 #
@@ -229,7 +230,8 @@ tmmark="tm$HH"
 dyn_file="${cycle_dir}/dynf0${fhr}.nc"
 phy_file="${cycle_dir}/phyf0${fhr}.nc"
 
-POST_TIME=$( ${NDATE} +${fhr} ${CDATE} )
+#POST_TIME=$( ${NDATE} +${fhr} ${CDATE} )
+POST_TIME=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours" "+%Y%m%d%H" )
 POST_YYYY=${POST_TIME:0:4}
 POST_MM=${POST_TIME:4:2}
 POST_DD=${POST_TIME:6:2}
