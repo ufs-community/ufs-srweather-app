@@ -60,10 +60,6 @@ QUEUE_FCST="production_queue"
 # dir_doc_start
 # Set directories.  Definitions:
 #
-# BASEDIR:
-# Directory in which the regional_workflow, NEMSfv3gfs, and other repo-
-# sitories are cloned.
-#
 # EXPT_BASEDIR:
 # The base directory in which the experiment directory will be created.  
 # If this is not specified or if it is set to an empty string, it will
@@ -80,8 +76,8 @@ QUEUE_FCST="production_queue"
 #
 #-----------------------------------------------------------------------
 #
-#BASEDIR="/path/to/directory/to/regional_workflow/clone"
-BASEDIR="/path/to/directory/above/regional_workflow/clone"
+#EXPT_BASEDIR="/path/to/directory/in/which/experiment/subdirs/will/exist"
+#EXPT_SUBDIR="my_test"
 EXPT_BASEDIR=""
 EXPT_SUBDIR=""
 

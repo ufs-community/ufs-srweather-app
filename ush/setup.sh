@@ -585,7 +585,15 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 #
 #-----------------------------------------------------------------------
 #
-HOMErrfs="$BASEDIR/regional_workflow"
+
+#
+# The current script should be located in the ush subdirectory of the 
+# workflow directory.  Thus, the workflow directory is the one above the
+# directory of the current script.  Get the path to this directory and
+# save it in HOMErrfs.
+#
+HOMErrfs=${script_dir%/*}
+
 USHDIR="$HOMErrfs/ush"
 SCRIPTSDIR="$HOMErrfs/scripts"
 JOBSDIR="$HOMErrfs/jobs"
@@ -593,7 +601,6 @@ SORCDIR="$HOMErrfs/sorc"
 PARMDIR="$HOMErrfs/parm"
 EXECDIR="$HOMErrfs/exec"
 FIXrrfs="$HOMErrfs/fix"
-#FIXam="$FIXrrfs/fix_am"
 FIXupp="$FIXrrfs/fix_upp"
 FIXgsd="$FIXrrfs/fix_gsd"
 TEMPLATE_DIR="$USHDIR/templates"
@@ -769,12 +776,26 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Construct the name (EXPT_SUBDIR) that we will used for the experiment
-# directory
+# If the base directory (EXPT_BASEDIR) in which the experiment subdirec-
+# tory (EXPT_SUBDIR) will be located is not set or is set to an empty 
+# string, set it to a default location that is at the same level as the
+# workflow directory (HOMErrfs).  Then create EXPT_BASEDIR if it doesn't
+# already exist.
 #
 #-----------------------------------------------------------------------
 #
-if [ -z "${EXPT_SUBDIR}" ]; then  # If EXPT_SUBDIR is not set or is set to an empty string.
+EXPT_BASEDIR="${EXPT_BASEDIR:-${HOMErrfs}/../expt_dirs}"
+EXPT_BASEDIR="$( readlink -f ${EXPT_BASEDIR} )"
+mkdir_vrfy -p "${EXPT_BASEDIR}"
+#
+#-----------------------------------------------------------------------
+#
+# If the experiment subdirectory name (EXPT_SUBDIR) is set to an empty
+# string, print out an error message and exit.
+#
+#-----------------------------------------------------------------------
+#
+if [ -z "${EXPT_SUBDIR}" ]; then
   print_err_msg_exit "${script_name}" "\
 The name of the experiment subdirectory (EXPT_SUBDIR) cannot be empty:
   EXPT_SUBDIR = \"${EXPT_SUBDIR}\"
@@ -783,23 +804,13 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Define the full path to the experiment directory.  This is the direct-
-# ory in which the static input files to the FV3SAR are placed.  Then
-# call the function that checks whether the experiment directory already
-# exists and if so, moves it, deletes it, or quits out of this script 
-# (the action taken depends on the value of the variable preexisting_-
-# dir_method).  Note that we do not yet create a new experiment directory; we will do that later below once
-# the workflow/experiment configuration parameters pass the various 
-# checks.
+# Set the full path to the experiment directory.  Then check if it al-
+# ready exists and if so, deal with it as specified by PREEXISTING_DIR_-
+# METHOD.
 #
 #-----------------------------------------------------------------------
 #
-#if [ -z "${EXPT_BASEDIR+x}" ]; then  # If EXPT_BASEDIR is not set at all, not even to an empty string.
-if [ -z "${EXPT_BASEDIR}" ]; then  # If EXPT_BASEDIR is not set or is set to an empty string.
-  EXPT_BASEDIR="${BASEDIR}/expt_dirs"
-fi
-mkdir_vrfy -p "${EXPT_BASEDIR}"
-
+# May have to make setting of EXPTDIR dependent on RUN_ENVIR later on.
 EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
 check_for_preexist_dir $EXPTDIR ${PREEXISTING_DIR_METHOD}
 #
