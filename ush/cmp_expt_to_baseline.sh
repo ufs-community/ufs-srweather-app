@@ -16,7 +16,8 @@
 #                Script has only been tested on theia
 #-----------------------------------------------------------------------
 
-module load nccmp
+module load intel
+module load nccmp/1.8.5
 #
 #-----------------------------------------------------------------------
 #
