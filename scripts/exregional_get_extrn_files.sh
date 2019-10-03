@@ -18,7 +18,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -27,7 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "$0" )
+script_name=$( basename "${BASH_SOURCE[0]}" )
 print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
@@ -80,7 +80,7 @@ fi
 #-----------------------------------------------------------------------
 #
 num_files_to_copy="${#EXTRN_MDL_FNS[@]}"
-prefix="$EXTRN_MDL_SYSDIR/"
+prefix="${EXTRN_MDL_SYSDIR}/"
 EXTRN_MDL_FPS=( "${EXTRN_MDL_FNS[@]/#/$prefix}" )
 
 num_files_found_on_disk="0"
@@ -144,15 +144,30 @@ EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
 
 if [ "$DATA_SRC" = "disk" ]; then
 
-  print_info_msg "
-Copying model output files (EXTRN_MDL_FNS) from system directory on disk 
-(EXTRN_MDL_SYSDIR) to local directory (EXTRN_MDL_FILES_DIR):
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+
+    print_info_msg "\
+Creating links in local directory (EXTRN_MDL_FILES_DIR) to external mo-
+del files (EXTRN_MDL_FNS) in the system directory on disk (EXTRN_MDL_-
+SYSDIR):
+  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
+  EXTRN_MDL_SYSDIR = \"$EXTRN_MDL_SYSDIR\"
+  EXTRN_MDL_FNS = $EXTRN_MDL_FNS_str
+"
+    ln_vrfy -sf -t ${EXTRN_MDL_FILES_DIR} ${EXTRN_MDL_FPS[@]}
+
+  else
+
+    print_info_msg "\
+Copying external model files (EXTRN_MDL_FNS) from the system directory 
+on disk (EXTRN_MDL_SYSDIR) to local directory (EXTRN_MDL_FILES_DIR):
   EXTRN_MDL_SYSDIR = \"$EXTRN_MDL_SYSDIR\"
   EXTRN_MDL_FNS = $EXTRN_MDL_FNS_str
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
 "
+    cp_vrfy ${EXTRN_MDL_FPS[@]} $EXTRN_MDL_FILES_DIR
 
-  cp_vrfy ${EXTRN_MDL_FPS[@]} $EXTRN_MDL_FILES_DIR
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -160,22 +175,23 @@ Copying model output files (EXTRN_MDL_FNS) from system directory on disk
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$ICSSURF_OR_LBCS" = "ICSSURF" ]; then
+  if [ "$ICS_OR_LBCS" = "ICS" ]; then
 
     print_info_msg "\n\
 ========================================================================
-External model files needed for generating initial condition and surface 
-fields for the FV3SAR successfully copied from system disk!!!
+Successfully copied or linked to external model files on system disk 
+needed for generating initial conditions and surface fields for the FV3
+forecast!!!
 Exiting script:  \"${script_name}\"
 ========================================================================"
 
-  elif [ "$ICSSURF_OR_LBCS" = "LBCS" ]; then
+  elif [ "$ICS_OR_LBCS" = "LBCS" ]; then
 
     print_info_msg "\n\
 ========================================================================
-External model files needed for generating lateral boundary conditions
-on the halo of the FV3SAR's regional grid successfully copied from sys-
-tem disk!!!
+Successfully copied or linked to external model files on system disk 
+needed for generating lateral boundary conditions for the FV3 fore-
+cast!!!
 Exiting script:  \"${script_name}\"
 ========================================================================"
 
@@ -292,7 +308,7 @@ HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 # If none of the external model files were found in the current archive
 # file, print out an error message and exit.
 #
-      num_files_in_crnt_arcv=${#files_in_crnt_arcv}
+      num_files_in_crnt_arcv=${#files_in_crnt_arcv[@]}
       if [ ${num_files_in_crnt_arcv} -eq 0 ]; then
         EXTRN_MDL_FPS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FPS[@]}" )")"
         print_err_msg_exit "${script_name}" "\
@@ -534,7 +550,7 @@ file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$ICSSURF_OR_LBCS" = "ICSSURF" ]; then
+  if [ "$ICS_OR_LBCS" = "ICS" ]; then
 
     print_info_msg "\n\
 ========================================================================
@@ -543,7 +559,7 @@ fields for the FV3SAR successfully fetched from HPSS!!!
 Exiting script:  \"${script_name}\"
 ========================================================================"
 
-  elif [ "$ICSSURF_OR_LBCS" = "LBCS" ]; then
+  elif [ "$ICS_OR_LBCS" = "LBCS" ]; then
 
     print_info_msg "\n\
 ========================================================================

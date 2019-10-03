@@ -39,8 +39,8 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 # Source the file containing the function that checks for preexisting 
 # directories and handles them according to the setting of the variable
-# preexisting_dir_method [which is specified in the configuration 
-# script(s)].
+# PREEXISTING_DIR_METHOD [which is specified in the experiment/workflow
+# configuration script(s)].
 #
 #-----------------------------------------------------------------------
 #

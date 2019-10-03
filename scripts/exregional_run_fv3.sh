@@ -27,7 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "$0" )
+script_name=$( basename "${BASH_SOURCE[0]}" )
 print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
@@ -44,7 +44,7 @@ specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "RUNDIR" )
+valid_args=( "CYCLE_DIR" )
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -60,10 +60,6 @@ follows:
     printf "  $line\n"
   done
 fi
-
-
-
-
 #
 #-----------------------------------------------------------------------
 #
@@ -76,12 +72,12 @@ case $MACHINE in
 "WCOSS_C" | "WCOSS")
 #
 
-  if [ "$CCPP" = "true" ]; then
+  if [ "${USE_CCPP}" = "TRUE" ]; then
   
-# Needed to change to the run directory to correctly load necessary mo-
-# dules for CCPP-version of FV3SAR in lines below
+# Needed to change to the experiment directory because the module files
+# for the CCPP-enabled version of FV3 have been copied to there.
 
-    cd_vrfy $RUNDIR
+    cd_vrfy ${CYCLE_DIR}
   
     set +x
     source ./module-setup.sh
@@ -108,11 +104,11 @@ case $MACHINE in
 "THEIA")
 #
 
-  if [ "$CCPP" = "true" ]; then
+  if [ "${USE_CCPP}" = "TRUE" ]; then
   
-# Needed to change to the run directory to correctly load necessary mo-
-# dules for CCPP-version of FV3SAR in lines below
-    cd_vrfy $RUNDIR
+# Need to change to the experiment directory to correctly load necessary 
+# modules for CCPP-version of FV3SAR in lines below
+    cd_vrfy ${EXPTDIR}
   
     set +x
     source ./module-setup.sh
@@ -142,17 +138,16 @@ case $MACHINE in
 "HERA")
 #
 
-  if [ "$CCPP" = "true" ]; then
+  if [ "${USE_CCPP}" = "TRUE" ]; then
   
-# Needed to change to the run directory to correctly load necessary mo-
-# dules for CCPP-version of FV3SAR in lines below
-    cd_vrfy $RUNDIR
+# Need to change to the experiment directory to correctly load necessary 
+# modules for CCPP-version of FV3SAR in lines below
+    cd_vrfy ${EXPTDIR}
   
     set +x
     source ./module-setup.sh
     module use $( pwd -P )
     module load modules.fv3
-    #module load contrib wrap-mpi
     module list
     set -x
   
@@ -165,15 +160,12 @@ case $MACHINE in
     module load impi/2018.0.4
     module load netcdf/4.6.1
     module load pnetcdf/1.10.0
-    module load contrib wrap-mpi 
     module list
   
   fi
 
   ulimit -s unlimited
   ulimit -a
-  #np=${SLURM_NTASKS}
-  #APRUN="mpirun -np ${np}"
   APRUN="srun"
   ;;
 #
@@ -209,25 +201,245 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Set and export variables.
+# Change location to the INPUT subdirectory of the current cycle's run 
+# directory.
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=scatter
-export OMP_NUM_THREADS=1 #Needs to be 1 for dynamic build of CCPP with GFDL fast physics, was 2 before.
-export OMP_STACKSIZE=1024m
+#cd_vrfy ${CYCLE_DIR}/INPUT
 #
 #-----------------------------------------------------------------------
 #
-# Change location to the run directory.  This is necessary because the
-# FV3SAR executable will look for various files in the current directo-
-# ry.  Since those files have been staged in the run directory, the cur-
-# rent directory must be the run directory.
+# Create links in the INPUT subdirectory of the current cycle's run di-
+# rectory to the grid and (filtered) orography files.
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy $RUNDIR
+print_info_msg_verbose "\
+Creating links in the INPUT subdirectory of the current cycle's run di-
+rectory to the grid and (filtered) orography files ..."
 
+
+# Create links to fix files in the FIXsar directory.
+
+
+cd_vrfy ${CYCLE_DIR}/INPUT
+
+relative_or_null=""
+if [ "${RUN_TASK_MAKE_GRID}" = "TRUE" ]; then
+  relative_or_null="--relative"
+fi
+
+# Symlink to mosaic file with a completely different name.
+target="${FIXsar}/${CRES}_mosaic.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf ${relative_or_null} $target grid_spec.nc
+else
+  print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+# Symlink to halo-3 grid file with "halo4" stripped from name.
+target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${nh3_T7}.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf ${relative_or_null} $target ${CRES}_grid.tile${TILE_RGNL}.nc
+else
+  print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+# Symlink to halo-4 grid file with "${CRES}_" stripped from name.
+#
+# If this link is not created, then the code hangs with an error message
+# like this:
+#
+#   check netcdf status=           2
+#  NetCDF error No such file or directory
+# Stopped
+#
+# Note that even though the message says "Stopped", the task still con-
+# sumes core-hours.
+#
+target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf $target ${relative_or_null} grid.tile${TILE_RGNL}.halo${nh4_T7}.nc
+else
+  print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+
+
+relative_or_null=""
+if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ]; then
+  relative_or_null="--relative"
+fi
+
+# Symlink to halo-0 orography file with "${CRES}_" and "halo0" stripped from name.
+target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh0_T7}.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf ${relative_or_null} $target oro_data.nc
+else
+  print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+#
+# Symlink to halo-4 orography file with "${CRES}_" stripped from name.
+#
+# If this link is not created, then the code hangs with an error message
+# like this:
+#
+#   check netcdf status=           2
+#  NetCDF error No such file or directory
+# Stopped
+#
+# Note that even though the message says "Stopped", the task still con-
+# sumes core-hours.
+#
+target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf $target ${relative_or_null} oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc
+else
+  print_err_msg_exit "${script_name}" "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+
+#
+#-----------------------------------------------------------------------
+#
+# The FV3 model looks for the following files in the INPUT subdirectory
+# of the run directory:
+#
+#   gfs_data.nc
+#   sfc_data.nc
+#   gfs_bndy*.nc
+#   gfs_ctrl.nc
+#
+# Some of these files (gfs_ctrl.nc, gfs_bndy*.nc) already exist, but 
+# others do not.  Thus, create links with these names to the appropriate
+# files (in this case the initial condition and surface files only).
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg_verbose "\
+Creating links with names that FV3 looks for in the INPUT subdirectory
+of the current cycle's run directory (CYCLE_DIR)..."
+
+cd_vrfy ${CYCLE_DIR}/INPUT
+ln_vrfy -sf gfs_data.tile${TILE_RGNL}.halo${nh0_T7}.nc gfs_data.nc
+ln_vrfy -sf sfc_data.tile${TILE_RGNL}.halo${nh0_T7}.nc sfc_data.nc
+#
+#-----------------------------------------------------------------------
+#
+# Create links in the current cycle's run directory to "fix" files in 
+# the main experiment directory.
+#
+#-----------------------------------------------------------------------
+#
+cd_vrfy ${CYCLE_DIR}
+
+print_info_msg_verbose "\
+Creating links in the current cycle's run directory to static (fix) 
+files in the FIXam directory..."
+#
+# If running in "nco" mode, FIXam is simply a symlink under the workflow
+# directory that points to the system directory containing the fix 
+# files.  The files in this system directory are named as listed in the
+# FIXam_FILES_SYSDIR array.  Thus, that is the array to use to form the
+# names of the link targets, but the names of the symlinks themselves
+# must be as specified in the FIXam_FILES_EXPTDIR array (because that 
+# array contains the file names that FV3 looks for).
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+
+  for (( i=0; i<${NUM_FIXam_FILES}; i++ )); do
+    ln_vrfy -sf $FIXam/${FIXam_FILES_SYSDIR[$i]} ${CYCLE_DIR}/${FIXam_FILES_EXPTDIR[$i]}
+  done
+#
+# If not running in "nco" mode, FIXam is an actual directory (not a sym-
+# link) in the experiment directory that contains the same files as the
+# system fix directory except that the files have renamed to the file
+# names that FV3 looks for.  Thus, when creating links to the files in
+# this directory, both the target and symlink names should be the ones
+# specified in the FIXam_FILES_EXPTDIR array (because that array con-
+# tains the file names that FV3 looks for).
+#
+else
+
+  for (( i=0; i<${NUM_FIXam_FILES}; i++ )); do
+    ln_vrfy -sf --relative $FIXam/${FIXam_FILES_EXPTDIR[$i]} ${CYCLE_DIR}
+  done
+
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If running this cycle more than once (e.g. using rocotoboot), remove
+# any time stamp file that may exist from the previous attempt.
+#
+#-----------------------------------------------------------------------
+#
+cd_vrfy ${CYCLE_DIR}
+rm_vrfy -f time_stamp.out
+#
+#-----------------------------------------------------------------------
+#
+# Create links in the current cycle's run directory to cycle-independent
+# model input files in the main experiment directory.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg_verbose "\
+Creating links in the current cycle's run directory to cycle-independent
+model input files in the main experiment directory..."
+
+ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${FV3_NML_FN}
+ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${DATA_TABLE_FN}
+ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${FIELD_TABLE_FN}
+ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${NEMS_CONFIG_FN}
+
+if [ "${USE_CCPP}" = "TRUE" ]; then
+  ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/module-setup.sh
+  ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/modules.fv3
+  if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+    ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/suite_FV3_GSD_v0.xml
+  elif [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
+    ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/suite_FV3_GFS_2017_gfdlmp.xml
+  fi
+  if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+    ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/CCN_ACTIVATE.BIN
+  fi
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Copy templates of cycle-dependent model input files from the templates
+# directory to the current cycle's run directory.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg_verbose "\
+Copying cycle-independent model input files from the templates directory 
+to the current cycle's run directory..." 
+
+cp_vrfy ${TEMPLATE_DIR}/${MODEL_CONFIG_FN} ${CYCLE_DIR}
+
+if [ "${USE_CCPP}" = "TRUE" ]; then
+  if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
+    cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_FN} ${CYCLE_DIR}
+  elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+    cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_CCPP_GSD_FN} ${CYCLE_DIR}/${DIAG_TABLE_FN}
+  fi
+elif [ "${USE_CCPP}" = "false" ]; then
+  cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_FN} ${CYCLE_DIR}
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -249,11 +461,13 @@ YYYYMMDD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
-MODEL_CONFIG_FP="$RUNDIR/$MODEL_CONFIG_FN"
+MODEL_CONFIG_FP="${CYCLE_DIR}/${MODEL_CONFIG_FN}"
 
 print_info_msg_verbose "\
 Setting parameters in file:
   MODEL_CONFIG_FP = \"$MODEL_CONFIG_FP\""
+
+dot_quilting_dot="."${QUILTING,,}"."
 
 set_file_param "$MODEL_CONFIG_FP" "PE_MEMBER01" "$PE_MEMBER01"
 set_file_param "$MODEL_CONFIG_FP" "dt_atmos" "$dt_atmos"
@@ -261,9 +475,9 @@ set_file_param "$MODEL_CONFIG_FP" "start_year" "$YYYY"
 set_file_param "$MODEL_CONFIG_FP" "start_month" "$MM"
 set_file_param "$MODEL_CONFIG_FP" "start_day" "$DD"
 set_file_param "$MODEL_CONFIG_FP" "start_hour" "$HH"
-set_file_param "$MODEL_CONFIG_FP" "nhours_fcst" "$fcst_len_hrs"
+set_file_param "$MODEL_CONFIG_FP" "nhours_fcst" "${FCST_LEN_HRS}"
 set_file_param "$MODEL_CONFIG_FP" "ncores_per_node" "$ncores_per_node"
-set_file_param "$MODEL_CONFIG_FP" "quilting" "$quilting"
+set_file_param "$MODEL_CONFIG_FP" "quilting" "${dot_quilting_dot}"
 set_file_param "$MODEL_CONFIG_FP" "print_esmf" "$print_esmf"
 #
 #-----------------------------------------------------------------------
@@ -280,7 +494,7 @@ set_file_param "$MODEL_CONFIG_FP" "print_esmf" "$print_esmf"
 #
 #-----------------------------------------------------------------------
 #
-if [ "$quilting" = ".true." ]; then
+if [ "$QUILTING" = "TRUE" ]; then
 
   cat $WRTCMP_PARAMS_TEMPLATE_FP >> $MODEL_CONFIG_FP
 
@@ -316,7 +530,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DIAG_TABLE_FP="$RUNDIR/$DIAG_TABLE_FN"
+DIAG_TABLE_FP="${CYCLE_DIR}/${DIAG_TABLE_FN}"
 
 print_info_msg_verbose "\
 Setting parameters in file:
@@ -335,19 +549,16 @@ set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YYYYMMDD"
 #
 #-----------------------------------------------------------------------
 #
-if [ "$CCPP" = "true" ]; then
+if [ "${USE_CCPP}" = "TRUE" ]; then
   FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3.exe"
 else
   FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3_32bit.exe"
 fi
 
-#cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/module-setup.sh.inc $EXPTDIR/module-setup.sh
-#cp_vrfy $NEMSfv3gfs_DIR/NEMS/src/conf/modules.nems $EXPTDIR/modules.fv3
-
 if [ -f $FV3SAR_EXEC ]; then
   print_info_msg_verbose "\
 Copying the FV3SAR executable to the run directory..."
-  cp_vrfy $FV3SAR_EXEC $RUNDIR/fv3_gfs.x
+  cp_vrfy ${FV3SAR_EXEC} ${CYCLE_DIR}/fv3_gfs.x
 else
   print_err_msg_exit "\
 The FV3SAR executable specified in FV3SAR_EXEC does not exist:
@@ -357,7 +568,21 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Run the FV3SAR model.
+# Set and export variables.
+#
+#-----------------------------------------------------------------------
+#
+export KMP_AFFINITY=scatter
+export OMP_NUM_THREADS=1 #Needs to be 1 for dynamic build of CCPP with GFDL fast physics, was 2 before.
+export OMP_STACKSIZE=1024m
+#
+#-----------------------------------------------------------------------
+#
+# Run the FV3SAR model.  Note that we have to launch the forecast from
+# the current cycle's run directory because the FV3 executable will look
+# for input files in the current directory.  Since those files have been 
+# staged in the run directory, the current directory must be the run di-
+# rectory (which it already is).
 #
 #-----------------------------------------------------------------------
 #

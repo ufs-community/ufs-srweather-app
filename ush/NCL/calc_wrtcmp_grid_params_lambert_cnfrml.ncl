@@ -71,12 +71,6 @@ begin
 ;
 ; **********************************************************************
 ;
-print("")
-print("(lon_tile_corners_face_midpts_native, lat_tile_corners_face_midpts_native) = " + \
-      "(" + lon_tile_corners_face_midpts_native + \
-      ", " + lat_tile_corners_face_midpts_native + ")")
-pause
-
   lambert_coords \
   := calc_lambert_cnfrml_coords_from_sphr( \
      lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
@@ -84,12 +78,6 @@ pause
      lat_tile_corners_face_midpts_native)
   x_tile_corners_face_midpts_native = lambert_coords@x
   y_tile_corners_face_midpts_native = lambert_coords@y
-
-print("")
-print("(x_tile_corners_face_midpts_native, y_tile_corners_face_midpts_native) = " + \
-      "(" + x_tile_corners_face_midpts_native + \
-      ", " + y_tile_corners_face_midpts_native + ")")
-pause
 
   i = 0
   x_SW_native = x_tile_corners_face_midpts_native(i)
@@ -150,15 +138,9 @@ pause
 ;
   x_W_native_max = max((/x_SW_native, x_W_native, x_NW_native/))
   x_E_native_min = min((/x_SE_native, x_E_native, x_NE_native/))
-print("")
-print("x_W_native_max = " + x_W_native_max)
-print("x_E_native_min = " + x_E_native_min)
 
   x_W = x_W_native_max + num_margin_cells*dx
   x_E = x_E_native_min - num_margin_cells*dx
-print("")
-print("x_W = " + x_W)
-print("x_E = " + x_E)
 
   Lx = x_E - x_W
   Lx_ovr_dx = Lx/dx
@@ -167,13 +149,6 @@ print("x_E = " + x_E)
   x_adj = (0.5d+0*frac_x)*dx
   x_W = x_W + x_adj
   x_E = x_E - x_adj
-print("")
-print("dx = " + dx)
-print("frac_x = " + frac_x)
-print("x_adj = " + x_adj)
-print("x_W = " + x_W)
-print("x_E = " + x_E)
-pause
 ;
 ; **********************************************************************
 ;
@@ -183,28 +158,15 @@ pause
 ;
 
   y_S_native_max = max((/y_SW_native, y_S_native, y_SE_native/))
-print("")
-print("y_SW_native = " + y_SW_native)
-print("y_S_native = " + y_S_native)
-print("y_SE_native = " + y_SE_native)
-print("===>> y_S_native_max = " + y_S_native_max)
   y_N_native_min = min((/y_NW_native, y_N_native, y_NE_native/))
-print("")
-print("y_NW_native = " + y_NW_native)
-print("y_N_native = " + y_N_native)
-print("y_NE_native = " + y_NE_native)
-print("===>> y_N_native_min = " + y_N_native_min)
-pause
 
   y_S = y_S_native_max + num_margin_cells*dy
   y_N = y_N_native_min - num_margin_cells*dy
-y_S_tmp = y_S
-y_N_tmp = y_N
-y_S = -min(abs((/y_S_tmp, y_N_tmp/)))
-y_N = -y_S
-print("")
-print("y_S = " + y_S)
-print("y_N = " + y_N)
+
+  y_S_tmp = y_S
+  y_N_tmp = y_N
+  y_S = -min(abs((/y_S_tmp, y_N_tmp/)))
+  y_N = -y_S
 
   Ly = y_N - y_S
   Ly_ovr_dy = Ly/dy
@@ -213,14 +175,6 @@ print("y_N = " + y_N)
   y_adj = (0.5d+0*frac_y)*dy
   y_S = y_S + y_adj
   y_N = y_N - y_adj
-print("")
-print("dy = " + dy)
-print("frac_y = " + frac_y)
-print("y_adj = " + y_adj)
-print("y_S = " + y_S)
-print("y_N = " + y_N)
-pause
-
 ;
 ; **********************************************************************
 ;
@@ -229,28 +183,11 @@ pause
 ;
 ; **********************************************************************
 ;
-x_W = x_W + 0.5*dx
-x_E = x_E - 0.5*dx
-;nxm = nx - 1
-print("")
-print("x_W = " + x_W)
-print("x_E = " + x_E)
-print("x_E - x_W = " + (x_E - x_W))
-print("(x_E - x_W)/dx = " + (x_E - x_W)/dx)
-print("nx = " + nx)
-;print("nxm = " + nxm)
+  x_W = x_W + 0.5*dx
+  x_E = x_E - 0.5*dx
 
-y_S = y_S + 0.5*dy
-y_N = y_N - 0.5*dy
-;nym = ny - 1
-print("")
-print("y_S = " + y_S)
-print("y_N = " + y_N)
-print("y_N - y_S = " + (y_N - y_S))
-print("(y_N - y_S)/dy = " + (y_N - y_S)/dy)
-print("ny = " + ny)
-;print("nym = " + nym)
-pause
+  y_S = y_S + 0.5*dy
+  y_N = y_N - 0.5*dy
 
   sphr_coords \
   := calc_sphr_coords_from_lambert_cnfrml( \

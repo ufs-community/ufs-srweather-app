@@ -2,15 +2,15 @@
 #-----------------------------------------------------------------------
 #
 # Set grid and other parameters according to the value of the predefined
-# domain (predef_domain).  Note that the code will enter this script on-
-# ly if predef_domain has a valid (and non-empty) value.
+# domain (PREDEF_GRID_NAME).  Note that the code will enter this script on-
+# ly if PREDEF_GRID_NAME has a valid (and non-empty) value.
 #
 # The following needs to be updated:
 #
 # 1) Reset the experiment title (expt_title).
 # 2) Reset the grid parameters.
-# 3) If the write component is to be used (i.e. quilting is set to
-#    ".true.") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the
+# 3) If the write component is to be used (i.e. QUILTING is set to
+#    "TRUE") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the
 #    name of the write-component template file is unset or empty, set
 #    that filename variable to the appropriate preexisting template
 #    file.
@@ -44,7 +44,7 @@
 #
 #-----------------------------------------------------------------------
 #
-case $predef_domain in
+case ${PREDEF_GRID_NAME} in
 #
 #-----------------------------------------------------------------------
 #
@@ -54,18 +54,16 @@ case $predef_domain in
 #
 "GSD_HAFSV0.A")
 
-  expt_title="_GSD_HAFSV0.A${expt_title}"
-
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
-  grid_gen_method = \"$grid_gen_method\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-62.0
     lat_rgnl_ctr=22.0
@@ -84,7 +82,7 @@ predefined domain:
     layout_y="24"
     blocksize="32"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="32"
       WRTCMP_output_grid="lambert_conformal"
@@ -92,10 +90,10 @@ predefined domain:
       WRTCMP_cen_lat="${lat_rgnl_ctr}"
       WRTCMP_stdlat1="${lat_rgnl_ctr}"
       WRTCMP_stdlat2="${lat_rgnl_ctr}"
-      WRTCMP_nx="383"
-      WRTCMP_ny="195"
-      WRTCMP_lon_lwr_left="-121.58647982"
-      WRTCMP_lat_lwr_left="24.36006861"
+      WRTCMP_nx="2937"
+      WRTCMP_ny="1788"
+      WRTCMP_lon_lwr_left="-97.83959"
+      WRTCMP_lat_lwr_left="-5.67929305"
       WRTCMP_dx="$delx"
       WRTCMP_dy="$dely"
     fi
@@ -111,9 +109,7 @@ predefined domain:
 #
 "GSD_RAP13km")
 
-  expt_title="_GSD_RAP13km${expt_title}"
-
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     lon_ctr_T6=-106.0
     lat_ctr_T6=54.0
@@ -139,7 +135,7 @@ predefined domain:
     layout_y="14"
     blocksize="26"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="14"
       WRTCMP_output_grid="rotated_latlon"
@@ -153,7 +149,7 @@ predefined domain:
       WRTCMP_dlat="0.121833"
     fi
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-106.0
     lat_rgnl_ctr=54.0
@@ -172,7 +168,7 @@ predefined domain:
     layout_y="16"
     blocksize="30"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="16"
       WRTCMP_output_grid="rotated_latlon"
@@ -197,18 +193,16 @@ predefined domain:
 #
 "GSD_HRRR25km")
 
-  expt_title="_GSD_HRRR25km${expt_title}"
-
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
-  grid_gen_method = \"$grid_gen_method\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-97.5
     lat_rgnl_ctr=38.5
@@ -227,7 +221,7 @@ predefined domain:
     layout_y="2"
     blocksize="2"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="2"
       WRTCMP_output_grid="lambert_conformal"
@@ -254,18 +248,16 @@ predefined domain:
 #
 "GSD_HRRR13km")
 
-  expt_title="_GSD_HRRR13km${expt_title}"
-
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
-  grid_gen_method = \"$grid_gen_method\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-97.5
     lat_rgnl_ctr=38.5
@@ -284,7 +276,7 @@ predefined domain:
     layout_y="10"
     blocksize="39"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="10"
       WRTCMP_output_grid="lambert_conformal"
@@ -311,18 +303,16 @@ predefined domain:
 #
 "GSD_HRRR3km")
 
-  expt_title="_GSD_HRRR3km${expt_title}"
-
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
-  grid_gen_method = \"$grid_gen_method\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-97.5
     lat_rgnl_ctr=38.5
@@ -341,7 +331,7 @@ predefined domain:
     layout_y="24"
     blocksize="34"
 
-    if [ "$quilting" = ".true." ]; then
+    if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="24"
       WRTCMP_output_grid="lambert_conformal"
@@ -368,9 +358,7 @@ predefined domain:
 #
 "EMC_CONUS")
 
-  expt_title="_EMC_CONUS${expt_title}"
-
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # Values from an EMC script.
 
 ### rocoto items
@@ -432,7 +420,7 @@ predefined domain:
     blocksize=32
 
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     lon_rgnl_ctr=-97.5
     lat_rgnl_ctr=38.5
@@ -456,15 +444,13 @@ predefined domain:
 #
 "EMC_AK")
 
-  expt_title="_EMC_AK${expt_title}"
-
-  if [ "$grid_gen_method" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
-  grid_gen_method = \"$grid_gen_method\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
 # Values from an EMC script.
@@ -527,13 +513,13 @@ predefined domain:
     write_tasks_per_group="24"
     blocksize=32
 
-  elif [ "$grid_gen_method" = "JPgrid" ]; then
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
     print_err_msg_exit "\
-The parameters for a \"$grid_gen_method\" type grid have not yet been specified for this
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
-  predef_domain = \"$predef_domain\"
-  grid_gen_method = \"$grid_gen_method\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
 
   fi
@@ -550,7 +536,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-if [ "$quilting" = ".true." ]; then
+if [ "$QUILTING" = "TRUE" ]; then
 #
 # First, make sure that WRTCMP_output_grid is set to a valid value.
 #

@@ -18,7 +18,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -27,7 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "$0" )
+script_name=$( basename "${BASH_SOURCE[0]}" )
 print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
@@ -46,7 +46,7 @@ for FV3 (in NetCDF format).
 #-----------------------------------------------------------------------
 #
 valid_args=( "EXTRN_MDL_FNS" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_CDATE" \
-             "WGRIB2_DIR" "APRUN" "WORKDIR_ICSLBCS_CDATE" )
+             "WGRIB2_DIR" "APRUN" "ICS_DIR" )
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -65,12 +65,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+#
+#
+#-----------------------------------------------------------------------
+#
+workdir="${ICS_DIR}/tmp_ICS"
+mkdir_vrfy -p "$workdir"
+cd_vrfy $workdir
+#
+#-----------------------------------------------------------------------
+#
 # Set physics-suite-dependent variables that are needed in the FORTRAN
 # namelist file that the chgres executable will read in.
 #
 #-----------------------------------------------------------------------
 #
-case "$CCPP_phys_suite" in
+case "${CCPP_PHYS_SUITE}" in
 
 "GFS")
   phys_suite="GFS"
@@ -84,7 +94,7 @@ case "$CCPP_phys_suite" in
   print_err_msg_exit "${script_name}" "\
 Physics-suite-dependent namelist variables have not yet been specified 
 for this physics suite:
-  CCPP_phys_suite = \"${CCPP_phys_suite}\""
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
   ;;
 
 esac
@@ -207,7 +217,7 @@ replace_vgfrc=""
 tg3_from_soil=""
 
 
-case "$EXTRN_MDL_NAME_ICSSURF" in
+case "$EXTRN_MDL_NAME_ICS" in
 
 
 "GSMGFS")
@@ -246,10 +256,10 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
 # table (which should be specific to each combination of external model,
 # external model file type, and physics suite).
 #
-  if [ "$CCPP" = "true" ]; then
-    if [ "$CCPP_phys_suite" = "GFS" ]; then
+  if [ "${USE_CCPP}" = "TRUE" ]; then
+    if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
       tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
-    elif [ "$CCPP_phys_suite" = "GSD" ]; then
+    elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
       tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
@@ -277,13 +287,13 @@ case "$EXTRN_MDL_NAME_ICSSURF" in
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
 
-if [ "$CCPP" = "true" ]; then
-    if [ "$CCPP_phys_suite" = "GFS" ]; then
-    numsoil_out="4"
-    elif [ "$CCPP_phys_suite" = "GSD" ]; then
-    numsoil_out="9"
+  if [ "${USE_CCPP}" = "TRUE" ]; then
+    if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
+      numsoil_out="4"
+    elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+      numsoil_out="9"
     fi
-fi
+  fi
   
   geogrid_file_input_grid="/scratch3/BMC/det/beck/FV3-CAM/geo_em.d01.nc"  # Maybe make this a fix file?
   replace_vgtyp=".false."
@@ -298,7 +308,7 @@ fi
   print_err_msg_exit "${script_name}" "\
 External-model-dependent namelist variables have not yet been specified 
 for this external model:
-  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\""
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
   ;;
 
 
@@ -374,14 +384,14 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 
 { cat > fort.41 <<EOF
 &config
- fix_dir_target_grid="${EXPTDIR}/INPUT"
- mosaic_file_target_grid="${EXPTDIR}/INPUT/${CRES}_mosaic.nc"
- orog_dir_target_grid="${EXPTDIR}/INPUT"
- orog_files_target_grid="${CRES}_oro_data.tile7.halo${nh4_T7}.nc"
- vcoord_file_target_grid="${FV3SAR_DIR}/fix/fix_am/global_hyblev.l65.txt"
+ fix_dir_target_grid="${FIXsar}"
+ mosaic_file_target_grid="${FIXsar}/${CRES}_mosaic.nc"
+ orog_dir_target_grid="${FIXsar}"
+ orog_files_target_grid="${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+ vcoord_file_target_grid="${FIXam}/global_hyblev.l65.txt"
  mosaic_file_input_grid=""
  orog_dir_input_grid=""
- base_install_dir="${BASEDIR}/sorc/UFS_UTILS_chgres_grib2"
+ base_install_dir="${SORCDIR}/UFS_UTILS_chgres_grib2"
  wgrib2_path="${WGRIB2_DIR}"
  data_dir_input_grid="${EXTRN_MDL_FILES_DIR}"
  atm_files_input_grid="${fn_atm_nemsio}"
@@ -419,11 +429,19 @@ status."
 #
 #-----------------------------------------------------------------------
 #
+# NOTE:
+# Often when the chgres_cube.exe run fails, it still returns a zero re-
+# turn code, so the failure isn't picked up the the logical OR (||) be-
+# low.  That should be fixed.  This might be due to the APRUN command -
+# maybe that is returning a zero exit code even though the exit code 
+# of chgres_cube is nonzero.
+# A similar thing happens in the forecast task.
+#
 ${APRUN} ${EXECDIR}/chgres_cube.exe || \
 print_err_msg_exit "${script_name}" "\
 Call to executable to generate surface and initial conditions files for
 the FV3SAR failed:
-  EXTRN_MDL_NAME_ICSSURF = \"${EXTRN_MDL_NAME_ICSSURF}\"
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\""
 #
 #-----------------------------------------------------------------------
@@ -433,10 +451,15 @@ the FV3SAR failed:
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy out.atm.tile7.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_data.tile7.nc
-mv_vrfy out.sfc.tile7.nc ${WORKDIR_ICSLBCS_CDATE}/sfc_data.tile7.nc
-mv_vrfy gfs_ctrl.nc ${WORKDIR_ICSLBCS_CDATE}
-mv_vrfy gfs_bndy.nc ${WORKDIR_ICSLBCS_CDATE}/gfs_bndy.tile7.000.nc
+mv_vrfy out.atm.tile${TILE_RGNL}.nc \
+        ${ICS_DIR}/gfs_data.tile${TILE_RGNL}.halo${nh0_T7}.nc
+
+mv_vrfy out.sfc.tile${TILE_RGNL}.nc \
+        ${ICS_DIR}/sfc_data.tile${TILE_RGNL}.halo${nh0_T7}.nc
+
+mv_vrfy gfs_ctrl.nc ${ICS_DIR}
+
+mv_vrfy gfs_bndy.nc ${ICS_DIR}/gfs_bndy.tile${TILE_RGNL}.000.nc
 #
 #-----------------------------------------------------------------------
 #

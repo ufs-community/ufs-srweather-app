@@ -230,21 +230,7 @@ begin
     grid_fn = cres + "_grid.tile" + n_tile
     if (strcmp_exact(gtype, "regional") .and. (n_tile .eq. 7)) then
       grid_fn = grid_fn + ".halo" + tostring(nhalo_T7) + ".nc"
-
-      grid_fn = work_dir + "/shave/" + grid_fn
-
-;;The following is just a temporary fix to get plots for Jeff's real_time 
-;;runs which don't use the latest directory structure.  The above is still
-;; the correct way to do it in general
-;temp_dir := str_sub_str(run_dir, "run_dirs", "work_dirs")
-;;temp_dir := str_sub_str(temp_dir, "2019062300", "shave")
-;indx := str_index_of_substr(temp_dir, "/", -1)
-;temp_dir := str_get_cols(temp_dir, 0, indx-1)
-;print("run_dir = " + char_dq + run_dir + char_dq)
-;print("temp_dir = " + char_dq + temp_dir + char_dq)
-;pause
-;grid_fn = temp_dir + "/shave/" + grid_fn
-
+      grid_fn = work_dir + "/fix_sar/" + grid_fn
     else
       grid_fn = grid_fn + ".nc"
       grid_fn = work_dir + "/grid/" + grid_fn
@@ -718,6 +704,281 @@ msg + char_nl + \
 ;
 ; **********************************************************************
 ;
+; Check whether any of the four faces of the current tile cross the in-
+; ternational date line (IDL).  This is important because if so, we will
+; not be able to identify the southwest (SW), southeast (SE), northwest 
+; (NW), and northeast (NE) corners of the tile.  We perform this check
+; for each face by checking whether there is a jump in the longitudes of
+; grid cell corner points that lie on the face as we move along the 
+; face.
+;
+; Note that if one (or both) of the poles lies within the tile, then one
+; of the tile faces must cross the IDL.  Thus, the IDL crossing check 
+; below will be triggered if one or both poles lie within the tile, but
+; the triggering of this check does not necessarily imply that one or 
+; both poles lie within the tile (i.e. crossing of the IDL by a tile
+; boundary is a necessary but not sufficient condition for one or both
+; poles to lie within the tile).  Below, if the IDL crossing check is
+; triggered, we do we do not go further to check whether or not one or
+; both poles lie within the tile (because that test is more complex).
+;
+; **********************************************************************
+;
+;    abs_dlon_cutoff := 0.0d+0  ; For debugging only.
+    abs_dlon_cutoff := 180.0d+0
+
+    fmt_str = "%8.4f"
+    abs_dlon_cutoff_str = sprintf(fmt_str, abs_dlon_cutoff)
+
+    face_id_strs := (/ "bottom", "right", "top", "left" /)
+    num_faces := dimsizes(face_id_strs)
+    do i=0, num_faces-1
+
+      face_id_str := face_id_strs(i)
+      if (strcmp_exact(face_id_str, "bottom")) then
+        lon_crnt_face := lon_verts_SG_crnt_tile(j_bot,:)
+      else if (strcmp_exact(face_id_str, "right")) then
+        lon_crnt_face := lon_verts_SG_crnt_tile(:,i_rght)
+      else if (strcmp_exact(face_id_str, "top")) then
+        lon_crnt_face := lon_verts_SG_crnt_tile(j_top,:)
+      else if (strcmp_exact(face_id_str, "left")) then
+        lon_crnt_face := lon_verts_SG_crnt_tile(:,i_left)
+      end if
+      end if
+      end if
+      end if
+
+      num_face_pts := dimsizes(lon_crnt_face)
+      dlon := lon_crnt_face(1:num_face_pts-1) - lon_crnt_face(0:num_face_pts-2)
+      abs_dlon_max := max(abs(dlon))
+
+      if (abs_dlon_max .ge. abs_dlon_cutoff) then
+        abs_dlon_max_str = sprintf(fmt_str, abs_dlon_max)
+        lat_str = sprintf(fmt_str, abs_dlon_max)
+        msg := char_nl + \
+"The " + char_dq + face_id_str + char_dq + " boundary of the current tile " + \
+"crosses the international date " + char_nl + \
+"line (IDL) because there is a jump in longitude from one grid point to " + char_nl + \
+"the next along that boundary with a magnitude that is greater than or " + char_nl + \
+"equal to the maximum allowed value specified by " + char_dq + "abs_dlon_cutoff" + char_dq + ":" + char_nl + \
+"  abs_dlon_cutoff = " + abs_dlon_cutoff_str + " deg" + char_nl + \
+"  abs_dlon_max    = " + abs_dlon_max_str + " deg" + char_nl + \
+"Please express the longitude and latitude of the grid points in a rota-" + char_nl + \
+"ted lat/lon coordinate system to avoid this problem." + char_nl + \
+"Stopping."
+        print("" + msg)
+        exit
+      end if
+
+    end do
+;
+; **********************************************************************
+;
+; Save in lon_tile_corners_crnt_tile and lat_tile_corners_crnt_tile the
+; longitudes and latitudes of the four corners of the current tile, 
+; starting with the lower left corner and proceeding counterclockwise to
+; the upper right corner.
+;
+; **********************************************************************
+;
+    num_corners := 4
+    lon_tile_corners_crnt_tile := new((/ num_corners /), coord_data_type)
+    lat_tile_corners_crnt_tile := new((/ num_corners /), coord_data_type)
+
+    i = 0
+    lon_tile_corners_crnt_tile(i) \
+    = lon_verts_SG_crnt_tile(j_bot, i_left)
+    lat_tile_corners_crnt_tile(i) \
+    = lat_verts_SG_crnt_tile(j_bot, i_left)
+
+    i = i + 1
+    lon_tile_corners_crnt_tile(i) \
+    = lon_verts_SG_crnt_tile(j_bot, i_rght)
+    lat_tile_corners_crnt_tile(i) \
+    = lat_verts_SG_crnt_tile(j_bot, i_rght)
+
+    i = i + 1
+    lon_tile_corners_crnt_tile(i) \
+    = lon_verts_SG_crnt_tile(j_top, i_rght)
+    lat_tile_corners_crnt_tile(i) \
+    = lat_verts_SG_crnt_tile(j_top, i_rght)
+
+    i = i + 1
+    lon_tile_corners_crnt_tile(i) \
+    = lon_verts_SG_crnt_tile(j_top, i_left)
+    lat_tile_corners_crnt_tile(i) \
+    = lat_verts_SG_crnt_tile(j_top, i_left)
+;
+; **********************************************************************
+;
+; Save in lon_face_midpts_crnt_tile and lat_face_midpts_crnt_tile the
+; longitudes and latitudes of the midpoints of the four faces of the 
+; current tile, starting with the bottom face and proceeding counter-
+; clockwise to the left face.
+;
+; **********************************************************************
+;
+;    num_faces := 4
+    lon_face_midpts_crnt_tile := new((/ num_faces /), coord_data_type)
+    lat_face_midpts_crnt_tile := new((/ num_faces /), coord_data_type)
+
+    i = 0
+    lon_face_midpts_crnt_tile(i) = lon_verts_SG_crnt_tile(j_bot, i_cntr)
+    lat_face_midpts_crnt_tile(i) = lat_verts_SG_crnt_tile(j_bot, i_cntr)
+
+    i = i + 1
+    lon_face_midpts_crnt_tile(i) = lon_verts_SG_crnt_tile(j_mid, i_rght)
+    lat_face_midpts_crnt_tile(i) = lat_verts_SG_crnt_tile(j_mid, i_rght)
+
+    i = i + 1
+    lon_face_midpts_crnt_tile(i) = lon_verts_SG_crnt_tile(j_top, i_cntr)
+    lat_face_midpts_crnt_tile(i) = lat_verts_SG_crnt_tile(j_top, i_cntr)
+
+    i = i + 1
+    lon_face_midpts_crnt_tile(i) = lon_verts_SG_crnt_tile(j_mid, i_left)
+    lat_face_midpts_crnt_tile(i) = lat_verts_SG_crnt_tile(j_mid, i_left)
+;
+; **********************************************************************
+;
+; Now find the indices into lon_tile_corners_crnt_tile (or lat_tile_-
+; corners_crnt_tile) of the southwest, southeast, northeast, and north-
+; west corners of the current tile.
+;
+; **********************************************************************
+;
+    indx_SW := new(1, "integer")
+    indx_SE := new(1, "integer")
+    indx_NE := new(1, "integer")
+    indx_NW := new(1, "integer")
+
+    do i=0, num_corners-1
+
+      ip1 = i + 1
+      if (ip1 .gt. num_corners-1) then 
+        ip1 = 0
+      end if
+
+      ip2 = ip1 + 1
+      if (ip2 .gt. num_corners-1) then 
+        ip2 = 0
+      end if
+
+      ip3 = ip2 + 1
+      if (ip3 .gt. num_corners-1) then 
+        ip3 = 0
+      end if
+
+      lon_i := lon_tile_corners_crnt_tile(i)
+      lat_i := lat_tile_corners_crnt_tile(i)
+    
+      lon_ip1 := lon_tile_corners_crnt_tile(ip1)
+      lat_ip1 := lat_tile_corners_crnt_tile(ip1)
+
+      lon_ip2 := lon_tile_corners_crnt_tile(ip2)
+      lat_ip2 := lat_tile_corners_crnt_tile(ip2)
+
+      lon_ip3 := lon_tile_corners_crnt_tile(ip3)
+      lat_ip3 := lat_tile_corners_crnt_tile(ip3)
+
+      if (ismissing(indx_SW) .and. \
+          (lon_i .lt. lon_ip1) .and. \
+          (lon_i .lt. lon_ip2) .and. \
+          (lat_i .lt. lat_ip2) .and. \
+          (lat_i .lt. lat_ip3)) then
+         indx_SW = i
+      end if
+
+      if (ismissing(indx_SE) .and. \
+          (lon_i .gt. lon_ip2) .and. \
+          (lon_i .gt. lon_ip3) .and. \
+          (lat_i .lt. lat_ip1) .and. \
+          (lat_i .lt. lat_ip2)) then
+         indx_SE := i
+      end if
+
+      if (ismissing(indx_NE) .and. \
+          (lon_i .gt. lon_ip1) .and. \
+          (lon_i .gt. lon_ip2) .and. \
+          (lat_i .gt. lat_ip2) .and. \
+          (lat_i .gt. lat_ip3)) then
+         indx_NE := i
+      end if
+
+      if (ismissing(indx_NW) .and. \
+          (lon_i .lt. lon_ip2) .and. \
+          (lon_i .lt. lon_ip3) .and. \
+          (lat_i .gt. lat_ip1) .and. \
+          (lat_i .gt. lat_ip2)) then
+         indx_NW := i
+      end if
+
+    end do
+;
+; **********************************************************************
+;
+; Now rearrange the lon_tile_corners_crnt_tile and lat_tile_corners_-
+; crnt_tile arrays so that the first element corresponds to the south-
+; west corner of the tile, the second corresponds to the southeast cor-
+; ner, the third corresponds to the northeast corner, and the fourth 
+; corresponds to the northwest corner.  Also, rearange the lon_face_-
+; midpts_crnt_tile and lat_face_midpts_crnt_tile arrays so that the
+; first element corresponds to the southern face, the second corresponds
+; to the eastern face, the third corresponds to the northern face, and
+; the fourth corresponds to the western face.
+;
+; **********************************************************************
+;
+; IMPORTANT NOTE:
+; For a global cubed-sphere grid, for three of the tiles (the ones over 
+; the north and south poles and the one that straddles the IDL), the in-
+; dices of the SW, SE, NE, and NW corners of the tile will not be set 
+; (they will remain set to their initial missing values), so the check
+; below will be triggered.  Something more comples needs to be done for
+; such tiles, but we do not worry about it here for now since we're only
+; dealing with regional domains.
+;
+    inds_reorder := (/ indx_SW, indx_SE, indx_NE, indx_NW /)
+    if (any(ismissing(inds_reorder))) then
+      msg := char_nl + \
+"One or more of the indices for the SW, SE, NE, and NW corners of the " + char_nl + \
+"current tile have not been set:" + char_nl + \
+"  indx_SW = " + indx_SW + char_nl + \
+"  indx_SE = " + indx_SE + char_nl + \
+"  indx_NE = " + indx_NE + char_nl + \
+"  indx_NW = " + indx_NW + char_nl + \
+"Stopping."
+      print("" + msg)
+      exit
+    end if
+
+    lon_tile_corners_crnt_tile := lon_tile_corners_crnt_tile(inds_reorder)
+    lat_tile_corners_crnt_tile := lat_tile_corners_crnt_tile(inds_reorder)
+
+    lon_face_midpts_crnt_tile := lon_face_midpts_crnt_tile(inds_reorder)
+    lat_face_midpts_crnt_tile := lat_face_midpts_crnt_tile(inds_reorder)
+;
+; **********************************************************************
+;
+; Now save the reordered tile corner and tile face midpoint coordinate
+; arrays for the current tile in the arrays containing the coordinates
+; for all tiles.
+;
+; **********************************************************************
+;
+    inds = (/ 0, 2, 4, 6 /)
+
+    lon_tile_corners_face_midpts_all_tiles(nn,inds) \
+    = lon_tile_corners_crnt_tile
+    lon_tile_corners_face_midpts_all_tiles(nn,inds+1) \
+    = lon_face_midpts_crnt_tile
+
+    lat_tile_corners_face_midpts_all_tiles(nn,inds) \
+    = lat_tile_corners_crnt_tile
+    lat_tile_corners_face_midpts_all_tiles(nn,inds+1) \
+    = lat_face_midpts_crnt_tile
+;
+; **********************************************************************
+;
 ; Calculate the coordinates of the center of the current tile as well as
 ; the coordinates of the tile corners and the midpoints of the four tile
 ; faces.
@@ -726,86 +987,34 @@ msg + char_nl + \
 ;
     lon_tile_cntr_all_tiles(nn) = lon_verts_SG_crnt_tile(j_mid, i_cntr)
     lat_tile_cntr_all_tiles(nn) = lat_verts_SG_crnt_tile(j_mid, i_cntr)
-
-    loc_names := new(8, "string")
-
-    i = 0
-    loc_names(i) = "SW_corner"
-    lon_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lon_verts_SG_crnt_tile(j_bot, i_left)
-    lat_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lat_verts_SG_crnt_tile(j_bot, i_left)
-
-    i = i + 1
-    loc_names(i) = "S_face_midpt"
-    lon_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lon_verts_SG_crnt_tile(j_bot, i_cntr)
-    lat_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lat_verts_SG_crnt_tile(j_bot, i_cntr)
-
-    i = i + 1
-    loc_names(i) = "SE_corner"
-    lon_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lon_verts_SG_crnt_tile(j_bot, i_rght)
-    lat_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lat_verts_SG_crnt_tile(j_bot, i_rght)
-
-    i = i + 1
-    loc_names(i) = "E_face_midpt"
-    lon_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lon_verts_SG_crnt_tile(j_mid, i_rght)
-    lat_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lat_verts_SG_crnt_tile(j_mid, i_rght)
-
-    i = i + 1
-    loc_names(i) = "NE_corner"
-    lon_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lon_verts_SG_crnt_tile(j_top, i_rght)
-    lat_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lat_verts_SG_crnt_tile(j_top, i_rght)
-
-    i = i + 1
-    loc_names(i) = "N_face_midpt"
-    lon_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lon_verts_SG_crnt_tile(j_top, i_cntr)
-    lat_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lat_verts_SG_crnt_tile(j_top, i_cntr)
-
-    i = i + 1
-    loc_names(i) = "NW_corner"
-    lon_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lon_verts_SG_crnt_tile(j_top, i_left)
-    lat_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lat_verts_SG_crnt_tile(j_top, i_left)
-
-    i = i + 1
-    loc_names(i) = "W_face_midpt"
-    lon_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lon_verts_SG_crnt_tile(j_mid, i_left)
-    lat_tile_corners_face_midpts_all_tiles(nn,i) \
-    = lat_verts_SG_crnt_tile(j_mid, i_left)
 ;
 ; **********************************************************************
 ;
-; Print out the coordinates of grid corners and face midpoints.
+; Print out the coordinates of tile corners and tile face midpoints.
 ;
 ; **********************************************************************
 ;
     lon_str := sprintf("%10.6f", lon_tile_corners_face_midpts_all_tiles(nn,:))
     lat_str := sprintf("%10.6f", lat_tile_corners_face_midpts_all_tiles(nn,:))
-    
+
+    loc_names := (/ "SW_corner", "S_face_midpt", \
+                    "SE_corner", "E_face_midpt", \
+                    "NE_corner", "N_face_midpt", \
+                    "NW_corner", "W_face_midpt" /)
     loc_names := strpad(loc_names + ":", " ", "right")
     lon_str := strpad(lon_str + " deg", " ", "left")
     lat_str := strpad(lat_str + " deg", " ", "left")
     msg := loc_names + "  lon = " + lon_str + ";  lat = " + lat_str
+    msg := "  " + msg
     msg := array_append_record( \
-"Longitudes and latitudes of the tile corners and tile face midpoints are:", \
-           "  " + msg, 0)
+           (/ \
+"Longitudes and latitudes of the corners and face midpoints of tile #" + n_tile, \
+"are:" \
+           /), msg, 0)
     msg := "  " + msg
     msg := str_join(msg, char_nl)
     print("")
     print("" + msg)
-
   end do
 
   print("")

@@ -63,7 +63,7 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-# If VERBOSE is set to "true", print out an informational message.
+# If VERBOSE is set to "TRUE", print out an informational message.
 #
 #-----------------------------------------------------------------------
 #

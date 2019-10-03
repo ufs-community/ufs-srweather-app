@@ -27,7 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "$0" )
+script_name=$( basename "${BASH_SOURCE[0]}" )
 print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
@@ -44,7 +44,7 @@ climatology.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "WORKDIR_LOCAL" )
+valid_args=( "workdir" )
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -68,7 +68,6 @@ fi
 #-----------------------------------------------------------------------
 #
 ulimit -s unlimited
-#ulimit -a
 #
 #-----------------------------------------------------------------------
 #
@@ -76,26 +75,7 @@ ulimit -s unlimited
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${WORKDIR_LOCAL}
-#
-#-----------------------------------------------------------------------
-#
-# Set the tile number(s).  The stand-alone regional and global nest are 
-# assumed to be tile 7.
-#
-#-----------------------------------------------------------------------
-#
-if [[ "$gtype" == "nest" ]] || [[ "$gtype" == "regional" ]]; then
-  tiles=("7")
-else
-  tiles=("1" "2" "3" "4" "5" "6")
-fi
-
-prefix="\"${CRES}_oro_data.tile"
-#prefix="\"${CRES}.oro_data.tile"
-orog_fns=( "${tiles[@]/#/$prefix}" )
-suffix=".nc\""
-orog_fns=( "${orog_fns[@]/%/$suffix}" )
+cd_vrfy $workdir
 #
 #-----------------------------------------------------------------------
 #
@@ -105,8 +85,6 @@ orog_fns=( "${orog_fns[@]/%/$suffix}" )
 #
 #-----------------------------------------------------------------------
 #
-mosaic_file="${WORKDIR_GRID}/${CRES}_mosaic.nc"
-
 cat << EOF > ./fort.41
 &config
 input_facsf_file="${SFC_CLIMO_INPUT_DIR}/facsf.1.0.nc"
@@ -117,9 +95,9 @@ input_slope_type_file="${SFC_CLIMO_INPUT_DIR}/slope_type.1.0.nc"
 input_soil_type_file="${SFC_CLIMO_INPUT_DIR}/soil_type.statsgo.0.05.nc"
 input_vegetation_type_file="${SFC_CLIMO_INPUT_DIR}/vegetation_type.igbp.0.05.nc"
 input_vegetation_greenness_file="${SFC_CLIMO_INPUT_DIR}/vegetation_greenness.0.144.nc"
-mosaic_file_mdl="${mosaic_file}"
-orog_dir_mdl="${WORKDIR_SHVE}"
-orog_files_mdl=${orog_fns}
+mosaic_file_mdl="${FIXsar}/${CRES}_mosaic.nc"
+orog_dir_mdl="${FIXsar}"
+orog_files_mdl=${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc
 halo=${nh4_T7}
 maximum_snow_albedo_method="bilinear"
 snowfree_albedo_method="bilinear"
@@ -147,21 +125,19 @@ case $MACHINE in
 
 "THEIA")
 # Need to load intel/15.1.133.  This and all other module loads should go into a module file.
-module load intel/15.1.133
-module list
+  module load intel/15.1.133
+  module list
   APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
   ;;
 
 "HERA")
-module purge
-module load intel/18.0.5.274
-module load impi/2018.0.4
-module load netcdf/4.6.1
-module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-module load esmf/7.1.0r
-module contrib wrap-mpi
-module list
-  #APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
+  module purge
+  module load intel/18.0.5.274
+  module load impi/2018.0.4
+  module load netcdf/4.6.1
+  module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
+  module load esmf/7.1.0r
+  module list
   APRUN_SFC="srun"
   ;;
 
@@ -197,13 +173,13 @@ case "$gtype" in
 #
 "global" | "stretch" | "nested")
 #
-# Move all files ending with ".nc" to the WORKDIR_SFC_CLIMO directory.
+# Move all files ending with ".nc" to the SFC_CLIMO_DIR directory.
 # In the process, rename them so that the file names start with the C-
 # resolution (followed by an underscore).
 #
   for fn in *.nc; do
     if [[ -f $fn ]]; then
-      mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}_${fn}
+      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}_${fn}
     fi
   done
   ;;
@@ -222,12 +198,12 @@ case "$gtype" in
   for fn in *.halo.nc; do
     if [ -f $fn ]; then
       bn="${fn%.halo.nc}"
-      mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}.${bn}.halo${nh4_T7}.nc
+      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${nh4_T7}.nc
     fi
   done
 #
 # Move all remaining files ending with ".nc" (which are the files for a
-# grid that doesn't include a halo) to the WORKDIR_SFC_CLIMO directory.  
+# grid that doesn't include a halo) to the SFC_CLIMO_DIR directory.  
 # In the process, rename them so that the file names start with the C-
 # resolution (followed by a dot) and contain the string "halo0" to indi-
 # cate that the grids in these files do not contain a halo.
@@ -235,7 +211,7 @@ case "$gtype" in
   for fn in *.nc; do
     if [ -f $fn ]; then
       bn="${fn%.nc}"
-      mv_vrfy $fn ${WORKDIR_SFC_CLIMO}/${CRES}.${bn}.halo${nh0_T7}.nc
+      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${nh0_T7}.nc
     fi
   done
   ;;
@@ -250,13 +226,13 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-#cd_vrfy ${WORKDIR_SFC_CLIMO}
-#
-#suffix=".halo${nh4_T7}.nc"
-#for fn in *${suffix}; do
-#  bn="${fn%.halo${nh4_T7}.nc}"
-#  ln_vrfy -fs ${bn}${suffix} ${bn}.nc
-#done
+$USHDIR/link_fix.sh \
+  verbose="FALSE" \
+  script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
+  file_group="sfc_climo" || \
+  print_err_msg_exit "\
+Call to script to create links to surface climatology files failed.
+"
 #
 #-----------------------------------------------------------------------
 #
