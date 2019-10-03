@@ -295,7 +295,7 @@ case "$EXTRN_MDL_NAME_ICS" in
     fi
   fi
   
-  geogrid_file_input_grid="/scratch3/BMC/det/beck/FV3-CAM/geo_em.d01.nc"  # Maybe make this a fix file?
+  geogrid_file_input_grid="/scratch2/BMC/det/beck/SAR-FV3/geo_em.d01.nc"  # Maybe make this a fix file?
   replace_vgtyp=".false."
   replace_sotyp=".false."
   replace_vgfrc=".false."
