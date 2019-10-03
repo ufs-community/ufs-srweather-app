@@ -70,6 +70,30 @@ Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------
 #
+# Create a flag file to make rocoto aware that the make_sfc_climo task
+# has successfully completed (so that other tasks that depend on it can
+# be launched).  
+#
+# Although we can use the <taskdep> tag to make other tasks depend on 
+# the successful completion of make_sfc_climo, it turns out that the 
+# <taskdep> tag assumes that the task it specifies (in this case make_-
+# sfc_climo) runs for the same set of cycles as the one in which it ap-
+# pears as a dependency.  Thus, if we use <taskdep> in a cycle-dependent
+# task in the workflow to make it depend on the make_sfc_climo, then the
+# workflow will wait for make_sfc_climo to run for each cycle for which
+# that cycle-dependent task is defined before running the task.  But 
+# since make_sfc_climo will not run for each cycle (except possibly for
+# the very first one), the cycle-dependent task will not be able to run
+# for any of the cycles except the first one.  For this reason, we can-
+# not use the <taskdep> tag to make other cycle-dependent tasks depend
+# on make_sfc_climo and must instead use a flag file.
+#
+#-----------------------------------------------------------------------
+#
+touch "$LOGDIR/make_sfc_climo_task_complete.txt"
+#
+#-----------------------------------------------------------------------
+#
 # Print exit message.
 #
 #-----------------------------------------------------------------------

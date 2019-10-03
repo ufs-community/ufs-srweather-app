@@ -21,6 +21,7 @@ the workflow XML.
 <!ENTITY USHDIR  "">
 <!ENTITY JOBSDIR "">
 <!ENTITY EXPTDIR "">
+<!ENTITY LOGDIR  "">
 
 <!ENTITY EXTRN_MDL_NAME_ICS  "">
 <!ENTITY EXTRN_MDL_NAME_LBCS "">
@@ -53,7 +54,6 @@ workflow XML.
 SECTION 2:
 Variables that are not modified by the workflow generation script.
 -->
-<!ENTITY LOG_DIR "&EXPTDIR;/log">
 
 <!ENTITY PROC_MAKE_GRID           "1:ppn=24">
 <!ENTITY PROC_MAKE_OROG           "1:ppn=24">
@@ -85,7 +85,7 @@ Variables that are not modified by the workflow generation script.
   <cycledef group="at_CCZ">&DATE_FIRST_CYCL;CC00 &DATE_LAST_CYCL;CC00 24:00:00</cycledef>  <!-- This line will be replaced with one or more lines with "CC" replaced by actual cycle hours, e.g. "00". -->
 
   <log>
-    <cyclestr>&LOG_DIR;/FV3_wflow.log</cyclestr>
+    <cyclestr>&LOGDIR;/FV3_wflow.log</cyclestr>
   </log>
 <!--
 ************************************************************************
@@ -99,7 +99,7 @@ Variables that are not modified by the workflow generation script.
     <command>&JOBSDIR;/JREGIONAL_MAKE_GRID</command>
     <nodes>&PROC_MAKE_GRID;</nodes>
     <jobname>make_grid</jobname>
-    <join><cyclestr>&LOG_DIR;/make_grid.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/make_grid.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -121,7 +121,7 @@ Variables that are not modified by the workflow generation script.
     <command>&JOBSDIR;/JREGIONAL_MAKE_OROG</command>
     <nodes>&PROC_MAKE_OROG;</nodes>
     <jobname>make_orog</jobname>
-    <join><cyclestr>&LOG_DIR;/make_orog.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/make_orog.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -130,7 +130,8 @@ Variables that are not modified by the workflow generation script.
       <and>
         <streq><left>&RUN_TASK_MAKE_OROG;</left><right>TRUE</right></streq>
         <or>
-          <taskdep task="make_grid"/>
+<!--          <taskdep task="make_grid"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -149,7 +150,7 @@ Variables that are not modified by the workflow generation script.
     <command>&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO</command>
     <nodes>&PROC_MAKE_SFC_CLIMO;</nodes>
     <jobname>make_sfc_climo</jobname>
-    <join><cyclestr>&LOG_DIR;/make_sfc_climo.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/make_sfc_climo.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -158,11 +159,13 @@ Variables that are not modified by the workflow generation script.
       <and>
         <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>TRUE</right></streq>
         <or>
-          <taskdep task="make_grid"/>
+<!--          <taskdep task="make_grid"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
-          <taskdep task="make_orog"/>
+<!--          <taskdep task="make_orog"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_orog_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -181,7 +184,7 @@ Variables that are not modified by the workflow generation script.
     <command>&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES</command>
     <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
     <jobname>get_files_ICS</jobname>
-    <join><cyclestr>&LOG_DIR;/get_files_ICS_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/get_files_ICS_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
@@ -203,7 +206,7 @@ Variables that are not modified by the workflow generation script.
     <command>&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES</command>
     <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
     <jobname>get_files_LBCS</jobname>
-    <join><cyclestr>&LOG_DIR;/get_files_LBCS_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/get_files_LBCS_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
@@ -225,7 +228,7 @@ Variables that are not modified by the workflow generation script.
     <command>&JOBSDIR;/JREGIONAL_MAKE_IC_LBC0</command>
     <nodes>&PROC_MAKE_ICS_SURF_LBC0;</nodes>
     <jobname>make_ICS_surf_LBC0</jobname>
-    <join><cyclestr>&LOG_DIR;/make_ICS_surf_LBC0_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/make_ICS_surf_LBC0_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
@@ -236,15 +239,18 @@ Variables that are not modified by the workflow generation script.
       <and>
         <taskdep task="get_files_ICS"/>
         <or>
-          <taskdep task="make_grid"/>
+<!--          <taskdep task="make_grid"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
-          <taskdep task="make_orog"/>
+<!--          <taskdep task="make_orog"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_orog_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
-          <taskdep task="make_sfc_climo"/>
+<!--          <taskdep task="make_sfc_climo"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_sfc_climo_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -263,7 +269,7 @@ Variables that are not modified by the workflow generation script.
     <command>&JOBSDIR;/JREGIONAL_MAKE_LBC1_TO_LBCN</command>
     <nodes>&PROC_MAKE_LBC1_TO_LBCN;</nodes>
     <jobname>make_LBC1_to_LBCN</jobname>
-    <join><cyclestr>&LOG_DIR;/make_LBC1_to_LBCN_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/make_LBC1_to_LBCN_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
@@ -274,15 +280,18 @@ Variables that are not modified by the workflow generation script.
       <and>
         <taskdep task="get_files_LBCS"/>
         <or>
-          <taskdep task="make_grid"/>
+<!--          <taskdep task="make_grid"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
-          <taskdep task="make_orog"/>
+<!--          <taskdep task="make_orog"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_orog_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
-          <taskdep task="make_sfc_climo"/>
+<!--          <taskdep task="make_sfc_climo"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_sfc_climo_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -301,7 +310,7 @@ Variables that are not modified by the workflow generation script.
     <command>&JOBSDIR;/JREGIONAL_RUN_FV3</command>
     <nodes>&PROC_RUN_FV3;</nodes>
     <jobname>run_FV3</jobname>
-    <join><cyclestr>&LOG_DIR;/run_FV3_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/run_FV3_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
@@ -332,7 +341,7 @@ Variables that are not modified by the workflow generation script.
       <command>&JOBSDIR;/JREGIONAL_RUN_POST</command>
       <nodes>&PROC_POST;</nodes>
       <jobname>run_post_#fhr#</jobname>
-      <join><cyclestr>&LOG_DIR;/run_post_#fhr#_@Y@m@d@H.log</cyclestr></join>
+      <join><cyclestr>&LOGDIR;/run_post_#fhr#_@Y@m@d@H.log</cyclestr></join>
 
       <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
       <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>

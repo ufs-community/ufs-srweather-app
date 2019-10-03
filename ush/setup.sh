@@ -813,6 +813,8 @@ fi
 # May have to make setting of EXPTDIR dependent on RUN_ENVIR later on.
 EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
 check_for_preexist_dir $EXPTDIR ${PREEXISTING_DIR_METHOD}
+
+LOGDIR="${EXPTDIR}/log"
 #
 #-----------------------------------------------------------------------
 #
@@ -1715,6 +1717,7 @@ NEMSfv3gfs_DIR="${NEMSfv3gfs_DIR}"
 SFC_CLIMO_INPUT_DIR="${SFC_CLIMO_INPUT_DIR}"
 
 EXPTDIR="$EXPTDIR"
+LOGDIR="$LOGDIR"
 GRID_DIR="${GRID_DIR}"
 OROG_DIR="${OROG_DIR}"
 SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
