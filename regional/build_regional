@@ -56,6 +56,12 @@ else
   cp ../exec/chgres_cube.exe ${RGNL_WFLOW_DIR}/exec
 fi
 
+#
+# Built EMC_post
+#
+cd ${RGNL_WFLOW_DIR}/sorc/EMC_post/sorc
+./build_ncep_post.sh >& out.build_EMC_post
+cp ../exec/ncep_post ${RGNL_WFLOW_DIR}/exec
 
 # prepare fixed data directories
 

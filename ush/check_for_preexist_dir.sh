@@ -3,7 +3,7 @@
 #
 # This file defines a function that checks for a preexisting version of
 # the specified directory and, if present, deals with it according to 
-# the method specified in the variable preexisting_dir_method.
+# the method specified by the argument preexisting_dir_method.
 #
 #-----------------------------------------------------------------------
 #
@@ -38,7 +38,8 @@ where the arguments are defined as follows:
 
   preexisting_dir_method:
   String specifying the action to take if a preexisting version of dir
-  is found.  Valid values are \"delete\", \"rename\", and \"quit\"."
+  is found.  Valid values are \"delete\", \"rename\", and \"quit\".
+"
   fi
 #
 #-----------------------------------------------------------------------

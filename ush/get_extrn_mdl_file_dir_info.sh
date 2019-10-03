@@ -476,7 +476,7 @@ bination of external model (extrn_mdl_name) and analysis or forecast
 #-----------------------------------------------------------------------
 #
   if [ "$anl_or_fcst" = "ANL" ]; then
-    sysbasedir="$EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF"
+    sysbasedir="$EXTRN_MDL_FILES_SYSBASEDIR_ICS"
   elif [ "$anl_or_fcst" = "FCST" ]; then
     sysbasedir="$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
   fi
@@ -646,9 +646,14 @@ has not been specified for this external model:
     ;;
 
   "FV3GFS")
-    arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+    if [ "${cdate_FV3SAR}" -le "2019061206" ]; then
+      arcv_dir="/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_C/Q2FY19/prfv3rt3/${cdate_FV3SAR}"
+      arcv_fns=""
+    else
+      arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+      arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}."
+    fi
     arcv_fmt="tar"
-    arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}."
     if [ "$anl_or_fcst" = "ANL" ]; then
       arcv_fns="${arcv_fns}gfs_nemsioa"
       arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
@@ -679,11 +684,38 @@ has not been specified for this external model:
     ;;
 
   "RAPX")
+#
+# The zip archive files for RAPX are named such that the forecast files
+# for odd-numbered starting hours (e.g. 01, 03, ..., 23) are stored to-
+# gether with the forecast files for the corresponding preceding even-
+# numbered starting hours (e.g. 00, 02, ..., 22, respectively), in an 
+# archive file whose name contains only the even-numbered hour.  Thus, 
+# in forming the name of the archive file, if the starting hour (hh) is
+# odd, we reduce it by one to get the corresponding even-numbered hour 
+# and use that to form the archive file name.
+#
+    hh_orig=$hh
+# Convert hh to a decimal (i.e. base-10) number.  We need this because 
+# if it starts with a 0 (e.g. 00, 01, ..., 09), bash will treat it as an
+# octal number, and 08 and 09 are illegal ocatal numbers for which the
+# arithmetic operations below will fail.
+    hh=$((10#$hh))
+    if [ $(($hh%2)) = 1 ]; then
+      hh=$((hh-1))
+    fi
+# Now that the arithmetic is done, recast hh as a two-digit string be-
+# cause that is needed in constructing the names below.
+    hh=$( printf "%02d\n" $hh )
+
     arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/rap/full/wrfnat"
     arcv_fmt="zip"
     arcv_fns="${yyyy}${mm}${dd}${hh}00.${arcv_fmt}"
     arcv_fps="$arcv_dir/$arcv_fns"
     arcvrel_dir=""
+#
+# Reset hh to its original value in case it is used again later below.
+#
+    hh=${hh_orig}
     ;;
 
   "HRRRX")

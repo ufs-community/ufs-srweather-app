@@ -27,7 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "$0" )
+script_name=$( basename "${BASH_SOURCE[0]}" )
 print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
@@ -37,24 +37,24 @@ climatology.
 #
 #-----------------------------------------------------------------------
 #
-# Create the work(??) directory for the surface climatology files.  If   <<-- Should call this "work" directory, since there is a subdirectory that's the true work directory.  Should rename WORKDIR_SFC_CLIMO (and also WORKDIR_GRID, WORKDIR_SHVE, etc).
-# it already exists, deal with it as specified by the variable pre-
-# existing_dir_method.
+# Create the output directory for the surface climatology files.  If it
+# already exists, deal with it as specified by the variable preexist-
+# ing_dir_method.
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir ${WORKDIR_SFC_CLIMO} $preexisting_dir_method
-mkdir_vrfy -p "${WORKDIR_SFC_CLIMO}"
+check_for_preexist_dir ${SFC_CLIMO_DIR} ${PREEXISTING_DIR_METHOD}
+mkdir_vrfy -p "${SFC_CLIMO_DIR}"
 #
 #-----------------------------------------------------------------------
 #
-# Create a (true) work directory.  If it already exists, delete it.
+# Create a work directory.  If it already exists, delete it.
 #
 #-----------------------------------------------------------------------
 #
-WORKDIR_LOCAL="${WORKDIR_SFC_CLIMO}/tmp"
-check_for_preexist_dir ${WORKDIR_LOCAL} "delete"
-mkdir_vrfy ${WORKDIR_LOCAL}
+workdir="${SFC_CLIMO_DIR}/tmp"
+check_for_preexist_dir $workdir "delete"
+mkdir_vrfy $workdir
 #
 #-----------------------------------------------------------------------
 #
@@ -64,9 +64,33 @@ mkdir_vrfy ${WORKDIR_LOCAL}
 #-----------------------------------------------------------------------
 #
 ${SCRIPTSDIR}/exregional_make_sfc_climo.sh \
-  WORKDIR_LOCAL="${WORKDIR_LOCAL}" \
-  || print_err_msg_exit "${script_name}" "\
+  workdir="$workdir" || \
+  print_err_msg_exit "${script_name}" "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Create a flag file to make rocoto aware that the make_sfc_climo task
+# has successfully completed (so that other tasks that depend on it can
+# be launched).  
+#
+# Although we can use the <taskdep> tag to make other tasks depend on 
+# the successful completion of make_sfc_climo, it turns out that the 
+# <taskdep> tag assumes that the task it specifies (in this case make_-
+# sfc_climo) runs for the same set of cycles as the one in which it ap-
+# pears as a dependency.  Thus, if we use <taskdep> in a cycle-dependent
+# task in the workflow to make it depend on the make_sfc_climo, then the
+# workflow will wait for make_sfc_climo to run for each cycle for which
+# that cycle-dependent task is defined before running the task.  But 
+# since make_sfc_climo will not run for each cycle (except possibly for
+# the very first one), the cycle-dependent task will not be able to run
+# for any of the cycles except the first one.  For this reason, we can-
+# not use the <taskdep> tag to make other cycle-dependent tasks depend
+# on make_sfc_climo and must instead use a flag file.
+#
+#-----------------------------------------------------------------------
+#
+touch "$LOGDIR/make_sfc_climo_task_complete.txt"
 #
 #-----------------------------------------------------------------------
 #

@@ -21,7 +21,6 @@
 ;run_dir = "ABCD"
 ;run_dir = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL"
 run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C768_S1p5_RR3_EMCCONUS_UUUU"
-run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_RAP_no_quilting"
 ;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S1p65_RR5_HRRR_new_chgres_fv3sar12"
 ;run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3sar_workflow/sorc/regional_grid"
 run_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/run_dirs/C384_S0p63_RR3_test_new_grid"
@@ -44,6 +43,12 @@ run_dir = "/scratch3/BMC/det/beck/FV3-CAM/run_dirs/real_time/2019062300"
 run_dir = "/scratch3/BMC/det/Gerard.Ketefian/FV3SAR_demo_PASPBL_20190725/expt_dirs/FFFFF"
 run_dir = "/scratch3/BMC/det/beck/CAM_chgres/run_dirs/test_HRRR25km_FV3GFSICBCs_GFSphysics"
 run_dir = "/scratch3/BMC/det/Gerard.Ketefian/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
+run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_get_RAP_arcv_01"
+
+run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR25km"
+run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
+run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR3km"
+run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HAFSV0.A"
 
 
 tile_inds := (/ 1, 7, 4 /)
@@ -676,17 +681,36 @@ if (True) then
   nn = 0
   lon_grid_cntr_native = lon_tile_cntr_tiles_to_plot(nn)
   lat_grid_cntr_native = lat_tile_cntr_tiles_to_plot(nn)
-  lon_tile_corners_face_midpts_native := lon_tile_corners_face_midpts_tiles_to_plot(nn,:)
-  lat_tile_corners_face_midpts_native := lat_tile_corners_face_midpts_tiles_to_plot(nn,:)
+  lon_tile_corners_face_midpts_native \
+  := lon_tile_corners_face_midpts_tiles_to_plot(nn,:)
+  lat_tile_corners_face_midpts_native \
+  := lat_tile_corners_face_midpts_tiles_to_plot(nn,:)
 
-  dx_native = 3.0d+3
-  dy_native = 3.0d+3
+;
+; Read in the native grid parameters from the variable defintions file 
+; in the experiment directory.
+;
+  var_defns_fp = run_dir + "/var_defns.sh"
+  param_names = (/ "delx", "dely" /)
+  num_params = dimsizes(param_names)
+  do np=0, num_params-1
 
-  dx_native = 13.0d+3
-  dy_native = 13.0d+3
+    param_name = param_names(np)
+    regex_search = "^\s*" + param_name + "=(" + char_dq + "([^" \
+                 + char_dq + "]+)" + char_dq + "|([^ " + char_dq + "]+))$"
+    regex_print = "\2\3"
+    sed_cmd = "sed -r -n -e " + char_sq + "s/" + regex_search + "/" \
+          + regex_print + "/p" + char_sq + " " + var_defns_fp
+    sed_output = systemfunc(sed_cmd)
 
-;  dx_native = 25.0d+3
-;  dy_native = 25.0d+3
+    if (strcmp_exact(param_name, "delx")) then
+      dx_native = todouble(sed_output)
+    else if (strcmp_exact(param_name, "dely")) then
+      dy_native = todouble(sed_output)
+    end if
+    end if                                                                                                 
+
+  end do
 
   angle_units = "deg"
 
@@ -698,7 +722,7 @@ if (True) then
          dx_native, dy_native, \
          angle_units)
 
-print("HELLO")
+print("DONE calculating write-component grid parameters.")
 pause
 end if
 ;

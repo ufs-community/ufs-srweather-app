@@ -17,7 +17,7 @@
 #-----------------------------------------------------------------------
 
 module load intel
-module load nccmp/1.8.5
+module load nccmp
 #
 #-----------------------------------------------------------------------
 #
@@ -25,7 +25,7 @@ module load nccmp/1.8.5
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "$0" )
+script_name=$( basename "${BASH_SOURCE[0]}" )
 if [ $# -ne 1 ] && [ $# -ne 2 ]; then
 
   printf "
@@ -83,20 +83,20 @@ if [ $# -eq 2 ]; then
 
 else
 
-  baseline_dir="/scratch3/BMC/det/regional_FV3/regr_baselines"
-  if [ -n ${predef_domain} ]; then
-    baseline_dir="${baseline_dir}/${predef_domain}"
+  baseline_dir="/scratch2/BMC/det/regional_FV3/regr_baselines"
+  if [ -n ${PREDEF_GRID_NAME} ]; then
+    baseline_dir="${baseline_dir}/${PREDEF_GRID_NAME}"
   else
     printf "\
 The experiment must be run on one of the predefined domains.  Thus, 
-predef_domain cannot be empty:
-  predef_domain = \"${predef_domain}\"
+PREDEF_GRID_NAME cannot be empty:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
 Exiting script with nonzero return code.
 "
     exit 1
   fi
-  baseline_dir="${baseline_dir}/${CCPP_phys_suite}phys"
-  baseline_dir="${baseline_dir}/ICs-${EXTRN_MDL_NAME_ICSSURF}_LBCs-${EXTRN_MDL_NAME_LBCS}"
+  baseline_dir="${baseline_dir}/${CCPP_PHYS_SUITE}phys"
+  baseline_dir="${baseline_dir}/ICs-${EXTRN_MDL_NAME_ICS}_LBCs-${EXTRN_MDL_NAME_LBCS}"
   baseline_dir="${baseline_dir}/$CDATE"
 
 fi
@@ -132,16 +132,20 @@ The experiment and baseline directories are:
 #
 #-----------------------------------------------------------------------
 #
-subdirs=( "grid" \
-          "orog" \
-          "filtered_topo" \
-          "shave" \
-          "sfc_climo" \
-          "${EXTRN_MDL_NAME_ICSSURF}/ICSSURF/$CDATE" \
-          "${EXTRN_MDL_NAME_LBCS}/LBCS/$CDATE" \
-          "ICs_BCs/$CDATE" \
-          "INPUT" \
-          "." )
+# This list should also include $CDATE/postprd since that contains the 
+# post-processed grib files, but those files' names don't end in a 
+# standard file extension, e.g. .grb, etc.  Must look into this more.
+#          "grid" \
+#          "orog" \
+#          "sfc_climo" \
+subdirs=( "." \
+          "fix_sar" \
+          "$CDATE/${EXTRN_MDL_NAME_ICS}/ICS" \
+          "$CDATE/${EXTRN_MDL_NAME_LBCS}/LBCS" \
+          "$CDATE/INPUT" \
+          "$CDATE/RESTART" \
+          "$CDATE" \
+          )
 #
 #-----------------------------------------------------------------------
 #
@@ -150,8 +154,8 @@ subdirs=( "grid" \
 #
 #-----------------------------------------------------------------------
 #
-declare -a file_extensions=( "nc" "nemsio" "grb" )
-#declare -a file_extensions=( "nc" "grb" )
+#declare -a file_extensions=( "nc" "nemsio" "grb" )
+declare -a file_extensions=( "nc" "grb" )
 #declare -a file_extensions=( "nc" )
 #
 #-----------------------------------------------------------------------

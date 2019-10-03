@@ -3,15 +3,6 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs the post-processor (UPP) on the NetCDF output files
-# of the write component of the FV3SAR model.
-#
-#-----------------------------------------------------------------------
-#
-
-#
-#-----------------------------------------------------------------------
-#
 # Source the variable definitions script and the function definitions
 # file.
 #
@@ -40,55 +31,44 @@ script_name=$( basename "${BASH_SOURCE[0]}" )
 print_info_msg "\n\
 ========================================================================
 Entering script:  \"${script_name}\"
-This is the J-job script for the task that runs the post-processor (UPP)
-on the output files corresponding to a specified forecast hour.
+This is the J-job script for the task that generates orography files.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# If it doesn't already exist, create the directory (postprd_dir) in 
-# which to store post-processing output.  (Note that postprd_dir may al-
-# ready have been created by this post-processing script run for a dif-
-# ferent forecast hour.)  Also, create a temporary work directory (FHR_-
-# DIR) for the current forecast hour being processed.  fhr_dir will be 
-# deleted later after the processing for the current forecast hour is 
-# complete.  Then change location to fhr_dir.
-#
-# Note that there may be a preexisting version of fhr_dir from previous 
-# runs of this script for the current forecast hour (e.g. from the work-
-# flow task that runs this script failing and then being called again).  
-# Thus, we first make sure preexisting versions are deleted.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  COMOUT="$COMROOT/$NET/$envir/$RUN.$PDY/$cyc"
-  postprd_dir="$COMOUT"
-else
-  postprd_dir="${CYCLE_DIR}/postprd"
-fi
-mkdir_vrfy -p "${postprd_dir}"
-
-fhr_dir="${postprd_dir}/$fhr"
-check_for_preexist_dir "${fhr_dir}" "delete"
-mkdir_vrfy -p "${fhr_dir}"
-
-cd_vrfy "${fhr_dir}"
-#
-#-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary varia-
-# bles. 
+# bles.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_run_post.sh \
-  cycle_dir="${CYCLE_DIR}" \
-  postprd_dir="${postprd_dir}" \
-  fhr_dir="${fhr_dir}" \
-  fhr="${fhr}" || \
+${SCRIPTSDIR}/exregional_make_orog.sh \
+  WORKDIR_LOCAL="ABCD" || \
   print_err_msg_exit "${script_name}" "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Create a flag file to make rocoto aware that the make_orog task has 
+# successfully completed (so that other tasks that depend on it can be
+# launched).  
+#
+# Although we can use the <taskdep> tag to make other tasks depend on 
+# the successful completion of make_orog, it turns out that the <task-
+# dep> tag assumes that the task it specifies (in this case make_orog)
+# runs for the same set of cycles as the one in which it appears as a 
+# dependency.  Thus, if we use <taskdep> in a cycle-dependent task in 
+# the workflow to make it depend on the make_orog, then the workflow 
+# will wait for make_orog to run for each cycle for which that cycle-de-
+# pendent task is defined before running the task.  But since make_orog
+# will not run for each cycle (except possibly for the very first one),
+# the cycle-dependent task will not be able to run for any of the cycles
+# except the first one.  For this reason, we cannot use the <taskdep> 
+# tag to make other cycle-dependent tasks depend on make_orog and must
+# instead use a flag file.
+#
+#-----------------------------------------------------------------------
+#
+touch "$LOGDIR/make_orog_task_complete.txt"
 #
 #-----------------------------------------------------------------------
 #
