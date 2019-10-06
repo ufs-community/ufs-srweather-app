@@ -69,9 +69,13 @@ cd ${RGNL_WFLOW_DIR}
 mkdir -p fix/fix_fv3
 cd fix
 
-if [ ${SITE} == "theia" ] || [ ${SITE} == "hera" ]; then
+if [ ${SITE} == "theia" ]; then
 
     ln -sfn /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am fix_am
+
+elif [ ${SITE} == "hera" ]; then
+
+    ln -sfn /scratch1/NCEPDEV/global/glopara/fix/fix_am fix_am
 
 elif [ ${SITE} == "wcoss" ] || [ ${SITE} == "dell" ]; then
 
