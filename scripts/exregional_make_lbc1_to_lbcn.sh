@@ -237,11 +237,13 @@ case "$EXTRN_MDL_NAME_LBCS" in
 
 "FV3GFS")
 
-  external_model="FV3GFS"
+  if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
 
-  input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
+    external_model="FV3GFS"
 
-  tracers_input="\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\""
+    input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
+
+    tracers_input="\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\""
 #
 # If CCPP is being used, then the list of atmospheric tracers to include
 # in the output file depends on the physics suite.  Hopefully, this me-
@@ -249,20 +251,28 @@ case "$EXTRN_MDL_NAME_LBCS" in
 # table (which should be specific to each combination of external model,
 # external model file type, and physics suite).
 #
-  if [ "${USE_CCPP}" = "TRUE" ]; then
-    if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
-      tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
-    elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+    if [ "${USE_CCPP}" = "TRUE" ]; then
+      if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
+        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+      elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
-      tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
-    fi
+        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
+      fi
 #
 # If CCPP is not being used, the only physics suite that can be used is
 # GFS.
 #
-  else
-    tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+    else
+      tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+    fi
+
+  elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
+
+    external_model="GFS"
+
+    input_type="grib2"
+
   fi
 
   numsoil_out="4"
