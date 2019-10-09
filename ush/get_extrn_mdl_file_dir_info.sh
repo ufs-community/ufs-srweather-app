@@ -379,20 +379,16 @@ anl_or_fcst must be set to one of the following:
     
       if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then  
 
-#      fns=( "atm" "sfc" "nst" )
-      fns=( "atm" "sfc" )
-      prefix="gfs.t${hh}z."
-      fns=( "${fns[@]/#/$prefix}" )
-      suffix="anl.nemsio"
-      fns=( "${fns[@]/%/$suffix}" )
+#        fns=( "atm" "sfc" "nst" )
+        fns=( "atm" "sfc" )
+        prefix="gfs.t${hh}z."
+        fns=( "${fns[@]/#/$prefix}" )
+        suffix="anl.nemsio"
+        fns=( "${fns[@]/%/$suffix}" )
 
       elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then #Only 0.25 degree files for now
 
-      fns=( "" )
-      prefix="gfs.t${hh}z."
-      fns=( "${fns[@]/#/$prefix}" )
-      suffix="pgrb2.0p25.anl"
-      fns=( "${fns[@]/%/$suffix}" )
+        fns=( "gfs.t${hh}z.pgrb2.0p25.anl" )
 
       fi
       ;;
@@ -439,20 +435,17 @@ bination of external model (extrn_mdl_name) and analysis or forecast
       ;;
 
     "FV3GFS")
-     if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
-      fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
-      prefix="gfs.t${hh}z.atmf"
-      fns=( "${fcst_hhh[@]/#/$prefix}" )
-      suffix=".nemsio"
-      fns=( "${fns[@]/%/$suffix}" )
-     
-     elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
-      fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
-      prefix="gfs.t${hh}z.pgrb2.0p25.f"
-      fns=( "${fcst_hhh[@]/#/$prefix}" )
-      suffix=""
-      fns=( "${fns[@]/%/$suffix}" )
-     fi
+      if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
+        fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
+        prefix="gfs.t${hh}z.atmf"
+        fns=( "${fcst_hhh[@]/#/$prefix}" )
+        suffix=".nemsio"
+        fns=( "${fns[@]/%/$suffix}" )
+      elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
+        fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
+        prefix="gfs.t${hh}z.pgrb2.0p25.f"
+        fns=( "${fcst_hhh[@]/#/$prefix}" )
+      fi
       ;;
 
     "RAPX")
