@@ -661,39 +661,41 @@ has not been specified for this external model:
     ;;
 
   "FV3GFS")
-   if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
+    if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
  
-    if [ "${cdate_FV3SAR}" -le "2019061206" ]; then
-      arcv_dir="/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_C/Q2FY19/prfv3rt3/${cdate_FV3SAR}"
-      arcv_fns=""
-    else
-      arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
-      arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}."
-    fi
-    arcv_fmt="tar"
-    if [ "$anl_or_fcst" = "ANL" ]; then
-      arcv_fns="${arcv_fns}gfs_nemsioa"
-      arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
-    elif [ "$anl_or_fcst" = "FCST" ]; then
-      last_fhr_in_nemsioa="39"
-      first_lbc_fhr="${lbc_update_fhrs[0]}"
-      last_lbc_fhr="${lbc_update_fhrs[-1]}"
-      if [ "${last_lbc_fhr}" -le "${last_fhr_in_nemsioa}" ]; then
-        arcv_fns="${arcv_fns}gfs_nemsioa"
-      elif [ "${first_lbc_fhr}" -gt "${last_fhr_in_nemsioa}" ]; then
-        arcv_fns="${arcv_fns}gfs_nemsiob"
+      if [ "${cdate_FV3SAR}" -le "2019061206" ]; then
+        arcv_dir="/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_C/Q2FY19/prfv3rt3/${cdate_FV3SAR}"
+        arcv_fns=""
       else
-        arcv_fns=( "${arcv_fns}gfs_nemsioa" "${arcv_fns}gfs_nemsiob" )
+        arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+        arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}."
       fi
-      arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
-    fi
+      arcv_fmt="tar"
+      if [ "$anl_or_fcst" = "ANL" ]; then
+        arcv_fns="${arcv_fns}gfs_nemsioa"
+        arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
+      elif [ "$anl_or_fcst" = "FCST" ]; then
+        last_fhr_in_nemsioa="39"
+        first_lbc_fhr="${lbc_update_fhrs[0]}"
+        last_lbc_fhr="${lbc_update_fhrs[-1]}"
+        if [ "${last_lbc_fhr}" -le "${last_fhr_in_nemsioa}" ]; then
+          arcv_fns="${arcv_fns}gfs_nemsioa"
+        elif [ "${first_lbc_fhr}" -gt "${last_fhr_in_nemsioa}" ]; then
+          arcv_fns="${arcv_fns}gfs_nemsiob"
+        else
+          arcv_fns=( "${arcv_fns}gfs_nemsioa" "${arcv_fns}gfs_nemsiob" )
+        fi
+        arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
+      fi
 
-   elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
-    arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
-    arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}.gfs_pgrb2"
-    arcv_fmt="tar"
-    arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
-   fi
+    elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
+
+      arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+      arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}.gfs_pgrb2"
+      arcv_fmt="tar"
+      arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
+  
+    fi
 
     is_array arcv_fns
     if [ "$?" = "0" ]; then
