@@ -242,15 +242,15 @@ case "$EXTRN_MDL_NAME_ICS" in
 
 "FV3GFS")
 
- if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
+  if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
 
-  external_model="FV3GFS"
+    external_model="FV3GFS"
 
-  fn_atm_nemsio="${EXTRN_MDL_FNS[0]}"
-  fn_sfc_nemsio="${EXTRN_MDL_FNS[1]}"
-  input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
+    fn_atm_nemsio="${EXTRN_MDL_FNS[0]}"
+    fn_sfc_nemsio="${EXTRN_MDL_FNS[1]}"
+    input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
 
-  tracers_input="\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\""
+    tracers_input="\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\""
 
 #
 # If CCPP is being used, then the list of atmospheric tracers to include
@@ -259,30 +259,30 @@ case "$EXTRN_MDL_NAME_ICS" in
 # table (which should be specific to each combination of external model,
 # external model file type, and physics suite).
 #
-  if [ "${USE_CCPP}" = "TRUE" ]; then
-    if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
-      tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
-    elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+    if [ "${USE_CCPP}" = "TRUE" ]; then
+      if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
+        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+      elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
-      tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
-    fi
+        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
+      fi
 #
 # If CCPP is not being used, the only physics suite that can be used is
 # GFS.
 #
-  else
-    tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+    else
+      tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+    fi
+
+  elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
+
+    external_model="GFS"
+
+    fn_grib2="${EXTRN_MDL_FNS[0]}"
+    input_type="grib2"
+
   fi
-
- elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
-
-  external_model="GFS"
-
-  fn_grib2="${EXTRN_MDL_FNS[0]}"
-  input_type="grib2"
-
- fi
 
   numsoil_out="4"
   replace_vgtyp=".true."
