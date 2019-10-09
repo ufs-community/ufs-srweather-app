@@ -265,6 +265,7 @@ FCST_LEN_HRS="24"
 #
 EXTRN_MDL_NAME_ICS="FV3GFS"
 EXTRN_MDL_NAME_LBCS="FV3GFS"
+FV3GFS_DATA_TYPE="nemsio"
 LBC_UPDATE_INTVL_HRS="6"
 #
 #-----------------------------------------------------------------------

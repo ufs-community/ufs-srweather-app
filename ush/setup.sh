@@ -1051,6 +1051,21 @@ EXTRN_MDL_NAME_LBCS must be one of the following:
 #
 #-----------------------------------------------------------------------
 #
+# Make sure FV3GFS_DATA_TYPE is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+iselementof "$FV3GFS_DATA_TYPE" valid_vals_FV3GFS_DATA_TYPE || { \
+valid_vals_FV3GFS_DATA_TYPE_str=$(printf "\"%s\" " "${valid_vals_FV3GFS_DATA_TYPE[@]}");
+print_err_msg_exit "${script_name}" "\
+The data type specified in FV3GFS_DATA_TYPE is not supported:
+  FV3GFS_DATA_TYPE = \"$FV3GFS_DATA_TYPE\"
+FV3GFS_DATA_TYPE must be one of the following:
+  $valid_vals_FV3GFS_DATA_TYPE_str
+"; }
+#
+#-----------------------------------------------------------------------
+#
 # If the run environment is "nco", the external model for both the ICs
 # and the LBCs should be either the FV3GFS or the GSMGFS.
 #

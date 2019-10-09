@@ -237,6 +237,8 @@ case "$EXTRN_MDL_NAME_LBCS" in
 
 "FV3GFS")
 
+ if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
+
   external_model="FV3GFS"
 
   input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
@@ -264,6 +266,14 @@ case "$EXTRN_MDL_NAME_LBCS" in
   else
     tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
   fi
+
+ elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
+
+  external_model="GFS"
+
+  input_type="grib2"
+
+ fi
 
   numsoil_out="4"
   replace_vgtyp=".true."

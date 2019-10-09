@@ -110,7 +110,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch4/BMC/public/data/gsd/hrrr/conus/wrfnat"
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
+      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch4/BMC/public/data/gsd/hrrr/conus/wrfnat"
       ;;
     *)
       print_err_msg_exit "\

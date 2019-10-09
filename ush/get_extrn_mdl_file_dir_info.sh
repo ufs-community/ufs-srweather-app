@@ -376,12 +376,25 @@ anl_or_fcst must be set to one of the following:
       ;;
 
     "FV3GFS")
+    
+      if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then  
+
 #      fns=( "atm" "sfc" "nst" )
       fns=( "atm" "sfc" )
       prefix="gfs.t${hh}z."
       fns=( "${fns[@]/#/$prefix}" )
       suffix="anl.nemsio"
       fns=( "${fns[@]/%/$suffix}" )
+
+      elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then #Only 0.25 degree files for now
+
+      fns=( "" )
+      prefix="gfs.t${hh}z."
+      fns=( "${fns[@]/#/$prefix}" )
+      suffix="pgrb2.0p25.anl"
+      fns=( "${fns[@]/%/$suffix}" )
+
+      fi
       ;;
   
     "RAPX")
@@ -426,11 +439,20 @@ bination of external model (extrn_mdl_name) and analysis or forecast
       ;;
 
     "FV3GFS")
+     if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
       fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
       prefix="gfs.t${hh}z.atmf"
       fns=( "${fcst_hhh[@]/#/$prefix}" )
       suffix=".nemsio"
       fns=( "${fns[@]/%/$suffix}" )
+     
+     elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
+      fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
+      prefix="gfs.t${hh}z.pgrb2.0p25.f"
+      fns=( "${fcst_hhh[@]/#/$prefix}" )
+      suffix=""
+      fns=( "${fns[@]/%/$suffix}" )
+     fi
       ;;
 
     "RAPX")
@@ -646,6 +668,8 @@ has not been specified for this external model:
     ;;
 
   "FV3GFS")
+   if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
+ 
     if [ "${cdate_FV3SAR}" -le "2019061206" ]; then
       arcv_dir="/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_C/Q2FY19/prfv3rt3/${cdate_FV3SAR}"
       arcv_fns=""
@@ -670,6 +694,13 @@ has not been specified for this external model:
       fi
       arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
     fi
+
+   elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
+    arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+    arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}.gfs_pgrb2"
+    arcv_fmt="tar"
+    arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
+   fi
 
     is_array arcv_fns
     if [ "$?" = "0" ]; then

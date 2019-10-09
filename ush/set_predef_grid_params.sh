@@ -76,7 +76,7 @@ predefined domain:
 
     nhw_T7=6
 
-    dt_atmos="50"
+    dt_atmos="100"
 
     layout_x="32"
     layout_y="24"
@@ -325,7 +325,7 @@ predefined domain:
 
     nhw_T7=6
 
-    dt_atmos="50"
+    dt_atmos="100"
 
     layout_x="34"
     layout_y="24"

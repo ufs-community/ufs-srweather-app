@@ -242,6 +242,8 @@ case "$EXTRN_MDL_NAME_ICS" in
 
 "FV3GFS")
 
+ if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
+
   external_model="FV3GFS"
 
   fn_atm_nemsio="${EXTRN_MDL_FNS[0]}"
@@ -249,6 +251,7 @@ case "$EXTRN_MDL_NAME_ICS" in
   input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
 
   tracers_input="\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\""
+
 #
 # If CCPP is being used, then the list of atmospheric tracers to include
 # in the output file depends on the physics suite.  Hopefully, this me-
@@ -271,6 +274,16 @@ case "$EXTRN_MDL_NAME_ICS" in
   else
     tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
   fi
+
+ elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
+
+  external_model="GFS"
+
+  fn_grib2="${EXTRN_MDL_FNS[0]}"
+  input_type="grib2"
+
+ fi
+
   numsoil_out="4"
   replace_vgtyp=".true."
   replace_sotyp=".true."
@@ -310,7 +323,6 @@ External-model-dependent namelist variables have not yet been specified
 for this external model:
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
   ;;
-
 
 esac
 #
