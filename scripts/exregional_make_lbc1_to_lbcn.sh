@@ -272,6 +272,7 @@ case "$EXTRN_MDL_NAME_LBCS" in
     external_model="GFS"
 
     input_type="grib2"
+    fn_grib2="${EXTRN_MDL_FNS[0]}"
 
   fi
 
