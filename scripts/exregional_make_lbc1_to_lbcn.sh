@@ -341,7 +341,11 @@ for (( i=0; i<$num_fhrs; i++ )); do
     fn_atm_nemsio="${EXTRN_MDL_FNS[$i]}"
     ;;
   "FV3GFS")
-    fn_atm_nemsio="${EXTRN_MDL_FNS[$i]}"
+     if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
+       fn_atm_nemsio="${EXTRN_MDL_FNS[$i]}"
+     elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
+       fn_grib2="${EXTRN_MDL_FNS[$i]}"
+     fi
     ;;
   "RAPX")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
