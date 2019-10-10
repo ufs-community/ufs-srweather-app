@@ -136,7 +136,7 @@ case $MACHINE in
   module load impi/2018.0.4
   module load netcdf/4.6.1
   module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-  module load esmf/7.1.0r
+  module load esmflocal/8_0_48b.netcdf47
   module list
   APRUN_SFC="srun"
   ;;
