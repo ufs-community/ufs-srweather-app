@@ -1051,17 +1051,17 @@ EXTRN_MDL_NAME_LBCS must be one of the following:
 #
 #-----------------------------------------------------------------------
 #
-# Make sure FV3GFS_DATA_TYPE is set to a valid value.
+# Make sure FV3GFS_FILE_FMT is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$FV3GFS_DATA_TYPE" valid_vals_FV3GFS_DATA_TYPE || { \
-valid_vals_FV3GFS_DATA_TYPE_str=$(printf "\"%s\" " "${valid_vals_FV3GFS_DATA_TYPE[@]}");
+iselementof "${FV3GFS_FILE_FMT}" valid_vals_FV3GFS_FILE_FMT || { \
+valid_vals_FV3GFS_FILE_FMT_str=$(printf "\"%s\" " "${valid_vals_FV3GFS_FILE_FMT[@]}");
 print_err_msg_exit "${script_name}" "\
-The data type specified in FV3GFS_DATA_TYPE is not supported:
-  FV3GFS_DATA_TYPE = \"$FV3GFS_DATA_TYPE\"
-FV3GFS_DATA_TYPE must be one of the following:
-  $valid_vals_FV3GFS_DATA_TYPE_str
+The data type specified in FV3GFS_FILE_FMT is not supported:
+  FV3GFS_FILE_FMT = \"${FV3GFS_FILE_FMT}\"
+FV3GFS_FILE_FMT must be one of the following:
+  $valid_vals_FV3GFS_FILE_FMT_str
 "; }
 #
 #-----------------------------------------------------------------------
