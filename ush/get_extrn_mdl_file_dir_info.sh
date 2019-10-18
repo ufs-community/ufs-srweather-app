@@ -242,14 +242,7 @@ fi
 #-----------------------------------------------------------------------
 #
   valid_vals_anl_or_fcst=( "ANL" "anl" "FCST" "fcst" )
-  iselementof "$anl_or_fcst" valid_vals_anl_or_fcst || { \
-    valid_vals_anl_or_fcst_str=$(printf "\"%s\" " "${valid_vals_anl_or_fcst[@]}");
-    print_err_msg_exit "${func_name}" "\
-Value specified in anl_or_fcst is not supported:
-  anl_or_fcst = \"$anl_or_fcst\"
-anl_or_fcst must be set to one of the following:
-  $valid_vals_anl_or_fcst_str
-"; }
+  check_var_valid_value "anl_or_fcst" "valid_vals_anl_or_fcst"
 #
 # For convenience of checking input values, change contents of anl_or_-
 # fcst to uppercase.
@@ -305,7 +298,7 @@ anl_or_fcst must be set to one of the following:
 #
   lbc_update_fhrs=( "" )
 
-  if [ "$anl_or_fcst" = "FCST" ]; then
+  if [ "${anl_or_fcst}" = "FCST" ]; then
 
     lbc_update_fhrs=( "${LBC_UPDATE_FCST_HRS[@]}" )
 #
@@ -329,8 +322,8 @@ anl_or_fcst must be set to one of the following:
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$extrn_mdl_name" = "RAPX" ] || \
-     [ "$extrn_mdl_name" = "HRRRX" ]; then
+  if [ "${extrn_mdl_name}" = "RAPX" ] || \
+     [ "${extrn_mdl_name}" = "HRRRX" ]; then
 #
 # Get the Julian day-of-year of the starting date and time of the exter-
 # nal model run.
@@ -351,7 +344,7 @@ anl_or_fcst must be set to one of the following:
 #
 #-----------------------------------------------------------------------
 #
-  case "$anl_or_fcst" in
+  case "${anl_or_fcst}" in
 #
 #-----------------------------------------------------------------------
 #
@@ -364,7 +357,7 @@ anl_or_fcst must be set to one of the following:
     fcst_hh="00"
     fcst_mn="00"
 
-    case "$extrn_mdl_name" in
+    case "${extrn_mdl_name}" in
 
     "GSMGFS")
 #      fns=( "atm" "sfc" "nst" )
@@ -386,9 +379,9 @@ anl_or_fcst must be set to one of the following:
         suffix="anl.nemsio"
         fns=( "${fns[@]/%/$suffix}" )
 
-      elif [ "${FV3GFS_FILE_FMT}" = "grib2" ]; then #Only 0.25 degree files for now
+      elif [ "${FV3GFS_FILE_FMT}" = "grib2" ]; then
 
-        fns=( "gfs.t${hh}z.pgrb2.0p25.anl" )
+        fns=( "gfs.t${hh}z.pgrb2.0p25.anl" )  # Get only 0.25 degree files for now.
 
       fi
       ;;
@@ -406,8 +399,8 @@ anl_or_fcst must be set to one of the following:
 The external model file names have not yet been specified for this com-
 bination of external model (extrn_mdl_name) and analysis or forecast 
 (anl_or_fcst):
-  extrn_mdl_name = \"$extrn_mdl_name\"
-  anl_or_fcst = \"$anl_or_fcst\"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
+  anl_or_fcst = \"${anl_or_fcst}\"
 "
       ;;
 
@@ -424,7 +417,7 @@ bination of external model (extrn_mdl_name) and analysis or forecast
 
     fcst_mn="00"
 
-    case "$extrn_mdl_name" in
+    case "${extrn_mdl_name}" in
 
     "GSMGFS")
       fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
@@ -469,8 +462,8 @@ bination of external model (extrn_mdl_name) and analysis or forecast
 The external model file names have not yet been specified for this com-
 bination of external model (extrn_mdl_name) and analysis or forecast 
 (anl_or_fcst):
-  extrn_mdl_name = \"$extrn_mdl_name\"
-  anl_or_fcst = \"$anl_or_fcst\"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
+  anl_or_fcst = \"${anl_or_fcst}\"
 "
       ;;
 
@@ -490,13 +483,13 @@ bination of external model (extrn_mdl_name) and analysis or forecast
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$anl_or_fcst" = "ANL" ]; then
+  if [ "${anl_or_fcst}" = "ANL" ]; then
     sysbasedir="$EXTRN_MDL_FILES_SYSBASEDIR_ICS"
-  elif [ "$anl_or_fcst" = "FCST" ]; then
+  elif [ "${anl_or_fcst}" = "FCST" ]; then
     sysbasedir="$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
   fi
 
-  case "$extrn_mdl_name" in
+  case "${extrn_mdl_name}" in
 
 #
 # It is not clear which, if any, systems the (old) spectral GFS model is 
@@ -523,7 +516,7 @@ bination of external model (extrn_mdl_name) and analysis or forecast
       print_err_msg_exit "${func_name}" "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
-  extrn_mdl_name = \"$extrn_mdl_name\"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
   MACHINE = \"$MACHINE\"
 "
       ;;
@@ -552,7 +545,7 @@ has not been specified for this external model and machine combination:
       print_err_msg_exit "${func_name}" "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
-  extrn_mdl_name = \"$extrn_mdl_name\"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
   MACHINE = \"$MACHINE\"
 "
       ;;
@@ -581,7 +574,7 @@ has not been specified for this external model and machine combination:
       print_err_msg_exit "${func_name}" "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
-  extrn_mdl_name = \"$extrn_mdl_name\"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
   MACHINE = \"$MACHINE\"
 "
       ;;
@@ -610,7 +603,7 @@ has not been specified for this external model and machine combination:
       print_err_msg_exit "${func_name}" "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
-  extrn_mdl_name = \"$extrn_mdl_name\"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
   MACHINE = \"$MACHINE\"
 "
       ;;
@@ -622,7 +615,7 @@ has not been specified for this external model and machine combination:
     print_err_msg_exit "${func_name}" "\
 The system directory in which to look for external model output files 
 has not been specified for this external model:
-  extrn_mdl_name = \"$extrn_mdl_name\"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
 "
 
   esac
@@ -643,16 +636,16 @@ has not been specified for this external model:
 #
 #-----------------------------------------------------------------------
 #
-  case "$extrn_mdl_name" in
+  case "${extrn_mdl_name}" in
 
   "GSMGFS")
     arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
     arcv_fmt="tar"
     arcv_fns="gpfs_hps_nco_ops_com_gfs_prod_gfs.${cdate}."
-    if [ "$anl_or_fcst" = "ANL" ]; then
+    if [ "${anl_or_fcst}" = "ANL" ]; then
       arcv_fns="${arcv_fns}anl"
       arcvrel_dir="."
-    elif [ "$anl_or_fcst" = "FCST" ]; then
+    elif [ "${anl_or_fcst}" = "FCST" ]; then
       arcv_fns="${arcv_fns}sigma"
       arcvrel_dir="/gpfs/hps/nco/ops/com/gfs/prod/gfs.${yyyymmdd}"
     fi
@@ -671,10 +664,10 @@ has not been specified for this external model:
         arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}."
       fi
       arcv_fmt="tar"
-      if [ "$anl_or_fcst" = "ANL" ]; then
+      if [ "${anl_or_fcst}" = "ANL" ]; then
         arcv_fns="${arcv_fns}gfs_nemsioa"
         arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
-      elif [ "$anl_or_fcst" = "FCST" ]; then
+      elif [ "${anl_or_fcst}" = "FCST" ]; then
         last_fhr_in_nemsioa="39"
         first_lbc_fhr="${lbc_update_fhrs[0]}"
         last_lbc_fhr="${lbc_update_fhrs[-1]}"
@@ -755,7 +748,7 @@ has not been specified for this external model:
   *)
     print_err_msg_exit "${func_name}" "\
 Archive file information has not been specified for this external model:
-  extrn_mdl_name = \"$extrn_mdl_name\"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
 "
     ;;
 

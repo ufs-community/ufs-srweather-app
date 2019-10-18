@@ -86,6 +86,15 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
+# Source the file containing the function that checks the validity of a
+# variable's value (given a set of valid values).
+#
+#-----------------------------------------------------------------------
+#
+. ${FUNCS_DIR}/check_var_valid_value.sh
+#
+#-----------------------------------------------------------------------
+#
 # Source the file containing the function that processes a list of argu-
 # ments to a script or function, where the list is comprised of a set of
 # argument name-value pairs, e.g. arg1="value1", ...

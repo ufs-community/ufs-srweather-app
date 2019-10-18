@@ -650,15 +650,12 @@ if [ "$QUILTING" = "TRUE" ]; then
 #
 # First, make sure that WRTCMP_output_grid is set to a valid value.
 #
-  iselementof "$WRTCMP_output_grid" valid_vals_WRTCMP_output_grid || { \
-  valid_vals_WRTCMP_output_grid_str=$(printf "\"%s\" " "${valid_vals_WRTCMP_output_grid[@]}");
-  print_err_msg_exit "\
-The write-component coordinate system specified in WRTCMP_output_grid is 
-not supported:
-  WRTCMP_output_grid = \"$WRTCMP_output_grid\"
-WRTCMP_output_grid must be set to one of the following:
-  $valid_vals_WRTCMP_output_grid_str
-"; }
+  err_msg="\
+The coordinate system used by the write-component output grid specified
+in WRTCMP_output_grid is not supported:
+  WRTCMP_output_grid = \"${WRITECMP_output_grid}\""
+  check_var_valid_value \
+    "WRTCMP_output_grid" "valid_vals_WRTCMP_output_grid" "${err_msg}"
 #
 # Now set the name of the write-component template file.
 #
