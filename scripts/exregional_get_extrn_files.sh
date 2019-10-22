@@ -390,22 +390,28 @@ details:
 #
     if [ "${EXTRN_MDL_ARCVREL_DIR}" != "." ]; then
 #
-# The code below works if the first character of EXTRN_MDL_ARCVREL_DIR 
-# is a "/", which is the only case encountered thus far.  The code may
-# have to be modified to accomodate the case of the first character of
-# EXTRN_MDL_ARCVREL_DIR not being a "/".
+# The code below works if EXTRN_MDL_ARCVREL_DIR starts with a "/" or a 
+# "./", which are the only case encountered thus far.  The code may have
+# to be modified to accomodate other cases.
 #
       if [ "${EXTRN_MDL_ARCVREL_DIR:0:1}" = "/" -o \
            "${EXTRN_MDL_ARCVREL_DIR:0:2}" = "./" ]; then
-
-        mv_vrfy ${EXTRN_MDL_ARCVREL_DIR}/* .
 #
-# Get the first subdirectory in EXTRN_MDL_ARCVREL_DIR, i.e. the directo-
-# ry after the first forward slash.  This is the subdirectory that we 
-# want to remove.
+# Strip the "/" or "./" from the beginning of EXTRN_MDL_ARCVREL_DIR to
+# obtain the relative directory from which to move the extracted files
+# to the current directory.  Then move the files.
 #
-        subdir_to_remove=$( printf "%s" "${EXTRN_MDL_ARCVREL_DIR}" | \
-                            sed -r 's%^(\/|\.\/)([^/]*).*%\2%' ) 
+        rel_dir=$( printf "%s" "${EXTRN_MDL_ARCVREL_DIR}" | \
+                   sed -r 's%^(\/|\.\/)([^/]*)(.*)%\2\3%' ) 
+        mv_vrfy ${rel_dir}/* .
+#
+# Get the first subdirectory in rel_dir, i.e. the subdirectory before 
+# the first forward slash.  This is the subdirectory that we want to re-
+# move since it no longer contains any files (only subdirectories).  
+# Then remove it.
+#
+        subdir_to_remove=$( printf "%s" "${rel_dir}" | \
+                            sed -r 's%^([^/]*)(.*)%\1%' ) 
         rm_vrfy -rf ./${subdir_to_remove}
 #
 # If EXTRN_MDL_ARCVREL_DIR does not start with a "/" (and it is not 
@@ -417,10 +423,10 @@ details:
 The archive-relative directory specified by EXTRN_MDL_ARCVREL_DIR [i.e. 
 the directory \"within\" the tar file(s) listed in EXTRN_MDL_ARCV_FPS] is
 not the current directory (i.e. it is not \".\"), and it does not start 
-with a \"/\":
+with a \"/\" or a \"./\":
   EXTRN_MDL_ARCVREL_DIR = \"${EXTRN_MDL_ARCVREL_DIR}\"
   EXTRN_MDL_ARCV_FPS = ${EXTRN_MDL_ARCV_FPS_str}
-This script (\"${script_name}\) must be modified to account for this case.
+This script must be modified to account for this case.
 "
       fi
 
@@ -586,4 +592,5 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&
+{ restore_shell_opts; } > /dev/null 2>&1
+
