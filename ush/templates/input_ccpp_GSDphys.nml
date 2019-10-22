@@ -195,7 +195,7 @@
        do_skeb        = .F.
        do_sfcperts    = .F.
        lsm            = 3
-       lsoil          = 4
+       lsoil          = <lsoil>
        lsoil_lsm      = 9
        icloud_bl         = 1
        bl_mynn_tkeadvect = .true.
