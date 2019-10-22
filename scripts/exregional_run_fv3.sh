@@ -98,7 +98,7 @@ case $MACHINE in
 
   ulimit -s unlimited
   ulimit -a
-  APRUN="mpirun -l -np $PE_MEMBER01"
+  APRUN="mpirun -l -np ${PE_MEMBER01}"
   ;;
 #
 "THEIA")
@@ -194,7 +194,7 @@ case $MACHINE in
 
   ulimit -s unlimited
   ulimit -a
-  APRUN="srun -n $PE_MEMBER01"
+  APRUN="srun -n ${PE_MEMBER01}"
   ;;
 #
 esac
@@ -465,20 +465,20 @@ MODEL_CONFIG_FP="${CYCLE_DIR}/${MODEL_CONFIG_FN}"
 
 print_info_msg_verbose "\
 Setting parameters in file:
-  MODEL_CONFIG_FP = \"$MODEL_CONFIG_FP\""
+  MODEL_CONFIG_FP = \"${MODEL_CONFIG_FP}\""
 
 dot_quilting_dot="."${QUILTING,,}"."
 
-set_file_param "$MODEL_CONFIG_FP" "PE_MEMBER01" "$PE_MEMBER01"
-set_file_param "$MODEL_CONFIG_FP" "dt_atmos" "$dt_atmos"
-set_file_param "$MODEL_CONFIG_FP" "start_year" "$YYYY"
-set_file_param "$MODEL_CONFIG_FP" "start_month" "$MM"
-set_file_param "$MODEL_CONFIG_FP" "start_day" "$DD"
-set_file_param "$MODEL_CONFIG_FP" "start_hour" "$HH"
-set_file_param "$MODEL_CONFIG_FP" "nhours_fcst" "${FCST_LEN_HRS}"
-set_file_param "$MODEL_CONFIG_FP" "ncores_per_node" "$ncores_per_node"
-set_file_param "$MODEL_CONFIG_FP" "quilting" "${dot_quilting_dot}"
-set_file_param "$MODEL_CONFIG_FP" "print_esmf" "$print_esmf"
+set_file_param "${MODEL_CONFIG_FP}" "PE_MEMBER01" "${PE_MEMBER01}"
+set_file_param "${MODEL_CONFIG_FP}" "dt_atmos" "${dt_atmos}"
+set_file_param "${MODEL_CONFIG_FP}" "start_year" "$YYYY"
+set_file_param "${MODEL_CONFIG_FP}" "start_month" "$MM"
+set_file_param "${MODEL_CONFIG_FP}" "start_day" "$DD"
+set_file_param "${MODEL_CONFIG_FP}" "start_hour" "$HH"
+set_file_param "${MODEL_CONFIG_FP}" "nhours_fcst" "${FCST_LEN_HRS}"
+set_file_param "${MODEL_CONFIG_FP}" "ncores_per_node" "${ncores_per_node}"
+set_file_param "${MODEL_CONFIG_FP}" "quilting" "${dot_quilting_dot}"
+set_file_param "${MODEL_CONFIG_FP}" "print_esmf" "$print_esmf"
 #
 #-----------------------------------------------------------------------
 #
@@ -496,29 +496,29 @@ set_file_param "$MODEL_CONFIG_FP" "print_esmf" "$print_esmf"
 #
 if [ "$QUILTING" = "TRUE" ]; then
 
-  cat $WRTCMP_PARAMS_TEMPLATE_FP >> $MODEL_CONFIG_FP
+  cat ${WRTCMP_PARAMS_TEMPLATE_FP} >> ${MODEL_CONFIG_FP}
 
-  set_file_param "$MODEL_CONFIG_FP" "write_groups" "$WRTCMP_write_groups"
-  set_file_param "$MODEL_CONFIG_FP" "write_tasks_per_group" "$WRTCMP_write_tasks_per_group"
+  set_file_param "${MODEL_CONFIG_FP}" "write_groups" "$WRTCMP_write_groups"
+  set_file_param "${MODEL_CONFIG_FP}" "write_tasks_per_group" "$WRTCMP_write_tasks_per_group"
 
-  set_file_param "$MODEL_CONFIG_FP" "output_grid" "\'$WRTCMP_output_grid\'"
-  set_file_param "$MODEL_CONFIG_FP" "cen_lon" "$WRTCMP_cen_lon"
-  set_file_param "$MODEL_CONFIG_FP" "cen_lat" "$WRTCMP_cen_lat"
-  set_file_param "$MODEL_CONFIG_FP" "lon1" "$WRTCMP_lon_lwr_left"
-  set_file_param "$MODEL_CONFIG_FP" "lat1" "$WRTCMP_lat_lwr_left"
+  set_file_param "${MODEL_CONFIG_FP}" "output_grid" "\'$WRTCMP_output_grid\'"
+  set_file_param "${MODEL_CONFIG_FP}" "cen_lon" "$WRTCMP_cen_lon"
+  set_file_param "${MODEL_CONFIG_FP}" "cen_lat" "$WRTCMP_cen_lat"
+  set_file_param "${MODEL_CONFIG_FP}" "lon1" "$WRTCMP_lon_lwr_left"
+  set_file_param "${MODEL_CONFIG_FP}" "lat1" "$WRTCMP_lat_lwr_left"
 
   if [ "${WRTCMP_output_grid}" = "rotated_latlon" ]; then
-    set_file_param "$MODEL_CONFIG_FP" "lon2" "$WRTCMP_lon_upr_rght"
-    set_file_param "$MODEL_CONFIG_FP" "lat2" "$WRTCMP_lat_upr_rght"
-    set_file_param "$MODEL_CONFIG_FP" "dlon" "$WRTCMP_dlon"
-    set_file_param "$MODEL_CONFIG_FP" "dlat" "$WRTCMP_dlat"
+    set_file_param "${MODEL_CONFIG_FP}" "lon2" "$WRTCMP_lon_upr_rght"
+    set_file_param "${MODEL_CONFIG_FP}" "lat2" "$WRTCMP_lat_upr_rght"
+    set_file_param "${MODEL_CONFIG_FP}" "dlon" "$WRTCMP_dlon"
+    set_file_param "${MODEL_CONFIG_FP}" "dlat" "$WRTCMP_dlat"
   elif [ "${WRTCMP_output_grid}" = "lambert_conformal" ]; then
-    set_file_param "$MODEL_CONFIG_FP" "stdlat1" "$WRTCMP_stdlat1"
-    set_file_param "$MODEL_CONFIG_FP" "stdlat2" "$WRTCMP_stdlat2"
-    set_file_param "$MODEL_CONFIG_FP" "nx" "$WRTCMP_nx"
-    set_file_param "$MODEL_CONFIG_FP" "ny" "$WRTCMP_ny"
-    set_file_param "$MODEL_CONFIG_FP" "dx" "$WRTCMP_dx"
-    set_file_param "$MODEL_CONFIG_FP" "dy" "$WRTCMP_dy"
+    set_file_param "${MODEL_CONFIG_FP}" "stdlat1" "$WRTCMP_stdlat1"
+    set_file_param "${MODEL_CONFIG_FP}" "stdlat2" "$WRTCMP_stdlat2"
+    set_file_param "${MODEL_CONFIG_FP}" "nx" "$WRTCMP_nx"
+    set_file_param "${MODEL_CONFIG_FP}" "ny" "$WRTCMP_ny"
+    set_file_param "${MODEL_CONFIG_FP}" "dx" "$WRTCMP_dx"
+    set_file_param "${MODEL_CONFIG_FP}" "dy" "$WRTCMP_dy"
   fi
 
 fi
@@ -534,14 +534,14 @@ DIAG_TABLE_FP="${CYCLE_DIR}/${DIAG_TABLE_FN}"
 
 print_info_msg_verbose "\
 Setting parameters in file:
-  DIAG_TABLE_FP = \"$DIAG_TABLE_FP\""
+  DIAG_TABLE_FP = \"${DIAG_TABLE_FP}\""
 
-set_file_param "$DIAG_TABLE_FP" "CRES" "$CRES"
-set_file_param "$DIAG_TABLE_FP" "YYYY" "$YYYY"
-set_file_param "$DIAG_TABLE_FP" "MM" "$MM"
-set_file_param "$DIAG_TABLE_FP" "DD" "$DD"
-set_file_param "$DIAG_TABLE_FP" "HH" "$HH"
-set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YYYYMMDD"
+set_file_param "${DIAG_TABLE_FP}" "CRES" "$CRES"
+set_file_param "${DIAG_TABLE_FP}" "YYYY" "$YYYY"
+set_file_param "${DIAG_TABLE_FP}" "MM" "$MM"
+set_file_param "${DIAG_TABLE_FP}" "DD" "$DD"
+set_file_param "${DIAG_TABLE_FP}" "HH" "$HH"
+set_file_param "${DIAG_TABLE_FP}" "YYYYMMDD" "$YYYYMMDD"
 #
 #-----------------------------------------------------------------------
 #
@@ -550,9 +550,9 @@ set_file_param "$DIAG_TABLE_FP" "YYYYMMDD" "$YYYYMMDD"
 #-----------------------------------------------------------------------
 #
 if [ "${USE_CCPP}" = "TRUE" ]; then
-  FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3.exe"
+  FV3SAR_EXEC="${NEMSfv3gfs_DIR}/tests/fv3.exe"
 else
-  FV3SAR_EXEC="$NEMSfv3gfs_DIR/tests/fv3_32bit.exe"
+  FV3SAR_EXEC="${NEMSfv3gfs_DIR}/tests/fv3_32bit.exe"
 fi
 
 if [ -f $FV3SAR_EXEC ]; then
