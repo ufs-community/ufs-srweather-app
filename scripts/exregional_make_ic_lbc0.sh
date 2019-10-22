@@ -242,7 +242,7 @@ case "$EXTRN_MDL_NAME_ICS" in
 
 "FV3GFS")
 
-  if [ "$FV3GFS_DATA_TYPE" = "nemsio" ]; then
+  if [ "${FV3GFS_FILE_FMT}" = "nemsio" ]; then
 
     external_model="FV3GFS"
 
@@ -275,7 +275,7 @@ case "$EXTRN_MDL_NAME_ICS" in
       tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
     fi
 
-  elif [ "$FV3GFS_DATA_TYPE" = "grib2" ]; then
+  elif [ "${FV3GFS_FILE_FMT}" = "grib2" ]; then
 
     external_model="GFS"
 

@@ -108,14 +108,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$RUN_ENVIR" valid_vals_RUN_ENVIR || { \
-valid_vals_RUN_ENVIR_str=$(printf "\"%s\" " "${valid_vals_RUN_ENVIR[@]}");
-print_err_msg_exit "${script_name}" "\
-Value specified in RUN_ENVIR is not supported:
-  RUN_ENVIR = \"$RUN_ENVIR\"
-RUN_ENVIR must be set to one of the following:
-  $valid_vals_RUN_ENVIR_str
-"; }
+check_var_valid_value "RUN_ENVIR" "valid_vals_RUN_ENVIR"
 #
 #-----------------------------------------------------------------------
 #
@@ -123,14 +116,7 @@ RUN_ENVIR must be set to one of the following:
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$VERBOSE" valid_vals_VERBOSE || { \
-valid_vals_VERBOSE_str=$(printf "\"%s\" " "${valid_vals_VERBOSE[@]}");
-print_err_msg_exit "${script_name}" "\
-Value specified in VERBOSE is not supported:
-  VERBOSE = \"$VERBOSE\"
-VERBOSE must be set to one of the following:
-  $valid_vals_VERBOSE_str
-"; }
+check_var_valid_value "VERBOSE" "valid_vals_VERBOSE"
 #
 # Set VERBOSE to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
@@ -150,14 +136,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-iselementof "${RUN_TASK_MAKE_GRID}" valid_vals_RUN_TASK_MAKE_GRID || { \
-valid_vals_RUN_TASK_MAKE_GRID_str=$(printf "\"%s\" " "${valid_vals_RUN_TASK_MAKE_GRID[@]}");
-print_err_msg_exit "${script_name}" "\
-Value specified in RUN_TASK_MAKE_GRID is not supported:
-  RUN_TASK_MAKE_GRID = \"${RUN_TASK_MAKE_GRID}\"
-RUN_TASK_MAKE_GRID must be set to one of the following:
-  ${valid_vals_RUN_TASK_MAKE_GRID_str}
-"; }
+check_var_valid_value "RUN_TASK_MAKE_GRID" "valid_vals_RUN_TASK_MAKE_GRID"
 #
 # Set RUN_TASK_MAKE_GRID to either "TRUE" or "FALSE" so we don't have to
 # consider other valid values later on.
@@ -177,14 +156,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$RUN_TASK_MAKE_SFC_CLIMO" valid_vals_RUN_TASK_MAKE_SFC_CLIMO || { \
-valid_vals_RUN_TASK_MAKE_SFC_CLIMO_str=$(printf "\"%s\" " "${valid_vals_RUN_TASK_MAKE_SFC_CLIMO[@]}");
-print_err_msg_exit "${script_name}" "\
-Value specified in RUN_TASK_MAKE_SFC_CLIMO is not supported:
-  RUN_TASK_MAKE_SFC_CLIMO = \"$RUN_TASK_MAKE_SFC_CLIMO\"
-RUN_TASK_MAKE_SFC_CLIMO must be set to one of the following:
-  $valid_vals_RUN_TASK_MAKE_SFC_CLIMO_str
-"; }
+check_var_valid_value \
+  "RUN_TASK_MAKE_SFC_CLIMO" "valid_vals_RUN_TASK_MAKE_SFC_CLIMO"
 #
 # Set RUN_TASK_MAKE_SFC_CLIMO to either "TRUE" or "FALSE" so we don't
 # have to consider other valid values later on.
@@ -229,15 +202,7 @@ fi
 #-----------------------------------------------------------------------
 #
 MACHINE=$( printf "%s" "$MACHINE" | sed -e 's/\(.*\)/\U\1/' )
-
-iselementof "$MACHINE" valid_vals_MACHINE || { \
-valid_vals_MACHINE_str=$(printf "\"%s\" " "${valid_vals_MACHINE[@]}");
-print_err_msg_exit "${script_name}" "\
-Machine specified in MACHINE is not supported:
-  MACHINE = \"$MACHINE\"
-MACHINE must be set to one of the following:
-  $valid_vals_MACHINE_str
-"; }
+check_var_valid_value "MACHINE" "valid_vals_MACHINE"
 #
 #-----------------------------------------------------------------------
 #
@@ -347,14 +312,7 @@ TILE_RGNL="7"
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$gtype" valid_vals_gtype || { \
-valid_vals_gtype_str=$(printf "\"%s\" " "${valid_vals_gtype[@]}");
-print_err_msg_exit "${script_name}" "\
-Value specified in gtype is not supported:
-  gtype = \"$gtype\"
-gtype must be set to one of the following:
-  $valid_vals_gtype_str
-"; }
+check_var_valid_value "gtype" "valid_vals_gtype"
 #
 #-----------------------------------------------------------------------
 #
@@ -363,19 +321,13 @@ gtype must be set to one of the following:
 #-----------------------------------------------------------------------
 #
 if [ ! -z ${PREDEF_GRID_NAME} ]; then
-  iselementof "$PREDEF_GRID_NAME" valid_vals_PREDEF_GRID_NAME || { \
-  valid_vals_PREDEF_GRID_NAME_str=$(printf "\"%s\" " "${valid_vals_PREDEF_GRID_NAME[@]}");
-  print_err_msg_exit "${script_name}" "\
-The predefined regional domain specified in PREDEF_GRID_NAME is not sup-
+  err_msg="\
+The predefined regional grid specified in PREDEF_GRID_NAME is not sup-
 ported:
-  PREDEF_GRID_NAME = \"$PREDEF_GRID_NAME\"
-PREDEF_GRID_NAME must be set either to an empty string or to one of the
-following:
-  $valid_vals_PREDEF_GRID_NAME_str
-"; }
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\""
+  check_var_valid_value \
+    "PREDEF_GRID_NAME" "valid_vals_PREDEF_GRID_NAME" "${err_msg}"
 fi
-
-
 #
 #-----------------------------------------------------------------------
 #
@@ -383,14 +335,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-iselementof "${PREEXISTING_DIR_METHOD}" valid_vals_PREEXISTING_DIR_METHOD || { \
-valid_vals_PREEXISTING_DIR_METHOD_str=$(printf "\"%s\" " "${valid_vals_PREEXISTING_DIR_METHOD[@]}");
-print_err_msg_exit "${script_name}" "\
-Value specified in PREEXISTING_DIR_METHOD is not supported:
-  PREEXISTING_DIR_METHOD = \"${PREEXISTING_DIR_METHOD}\"
-PREEXISTING_DIR_METHOD must be set to one of the following:
-  $valid_vals_PREEXISTING_DIR_METHOD_str
-"; }
+check_var_valid_value \
+  "PREEXISTING_DIR_METHOD" "valid_vals_PREEXISTING_DIR_METHOD"
 #
 #-----------------------------------------------------------------------
 #
@@ -398,14 +344,7 @@ PREEXISTING_DIR_METHOD must be set to one of the following:
 #
 #-----------------------------------------------------------------------
 #
-iselementof "${USE_CCPP}" valid_vals_USE_CCPP || { \
-valid_vals_USE_CCPP_str=$(printf "\"%s\" " "${valid_vals_USE_CCPP[@]}");
-print_err_msg_exit "${script_name}" "\
-The value specified for the USE_CCPP flag is not supported:
-  USE_CCPP = \"${USE_CCPP}\"
-USE_CCPP must be set to one of the following:
-  $valid_vals_CCPP_str
-"; }
+check_var_valid_value "USE_CCPP" "valid_vals_USE_CCPP"
 #
 # Set USE_CCPP to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
@@ -426,21 +365,13 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${USE_CCPP}" = "TRUE" ]; then
-
-  if [ ! -z ${CCPP_PHYS_SUITE} ]; then
-    iselementof "${CCPP_PHYS_SUITE}" valid_vals_CCPP_PHYS_SUITE || { \
-    valid_vals_CCPP_PHYS_SUITE_str=$(printf "\"%s\" " "${valid_vals_CCPP_PHYS_SUITE[@]}");
-    print_err_msg_exit "${script_name}" "\
+if [ "${USE_CCPP}" = "TRUE" ] && [ ! -z ${CCPP_PHYS_SUITE} ]; then
+  err_msg="\
 The CCPP physics suite specified in CCPP_PHYS_SUITE is not supported:
-  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
-CCPP_PHYS_SUITE must be set to one of the following:
-  $valid_vals_CCPP_PHYS_SUITE_str
-  "; }
-  fi
-
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
+  check_var_valid_value \
+    "CCPP_PHYS_SUITE" "valid_vals_CCPP_PHYS_SUITE" "${err_msg}"
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -609,15 +540,16 @@ NEMSfv3gfs_DIR="$SORCDIR/NEMSfv3gfs"
 #
 # Make sure that the NEMSfv3gfs_DIR directory exists.
 #
-if [ ! -d "$NEMSfv3gfs_DIR" ]; then
+if [ 0 = 1 ]; then
+if [ ! -d "${NEMSfv3gfs_DIR}" ]; then
   print_err_msg_exit "${script_name}" "\
 The NEMSfv3gfs directory specified by NEMSfv3gfs_DIR that should contain
 the FV3 source code does not exist:
-  NEMSfv3gfs_DIR = \"$NEMSfv3gfs_DIR\"
+  NEMSfv3gfs_DIR = \"${NEMSfv3gfs_DIR}\"
 Please clone the NEMSfv3gfs repository in this directory, build the FV3
 executable, and then rerun the workflow."
 fi
-
+fi
 
 case $MACHINE in
 
@@ -733,19 +665,12 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-
-  iselementof "$RES" valid_vals_RES || { \
-  valid_vals_RES_str=$(printf "\"%s\" " "${valid_vals_RES[@]}");
-  print_err_msg_exit "${script_name}" "\
-Number of grid cells per tile (in each horizontal direction) specified in
-RES is not supported:
-  RES = \"$RES\"
-RES must be one of the following:
-  $valid_vals_RES_str
-"; }
-
+  err_msg="\
+The number of grid cells per tile in each horizontal direction specified
+in RES is not supported:
+  RES = \"${RES}\""
+  check_var_valid_value "RES" "valid_vals_RES" "${err_msg}"
   CRES="C${RES}"
-
 fi
 #
 #-----------------------------------------------------------------------
@@ -1023,15 +948,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$EXTRN_MDL_NAME_ICS" valid_vals_EXTRN_MDL_NAME_ICS || { \
-valid_vals_EXTRN_MDL_NAME_ICS_str=$(printf "\"%s\" " "${valid_vals_EXTRN_MDL_NAME_ICS[@]}");
-print_err_msg_exit "${script_name}" "\
+err_msg="\
 The external model specified in EXTRN_MDL_NAME_ICS that provides initial
 conditions (ICs) and surface fields to the FV3SAR is not supported:
-  EXTRN_MDL_NAME_ICS = \"$EXTRN_MDL_NAME_ICS\"
-EXTRN_MDL_NAME_ICS must be one of the following:
-  $valid_vals_EXTRN_MDL_NAME_ICS_str
-"; }
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
+check_var_valid_value \
+  "EXTRN_MDL_NAME_ICS" "valid_vals_EXTRN_MDL_NAME_ICS" "${err_msg}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1039,30 +961,28 @@ EXTRN_MDL_NAME_ICS must be one of the following:
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$EXTRN_MDL_NAME_LBCS" valid_vals_EXTRN_MDL_NAME_LBCS || { \
-valid_vals_EXTRN_MDL_NAME_LBCS_str=$(printf "\"%s\" " "${valid_vals_EXTRN_MDL_NAME_LBCS[@]}");
-print_err_msg_exit "${script_name}" "\
-The external model specified in EXTRN_MDL_NAME_LBCS that provides later-
-al boundary conditions (LBCs) to the FV3SAR is not supported:
-  EXTRN_MDL_NAME_LBCS = \"$EXTRN_MDL_NAME_LBCS\"
-EXTRN_MDL_NAME_LBCS must be one of the following:
-  $valid_vals_EXTRN_MDL_NAME_LBCS_str
-"; }
+err_msg="\
+The external model specified in EXTRN_MDL_NAME_ICS that provides lateral
+boundary conditions (LBCs) to the FV3SAR is not supported:
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
+check_var_valid_value \
+  "EXTRN_MDL_NAME_LBCS" "valid_vals_EXTRN_MDL_NAME_LBCS" "${err_msg}"
 #
 #-----------------------------------------------------------------------
 #
-# Make sure FV3GFS_DATA_TYPE is set to a valid value.
+# Make sure FV3GFS_FILE_FMT is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$FV3GFS_DATA_TYPE" valid_vals_FV3GFS_DATA_TYPE || { \
-valid_vals_FV3GFS_DATA_TYPE_str=$(printf "\"%s\" " "${valid_vals_FV3GFS_DATA_TYPE[@]}");
-print_err_msg_exit "${script_name}" "\
-The data type specified in FV3GFS_DATA_TYPE is not supported:
-  FV3GFS_DATA_TYPE = \"$FV3GFS_DATA_TYPE\"
-FV3GFS_DATA_TYPE must be one of the following:
-  $valid_vals_FV3GFS_DATA_TYPE_str
-"; }
+if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
+   [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
+  err_msg="\
+The file format for FV3GFS external model files specified in FV3GFS_-
+FILE_FMT is not supported:
+  FV3GFS_FILE_FMT = \"${FV3GFS_FILE_FMT}\""
+  check_var_valid_value \
+    "FV3GFS_FILE_FMT" "valid_vals_FV3GFS_FILE_FMT" "${err_msg}"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1165,14 +1085,12 @@ nh4_T7=$(( $nh3_T7 + 1 ))
 #
 #-----------------------------------------------------------------------
 #
-iselementof "${GRID_GEN_METHOD}" valid_vals_GRID_GEN_METHOD || { \
-valid_vals_GRID_GEN_METHOD_str=$(printf "\"%s\" " "${valid_vals_GRID_GEN_METHOD[@]}");
-print_err_msg_exit "${script_name}" "\
-The grid generation method specified in GRID_GEN_METHOD is not supported:
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-GRID_GEN_METHOD must be one of the following:
-  $valid_vals_GRID_GEN_METHOD_str
-"; }
+err_msg="\
+The horizontal grid generation method specified in GRID_GEN_METHOD is 
+not supported:
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
+check_var_valid_value \
+  "GRID_GEN_METHOD" "valid_vals_GRID_GEN_METHOD" "${err_msg}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1204,14 +1122,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-iselementof "$QUILTING" valid_vals_QUILTING || { \
-valid_vals_QUILTING_str=$(printf "\"%s\" " "${valid_vals_QUILTING[@]}");
-print_err_msg_exit "${script_name}" "\
-Value specified in QUILTING is not supported:
-  QUILTING = \"$QUILTING\"
-QUILTING must be set to one of the following:
-  $valid_vals_QUILTING_str
-"; }
+check_var_valid_value "QUILTING" "valid_vals_QUILTING"
 #
 # Set QUILTING to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.

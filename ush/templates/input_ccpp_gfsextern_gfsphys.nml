@@ -1,42 +1,42 @@
- &amip_interp_nml
-     interp_oi_sst = .true.
-     use_ncep_sst = .true.
-     use_ncep_ice = .false.
-     no_anom_sst = .false.
-     data_set = 'reynolds_oi',
-     date_out_of_range = 'climo',
+&amip_interp_nml
+       interp_oi_sst = .true.
+       use_ncep_sst = .true.
+       use_ncep_ice = .false.
+       no_anom_sst = .false.
+       data_set = 'reynolds_oi',
+       date_out_of_range = 'climo',
 /
 
- &atmos_model_nml
-     blocksize = <blocksize>
-     chksum_debug = .false.
-     dycore_only = .false.
-     fdiag = 1
-     ccpp_suite = 'FV3_GFS_2017_gfdlmp'
-     avg_max_length = 3600.
+&atmos_model_nml
+       blocksize = <blocksize>
+       chksum_debug = .false.
+       dycore_only = .false.
+       fdiag = 1
+       ccpp_suite = 'FV3_GFS_2017_gfdlmp'
+       avg_max_length = 3600.
 /
 
 &diag_manager_nml
-      prepend_date = .false.
+       prepend_date = .false.
 /
 
- &fms_io_nml
+&fms_io_nml
        checksum_required   = .false.
        max_files_r = 100,
        max_files_w = 100,
 /
 
- &fms_nml
+&fms_nml
        clock_grain = 'ROUTINE',
        domains_stack_size = 1800200,
        print_memory_usage = .false.
 /
 
- &fv_grid_nml
+&fv_grid_nml
        grid_file = 'INPUT/grid_spec.nc'
 /
 
- &fv_core_nml
+&fv_core_nml
        layout   = <layout_x>,<layout_y>
        io_layout = 1,1
        npx      = <npx>
@@ -119,17 +119,17 @@
 /
 
 &surf_map_nml
-    zero_ocean = .F.
-    cd4 = 0.12
-    cd2 = -1
-    n_del2_strong = 0
-    n_del2_weak = 2
-    n_del4 = 1
-    max_slope = 0.4
-    peak_fac = 1.
+       zero_ocean = .F.
+       cd4 = 0.12
+       cd2 = -1
+       n_del2_strong = 0
+       n_del2_weak = 2
+       n_del4 = 1
+       max_slope = 0.4
+       peak_fac = 1.
 /
 
- &external_ic_nml 
+&external_ic_nml 
        filtered_terrain = .true.
        levp = 65
        gfs_dwinds = .true.
@@ -137,7 +137,7 @@
        nt_checker = 0
 /
 
- &gfs_physics_nml
+&gfs_physics_nml
        fhzero         = 1.
        ldiag3d        = .false.
        lradar         = .true.
@@ -188,7 +188,7 @@
        effr_in = .true.
 /
 
- &gfdl_cloud_microphysics_nml
+&gfdl_cloud_microphysics_nml
        sedi_transport = .false.
        do_sedi_heat = .false.
        rad_snow = .true.
@@ -236,7 +236,7 @@
        icloud_f = 1
        mp_time = 90.
 /
-  &interpolator_nml
+&interpolator_nml
        interp_method = 'conserve_great_circle'
 /
 &namsfc
