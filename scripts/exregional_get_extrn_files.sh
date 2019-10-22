@@ -8,7 +8,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $SCRIPT_VAR_DEFNS_FP
+. ${SCRIPT_VAR_DEFNS_FP}
 . $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
@@ -45,9 +45,15 @@ tial or boundary condition files for the FV3 will be generated.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "EXTRN_MDL_FNS" "EXTRN_MDL_SYSDIR" "EXTRN_MDL_FILES_DIR" \
-             "EXTRN_MDL_ARCV_FNS" "EXTRN_MDL_ARCV_FPS" "EXTRN_MDL_ARCV_FMT" \
-             "EXTRN_MDL_ARCVREL_DIR" )
+valid_args=( \
+"EXTRN_MDL_FNS" \
+"EXTRN_MDL_SYSDIR" \
+"EXTRN_MDL_FILES_DIR" \
+"EXTRN_MDL_ARCV_FNS" \
+"EXTRN_MDL_ARCV_FPS" \
+"EXTRN_MDL_ARCV_FMT" \
+"EXTRN_MDL_ARCVREL_DIR" \
+)
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -58,7 +64,7 @@ if [ "$VERBOSE" = "TRUE" ]; then
 The arguments to script/function \"${script_name}\" have been set as 
 follows:
 "
-  for (( i=0; i<$num_valid_args; i++ )); do
+  for (( i=0; i<${num_valid_args}; i++ )); do
     line=$( declare -p "${valid_args[$i]}" )
     printf "  $line\n"
   done
@@ -142,7 +148,7 @@ fi
 #
 EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
 
-if [ "$DATA_SRC" = "disk" ]; then
+if [ "${DATA_SRC}" = "disk" ]; then
 
   if [ "${RUN_ENVIR}" = "nco" ]; then
 
@@ -150,9 +156,9 @@ if [ "$DATA_SRC" = "disk" ]; then
 Creating links in local directory (EXTRN_MDL_FILES_DIR) to external mo-
 del files (EXTRN_MDL_FNS) in the system directory on disk (EXTRN_MDL_-
 SYSDIR):
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  EXTRN_MDL_SYSDIR = \"$EXTRN_MDL_SYSDIR\"
-  EXTRN_MDL_FNS = $EXTRN_MDL_FNS_str
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+  EXTRN_MDL_SYSDIR = \"${EXTRN_MDL_SYSDIR}\"
+  EXTRN_MDL_FNS = ${EXTRN_MDL_FNS_str}
 "
     ln_vrfy -sf -t ${EXTRN_MDL_FILES_DIR} ${EXTRN_MDL_FPS[@]}
 
@@ -161,11 +167,11 @@ SYSDIR):
     print_info_msg "\
 Copying external model files (EXTRN_MDL_FNS) from the system directory 
 on disk (EXTRN_MDL_SYSDIR) to local directory (EXTRN_MDL_FILES_DIR):
-  EXTRN_MDL_SYSDIR = \"$EXTRN_MDL_SYSDIR\"
-  EXTRN_MDL_FNS = $EXTRN_MDL_FNS_str
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
+  EXTRN_MDL_SYSDIR = \"${EXTRN_MDL_SYSDIR}\"
+  EXTRN_MDL_FNS = ${EXTRN_MDL_FNS_str}
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
 "
-    cp_vrfy ${EXTRN_MDL_FPS[@]} $EXTRN_MDL_FILES_DIR
+    cp_vrfy ${EXTRN_MDL_FPS[@]} ${EXTRN_MDL_FILES_DIR}
 
   fi
 #
@@ -175,7 +181,7 @@ on disk (EXTRN_MDL_SYSDIR) to local directory (EXTRN_MDL_FILES_DIR):
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$ICS_OR_LBCS" = "ICS" ]; then
+  if [ "${ICS_OR_LBCS}" = "ICS" ]; then
 
     print_info_msg "\n\
 ========================================================================
@@ -185,7 +191,7 @@ forecast!!!
 Exiting script:  \"${script_name}\"
 ========================================================================"
 
-  elif [ "$ICS_OR_LBCS" = "LBCS" ]; then
+  elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
 
     print_info_msg "\n\
 ========================================================================
@@ -204,7 +210,7 @@ Exiting script:  \"${script_name}\"
 #
 #-----------------------------------------------------------------------
 #
-elif [ "$DATA_SRC" = "HPSS" ]; then
+elif [ "${DATA_SRC}" = "HPSS" ]; then
 #
 #-----------------------------------------------------------------------
 #
@@ -213,7 +219,7 @@ elif [ "$DATA_SRC" = "HPSS" ]; then
 #
 #-----------------------------------------------------------------------
 #
-  prefix=${EXTRN_MDL_ARCVREL_DIR:+$EXTRN_MDL_ARCVREL_DIR/}
+  prefix=${EXTRN_MDL_ARCVREL_DIR:+${EXTRN_MDL_ARCVREL_DIR}/}
   EXTRN_MDL_FPS=( "${EXTRN_MDL_FNS[@]/#/$prefix}" )
 
   EXTRN_MDL_FPS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FPS[@]}" )")"
@@ -224,9 +230,9 @@ Fetching model output files from HPSS.  The model output files (EXTRN_-
 MDL_FPS), the archive files on HPSS in which these output files are 
 stored (EXTRN_MDL_ARCV_FPS), and the local directory into which they 
 will be copied (EXTRN_MDL_FILES_DIR) are:
-  EXTRN_MDL_FPS = $EXTRN_MDL_FPS_str
-  EXTRN_MDL_ARCV_FPS = $EXTRN_MDL_ARCV_FPS_str
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\""
+  EXTRN_MDL_FPS = ${EXTRN_MDL_FPS_str}
+  EXTRN_MDL_ARCV_FPS = ${EXTRN_MDL_ARCV_FPS_str}
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\""
 #
 #-----------------------------------------------------------------------
 #
@@ -253,7 +259,7 @@ will be copied (EXTRN_MDL_FILES_DIR) are:
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$EXTRN_MDL_ARCV_FMT" = "tar" ]; then
+  if [ "${EXTRN_MDL_ARCV_FMT}" = "tar" ]; then
 #
 #-----------------------------------------------------------------------
 #
@@ -264,7 +270,7 @@ will be copied (EXTRN_MDL_FILES_DIR) are:
 #
     num_files_to_extract="${#EXTRN_MDL_FPS[@]}"
 
-    for (( narcv=0; narcv<$num_arcv_files; narcv++ )); do
+    for (( narcv=0; narcv<${num_arcv_files}; narcv++ )); do
 
       narcv_formatted=$( printf "%02d" $narcv )
       ARCV_FP="${EXTRN_MDL_ARCV_FPS[$narcv]}"
@@ -290,13 +296,13 @@ will be copied (EXTRN_MDL_FILES_DIR) are:
       print_err_msg_exit "${script_name}" "\
 htar file list operation (\"htar -tvf ...\") failed.  Check the log file 
 HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HTAR_LOG_FN = \"$HTAR_LOG_FN\"
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+  HTAR_LOG_FN = \"${HTAR_LOG_FN}\"
 "
 
       i=0
       files_in_crnt_arcv=()
-      for (( nfile=0; nfile<$num_files_to_extract; nfile++ )); do
+      for (( nfile=0; nfile<${num_files_to_extract}; nfile++ )); do
         extrn_mdl_fp="${EXTRN_MDL_FPS[$nfile]}"
 #        grep -n ${extrn_mdl_fp} ${HTAR_LOG_FN} 2>&1 && { \
         grep -n ${extrn_mdl_fp} ${HTAR_LOG_FN} > /dev/null 2>&1 && { \
@@ -314,8 +320,8 @@ HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
         print_err_msg_exit "${script_name}" "\
 The current archive file (ARCV_FP) does not contain any of the external 
 model files listed in EXTRN_MDL_FPS:
-  ARCV_FP = \"$ARCV_FP\"
-  EXTRN_MDL_FPS = $EXTRN_MDL_FPS_str
+  ARCV_FP = \"${ARCV_FP}\"
+  EXTRN_MDL_FPS = ${EXTRN_MDL_FPS_str}
 The archive file should contain at least one external model file; other-
 wise, it would not be needed.
 "
@@ -331,8 +337,8 @@ wise, it would not be needed.
       print_err_msg_exit "${script_name}" "\
 htar file extract operation (\"htar -xvf ...\") failed.  Check the log 
 file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HTAR_LOG_FN = \"$HTAR_LOG_FN\"
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+  HTAR_LOG_FN = \"${HTAR_LOG_FN}\"
 "
 #
 # Note that the htar file extract operation above may return with a 0 
@@ -359,12 +365,12 @@ file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
         print_err_msg_exit "${script_name}" "\
 External model output file FP not extracted from tar archive file ARCV_-
 FP:
-  ARCV_FP = \"$ARCV_FP\"
+  ARCV_FP = \"${ARCV_FP}\"
   FP = \"$FP\"
 Check the log file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for 
 details:
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HTAR_LOG_FN = \"$HTAR_LOG_FN\"
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+  HTAR_LOG_FN = \"${HTAR_LOG_FN}\"
 "
 
       done
@@ -382,7 +388,7 @@ details:
 #
 #-----------------------------------------------------------------------
 #
-    if [ "$EXTRN_MDL_ARCVREL_DIR" != "." ]; then
+    if [ "${EXTRN_MDL_ARCVREL_DIR}" != "." ]; then
 #
 # The code below works if the first character of EXTRN_MDL_ARCVREL_DIR 
 # is a "/", which is the only case encountered thus far.  The code may
@@ -392,7 +398,7 @@ details:
       if [ "${EXTRN_MDL_ARCVREL_DIR:0:1}" = "/" -o \
            "${EXTRN_MDL_ARCVREL_DIR:0:2}" = "./" ]; then
 
-        mv_vrfy $EXTRN_MDL_ARCVREL_DIR/* .
+        mv_vrfy ${EXTRN_MDL_ARCVREL_DIR}/* .
 #
 # Get the first subdirectory in EXTRN_MDL_ARCVREL_DIR, i.e. the directo-
 # ry after the first forward slash.  This is the subdirectory that we 
@@ -400,7 +406,7 @@ details:
 #
         subdir_to_remove=$( printf "%s" "${EXTRN_MDL_ARCVREL_DIR}" | \
                             sed -r 's%^(\/|\.\/)([^/]*).*%\2%' ) 
-        rm_vrfy -rf ./$subdir_to_remove
+        rm_vrfy -rf ./${subdir_to_remove}
 #
 # If EXTRN_MDL_ARCVREL_DIR does not start with a "/" (and it is not 
 # equal to "."), then print out an error message and exit.
@@ -412,8 +418,8 @@ The archive-relative directory specified by EXTRN_MDL_ARCVREL_DIR [i.e.
 the directory \"within\" the tar file(s) listed in EXTRN_MDL_ARCV_FPS] is
 not the current directory (i.e. it is not \".\"), and it does not start 
 with a \"/\":
-  EXTRN_MDL_ARCVREL_DIR = \"$EXTRN_MDL_ARCVREL_DIR\"
-  EXTRN_MDL_ARCV_FPS = $EXTRN_MDL_ARCV_FPS_str
+  EXTRN_MDL_ARCVREL_DIR = \"${EXTRN_MDL_ARCVREL_DIR}\"
+  EXTRN_MDL_ARCV_FPS = ${EXTRN_MDL_ARCV_FPS_str}
 This script (\"${script_name}\) must be modified to account for this case.
 "
       fi
@@ -427,7 +433,7 @@ This script (\"${script_name}\) must be modified to account for this case.
 #
 #-----------------------------------------------------------------------
 #
-  elif [ "$EXTRN_MDL_ARCV_FMT" = "zip" ]; then
+  elif [ "${EXTRN_MDL_ARCV_FMT}" = "zip" ]; then
 #
 #-----------------------------------------------------------------------
 #
@@ -440,13 +446,13 @@ This script (\"${script_name}\) must be modified to account for this case.
 #
 #-----------------------------------------------------------------------
 #
-    if [ "$num_arcv_files" -gt 1 ]; then
+    if [ "${num_arcv_files}" -gt 1 ]; then
       print_err_msg_exit "${script_name}" "\
 Currently, this script is coded to handle only one archive file if the 
 archive file format is specified to be \"zip\", but the number of archive 
 files (num_arcv_files) passed to this script is greater than 1:
-  EXTRN_MDL_ARCV_FMT = \"$EXTRN_MDL_ARCV_FMT\"
-  num_arcv_files = $num_arcv_files
+  EXTRN_MDL_ARCV_FMT = \"${EXTRN_MDL_ARCV_FMT}\"
+  num_arcv_files = ${num_arcv_files}
 Please modify the script to handle more than one \"zip\" archive file.
 Note that code already exists in this script that can handle multiple
 archive files if the archive file format is specified to be \"tar\", so 
@@ -467,8 +473,8 @@ that can be used as a guide for the \"zip\" case."
     print_err_msg_exit "${script_name}" "\
 hsi file get operation (\"hsi get ...\") failed.  Check the log file 
 HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  HSI_LOG_FN = \"$HSI_LOG_FN\"
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+  HSI_LOG_FN = \"${HSI_LOG_FN}\"
 "
 #
 #-----------------------------------------------------------------------
@@ -484,9 +490,9 @@ HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 unzip operation to list the contents of the zip archive file ARCV_FN in
 the directory EXTRN_MDL_FILES_DIR failed.  Check the log file UNZIP_-
 LOG_FN in that directory for details:
-  ARCV_FN = \"$ARCV_FN\"
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
+  ARCV_FN = \"${ARCV_FN}\"
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+  UNZIP_LOG_FN = \"${UNZIP_LOG_FN}\"
 "
 #
 #-----------------------------------------------------------------------
@@ -506,10 +512,10 @@ LOG_FN in that directory for details:
 External model output file FP does not exist in the zip archive file 
 ARCV_FN in the directory EXTRN_MDL_FILES_DIR.  Check the log file UN-
 ZIP_LOG_FN in that directory for the contents of the zip archive:
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  ARCV_FN = \"$ARCV_FN\"
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+  ARCV_FN = \"${ARCV_FN}\"
   FP = \"$FP\"
-  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
+  UNZIP_LOG_FN = \"${UNZIP_LOG_FN}\"
 "
     done
 #
@@ -527,8 +533,8 @@ ZIP_LOG_FN in that directory for the contents of the zip archive:
     print_err_msg_exit "${script_name}" "\
 unzip file extract operation (\"unzip -o ...\") failed.  Check the log 
 file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\"
-  UNZIP_LOG_FN = \"$UNZIP_LOG_FN\"
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
+  UNZIP_LOG_FN = \"${UNZIP_LOG_FN}\"
 "
 #
 # NOTE:
@@ -550,7 +556,7 @@ file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$ICS_OR_LBCS" = "ICS" ]; then
+  if [ "${ICS_OR_LBCS}" = "ICS" ]; then
 
     print_info_msg "\n\
 ========================================================================
@@ -559,7 +565,7 @@ fields for the FV3SAR successfully fetched from HPSS!!!
 Exiting script:  \"${script_name}\"
 ========================================================================"
 
-  elif [ "$ICS_OR_LBCS" = "LBCS" ]; then
+  elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
 
     print_info_msg "\n\
 ========================================================================
@@ -580,4 +586,4 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+{ restore_shell_opts; } > /dev/null 2>&

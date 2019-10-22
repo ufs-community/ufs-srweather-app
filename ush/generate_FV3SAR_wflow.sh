@@ -94,7 +94,7 @@ else
   CYCLE_DIR="$EXPTDIR/${CDATE_generic}"
 fi
 
-set_file_param "${WFLOW_XML_FP}" "SCRIPT_VAR_DEFNS_FP" "$SCRIPT_VAR_DEFNS_FP"
+set_file_param "${WFLOW_XML_FP}" "SCRIPT_VAR_DEFNS_FP" "${SCRIPT_VAR_DEFNS_FP}"
 set_file_param "${WFLOW_XML_FP}" "CYCLE_DIR" "${CYCLE_DIR}"
 set_file_param "${WFLOW_XML_FP}" "ACCOUNT" "$ACCOUNT"
 set_file_param "${WFLOW_XML_FP}" "SCHED" "$SCHED"

@@ -1464,7 +1464,7 @@ str_to_insert=${str_to_insert//$'\n'/\\n}
 # containing the name of the interpreter.
 #
 REGEXP="(^#!.*)"
-sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" $SCRIPT_VAR_DEFNS_FP
+sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" ${SCRIPT_VAR_DEFNS_FP}
 
 
 
@@ -1612,7 +1612,7 @@ done <<< "${line_list}"
 #
 #-----------------------------------------------------------------------
 #
-{ cat << EOM >> $SCRIPT_VAR_DEFNS_FP
+{ cat << EOM >> ${SCRIPT_VAR_DEFNS_FP}
 
 #
 #-----------------------------------------------------------------------
@@ -1693,7 +1693,7 @@ definitions file returned with a nonzero status."
 #
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
-  { cat << EOM >> $SCRIPT_VAR_DEFNS_FP
+  { cat << EOM >> ${SCRIPT_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -1722,7 +1722,7 @@ file returned with a nonzero status."
 
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-  { cat << EOM >> $SCRIPT_VAR_DEFNS_FP
+  { cat << EOM >> ${SCRIPT_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -1759,7 +1759,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-{ cat << EOM >> $SCRIPT_VAR_DEFNS_FP 
+{ cat << EOM >> ${SCRIPT_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #

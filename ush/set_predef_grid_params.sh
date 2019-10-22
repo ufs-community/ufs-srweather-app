@@ -653,7 +653,7 @@ if [ "$QUILTING" = "TRUE" ]; then
   err_msg="\
 The coordinate system used by the write-component output grid specified
 in WRTCMP_output_grid is not supported:
-  WRTCMP_output_grid = \"${WRITECMP_output_grid}\""
+  WRTCMP_output_grid = \"${WRTCMP_output_grid}\""
   check_var_valid_value \
     "WRTCMP_output_grid" "valid_vals_WRTCMP_output_grid" "${err_msg}"
 #

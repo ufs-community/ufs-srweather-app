@@ -41,10 +41,11 @@ USHDIR="${script_dir}"
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "verbose" \
-             "script_var_defns_fp" \
-             "file_group" \
-           )
+valid_args=( \
+"verbose" \
+"script_var_defns_fp" \
+"file_group" \
+)
 process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
@@ -69,7 +70,7 @@ if [ "$verbose" = "TRUE" ]; then
 The arguments to script/function \"${script_name}\" have been set as 
 follows:
 " 1>&2
-  for (( i=0; i<$num_valid_args; i++ )); do
+  for (( i=0; i<${num_valid_args}; i++ )); do
     line=$( declare -p "${valid_args[$i]}" )
     printf "  $line\n" 1>&2
   done

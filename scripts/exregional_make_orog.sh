@@ -8,7 +8,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $SCRIPT_VAR_DEFNS_FP
+. ${SCRIPT_VAR_DEFNS_FP}
 . $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
@@ -63,7 +63,7 @@ if [ "$VERBOSE" = "TRUE" ]; then
 The arguments to script/function \"${script_name}\" have been set as 
 follows:
 "
-  for (( i=0; i<$num_valid_args; i++ )); do
+  for (( i=0; i<${num_valid_args}; i++ )); do
     line=$( declare -p "${valid_args[$i]}" )
     printf "  $line\n"
   done

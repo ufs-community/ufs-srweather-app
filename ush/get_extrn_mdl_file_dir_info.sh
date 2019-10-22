@@ -69,7 +69,7 @@ function get_extrn_mdl_file_dir_info () {
 The arguments to script/function \"${func_name}\" have been set as 
 follows:
 "
-    for (( i=0; i<$num_valid_args; i++ )); do
+    for (( i=0; i<${num_valid_args}; i++ )); do
       line=$( declare -p "${valid_args[$i]}" )
       printf "  $line\n"
     done

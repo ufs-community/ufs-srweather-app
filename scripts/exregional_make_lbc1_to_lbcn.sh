@@ -8,7 +8,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $SCRIPT_VAR_DEFNS_FP
+. ${SCRIPT_VAR_DEFNS_FP}
 . $USHDIR/source_funcs.sh
 #
 #-----------------------------------------------------------------------
@@ -45,8 +45,15 @@ hour zero).
 #
 #-----------------------------------------------------------------------
 #
-valid_args=("EXTRN_MDL_FNS" "EXTRN_MDL_FILES_DIR" "EXTRN_MDL_CDATE" "WGRIB2_DIR" \
-            "APRUN" "LBCS_DIR" "EXTRN_MDL_LBC_UPDATE_FHRS")
+valid_args=( \
+"EXTRN_MDL_FNS" \
+"EXTRN_MDL_FILES_DIR" \
+"EXTRN_MDL_CDATE" \
+"WGRIB2_DIR" \
+"APRUN" \
+"LBCS_DIR" \
+"EXTRN_MDL_LBC_UPDATE_FHRS" \
+)
 process_args valid_args "$@"
 
 # If VERBOSE is set to TRUE, print out what each valid argument has been
@@ -57,7 +64,7 @@ if [ "$VERBOSE" = "TRUE" ]; then
 The arguments to script/function \"${script_name}\" have been set as 
 follows:
 "
-  for (( i=0; i<$num_valid_args; i++ )); do
+  for (( i=0; i<${num_valid_args}; i++ )); do
     line=$( declare -p "${valid_args[$i]}" )
     printf "  $line\n"
   done
