@@ -99,17 +99,14 @@ PTMP="/path/to/temporary/directory/ptmp"
 # FV3_NML_FN:
 # Name of file containing the FV3SAR namelist settings.
 #
-# FV3_NML_CCPP_GFSEXTERN_GFSPHYS_FN:
-# Name of file containing the FV3SAR namelist settings for a CCPP-
-# enabled forecast that uses GFS external model data and GFS physics.
+# FV3_NML_CCPP_GFSPHYS_GFSEXTRN_FN:
+# Name of file containing the FV3SAR namelist settings for a CCPP-ena-
+# bled forecast that uses GFS external model data for the initial condi-
+# tions (ICs) and GFS physics.
 #
-# FV3_NML_CCPP_GFSEXTERN_GSDPHYS_FN:
-# Name of file containing the FV3SAR namelist settings for a CCPP-
-# enabled forecast that uses GFS external model data and GSD physics.
-#
-# FV3_NML_CCPP_RAPHRRREXTERN_GSDPHYS_FN:
-# Name of file containing the FV3SAR namelist settings for a CCPP-
-# enabled forecast that uses RAP or HRRR external model data and GSD physics.
+# FV3_NML_CCPP_GSDPHYS_FN:
+# Name of file containing the FV3SAR namelist settings for a CCPP-ena-
+# bled forecast that uses GSD physics.
 #
 # DIAG_TABLE_FN:
 # Name of file that specifies the fields that the FV3SAR will output.
@@ -170,9 +167,8 @@ PTMP="/path/to/temporary/directory/ptmp"
 #
 RGNL_GRID_NML_FN="regional_grid.nml"
 FV3_NML_FN="input.nml"
-FV3_NML_CCPP_GFSEXTERN_GFSPHYS_FN="input_ccpp_gfsextern_gfsphys.nml"
-FV3_NML_CCPP_GFSEXTERN_GSDPHYS_FN="input_ccpp_gfsextern_gsdphys.nml"
-FV3_NML_CCPP_RAPHRRREXTERN_GSDPHYS_FN="input_ccpp_raphrrrextern_gsdphys.nml"
+FV3_NML_CCPP_GFSPHYS_GFSEXTRN_FN="input_ccpp_GFSphys_GFSextrn.nml"
+FV3_NML_CCPP_GSDPHYS_FN="input_ccpp_GSDphys.nml"
 DIAG_TABLE_FN="diag_table"
 DIAG_TABLE_CCPP_GSD_FN="diag_table_ccpp_gsd"
 FIELD_TABLE_FN="field_table"

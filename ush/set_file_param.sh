@@ -86,32 +86,36 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
 
   case $file in
 #
-  "$WFLOW_XML_FN")
+  "${WFLOW_XML_FN}")
     regex_search="(^\s*<!ENTITY\s+$param\s*\")(.*)(\">.*)"
     regex_replace="\1$value\3"
     ;;
 #
-  "$RGNL_GRID_NML_FN")
+  "${RGNL_GRID_NML_FN}")
     regex_search="^(\s*$param\s*=)(.*)"
     regex_replace="\1 $value"
     ;;
 #
-  "$FV3_NML_FN" | "$FV3_NML_CCPP_GFSEXTERN_GFSPHYS_FN" | "$FV3_NML_CCPP_GFSEXTERN_GSDPHYS_FN" | "$FV3_NML_CCPP_RAPHRRREXTERN_GSDPHYS_FN")
+  "${FV3_NML_FN}" | \
+  "${FV3_NML_CCPP_GFSPHYS_GFSEXTRN_FN}" | \
+  "${FV3_NML_CCPP_GSDPHYS_FN}")
     regex_search="^(\s*$param\s*=)(.*)"
     regex_replace="\1 $value"
     ;;
 #
-  "$DIAG_TABLE_FN" | "$DIAG_TABLE_CCPP_GSD_FN" | "$DIAG_TABLE_CCPP_GSD_FN")
+  "${DIAG_TABLE_FN}" | \
+  "${DIAG_TABLE_CCPP_GSD_FN}" | \
+  "${DIAG_TABLE_CCPP_GSD_FN}")
     regex_search="(.*)(<$param>)(.*)"
     regex_replace="\1$value\3"
     ;;
 #
-  "$MODEL_CONFIG_FN")
+  "${MODEL_CONFIG_FN}")
     regex_search="^(\s*$param:\s*)(.*)"
     regex_replace="\1$value"
     ;;
 #
-  "$SCRIPT_VAR_DEFNS_FN")
+  "${SCRIPT_VAR_DEFNS_FN}")
     regex_search="(^\s*$param=)(\".*\"|[^ \"]*)(\s*[#].*)?$"  # Whole line with regex_replace=\1.
 #    regex_search="(^\s*$param=)(\".*\"|[^ \"]*)(\s*[#].*)?"
     regex_search="(^\s*$param=)(\".*\")?([^ \"]*)?(\(.*\))?(\s*[#].*)?"

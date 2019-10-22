@@ -23,7 +23,7 @@ ushdir=$(pwd)
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 
 
 script_name=$( basename "${BASH_SOURCE[0]}" )
@@ -49,8 +49,8 @@ script_name=$( basename "${BASH_SOURCE[0]}" )
 #
 #-----------------------------------------------------------------------
 #
-TEMPLATE_XML_FP="$TEMPLATE_DIR/$WFLOW_XML_FN"
-WFLOW_XML_FP="$EXPTDIR/$WFLOW_XML_FN"
+TEMPLATE_XML_FP="${TEMPLATE_DIR}/${WFLOW_XML_FN}"
+WFLOW_XML_FP="$EXPTDIR/${WFLOW_XML_FN}"
 #
 #-----------------------------------------------------------------------
 #
@@ -58,7 +58,7 @@ WFLOW_XML_FP="$EXPTDIR/$WFLOW_XML_FN"
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy $TEMPLATE_XML_FP $WFLOW_XML_FP
+cp_vrfy ${TEMPLATE_XML_FP} ${WFLOW_XML_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -94,32 +94,32 @@ else
   CYCLE_DIR="$EXPTDIR/${CDATE_generic}"
 fi
 
-set_file_param "$WFLOW_XML_FP" "SCRIPT_VAR_DEFNS_FP" "$SCRIPT_VAR_DEFNS_FP"
-set_file_param "$WFLOW_XML_FP" "CYCLE_DIR" "${CYCLE_DIR}"
-set_file_param "$WFLOW_XML_FP" "ACCOUNT" "$ACCOUNT"
-set_file_param "$WFLOW_XML_FP" "SCHED" "$SCHED"
-set_file_param "$WFLOW_XML_FP" "QUEUE_DEFAULT" "$QUEUE_DEFAULT"
-set_file_param "$WFLOW_XML_FP" "QUEUE_HPSS" "$QUEUE_HPSS"
-set_file_param "$WFLOW_XML_FP" "QUEUE_FCST" "$QUEUE_FCST"
-set_file_param "$WFLOW_XML_FP" "USHDIR" "$USHDIR"
-set_file_param "$WFLOW_XML_FP" "JOBSDIR" "$JOBSDIR"
-set_file_param "$WFLOW_XML_FP" "EXPTDIR" "$EXPTDIR"
-set_file_param "$WFLOW_XML_FP" "LOGDIR" "$LOGDIR"
-set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_NAME_ICS" "$EXTRN_MDL_NAME_ICS"
-set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_NAME_LBCS" "$EXTRN_MDL_NAME_LBCS"
-set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_FILES_SYSBASEDIR_ICS" "$EXTRN_MDL_FILES_SYSBASEDIR_ICS"
-set_file_param "$WFLOW_XML_FP" "EXTRN_MDL_FILES_SYSBASEDIR_LBCS" "$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
-set_file_param "$WFLOW_XML_FP" "PROC_RUN_FV3" "$PROC_RUN_FV3"
-set_file_param "$WFLOW_XML_FP" "DATE_FIRST_CYCL" "$DATE_FIRST_CYCL"
-set_file_param "$WFLOW_XML_FP" "DATE_LAST_CYCL" "$DATE_LAST_CYCL"
-set_file_param "$WFLOW_XML_FP" "YYYY_FIRST_CYCL" "$YYYY_FIRST_CYCL"
-set_file_param "$WFLOW_XML_FP" "MM_FIRST_CYCL" "$MM_FIRST_CYCL"
-set_file_param "$WFLOW_XML_FP" "DD_FIRST_CYCL" "$DD_FIRST_CYCL"
-set_file_param "$WFLOW_XML_FP" "HH_FIRST_CYCL" "$HH_FIRST_CYCL"
-set_file_param "$WFLOW_XML_FP" "FHR" "$FHR"
-set_file_param "$WFLOW_XML_FP" "RUN_TASK_MAKE_GRID" "$RUN_TASK_MAKE_GRID"
-set_file_param "$WFLOW_XML_FP" "RUN_TASK_MAKE_OROG" "$RUN_TASK_MAKE_OROG"
-set_file_param "$WFLOW_XML_FP" "RUN_TASK_MAKE_SFC_CLIMO" "$RUN_TASK_MAKE_SFC_CLIMO"
+set_file_param "${WFLOW_XML_FP}" "SCRIPT_VAR_DEFNS_FP" "$SCRIPT_VAR_DEFNS_FP"
+set_file_param "${WFLOW_XML_FP}" "CYCLE_DIR" "${CYCLE_DIR}"
+set_file_param "${WFLOW_XML_FP}" "ACCOUNT" "$ACCOUNT"
+set_file_param "${WFLOW_XML_FP}" "SCHED" "$SCHED"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_DEFAULT" "$QUEUE_DEFAULT"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_HPSS" "$QUEUE_HPSS"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_FCST" "$QUEUE_FCST"
+set_file_param "${WFLOW_XML_FP}" "USHDIR" "$USHDIR"
+set_file_param "${WFLOW_XML_FP}" "JOBSDIR" "$JOBSDIR"
+set_file_param "${WFLOW_XML_FP}" "EXPTDIR" "$EXPTDIR"
+set_file_param "${WFLOW_XML_FP}" "LOGDIR" "$LOGDIR"
+set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_ICS" "$EXTRN_MDL_NAME_ICS"
+set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_LBCS" "$EXTRN_MDL_NAME_LBCS"
+set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_ICS" "$EXTRN_MDL_FILES_SYSBASEDIR_ICS"
+set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_LBCS" "$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
+set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FV3" "$PROC_RUN_FV3"
+set_file_param "${WFLOW_XML_FP}" "DATE_FIRST_CYCL" "$DATE_FIRST_CYCL"
+set_file_param "${WFLOW_XML_FP}" "DATE_LAST_CYCL" "$DATE_LAST_CYCL"
+set_file_param "${WFLOW_XML_FP}" "YYYY_FIRST_CYCL" "$YYYY_FIRST_CYCL"
+set_file_param "${WFLOW_XML_FP}" "MM_FIRST_CYCL" "$MM_FIRST_CYCL"
+set_file_param "${WFLOW_XML_FP}" "DD_FIRST_CYCL" "$DD_FIRST_CYCL"
+set_file_param "${WFLOW_XML_FP}" "HH_FIRST_CYCL" "$HH_FIRST_CYCL"
+set_file_param "${WFLOW_XML_FP}" "FHR" "$FHR"
+set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_GRID" "$RUN_TASK_MAKE_GRID"
+set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_OROG" "$RUN_TASK_MAKE_OROG"
+set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_SFC_CLIMO" "$RUN_TASK_MAKE_SFC_CLIMO"
 #
 #-----------------------------------------------------------------------
 #
@@ -144,7 +144,7 @@ regex_search="(^\s*<cycledef\s+group=\"at_)(CC)(Z\">)(\&DATE_FIRST_CYCL;)(CC00)(
 i=0
 for cycl in "${CYCL_HRS[@]}"; do
   regex_replace="\1${cycl}\3\4${cycl}00 \7${cycl}00\9"
-  crnt_line=$( sed -n -r -e "s%$regex_search%$regex_replace%p" "$WFLOW_XML_FP" )
+  crnt_line=$( sed -n -r -e "s%$regex_search%$regex_replace%p" "${WFLOW_XML_FP}" )
   if [ "$i" -eq "0" ]; then
     all_cycledefs="${crnt_line}"
   else
@@ -169,7 +169,7 @@ all_cycledefs=${all_cycledefs//&/\\\&}
 #
 # Perform the subsutitution.
 #
-sed -i -r -e "s|${regex_search}|${all_cycledefs}|g" "$WFLOW_XML_FP"
+sed -i -r -e "s|${regex_search}|${all_cycledefs}|g" "${WFLOW_XML_FP}"
 #
 #-----------------------------------------------------------------------
 #
@@ -487,14 +487,29 @@ the FV3SAR under NEMS to the experiment directory..."
 #
   if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
 
-    print_info_msg_verbose "
+    if [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" -o \
+         "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] && \
+       [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" -o \
+         "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
+
+      print_info_msg_verbose "
 Copying the FV3 namelist file for the GFS physics suite to the experi-
 ment directory..."
-#    cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GFS_FN} \
-#            $EXPTDIR/${FV3_NML_FN}
-    if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
-      cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GFSEXTERN_GFSPHYS_FN} \
+      cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GFSPHYS_GFSEXTRN_FN} \
               $EXPTDIR/${FV3_NML_FN}
+
+    else
+
+      print_err_msg_exit "
+A template FV3 namelist file is not available for the following combina-
+tion of physics suite and external models for ICs and LBCs:
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
+Please change one or more of these parameters or provide a template
+namelist file for this combination (and change workflow generation 
+script(s) accordingly) and rerun."
+
     fi
 
     print_info_msg_verbose "
@@ -520,16 +535,8 @@ directory..."
     print_info_msg_verbose "
 Copying the FV3 namelist file for the GSD physics suite to the experi-
 ment directory..."
-#    cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GSD_FN} \
-#            $EXPTDIR/${FV3_NML_FN}
-
-    if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
-      cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GFSEXTERN_GSDPHYS_FN} \
-              $EXPTDIR/${FV3_NML_FN}
-    elif [ "${EXTRN_MDL_NAME_ICS}" = "HRRRX" ]; then
-      cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_RAPHRRREXTERN_GSDPHYS_FN} \
-              $EXPTDIR/${FV3_NML_FN}
-    fi
+    cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GSDPHYS_FN} \
+            $EXPTDIR/${FV3_NML_FN}
 
     print_info_msg_verbose "
 Copying the field table file for the GSD physics suite to the experiment
@@ -549,24 +556,6 @@ GSD suite) to the experiment directory..."
     cp_vrfy $FIXgsd/CCN_ACTIVATE.BIN $EXPTDIR
 
   fi
-
-# Original changes in stage_static.sh by Jeff:
-#  if [ "${CCPP_PHYS_SUITE}" = "GFS" ] && [ "$EXTRN_MDL_NAME_ICS" = "FV3GFS" ]; then
-#
-#    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFSEXTERN_GFSPHYS_FN $EXPTDIR/$FV3_NML_FN
-#    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_FN $EXPTDIR
-#
-#  elif [ "${CCPP_PHYS_SUITE}" = "GSD" ] && [ "$EXTRN_MDL_NAME_ICS" = "FV3GFS" ]; then
-#
-#    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_GFSEXTERN_GSDPHYS_FN $EXPTDIR/$FV3_NML_FN
-#    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $EXPTDIR/$FIELD_TABLE_FN
-#
-#  elif [ "${CCPP_PHYS_SUITE}" = "GSD" ] && [ "$EXTRN_MDL_NAME_ICS" = "HRRRX" ]; then
-#
-#    cp_vrfy $TEMPLATE_DIR/$FV3_NML_CCPP_RAPHRRREXTERN_GSDPHYS_FN $EXPTDIR/$FV3_NML_FN
-#    cp_vrfy $TEMPLATE_DIR/$FIELD_TABLE_CCPP_GSD_FN $EXPTDIR/$FIELD_TABLE_FN
-#
-#  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -628,6 +617,35 @@ elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 fi
 set_file_param "${FV3_NML_FP}" "stretch_fac" "${stretch_fac}"
 set_file_param "${FV3_NML_FP}" "bc_update_interval" "${LBC_UPDATE_INTVL_HRS}"
+#
+# For GSD physics, set the parameter lsoil according to the external mo-
+# dels specified for ICs and LBCs.
+#
+if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+
+  if [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" -o \
+       "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] && \
+     [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" -o \
+       "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
+    set_file_param "${FV3_NML_FP}" "lsoil" "4"
+  elif [ "${EXTRN_MDL_NAME_ICS}" = "RAPX" -o \
+         "${EXTRN_MDL_NAME_ICS}" = "HRRRX" ] && \
+       [ "${EXTRN_MDL_NAME_LBCS}" = "RAPX" -o \
+         "${EXTRN_MDL_NAME_LBCS}" = "HRRRX" ]; then
+    set_file_param "${FV3_NML_FP}" "lsoil" "9"
+  else
+    print_err_msg_exit "
+The value to set the variable lsoil to in the FV3 namelist file (FV3_-
+NML_FP) has not been specified for the following combination of physics
+suite and external models for ICs and LBCs:
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
+Please change one or more of these parameters or provide a value for 
+lsoil (and change workflow generation script(s) accordingly) and rerun."
+  fi
+
+fi
 #
 #-----------------------------------------------------------------------
 #

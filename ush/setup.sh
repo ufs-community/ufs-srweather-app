@@ -375,16 +375,27 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Do not allow the option of running with RAP or HRRR external model 
-# data and GFS physics.  This option is currently untested.
+# For GFS physics, only allow "GSMGFS" and "FV3GFS" as the external mo-
+# dels for ICs and LBCs.
 #
 #-----------------------------------------------------------------------
 #
-if [ "$EXTRN_MDL_NAME_ICS" = "HRRRX" -o "$EXTRN_MDL_NAME_LBCS" = "RAPX" ] && \
-   [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
-  print_err_msg_exit "${script_name}" "\
-Using $EXTRN_MDL_NAME_ICS external model data and ${CCPP_PHYS_SUITE} physics through CCPP is
-untested and not currently an option in the community SAR workflow."
+if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
+
+  if [ "${EXTRN_MDL_NAME_ICS}" != "GSMGFS" -a \
+       "${EXTRN_MDL_NAME_ICS}" != "FV3GFS" ] || \
+     [ "${EXTRN_MDL_NAME_LBCS}" != "GSMGFS" -a \
+       "${EXTRN_MDL_NAME_LBCS}" != "FV3GFS" ]; then
+    print_info_msg_verbose "
+The following combination of physics suite and external models is not 
+allowed:
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
+Currently, for GFS physics, the only external models that the workflow
+allows for ICs and LBCs are \"GSMGFS\" and \"FV3GFS\"." 
+  fi
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -540,7 +551,6 @@ NEMSfv3gfs_DIR="$SORCDIR/NEMSfv3gfs"
 #
 # Make sure that the NEMSfv3gfs_DIR directory exists.
 #
-if [ 0 = 1 ]; then
 if [ ! -d "${NEMSfv3gfs_DIR}" ]; then
   print_err_msg_exit "${script_name}" "\
 The NEMSfv3gfs directory specified by NEMSfv3gfs_DIR that should contain
@@ -549,7 +559,7 @@ the FV3 source code does not exist:
 Please clone the NEMSfv3gfs repository in this directory, build the FV3
 executable, and then rerun the workflow."
 fi
-fi
+
 
 case $MACHINE in
 
@@ -1146,13 +1156,13 @@ fi
 #
 PE_MEMBER01=$(( $layout_x*$layout_y ))
 if [ "$QUILTING" = "TRUE" ]; then
-  PE_MEMBER01=$(( $PE_MEMBER01 + ${WRTCMP_write_groups}*${WRTCMP_write_tasks_per_group} ))
+  PE_MEMBER01=$(( ${PE_MEMBER01} + ${WRTCMP_write_groups}*${WRTCMP_write_tasks_per_group} ))
 fi
 
 print_info_msg_verbose "\
 The number of MPI tasks for the forecast (including those for the write
 component if it is being used) are:
-  PE_MEMBER01 = $PE_MEMBER01"
+  PE_MEMBER01 = ${PE_MEMBER01}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1224,20 +1234,20 @@ fi
 #
 if [ "$QUILTING" = "TRUE" ]; then
 
-  if [ -z "$WRTCMP_PARAMS_TEMPLATE_FN" ]; then
+  if [ -z "${WRTCMP_PARAMS_TEMPLATE_FN}" ]; then
     print_err_msg_exit "${script_name}" "\
 The write-component template file name (WRTCMP_PARAMS_TEMPLATE_FN) must
 be set to a non-empty value when quilting (i.e. the write-component) is 
 enabled:
   QUILTING = \"$QUILTING\"
-  WRTCMP_PARAMS_TEMPLATE_FN = \"$WRTCMP_PARAMS_TEMPLATE_FN\""
+  WRTCMP_PARAMS_TEMPLATE_FN = \"${WRTCMP_PARAMS_TEMPLATE_FN}\""
   fi
 
-  WRTCMP_PARAMS_TEMPLATE_FP="$TEMPLATE_DIR/$WRTCMP_PARAMS_TEMPLATE_FN"
-  if [ ! -f "$WRTCMP_PARAMS_TEMPLATE_FP" ]; then
+  WRTCMP_PARAMS_TEMPLATE_FP="${TEMPLATE_DIR}/${WRTCMP_PARAMS_TEMPLATE_FN}"
+  if [ ! -f "${WRTCMP_PARAMS_TEMPLATE_FP}" ]; then
     print_err_msg_exit "${script_name}" "\
 The write-component template file does not exist or is not a file:
-  WRTCMP_PARAMS_TEMPLATE_FP = \"$WRTCMP_PARAMS_TEMPLATE_FP\""
+  WRTCMP_PARAMS_TEMPLATE_FP = \"${WRTCMP_PARAMS_TEMPLATE_FP}\""
   fi
 
 fi
@@ -1290,7 +1300,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-NUM_NODES=$(( ($PE_MEMBER01 + $ncores_per_node - 1)/$ncores_per_node ))
+NUM_NODES=$(( (${PE_MEMBER01} + ${ncores_per_node} - 1)/${ncores_per_node} ))
 #
 #-----------------------------------------------------------------------
 #
@@ -1804,8 +1814,8 @@ LBC_UPDATE_FCST_HRS=(${LBC_UPDATE_FCST_HRS[@]})  # LBC_UPDATE_FCST_HRS is an arr
 #
 #-----------------------------------------------------------------------
 #
-ncores_per_node="$ncores_per_node"
-PE_MEMBER01="$PE_MEMBER01"
+ncores_per_node="${ncores_per_node}"
+PE_MEMBER01="${PE_MEMBER01}"
 EOM
 } || print_err_msg_exit "${script_name}" "\
 Heredoc (cat) command to append new variable definitions to variable 
