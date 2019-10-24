@@ -78,7 +78,7 @@ while read crnt_line; do
 # Note that a variable name will be found only if the equal sign immed-
 # iately follows the variable name.
 # 
-  var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p")
+  var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ =\"]*)=.*/\1/p")
 
   if [ -z "${var_name}" ]; then
 
