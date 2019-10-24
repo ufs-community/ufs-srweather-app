@@ -109,13 +109,9 @@ PTMP="/path/to/temporary/directory/ptmp"
 # bled forecast that uses GSD physics.
 #
 # DIAG_TABLE_FN:
-# Name of file that specifies the fields that the FV3SAR will output.
-#
-# DIAG_TABLE_CCPP_GFS_FN:
 # Name of file that specifies the fields that the FV3SAR will output for
-# a CCPP-enabled forecast that uses GFS physics.  This is needed because
-# the current version of the CCPP-enabled FV3SAR executable using GFS 
-# physics cannot handle refl_10cm variable in diag_table.
+# a forecast that uses GFS physics.  The forecast can be either with 
+# CCPP enabled or disabled.
 #
 # DIAG_TABLE_CCPP_GSD_FN:
 # Name of file that specifies the fields that the FV3SAR will output for

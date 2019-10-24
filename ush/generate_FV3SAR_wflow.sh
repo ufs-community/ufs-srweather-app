@@ -144,13 +144,13 @@ regex_search="(^\s*<cycledef\s+group=\"at_)(CC)(Z\">)(\&DATE_FIRST_CYCL;)(CC00)(
 i=0
 for cycl in "${CYCL_HRS[@]}"; do
   regex_replace="\1${cycl}\3\4${cycl}00 \7${cycl}00\9"
-  crnt_line=$( sed -n -r -e "s%$regex_search%$regex_replace%p" "${WFLOW_XML_FP}" )
+  crnt_line=$( sed -n -r -e "s%${regex_search}%${regex_replace}%p" "${WFLOW_XML_FP}" )
   if [ "$i" -eq "0" ]; then
     all_cycledefs="${crnt_line}"
   else
     all_cycledefs=$( printf "%s\n%s" "${all_cycledefs}" "${crnt_line}" )
   fi
-  i=$(( $i+1 ))
+  i=$((i+1))
 done
 #
 # Replace all actual newlines in the variable all_cycledefs with back-

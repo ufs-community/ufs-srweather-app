@@ -104,7 +104,6 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
     ;;
 #
   "${DIAG_TABLE_FN}" | \
-  "${DIAG_TABLE_CCPP_GSD_FN}" | \
   "${DIAG_TABLE_CCPP_GSD_FN}")
     regex_search="(.*)(<$param>)(.*)"
     regex_replace="\1$value\3"
@@ -151,18 +150,18 @@ specified for this file:
 #
 #-----------------------------------------------------------------------
 #
-  grep -q -E "$regex_search" $file_full_path
+  grep -q -E "${regex_search}" "${file_full_path}"
 
   if [ $? -eq 0 ]; then
-    sed -i -r -e "s%$regex_search%$regex_replace%" $file_full_path
+    sed -i -r -e "s%${regex_search}%${regex_replace}%" "${file_full_path}"
   else
     print_err_msg_exit "\
 Specified file (file_full_path) does not contain the searched-for regular 
 expression (regex_search):
-  file_full_path = \"$file_full_path\"
+  file_full_path = \"${file_full_path}\"
   param = \"$param\"
   value = \"$value\"
-  regex_search = $regex_search"
+  regex_search = ${regex_search}"
   fi
 #
 #-----------------------------------------------------------------------
