@@ -67,7 +67,7 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  print_info_msg_verbose "\
+  print_info_msg "$VERBOSE" "\
 Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
 #
 #-----------------------------------------------------------------------

@@ -27,110 +27,78 @@ function print_info_msg() {
 #
 #-----------------------------------------------------------------------
 #
-# Check arguments.
+# Get the name of this function.
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$#" -ne 1 ]; then
-    print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
+# Declare local variables.
+#
+#-----------------------------------------------------------------------
+#
+  local info_msg
+  local verbose
+#
+#-----------------------------------------------------------------------
+#
+# If one argument is supplied, we assume it is the message to print out.
+# between informational lines that are always printed.
+#
+#-----------------------------------------------------------------------
+#
+  if [ "$#" -eq 1 ]; then
+
+    info_msg="$1"
+    verbose="FALSE"
+    
+  elif [ "$#" -eq 2 ]; then
+
+    verbose="$1"
+    info_msg="$2"
+#
+#-----------------------------------------------------------------------
+#
+# If no arguments or more than two arguments are supplied, print out a 
+# usage message and exit.
+#
+#-----------------------------------------------------------------------
+#
+  else
+
+    printf "\
+Function \"${func_name}\":  Incorrect number of arguments specified.
 Usage:
 
-  ${FUNCNAME[0]} msg
+  ${func_name} [verbose] info_msg
 
-where msg is the message to print."
+where the arguments are defined as follows:
+
+  verbose:
+  This is an optional argument.  If set to \"TRUE\", info_msg will be
+  printed to stdout.  Otherwise, info_msg will not be printed.
+
+  info_msg:
+  This is the informational message to print to stdout.
+
+This function prints an informational message to stout.  If one argument
+is passed in, then that argument is assumed to be info_msg and is print-
+ed.  If two arguments are passed in, then the first is assumed to be 
+verbose and the second info_msg.  In this case, info_msg gets printed
+only if verbose is set to \"TRUE\".\n"
+
   fi
 #
 #-----------------------------------------------------------------------
 #
-# Set local variables.
+# If verbose is set to "TRUE", print out the message.
 #
 #-----------------------------------------------------------------------
 #
-  local info_msg="$1"
-#
-#-----------------------------------------------------------------------
-#
-# Remove trailing newlines from info_msg.  Command substitution [i.e.
-# the $( ... )] will do this automatically.
-#
-#-----------------------------------------------------------------------
-#
-  info_msg=$( printf '%s' "${info_msg}" )
-#
-#-----------------------------------------------------------------------
-#
-# Add informational lines at the beginning and end of the message.
-#
-#-----------------------------------------------------------------------
-#
-  local MSG=$(printf "\
-$info_msg
-")
-#
-#-----------------------------------------------------------------------
-#
-# Print out the message.
-#
-#-----------------------------------------------------------------------
-#
-  printf '%s\n' "$MSG"
-#
-#-----------------------------------------------------------------------
-#
-# Restore the shell options saved at the beginning of this script/func-
-# tion.
-#
-#-----------------------------------------------------------------------
-#
-  { restore_shell_opts; } > /dev/null 2>&1
-}
-
-
-
-#
-#-----------------------------------------------------------------------
-#
-# Function to print informational messages using printf, but only if the
-# VERBOSE flag is set to "TRUE".
-#
-#-----------------------------------------------------------------------
-#
-function print_info_msg_verbose() {
-#
-#-----------------------------------------------------------------------
-#
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#
-#-----------------------------------------------------------------------
-#
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
-#
-#-----------------------------------------------------------------------
-#
-# Check arguments.
-#
-#-----------------------------------------------------------------------
-#
-  if [ "$#" -ne 1 ]; then
-    print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
-Usage:
-
-  ${FUNCNAME[0]} msg
-
-where msg is the message to print."
-  fi
-#
-#-----------------------------------------------------------------------
-#
-# Print the message only if VERBOSE is set to "TRUE".
-#
-#-----------------------------------------------------------------------
-#
-  if [ "$VERBOSE" = "TRUE" ]; then
-    print_info_msg "$1"
+  if [ "$verbose" = "TRUE" ]; then
+    printf "%s\n" "${info_msg}"
   fi
 #
 #-----------------------------------------------------------------------
@@ -145,10 +113,12 @@ where msg is the message to print."
 
 
 
+
 #
 #-----------------------------------------------------------------------
 #
-# Function to print error messages using printf and exit.
+# Function to print out an error message to stderr using printf and then
+# exit.
 #
 #-----------------------------------------------------------------------
 #
@@ -165,15 +135,32 @@ function print_err_msg_exit() {
 #
 #-----------------------------------------------------------------------
 #
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
+# Declare local variables.
+#
+#-----------------------------------------------------------------------
+#
+  local err_msg
+  local caller_name
+#
+#-----------------------------------------------------------------------
+#
 # If no arguments are supplied, use a standard error message. 
 #
 #-----------------------------------------------------------------------
 #
   if [ "$#" -eq 0 ]; then
 
-    local MSG=$(printf "\
-ERROR.  Exiting script or function with nonzero status.
-")
+    err_msg=$( printf "\
+ERROR.  Exiting script or function with nonzero status."
+             )
 #
 #-----------------------------------------------------------------------
 #
@@ -184,7 +171,7 @@ ERROR.  Exiting script or function with nonzero status.
 #
   elif [ "$#" -eq 1 ]; then
 
-    local err_msg="$1"
+    err_msg="$1"
 #
 #-----------------------------------------------------------------------
 #
@@ -201,11 +188,11 @@ ERROR.  Exiting script or function with nonzero status.
 #
 #-----------------------------------------------------------------------
 #
-    local MSG=$(printf "\
+    err_msg=$( printf "\
 ERROR:
-$err_msg
-Exiting script/function with nonzero status.
-")
+${err_msg}
+Exiting script/function with nonzero status."
+             )
 #
 #-----------------------------------------------------------------------
 #
@@ -218,8 +205,8 @@ Exiting script/function with nonzero status.
 #
   elif [ "$#" -eq 2 ]; then
 
-    local script_func_name="$1"
-    local err_msg="$2"
+    caller_name="$1"
+    err_msg="$2"
 #
 #-----------------------------------------------------------------------
 #
@@ -236,43 +223,55 @@ Exiting script/function with nonzero status.
 #
 #-----------------------------------------------------------------------
 #
-    local MSG=$(printf "\
-ERROR from script/function \"${script_func_name}\":
-$err_msg
-Exiting script/function with nonzero status.
-")
+    err_msg=$(printf "\
+ERROR from script/file \"${caller_name}\":
+${err_msg}
+Exiting script/function with nonzero status."
+             )
 #
 #-----------------------------------------------------------------------
 #
-# If more than two arguments are supplied, print out a usage error mes-
-# sage.
+# If more than two arguments are supplied, print out a usage message and
+# exit.
 #
 #-----------------------------------------------------------------------
 #
-  elif [ "$#" -gt 1 ]; then
+  else
 
-    local MSG=$(printf "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
+    printf "\
+Function \"${func_name}\":  Incorrect number of arguments specified.
 Usage:
 
-  ${FUNCNAME[0]}
+  ${func_name} [caller_name] [err_msg]
 
-or
+where the arguments are defined as follows:
 
-  ${FUNCNAME[0]} msg
+  caller_name:
+  This is an optional argument that specifies the name of the script or 
+  function that calls this function (i.e. the caller).  
 
-where msg is an optional error message to print.  Exiting with nonzero status.
-")
+  err_msg:
+  This is an optional argument that specifies the error message to print
+  to stderr.
+
+This function prints an error message to stderr.  If no arguments are 
+passed in, then a standard error message is printed.  If only one argu-
+ment is passed in, then that argument is assumed to be err_msg, and this
+along with appropriate leading and trailing lines are printed.  If two 
+arguments are passed in, then the first is assumed to be caller_name and
+the second err_msg.  In this case, err_msg along with appropriate lead-
+ing and trailing lines are printed, with the leading line containing the
+name of the caller.\n"
 
   fi
 #
 #-----------------------------------------------------------------------
 #
-# Print out MSG and exit function/script with nonzero status.
+# Print out err_msg and exit function/script with nonzero status.
 #
 #-----------------------------------------------------------------------
 #
-  printf '\n%s\n' "$MSG" 1>&2
+  printf "\n%s\n" "${err_msg}" 1>&2
   exit 1
 #
 #-----------------------------------------------------------------------

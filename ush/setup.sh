@@ -386,7 +386,7 @@ if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
        "${EXTRN_MDL_NAME_ICS}" != "FV3GFS" ] || \
      [ "${EXTRN_MDL_NAME_LBCS}" != "GSMGFS" -a \
        "${EXTRN_MDL_NAME_LBCS}" != "FV3GFS" ]; then
-    print_info_msg_verbose "
+    print_info_msg "$VERBOSE" "
 The following combination of physics suite and external models is not 
 allowed:
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
@@ -1159,7 +1159,7 @@ if [ "$QUILTING" = "TRUE" ]; then
   PE_MEMBER01=$(( ${PE_MEMBER01} + ${WRTCMP_write_groups}*${WRTCMP_write_tasks_per_group} ))
 fi
 
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 The number of MPI tasks for the forecast (including those for the write
 component if it is being used) are:
   PE_MEMBER01 = ${PE_MEMBER01}"
@@ -1189,7 +1189,7 @@ by the number of MPI tasks in the y direction (layout_y):
   layout_y = $layout_y"
 fi
 
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 The MPI task layout is:
   layout_x = $layout_x
   layout_y = $layout_y"

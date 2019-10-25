@@ -67,7 +67,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "Starting post-processing for fhr = $fhr hr..."
+print_info_msg "$VERBOSE" "\
+Starting post-processing for fhr = $fhr hr..."
 
 case $MACHINE in
 

@@ -215,7 +215,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 Creating links in the INPUT subdirectory of the current cycle's run di-
 rectory to the grid and (filtered) orography files ..."
 
@@ -328,7 +328,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 Creating links with names that FV3 looks for in the INPUT subdirectory
 of the current cycle's run directory (CYCLE_DIR)..."
 
@@ -345,7 +345,7 @@ ln_vrfy -sf sfc_data.tile${TILE_RGNL}.halo${nh0_T7}.nc sfc_data.nc
 #
 cd_vrfy ${CYCLE_DIR}
 
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 Creating links in the current cycle's run directory to static (fix) 
 files in the FIXam directory..."
 #
@@ -396,7 +396,7 @@ rm_vrfy -f time_stamp.out
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 Creating links in the current cycle's run directory to cycle-independent
 model input files in the main experiment directory..."
 
@@ -425,7 +425,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 Copying cycle-independent model input files from the templates directory 
 to the current cycle's run directory..." 
 
@@ -463,7 +463,7 @@ YYYYMMDD=${CDATE:0:8}
 #
 MODEL_CONFIG_FP="${CYCLE_DIR}/${MODEL_CONFIG_FN}"
 
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 Setting parameters in file:
   MODEL_CONFIG_FP = \"${MODEL_CONFIG_FP}\""
 
@@ -532,7 +532,7 @@ fi
 #
 DIAG_TABLE_FP="${CYCLE_DIR}/${DIAG_TABLE_FN}"
 
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 Setting parameters in file:
   DIAG_TABLE_FP = \"${DIAG_TABLE_FP}\""
 
@@ -556,7 +556,7 @@ else
 fi
 
 if [ -f $FV3SAR_EXEC ]; then
-  print_info_msg_verbose "\
+  print_info_msg "$VERBOSE" "\
 Copying the FV3SAR executable to the run directory..."
   cp_vrfy ${FV3SAR_EXEC} ${CYCLE_DIR}/fv3_gfs.x
 else

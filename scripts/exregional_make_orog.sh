@@ -256,7 +256,7 @@ export exec_dir="$EXECDIR"
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "Starting orography file generation..."
+print_info_msg "$VERBOSE" "Starting orography file generation..."
 
 tmp_dir="${raw_dir}/tmp"
 
@@ -316,7 +316,7 @@ ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc \
             oro.${CRES}.tile${TILE_RGNL}.nc
 cd_vrfy -
 
-print_info_msg_verbose "Orography file generation complete."
+print_info_msg "$VERBOSE" "Orography file generation complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -324,7 +324,7 @@ print_info_msg_verbose "Orography file generation complete."
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "Setting orography filtering parameters..."
+print_info_msg "$VERBOSE" "Setting orography filtering parameters..."
 
 # Need to fix the following (also above).  Then redo to get cell_size_avg.
 #cd_vrfy ${GRID_DIR}
@@ -441,7 +441,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "Starting filtering of orography..."
+print_info_msg "$VERBOSE" "Starting filtering of orography..."
 echo "gtype = \"$gtype\""
 
 # The script below creates absolute symlinks in $filter_dir.  That's 
@@ -475,7 +475,7 @@ mv_vrfy oro.${CRES}.tile${TILE_RGNL}.nc \
 #            oro.${CRES}.tile${TILE_RGNL}.nc
 cd_vrfy -
 
-print_info_msg_verbose "Filtering of orography complete."
+print_info_msg "$VERBOSE" "Filtering of orography complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -508,7 +508,7 @@ cd_vrfy ${shave_dir}
 # call the shave executable.  Finally, move the resultant file to the 
 # OROG_DIR directory.
 #
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 \"Shaving\" orography file with wide halo to obtain orography file with 
 ${nh0_T7}-cell-wide halo..."
 
@@ -533,7 +533,7 @@ mv_vrfy ${shaved_fp} ${OROG_DIR}
 # Then call the shave executable.  Finally, move the resultant file to
 # the OROG_DIR directory.
 #
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "\
 \"Shaving\" orography file with wide halo to obtain orography file with 
 ${nh4_T7}-cell-wide halo..."
 
@@ -580,7 +580,7 @@ Call to script to create links to orography files failed.
 # Moved the following to exregional_make_sfc_climo.sh script since it 
 # needs to be done only if the make_sfc_climo task is run.
 
-#print_info_msg_verbose "\
+#print_info_msg "$VERBOSE" "\
 #Creating links needed by the make_sfc_climo task to the 4-halo grid and
 #orography files..."
 #

@@ -366,7 +366,7 @@ fi
 # that can be changed.
 if [ "${RUN_ENVIR}" != "nco" ]; then
 
-  print_info_msg_verbose "\
+  print_info_msg "$VERBOSE" "\
 Copying fixed files from system directory to the workflow directory..."
 
   check_for_preexist_dir $FIXam "delete"
@@ -386,7 +386,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "
+print_info_msg "$VERBOSE" "
 Copying templates of various input files to the experiment directory..."
 #
 #-----------------------------------------------------------------------
@@ -440,7 +440,7 @@ if [ "${USE_CCPP}" = "TRUE" ]; then
 # 4) Uses the "module use ..." command to prepend or append paths to 
 #    Lmod's search path (MODULEPATH).
 #
-  print_info_msg_verbose "
+  print_info_msg "$VERBOSE" "
 Copying the shell script that initializes the Lmod (Lua-based module) 
 system/software for handling modules..."
 #
@@ -473,7 +473,7 @@ Heredoc (cat) command to append command to add path to CCPP libraries to
 the Lmod initialization script in the experiment directory returned with
 a nonzero status."
 
-  print_info_msg_verbose "
+  print_info_msg "$VERBOSE" "
 Copying the modulefile required for running the CCPP-enabled version of
 the FV3SAR under NEMS to the experiment directory..." 
   cp_vrfy ${NEMSfv3gfs_DIR}/NEMS/src/conf/modules.nems $EXPTDIR/modules.fv3
@@ -492,7 +492,7 @@ the FV3SAR under NEMS to the experiment directory..."
        [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" -o \
          "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
 
-      print_info_msg_verbose "
+      print_info_msg "$VERBOSE" "
 Copying the FV3 namelist file for the GFS physics suite to the experi-
 ment directory..."
       cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GFSPHYS_GFSEXTRN_FN} \
@@ -512,13 +512,13 @@ script(s) accordingly) and rerun."
 
     fi
 
-    print_info_msg_verbose "
+    print_info_msg "$VERBOSE" "
 Copying the field table file for the GFS physics suite to the experiment
 directory..."
     cp_vrfy ${TEMPLATE_DIR}/${FIELD_TABLE_FN} \
             $EXPTDIR
 
-    print_info_msg_verbose "
+    print_info_msg "$VERBOSE" "
 Copying the CCPP XML file for the GFS physics suite to the experiment 
 directory..."
     cp_vrfy ${NEMSfv3gfs_DIR}/ccpp/suites/suite_FV3_GFS_2017_gfdlmp.xml \
@@ -532,25 +532,25 @@ directory..."
 #
   elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
 
-    print_info_msg_verbose "
+    print_info_msg "$VERBOSE" "
 Copying the FV3 namelist file for the GSD physics suite to the experi-
 ment directory..."
     cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GSDPHYS_FN} \
             $EXPTDIR/${FV3_NML_FN}
 
-    print_info_msg_verbose "
+    print_info_msg "$VERBOSE" "
 Copying the field table file for the GSD physics suite to the experiment
 directory..."
     cp_vrfy ${TEMPLATE_DIR}/${FIELD_TABLE_CCPP_GSD_FN} \
             $EXPTDIR/${FIELD_TABLE_FN}
 
-    print_info_msg_verbose "
+    print_info_msg "$VERBOSE" "
 Copying the CCPP XML file for the GSD physics suite to the experiment 
 directory..."
     cp_vrfy ${NEMSfv3gfs_DIR}/ccpp/suites/suite_FV3_GSD_v0.xml \
             $EXPTDIR/suite_FV3_GSD_v0.xml
 
-    print_info_msg_verbose "
+    print_info_msg "$VERBOSE" "
 Copying the CCN fixed file needed by Thompson microphysics (part of the
 GSD suite) to the experiment directory..."
     cp_vrfy $FIXgsd/CCN_ACTIVATE.BIN $EXPTDIR
@@ -582,7 +582,7 @@ cp_vrfy ${TEMPLATE_DIR}/${NEMS_CONFIG_FN} $EXPTDIR
 #
 FV3_NML_FP="$EXPTDIR/${FV3_NML_FN}"
 
-print_info_msg_verbose "
+print_info_msg "$VERBOSE" "
 Setting parameters in FV3 namelist file (FV3_NML_FP):
   FV3_NML_FP = \"${FV3_NML_FP}\""
 #
