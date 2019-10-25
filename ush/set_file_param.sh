@@ -27,18 +27,20 @@ function set_file_param() {
     print_err_msg_exit "\
 Incorrect number of arguments specified.  Usage:
 
-  ${FUNCNAME[0]} file_full_path param value
+  ${func_name}  file_full_path  param  value
 
 where the arguments are defined as follows:
 
   file_full_path:
-  Full path to the file in which the specified parameter's value will be set.
+  Full path to the file in which the specified parameter's value will be
+  set.
 
   param: 
   Name of the parameter whose value will be set.
 
   value:
-  Value to set the parameter to."
+  Value to set the parameter to.
+"
 
   fi
 #
@@ -114,14 +116,9 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
     ;;
 #
   "${SCRIPT_VAR_DEFNS_FN}")
-    regex_search="(^\s*$param=)(\".*\"|[^ \"]*)(\s*[#].*)?$"  # Whole line with regex_replace=\1.
-#    regex_search="(^\s*$param=)(\".*\"|[^ \"]*)(\s*[#].*)?"
     regex_search="(^\s*$param=)(\".*\")?([^ \"]*)?(\(.*\))?(\s*[#].*)?"
-#    regex_replace="\1\"$value\"\3"
-#    regex_replace="\1$value\3"
-#    regex_replace="\1\3"
-#    regex_replace="\1AAAA\2BBBB\3CCCC\4DDDD\5"
     regex_replace="\1$value\5"
+#    set_bash_param "${file_full_path}" "$param" "$value"
     ;;
 #
 #-----------------------------------------------------------------------
