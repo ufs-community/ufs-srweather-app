@@ -97,7 +97,7 @@ case "${CCPP_PHYS_SUITE}" in
   ;;
 
 *)
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Physics-suite-dependent namelist variables have not yet been specified 
 for this physics suite:
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
@@ -324,7 +324,7 @@ case "$EXTRN_MDL_NAME_ICS" in
 
 
 *)
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 External-model-dependent namelist variables have not yet been specified 
 for this external model:
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
@@ -436,7 +436,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
  tg3_from_soil=${tg3_from_soil}
 /
 EOF
-} || print_err_msg_exit "${script_name}" "\
+} || print_err_msg_exit "\
 \"cat\" command to create a namelist file for chgres_cube to generate ICs,
 surface fields, and the 0-th hour (initial) LBCs returned with nonzero 
 status."
@@ -456,7 +456,7 @@ status."
 # A similar thing happens in the forecast task.
 #
 ${APRUN} ${EXECDIR}/chgres_cube.exe || \
-print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to executable to generate surface and initial conditions files for
 the FV3SAR failed:
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"

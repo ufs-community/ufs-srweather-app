@@ -28,8 +28,7 @@ function interpol_to_arbit_CRES () {
   if [ "$#" -ne 3 ]; then
 
     print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
-Usage:
+Incorrect number of arguments specified.  Usage:
 
   ${FUNCNAME[0]} RES RES_array prop_array
 
@@ -48,7 +47,6 @@ where the arguments are defined as follows:
   prop_array:
   The name of the array containing the values of the property corres-
   ponding to the cubed-sphere resolutions in RES_array.
- 
 "
 
   fi

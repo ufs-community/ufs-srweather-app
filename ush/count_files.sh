@@ -14,8 +14,7 @@ function count_files() {
 
   if [ "$#" -ne 1 ]; then
     print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
-Usage:
+Incorrect number of arguments specified.  Usage:
 
   ${FUNCNAME[0]} file_extension
 

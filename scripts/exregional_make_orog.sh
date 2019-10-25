@@ -289,7 +289,7 @@ ${tmp_dir}" \
 "THEIA" | "HERA" | "JET" | "ODIN")
   ${ufs_utils_ushdir}/${orog_gen_scr} \
     $RES ${TILE_RGNL} ${FIXsar} ${raw_dir} ${UFS_UTILS_DIR} ${topo_dir} ${tmp_dir} || \
-    print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Call to script that generates raw orography file returned with nonzero
 exit code."
   ;;
@@ -329,8 +329,9 @@ print_info_msg "$VERBOSE" "Setting orography filtering parameters..."
 # Need to fix the following (also above).  Then redo to get cell_size_avg.
 #cd_vrfy ${GRID_DIR}
 #$SORCDIR/regional_grid/regional_grid $RGNL_GRID_NML_FP $CRES || \
-#  print_err_msg_exit "${script_name}" "\ 
-#Call to script that generates grid file (Jim Purser version) returned with nonzero exit code."
+#print_err_msg_exit "\ 
+#Call to script that generates grid file (Jim Purser version) returned 
+#with nonzero exit code."
 #${CRES}_grid.tile${TILE_RGNL}.halo${nhw_T7}.nc
 
 
@@ -363,11 +364,10 @@ peak_fac_array=(    "1.1"   "1.1"   "1.05"  "1.0"   "1.0"   "1.0"   "1.0")
 # Need to fix this so that the stderr from a failed call to interpol_to_arbit_CRES
 # gets sent to the stderr of this script.
 cd4=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "cd4_array" ) || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to script that interpolated cd4 to the regional grid's equiavlent 
 global cubed-sphere resolution (RES_equiv) failed:
-  RES_equiv = \"${RES_equiv}\"
-"
+  RES_equiv = \"${RES_equiv}\""
 echo "====>>>> cd4 = $cd4"
 #
 max_slope=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "max_slope_array" )
@@ -456,7 +456,7 @@ ${ufs_utils_ushdir}/${orog_fltr_scr} \
   ${FIXsar} ${raw_dir} ${filter_dir} \
   $cd4 ${peak_fac} ${max_slope} ${n_del2_weak} \
   ${ufs_utils_ushdir} || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to script that generates filtered orography file returned with non-
 zero exit code."
 #
@@ -519,13 +519,12 @@ printf "%s %s %s %s %s\n" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to \"shave\" executable to generate (filtered) orography file with
 a 4-cell wide halo returned with nonzero exit code.  The namelist file 
 nml_fn is in directory shave_dir:
   shave_dir = \"${shave_dir}\"
-  nml_fn = \"${nml_fn}\"
-"
+  nml_fn = \"${nml_fn}\""
 mv_vrfy ${shaved_fp} ${OROG_DIR}
 #
 # Create an input namelist file for the shave executable to generate an
@@ -544,13 +543,12 @@ printf "%s %s %s %s %s\n" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to \"shave\" executable to generate (filtered) orography file with
 a 4-cell wide halo returned with nonzero exit code.  The namelist file 
 nml_fn is in directory shave_dir:
   shave_dir = \"${shave_dir}\"
-  nml_fn = \"${nml_fn}\"
-"
+  nml_fn = \"${nml_fn}\""
 mv_vrfy ${shaved_fp} ${OROG_DIR}
 #
 # Change location back to the directory before shave_dir.
@@ -573,9 +571,8 @@ $USHDIR/link_fix.sh \
   verbose="FALSE" \
   script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
   file_group="orog" || \
-  print_err_msg_exit "\
-Call to script to create links to orography files failed.
-"
+print_err_msg_exit "\
+Call to script to create links to orography files failed."
 
 # Moved the following to exregional_make_sfc_climo.sh script since it 
 # needs to be done only if the make_sfc_climo task is run.

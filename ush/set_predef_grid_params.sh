@@ -60,8 +60,7 @@ case ${PREDEF_GRID_NAME} in
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
@@ -115,8 +114,7 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
@@ -170,8 +168,7 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
@@ -309,8 +306,7 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
@@ -364,8 +360,7 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
@@ -419,8 +414,7 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
@@ -560,8 +554,7 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
 # Values from an EMC script.
 
@@ -629,8 +622,7 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   fi
   ;;

@@ -98,7 +98,7 @@ case "${CCPP_PHYS_SUITE}" in
   ;;
 
 *)
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Physics-suite-dependent namelist variables have not yet been specified 
 for this physics suite:
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
@@ -315,7 +315,7 @@ case "$EXTRN_MDL_NAME_LBCS" in
 
 
 *)
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 External-model-dependent namelist variables have not yet been specified 
 for this external model:
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
@@ -359,7 +359,7 @@ for (( i=0; i<$num_fhrs; i++ )); do
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
   *)
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 The external model output file name to use in the chgres FORTRAN name-
 list file has not specified for this external model:
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
@@ -421,7 +421,7 @@ list file has not specified for this external model:
  phys_suite="${phys_suite}"
 /
 EOF
-  } || print_err_msg_exit "${script_name}" "\
+  } || print_err_msg_exit "\
 \"cat\" command to create a namelist file for chgres_cube to generate LBCs
 for all boundary update times (except the 0-th forecast hour) returned 
 with nonzero status."
@@ -429,7 +429,7 @@ with nonzero status."
 # Run chgres_cube.
 #
   ${APRUN} ${EXECDIR}/chgres_cube.exe || \
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Call to executable to generate lateral boundary conditions file for the
 the FV3SAR failed:
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"

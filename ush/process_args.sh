@@ -100,8 +100,7 @@ function process_args() {
   if [ "$#" -lt 1 ]; then
 
     print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
-Usage:
+Incorrect number of arguments specified.  Usage:
 
   ${FUNCNAME[0]} valid_arg_names_array_name \
                  arg_val_pair1 \
@@ -123,7 +122,8 @@ where the arguments are defined as follows:
   the valid arguments listed in valid_arg_names_array_name need to be 
   set, and the argument-value pairs can be in any order, i.e. they don't
   have to follow the order of arguments listed in valid_arg_names_ar-
-  ray_name.\n"
+  ray_name.
+"
 
   fi
 #
@@ -167,13 +167,11 @@ where the arguments are defined as follows:
 #
   if [ "${num_arg_val_pairs}" -gt "${num_valid_args}" ]; then
     print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":
 The number of argument-value pairs specified on the command line (num_-
 arg_val_pairs) must be less than or equal to the number of valid argu-
 ments (num_valid_args) specified in the array valid_arg_names:
   num_arg_val_pairs = ${num_arg_val_pairs}
-  num_valid_args = ${num_valid_args}
-"
+  num_valid_args = ${num_valid_args}"
   fi
 #
 #-----------------------------------------------------------------------
@@ -260,8 +258,7 @@ The current argument has already been assigned a value on the command
 line:
   arg_name = \"${arg_name}\"
   cmd_line = ${cmd_line}
-Please assign values to arguments only once on the command line.
-"
+Please assign values to arguments only once on the command line."
         fi
       fi
 

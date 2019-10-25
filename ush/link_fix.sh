@@ -132,6 +132,16 @@ done
 #
 #-----------------------------------------------------------------------
 #
+# Set the valid values that file_group can take on and then check whe-
+# ther it is in fact set to one of these valid values.
+#
+#-----------------------------------------------------------------------
+#
+valid_vals_file_group=( "grid" "orog" "sfc_climo" )
+check_var_valid_value "file_group" "valid_vals_file_group"
+#
+#-----------------------------------------------------------------------
+#
 # Prepend appropriate directory to each set of file name globbing pat-
 # terns.
 #
@@ -150,10 +160,6 @@ elif [ "${file_group}" = "orog" ]; then
 elif [ "${file_group}" = "sfc_climo" ]; then
   fps_all=( "${fps_sfc_climo[@]}" )
   run_task="${RUN_TASK_MAKE_SFC_CLIMO}"
-else
-  print_err_msg_exit "${script_name}" "\
-Invalid value specified for file_group.  Valid values are:
-"
 fi
 #
 #-----------------------------------------------------------------------
@@ -176,26 +182,24 @@ printf "  fn = %s\n" "$fn"
 
   res=$( printf "%s" $fn | sed -n -r -e "s/^C([0-9]*).*/\1/p" )
   if [ -z $res ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 The C-resolution could not be extracted from the current file's name.
 The full path to the file (fp) is:
   fp = \"${fp}\"
 This may be because fp contains the * globbing character, which would
 imply that no files were found that match the globbing pattern specified
-in fp.
-"
+in fp."
   fi
 
 printf "  res_prev = %s\n" "${res_prev}"
 printf "  res = %s\n" "${res}"
   if [ $i -gt 0 ] && [ ${res} != ${res_prev} ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 The C-resolutions (as obtained from the file names) of the previous and 
 current file (fp_prev and fp, respectively) are different:
   fp_prev = \"${fp_prev}\"
   fp      = \"${fp}\"
-Please ensure that all files have the same C-resolution.
-"
+Please ensure that all files have the same C-resolution."
   fi
 
   i=$((i+1))
@@ -219,7 +223,7 @@ if [ "$RES" = "$res" ] || [ "$RES" = "" ]; then
   set_file_param "${SCRIPT_VAR_DEFNS_FP}" "RES" "${res}"
   set_file_param "${SCRIPT_VAR_DEFNS_FP}" "CRES" "${cres}"
 elif [ "$RES" != "$res" ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 The resolution (RES) specified in the variable definitions file 
 (script_var_defns_fp) does not match the resolution (res) found in this
 script for the specified file group (file_group):
@@ -228,8 +232,7 @@ script for the specified file group (file_group):
   file_group = \"${file_group}\"
   res = \"${res}\"
 This usually means that one or more of the file groups (grid, orography,
-and/or surface climatology) are defined on different grids.
-"
+and/or surface climatology) are defined on different grids."
 fi
 #
 #-----------------------------------------------------------------------
@@ -263,7 +266,7 @@ for fp in "${fps_all[@]}"; do
     ln_vrfy -sf ${relative_or_null} $fp .
 #    ln_vrfy -sf $fp .
   else
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 Cannot create symlink because target file (fp) does not exist:
   fp = \"${fp}\""
   fi
@@ -297,7 +300,7 @@ if [ "${file_group}" = "sfc_climo" ]; then
 #      ln_vrfy -sf ${relative_or_null} $target $symlink
       ln_vrfy -sf $target $symlink
     else
-      print_err_msg_exit "${script_name}" "\
+      print_err_msg_exit "\
 Cannot create symlink because target file (target) does not exist:
   target = \"${target}\""
     fi

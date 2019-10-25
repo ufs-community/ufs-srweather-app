@@ -150,7 +150,7 @@ export stretch_fac
 #
 ${SCRIPTSDIR}/exregional_make_grid.sh \
   WORKDIR_LOCAL="ABCD" || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------

@@ -30,7 +30,6 @@ TESTSDIR="$FV3SAR_WFLOW_DIR/tests"
 if [ "$#" -ne 1 ]; then
 
   print_err_msg_exit "\
-Script \"$0\":  
 Incorrect number of arguments specified.  Usage:
 
   $0  \${test_suite}
@@ -58,11 +57,9 @@ PARAM_ARRAYS_FP="$TESTSDIR/$PARAM_ARRAYS_FN"
 
 if [ ! -f ${PARAM_ARRAYS_FP} ]; then
   print_err_msg_exit "\
-Script \"$0\": 
 The file specified by PARAM_ARRAYS_FP defining the arrays that specify
 the values that each experiment parameter will take on does not exist:
-  PARAM_ARRAYS_FP = \"$PARAM_ARRAYS_FP\"
-"
+  PARAM_ARRAYS_FP = \"$PARAM_ARRAYS_FP\""
 else
   . ${PARAM_ARRAYS_FP}
 fi

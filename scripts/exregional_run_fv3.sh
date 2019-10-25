@@ -235,7 +235,7 @@ target="${FIXsar}/${CRES}_mosaic.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target grid_spec.nc
 else
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Cannot create symlink because target does not exist:
   target = \"$target}\""
 fi
@@ -245,7 +245,7 @@ target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${nh3_T7}.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target ${CRES}_grid.tile${TILE_RGNL}.nc
 else
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Cannot create symlink because target does not exist:
   target = \"$target}\""
 fi
@@ -266,7 +266,7 @@ target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${nh4_T7}.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf $target ${relative_or_null} grid.tile${TILE_RGNL}.halo${nh4_T7}.nc
 else
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Cannot create symlink because target does not exist:
   target = \"$target}\""
 fi
@@ -283,7 +283,7 @@ target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh0_T7}.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target oro_data.nc
 else
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Cannot create symlink because target does not exist:
   target = \"$target}\""
 fi
@@ -305,7 +305,7 @@ target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf $target ${relative_or_null} oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc
 else
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Cannot create symlink because target does not exist:
   target = \"$target}\""
 fi
@@ -587,7 +587,8 @@ export OMP_STACKSIZE=1024m
 #-----------------------------------------------------------------------
 #
 $APRUN ./fv3_gfs.x || print_err_msg_exit "\
-Call to executable to run FV3SAR forecast returned with nonzero exit code."
+Call to executable to run FV3SAR forecast returned with nonzero exit 
+code."
 #
 #-----------------------------------------------------------------------
 #

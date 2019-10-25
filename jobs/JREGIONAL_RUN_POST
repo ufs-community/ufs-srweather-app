@@ -87,7 +87,7 @@ $SCRIPTSDIR/exregional_run_post.sh \
   postprd_dir="${postprd_dir}" \
   fhr_dir="${fhr_dir}" \
   fhr="${fhr}" || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------

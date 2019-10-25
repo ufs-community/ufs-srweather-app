@@ -184,10 +184,9 @@ get_extrn_mdl_file_dir_info \
 #
 #-----------------------------------------------------------------------
 #
-WGRIB2_DIR=$( which wgrib2 ) || print_err_msg_exit "${script_name}" "\
+WGRIB2_DIR=$( which wgrib2 ) || print_err_msg_exit "\
 Directory in which the wgrib2 executable is located not found:
-  WGRIB2_DIR = \"${WGRIB2_DIR}\"
-"
+  WGRIB2_DIR = \"${WGRIB2_DIR}\""
 #
 #-----------------------------------------------------------------------
 #
@@ -215,7 +214,7 @@ $SCRIPTSDIR/exregional_make_lbc1_to_lbcn.sh \
   APRUN="${APRUN}" \
   LBCS_DIR="${LBCS_DIR}" \
   EXTRN_MDL_LBC_UPDATE_FHRS="${EXTRN_MDL_LBC_UPDATE_FHRS_str}" || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------

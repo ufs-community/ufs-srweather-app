@@ -109,9 +109,8 @@ fcst_len_hrs=${fcst_len_hrs:-}
 lbc_update_intvl_hrs=${lbc_update_intvl_hrs:-"3"}
 
 if [ -z "${basedir}" ]; then
-  print_err_msg_exit "${script_name}" "
-A base directory must be specified.
-"
+  print_err_msg_exit "\
+A base directory must be specified."
 #
 #-----------------------------------------------------------------------
 #

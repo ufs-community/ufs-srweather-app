@@ -79,14 +79,13 @@ case $EXTRN_MDL_NAME in
 # last CDATE for the GSMGFS to the one 6 hours before this.
   CDATE_max="2019061206"
   if [ "$CDATE" -gt "$CDATE_max" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 Output from the specified external model (EXTRN_MDL_NAME) is not availa-
 ble for the specified cycle date and time (CDATE) because the latter is
 later than the last forecast date and time (CDATE_max) with this model:
   EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
   CDATE_max = \"${CDATE_max}\"
-  CDATE = \"${CDATE}\"
-"
+  CDATE = \"${CDATE}\""
   fi
   ;;
 
@@ -98,14 +97,13 @@ later than the last forecast date and time (CDATE_max) with this model:
 #  CDATE_min="2019061212"
   CDATE_min="2018121500"
   if [ "$CDATE" -lt "$CDATE_min" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 Output from the specified external model (EXTRN_MDL_NAME) is not availa-
 ble for the specified cycle date and time (CDATE) because the latter is
 earlier than the implementation date of this model:
   EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
   CDATE_min = \"${CDATE_min}\"
-  CDATE = \"${CDATE}\"
-"
+  CDATE = \"${CDATE}\""
   fi
   ;;
 
@@ -114,14 +112,13 @@ earlier than the implementation date of this model:
 # July 01, 2015.
   CDATE_min="2015070100"
   if [ "$CDATE" -lt "$CDATE_min" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 Output from the specified external model (EXTRN_MDL_NAME) is not availa-
 ble for the specified cycle date and time (CDATE) because the latter is
 earlier than the implementation date of this model:
   EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
   CDATE_min = \"${CDATE_min}\"
-  CDATE = \"${CDATE}\"
-"
+  CDATE = \"${CDATE}\""
   fi
   ;;
 
@@ -131,14 +128,13 @@ earlier than the implementation date of this model:
 # ber 30, 2014.
   CDATE_min="2014103000"
   if [ "$CDATE" -lt "$CDATE_min" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 Output from the specified external model (EXTRN_MDL_NAME) is not availa-
 ble for the specified cycle date and time (CDATE) because the latter is
 earlier than the implementation date of this model:
   EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
   CDATE_min = \"${CDATE_min}\"
-  CDATE = \"${CDATE}\"
-"
+  CDATE = \"${CDATE}\""
   fi
   ;;
 
@@ -164,12 +160,11 @@ elif [ "$ICS_OR_LBCS" = "LBCS" ]; then
   TIME_OFFSET_HRS="$EXTRN_MDL_LBCS_OFFSET_HRS"
 else
   valid_vals_ICS_OR_LBCS_str=$( printf "\"%s\" " "${valid_vals_ICS_OR_LBCS[@]}" )
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Invalid value specified for ICS_OR_LBCS:
   ICS_OR_LBCS = \"$ICS_OR_LBCS\"
 Valid values are:
-  ${valid_vals_ICS_OR_LBCS_str}
-"
+  ${valid_vals_ICS_OR_LBCS_str}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -192,7 +187,7 @@ EXTRN_MDL_FILES_DIR="${CYCLE_DIR}/${EXTRN_MDL_NAME}/${ICS_OR_LBCS}"
 #-----------------------------------------------------------------------
 #
 mkdir_vrfy -p "$EXTRN_MDL_FILES_DIR"
-cd_vrfy $EXTRN_MDL_FILES_DIR || print_err_msg_exit "${script_name}" "\
+cd_vrfy $EXTRN_MDL_FILES_DIR || print_err_msg_exit "\
 Could not change directory to EXTRN_MDL_FILES_DIR:
   EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\""
 #
@@ -237,7 +232,7 @@ $SCRIPTSDIR/exregional_get_extrn_files.sh \
   EXTRN_MDL_ARCV_FPS="${EXTRN_MDL_ARCV_FPS_str}" \
   EXTRN_MDL_ARCV_FMT="${EXTRN_MDL_ARCV_FMT}" \
   EXTRN_MDL_ARCVREL_DIR="${EXTRN_MDL_ARCVREL_DIR}" || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------

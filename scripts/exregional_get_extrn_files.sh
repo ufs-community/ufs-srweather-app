@@ -293,12 +293,11 @@ will be copied (EXTRN_MDL_FILES_DIR) are:
 #
       HTAR_LOG_FN="log.htar_tvf.${narcv_formatted}"
       htar -tvf ${ARCV_FP} ${EXTRN_MDL_FPS[@]} >& ${HTAR_LOG_FN} || \
-      print_err_msg_exit "${script_name}" "\
+      print_err_msg_exit "\
 htar file list operation (\"htar -tvf ...\") failed.  Check the log file 
 HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-  HTAR_LOG_FN = \"${HTAR_LOG_FN}\"
-"
+  HTAR_LOG_FN = \"${HTAR_LOG_FN}\""
 
       i=0
       files_in_crnt_arcv=()
@@ -317,14 +316,13 @@ HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
       num_files_in_crnt_arcv=${#files_in_crnt_arcv[@]}
       if [ ${num_files_in_crnt_arcv} -eq 0 ]; then
         EXTRN_MDL_FPS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FPS[@]}" )")"
-        print_err_msg_exit "${script_name}" "\
+        print_err_msg_exit "\
 The current archive file (ARCV_FP) does not contain any of the external 
 model files listed in EXTRN_MDL_FPS:
   ARCV_FP = \"${ARCV_FP}\"
   EXTRN_MDL_FPS = ${EXTRN_MDL_FPS_str}
 The archive file should contain at least one external model file; other-
-wise, it would not be needed.
-"
+wise, it would not be needed."
       fi
 #
 # Extract from the current tar archive file on HPSS all the external mo-
@@ -334,12 +332,11 @@ wise, it would not be needed.
 #
       HTAR_LOG_FN="log.htar_xvf.${narcv_formatted}"
       htar -xvf ${ARCV_FP} ${files_in_crnt_arcv[@]} >& ${HTAR_LOG_FN} || \
-      print_err_msg_exit "${script_name}" "\
+      print_err_msg_exit "\
 htar file extract operation (\"htar -xvf ...\") failed.  Check the log 
 file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-  HTAR_LOG_FN = \"${HTAR_LOG_FN}\"
-"
+  HTAR_LOG_FN = \"${HTAR_LOG_FN}\""
 #
 # Note that the htar file extract operation above may return with a 0 
 # exit code (success) even if one or more (or all) external model output
@@ -362,7 +359,7 @@ file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
         fi
 
         grep -n "${FP}" "${HTAR_LOG_FN}" > /dev/null 2>&1 || \
-        print_err_msg_exit "${script_name}" "\
+        print_err_msg_exit "\
 External model output file FP not extracted from tar archive file ARCV_-
 FP:
   ARCV_FP = \"${ARCV_FP}\"
@@ -370,8 +367,7 @@ FP:
 Check the log file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for 
 details:
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-  HTAR_LOG_FN = \"${HTAR_LOG_FN}\"
-"
+  HTAR_LOG_FN = \"${HTAR_LOG_FN}\""
 
       done
 
@@ -419,15 +415,15 @@ details:
 #
       else
 
-        print_err_msg_exit "${script_name}" "\
+        print_err_msg_exit "\
 The archive-relative directory specified by EXTRN_MDL_ARCVREL_DIR [i.e. 
 the directory \"within\" the tar file(s) listed in EXTRN_MDL_ARCV_FPS] is
 not the current directory (i.e. it is not \".\"), and it does not start 
 with a \"/\" or a \"./\":
   EXTRN_MDL_ARCVREL_DIR = \"${EXTRN_MDL_ARCVREL_DIR}\"
   EXTRN_MDL_ARCV_FPS = ${EXTRN_MDL_ARCV_FPS_str}
-This script must be modified to account for this case.
-"
+This script must be modified to account for this case."
+
       fi
 
     fi
@@ -453,7 +449,7 @@ This script must be modified to account for this case.
 #-----------------------------------------------------------------------
 #
     if [ "${num_arcv_files}" -gt 1 ]; then
-      print_err_msg_exit "${script_name}" "\
+      print_err_msg_exit "\
 Currently, this script is coded to handle only one archive file if the 
 archive file format is specified to be \"zip\", but the number of archive 
 files (num_arcv_files) passed to this script is greater than 1:
@@ -476,12 +472,11 @@ that can be used as a guide for the \"zip\" case."
 #
     HSI_LOG_FN="log.hsi_get"
     hsi get "${ARCV_FP}" >& ${HSI_LOG_FN} || \
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 hsi file get operation (\"hsi get ...\") failed.  Check the log file 
 HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-  HSI_LOG_FN = \"${HSI_LOG_FN}\"
-"
+  HSI_LOG_FN = \"${HSI_LOG_FN}\""
 #
 #-----------------------------------------------------------------------
 #
@@ -492,14 +487,13 @@ HSI_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #
     UNZIP_LOG_FN="log.unzip_lv"
     unzip -l -v ${ARCV_FN} >& ${UNZIP_LOG_FN} || \
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 unzip operation to list the contents of the zip archive file ARCV_FN in
 the directory EXTRN_MDL_FILES_DIR failed.  Check the log file UNZIP_-
 LOG_FN in that directory for details:
   ARCV_FN = \"${ARCV_FN}\"
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-  UNZIP_LOG_FN = \"${UNZIP_LOG_FN}\"
-"
+  UNZIP_LOG_FN = \"${UNZIP_LOG_FN}\""
 #
 #-----------------------------------------------------------------------
 #
@@ -514,15 +508,14 @@ LOG_FN in that directory for details:
 #
     for FP in "${EXTRN_MDL_FPS[@]}"; do
       grep -n "${FP}" "${UNZIP_LOG_FN}" > /dev/null 2>&1 || \
-      print_err_msg_exit "${script_name}" "\
+      print_err_msg_exit "\
 External model output file FP does not exist in the zip archive file 
 ARCV_FN in the directory EXTRN_MDL_FILES_DIR.  Check the log file UN-
 ZIP_LOG_FN in that directory for the contents of the zip archive:
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
   ARCV_FN = \"${ARCV_FN}\"
   FP = \"$FP\"
-  UNZIP_LOG_FN = \"${UNZIP_LOG_FN}\"
-"
+  UNZIP_LOG_FN = \"${UNZIP_LOG_FN}\""
     done
 #
 #-----------------------------------------------------------------------
@@ -536,12 +529,11 @@ ZIP_LOG_FN in that directory for the contents of the zip archive:
 #
     UNZIP_LOG_FN="log.unzip"
     unzip -o "${ARCV_FN}" ${EXTRN_MDL_FPS[@]} >& ${UNZIP_LOG_FN} || \
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 unzip file extract operation (\"unzip -o ...\") failed.  Check the log 
 file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-  UNZIP_LOG_FN = \"${UNZIP_LOG_FN}\"
-"
+  UNZIP_LOG_FN = \"${UNZIP_LOG_FN}\""
 #
 # NOTE:
 # If EXTRN_MDL_ARCVREL_DIR is not empty, the unzip command above will 

@@ -331,15 +331,16 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
     ${istart_rgnl_wide_halo_T6SG} ${jstart_rgnl_wide_halo_T6SG} \
     ${iend_rgnl_wide_halo_T6SG} ${jend_rgnl_wide_halo_T6SG} \
     1 $USHDIR || \
-    print_err_msg_exit "${script_name}" "\
-Call to script that generates grid files returned with nonzero exit code."
+  print_err_msg_exit "\
+Call to script that generates grid files returned with nonzero exit 
+code."
 
   tile_rgnl=7
   grid_fp="$tmpdir/${CRES}_grid.tile${tile_rgnl}.nc"
   $EXECDIR/global_equiv_resol "${grid_fp}" || \
-    print_err_msg_exit "${script_name}" "\ 
-Call to executable that calculates equivalent global uniform cubed sphere
-resolution returned with nonzero exit code."
+  print_err_msg_exit "\
+Call to executable that calculates equivalent global uniform cubed 
+sphere resolution returned with nonzero exit code."
 
   RES_equiv=$( ncdump -h "${grid_fp}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
   RES_equiv=${RES_equiv//$'\n'/}
@@ -378,16 +379,16 @@ Setting parameters in file:
   cd_vrfy $tmpdir
 
   $EXECDIR/regional_grid ${RGNL_GRID_NML_FP} || \
-    print_err_msg_exit "${script_name}" "\ 
-Call to executable that generates grid file (Jim Purser version) returned 
-with nonzero exit code."
+  print_err_msg_exit "\
+Call to executable that generates grid file (Jim Purser version) re-
+turned with nonzero exit code."
 
   tile_rgnl=7
   grid_fp="$tmpdir/regional_grid.nc"
   $EXECDIR/global_equiv_resol "${grid_fp}" || \
-    print_err_msg_exit "${script_name}" "\ 
-Call to executable that calculates equivalent global uniform cubed sphere
-resolution returned with nonzero exit code."
+  print_err_msg_exit "\
+Call to executable that calculates equivalent global uniform cubed 
+sphere resolution returned with nonzero exit code."
 
   RES_equiv=$( ncdump -h "${grid_fp}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]" ) # Need error checking here.
   RES_equiv=${RES_equiv//$'\n'/}
@@ -400,7 +401,7 @@ printf "%s\n" "CRES_equiv = $CRES_equiv"
   mv_vrfy ${grid_fp_orig} ${grid_fp}
 
   $EXECDIR/mosaic_file $CRES_equiv || \
-    print_err_msg_exit "${script_name}" "\ 
+  print_err_msg_exit "\
 Call to executable that creates a grid mosaic file returned with nonzero
 exit code."
 #
@@ -473,13 +474,12 @@ printf "%s %s %s %s %s\n" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to executable \"${shave_exec}\" to generate a grid file with a ${nh3_T7}-
 cell-wide-halo returned with nonzero exit code.  The namelist file
 nml_fn is in directory tmpdir: 
   tmpdir = \"${tmpdir}\"
-  nml_fn = \"${nml_fn}\"
-"
+  nml_fn = \"${nml_fn}\""
 mv_vrfy ${shaved_fp} ${GRID_DIR}
 #
 # Create an input namelist file for the shave executable to generate an
@@ -498,13 +498,12 @@ printf "%s %s %s %s %s\n" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to executable \"${shave_exec}\" to generate a grid file with a ${nh4_T7}-
 cell-wide-halo returned with nonzero exit code.  The namelist file
 nml_fn is in directory tmpdir: 
   tmpdir = \"${tmpdir}\"
-  nml_fn = \"${nml_fn}\"
-"
+  nml_fn = \"${nml_fn}\""
 mv_vrfy ${shaved_fp} ${GRID_DIR}
 #
 # Change location back to the directory before tmpdir.
@@ -523,9 +522,8 @@ $USHDIR/link_fix.sh \
   verbose="FALSE" \
   script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
   file_group="grid" || \
-  print_err_msg_exit "\
-Call to script to create links to grid files failed.
-"
+print_err_msg_exit "\
+Call to script to create links to grid files failed."
 #
 #-----------------------------------------------------------------------
 #

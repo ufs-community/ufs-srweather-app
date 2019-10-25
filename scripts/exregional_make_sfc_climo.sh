@@ -145,7 +145,7 @@ case $MACHINE in
   ;;
 
 *)
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Run command has not been specified for this machine:
   MACHINE = \"$MACHINE\"
   APRUN_SFC = \"$APRUN_SFC\""
@@ -159,7 +159,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-$APRUN_SFC ${EXECDIR}/sfc_climo_gen || print_err_msg_exit "${script_name}" "\
+$APRUN_SFC ${EXECDIR}/sfc_climo_gen || print_err_msg_exit "\
 Call to executable that generates surface climatology files returned 
 with nonzero exit code."
 #
@@ -233,9 +233,8 @@ $USHDIR/link_fix.sh \
   verbose="FALSE" \
   script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
   file_group="sfc_climo" || \
-  print_err_msg_exit "\
-Call to script to create links to surface climatology files failed.
-"
+print_err_msg_exit "\
+Call to script to create links to surface climatology files failed."
 #
 #-----------------------------------------------------------------------
 #

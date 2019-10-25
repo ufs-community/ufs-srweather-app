@@ -49,8 +49,7 @@ function iselementof () {
 #
   if [ "$#" -ne 2 ]; then
     print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
-Usage:
+Incorrect number of arguments specified.  Usage:
 
   ${FUNCNAME[0]} str_to_match array_name
 
@@ -61,7 +60,6 @@ where the arguments are defined as follows:
 
   array_name:
   The name of the array to search.
- 
 "
 
   fi

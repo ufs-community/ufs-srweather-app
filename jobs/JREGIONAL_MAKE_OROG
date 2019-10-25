@@ -43,7 +43,7 @@ This is the J-job script for the task that generates orography files.
 #
 ${SCRIPTSDIR}/exregional_make_orog.sh \
   WORKDIR_LOCAL="ABCD" || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------

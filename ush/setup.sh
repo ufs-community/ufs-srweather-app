@@ -177,11 +177,10 @@ fi
 #
 if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ] && \
    [ ! -d "${SFC_CLIMO_DIR}" ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 The directory (SFC_CLIMO_DIR) that should contain the pre-generated sur-
 face climatology files does not exist:
-  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"
-"
+  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\""
 fi
 #
 # If RUN_TASK_MAKE_SFC_CLIMO is set to "TRUE" and the variable specify-
@@ -216,7 +215,7 @@ case $MACHINE in
 #
 "WCOSS_C")
 #
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
 Then remove this message and rerun." 
@@ -229,7 +228,7 @@ Then remove this message and rerun."
 #
 "WCOSS")
 #
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
 Then remove this message and rerun."
@@ -279,7 +278,7 @@ Then remove this message and rerun."
 #
 "CHEYENNE")
 #
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
 Then remove this message and rerun."
@@ -407,7 +406,7 @@ fi
 #
 DATE_OR_NULL=$( printf "%s" "$DATE_FIRST_CYCL" | sed -n -r -e "s/^([0-9]{8})$/\1/p" )
 if [ -z "${DATE_OR_NULL}" ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 DATE_FIRST_CYCL must be a string consisting of exactly 8 digits of the 
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
 month, DD is the 2-digit day-of-month, and HH is the 2-digit hour-of-
@@ -417,7 +416,7 @@ fi
 
 DATE_OR_NULL=$( printf "%s" "$DATE_LAST_CYCL" | sed -n -r -e "s/^([0-9]{8})$/\1/p" )
 if [ -z "${DATE_OR_NULL}" ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the 
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
 month, DD is the 2-digit day-of-month, and HH is the 2-digit hour-of-
@@ -441,7 +440,7 @@ for CYCL in "${CYCL_HRS[@]}"; do
   CYCL_OR_NULL=$( printf "%s" "$CYCL" | sed -n -r -e "s/^([0-9]{2})$/\1/p" )
 
   if [ -z "${CYCL_OR_NULL}" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 Each element of CYCL_HRS must be a string consisting of exactly 2 digits
 (including a leading \"0\", if necessary) specifying an hour-of-day.  Ele-
 ment #$i of CYCL_HRS (where the index of the first element is 0) does not
@@ -451,7 +450,7 @@ have this form:
   fi
 
   if [ "${CYCL_OR_NULL}" -lt "0" ] || [ "${CYCL_OR_NULL}" -gt "23" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 Each element of CYCL_HRS must be an integer between \"00\" and \"23\", in-
 clusive (including a leading \"0\", if necessary), specifying an hour-of-
 day.  Element #$i of CYCL_HRS (where the index of the first element is 0) 
@@ -552,7 +551,7 @@ NEMSfv3gfs_DIR="$SORCDIR/NEMSfv3gfs"
 # Make sure that the NEMSfv3gfs_DIR directory exists.
 #
 if [ ! -d "${NEMSfv3gfs_DIR}" ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 The NEMSfv3gfs directory specified by NEMSfv3gfs_DIR that should contain
 the FV3 source code does not exist:
   NEMSfv3gfs_DIR = \"${NEMSfv3gfs_DIR}\"
@@ -599,10 +598,9 @@ case $MACHINE in
   ;;
 
 *)
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Directories have not been specified for this machine:
-  MACHINE = \"$MACHINE\"
-"
+  MACHINE = \"$MACHINE\""
   ;;
 
 esac
@@ -618,7 +616,7 @@ esac
 #
 FCST_LEN_HRS_MAX="999"
 if [ "$FCST_LEN_HRS" -gt "$FCST_LEN_HRS_MAX" ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Forecast length is greater than maximum allowed length:
   FCST_LEN_HRS = $FCST_LEN_HRS
   FCST_LEN_HRS_MAX = $FCST_LEN_HRS_MAX"
@@ -636,7 +634,7 @@ fi
 rem=$(( ${FCST_LEN_HRS}%${LBC_UPDATE_INTVL_HRS} ))
 
 if [ "$rem" -ne "0" ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 The forecast length (FCST_LEN_HRS) is not evenly divisible by the later-
 al boundary conditions update interval (LBC_UPDATE_INTVL_HRS):
   FCST_LEN_HRS = $FCST_LEN_HRS
@@ -731,10 +729,9 @@ mkdir_vrfy -p "${EXPT_BASEDIR}"
 #-----------------------------------------------------------------------
 #
 if [ -z "${EXPT_SUBDIR}" ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 The name of the experiment subdirectory (EXPT_SUBDIR) cannot be empty:
-  EXPT_SUBDIR = \"${EXPT_SUBDIR}\"
-"
+  EXPT_SUBDIR = \"${EXPT_SUBDIR}\""
 fi
 #
 #-----------------------------------------------------------------------
@@ -891,15 +888,12 @@ else
 #-----------------------------------------------------------------------
 #
   if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
-
     if [ ! -d "${GRID_DIR}" ]; then
-  print_err_msg_exit "${script_name}" "\
+      print_err_msg_exit "\
 The directory (GRID_DIR) that should contain the pre-generated grid 
 files does not exist:
-  GRID_DIR = \"${GRID_DIR}\"
-"
+  GRID_DIR = \"${GRID_DIR}\""
     fi
-
   else
     GRID_DIR="$EXPTDIR/grid"
   fi
@@ -914,15 +908,12 @@ files does not exist:
 #-----------------------------------------------------------------------
 #
   if [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ]; then
-
     if [ ! -d "${OROG_DIR}" ]; then
-  print_err_msg_exit "${script_name}" "\
+      print_err_msg_exit "\
 The directory (OROG_DIR) that should contain the pre-generated orography
 files does not exist:
-  OROG_DIR = \"${OROG_DIR}\"
-"
+  OROG_DIR = \"${OROG_DIR}\""
     fi
-
   else
     OROG_DIR="$EXPTDIR/orog"
   fi
@@ -939,11 +930,10 @@ files does not exist:
   if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
 
     if [ ! -d "${SFC_CLIMO_DIR}" ]; then
-  print_err_msg_exit "${script_name}" "\
+      print_err_msg_exit "\
 The directory (SFC_CLIMO_DIR) that should contain the pre-generated orography
 files does not exist:
-  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"
-"
+  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\""
     fi
 
   else
@@ -1005,22 +995,20 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 
   if [ "${EXTRN_MDL_NAME_ICS}" != "FV3GFS" ] && \
      [ "${EXTRN_MDL_NAME_ICS}" != "GSMGFS" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 When RUN_ENVIR set to \"nco\", the external model used for the initial
 conditions and surface fields must be either \"FV3GFS\" or \"GSMGFS\":
   RUN_ENVIR = \"${RUN_ENVIR}\"
-  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
-"
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
   fi
 
   if [ "${EXTRN_MDL_NAME_LBCS}" != "FV3GFS" ] && \
      [ "${EXTRN_MDL_NAME_LBCS}" != "GSMGFS" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 When RUN_ENVIR set to \"nco\", the external model used for the initial
 conditions and surface fields must be either \"FV3GFS\" or \"GSMGFS\":
   RUN_ENVIR = \"${RUN_ENVIR}\"
-  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
-"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
   fi
 
 fi
@@ -1173,7 +1161,7 @@ component if it is being used) are:
 #
 rem=$(( $nx_T7%$layout_x ))
 if [ $rem -ne 0 ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 The number of grid cells in the x direction (nx_T7) is not evenly divisible
 by the number of MPI tasks in the x direction (layout_x):
   nx_T7 = $nx_T7
@@ -1182,7 +1170,7 @@ fi
 
 rem=$(( $ny_T7%$layout_y ))
 if [ $rem -ne 0 ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 The number of grid cells in the y direction (ny_T7) is not evenly divisible
 by the number of MPI tasks in the y direction (layout_y):
   ny_T7 = $ny_T7
@@ -1208,7 +1196,7 @@ num_cols_per_task=$(( $nx_per_task*$ny_per_task ))
 rem=$(( $num_cols_per_task%$blocksize ))
 if [ $rem -ne 0 ]; then
   prime_factors_num_cols_per_task=$( factor $num_cols_per_task | sed -r -e 's/^[0-9]+: (.*)/\1/' )
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 The number of columns assigned to a given MPI task must be divisible by
 the blocksize:
   nx_per_task = nx_T7/layout_x = $nx_T7/$layout_x = $nx_per_task
@@ -1235,7 +1223,7 @@ fi
 if [ "$QUILTING" = "TRUE" ]; then
 
   if [ -z "${WRTCMP_PARAMS_TEMPLATE_FN}" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 The write-component template file name (WRTCMP_PARAMS_TEMPLATE_FN) must
 be set to a non-empty value when quilting (i.e. the write-component) is 
 enabled:
@@ -1245,7 +1233,7 @@ enabled:
 
   WRTCMP_PARAMS_TEMPLATE_FP="${TEMPLATE_DIR}/${WRTCMP_PARAMS_TEMPLATE_FN}"
   if [ ! -f "${WRTCMP_PARAMS_TEMPLATE_FP}" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 The write-component template file does not exist or is not a file:
   WRTCMP_PARAMS_TEMPLATE_FP = \"${WRTCMP_PARAMS_TEMPLATE_FP}\""
   fi
@@ -1270,7 +1258,7 @@ if [ "$QUILTING" = "TRUE" ]; then
   rem=$(( $ny_T7%${WRTCMP_write_tasks_per_group} ))
 
   if [ $rem -ne 0 ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 The number of grid points in the y direction on the regional grid (ny_-
 T7) must be evenly divisible by the number of tasks per write group 
 (WRTCMP_write_tasks_per_group):
@@ -1316,12 +1304,11 @@ NUM_NODES=$(( (${PE_MEMBER01} + ${ncores_per_node} - 1)/${ncores_per_node} ))
 num_fixam_files_sysdir="${#FIXam_FILES_SYSDIR[@]}"
 num_fixam_files_exptdir="${#FIXam_FILES_EXPTDIR[@]}"
 if [ "${num_fixam_files_sysdir}" -ne "${num_fixam_files_exptdir}" ]; then
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 The number of fixed files specified in FIXam_FILES_SYSDIR must be equal 
 to that specified in FIXam_FILES_EXPTDIR:
   num_fixam_files_sysdir = ${num_fixam_files_sysdir}
-  num_fixam_files_exptdir = ${num_fixam_files_exptdir}
-"
+  num_fixam_files_exptdir = ${num_fixam_files_exptdir}"
 else
   NUM_FIXam_FILES="${num_fixam_files_sysdir}"
 fi
@@ -1680,7 +1667,7 @@ nh0_T7="$nh0_T7"
 nh3_T7="$nh3_T7"
 nh4_T7="$nh4_T7"
 EOM
-} || print_err_msg_exit "${script_name}" "\
+} || print_err_msg_exit "\
 Heredoc (cat) command to append new variable definitions to variable 
 definitions file returned with a nonzero status."
 #
@@ -1716,7 +1703,7 @@ jstart_rgnl_wide_halo_T6SG="$jstart_rgnl_wide_halo_T6SG"
 jend_rgnl_wide_halo_T6SG="$jend_rgnl_wide_halo_T6SG"
 CRES="$CRES"
 EOM
-} || print_err_msg_exit "${script_name}" "\
+} || print_err_msg_exit "\
 Heredoc (cat) command to append grid parameters to variable definitions
 file returned with a nonzero status."
 
@@ -1746,7 +1733,7 @@ RES=""   # This will be set after the grid generation task is complete.
 CRES=""  # This will be set after the grid generation task is complete.
 stretch_fac="$stretch_fac"
 EOM
-} || print_err_msg_exit "${script_name}" "\
+} || print_err_msg_exit "\
 Heredoc (cat) command to append grid parameters to variable definitions
 file returned with a nonzero status."
 
@@ -1817,7 +1804,7 @@ LBC_UPDATE_FCST_HRS=(${LBC_UPDATE_FCST_HRS[@]})  # LBC_UPDATE_FCST_HRS is an arr
 ncores_per_node="${ncores_per_node}"
 PE_MEMBER01="${PE_MEMBER01}"
 EOM
-} || print_err_msg_exit "${script_name}" "\
+} || print_err_msg_exit "\
 Heredoc (cat) command to append new variable definitions to variable 
 definitions file returned with a nonzero status."
 #

@@ -266,7 +266,7 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
   num_files=$( ls -1 ${glob_pattern} 2>/dev/null | wc -l )
 
   if [ "${num_files}" -ne "1" ]; then
-    print_err_msg_exit "${script_name}" "\
+    print_err_msg_exit "\
 Exactly one file must exist in directory FIXsar matching the globbing
 pattern glob_pattern:
   FIXsar = \"${FIXsar}\"
@@ -306,9 +306,8 @@ else
       verbose="FALSE" \
       script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
       file_group="grid" || \
-      print_err_msg_exit "\
-Call to script to create links to grid files failed.
-"
+    print_err_msg_exit "\
+Call to script to create links to grid files failed."
   fi
 #
 #-----------------------------------------------------------------------
@@ -324,9 +323,8 @@ Call to script to create links to grid files failed.
       verbose="FALSE" \
       script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
       file_group="orog" || \
-      print_err_msg_exit "\
-Call to script to create links to orography files failed.
-"
+    print_err_msg_exit "\
+Call to script to create links to orography files failed."
   fi
 #
 #-----------------------------------------------------------------------
@@ -343,9 +341,8 @@ Call to script to create links to orography files failed.
       verbose="FALSE" \
       script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
       file_group="sfc_climo" || \
-      print_err_msg_exit "\
-Call to script to create links to surface climatology files failed.
-"
+    print_err_msg_exit "\
+Call to script to create links to surface climatology files failed."
   fi
 
 fi
@@ -468,7 +465,7 @@ system/software for handling modules..."
 #
 export LD_LIBRARY_PATH="${NEMSfv3gfs_DIR}/ccpp/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
 EOM
-} || print_err_msg_exit "${script_name}" "
+} || print_err_msg_exit "\
 Heredoc (cat) command to append command to add path to CCPP libraries to
 the Lmod initialization script in the experiment directory returned with
 a nonzero status."
@@ -500,7 +497,7 @@ ment directory..."
 
     else
 
-      print_err_msg_exit "
+      print_err_msg_exit "\
 A template FV3 namelist file is not available for the following combina-
 tion of physics suite and external models for ICs and LBCs:
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
@@ -634,7 +631,7 @@ if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
          "${EXTRN_MDL_NAME_LBCS}" = "HRRRX" ]; then
     set_file_param "${FV3_NML_FP}" "lsoil" "9"
   else
-    print_err_msg_exit "
+    print_err_msg_exit "\
 The value to set the variable lsoil to in the FV3 namelist file (FV3_-
 NML_FP) has not been specified for the following combination of physics
 suite and external models for ICs and LBCs:

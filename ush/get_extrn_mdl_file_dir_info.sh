@@ -86,9 +86,8 @@ follows:
 if [ 0 = 1 ]; then
 
   if [ "$#" -ne "13" ]; then
-    print_err_msg_exit "${func_name}" "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
-Usage:
+    print_err_msg_exit "\
+Incorrect number of arguments specified.  Usage:
 
   ${FUNCNAME[0]} \
     extrn_mdl_name \
@@ -174,7 +173,6 @@ where the arguments are defined as follows:
   Name of the global variable that will contain the archive-relative di-
   rectory, i.e. the directory \"inside\" the archive file in which the ex-
   ternal model output files may be stored.
- 
 "
 
   fi
@@ -395,13 +393,12 @@ fi
       ;;
 
     *)
-      print_err_msg_exit "${func_name}" "\
+      print_err_msg_exit "\
 The external model file names have not yet been specified for this com-
 bination of external model (extrn_mdl_name) and analysis or forecast 
 (anl_or_fcst):
   extrn_mdl_name = \"${extrn_mdl_name}\"
-  anl_or_fcst = \"${anl_or_fcst}\"
-"
+  anl_or_fcst = \"${anl_or_fcst}\""
       ;;
 
     esac
@@ -458,13 +455,12 @@ bination of external model (extrn_mdl_name) and analysis or forecast
       ;;
 
     *)
-      print_err_msg_exit "${func_name}" "\
+      print_err_msg_exit "\
 The external model file names have not yet been specified for this com-
 bination of external model (extrn_mdl_name) and analysis or forecast 
 (anl_or_fcst):
   extrn_mdl_name = \"${extrn_mdl_name}\"
-  anl_or_fcst = \"${anl_or_fcst}\"
-"
+  anl_or_fcst = \"${anl_or_fcst}\""
       ;;
 
     esac
@@ -513,12 +509,11 @@ bination of external model (extrn_mdl_name) and analysis or forecast
       sysdir=""
       ;;
     *)
-      print_err_msg_exit "${func_name}" "\
+      print_err_msg_exit "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
   extrn_mdl_name = \"${extrn_mdl_name}\"
-  MACHINE = \"$MACHINE\"
-"
+  MACHINE = \"$MACHINE\""
       ;;
     esac
     ;;
@@ -542,12 +537,11 @@ has not been specified for this external model and machine combination:
       sysdir="$sysbasedir/${yyyymmdd}"
       ;;
     *)
-      print_err_msg_exit "${func_name}" "\
+      print_err_msg_exit "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
   extrn_mdl_name = \"${extrn_mdl_name}\"
-  MACHINE = \"$MACHINE\"
-"
+  MACHINE = \"$MACHINE\""
       ;;
     esac
     ;;
@@ -571,12 +565,11 @@ has not been specified for this external model and machine combination:
       sysdir="$sysbasedir"
       ;;
     *)
-      print_err_msg_exit "${func_name}" "\
+      print_err_msg_exit "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
   extrn_mdl_name = \"${extrn_mdl_name}\"
-  MACHINE = \"$MACHINE\"
-"
+  MACHINE = \"$MACHINE\""
       ;;
     esac
     ;;
@@ -600,23 +593,21 @@ has not been specified for this external model and machine combination:
       sysdir="$sysbasedir"
       ;;
     *)
-      print_err_msg_exit "${func_name}" "\
+      print_err_msg_exit "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
   extrn_mdl_name = \"${extrn_mdl_name}\"
-  MACHINE = \"$MACHINE\"
-"
+  MACHINE = \"$MACHINE\""
       ;;
     esac
     ;;
 
 
   *)
-    print_err_msg_exit "${func_name}" "\
+    print_err_msg_exit "\
 The system directory in which to look for external model output files 
 has not been specified for this external model:
-  extrn_mdl_name = \"${extrn_mdl_name}\"
-"
+  extrn_mdl_name = \"${extrn_mdl_name}\""
 
   esac
 #
@@ -746,10 +737,9 @@ has not been specified for this external model:
     ;;
 
   *)
-    print_err_msg_exit "${func_name}" "\
+    print_err_msg_exit "\
 Archive file information has not been specified for this external model:
-  extrn_mdl_name = \"${extrn_mdl_name}\"
-"
+  extrn_mdl_name = \"${extrn_mdl_name}\""
     ;;
 
   esac

@@ -25,8 +25,7 @@ function set_file_param() {
 #
   if [ "$#" -ne 3 ]; then
     print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
-Usage:
+Incorrect number of arguments specified.  Usage:
 
   ${FUNCNAME[0]} file_full_path param value
 
@@ -134,7 +133,6 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
 #
   *)
     print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":
 The regular expressions for performing search and replace have not been 
 specified for this file:
   file = \"$file\""
@@ -156,8 +154,8 @@ specified for this file:
     sed -i -r -e "s%${regex_search}%${regex_replace}%" "${file_full_path}"
   else
     print_err_msg_exit "\
-Specified file (file_full_path) does not contain the searched-for regular 
-expression (regex_search):
+Specified file (file_full_path) does not contain the searched-for regu-
+lar expression (regex_search):
   file_full_path = \"${file_full_path}\"
   param = \"$param\"
   value = \"$value\"

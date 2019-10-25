@@ -33,14 +33,12 @@ function is_array () {
 
   if [ "$#" -ne 1 ]; then
     print_err_msg_exit "\
-Function \"${func_name}\":  Incorrect number of arguments specified.
-Usage:
+Incorrect number of arguments specified.  Usage:
 
   ${func_name} var_name
 
 where var_name is the name of the variable to check to determine whether 
 or not it is an array.
- 
 "
   fi
 #

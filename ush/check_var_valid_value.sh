@@ -91,13 +91,13 @@ The value specified in ${var_name} is not supported:
 #-----------------------------------------------------------------------
 #
   iselementof "${var_value}" valid_var_values || { \
-  caller_name=$( basename "${BASH_SOURCE[1]}" )
-  valid_var_values_str=$(printf "\"%s\" " "${valid_var_values[@]}");
-  print_err_msg_exit "${caller_name}" "\
+    caller_name=$( basename "${BASH_SOURCE[1]}" )
+    valid_var_values_str=$(printf "\"%s\" " "${valid_var_values[@]}");
+    print_err_msg_exit "\
 ${err_msg}
 ${var_name} must be set to one of the following:
-  ${valid_var_values_str}
-"; }
+  ${valid_var_values_str}"; \
+  }
 #
 #-----------------------------------------------------------------------
 #
