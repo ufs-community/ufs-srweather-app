@@ -60,7 +60,7 @@ sed -r \
     -e "s/^([ ]*)([^ ]+.*)/\2/g" \
     -e "/^#.*/d" \
     -e "/^$/d" \
-    ${LOCAL_CONFIG_FN} \
+    ${CUSTOM_CONFIG_FN} \
 )
 #
 #-----------------------------------------------------------------------
@@ -83,8 +83,9 @@ while read crnt_line; do
   if [ -z "${var_name}" ]; then
 
     print_info_msg "\
-Current line of configuration script \"${LOCAL_CONFIG_FN}\" does not contain
-a variable name:
+Current line (crnt_line) of custom experiment/workflow configuration 
+script (CUSTOM_CONFIG_FN) does not contain a variable name (var_name):
+  CUSTOM_CONFIG_FN = \"${CUSTOM_CONFIG_FN}\"
   crnt_line = \"${crnt_line}\"
   var_name = \"${var_name}\"
 Skipping to next line."
@@ -98,11 +99,13 @@ Skipping to next line."
 #
     grep "^${var_name}=" <<< "${var_list_default}" > /dev/null 2>&1 || \
     print_err_msg_exit "\
-Variable in local configuration script \"${LOCAL_CONFIG_FN}\" not set in default
-configuration script \"${DEFAULT_CONFIG_FN}\":
+Variable (var_name) in custom configuration script (CUSTOM_CONFIG_FN) 
+not defined in default configuration script (DEFAULT_CONFIG_FN):
+  CUSTOM_CONFIG_FN = \"${CUSTOM_CONFIG_FN}\"
+  DEFAULT_CONFIG_FN = \"${DEFAULT_CONFIG_FN}\"
   var_name = \"${var_name}\"
-Please assign a default value to this variable in \"${DEFAULT_CONFIG_FN}\" 
-and rerun."
+Please assign a default value to this variable in the default configura-
+tion script and rerun."
 
   fi
 

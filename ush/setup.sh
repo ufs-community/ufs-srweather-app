@@ -51,7 +51,7 @@ script_dir=$( dirname ${BASH_SOURCE[0]} )
 #-----------------------------------------------------------------------
 #
 DEFAULT_CONFIG_FN="config_defaults.sh"
-LOCAL_CONFIG_FN="config.sh"
+CUSTOM_CONFIG_FN="config.sh"
 #
 #-----------------------------------------------------------------------
 #
@@ -77,7 +77,7 @@ LOCAL_CONFIG_FN="config.sh"
 #
 #-----------------------------------------------------------------------
 #
-if [ -f "$LOCAL_CONFIG_FN" ]; then
+if [ -f "${CUSTOM_CONFIG_FN}" ]; then
 #
 # We require that the variables being set in the local configuration 
 # script have counterparts in the default configuration script.  This is
@@ -90,7 +90,7 @@ if [ -f "$LOCAL_CONFIG_FN" ]; then
 #
 # Now source the local configuration script.
 #
-  . ./$LOCAL_CONFIG_FN
+  . ./${CUSTOM_CONFIG_FN}
 #
 fi
 #
