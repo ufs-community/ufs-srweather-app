@@ -62,7 +62,7 @@ process_args valid_args "$@"
 # set to.
 if [ "$VERBOSE" = "TRUE" ]; then
   num_valid_args="${#valid_args[@]}"
-  print_info_msg "\n\
+  print_info_msg "
 The arguments to script/function \"${script_name}\" have been set as 
 follows:
 "

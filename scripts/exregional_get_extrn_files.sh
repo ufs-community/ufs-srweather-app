@@ -63,7 +63,7 @@ process_args valid_args "$@"
 # set to.
 if [ "$VERBOSE" = "TRUE" ]; then
   num_valid_args="${#valid_args[@]}"
-  print_info_msg "\n\
+  print_info_msg "
 The arguments to script/function \"${script_name}\" have been set as 
 follows:
 "
@@ -99,26 +99,30 @@ for FP in "${EXTRN_MDL_FPS[@]}"; do
   if [ -f "$FP" ]; then
 
     if [ $( find "$FP" -mmin +${min_age} ) ]; then
+
       num_files_found_on_disk=$(( num_files_found_on_disk+1 ))
-      print_info_msg "\n\
+      print_info_msg "
 File FP exists on system disk and is older than the minimum required age
 of min_age minutes:
   FP = \"$FP\"
-  min_age = ${min_age} min"
+  min_age = ${min_age} minutes"
+
     else
-      print_info_msg "\n\
+
+      print_info_msg "
 File FP exists on system disk and but is NOT older than the minumum re-
 quired age of min_age minutes:
   FP = \"$FP\"
-  min_age = ${min_age} min
+  min_age = ${min_age} minutes
 Will try fetching all external model files from HPSS.  Not checking pre-
 sence and age of remaining external model files on system disk."
       break
+
     fi
 
   else
 
-    print_info_msg "\n\
+    print_info_msg "
 File FP does NOT exist on system disk:
   FP = \"$FP\"
 Will try fetching all external model files from HPSS.  Not checking pre-
@@ -155,25 +159,25 @@ if [ "${DATA_SRC}" = "disk" ]; then
 
   if [ "${RUN_ENVIR}" = "nco" ]; then
 
-    print_info_msg "\
+    print_info_msg "
 Creating links in local directory (EXTRN_MDL_FILES_DIR) to external mo-
 del files (EXTRN_MDL_FNS) in the system directory on disk (EXTRN_MDL_-
 SYSDIR):
   EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
   EXTRN_MDL_SYSDIR = \"${EXTRN_MDL_SYSDIR}\"
-  EXTRN_MDL_FNS = ${EXTRN_MDL_FNS_str}
-"
+  EXTRN_MDL_FNS = ${EXTRN_MDL_FNS_str}"
+
     ln_vrfy -sf -t ${EXTRN_MDL_FILES_DIR} ${EXTRN_MDL_FPS[@]}
 
   else
 
-    print_info_msg "\
+    print_info_msg "
 Copying external model files (EXTRN_MDL_FNS) from the system directory 
 on disk (EXTRN_MDL_SYSDIR) to local directory (EXTRN_MDL_FILES_DIR):
   EXTRN_MDL_SYSDIR = \"${EXTRN_MDL_SYSDIR}\"
   EXTRN_MDL_FNS = ${EXTRN_MDL_FNS_str}
-  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\"
-"
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\""
+
     cp_vrfy ${EXTRN_MDL_FPS[@]} ${EXTRN_MDL_FILES_DIR}
 
   fi
@@ -229,7 +233,7 @@ elif [ "${DATA_SRC}" = "HPSS" ]; then
   EXTRN_MDL_FPS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FPS[@]}" )")"
   EXTRN_MDL_ARCV_FPS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_ARCV_FPS[@]}" )")"
 
-  print_info_msg "\n\
+  print_info_msg "
 Fetching model output files from HPSS.  The model output files (EXTRN_-
 MDL_FPS), the archive files on HPSS in which these output files are 
 stored (EXTRN_MDL_ARCV_FPS), and the local directory into which they 
@@ -560,7 +564,7 @@ file UNZIP_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 #
   if [ "${ICS_OR_LBCS}" = "ICS" ]; then
 
-    print_info_msg "\n\
+    print_info_msg "
 ========================================================================
 External model files needed for generating initial condition and surface 
 fields for the FV3SAR successfully fetched from HPSS!!!
@@ -569,7 +573,7 @@ Exiting script:  \"${script_name}\"
 
   elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
 
-    print_info_msg "\n\
+    print_info_msg "
 ========================================================================
 External model files needed for generating lateral boundary conditions
 on the halo of the FV3SAR's regional grid successfully fetched from 

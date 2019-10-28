@@ -65,7 +65,7 @@ function get_extrn_mdl_file_dir_info () {
 # set to.
   if [ "$VERBOSE" = "TRUE" ]; then
     num_valid_args="${#valid_args[@]}"
-    print_info_msg "\n\
+    print_info_msg "
 The arguments to script/function \"${func_name}\" have been set as 
 follows:
 "

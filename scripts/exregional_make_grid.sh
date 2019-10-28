@@ -62,7 +62,7 @@ process_args valid_args "$@"
 # set to.
 if [ "$VERBOSE" = "TRUE" ]; then
   num_valid_args="${#valid_args[@]}"
-  print_info_msg "\n\
+  print_info_msg "
 The arguments to script/function \"${script_name}\" have been set as 
 follows:
 "
@@ -323,7 +323,8 @@ mkdir_vrfy -p "$tmpdir"
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "Starting grid file generation..."
+print_info_msg "$VERBOSE" "
+Starting grid file generation..."
 
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
@@ -364,7 +365,7 @@ elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
   RGNL_GRID_NML_FP="$tmpdir/${RGNL_GRID_NML_FN}"
   cp_vrfy ${TEMPLATE_DIR}/${RGNL_GRID_NML_FN} ${RGNL_GRID_NML_FP}
 
-  print_info_msg "$VERBOSE" "\
+  print_info_msg "$VERBOSE" "
 Setting parameters in file:
   RGNL_GRID_NML_FP = \"$RGNL_GRID_NML_FP\""
 #
@@ -434,7 +435,8 @@ mv_vrfy ${CRES}_grid.tile${TILE_RGNL}.nc \
 mv_vrfy ${CRES}_mosaic.nc ${GRID_DIR}
 cd_vrfy -
 
-print_info_msg "$VERBOSE" "Grid file generation complete."
+print_info_msg "$VERBOSE" "
+Grid file generation complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -466,9 +468,9 @@ cd_vrfy ${tmpdir}
 # call the shave executable.  Finally, move the resultant file to the 
 # GRID_DIR directory.
 #
-print_info_msg "$VERBOSE" "\
-\"Shaving\" grid file with wide halo to obtain grid file with ${nh3_T7}-cell-
-wide halo..."
+print_info_msg "$VERBOSE" "
+\"Shaving\" grid file with wide halo to obtain grid file with ${nh3_T7}-cell-wide
+halo..."
 
 nml_fn="input.shave.grid.halo${nh3_T7}"
 shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${nh3_T7}.nc"
@@ -490,9 +492,9 @@ mv_vrfy ${shaved_fp} ${GRID_DIR}
 # call the shave executable.  Finally, move the resultant file to the 
 # GRID_DIR directory.
 #
-print_info_msg "$VERBOSE" "\
-\"Shaving\" grid file with wide halo to obtain grid file with ${nh4_T7}-cell-
-wide halo..."
+print_info_msg "$VERBOSE" "
+\"Shaving\" grid file with wide halo to obtain grid file with ${nh4_T7}-cell-wide
+halo..."
 
 nml_fn="input.shave.grid.halo${nh4_T7}"
 shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${nh4_T7}.nc"

@@ -62,7 +62,7 @@ process_args valid_args "$@"
 # set to.
 if [ "$verbose" = "TRUE" ]; then
   num_valid_args="${#valid_args[@]}"
-  print_info_msg "\n\
+  print_info_msg "
 The arguments to script/function \"${script_name}\" have been set as 
 follows:
 "
@@ -178,7 +178,7 @@ quilting="${7:-}"
 
 dot_quilting=".${quilting}."
 
-print_info_msg "\
+print_info_msg "
 User-specified forecast parameters:
 
   predef_domain = \"${predef_domain}\"
@@ -205,7 +205,7 @@ RUNDIR_BASE="$BASEDIR/run_dirs"
 RUN_SUBDIR="test_date_${TEST_DATE}/$EXPT_NAME"
 TMPDIR="$BASEDIR/work_dirs"
 
-print_info_msg "\
+print_info_msg "
 Variables constructed from user-specified forecast parameters:
 
   BASEDIR = \"${BASEDIR}\"
@@ -350,7 +350,7 @@ chmod u+x $RELAUNCH_SCR
 #-----------------------------------------------------------------------
 #
 CRONTAB_ORIG="$(pwd)/crontab.orig"
-print_info_msg "\
+print_info_msg "
 Copying contents of user cron table to backup file:
   CRONTAB_ORIG = \"$CRONTAB_ORIG\""
 crontab -l > $CRONTAB_ORIG
@@ -368,14 +368,14 @@ exit_status=$?
 
 if [ "$exit_status" -eq 0 ]; then
 
-  print_info_msg "\
+  print_info_msg "
 The following line already exists in the cron table and thus will not be
 added:
   crontab_line = \"$crontab_line\""
   
 else
 
-  print_info_msg "\
+  print_info_msg "
 Adding the following line to the cron table in order to automatically
 resubmit FV3SAR workflow:
   crontab_line = \"$crontab_line\""

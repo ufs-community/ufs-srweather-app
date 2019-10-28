@@ -66,7 +66,7 @@ process_args valid_args "$@"
 #
 if [ "$verbose" = "TRUE" ]; then
   num_valid_args="${#valid_args[@]}"
-  print_info_msg "\n\
+  print_info_msg "
 The arguments to script/function \"${script_name}\" have been set as 
 follows:
 " 1>&2
@@ -91,8 +91,7 @@ fi
 #
 if [ "$verbose" = "TRUE" ]; then
   print_info_msg "
-Creating links in the FIXsar directory to the grid files...
-"
+Creating links in the FIXsar directory to the grid files..."
 fi
 #
 #-----------------------------------------------------------------------
