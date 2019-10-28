@@ -110,7 +110,7 @@ where the arguments are defined as follows:
         old_dir="${dir}_old${old_indx}"
       done
 
-      print_info_msg $VERBOSE" "
+      print_info_msg "$VERBOSE" "
 Directory already exists:
   dir = \"$dir\"
 Moving (renaming) preexisting directory to:
