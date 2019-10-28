@@ -17,6 +17,18 @@ function check_for_preexist_dir() {
 #-----------------------------------------------------------------------
 #
   { save_shell_opts; set -u +x; } > /dev/null 2>&1
+#-----------------------------------------------------------------------
+#
+# Get the name of this function as well as information about the calling
+# script or function.
+#
+#-----------------------------------------------------------------------
+#
+  local crnt_func="${FUNCNAME[0]}"
+  local caller_path=$( readlink -f "${BASH_SOURCE[1]}" )
+  local caller_filename=$( basename "${caller_path}" )
+  local caller_dir=$( dirname "${caller_path}" )
+  local caller_name="${FUNCNAME[1]}"
 #
 #-----------------------------------------------------------------------
 #
@@ -25,11 +37,15 @@ function check_for_preexist_dir() {
 #-----------------------------------------------------------------------
 #
   if [ "$#" -ne 2 ]; then
-    print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
+    print_err_msg_exit "
+Incorrect number of arguments specified:
+
+  script/function name = \"${crnt_func}\"
+  number of arguments specified = $#
+
 Usage:
 
-  ${FUNCNAME[0]} dir preexisting_dir_method
+  ${crnt_func}  dir  preexisting_dir_method
 
 where the arguments are defined as follows:
 
@@ -38,7 +54,8 @@ where the arguments are defined as follows:
 
   preexisting_dir_method:
   String specifying the action to take if a preexisting version of dir
-  is found.  Valid values are \"delete\", \"rename\", and \"quit\"."
+  is found.  Valid values are \"delete\", \"rename\", and \"quit\".
+" 1>@2
   fi
 #
 #-----------------------------------------------------------------------
@@ -93,8 +110,8 @@ where the arguments are defined as follows:
         old_dir="${dir}_old${old_indx}"
       done
 
-      print_info_msg "\
-Function \"${FUNCNAME[0]}\":  Directory already exists:
+      print_info_msg $VERBOSE" "
+Directory already exists:
   dir = \"$dir\"
 Moving (renaming) preexisting directory to:
   old_dir = \"$old_dir\""

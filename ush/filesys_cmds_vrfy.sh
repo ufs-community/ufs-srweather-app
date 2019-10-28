@@ -22,19 +22,44 @@ function filesys_cmd_vrfy() {
 #
 #-----------------------------------------------------------------------
 #
+# Get the name of this function as well as information about the calling
+# script or function.
+#
+#-----------------------------------------------------------------------
+#
+  local crnt_func="${FUNCNAME[0]}"
+# Note:
+# Below, the index into BASH_SOURCE and FUNCNAME is 2 (not 1 as is usu-
+# ally the case) because this function is called by functions such as
+# cp_vrfy, mv_vrfy, rm_vrfy, ln_vrfy, mkdir_vrfy, and cd_vrfy, but these
+# are just wrappers, and in the error and informational messages we are
+# really interested in the scripts/functions that call these wrappers. 
+  local caller_path=$( readlink -f "${BASH_SOURCE[2]}" )
+  local caller_filename=$( basename "${caller_path}" )
+  local caller_dir=$( dirname "${caller_path}" )
+  local caller_name="${FUNCNAME[2]}"
+#
+#-----------------------------------------------------------------------
+#
 # Check that at least one argument is supplied.
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$#" -lt 1 ]; then
+  if [ "$#" -lt 2 ]; then
 
-    print_err_msg_exit "\
-From function \"${FUNCNAME[0]}\":  At least one argument must be specified:
-  number of arguments = \$# = $#
-Usage is:
-  ${FUNCNAME[0]} cmd args_to_cmd
-where \"cmd\" is the command to execute and \"args_to_cmd\" are the options and
-arguments to pass to that command."
+    print_err_msg_exit "
+At least two arguments must be specified:
+
+  script/function name = \"${crnt_func}\"
+  number of arguments specified = $#
+
+Usage:
+
+  ${crnt_func}  cmd  args_to_cmd
+
+where \"cmd\" is the command to execute and \"args_to_cmd\" are the options
+and arguments to pass to that command.
+"
 
   fi
 #
@@ -85,7 +110,10 @@ arguments to pass to that command."
 #
   if [ $exit_code -ne 0 ]; then
     print_err_msg_exit "\
-From function \"${FUNCNAME[0]}\":  \"$cmd\" operation failed:
+Call to function \"${cmd}_vrfy\" failed.  This function was called:
+  From script/function:  \"${caller_name}\"  (This gets set to \"source\" for a script, or to \"main\" for the top-level script.)
+  In file:  \"${caller_path}\" 
+Error message from \"${cmd}_vrfy\" function's \"$cmd\" operation:
 $output"
   fi
 #
@@ -112,8 +140,12 @@ $output"
 #-----------------------------------------------------------------------
 #
   if [ -n "$output" ]; then
-    print_info_msg "\
-From function \"${FUNCNAME[0]}\":  Message from \"$cmd\" operation:
+    print_info_msg "
+\"${cmd}_vrfy\" operation returned with a message.  This command was 
+issued:
+  From script/function:  \"${caller_name}\"  (This gets set to \"source\" for a script, or to \"main\" for the top-level script.)
+  In file:  \"${caller_path}\" 
+Message from \"${cmd}_vrfy\" function's \"$cmd\" operation:
 $output"
   fi
 #
