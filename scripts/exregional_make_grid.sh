@@ -57,22 +57,24 @@ This is the ex-script for the task that generates grid files.
 #
 valid_args=( "WORKDIR_LOCAL" )
 process_args valid_args "$@"
-
-# If VERBOSE is set to TRUE, print out what each valid argument has been
-# set to.
-if [ "$VERBOSE" = "TRUE" ]; then
-  num_valid_args="${#valid_args[@]}"
-  print_info_msg "
+#
+#-----------------------------------------------------------------------
+#
+# If VERBOSE is set to "TRUE", print out values of arguments passed to
+# this script.
+#
+#-----------------------------------------------------------------------
+#
+msg="
 The arguments to script/function \"${script_name}\" have been set as 
 follows:
 "
-  for (( i=0; i<${num_valid_args}; i++ )); do
-    line=$( declare -p "${valid_args[$i]}" )
-    printf "  $line\n"
-  done
-fi
-
-
+num_valid_args="${#valid_args[@]}"
+for (( i=0; i<${num_valid_args}; i++ )); do
+  line=$( declare -p "${valid_args[$i]}" )
+  msg="$msg"$( printf "  $line\n" )
+done
+print_info_msg "$VERBOSE" "$msg"
 #
 #-----------------------------------------------------------------------
 #

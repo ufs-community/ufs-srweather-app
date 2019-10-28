@@ -89,10 +89,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$verbose" = "TRUE" ]; then
-  print_info_msg "
+print_info_msg "$verbose" "
 Creating links in the FIXsar directory to the grid files..."
-fi
 #
 #-----------------------------------------------------------------------
 #
