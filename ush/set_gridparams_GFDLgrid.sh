@@ -197,7 +197,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "\
+print_info_msg "$VERBOSE" "
 Original values of the halo width on the tile 6 supergrid and on the 
 tile 7 grid are:
   nhw_T6SG = $nhw_T6SG
@@ -207,7 +207,7 @@ nhw_T6SG=$(( $istart_rgnl_T6SG - $istart_rgnl_wide_halo_T6SG ))
 nhw_T6=$(( $nhw_T6SG/2 ))
 nhw_T7=$(( $nhw_T6*$refine_ratio ))
 
-print_info_msg "$VERBOSE" "\
+print_info_msg "$VERBOSE" "
 Values of the halo width on the tile 6 supergrid and on the tile 7 grid 
 AFTER adjustments are:
   nhw_T6SG = $nhw_T6SG
@@ -240,7 +240,7 @@ ny_T6SG=$(( $ny_T6*2 ))
 prime_factors_nx_T7=$( factor $nx_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
 prime_factors_ny_T7=$( factor $ny_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
 
-print_info_msg "$VERBOSE" "\
+print_info_msg "$VERBOSE" "
 The number of cells in the two horizontal directions (x and y) on the 
 parent tile's (tile 6) grid and supergrid are:
   nx_T6 = $nx_T6
@@ -301,12 +301,12 @@ ny_wide_halo_T6SG=$(( $jend_rgnl_wide_halo_T6SG - $jstart_rgnl_wide_halo_T6SG + 
 ny_wide_halo_T6=$(( $ny_wide_halo_T6SG/2 ))
 ny_wide_halo_T7=$(( $ny_wide_halo_T6*$refine_ratio ))
 
-print_info_msg "$VERBOSE" "\
+print_info_msg "$VERBOSE" "
 nx_wide_halo_T7 = $nx_T7 \
 (istart_rgnl_wide_halo_T6SG = $istart_rgnl_wide_halo_T6SG, \
 iend_rgnl_wide_halo_T6SG = $iend_rgnl_wide_halo_T6SG)"
 
-print_info_msg "$VERBOSE" "\
+print_info_msg "$VERBOSE" "
 ny_wide_halo_T7 = $ny_T7 \
 (jstart_rgnl_wide_halo_T6SG = $jstart_rgnl_wide_halo_T6SG, \
 jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"

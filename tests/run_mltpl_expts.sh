@@ -78,7 +78,7 @@ all_vals_CDATE_str=$(printf "\"%s\" " "${all_vals_CDATE[@]}")
 all_vals_fcst_len_hrs_str=$(printf "\"%s\" " "${all_vals_fcst_len_hrs[@]}")
 all_vals_quilting_str=$(printf "\"%s\" " "${all_vals_quilting[@]}")
 
-print_info_msg "\
+print_info_msg "
 Creating and launching workflows for test suite:
 
   test_suite = \"$test_suite\"

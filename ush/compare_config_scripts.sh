@@ -82,7 +82,7 @@ while read crnt_line; do
 
   if [ -z "${var_name}" ]; then
 
-    print_info_msg "\
+    print_info_msg "
 Current line (crnt_line) of custom experiment/workflow configuration 
 script (CUSTOM_CONFIG_FN) does not contain a variable name (var_name):
   CUSTOM_CONFIG_FN = \"${CUSTOM_CONFIG_FN}\"

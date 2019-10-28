@@ -793,7 +793,7 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
      [ "${RUN_TASK_MAKE_GRID}" = "FALSE" -a \
        "${GRID_DIR}" != "$FIXsar" ]; then
 
-    msg="\
+    msg="
 When RUN_ENVIR is set to \"nco\", it is assumed that grid files already
 exist in the directory specified by FIXsar.  Thus, the grid file genera-
 tion task must not be run (i.e. RUN_TASK_MAKE_GRID must be set to 
@@ -811,7 +811,6 @@ of FIXsar.  Reset values are:"
     msg="$msg""
   RUN_TASK_MAKE_GRID = \"${RUN_TASK_MAKE_GRID}\"
   GRID_DIR = \"${GRID_DIR}\"
- 
 "
 
     print_info_msg "$msg"
@@ -822,7 +821,7 @@ of FIXsar.  Reset values are:"
      [ "${RUN_TASK_MAKE_OROG}" = "FALSE" -a \
        "${OROG_DIR}" != "$FIXsar" ]; then
 
-    msg="\
+    msg="
 When RUN_ENVIR is set to \"nco\", it is assumed that orography files al-
 ready exist in the directory specified by FIXsar.  Thus, the orography 
 file generation task must not be run (i.e. RUN_TASK_MAKE_OROG must be 
@@ -840,7 +839,6 @@ of FIXsar.  Reset values are:"
     msg="$msg""
   RUN_TASK_MAKE_OROG = \"${RUN_TASK_MAKE_OROG}\"
   OROG_DIR = \"${OROG_DIR}\"
- 
 "
 
     print_info_msg "$msg"
@@ -851,7 +849,7 @@ of FIXsar.  Reset values are:"
      [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" -a \
        "${SFC_CLIMO_DIR}" != "$FIXsar" ]; then
 
-    msg="\
+    msg="
 When RUN_ENVIR is set to \"nco\", it is assumed that surface climatology
 files already exist in the directory specified by FIXsar.  Thus, the 
 surface climatology file generation task must not be run (i.e. RUN_-
@@ -868,8 +866,7 @@ contents of FIXsar.  Reset values are:"
 
     msg="$msg""
   RUN_TASK_MAKE_SFC_CLIMO = \"${RUN_TASK_MAKE_SFC_CLIMO}\"
-  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"\n
- 
+  SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\"
 "
 
     print_info_msg "$msg"
@@ -1177,7 +1174,7 @@ by the number of MPI tasks in the y direction (layout_y):
   layout_y = $layout_y"
 fi
 
-print_info_msg "$VERBOSE" "\
+print_info_msg "$VERBOSE" "
 The MPI task layout is:
   layout_x = $layout_x
   layout_y = $layout_y"
@@ -1557,11 +1554,12 @@ while read crnt_line; do
 #
     else
 
-      print_info_msg "\
+      print_info_msg "
 The variable specified by \"var_name\" is not set in the current envi-
 ronment:
   var_name = \"${var_name}\"
 Setting its value in the variable definitions file to an empty string."
+
       var_value="\"\""
 
     fi
@@ -1577,8 +1575,7 @@ Setting its value in the variable definitions file to an empty string."
 #
   else
 
-    print_info_msg "\
-
+    print_info_msg "
 Could not extract a variable name from the current line in \"line_list\"
 (probably because it does not contain an equal sign with no spaces on 
 either side):
@@ -1814,8 +1811,7 @@ definitions file returned with a nonzero status."
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\
-
+print_info_msg "
 ========================================================================
 Setup script completed successfully!!!
 ========================================================================"

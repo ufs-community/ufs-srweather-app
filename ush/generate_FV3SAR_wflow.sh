@@ -196,7 +196,7 @@ load_rocoto_cmd="module load rocoto/1.3.1"
 rocotorun_cmd="rocotorun -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
 rocotostat_cmd="rocotostat -w ${WFLOW_XML_FN} -d ${WFLOW_DB_FN} -v 10"
 
-print_info_msg "\
+print_info_msg "
 ========================================================================
 ========================================================================
 
@@ -363,7 +363,7 @@ fi
 # that can be changed.
 if [ "${RUN_ENVIR}" != "nco" ]; then
 
-  print_info_msg "$VERBOSE" "\
+  print_info_msg "$VERBOSE" "
 Copying fixed files from system directory to the workflow directory..."
 
   check_for_preexist_dir $FIXam "delete"
