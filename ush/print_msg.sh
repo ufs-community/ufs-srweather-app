@@ -28,15 +28,15 @@ function print_info_msg() {
 #-----------------------------------------------------------------------
 #
 # Get the name of this function as well as information about the calling
-# script/function.
+# script or function.
 #
 #-----------------------------------------------------------------------
 #
   local crnt_func="${FUNCNAME[0]}"
-  local caller_fp=$( readlink -f "${BASH_SOURCE[1]}" )
-  local caller_fn=$( basename "${caller_fp}" )
-  local caller_dir=$( dirname "${caller_fp}" )
-  local caller_func="${FUNCNAME[1]}"
+  local caller_path=$( readlink -f "${BASH_SOURCE[1]}" )
+  local caller_filename=$( basename "${caller_path}" )
+  local caller_dir=$( dirname "${caller_path}" )
+  local caller_name="${FUNCNAME[1]}"
 #
 #-----------------------------------------------------------------------
 #
@@ -73,11 +73,15 @@ function print_info_msg() {
 #
   else
 
-    printf "\
-Function \"${crnt_func}\":  Incorrect number of arguments specified.
+    print_err_msg_exit "
+Incorrect number of arguments specified:
+
+  script/function name = \"${crnt_func}\"
+  number of arguments specified = $#
+
 Usage:
 
-  ${crnt_func} [verbose] info_msg
+  ${crnt_func}  [verbose]  info_msg
 
 where the arguments are defined as follows:
 
@@ -88,11 +92,12 @@ where the arguments are defined as follows:
   info_msg:
   This is the informational message to print to stdout.
 
-This function prints an informational message to stout.  If one argument
-is passed in, then that argument is assumed to be info_msg and is print-
-ed.  If two arguments are passed in, then the first is assumed to be 
-verbose and the second info_msg.  In this case, info_msg gets printed
-only if verbose is set to \"TRUE\".\n"
+This function prints an informational message to stdout.  If one argu-
+ment is passed in, then that argument is assumed to be info_msg and is 
+printed.  If two arguments are passed in, then the first is assumed to
+be verbose and the second info_msg.  In this case, info_msg gets printed
+only if verbose is set to \"TRUE\".
+"
 
   fi
 #
@@ -141,15 +146,15 @@ function print_err_msg_exit() {
 #-----------------------------------------------------------------------
 #
 # Get the name of this function as well as information about the calling
-# script/function.
+# script or function.
 #
 #-----------------------------------------------------------------------
 #
   local crnt_func="${FUNCNAME[0]}"
-  local caller_fp=$( readlink -f "${BASH_SOURCE[1]}" )
-  local caller_fn=$( basename "${caller_fp}" )
-  local caller_dir=$( dirname "${caller_fp}" )
-  local caller_func="${FUNCNAME[1]}"
+  local caller_path=$( readlink -f "${BASH_SOURCE[1]}" )
+  local caller_filename=$( basename "${caller_path}" )
+  local caller_dir=$( dirname "${caller_path}" )
+  local caller_name="${FUNCNAME[1]}"
 #
 #-----------------------------------------------------------------------
 #
@@ -168,10 +173,9 @@ function print_err_msg_exit() {
 #-----------------------------------------------------------------------
 #
   msg_header=$( printf "\n\
-ERROR from:
-  function:   \"${caller_func}\"  (will be set to \"source\" for a script)
-  file:       \"${caller_fn}\"
-  directory:  \"${caller_dir}\"
+ERROR:
+  From script/function:  \"${caller_name}\"  (This gets set to \"source\" for a script, or to \"main\" for the top-level script.)
+  In file:  \"${caller_path}\"
 "
               )
   msg_footer=$( printf "\nExiting with nonzero status." )
@@ -185,18 +189,21 @@ ERROR from:
 #
   if [ "$#" -gt 1 ]; then
 
-    printf "\
-Function \"${crnt_func}\":  Incorrect number of arguments specified.
+    print_err_msg_exit "
+Incorrect number of arguments specified:
+
+  script/function name = \"${crnt_func}\"
+  number of arguments specified = $#
+
 Usage:
 
-  ${crnt_func} err_msg
+  ${crnt_func}  err_msg
 
 where err_msg is an optional error message to print to stderr.  Note 
 that a header and a footer are always added to err_msg.  Thus, if err_-
 msg is not specified, the message that is printed will consist of only
 the header and footer.
 " 1>&2
-    exit 1
 #
 #-----------------------------------------------------------------------
 #

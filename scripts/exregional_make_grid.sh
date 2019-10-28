@@ -27,19 +27,22 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
-# Set the script name and print out an informational message informing
-# the user that we've entered this script.
+# Get the name of this script as well as the directory in which it is 
+# located.
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "${BASH_SOURCE[0]}" )
-print_info_msg "\n\
+script_path=$( readlink -f "${BASH_SOURCE[0]}" )
+script_name=$( basename "${script_path}" )
+script_dir=$( dirname "${script_path}" )
+print_info_msg "
 ========================================================================
-Entering script:  \"${script_name}\"
+Entering script:  \"${script_path}\"
+
 This is the ex-script for the task that generates grid files.
 ========================================================================"
 #
@@ -531,10 +534,11 @@ Call to script to create links to grid files failed."
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\n\
+print_info_msg "
 ========================================================================
 Grid files with various halo widths generated successfully!!!
-Exiting script:  \"${script_name}\"
+
+Exiting script:  \"${script_path}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

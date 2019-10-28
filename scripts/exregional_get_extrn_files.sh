@@ -22,15 +22,18 @@
 #
 #-----------------------------------------------------------------------
 #
-# Set the script name and print out an informational message informing
-# the user that we've entered this script.
+# Get the name of this script as well as the directory in which it is 
+# located.
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "${BASH_SOURCE[0]}" )
-print_info_msg "\n\
+script_path=$( readlink -f "${BASH_SOURCE[0]}" )
+script_name=$( basename "${script_path}" )
+script_dir=$( dirname "${script_path}" )
+print_info_msg "
 ========================================================================
-Entering script:  \"${script_name}\"
+Entering script:  \"${script_path}\"
+
 This is the ex-script for the task that copies/fetches to a local direc-
 tory (either from disk or HPSS) the external model files from which ini-
 tial or boundary condition files for the FV3 will be generated.
@@ -183,22 +186,23 @@ on disk (EXTRN_MDL_SYSDIR) to local directory (EXTRN_MDL_FILES_DIR):
 #
   if [ "${ICS_OR_LBCS}" = "ICS" ]; then
 
-    print_info_msg "\n\
+    print_info_msg "
 ========================================================================
 Successfully copied or linked to external model files on system disk 
 needed for generating initial conditions and surface fields for the FV3
 forecast!!!
-Exiting script:  \"${script_name}\"
+
+Exiting script:  \"${script_path}\"
 ========================================================================"
 
   elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
 
-    print_info_msg "\n\
+    print_info_msg "
 ========================================================================
 Successfully copied or linked to external model files on system disk 
 needed for generating lateral boundary conditions for the FV3 fore-
 cast!!!
-Exiting script:  \"${script_name}\"
+Exiting script:  \"${script_path}\"
 ========================================================================"
 
   fi
