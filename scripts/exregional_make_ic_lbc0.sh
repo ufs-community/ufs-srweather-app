@@ -72,13 +72,6 @@ fi
 workdir="${ICS_DIR}/tmp_ICS"
 mkdir_vrfy -p "$workdir"
 cd_vrfy $workdir
-
-#-----------------------------------------------------------------------
-# Run make_ic_lbc0 without threading.  Setting OMP_NUM_THREADS=6 results
-# in a banded snow pattern in sheleg and snwdph.
-#-----------------------------------------------------------------------
-export OMP_NUM_THREADS=1
-export OMP_STACKSIZE=2048m
 #
 #-----------------------------------------------------------------------
 #
