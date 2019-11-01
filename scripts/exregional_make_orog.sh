@@ -180,7 +180,7 @@ case $MACHINE in
   . /apps/lmod/lmod/init/sh
   module purge
   module load intel/18.0.5.274
-  module load netcdf/4.6.1
+  module load netcdf/4.7.0
   module load hdf5/1.10.4
   module list
 
