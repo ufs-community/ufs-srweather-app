@@ -14,10 +14,6 @@ if [ ${SITE} == "cheyenne" ]; then
 fi
 
 cd ${RGNL_WFLOW_DIR}/sorc
-./build_fre-nctools.sh ${SITE}           >& out.build_fre-nctools
-./build_orog.sh ${SITE}                  >& out.build_orog
-# Don't build the old chgres any more.  Build chgres_cube instead (below).
-#./build_chgres.sh ${SITE}                >& out.build_chgres
 #
 # The following build several new utilities needed in order to use the
 # new Jim Purser-type grid in the SAR.  The following only works on
@@ -29,10 +25,25 @@ cd ${RGNL_WFLOW_DIR}/sorc
 #
 # Build sfc_climo_gen.
 #
-#cd ${RGNL_WFLOW_DIR}/../UFS_UTILS_gridgen_sfc/sorc
 cd ${RGNL_WFLOW_DIR}/sorc/UFS_UTILS_develop/sorc
 ./build_sfc_climo_gen.sh >& out.build_sfc_climo_gen
 cp ../exec/sfc_climo_gen ${RGNL_WFLOW_DIR}/exec
+#
+# Build fre-nctools.
+#
+./build_fre-nctools.sh >& out.build_fre-nctools
+cp ../exec/filter_topo ${RGNL_WFLOW_DIR}/exec
+cp ../exec/fregrid ${RGNL_WFLOW_DIR}/exec
+cp ../exec/fregrid_parallel ${RGNL_WFLOW_DIR}/exec
+cp ../exec/make_hgrid ${RGNL_WFLOW_DIR}/exec
+cp ../exec/make_hgrid_parallel ${RGNL_WFLOW_DIR}/exec
+cp ../exec/make_solo_mosaic ${RGNL_WFLOW_DIR}/exec
+cp ../exec/shave.x ${RGNL_WFLOW_DIR}/exec
+#
+# Build orog.
+#
+./build_orog.sh >& out.build_orog
+cp ../exec/orog.x ${RGNL_WFLOW_DIR}/exec
 #
 # Build chgres_cube.
 #
