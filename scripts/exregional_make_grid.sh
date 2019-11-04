@@ -8,8 +8,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${SCRIPT_VAR_DEFNS_FP}
-. $USHDIR/source_funcs.sh
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -31,17 +31,26 @@
 #
 #-----------------------------------------------------------------------
 #
-# Get the name of this script as well as the directory in which it is 
-# located.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-script_path=$( readlink -f "${BASH_SOURCE[0]}" )
-script_name=$( basename "${script_path}" )
-script_dir=$( dirname "${script_path}" )
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
 print_info_msg "
 ========================================================================
-Entering script:  \"${script_path}\"
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
 
 This is the ex-script for the task that generates grid files.
 ========================================================================"
@@ -60,21 +69,13 @@ process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
 #
-# If VERBOSE is set to "TRUE", print out values of arguments passed to
-# this script.
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
 #
 #-----------------------------------------------------------------------
 #
-msg="
-The arguments to script/function \"${script_name}\" have been set as 
-follows:
-"
-num_valid_args="${#valid_args[@]}"
-for (( i=0; i<${num_valid_args}; i++ )); do
-  line=$( declare -p "${valid_args[$i]}" )
-  msg="$msg"$( printf "  $line\n" )
-done
-print_info_msg "$VERBOSE" "$msg"
+print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -162,8 +163,10 @@ case $MACHINE in
   . /apps/lmod/lmod/init/sh
   module purge
   module load intel/18.0.5.274
-  module load netcdf/4.6.1
-  module load hdf5/1.10.4
+#  module load netcdf/4.6.1
+#  module load hdf5/1.10.4
+  module load netcdf/4.7.0
+  module load hdf5/1.10.5
   module list
 
   { restore_shell_opts; } > /dev/null 2>&1
@@ -418,8 +421,8 @@ exit code."
   RES="$RES_equiv"
   CRES="$CRES_equiv"
 
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "RES" "$RES"
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "CRES" "$CRES"
+  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "RES" "$RES"
+  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "$CRES"
 
 fi
 #
@@ -482,9 +485,9 @@ printf "%s %s %s %s %s\n" \
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
 print_err_msg_exit "\
-Call to executable \"${shave_exec}\" to generate a grid file with a ${nh3_T7}-
-cell-wide-halo returned with nonzero exit code.  The namelist file
-nml_fn is in directory tmpdir: 
+Call to executable \"${shave_exec}\" to generate a grid file with a ${nh3_T7}-cell-wide
+halo returned with nonzero exit code.  The namelist file nml_fn is in 
+directory tmpdir: 
   tmpdir = \"${tmpdir}\"
   nml_fn = \"${nml_fn}\""
 mv_vrfy ${shaved_fp} ${GRID_DIR}
@@ -506,9 +509,9 @@ printf "%s %s %s %s %s\n" \
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
 print_err_msg_exit "\
-Call to executable \"${shave_exec}\" to generate a grid file with a ${nh4_T7}-
-cell-wide-halo returned with nonzero exit code.  The namelist file
-nml_fn is in directory tmpdir: 
+Call to executable \"${shave_exec}\" to generate a grid file with a ${nh4_T7}-cell-wide
+halo returned with nonzero exit code.  The namelist file nml_fn is in 
+directory tmpdir: 
   tmpdir = \"${tmpdir}\"
   nml_fn = \"${nml_fn}\""
 mv_vrfy ${shaved_fp} ${GRID_DIR}
@@ -527,7 +530,7 @@ cd_vrfy -
 #
 $USHDIR/link_fix.sh \
   verbose="FALSE" \
-  script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
+  global_var_defns_fp="${GLOBAL_VAR_DEFNS_FP}" \
   file_group="grid" || \
 print_err_msg_exit "\
 Call to script to create links to grid files failed."
@@ -542,7 +545,8 @@ print_info_msg "
 ========================================================================
 Grid files with various halo widths generated successfully!!!
 
-Exiting script:  \"${script_path}\"
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

@@ -8,8 +8,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${SCRIPT_VAR_DEFNS_FP}
-. $USHDIR/source_funcs.sh
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -27,21 +27,30 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
-# Get the name of this script as well as the directory in which it is 
-# located.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-script_path=$( readlink -f "${BASH_SOURCE[0]}" )
-script_name=$( basename "${script_path}" )
-script_dir=$( dirname "${script_path}" )
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
 print_info_msg "
 ========================================================================
-Entering script:  \"${script_path}\"
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
 
 This is the ex-script for the task that generates orography files.
 ========================================================================"
@@ -60,21 +69,13 @@ process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
 #
-# If VERBOSE is set to "TRUE", print out values of arguments passed to
-# this script.
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
 #
 #-----------------------------------------------------------------------
 #
-msg="
-The arguments to script/function \"${script_name}\" have been set as 
-follows:
-"
-num_valid_args="${#valid_args[@]}"
-for (( i=0; i<${num_valid_args}; i++ )); do
-  line=$( declare -p "${valid_args[$i]}" )
-  msg="$msg"$( printf "  $line\n" )
-done
-print_info_msg "$VERBOSE" "$msg"
+print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -185,7 +186,7 @@ case $MACHINE in
   . /apps/lmod/lmod/init/sh
   module purge
   module load intel/18.0.5.274
-  module load netcdf/4.6.1
+  module load netcdf/4.7.0
   module load hdf5/1.10.4
   module list
 
@@ -371,26 +372,19 @@ peak_fac_array=(    "1.1"   "1.1"   "1.05"  "1.0"   "1.0"   "1.0"   "1.0")
 
 # Need to fix this so that the stderr from a failed call to interpol_to_arbit_CRES
 # gets sent to the stderr of this script.
-cd4=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "cd4_array" ) || \
-print_err_msg_exit "\
-Call to script that interpolated cd4 to the regional grid's equiavlent 
+var_names=( "cd4" "max_slope" "n_del2_weak" "peak_fac" )
+num_vars=${#var_names[@]}
+for (( i=0; i<${num_vars}; i++ )); do
+  var_name=${var_names[$i]}
+  eval ${var_name}=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "${var_name}_array" ) || \
+       print_err_msg_exit "\
+Call to script that interpolated ${var_name} to the regional grid's equiavlent 
 global cubed-sphere resolution (RES_equiv) failed:
   RES_equiv = \"${RES_equiv}\""
-echo "====>>>> cd4 = $cd4"
-#
-max_slope=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "max_slope_array" )
-echo "====>>>> max_slope = $max_slope"
-#
-n_del2_weak=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "n_del2_weak_array" )
-# n_del2_weak is defined to be of integer type in the filter_topo code 
-# that uses it, so round it to the nearest integer.  Otherwise, the code
-# might break on some machines/compilers.
-n_del2_weak=$( printf "%.0f" ${n_del2_weak} )   # cast to integer, Y. Wang
-echo "====>>>> n_del2_weak = $n_del2_weak"
-#
-peak_fac=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "peak_fac_array" )
-echo "====>>>> peak_fac = $peak_fac"
-#
+  var_value=${!var_name}
+  echo "====>>>> ${var_name} = ${var_value}"
+done
+
 
 
 if [ 0 = 1 ]; then
@@ -579,7 +573,7 @@ cd_vrfy -
 
 $USHDIR/link_fix.sh \
   verbose="FALSE" \
-  script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
+  global_var_defns_fp="${GLOBAL_VAR_DEFNS_FP}" \
   file_group="orog" || \
 print_err_msg_exit "\
 Call to script to create links to orography files failed."
@@ -630,7 +624,8 @@ print_info_msg "
 ========================================================================
 Orography files with various halo widths generated successfully!!!
 
-Exiting script:  \"${script_path}\"
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

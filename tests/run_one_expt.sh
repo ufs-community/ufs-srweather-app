@@ -16,7 +16,7 @@ USHDIR="$basedir/regional_workflow/ush"
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/source_funcs.sh
+. $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -29,12 +29,15 @@ USHDIR="$basedir/regional_workflow/ush"
 #
 #-----------------------------------------------------------------------
 #
-# Set the script name and print out an informational message informing
-# the user that we've entered this script.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "${BASH_SOURCE[0]}" )
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
@@ -57,20 +60,16 @@ valid_args=( \
 "quilting" \
 )
 process_args valid_args "$@"
-
-# If verbose is set to TRUE, print out what each valid argument has been
-# set to.
-if [ "$verbose" = "TRUE" ]; then
-  num_valid_args="${#valid_args[@]}"
-  print_info_msg "
-The arguments to script/function \"${script_name}\" have been set as 
-follows:
-"
-  for (( i=0; i<${num_valid_args}; i++ )); do
-    line=$( declare -p "${valid_args[$i]}" )
-    printf "  $line\n"
-  done
-fi
+#
+#-----------------------------------------------------------------------
+#
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
+#
+#-----------------------------------------------------------------------
+#
+print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #

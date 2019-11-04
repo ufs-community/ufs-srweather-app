@@ -8,8 +8,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${SCRIPT_VAR_DEFNS_FP}
-. $USHDIR/source_funcs.sh
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -22,17 +22,26 @@
 #
 #-----------------------------------------------------------------------
 #
-# Get the name of this script as well as the directory in which it is 
-# located.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-script_path=$( readlink -f "${BASH_SOURCE[0]}" )
-script_name=$( basename "${script_path}" )
-script_dir=$( dirname "${script_path}" )
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
 print_info_msg "
 ========================================================================
-Entering script:  \"${script_path}\"
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
 
 This is the ex-script for the task that runs a forecast with FV3 for the
 specified cycle.
@@ -52,21 +61,13 @@ process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
 #
-# If VERBOSE is set to "TRUE", print out values of arguments passed to
-# this script.
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
 #
 #-----------------------------------------------------------------------
 #
-msg="
-The arguments to script/function \"${script_name}\" have been set as 
-follows:
-"
-num_valid_args="${#valid_args[@]}"
-for (( i=0; i<${num_valid_args}; i++ )); do
-  line=$( declare -p "${valid_args[$i]}" )
-  msg="$msg"$( printf "  $line\n" )
-done
-print_info_msg "$VERBOSE" "$msg"
+print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -607,7 +608,8 @@ print_info_msg "
 ========================================================================
 FV3 forecast completed successfully!!!
 
-Exiting script:  \"${script_path}\"
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------
