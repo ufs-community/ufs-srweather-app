@@ -1,12 +1,33 @@
+function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-# Set the location to look for the sourced function definition files.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-#FUNCS_DIR=${USHDIR:-"."}
-FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
+# Set the directory in which the files defining the various utility 
+# functions are located.
+#
+#-----------------------------------------------------------------------
+#
+  local bashutils_dir="${scrfunc_dir}/bash_utils"
 #
 #-----------------------------------------------------------------------
 #
@@ -15,7 +36,7 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
-. ${FUNCS_DIR}/save_restore_shell_opts.sh
+  . ${bashutils_dir}/save_restore_shell_opts.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -23,7 +44,15 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
-. ${FUNCS_DIR}/print_msg.sh
+  . ${bashutils_dir}/print_msg.sh
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/set_bash_param.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -33,7 +62,7 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
-. ${FUNCS_DIR}/set_file_param.sh
+  . ${bashutils_dir}/set_file_param.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -44,7 +73,7 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
-. ${FUNCS_DIR}/check_for_preexist_dir.sh
+  . ${bashutils_dir}/check_for_preexist_dir.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -54,7 +83,7 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
-. ${FUNCS_DIR}/filesys_cmds_vrfy.sh
+  . ${bashutils_dir}/filesys_cmds_vrfy.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -63,7 +92,7 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
-. ${FUNCS_DIR}/iselementof.sh
+  . ${bashutils_dir}/iselementof.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -72,7 +101,7 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
-. ${FUNCS_DIR}/is_array.sh
+  . ${bashutils_dir}/is_array.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -82,7 +111,7 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
-. ${FUNCS_DIR}/interpol_to_arbit_CRES.sh
+  . ${bashutils_dir}/interpol_to_arbit_CRES.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -91,7 +120,15 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
-. ${FUNCS_DIR}/check_var_valid_value.sh
+  . ${bashutils_dir}/check_var_valid_value.sh
+#
+#-----------------------------------------------------------------------
+#
+# 
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/print_input_args.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -101,5 +138,8 @@ FUNCS_DIR=${FUNCS_DIR:-${USHDIR:-"."}}
 #
 #-----------------------------------------------------------------------
 #
-. ${FUNCS_DIR}/process_args.sh
+  . ${bashutils_dir}/process_args.sh
+}
+source_util_funcs
+
 
