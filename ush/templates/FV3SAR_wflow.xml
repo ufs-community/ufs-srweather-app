@@ -47,7 +47,7 @@ The following are variables that are passed to the shell scripts that
 execute the various workflow tasks but are not otherwise used in the 
 workflow XML.
 -->
-<!ENTITY SCRIPT_VAR_DEFNS_FP "">
+<!ENTITY GLOBAL_VAR_DEFNS_FP "">
 <!ENTITY CYCLE_DIR           "">
 
 <!--
@@ -101,7 +101,7 @@ Variables that are not modified by the workflow generation script.
     <jobname>make_grid</jobname>
     <join><cyclestr>&LOGDIR;/make_grid.log</cyclestr></join>
 
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
@@ -123,7 +123,7 @@ Variables that are not modified by the workflow generation script.
     <jobname>make_orog</jobname>
     <join><cyclestr>&LOGDIR;/make_orog.log</cyclestr></join>
 
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
@@ -152,7 +152,7 @@ Variables that are not modified by the workflow generation script.
     <jobname>make_sfc_climo</jobname>
     <join><cyclestr>&LOGDIR;/make_sfc_climo.log</cyclestr></join>
 
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
@@ -186,7 +186,7 @@ Variables that are not modified by the workflow generation script.
     <jobname>get_files_ICS</jobname>
     <join><cyclestr>&LOGDIR;/get_files_ICS_@Y@m@d@H.log</cyclestr></join>
 
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -208,7 +208,7 @@ Variables that are not modified by the workflow generation script.
     <jobname>get_files_LBCS</jobname>
     <join><cyclestr>&LOGDIR;/get_files_LBCS_@Y@m@d@H.log</cyclestr></join>
 
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -230,7 +230,7 @@ Variables that are not modified by the workflow generation script.
     <jobname>make_ICS_surf_LBC0</jobname>
     <join><cyclestr>&LOGDIR;/make_ICS_surf_LBC0_@Y@m@d@H.log</cyclestr></join>
 
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -271,7 +271,7 @@ Variables that are not modified by the workflow generation script.
     <jobname>make_LBC1_to_LBCN</jobname>
     <join><cyclestr>&LOGDIR;/make_LBC1_to_LBCN_@Y@m@d@H.log</cyclestr></join>
 
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -312,7 +312,7 @@ Variables that are not modified by the workflow generation script.
     <jobname>run_FV3</jobname>
     <join><cyclestr>&LOGDIR;/run_FV3_@Y@m@d@H.log</cyclestr></join>
 
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -343,7 +343,7 @@ Variables that are not modified by the workflow generation script.
       <jobname>run_post_#fhr#</jobname>
       <join><cyclestr>&LOGDIR;/run_post_#fhr#_@Y@m@d@H.log</cyclestr></join>
 
-      <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+      <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
       <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>

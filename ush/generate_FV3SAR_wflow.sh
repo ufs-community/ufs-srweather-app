@@ -53,7 +53,7 @@ ushdir="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -403,7 +403,7 @@ fi
 if [ "${RUN_ENVIR}" != "nco" ]; then
 
   print_info_msg "$VERBOSE" "
-Copying fixed files from system directory to the workflow directory..."
+Copying fixed files from system directory to the experiment directory..."
 
   check_for_preexist_dir $FIXam "delete"
   mkdir -p $FIXam

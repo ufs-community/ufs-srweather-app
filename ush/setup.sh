@@ -58,7 +58,7 @@ cd_vrfy ${scrfunc_dir}
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -1161,7 +1161,7 @@ if [ "$QUILTING" = "TRUE" ]; then
   PE_MEMBER01=$(( ${PE_MEMBER01} + ${WRTCMP_write_groups}*${WRTCMP_write_tasks_per_group} ))
 fi
 
-print_info_msg "$VERBOSE" "\
+print_info_msg "$VERBOSE" "
 The number of MPI tasks for the forecast (including those for the write
 component if it is being used) are:
   PE_MEMBER01 = ${PE_MEMBER01}"
@@ -1426,11 +1426,12 @@ line_list=$( sed -r \
              -e "/^#.*/d" \
              -e "/^$/d" \
              ${GLOBAL_VAR_DEFNS_FP} )
-echo 
-echo "The variable \"line_list\" contains:"
-echo
-printf "%s\n" "${line_list}"
-echo
+
+print_info_msg "$VERBOSE" "
+The variable \"line_list\" contains:
+
+${line_list}
+"
 #
 #-----------------------------------------------------------------------
 #
@@ -1495,7 +1496,8 @@ while read crnt_line; do
 #
   if [ ! -z $var_name ]; then
 
-    printf "\n%s\n" "var_name = \"${var_name}\""
+    print_info_msg "$VERBOSE" "
+var_name = \"${var_name}\""
 #
 # If the variable specified in var_name is set in the current environ-
 # ment (to either an empty or non-empty string), get its value and in-
