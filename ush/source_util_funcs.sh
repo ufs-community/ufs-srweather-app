@@ -66,6 +66,14 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
+#
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/count_files.sh
+#
+#-----------------------------------------------------------------------
+#
 # Source the file containing the function that checks for preexisting 
 # directories and handles them according to the setting of the variable
 # PREEXISTING_DIR_METHOD [which is specified in the experiment/workflow
