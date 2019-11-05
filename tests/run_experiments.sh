@@ -1,28 +1,26 @@
 #!/bin/bash -l
 
-set -x
 #
 #-----------------------------------------------------------------------
 #
-# Get the name of this script/function (scrfunc_name), the full path to
-# the file in which it is located (scrfunc_fp), the name of the file 
-# (scrfunc_fn), and the directory in which the file is located (scr-
-# func_-dir).  Note that if this is a script (as opposed to a function), 
-# the script name (scrfunc_name) will be set to "main" if it is the top-
-# level script and to "script" if it is a script called from another 
-# script or function.
+# Get the full path to the file in which this script/function is located
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_name="${FUNCNAME[0]}"
 scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
+#-----------------------------------------------------------------------
+#
 # The current script should be located in the "tests" subdirectory of 
-# the workflow directory.  Thus, the workflow directory is the one above
-# the directory of the current script.  Get the path to this directory
-# and save it in HOMErrfs.
+# the workflow directory, which we denote by HOMErrfs.  Thus, the work-
+# flow directory (HOMErrfs) is the one above the directory of the cur-
+# rent script.  Set HOMRErrfs accordingly.
+#
+#-----------------------------------------------------------------------
 #
 HOMErrfs=${scrfunc_dir%/*}
 #
@@ -32,8 +30,6 @@ HOMErrfs=${scrfunc_dir%/*}
 #
 #-----------------------------------------------------------------------
 #
-#basedir="$(pwd)/../.."
-#USHDIR="$basedir/regional_workflow/ush"
 USHDIR="$HOMErrfs/ush"
 TESTSDIR="$HOMErrfs/tests"
 #
@@ -43,9 +39,7 @@ TESTSDIR="$HOMErrfs/tests"
 #
 #-----------------------------------------------------------------------
 #
-echo "AAAAAAAA  scrfunc_dir = ${scrfunc_dir}"
 . $USHDIR/source_util_funcs.sh
-echo "BBBBBBBB  scrfunc_dir = ${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
@@ -54,7 +48,7 @@ echo "BBBBBBBB  scrfunc_dir = ${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -67,30 +61,71 @@ ACCOUNT="gsd-fv3"
 QUEUE_DEFAULT="batch"
 QUEUE_HPSS="service"
 QUEUE_FCST="batch"
-#VERBOSE="FALSE"  # This should be removed later.  To do so, must remove VERBOSE variable from function print_info_msg in file print_msg.sh.
+VERBOSE="TRUE"
 #
 #-----------------------------------------------------------------------
 #
+# Read in the list of experiments (which might be baselines) to run.
+# This entails reading in each line of the file experiments_list.txt in
+# the directory of this script and saving the result in the array varia-
+# ble experiments_list.  Note that each line of experiments_list.txt has
+# the form
 #
+#   BASELINE_NAME  |  VAR_NAME_1="VAR_VALUE_1"  |  ... |  VAR_NAME_N="VAR_VALUE_N"
+#
+# where BASELINE_NAME is the name of the baseline and the zero or more
+# variable name-value pairs following the baseline name are a list of 
+# variables to modify from the baseline.  Note that:
+#
+# 1) There must exist a experiment/workflow configuration file named
+#    config.BASELINE_NAME.sh in a subdirectory named baseline_configs 
+#    in the directory of this script.
+#
+# 2) The variable name-value pairs on each line of the experiments_-
+#    list.txt file are delimited from the baseline and from each other 
+#    by pipe characters (i.e. "|").  
 #
 #-----------------------------------------------------------------------
 #
-readarray -t experiments_list < ${TESTSDIR}/experiments_list.txt
-printf "%s\n" "${experiments_list[@]}"
+EXPTS_LIST_FN="${TESTSDIR}/experiments_list.txt"
+
+print_info_msg "$VERBOSE" "
+Reading in list of forecast experiments from file
+
+  EXPTS_LIST_FN = \"${EXPTS_LIST_FN}\"
+
+and storing result in the array \"experiments_list\" (one array element 
+per experiment)..."
+
+readarray -t experiments_list < "${EXPTS_LIST_FN}"
+
+msg=$( printf "%s\n" "${experiments_list[@]}" )
+msg="
+List of forecast experiments to run is given by:
+
+experiments_list = (
+$msg
+)
+"
+print_info_msg "$VERBOSE" "$msg"
+
 num_elem="${#experiments_list[@]}"
+
+echo
 echo "num_elem = ${num_elem}"
 echo "scrfunc_dir = ${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-#
+# Loop through the experiments list.  For each experiment, generate a
+# workflow and launch it.
 #
 #-----------------------------------------------------------------------
 #
-set +x
-echo
+#set -x
 i=0
 while [ ! -z "${experiments_list[$i]}" ]; do
+
 echo
 echo "======================================================"
 echo "i = $i"
@@ -100,14 +135,14 @@ echo "experiments_list[$i] = '${experiments_list[$i]}'"
   experiments_list[$i]=$( \
     printf "%s" "${experiments_list[$i]}" | \
     sed -r -e "s/^[ ]*//" -e "s/[ ]*$//" )
-#                    sed -r -n -e "s/^[ ]*//" -e "s/[ ]*$//p" )
+#    sed -r -n -e "s/^[ ]*//" -e "s/[ ]*$//p" )
 echo "experiments_list[$i] = '${experiments_list[$i]}'"
 # Remove spaces before and after all separators.  We use the pipe symbol
 # as the separator.
   experiments_list[$i]=$( \
     printf "%s" "${experiments_list[$i]}" | \
     sed -r -e "s/[ ]*\|[ ]*/\|/g" )
-#                    sed -r -n -e "s/[ ]*\|[ ]*/\|/gp" )
+#    sed -r -n -e "s/[ ]*\|[ ]*/\|/gp" )
 echo "experiments_list[$i] = '${experiments_list[$i]}'"
 
 #  regex_search="^[ ]*([^\|]*)[ ]*\|[ ]*(.*)"
@@ -173,7 +208,7 @@ echo "experiment_name = '${experiment_name}'"
   set_bash_param "${experiment_config_fp}" "QUEUE_DEFAULT" "${QUEUE_DEFAULT}"
   set_bash_param "${experiment_config_fp}" "QUEUE_HPSS" "${QUEUE_HPSS}"
   set_bash_param "${experiment_config_fp}" "QUEUE_FCST" "${QUEUE_FCST}"
-#  set_bash_param "${experiment_config_fp}" "VERBOSE" "$VERBOSE"
+  set_bash_param "${experiment_config_fp}" "VERBOSE" "$VERBOSE"
   set_bash_param "${experiment_config_fp}" "EXPT_SUBDIR" "${EXPT_SUBDIR}"
 
   ln_vrfy -fs "${experiment_config_fp}" "$USHDIR/config.sh"
