@@ -229,7 +229,7 @@ replace_vgfrc=""
 tg3_from_soil=""
 
 
-case "$EXTRN_MDL_NAME_LBCS" in
+case "${EXTRN_MDL_NAME_LBCS}" in
 
 
 "GSMGFS")
@@ -352,7 +352,7 @@ for (( i=0; i<$num_fhrs; i++ )); do
   fn_atm_nemsio=""
   fn_grib2=""
 
-  case "$EXTRN_MDL_NAME_LBCS" in
+  case "${EXTRN_MDL_NAME_LBCS}" in
   "GSMGFS")
     fn_atm_nemsio="${EXTRN_MDL_FNS[$i]}"
     ;;

@@ -421,24 +421,26 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DATE_OR_NULL=$( printf "%s" "$DATE_FIRST_CYCL" | sed -n -r -e "s/^([0-9]{8})$/\1/p" )
+DATE_OR_NULL=$( printf "%s" "${DATE_FIRST_CYCL}" | \
+                sed -n -r -e "s/^([0-9]{8})$/\1/p" )
 if [ -z "${DATE_OR_NULL}" ]; then
   print_err_msg_exit "\
 DATE_FIRST_CYCL must be a string consisting of exactly 8 digits of the 
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
 month, DD is the 2-digit day-of-month, and HH is the 2-digit hour-of-
 day.
-  DATE_FIRST_CYCL = \"$DATE_FIRST_CYCL\""
+  DATE_FIRST_CYCL = \"${DATE_FIRST_CYCL}\""
 fi
 
-DATE_OR_NULL=$( printf "%s" "$DATE_LAST_CYCL" | sed -n -r -e "s/^([0-9]{8})$/\1/p" )
+DATE_OR_NULL=$( printf "%s" "${DATE_LAST_CYCL}" | \
+                sed -n -r -e "s/^([0-9]{8})$/\1/p" )
 if [ -z "${DATE_OR_NULL}" ]; then
   print_err_msg_exit "\
 DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the 
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
 month, DD is the 2-digit day-of-month, and HH is the 2-digit hour-of-
 day.
-  DATE_LAST_CYCL = \"$DATE_LAST_CYCL\""
+  DATE_LAST_CYCL = \"${DATE_LAST_CYCL}\""
 fi
 #
 #-----------------------------------------------------------------------

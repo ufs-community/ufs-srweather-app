@@ -114,9 +114,9 @@ FHR_STR=$( printf "%02d" "${FHR[i]}" )
 numel=${#FHR[@]}
 for i in $(seq 1 $(($numel-1)) ); do
   hour=$( printf "%02d" "${FHR[i]}" )
-  FHR_STR="$FHR_STR $hour"
+  FHR_STR="${FHR_STR} $hour"
 done
-FHR="$FHR_STR"
+FHR="${FHR_STR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -137,28 +137,28 @@ set_file_param "${WFLOW_XML_FP}" "GLOBAL_VAR_DEFNS_FP" "${GLOBAL_VAR_DEFNS_FP}"
 set_file_param "${WFLOW_XML_FP}" "CYCLE_DIR" "${CYCLE_DIR}"
 set_file_param "${WFLOW_XML_FP}" "ACCOUNT" "$ACCOUNT"
 set_file_param "${WFLOW_XML_FP}" "SCHED" "$SCHED"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_DEFAULT" "$QUEUE_DEFAULT"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_HPSS" "$QUEUE_HPSS"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_FCST" "$QUEUE_FCST"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_DEFAULT" "${QUEUE_DEFAULT}"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_HPSS" "${QUEUE_HPSS}"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_FCST" "${QUEUE_FCST}"
 set_file_param "${WFLOW_XML_FP}" "USHDIR" "$USHDIR"
 set_file_param "${WFLOW_XML_FP}" "JOBSDIR" "$JOBSDIR"
 set_file_param "${WFLOW_XML_FP}" "EXPTDIR" "$EXPTDIR"
 set_file_param "${WFLOW_XML_FP}" "LOGDIR" "$LOGDIR"
-set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_ICS" "$EXTRN_MDL_NAME_ICS"
-set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_LBCS" "$EXTRN_MDL_NAME_LBCS"
-set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_ICS" "$EXTRN_MDL_FILES_SYSBASEDIR_ICS"
-set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_LBCS" "$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
-set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FV3" "$PROC_RUN_FV3"
-set_file_param "${WFLOW_XML_FP}" "DATE_FIRST_CYCL" "$DATE_FIRST_CYCL"
-set_file_param "${WFLOW_XML_FP}" "DATE_LAST_CYCL" "$DATE_LAST_CYCL"
-set_file_param "${WFLOW_XML_FP}" "YYYY_FIRST_CYCL" "$YYYY_FIRST_CYCL"
-set_file_param "${WFLOW_XML_FP}" "MM_FIRST_CYCL" "$MM_FIRST_CYCL"
-set_file_param "${WFLOW_XML_FP}" "DD_FIRST_CYCL" "$DD_FIRST_CYCL"
-set_file_param "${WFLOW_XML_FP}" "HH_FIRST_CYCL" "$HH_FIRST_CYCL"
+set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_ICS" "${EXTRN_MDL_NAME_ICS}"
+set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_LBCS" "${EXTRN_MDL_NAME_LBCS}"
+set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_ICS" "${EXTRN_MDL_FILES_SYSBASEDIR_ICS}"
+set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_LBCS" "${EXTRN_MDL_FILES_SYSBASEDIR_LBCS}"
+set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FV3" "${PROC_RUN_FV3}"
+set_file_param "${WFLOW_XML_FP}" "DATE_FIRST_CYCL" "${DATE_FIRST_CYCL}"
+set_file_param "${WFLOW_XML_FP}" "DATE_LAST_CYCL" "${DATE_LAST_CYCL}"
+set_file_param "${WFLOW_XML_FP}" "YYYY_FIRST_CYCL" "${YYYY_FIRST_CYCL}"
+set_file_param "${WFLOW_XML_FP}" "MM_FIRST_CYCL" "${MM_FIRST_CYCL}"
+set_file_param "${WFLOW_XML_FP}" "DD_FIRST_CYCL" "${DD_FIRST_CYCL}"
+set_file_param "${WFLOW_XML_FP}" "HH_FIRST_CYCL" "${HH_FIRST_CYCL}"
 set_file_param "${WFLOW_XML_FP}" "FHR" "$FHR"
-set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_GRID" "$RUN_TASK_MAKE_GRID"
-set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_OROG" "$RUN_TASK_MAKE_OROG"
-set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_SFC_CLIMO" "$RUN_TASK_MAKE_SFC_CLIMO"
+set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_GRID" "${RUN_TASK_MAKE_GRID}"
+set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_OROG" "${RUN_TASK_MAKE_OROG}"
+set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_SFC_CLIMO" "${RUN_TASK_MAKE_SFC_CLIMO}"
 #
 #-----------------------------------------------------------------------
 #

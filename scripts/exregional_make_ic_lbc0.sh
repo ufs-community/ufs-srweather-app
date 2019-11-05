@@ -231,7 +231,7 @@ replace_vgfrc=""
 tg3_from_soil=""
 
 
-case "$EXTRN_MDL_NAME_ICS" in
+case "${EXTRN_MDL_NAME_ICS}" in
 
 
 "GSMGFS")
