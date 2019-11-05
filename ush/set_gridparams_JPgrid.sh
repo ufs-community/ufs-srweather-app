@@ -39,8 +39,8 @@ local func_name="${FUNCNAME[0]}"
 . ${USHDIR}/constants.sh
 echo
 echo "pi_geom = $pi_geom"
-echo "degs_per_radian = $degs_per_radian"
-echo "radius_Earth = $radius_Earth"
+echo "degs_per_radian = ${degs_per_radian}"
+echo "radius_Earth = ${radius_Earth}"
 #
 #-----------------------------------------------------------------------
 #
@@ -48,22 +48,22 @@ echo "radius_Earth = $radius_Earth"
 #
 #-----------------------------------------------------------------------
 #
-del_angle_x_SG=$( bc -l <<< "($delx/(2.0*$radius_Earth))*$degs_per_radian" )
-del_angle_x_SG=$( printf "%0.10f\n" $del_angle_x_SG )
+DEL_ANGLE_X_SG=$( bc -l <<< "($DELX/(2.0*${radius_Earth}))*${degs_per_radian}" )
+DEL_ANGLE_X_SG=$( printf "%0.10f\n" ${DEL_ANGLE_X_SG} )
 
-del_angle_y_SG=$( bc -l <<< "($dely/(2.0*$radius_Earth))*$degs_per_radian" )
-del_angle_y_SG=$( printf "%0.10f\n" $del_angle_y_SG )
+DEL_ANGLE_Y_SG=$( bc -l <<< "($DELY/(2.0*${radius_Earth}))*${degs_per_radian}" )
+DEL_ANGLE_Y_SG=$( printf "%0.10f\n" ${DEL_ANGLE_Y_SG} )
 
-echo "del_angle_x_SG = $del_angle_x_SG"
-echo "del_angle_y_SG = $del_angle_y_SG"
+echo "DEL_ANGLE_X_SG = ${DEL_ANGLE_X_SG}"
+echo "DEL_ANGLE_Y_SG = ${DEL_ANGLE_Y_SG}"
 
-mns_nx_T7_pls_wide_halo=$( bc -l <<< "-($nx_T7 + 2*$nhw_T7)" )
-mns_nx_T7_pls_wide_halo=$( printf "%.0f\n" $mns_nx_T7_pls_wide_halo )
-echo "mns_nx_T7_pls_wide_halo = $mns_nx_T7_pls_wide_halo"
+MNS_NX_T7_PLS_WIDE_HALO=$( bc -l <<< "-(${NX_T7} + 2*${NHW_T7})" )
+MNS_NX_T7_PLS_WIDE_HALO=$( printf "%.0f\n" ${MNS_NX_T7_PLS_WIDE_HALO} )
+echo "MNS_NX_T7_PLS_WIDE_HALO = ${MNS_NX_T7_PLS_WIDE_HALO}"
 
-mns_ny_T7_pls_wide_halo=$( bc -l <<< "-($ny_T7 + 2*$nhw_T7)" )
-mns_ny_T7_pls_wide_halo=$( printf "%.0f\n" $mns_ny_T7_pls_wide_halo )
-echo "mns_ny_T7_pls_wide_halo = $mns_ny_T7_pls_wide_halo"
+MNS_NY_T7_PLS_WIDE_HALO=$( bc -l <<< "-(${NY_T7} + 2*${NHW_T7})" )
+MNS_NY_T7_PLS_WIDE_HALO=$( printf "%.0f\n" ${MNS_NY_T7_PLS_WIDE_HALO} )
+echo "MNS_NY_T7_PLS_WIDE_HALO = ${MNS_NY_T7_PLS_WIDE_HALO}"
 
 }
 #

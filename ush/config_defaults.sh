@@ -338,7 +338,7 @@ GRID_GEN_METHOD="JPgrid"
 #   sphere grid.  RES must be one of "48", "96", "192", "384", "768",
 #   "1152", and "3072".  The mapping from RES to nominal resolution
 #   (cell size) for a uniform global grid (i.e. Schmidt stretch factor
-#   stretch_fac set to 1) is as follows:
+#   STRETCH_FAC set to 1) is as follows:
 #
 #     C192   -->  50km
 #     C384   -->  25km
@@ -350,28 +350,28 @@ GRID_GEN_METHOD="JPgrid"
 #   the global grid tiles varies somewhat as we move across a tile.
 #
 # * Tile 6 has arbitrarily been chosen as the tile to use to orient the
-#   global grid on the sphere (Earth).  This is done by specifying lon_-
-#   ctr_T6 and lat_ctr_T6, which are the longitude and latitude (in de-
+#   global grid on the sphere (Earth).  This is done by specifying LON_-
+#   CTR_T6 and LAT_CTR_T6, which are the longitude and latitude (in de-
 #   grees) of the center of tile 6.
 #
-# * Setting the Schmidt stretching factor stretch_fac to a value greater
+# * Setting the Schmidt stretching factor STRETCH_FAC to a value greater
 #   than 1 shrinks tile 6, while setting it to a value less than 1 (but
 #   still greater than 0) expands tile 6.  The remaining 5 tiles change
 #   shape as necessary to maintain global coverage of the grid.
 #
 # * The cell size on a given global tile depends on both RES and
-#   stretch_fac (since changing RES changes the number of cells in the
-#   tile, and changing stretch_fac modifies the shape and size of the
+#   STRETCH_FAC (since changing RES changes the number of cells in the
+#   tile, and changing STRETCH_FAC modifies the shape and size of the
 #   tile).
 #
 # * The regional grid is embedded within tile 6 (i.e. it doesn't extend
 #   beyond the boundary of tile 6).  Its exact location within tile 6 is
 #   is determined by the starting and ending i and j indices
 #
-#     istart_rgnl_T6
-#     jstart_rgnl_T6
-#     iend_rgnl_T6
-#     jend_rgnl_T6
+#     ISTART_RGNL_T6
+#     JSTART_RGNL_T6
+#     IEND_RGNL_T6
+#     JEND_RGNL_T6
 #
 #   where i is the grid index in the x direction and j is the grid index
 #   in the y direction.
@@ -383,12 +383,12 @@ GRID_GEN_METHOD="JPgrid"
 #   6).  Tile 6 is often referred to as the "parent" tile of the region-
 #   al grid.
 #
-# * refine_ratio is the refinement ratio of the regional grid (tile 7)
+# * REFINE_RATIO is the refinement ratio of the regional grid (tile 7)
 #   with respect to the grid on its parent tile (tile 6), i.e. it is the
 #   number of grid cells along the boundary of the regional grid that
 #   abut one cell on tile 6.  Thus, the cell size on the regional grid
-#   depends not only on RES and stretch_fac (because the cell size on
-#   tile 6 depends on these two parameters) but also on refine_ratio.
+#   depends not only on RES and STRETCH_FAC (because the cell size on
+#   tile 6 depends on these two parameters) but also on REFINE_RATIO.
 #   Note that as on the tiles of the global grid, the cell size on the
 #   regional grid is not uniform but varies as we move across the grid.
 #
@@ -399,29 +399,29 @@ GRID_GEN_METHOD="JPgrid"
 # on each tile of the global grid.  Must be "48", "96", "192", "384",
 # "768", "1152", or "3072"
 #
-# lon_ctr_T6:
+# LON_CTR_T6:
 # Longitude of the center of tile 6 (in degrees).
 #
-# lat_ctr_T6:
+# LAT_CTR_T6:
 # Latitude of the center of tile 6 (in degrees).
 #
-# stretch_fac:
+# STRETCH_FAC:
 # Stretching factor used in the Schmidt transformation applied to the
 # cubed sphere grid.
 #
-# istart_rgnl_T6:
+# ISTART_RGNL_T6:
 # i-index on tile 6 at which the regional grid (tile 7) starts.
 #
-# iend_rgnl_T6:
+# IEND_RGNL_T6:
 # i-index on tile 6 at which the regional grid (tile 7) ends.
 #
-# jstart_rgnl_T6:
+# JSTART_RGNL_T6:
 # j-index on tile 6 at which the regional grid (tile 7) starts.
 #
-# jend_rgnl_T6:
+# JEND_RGNL_T6:
 # j-index on tile 6 at which the regional grid (tile 7) ends.
 #
-# refine_ratio:
+# REFINE_RATIO:
 # Cell refinement ratio for the regional grid, i.e. the number of cells
 # in either the x or y direction on the regional grid (tile 7) that abut
 # one cell on its parent tile (tile 6).
@@ -431,14 +431,14 @@ GRID_GEN_METHOD="JPgrid"
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
   RES="384"
-  lon_ctr_T6=-97.5
-  lat_ctr_T6=35.5
-  stretch_fac=1.5
-  istart_rgnl_T6=10
-  iend_rgnl_T6=374
-  jstart_rgnl_T6=10
-  jend_rgnl_T6=374
-  refine_ratio=3
+  LON_CTR_T6=-97.5
+  LAT_CTR_T6=35.5
+  STRETCH_FAC=1.5
+  ISTART_RGNL_T6=10
+  IEND_RGNL_T6=374
+  JSTART_RGNL_T6=10
+  JEND_RGNL_T6=374
+  REFINE_RATIO=3
 #
 #-----------------------------------------------------------------------
 #
@@ -446,53 +446,53 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # without a global parent (i.e. for GRID_GEN_METHOD set to "JPgrid").  
 # These are:
 #
-# lon_rgnl_ctr:
+# LON_RGNL_CTR:
 # The longitude of the center of the grid (in degrees).
 #
-# lat_rgnl_ctr:
+# LAT_RGNL_CTR:
 # The latitude of the center of the grid (in degrees).
 #
-# delx:
+# DELX:
 # The cell size in the zonal direction of the regional grid (in meters).
 #
-# dely:
+# DELY:
 # The cell size in the meridional direction of the regional grid (in me-
 # ters).
 #
-# nx_T7:
+# NX_T7:
 # The number of cells in the zonal direction on the regional grid.
 #
-# ny_T7:
+# NY_T7:
 # The number of cells in the meridional direction on the regional grid.
 #
-# nhw_T7:
+# NHW_T7:
 # The width of the wide halo (in units of number of cells) to create 
 # around the regional grid.  A grid with a halo of this width will first
 # be created and stored in a grid specification file.  This grid will 
 # then be shaved down to obtain grids with 3-cell-wide and 4-cell-wide
 # halos.
 #
-# a_grid_param:
-# The "a" parameter used in the Jim Purser map projection/grid genera-
-# tion method.
+# ALPHA_JPGRID_PARAM:
+# The alpha parameter used in the Jim Purser map projection/grid gene-
+# ration method.
 #
-# k_grid_param:
-# The "k" parameter used in the Jim Purser map projection/grid genera-
-# tion method.
+# KAPPA_JPGRID_PARAM:
+# The kappa parameter used in the Jim Purser map projection/grid gene-
+# ration method.
 #
 #-----------------------------------------------------------------------
 #
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-  lon_rgnl_ctr=-97.5
-  lat_rgnl_ctr=35.5
-  delx="3000.0"
-  dely="3000.0"
-  nx_T7=1000
-  ny_T7=1000
-  nhw_T7=6
-  a_grid_param="0.21423"
-  k_grid_param="-0.23209"
+  LON_RGNL_CTR=-97.5
+  LAT_RGNL_CTR=35.5
+  DELX="3000.0"
+  DELY="3000.0"
+  NX_T7=1000
+  NY_T7=1000
+  NHW_T7=6
+  ALPHA_JPGRID_PARAM="0.21423"
+  KAPPA_JPGRID_PARAM="-0.23209"
 
 fi
 #
@@ -523,14 +523,14 @@ PREDEF_GRID_NAME=""
 #
 #-----------------------------------------------------------------------
 #
-# Set the model integraton time step dt_atmos.  This is the time step 
+# Set the model integraton time step DT_ATMOS.  This is the time step 
 # for the largest atmosphere model loop.  It corresponds to the frequen-
 # cy with which the top level routine in the dynamics is called as well
 # as the frequency with which the physics is called.
 #
 #-----------------------------------------------------------------------
 #
-dt_atmos=18 #Preliminary values: 18 for 3-km runs, 90 for 13-km runs
+DT_ATMOS=18 #Preliminary values: 18 for 3-km runs, 90 for 13-km runs
 #
 #-----------------------------------------------------------------------
 #
@@ -579,19 +579,19 @@ VERBOSE="TRUE"
 #
 #-----------------------------------------------------------------------
 #
-layout_x="20"
-layout_y="20"
+LAYOUT_X="20"
+LAYOUT_Y="20"
 #
 #-----------------------------------------------------------------------
 #
-# Set the blocksize to use.  This is the amount of data that is passed
+# Set the BLOCKSIZE to use.  This is the amount of data that is passed
 # into the cache at a time.  The number of vertical columns per MPI task
-# needs to be divisible by the blocksize; otherwise, unexpected results
-# may occur.
+# needs to be divisible by BLOCKSIZE; otherwise, unexpected results may
+# occur.
 #
 #-----------------------------------------------------------------------
 #
-blocksize="24"
+BLOCKSIZE="24"
 #
 #-----------------------------------------------------------------------
 #
@@ -600,14 +600,14 @@ blocksize="24"
 # QUILTING:
 # Flag for whether or not to use the write component for output.
 #
-# write_groups:
+# WRTCMP_write_groups:
 # The number of write groups (i.e. groups of MPI tasks) to use in the
 # write component.
 #
-# write_tasks_per_group:
+# WRTCMP_write_tasks_per_group:
 # The number of MPI tasks to allocate for each write group.
 #
-# print_esmf:
+# PRINT_ESMF:
 # Flag for whether or not to output extra (debugging) information from
 # ESMF routines.  Must be ".true." or ".false.".  Note that the write
 # component uses ESMF library routines to interpolate from the native
@@ -618,7 +618,7 @@ blocksize="24"
 #-----------------------------------------------------------------------
 #
 QUILTING="TRUE"
-print_esmf=".false."
+PRINT_ESMF=".false."
 
 WRTCMP_write_groups="1"
 WRTCMP_write_tasks_per_group="20"

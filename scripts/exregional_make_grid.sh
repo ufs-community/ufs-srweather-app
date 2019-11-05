@@ -79,11 +79,9 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-# Set the file names of the scripts to use for generating the grid
-# files, the orography files, and for filtering the orography files,
-# respectively.  Also, set the name of the executable file used to
-# "shave" (i.e. remove the halo from) certain grid and orography
-# files.  The shaving is needed only for the gtype="regional" case.
+# Set the file name of the script to use for generating the grid files 
+# and the name of the executable file used to "shave" (i.e. remove the 
+# halo from) certain grid files.
 #
 #-----------------------------------------------------------------------
 #
@@ -251,7 +249,7 @@ mkdir_vrfy -p "$tmpdir"
 # mation on how tiles 1 through 6 are connected or that tile 7 is within
 # tile 6).  All these files will be placed in the directory specified by
 # GRID_DIR.  Note that the file for tile 7 will include a halo of
-# width nhw_T7 cells.
+# width NHW_T7 cells.
 #
 # Since tiles 1 through 6 are not needed to run the FV3SAR model and are
 # not used later on in any other preprocessing steps, it is not clear
@@ -260,7 +258,7 @@ mkdir_vrfy -p "$tmpdir"
 # lity/executable that grid_gen_scr calls, i.e. it might be because with
 # make_hgrid, one has to either create just the 6 global tiles or create
 # the 6 global tiles plus the regional (tile 7), and then for the case
-# of a regional simulation (i.e. gtype="regional", which is always the
+# of a regional simulation (i.e. GTYPE="regional", which is always the
 # case here) just not use the 6 global tiles.
 #
 # The grid_gen_scr script called below takes its next-to-last argument
@@ -288,14 +286,14 @@ mkdir_vrfy -p "$tmpdir"
 #   --grid_type gnomonic_ed \
 #   --nlon 2*${RES} \
 #   --grid_name C${RES}_grid \
-#   --do_schmidt --stretch_factor ${stretch_fac} \
-#   --target_lon ${lon_ctr_T6} --target_lat ${lat_ctr_T6} \
-#   --nest_grid --parent_tile 6 --refine_ratio ${refine_ratio} \
+#   --do_schmidt --stretch_factor ${STRETCH_FAC} \
+#   --target_lon ${LON_CTR_T6} --target_lat ${LAT_CTR_T6} \
+#   --nest_grid --parent_tile 6 --refine_ratio ${REFINE_RATIO} \
 #   --istart_nest ${istart_rgnl_wide_halo_T6SG} \
 #   --jstart_nest ${jstart_rgnl_wide_halo_T6SG} \
 #   --iend_nest ${iend_rgnl_wide_halo_T6SG} \
 #   --jend_nest ${jend_rgnl_wide_halo_T6SG} \
-#   --halo ${nh3_T7} \
+#   --halo ${NH3_T7} \
 #   --great_circle_algorithm
 #
 # This creates the 7 grid files ${CRES}_grid.tileN.nc for N=1,...,7.
@@ -310,7 +308,7 @@ mkdir_vrfy -p "$tmpdir"
 #
 # According to Rusty Benson of GFDL, the flag
 #
-#   --halo ${nh3_T7}
+#   --halo ${NH3_T7}
 #
 # only checks to make sure that the nested or regional grid combined
 # with the specified halo lies completely within the parent tile.  If
@@ -336,7 +334,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
   $USHDIR/$grid_gen_scr \
     $RES \
     $tmpdir \
-    ${stretch_fac} ${lon_ctr_T6} ${lat_ctr_T6} ${refine_ratio} \
+    ${STRETCH_FAC} ${LON_CTR_T6} ${LAT_CTR_T6} ${REFINE_RATIO} \
     ${istart_rgnl_wide_halo_T6SG} ${jstart_rgnl_wide_halo_T6SG} \
     ${iend_rgnl_wide_halo_T6SG} ${jend_rgnl_wide_halo_T6SG} \
     1 $USHDIR || \
@@ -372,18 +370,18 @@ elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
   print_info_msg "$VERBOSE" "
 Setting parameters in file:
-  RGNL_GRID_NML_FP = \"$RGNL_GRID_NML_FP\""
+  RGNL_GRID_NML_FP = \"${RGNL_GRID_NML_FP}\""
 #
 # Set parameters.
 #
-  set_file_param "$RGNL_GRID_NML_FP" "plon" "$lon_rgnl_ctr"
-  set_file_param "$RGNL_GRID_NML_FP" "plat" "$lat_rgnl_ctr"
-  set_file_param "$RGNL_GRID_NML_FP" "delx" "$del_angle_x_SG"
-  set_file_param "$RGNL_GRID_NML_FP" "dely" "$del_angle_y_SG"
-  set_file_param "$RGNL_GRID_NML_FP" "lx" "$mns_nx_T7_pls_wide_halo"
-  set_file_param "$RGNL_GRID_NML_FP" "ly" "$mns_ny_T7_pls_wide_halo"
-  set_file_param "$RGNL_GRID_NML_FP" "a" "$a_grid_param"
-  set_file_param "$RGNL_GRID_NML_FP" "k" "$k_grid_param"
+  set_file_param "${RGNL_GRID_NML_FP}" "plon" "${LON_RGNL_CTR}"
+  set_file_param "${RGNL_GRID_NML_FP}" "plat" "${LAT_RGNL_CTR}"
+  set_file_param "${RGNL_GRID_NML_FP}" "delx" "${DEL_ANGLE_X_SG}"
+  set_file_param "${RGNL_GRID_NML_FP}" "dely" "${DEL_ANGLE_Y_SG}"
+  set_file_param "${RGNL_GRID_NML_FP}" "lx" "${MNS_NX_T7_PLS_WIDE_HALO}"
+  set_file_param "${RGNL_GRID_NML_FP}" "ly" "${MNS_NY_T7_PLS_WIDE_HALO}"
+  set_file_param "${RGNL_GRID_NML_FP}" "a" "${ALPHA_JPGRID_PARAM}"
+  set_file_param "${RGNL_GRID_NML_FP}" "k" "${KAPPA_JPGRID_PARAM}"
 
   cd_vrfy $tmpdir
 
@@ -436,7 +434,7 @@ fi
 #
 cd_vrfy $tmpdir
 mv_vrfy ${CRES}_grid.tile${TILE_RGNL}.nc \
-        ${CRES}_grid.tile${TILE_RGNL}.halo${nhw_T7}.nc
+        ${CRES}_grid.tile${TILE_RGNL}.halo${NHW_T7}.nc
 mv_vrfy ${CRES}_mosaic.nc ${GRID_DIR}
 cd_vrfy -
 
@@ -460,13 +458,13 @@ Grid file generation complete."
 # wide halo.  This is the input grid file for generating both the grid
 # file with a 3-cell-wide halo and the one with a 4-cell-wide halo.
 #
-unshaved_fp="$tmpdir/${CRES}_grid.tile${TILE_RGNL}.halo${nhw_T7}.nc"
+unshaved_fp="$tmpdir/${CRES}_grid.tile${TILE_RGNL}.halo${NHW_T7}.nc"
 #
 # We perform the work in tmpdir, so change location to that directory.  
 # Once it is complete, we move the resultant file from tmpdir to GRID_-
 # DIR.
 #
-cd_vrfy ${tmpdir}
+cd_vrfy $tmpdir
 #
 # Create an input namelist file for the shave executable to generate a
 # grid file with a 3-cell-wide halo from the one with a wide halo.  Then 
@@ -474,18 +472,18 @@ cd_vrfy ${tmpdir}
 # GRID_DIR directory.
 #
 print_info_msg "$VERBOSE" "
-\"Shaving\" grid file with wide halo to obtain grid file with ${nh3_T7}-cell-wide
+\"Shaving\" grid file with wide halo to obtain grid file with ${NH3_T7}-cell-wide
 halo..."
 
-nml_fn="input.shave.grid.halo${nh3_T7}"
-shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${nh3_T7}.nc"
+nml_fn="input.shave.grid.halo${NH3_T7}"
+shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${NH3_T7}.nc"
 printf "%s %s %s %s %s\n" \
-  ${nx_T7} ${ny_T7} ${nh3_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  ${NX_T7} ${NY_T7} ${NH3_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
 print_err_msg_exit "\
-Call to executable \"${shave_exec}\" to generate a grid file with a ${nh3_T7}-cell-wide
+Call to executable \"${shave_exec}\" to generate a grid file with a ${NH3_T7}-cell-wide
 halo returned with nonzero exit code.  The namelist file nml_fn is in 
 directory tmpdir: 
   tmpdir = \"${tmpdir}\"
@@ -498,18 +496,18 @@ mv_vrfy ${shaved_fp} ${GRID_DIR}
 # GRID_DIR directory.
 #
 print_info_msg "$VERBOSE" "
-\"Shaving\" grid file with wide halo to obtain grid file with ${nh4_T7}-cell-wide
+\"Shaving\" grid file with wide halo to obtain grid file with ${NH4_T7}-cell-wide
 halo..."
 
-nml_fn="input.shave.grid.halo${nh4_T7}"
-shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+nml_fn="input.shave.grid.halo${NH4_T7}"
+shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${NH4_T7}.nc"
 printf "%s %s %s %s %s\n" \
-  ${nx_T7} ${ny_T7} ${nh4_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  ${NX_T7} ${NY_T7} ${NH4_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
 print_err_msg_exit "\
-Call to executable \"${shave_exec}\" to generate a grid file with a ${nh4_T7}-cell-wide
+Call to executable \"${shave_exec}\" to generate a grid file with a ${NH4_T7}-cell-wide
 halo returned with nonzero exit code.  The namelist file nml_fn is in 
 directory tmpdir: 
   tmpdir = \"${tmpdir}\"

@@ -285,15 +285,17 @@ else
   grid_name="${GRID_GEN_METHOD}"
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-    stretch_str="S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
-    refine_str="RR${refine_ratio}"
+    stretch_str="S$( printf "%s" "${STRETCH_FAC}" | sed "s|\.|p|" )"
+    refine_str="RR${REFINE_RATIO}"
     grid_name="${grid_name}_${CRES}_${stretch_str}_${refine_str}"
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-    nx_T7_str="NX$( printf "%s" "${nx_T7}" | sed "s|\.|p|" )"
-    ny_T7_str="NY$( printf "%s" "${ny_T7}" | sed "s|\.|p|" )"
-    a_grid_param_str="A$( printf "%s" "${a_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
-    k_grid_param_str="K$( printf "%s" "${k_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
-    grid_name="${grid_name}_${nx_T7_str}_${ny_T7_str}_${a_grid_param_str}_${k_grid_param_str}"
+    nx_T7_str="NX$( printf "%s" "${NX_T7}" | sed "s|\.|p|" )"
+    ny_T7_str="NY$( printf "%s" "${NY_T7}" | sed "s|\.|p|" )"
+    alpha_JPgrid_param_str="A"$( printf "%s" "${ALPHA_JPGRID_PARAM}" | \
+                                 sed "s|-|mns|" | sed "s|\.|p|" )
+    kappa_JPgrid_param_str="K"$( printf "%s" "${KAPPA_JPGRID_PARAM}" | \
+                                 sed "s|-|mns|" | sed "s|\.|p|" )
+    grid_name="${grid_name}_${nx_T7_str}_${ny_T7_str}_${alpha_JPgrid_param_str}_${kappa_JPgrid_param_str}"
   fi
 
 fi

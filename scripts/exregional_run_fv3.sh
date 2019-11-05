@@ -249,7 +249,7 @@ Cannot create symlink because target does not exist:
 fi
 
 # Symlink to halo-3 grid file with "halo4" stripped from name.
-target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${nh3_T7}.nc"
+target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${NH3_T7}.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target ${CRES}_grid.tile${TILE_RGNL}.nc
 else
@@ -270,9 +270,9 @@ fi
 # Note that even though the message says "Stopped", the task still con-
 # sumes core-hours.
 #
-target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${NH4_T7}.nc"
 if [ -f "${target}" ]; then
-  ln_vrfy -sf $target ${relative_or_null} grid.tile${TILE_RGNL}.halo${nh4_T7}.nc
+  ln_vrfy -sf $target ${relative_or_null} grid.tile${TILE_RGNL}.halo${NH4_T7}.nc
 else
   print_err_msg_exit "\
 Cannot create symlink because target does not exist:
@@ -287,7 +287,7 @@ if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ]; then
 fi
 
 # Symlink to halo-0 orography file with "${CRES}_" and "halo0" stripped from name.
-target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh0_T7}.nc"
+target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0_T7}.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target oro_data.nc
 else
@@ -309,9 +309,9 @@ fi
 # Note that even though the message says "Stopped", the task still con-
 # sumes core-hours.
 #
-target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc"
 if [ -f "${target}" ]; then
-  ln_vrfy -sf $target ${relative_or_null} oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc
+  ln_vrfy -sf $target ${relative_or_null} oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc
 else
   print_err_msg_exit "\
 Cannot create symlink because target does not exist:
@@ -341,8 +341,8 @@ Creating links with names that FV3 looks for in the INPUT subdirectory
 of the current cycle's run directory (CYCLE_DIR)..."
 
 cd_vrfy ${CYCLE_DIR}/INPUT
-ln_vrfy -sf gfs_data.tile${TILE_RGNL}.halo${nh0_T7}.nc gfs_data.nc
-ln_vrfy -sf sfc_data.tile${TILE_RGNL}.halo${nh0_T7}.nc sfc_data.nc
+ln_vrfy -sf gfs_data.tile${TILE_RGNL}.halo${NH0_T7}.nc gfs_data.nc
+ln_vrfy -sf sfc_data.tile${TILE_RGNL}.halo${NH0_T7}.nc sfc_data.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -478,15 +478,15 @@ Setting parameters in file:
 dot_quilting_dot="."${QUILTING,,}"."
 
 set_file_param "${MODEL_CONFIG_FP}" "PE_MEMBER01" "${PE_MEMBER01}"
-set_file_param "${MODEL_CONFIG_FP}" "dt_atmos" "${dt_atmos}"
+set_file_param "${MODEL_CONFIG_FP}" "dt_atmos" "${DT_ATMOS}"
 set_file_param "${MODEL_CONFIG_FP}" "start_year" "$YYYY"
 set_file_param "${MODEL_CONFIG_FP}" "start_month" "$MM"
 set_file_param "${MODEL_CONFIG_FP}" "start_day" "$DD"
 set_file_param "${MODEL_CONFIG_FP}" "start_hour" "$HH"
 set_file_param "${MODEL_CONFIG_FP}" "nhours_fcst" "${FCST_LEN_HRS}"
-set_file_param "${MODEL_CONFIG_FP}" "ncores_per_node" "${ncores_per_node}"
+set_file_param "${MODEL_CONFIG_FP}" "ncores_per_node" "${NCORES_PER_NODE}"
 set_file_param "${MODEL_CONFIG_FP}" "quilting" "${dot_quilting_dot}"
-set_file_param "${MODEL_CONFIG_FP}" "print_esmf" "$print_esmf"
+set_file_param "${MODEL_CONFIG_FP}" "print_esmf" "${PRINT_ESMF}"
 #
 #-----------------------------------------------------------------------
 #

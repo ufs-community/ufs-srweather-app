@@ -106,7 +106,7 @@ cp_vrfy ${TEMPLATE_XML_FP} ${WFLOW_XML_FP}
 #
 #-----------------------------------------------------------------------
 #
-PROC_RUN_FV3="${NUM_NODES}:ppn=${ncores_per_node}"
+PROC_RUN_FV3="${NUM_NODES}:ppn=${NCORES_PER_NODE}"
 
 FHR=( $( seq 0 1 ${FCST_LEN_HRS} ) )
 i=0
@@ -513,7 +513,6 @@ a nonzero status."
 Copying the modulefile required for running the CCPP-enabled version of
 the FV3SAR under NEMS to the experiment directory..." 
   cp_vrfy ${NEMSfv3gfs_DIR}/NEMS/src/conf/modules.nems $EXPTDIR/modules.fv3
-
 #
 #-----------------------------------------------------------------------
 #
@@ -622,18 +621,18 @@ print_info_msg "$VERBOSE" "
 Setting parameters in FV3 namelist file (FV3_NML_FP):
   FV3_NML_FP = \"${FV3_NML_FP}\""
 #
-# Set npx_T7 and npy_T7, which are just nx_T7 plus 1 and ny_T7 plus 1,
+# Set npx_T7 and npy_T7, which are just NX_T7 plus 1 and NY_T7 plus 1,
 # respectively.  These need to be set in the FV3SAR Fortran namelist
 # file.  They represent the number of cell vertices in the x and y di-
 # rections on the regional grid (tile 7).
 #
-npx_T7=$(($nx_T7+1))
-npy_T7=$(($ny_T7+1))
+npx_T7=$(( NX_T7+1 ))
+npy_T7=$(( NY_T7+1 ))
 #
 # Set parameters.
 #
-set_file_param "${FV3_NML_FP}" "blocksize" "$blocksize"
-set_file_param "${FV3_NML_FP}" "layout" "${layout_x},${layout_y}"
+set_file_param "${FV3_NML_FP}" "blocksize" "$BLOCKSIZE"
+set_file_param "${FV3_NML_FP}" "layout" "${LAYOUT_X},${LAYOUT_Y}"
 set_file_param "${FV3_NML_FP}" "npx" "${npx_T7}"
 set_file_param "${FV3_NML_FP}" "npy" "${npy_T7}"
 
@@ -645,13 +644,13 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # are not necessarily the same [although assuming there is only one re-
 # gional domain within tile 6, i.e. assuming there is no tile 8, 9, etc,
 # there is no reason not to center tile 7 with respect to tile 6].
-  set_file_param "${FV3_NML_FP}" "target_lon" "${lon_ctr_T6}"
-  set_file_param "${FV3_NML_FP}" "target_lat" "${lat_ctr_T6}"
+  set_file_param "${FV3_NML_FP}" "target_lon" "${LON_CTR_T6}"
+  set_file_param "${FV3_NML_FP}" "target_lat" "${LAT_CTR_T6}"
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-  set_file_param "${FV3_NML_FP}" "target_lon" "${lon_rgnl_ctr}"
-  set_file_param "${FV3_NML_FP}" "target_lat" "${lat_rgnl_ctr}"
+  set_file_param "${FV3_NML_FP}" "target_lon" "${LON_RGNL_CTR}"
+  set_file_param "${FV3_NML_FP}" "target_lat" "${LAT_RGNL_CTR}"
 fi
-set_file_param "${FV3_NML_FP}" "stretch_fac" "${stretch_fac}"
+set_file_param "${FV3_NML_FP}" "stretch_fac" "${STRETCH_FAC}"
 set_file_param "${FV3_NML_FP}" "bc_update_interval" "${LBC_UPDATE_INTVL_HRS}"
 #
 # For GSD physics, set the parameter lsoil according to the external mo-

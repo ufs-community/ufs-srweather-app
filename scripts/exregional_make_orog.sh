@@ -101,11 +101,10 @@ ufs_utils_ushdir="${UFS_UTILS_DIR}/ush"
 #
 #-----------------------------------------------------------------------
 #
-# Set the file names of the scripts to use for generating the grid
-# files, the orography files, and for filtering the orography files,
-# respectively.  Also, set the name of the executable file used to
-# "shave" (i.e. remove the halo from) certain grid and orography
-# files.  The shaving is needed only for the gtype="regional" case.
+# Set the file names of the scripts to use for generating the raw oro-
+# graphy files and for filtering the latter to obtain filtered orography
+# files.  Also, set the name of the executable file used to "shave" 
+# (i.e. remove the halo from) certain orography files.
 #
 #-----------------------------------------------------------------------
 #
@@ -255,7 +254,7 @@ export exec_dir="$EXECDIR"
 #   oro.${CRES}.tile7.nc
 #
 # and will place it in OROG_DIR.  Note that this file will include
-# orography for a halo of width nhw_T7 cells around tile 7.  The follow-
+# orography for a halo of width NHW_T7 cells around tile 7.  The follow-
 # ing will also create a work directory called tile7 under OROG_DIR.
 # This work directory can be removed after the orography file has been
 # created (it is currently not deleted).
@@ -318,8 +317,8 @@ esac
 #
 cd_vrfy ${raw_dir}
 mv_vrfy oro.${CRES}.tile${TILE_RGNL}.nc \
-        oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc
-ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc \
+        oro.${CRES}.tile${TILE_RGNL}.halo${NHW_T7}.nc
+ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${NHW_T7}.nc \
             oro.${CRES}.tile${TILE_RGNL}.nc
 cd_vrfy -
 
@@ -341,13 +340,13 @@ Setting orography filtering parameters..."
 #print_err_msg_exit "\ 
 #Call to script that generates grid file (Jim Purser version) returned 
 #with nonzero exit code."
-#${CRES}_grid.tile${TILE_RGNL}.halo${nhw_T7}.nc
+#${CRES}_grid.tile${TILE_RGNL}.halo${NHW_T7}.nc
 
 
 #if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-#  RES_eff=$( bc -l <<< "$RES*$refine_ratio" )
+#  RES_eff=$( bc -l <<< "$RES*${REFINE_RATIO}" )
 #elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-#  grid_size_eff=$( "($delx + $dely)/2" )
+#  grid_size_eff=$( "($DELX + $DELY)/2" )
 #echo "grid_size_eff = $grid_size_eff"
 #  RES_eff=$( bc -l <<< "2*$pi_geom*$radius_Earth/(4*$grid_size_eff)" )
 #fi
@@ -415,7 +414,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Generate a filtered orography file with a wide halo (i.e. with a halo
-# width of nhw_T7 cells) for tile 7 from the corresponding raw orography
+# width of NHW_T7 cells) for tile 7 from the corresponding raw orography
 # file.
 #
 # The following will create a filtered orography file named
@@ -434,7 +433,7 @@ fi
 # mosaic file, the executable replaces the raw orography file
 # with its filtered counterpart (i.e. it gives the filtered file the
 # same name as the original raw file).  Since in this (i.e.
-# gtype="regional") case the mosaic file lists only tile 7, a filtered
+# GTYPE="regional") case the mosaic file lists only tile 7, a filtered
 # orography file is generated only for tile 7.  Thus, the grid files for
 # the first 6 tiles that were created above in GRID_DIR are not used
 # and thus do not need to be copied from GRID_DIR to filter_dir
@@ -445,15 +444,15 @@ fi
 #
 print_info_msg "$VERBOSE" "
 Starting filtering of orography..."
-echo "gtype = \"$gtype\""
+#echo "GTYPE = \"$GTYPE\""
 
 # The script below creates absolute symlinks in $filter_dir.  That's 
 # probably necessary for NCO but probably better to create relative 
 # links for the community workflow.
 
-# Have to export gtype because it is not one of the arguments to the 
-# called script.
-export gtype
+# Have to create and export a new variable named gtype because the 
+# script called below expects it to be in the environment.
+export gtype="$GTYPE"
 ${ufs_utils_ushdir}/${orog_fltr_scr} \
   $RES \
   ${FIXsar} ${raw_dir} ${filter_dir} \
@@ -473,8 +472,8 @@ zero exit code."
 #
 cd_vrfy ${filter_dir}
 mv_vrfy oro.${CRES}.tile${TILE_RGNL}.nc \
-        oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc
-#ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc \
+        oro.${CRES}.tile${TILE_RGNL}.halo${NHW_T7}.nc
+#ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${NHW_T7}.nc \
 #            oro.${CRES}.tile${TILE_RGNL}.nc
 cd_vrfy -
 
@@ -499,7 +498,7 @@ Filtering of orography complete."
 # orography file without a halo and the one with a 4-cell-wide halo.
 #
 #unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.nc"
-unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc"
+unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.halo${NHW_T7}.nc"
 #
 # We perform the work in shave_dir, so change location to that directo-
 # ry.  Once it is complete, we move the resultant file from shave_dir to
@@ -514,12 +513,12 @@ cd_vrfy ${shave_dir}
 #
 print_info_msg "$VERBOSE" "
 \"Shaving\" orography file with wide halo to obtain orography file with 
-${nh0_T7}-cell-wide halo..."
+${NH0_T7}-cell-wide halo..."
 
-nml_fn="input.shave.orog.halo${nh0_T7}"
-shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh0_T7}.nc"
+nml_fn="input.shave.orog.halo${NH0_T7}"
+shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0_T7}.nc"
 printf "%s %s %s %s %s\n" \
-  ${nx_T7} ${ny_T7} ${nh0_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  ${NX_T7} ${NY_T7} ${NH0_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
@@ -538,12 +537,12 @@ mv_vrfy ${shaved_fp} ${OROG_DIR}
 #
 print_info_msg "$VERBOSE" "
 \"Shaving\" orography file with wide halo to obtain orography file with 
-${nh4_T7}-cell-wide halo..."
+${NH4_T7}-cell-wide halo..."
 
-nml_fn="input.shave.orog.halo${nh4_T7}"
-shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+nml_fn="input.shave.orog.halo${NH4_T7}"
+shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc"
 printf "%s %s %s %s %s\n" \
-  ${nx_T7} ${ny_T7} ${nh4_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  ${NX_T7} ${NY_T7} ${NH4_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
@@ -587,7 +586,7 @@ Call to script to create links to orography files failed."
 #
 if [ 0 = 1 ]; then
 cd_vrfy ${OROG_DIR}
-ln_vrfy -sf ${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc \
+ln_vrfy -sf ${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc \
             ${CRES}_oro_data.tile${TILE_RGNL}.nc
 fi
 
@@ -604,13 +603,13 @@ fi
 if [ 0 = 1 ]; then
 cd_vrfy ${FIXsar}
 
-filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${nh0_T7}.nc"
+filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0_T7}.nc"
 ln_vrfy --relative -sf ${OROG_DIR}/$filename $FIXsar
 ln_vrfy -sf $filename oro_data.nc
 
-filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc"
 ln_vrfy --relative -sf ${OROG_DIR}/$filename $FIXsar
-ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc
+ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc
 ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.nc
 fi
 #

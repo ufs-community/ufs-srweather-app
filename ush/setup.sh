@@ -236,7 +236,7 @@ case $MACHINE in
 Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
 Then remove this message and rerun." 
-  ncores_per_node=""
+  NCORES_PER_NODE=""
   SCHED=""
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
@@ -250,7 +250,7 @@ Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
 Then remove this message and rerun."
 
-  ncores_per_node=""
+  NCORES_PER_NODE=""
   SCHED=""
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
@@ -259,7 +259,7 @@ Then remove this message and rerun."
 #
 "THEIA")
 #
-  ncores_per_node=24
+  NCORES_PER_NODE=24
   SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
@@ -268,7 +268,7 @@ Then remove this message and rerun."
 #
 "HERA")
 #
-  ncores_per_node=24
+  NCORES_PER_NODE=24
   SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
@@ -277,7 +277,7 @@ Then remove this message and rerun."
 #
 "JET")
 #
-  ncores_per_node=24
+  NCORES_PER_NODE=24
   SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
@@ -286,7 +286,7 @@ Then remove this message and rerun."
 #
 "ODIN")
 #
-  ncores_per_node=24
+  NCORES_PER_NODE=24
   SCHED="slurm"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
@@ -300,7 +300,7 @@ Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
 Then remove this message and rerun."
 
-  ncores_per_node=
+  NCORES_PER_NODE=
   SCHED=""
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
@@ -310,25 +310,25 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Set the grid type (gtype).  In general, in the FV3 code, this can take
+# Set the grid type (GTYPE).  In general, in the FV3 code, this can take
 # on one of the following values: "global", "stretch", "nest", and "re-
 # gional".  The first three values are for various configurations of a
 # global grid, while the last one is for a regional grid.  Since here we
-# are only interested in a regional grid, gtype must be set to "region-
+# are only interested in a regional grid, GTYPE must be set to "region-
 # al".
 #
 #-----------------------------------------------------------------------
 #
-gtype="regional"
+GTYPE="regional"
 TILE_RGNL="7"
 #
 #-----------------------------------------------------------------------
 #
-# Make sure that gtype is set to a valid value.
+# Make sure that GTYPE is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-check_var_valid_value "gtype" "valid_vals_gtype"
+check_var_valid_value "GTYPE" "valid_vals_GTYPE"
 #
 #-----------------------------------------------------------------------
 #
@@ -714,16 +714,16 @@ fi
 # the stretch factor needs to be set to 1 because we are considering an
 # equivalent globally UNIFORM grid.  However, it turns out that with a 
 # non-symmetric regional grid (one in which nx is not equal to ny), set-
-# ting stretch_fac to 1 fails because the orography filtering program is
+# ting STRETCH_FAC to 1 fails because the orography filtering program is
 # designed for a global cubed-sphere grid and thus assumes that nx and 
-# ny for a given tile are equal when stretch_fac is exactly equal to 1.  <-- Why is this?  Seems like symmetry btwn x and y should still hold when stretch_fac is not equal to 1.  
-# It turns out that the program will work if we set stretch_fac that is
+# ny for a given tile are equal when STRETCH_FAC is exactly equal to 1.  <-- Why is this?  Seems like symmetry btwn x and y should still hold when STRETCH_FAC is not equal to 1.  
+# It turns out that the program will work if we set STRETCH_FAC that is
 # not exactly 1.  This is what we do below. 
 #
 #-----------------------------------------------------------------------
 #
 if [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-  stretch_fac="0.999"
+  STRETCH_FAC="0.999"
 fi
 #
 #-----------------------------------------------------------------------
@@ -1076,22 +1076,22 @@ fi
 # Note that the regional grid is referred to as "tile 7" in the code.
 # We will let:
 #
-# * nh0_T7 denote the width (in units of number of cells on tile 7) of
-#   the 0-cell-wide halo, i.e. nh0_T7 = 0;
+# * NH0_T7 denote the width (in units of number of cells on tile 7) of
+#   the 0-cell-wide halo, i.e. NH0_T7 = 0;
 #
-# * nh3_T7 denote the width (in units of number of cells on tile 7) of
-#   the 3-cell-wide halo, i.e. nh3_T7 = 3; and
+# * NH3_T7 denote the width (in units of number of cells on tile 7) of
+#   the 3-cell-wide halo, i.e. NH3_T7 = 3; and
 #
-# * nh4_T7 denote the width (in units of number of cells on tile 7) of
-#   the 4-cell-wide halo, i.e. nh4_T7 = 4.
+# * NH4_T7 denote the width (in units of number of cells on tile 7) of
+#   the 4-cell-wide halo, i.e. NH4_T7 = 4.
 #
 # We define these variables next.
 #
 #-----------------------------------------------------------------------
 #
-nh0_T7=0
-nh3_T7=3
-nh4_T7=$(( $nh3_T7 + 1 ))
+NH0_T7=0
+NH3_T7=3
+NH4_T7=4
 #
 #-----------------------------------------------------------------------
 #
@@ -1158,7 +1158,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-PE_MEMBER01=$(( $layout_x*$layout_y ))
+PE_MEMBER01=$(( LAYOUT_X*LAYOUT_Y ))
 if [ "$QUILTING" = "TRUE" ]; then
   PE_MEMBER01=$(( ${PE_MEMBER01} + ${WRTCMP_write_groups}*${WRTCMP_write_tasks_per_group} ))
 fi
@@ -1171,57 +1171,57 @@ component if it is being used) are:
 #-----------------------------------------------------------------------
 #
 # Make sure that the number of cells in the x and y direction are divi-
-# sible by the MPI task dimensions layout_x and layout_y, respectively.
+# sible by the MPI task dimensions LAYOUT_X and LAYOUT_Y, respectively.
 #
 #-----------------------------------------------------------------------
 #
-rem=$(( $nx_T7%$layout_x ))
+rem=$(( NX_T7%LAYOUT_X ))
 if [ $rem -ne 0 ]; then
   print_err_msg_exit "\
-The number of grid cells in the x direction (nx_T7) is not evenly divisible
-by the number of MPI tasks in the x direction (layout_x):
-  nx_T7 = $nx_T7
-  layout_x = $layout_x"
+The number of grid cells in the x direction (NX_T7) is not evenly divisible
+by the number of MPI tasks in the x direction (LAYOUT_X):
+  NX_T7 = ${NX_T7}
+  LAYOUT_X = ${LAYOUT_X}"
 fi
 
-rem=$(( $ny_T7%$layout_y ))
+rem=$(( NY_T7%LAYOUT_Y ))
 if [ $rem -ne 0 ]; then
   print_err_msg_exit "\
-The number of grid cells in the y direction (ny_T7) is not evenly divisible
-by the number of MPI tasks in the y direction (layout_y):
-  ny_T7 = $ny_T7
-  layout_y = $layout_y"
+The number of grid cells in the y direction (NY_T7) is not evenly divisible
+by the number of MPI tasks in the y direction (LAYOUT_Y):
+  NY_T7 = ${NY_T7}
+  LAYOUT_Y = ${LAYOUT_Y}"
 fi
 
 print_info_msg "$VERBOSE" "
 The MPI task layout is:
-  layout_x = $layout_x
-  layout_y = $layout_y"
+  LAYOUT_X = ${LAYOUT_X}
+  LAYOUT_Y = ${LAYOUT_Y}"
 #
 #-----------------------------------------------------------------------
 #
 # Make sure that, for a given MPI task, the number columns (which is 
-# equal to the number of horizontal cells) is divisible by the blocksize.
+# equal to the number of horizontal cells) is divisible by BLOCKSIZE.
 #
 #-----------------------------------------------------------------------
 #
-nx_per_task=$(( $nx_T7/$layout_x ))
-ny_per_task=$(( $ny_T7/$layout_y ))
+nx_per_task=$(( NX_T7/LAYOUT_X ))
+ny_per_task=$(( NY_T7/LAYOUT_Y ))
 num_cols_per_task=$(( $nx_per_task*$ny_per_task ))
 
-rem=$(( $num_cols_per_task%$blocksize ))
+rem=$(( num_cols_per_task%BLOCKSIZE ))
 if [ $rem -ne 0 ]; then
   prime_factors_num_cols_per_task=$( factor $num_cols_per_task | sed -r -e 's/^[0-9]+: (.*)/\1/' )
   print_err_msg_exit "\
 The number of columns assigned to a given MPI task must be divisible by
-the blocksize:
-  nx_per_task = nx_T7/layout_x = $nx_T7/$layout_x = $nx_per_task
-  ny_per_task = ny_T7/layout_y = $ny_T7/$layout_y = $ny_per_task
+BLOCKSIZE:
+  nx_per_task = NX_T7/LAYOUT_X = ${NX_T7}/${LAYOUT_X} = $nx_per_task
+  ny_per_task = NY_T7/LAYOUT_Y = ${NY_T7}/${LAYOUT_Y} = $ny_per_task
   num_cols_per_task = nx_per_task*ny_per_task = $num_cols_per_task
-  blocksize = $blocksize
-  rem = num_cols_per_task%%blocksize = $rem
-The prime factors of num_cols_per_task are (useful for determining a valid
-blocksize): 
+  BLOCKSIZE = $BLOCKSIZE
+  rem = num_cols_per_task%%BLOCKSIZE = $rem
+The prime factors of num_cols_per_task are (useful for determining a va-
+lid BLOCKSIZE): 
   prime_factors_num_cols_per_task: $prime_factors_num_cols_per_task"
 fi
 #
@@ -1259,11 +1259,11 @@ fi
 #-----------------------------------------------------------------------
 #
 # If the write component is going to be used, make sure that the number
-# of grid cells in the y direction (ny_T7) is divisible by the number of
-# write tasks per group.  This is because the ny_T7 rows of the grid
+# of grid cells in the y direction (NY_T7) is divisible by the number of
+# write tasks per group.  This is because the NY_T7 rows of the grid
 # must be distributed evenly among the write_tasks_per_group tasks in a
 # given write group, i.e. each task must receive the same number of
-# rows.  This implies that ny_T7 must be evenly divisible by write_-
+# rows.  This implies that NY_T7 must be evenly divisible by write_-
 # tasks_per_group.  If it isn't, the write component will hang or fail.
 # We check for this below.
 #
@@ -1271,16 +1271,16 @@ fi
 #
 if [ "$QUILTING" = "TRUE" ]; then
 
-  rem=$(( $ny_T7%${WRTCMP_write_tasks_per_group} ))
+  rem=$(( NY_T7%WRTCMP_write_tasks_per_group ))
 
   if [ $rem -ne 0 ]; then
     print_err_msg_exit "\
 The number of grid points in the y direction on the regional grid (ny_-
 T7) must be evenly divisible by the number of tasks per write group 
 (WRTCMP_write_tasks_per_group):
-  ny_T7 = $ny_T7
+  NY_T7 = ${NY_T7}
   WRTCMP_write_tasks_per_group = $WRTCMP_write_tasks_per_group
-  ny_T7%%write_tasks_per_group = $rem"
+  NY_T7%%write_tasks_per_group = $rem"
   fi
 
 fi
@@ -1289,9 +1289,9 @@ fi
 #
 # Calculate the number of nodes (NUM_NODES) to request from the job
 # scheduler.  This is just PE_MEMBER01 dividied by the number of cores
-# per node (ncores_per_node) rounded up to the nearest integer, i.e.
+# per node (NCORES_PER_NODE) rounded up to the nearest integer, i.e.
 #
-#   NUM_NODES = ceil(PE_MEMBER01/ncores_per_node)
+#   NUM_NODES = ceil(PE_MEMBER01/NCORES_PER_NODE)
 #
 # where ceil(...) is the ceiling function, i.e. it rounds its floating
 # point argument up to the next larger integer.  Since in bash division
@@ -1300,11 +1300,11 @@ fi
 # adding the denominator (of the argument of ceil(...) above) minus 1 to
 # the original numerator, i.e. by redefining NUM_NODES to be
 #
-#   NUM_NODES = (PE_MEMBER01 + ncores_per_node - 1)/ncores_per_node
+#   NUM_NODES = (PE_MEMBER01 + NCORES_PER_NODE - 1)/NCORES_PER_NODE
 #
 #-----------------------------------------------------------------------
 #
-NUM_NODES=$(( (${PE_MEMBER01} + ${ncores_per_node} - 1)/${ncores_per_node} ))
+NUM_NODES=$(( (PE_MEMBER01 + NCORES_PER_NODE - 1)/NCORES_PER_NODE ))
 #
 #-----------------------------------------------------------------------
 #
@@ -1679,11 +1679,11 @@ WRTCMP_PARAMS_TEMPLATE_FP="${WRTCMP_PARAMS_TEMPLATE_FP}"
 #
 #-----------------------------------------------------------------------
 #
-gtype="$gtype"
+GTYPE="$GTYPE"
 TILE_RGNL="${TILE_RGNL}"
-nh0_T7="$nh0_T7"
-nh3_T7="$nh3_T7"
-nh4_T7="$nh4_T7"
+NH0_T7="${NH0_T7}"
+NH3_T7="${NH3_T7}"
+NH4_T7="${NH4_T7}"
 EOM
 } || print_err_msg_exit "\
 Heredoc (cat) command to append new variable definitions to variable 
@@ -1712,9 +1712,9 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
-nhw_T7="$nhw_T7"
-nx_T7="$nx_T7"
-ny_T7="$ny_T7"
+NHW_T7="${NHW_T7}"
+NX_T7="${NX_T7}"
+NY_T7="${NY_T7}"
 istart_rgnl_wide_halo_T6SG="$istart_rgnl_wide_halo_T6SG"
 iend_rgnl_wide_halo_T6SG="$iend_rgnl_wide_halo_T6SG"
 jstart_rgnl_wide_halo_T6SG="$jstart_rgnl_wide_halo_T6SG"
@@ -1738,10 +1738,10 @@ elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
-del_angle_x_SG="$del_angle_x_SG"
-del_angle_y_SG="$del_angle_y_SG"
-mns_nx_T7_pls_wide_halo="$mns_nx_T7_pls_wide_halo"
-mns_ny_T7_pls_wide_halo="$mns_ny_T7_pls_wide_halo"
+DEL_ANGLE_X_SG="${DEL_ANGLE_X_SG}"
+DEL_ANGLE_Y_SG="${DEL_ANGLE_Y_SG}"
+MNS_NX_T7_PLS_WIDE_HALO="${MNS_NX_T7_PLS_WIDE_HALO}"
+MNS_NY_T7_PLS_WIDE_HALO="${MNS_NY_T7_PLS_WIDE_HALO}"
 #
 # The following variables must be set in order to be able to use the 
 # same scripting machinary for the case of GRID_GEN_METHOD set to "JP-
@@ -1749,7 +1749,7 @@ mns_ny_T7_pls_wide_halo="$mns_ny_T7_pls_wide_halo"
 #
 RES=""   # This will be set after the grid generation task is complete.
 CRES=""  # This will be set after the grid generation task is complete.
-stretch_fac="$stretch_fac"
+STRETCH_FAC="${STRETCH_FAC}"
 EOM
 } || print_err_msg_exit "\
 Heredoc (cat) command to append grid parameters to variable definitions
@@ -1819,7 +1819,7 @@ LBC_UPDATE_FCST_HRS=(${LBC_UPDATE_FCST_HRS[@]})  # LBC_UPDATE_FCST_HRS is an arr
 #
 #-----------------------------------------------------------------------
 #
-ncores_per_node="${ncores_per_node}"
+NCORES_PER_NODE="${NCORES_PER_NODE}"
 PE_MEMBER01="${PE_MEMBER01}"
 EOM
 } || print_err_msg_exit "\

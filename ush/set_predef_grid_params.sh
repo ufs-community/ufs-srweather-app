@@ -93,37 +93,37 @@ predefined domain:
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-62.0
-    lat_rgnl_ctr=22.0
+    LON_RGNL_CTR=-62.0
+    LAT_RGNL_CTR=22.0
 
-    delx="3000.0"
-    dely="3000.0"
+    DELX="3000.0"
+    DELY="3000.0"
 
-    nx_T7=2880
-    ny_T7=1920
+    NX_T7=2880
+    NY_T7=1920
 
-    nhw_T7=6
+    NHW_T7=6
 
-    dt_atmos="100"
+    DT_ATMOS="100"
 
-    layout_x="32"
-    layout_y="24"
-    blocksize="32"
+    LAYOUT_X="32"
+    LAYOUT_Y="24"
+    BLOCKSIZE="32"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="32"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${LON_RGNL_CTR}"
+      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
       WRTCMP_nx="2937"
       WRTCMP_ny="1788"
       WRTCMP_lon_lwr_left="-97.83959"
       WRTCMP_lat_lwr_left="-5.67929305"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_dx="$DELX"
+      WRTCMP_dy="$DELY"
     fi
 
   fi
@@ -147,37 +147,37 @@ predefined domain:
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-62.0
-    lat_rgnl_ctr=22.0
+    LON_RGNL_CTR=-62.0
+    LAT_RGNL_CTR=22.0
 
-    delx="13000.0"
-    dely="13000.0"
+    DELX="13000.0"
+    DELY="13000.0"
 
-    nx_T7=665
-    ny_T7=444
+    NX_T7=665
+    NY_T7=444
 
-    nhw_T7=6
+    NHW_T7=6
 
-    dt_atmos="180"
+    DT_ATMOS="180"
 
-    layout_x="19"
-    layout_y="12"
-    blocksize="35"
+    LAYOUT_X="19"
+    LAYOUT_Y="12"
+    BLOCKSIZE="35"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="12"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${LON_RGNL_CTR}"
+      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
       WRTCMP_nx="658"
       WRTCMP_ny="412"
       WRTCMP_lon_lwr_left="-98.0"
       WRTCMP_lat_lwr_left="-5.33"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_dx="$DELX"
+      WRTCMP_dy="$DELY"
     fi
 
   fi
@@ -201,37 +201,37 @@ predefined domain:
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-62.0
-    lat_rgnl_ctr=22.0
+    LON_RGNL_CTR=-62.0
+    LAT_RGNL_CTR=22.0
 
-    delx="25000.0"
-    dely="25000.0"
+    DELX="25000.0"
+    DELY="25000.0"
 
-    nx_T7=345
-    ny_T7=230
+    NX_T7=345
+    NY_T7=230
 
-    nhw_T7=6
+    NHW_T7=6
 
-    dt_atmos="300"
+    DT_ATMOS="300"
 
-    layout_x="5"
-    layout_y="5"
-    blocksize="6"
+    LAYOUT_X="5"
+    LAYOUT_Y="5"
+    BLOCKSIZE="6"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="10"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${LON_RGNL_CTR}"
+      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
       WRTCMP_nx="337"
       WRTCMP_ny="210"
       WRTCMP_lon_lwr_left="-98.0"
       WRTCMP_lat_lwr_left="-4.5"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_dx="$DELX"
+      WRTCMP_dy="$DELY"
     fi
 
   fi
@@ -247,36 +247,36 @@ predefined domain:
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
-    lon_ctr_T6=-106.0
-    lat_ctr_T6=54.0
-    stretch_fac=0.63
+    LON_CTR_T6=-106.0
+    LAT_CTR_T6=54.0
+    STRETCH_FAC=0.63
     RES="384"
-    refine_ratio=3
+    REFINE_RATIO=3
   
     num_margin_cells_T6_left=10
-    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+    ISTART_RGNL_T6=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=10
-    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+    IEND_RGNL_T6=$(( RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=10
-    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+    JSTART_RGNL_T6=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=10
-    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+    JEND_RGNL_T6=$(( RES - num_margin_cells_T6_top ))
 
-    dt_atmos="90"
+    DT_ATMOS="90"
 
-    layout_x="14"
-    layout_y="14"
-    blocksize="26"
+    LAYOUT_X="14"
+    LAYOUT_Y="14"
+    BLOCKSIZE="26"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="14"
       WRTCMP_output_grid="rotated_latlon"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${LON_RGNL_CTR}"
+      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
       WRTCMP_lon_lwr_left="-57.9926"
       WRTCMP_lat_lwr_left="-50.74344"
       WRTCMP_lon_upr_rght="57.99249"
@@ -287,29 +287,29 @@ predefined domain:
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-106.0
-    lat_rgnl_ctr=54.0
+    LON_RGNL_CTR=-106.0
+    LAT_RGNL_CTR=54.0
 
-    delx="13000.0"
-    dely="13000.0"
+    DELX="13000.0"
+    DELY="13000.0"
 
-    nx_T7=960
-    ny_T7=960
+    NX_T7=960
+    NY_T7=960
 
-    nhw_T7=6
+    NHW_T7=6
 
-    dt_atmos="90"
+    DT_ATMOS="90"
 
-    layout_x="16"
-    layout_y="16"
-    blocksize="30"
+    LAYOUT_X="16"
+    LAYOUT_Y="16"
+    BLOCKSIZE="30"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="16"
       WRTCMP_output_grid="rotated_latlon"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${LON_RGNL_CTR}"
+      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
       WRTCMP_lon_lwr_left="-57.9926"
       WRTCMP_lat_lwr_left="-50.74344"
       WRTCMP_lon_upr_rght="57.99249"
@@ -339,37 +339,37 @@ predefined domain:
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-97.5
-    lat_rgnl_ctr=38.5
+    LON_RGNL_CTR=-97.5
+    LAT_RGNL_CTR=38.5
 
-    delx="25000.0"
-    dely="25000.0"
+    DELX="25000.0"
+    DELY="25000.0"
 
-    nx_T7=200
-    ny_T7=110
+    NX_T7=200
+    NY_T7=110
 
-    nhw_T7=6
+    NHW_T7=6
 
-    dt_atmos="300"
+    DT_ATMOS="300"
 
-    layout_x="2"
-    layout_y="2"
-    blocksize="2"
+    LAYOUT_X="2"
+    LAYOUT_Y="2"
+    BLOCKSIZE="2"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="2"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${LON_RGNL_CTR}"
+      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
       WRTCMP_nx="191"
       WRTCMP_ny="97"
       WRTCMP_lon_lwr_left="-120.72962370"
       WRTCMP_lat_lwr_left="25.11648583"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_dx="$DELX"
+      WRTCMP_dy="$DELY"
     fi
 
   fi
@@ -393,37 +393,37 @@ predefined domain:
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-97.5
-    lat_rgnl_ctr=38.5
+    LON_RGNL_CTR=-97.5
+    LAT_RGNL_CTR=38.5
 
-    delx="13000.0"
-    dely="13000.0"
+    DELX="13000.0"
+    DELY="13000.0"
 
-    nx_T7=390
-    ny_T7=210
+    NX_T7=390
+    NY_T7=210
 
-    nhw_T7=6
+    NHW_T7=6
 
-    dt_atmos="180"
+    DT_ATMOS="180"
 
-    layout_x="10"
-    layout_y="10"
-    blocksize="39"
+    LAYOUT_X="10"
+    LAYOUT_Y="10"
+    BLOCKSIZE="39"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="10"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${LON_RGNL_CTR}"
+      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
       WRTCMP_nx="383"
       WRTCMP_ny="195"
       WRTCMP_lon_lwr_left="-121.58647982"
       WRTCMP_lat_lwr_left="24.36006861"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_dx="$DELX"
+      WRTCMP_dy="$DELY"
     fi
 
   fi
@@ -447,37 +447,37 @@ predefined domain:
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-97.5
-    lat_rgnl_ctr=38.5
+    LON_RGNL_CTR=-97.5
+    LAT_RGNL_CTR=38.5
 
-    delx="3000.0"
-    dely="3000.0"
+    DELX="3000.0"
+    DELY="3000.0"
 
-    nx_T7=1734
-    ny_T7=1008
+    NX_T7=1734
+    NY_T7=1008
 
-    nhw_T7=6
+    NHW_T7=6
 
-    dt_atmos="100"
+    DT_ATMOS="100"
 
-    layout_x="34"
-    layout_y="24"
-    blocksize="34"
+    LAYOUT_X="34"
+    LAYOUT_Y="24"
+    BLOCKSIZE="34"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="24"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${LON_RGNL_CTR}"
+      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
       WRTCMP_nx="1738"
       WRTCMP_ny="974"
       WRTCMP_lon_lwr_left="-122.21414225"
       WRTCMP_lat_lwr_left="22.41403305"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_dx="$DELX"
+      WRTCMP_dy="$DELY"
     fi
 
   fi
@@ -527,44 +527,44 @@ predefined domain:
 #dlat=0.02
 
 
-    lon_ctr_T6=-97.5
-    lat_ctr_T6=38.5
-    stretch_fac=1.5
+    LON_CTR_T6=-97.5
+    LAT_CTR_T6=38.5
+    STRETCH_FAC=1.5
     RES="768"
-    refine_ratio=3
+    REFINE_RATIO=3
   
     num_margin_cells_T6_left=61
-    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+    ISTART_RGNL_T6=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=67
-    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+    IEND_RGNL_T6=$(( RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=165
-    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+    JSTART_RGNL_T6=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=171
-    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+    JEND_RGNL_T6=$(( RES - num_margin_cells_T6_top ))
 
-    dt_atmos="18"
+    DT_ATMOS="18"
 
-    layout_x="16"
-    layout_y="72"
+    LAYOUT_X="16"
+    LAYOUT_Y="72"
     write_tasks_per_group="72"
-    blocksize=32
+    BLOCKSIZE=32
 
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-97.5
-    lat_rgnl_ctr=38.5
+    LON_RGNL_CTR=-97.5
+    LAT_RGNL_CTR=38.5
 
-    delx="3000.0"
-    dely="3000.0"
+    DELX="3000.0"
+    DELY="3000.0"
 
-    nx_T7=960
-    ny_T7=960
+    NX_T7=960
+    NY_T7=960
 
-    nhw_T7=6
+    NHW_T7=6
 
   fi
   ;;
@@ -619,31 +619,31 @@ predefined domain:
 #dlon=0.03
 #dlat=0.03
 
-    lon_ctr_T6=-153.0
-    lat_ctr_T6=61.0
-    stretch_fac=1.0  # ???
+    LON_CTR_T6=-153.0
+    LAT_CTR_T6=61.0
+    STRETCH_FAC=1.0  # ???
     RES="768"
-    refine_ratio=3   # ???
+    REFINE_RATIO=3   # ???
   
     num_margin_cells_T6_left=61
-    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+    ISTART_RGNL_T6=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=67
-    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+    IEND_RGNL_T6=$(( RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=165
-    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+    JSTART_RGNL_T6=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=171
-    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+    JEND_RGNL_T6=$(( RES - num_margin_cells_T6_top ))
 
-    dt_atmos="18"
+    DT_ATMOS="18"
 
-    layout_x="16"
-    layout_y="48"
+    LAYOUT_X="16"
+    LAYOUT_Y="48"
     write_groups="2"
     write_tasks_per_group="24"
-    blocksize=32
+    BLOCKSIZE=32
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 

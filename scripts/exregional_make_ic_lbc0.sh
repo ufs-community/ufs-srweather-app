@@ -413,7 +413,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
  fix_dir_target_grid="${FIXsar}"
  mosaic_file_target_grid="${FIXsar}/${CRES}_mosaic.nc"
  orog_dir_target_grid="${FIXsar}"
- orog_files_target_grid="${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+ orog_files_target_grid="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc"
  vcoord_file_target_grid="${FIXam}/global_hyblev.l65.txt"
  mosaic_file_input_grid=""
  orog_dir_input_grid=""
@@ -430,7 +430,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
  convert_sfc=.true.
  convert_nst=.false.
  regional=1
- halo_bndy=${nh4_T7}
+ halo_bndy=${NH4_T7}
  input_type="${input_type}"
  external_model="${external_model}"
  tracers_input=${tracers_input}
@@ -478,10 +478,10 @@ the FV3SAR failed:
 #-----------------------------------------------------------------------
 #
 mv_vrfy out.atm.tile${TILE_RGNL}.nc \
-        ${ICS_DIR}/gfs_data.tile${TILE_RGNL}.halo${nh0_T7}.nc
+        ${ICS_DIR}/gfs_data.tile${TILE_RGNL}.halo${NH0_T7}.nc
 
 mv_vrfy out.sfc.tile${TILE_RGNL}.nc \
-        ${ICS_DIR}/sfc_data.tile${TILE_RGNL}.halo${nh0_T7}.nc
+        ${ICS_DIR}/sfc_data.tile${TILE_RGNL}.halo${NH0_T7}.nc
 
 mv_vrfy gfs_ctrl.nc ${ICS_DIR}
 
