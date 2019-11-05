@@ -1,30 +1,47 @@
-#!/bin/sh -l
-
 #
 #-----------------------------------------------------------------------
 #
-# This script sets parameters needed by the various scripts that are
-# called by the rocoto workflow.  This secondary set of parameters is
-# calculated using the primary set of user-defined parameters in the
-# default and local workflow/experiment configuration scripts (whose 
-# file names are defined below).  This script then saves both sets of 
-# parameters in a variable-definitions script in the run directory that
-# will be sourced by the various scripts called by the workflow.
+# This file defines and then calls a function that sets a secondary set
+# of parameters needed by the various scripts that are called by the 
+# FV3SAR rocoto community workflow.  This secondary set of parameters is 
+# calculated using the primary set of user-defined parameters in the de-
+# fault and custom experiment/workflow configuration scripts (whose file
+# names are defined below).  This script then saves both sets of parame-
+# ters in a global variable definitions file (really a bash script) in 
+# the experiment directory.  This file then gets sourced by the various 
+# scripts called by the tasks in the workflow.
 #
 #-----------------------------------------------------------------------
 #
-
-
+function setup() {
 #
 #-----------------------------------------------------------------------
 #
-# Set the current script's name and the directory in which it is loca-
-# ted.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "${BASH_SOURCE[0]}" )
-script_dir=$( dirname ${BASH_SOURCE[0]} )
+local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+local scrfunc_fn=$( basename "${scrfunc_fp}" )
+local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+cd_vrfy ${scrfunc_dir}
 #
 #-----------------------------------------------------------------------
 #
@@ -533,7 +550,7 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 # directory of the current script.  Get the path to this latter directo-
 # ry and save it in HOMErrfs.
 #
-HOMErrfs=${script_dir%/*}
+HOMErrfs=${scrfunc_dir%/*}
 
 USHDIR="$HOMErrfs/ush"
 SCRIPTSDIR="$HOMErrfs/scripts"
@@ -1824,6 +1841,13 @@ Setup script completed successfully!!!
 #
 { restore_shell_opts; } > /dev/null 2>&1
 
-
-
+}
+#
+#-----------------------------------------------------------------------
+#
+# Call the function defined above.
+#
+#-----------------------------------------------------------------------
+#
+setup
 

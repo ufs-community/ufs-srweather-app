@@ -32,8 +32,19 @@ function get_extrn_mdl_file_dir_info() {
 #
 #-----------------------------------------------------------------------
 #
-# Get the name of the current function.  This is useful as part of error
-# and/or informational messages.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
 #
 #-----------------------------------------------------------------------
 #
@@ -63,21 +74,13 @@ function get_extrn_mdl_file_dir_info() {
 #
 #-----------------------------------------------------------------------
 #
-# If VERBOSE is set to "TRUE", print out values of arguments passed to
-# this script.
+# For debugging purposes, print out values of arguments passed to this
+# script/function.  Note that these will be printed out only if VERBOSE
+# is set to TRUE.
 #
 #-----------------------------------------------------------------------
 #
-  msg="
-The arguments to script/function \"${script_name}\" have been set as 
-follows:
-"
-  num_valid_args="${#valid_args[@]}"
-  for (( i=0; i<${num_valid_args}; i++ )); do
-    line=$( declare -p "${valid_args[$i]}" )
-    msg="$msg"$( printf "  $line\n" )
-  done
-  print_info_msg "$VERBOSE" "$msg"
+  print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -88,10 +91,16 @@ follows:
 if [ 0 = 1 ]; then
 
   if [ "$#" -ne "13" ]; then
-    print_err_msg_exit "\
-Incorrect number of arguments specified.  Usage:
 
-  ${FUNCNAME[0]} \
+    print_err_msg_exit "
+Incorrect number of arguments specified:
+
+  Function name:  \"${func_name}\"
+  Number of arguments specified:  $#
+
+Usage:
+
+  ${func_name} \
     extrn_mdl_name \
     anl_or_fcst \
     cdate_FV3SAR \

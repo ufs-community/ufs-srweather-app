@@ -1,7 +1,33 @@
-# This file is always sourced by another script (i.e. it's never run in
-# its own shell), so there's no need to put the #!/bin/some_shell on the
-# first line.
-
+#
+#-----------------------------------------------------------------------
+#
+# This file defines and then calls a function that sets the parameters
+# for a grid that is to be generated using the "GFDLgrid" grid genera-
+# tion method (i.e. GRID_GEN_METHOD set to "GFDLgrid").
+#
+#-----------------------------------------------------------------------
+#
+function set_gridparams_GFDLgrid() {
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+local scrfunc_fn=$( basename "${scrfunc_fp}" )
+local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+local func_name="${FUNCNAME[0]}"
 #
 #-----------------------------------------------------------------------
 #
@@ -319,5 +345,13 @@ jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"
 #
 { restore_shell_opts; } > /dev/null 2>&1
 
-
+}
+#
+#-----------------------------------------------------------------------
+#
+# Call the function defined above.
+#
+#-----------------------------------------------------------------------
+#
+set_gridparams_GFDLgrid
 

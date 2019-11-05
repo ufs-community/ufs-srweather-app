@@ -1,12 +1,42 @@
-#!/bin/sh -l
-
-# These need to be made machine-dependent.  The following work only on
-# Hera.
-module load intel/19.0.4.243
-module load netcdf/4.7.0
-
-
-ushdir=$(pwd)
+#!/bin/bash -l
+#
+#-----------------------------------------------------------------------
+#
+# This file defines and then calls a function that sets up a forecast
+# experiment and creates a workflow (according to the parameters speci-
+# fied in the configuration file; see instructions).
+#
+#-----------------------------------------------------------------------
+#
+function generate_FV3SAR_wflow() {
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+local scrfunc_fn=$( basename "${scrfunc_fp}" )
+local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
+# Set directories.
+#
+#-----------------------------------------------------------------------
+#
+ushdir="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
@@ -24,9 +54,18 @@ ushdir=$(pwd)
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; set -u -x; } > /dev/null 2>&1
-
-
-script_name=$( basename "${BASH_SOURCE[0]}" )
+#
+#-----------------------------------------------------------------------
+#
+# Load modules.
+#
+#-----------------------------------------------------------------------
+#
+module purge
+# These need to be made machine-dependent.  The following work only on
+# Hera.
+module load intel/19.0.4.243
+module load netcdf/4.7.0
 #
 #-----------------------------------------------------------------------
 #
@@ -653,5 +692,14 @@ fi
 #
 { restore_shell_opts; } > /dev/null 2>&1
 
+}
+#
+#-----------------------------------------------------------------------
+#
+# Call the function defined above.
+#
+#-----------------------------------------------------------------------
+#
+generate_FV3SAR_wflow
 
 

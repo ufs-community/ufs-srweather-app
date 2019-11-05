@@ -1,7 +1,33 @@
-# This file is always sourced by another script (i.e. it's never run in
-# its own shell), so there's no need to put the #!/bin/some_shell on the
-# first line.
-
+#
+#-----------------------------------------------------------------------
+#
+# This file defines and then calls a function that sets the parameters
+# for a grid that is to be generated using the "JPgrid" grid generation 
+# method (i.e. GRID_GEN_METHOD set to "JPgrid").
+#
+#-----------------------------------------------------------------------
+#
+function set_gridparams_JPgrid() {
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+local scrfunc_fn=$( basename "${scrfunc_fp}" )
+local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+local func_name="${FUNCNAME[0]}"
 #
 #-----------------------------------------------------------------------
 #
@@ -39,4 +65,13 @@ mns_ny_T7_pls_wide_halo=$( bc -l <<< "-($ny_T7 + 2*$nhw_T7)" )
 mns_ny_T7_pls_wide_halo=$( printf "%.0f\n" $mns_ny_T7_pls_wide_halo )
 echo "mns_ny_T7_pls_wide_halo = $mns_ny_T7_pls_wide_halo"
 
+}
+#
+#-----------------------------------------------------------------------
+#
+# Call the function defined above.
+#
+#-----------------------------------------------------------------------
+#
+set_gridparams_JPgrid
 

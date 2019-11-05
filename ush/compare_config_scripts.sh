@@ -1,18 +1,35 @@
-# This file is always sourced by another script (i.e. it's never run in
-# its own shell), so there's no need to put the #!/bin/some_shell on the
-# first line.
-
 #
 #-----------------------------------------------------------------------
 #
-# This script checks that all variables defined in the local configura-
-# tion script (whose file name is stored in the variable LOCAL_CONFIG_-
-# FN) are also assigned a default value in the default configuration
-# script (whose file name is stored in the variable DEFAULT_CONFIG_FN).
+# This file defines and then calls a function that checks that all vari-
+# ables defined in the local configuration script (whose file name is 
+# stored in the variable LOCAL_CONFIG_FN) are also assigned a default 
+# value in the default configuration script (whose file name is stored 
+# in the variable DEFAULT_CONFIG_FN).
 #
 #-----------------------------------------------------------------------
 #
-
+function compare_config_scripts() {
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+local scrfunc_fn=$( basename "${scrfunc_fp}" )
+local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+local func_name="${FUNCNAME[0]}"
 #
 #-----------------------------------------------------------------------
 #
@@ -20,7 +37,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. ./source_funcs.sh
+. ${scrfunc_dir}/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -120,4 +137,13 @@ done <<< "${var_list_local}"
 #
 { restore_shell_opts; } > /dev/null 2>&1
 
+}
+#
+#-----------------------------------------------------------------------
+#
+# Call the function defined above.
+#
+#-----------------------------------------------------------------------
+#
+compare_config_scripts
 

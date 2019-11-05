@@ -1,6 +1,35 @@
 #
 #-----------------------------------------------------------------------
 #
+# This file defines and then calls a function that sets grid parameters
+# for the specified predefined grid.
+#
+#-----------------------------------------------------------------------
+#
+function set_predef_grid_params() {
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+local scrfunc_fn=$( basename "${scrfunc_fp}" )
+local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
 # Set grid and other parameters according to the value of the predefined
 # domain (PREDEF_GRID_NAME).  Note that the code will enter this script on-
 # ly if PREDEF_GRID_NAME has a valid (and non-empty) value.
@@ -654,4 +683,14 @@ in WRTCMP_output_grid is not supported:
   WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcmp_${WRTCMP_output_grid}"}
 
 fi
+
+}
+#
+#-----------------------------------------------------------------------
+#
+# Call the function defined above.
+#
+#-----------------------------------------------------------------------
+#
+set_predef_grid_params
 
