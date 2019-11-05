@@ -139,7 +139,7 @@ PTMP="/path/to/temporary/directory/ptmp"
 # WFLOW_XML_FN:
 # Name of the workflow XML file to be passed to rocoto.
 #
-# SCRIPT_VAR_DEFNS_FN:
+# GLOBAL_VAR_DEFNS_FN:
 # Name of file that is sourced by the worflow scripts to set variable
 # values.
 #
@@ -173,7 +173,7 @@ DATA_TABLE_FN="data_table"
 MODEL_CONFIG_FN="model_configure"
 NEMS_CONFIG_FN="nems.configure"
 WFLOW_XML_FN="FV3SAR_wflow.xml"
-SCRIPT_VAR_DEFNS_FN="var_defns.sh"
+GLOBAL_VAR_DEFNS_FN="var_defns.sh"
 WRTCMP_PARAMS_TEMPLATE_FN=""
 #
 #-----------------------------------------------------------------------

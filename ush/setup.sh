@@ -32,7 +32,7 @@ script_dir=$( dirname ${BASH_SOURCE[0]} )
 #
 #-----------------------------------------------------------------------
 #
-. ./source_funcs.sh
+. ./source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -530,8 +530,8 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 #
 # The current script should be located in the ush subdirectory of the 
 # workflow directory.  Thus, the workflow directory is the one above the
-# directory of the current script.  Get the path to this directory and
-# save it in HOMErrfs.
+# directory of the current script.  Get the path to this latter directo-
+# ry and save it in HOMErrfs.
 #
 HOMErrfs=${script_dir%/*}
 
@@ -1335,7 +1335,7 @@ fi
 # 1) Copying the default workflow/experiment configuration script (spe-
 #    fied by DEFAULT_CONFIG_FN and located in the shell script directory
 #    USHDIR) to the run directory and renaming it to the name specified
-#    by SCRIPT_VAR_DEFNS_FN.
+#    by GLOBAL_VAR_DEFNS_FN.
 #
 # 2) Resetting the original values of the variables defined in this file
 #    to their current values.  This is necessary because these variables 
@@ -1353,8 +1353,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-SCRIPT_VAR_DEFNS_FP="$EXPTDIR/$SCRIPT_VAR_DEFNS_FN"
-cp_vrfy ./${DEFAULT_CONFIG_FN} ${SCRIPT_VAR_DEFNS_FP}
+GLOBAL_VAR_DEFNS_FP="$EXPTDIR/$GLOBAL_VAR_DEFNS_FN"
+cp_vrfy ./${DEFAULT_CONFIG_FN} ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -1362,15 +1362,15 @@ cp_vrfy ./${DEFAULT_CONFIG_FN} ${SCRIPT_VAR_DEFNS_FP}
 #-----------------------------------------------------------------------
 #
 
-# Read all lines of SCRIPT_VAR_DEFNS file into the variable line_list.
-line_list=$( sed -r -e "s/(.*)/\1/g" ${SCRIPT_VAR_DEFNS_FP} )
+# Read all lines of GLOBAL_VAR_DEFNS file into the variable line_list.
+line_list=$( sed -r -e "s/(.*)/\1/g" ${GLOBAL_VAR_DEFNS_FP} )
 #
 # Loop through the lines in line_list and concatenate lines ending with
 # the line bash continuation character "\".
 #
-rm_vrfy ${SCRIPT_VAR_DEFNS_FP}
+rm_vrfy ${GLOBAL_VAR_DEFNS_FP}
 while read crnt_line; do
-  printf "%s\n" "${crnt_line}" >> ${SCRIPT_VAR_DEFNS_FP}
+  printf "%s\n" "${crnt_line}" >> ${GLOBAL_VAR_DEFNS_FP}
 done <<< "${line_list}"
 #
 #-----------------------------------------------------------------------
@@ -1408,7 +1408,7 @@ line_list=$( sed -r \
              -e "s/^([ ]*)([^ ]+.*)/\2/g" \
              -e "/^#.*/d" \
              -e "/^$/d" \
-             ${SCRIPT_VAR_DEFNS_FP} )
+             ${GLOBAL_VAR_DEFNS_FP} )
 echo 
 echo "The variable \"line_list\" contains:"
 echo
@@ -1444,11 +1444,11 @@ EOM
 #
 str_to_insert=${str_to_insert//$'\n'/\\n}
 #
-# Insert str_to_insert into SCRIPT_VAR_DEFNS_FP right after the line
+# Insert str_to_insert into GLOBAL_VAR_DEFNS_FP right after the line
 # containing the name of the interpreter.
 #
 REGEXP="(^#!.*)"
-sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" ${SCRIPT_VAR_DEFNS_FP}
+sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" ${GLOBAL_VAR_DEFNS_FP}
 
 
 
@@ -1567,7 +1567,7 @@ Setting its value in the variable definitions file to an empty string."
 # Now place var_value on the right-hand side of the assignment statement
 # on the appropriate line in variable definitions file.
 #
-    set_file_param "${SCRIPT_VAR_DEFNS_FP}" "${var_name}" "${var_value}"
+    set_file_param "${GLOBAL_VAR_DEFNS_FP}" "${var_name}" "${var_value}"
 #
 # If var_name is empty, then a variable name was not found in the cur-
 # rent line in line_list.  In this case, print out a warning and move on
@@ -1596,7 +1596,7 @@ done <<< "${line_list}"
 #
 #-----------------------------------------------------------------------
 #
-{ cat << EOM >> ${SCRIPT_VAR_DEFNS_FP}
+{ cat << EOM >> ${GLOBAL_VAR_DEFNS_FP}
 
 #
 #-----------------------------------------------------------------------
@@ -1648,7 +1648,7 @@ SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
 #
 #-----------------------------------------------------------------------
 #
-SCRIPT_VAR_DEFNS_FP="${SCRIPT_VAR_DEFNS_FP}"
+GLOBAL_VAR_DEFNS_FP="${GLOBAL_VAR_DEFNS_FP}"
 WRTCMP_PARAMS_TEMPLATE_FP="${WRTCMP_PARAMS_TEMPLATE_FP}"
 #
 #-----------------------------------------------------------------------
@@ -1677,7 +1677,7 @@ definitions file returned with a nonzero status."
 #
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
-  { cat << EOM >> ${SCRIPT_VAR_DEFNS_FP}
+  { cat << EOM >> ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -1706,7 +1706,7 @@ file returned with a nonzero status."
 
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-  { cat << EOM >> ${SCRIPT_VAR_DEFNS_FP}
+  { cat << EOM >> ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -1743,7 +1743,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-{ cat << EOM >> ${SCRIPT_VAR_DEFNS_FP}
+{ cat << EOM >> ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #

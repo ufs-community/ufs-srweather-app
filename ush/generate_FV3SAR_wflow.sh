@@ -14,7 +14,7 @@ ushdir=$(pwd)
 #
 #-----------------------------------------------------------------------
 #
-. $ushdir/source_funcs.sh
+. $ushdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -94,7 +94,7 @@ else
   CYCLE_DIR="$EXPTDIR/${CDATE_generic}"
 fi
 
-set_file_param "${WFLOW_XML_FP}" "SCRIPT_VAR_DEFNS_FP" "${SCRIPT_VAR_DEFNS_FP}"
+set_file_param "${WFLOW_XML_FP}" "GLOBAL_VAR_DEFNS_FP" "${GLOBAL_VAR_DEFNS_FP}"
 set_file_param "${WFLOW_XML_FP}" "CYCLE_DIR" "${CYCLE_DIR}"
 set_file_param "${WFLOW_XML_FP}" "ACCOUNT" "$ACCOUNT"
 set_file_param "${WFLOW_XML_FP}" "SCHED" "$SCHED"
@@ -288,8 +288,8 @@ echo "RES = $RES"
 #  RES="$RES_equiv"
 #  CRES="$CRES_equiv"
 
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "RES" "${RES}"
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "CRES" "${CRES}"
+  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "RES" "${RES}"
+  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "${CRES}"
 
 else
 #
@@ -304,7 +304,7 @@ else
   if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
     $USHDIR/link_fix.sh \
       verbose="FALSE" \
-      script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
+      global_var_defns_fp="${GLOBAL_VAR_DEFNS_FP}" \
       file_group="grid" || \
     print_err_msg_exit "\
 Call to script to create links to grid files failed."
@@ -321,7 +321,7 @@ Call to script to create links to grid files failed."
   if [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ]; then
     $USHDIR/link_fix.sh \
       verbose="FALSE" \
-      script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
+      global_var_defns_fp="${GLOBAL_VAR_DEFNS_FP}" \
       file_group="orog" || \
     print_err_msg_exit "\
 Call to script to create links to orography files failed."
@@ -339,7 +339,7 @@ Call to script to create links to orography files failed."
   if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
     $USHDIR/link_fix.sh \
       verbose="FALSE" \
-      script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
+      global_var_defns_fp="${GLOBAL_VAR_DEFNS_FP}" \
       file_group="sfc_climo" || \
     print_err_msg_exit "\
 Call to script to create links to surface climatology files failed."

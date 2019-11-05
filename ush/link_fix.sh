@@ -22,7 +22,7 @@ USHDIR="${script_dir}"
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/source_funcs.sh
+. $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -43,7 +43,7 @@ USHDIR="${script_dir}"
 #
 valid_args=( \
 "verbose" \
-"script_var_defns_fp" \
+"global_var_defns_fp" \
 "file_group" \
 )
 process_args valid_args "$@"
@@ -217,14 +217,14 @@ done
 RES=${RES:-""}
 if [ "$RES" = "$res" ] || [ "$RES" = "" ]; then
   cres="C${res}"
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "RES" "${res}"
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "CRES" "${cres}"
+  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "RES" "${res}"
+  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "${cres}"
 elif [ "$RES" != "$res" ]; then
   print_err_msg_exit "\
 The resolution (RES) specified in the variable definitions file 
-(script_var_defns_fp) does not match the resolution (res) found in this
+(global_var_defns_fp) does not match the resolution (res) found in this
 script for the specified file group (file_group):
-  script_var_defns_fp = \"${script_var_defns_fp}\"
+  global_var_defns_fp = \"${global_var_defns_fp}\"
   RES = \"${RES}\"
   file_group = \"${file_group}\"
   res = \"${res}\"
