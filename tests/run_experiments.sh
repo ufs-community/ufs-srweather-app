@@ -48,7 +48,7 @@ TESTSDIR="$HOMErrfs/tests"
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -213,6 +213,10 @@ echo "experiment_name = '${experiment_name}'"
 
   ln_vrfy -fs "${experiment_config_fp}" "$USHDIR/config.sh"
   
+  print_info_msg "
+Generating experiment with name:
+  experiment_name = \"${experiment_name}\""
+
   log_fp="$USHDIR/log.generate_wflow.${experiment_name}"
   $USHDIR/generate_FV3SAR_wflow.sh 2>&1 >& "${log_fp}" || { \
     print_err_msg_exit "\
