@@ -90,11 +90,11 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-# If VERBOSE is set to "TRUE", print out an informational message.
+# Print out an informational message.
 #
 #-----------------------------------------------------------------------
 #
-  print_info_msg "$VERBOSE" "
+  print_info_msg "\
 Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
 #
 #-----------------------------------------------------------------------
