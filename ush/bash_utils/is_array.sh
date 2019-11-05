@@ -12,7 +12,7 @@
 # 
 #-----------------------------------------------------------------------
 #
-function is_array () { 
+function is_array() { 
 #
 #-----------------------------------------------------------------------
 #
@@ -25,21 +25,46 @@ function is_array () {
 #
 #-----------------------------------------------------------------------
 #
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
 # Check arguments.
 #
 #-----------------------------------------------------------------------
 #
-  func_name="${FUNCNAME[0]}"
-
   if [ "$#" -ne 1 ]; then
-    print_err_msg_exit "\
-Incorrect number of arguments specified.  Usage:
 
-  ${func_name} var_name
+    print_err_msg_exit "
+Incorrect number of arguments specified:
+
+  Function name:  \"${func_name}\"
+  Number of arguments specified:  $#
+
+Usage:
+
+  ${func_name}  var_name
 
 where var_name is the name of the variable to check to determine whether 
 or not it is an array.
 "
+
   fi
 #
 #-----------------------------------------------------------------------
@@ -65,10 +90,11 @@ or not it is an array.
 #
 #-----------------------------------------------------------------------
 #
-# Return the variable "contains".
+# Return the variable "is_an_array".
 #
 #-----------------------------------------------------------------------
 #
   return ${is_an_array}
+
 }
 

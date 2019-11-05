@@ -17,18 +17,26 @@ function check_for_preexist_dir() {
 #-----------------------------------------------------------------------
 #
   { save_shell_opts; set -u +x; } > /dev/null 2>&1
-#-----------------------------------------------------------------------
-#
-# Get the name of this function as well as information about the calling
-# script or function.
 #
 #-----------------------------------------------------------------------
 #
-  local crnt_func="${FUNCNAME[0]}"
-  local caller_path=$( readlink -f "${BASH_SOURCE[1]}" )
-  local caller_filename=$( basename "${caller_path}" )
-  local caller_dir=$( dirname "${caller_path}" )
-  local caller_name="${FUNCNAME[1]}"
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
 #
 #-----------------------------------------------------------------------
 #
@@ -37,15 +45,16 @@ function check_for_preexist_dir() {
 #-----------------------------------------------------------------------
 #
   if [ "$#" -ne 2 ]; then
+
     print_err_msg_exit "
 Incorrect number of arguments specified:
 
-  script/function name = \"${crnt_func}\"
-  number of arguments specified = $#
+  Function name:  \"${func_name}\"
+  Number of arguments specified:  $#
 
 Usage:
 
-  ${crnt_func}  dir  preexisting_dir_method
+  ${func_name}  dir  preexisting_dir_method
 
 where the arguments are defined as follows:
 
@@ -55,7 +64,8 @@ where the arguments are defined as follows:
   preexisting_dir_method:
   String specifying the action to take if a preexisting version of dir
   is found.  Valid values are \"delete\", \"rename\", and \"quit\".
-" 1>@2
+"
+
   fi
 #
 #-----------------------------------------------------------------------
@@ -69,6 +79,17 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
+# Set the valid values that preexisting_dir_method can take on and check
+# to make sure the specified value is valid.
+#
+#-----------------------------------------------------------------------
+#
+  local valid_vals_preexisting_dir_method=( "delete" "rename" "quit" )
+  check_var_valid_value "preexisting_dir_method" \
+                        "valid_vals_preexisting_dir_method"
+#
+#-----------------------------------------------------------------------
+#
 # Check if dir already exists.  If so, act depending on the value of
 # preexisting_dir_method.
 #
@@ -76,7 +97,7 @@ where the arguments are defined as follows:
 #
   if [ -d "$dir" ]; then
 
-    case $preexisting_dir_method in
+    case ${preexisting_dir_method} in
 #
 #-----------------------------------------------------------------------
 #
@@ -111,12 +132,12 @@ where the arguments are defined as follows:
       done
 
       print_info_msg "$VERBOSE" "
-Directory already exists:
+Specified directory (dir) already exists:
   dir = \"$dir\"
 Moving (renaming) preexisting directory to:
-  old_dir = \"$old_dir\""
+  old_dir = \"${old_dir}\""
 
-      mv_vrfy "$dir" "$old_dir"
+      mv_vrfy "$dir" "${old_dir}"
       ;;
 #
 #-----------------------------------------------------------------------
@@ -131,25 +152,8 @@ Moving (renaming) preexisting directory to:
     "quit")
 
       print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Directory already exists:
+Specified directory (dir) already exists:
   dir = \"$dir\""
-      ;;
-#
-#-----------------------------------------------------------------------
-#
-# If preexisting_dir_method is set to a disallowed value, we simply exit
-# with a nonzero status.  Note that "exit" is different than "return" 
-# because it will cause the calling script (in which this file/function
-# is sourced) to stop execution.
-#
-#-----------------------------------------------------------------------
-#
-    *)
-
-      print_err_msg_exit "\
-Disallowed value for \"preexisting_dir_method\":
-  preexisting_dir_method = \"$preexisting_dir_method\"
-Allowed values are:  \"delete\"  \"rename\"  \"quit\""
       ;;
 
     esac
@@ -164,6 +168,7 @@ Allowed values are:  \"delete\"  \"rename\"  \"quit\""
 #-----------------------------------------------------------------------
 #
   { restore_shell_opts; } > /dev/null 2>&1
+
 }
 
 

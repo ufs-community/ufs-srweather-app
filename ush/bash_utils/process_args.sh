@@ -93,23 +93,48 @@ function process_args() {
 #
 #-----------------------------------------------------------------------
 #
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
 # Check arguments.
 #
 #-----------------------------------------------------------------------
 #
   if [ "$#" -lt 1 ]; then
 
-    print_err_msg_exit "\
-Incorrect number of arguments specified.  Usage:
+    print_err_msg_exit "
+Incorrect number of arguments specified:
 
-  ${FUNCNAME[0]} valid_arg_names_array_name \
-                 arg_val_pair1 \
-                 ... \
-                 arg_val_pairN
+  Function name:  \"${func_name}\"
+  Number of arguments specified:  $#
+
+Usage:
+
+  ${func_name}  array_name_valid_arg_names \
+                arg_val_pair1 \
+                ... \
+                arg_val_pairN
 
 where the arguments are defined as follows:
 
-  valid_arg_names_array_name:
+  array_name_valid_arg_names:
   The name of the array containing a list of valid argument names.
 
   arg_val_pair1 ... arg_val_pairN:
@@ -118,8 +143,8 @@ where the arguments are defined as follows:
     arg1=\"val1\" ... argN=\"valN\"
 
   where each argument name (argI) needs to be in the list of valid argu-
-  ment names specified in valid_arg_names_array_name.  Note that not all
-  the valid arguments listed in valid_arg_names_array_name need to be 
+  ment names specified in array_name_valid_arg_names.  Note that not all
+  the valid arguments listed in array_name_valid_arg_names need to be 
   set, and the argument-value pairs can be in any order, i.e. they don't
   have to follow the order of arguments listed in valid_arg_names_ar-
   ray_name.
@@ -133,7 +158,7 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  local valid_arg_names_array_name \
+  local array_name_valid_arg_names \
         valid_arg_names_at \
         valid_arg_names \
         num_valid_args \
@@ -142,8 +167,8 @@ where the arguments are defined as follows:
         arg_val_pair arg_name arg_value is_array \
         err_msg cmd_line
 
-  valid_arg_names_array_name="$1"
-  valid_arg_names_at="${valid_arg_names_array_name}[@]"
+  array_name_valid_arg_names="$1"
+  valid_arg_names_at="${array_name_valid_arg_names}[@]"
   valid_arg_names=("${!valid_arg_names_at}")
   num_valid_args=${#valid_arg_names[@]}
 #

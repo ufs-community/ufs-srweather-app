@@ -19,13 +19,39 @@ function set_file_param() {
 #
 #-----------------------------------------------------------------------
 #
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
 # Check arguments.
 #
 #-----------------------------------------------------------------------
 #
   if [ "$#" -ne 3 ]; then
-    print_err_msg_exit "\
-Incorrect number of arguments specified.  Usage:
+
+    print_err_msg_exit "
+Incorrect number of arguments specified:
+
+  Function name:  \"${func_name}\"
+  Number of arguments specified:  $#
+
+Usage:
 
   ${func_name}  file_full_path  param  value
 
@@ -115,7 +141,7 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
     regex_replace="\1$value"
     ;;
 #
-  "${SCRIPT_VAR_DEFNS_FN}")
+  "${GLOBAL_VAR_DEFNS_FN}")
     regex_search="(^\s*$param=)(\".*\")?([^ \"]*)?(\(.*\))?(\s*[#].*)?"
     regex_replace="\1$value\5"
 #    set_bash_param "${file_full_path}" "$param" "$value"
@@ -167,6 +193,6 @@ lar expression (regex_search):
 #-----------------------------------------------------------------------
 #
   { restore_shell_opts; } > /dev/null 2>&1
-}
 
+}
 

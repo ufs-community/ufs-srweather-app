@@ -8,7 +8,7 @@
 # 
 #-----------------------------------------------------------------------
 #
-function interpol_to_arbit_CRES () { 
+function interpol_to_arbit_CRES() { 
 #
 #-----------------------------------------------------------------------
 #
@@ -21,16 +21,41 @@ function interpol_to_arbit_CRES () {
 #
 #-----------------------------------------------------------------------
 #
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
 # Check arguments.
 #
 #-----------------------------------------------------------------------
 #
   if [ "$#" -ne 3 ]; then
 
-    print_err_msg_exit "\
-Incorrect number of arguments specified.  Usage:
+    print_err_msg_exit "
+Incorrect number of arguments specified:
 
-  ${FUNCNAME[0]} RES RES_array prop_array
+  Function name:  \"${func_name}\"
+  Number of arguments specified:  $#
+
+Usage:
+
+  ${func_name}  RES  RES_array  prop_array
 
 where the arguments are defined as follows:
 
@@ -126,5 +151,4 @@ where the arguments are defined as follows:
   { restore_shell_opts; } > /dev/null 2>&1
 
 }
-
 

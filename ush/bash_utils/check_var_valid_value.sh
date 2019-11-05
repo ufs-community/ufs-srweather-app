@@ -19,17 +19,41 @@ function check_var_valid_value() {
 #
 #-----------------------------------------------------------------------
 #
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
 # Check arguments.
 #
 #-----------------------------------------------------------------------
 #
   if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
 
-    print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
+    print_err_msg_exit "
+Incorrect number of arguments specified:
+
+  Function name:  \"${func_name}\"
+  Number of arguments specified:  $#
+
 Usage:
 
-  ${FUNCNAME[0]}  var_name   valid_var_values_array_name  [msg]
+  ${func_name}  var_name   valid_var_values_array_name  [msg]
 
 where the arguments are defined as follows:
 

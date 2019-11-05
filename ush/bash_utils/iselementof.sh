@@ -30,7 +30,7 @@
 # 
 #-----------------------------------------------------------------------
 #
-function iselementof () { 
+function iselementof() { 
 #
 #-----------------------------------------------------------------------
 #
@@ -43,15 +43,41 @@ function iselementof () {
 #
 #-----------------------------------------------------------------------
 #
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
 # Check arguments.
 #
 #-----------------------------------------------------------------------
 #
   if [ "$#" -ne 2 ]; then
-    print_err_msg_exit "\
-Incorrect number of arguments specified.  Usage:
 
-  ${FUNCNAME[0]} str_to_match array_name
+    print_err_msg_exit "
+Incorrect number of arguments specified:
+
+  Function name:  \"${func_name}\"
+  Number of arguments specified:  $#
+
+Usage:
+
+  ${func_name}  str_to_match  array_name
 
 where the arguments are defined as follows:
 
@@ -105,5 +131,6 @@ where the arguments are defined as follows:
 #-----------------------------------------------------------------------
 #
   return $contains
+
 }
 
