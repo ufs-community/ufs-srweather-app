@@ -3,16 +3,25 @@
 #
 #-----------------------------------------------------------------------
 #
-# Get the name of the current script and the directory in which it is 
-# located.  This script should be located in USHDIR, so set USHDIR to 
-# the script directory (USHDIR is needed in various places below or in
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# This script should be located in USHDIR, so set USHDIR to this 
+# script's directory (USHDIR is needed in various places below or in
 # sourced scripts).
 #
 #-----------------------------------------------------------------------
 #
-script_name=$(basename ${BASH_SOURCE[0]})
-script_dir=$(dirname ${BASH_SOURCE[0]})
-USHDIR="${script_dir}"
+USHDIR="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
@@ -50,31 +59,22 @@ process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
 #
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
+#
+#-----------------------------------------------------------------------
+#
+print_input_args valid_args
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions script and the function definitions
 # file.
 #
 #-----------------------------------------------------------------------
 #
-. ${script_var_defns_fp}
-#
-#-----------------------------------------------------------------------
-#
-# If verbose is set to TRUE, print out what each valid argument has been
-# set to.
-#
-#-----------------------------------------------------------------------
-#
-if [ "$verbose" = "TRUE" ]; then
-  num_valid_args="${#valid_args[@]}"
-  print_info_msg "
-The arguments to script/function \"${script_name}\" have been set as 
-follows:
-" 1>&2
-  for (( i=0; i<${num_valid_args}; i++ )); do
-    line=$( declare -p "${valid_args[$i]}" )
-    printf "  $line\n" 1>&2
-  done
-fi
+. ${global_var_defns_fp}
 #
 #-----------------------------------------------------------------------
 #
