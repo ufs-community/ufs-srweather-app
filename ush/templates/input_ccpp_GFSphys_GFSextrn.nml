@@ -103,7 +103,6 @@
        z_tracer = .T.
        read_increment = .F.
        res_latlon_dynamics = "fv3_increment.nc"
-
        do_schmidt = .true.
        target_lat = <target_lat>
        target_lon = <target_lon>
@@ -111,9 +110,7 @@
        regional = .true.
        bc_update_interval = <bc_update_interval>
        agrid_vel_rst = .false.
-
        full_zs_filter = .F. !unreleased feature
-
 !!       nord_zs_filter = 4
        n_zs_filter = 0 ! safety
 /
@@ -236,9 +233,26 @@
        icloud_f = 1
        mp_time = 90.
 /
+
+&cires_ugwp_nml
+       knob_ugwp_solver  = 2
+       knob_ugwp_source  = 1,1,0,0
+       knob_ugwp_wvspec  = 1,25,25,25
+       knob_ugwp_azdir   = 2,4,4,4
+       knob_ugwp_stoch   = 0,0,0,0
+       knob_ugwp_effac   = 1,1,1,1
+       knob_ugwp_doaxyz  = 1
+       knob_ugwp_doheat  = 1
+       knob_ugwp_dokdis  = 1
+       knob_ugwp_ndx4lh  = 1
+       knob_ugwp_version = 0
+       launch_level      = 25
+/
+
 &interpolator_nml
        interp_method = 'conserve_great_circle'
 /
+
 &namsfc
        FNGLAC   = "global_glacier.2x2.grb",
        FNMXIC   = "global_maxice.2x2.grb",
@@ -280,7 +294,9 @@
        FSNOS    = 99999,
        FSICS    = 99999,
 /
+
 &nam_stochy
 /
+
 &nam_sfcperts
 /
