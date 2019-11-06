@@ -1,5 +1,5 @@
 #%Module#####################################################
-## Module file for regional_grid
+## Module file for mosaic_file on NCAR/UCAR Cheyenne
 #############################################################
 module purge
 module load ncarenv/1.3

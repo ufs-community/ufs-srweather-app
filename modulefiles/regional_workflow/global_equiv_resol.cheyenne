@@ -1,5 +1,5 @@
 #%Module#####################################################
-## Module file for regional_grid
+## Module file for global_equiv_resol on NCAR/UCAR Cheyenne
 #############################################################
 module purge
 module load ncarenv/1.3
