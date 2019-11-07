@@ -340,7 +340,7 @@ esac
 #-----------------------------------------------------------------------
 #
 num_fhrs="${#EXTRN_MDL_LBC_UPDATE_FHRS[@]}"
-for (( i=0; i<$num_fhrs; i++ )); do
+for (( i=0; i<${num_fhrs}; i++ )); do
 #
 # Get the forecast hour of the external model.
 #

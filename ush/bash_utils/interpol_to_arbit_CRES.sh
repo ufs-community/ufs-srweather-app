@@ -120,7 +120,7 @@ where the arguments are defined as follows:
 
   else
 
-    for ((i=0; i < ${num_valid_RESes}-1 ; i++)); do
+    for (( i=0; i<$((num_valid_RESes-1)); i++ )); do
     
       if [ "$RES" -gt "${RES_array[$i]}" ] && \
          [ "$RES" -le "${RES_array[$i+1]}" ]; then

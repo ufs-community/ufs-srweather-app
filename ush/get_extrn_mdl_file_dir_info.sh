@@ -318,7 +318,7 @@ fi
 # the start time of the external model run.
 #
     num_fhrs=${#lbc_update_fhrs[@]}
-    for (( i=0; i<=$(( $num_fhrs - 1 )); i++ )); do
+    for (( i=0; i<=$((num_fhrs-1)); i++ )); do
       lbc_update_fhrs[$i]=$(( ${lbc_update_fhrs[$i]} + time_offset_hrs ))
     done
 
