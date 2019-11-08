@@ -289,8 +289,84 @@ Done.
 
 
 
+#
+#-----------------------------------------------------------------------
+#
+# Copy the workflow (re)launch script to the experiment directory.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+Copying the workflow launcher script (WFLOW_LAUNCH_SCRIPT_FN) from the 
+USHDIR to the experiment directory (with the destination path specified
+by WFLOW_LAUNCH_SCRIPT_FP):
+  USHDIR = \"${USHDIR}\"
+  WFLOW_LAUNCH_SCRIPT_FN = \"${WFLOW_LAUNCH_SCRIPT_FN}\"
+  WFLOW_LAUNCH_SCRIPT_FP = \"${WFLOW_LAUNCH_SCRIPT_FP}\""
+cp_vrfy "$USHDIR/${WFLOW_LAUNCH_SCRIPT_FN}" "${WFLOW_LAUNCH_SCRIPT_FP}"
+#
+#-----------------------------------------------------------------------
+#
+# If USE_CRON_TO_RELAUNCH is set to TRUE, add a line to the user's cron
+# table to call the (re)launch script every CRON_RELAUNCH_INTVL_MNTS mi-
+# nutes.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
+#
+# Make a backup copy of the user's crontab file and save it in a file.
+#
+  date_stamp=$( date "+%Y%m%d%H%M%S" )
+  crontab_backup_fp="$EXPTDIR/crontab.${date_stamp}"
+  print_info_msg "
+Copying contents of user cron table to backup file:
+  crontab_backup_fp = \"${crontab_backup_fp}\""
+  crontab -l > ${crontab_backup_fp}
+#
+# Below, we use "grep" to determine whether the crontab line that the 
+# variable CRONTAB_LINE contains is already present in the cron table.  
+# For that purpose, we need to escape the asterisks in the string in 
+# CRONTAB_LINE with backslashes.  Do this next.
+#
+  crontab_line_esc_astr=$( printf "%s" "${CRONTAB_LINE}" | \
+                           sed -r -e "s%[*]%\\\\*%g" )
+#
+# In the grep command below, the "^" at the beginning of the string be-
+# ing passed to grep is a start-of-line anchor while the "$" at the end
+# of the string is an end-of-line anchor.  Thus, in order for grep to 
+# find a match on any given line of the output of "crontab -l", that 
+# line must contain exactly the string in the variable crontab_line_-
+# esc_astr without any leading or trailing characters.  This is to eli-
+# minate situations in which a line in the output of "crontab -l" con-
+# tains the string in crontab_line_esc_astr but is precedeeded, for ex-
+# ample, by the comment character "#" (in which case cron ignores that
+# line) and/or is followed by further commands that are not part of the 
+# string in crontab_line_esc_astr (in which case it does something more
+# than the command portion of the string in crontab_line_esc_astr does).
+#
+  grep_output=$( crontab -l | grep "^${crontab_line_esc_astr}$" )
+  exit_status=$?
 
+  if [ "${exit_status}" -eq 0 ]; then
 
+    print_info_msg "
+The following line already exists in the cron table and thus will not be
+added:
+  CRONTAB_LINE = \"${CRONTAB_LINE}\""
+  
+  else
+
+    print_info_msg "
+Adding the following line to the cron table in order to automatically
+resubmit FV3SAR workflow:
+  CRONTAB_LINE = \"${CRONTAB_LINE}\""
+
+    ( crontab -l; echo "${CRONTAB_LINE}" ) | crontab -
+
+  fi
+
+fi
 #
 #-----------------------------------------------------------------------
 #

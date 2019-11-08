@@ -149,6 +149,26 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that USE_CRON_TO_RELAUNCH is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "USE_CRON_TO_RELAUNCH" "valid_vals_USE_CRON_TO_RELAUNCH"
+#
+# Set USE_CRON_TO_RELAUNCH to either "TRUE" or "FALSE" so we don't have to consider
+# other valid values later on.
+#
+USE_CRON_TO_RELAUNCH=${USE_CRON_TO_RELAUNCH^^}
+if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ] || \
+   [ "${USE_CRON_TO_RELAUNCH}" = "YES" ]; then
+  USE_CRON_TO_RELAUNCH="TRUE"
+elif [ "${USE_CRON_TO_RELAUNCH}" = "FALSE" ] || \
+     [ "${USE_CRON_TO_RELAUNCH}" = "NO" ]; then
+  USE_CRON_TO_RELAUNCH="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that RUN_TASK_MAKE_GRID is set to a valid value.
 #
 #-----------------------------------------------------------------------
@@ -781,6 +801,24 @@ else
   FIXam="${EXPTDIR}/fix_am"
   FIXsar="${EXPTDIR}/fix_sar"
   COMROOT=""
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Set the full path to the script that can be used to launch/relaunch 
+# the workflow.  Also, set the line to add to the cron table to automa-
+# tically relaunch the workflow every CRON_RELAUNCH_INTVL_MNTS minutes
+# (if USE_CRON_TO_RELAUNCH is set to TRUE).
+#
+#-----------------------------------------------------------------------
+#
+WFLOW_LAUNCH_SCRIPT_FP="$EXPTDIR/${WFLOW_LAUNCH_SCRIPT_FN}"
+WFLOW_LAUNCH_LOG_FP="$EXPTDIR/${WFLOW_LAUNCH_LOG_FN}"
+if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
+  CRONTAB_LINE="*/${CRON_RELAUNCH_INTVL_MNTS} * * * * cd $EXPTDIR && \
+./${WFLOW_LAUNCH_SCRIPT_FN} >> ./${WFLOW_LAUNCH_LOG_FN} 2>&1"
+else
+  CRONTAB_LINE=""
 fi
 #
 #-----------------------------------------------------------------------
@@ -1631,6 +1669,16 @@ done <<< "${line_list}"
 #-----------------------------------------------------------------------
 #
 
+#
+#-----------------------------------------------------------------------
+#
+# Workflow launcher script and cron table line.
+#
+#-----------------------------------------------------------------------
+#
+WFLOW_LAUNCH_SCRIPT_FP="${WFLOW_LAUNCH_SCRIPT_FP}"
+WFLOW_LAUNCH_LOG_FP="${WFLOW_LAUNCH_LOG_FP}"
+CRONTAB_LINE="${CRONTAB_LINE}"
 #
 #-----------------------------------------------------------------------
 #

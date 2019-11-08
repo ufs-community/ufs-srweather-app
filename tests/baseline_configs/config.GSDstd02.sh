@@ -15,6 +15,9 @@ QUEUE_DEFAULT="batch"
 QUEUE_HPSS="service"
 QUEUE_FCST="batch"
 
+USE_CRON_TO_RELAUNCH="TRUE"
+CRON_RELAUNCH_INTVL_MNTS="03"
+
 VERBOSE="TRUE"
 
 # Can specify EXPT_BASEDIR if you want.  If not specified, will default
