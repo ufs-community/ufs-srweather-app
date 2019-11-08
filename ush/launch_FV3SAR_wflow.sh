@@ -24,24 +24,30 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions file.  This is assumed to be in the 
-# same directory as this script.
+# Get the experiment directory.  This is assumed to be the directory 
+# from which this script is called.  (There will normally be a symlink 
+# in the experiment directory with the same name as this script pointing
+# to the actual location of this script in the workflow directory struc-
+# ture.  Thus, when this script is called from the experiment directory,
+# the working directory will be the experiment directory.)
 #
 #-----------------------------------------------------------------------
 #
-. ${scrfunc_dir}/var_defns.sh
+EXPTDIR=$( readlink -f "$(pwd)" )
 #
 #-----------------------------------------------------------------------
 #
-# Set the variables containing the full path to the experiment directo-
-# ry, the experiment name, and the full path to the workflow launch 
-# script (this script).  In doing so, we assume that:
+# Source the variable definitions file for the experiment.
 #
-# 1) This script has been copied to the experiment directory.  Thus, the
-#    directory in which it is located is the experiment directory.
-# 2) The name of the experiment subdirectory (i.e. the string after the
-#    last "/" in the full path to the experiment directory) is identical
-#    to the experiment name.
+#-----------------------------------------------------------------------
+#
+. $EXPTDIR/var_defns.sh
+#
+#-----------------------------------------------------------------------
+#
+# Set the name of the experiment.  We take this to be the name of the 
+# experiment subdirectory (i.e. the string after the last "/" in the 
+# full path to the experiment directory).
 #
 #-----------------------------------------------------------------------
 #
@@ -53,11 +59,14 @@ expt_name="${EXPT_SUBDIR}"
 #
 #-----------------------------------------------------------------------
 #
+module purge
 module load rocoto
 #
 #-----------------------------------------------------------------------
 #
-# Set file names.
+# Set file names.  These include the rocoto database file and the log
+# file in which to store output from this script (aka the workflow 
+# launch script).
 #
 #-----------------------------------------------------------------------
 #
@@ -67,17 +76,23 @@ launch_log_fn="log.launch_${rocoto_xml_bn}"
 #
 #-----------------------------------------------------------------------
 #
-# Set the default status of the workflow to be "IN PROGRESS".  Also, 
-# change directory to the experiment directory.
+# Initialize the default status of the workflow to "IN PROGRESS".
 #
 #-----------------------------------------------------------------------
 #
-workflow_status="IN PROGRESS"
+wflow_status="IN PROGRESS"
+#
+#-----------------------------------------------------------------------
+#
+# Change location to the experiment directory.
+#
+#-----------------------------------------------------------------------
+#
 cd "$EXPTDIR"
 #
 #-----------------------------------------------------------------------
 #
-# Issue the rocotorun command to launch/relaunch the next task in the 
+# Issue the rocotorun command to (re)launch the next task in the 
 # workflow.  Then check for error messages in the output of rocotorun.  
 # If any are found, it means the end-to-end run of the workflow failed.  
 # In this case, we remove the crontab entry that launches the workflow,
@@ -119,16 +134,14 @@ tmp_fn="rocotorun_output.txt"
 rocotorun_cmd="rocotorun -w \"${WFLOW_XML_FN}\" -d \"${rocoto_database_fn}\" -v 10"
 eval ${rocotorun_cmd} > ${tmp_fn} 2>&1
 rocotorun_output=$( cat "${tmp_fn}" )
-#rm "${tmp_fn}"
-
-#rocotorun -w "${WFLOW_XML_FN}" -d "${rocoto_database_fn}" -v 10 > ${tmp_fn} 2>&1
+rm "${tmp_fn}"
 
 error_msg="sbatch: error: Batch job submission failed:"
 # Job violates accounting/QOS policy (job submit limit, user's size and/or time limits)"
 while read -r line; do
   grep_output=$( printf "$line" | grep "${error_msg}" )
   if [ $? -eq 0 ]; then
-    workflow_status="FAILED"
+    wflow_status="FAILURE"
     break
   fi
 done <<< "${rocotorun_output}"
@@ -158,10 +171,9 @@ rocotostat_output=$( eval ${rocotostat_cmd} 2>&1 )
 #rocotostat_output=$( { pwd; ls -alF; } 2>&1 )
 error_msg="DEAD"
 while read -r line; do
-#  grep_output=$( printf "$line" | grep "DEAD" )
   grep_output=$( printf "$line" | grep "${error_msg}" )
   if [ $? -eq 0 ]; then
-    workflow_status="FAILED"
+    wflow_status="FAILURE"
     break
   fi
 done <<< "${rocotostat_output}"
@@ -263,12 +275,12 @@ done
 #
 # If the number of completed cycles is equal to the total number of cy-
 # cles, it means the end-to-end run of the workflow was successful.  In
-# this case, we reset the workflow_status to "SUCCEEDED".
+# this case, we reset the wflow_status to "SUCCESS".
 #
 #-----------------------------------------------------------------------
 #
 if [ ${num_cycles_completed} -eq ${num_cycles_total} ]; then
-  workflow_status="SUCCEEDED"
+  wflow_status="SUCCESS"
 fi
 #
 #-----------------------------------------------------------------------
@@ -284,7 +296,7 @@ Summary of workflow status:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   ${num_cycles_completed} out of ${num_cycles_total} cycles completed.
-  Workflow status:  ${workflow_status}
+  Workflow status:  ${wflow_status}
 
 ========================================================================
 End of output from script \"${scrfunc_fn}\".
@@ -294,36 +306,38 @@ End of output from script \"${scrfunc_fn}\".
 #
 #-----------------------------------------------------------------------
 #
-# If the workflow status is now either "SUCCEEDED" or "FAILED", indicate
-# this by appending an appropriate message to the end of the launch log
-# file.
+# If the workflow status is now either "SUCCESS" or "FAILURE", indicate
+# this by appending an appropriate workflow completion message to the 
+# end of the launch log file.
 #
 #-----------------------------------------------------------------------
 #
-msg="
-The end-to-end run of the workflow for the experiment specified by 
-expt_name ${workflow_status}:
+if [ "${wflow_status}" = "SUCCESS" ] || \
+   [ "${wflow_status}" = "FAILURE" ]; then
+
+  msg="
+The end-to-end run of the workflow for the forecast experiment specified 
+by expt_name has completed with the following workflow status (wflow_-
+status):
   expt_name = \"${expt_name}\"
+  wflow_status = \"${wflow_status}\"
 "
-
-if [ "${workflow_status}" = "SUCCEEDED" ] || \
-   [ "${workflow_status}" = "FAILED" ]; then
-
-  printf "$msg" >> ${WFLOW_LAUNCH_LOG_FN} 2>&1
 #
 # If a cron job was being used to periodically relaunch the workflow, we
 # now remove the entry in the crontab corresponding to the workflow be-
 # cause the end-to-end run of the workflow has now either succeeded or
 # failed and will remain in that state without manual user intervention.
-# Thus, there is no need to try to relaunch it.
+# Thus, there is no need to try to relaunch it.  We also append a mes-
+# sage to the completion message above to indicate this.
 #
   if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
 
-    msg="$msg
-Removing the corresponding line (CRONTAB_LINE) from the crontab file:
+    msg="${msg}\
+Thus, there is no need to relaunch the workflow via a cron job.  Remo-
+ving from the crontab the line (CRONTAB_LINE) that calls the workflow
+launch script for this experiment:
   CRONTAB_LINE = \"${CRONTAB_LINE}\"
 "
-    printf "$msg"
 #
 # Below, we use "grep" to determine whether the crontab line that the
 # variable CRONTAB_LINE contains is already present in the cron table.
@@ -340,6 +354,18 @@ Removing the corresponding line (CRONTAB_LINE) from the crontab file:
 #
     ( crontab -l | grep -v "^${crontab_line_esc_astr}$" ) | crontab -
 
+  fi
+#
+# Print the workflow completion message to the launch log file.
+#
+  printf "$msg" >> ${WFLOW_LAUNCH_LOG_FN} 2>&1
+#
+# If the stdout from this script is being sent to the screen (e.g. it is
+# not being redirected to a file), then also print out the workflow 
+# completion message to the screen.
+#
+  if [ -t 1 ]; then
+    printf "$msg"
   fi
 
 fi

@@ -805,14 +805,15 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the full path to the script that can be used to launch/relaunch 
-# the workflow.  Also, set the line to add to the cron table to automa-
-# tically relaunch the workflow every CRON_RELAUNCH_INTVL_MNTS minutes
-# (if USE_CRON_TO_RELAUNCH is set to TRUE).
+# Set the full path to the script that can be used to (re)launch the 
+# workflow.  Also, if USE_CRON_TO_RELAUNCH is set to TRUE, set the line
+# to add to the cron table to automatically relaunch the workflow every
+# CRON_RELAUNCH_INTVL_MNTS minutes.  Otherwise, set the variable con-
+# taining this line to a null string.
 #
 #-----------------------------------------------------------------------
 #
-WFLOW_LAUNCH_SCRIPT_FP="$EXPTDIR/${WFLOW_LAUNCH_SCRIPT_FN}"
+WFLOW_LAUNCH_SCRIPT_FP="$USHDIR/${WFLOW_LAUNCH_SCRIPT_FN}"
 WFLOW_LAUNCH_LOG_FP="$EXPTDIR/${WFLOW_LAUNCH_LOG_FN}"
 if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
   CRONTAB_LINE="*/${CRON_RELAUNCH_INTVL_MNTS} * * * * cd $EXPTDIR && \

@@ -297,13 +297,11 @@ Done.
 #-----------------------------------------------------------------------
 #
 print_info_msg "
-Copying the workflow launcher script (WFLOW_LAUNCH_SCRIPT_FN) from the 
-USHDIR to the experiment directory (with the destination path specified
-by WFLOW_LAUNCH_SCRIPT_FP):
-  USHDIR = \"${USHDIR}\"
-  WFLOW_LAUNCH_SCRIPT_FN = \"${WFLOW_LAUNCH_SCRIPT_FN}\"
+Creating symlink in the experiment directory (EXPTDIR) to the workflow
+launch script (WFLOW_LAUNCH_SCRIPT_FP):
+  EXPTDIR = \"${EXPTDIR}\"
   WFLOW_LAUNCH_SCRIPT_FP = \"${WFLOW_LAUNCH_SCRIPT_FP}\""
-cp_vrfy "$USHDIR/${WFLOW_LAUNCH_SCRIPT_FN}" "${WFLOW_LAUNCH_SCRIPT_FP}"
+ln_vrfy -fs "${WFLOW_LAUNCH_SCRIPT_FP}" "$EXPTDIR"
 #
 #-----------------------------------------------------------------------
 #
