@@ -48,7 +48,7 @@ TESTSDIR="$HOMErrfs/tests"
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -58,18 +58,17 @@ TESTSDIR="$HOMErrfs/tests"
 #
 MACHINE="HERA"
 ACCOUNT="gsd-fv3"
-QUEUE_DEFAULT="batch"
-QUEUE_HPSS="service"
-QUEUE_FCST="batch"
-VERBOSE="TRUE"
+
+USE_CRON_TO_RELAUNCH="TRUE"
+#USE_CRON_TO_RELAUNCH="FALSE"
+CRON_RELAUNCH_INTVL_MNTS="02"
 #
 #-----------------------------------------------------------------------
 #
 # Read in the list of experiments (which might be baselines) to run.
-# This entails reading in each line of the file experiments_list.txt in
-# the directory of this script and saving the result in the array varia-
-# ble experiments_list.  Note that each line of experiments_list.txt has
-# the form
+# This entails reading in each line of the file expts_list.txt in the 
+# directory of this script and saving the result in the array variable 
+# expts_list.  Note that each line of expts_list.txt has the form
 #
 #   BASELINE_NAME  |  VAR_NAME_1="VAR_VALUE_1"  |  ... |  VAR_NAME_N="VAR_VALUE_N"
 #
@@ -81,104 +80,176 @@ VERBOSE="TRUE"
 #    config.BASELINE_NAME.sh in a subdirectory named baseline_configs 
 #    in the directory of this script.
 #
-# 2) The variable name-value pairs on each line of the experiments_-
-#    list.txt file are delimited from the baseline and from each other 
-#    by pipe characters (i.e. "|").  
+# 2) The variable name-value pairs on each line of the expts_list.txt 
+#    file are delimited from the baseline and from each other by pipe 
+#    characters (i.e. "|").  
 #
 #-----------------------------------------------------------------------
 #
-EXPTS_LIST_FN="${TESTSDIR}/experiments_list.txt"
+EXPTS_LIST_FN="expts_list.txt"
+EXPTS_LIST_FP="${TESTSDIR}/${EXPTS_LIST_FN}"
 
-print_info_msg "$VERBOSE" "
+print_info_msg "
 Reading in list of forecast experiments from file
+  EXPTS_LIST_FP = \"${EXPTS_LIST_FP}\"
+and storing result in the array \"all_lines\" (one array element per expe-
+riment)..."
 
-  EXPTS_LIST_FN = \"${EXPTS_LIST_FN}\"
+readarray -t all_lines < "${EXPTS_LIST_FP}"
 
-and storing result in the array \"experiments_list\" (one array element 
-per experiment)..."
+all_lines_str=$( printf "\'%s\'\n" "${all_lines[@]}" )
+print_info_msg "
+All lines from experiments list file EXPTS_LIST_FP read in, where:
 
-readarray -t experiments_list < "${EXPTS_LIST_FN}"
+  EXPTS_LIST_FP = \"${EXPTS_LIST_FP}\"
 
-msg=$( printf "%s\n" "${experiments_list[@]}" )
-msg="
-List of forecast experiments to run is given by:
+Contents of file (line by line, before any processing) are:
 
-experiments_list = (
-$msg
-)
+${all_lines_str}
 "
-print_info_msg "$VERBOSE" "$msg"
-
-num_elem="${#experiments_list[@]}"
-
-echo
-echo "num_elem = ${num_elem}"
-echo "scrfunc_dir = ${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-# Loop through the experiments list.  For each experiment, generate a
-# workflow and launch it.
+# Loop through the elements of all_lines and modify each line to remove
+# leading and trailing whitespace and any whitespace before and after 
+# the field separator character (which is the pipe character, "|").  Al-
+# so, drop any elements that are empty after this processing, and save
+# the resulting set of non-empty elements in the array expts_list.
 #
 #-----------------------------------------------------------------------
 #
-#set -x
-i=0
-while [ ! -z "${experiments_list[$i]}" ]; do
+expts_list=()
+field_separator="\|"  # Need backslash as an escape sequence in the sed commands.
 
-echo
-echo "======================================================"
-echo "i = $i"
-echo "experiments_list[$i] = '${experiments_list[$i]}'"
+j=0
+num_lines="${#all_lines[@]}"
+for (( i=0; i<=$((num_lines-1)); i++ )); do
+#
+# Remove all leading and trailing whitespace from the current element of
+# all_lines.
+#
+  all_lines[$i]=$( printf "%s" "${all_lines[$i]}" | \
+                   sed -r -e "s/^[ ]*//" -e "s/[ ]*$//" )
+#
+# Remove spaces before and after all field separators in the current 
+# element of all_lines.  Note that we use the pipe symbol, "|", as the
+# field separator.
+#
+  all_lines[$i]=$( printf "%s" "${all_lines[$i]}" | \
+                   sed -r -e "s/[ ]*${field_separator}[ ]*/${field_separator}/g" )
+#
+# If the last character of the current line is a field separator, remove
+# it.
+#
+  all_lines[$i]=$( printf "%s" "${all_lines[$i]}" | \
+                   sed -r -e "s/${field_separator}$//g" )
+#
+# If after the processing above the current element of all_lines is not
+# empty, save it as the next element of expts_list.
+#
+  if [ ! -z "${all_lines[$i]}" ]; then
+    expts_list[$j]="${all_lines[$i]}"
+    j=$((j+1))
+  fi
 
-# Remove all leading and trailing whitespace.
-  experiments_list[$i]=$( \
-    printf "%s" "${experiments_list[$i]}" | \
-    sed -r -e "s/^[ ]*//" -e "s/[ ]*$//" )
-#    sed -r -n -e "s/^[ ]*//" -e "s/[ ]*$//p" )
-echo "experiments_list[$i] = '${experiments_list[$i]}'"
-# Remove spaces before and after all separators.  We use the pipe symbol
-# as the separator.
-  experiments_list[$i]=$( \
-    printf "%s" "${experiments_list[$i]}" | \
-    sed -r -e "s/[ ]*\|[ ]*/\|/g" )
-#    sed -r -n -e "s/[ ]*\|[ ]*/\|/gp" )
-echo "experiments_list[$i] = '${experiments_list[$i]}'"
+done
+#
+#-----------------------------------------------------------------------
+#
+# Get the number of experiments to run and print out an informational 
+# message.
+#
+#-----------------------------------------------------------------------
+#
+num_expts="${#expts_list[@]}"
+expts_list_str=$( printf "  \'%s\'\n" "${expts_list[@]}" )
+print_info_msg "
+After processing, the number of experiments to run (num_expts) is:
 
-#  regex_search="^[ ]*([^\|]*)[ ]*\|[ ]*(.*)"
-#  regex_search="^([^\|]*)\|(.*)"
+  num_expts = ${num_expts}
+
+The list of forecast experiments to run (one experiment per line) is gi-
+ven by:
+
+${expts_list_str}
+"
+#
+#-----------------------------------------------------------------------
+#
+# Loop through the elements of the array expts_list.  For each element
+# (i.e. for each experiment), generate an experiment directory and cor-
+# responding workflow and then launch the workflow.
+#
+#-----------------------------------------------------------------------
+#
+for (( i=0; i<=$((num_expts-1)); i++ )); do
+
+  print_info_msg "
+
+Processing experiment #$((${i}+1)):
+------------------------
+
+The experiment specification line for this experiment is given by:
+
+  ${expts_list[$i]}
+"
+#
+# Get the name of the baseline on which the current experiment is based.
+# Then save the remainder of the current element of expts_list in the
+# variable "remainder".  Note that if this variable is empty, then the
+# current experiment is identical to the current baseline.  If not, then
+# "remainder" contains the modifications that need to be made to the 
+# current baseline to obtain the current experiment.
+#
   regex_search="^([^\|]*)(\|(.*)|)"
-
-  baseline_name=$( printf "%s" "${experiments_list[$i]}" | sed -r -n -e "s/${regex_search}/\1/p" )
-  remainder=$( printf "%s" "${experiments_list[$i]}" | sed -r -n -e "s/${regex_search}/\3/p" )
-echo
-echo "  baseline_name = '${baseline_name}'"
-echo "  remainder = '$remainder'"
-
+  baseline_name=$( printf "%s" "${expts_list[$i]}" | \
+                   sed -r -n -e "s/${regex_search}/\1/p" )
+  remainder=$( printf "%s" "${expts_list[$i]}" | \
+               sed -r -n -e "s/${regex_search}/\3/p" )
+#
+# Get the names and corresponding values of the variables that need to
+# be modified in the current baseline to obtain the current experiment.
+# The following while-loop steps through all the variables listed in 
+# "remainder"
+#
   modvar_name=()
   modvar_value=()
   num_mod_vars=0
   while [ ! -z "${remainder}" ]; do
-#    next_field=$( printf "%s" "$remainder" | sed -r -n -e "s/${regex_search}/\1/p" )
-#    remainder=$( printf "%s" "$remainder" | sed -r -n -e "s/${regex_search}/\3/p" )
-    next_field=$( printf "%s" "$remainder" | sed -r -e "s/${regex_search}/\1/" )
-    remainder=$( printf "%s" "$remainder" | sed -r -e "s/${regex_search}/\3/" )
-#    modvar_name[${num_mod_vars}]=$( printf "%s" "${next_field}" | sed -r -n -e "s/^([^=]*)=(.*)/\1/p" )
-#    modvar_value[${num_mod_vars}]=$( printf "%s" "${next_field}" | sed -r -n -e "s/^([^=]*)=(.*)/\2/p" )
-    modvar_name[${num_mod_vars}]=$( printf "%s" "${next_field}" | sed -r -e "s/^([^=]*)=(.*)/\1/" )
-    modvar_value[${num_mod_vars}]=$( printf "%s" "${next_field}" | sed -r -e "s/^([^=]*)=(\")?([^\"]+*)(\")?/\3/" )
-echo
-echo "  next_field = '${next_field}'"
-echo "  remainder = '$remainder'"
-echo "  modvar_name[${num_mod_vars}] = ${modvar_name[${num_mod_vars}]}"
-echo "  modvar_value[${num_mod_vars}] = ${modvar_value[${num_mod_vars}]}"
+#
+# Get the next variable-value pair in remainder, and save what is left
+# of remainder back into itself.
+#
+    next_field=$( printf "%s" "$remainder" | \
+                  sed -r -e "s/${regex_search}/\1/" )
+    remainder=$( printf "%s" "$remainder" | \
+                 sed -r -e "s/${regex_search}/\3/" )
+#
+# Save the name of the variable in the variable-value pair obtained 
+# above in the array modvar_name.  Then save the value in the variable-
+# value pair in the array modvar_value.
+    modvar_name[${num_mod_vars}]=$( printf "%s" "${next_field}" | \
+                                    sed -r -e "s/^([^=]*)=(.*)/\1/" )
+    modvar_value[${num_mod_vars}]=$( printf "%s" "${next_field}" | \
+                                     sed -r -e "s/^([^=]*)=(\")?([^\"]+*)(\")?/\3/" )
+#
+# Increment the index that keeps track of the number of variables that 
+# need to be modified in the current baseline to obtain the current ex-
+# periment.
+#
     num_mod_vars=$((num_mod_vars+1))
-echo "  num_mod_vars = ${num_mod_vars}"
 
   done
-
-
+#
+# Generate the path to the configuration file for the current baseline.
+# This will be modified to obtain the configuration file for the current 
+# experiment.
+#
   baseline_config_fp="${TESTSDIR}/baseline_configs/config.${baseline_name}.sh"
+#
+# Print out an error message and exit if a configuration file for the 
+# current baseline does not exist.
+#
   if [ ! -f "${baseline_config_fp}" ]; then
     print_err_msg_exit "\
 The experiment/workflow configuration file (baseline_config_fp) for the
@@ -186,43 +257,87 @@ specified baseline (baseline_name) does not exist:
   baseline_name = \"${baseline_name}\"
   baseline_config_fp = \"${baseline_config_fp}\""
   fi
-
-  experiment_name="${baseline_name}"
+#
+# We require that EXPT_SUBDIR in the configuration file for the baseline 
+# be set to the name of the baseline.  Check for this by extracting the
+# value of EXPT_SUBDIR from the baseline configuration file and compa-
+# ring it to baseline_name.
+#
+  regex_search="^[ ]*EXPT_SUBDIR=(\")?([^ =\"]+)(.*)"
+  EXPT_SUBDIR=$( sed -r -n -e "s/${regex_search}/\2/p" \
+                 "${baseline_config_fp}" )
+  if [ "${EXPT_SUBDIR}" != "${baseline_name}" ]; then
+    print_err_msg_exit "\
+The name of the experiment subdirectory (EXPT_SUBDIR) in the configura-
+tion file (baseline_config_fp) for the current baseline does not match
+the name of the baseline (baseline_name):
+  baseline_name = \"${baseline_name}\"
+  baseline_config_fp = \"${baseline_config_fp}\"
+  EXPT_SUBDIR = \"${EXPT_SUBDIR}\""
+  fi
+#
+# Generate a name for the current experiment.  We start with the name of 
+# the current baseline and modify it to indicate which variables must be
+# reset to obtain the current experiment.
+#
+  expt_name="${baseline_name}"
   for (( j=0; j<${num_mod_vars}; j++ )); do
     if [ $j -lt ${#modvar_name[@]} ]; then
-      experiment_name="${experiment_name}__${modvar_name[$j]}=${modvar_value[$j]}"
+      expt_name="${expt_name}__${modvar_name[$j]}.eq.${modvar_value[$j]}"
     else
       break
     fi
   done
-echo
-echo "experiment_name = '${experiment_name}'"
+#
+# Reset EXPT_SUBDIR to the name of the current experiment.  Below, we
+# will write this to the configuration file for the current experiment.
+#
+  EXPT_SUBDIR="${expt_name}"
+#
+# Create a configuration file for the current experiment.  We do this by
+# first copying the baseline configuration file and then modifying the 
+# the values of those variables within it that are different between the
+# baseline and the experiment.
+#
+  expt_config_fp="${USHDIR}/config.${expt_name}.sh"
+  cp_vrfy "${baseline_config_fp}" "${expt_config_fp}"
 
-  experiment_config_fp="${USHDIR}/config.${experiment_name}.sh"
-  cp_vrfy "${baseline_config_fp}" "${experiment_config_fp}"
+  set_bash_param "${expt_config_fp}" "MACHINE" "$MACHINE"
+  set_bash_param "${expt_config_fp}" "ACCOUNT" "$ACCOUNT"
+  set_bash_param "${expt_config_fp}" "USE_CRON_TO_RELAUNCH" "${USE_CRON_TO_RELAUNCH}"
+  set_bash_param "${expt_config_fp}" "CRON_RELAUNCH_INTVL_MNTS" "${CRON_RELAUNCH_INTVL_MNTS}"
+  set_bash_param "${expt_config_fp}" "EXPT_SUBDIR" "${EXPT_SUBDIR}"
 
-  EXPT_SUBDIR="${experiment_name}"
-
-  set_bash_param "${experiment_config_fp}" "MACHINE" "$MACHINE"
-  set_bash_param "${experiment_config_fp}" "ACCOUNT" "$ACCOUNT"
-  set_bash_param "${experiment_config_fp}" "QUEUE_DEFAULT" "${QUEUE_DEFAULT}"
-  set_bash_param "${experiment_config_fp}" "QUEUE_HPSS" "${QUEUE_HPSS}"
-  set_bash_param "${experiment_config_fp}" "QUEUE_FCST" "${QUEUE_FCST}"
-  set_bash_param "${experiment_config_fp}" "VERBOSE" "$VERBOSE"
-  set_bash_param "${experiment_config_fp}" "EXPT_SUBDIR" "${EXPT_SUBDIR}"
-
-  ln_vrfy -fs "${experiment_config_fp}" "$USHDIR/config.sh"
-  
+  printf ""
+  for (( j=0; j<${num_mod_vars}; j++ )); do
+    set_bash_param "${expt_config_fp}" "${modvar_name[$j]}" "${modvar_value[$j]}"
+  done
+#
+# Create a symlink called "config.sh" in USHDIR that points to the cur-
+# rent experiment's configuration file.  This must be done because the 
+# experiment/workflow generation script assumes that this is the name 
+# and location of the configuration file to use to generate a new expe-
+# riment and corresponding workflow.
+#
+  ln_vrfy -fs "${expt_config_fp}" "$USHDIR/config.sh"
+#
+#-----------------------------------------------------------------------
+#
+# Call the experiment/workflow generation script for the current experi-
+# ment.
+#
+#-----------------------------------------------------------------------
+#
   print_info_msg "
 Generating experiment with name:
-  experiment_name = \"${experiment_name}\""
+  expt_name = \"${expt_name}\""
 
-  log_fp="$USHDIR/log.generate_wflow.${experiment_name}"
+  log_fp="$USHDIR/log.generate_FV3SAR_wflow.${expt_name}"
   $USHDIR/generate_FV3SAR_wflow.sh 2>&1 >& "${log_fp}" || { \
     print_err_msg_exit "\
 Could not generate an experiment/workflow for the test specified by 
-experiment_name:
-  experiment_name = \"${experiment_name}\"
+expt_name:
+  expt_name = \"${expt_name}\"
 The log file from the generation script is in the file specified by 
 log_fp:
   log_fp = \"${log_fp}\"";
@@ -231,110 +346,15 @@ log_fp:
 #-----------------------------------------------------------------------
 #
 # Set the experiment directory to the one that the workflow will create.
-# Then move the configuration file and experiment/workflow generation 
-# log file to the experiment directory.
+# Then, in order to have a record of how the experiment and workflow 
+# were generated, move the configuration file and experiment/workflow
+# generation log file to the experiment directory.
 #
 #-----------------------------------------------------------------------
 #
   EXPTDIR=$( readlink -f "$HOMErrfs/../expt_dirs/${EXPT_SUBDIR}" )
-  mv_vrfy "${experiment_config_fp}" "${EXPTDIR}"
+  mv_vrfy "${expt_config_fp}" "${EXPTDIR}"
   mv_vrfy "${log_fp}" "${EXPTDIR}"
-#
-#-----------------------------------------------------------------------
-#
-# Create a script in the run directory that can be used to (re)launch 
-# the workflow and report on its status.  This script saves its output 
-# to a log file (in the run directory) for debugging purposes and to al-
-# low the user to check on the status of the workflow.
-#
-#-----------------------------------------------------------------------
-#
-  cd_vrfy $EXPTDIR
-
-  xml_bn="FV3SAR_wflow"
-  xml_fn="${xml_bn}.xml"
-  db_fn="${xml_bn}.db"
-  relaunch_script_fn="relaunch_wflow.sh"
-
-  { cat << EOM > ${relaunch_script_fn}
-#!/bin/bash -l
-
-module load rocoto
-cd "$EXPTDIR"
-{
-rocotorun -w "${xml_fn}" -d "${db_fn}" -v 10;
-echo;
-rocotostat -w "${xml_fn}" -d "${db_fn}" -v 10; 
-} >> log.rocotostat 2>&1
-
-dead_tasks=$( rocotostat -w "${xml_fn}" -d "${db_fn}" -v 10 | grep "DEAD" )
-if [ ! -z ${dead_tasks} ]; then
-  printf "%s\n" "
-The end-to-end workflow test for the experiment specified below FAILED:
-  experiment_name = \"${experiment_name}\"
-Removing the corresponding line from the crontab file.\n"
-fi
-EOM
-  } || print_err_msg_exit "\
-cat operation to create a relaunch script (relaunch_script_fn) in the experi-
-ment directory (EXPTDIR) failed:
-  EXPTDIR = \"$EXPTDIR\"
-  relaunch_script_fn = \"${relaunch_script_fn}\""
-#
-# Make the relaunch script executable.
-#
-  chmod u+x ${relaunch_script_fn}
-#
-#-----------------------------------------------------------------------
-#
-# Add a line to the user's cron table to call the (re)launch script at
-# some frequency (e.g. every 5 minutes).
-#
-#-----------------------------------------------------------------------
-#
-  crontab_orig_fp="$(pwd)/crontab.orig"
-  print_info_msg "
-Copying contents of user cron table to backup file:
-  crontab_orig_fp = \"${crontab_orig_fp}\""
-  crontab -l > ${crontab_orig_fp}
-
-  crontab_line="*/5 * * * * cd $EXPTDIR && ./${relaunch_script_fn}" 
-#
-# Below, we use "grep" to determine whether the above crontab line is 
-# already present in the cron table.  For that purpose, we need to es-
-# cape the asterisks in the crontab line with backslashes.  Do this 
-# next.
-#
-  crontab_line_esc_astr=$( printf "%s" "${crontab_line}" | \
-                           sed -r -e "s![*]!\\\\*!g" )
-  grep_output=$( crontab -l | grep "${crontab_line_esc_astr}" )
-  exit_status=$?
-
-  if [ "${exit_status}" -eq 0 ]; then
-
-    print_info_msg "
-The following line already exists in the cron table and thus will not be
-added:
-  crontab_line = \"${crontab_line}\""
-  
-  else
-
-    print_info_msg "
-Adding the following line to the cron table in order to automatically
-resubmit FV3SAR workflow:
-  crontab_line = \"${crontab_line}\""
-
-    (crontab -l 2>/dev/null; echo "${crontab_line}") | crontab -
-
-  fi
-#
-#-----------------------------------------------------------------------
-#
-# Increment the index that keeps track of the test/experiment number.
-#
-#-----------------------------------------------------------------------
-#
-  i=$((i+1))
 
 done
 #
