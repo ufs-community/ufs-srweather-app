@@ -10,16 +10,12 @@ This is the community\_develop branch of the regional\_workflow used to run the 
 
 This step will checkout EMC\_post, NEMSfv3gfs and its submodules, UFS\_UTILS\_chgres\_grib2 and UFS\_UTILS\_develop in the sorc directory.
 
-2. Build the utilities:
+2. Build the utilities, post and FV3:
 ```
-cd regional
-./build_regional theia >& out.build_regional
+cd sorc
+./build_all.sh
 ```
-3. Build FV3:
-```
-cd sorc/NEMSfv3gfs/tests
-compile.sh $BASEDIR/regional_workflow/sorc/NEMSfv3gfs/FV3 theia.intel "CCPP=Y STATIC=N 32BIT=Y REPRO=Y" >& out.compile_32bit
-```
+This step will also copy the executables to the `exec` directory and link the fix files.
 4. Create a `config.sh` file in the `ush` directory (see Users Guide).
 5. Generate a workflow:
 ```
