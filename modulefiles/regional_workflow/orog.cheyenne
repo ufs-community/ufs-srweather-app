@@ -1,5 +1,5 @@
 #%Module#####################################################
-## Module file for orog
+## Module file for orog on NCAR/UCAR Cheyenne
 #############################################################
 # Loading Intel Compiler Suite
 module load intel/18.0.1
