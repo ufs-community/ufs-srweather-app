@@ -132,50 +132,28 @@ case $MACHINE in
   ;;
 
 
-"THEIA")
+#"HERA")
+##
+#  { save_shell_opts; set +x; } > /dev/null 2>&1
 #
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  . /apps/lmod/lmod/init/sh
-  module purge
-  module load intel/16.1.150
-  module load impi
-  module load hdf5/1.8.14
-  module load netcdf/4.3.0
-  module list
-
-  { restore_shell_opts; } > /dev/null 2>&1
-
-  export APRUN="time"
-  export topo_dir="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog"
-
-  ulimit -s unlimited
-  ulimit -a
-  ;;
-
-
-"HERA")
+#  . /apps/lmod/lmod/init/sh
+#  module purge
+#  module load intel/18.0.5.274
+##  module load netcdf/4.6.1
+##  module load hdf5/1.10.4
+#  module load netcdf/4.7.0
+#  module load hdf5/1.10.5
+#  module list
 #
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  . /apps/lmod/lmod/init/sh
-  module purge
-  module load intel/18.0.5.274
-#  module load netcdf/4.6.1
-#  module load hdf5/1.10.4
-  module load netcdf/4.7.0
-  module load hdf5/1.10.5
-  module list
-
-  { restore_shell_opts; } > /dev/null 2>&1
-
-  export APRUN="time"
-  export topo_dir="/scratch1/NCEPDEV/global/glopara/fix/fix_orog"
-
-  ulimit -s unlimited
-  ulimit -a
-  ;;
-
+#  { restore_shell_opts; } > /dev/null 2>&1
+#
+#  export APRUN="time"
+#  export topo_dir="/scratch1/NCEPDEV/global/glopara/fix/fix_orog"
+#
+#  ulimit -s unlimited
+#  ulimit -a
+#  ;;
+#
 
 "JET")
 #
