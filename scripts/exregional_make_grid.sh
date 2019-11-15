@@ -132,8 +132,8 @@ case $MACHINE in
   ;;
 
 
-#"HERA")
-##
+"HERA")
+#
 #  { save_shell_opts; set +x; } > /dev/null 2>&1
 #
 #  . /apps/lmod/lmod/init/sh
@@ -148,11 +148,12 @@ case $MACHINE in
 #  { restore_shell_opts; } > /dev/null 2>&1
 #
 #  export APRUN="time"
-#  export topo_dir="/scratch1/NCEPDEV/global/glopara/fix/fix_orog"
+  APRUN="time"
+  topo_dir="/scratch1/NCEPDEV/global/glopara/fix/fix_orog"
 #
 #  ulimit -s unlimited
 #  ulimit -a
-#  ;;
+  ;;
 #
 
 "JET")

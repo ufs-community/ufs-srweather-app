@@ -78,9 +78,10 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY RSRV_RUN_FV3 "<queue>&QUEUE_FCST;</queue><account>&ACCOUNT;</account>"> 
 
 <!-- 
-Shell "pre" script to load task-specific modules.
+Shell script to load task-specific modules and then run the task (while
+killing itelf off) using the exec command.
 -->
-<!ENTITY LOAD_MODULES_SCR "&HOMErrfs;/ush/load_modules.sh">
+<!ENTITY LOAD_MODULES_RUN_TASK_FP "&USHDIR;/load_modules_run_task.sh">
 
 <!-- 
 Task names.
@@ -113,13 +114,35 @@ Task names.
 
     &RSRC_MAKE_GRID;
     &RSRV_DEFAULT;
-    <command>{ &USHDIR/&LOAD_MODULES_SCR; &TN_MAKE_GRID;; &JOBSDIR;/JREGIONAL_MAKE_GRID }</command>
+<!-- 
+The following command works if we do NOT call exec in LOAD_MODULES_RUN_-
+TASK_FP to run the J-job.  This just sources the LOAD_MODULES_RUN_TASK_-
+FP before running the J-job, so it is simpler than calling exec and thus
+preferred if NCO accepts it.  Note that while sourcing LOAD_MODULES_-
+RUN_TASK_FP, it also passes an argument along (the name of the task), 
+and that works in bash (but it probably won't work in sh).  
+
+If this method is acceptable to NCO, then for clarity maybe we can 
+source LOAD_MODULES_RUN_TASK_FP within the J-job instead of here since 
+we have are already sourcing other files in the J-job anyway.
+-->
+<!-- 
+    <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_GRID;"; 
+               &JOBSDIR;/JREGIONAL_MAKE_GRID;
+             }</command>
+-->
+<!-- 
+The following command works if we call exec in LOAD_MODULES_RUN_TASK_FP
+to run the J-job.  This passes the J-job script as the second argument 
+to LOAD_MODULES_RUN_TASK_FP (the first argument is the task name).  The
+J-job then uses exec to run the J-job (while also terminating the LOAD_-
+MODULES_RUN_TASK_FP script.
+-->
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_GRID;" "&JOBSDIR;/JREGIONAL_MAKE_GRID"</command>
     <nodes>&PROC_MAKE_GRID;</nodes>
     <jobname>&TN_MAKE_GRID;</jobname>
     <join><cyclestr>&LOGDIR;/&TN_MAKE_GRID;.log</cyclestr></join>
 
-    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
-    <envar><name>HOMErrfs</name><value>&HOMErrfs;</value></envar>
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
