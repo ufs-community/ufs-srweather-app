@@ -591,7 +591,7 @@ GSD suite) to the experiment directory..."
 #
 #-----------------------------------------------------------------------
 #
-elif [ "${USE_CCPP}" = "FALSE" ]; then
+else
 
   cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_FN} $EXPTDIR
   cp_vrfy ${TEMPLATE_DIR}/${FIELD_TABLE_FN} $EXPTDIR

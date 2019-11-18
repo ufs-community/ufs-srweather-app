@@ -416,7 +416,7 @@ if [ "${USE_CCPP}" = "TRUE" ]; then
   elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
     cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_CCPP_GSD_FN} ${CYCLE_DIR}/${DIAG_TABLE_FN}
   fi
-elif [ "${USE_CCPP}" = "false" ]; then
+else
   cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_FN} ${CYCLE_DIR}
 fi
 #
