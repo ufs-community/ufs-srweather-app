@@ -119,35 +119,9 @@ case "$MACHINE" in
   ;;
 #
 "HERA")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
   ulimit -s unlimited
 #  ulimit -a
-
-  module purge
-  module load intel/18.0.5.274
-  module load impi/2018.0.4
-  module load netcdf/4.6.1
-
-  module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-  module load esmf/8.0.0bs21
-
-  module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-  module load w3nco
-  module load nemsio/2.2.3
-  module load bacio
-  module load sp
-  module load sfcio
-  module load sigio
-
-  module load wgrib2 
- 
-  module list
-
   APRUN="srun"
-
-  { restore_shell_opts; } > /dev/null 2>&1
   ;;
 #
 "JET")
@@ -216,7 +190,7 @@ EXTRN_MDL_FILES_DIR="${CYCLE_DIR}/${EXTRN_MDL_NAME_ICS}/ICS"
 #
 EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
 
-$SCRIPTSDIR/exregional_make_ic_lbc0.sh \
+$SCRIPTSDIR/exregional_make_ics.sh \
   EXTRN_MDL_FNS="${EXTRN_MDL_FNS_str}" \
   EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_DIR}" \
   EXTRN_MDL_CDATE="${EXTRN_MDL_CDATE}" \

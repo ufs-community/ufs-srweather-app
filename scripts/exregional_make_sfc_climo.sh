@@ -123,40 +123,30 @@ case $MACHINE in
 
 "WCOSS_C")
 # This could be wrong.  Just a guess since I don't have access to this machine.
-  APRUN_SFC=${APRUN_SFC:-"aprun -j 1 -n 6 -N 6"}
+  APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}
   ;;
 
 "WCOSS")
 # This could be wrong.  Just a guess since I don't have access to this machine.
-  APRUN_SFC=${APRUN_SFC:-"aprun -j 1 -n 6 -N 6"}
+  APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}
   ;;
 
 "THEIA")
 # Need to load intel/15.1.133.  This and all other module loads should go into a module file.
   module load intel/15.1.133
   module list
-  APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
+  APRUN="mpirun -np ${SLURM_NTASKS}"
   ;;
 
 "HERA")
-  module purge
-  module load intel/18.0.5.274
-  module load impi/2018.0.4
-  module load netcdf/4.6.1
-  #module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-  export NCEPLIBS=/scratch1/NCEPDEV/global/gwv/l819/lib
-  module use -a $NCEPLIBS/modulefiles
-  module load esmflocal/8_0_48b.netcdf47
-  #module load esmf/7.1.0r
-  module list
-  APRUN_SFC="srun"
+  APRUN="srun"
   ;;
 
 *)
   print_err_msg_exit "\
 Run command has not been specified for this machine:
   MACHINE = \"$MACHINE\"
-  APRUN_SFC = \"$APRUN_SFC\""
+  APRUN = \"$APRUN\""
   ;;
 
 esac
@@ -167,7 +157,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-$APRUN_SFC ${EXECDIR}/sfc_climo_gen || print_err_msg_exit "\
+$APRUN ${EXECDIR}/sfc_climo_gen || print_err_msg_exit "\
 Call to executable that generates surface climatology files returned 
 with nonzero exit code."
 #

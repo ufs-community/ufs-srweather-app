@@ -16,13 +16,13 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 # The current script should be located in the "tests" subdirectory of 
-# the workflow directory, which we denote by HOMErrfs.  Thus, the work-
-# flow directory (HOMErrfs) is the one above the directory of the cur-
+# the workflow directory, which we denote by homerrfs.  Thus, the work-
+# flow directory (homerrfs) is the one above the directory of the cur-
 # rent script.  Set HOMRErrfs accordingly.
 #
 #-----------------------------------------------------------------------
 #
-HOMErrfs=${scrfunc_dir%/*}
+homerrfs=${scrfunc_dir%/*}
 #
 #-----------------------------------------------------------------------
 #
@@ -30,8 +30,8 @@ HOMErrfs=${scrfunc_dir%/*}
 #
 #-----------------------------------------------------------------------
 #
-USHDIR="$HOMErrfs/ush"
-TESTSDIR="$HOMErrfs/tests"
+ushdir="$homerrfs/ush"
+baseline_configs_dir="$homerrfs/tests/baseline_configs"
 #
 #-----------------------------------------------------------------------
 #
@@ -39,7 +39,7 @@ TESTSDIR="$HOMErrfs/tests"
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/source_util_funcs.sh
+. $ushdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -56,12 +56,54 @@ TESTSDIR="$HOMErrfs/tests"
 #
 #-----------------------------------------------------------------------
 #
-MACHINE="HERA"
-ACCOUNT="gsd-fv3"
+machine="HERA"
+account="gsd-fv3"
 
-USE_CRON_TO_RELAUNCH="TRUE"
-#USE_CRON_TO_RELAUNCH="FALSE"
-CRON_RELAUNCH_INTVL_MNTS="02"
+use_cron_to_relaunch="TRUE"
+#use_cron_to_relaunch="FALSE"
+cron_relaunch_intvl_mnts="02"
+#
+#-----------------------------------------------------------------------
+#
+# Check arguments.
+#
+#-----------------------------------------------------------------------
+#
+  if [ "$#" -ne 1 ]; then
+
+    print_err_msg_exit "
+Incorrect number of arguments specified:
+
+  Number of arguments specified:  $#
+
+Usage:
+
+  ${scrfunc_fn}  expts_file
+
+where expts_file is the name of the file containing the list of experi-
+ments to run.  If expts_file is the absolute path to a file, it is used
+as is.  If it is a relative path (including just a file name), it is as-
+sumed to be given relative to the path from which this script is called.
+"
+
+  fi
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+  expts_file="$1"
+  expts_list_fp=$( readlink -f "${expts_file}" )
+
+  if [ ! -f "${expts_list_fp}" ]; then
+    print_err_msg_exit "\
+The experiments list file (expts_file) specified as an argument to this
+script (and with full path given by expts_list_fp) does not exist:
+  expts_file = \"${expts_file}\"
+  expts_list_fp = \"${expts_list_fp}\""
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -86,24 +128,20 @@ CRON_RELAUNCH_INTVL_MNTS="02"
 #
 #-----------------------------------------------------------------------
 #
-EXPTS_LIST_FN="expts_list.txt"
-EXPTS_LIST_FP="${TESTSDIR}/${EXPTS_LIST_FN}"
-
 print_info_msg "
 Reading in list of forecast experiments from file
-  EXPTS_LIST_FP = \"${EXPTS_LIST_FP}\"
+  expts_list_fp = \"${expts_list_fp}\"
 and storing result in the array \"all_lines\" (one array element per expe-
 riment)..."
 
-readarray -t all_lines < "${EXPTS_LIST_FP}"
+readarray -t all_lines < "${expts_list_fp}"
 
 all_lines_str=$( printf "\'%s\'\n" "${all_lines[@]}" )
 print_info_msg "
-All lines from experiments list file EXPTS_LIST_FP read in, where:
-
-  EXPTS_LIST_FP = \"${EXPTS_LIST_FP}\"
-
-Contents of file (line by line, before any processing) are:
+All lines from experiments list file (expts_list_fp) read in, where:
+  expts_list_fp = \"${expts_list_fp}\"
+Contents of file are (line by line, each line within single quotes, and 
+before any processing):
 
 ${all_lines_str}
 "
@@ -119,7 +157,7 @@ ${all_lines_str}
 #-----------------------------------------------------------------------
 #
 expts_list=()
-field_separator="\|"  # Need backslash as an escape sequence in the sed commands.
+field_separator="\|"  # Need backslash as an escape sequence in the sed commands below.
 
 j=0
 num_lines="${#all_lines[@]}"
@@ -165,12 +203,9 @@ num_expts="${#expts_list[@]}"
 expts_list_str=$( printf "  \'%s\'\n" "${expts_list[@]}" )
 print_info_msg "
 After processing, the number of experiments to run (num_expts) is:
-
   num_expts = ${num_expts}
-
 The list of forecast experiments to run (one experiment per line) is gi-
 ven by:
-
 ${expts_list_str}
 "
 #
@@ -185,14 +220,7 @@ ${expts_list_str}
 for (( i=0; i<=$((num_expts-1)); i++ )); do
 
   print_info_msg "
-
-Processing experiment #$((${i}+1)):
-------------------------
-
-The experiment specification line for this experiment is given by:
-
-  ${expts_list[$i]}
-"
+Processing experiment \"${expts_list[$i]}\" ..."
 #
 # Get the name of the baseline on which the current experiment is based.
 # Then save the remainder of the current element of expts_list in the
@@ -245,7 +273,7 @@ The experiment specification line for this experiment is given by:
 # This will be modified to obtain the configuration file for the current 
 # experiment.
 #
-  baseline_config_fp="${TESTSDIR}/baseline_configs/config.${baseline_name}.sh"
+  baseline_config_fp="${baseline_configs_dir}/config.${baseline_name}.sh"
 #
 # Print out an error message and exit if a configuration file for the 
 # current baseline does not exist.
@@ -255,7 +283,8 @@ The experiment specification line for this experiment is given by:
 The experiment/workflow configuration file (baseline_config_fp) for the
 specified baseline (baseline_name) does not exist:
   baseline_name = \"${baseline_name}\"
-  baseline_config_fp = \"${baseline_config_fp}\""
+  baseline_config_fp = \"${baseline_config_fp}\"
+Please correct and rerun."
   fi
 #
 # We require that EXPT_SUBDIR in the configuration file for the baseline 
@@ -289,37 +318,37 @@ the name of the baseline (baseline_name):
     fi
   done
 #
-# Reset EXPT_SUBDIR to the name of the current experiment.  Below, we
-# will write this to the configuration file for the current experiment.
+# Set expt_subdir to the name of the current experiment.  Below, we will
+# write this to the configuration file for the current experiment.
 #
-  EXPT_SUBDIR="${expt_name}"
+  expt_subdir="${expt_name}"
 #
 # Create a configuration file for the current experiment.  We do this by
 # first copying the baseline configuration file and then modifying the 
 # the values of those variables within it that are different between the
 # baseline and the experiment.
 #
-  expt_config_fp="${USHDIR}/config.${expt_name}.sh"
+  expt_config_fp="$ushdir/config.${expt_name}.sh"
   cp_vrfy "${baseline_config_fp}" "${expt_config_fp}"
 
-  set_bash_param "${expt_config_fp}" "MACHINE" "$MACHINE"
-  set_bash_param "${expt_config_fp}" "ACCOUNT" "$ACCOUNT"
-  set_bash_param "${expt_config_fp}" "USE_CRON_TO_RELAUNCH" "${USE_CRON_TO_RELAUNCH}"
-  set_bash_param "${expt_config_fp}" "CRON_RELAUNCH_INTVL_MNTS" "${CRON_RELAUNCH_INTVL_MNTS}"
-  set_bash_param "${expt_config_fp}" "EXPT_SUBDIR" "${EXPT_SUBDIR}"
+  set_bash_param "${expt_config_fp}" "MACHINE" "$machine"
+  set_bash_param "${expt_config_fp}" "ACCOUNT" "$account"
+  set_bash_param "${expt_config_fp}" "USE_CRON_TO_RELAUNCH" "${use_cron_to_relaunch}"
+  set_bash_param "${expt_config_fp}" "CRON_RELAUNCH_INTVL_MNTS" "${cron_relaunch_intvl_mnts}"
+  set_bash_param "${expt_config_fp}" "EXPT_SUBDIR" "${expt_subdir}"
 
   printf ""
   for (( j=0; j<${num_mod_vars}; j++ )); do
     set_bash_param "${expt_config_fp}" "${modvar_name[$j]}" "${modvar_value[$j]}"
   done
 #
-# Create a symlink called "config.sh" in USHDIR that points to the cur-
+# Create a symlink called "config.sh" in ushdir that points to the cur-
 # rent experiment's configuration file.  This must be done because the 
 # experiment/workflow generation script assumes that this is the name 
 # and location of the configuration file to use to generate a new expe-
 # riment and corresponding workflow.
 #
-  ln_vrfy -fs "${expt_config_fp}" "$USHDIR/config.sh"
+  ln_vrfy -fs "${expt_config_fp}" "$ushdir/config.sh"
 #
 #-----------------------------------------------------------------------
 #
@@ -328,12 +357,14 @@ the name of the baseline (baseline_name):
 #
 #-----------------------------------------------------------------------
 #
+  log_fp="$ushdir/log.generate_FV3SAR_wflow.${expt_name}"
   print_info_msg "
 Generating experiment with name:
-  expt_name = \"${expt_name}\""
+  expt_name = \"${expt_name}\"
+Log file for generation step is:
+  log_fp = \"${log_fp}\""
 
-  log_fp="$USHDIR/log.generate_FV3SAR_wflow.${expt_name}"
-  $USHDIR/generate_FV3SAR_wflow.sh 2>&1 >& "${log_fp}" || { \
+  $ushdir/generate_FV3SAR_wflow.sh > "${log_fp}" 2>&1 || { \
     print_err_msg_exit "\
 Could not generate an experiment/workflow for the test specified by 
 expt_name:
@@ -352,9 +383,9 @@ log_fp:
 #
 #-----------------------------------------------------------------------
 #
-  EXPTDIR=$( readlink -f "$HOMErrfs/../expt_dirs/${EXPT_SUBDIR}" )
-  mv_vrfy "${expt_config_fp}" "${EXPTDIR}"
-  mv_vrfy "${log_fp}" "${EXPTDIR}"
+  exptdir=$( readlink -f "$homerrfs/../expt_dirs/${expt_subdir}" )
+  mv_vrfy "${expt_config_fp}" "${exptdir}"
+  mv_vrfy "${log_fp}" "${exptdir}"
 
 done
 #

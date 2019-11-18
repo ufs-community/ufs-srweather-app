@@ -106,7 +106,7 @@ cp_vrfy ${TEMPLATE_XML_FP} ${WFLOW_XML_FP}
 #
 #-----------------------------------------------------------------------
 #
-PROC_RUN_FV3="${NUM_NODES}:ppn=${NCORES_PER_NODE}"
+PROC_RUN_FCST="${NUM_NODES}:ppn=${NCORES_PER_NODE}"
 
 FHR=( $( seq 0 1 ${FCST_LEN_HRS} ) )
 i=0
@@ -148,7 +148,7 @@ set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_ICS" "${EXTRN_MDL_NAME_ICS}"
 set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_LBCS" "${EXTRN_MDL_NAME_LBCS}"
 set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_ICS" "${EXTRN_MDL_FILES_SYSBASEDIR_ICS}"
 set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_LBCS" "${EXTRN_MDL_FILES_SYSBASEDIR_LBCS}"
-set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FV3" "${PROC_RUN_FV3}"
+set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FCST" "${PROC_RUN_FCST}"
 set_file_param "${WFLOW_XML_FP}" "DATE_FIRST_CYCL" "${DATE_FIRST_CYCL}"
 set_file_param "${WFLOW_XML_FP}" "DATE_LAST_CYCL" "${DATE_LAST_CYCL}"
 set_file_param "${WFLOW_XML_FP}" "YYYY_FIRST_CYCL" "${YYYY_FIRST_CYCL}"
@@ -503,90 +503,9 @@ Copying templates of various input files to the experiment directory..."
 #
 # If using CCPP...
 #
-# If USE_CCPP is set to "TRUE", copy the appropriate modulefile, the 
-# CCPP physics suite definition file (an XML file), and possibly other 
-# suite-dependent files to the experiment directory.
-#
-# The modulefile modules.nems in the directory
-#
-#   $NEMSfv3gfs_DIR/NEMS/src/conf
-#
-# is generated during the FV3 build process and this is configured pro-
-# perly for the machine, shell environment, etc.  Thus, we can just copy
-# it to the experiment directory without worrying about what machine 
-# we're on, but this still needs to be confirmed.
-#
-# Note that a modulefile is a file whose first line is the "magic coo-
-# kie" '#%Module'.  It is interpreted by the "module load ..." command.  
-# It sets environment variables (including prepending/appending to 
-# paths) and loads modules.
-#
-# QUESTION:
-# Why don't we do this for the non-CCPP version of FV3?
-#
-# ANSWER:
-# Because for that case, we load different versions of intel and impi 
-# (compare modules.nems to the modules loaded for the case of USE_CCPP
-# set to "FALSE" in run_FV3SAR.sh).  Maybe these can be combined at some 
-# point.  Note that a modules.nems file is generated in the same rela-
-# tive location in the non-CCPP-enabled version of NEMSfv3gfs, so maybe
-# that can be used and the run_FV3SAR.sh script modified to accomodate
-# such a change.  That way the below can be performed for both the CCPP-
-# enabled and non-CCPP-enabled versions of NEMSfv3gfs.
-#
 #-----------------------------------------------------------------------
 #
 if [ "${USE_CCPP}" = "TRUE" ]; then
-#
-# Copy the shell script that initializes the Lmod (Lua-based module) 
-# system/software for handling modules.  This script:
-#
-# 1) Detects the shell in which it is being invoked (i.e. the shell of
-#    the "parent" script in which it is being sourced).
-# 2) Detects the machine it is running on and and calls the appropriate 
-#    (shell- and machine-dependent) initalization script to initialize 
-#    Lmod.
-# 3) Purges all modules.
-# 4) Uses the "module use ..." command to prepend or append paths to 
-#    Lmod's search path (MODULEPATH).
-#
-  print_info_msg "$VERBOSE" "
-Copying the shell script that initializes the Lmod (Lua-based module) 
-system/software for handling modules..."
-#
-# The following might have to be made shell-dependent, e.g. if using csh 
-# or tcsh, copy over the file module-setup.csh.inc??.
-#
-# It may be convenient to also copy over this script when running the 
-# non-CCPP version of the FV3SAR and try to simplify the run script 
-# (run_FV3SAR.sh) so that it doesn't depend on whether USE_CCPP is set 
-# to "TRUE" or "FALSE".  We can do that, but currently the non-CCPP and 
-# CCPP-enabled versions of the FV3SAR code use different versions of
-# intel and impi, so module-setup.sh must account for this.
-#
-  cp_vrfy ${NEMSfv3gfs_DIR}/NEMS/src/conf/module-setup.sh.inc \
-          $EXPTDIR/module-setup.sh
-#
-# Append the command that adds the path to the CCPP libraries (via the
-# shell variable LD_LIBRARY_PATH) to the Lmod initialization script in 
-# the experiment directory.  This is needed if running the dynamic build
-# of the CCPP-enabled version of the FV3SAR.
-#
-  { cat << EOM >> $EXPTDIR/module-setup.sh
-#
-# Add path to libccpp.so and libccpphys.so to LD_LIBRARY_PATH"
-#
-export LD_LIBRARY_PATH="${NEMSfv3gfs_DIR}/ccpp/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
-EOM
-} || print_err_msg_exit "\
-Heredoc (cat) command to append command to add path to CCPP libraries to
-the Lmod initialization script in the experiment directory returned with
-a nonzero status."
-
-  print_info_msg "$VERBOSE" "
-Copying the modulefile required for running the CCPP-enabled version of
-the FV3SAR under NEMS to the experiment directory..." 
-  cp_vrfy ${NEMSfv3gfs_DIR}/NEMS/src/conf/modules.nems $EXPTDIR/modules.fv3
 #
 #-----------------------------------------------------------------------
 #
@@ -672,7 +591,7 @@ GSD suite) to the experiment directory..."
 #
 #-----------------------------------------------------------------------
 #
-elif [ "${USE_CCPP}" = "FALSE" ]; then
+else
 
   cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_FN} $EXPTDIR
   cp_vrfy ${TEMPLATE_DIR}/${FIELD_TABLE_FN} $EXPTDIR
