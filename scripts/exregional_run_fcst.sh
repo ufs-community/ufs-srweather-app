@@ -144,37 +144,10 @@ case $MACHINE in
   ;;
 #
 "HERA")
-#
-
-  if [ "${USE_CCPP}" = "TRUE" ]; then
-  
-# Need to change to the experiment directory to correctly load necessary 
-# modules for CCPP-version of FV3SAR in lines below
-    cd_vrfy ${EXPTDIR}
-  
-    set +x
-    source ./module-setup.sh
-    module use $( pwd -P )
-    module load modules.fv3
-    module list
-    set -x
-  
-  else
-  
-    . /apps/lmod/lmod/init/sh
-    module purge
-    module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles    
-    module load intel/18.0.5.274
-    module load impi/2018.0.4
-    module load netcdf/4.6.1
-    module load pnetcdf/1.10.0
-    module list
-  
-  fi
-
   ulimit -s unlimited
   ulimit -a
   APRUN="srun"
+  LD_LIBRARY_PATH="${NEMSfv3gfs_DIR}/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
   ;;
 #
 "JET")
@@ -414,8 +387,6 @@ ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${FIELD_TABLE_FN}
 ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${NEMS_CONFIG_FN}
 
 if [ "${USE_CCPP}" = "TRUE" ]; then
-  ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/module-setup.sh
-  ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/modules.fv3
   if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
     ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/suite_FV3_GSD_v0.xml
   elif [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then

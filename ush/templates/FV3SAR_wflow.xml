@@ -86,15 +86,15 @@ killing itelf off) using the exec command.
 <!-- 
 Task names.
 -->
-<!ENTITY TN_MAKE_GRID       "make_grid">
-<!ENTITY TN_MAKE_OROG       "make_orog">
-<!ENTITY TN_MAKE_SFC_CLIMO  "make_sfc_climo">
-<!ENTITY TN_GET_EXTRN_ICS   "get_extrn_ics">
-<!ENTITY TN_GET_EXTRN_LBCS  "get_extrn_lbcs">
-<!ENTITY TN_MAKE_ICS        "make_ics">
-<!ENTITY TN_MAKE_LBCS       "make_lbcs">
-<!ENTITY TN_RUN_FCST        "run_fcst">
-<!ENTITY TN_RUN_POST        "run_post">
+<!ENTITY TN_MAKE_GRID      "make_grid">
+<!ENTITY TN_MAKE_OROG      "make_orog">
+<!ENTITY TN_MAKE_SFC_CLIMO "make_sfc_climo">
+<!ENTITY TN_GET_EXTRN_ICS  "get_extrn_ics">
+<!ENTITY TN_GET_EXTRN_LBCS "get_extrn_lbcs">
+<!ENTITY TN_MAKE_ICS       "make_ics">
+<!ENTITY TN_MAKE_LBCS      "make_lbcs">
+<!ENTITY TN_RUN_FCST       "run_fcst">
+<!ENTITY TN_RUN_POST       "run_post">
 
 ]>
 
@@ -104,7 +104,7 @@ Task names.
   <cycledef group="at_CCZ">&DATE_FIRST_CYCL;CC00 &DATE_LAST_CYCL;CC00 24:00:00</cycledef>  <!-- This line will be replaced with one or more lines with "CC" replaced by actual cycle hours, e.g. "00". -->
 
   <log>
-    <cyclestr>&LOGDIR;/FV3_wflow.log</cyclestr>
+    <cyclestr>&LOGDIR;/FV3SAR_wflow.log</cyclestr>
   </log>
 <!--
 ************************************************************************
@@ -160,7 +160,7 @@ MODULES_RUN_TASK_FP script.
     &RSRC_MAKE_OROG;
     &RSRV_DEFAULT;
 
-    <command>&JOBSDIR;/JREGIONAL_MAKE_OROG</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_OROG;" "&JOBSDIR;/JREGIONAL_MAKE_OROG"</command>
     <nodes>&PROC_MAKE_OROG;</nodes>
     <jobname>&TN_MAKE_OROG;</jobname>
     <join><cyclestr>&LOGDIR;/&TN_MAKE_OROG;.log</cyclestr></join>
@@ -189,7 +189,7 @@ MODULES_RUN_TASK_FP script.
     &RSRC_MAKE_SFC_CLIMO;
     &RSRV_DEFAULT;
 
-    <command>&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_SFC_CLIMO;" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"</command>
     <nodes>&PROC_MAKE_SFC_CLIMO;</nodes>
     <jobname>&TN_MAKE_SFC_CLIMO;</jobname>
     <join><cyclestr>&LOGDIR;/&TN_MAKE_SFC_CLIMO;.log</cyclestr></join>
@@ -223,7 +223,7 @@ MODULES_RUN_TASK_FP script.
     &RSRC_GET_EXTRN_MDL_FILES;
     &RSRV_HPSS;
 
-    <command>&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_ICS;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES"</command>
     <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
     <jobname>&TN_GET_EXTRN_ICS;</jobname>
     <join><cyclestr>&LOGDIR;/&TN_GET_EXTRN_ICS;_@Y@m@d@H.log</cyclestr></join>
@@ -245,7 +245,7 @@ MODULES_RUN_TASK_FP script.
     &RSRC_GET_EXTRN_MDL_FILES;
     &RSRV_HPSS;
 
-    <command>&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_LBCS;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES"</command>
     <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
     <jobname>&TN_GET_EXTRN_LBCS;</jobname>
     <join><cyclestr>&LOGDIR;/&TN_GET_EXTRN_LBCS;_@Y@m@d@H.log</cyclestr></join>
@@ -267,7 +267,7 @@ MODULES_RUN_TASK_FP script.
     &RSRC_MAKE_ICS_SURF_LBC0;
     &RSRV_DEFAULT;
 
-    <command>&JOBSDIR;/JREGIONAL_MAKE_IC_LBC0</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_ICS;" "&JOBSDIR;/JREGIONAL_MAKE_ICS"</command>
     <nodes>&PROC_MAKE_ICS_SURF_LBC0;</nodes>
     <jobname>&TN_MAKE_ICS;</jobname>
     <join><cyclestr>&LOGDIR;/&TN_MAKE_ICS;_@Y@m@d@H.log</cyclestr></join>
@@ -308,7 +308,7 @@ MODULES_RUN_TASK_FP script.
     &RSRC_MAKE_LBC1_TO_LBCN;
     &RSRV_DEFAULT;
 
-    <command>&JOBSDIR;/JREGIONAL_MAKE_LBC1_TO_LBCN</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_LBCS;" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"</command>
     <nodes>&PROC_MAKE_LBC1_TO_LBCN;</nodes>
     <jobname>&TN_MAKE_LBCS;</jobname>
     <join><cyclestr>&LOGDIR;/&TN_MAKE_LBCS;_@Y@m@d@H.log</cyclestr></join>
@@ -349,7 +349,7 @@ MODULES_RUN_TASK_FP script.
     &RSRC_RUN_FCST;
     &RSRV_RUN_FCST;
 
-    <command>&JOBSDIR;/JREGIONAL_RUN_FCST</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_FCST;" "&JOBSDIR;/JREGIONAL_RUN_FCST"</command>
     <nodes>&PROC_RUN_FCST;</nodes>
     <jobname>&TN_RUN_FCST;</jobname>
     <join><cyclestr>&LOGDIR;/&TN_RUN_FCST;_@Y@m@d@H.log</cyclestr></join>
@@ -380,7 +380,7 @@ MODULES_RUN_TASK_FP script.
       &RSRC_POST;
       &RSRV_DEFAULT;
 
-      <command>&JOBSDIR;/JREGIONAL_RUN_POST</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
       <nodes>&PROC_POST;</nodes>
       <jobname>&TN_RUN_POST;_#fhr#</jobname>
       <join><cyclestr>&LOGDIR;/&TN_RUN_POST;_#fhr#_@Y@m@d@H.log</cyclestr></join>
