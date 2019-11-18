@@ -106,7 +106,7 @@ cp_vrfy ${TEMPLATE_XML_FP} ${WFLOW_XML_FP}
 #
 #-----------------------------------------------------------------------
 #
-PROC_RUN_FV3="${NUM_NODES}:ppn=${NCORES_PER_NODE}"
+PROC_RUN_FCST="${NUM_NODES}:ppn=${NCORES_PER_NODE}"
 
 FHR=( $( seq 0 1 ${FCST_LEN_HRS} ) )
 i=0
@@ -148,7 +148,7 @@ set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_ICS" "${EXTRN_MDL_NAME_ICS}"
 set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_LBCS" "${EXTRN_MDL_NAME_LBCS}"
 set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_ICS" "${EXTRN_MDL_FILES_SYSBASEDIR_ICS}"
 set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_LBCS" "${EXTRN_MDL_FILES_SYSBASEDIR_LBCS}"
-set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FV3" "${PROC_RUN_FV3}"
+set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FCST" "${PROC_RUN_FCST}"
 set_file_param "${WFLOW_XML_FP}" "DATE_FIRST_CYCL" "${DATE_FIRST_CYCL}"
 set_file_param "${WFLOW_XML_FP}" "DATE_LAST_CYCL" "${DATE_LAST_CYCL}"
 set_file_param "${WFLOW_XML_FP}" "YYYY_FIRST_CYCL" "${YYYY_FIRST_CYCL}"

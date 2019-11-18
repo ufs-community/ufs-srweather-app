@@ -73,7 +73,7 @@ mkdir_vrfy -p ${CYCLE_DIR}/RESTART
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_run_fv3.sh \
+$SCRIPTSDIR/exregional_run_fcst.sh \
   CYCLE_DIR="${CYCLE_DIR}" || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."

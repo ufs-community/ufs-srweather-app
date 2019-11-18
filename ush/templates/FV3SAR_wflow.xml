@@ -61,7 +61,7 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY PROC_GET_EXTRN_MDL_FILES "1:ppn=1">
 <!ENTITY PROC_MAKE_ICS_SURF_LBC0  "4:ppn=12">
 <!ENTITY PROC_MAKE_LBC1_TO_LBCN   "4:ppn=12">
-<!ENTITY PROC_RUN_FV3             "">
+<!ENTITY PROC_RUN_FCST            "">
 <!ENTITY PROC_POST                "2:ppn=24">
 
 <!ENTITY RSRC_MAKE_GRID           "<walltime>00:10:00</walltime>">
@@ -70,12 +70,12 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY RSRC_GET_EXTRN_MDL_FILES "<walltime>00:45:00</walltime>">
 <!ENTITY RSRC_MAKE_ICS_SURF_LBC0  "<walltime>00:30:00</walltime>">
 <!ENTITY RSRC_MAKE_LBC1_TO_LBCN   "<walltime>01:00:00</walltime>">
-<!ENTITY RSRC_RUN_FV3             "<walltime>04:30:00</walltime>">
+<!ENTITY RSRC_RUN_FCST            "<walltime>04:30:00</walltime>">
 <!ENTITY RSRC_POST                "<walltime>00:30:00</walltime>">
 
-<!ENTITY RSRV_DEFAULT "<queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
-<!ENTITY RSRV_HPSS    "<partition>&QUEUE_HPSS;</partition><account>&ACCOUNT;</account>"> 
-<!ENTITY RSRV_RUN_FV3 "<queue>&QUEUE_FCST;</queue><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_DEFAULT  "<queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_HPSS     "<partition>&QUEUE_HPSS;</partition><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_RUN_FCST "<queue>&QUEUE_FCST;</queue><account>&ACCOUNT;</account>"> 
 
 <!-- 
 Shell script to load task-specific modules and then run the task (while
@@ -346,11 +346,11 @@ MODULES_RUN_TASK_FP script.
 -->
   <task name="&TN_RUN_FCST;" maxtries="3">
 
-    &RSRC_RUN_FV3;
-    &RSRV_RUN_FV3;
+    &RSRC_RUN_FCST;
+    &RSRV_RUN_FCST;
 
-    <command>&JOBSDIR;/JREGIONAL_RUN_FV3</command>
-    <nodes>&PROC_RUN_FV3;</nodes>
+    <command>&JOBSDIR;/JREGIONAL_RUN_FCST</command>
+    <nodes>&PROC_RUN_FCST;</nodes>
     <jobname>&TN_RUN_FCST;</jobname>
     <join><cyclestr>&LOGDIR;/&TN_RUN_FCST;_@Y@m@d@H.log</cyclestr></join>
 

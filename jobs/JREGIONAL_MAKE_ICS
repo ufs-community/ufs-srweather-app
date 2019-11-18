@@ -216,7 +216,7 @@ EXTRN_MDL_FILES_DIR="${CYCLE_DIR}/${EXTRN_MDL_NAME_ICS}/ICS"
 #
 EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
 
-$SCRIPTSDIR/exregional_make_ic_lbc0.sh \
+$SCRIPTSDIR/exregional_make_ics.sh \
   EXTRN_MDL_FNS="${EXTRN_MDL_FNS_str}" \
   EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_DIR}" \
   EXTRN_MDL_CDATE="${EXTRN_MDL_CDATE}" \
