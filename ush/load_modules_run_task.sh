@@ -230,14 +230,13 @@ if [ ! -f "${modulefile_path}" ]; then
     print_err_msg_exit "\
 The target (modulefile_path) of the symlink (modulefile_name) in the 
 task modules directory (modules_dir) that points to module file for this
-task (task_name) does not exsit:
+task (task_name) does not exist:
   task_name = \"${task_name}\"
   modulefile_name = \"${modulefile_name}\"
   modules_dir = \"${modules_dir}\"
   modulefile_path = \"${modulefile_path}\"
 This is likely because the forecast model code (NEMSfv3gfs) has not yet
-been built.
-"
+been built."
 
   else
 
@@ -246,6 +245,8 @@ The module file (modulefile_path) specified for this task (task_name)
 does not exist:
   task_name = \"${task_name}\"
   modulefile_path = \"${modulefile_path}\""
+
+  fi
 
 fi
 #
