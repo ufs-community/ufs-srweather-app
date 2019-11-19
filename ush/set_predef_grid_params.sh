@@ -458,7 +458,7 @@ predefined domain:
 
     NHW_T7=6
 
-    DT_ATMOS="100"
+    DT_ATMOS="40"
 
     LAYOUT_X="34"
     LAYOUT_Y="24"
