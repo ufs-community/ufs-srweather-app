@@ -154,6 +154,11 @@ esac
 # rain, and water number concentrations -- may be specified at the end
 # of tracers, and these will be calculated by chgres.
 #
+# internal_GSD:
+# Logical variable indicating whether or not to try to read in land sur-
+# face model (LSM) variables available in the HRRRX grib2 files created
+# after about 2019111500.
+#
 # numsoil_out:
 # The number of soil layers to include in the output NetCDF file.
 #
@@ -223,6 +228,7 @@ fn_grib2=""
 input_type=""
 tracers_input="\"\""
 tracers="\"\""
+internal_GSD=""
 numsoil_out=""
 geogrid_file_input_grid=""
 replace_vgtyp=""
@@ -245,6 +251,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
   tracers_input="\"spfh\",\"clwmr\",\"o3mr\""
   tracers="\"sphum\",\"liq_wat\",\"o3mr\""
  
+  internal_GSD=".false."
   numsoil_out="4"
   replace_vgtyp=".true."
   replace_sotyp=".true."
@@ -298,6 +305,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
 
   fi
 
+  internal_GSD=".false."
   numsoil_out="4"
   replace_vgtyp=".true."
   replace_sotyp=".true."
@@ -313,6 +321,16 @@ case "${EXTRN_MDL_NAME_ICS}" in
 
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
+
+  internal_GSD=".false."
+  cdate_min_HRRRX="2019111500"
+  if [ ${CDATE} -gt ${cdate_min_HRRRX} ]; then
+    print_info_msg "
+Setting the chgres_cube namelist setting \"internal_GSD\" to \".true.\" in
+order to read in land surface model (LSM) variables available in the
+HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
+    internal_GSD=".true."
+  fi
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
     if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
@@ -436,6 +454,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
  tracers_input=${tracers_input}
  tracers=${tracers}
  phys_suite="${phys_suite}"
+ internal_GSD=${internal_GSD}
  numsoil_out=${numsoil_out}
  geogrid_file_input_grid="${geogrid_file_input_grid}"
  replace_vgtyp=${replace_vgtyp}
