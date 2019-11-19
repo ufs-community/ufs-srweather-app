@@ -52,16 +52,31 @@ baseline_configs_dir="$homerrfs/tests/baseline_configs"
 #
 #-----------------------------------------------------------------------
 #
-# Set site and computational parameters.
+# Specify the set of valid argument names for this script/function.  
+# Then process the arguments provided to this script/function (which 
+# should consist of a set of name-value pairs of the form arg1="value1",
+# etc).
 #
 #-----------------------------------------------------------------------
 #
-machine="HERA"
-account="gsd-fv3"
-
-use_cron_to_relaunch="TRUE"
-#use_cron_to_relaunch="FALSE"
-cron_relaunch_intvl_mnts="02"
+valid_args=( \
+"expts_file" \
+"machine" \
+"account" \
+"use_cron_to_relaunch" \
+"cron_relaunch_intvl_mnts" \
+)
+process_args valid_args "$@"
+#
+#-----------------------------------------------------------------------
+#
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
+#
+#-----------------------------------------------------------------------
+#
+print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -69,6 +84,7 @@ cron_relaunch_intvl_mnts="02"
 #
 #-----------------------------------------------------------------------
 #
+if [ 1 = 0 ]; then
   if [ "$#" -ne 1 ]; then
 
     print_err_msg_exit "
@@ -87,14 +103,49 @@ sumed to be given relative to the path from which this script is called.
 "
 
   fi
+fi
 #
 #-----------------------------------------------------------------------
 #
-#
+# Verify that an experiments list file has been specified.  If not, 
+# print out an error message and exit.
 #
 #-----------------------------------------------------------------------
 #
-  expts_file="$1"
+# Note: 
+# The function process_args() should be modified to look for required
+# arguments, which can be denoted by appending to the name of a required
+# argument the string "; REQUIRED".  It can then check that all required
+# arguments are in fact specified in the arguments list.  That way, the
+# following if-statement will not be needed since process_args() will 
+# catch the case of missing required arguments.
+# 
+  if [ -z "${expts_file}" ] || \
+     [ -z "${machine}" ] || \
+     [ -z "${account}" ]; then
+    print_err_msg_exit "\
+An experiments list file (expts_file), a machine name (machine), and an
+account name (account) must be specified as input arguments to this 
+script.  One or more of these is currently set to an empty string:
+  expts_file = \"${expts_file}\"
+  machine = \"${machine}\"
+  account = \"${account}\"
+Use the following format to specify these in the argument list passed to
+this script:
+  ${scrfunc_fn}  \\
+    expts_file=\"name_of_file_or_full_path_to_file\" \\
+    machine=\"name_of_machine_to_run_on\" \\
+    account=\"name_of_hpc_account_to_use\" \\
+    ..."
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the experiments list file and verify that it ex-
+# ists.
+#
+#-----------------------------------------------------------------------
+#
   expts_list_fp=$( readlink -f "${expts_file}" )
 
   if [ ! -f "${expts_list_fp}" ]; then
@@ -256,6 +307,7 @@ Processing experiment \"${expts_list[$i]}\" ..."
 # Save the name of the variable in the variable-value pair obtained 
 # above in the array modvar_name.  Then save the value in the variable-
 # value pair in the array modvar_value.
+#
     modvar_name[${num_mod_vars}]=$( printf "%s" "${next_field}" | \
                                     sed -r -e "s/^([^=]*)=(.*)/\1/" )
     modvar_value[${num_mod_vars}]=$( printf "%s" "${next_field}" | \
@@ -292,6 +344,7 @@ Please correct and rerun."
 # value of EXPT_SUBDIR from the baseline configuration file and compa-
 # ring it to baseline_name.
 #
+if [ 0 = 1 ]; then
   regex_search="^[ ]*EXPT_SUBDIR=(\")?([^ =\"]+)(.*)"
   EXPT_SUBDIR=$( sed -r -n -e "s/${regex_search}/\2/p" \
                  "${baseline_config_fp}" )
@@ -304,6 +357,7 @@ the name of the baseline (baseline_name):
   baseline_config_fp = \"${baseline_config_fp}\"
   EXPT_SUBDIR = \"${EXPT_SUBDIR}\""
   fi
+fi
 #
 # Generate a name for the current experiment.  We start with the name of 
 # the current baseline and modify it to indicate which variables must be
@@ -330,13 +384,53 @@ the name of the baseline (baseline_name):
 #
   expt_config_fp="$ushdir/config.${expt_name}.sh"
   cp_vrfy "${baseline_config_fp}" "${expt_config_fp}"
-
-  set_bash_param "${expt_config_fp}" "MACHINE" "$machine"
-  set_bash_param "${expt_config_fp}" "ACCOUNT" "$account"
-  set_bash_param "${expt_config_fp}" "USE_CRON_TO_RELAUNCH" "${use_cron_to_relaunch}"
-  set_bash_param "${expt_config_fp}" "CRON_RELAUNCH_INTVL_MNTS" "${cron_relaunch_intvl_mnts}"
+#
+#-----------------------------------------------------------------------
+#
+# Set the name of the experiment subdirectory (EXPT_SUBDIR) in the expe-
+# riment configuration file to the name of the current experiment.
+#
+#-----------------------------------------------------------------------
+#
   set_bash_param "${expt_config_fp}" "EXPT_SUBDIR" "${expt_subdir}"
+#
+#-----------------------------------------------------------------------
+#
+# Set any parameters in the experiment configuration file that have been
+# assigned a value in the arguments list to this script (and thus are 
+# not empty).  Any parameters that have not been assigned a value in the
+# arguments list will retain their values in the baseline configuration
+# file if they are specified in that file.  If not, they will take on
+# the default values specified in the default experiment configuration
+# file in the workflow repository (config_defaults.sh).
+#
+#-----------------------------------------------------------------------
+#
+  if [ ! -z "$machine" ]; then
+    set_bash_param "${expt_config_fp}" "MACHINE" "$machine"
+  fi
 
+  if [ ! -z "$account" ]; then
+    set_bash_param "${expt_config_fp}" "ACCOUNT" "$account"
+  fi
+
+  if [ ! -z "${use_cron_to_relaunch}" ]; then
+    set_bash_param "${expt_config_fp}" "USE_CRON_TO_RELAUNCH" "${use_cron_to_relaunch}"
+  fi
+
+  if [ ! -z "${cron_relaunch_intvl_mnts}" ]; then
+    set_bash_param "${expt_config_fp}" "CRON_RELAUNCH_INTVL_MNTS" "${cron_relaunch_intvl_mnts}"
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# Set the values of those parameters in the experiment configuration 
+# file that need to be adjusted from their baseline values (as specified
+# in the current line of the experiments list file) to obtain the confi-
+# guration file for the current experiment.
+#
+#-----------------------------------------------------------------------
+#
   printf ""
   for (( j=0; j<${num_mod_vars}; j++ )); do
     set_bash_param "${expt_config_fp}" "${modvar_name[$j]}" "${modvar_value[$j]}"
@@ -352,8 +446,8 @@ the name of the baseline (baseline_name):
 #
 #-----------------------------------------------------------------------
 #
-# Call the experiment/workflow generation script for the current experi-
-# ment.
+# Call the experiment/workflow generation script to generate an experi-
+# ment directory and rocoto workflow XML for the current experiment.
 #
 #-----------------------------------------------------------------------
 #
