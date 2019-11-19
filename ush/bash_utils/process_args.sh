@@ -191,12 +191,14 @@ where the arguments are defined as follows:
 #-----------------------------------------------------------------------
 #
   if [ "${num_arg_val_pairs}" -gt "${num_valid_args}" ]; then
+    valid_arg_names_str=$(printf "\"%s\" " "${valid_arg_names[@]}");
     print_err_msg_exit "\
 The number of argument-value pairs specified on the command line (num_-
 arg_val_pairs) must be less than or equal to the number of valid argu-
 ments (num_valid_args) specified in the array valid_arg_names:
   num_arg_val_pairs = ${num_arg_val_pairs}
-  num_valid_args = ${num_valid_args}"
+  num_valid_args = ${num_valid_args}
+  valid_arg_names = ( ${valid_arg_names_str})"
   fi
 #
 #-----------------------------------------------------------------------

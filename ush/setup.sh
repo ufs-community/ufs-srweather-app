@@ -330,6 +330,19 @@ esac
 #
 #-----------------------------------------------------------------------
 #
+# Verify that the ACCOUNT variable is not empty.  If it is, print out an
+# error message and exit.
+#
+#-----------------------------------------------------------------------
+#
+if [ -z "$ACCOUNT" ]; then
+  print_err_msg_exit "\
+The variable ACCOUNT cannot be empty:
+  ACCOUNT = \"$ACCOUNT\""
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Set the grid type (GTYPE).  In general, in the FV3 code, this can take
 # on one of the following values: "global", "stretch", "nest", and "re-
 # gional".  The first three values are for various configurations of a
