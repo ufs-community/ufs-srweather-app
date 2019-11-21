@@ -114,7 +114,7 @@ The value specified in ${var_name} is not supported:
 #
 #-----------------------------------------------------------------------
 #
-  iselementof "${var_value}" valid_var_values || { \
+  is_element_of "${var_value}" valid_var_values || { \
     valid_var_values_str=$(printf "\"%s\" " "${valid_var_values[@]}");
     print_err_msg_exit "\
 ${err_msg}

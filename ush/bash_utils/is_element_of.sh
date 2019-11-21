@@ -5,32 +5,32 @@
 # ray contains a specified string as one of its elements.  It is called
 # as follows:
 #
-#   iselemof "$str_to_match" array_name
+#   is_element_of "${str_to_match}" array_name
 #
-# where $str_to_match is the string to find in the array array_name.
-# Use this function in a script as follows:
+# where $str_to_match is the string to find in the array named array_-
+# name.  Use this function in a script as follows:
 #
-#   . ./iselementof.sh
+#   . ./is_element_of.sh
 #   array_name=("1" "2" "3 4" "5")
 #
 #   str_to_match="2"
-#   iselementof "$str_to_match" array_name
+#   is_element_of "${str_to_match}" array_name
 #   echo $?  # Should output 0.
 #
 #   str_to_match="3 4"
-#   iselementof "$str_to_match" array_name
+#   is_element_of "${str_to_match}" array_name
 #   echo $?  # Should output 0.
 #
 #   str_to_match="6"
-#   iselementof "$str_to_match" array_name
+#   is_element_of "${str_to_match}" array_name
 #   echo $?  # Should output 1.
 #
-# Note that the first argument to this function is the array name (with-
-# out a "$" before it or "[@]" after it).
+# Note that the second argument to this function is the array name, not
+# the array itself.
 # 
 #-----------------------------------------------------------------------
 #
-function iselementof() { 
+function is_element_of() { 
 #
 #-----------------------------------------------------------------------
 #
@@ -96,20 +96,22 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  local match="$1"
+  local str_to_match="$1"
   local array="$2[@]"
 #
 #-----------------------------------------------------------------------
 #
-# Loop through the array elements and look for $match in the array.  If
-# it is found, set contains to 0.  Otherwise, set it to 1.
+# Loop through the elements of the array and check whether each element
+# is equal to ${str_to_match}.  Once a match is found, reset the variable 
+# "contains" (which by default is set to 1 (false)) to 0 (true) and 
+# break out of the loop.
 #
 #-----------------------------------------------------------------------
 #
   local contains=1
   local element
   for element in "${!array}"; do
-    if [ "$element" = "$match" ]; then
+    if [ "$element" = "${str_to_match}" ]; then
       contains=0
       break
     fi
