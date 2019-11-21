@@ -1,32 +1,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This file defines a function that is used to check whether a given ar-
-# ray contains a specified string as one of its elements.  It is called
-# as follows:
-#
-#   is_element_of "${str_to_match}" array_name
-#
-# where $str_to_match is the string to find in the array named array_-
-# name.  Use this function in a script as follows:
-#
-#   . ./is_element_of.sh
-#   array_name=("1" "2" "3 4" "5")
-#
-#   str_to_match="2"
-#   is_element_of "${str_to_match}" array_name
-#   echo $?  # Should output 0.
-#
-#   str_to_match="3 4"
-#   is_element_of "${str_to_match}" array_name
-#   echo $?  # Should output 0.
-#
-#   str_to_match="6"
-#   is_element_of "${str_to_match}" array_name
-#   echo $?  # Should output 1.
-#
-# Note that the second argument to this function is the array name, not
-# the array itself.
+# For a description of this function, see the usage message below.
 # 
 #-----------------------------------------------------------------------
 #
@@ -77,18 +52,55 @@ Incorrect number of arguments specified:
 
 Usage:
 
-  ${func_name}  str_to_match  array_name
+  ${func_name}  array_name  str_to_match
 
-where the arguments are defined as follows:
+This function checks whether the specified array contains the specified
+string, i.e. whether at least one of the elements of the array is equal
+to the string.  The return code from this function will be zero if at 
+least one match is found and nonzero if no matches are found.
 
-  str_to_match:
-  The string to find in array_name (as one of its elements).
+The arguments to this function are defined as follows:
 
   array_name:
-  The name of the array to search.
+  The name of the array in which to search for str_to_match.  Note that
+  this is the name of the array, not the array itself.
+
+  str_to_match:
+  The string to search for in array_name.
+
+Use this function in a script as follows:
+
+  . ./is_element_of.sh
+  array_name=("1" "2" "3 4" "5")
+
+  str_to_match="2"
+  is_element_of "${str_to_match}" array_name
+  echo $?  # Should output 0.
+
+  str_to_match="3 4"
+  is_element_of "${str_to_match}" array_name
+  echo $?  # Should output 0.
+
+  str_to_match="6"
+  is_element_of "${str_to_match}" array_name
+  echo $?  # Should output 1.
 "
 
   fi
+#
+#-----------------------------------------------------------------------
+#
+# Declare local variables.
+#
+#-----------------------------------------------------------------------
+#
+  local array_name \
+        str_to_match \
+        array_name_at \
+        array \
+        found_match \
+        num_elems \
+        n
 #
 #-----------------------------------------------------------------------
 #
@@ -96,23 +108,26 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  local str_to_match="$1"
-  local array="$2[@]"
+  array_name="$1"
+  str_to_match="$2"
+
+  array_name_at="$array_name[@]"
+  array=("${!array_name_at}")
 #
 #-----------------------------------------------------------------------
 #
-# Loop through the elements of the array and check whether each element
-# is equal to ${str_to_match}.  Once a match is found, reset the variable 
-# "contains" (which by default is set to 1 (false)) to 0 (true) and 
-# break out of the loop.
+# Initialize the return variable found_match to 1 (false).  Then loop
+# through the elements of the array and check whether each element is
+# equal to str_to_match.  Once a match is found, reset found_match to 0
+# (true) and break out of the loop.
 #
 #-----------------------------------------------------------------------
 #
-  local contains=1
-  local element
-  for element in "${!array}"; do
-    if [ "$element" = "${str_to_match}" ]; then
-      contains=0
+  found_match=1
+  num_elems=${#array[@]}
+  for (( n=0; n<${num_elems}; n++ )); do
+    if [ "${array[$n]}" = "${str_to_match}" ]; then
+      found_match=0
       break
     fi
   done
@@ -128,11 +143,11 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-# Return the variable "contains".
+# Return the variable found_match.
 #
 #-----------------------------------------------------------------------
 #
-  return $contains
+  return ${found_match}
 
 }
 
