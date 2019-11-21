@@ -57,15 +57,15 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 # any path before it, the "dirname" command will return a ".", e.g. in 
 # bash, 
 #
-#   > EXPTDIR=$( dirname "launch_FV3SAR_wflow.sh" )
-#   > echo $EXPTDIR
+#   > exptdir=$( dirname "launch_FV3SAR_wflow.sh" )
+#   > echo $exptdir
 #
 # will print out ".".
 #
 #-----------------------------------------------------------------------
 #
-EXPTDIR=$( dirname "$0" )
-EXPTDIR=$( readlink -f "$EXPTDIR" )
+exptdir=$( dirname "$0" )
+exptdir=$( readlink -f "$exptdir" )
 #
 #-----------------------------------------------------------------------
 #
@@ -73,7 +73,7 @@ EXPTDIR=$( readlink -f "$EXPTDIR" )
 #
 #-----------------------------------------------------------------------
 #
-. $EXPTDIR/var_defns.sh
+. $exptdir/var_defns.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -120,7 +120,7 @@ wflow_status="IN PROGRESS"
 #
 #-----------------------------------------------------------------------
 #
-cd "$EXPTDIR"
+cd "$exptdir"
 #
 #-----------------------------------------------------------------------
 #
