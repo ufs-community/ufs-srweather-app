@@ -597,20 +597,6 @@ FIXrrfs="$HOMErrfs/fix"
 FIXupp="$FIXrrfs/fix_upp"
 FIXgsd="$FIXrrfs/fix_gsd"
 TEMPLATE_DIR="$USHDIR/templates"
-UFS_UTILS_DIR="$SORCDIR/UFS_UTILS_develop"
-NEMSfv3gfs_DIR="$SORCDIR/NEMSfv3gfs"
-#
-# Make sure that the NEMSfv3gfs_DIR directory exists.
-#
-if [ ! -d "${NEMSfv3gfs_DIR}" ]; then
-  print_err_msg_exit "\
-The NEMSfv3gfs directory specified by NEMSfv3gfs_DIR that should contain
-the FV3 source code does not exist:
-  NEMSfv3gfs_DIR = \"${NEMSfv3gfs_DIR}\"
-Please clone the NEMSfv3gfs repository in this directory, build the FV3
-executable, and then rerun the workflow."
-fi
-
 
 case $MACHINE in
 
@@ -656,6 +642,53 @@ Directories have not been specified for this machine:
   ;;
 
 esac
+#
+#-----------------------------------------------------------------------
+#
+# Set the base directories in which codes obtained from external reposi-
+# tories (using the manage_externals tool) are placed.  Obtain the rela-
+# tive paths to these directories by reading them in from the manage_ex-
+# ternals configuration file.  (Note that these are relative to the lo-
+# cation of the configuration file.)  Then form the full paths to these
+# directories.  Finally, make sure that each of these directories actu-
+# ally exists.
+#
+#-----------------------------------------------------------------------
+#
+mng_extrns_cfg_fn="$HOMErrfs/Externals.cfg"
+
+NEMSfv3gfs_DIR=$( get_mng_extrns_local_path "${mng_extrns_cfg_fn}" "NEMSfv3gfs" )
+NEMSfv3gfs_DIR="$HOMErrfs/${NEMSfv3gfs_DIR}"
+if [ ! -d "${NEMSfv3gfs_DIR}" ]; then
+  print_err_msg_exit "\
+The base directory in which the FV3 source code should be located (NEMS-
+fv3gfs_DIR) does not exist:
+  NEMSfv3gfs_DIR = \"${NEMSfv3gfs_DIR}\"
+Please clone the external repository containing the code in this direct-
+ory, build the executable, and then rerun the workflow."
+fi
+
+UFS_UTILS_DIR=$( get_mng_extrns_local_path "${mng_extrns_cfg_fn}" "ufs_utils_develop" )
+UFS_UTILS_DIR="$HOMErrfs/${UFS_UTILS_DIR}"
+if [ ! -d "${UFS_UTILS_DIR}" ]; then
+  print_err_msg_exit "\
+The base directory in which the UFS utilities source codes should be lo-
+cated (UFS_UTILS_DIR) does not exist:
+  UFS_UTILS_DIR = \"${UFS_UTILS_DIR}\"
+Please clone the external repository containing the code in this direct-
+ory, build the executables, and then rerun the workflow."
+fi
+
+CHGRES_DIR=$( get_mng_extrns_local_path "${mng_extrns_cfg_fn}" "ufs_utils_chgres" )
+CHGRES_DIR="$HOMErrfs/${CHGRES_DIR}"
+if [ ! -d "${CHGRES_DIR}" ]; then
+  print_err_msg_exit "\
+The base directory in which the chgres source code should be located 
+(CHGRES_DIR) does not exist:
+  CHGRES_DIR = \"${CHGRES_DIR}\"
+Please clone the external repository containing the code in this direct-
+ory, build the executable, and then rerun the workflow."
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1715,8 +1748,9 @@ FIXupp="$FIXupp"
 FIXgsd="$FIXgsd"
 COMROOT="$COMROOT"
 TEMPLATE_DIR="${TEMPLATE_DIR}"
-UFS_UTILS_DIR="${UFS_UTILS_DIR}"
 NEMSfv3gfs_DIR="${NEMSfv3gfs_DIR}"
+UFS_UTILS_DIR="${UFS_UTILS_DIR}"
+CHGRES_DIR="${CHGRES_DIR}"
 SFC_CLIMO_INPUT_DIR="${SFC_CLIMO_INPUT_DIR}"
 
 EXPTDIR="$EXPTDIR"
