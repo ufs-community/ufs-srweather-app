@@ -104,6 +104,15 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
+# Source the file containing the function that gets the indices of those
+# elements of an array that match a given string.
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/get_elem_inds.sh
+#
+#-----------------------------------------------------------------------
+#
 # Source the file containing the function that determines whether or not
 # a specified variable is an array.
 #

@@ -173,8 +173,8 @@
        ivegsrc        = 1
        isot           = 1
        debug          = .false.
-       oz_phys        = .false.
-       oz_phys_2015   = .true.
+       oz_phys        = .true.
+       oz_phys_2015   = .false.
        nstf_name      = 2,1,1,0,5
        iau_delthrs    = 6
        iaufhrs        = 30

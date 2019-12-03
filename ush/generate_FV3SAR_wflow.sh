@@ -288,7 +288,99 @@ Done.
 
 
 
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that the correct ozone production/loss fixed file is speci-
+# fied in the array FIXam_FILES_SYSDIR.  There are two such files.  
+# Which of these should be used depends on the specified physics suite.
+#
+# Need to clean up these comments!!!
+# 
+# The GFS physics suite does not use the 2015 ozone parameterization but
+# the more recent one, i.e. in the template FV3 namelist file copied
+# above, oz_phys is set to .true. and oz_phys_2015 is set to .false..  
+# We do this because the CCPP suite definition file that we copied above
+# uses the more recent ozone parameterization.  For this reason, the 
+# ozone production/loss fixed file corresponding to this parameterizaton
+# must be copied over.  On the system directory (FIXgsm), the produc-
+# tion/loss file for the 2015 parameterization is named
+#
+#   ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77
+#
+# while the one for the more recent parameterization is named
+#
+#   global_o3prdlos.f77
+#
+# 
+# called "".  Here, we make sure the correct one is being copied over.
+# us, we now make sure this is the case.
+# /FV3/ccpp/suites/suite_FV3_GFS_2017_gfdlmp.xml
+#
+#-----------------------------------------------------------------------
+#
 
+#
+# First, get the index (if any) of the element in FIXam_FILES_SYSDIR
+# that contains the name of the 2015 ozone production/loss file.
+#
+ozphys_2015_fn="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
+indx_ozphys_2015=$( get_elem_inds "FIXam_FILES_SYSDIR" "${ozphys_2015_fn}" )
+read -a indx_ozphys_2015 <<< ${indx_ozphys_2015}
+num_files_ozphys_2015=${#indx_ozphys_2015[@]}
+
+ozphys_after2015_fn="global_o3prdlos.f77"
+indx_ozphys_after2015=$( get_elem_inds "FIXam_FILES_SYSDIR" "${ozphys_after2015_fn}" )
+read -a indx_ozphys_after2015 <<< ${indx_ozphys_after2015}
+num_files_ozphys_after2015=${#indx_ozphys_after2015[@]}
+#
+# Check if the name of the ozone production/loss fixed file in the array
+# FIXam_FILES_SYSDIR is that of the after-2015 parameterization.
+#
+if [ ${num_files_ozphys_2015} -eq 0 ] && \
+   [ ${num_files_ozphys_after2015} -eq 1 ]; then
+#
+# GSD physics uses the 2015 ozone parameterization, so if using GSD 
+# phyics, switch the file name from that of the after-2015 parameteri-
+# zation to that of the former.
+#
+  if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+    FIXam_FILES_SYSDIR[${indx_ozphys_after2015}]="${ozphys_2015_fn}"
+  fi
+#
+# Check if the name of the ozone production/loss fixed file in the array
+# FIXam_FILES_SYSDIR is that of the 2015 parameterization.
+#
+elif [ ${num_files_ozphys_2015} -eq 1 ] && \
+     [ ${num_files_ozphys_after2015} -eq 0 ]; then
+
+  if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
+    FIXam_FILES_SYSDIR[${indx_ozphys_2015}]="${ozphys_after2015_fn}"
+  fi
+#
+#
+#
+else
+
+  FIXam_FILES_SYSDIR_str=$( printf "\"%s\"\n" "${FIXam_FILES_SYSDIR[@]}" )
+  print_err_msg_exit "\
+The array FIXam_FILES_SYSDIR containing the names of the fixed files in
+the system directory (FIXgsm) to copy or link to has been specified in-
+correctly because it contains no or more than one occurrence of the 
+ozone production/loss file(s) (whose names are specified in the varia-
+bles ozphys_2015_fn and ozphys_after2015_fn):
+  FIXgsm = \"${FIXgsm}\"
+  ozphys_2015_fn = \"${ozphys_2015_fn}\"
+  num_files_ozphys_2015_fn = \"${num_files_ozphys_2015_fn}\"
+  ozphys_after2015_fn = \"${ozphys_after2015_fn}\"
+  num_files_ozphys_after2015_fn = \"${num_files_ozphys_after2015_fn}\"
+  FIXam_FILES_SYSDIR = 
+(
+${FIXam_FILES_SYSDIR_str}
+)
+Please check the contents of the FIXam_FILES_SYSDIR array and rerun."
+
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -459,9 +551,6 @@ Call to script to create links to surface climatology files failed."
   fi
 
 fi
-
-
-
 #
 #-----------------------------------------------------------------------
 #
@@ -549,7 +638,7 @@ directory..."
     print_info_msg "$VERBOSE" "
 Copying the CCPP XML file for the GFS physics suite to the experiment 
 directory..."
-    cp_vrfy ${NEMSfv3gfs_DIR}/ccpp/suites/suite_FV3_GFS_2017_gfdlmp.xml \
+    cp_vrfy ${NEMSfv3gfs_DIR}/FV3/ccpp/suites/suite_FV3_GFS_2017_gfdlmp.xml \
             $EXPTDIR/suite_FV3_GFS_2017_gfdlmp.xml
 #
 #-----------------------------------------------------------------------
@@ -575,7 +664,7 @@ directory..."
     print_info_msg "$VERBOSE" "
 Copying the CCPP XML file for the GSD physics suite to the experiment 
 directory..."
-    cp_vrfy ${NEMSfv3gfs_DIR}/ccpp/suites/suite_FV3_GSD_v0.xml \
+    cp_vrfy ${NEMSfv3gfs_DIR}/FV3/ccpp/suites/suite_FV3_GSD_v0.xml \
             $EXPTDIR/suite_FV3_GSD_v0.xml
 
     print_info_msg "$VERBOSE" "
