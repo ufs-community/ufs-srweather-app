@@ -81,7 +81,7 @@ where the arguments are defined as follows:
   external_name="$2"
 
   local_path=$( sed -r -n \
-    -e "/^[ ]*\[${external_name}/!b" \
+    -e "/^[ ]*\[${external_name}\]/!b" \
     -e ":SearchForLocalPath" \
     -e "s/^[ ]*local_path[ ]*=[ ]*([^ ]*).*/\1/;t FoundLocalPath" \
     -e "n;bSearchForLocalPath" \

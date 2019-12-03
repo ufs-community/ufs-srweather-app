@@ -668,7 +668,7 @@ Please clone the external repository containing the code in this direct-
 ory, build the executable, and then rerun the workflow."
 fi
 
-UFS_UTILS_DIR=$( get_mng_extrns_local_path "${mng_extrns_cfg_fn}" "ufs_utils_develop" )
+UFS_UTILS_DIR=$( get_mng_extrns_local_path "${mng_extrns_cfg_fn}" "ufs_utils" )
 UFS_UTILS_DIR="$HOMErrfs/${UFS_UTILS_DIR}"
 if [ ! -d "${UFS_UTILS_DIR}" ]; then
   print_err_msg_exit "\
