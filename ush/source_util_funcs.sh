@@ -163,7 +163,7 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-  . ${bashutils_dir}/get_mng_extrns_local_path.sh
+  . ${bashutils_dir}/get_manage_externals_property.sh
 
 }
 source_util_funcs

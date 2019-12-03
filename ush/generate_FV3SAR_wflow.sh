@@ -292,37 +292,40 @@ Done.
 #-----------------------------------------------------------------------
 #
 # Make sure that the correct ozone production/loss fixed file is speci-
-# fied in the array FIXam_FILES_SYSDIR.  There are two such files.  
-# Which of these should be used depends on the specified physics suite.
-#
-# Need to clean up these comments!!!
-# 
-# The GFS physics suite does not use the 2015 ozone parameterization but
-# the more recent one, i.e. in the template FV3 namelist file copied
-# above, oz_phys is set to .true. and oz_phys_2015 is set to .false..  
-# We do this because the CCPP suite definition file that we copied above
-# uses the more recent ozone parameterization.  For this reason, the 
-# ozone production/loss fixed file corresponding to this parameterizaton
-# must be copied over.  On the system directory (FIXgsm), the produc-
-# tion/loss file for the 2015 parameterization is named
+# fied in the array FIXam_FILES_SYSDIR.  There should be two such files
+# on disk in the system directory specified in FIXgsm.  They are named
 #
 #   ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77
 #
-# while the one for the more recent parameterization is named
+# and
 #
 #   global_o3prdlos.f77
 #
-# 
-# called "".  Here, we make sure the correct one is being copied over.
-# us, we now make sure this is the case.
-# /FV3/ccpp/suites/suite_FV3_GFS_2017_gfdlmp.xml
+# The first should be used with the 2015 ozone parameterization, while
+# the second should be used with the more recent ozone parameterization
+# (referred to here as the after-2015 parameterization).
+#
+# Which of these should be used depends on the specified physics suite
+# (CCPP_PHYS_SUITE).  The GFS physics suite uses the after-2015 parame-
+# terization, while the GSD physics suite uses the 2015 parameteriza-
+# tion.  Thus, we must ensure that the ozone production/loss fixed file
+# listed in the array FIXam_FILES_SYSDIR is the correct one for the gi-
+# ven physics suite.  We do this below as follows.
+#
+# First, note that FIXam_FILES_SYSDIR should contain the name of exactly
+# one of the ozone production/loss fixed files listed above.  We verify
+# this by trying to obtain the indices of the elements of FIXam_FILES_-
+# SYSDIR that contain the two files.  One of these indices should not
+# exist while the other one should.  If the 2015 file is the one that is
+# found in FIXam_FILES_SYSDIR, then if we're using GFS physics, we 
+# change that element in FIXam_FILES_SYSDIR to the name of the after-
+# 2015 file.  Similarly, if the after-2015 file is the one that is found
+# in FIXam_FILES_SYSDIR, then if we're using GSD physics, we change that
+# element in FIXam_FILES_SYSDIR to the name of the 2015 file.  If 
+# neither file or more than one ozone production/loss file is found in
+# FIXam_FILES_SYSDIR, we print out an error message and exit.
 #
 #-----------------------------------------------------------------------
-#
-
-#
-# First, get the index (if any) of the element in FIXam_FILES_SYSDIR
-# that contains the name of the 2015 ozone production/loss file.
 #
 ozphys_2015_fn="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
 indx_ozphys_2015=$( get_elem_inds "FIXam_FILES_SYSDIR" "${ozphys_2015_fn}" )
@@ -333,33 +336,21 @@ ozphys_after2015_fn="global_o3prdlos.f77"
 indx_ozphys_after2015=$( get_elem_inds "FIXam_FILES_SYSDIR" "${ozphys_after2015_fn}" )
 read -a indx_ozphys_after2015 <<< ${indx_ozphys_after2015}
 num_files_ozphys_after2015=${#indx_ozphys_after2015[@]}
-#
-# Check if the name of the ozone production/loss fixed file in the array
-# FIXam_FILES_SYSDIR is that of the after-2015 parameterization.
-#
-if [ ${num_files_ozphys_2015} -eq 0 ] && \
-   [ ${num_files_ozphys_after2015} -eq 1 ]; then
-#
-# GSD physics uses the 2015 ozone parameterization, so if using GSD 
-# phyics, switch the file name from that of the after-2015 parameteri-
-# zation to that of the former.
-#
-  if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
-    FIXam_FILES_SYSDIR[${indx_ozphys_after2015}]="${ozphys_2015_fn}"
-  fi
-#
-# Check if the name of the ozone production/loss fixed file in the array
-# FIXam_FILES_SYSDIR is that of the 2015 parameterization.
-#
-elif [ ${num_files_ozphys_2015} -eq 1 ] && \
-     [ ${num_files_ozphys_after2015} -eq 0 ]; then
+
+if [ ${num_files_ozphys_2015} -eq 1 ] && \
+   [ ${num_files_ozphys_after2015} -eq 0 ]; then
 
   if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
     FIXam_FILES_SYSDIR[${indx_ozphys_2015}]="${ozphys_after2015_fn}"
   fi
-#
-#
-#
+
+elif [ ${num_files_ozphys_2015} -eq 0 ] && \
+     [ ${num_files_ozphys_after2015} -eq 1 ]; then
+
+  if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+    FIXam_FILES_SYSDIR[${indx_ozphys_after2015}]="${ozphys_2015_fn}"
+  fi
+
 else
 
   FIXam_FILES_SYSDIR_str=$( printf "\"%s\"\n" "${FIXam_FILES_SYSDIR[@]}" )

@@ -656,8 +656,17 @@ esac
 #-----------------------------------------------------------------------
 #
 mng_extrns_cfg_fn="$HOMErrfs/Externals.cfg"
+property_name="local_path"
+#
+# Get the base directory of the NEMSfv3gfs code.
+#
+external_name="NEMSfv3gfs"
+NEMSfv3gfs_DIR=$( \
+get_manage_externals_property \
+"${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
+print_err_msg_exit "\
+Call to function get_manage_externals_property failed."
 
-NEMSfv3gfs_DIR=$( get_mng_extrns_local_path "${mng_extrns_cfg_fn}" "NEMSfv3gfs" )
 NEMSfv3gfs_DIR="$HOMErrfs/${NEMSfv3gfs_DIR}"
 if [ ! -d "${NEMSfv3gfs_DIR}" ]; then
   print_err_msg_exit "\
@@ -667,8 +676,16 @@ fv3gfs_DIR) does not exist:
 Please clone the external repository containing the code in this direct-
 ory, build the executable, and then rerun the workflow."
 fi
+#
+# Get the base directory of the UFS_UTILS codes (except for chgres).
+#
+external_name="ufs_utils"
+UFS_UTILS_DIR=$( \
+get_manage_externals_property \
+"${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
+print_err_msg_exit "\
+Call to function get_manage_externals_property failed."
 
-UFS_UTILS_DIR=$( get_mng_extrns_local_path "${mng_extrns_cfg_fn}" "ufs_utils" )
 UFS_UTILS_DIR="$HOMErrfs/${UFS_UTILS_DIR}"
 if [ ! -d "${UFS_UTILS_DIR}" ]; then
   print_err_msg_exit "\
@@ -678,8 +695,16 @@ cated (UFS_UTILS_DIR) does not exist:
 Please clone the external repository containing the code in this direct-
 ory, build the executables, and then rerun the workflow."
 fi
+#
+# Get the base directory of the chgres code.
+#
+external_name="ufs_utils_chgres"
+CHGRES_DIR=$( \
+get_manage_externals_property \
+"${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
+print_err_msg_exit "\
+Call to function get_manage_externals_property failed."
 
-CHGRES_DIR=$( get_mng_extrns_local_path "${mng_extrns_cfg_fn}" "ufs_utils_chgres" )
 CHGRES_DIR="$HOMErrfs/${CHGRES_DIR}"
 if [ ! -d "${CHGRES_DIR}" ]; then
   print_err_msg_exit "\
