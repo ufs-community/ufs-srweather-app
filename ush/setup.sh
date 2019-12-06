@@ -662,10 +662,10 @@ property_name="local_path"
 #
 external_name="NEMSfv3gfs"
 NEMSfv3gfs_DIR=$( \
-get_manage_externals_property \
+get_manage_externals_config_property \
 "${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
 print_err_msg_exit "\
-Call to function get_manage_externals_property failed."
+Call to function get_manage_externals_config_property failed."
 
 NEMSfv3gfs_DIR="$HOMErrfs/${NEMSfv3gfs_DIR}"
 if [ ! -d "${NEMSfv3gfs_DIR}" ]; then
@@ -681,10 +681,10 @@ fi
 #
 external_name="ufs_utils"
 UFS_UTILS_DIR=$( \
-get_manage_externals_property \
+get_manage_externals_config_property \
 "${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
 print_err_msg_exit "\
-Call to function get_manage_externals_property failed."
+Call to function get_manage_externals_config_property failed."
 
 UFS_UTILS_DIR="$HOMErrfs/${UFS_UTILS_DIR}"
 if [ ! -d "${UFS_UTILS_DIR}" ]; then
@@ -700,10 +700,10 @@ fi
 #
 external_name="ufs_utils_chgres"
 CHGRES_DIR=$( \
-get_manage_externals_property \
+get_manage_externals_config_property \
 "${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
 print_err_msg_exit "\
-Call to function get_manage_externals_property failed."
+Call to function get_manage_externals_config_property failed."
 
 CHGRES_DIR="$HOMErrfs/${CHGRES_DIR}"
 if [ ! -d "${CHGRES_DIR}" ]; then
