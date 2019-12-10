@@ -9,26 +9,37 @@
            "longname",     "cloud water mixing ratio"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=1.e30" /
- "TRACER", "atmos_mod", "rainwat"
-           "longname",     "rain mixing ratio"
-           "units",        "kg/kg"
-       "profile_type", "fixed", "surface_value=1.e30" /
+# prognostic ice water mixing ratio
  "TRACER", "atmos_mod", "ice_wat"
            "longname",     "cloud ice mixing ratio"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=1.e30" /
- "TRACER", "atmos_mod", "snowwat"
-           "longname",     "snow mixing ratio"
+# prognostic rain water mixing ratio
+ "TRACER", "atmos_mod", "rainwat"
+           "longname",     "rain water mixing ratio"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=1.e30" /
+# prognostic snow water mixing ratio
+ "TRACER", "atmos_mod", "snowwat"
+           "longname",     "snow water mixing ratio"
+           "units",        "kg/kg"
+       "profile_type", "fixed", "surface_value=1.e30" /
+# prognostic graupel mixing ratio
  "TRACER", "atmos_mod", "graupel"
            "longname",     "graupel mixing ratio"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=1.e30" /
- "TRACER", "atmos_mod", "ice_nc"
-           "longname",     "ice number concentration"
+# prognostic cloud water number concentration
+ "TRACER", "atmos_mod", "water_nc"
+           "longname",     "cloud liquid water number concentration"
            "units",        "/kg"
        "profile_type", "fixed", "surface_value=1.e30" /
+# prognostic cloud ice number concentration
+ "TRACER", "atmos_mod", "ice_nc"
+           "longname",     "cloud ice water number concentration"
+           "units",        "/kg"
+       "profile_type", "fixed", "surface_value=1.e30" /
+# prognostic rain number concentration
  "TRACER", "atmos_mod", "rain_nc"
            "longname",     "rain number concentration"
            "units",        "/kg"
@@ -38,11 +49,7 @@
            "longname",     "ozone mixing ratio"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=1.e30" /
-# cloud droplets, water- and ice-friendly aerosols (Thompson)
- "TRACER", "atmos_mod", "water_nc"
-           "longname",     "cloud droplet number concentration"
-           "units",        "/kg"
-       "profile_type", "fixed", "surface_value=0.0" /
+# water- and ice-friendly aerosols (Thompson)
  "TRACER", "atmos_mod", "liq_aero"
            "longname",     "water-friendly aerosol number concentration"
            "units",        "/kg"

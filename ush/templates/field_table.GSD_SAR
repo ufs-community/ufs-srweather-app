@@ -24,7 +24,7 @@
            "longname",     "snow water mixing ratio"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=1.e30" /
-# prognostic graupel water mixing ratio
+# prognostic graupel mixing ratio
  "TRACER", "atmos_mod", "graupel"
            "longname",     "graupel mixing ratio"
            "units",        "kg/kg"
