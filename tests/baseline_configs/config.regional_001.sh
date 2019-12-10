@@ -7,21 +7,21 @@ MACHINE=""
 # ACCOUNT will be set by the workflow launch script (launch_FV3SAR_-
 # wflow.sh) to value passed in as an argument to that script.
 #
-ACCOUNT=""  
+ACCOUNT=""
 #
 # EXPT_SUBDIR will be set by the workflow launch script (launch_FV3SAR_-
 # wflow.sh) to a value obtained from the name of this file.
 #
-EXPT_SUBDIR=""  
+EXPT_SUBDIR=""
 #
-# USE_CRON_TO_RELAUNCH may be reset by the workflow launch script 
-# (launch_FV3SAR_wflow.sh) to value passed in as an argument to that 
+# USE_CRON_TO_RELAUNCH may be reset by the workflow launch script
+# (launch_FV3SAR_wflow.sh) to value passed in as an argument to that
 # script, but in case it is not, we give it a default value here.
 #
 USE_CRON_TO_RELAUNCH="TRUE"
 #
-# CRON_RELAUNCH_INTVL_MNTS may be reset by the workflow launch script 
-# (launch_FV3SAR_wflow.sh) to value passed in as an argument to that 
+# CRON_RELAUNCH_INTVL_MNTS may be reset by the workflow launch script
+# (launch_FV3SAR_wflow.sh) to value passed in as an argument to that
 # script, but in case it is not, we give it a default value here.
 #
 CRON_RELAUNCH_INTVL_MNTS="02"
