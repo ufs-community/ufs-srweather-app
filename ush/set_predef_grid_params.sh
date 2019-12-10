@@ -31,18 +31,17 @@ local func_name="${FUNCNAME[0]}"
 #-----------------------------------------------------------------------
 #
 # Set grid and other parameters according to the value of the predefined
-# domain (PREDEF_GRID_NAME).  Note that the code will enter this script on-
-# ly if PREDEF_GRID_NAME has a valid (and non-empty) value.
+# domain (PREDEF_GRID_NAME).  Note that the code will enter this script 
+# only if PREDEF_GRID_NAME has a valid (and non-empty) value.
 #
 # The following needs to be updated:
 #
 # 1) Reset the experiment title (expt_title).
 # 2) Reset the grid parameters.
 # 3) If the write component is to be used (i.e. QUILTING is set to
-#    "TRUE") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the
-#    name of the write-component template file is unset or empty, set
-#    that filename variable to the appropriate preexisting template
-#    file.
+#    "TRUE") and the variable WRTCMP_PARAMS_TMPL_FN containing the name
+#    of the write-component template file is unset or empty, set that
+#    filename variable to the appropriate preexisting template file.
 #
 # For the predefined domains, we determine the starting and ending indi-
 # ces of the regional grid within tile 6 by specifying margins (in units
@@ -680,7 +679,7 @@ in WRTCMP_output_grid is not supported:
 #
 # Now set the name of the write-component template file.
 #
-  WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcmp_${WRTCMP_output_grid}"}
+  WRTCMP_PARAMS_TMPL_FN=${WRTCMP_PARAMS_TMPL_FN:-"wrtcmp_${WRTCMP_output_grid}"}
 
 fi
 

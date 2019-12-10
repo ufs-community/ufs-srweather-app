@@ -159,7 +159,7 @@ field_name_RAP = "sqrt_cell_area"
 ; This is for HRRR grib2 file.
 field_name_RAP = "VGTYP_P0_L1_GLC0"
 
-RAP_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
+RAP_dir = "/scratch1/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 ;RAP_grid_fn = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL/plot_grid.ncl"
 ;RAP_grid_fn = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.RAP.nc"
 ;RAP_grid_fn = RAP_dir + "/geo_em.d01.RAP.nc"

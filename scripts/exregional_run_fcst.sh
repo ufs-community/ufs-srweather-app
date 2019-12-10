@@ -147,7 +147,7 @@ case $MACHINE in
   ulimit -s unlimited
   ulimit -a
   APRUN="srun"
-  LD_LIBRARY_PATH="${NEMSfv3gfs_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  LD_LIBRARY_PATH="${UFS_WTHR_MDL_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
   ;;
 #
 "JET")
@@ -381,20 +381,20 @@ print_info_msg "$VERBOSE" "
 Creating links in the current cycle's run directory to cycle-independent
 model input files in the main experiment directory..."
 
-ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${FV3_NML_FN}
-ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${DATA_TABLE_FN}
-ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${FIELD_TABLE_FN}
-ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/${NEMS_CONFIG_FN}
+ln_vrfy -sf -t ${CYCLE_DIR} ${DATA_TABLE_FP}
+ln_vrfy -sf -t ${CYCLE_DIR} ${FIELD_TABLE_FP}
+ln_vrfy -sf -t ${CYCLE_DIR} ${FV3_NML_FP}
+ln_vrfy -sf -t ${CYCLE_DIR} ${NEMS_CONFIG_FP}
 
 if [ "${USE_CCPP}" = "TRUE" ]; then
-  if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
-    ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/suite_FV3_GSD_v0.xml
-  elif [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
-    ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/suite_FV3_GFS_2017_gfdlmp.xml
-  fi
-  if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+
+  ln_vrfy -sf -t ${CYCLE_DIR} ${CCPP_PHYS_SUITE_FP}
+
+  if [ "${CCPP_PHYS_SUITE}" = "GSD_v0" -o \\
+       "${CCPP_PHYS_SUITE}" = "GSD_SAR" ]; then
     ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/CCN_ACTIVATE.BIN
   fi
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -405,20 +405,20 @@ fi
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Copying cycle-independent model input files from the templates directory 
+Copying cycle-dependent model input files from the templates directory 
 to the current cycle's run directory..." 
 
-cp_vrfy ${TEMPLATE_DIR}/${MODEL_CONFIG_FN} ${CYCLE_DIR}
+print_info_msg "$VERBOSE" "
+  Copying the template diagnostics table file to the current cycle's run
+  directory..."
+diag_table_fp="${CYCLE_DIR}/${DIAG_TABLE_FN}"
+cp_vrfy "${DIAG_TABLE_TMPL_FP}" "${diag_table_fp}"
 
-if [ "${USE_CCPP}" = "TRUE" ]; then
-  if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
-    cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_FN} ${CYCLE_DIR}
-  elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
-    cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_CCPP_GSD_FN} ${CYCLE_DIR}/${DIAG_TABLE_FN}
-  fi
-else
-  cp_vrfy ${TEMPLATE_DIR}/${DIAG_TABLE_FN} ${CYCLE_DIR}
-fi
+print_info_msg "$VERBOSE" "
+  Copying the template model configuration file to the current cycle's
+  run directory..."
+model_config_fp="${CYCLE_DIR}/${MODEL_CONFIG_FN}"
+cp_vrfy "${MODEL_CONFIG_TMPL_FP}" "${model_config_fp}"
 #
 #-----------------------------------------------------------------------
 #
@@ -435,39 +435,53 @@ YYYYMMDD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
-# Set the full path to the model configuration file.  Then set parame-
-# ters in that file.
+# Set parameters in the diagnostics table file.
 #
 #-----------------------------------------------------------------------
 #
-MODEL_CONFIG_FP="${CYCLE_DIR}/${MODEL_CONFIG_FN}"
-
 print_info_msg "$VERBOSE" "
 Setting parameters in file:
-  MODEL_CONFIG_FP = \"${MODEL_CONFIG_FP}\""
+  diag_table_fp = \"${diag_table_fp}\""
+
+set_file_param "${diag_table_fp}" "CRES" "$CRES"
+set_file_param "${diag_table_fp}" "YYYY" "$YYYY"
+set_file_param "${diag_table_fp}" "MM" "$MM"
+set_file_param "${diag_table_fp}" "DD" "$DD"
+set_file_param "${diag_table_fp}" "HH" "$HH"
+set_file_param "${diag_table_fp}" "YYYYMMDD" "$YYYYMMDD"
+#
+#-----------------------------------------------------------------------
+#
+# Set parameters in the model configuration file.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "$VERBOSE" "
+Setting parameters in file:
+  model_config_fp = \"${model_config_fp}\""
 
 dot_quilting_dot="."${QUILTING,,}"."
 
-set_file_param "${MODEL_CONFIG_FP}" "PE_MEMBER01" "${PE_MEMBER01}"
-set_file_param "${MODEL_CONFIG_FP}" "dt_atmos" "${DT_ATMOS}"
-set_file_param "${MODEL_CONFIG_FP}" "start_year" "$YYYY"
-set_file_param "${MODEL_CONFIG_FP}" "start_month" "$MM"
-set_file_param "${MODEL_CONFIG_FP}" "start_day" "$DD"
-set_file_param "${MODEL_CONFIG_FP}" "start_hour" "$HH"
-set_file_param "${MODEL_CONFIG_FP}" "nhours_fcst" "${FCST_LEN_HRS}"
-set_file_param "${MODEL_CONFIG_FP}" "ncores_per_node" "${NCORES_PER_NODE}"
-set_file_param "${MODEL_CONFIG_FP}" "quilting" "${dot_quilting_dot}"
-set_file_param "${MODEL_CONFIG_FP}" "print_esmf" "${PRINT_ESMF}"
+set_file_param "${model_config_fp}" "PE_MEMBER01" "${PE_MEMBER01}"
+set_file_param "${model_config_fp}" "dt_atmos" "${DT_ATMOS}"
+set_file_param "${model_config_fp}" "start_year" "$YYYY"
+set_file_param "${model_config_fp}" "start_month" "$MM"
+set_file_param "${model_config_fp}" "start_day" "$DD"
+set_file_param "${model_config_fp}" "start_hour" "$HH"
+set_file_param "${model_config_fp}" "nhours_fcst" "${FCST_LEN_HRS}"
+set_file_param "${model_config_fp}" "ncores_per_node" "${NCORES_PER_NODE}"
+set_file_param "${model_config_fp}" "quilting" "${dot_quilting_dot}"
+set_file_param "${model_config_fp}" "print_esmf" "${PRINT_ESMF}"
 #
 #-----------------------------------------------------------------------
 #
 # If the write component is to be used, then a set of parameters, in-
 # cluding those that define the write component's output grid, need to
-# be specified in the model configuration file (MODEL_CONFIG_FP).  This
+# be specified in the model configuration file (model_config_fp).  This
 # is done by appending a template file (in which some write-component
 # parameters are set to actual values while others are set to placehol-
-# ders) to MODEL_CONFIG_FP and then replacing the placeholder values in
-# the (new) MODEL_CONFIG_FP file with actual values.  The full path of
+# ders) to model_config_fp and then replacing the placeholder values in
+# the (new) model_config_fp file with actual values.  The full path of
 # this template file is specified in the variable WRTCMP_PA RAMS_TEMP-
 # LATE_FP.
 #
@@ -475,52 +489,32 @@ set_file_param "${MODEL_CONFIG_FP}" "print_esmf" "${PRINT_ESMF}"
 #
 if [ "$QUILTING" = "TRUE" ]; then
 
-  cat ${WRTCMP_PARAMS_TEMPLATE_FP} >> ${MODEL_CONFIG_FP}
+  cat ${WRTCMP_PARAMS_TMPL_FP} >> ${model_config_fp}
 
-  set_file_param "${MODEL_CONFIG_FP}" "write_groups" "$WRTCMP_write_groups"
-  set_file_param "${MODEL_CONFIG_FP}" "write_tasks_per_group" "$WRTCMP_write_tasks_per_group"
+  set_file_param "${model_config_fp}" "write_groups" "$WRTCMP_write_groups"
+  set_file_param "${model_config_fp}" "write_tasks_per_group" "$WRTCMP_write_tasks_per_group"
 
-  set_file_param "${MODEL_CONFIG_FP}" "output_grid" "\'$WRTCMP_output_grid\'"
-  set_file_param "${MODEL_CONFIG_FP}" "cen_lon" "$WRTCMP_cen_lon"
-  set_file_param "${MODEL_CONFIG_FP}" "cen_lat" "$WRTCMP_cen_lat"
-  set_file_param "${MODEL_CONFIG_FP}" "lon1" "$WRTCMP_lon_lwr_left"
-  set_file_param "${MODEL_CONFIG_FP}" "lat1" "$WRTCMP_lat_lwr_left"
+  set_file_param "${model_config_fp}" "output_grid" "\'$WRTCMP_output_grid\'"
+  set_file_param "${model_config_fp}" "cen_lon" "$WRTCMP_cen_lon"
+  set_file_param "${model_config_fp}" "cen_lat" "$WRTCMP_cen_lat"
+  set_file_param "${model_config_fp}" "lon1" "$WRTCMP_lon_lwr_left"
+  set_file_param "${model_config_fp}" "lat1" "$WRTCMP_lat_lwr_left"
 
   if [ "${WRTCMP_output_grid}" = "rotated_latlon" ]; then
-    set_file_param "${MODEL_CONFIG_FP}" "lon2" "$WRTCMP_lon_upr_rght"
-    set_file_param "${MODEL_CONFIG_FP}" "lat2" "$WRTCMP_lat_upr_rght"
-    set_file_param "${MODEL_CONFIG_FP}" "dlon" "$WRTCMP_dlon"
-    set_file_param "${MODEL_CONFIG_FP}" "dlat" "$WRTCMP_dlat"
+    set_file_param "${model_config_fp}" "lon2" "$WRTCMP_lon_upr_rght"
+    set_file_param "${model_config_fp}" "lat2" "$WRTCMP_lat_upr_rght"
+    set_file_param "${model_config_fp}" "dlon" "$WRTCMP_dlon"
+    set_file_param "${model_config_fp}" "dlat" "$WRTCMP_dlat"
   elif [ "${WRTCMP_output_grid}" = "lambert_conformal" ]; then
-    set_file_param "${MODEL_CONFIG_FP}" "stdlat1" "$WRTCMP_stdlat1"
-    set_file_param "${MODEL_CONFIG_FP}" "stdlat2" "$WRTCMP_stdlat2"
-    set_file_param "${MODEL_CONFIG_FP}" "nx" "$WRTCMP_nx"
-    set_file_param "${MODEL_CONFIG_FP}" "ny" "$WRTCMP_ny"
-    set_file_param "${MODEL_CONFIG_FP}" "dx" "$WRTCMP_dx"
-    set_file_param "${MODEL_CONFIG_FP}" "dy" "$WRTCMP_dy"
+    set_file_param "${model_config_fp}" "stdlat1" "$WRTCMP_stdlat1"
+    set_file_param "${model_config_fp}" "stdlat2" "$WRTCMP_stdlat2"
+    set_file_param "${model_config_fp}" "nx" "$WRTCMP_nx"
+    set_file_param "${model_config_fp}" "ny" "$WRTCMP_ny"
+    set_file_param "${model_config_fp}" "dx" "$WRTCMP_dx"
+    set_file_param "${model_config_fp}" "dy" "$WRTCMP_dy"
   fi
 
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Set the full path to the file that specifies the fields to output.
-# Then set parameters in that file.
-#
-#-----------------------------------------------------------------------
-#
-DIAG_TABLE_FP="${CYCLE_DIR}/${DIAG_TABLE_FN}"
-
-print_info_msg "$VERBOSE" "
-Setting parameters in file:
-  DIAG_TABLE_FP = \"${DIAG_TABLE_FP}\""
-
-set_file_param "${DIAG_TABLE_FP}" "CRES" "$CRES"
-set_file_param "${DIAG_TABLE_FP}" "YYYY" "$YYYY"
-set_file_param "${DIAG_TABLE_FP}" "MM" "$MM"
-set_file_param "${DIAG_TABLE_FP}" "DD" "$DD"
-set_file_param "${DIAG_TABLE_FP}" "HH" "$HH"
-set_file_param "${DIAG_TABLE_FP}" "YYYYMMDD" "$YYYYMMDD"
 #
 #-----------------------------------------------------------------------
 #
@@ -529,9 +523,9 @@ set_file_param "${DIAG_TABLE_FP}" "YYYYMMDD" "$YYYYMMDD"
 #-----------------------------------------------------------------------
 #
 if [ "${USE_CCPP}" = "TRUE" ]; then
-  FV3SAR_EXEC="${NEMSfv3gfs_DIR}/tests/fv3.exe"
+  FV3SAR_EXEC="${UFS_WTHR_MDL_DIR}/tests/fv3.exe"
 else
-  FV3SAR_EXEC="${NEMSfv3gfs_DIR}/tests/fv3_32bit.exe"
+  FV3SAR_EXEC="${UFS_WTHR_MDL_DIR}/tests/fv3_32bit.exe"
 fi
 
 if [ -f $FV3SAR_EXEC ]; then
