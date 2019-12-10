@@ -147,7 +147,7 @@ case $MACHINE in
   ulimit -s unlimited
   ulimit -a
   APRUN="srun"
-  LD_LIBRARY_PATH="${NEMSfv3gfs_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  LD_LIBRARY_PATH="${UFS_WTHR_MDL_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
   ;;
 #
 "JET")
@@ -523,9 +523,9 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${USE_CCPP}" = "TRUE" ]; then
-  FV3SAR_EXEC="${NEMSfv3gfs_DIR}/tests/fv3.exe"
+  FV3SAR_EXEC="${UFS_WTHR_MDL_DIR}/tests/fv3.exe"
 else
-  FV3SAR_EXEC="${NEMSfv3gfs_DIR}/tests/fv3_32bit.exe"
+  FV3SAR_EXEC="${UFS_WTHR_MDL_DIR}/tests/fv3_32bit.exe"
 fi
 
 if [ -f $FV3SAR_EXEC ]; then

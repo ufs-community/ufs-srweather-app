@@ -557,7 +557,7 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 # Directory in which templates of various FV3SAR input files are locat-
 # ed.
 #
-# NEMSfv3gfs_DIR:
+# UFS_WTHR_MDL_DIR:
 # Directory in which the (NEMS-enabled) FV3SAR application is located.
 # This directory includes subdirectories for FV3, NEMS, and FMS.  If
 # USE_CCPP is set to "TRUE", it also includes a subdirectory for CCPP.
@@ -659,21 +659,21 @@ esac
 mng_extrns_cfg_fn="$HOMErrfs/Externals.cfg"
 property_name="local_path"
 #
-# Get the base directory of the NEMSfv3gfs code.
+# Get the base directory of the FV3 forecast model code code.
 #
-external_name="NEMSfv3gfs"
-NEMSfv3gfs_DIR=$( \
+external_name="ufs_weather_model"
+UFS_WTHR_MDL_DIR=$( \
 get_manage_externals_config_property \
 "${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
 print_err_msg_exit "\
 Call to function get_manage_externals_config_property failed."
 
-NEMSfv3gfs_DIR="$HOMErrfs/${NEMSfv3gfs_DIR}"
-if [ ! -d "${NEMSfv3gfs_DIR}" ]; then
+UFS_WTHR_MDL_DIR="$HOMErrfs/${UFS_WTHR_MDL_DIR}"
+if [ ! -d "${UFS_WTHR_MDL_DIR}" ]; then
   print_err_msg_exit "\
 The base directory in which the FV3 source code should be located (NEMS-
 fv3gfs_DIR) does not exist:
-  NEMSfv3gfs_DIR = \"${NEMSfv3gfs_DIR}\"
+  UFS_WTHR_MDL_DIR = \"${UFS_WTHR_MDL_DIR}\"
 Please clone the external repository containing the code in this direct-
 ory, build the executable, and then rerun the workflow."
 fi
@@ -961,7 +961,7 @@ CCPP_PHYS_SUITE_FP=""
 
 if [ "${USE_CCPP}" = "TRUE" ]; then
   CCPP_PHYS_SUITE_FN="suite_FV3_${CCPP_PHYS_SUITE}.xml"
-  CCPP_PHYS_SUITE_IN_CCPP_FP="${NEMSfv3gfs_DIR}/FV3/ccpp/suites/${CCPP_PHYS_SUITE_FN}"
+  CCPP_PHYS_SUITE_IN_CCPP_FP="${UFS_WTHR_MDL_DIR}/FV3/ccpp/suites/${CCPP_PHYS_SUITE_FN}"
   CCPP_PHYS_SUITE_FP="${EXPTDIR}/${CCPP_PHYS_SUITE_FN}"
 fi
 #
@@ -1900,7 +1900,7 @@ FIXupp="$FIXupp"
 FIXgsd="$FIXgsd"
 COMROOT="$COMROOT"
 TEMPLATE_DIR="${TEMPLATE_DIR}"
-NEMSfv3gfs_DIR="${NEMSfv3gfs_DIR}"
+UFS_WTHR_MDL_DIR="${UFS_WTHR_MDL_DIR}"
 UFS_UTILS_DIR="${UFS_UTILS_DIR}"
 CHGRES_DIR="${CHGRES_DIR}"
 SFC_CLIMO_INPUT_DIR="${SFC_CLIMO_INPUT_DIR}"
