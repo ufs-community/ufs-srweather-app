@@ -263,14 +263,15 @@ num_files_ozphys_after2015=${#indx_ozphys_after2015[@]}
 if [ ${num_files_ozphys_2015} -eq 1 ] && \
    [ ${num_files_ozphys_after2015} -eq 0 ]; then
 
-  if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
+  if [ "${CCPP_PHYS_SUITE}" = "GFS_2017_gfdlmp" ]; then
     FIXam_FILES_SYSDIR[${indx_ozphys_2015}]="${ozphys_after2015_fn}"
   fi
 
 elif [ ${num_files_ozphys_2015} -eq 0 ] && \
      [ ${num_files_ozphys_after2015} -eq 1 ]; then
 
-  if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+  if [ "${CCPP_PHYS_SUITE}" = "GSD_v0" -o \\
+       "${CCPP_PHYS_SUITE}" = "GSD_SAR" ]; then
     FIXam_FILES_SYSDIR[${indx_ozphys_after2015}]="${ozphys_2015_fn}"
   fi
 
@@ -501,118 +502,58 @@ fi
 #
 print_info_msg "$VERBOSE" "
 Copying templates of various input files to the experiment directory..."
+
+print_info_msg "$VERBOSE" "
+  Copying the template data table file to the experiment directory..."
+cp_vrfy "${DATA_TABLE_TMPL_FP}" "${DATA_TABLE_FP}"
+
+print_info_msg "$VERBOSE" "
+  Copying the template field table file to the experiment directory..."
+cp_vrfy "${FIELD_TABLE_TMPL_FP}" "${FIELD_TABLE_FP}"
+
+print_info_msg "$VERBOSE" "
+  Copying the template FV3 namelist file to the experiment directory..."
+cp_vrfy "${FV3_NML_TMPL_FP}" "${FV3_NML_FP}"
+
+print_info_msg "$VERBOSE" "
+  Copying the template NEMS configuration file to the experiment direct-
+  ory..."
+cp_vrfy "${NEMS_CONFIG_TMPL_FP}" "${NEMS_CONFIG_FP}"
 #
-#-----------------------------------------------------------------------
-#
-# If using CCPP...
-#
-#-----------------------------------------------------------------------
+# If using CCPP ... 
 #
 if [ "${USE_CCPP}" = "TRUE" ]; then
 #
-#-----------------------------------------------------------------------
+# Copy the CCPP physics suite definition file from its location in the 
+# clone of the FV3 code repository to the experiment directory (EXPT-
+# DIR).
 #
-# If using CCPP with the GFS physics suite...
+  print_info_msg "$VERBOSE" "
+Copying the CCPP physics suite definition XML file from its location in
+the forecast model directory sturcture to the experiment directory..."
+  cp_vrfy "${CCPP_PHYS_SUITE_IN_CCPP_FP}" "${CCPP_PHYS_SUITE_FP}"
 #
-#-----------------------------------------------------------------------
+# If using the GSD_v0 or GSD_SAR physics suite, copy the fixed file con-
+# taining cloud condensation nuclei (CCN) data that is needed by the 
+# Thompson microphysics parameterization to the experiment directory.
 #
-  if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
-
-    if [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" -o \
-         "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] && \
-       [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" -o \
-         "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
-
-      print_info_msg "$VERBOSE" "
-Copying the FV3 namelist file for the GFS physics suite to the experi-
-ment directory..."
-      cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GFSPHYS_GFSEXTRN_FN} \
-              $EXPTDIR/${FV3_NML_FN}
-
-    else
-
-      print_err_msg_exit "\
-A template FV3 namelist file is not available for the following combina-
-tion of physics suite and external models for ICs and LBCs:
-  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
-  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
-  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
-Please change one or more of these parameters or provide a template
-namelist file for this combination (and change workflow generation 
-script(s) accordingly) and rerun."
-
-    fi
-
+  if [ "${CCPP_PHYS_SUITE}" = "GSD_v0" -o \\
+       "${CCPP_PHYS_SUITE}" = "GSD_SAR" ]; then
     print_info_msg "$VERBOSE" "
-Copying the field table file for the GFS physics suite to the experiment
+Copying the fixed file containing cloud condensation nuclei (CCN) data 
+(needed by the Thompson microphysics parameterization) to the experiment
 directory..."
-    cp_vrfy ${TEMPLATE_DIR}/${FIELD_TABLE_FN} \
-            $EXPTDIR
-
-    print_info_msg "$VERBOSE" "
-Copying the CCPP XML file for the GFS physics suite to the experiment 
-directory..."
-    cp_vrfy ${NEMSfv3gfs_DIR}/FV3/ccpp/suites/suite_FV3_GFS_2017_gfdlmp.xml \
-            $EXPTDIR/suite_FV3_GFS_2017_gfdlmp.xml
-#
-#-----------------------------------------------------------------------
-#
-# If using CCPP with the GSD physics suite...
-#
-#-----------------------------------------------------------------------
-#
-  elif [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
-
-    print_info_msg "$VERBOSE" "
-Copying the FV3 namelist file for the GSD physics suite to the experi-
-ment directory..."
-    cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_CCPP_GSDPHYS_FN} \
-            $EXPTDIR/${FV3_NML_FN}
-
-    print_info_msg "$VERBOSE" "
-Copying the field table file for the GSD physics suite to the experiment
-directory..."
-    cp_vrfy ${TEMPLATE_DIR}/${FIELD_TABLE_CCPP_GSD_FN} \
-            $EXPTDIR/${FIELD_TABLE_FN}
-
-    print_info_msg "$VERBOSE" "
-Copying the CCPP XML file for the GSD physics suite to the experiment 
-directory..."
-    cp_vrfy ${NEMSfv3gfs_DIR}/FV3/ccpp/suites/suite_FV3_GSD_v0.xml \
-            $EXPTDIR/suite_FV3_GSD_v0.xml
-
-    print_info_msg "$VERBOSE" "
-Copying the CCN fixed file needed by Thompson microphysics (part of the
-GSD suite) to the experiment directory..."
-    cp_vrfy $FIXgsd/CCN_ACTIVATE.BIN $EXPTDIR
-
+    cp_vrfy "$FIXgsd/CCN_ACTIVATE.BIN" "$EXPTDIR"
   fi
-#
-#-----------------------------------------------------------------------
-#
-# If not using CCPP...
-#
-#-----------------------------------------------------------------------
-#
-else
-
-  cp_vrfy ${TEMPLATE_DIR}/${FV3_NML_FN} $EXPTDIR
-  cp_vrfy ${TEMPLATE_DIR}/${FIELD_TABLE_FN} $EXPTDIR
 
 fi
-
-cp_vrfy ${TEMPLATE_DIR}/${DATA_TABLE_FN} $EXPTDIR
-cp_vrfy ${TEMPLATE_DIR}/${NEMS_CONFIG_FN} $EXPTDIR
 #
 #-----------------------------------------------------------------------
 #
-# Set the full path to the FV3SAR namelist file.  Then set parameters in
-# that file.
+# Set parameters in the FV3SAR namelist file.
 #
 #-----------------------------------------------------------------------
 #
-FV3_NML_FP="$EXPTDIR/${FV3_NML_FN}"
-
 print_info_msg "$VERBOSE" "
 Setting parameters in FV3 namelist file (FV3_NML_FP):
   FV3_NML_FP = \"${FV3_NML_FP}\""
@@ -622,12 +563,13 @@ Setting parameters in FV3 namelist file (FV3_NML_FP):
 # file.  They represent the number of cell vertices in the x and y di-
 # rections on the regional grid (tile 7).
 #
-npx_T7=$(( NX_T7+1 ))
-npy_T7=$(( NY_T7+1 ))
+npx_T7=$((NX_T7+1))
+npy_T7=$((NY_T7+1))
 #
 # Set parameters.
 #
 set_file_param "${FV3_NML_FP}" "blocksize" "$BLOCKSIZE"
+set_file_param "${FV3_NML_FP}" "ccpp_suite" "\'${CCPP_PHYS_SUITE}\'"
 set_file_param "${FV3_NML_FP}" "layout" "${LAYOUT_X},${LAYOUT_Y}"
 set_file_param "${FV3_NML_FP}" "npx" "${npx_T7}"
 set_file_param "${FV3_NML_FP}" "npy" "${npy_T7}"
@@ -649,10 +591,11 @@ fi
 set_file_param "${FV3_NML_FP}" "stretch_fac" "${STRETCH_FAC}"
 set_file_param "${FV3_NML_FP}" "bc_update_interval" "${LBC_UPDATE_INTVL_HRS}"
 #
-# For GSD physics, set the parameter lsoil according to the external mo-
-# dels specified for ICs and LBCs.
+# For the GSD_v0 and the GSD_SAR physics suites, set the parameter lsoil
+# according to the external models used to obtain ICs and LBCs.
 #
-if [ "${CCPP_PHYS_SUITE}" = "GSD" ]; then
+if [ "${CCPP_PHYS_SUITE}" = "GSD_v0" -o \\
+     "${CCPP_PHYS_SUITE}" = "GSD_SAR" ]; then
 
   if [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" -o \
        "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] && \

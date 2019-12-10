@@ -108,33 +108,14 @@ PTMP="/path/to/temporary/directory/ptmp"
 # FV3_NML_FN:
 # Name of file containing the FV3SAR namelist settings.
 #
-# FV3_NML_CCPP_GFSPHYS_GFSEXTRN_FN:
-# Name of file containing the FV3SAR namelist settings for a CCPP-ena-
-# bled forecast that uses GFS external model data for the initial condi-
-# tions (ICs) and GFS physics.
-#
-# FV3_NML_CCPP_GSDPHYS_FN:
-# Name of file containing the FV3SAR namelist settings for a CCPP-ena-
-# bled forecast that uses GSD physics.
-#
 # DIAG_TABLE_FN:
 # Name of file that specifies the fields that the FV3SAR will output for
 # a forecast that uses GFS physics.  The forecast can be either with 
 # CCPP enabled or disabled.
 #
-# DIAG_TABLE_CCPP_GSD_FN:
-# Name of file that specifies the fields that the FV3SAR will output for
-# a CCPP-enabled forecast that uses GSD physics.  This includes varia-
-# bles specific to Thompson microphysics.
-#
 # FIELD_TABLE_FN:
 # Name of file that specifies the traces that the FV3SAR will read in
 # from the IC/BC files.
-#
-# FIELD_TABLE_CCPP_GSD_FN:
-# Name of file that specifies the traces that the FV3SAR will read in
-# from the IC/BC files for a CCPP-enabled forecast that uses GSD phys-
-# ics.
 #
 # DATA_TABLE_FN:
 # Name of file that specifies ???
@@ -152,7 +133,7 @@ PTMP="/path/to/temporary/directory/ptmp"
 # Name of file that is sourced by the worflow scripts to set variable
 # values.
 #
-# WRTCMP_PARAMS_TEMPLATE_FN:
+# WRTCMP_PARAMS_TMPL_FN:
 # Name of the template file that needs to be appended to the model con-
 # figuration file (MODEL_CONFIG_FN) if the write component (QUILTING) is
 # going to be used to write output files.  This file contains defini-
@@ -171,19 +152,17 @@ PTMP="/path/to/temporary/directory/ptmp"
 #-----------------------------------------------------------------------
 #
 RGNL_GRID_NML_FN="regional_grid.nml"
-FV3_NML_FN="input.nml"
-FV3_NML_CCPP_GFSPHYS_GFSEXTRN_FN="input_ccpp_GFSphys_GFSextrn.nml"
-FV3_NML_CCPP_GSDPHYS_FN="input_ccpp_GSDphys.nml"
-DIAG_TABLE_FN="diag_table"
-DIAG_TABLE_CCPP_GSD_FN="diag_table_ccpp_gsd"
-FIELD_TABLE_FN="field_table"
-FIELD_TABLE_CCPP_GSD_FN="field_table_ccpp_gsd"
+
 DATA_TABLE_FN="data_table"
+DIAG_TABLE_FN="diag_table"
+FIELD_TABLE_FN="field_table"
+FV3_NML_FN="input.nml"
 MODEL_CONFIG_FN="model_configure"
 NEMS_CONFIG_FN="nems.configure"
+
 WFLOW_XML_FN="FV3SAR_wflow.xml"
 GLOBAL_VAR_DEFNS_FN="var_defns.sh"
-WRTCMP_PARAMS_TEMPLATE_FN=""
+WRTCMP_PARAMS_TMPL_FN=""
 WFLOW_LAUNCH_SCRIPT_FN="launch_FV3SAR_wflow.sh"
 WFLOW_LAUNCH_LOG_FN="log.launch_FV3SAR_wflow"
 #
@@ -294,11 +273,7 @@ USE_CCPP="FALSE"
 # the physics suite that will run using CCPP.  This affects the FV3SAR
 # namelist file, the diagnostics table file, the field table file, and
 # the XML physics suite definition file that are staged in the experi-
-# ment directory and/or the run directories under it.  As of 4/4/2019,
-# valid values for this parameter are:
-#
-#   "GFS" - to run with the GFS physics suite
-#   "GSD" - to run with the GSD physics suite
+# ment directory and/or the run directories under it.
 #
 # Note that with CCPP set to "FALSE", the only physics suite that can be
 # run is the GFS.
@@ -312,8 +287,9 @@ USE_CCPP="FALSE"
 #
 #-----------------------------------------------------------------------
 #
-CCPP_PHYS_SUITE="GSD"
-#CCPP_PHYS_SUITE="GFS"
+#CCPP_PHYS_SUITE="GFS_2017_gfdlmp"
+CCPP_PHYS_SUITE="GSD_v0"
+#CCPP_PHYS_SUITE="GSD_SAR"
 #
 #-----------------------------------------------------------------------
 #

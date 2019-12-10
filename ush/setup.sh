@@ -424,25 +424,26 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# For GFS physics, only allow "GSMGFS" and "FV3GFS" as the external mo-
-# dels for ICs and LBCs.
+# If using CCPP with the GFS_2017_gfdlmp physics suite, only allow 
+# "GSMGFS" and "FV3GFS" as the external models for ICs and LBCs.
 #
 #-----------------------------------------------------------------------
 #
-if [ "${CCPP_PHYS_SUITE}" = "GFS" ]; then
+if [ "${USE_CCPP}" = "TRUE" -a \\
+     "${CCPP_PHYS_SUITE}" = "GFS_2017_gfdlmp" ]; then
 
   if [ "${EXTRN_MDL_NAME_ICS}" != "GSMGFS" -a \
        "${EXTRN_MDL_NAME_ICS}" != "FV3GFS" ] || \
      [ "${EXTRN_MDL_NAME_LBCS}" != "GSMGFS" -a \
        "${EXTRN_MDL_NAME_LBCS}" != "FV3GFS" ]; then
     print_info_msg "$VERBOSE" "
-The following combination of physics suite and external models is not 
-allowed:
+The following combination of physics suite and external model(s) for ICs 
+and LBCs is not allowed:
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
-Currently, for GFS physics, the only external models that the workflow
-allows for ICs and LBCs are \"GSMGFS\" and \"FV3GFS\"." 
+For this physics suite, the only external models that the workflow cur-
+rently allows are \"GSMGFS\" and \"FV3GFS\"." 
   fi
 
 fi
@@ -873,6 +874,132 @@ else
   FIXsar="${EXPTDIR}/fix_sar"
   COMROOT=""
 fi
+#
+#-----------------------------------------------------------------------
+#
+# The FV3 forecast model needs the following input files in the run di-
+# rectory to start a forecast:
+#
+#   (1) The data table file
+#   (2) The diagnostics table file
+#   (3) The field table file
+#   (4) The FV3 namelist file
+#   (5) The model configuration file
+#   (6) The NEMS configuration file
+#
+# If using CCPP, it also needs:
+#
+#   (7) The CCPP physics suite definition file
+#
+# The workflow contains templates for the first six of these files.  
+# Template files are versions of these files that contain placeholder
+# (i.e. dummy) values for various parameters.  The experiment/workflow 
+# generation scripts copy these templates to appropriate locations in 
+# the experiment directory (either the top of the experiment directory
+# or one of the cycle subdirectories) and replace the placeholders in
+# these copies by actual values specified in the experiment/workflow 
+# configuration file (or derived from such values).  The scripts then
+# use the resulting "actual" files as inputs to the forecast model.
+#
+# Note that the CCPP physics suite defintion file does not have a cor-
+# responding template file because it does not contain any values that
+# need to be replaced according to the experiment/workflow configura-
+# tion.  If using CCPP, this file simply needs to be copied over from 
+# its location in the forecast model's directory structure to the ex-
+# periment directory.
+#
+# Below, we first set the names of the templates for the first six files
+# listed above.  We then set the full paths to these template files.  
+# Note that some of these file names depend on the physics suite while
+# others do not.
+#
+#-----------------------------------------------------------------------
+#
+dot_ccpp_phys_suite_or_null=""
+if [ "${USE_CCPP}" = "TRUE" ]; then
+  dot_ccpp_phys_suite_or_null=".${CCPP_PHYS_SUITE}"
+fi
+
+DATA_TABLE_TMPL_FN="${DATA_TABLE_FN}"
+DIAG_TABLE_TMPL_FN="${DIAG_TABLE_FN}${dot_ccpp_phys_suite_or_null}"
+FIELD_TABLE_TMPL_FN="${FIELD_TABLE_FN}${dot_ccpp_phys_suite_or_null}"
+FV3_NML_TMPL_FN="${FV3_NML_FN}${dot_ccpp_phys_suite_or_null}"
+MODEL_CONFIG_TMPL_FN="${MODEL_CONFIG_FN}${dot_ccpp_phys_suite_or_null}"
+NEMS_CONFIG_TMPL_FN="${NEMS_CONFIG_FN}"
+
+DATA_TABLE_TMPL_FP="${TEMPLATE_DIR}/${DATA_TABLE_TMPL_FN}"
+DIAG_TABLE_TMPL_FP="${TEMPLATE_DIR}/${DIAG_TABLE_TMPL_FN}"
+FIELD_TABLE_TMPL_FP="${TEMPLATE_DIR}/${FIELD_TABLE_TMPL_FN}"
+FV3_NML_TMPL_FP="${TEMPLATE_DIR}/${FV3_NML_TMPL_FN}"
+MODEL_CONFIG_TMPL_FP="${TEMPLATE_DIR}/${MODEL_CONFIG_TMPL_FN}"
+NEMS_CONFIG_TMPL_FP="${TEMPLATE_DIR}/${NEMS_CONFIG_TMPL_FN}"
+#
+#-----------------------------------------------------------------------
+#
+# If using CCPP, set:
+#
+# 1) the variable CCPP_PHYS_SUITE_FN to the name of the CCPP physics 
+#    suite definition file.
+# 2) the variable CCPP_PHYS_SUITE_IN_CCPP_FP to the full path of this 
+#    file in the forecast model's directory structure.
+# 3) the variable CCPP_PHYS_SUITE_FP to the full path of this file in 
+#    the experiment directory.
+#
+# Note that the experiment/workflow generation scripts will copy this
+# file from CCPP_PHYS_SUITE_IN_CCPP_FP to CCPP_PHYS_SUITE_FP.  Then, for
+# each cycle, the forecast launch script will create a link in the cycle
+# run directory to the copy of this file at CCPP_PHYS_SUITE_FP.
+#
+# Note that if not using CCPP, the variables described above will get 
+# set to null strings.
+#
+#-----------------------------------------------------------------------
+#
+CCPP_PHYS_SUITE_FN=""
+CCPP_PHYS_SUITE_IN_CCPP_FP=""
+CCPP_PHYS_SUITE_FP=""
+
+if [ "${USE_CCPP}" = "TRUE" ]; then
+  CCPP_PHYS_SUITE_FN="suite_FV3_${CCPP_PHYS_SUITE}.xml"
+  CCPP_PHYS_SUITE_IN_CCPP_FP="${NEMSfv3gfs_DIR}/FV3/ccpp/suites/${CCPP_PHYS_SUITE_FN}"
+  CCPP_PHYS_SUITE_FP="${EXPTDIR}/${CCPP_PHYS_SUITE_FN}"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Set the full paths to those forecast model input files that are cycle-
+# independent, i.e. they don't include information about the cycle's 
+# starting day/time.  These are:
+#
+#   * The data table file [(1) in the list above)]
+#   * The field table file [(3) in the list above)]
+#   * The FV3 namelist file [(4) in the list above)]
+#   * The NEMS configuration file [(6) in the list above)]
+#
+# Since they are cycle-independent, the experiment/workflow generation
+# scripts will place them in the main experiment directory (EXPTDIR).
+# The script that runs each cycle will then create links to these files
+# in the run directories of the individual cycles (which are subdirecto-
+# ries under EXPTDIR).  
+# 
+# The remaining two input files to the forecast model, i.e.
+#
+#   * The diagnostics table file [(2) in the list above)]
+#   * The model configuration file [(5) in the list above)]
+#
+# contain parameters that depend on the cycle start date.  Thus, custom
+# versions of these two files must be generated for each cycle and then
+# placed directly in the run directories of the cycles (not EXPTDIR).
+# For this reason, the full paths to their locations vary by cycle and
+# cannot be set here (i.e. they can only be set in the loop over the 
+# cycles in the rocoto workflow XML file).
+#
+#-----------------------------------------------------------------------
+#
+DATA_TABLE_FP="${EXPTDIR}/${DATA_TABLE_FN}"
+FIELD_TABLE_FP="${EXPTDIR}/${FIELD_TABLE_FN}"
+FV3_NML_FP="${EXPTDIR}/${FV3_NML_FN}"
+NEMS_CONFIG_FP="${EXPTDIR}/${NEMS_CONFIG_FN}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1348,20 +1475,20 @@ fi
 #
 if [ "$QUILTING" = "TRUE" ]; then
 
-  if [ -z "${WRTCMP_PARAMS_TEMPLATE_FN}" ]; then
+  if [ -z "${WRTCMP_PARAMS_TMPL_FN}" ]; then
     print_err_msg_exit "\
-The write-component template file name (WRTCMP_PARAMS_TEMPLATE_FN) must
-be set to a non-empty value when quilting (i.e. the write-component) is 
+The write-component template file name (WRTCMP_PARAMS_TMPL_FN) must be 
+set to a non-empty value when quilting (i.e. the write-component) is 
 enabled:
   QUILTING = \"$QUILTING\"
-  WRTCMP_PARAMS_TEMPLATE_FN = \"${WRTCMP_PARAMS_TEMPLATE_FN}\""
+  WRTCMP_PARAMS_TMPL_FN = \"${WRTCMP_PARAMS_TMPL_FN}\""
   fi
 
-  WRTCMP_PARAMS_TEMPLATE_FP="${TEMPLATE_DIR}/${WRTCMP_PARAMS_TEMPLATE_FN}"
-  if [ ! -f "${WRTCMP_PARAMS_TEMPLATE_FP}" ]; then
+  WRTCMP_PARAMS_TMPL_FP="${TEMPLATE_DIR}/${WRTCMP_PARAMS_TMPL_FN}"
+  if [ ! -f "${WRTCMP_PARAMS_TMPL_FP}" ]; then
     print_err_msg_exit "\
 The write-component template file does not exist or is not a file:
-  WRTCMP_PARAMS_TEMPLATE_FP = \"${WRTCMP_PARAMS_TEMPLATE_FP}\""
+  WRTCMP_PARAMS_TMPL_FP = \"${WRTCMP_PARAMS_TMPL_FP}\""
   fi
 
 fi
@@ -1791,7 +1918,31 @@ SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
 #-----------------------------------------------------------------------
 #
 GLOBAL_VAR_DEFNS_FP="${GLOBAL_VAR_DEFNS_FP}"
-WRTCMP_PARAMS_TEMPLATE_FP="${WRTCMP_PARAMS_TEMPLATE_FP}"
+
+DATA_TABLE_TMPL_FN="${DATA_TABLE_TMPL_FN}"
+DIAG_TABLE_TMPL_FN="${DIAG_TABLE_TMPL_FN}"
+FIELD_TABLE_TMPL_FN="${FIELD_TABLE_TMPL_FN}"
+FV3_NML_TMPL_FN="${FV3_NML_TMPL_FN}"
+MODEL_CONFIG_TMPL_FN="${MODEL_CONFIG_TMPL_FN}"
+NEMS_CONFIG_TMPL_FN="${NEMS_CONFIG_TMPL_FN}"
+
+DATA_TABLE_TMPL_FP="${DATA_TABLE_TMPL_FP}"
+DIAG_TABLE_TMPL_FP="${DIAG_TABLE_TMPL_FP}"
+FIELD_TABLE_TMPL_FP="${FIELD_TABLE_TMPL_FP}"
+FV3_NML_TMPL_FP="${FV3_NML_TMPL_FP}"
+MODEL_CONFIG_TMPL_FP="${MODEL_CONFIG_TMPL_FP}"
+NEMS_CONFIG_TMPL_FP="${NEMS_CONFIG_TMPL_FP}"
+
+CCPP_PHYS_SUITE_FN="${CCPP_PHYS_SUITE_FN}"
+CCPP_PHYS_SUITE_IN_CCPP_FP="${CCPP_PHYS_SUITE_IN_CCPP_FP}"
+CCPP_PHYS_SUITE_FP="${CCPP_PHYS_SUITE_FP}"
+
+DATA_TABLE_FP="${DATA_TABLE_FP}"
+FIELD_TABLE_FP="${FIELD_TABLE_FP}"
+FV3_NML_FP="${FV3_NML_FP}"
+NEMS_CONFIG_FP="${NEMS_CONFIG_FP}"
+
+WRTCMP_PARAMS_TMPL_FP="${WRTCMP_PARAMS_TMPL_FP}"
 #
 #-----------------------------------------------------------------------
 #
