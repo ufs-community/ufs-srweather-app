@@ -718,6 +718,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Set the names of the various tasks in the rocoto workflow XML.
+#
+#-----------------------------------------------------------------------
+#
+MAKE_GRID_TN="make_grid"
+MAKE_OROG_TN="make_orog"
+MAKE_SFC_CLIMO_TN="make_sfc_climo"
+GET_EXTRN_ICS_TN="get_extrn_ics"
+GET_EXTRN_LBCS_TN="get_extrn_lbcs"
+MAKE_ICS_TN="make_ics"
+MAKE_LBCS_TN="make_lbcs"
+RUN_FCST_TN="run_fcst"
+RUN_POST_TN="run_post"
+#
+#-----------------------------------------------------------------------
+#
 # The forecast length (in integer hours) cannot contain more than 3 cha-
 # racters.  Thus, its maximum value is 999.  Check whether the specified
 # forecast length exceeds this maximum value.  If so, print out a warn-
@@ -1943,6 +1959,22 @@ FV3_NML_FP="${FV3_NML_FP}"
 NEMS_CONFIG_FP="${NEMS_CONFIG_FP}"
 
 WRTCMP_PARAMS_TMPL_FP="${WRTCMP_PARAMS_TMPL_FP}"
+#
+#-----------------------------------------------------------------------
+#
+# Names of the tasks in the rocoto workflow XML.
+#
+#-----------------------------------------------------------------------
+#
+MAKE_GRID_TN="${MAKE_GRID_TN}"
+MAKE_OROG_TN="${MAKE_OROG_TN}"
+MAKE_SFC_CLIMO_TN="${MAKE_SFC_CLIMO_TN}"
+GET_EXTRN_ICS_TN="${GET_EXTRN_ICS_TN}"
+GET_EXTRN_LBCS_TN="${GET_EXTRN_LBCS_TN}"
+MAKE_ICS_TN="${MAKE_ICS_TN}"
+MAKE_LBCS_TN="${MAKE_LBCS_TN}"
+RUN_FCST_TN="${RUN_FCST_TN}"
+RUN_POST_TN="${RUN_POST_TN}"
 #
 #-----------------------------------------------------------------------
 #

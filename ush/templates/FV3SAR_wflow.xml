@@ -50,6 +50,19 @@ workflow XML.
 <!ENTITY GLOBAL_VAR_DEFNS_FP "">
 <!ENTITY CYCLE_DIR           "">
 
+<!-- 
+Task names.
+-->
+<!ENTITY MAKE_GRID_TN      "">
+<!ENTITY MAKE_OROG_TN      "">
+<!ENTITY MAKE_SFC_CLIMO_TN "">
+<!ENTITY GET_EXTRN_ICS_TN  "">
+<!ENTITY GET_EXTRN_LBCS_TN "">
+<!ENTITY MAKE_ICS_TN       "">
+<!ENTITY MAKE_LBCS_TN      "">
+<!ENTITY RUN_FCST_TN       "">
+<!ENTITY RUN_POST_TN       "">
+
 <!--
 SECTION 2:
 Variables that are not modified by the workflow generation script.
@@ -83,19 +96,6 @@ killing itelf off) using the exec command.
 -->
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "&USHDIR;/load_modules_run_task.sh">
 
-<!-- 
-Task names.
--->
-<!ENTITY TN_MAKE_GRID      "make_grid">
-<!ENTITY TN_MAKE_OROG      "make_orog">
-<!ENTITY TN_MAKE_SFC_CLIMO "make_sfc_climo">
-<!ENTITY TN_GET_EXTRN_ICS  "get_extrn_ics">
-<!ENTITY TN_GET_EXTRN_LBCS "get_extrn_lbcs">
-<!ENTITY TN_MAKE_ICS       "make_ics">
-<!ENTITY TN_MAKE_LBCS      "make_lbcs">
-<!ENTITY TN_RUN_FCST       "run_fcst">
-<!ENTITY TN_RUN_POST       "run_post">
-
 ]>
 
 <workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20">
@@ -110,7 +110,7 @@ Task names.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_MAKE_GRID;" cycledefs="at_start" maxtries="4">
+  <task name="&MAKE_GRID_TN;" cycledefs="at_start" maxtries="4">
 
     &RSRC_MAKE_GRID;
     &RSRV_DEFAULT;
@@ -127,7 +127,7 @@ source LOAD_MODULES_RUN_TASK_FP within the J-job instead of here since
 we have are already sourcing other files in the J-job anyway.
 -->
 <!-- 
-    <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_GRID;"; 
+    <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;"; 
                &JOBSDIR;/JREGIONAL_MAKE_GRID;
              }</command>
 -->
@@ -138,10 +138,10 @@ to LOAD_MODULES_RUN_TASK_FP (the first argument is the task name).  The
 J-job then uses exec to run the J-job (while also terminating the LOAD_-
 MODULES_RUN_TASK_FP script.
 -->
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_GRID;" "&JOBSDIR;/JREGIONAL_MAKE_GRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;" "&JOBSDIR;/JREGIONAL_MAKE_GRID"</command>
     <nodes>&PROC_MAKE_GRID;</nodes>
-    <jobname>&TN_MAKE_GRID;</jobname>
-    <join><cyclestr>&LOGDIR;/&TN_MAKE_GRID;.log</cyclestr></join>
+    <jobname>&MAKE_GRID_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&MAKE_GRID_TN;.log</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -155,15 +155,15 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_MAKE_OROG;" cycledefs="at_start" maxtries="4">
+  <task name="&MAKE_OROG_TN;" cycledefs="at_start" maxtries="4">
 
     &RSRC_MAKE_OROG;
     &RSRV_DEFAULT;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_OROG;" "&JOBSDIR;/JREGIONAL_MAKE_OROG"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_OROG_TN;" "&JOBSDIR;/JREGIONAL_MAKE_OROG"</command>
     <nodes>&PROC_MAKE_OROG;</nodes>
-    <jobname>&TN_MAKE_OROG;</jobname>
-    <join><cyclestr>&LOGDIR;/&TN_MAKE_OROG;.log</cyclestr></join>
+    <jobname>&MAKE_OROG_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&MAKE_OROG_TN;.log</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -184,15 +184,15 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_MAKE_SFC_CLIMO;" cycledefs="at_start" maxtries="2">
+  <task name="&MAKE_SFC_CLIMO_TN;" cycledefs="at_start" maxtries="2">
 
     &RSRC_MAKE_SFC_CLIMO;
     &RSRV_DEFAULT;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_SFC_CLIMO;" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_SFC_CLIMO_TN;" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"</command>
     <nodes>&PROC_MAKE_SFC_CLIMO;</nodes>
-    <jobname>&TN_MAKE_SFC_CLIMO;</jobname>
-    <join><cyclestr>&LOGDIR;/&TN_MAKE_SFC_CLIMO;.log</cyclestr></join>
+    <jobname>&MAKE_SFC_CLIMO_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&MAKE_SFC_CLIMO_TN;.log</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -206,8 +206,8 @@ MODULES_RUN_TASK_FP script.
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
-<!--          <taskdep task="&TN_MAKE_OROG;"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/&TN_MAKE_OROG;_task_complete.txt</datadep>	
+<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -218,15 +218,15 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_GET_EXTRN_ICS;" maxtries="3">
+  <task name="&GET_EXTRN_ICS_TN;" maxtries="3">
 
     &RSRC_GET_EXTRN_MDL_FILES;
     &RSRV_HPSS;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_ICS;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES"</command>
     <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
-    <jobname>&TN_GET_EXTRN_ICS;</jobname>
-    <join><cyclestr>&LOGDIR;/&TN_GET_EXTRN_ICS;_@Y@m@d@H.log</cyclestr></join>
+    <jobname>&GET_EXTRN_ICS_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&GET_EXTRN_ICS_TN;_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
@@ -240,15 +240,15 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_GET_EXTRN_LBCS;" maxtries="3">
+  <task name="&GET_EXTRN_LBCS_TN;" maxtries="3">
 
     &RSRC_GET_EXTRN_MDL_FILES;
     &RSRV_HPSS;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_LBCS;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES"</command>
     <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
-    <jobname>&TN_GET_EXTRN_LBCS;</jobname>
-    <join><cyclestr>&LOGDIR;/&TN_GET_EXTRN_LBCS;_@Y@m@d@H.log</cyclestr></join>
+    <jobname>&GET_EXTRN_LBCS_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&GET_EXTRN_LBCS_TN;_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
@@ -262,15 +262,15 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_MAKE_ICS;" maxtries="3">
+  <task name="&MAKE_ICS_TN;" maxtries="3">
 
     &RSRC_MAKE_ICS_SURF_LBC0;
     &RSRV_DEFAULT;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_ICS;" "&JOBSDIR;/JREGIONAL_MAKE_ICS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_ICS_TN;" "&JOBSDIR;/JREGIONAL_MAKE_ICS"</command>
     <nodes>&PROC_MAKE_ICS_SURF_LBC0;</nodes>
-    <jobname>&TN_MAKE_ICS;</jobname>
-    <join><cyclestr>&LOGDIR;/&TN_MAKE_ICS;_@Y@m@d@H.log</cyclestr></join>
+    <jobname>&MAKE_ICS_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&MAKE_ICS_TN;_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
@@ -279,20 +279,20 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
       <and>
-        <taskdep task="&TN_GET_EXTRN_ICS;"/>
+        <taskdep task="&GET_EXTRN_ICS_TN;"/>
         <or>
 <!--          <taskdep task="make_grid"/> -->
           <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
-<!--          <taskdep task="&TN_MAKE_OROG;"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/&TN_MAKE_OROG;_task_complete.txt</datadep>	
+<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
-<!--          <taskdep task="&TN_MAKE_SFC_CLIMO;"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/&TN_MAKE_SFC_CLIMO;_task_complete.txt</datadep>	
+<!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_SFC_CLIMO_TN;_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -303,15 +303,15 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_MAKE_LBCS;" maxtries="3">
+  <task name="&MAKE_LBCS_TN;" maxtries="3">
 
     &RSRC_MAKE_LBC1_TO_LBCN;
     &RSRV_DEFAULT;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_LBCS;" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_LBCS_TN;" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"</command>
     <nodes>&PROC_MAKE_LBC1_TO_LBCN;</nodes>
-    <jobname>&TN_MAKE_LBCS;</jobname>
-    <join><cyclestr>&LOGDIR;/&TN_MAKE_LBCS;_@Y@m@d@H.log</cyclestr></join>
+    <jobname>&MAKE_LBCS_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&MAKE_LBCS_TN;_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
@@ -320,20 +320,20 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
       <and>
-        <taskdep task="&TN_GET_EXTRN_LBCS;"/>
+        <taskdep task="&GET_EXTRN_LBCS_TN;"/>
         <or>
 <!--          <taskdep task="make_grid"/> -->
           <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
-<!--          <taskdep task="&TN_MAKE_OROG;"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/&TN_MAKE_OROG;_task_complete.txt</datadep>	
+<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
-<!--          <taskdep task="&TN_MAKE_SFC_CLIMO;"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/&TN_MAKE_SFC_CLIMO;_task_complete.txt</datadep>	
+<!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_SFC_CLIMO_TN;_task_complete.txt</datadep>	
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -344,15 +344,15 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_RUN_FCST;" maxtries="3">
+  <task name="&RUN_FCST_TN;" maxtries="3">
 
     &RSRC_RUN_FCST;
     &RSRV_RUN_FCST;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_FCST;" "&JOBSDIR;/JREGIONAL_RUN_FCST"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_FCST_TN;" "&JOBSDIR;/JREGIONAL_RUN_FCST"</command>
     <nodes>&PROC_RUN_FCST;</nodes>
-    <jobname>&TN_RUN_FCST;</jobname>
-    <join><cyclestr>&LOGDIR;/&TN_RUN_FCST;_@Y@m@d@H.log</cyclestr></join>
+    <jobname>&RUN_FCST_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&RUN_FCST_TN;_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
@@ -361,8 +361,8 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
       <and>
-        <taskdep task="&TN_MAKE_ICS;"/>
-        <taskdep task="&TN_MAKE_LBCS;"/>
+        <taskdep task="&MAKE_ICS_TN;"/>
+        <taskdep task="&MAKE_LBCS_TN;"/>
       </and>
     </dependency>
 
@@ -371,19 +371,19 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <metatask name="&TN_RUN_POST;">
+  <metatask name="&RUN_POST_TN;">
     
     <var name="fhr">&FHR;</var>
     
-    <task name="&TN_RUN_POST;_#fhr#" maxtries="2">
+    <task name="&RUN_POST_TN;_#fhr#" maxtries="2">
     
       &RSRC_POST;
       &RSRV_DEFAULT;
 
-      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
       <nodes>&PROC_POST;</nodes>
-      <jobname>&TN_RUN_POST;_#fhr#</jobname>
-      <join><cyclestr>&LOGDIR;/&TN_RUN_POST;_#fhr#_@Y@m@d@H.log</cyclestr></join>
+      <jobname>&RUN_POST_TN;_#fhr#</jobname>
+      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;_#fhr#_@Y@m@d@H.log</cyclestr></join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
