@@ -429,7 +429,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${USE_CCPP}" = "TRUE" -a \\
+if [ "${USE_CCPP}" = "TRUE" -a \
      "${CCPP_PHYS_SUITE}" = "GFS_2017_gfdlmp" ]; then
 
   if [ "${EXTRN_MDL_NAME_ICS}" != "GSMGFS" -a \
