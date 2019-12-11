@@ -1,7 +1,0 @@
-all_vals_PREDEF_GRID_NAME=( "GSD_HRRR25km" )
-all_vals_GRID_GEN_METHOD=( "JPgrid" )
-all_vals_USE_CCPP=( "true" )
-all_vals_CCPP_PHYS_SUITE=( "GSD" )
-all_vals_CDATE=( "2017090700" )
-all_vals_FCST_LEN_HRS=( "6" )
-all_vals_QUILTING=( "true" )
