@@ -243,6 +243,47 @@ sed -i -r -e "s|${regex_search}|${all_cycledefs}|g" "${WFLOW_XML_FP}"
 #
 #-----------------------------------------------------------------------
 #
+# For select workflow tasks, create symlinks (in an appropriate subdi-
+# rectory under the workflow directory tree) that point to module files
+# in the various cloned external repositories.  In principle, this is 
+# better than having hard-coded module files for tasks because the sym-
+# links will always point to updated module files.  However, it does re-
+# quire that these module files in the external repositories be coded
+# correctly, e.g. that they really be lua module files and not contain
+# any shell commands (like "export SOME_VARIABLE").
+#
+#-----------------------------------------------------------------------
+#
+machine=${MACHINE,,}
+
+cd_vrfy "${MODULES_DIR}/$machine"
+
+#
+# The "module" file (really a shell script) for orog in the UFS_UTILS 
+# repo uses a shell variable named MOD_PATH, but it is not clear where
+# that is defined.  That needs to be fixed.  Until then, we have to use
+# a hard-coded module file, which may or may not be compatible with the
+# modules used in the UFS_UTILS repo to build the orog code.
+#ln_vrfy -fs "${UFS_UTILS_DIR}/modulefiles/fv3gfs/orog.$machine" \
+#            "${MAKE_OROG_TN}"
+ln_vrfy -fs "make_orog.hardcoded" "${MAKE_OROG_TN}"
+
+ln_vrfy -fs "${UFS_UTILS_DIR}/modulefiles/modulefile.sfc_climo_gen.$machine" \
+            "${MAKE_SFC_CLIMO_TN}"
+
+ln_vrfy -fs "${CHGRES_DIR}/modulefiles/chgres_cube.$machine" \
+            "${MAKE_ICS_TN}"
+
+ln_vrfy -fs "${CHGRES_DIR}/modulefiles/chgres_cube.$machine" \
+            "${MAKE_LBCS_TN}"
+
+ln_vrfy -fs "${UFS_WTHR_MDL_DIR}/NEMS/src/conf/modules.nems" \
+            "${RUN_FCST_TN}"
+
+cd_vrfy -
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that the correct ozone production/loss fixed file is speci-
 # fied in the array FIXam_FILES_SYSDIR.  There should be two such files
 # on disk in the system directory specified in FIXgsm.  They are named

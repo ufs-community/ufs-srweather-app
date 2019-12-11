@@ -204,15 +204,17 @@ modulefile_name="${task_name}"
 # regardless of the setting of USE_CCPP.  But this requires that we then
 # test the non-CCPP-enabled version, which we've never done.  Leave this
 # for another time...
-if [ "${task_name}" = "run_fcst" ]; then
-  if [ "${USE_CCPP}" = "TRUE" ]; then
-    modulefile_name=${modulefile_name}_ccpp
-  else
-    modulefile_name=${modulefile_name}_no_ccpp
-  fi
-fi
+#if [ "${task_name}" = "run_fcst" ]; then
+#  if [ "${USE_CCPP}" = "TRUE" ]; then
+#    modulefile_name=${modulefile_name}_ccpp
+#  else
+#    modulefile_name=${modulefile_name}_no_ccpp
+#  fi
+#fi
 #
 #-----------------------------------------------------------------------
+#
+# This comment needs to be updated:
 #
 # Use the "readlink" command to resolve the full path to the module file
 # and then verify that the file exists.  This is not necessary for most
@@ -228,7 +230,11 @@ modulefile_path=$( readlink -f "${modules_dir}/${modulefile_name}" )
 
 if [ ! -f "${modulefile_path}" ]; then
 
-  if [ "${task_name}" = "run_fcst" ]; then
+  if [ "${task_name}" = "${MAKE_OROG_TN}" -o \
+       "${task_name}" = "${MAKE_SFC_CLIMO_TN}" -o \
+       "${task_name}" = "${MAKE_ICS_TN}" -o \
+       "${task_name}" = "${MAKE_LBCS_TN}" -o \
+       "${task_name}" = "${RUN_FCST_TN}" ]; then
 
     print_err_msg_exit "\
 The target (modulefile_path) of the symlink (modulefile_name) in the 
@@ -267,8 +273,33 @@ module purge
 module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
 
-module load ${modulefile_name} || print_err_msg_exit "\
-Call to \"module load\" command failed."
+#
+# Some of the task module files that are symlinks to module files in the
+# external repositories are in fact shell scripts (they shouldn't be; 
+# such cases should be fixed in the external repositories).  For such
+# files, we source the "module" file.  For true module files, we use the
+# "module load" command.
+#
+case "${task_name}" in
+#
+"${MAKE_ICS_TN}" | "${MAKE_LBCS_TN}" | "${MAKE_SFC_CLIMO_TN}")
+  . ${modulefile_path} || print_err_msg_exit "\                                                                                           
+Sourcing of \"module\" file (modulefile_path; really a shell script) for
+the specified task (task_name) failed:
+  task_name = \"${task_name}\"
+  modulefile_path = \"${modulefile_path}\""
+  ;;
+#
+*)
+  module load ${modulefile_name} || print_err_msg_exit "\
+Loading of module file (modulefile_name; in directory specified by mod-
+ules_dir) for the specified task (task_name) failed:
+  task_name = \"${task_name}\"
+  modulefile_name = \"${modulefile_name}\"
+  modules_dir = \"${modules_dir}\""
+  ;;
+#
+esac
 
 module list
 #
