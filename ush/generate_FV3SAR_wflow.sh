@@ -333,15 +333,15 @@ num_files_ozphys_after2015=${#indx_ozphys_after2015[@]}
 if [ ${num_files_ozphys_2015} -eq 1 ] && \
    [ ${num_files_ozphys_after2015} -eq 0 ]; then
 
-  if [ "${CCPP_PHYS_SUITE}" = "GFS_2017_gfdlmp" ]; then
+  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
     FIXam_FILES_SYSDIR[${indx_ozphys_2015}]="${ozphys_after2015_fn}"
   fi
 
 elif [ ${num_files_ozphys_2015} -eq 0 ] && \
      [ ${num_files_ozphys_after2015} -eq 1 ]; then
 
-  if [ "${CCPP_PHYS_SUITE}" = "GSD_v0" -o \
-       "${CCPP_PHYS_SUITE}" = "GSD_SAR" ]; then
+  if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" -o \
+       "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
     FIXam_FILES_SYSDIR[${indx_ozphys_after2015}]="${ozphys_2015_fn}"
   fi
 
@@ -607,8 +607,8 @@ the forecast model directory sturcture to the experiment directory..."
 # taining cloud condensation nuclei (CCN) data that is needed by the 
 # Thompson microphysics parameterization to the experiment directory.
 #
-  if [ "${CCPP_PHYS_SUITE}" = "GSD_v0" -o \
-       "${CCPP_PHYS_SUITE}" = "GSD_SAR" ]; then
+  if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" -o \
+       "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
     print_info_msg "$VERBOSE" "
 Copying the fixed file containing cloud condensation nuclei (CCN) data 
 (needed by the Thompson microphysics parameterization) to the experiment
@@ -664,8 +664,8 @@ set_file_param "${FV3_NML_FP}" "bc_update_interval" "${LBC_UPDATE_INTVL_HRS}"
 # For the GSD_v0 and the GSD_SAR physics suites, set the parameter lsoil
 # according to the external models used to obtain ICs and LBCs.
 #
-if [ "${CCPP_PHYS_SUITE}" = "GSD_v0" -o \
-     "${CCPP_PHYS_SUITE}" = "GSD_SAR" ]; then
+if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" -o \
+     "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 
   if [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" -o \
        "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] && \

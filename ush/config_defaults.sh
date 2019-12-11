@@ -287,9 +287,9 @@ USE_CCPP="FALSE"
 #
 #-----------------------------------------------------------------------
 #
-#CCPP_PHYS_SUITE="GFS_2017_gfdlmp"
-CCPP_PHYS_SUITE="GSD_v0"
-#CCPP_PHYS_SUITE="GSD_SAR"
+#CCPP_PHYS_SUITE="FV3_GFS_2017_gfdlmp"
+CCPP_PHYS_SUITE="FV3_GSD_v0"
+#CCPP_PHYS_SUITE="FV3_GSD_SAR"
 #
 #-----------------------------------------------------------------------
 #

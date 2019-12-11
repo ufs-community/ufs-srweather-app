@@ -430,7 +430,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${USE_CCPP}" = "TRUE" -a \
-     "${CCPP_PHYS_SUITE}" = "GFS_2017_gfdlmp" ]; then
+     "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
 
   if [ "${EXTRN_MDL_NAME_ICS}" != "GSMGFS" -a \
        "${EXTRN_MDL_NAME_ICS}" != "FV3GFS" ] || \
@@ -977,7 +977,7 @@ CCPP_PHYS_SUITE_IN_CCPP_FP=""
 CCPP_PHYS_SUITE_FP=""
 
 if [ "${USE_CCPP}" = "TRUE" ]; then
-  CCPP_PHYS_SUITE_FN="suite_FV3_${CCPP_PHYS_SUITE}.xml"
+  CCPP_PHYS_SUITE_FN="suite_${CCPP_PHYS_SUITE}.xml"
   CCPP_PHYS_SUITE_IN_CCPP_FP="${UFS_WTHR_MDL_DIR}/FV3/ccpp/suites/${CCPP_PHYS_SUITE_FN}"
   CCPP_PHYS_SUITE_FP="${EXPTDIR}/${CCPP_PHYS_SUITE_FN}"
 fi
