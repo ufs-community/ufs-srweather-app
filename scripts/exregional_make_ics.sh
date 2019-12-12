@@ -346,7 +346,7 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
     fi
   fi
   
-  geogrid_file_input_grid="/scratch2/BMC/det/beck/SAR-FV3/geo_em.d01.nc"  # Maybe make this a fix file?
+  geogrid_file_input_grid="/scratch2/BMC/det/beck/SAR-FV3/geo_em.d01.nc_HRRRX"  # Maybe make this a fix file?
   replace_vgtyp=".false."
   replace_sotyp=".false."
   replace_vgfrc=".false."
@@ -354,6 +354,41 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
 
   ;;
 
+"RAPX")
+
+  external_model="RAP"
+
+  fn_grib2="${EXTRN_MDL_FNS[0]}"
+  input_type="grib2"
+
+  internal_GSD=".false."
+#  cdate_min_HRRRX="2019111500"
+#  if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" -o \
+#       "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ] && \
+#     [ ${CDATE} -gt ${cdate_min_HRRRX} ]; then
+#    print_info_msg "
+#Setting the chgres_cube namelist setting \"internal_GSD\" to \".true.\" in
+#order to read in land surface model (LSM) variables available in the
+#HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
+#    internal_GSD=".true."
+#  fi
+
+  if [ "${USE_CCPP}" = "TRUE" ]; then
+    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
+      numsoil_out="4"
+    elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" -o \
+           "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
+      numsoil_out="9"
+    fi
+  fi
+
+  geogrid_file_input_grid="/scratch2/BMC/det/beck/SAR-FV3/geo_em.d01.nc_RAPX"  # Maybe make this a fix file?
+  replace_vgtyp=".false."
+  replace_sotyp=".false."
+  replace_vgfrc=".false."
+  tg3_from_soil=".true."
+
+  ;;
 
 *)
   print_err_msg_exit "\
