@@ -18,10 +18,10 @@
 
 ;help = True
 
-run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR25km"
-run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
-run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR3km"
-run_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HAFSV0.A"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR25km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR3km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HAFSV0.A"
 
 
 tile_inds := (/ 1, 7, 4 /)
@@ -465,8 +465,7 @@ end if
   num_tiles_to_plot = plot_params@num_tiles_to_plot
   inds_tiles_to_plot = plot_params@inds_tiles_to_plot
   cres = plot_params@cres
-  run_dir = plot_params@run_dir
-  work_dir = plot_params@work_dir
+  expt_dir = plot_params@expt_dir
 
   horiz_dist_units = plot_params@horiz_dist_units
   horiz_area_units = plot_params@horiz_area_units
@@ -513,7 +512,7 @@ end if
 
   if (read_FV3SAR_wrtcmp) then
 
-  FV3SAR_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "dynf000.nc"
+  FV3SAR_wrtcmp_fn = expt_dir + "/" + CDATE + "/" + "dynf000.nc"
   get_domain_bdy = True
   grid_info := read_FV3SAR_grid_wrtcmp( \
                FV3SAR_wrtcmp_fn, \
@@ -533,7 +532,7 @@ end if
   else
 
   grid_info := read_FV3SAR_grid_native( \
-               work_dir, \
+               expt_dir, \
                gtype, \
                cres, \
                inds_tiles_to_plot, \

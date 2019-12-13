@@ -14,10 +14,10 @@
 ;
 ; The input arguments to this function are as follows:
 ;
-; work_dir:
-; This is the work directory created by the FV3SAR workflow.  The grid
-; specification files corresponding to the cubed-sphere tiles are within
-; subdirectories under this directory.
+; expt_dir:
+; This is the experiment directory created by the FV3SAR workflow gene-
+; ration script.  The grid specification files corresponding to the 
+; cubed-sphere tiles are within subdirectories under this directory.
 ;
 ; gtype:
 ; This is a string containing the grid type of the FV3 cubed-sphere grid
@@ -70,7 +70,7 @@ loadscript(lib_location + "adjust_longitude_range.ncl")
 undef("read_FV3SAR_grid_native")
 
 function read_FV3SAR_grid_native( \
-         work_dir:string, \
+         expt_dir:string, \
          gtype:string, \
          cres:string, \
          tile_inds:integer, \
@@ -230,11 +230,10 @@ begin
     grid_fn = cres + "_grid.tile" + n_tile
     if (strcmp_exact(gtype, "regional") .and. (n_tile .eq. 7)) then
       grid_fn = grid_fn + ".halo" + tostring(nhalo_T7) + ".nc"
-      grid_fn = work_dir + "/fix_sar/" + grid_fn
     else
       grid_fn = grid_fn + ".nc"
-      grid_fn = work_dir + "/grid/" + grid_fn
     end if
+    grid_fn = expt_dir + "/fix_sar/" + grid_fn
 
     grid_fn_all_tiles(nn) = grid_fn
     print("  grid_fn_all_tiles(" + nn + ") = " + \
