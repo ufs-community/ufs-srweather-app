@@ -1,7 +1,7 @@
 ;
 ; **********************************************************************
 ;
-; File name: calc_sphr_coords_from_lambert_cnfrml.ncl
+; File name: convert_lambert_cnfrml_coords_to_sphr.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
@@ -14,9 +14,9 @@
 ;
 loadscript(lib_location + "calc_lambert_cnfrml_proj_auxil_params.ncl")
 
-undef("calc_sphr_coords_from_lambert_cnfrml")
+undef("convert_lambert_cnfrml_coords_to_sphr")
 
-function calc_sphr_coords_from_lambert_cnfrml( \
+function convert_lambert_cnfrml_coords_to_sphr( \
          lon_ctr:snumeric, lat_ctr:snumeric, \
          lat1:snumeric, lat2:snumeric, radius:snumeric, \
          angle_units:string, \
@@ -39,7 +39,7 @@ begin
 ; **********************************************************************
 ;
   curnt_script_proc_func_name \
-  := "function calc_sphr_coords_from_lambert_cnfrml"
+  := "function convert_lambert_cnfrml_coords_to_sphr"
 ;
 ; **********************************************************************
 ;

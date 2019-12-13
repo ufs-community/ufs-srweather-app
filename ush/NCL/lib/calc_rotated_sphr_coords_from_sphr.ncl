@@ -1,7 +1,7 @@
 ;
 ; **********************************************************************
 ;
-; File name: convert_sphr_coords_to_lambert_cnfrml.ncl
+; File name: calc_rotated_sphr_coords_from_sphr.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
@@ -12,11 +12,11 @@
 ;
 ; **********************************************************************
 ;
-loadscript(lib_location + "calc_lambert_cnfrml_proj_auxil_params.ncl")
+loadscript(lib_location + "calc_rotated_sphr_proj_auxil_params.ncl")
 
-undef("convert_sphr_coords_to_lambert_cnfrml")
+undef("calc_rotated_sphr_coords_from_sphr")
 
-function convert_sphr_coords_to_lambert_cnfrml( \
+function calc_rotated_sphr_coords_from_sphr( \
          lon_ctr:snumeric, lat_ctr:snumeric, \
          lat1:snumeric, lat2:snumeric, radius:snumeric, \
          angle_units:string, \
@@ -40,7 +40,7 @@ begin
 ; **********************************************************************
 ;
   curnt_script_proc_func_name \
-  := "function convert_sphr_coords_to_lambert_cnfrml"
+  := "function calc_rotated_sphr_coords_from_sphr"
 ;
 ; **********************************************************************
 ;
@@ -50,7 +50,7 @@ begin
 ;
 ; **********************************************************************
 ;
-  proj_params := calc_lambert_cnfrml_proj_auxil_params( \
+  proj_params := calc_rotated_sphr_proj_auxil_params( \
                  lon_ctr, lat_ctr, lat1, lat2, radius, angle_units)
 
   lon_ctr_rad = proj_params@lon_ctr_rad

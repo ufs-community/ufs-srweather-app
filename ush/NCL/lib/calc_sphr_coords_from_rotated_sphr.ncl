@@ -1,33 +1,32 @@
 ;
 ; **********************************************************************
 ;
-; File name: convert_sphr_coords_to_lambert_cnfrml.ncl
+; File name: calc_sphr_coords_from_rotated_sphr.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
 ; ^^^^^^^^^^^
-; This function calculates the Lambert conformal coordinates x and y
-; corresponding to the specified spherical coordinates lon (longitude)
-; and lat (latitude).
+; This function calculates the spherical coordinates (longitude and la-
+; titude) corresponding to the specified Lambert conformal coordinates 
+; x and y.
 ;
 ; **********************************************************************
 ;
-loadscript(lib_location + "calc_lambert_cnfrml_proj_auxil_params.ncl")
+loadscript(lib_location + "calc_rotated_sphr_proj_auxil_params.ncl")
 
-undef("convert_sphr_coords_to_lambert_cnfrml")
+undef("calc_sphr_coords_from_rotated_sphr")
 
-function convert_sphr_coords_to_lambert_cnfrml( \
+function calc_sphr_coords_from_rotated_sphr( \
          lon_ctr:snumeric, lat_ctr:snumeric, \
          lat1:snumeric, lat2:snumeric, radius:snumeric, \
          angle_units:string, \
-         lon:snumeric, lat:snumeric)
+         x:snumeric, y:snumeric)
 
 local proj_params, \
       lon_ctr_rad, lat_ctr_rad, lat1_rad, lat2_rad, \
       n, F, rho_ctr, \
-      angle_units_short_lwrcase, \
-      lon_rad, lat_rad, rho, n_dlon_rad, \
-      x, y, coords_out
+      rho_ctr_mns_y, rho, theta, lon_rad, lat_rad, \
+      angle_units_short_lwr, lon, lat
 
 begin
 ;
@@ -40,17 +39,17 @@ begin
 ; **********************************************************************
 ;
   curnt_script_proc_func_name \
-  := "function convert_sphr_coords_to_lambert_cnfrml"
+  := "function calc_sphr_coords_from_rotated_sphr"
 ;
 ; **********************************************************************
 ;
 ; Calculate the auxiliary Lambert conformal map projection parameters
-; that are needed in the calculation of the Lambert conformal coordi-
-; nates (x,y) below.
+; thar are needed in the calculation of the spherical coordinates (lon,
+; lat) below.
 ;
 ; **********************************************************************
 ;
-  proj_params := calc_lambert_cnfrml_proj_auxil_params( \
+  proj_params := calc_rotated_sphr_proj_auxil_params( \
                  lon_ctr, lat_ctr, lat1, lat2, radius, angle_units)
 
   lon_ctr_rad = proj_params@lon_ctr_rad
@@ -63,30 +62,32 @@ begin
 ;
 ; **********************************************************************
 ;
-; If necessary, convert longitude and latitude from degrees to radians.
+; Calculate the spherical coordinates (lon_rad,lat_rad)  using the pro-
+; jection parameters obtained above and the specified Lambert conformal
+; coordinates.  Note that lon_rad and lat_rad are in units of radians. 
 ;
 ; **********************************************************************
 ;
-  angle_units_short_lwrcase = str_lower(str_get_cols(angle_units, 0, 2))
-  if (strcmp_exact(angle_units_short_lwrcase, "deg")) then
-    lon_rad = lon*rads_per_deg
-    lat_rad = lat*rads_per_deg
+  rho_ctr_mns_y = rho_ctr - y
+  rho = sign_matlab(n)*sqrt(x^2 + rho_ctr_mns_y^2)
+  theta = atan(x/rho_ctr_mns_y)
+  lon_rad = lon_ctr_rad + theta/n
+  lat_rad = 2.0d+0*atan((F/rho)^(1.0d+0/n)) - 0.5d+0*pi_geom
+;
+; **********************************************************************
+;
+; If necessary, convert angles from radians to degrees.
+;
+; **********************************************************************
+;
+  angle_units_short_lwr = str_lower(str_get_cols(angle_units, 0, 2))
+  if (strcmp_exact(angle_units_short_lwr, "deg")) then
+    lon = lon_rad*degs_per_rad
+    lat = lat_rad*degs_per_rad
   else
-    lon_rad = lon
-    lat_rad = lat
+    lon = lon_rad
+    lat = lat_rad
   end if
-;
-; **********************************************************************
-;
-; Calculate the Lambert conformal coordinates (x,y) using the projection
-; parameters obtained above and the specified spherical coordinates.
-;
-; **********************************************************************
-;
-  rho = F/((tan(0.25d+0*pi_geom + 0.5d+0*lat_rad))^n)
-  n_dlon_rad = n*(lon_rad - lon_ctr_rad)
-  x = rho*sin(n_dlon_rad)
-  y = rho_ctr - rho*cos(n_dlon_rad)
 ;
 ; **********************************************************************
 ;
@@ -95,8 +96,8 @@ begin
 ; **********************************************************************
 ;
   coords_out = True
-  coords_out@x = x
-  coords_out@y = y
+  coords_out@lon = lon
+  coords_out@lat = lat
   return(coords_out)
 
 end

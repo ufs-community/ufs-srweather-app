@@ -10,12 +10,12 @@ loadscript(lib_location + "constants.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "strpad.ncl")
 loadscript(lib_location + "repeat_str.ncl")
-loadscript(lib_location + "convert_sphr_coords_to_lambert_cnfrml.ncl")
-loadscript(lib_location + "convert_lambert_cnfrml_coords_to_sphr.ncl")
+loadscript(lib_location + "calc_rotated_sphr_coords_from_sphr.ncl")
+loadscript(lib_location + "calc_sphr_coords_from_rotated_sphr.ncl")
 
-undef("calc_wrtcmp_grid_params_lambert_cnfrml")
+undef("calc_wrtcmp_grid_params_rotated_latlon")
 
-function calc_wrtcmp_grid_params_lambert_cnfrml( \
+function calc_wrtcmp_grid_params_rotated_latlon( \
          wrtcmp_config_fn:string, \
          lon_ctr_native:snumeric, lat_ctr_native:snumeric, \
          lon_tile_corners_face_midpts_native[8]:snumeric, \
@@ -72,8 +72,8 @@ begin
 ; **********************************************************************
 ;
   lambert_coords \
-  := convert_sphr_coords_to_lambert_cnfrml( \
-     lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
+  := calc_rotated_sphr_coords_from_sphr( \
+     lon_ctr, lat_ctr, lat1, lat2, angle_units, \
      lon_tile_corners_face_midpts_native, \
      lat_tile_corners_face_midpts_native)
   x_tile_corners_face_midpts_native = lambert_coords@x
@@ -156,7 +156,6 @@ begin
 ;
 ; **********************************************************************
 ;
-
   y_S_native_max = max((/y_SW_native, y_S_native, y_SE_native/))
   y_N_native_min = min((/y_NW_native, y_N_native, y_NE_native/))
 
@@ -190,7 +189,7 @@ begin
   y_N = y_N - 0.5*dy
 
   sphr_coords \
-  := convert_lambert_cnfrml_coords_to_sphr( \
+  := calc_sphr_coords_from_rotated_sphr( \
      lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
      x_W, y_S)
   lon_SW = sphr_coords@lon
@@ -207,14 +206,12 @@ begin
     "output_grid", \
     "cen_lon", \
     "cen_lat", \
-    "stdlat1", \
-    "stdlat2", \
-    "nx", \
-    "ny", \
     "lon1", \
     "lat1", \
-    "dx", \
-    "dy" /)
+    "lon2", \
+    "lat2", \
+    "dlon", \
+    "dlat" /)
 ;
 ; **********************************************************************
 ;
@@ -236,7 +233,7 @@ begin
 ;
   np = 0
   param_name = param_names(np)
-  param_value := char_sq + "lambert_conformal" + char_sq
+  param_value := char_sq + "rotated_latlon" + char_sq
   param_value_str := tostring(param_value)
 
   regex_search = "^(\s*" + param_name + ":\s+)(<" + param_name + ">)(\s*)(.*)"
@@ -267,28 +264,22 @@ begin
     else if (strcmp_exact(param_name, "cen_lat")) then
       param_value := lat_ctr
       fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "stdlat1")) then
-      param_value := lat1
-      fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "stdlat2")) then
-      param_value := lat2
-      fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "nx")) then
-      param_value := nx
-      fmt_str = "%10.0f"
-    else if (strcmp_exact(param_name, "ny")) then
-      param_value := ny
-      fmt_str = "%10.0f"
     else if (strcmp_exact(param_name, "lon1")) then
       param_value := lon_SW
       fmt_str = "%16.8f"
     else if (strcmp_exact(param_name, "lat1")) then
       param_value := lat_SW
       fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "dx")) then
+    else if (strcmp_exact(param_name, "lon2")) then
+      param_value := lon_SW
+      fmt_str = "%16.8f"
+    else if (strcmp_exact(param_name, "lat2")) then
+      param_value := lat_SW
+      fmt_str = "%16.8f"
+    else if (strcmp_exact(param_name, "dlon")) then
       param_value := dx
       fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "dy")) then
+    else if (strcmp_exact(param_name, "dlat")) then
       param_value := dy
       fmt_str = "%16.8f"
     else
@@ -301,8 +292,6 @@ begin
       print("" + msg)
       exit
 
-    end if
-    end if
     end if
     end if
     end if

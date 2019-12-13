@@ -10,12 +10,13 @@ loadscript(lib_location + "constants.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "strpad.ncl")
 loadscript(lib_location + "repeat_str.ncl")
+loadscript(lib_location + "convert_from_to_sphr_coords_to_from_rotated_sphr.ncl")
 loadscript(lib_location + "convert_sphr_coords_to_lambert_cnfrml.ncl")
 loadscript(lib_location + "convert_lambert_cnfrml_coords_to_sphr.ncl")
 
-undef("calc_wrtcmp_grid_params_lambert_cnfrml")
+undef("calc_wrtcmp_grid_params")
 
-function calc_wrtcmp_grid_params_lambert_cnfrml( \
+function calc_wrtcmp_grid_params( \
          wrtcmp_config_fn:string, \
          lon_ctr_native:snumeric, lat_ctr_native:snumeric, \
          lon_tile_corners_face_midpts_native[8]:snumeric, \
@@ -59,10 +60,10 @@ begin
 ;
 ; **********************************************************************
 ;
-  lon_ctr = lon_ctr_native
-  lat_ctr = lat_ctr_native
-  lat1 = lat_ctr
-  lat2 = lat_ctr
+;  lon_ctr = lon_ctr_native
+;  lat_ctr = lat_ctr_native
+;  lat1 = lat_ctr
+;  lat2 = lat_ctr
 ;
 ; **********************************************************************
 ;
@@ -71,13 +72,38 @@ begin
 ;
 ; **********************************************************************
 ;
-  lambert_coords \
-  := convert_sphr_coords_to_lambert_cnfrml( \
-     lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
-     lon_tile_corners_face_midpts_native, \
-     lat_tile_corners_face_midpts_native)
-  x_tile_corners_face_midpts_native = lambert_coords@x
-  y_tile_corners_face_midpts_native = lambert_coords@y
+  if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
+
+    lon_ctr = lon_ctr_native
+    lat_ctr = lat_ctr_native
+
+    rotated_sphr_coords \
+    := convert_from_to_sphr_coords_to_from_rotated_sphr( \
+       lon_ctr, lat_ctr, angle_units, 1, \
+       lon_tile_corners_face_midpts_native, \
+       lat_tile_corners_face_midpts_native)
+    lon_verts = sphr_coords@lon_out
+    lat_verts = sphr_coords@lat_out
+    x_tile_corners_face_midpts_native = rotated_sphr_coords@lon_out
+    y_tile_corners_face_midpts_native = rotated_sphr_coords@lat_out
+
+  else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then
+
+    lon_ctr = lon_ctr_native
+    lat_ctr = lat_ctr_native
+    lat1 = lat_ctr
+    lat2 = lat_ctr
+
+    lambert_coords \
+    := convert_sphr_coords_to_lambert_cnfrml( \
+       lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
+       lon_tile_corners_face_midpts_native, \
+       lat_tile_corners_face_midpts_native)
+    x_tile_corners_face_midpts_native = lambert_coords@x
+    y_tile_corners_face_midpts_native = lambert_coords@y
+
+  end if
+  end if
 
   i = 0
   x_SW_native = x_tile_corners_face_midpts_native(i)
@@ -156,7 +182,6 @@ begin
 ;
 ; **********************************************************************
 ;
-
   y_S_native_max = max((/y_SW_native, y_S_native, y_SE_native/))
   y_N_native_min = min((/y_NW_native, y_N_native, y_NE_native/))
 
@@ -189,12 +214,22 @@ begin
   y_S = y_S + 0.5*dy
   y_N = y_N - 0.5*dy
 
-  sphr_coords \
-  := convert_lambert_cnfrml_coords_to_sphr( \
-     lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
-     x_W, y_S)
-  lon_SW = sphr_coords@lon
-  lat_SW = sphr_coords@lat
+  if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
+    sphr_coords \
+    := convert_from_to_sphr_coords_to_from_rotated_sphr( \
+       lon_ctr, lat_ctr, angle_units, -1, \
+       x_W, y_S)
+    lon_SW = sphr_coords@lon_out
+    lat_SW = sphr_coords@lat_out
+  else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then
+    sphr_coords \
+    := convert_lambert_cnfrml_coords_to_sphr( \
+       lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
+       x_W, y_S)
+    lon_SW = sphr_coords@lon
+    lat_SW = sphr_coords@lat
+  end if
+  end if
 ;
 ; **********************************************************************
 ;
@@ -203,18 +238,36 @@ begin
 ;
 ; **********************************************************************
 ;
-  param_names = (/ \
-    "output_grid", \
-    "cen_lon", \
-    "cen_lat", \
-    "stdlat1", \
-    "stdlat2", \
-    "nx", \
-    "ny", \
-    "lon1", \
-    "lat1", \
-    "dx", \
-    "dy" /)
+  if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
+
+    param_names = (/ \
+      "output_grid", \
+      "cen_lon", \
+      "cen_lat", \
+      "lon1", \
+      "lat1", \
+      "lon2", \
+      "lat2", \
+      "dlon", \
+      "dlat" /)
+
+  else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then                                                                              
+
+    param_names = (/ \
+      "output_grid", \
+      "cen_lon", \
+      "cen_lat", \
+      "stdlat1", \
+      "stdlat2", \
+      "nx", \
+      "ny", \
+      "lon1", \
+      "lat1", \
+      "dx", \
+      "dy" /)
+
+  end if
+  end if
 ;
 ; **********************************************************************
 ;
@@ -236,7 +289,8 @@ begin
 ;
   np = 0
   param_name = param_names(np)
-  param_value := char_sq + "lambert_conformal" + char_sq
+;  param_value := char_sq + "lambert_conformal" + char_sq
+  param_value := char_sq + wrtcmp_coord_sys + char_sq
   param_value_str := tostring(param_value)
 
   regex_search = "^(\s*" + param_name + ":\s+)(<" + param_name + ">)(\s*)(.*)"
@@ -260,39 +314,101 @@ begin
   do np=1, num_params-1
 
     param_name := param_names(np)
+    unrecognized_param = False
 
-    if (strcmp_exact(param_name, "cen_lon")) then
-      param_value := lon_ctr
-      fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "cen_lat")) then
-      param_value := lat_ctr
-      fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "stdlat1")) then
-      param_value := lat1
-      fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "stdlat2")) then
-      param_value := lat2
-      fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "nx")) then
-      param_value := nx
-      fmt_str = "%10.0f"
-    else if (strcmp_exact(param_name, "ny")) then
-      param_value := ny
-      fmt_str = "%10.0f"
-    else if (strcmp_exact(param_name, "lon1")) then
-      param_value := lon_SW
-      fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "lat1")) then
-      param_value := lat_SW
-      fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "dx")) then
-      param_value := dx
-      fmt_str = "%16.8f"
-    else if (strcmp_exact(param_name, "dy")) then
-      param_value := dy
-      fmt_str = "%16.8f"
-    else
+    if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
 
+      if (strcmp_exact(param_name, "cen_lon")) then
+        param_value := lon_ctr
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "cen_lat")) then
+        param_value := lat_ctr
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "lon1")) then
+        param_value := rot_lon_SW
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "lat1")) then
+        param_value := rot_lat_SW
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "lon2")) then
+        param_value := rot_lon_NE
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "lat2")) then
+        param_value := rot_lat_NE
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "dlon")) then
+        param_value := dlon
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "dlat")) then
+        param_value := dlat
+        fmt_str = "%16.8f"
+      else
+        unrecognized_param = True
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+
+    else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then                                                                              
+
+      if (strcmp_exact(param_name, "cen_lon")) then
+        param_value := lon_ctr
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "cen_lat")) then
+        param_value := lat_ctr
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "stdlat1")) then
+        param_value := lat1
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "stdlat2")) then
+        param_value := lat2
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "nx")) then
+;        param_value := nxm
+        param_value := nx
+        fmt_str = "%10.0f"
+      else if (strcmp_exact(param_name, "ny")) then
+;        param_value := nym
+        param_value := ny
+        fmt_str = "%10.0f"
+      else if (strcmp_exact(param_name, "lon1")) then
+        param_value := lon_SW
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "lat1")) then
+        param_value := lat_SW
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "dx")) then
+        param_value := dx
+        fmt_str = "%16.8f"
+      else if (strcmp_exact(param_name, "dy")) then
+        param_value := dy
+        fmt_str = "%16.8f"
+      else
+        unrecognized_param = True
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+
+    end if
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+;
+    if (unrecognized_param) then
       msg := char_nl + \
 "Unknown parameter name specified for given output_coord_sys:" + char_nl + \
 "  output_coord_sys = " + char_dq + output_coord_sys + char_dq + char_nl + \
@@ -300,16 +416,6 @@ begin
 "Stopping."
       print("" + msg)
       exit
-
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
     end if
 ;
 ; Generate a string containing the parameter value and formatted as spe-
@@ -343,24 +449,13 @@ begin
 ;
 ; Generate a string array containing each line in the model_configure
 ; file that specifies a parameter describing the write-component output
-; grid.  Each such line will contain the parameter name, value, and an
-; trailing comment, with the trailing comments aligned for readability.
+; grid.  Each such line will contain the parameter name, value, and any
+; trailing comments, with the trailing comments aligned for readability.
 ;
 ; **********************************************************************
 ;
   lines_final := strpad(param_names_and_vals, " ", "right")
   lines_final := lines_final + "  " + trailing_comments
-;
-; **********************************************************************
-;
-; Print out the write-component parameter values calculated above.
-;
-; **********************************************************************
-;
-  msg := char_nl + \
-"Write-component parameters corresponding to this native grid are:" + char_nl
-  print("" + msg)
-  print("" + lines_final)
 ;
 ; **********************************************************************
 ;

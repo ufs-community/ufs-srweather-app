@@ -162,6 +162,10 @@ example_usage_and_help_str
       + "'s/(^gtype=)([" + char_dq + "]*)([A-Za-z]+)([" + char_dq + "]*)(.*)/\3/p' " \
       + var_defns_fn
   gtype := systemfunc(cmd)
+
+; This is a temporary fix.  Need this since we removed "gtype" from the
+; variable defintions file of the community workflow.
+gtype = "regional"
 ;
 ; **********************************************************************
 ;

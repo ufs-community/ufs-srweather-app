@@ -718,8 +718,8 @@ msg + char_nl + \
 ; both poles lie within the tile (i.e. crossing of the IDL by a tile
 ; boundary is a necessary but not sufficient condition for one or both
 ; poles to lie within the tile).  Below, if the IDL crossing check is
-; triggered, we do we do not go further to check whether or not one or
-; both poles lie within the tile (because that test is more complex).
+; triggered, we do not go further to check whether or not one or both 
+; poles lie within the tile (because that test is more complex).
 ;
 ; **********************************************************************
 ;
@@ -932,7 +932,7 @@ msg + char_nl + \
 ; the north and south poles and the one that straddles the IDL), the in-
 ; dices of the SW, SE, NE, and NW corners of the tile will not be set 
 ; (they will remain set to their initial missing values), so the check
-; below will be triggered.  Something more comples needs to be done for
+; below will be triggered.  Something more complex needs to be done for
 ; such tiles, but we do not worry about it here for now since we're only
 ; dealing with regional domains.
 ;

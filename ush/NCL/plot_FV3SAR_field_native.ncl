@@ -494,6 +494,75 @@ end if
 ;
 ; **********************************************************************
 ;
+; Get/construct the write-component grid.
+;
+; **********************************************************************
+;
+
+; These should be at the top and go through the process_...() function.
+
+;  show_wrtcmp_grid = True
+  show_wrtcmp_grid = False
+
+  show_wrtcmp_bdy = True
+;  show_wrtcmp_bdy = False
+
+  wrtcmp_bdy_color = "green"
+
+
+;  rd := "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01/2017090700"
+;  rd := "/scratch3/BMC/det/Gerard.Ketefian"
+  rd := run_dir + "/2019052000"
+
+  wrtcmp_config_fn := rd + "/model_configure"
+;  wrtcmp_config_tmpl_fn = wrtcmp_config_fn + ".tmpl"
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+;
+  if (show_wrtcmp_grid .or. show_wrtcmp_bdy) then
+print("")
+print("wrtcmp_config_fn = " + char_dq + wrtcmp_config_fn + char_dq)
+pause
+    grid_info := get_wrtcmp_grid(wrtcmp_config_fn, show_wrtcmp_bdy)
+
+    nx_wrtcmp = grid_info@nx
+    ny_wrtcmp = grid_info@ny
+    lon_cntrs_unstruc_wrtcmp = grid_info@lon_cntrs_unstruc
+    lat_cntrs_unstruc_wrtcmp = grid_info@lat_cntrs_unstruc
+    lon_verts_unstruc_wrtcmp = grid_info@lon_verts_unstruc
+    lat_verts_unstruc_wrtcmp = grid_info@lat_verts_unstruc
+    lon_bdy_wrtcmp = grid_info@lon_bdy
+    lat_bdy_wrtcmp = grid_info@lat_bdy
+    lon_grid_cntr_wrtcmp = grid_info@lon_grid_cntr
+    lat_grid_cntr_wrtcmp = grid_info@lat_grid_cntr
+    coord_data_type_wrtcmp = grid_info@coord_data_type
+
+    print("")
+    print("lon_grid_cntr_wrtcmp = " + lon_grid_cntr_wrtcmp + " deg")
+    print("lat_grid_cntr_wrtcmp = " + lat_grid_cntr_wrtcmp + " deg")
+pause
+
+
+    out := calc_wrtcmp_grid_params( \
+           wrtcmp_config_fn, \
+           lon_ctr_native, lat_ctr_native, \
+           lon_tile_corners_face_midpts_native, \
+           lat_tile_corners_face_midpts_native, \
+           dx_native, dy_native, \
+           angle_units)
+
+print("")
+print("out = " + out)
+pause
+
+  end if
+;
+; **********************************************************************
+;
 ; Read in the FV3SAR grid.
 ;
 ; **********************************************************************
@@ -620,59 +689,59 @@ end if
     print("lat_grid_cntr_RAP = " + lat_grid_cntr_RAP + " deg")
 
   end if
+;;
+;; **********************************************************************
+;;
+;; Get/construct the write-component grid.
+;;
+;; **********************************************************************
+;;
 ;
-; **********************************************************************
+;; These should be at the top and go through the process_...() function.
 ;
-; Get/construct the write-component grid.
+;;  show_wrtcmp_grid = True
+;  show_wrtcmp_grid = False
 ;
-; **********************************************************************
+;  show_wrtcmp_bdy = True
+;;  show_wrtcmp_bdy = False
 ;
-
-; These should be at the top and go through the process_...() function.
-
-;  show_wrtcmp_grid = True
-  show_wrtcmp_grid = False
-
-  show_wrtcmp_bdy = True
-;  show_wrtcmp_bdy = False
-
-  wrtcmp_bdy_color = "green"
-
-
-;  rd := "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01/2017090700"
-  rd := "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM"
-
-  wrtcmp_config_fn := rd + "/model_configure"
-  wrtcmp_config_tmpl_fn = wrtcmp_config_fn + ".tmpl"
-;
-; **********************************************************************
+;  wrtcmp_bdy_color = "green"
 ;
 ;
+;;  rd := "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01/2017090700"
+;  rd := "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM"
 ;
-; **********************************************************************
+;  wrtcmp_config_fn := rd + "/model_configure"
+;  wrtcmp_config_tmpl_fn = wrtcmp_config_fn + ".tmpl"
+;;
+;; **********************************************************************
+;;
+;;
+;;
+;; **********************************************************************
+;;
+;  if (show_wrtcmp_grid .or. show_wrtcmp_bdy) then
 ;
-  if (show_wrtcmp_grid .or. show_wrtcmp_bdy) then
-
-    grid_info := get_wrtcmp_grid(wrtcmp_config_fn, show_wrtcmp_bdy)
-
-    nx_wrtcmp = grid_info@nx
-    ny_wrtcmp = grid_info@ny
-    lon_cntrs_unstruc_wrtcmp = grid_info@lon_cntrs_unstruc
-    lat_cntrs_unstruc_wrtcmp = grid_info@lat_cntrs_unstruc
-    lon_verts_unstruc_wrtcmp = grid_info@lon_verts_unstruc
-    lat_verts_unstruc_wrtcmp = grid_info@lat_verts_unstruc
-    lon_bdy_wrtcmp = grid_info@lon_bdy
-    lat_bdy_wrtcmp = grid_info@lat_bdy
-    lon_grid_cntr_wrtcmp = grid_info@lon_grid_cntr
-    lat_grid_cntr_wrtcmp = grid_info@lat_grid_cntr
-    coord_data_type_wrtcmp = grid_info@coord_data_type
-
-    print("")
-    print("lon_grid_cntr_wrtcmp = " + lon_grid_cntr_wrtcmp + " deg")
-    print("lat_grid_cntr_wrtcmp = " + lat_grid_cntr_wrtcmp + " deg")
-pause
-
-  end if
+;    grid_info := get_wrtcmp_grid(wrtcmp_config_fn, show_wrtcmp_bdy)
+;
+;    nx_wrtcmp = grid_info@nx
+;    ny_wrtcmp = grid_info@ny
+;    lon_cntrs_unstruc_wrtcmp = grid_info@lon_cntrs_unstruc
+;    lat_cntrs_unstruc_wrtcmp = grid_info@lat_cntrs_unstruc
+;    lon_verts_unstruc_wrtcmp = grid_info@lon_verts_unstruc
+;    lat_verts_unstruc_wrtcmp = grid_info@lat_verts_unstruc
+;    lon_bdy_wrtcmp = grid_info@lon_bdy
+;    lat_bdy_wrtcmp = grid_info@lat_bdy
+;    lon_grid_cntr_wrtcmp = grid_info@lon_grid_cntr
+;    lat_grid_cntr_wrtcmp = grid_info@lat_grid_cntr
+;    coord_data_type_wrtcmp = grid_info@coord_data_type
+;
+;    print("")
+;    print("lon_grid_cntr_wrtcmp = " + lon_grid_cntr_wrtcmp + " deg")
+;    print("lat_grid_cntr_wrtcmp = " + lat_grid_cntr_wrtcmp + " deg")
+;pause
+;
+;  end if
 ;
 ; **********************************************************************
 ;
