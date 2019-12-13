@@ -362,22 +362,12 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
   input_type="grib2"
 
   internal_GSD=".false."
-#  cdate_min_HRRRX="2019111500"
-#  if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" -o \
-#       "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ] && \
-#     [ ${CDATE} -gt ${cdate_min_HRRRX} ]; then
-#    print_info_msg "
-#Setting the chgres_cube namelist setting \"internal_GSD\" to \".true.\" in
-#order to read in land surface model (LSM) variables available in the
-#HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
-#    internal_GSD=".true."
-#  fi
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
       numsoil_out="4"
-    elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" -o \
-           "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
+    elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+         [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
       numsoil_out="9"
     fi
   fi
