@@ -673,37 +673,37 @@ predefined domain:
 "
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-163.5 #HRRR-AK is -163.5 
-    lat_rgnl_ctr=65.8 #HRRR-AK is 60.8
+    LON_RGNL_CTR=-163.5 #HRRR-AK is -163.5 
+    LAT_RGNL_CTR=62.8 #HRRR-AK is 60.8
 
-    delx="3000.0"
-    dely="3000.0"
+    DELX="3000.0"
+    DELY="3000.0"
 
-    nx_T7=1230 #HRRR-AK is 1300
-    ny_T7=850 #HRRR-AK is 920
+    NX_T7=1230 #HRRR-AK is 1300
+    NY_T7=850 #HRRR-AK is 920
 
-    nhw_T7=6
+    NHW_T7=6
 
-    dt_atmos="50"
+    DT_ATMOS="50"
 
-    layout_x="30"
-    layout_y="17"
-    blocksize="25"
+    LAYOUT_X="30"
+    LAYOUT_Y="17"
+    BLOCKSIZE="25"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="2"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
-      WRTCMP_nx="191"
-      WRTCMP_ny="97"
-      WRTCMP_lon_lwr_left="-120.72962370"
-      WRTCMP_lat_lwr_left="25.11648583"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_cen_lon="${LON_RGNL_CTR}"
+      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
+      WRTCMP_nx="1169"
+      WRTCMP_ny="762"
+      WRTCMP_lon_lwr_left="172.0"
+      WRTCMP_lat_lwr_left="49.0"
+      WRTCMP_dx="$DELX"
+      WRTCMP_dy="$DELY"
     fi
 
   fi
