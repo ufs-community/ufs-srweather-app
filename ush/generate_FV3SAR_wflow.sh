@@ -256,7 +256,7 @@ sed -i -r -e "s|${regex_search}|${all_cycledefs}|g" "${WFLOW_XML_FP}"
 #
 machine=${MACHINE,,}
 
-cd_vrfy "${MODULES_DIR}/$machine"
+cd_vrfy "${MODULES_DIR}/tasks/$machine"
 
 #
 # The "module" file (really a shell script) for orog in the UFS_UTILS 
