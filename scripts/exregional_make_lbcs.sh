@@ -271,8 +271,8 @@ case "${EXTRN_MDL_NAME_LBCS}" in
     if [ "${USE_CCPP}" = "TRUE" ]; then
       if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
         tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
-      elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" -o \
-             "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
+      elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+           [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
         tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
@@ -312,8 +312,8 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   if [ "${USE_CCPP}" = "TRUE" ]; then
     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
       numsoil_out="4"
-    elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" -o \
-           "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
+    elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+         [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
       numsoil_out="9"
     fi
   fi

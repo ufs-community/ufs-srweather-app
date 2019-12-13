@@ -396,8 +396,8 @@ details:
 # "./", which are the only case encountered thus far.  The code may have
 # to be modified to accomodate other cases.
 #
-      if [ "${EXTRN_MDL_ARCVREL_DIR:0:1}" = "/" -o \
-           "${EXTRN_MDL_ARCVREL_DIR:0:2}" = "./" ]; then
+      if [ "${EXTRN_MDL_ARCVREL_DIR:0:1}" = "/" ] || \
+         [ "${EXTRN_MDL_ARCVREL_DIR:0:2}" = "./" ]; then
 #
 # Strip the "/" or "./" from the beginning of EXTRN_MDL_ARCVREL_DIR to
 # obtain the relative directory from which to move the extracted files

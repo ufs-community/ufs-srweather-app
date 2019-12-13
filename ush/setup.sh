@@ -429,8 +429,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${USE_CCPP}" = "TRUE" -a \
-     "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
+if [ "${USE_CCPP}" = "TRUE" ] && \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
 
   if [ "${EXTRN_MDL_NAME_ICS}" != "GSMGFS" -a \
        "${EXTRN_MDL_NAME_ICS}" != "FV3GFS" ] || \
@@ -502,7 +502,8 @@ have this form:
   CYCL_HRS[$i] = \"${CYCL_HRS[$i]}\""
   fi
 
-  if [ "${CYCL_OR_NULL}" -lt "0" ] || [ "${CYCL_OR_NULL}" -gt "23" ]; then
+  if [ "${CYCL_OR_NULL}" -lt "0" ] || \
+     [ "${CYCL_OR_NULL}" -gt "23" ]; then
     print_err_msg_exit "\
 Each element of CYCL_HRS must be an integer between \"00\" and \"23\", in-
 clusive (including a leading \"0\", if necessary), specifying an hour-of-

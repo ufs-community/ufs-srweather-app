@@ -230,11 +230,11 @@ modulefile_path=$( readlink -f "${modules_dir}/${modulefile_name}" )
 
 if [ ! -f "${modulefile_path}" ]; then
 
-  if [ "${task_name}" = "${MAKE_OROG_TN}" -o \
-       "${task_name}" = "${MAKE_SFC_CLIMO_TN}" -o \
-       "${task_name}" = "${MAKE_ICS_TN}" -o \
-       "${task_name}" = "${MAKE_LBCS_TN}" -o \
-       "${task_name}" = "${RUN_FCST_TN}" ]; then
+  if [ "${task_name}" = "${MAKE_OROG_TN}" ] || \
+     [ "${task_name}" = "${MAKE_SFC_CLIMO_TN}" ] || \
+     [ "${task_name}" = "${MAKE_ICS_TN}" ] || \
+     [ "${task_name}" = "${MAKE_LBCS_TN}" ] || \
+     [ "${task_name}" = "${RUN_FCST_TN}" ]; then
 
     print_err_msg_exit "\
 The target (modulefile_path) of the symlink (modulefile_name) in the 
