@@ -1,7 +1,7 @@
 valid_vals_RUN_ENVIR=("nco" "community")
 valid_vals_VERBOSE=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_MACHINE=("WCOSS_C" "WCOSS" "DELL" "THEIA" "HERA" "JET" "ODIN" "CHEYENNE")
-valid_vals_PREDEF_GRID_NAME=("GSD_HAFSV0.A3km" "GSD_HAFSV0.A13km" "GSD_HAFSV0.A25km" "GSD_RAP13km" "GSD_HRRR3km" "GSD_HRRR13km" "GSD_HRRR25km" "GSD_HRRR_AK_3km" "EMC_CONUS" "EMC_AK")
+valid_vals_PREDEF_GRID_NAME=("GSD_HAFSV0.A3km" "GSD_HAFSV0.A13km" "GSD_HAFSV0.A25km" "GSD_RAP13km" "GSD_HRRR3km" "GSD_HRRR13km" "GSD_HRRR25km" "GSD_HRRR_AK_3km" "GSD_HRRR_AK_50km" "EMC_CONUS" "EMC_AK")
 valid_vals_USE_CCPP=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_CCPP_PHYS_SUITE=("FV3_GFS_2017_gfdlmp" "FV3_GSD_v0" "FV3_GSD_SAR")
 valid_vals_RES=("48" "96" "192" "384" "768" "1152" "3072")

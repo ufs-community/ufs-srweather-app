@@ -708,7 +708,60 @@ predefined domain:
 
   fi
   ;;
+#
+#-----------------------------------------------------------------------
+#
+# 3-km HRRR Alaska grid.
+#
+#-----------------------------------------------------------------------
+#
+"GSD_HRRR_AK_50km")
 
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
+predefined domain:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
+"
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+
+    LON_RGNL_CTR=-163.5 #HRRR-AK is -163.5 
+    LAT_RGNL_CTR=62.8 #HRRR-AK is 60.8
+
+    DELX="50000.0"
+    DELY="50000.0"
+
+    NX_T7=74 #HRRR-AK is 1300
+    NY_T7=51 #HRRR-AK is 920
+
+    NHW_T7=6
+
+    DT_ATMOS="600"
+
+    LAYOUT_X="2"
+    LAYOUT_Y="3"
+    BLOCKSIZE="37"
+
+    if [ "$QUILTING" = "TRUE" ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group="1"
+      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_cen_lon="${LON_RGNL_CTR}"
+      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
+      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
+      WRTCMP_nx="70"
+      WRTCMP_ny="45"
+      WRTCMP_lon_lwr_left="172.0"
+      WRTCMP_lat_lwr_left="49.0"
+      WRTCMP_dx="$DELX"
+      WRTCMP_dy="$DELY"
+    fi
+
+  fi
+  ;;
 #
 esac
 #
