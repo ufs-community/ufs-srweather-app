@@ -640,7 +640,7 @@ end if
 
 
 ;  rd := "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01/2017090700"
-  rd := "/scratch3/BMC/det/Gerard.Ketefian"
+  rd := "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM"
 
   wrtcmp_config_fn := rd + "/model_configure"
   wrtcmp_config_tmpl_fn = wrtcmp_config_fn + ".tmpl"
