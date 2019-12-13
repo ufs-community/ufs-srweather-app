@@ -239,8 +239,8 @@ function print_err_msg_exit() {
 
     msg_header=$( printf "\n\
 ERROR:
-  From script in file:  \"${caller_fn}\"
-  In directory:         \"${caller_dir}\"
+  From script:  \"${caller_fn}\"
+  Full path to script:  \"${caller_fp}\"
 "
                 )
 
@@ -249,8 +249,8 @@ ERROR:
     msg_header=$( printf "\n\
 ERROR:
   From function:  \"${caller_name}\"
-  In file:        \"${caller_fn}\"
-  In directory:   \"${caller_dir}\"
+  In file:  \"${caller_fn}\"
+  Full path to file:  \"${caller_fp}\"
 "
                 )
 
