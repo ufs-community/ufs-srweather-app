@@ -254,7 +254,7 @@ case "${EXTRN_MDL_NAME_LBCS}" in
 
 "FV3GFS")
 
-  if [ "${FV3GFS_FILE_FMT}" = "nemsio" ]; then
+  if [ "$FV3GFS_FILE_FMT_LBCS" = "nemsio" ]; then
 
     external_model="FV3GFS"
 
@@ -285,7 +285,7 @@ case "${EXTRN_MDL_NAME_LBCS}" in
       tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
     fi
 
-  elif [ "${FV3GFS_FILE_FMT}" = "grib2" ]; then
+  elif [ "$FV3GFS_FILE_FMT_LBCS" = "grib2" ]; then
 
     external_model="GFS"
 
@@ -361,9 +361,9 @@ for (( i=0; i<${num_fhrs}; i++ )); do
     fn_atm_nemsio="${EXTRN_MDL_FNS[$i]}"
     ;;
   "FV3GFS")
-     if [ "${FV3GFS_FILE_FMT}" = "nemsio" ]; then
+     if [ "$FV3GFS_FILE_FMT_LBCS" = "nemsio" ]; then
        fn_atm_nemsio="${EXTRN_MDL_FNS[$i]}"
-     elif [ "${FV3GFS_FILE_FMT}" = "grib2" ]; then
+     elif [ "$FV3GFS_FILE_FMT_LBCS" = "grib2" ]; then
        fn_grib2="${EXTRN_MDL_FNS[$i]}"
      fi
     ;;
