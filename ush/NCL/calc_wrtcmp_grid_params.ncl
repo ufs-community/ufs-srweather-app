@@ -352,7 +352,6 @@ begin
       end if
       end if
       end if
-      end if
 
     else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then                                                                              
 
@@ -369,11 +368,9 @@ begin
         param_value := lat2
         fmt_str = "%16.8f"
       else if (strcmp_exact(param_name, "nx")) then
-;        param_value := nxm
         param_value := nx
         fmt_str = "%10.0f"
       else if (strcmp_exact(param_name, "ny")) then
-;        param_value := nym
         param_value := ny
         fmt_str = "%10.0f"
       else if (strcmp_exact(param_name, "lon1")) then
@@ -399,7 +396,9 @@ begin
       end if
       end if
       end if
+      end if
 
+    end if
     end if
 ;
 ; **********************************************************************
