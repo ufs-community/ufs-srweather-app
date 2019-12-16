@@ -1245,7 +1245,7 @@ check_var_valid_value \
 #
 #-----------------------------------------------------------------------
 #
-if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
+if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
   err_msg="\
 The file format for FV3GFS external model files specified in FV3GFS_-
 FILE_FMT_ICS is not supported:
