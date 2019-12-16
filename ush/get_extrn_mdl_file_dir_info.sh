@@ -353,6 +353,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+  if [ "${anl_or_fcst}" = "ANL" ]; then
+    fv3gfs_file_fmt="${FV3GFS_FILE_FMT_ICS}"
+  elif [ "${anl_or_fcst}" = "FCST" ]; then
+    fv3gfs_file_fmt="${FV3GFS_FILE_FMT_LBCS}"
+  fi
+
   case "${anl_or_fcst}" in
 #
 #-----------------------------------------------------------------------
@@ -379,7 +385,7 @@ fi
 
     "FV3GFS")
     
-      if [ "${FV3GFS_FILE_FMT}" = "nemsio" ]; then  
+      if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then  
 
 #        fns=( "atm" "sfc" "nst" )
         fns=( "atm" "sfc" )
@@ -388,9 +394,12 @@ fi
         suffix="anl.nemsio"
         fns=( "${fns[@]/%/$suffix}" )
 
-      elif [ "${FV3GFS_FILE_FMT}" = "grib2" ]; then
+      elif [ "${fv3gfs_file_fmt}" = "grib2" ]; then
 
-      #  fns=( "gfs.t${hh}z.pgrb2.0p25.anl" )  # Get only 0.25 degree files for now.
+# GSK 12/16/2019:
+# Turns out that the .f000 file contains certain necessary fields that
+# are not in the .anl file, so switch to the former.
+#        fns=( "gfs.t${hh}z.pgrb2.0p25.anl" )  # Get only 0.25 degree files for now.
         fns=( "gfs.t${hh}z.pgrb2.0p25.f000" )  # Get only 0.25 degree files for now.
 
       fi
@@ -437,13 +446,13 @@ bination of external model (extrn_mdl_name) and analysis or forecast
       ;;
 
     "FV3GFS")
-      if [ "${FV3GFS_FILE_FMT}" = "nemsio" ]; then
+      if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then
         fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
         prefix="gfs.t${hh}z.atmf"
         fns=( "${fcst_hhh[@]/#/$prefix}" )
         suffix=".nemsio"
         fns=( "${fns[@]/%/$suffix}" )
-      elif [ "${FV3GFS_FILE_FMT}" = "grib2" ]; then
+      elif [ "${fv3gfs_file_fmt}" = "grib2" ]; then
         fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
         prefix="gfs.t${hh}z.pgrb2.0p25.f"
         fns=( "${fcst_hhh[@]/#/$prefix}" )
@@ -657,7 +666,7 @@ has not been specified for this external model:
     ;;
 
   "FV3GFS")
-    if [ "${FV3GFS_FILE_FMT}" = "nemsio" ]; then
+    if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then
  
       if [ "${cdate_FV3SAR}" -le "2019061206" ]; then
         arcv_dir="/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_C/Q2FY19/prfv3rt3/${cdate_FV3SAR}"
@@ -684,7 +693,7 @@ has not been specified for this external model:
         arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
       fi
 
-    elif [ "${FV3GFS_FILE_FMT}" = "grib2" ]; then
+    elif [ "${fv3gfs_file_fmt}" = "grib2" ]; then
 
       arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
       arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}.gfs_pgrb2"

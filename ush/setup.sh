@@ -1241,18 +1241,32 @@ check_var_valid_value \
 #
 #-----------------------------------------------------------------------
 #
-# Make sure FV3GFS_FILE_FMT is set to a valid value.
+# Make sure FV3GFS_FILE_FMT_ICS is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
 if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
-   [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
   err_msg="\
 The file format for FV3GFS external model files specified in FV3GFS_-
-FILE_FMT is not supported:
-  FV3GFS_FILE_FMT = \"${FV3GFS_FILE_FMT}\""
+FILE_FMT_ICS is not supported:
+  FV3GFS_FILE_FMT_ICS = \"${FV3GFS_FILE_FMT_ICS}\""
   check_var_valid_value \
-    "FV3GFS_FILE_FMT" "valid_vals_FV3GFS_FILE_FMT" "${err_msg}"
+    "FV3GFS_FILE_FMT_ICS" "valid_vals_FV3GFS_FILE_FMT_ICS" "${err_msg}"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure FV3GFS_FILE_FMT_LBCS is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
+  err_msg="\
+The file format for FV3GFS external model files specified in FV3GFS_-
+FILE_FMT_LBCS is not supported:
+  FV3GFS_FILE_FMT_LBCS = \"${FV3GFS_FILE_FMT_LBCS}\""
+  check_var_valid_value \
+    "FV3GFS_FILE_FMT_LBCS" "valid_vals_FV3GFS_FILE_FMT_LBCS" "${err_msg}"
 fi
 #
 #-----------------------------------------------------------------------
