@@ -390,7 +390,8 @@ fi
 
       elif [ "${FV3GFS_FILE_FMT}" = "grib2" ]; then
 
-        fns=( "gfs.t${hh}z.pgrb2.0p25.anl" )  # Get only 0.25 degree files for now.
+      #  fns=( "gfs.t${hh}z.pgrb2.0p25.anl" )  # Get only 0.25 degree files for now.
+        fns=( "gfs.t${hh}z.pgrb2.0p25.f000" )  # Get only 0.25 degree files for now.
 
       fi
       ;;

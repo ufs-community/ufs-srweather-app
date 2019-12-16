@@ -112,17 +112,15 @@ predefined domain:
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="32"
-      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_output_grid="regional_latlon"
       WRTCMP_cen_lon="${LON_RGNL_CTR}"
-      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
-      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
-      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
-      WRTCMP_nx="2937"
-      WRTCMP_ny="1788"
-      WRTCMP_lon_lwr_left="-97.83959"
-      WRTCMP_lat_lwr_left="-5.67929305"
-      WRTCMP_dx="$DELX"
-      WRTCMP_dy="$DELY"
+      WRTCMP_cen_lat="25.0"
+      WRTCMP_lon_lwr_left="-114.5"
+      WRTCMP_lat_lwr_left="-5.0"
+      WRTCMP_lon_upr_rght="-9.5"
+      WRTCMP_lat_upr_rght="55.0"
+      WRTCMP_dlon="0.03"
+      WRTCMP_dlat="0.03"
     fi
 
   fi
@@ -165,18 +163,16 @@ predefined domain:
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
-      WRTCMP_write_tasks_per_group="12"
-      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_write_tasks_per_group="32"
+      WRTCMP_output_grid="regional_latlon"
       WRTCMP_cen_lon="${LON_RGNL_CTR}"
-      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
-      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
-      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
-      WRTCMP_nx="658"
-      WRTCMP_ny="412"
-      WRTCMP_lon_lwr_left="-98.0"
-      WRTCMP_lat_lwr_left="-5.33"
-      WRTCMP_dx="$DELX"
-      WRTCMP_dy="$DELY"
+      WRTCMP_cen_lat="25.0"
+      WRTCMP_lon_lwr_left="-114.5"
+      WRTCMP_lat_lwr_left="-5.0"
+      WRTCMP_lon_upr_rght="-9.5"
+      WRTCMP_lat_upr_rght="55.0"
+      WRTCMP_dlon="0.13"
+      WRTCMP_dlat="0.13"
     fi
 
   fi
@@ -219,18 +215,16 @@ predefined domain:
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
-      WRTCMP_write_tasks_per_group="10"
-      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_write_tasks_per_group="32"
+      WRTCMP_output_grid="regional_latlon"
       WRTCMP_cen_lon="${LON_RGNL_CTR}"
-      WRTCMP_cen_lat="${LAT_RGNL_CTR}"
-      WRTCMP_stdlat1="${LAT_RGNL_CTR}"
-      WRTCMP_stdlat2="${LAT_RGNL_CTR}"
-      WRTCMP_nx="337"
-      WRTCMP_ny="210"
-      WRTCMP_lon_lwr_left="-98.0"
-      WRTCMP_lat_lwr_left="-4.5"
-      WRTCMP_dx="$DELX"
-      WRTCMP_dy="$DELY"
+      WRTCMP_cen_lat="25.0"
+      WRTCMP_lon_lwr_left="-114.5"
+      WRTCMP_lat_lwr_left="-5.0"
+      WRTCMP_lon_upr_rght="-9.5"
+      WRTCMP_lat_upr_rght="55.0"
+      WRTCMP_dlon="0.25"
+      WRTCMP_dlat="0.25"
     fi
 
   fi
