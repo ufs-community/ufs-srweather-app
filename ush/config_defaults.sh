@@ -628,8 +628,6 @@ WRTCMP_dlat=""
 # The following are used only for the case of WRTCMP_output_grid set to
 # "'lambert_conformal'".
 #
-WRTCMP_cen_lon=""
-WRTCMP_cen_lat=""
 WRTCMP_stdlat1=""
 WRTCMP_stdlat2=""
 WRTCMP_nx=""

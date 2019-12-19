@@ -57,18 +57,6 @@ ushdir="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-# Load modules.
-#
-#-----------------------------------------------------------------------
-#
-module purge
-# These need to be made machine-dependent.  The following work only on
-# Hera.
-module load intel/19.0.4.243
-module load netcdf/4.7.0
-#
-#-----------------------------------------------------------------------
-#
 # Source the setup script.  Note that this in turn sources the configu-
 # ration file/script (config.sh) in the current directory.  It also cre-
 # ates the run and work directories, the INPUT and RESTART subdirecto-
@@ -400,7 +388,7 @@ if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
 #
 # Make a backup copy of the user's crontab file and save it in a file.
 #
-  time_stamp=$( date "+%Y%m%d%H%M%S" )
+  time_stamp=$( date "+%F_%T" )
   crontab_backup_fp="$EXPTDIR/crontab.bak.${time_stamp}"
   print_info_msg "
 Copying contents of user cron table to backup file:
