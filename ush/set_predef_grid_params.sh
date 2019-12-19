@@ -705,7 +705,7 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-# 3-km HRRR Alaska grid.
+# 50-km HRRR Alaska grid.
 #
 #-----------------------------------------------------------------------
 #
@@ -721,14 +721,14 @@ predefined domain:
 "
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    LON_RGNL_CTR=-163.5 #HRRR-AK is -163.5 
-    LAT_RGNL_CTR=62.8 #HRRR-AK is 60.8
+    LON_RGNL_CTR=-163.5
+    LAT_RGNL_CTR=62.8
 
     DELX="50000.0"
     DELY="50000.0"
 
-    NX_T7=74 #HRRR-AK is 1300
-    NY_T7=51 #HRRR-AK is 920
+    NX_T7=74
+    NY_T7=51
 
     NHW_T7=6
 

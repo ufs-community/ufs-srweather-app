@@ -1,4 +1,5 @@
 #!/bin/bash -l
+
 #
 #-----------------------------------------------------------------------
 #
@@ -457,7 +458,7 @@ Exactly one file must exist in directory FIXsar matching the globbing
 pattern glob_pattern:
   FIXsar = \"${FIXsar}\"
   glob_pattern = \"${glob_pattern}\"
-  num_files = \"${num_files}\""
+  num_files = ${num_files}"
   fi
 
   fn=$( ls -1 ${glob_pattern} )
@@ -755,7 +756,7 @@ For automatic resubmission of the workflow (say every 3 minutes), the
 following line can be added to the user's crontab (use \"crontab -e\" to
 edit the cron table): 
 
-*/3 * * * * cd $EXPTDIR && $rocotorun_cmd
+*/3 * * * * cd $EXPTDIR && ${rocotorun_cmd}
 
 Done.
 "

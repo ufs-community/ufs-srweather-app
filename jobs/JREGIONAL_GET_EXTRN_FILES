@@ -198,10 +198,10 @@ EXTRN_MDL_FILES_DIR="${CYCLE_DIR}/${EXTRN_MDL_NAME}/${ICS_OR_LBCS}"
 #
 #-----------------------------------------------------------------------
 #
-mkdir_vrfy -p "$EXTRN_MDL_FILES_DIR"
-cd_vrfy $EXTRN_MDL_FILES_DIR || print_err_msg_exit "\
+mkdir_vrfy -p "${EXTRN_MDL_FILES_DIR}"
+cd_vrfy ${EXTRN_MDL_FILES_DIR} || print_err_msg_exit "\
 Could not change directory to EXTRN_MDL_FILES_DIR:
-  EXTRN_MDL_FILES_DIR = \"$EXTRN_MDL_FILES_DIR\""
+  EXTRN_MDL_FILES_DIR = \"${EXTRN_MDL_FILES_DIR}\""
 #
 #-----------------------------------------------------------------------
 #
