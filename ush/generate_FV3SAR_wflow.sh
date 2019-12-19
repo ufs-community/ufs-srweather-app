@@ -701,6 +701,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# To have a record of how this experiment/workflow was generated, copy
+# the experiment/workflow configuration file to the experiment directo-
+# ry.
+#
+#-----------------------------------------------------------------------
+#
+cp_vrfy $USHDIR/${CUSTOM_CONFIG_FN} $EXPTDIR
+#
+#-----------------------------------------------------------------------
+#
 # For convenience, print out the commands that need to be issued on the 
 # command line in order to launch the workflow and to check its status.  
 # Also, print out the command that should be placed in the user's cron-
@@ -772,15 +782,106 @@ Done.
 { restore_shell_opts; } > /dev/null 2>&1
 
 }
-#
-#-----------------------------------------------------------------------
-#
-# Call the function defined above.
-#
-#-----------------------------------------------------------------------
-#
-generate_FV3SAR_wflow
 
+
+
+
+#
+#-----------------------------------------------------------------------
+#
+# Start of the script that will call the experiment/workflow generation 
+# function defined above.
+#
+#-----------------------------------------------------------------------
+#
+set -u
+#set -x
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Set directories.
+#
+#-----------------------------------------------------------------------
+#
+ushdir="${scrfunc_dir}"
+#
+# Set the name of and full path to the temporary file in which we will 
+# save some experiment/workflow variables.  The need for this temporary
+# file is explained below.
+#
+tmp_fn="tmp"
+tmp_fp="$ushdir/${tmp_fn}"
+rm -f "${tmp_fp}"
+#
+# Set the name of and full path to the log file in which the output from
+# the experiment/workflow generation function will be saved.
+#
+log_fn="log.generate_FV3SAR_wflow"
+log_fp="$ushdir/${log_fn}"
+rm -f "${log_fp}"
+#
+# Call the generate_FV3SAR_wflow function defined above to generate the
+# experiment/workflow.  Note that we pipe the output of the function 
+# (and possibly other commands) to the "tee" command in order to be able
+# to both save it to a file and print it out to the screen (stdout).  
+# The piping causes the call to the function (and the other commands 
+# grouped with it using the curly braces, { ... }) to be executed in a 
+# subshell.  As a result, the experiment/workflow variables that the 
+# function sets are not available outside of the grouping, i.e. they are
+# not available at and after the call to "tee".  Since some of these va-
+# riables are needed after the call to "tee" below, we save them in a 
+# temporary file and read them in outside the subshell later below.
+#
+{ 
+generate_FV3SAR_wflow 2>&1
+retval=$?
+echo "$EXPTDIR" >> "${tmp_fp}"
+echo "$retval" >> "${tmp_fp}"
+} | tee "${log_fp}"
+#
+# Read in experiment/workflow variables needed later below from the tem-
+# porary file created in the subshell above containing the call to the 
+# generate_FV3SAR_wflow function.  These variables are not directly 
+# available here because the call to generate_FV3SAR_wflow above takes
+# place in a subshell (due to the fact that we are then piping its out-
+# put to the "tee" command).  Then remove the temporary file.
+#
+exptdir=$( sed "1q;d" "${tmp_fp}" )
+retval=$( sed "2q;d" "${tmp_fp}" )
+rm "${tmp_fp}"
+#
+# If the call to the generate_FV3SAR_wflow function above was success-
+# ful, move the log file in which the "tee" command saved the output of
+# the function to the experiment directory.
+#
+if [ $retval -eq 0 ]; then
+  mv "${log_fp}" "$exptdir"
+#
+# If the call to the generate_FV3SAR_wflow function above was not suc-
+# cessful, print out an error message and exit with a nonzero return 
+# code.
+# 
+else
+  printf "
+Experiment/workflow generation failed.  Check the log file from the ex-
+periment/workflow generation script in the file specified by log_fp:
+  log_fp = \"${log_fp}\"
+Stopping.
+"
+  exit 1
+fi
 
 
 

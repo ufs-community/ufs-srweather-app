@@ -451,35 +451,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-  log_fp="$ushdir/log.generate_FV3SAR_wflow.${expt_name}"
-  print_info_msg "
-Generating experiment with name:
-  expt_name = \"${expt_name}\"
-Log file for generation step is:
-  log_fp = \"${log_fp}\""
-
-  $ushdir/generate_FV3SAR_wflow.sh > "${log_fp}" 2>&1 || { \
+  $ushdir/generate_FV3SAR_wflow.sh || \
     print_err_msg_exit "\
 Could not generate an experiment/workflow for the test specified by 
 expt_name:
-  expt_name = \"${expt_name}\"
-The log file from the generation script is in the file specified by 
-log_fp:
-  log_fp = \"${log_fp}\"";
-  }
-#
-#-----------------------------------------------------------------------
-#
-# Set the experiment directory to the one that the workflow will create.
-# Then, in order to have a record of how the experiment and workflow 
-# were generated, move the configuration file and experiment/workflow
-# generation log file to the experiment directory.
-#
-#-----------------------------------------------------------------------
-#
-  exptdir=$( readlink -f "$homerrfs/../expt_dirs/${expt_subdir}" )
-  mv_vrfy "${expt_config_fp}" "${exptdir}"
-  mv_vrfy "${log_fp}" "${exptdir}"
+  expt_name = \"${expt_name}\""
 
 done
 #
