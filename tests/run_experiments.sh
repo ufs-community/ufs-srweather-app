@@ -442,7 +442,8 @@ fi
 # and location of the configuration file to use to generate a new expe-
 # riment and corresponding workflow.
 #
-  ln_vrfy -fs "${expt_config_fp}" "$ushdir/config.sh"
+#  ln_vrfy -fs "${expt_config_fp}" "$ushdir/config.sh"
+  mv_vrfy -fs "${expt_config_fp}" "$ushdir/config.sh"
 #
 #-----------------------------------------------------------------------
 #
