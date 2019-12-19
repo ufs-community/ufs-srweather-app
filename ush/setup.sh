@@ -380,6 +380,21 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# If running in NCO mode, a valid EMC grid must be specified.  Make sure 
+# EMC_GRID_NAME is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  err_msg="\
+The EMC grid specified in EMC_GRID_NAME is not supported:
+  EMC_GRID_NAME = \"${EMC_GRID_NAME}\""
+  check_var_valid_value \
+    "EMC_GRID_NAME" "valid_vals_EMC_GRID_NAME" "${err_msg}"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that PREEXISTING_DIR_METHOD is set to a valid value.
 #
 #-----------------------------------------------------------------------

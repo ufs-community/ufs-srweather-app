@@ -128,7 +128,7 @@ FHR="${FHR_STR}"
 #
 CDATE_generic="@Y@m@d@H"
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  CYCLE_DIR="$STMP/tmpnwprd/${PREDEF_GRID_NAME}_${CDATE_generic}"
+  CYCLE_DIR="$STMP/tmpnwprd/${EMC_GRID_NAME}_${CDATE_generic}"
 else
   CYCLE_DIR="$EXPTDIR/${CDATE_generic}"
 fi
