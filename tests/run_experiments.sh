@@ -443,7 +443,7 @@ fi
 # riment and corresponding workflow.
 #
 #  ln_vrfy -fs "${expt_config_fp}" "$ushdir/config.sh"
-  mv_vrfy -fs "${expt_config_fp}" "$ushdir/config.sh"
+  mv_vrfy -f "${expt_config_fp}" "$ushdir/config.sh"
 #
 #-----------------------------------------------------------------------
 #
