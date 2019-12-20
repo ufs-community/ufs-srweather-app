@@ -103,7 +103,7 @@ predefined domain:
 
     NHW_T7=6
 
-    DT_ATMOS="100"
+    DT_ATMOS="40"
 
     LAYOUT_X="32"
     LAYOUT_Y="24"
