@@ -1520,6 +1520,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+WRTCMP_PARAMS_TMPL_FP = ""
+
 if [ "$QUILTING" = "TRUE" ]; then
 
   if [ -z "${WRTCMP_PARAMS_TMPL_FN}" ]; then
