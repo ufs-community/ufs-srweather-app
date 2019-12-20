@@ -1505,6 +1505,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+
+#Initialize WRTCMP_PARAMS_TMPL_FP in case QUILTING="FALSE"
+WRTCMP_PARAMS_TMPL_FP=""
+
 if [ "$QUILTING" = "TRUE" ]; then
 
   if [ -z "${WRTCMP_PARAMS_TMPL_FN}" ]; then
