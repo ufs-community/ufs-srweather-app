@@ -500,12 +500,12 @@ cd_vrfy ${shave_dir}
 #
 print_info_msg "$VERBOSE" "
 \"Shaving\" orography file with wide halo to obtain orography file with 
-${NH0_T7}-cell-wide halo..."
+${NH0}-cell-wide halo..."
 
-nml_fn="input.shave.orog.halo${NH0_T7}"
-shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0_T7}.nc"
+nml_fn="input.shave.orog.halo${NH0}"
+shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 printf "%s %s %s %s %s\n" \
-  ${NX_T7} ${NY_T7} ${NH0_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  ${NX_T7} ${NY_T7} ${NH0} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
@@ -524,12 +524,12 @@ mv_vrfy ${shaved_fp} ${OROG_DIR}
 #
 print_info_msg "$VERBOSE" "
 \"Shaving\" orography file with wide halo to obtain orography file with 
-${NH4_T7}-cell-wide halo..."
+${NH4}-cell-wide halo..."
 
-nml_fn="input.shave.orog.halo${NH4_T7}"
-shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc"
+nml_fn="input.shave.orog.halo${NH4}"
+shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 printf "%s %s %s %s %s\n" \
-  ${NX_T7} ${NY_T7} ${NH4_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  ${NX_T7} ${NY_T7} ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
@@ -573,7 +573,7 @@ Call to script to create links to orography files failed."
 #
 if [ 0 = 1 ]; then
 cd_vrfy ${OROG_DIR}
-ln_vrfy -sf ${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc \
+ln_vrfy -sf ${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc \
             ${CRES}_oro_data.tile${TILE_RGNL}.nc
 fi
 
@@ -590,13 +590,13 @@ fi
 if [ 0 = 1 ]; then
 cd_vrfy ${FIXsar}
 
-filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0_T7}.nc"
+filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 ln_vrfy --relative -sf ${OROG_DIR}/$filename $FIXsar
 ln_vrfy -sf $filename oro_data.nc
 
-filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc"
+filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 ln_vrfy --relative -sf ${OROG_DIR}/$filename $FIXsar
-ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc
+ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.halo${NH4}.nc
 ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.nc
 fi
 #

@@ -135,7 +135,7 @@ jend_rgnl_T6SG=$(( 2*JEND_RGNL_T6 ))
 # In order to calculate nhw_T6G using the above expression, we must
 # first specify NHW_T7.  Next, we specify an initial value for it by
 # setting it to one more than the largest-width halo that the model ac-
-# tually needs, which is NH4_T7.  We then calculate nhw_T6SG using the
+# tually needs, which is NH4.  We then calculate nhw_T6SG using the
 # above expression.  Note that these values of NHW_T7 and nhw_T6SG will
 # likely not be their final values; their final values will be calcula-
 # ted later below after calculating the starting and ending indices of
@@ -144,7 +144,7 @@ jend_rgnl_T6SG=$(( 2*JEND_RGNL_T6 ))
 #
 #-----------------------------------------------------------------------
 #
-NHW_T7=$(( NH4_T7+1 ))
+NHW_T7=$(( NH4+1 ))
 nhw_T6SG=$(( (2*NHW_T7 + REFINE_RATIO - 1)/REFINE_RATIO ))
 #
 #-----------------------------------------------------------------------

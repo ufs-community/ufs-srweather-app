@@ -272,7 +272,7 @@ mkdir_vrfy -p "$tmpdir"
 #   --jstart_nest ${jstart_rgnl_wide_halo_T6SG} \
 #   --iend_nest ${iend_rgnl_wide_halo_T6SG} \
 #   --jend_nest ${jend_rgnl_wide_halo_T6SG} \
-#   --halo ${NH3_T7} \
+#   --halo ${NH3} \
 #   --great_circle_algorithm
 #
 # This creates the 7 grid files ${CRES}_grid.tileN.nc for N=1,...,7.
@@ -287,7 +287,7 @@ mkdir_vrfy -p "$tmpdir"
 #
 # According to Rusty Benson of GFDL, the flag
 #
-#   --halo ${NH3_T7}
+#   --halo ${NH3}
 #
 # only checks to make sure that the nested or regional grid combined
 # with the specified halo lies completely within the parent tile.  If
@@ -451,18 +451,18 @@ cd_vrfy $tmpdir
 # GRID_DIR directory.
 #
 print_info_msg "$VERBOSE" "
-\"Shaving\" grid file with wide halo to obtain grid file with ${NH3_T7}-cell-wide
+\"Shaving\" grid file with wide halo to obtain grid file with ${NH3}-cell-wide
 halo..."
 
-nml_fn="input.shave.grid.halo${NH3_T7}"
-shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${NH3_T7}.nc"
+nml_fn="input.shave.grid.halo${NH3}"
+shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${NH3}.nc"
 printf "%s %s %s %s %s\n" \
-  ${NX_T7} ${NY_T7} ${NH3_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  ${NX_T7} ${NY_T7} ${NH3} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
 print_err_msg_exit "\
-Call to executable \"${shave_exec}\" to generate a grid file with a ${NH3_T7}-cell-wide
+Call to executable \"${shave_exec}\" to generate a grid file with a ${NH3}-cell-wide
 halo returned with nonzero exit code.  The namelist file nml_fn is in 
 directory tmpdir: 
   tmpdir = \"${tmpdir}\"
@@ -475,18 +475,18 @@ mv_vrfy ${shaved_fp} ${GRID_DIR}
 # GRID_DIR directory.
 #
 print_info_msg "$VERBOSE" "
-\"Shaving\" grid file with wide halo to obtain grid file with ${NH4_T7}-cell-wide
+\"Shaving\" grid file with wide halo to obtain grid file with ${NH4}-cell-wide
 halo..."
 
-nml_fn="input.shave.grid.halo${NH4_T7}"
-shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${NH4_T7}.nc"
+nml_fn="input.shave.grid.halo${NH4}"
+shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
 printf "%s %s %s %s %s\n" \
-  ${NX_T7} ${NY_T7} ${NH4_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  ${NX_T7} ${NY_T7} ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
 print_err_msg_exit "\
-Call to executable \"${shave_exec}\" to generate a grid file with a ${NH4_T7}-cell-wide
+Call to executable \"${shave_exec}\" to generate a grid file with a ${NH4}-cell-wide
 halo returned with nonzero exit code.  The namelist file nml_fn is in 
 directory tmpdir: 
   tmpdir = \"${tmpdir}\"

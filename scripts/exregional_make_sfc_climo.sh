@@ -105,8 +105,8 @@ input_vegetation_type_file="${SFC_CLIMO_INPUT_DIR}/vegetation_type.igbp.0.05.nc"
 input_vegetation_greenness_file="${SFC_CLIMO_INPUT_DIR}/vegetation_greenness.0.144.nc"
 mosaic_file_mdl="${FIXsar}/${CRES}_mosaic.nc"
 orog_dir_mdl="${FIXsar}"
-orog_files_mdl=${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc
-halo=${NH4_T7}
+orog_files_mdl=${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc
+halo=${NH4}
 maximum_snow_albedo_method="bilinear"
 snowfree_albedo_method="bilinear"
 vegetation_greenness_method="bilinear"
@@ -199,7 +199,7 @@ case "$GTYPE" in
   for fn in *.halo.nc; do
     if [ -f $fn ]; then
       bn="${fn%.halo.nc}"
-      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH4_T7}.nc
+      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH4}.nc
     fi
   done
 #
@@ -212,7 +212,7 @@ case "$GTYPE" in
   for fn in *.nc; do
     if [ -f $fn ]; then
       bn="${fn%.nc}"
-      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH0_T7}.nc
+      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH0}.nc
     fi
   done
   ;;

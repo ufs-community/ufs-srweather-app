@@ -100,13 +100,13 @@ Creating links in the FIXsar directory to the grid files..."
 #
 fns_grid=( \
 "C*_mosaic.nc" \
-"C*_grid.tile${TILE_RGNL}.halo${NH3_T7}.nc" \
-"C*_grid.tile${TILE_RGNL}.halo${NH4_T7}.nc" \
+"C*_grid.tile${TILE_RGNL}.halo${NH3}.nc" \
+"C*_grid.tile${TILE_RGNL}.halo${NH4}.nc" \
 )
 
 fns_orog=( \
-"C*_oro_data.tile${TILE_RGNL}.halo${NH0_T7}.nc" \
-"C*_oro_data.tile${TILE_RGNL}.halo${NH4_T7}.nc" \
+"C*_oro_data.tile${TILE_RGNL}.halo${NH0}.nc" \
+"C*_oro_data.tile${TILE_RGNL}.halo${NH4}.nc" \
 )
 
 sfc_climo_fields=( \
@@ -123,8 +123,8 @@ num_fields=${#sfc_climo_fields[@]}
 fns_sfc_climo=()
 for (( i=0; i<${num_fields}; i++ )); do
   ii=$((2*i))
-  fns_sfc_climo[$ii]="C*.${sfc_climo_fields[$i]}.tile${TILE_RGNL}.halo${NH0_T7}.nc"
-  fns_sfc_climo[$ii+1]="C*.${sfc_climo_fields[$i]}.tile${TILE_RGNL}.halo${NH4_T7}.nc"
+  fns_sfc_climo[$ii]="C*.${sfc_climo_fields[$i]}.tile${TILE_RGNL}.halo${NH0}.nc"
+  fns_sfc_climo[$ii+1]="C*.${sfc_climo_fields[$i]}.tile${TILE_RGNL}.halo${NH4}.nc"
 done
 #
 #-----------------------------------------------------------------------
@@ -278,7 +278,7 @@ done
 #
 if [ "${file_group}" = "grid" ]; then
 # Create link to grid file needed by the make_ic and make_lbc tasks.
-  filename="${cres}_grid.tile${TILE_RGNL}.halo${NH4_T7}.nc"
+  filename="${cres}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
   ln_vrfy -sf ${relative_or_null} $filename ${cres}_grid.tile${TILE_RGNL}.nc
 fi
 
@@ -286,7 +286,7 @@ fi
 if [ "${file_group}" = "sfc_climo" ]; then
 
   tmp=( "${sfc_climo_fields[@]/#/${cres}.}" )
-  fns_sfc_climo_with_halo=( "${tmp[@]/%/.tile${TILE_RGNL}.halo${NH4_T7}.nc}" )
+  fns_sfc_climo_with_halo=( "${tmp[@]/%/.tile${TILE_RGNL}.halo${NH4}.nc}" )
   fns_sfc_climo_no_halo=( "${tmp[@]/%/.tile${TILE_RGNL}.nc}" )
 
   cd_vrfy $FIXsar

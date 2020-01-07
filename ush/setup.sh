@@ -1363,22 +1363,22 @@ fi
 # Note that the regional grid is referred to as "tile 7" in the code.
 # We will let:
 #
-# * NH0_T7 denote the width (in units of number of cells on tile 7) of
-#   the 0-cell-wide halo, i.e. NH0_T7 = 0;
+# * NH0 denote the width (in units of number of cells on tile 7) of
+#   the 0-cell-wide halo, i.e. NH0 = 0;
 #
-# * NH3_T7 denote the width (in units of number of cells on tile 7) of
-#   the 3-cell-wide halo, i.e. NH3_T7 = 3; and
+# * NH3 denote the width (in units of number of cells on tile 7) of
+#   the 3-cell-wide halo, i.e. NH3 = 3; and
 #
-# * NH4_T7 denote the width (in units of number of cells on tile 7) of
-#   the 4-cell-wide halo, i.e. NH4_T7 = 4.
+# * NH4 denote the width (in units of number of cells on tile 7) of
+#   the 4-cell-wide halo, i.e. NH4 = 4.
 #
 # We define these variables next.
 #
 #-----------------------------------------------------------------------
 #
-NH0_T7=0
-NH3_T7=3
-NH4_T7=4
+NH0=0
+NH3=3
+NH4=4
 #
 #-----------------------------------------------------------------------
 #
@@ -2040,9 +2040,9 @@ RUN_POST_TN="${RUN_POST_TN}"
 #
 GTYPE="$GTYPE"
 TILE_RGNL="${TILE_RGNL}"
-NH0_T7="${NH0_T7}"
-NH3_T7="${NH3_T7}"
-NH4_T7="${NH4_T7}"
+NH0="${NH0}"
+NH3="${NH3}"
+NH4="${NH4}"
 EOM
 } || print_err_msg_exit "\
 Heredoc (cat) command to append new variable definitions to variable 
