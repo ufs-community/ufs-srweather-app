@@ -542,7 +542,7 @@ predefined domain:
 
     LAYOUT_X="16"
     LAYOUT_Y="72"
-    write_tasks_per_group="72"
+    WRTCMP_write_tasks_per_group="72"
     BLOCKSIZE=32
 
 
@@ -634,8 +634,8 @@ predefined domain:
 
     LAYOUT_X="16"
     LAYOUT_Y="48"
-    write_groups="2"
-    write_tasks_per_group="24"
+    WRTCMP_write_groups="2"
+    WRTCMP_write_tasks_per_group="24"
     BLOCKSIZE=32
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
