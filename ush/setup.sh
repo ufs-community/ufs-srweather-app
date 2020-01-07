@@ -1414,15 +1414,15 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
   set_gridparams_JPgrid \
-    jpgrid_lon_ctr="${LON_RGNL_CTR}" \
-    jpgrid_lat_ctr="${LAT_RGNL_CTR}" \
-    jpgrid_nx="${NX_T7}" \
-    jpgrid_ny="${NY_T7}" \
-    jpgrid_nhw="${NHW_T7}" \
-    jpgrid_delx="${DELX}" \
-    jpgrid_dely="${DELY}" \
-    jpgrid_alpha="${ALPHA_JPGRID_PARAM}" \
-    jpgrid_kappa="${KAPPA_JPGRID_PARAM}" \
+    jpgrid_lon_ctr="${JPgrid_LON_CTR}" \
+    jpgrid_lat_ctr="${JPgrid_LAT_CTR}" \
+    jpgrid_nx="${JPgrid_NX}" \
+    jpgrid_ny="${JPgrid_NY}" \
+    jpgrid_nhw="${JPgrid_WIDE_HALO_WIDTH}" \
+    jpgrid_delx="${JPgrid_DELX}" \
+    jpgrid_dely="${JPgrid_DELY}" \
+    jpgrid_alpha="${JPgrid_ALPHA_PARAM}" \
+    jpgrid_kappa="${JPgrid_KAPPA_PARAM}" \
     output_varname_lon_ctr="LON_CTR" \
     output_varname_lat_ctr="LAT_CTR" \
     output_varname_nx="NX" \
@@ -1430,8 +1430,8 @@ elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
     output_varname_nhw="NHW" \
     output_varname_del_angle_x_sg="DEL_ANGLE_X_SG" \
     output_varname_del_angle_y_sg="DEL_ANGLE_Y_SG" \
-    output_varname_mns_nx_pls_wide_halo="MNS_NX_T7_PLS_WIDE_HALO" \
-    output_varname_mns_ny_pls_wide_halo="MNS_NY_T7_PLS_WIDE_HALO"
+    output_varname_mns_nx_pls_wide_halo="NEG_NX_OF_DOM_WITH_WIDE_HALO" \
+    output_varname_mns_ny_pls_wide_halo="NEG_NY_OF_DOM_WITH_WIDE_HALO"
 
 fi
 #
@@ -2099,8 +2099,8 @@ elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 #
 DEL_ANGLE_X_SG="${DEL_ANGLE_X_SG}"
 DEL_ANGLE_Y_SG="${DEL_ANGLE_Y_SG}"
-MNS_NX_T7_PLS_WIDE_HALO="${MNS_NX_T7_PLS_WIDE_HALO}"
-MNS_NY_T7_PLS_WIDE_HALO="${MNS_NY_T7_PLS_WIDE_HALO}"
+NEG_NX_OF_DOM_WITH_WIDE_HALO="${NEG_NX_OF_DOM_WITH_WIDE_HALO}"
+NEG_NY_OF_DOM_WITH_WIDE_HALO="${NEG_NY_OF_DOM_WITH_WIDE_HALO}"
 #
 # The following variables must be set in order to be able to use the 
 # same scripting machinary for the case of GRID_GEN_METHOD set to "JP-

@@ -333,7 +333,7 @@ Setting orography filtering parameters..."
 #if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #  RES_eff=$( bc -l <<< "$RES*${GFDLgrid_REFINE_RATIO}" )
 #elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-#  grid_size_eff=$( "($DELX + $DELY)/2" )
+#  grid_size_eff=$( "(${JPgrid_DELX} + ${JPgrid_DELY})/2" )
 #echo "grid_size_eff = $grid_size_eff"
 #  RES_eff=$( bc -l <<< "2*$pi_geom*$radius_Earth/(4*$grid_size_eff)" )
 #fi

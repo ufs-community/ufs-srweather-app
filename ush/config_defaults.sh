@@ -434,37 +434,37 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # without a global parent (i.e. for GRID_GEN_METHOD set to "JPgrid").  
 # These are:
 #
-# LON_RGNL_CTR:
+# JPgrid_LON_CTR:
 # The longitude of the center of the grid (in degrees).
 #
-# LAT_RGNL_CTR:
+# JPgrid_LAT_CTR:
 # The latitude of the center of the grid (in degrees).
 #
-# DELX:
+# JPgrid_DELX:
 # The cell size in the zonal direction of the regional grid (in meters).
 #
-# DELY:
+# JPgrid_DELY:
 # The cell size in the meridional direction of the regional grid (in me-
 # ters).
 #
-# NX_T7:
+# JPgrid_NX:
 # The number of cells in the zonal direction on the regional grid.
 #
-# NY_T7:
+# JPgrid_NY:
 # The number of cells in the meridional direction on the regional grid.
 #
-# NHW_T7:
+# JPgrid_WIDE_HALO_WIDTH:
 # The width of the wide halo (in units of number of cells) to create 
 # around the regional grid.  A grid with a halo of this width will first
 # be created and stored in a grid specification file.  This grid will 
 # then be shaved down to obtain grids with 3-cell-wide and 4-cell-wide
 # halos.
 #
-# ALPHA_JPGRID_PARAM:
+# JPgrid_ALPHA_PARAM:
 # The alpha parameter used in the Jim Purser map projection/grid gene-
 # ration method.
 #
-# KAPPA_JPGRID_PARAM:
+# JPgrid_KAPPA_PARAM:
 # The kappa parameter used in the Jim Purser map projection/grid gene-
 # ration method.
 #
@@ -472,15 +472,15 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-  LON_RGNL_CTR=-97.5
-  LAT_RGNL_CTR=35.5
-  DELX="3000.0"
-  DELY="3000.0"
-  NX_T7=1000
-  NY_T7=1000
-  NHW_T7=6
-  ALPHA_JPGRID_PARAM="0.21423"
-  KAPPA_JPGRID_PARAM="-0.23209"
+  JPgrid_LON_CTR=-97.5
+  JPgrid_LAT_CTR=35.5
+  JPgrid_DELX="3000.0"
+  JPgrid_DELY="3000.0"
+  JPgrid_NX=1000
+  JPgrid_NY=1000
+  JPgrid_WIDE_HALO_WIDTH=6
+  JPgrid_ALPHA_PARAM="0.21423"
+  JPgrid_KAPPA_PARAM="-0.23209"
 
 fi
 #

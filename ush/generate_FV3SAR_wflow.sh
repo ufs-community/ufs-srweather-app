@@ -653,8 +653,8 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
   set_file_param "${FV3_NML_FP}" "target_lat" "${GFDLgrid_LAT_T6_CTR}"
   set_file_param "${FV3_NML_FP}" "stretch_fac" "${GFDLgrid_STRETCH_FAC}"
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-  set_file_param "${FV3_NML_FP}" "target_lon" "${LON_RGNL_CTR}"
-  set_file_param "${FV3_NML_FP}" "target_lat" "${LAT_RGNL_CTR}"
+  set_file_param "${FV3_NML_FP}" "target_lon" "${JPgrid_LON_CTR}"
+  set_file_param "${FV3_NML_FP}" "target_lat" "${JPgrid_LAT_CTR}"
   set_file_param "${FV3_NML_FP}" "stretch_fac" "${STRETCH_FAC}"
 fi
 set_file_param "${FV3_NML_FP}" "bc_update_interval" "${LBC_UPDATE_INTVL_HRS}"

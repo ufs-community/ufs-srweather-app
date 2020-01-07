@@ -112,10 +112,10 @@ function set_gridparams_JPgrid() {
   del_angle_y_sg=$( bc -l <<< "(${jpgrid_dely}/(2.0*${radius_Earth}))*${degs_per_radian}" )
   del_angle_y_sg=$( printf "%0.10f\n" ${del_angle_y_sg} )
 
-  mns_nx_pls_wide_halo=$( bc -l <<< "-(${NX_T7} + 2*${NHW_T7})" )
+  mns_nx_pls_wide_halo=$( bc -l <<< "-(${JPgrid_NX} + 2*${JPgrid_WIDE_HALO_WIDTH})" )
   mns_nx_pls_wide_halo=$( printf "%.0f\n" ${mns_nx_pls_wide_halo} )
 
-  mns_ny_pls_wide_halo=$( bc -l <<< "-(${NY_T7} + 2*${NHW_T7})" )
+  mns_ny_pls_wide_halo=$( bc -l <<< "-(${JPgrid_NY} + 2*${JPgrid_WIDE_HALO_WIDTH})" )
   mns_ny_pls_wide_halo=$( printf "%.0f\n" ${mns_ny_pls_wide_halo} )
 #
 #-----------------------------------------------------------------------

@@ -354,14 +354,14 @@ Setting parameters in file:
 #
 # Set parameters.
 #
-  set_file_param "${RGNL_GRID_NML_FP}" "plon" "${LON_RGNL_CTR}"
-  set_file_param "${RGNL_GRID_NML_FP}" "plat" "${LAT_RGNL_CTR}"
+  set_file_param "${RGNL_GRID_NML_FP}" "plon" "${JPgrid_LON_CTR}"
+  set_file_param "${RGNL_GRID_NML_FP}" "plat" "${JPgrid_LAT_CTR}"
   set_file_param "${RGNL_GRID_NML_FP}" "delx" "${DEL_ANGLE_X_SG}"
   set_file_param "${RGNL_GRID_NML_FP}" "dely" "${DEL_ANGLE_Y_SG}"
-  set_file_param "${RGNL_GRID_NML_FP}" "lx" "${MNS_NX_T7_PLS_WIDE_HALO}"
-  set_file_param "${RGNL_GRID_NML_FP}" "ly" "${MNS_NY_T7_PLS_WIDE_HALO}"
-  set_file_param "${RGNL_GRID_NML_FP}" "a" "${ALPHA_JPGRID_PARAM}"
-  set_file_param "${RGNL_GRID_NML_FP}" "k" "${KAPPA_JPGRID_PARAM}"
+  set_file_param "${RGNL_GRID_NML_FP}" "lx" "${NEG_NX_OF_DOM_WITH_WIDE_HALO}"
+  set_file_param "${RGNL_GRID_NML_FP}" "ly" "${NEG_NY_OF_DOM_WITH_WIDE_HALO}"
+  set_file_param "${RGNL_GRID_NML_FP}" "a" "${JPgrid_ALPHA_PARAM}"
+  set_file_param "${RGNL_GRID_NML_FP}" "k" "${JPgrid_KAPPA_PARAM}"
 
   cd_vrfy $tmpdir
 
