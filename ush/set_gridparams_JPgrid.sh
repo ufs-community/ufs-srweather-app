@@ -47,25 +47,26 @@ function set_gridparams_JPgrid() {
 #
 #-----------------------------------------------------------------------
 #
-  valid_args=( \
-"jpgrid_lon_ctr" \
-"jpgrid_lat_ctr" \
-"jpgrid_nx" \
-"jpgrid_ny" \
-"jpgrid_nhw" \
-"jpgrid_delx" \
-"jpgrid_dely" \
-"jpgrid_alpha" \
-"jpgrid_kappa" \
+  local valid_args=( \
+"lon_ctr" \
+"lat_ctr" \
+"nx" \
+"ny" \
+"halo_width" \
+"delx" \
+"dely" \
+"alpha" \
+"kappa" \
 "output_varname_lon_ctr" \
 "output_varname_lat_ctr" \
 "output_varname_nx" \
 "output_varname_ny" \
-"output_varname_nhw" \
+"output_varname_halo_width" \
+"output_varname_stretch_factor" \
 "output_varname_del_angle_x_sg" \
 "output_varname_del_angle_y_sg" \
-"output_varname_mns_nx_pls_wide_halo" \
-"output_varname_mns_ny_pls_wide_halo" \
+"output_varname_neg_nx_of_dom_with_wide_halo" \
+"output_varname_neg_ny_of_dom_with_wide_halo" \
   )
   process_args valid_args "$@"
 #
@@ -94,10 +95,35 @@ function set_gridparams_JPgrid() {
 #
 #-----------------------------------------------------------------------
 #
-  local del_angle_x_sg \
+  local stretch_factor \
+        del_angle_x_sg \
         del_angle_y_sg \
-        mns_nx_pls_wide_halo \
-        mns_ny_pls_wide_halo
+        neg_nx_of_dom_with_wide_halo \
+        neg_ny_of_dom_with_wide_halo
+#
+#-----------------------------------------------------------------------
+#
+# For a JPgrid-type grid, the orography filtering is performed by pass-
+# ing to the orography filtering the parameters for an "equivalent" glo-
+# bal uniform cubed-sphere grid.  These are the parameters that a global
+# uniform cubed-sphere grid needs to have in order to have a nominal 
+# grid cell size equal to that of the (average) cell size on the region-
+# al grid.  These globally-equivalent parameters include a resolution 
+# (in units of number of cells in each of the two horizontal directions)
+# and a stretch factor.  The equivalent resolution is calculated in the
+# script that generates the grid, and the stretch factor needs to be set
+# to 1 because we are considering an equivalent globally UNIFORM grid.  
+# However, it turns out that with a non-symmetric regional grid (one in
+# which nx is not equal to ny), setting stretch_factor to 1 fails be-
+# cause the orography filtering program is designed for a global cubed-
+# sphere grid and thus assumes that nx and ny for a given tile are equal
+# when stretch_factor is exactly equal to 1.                            <-- Why is this?  Seems like symmetry btwn x and y should still hold when the stretch factor is not equal to 1.  
+# It turns out that the program will work if we set stretch_factor to a 
+# value that is not exactly 1.  This is what we do below. 
+#
+#-----------------------------------------------------------------------
+#
+  stretch_factor="0.999"   # Check whether the orography program has been fixed so that we can set this to 1...
 #
 #-----------------------------------------------------------------------
 #
@@ -106,17 +132,17 @@ function set_gridparams_JPgrid() {
 #
 #-----------------------------------------------------------------------
 #
-  del_angle_x_sg=$( bc -l <<< "(${jpgrid_delx}/(2.0*${radius_Earth}))*${degs_per_radian}" )
+  del_angle_x_sg=$( bc -l <<< "(${delx}/(2.0*${radius_Earth}))*${degs_per_radian}" )
   del_angle_x_sg=$( printf "%0.10f\n" ${del_angle_x_sg} )
 
-  del_angle_y_sg=$( bc -l <<< "(${jpgrid_dely}/(2.0*${radius_Earth}))*${degs_per_radian}" )
+  del_angle_y_sg=$( bc -l <<< "(${dely}/(2.0*${radius_Earth}))*${degs_per_radian}" )
   del_angle_y_sg=$( printf "%0.10f\n" ${del_angle_y_sg} )
 
-  mns_nx_pls_wide_halo=$( bc -l <<< "-(${JPgrid_NX} + 2*${JPgrid_WIDE_HALO_WIDTH})" )
-  mns_nx_pls_wide_halo=$( printf "%.0f\n" ${mns_nx_pls_wide_halo} )
+  neg_nx_of_dom_with_wide_halo=$( bc -l <<< "-($nx + 2*${halo_width})" )
+  neg_nx_of_dom_with_wide_halo=$( printf "%.0f\n" ${neg_nx_of_dom_with_wide_halo} )
 
-  mns_ny_pls_wide_halo=$( bc -l <<< "-(${JPgrid_NY} + 2*${JPgrid_WIDE_HALO_WIDTH})" )
-  mns_ny_pls_wide_halo=$( printf "%.0f\n" ${mns_ny_pls_wide_halo} )
+  neg_ny_of_dom_with_wide_halo=$( bc -l <<< "-($ny + 2*${halo_width})" )
+  neg_ny_of_dom_with_wide_halo=$( printf "%.0f\n" ${neg_ny_of_dom_with_wide_halo} )
 #
 #-----------------------------------------------------------------------
 #
@@ -124,15 +150,16 @@ function set_gridparams_JPgrid() {
 #
 #-----------------------------------------------------------------------
 #
-  eval ${output_varname_lon_ctr}="${jpgrid_lon_ctr}"
-  eval ${output_varname_lat_ctr}="${jpgrid_lat_ctr}"
-  eval ${output_varname_nx}="${jpgrid_nx}"
-  eval ${output_varname_ny}="${jpgrid_ny}"
-  eval ${output_varname_nhw}="${jpgrid_nhw}"
+  eval ${output_varname_lon_ctr}="${lon_ctr}"
+  eval ${output_varname_lat_ctr}="${lat_ctr}"
+  eval ${output_varname_nx}="${nx}"
+  eval ${output_varname_ny}="${ny}"
+  eval ${output_varname_halo_width}="${halo_width}"
+  eval ${output_varname_stretch_factor}="${stretch_factor}"
   eval ${output_varname_del_angle_x_sg}="${del_angle_x_sg}"
   eval ${output_varname_del_angle_y_sg}="${del_angle_y_sg}"
-  eval ${output_varname_mns_nx_pls_wide_halo}="${mns_nx_pls_wide_halo}"
-  eval ${output_varname_mns_ny_pls_wide_halo}="${mns_ny_pls_wide_halo}"
+  eval ${output_varname_neg_nx_of_dom_with_wide_halo}="${neg_nx_of_dom_with_wide_halo}"
+  eval ${output_varname_neg_ny_of_dom_with_wide_halo}="${neg_ny_of_dom_with_wide_halo}"
 #
 #-----------------------------------------------------------------------
 #

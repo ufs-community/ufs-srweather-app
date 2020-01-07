@@ -830,32 +830,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# For a grid with GRID_GEN_METHOD set to "JPgrid", the orography filter-
-# is performed by passing to the orography filtering the parameters for
-# an "equivalent" global uniform cubed-sphere grid.  These are the para-
-# meters that a global uniform cubed-sphere grid needs to have in order
-# to have a nominal grid cell size equal to that of the (average) cell
-# size on the regional grid.  These globally-equivalent parameters in-
-# clude a resolution (in units of number of cells in each of the two ho-
-# rizontal directions) and a stretch factor.  The equivalent resolution
-# is calculated in the script that generates the grid and orography, and
-# the stretch factor needs to be set to 1 because we are considering an
-# equivalent globally UNIFORM grid.  However, it turns out that with a 
-# non-symmetric regional grid (one in which nx is not equal to ny), set-
-# ting STRETCH_FAC to 1 fails because the orography filtering program is
-# designed for a global cubed-sphere grid and thus assumes that nx and 
-# ny for a given tile are equal when STRETCH_FAC is exactly equal to 1.  <-- Why is this?  Seems like symmetry btwn x and y should still hold when STRETCH_FAC is not equal to 1.  
-# It turns out that the program will work if we set STRETCH_FAC that is
-# not exactly 1.  This is what we do below. 
-#
-#-----------------------------------------------------------------------
-#
-if [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-  STRETCH_FAC="0.999"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # If the base directory (EXPT_BASEDIR) in which the experiment subdirec-
 # tory (EXPT_SUBDIR) will be located is not set or is set to an empty 
 # string, set it to a default location that is at the same level as the
@@ -1414,24 +1388,25 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
   set_gridparams_JPgrid \
-    jpgrid_lon_ctr="${JPgrid_LON_CTR}" \
-    jpgrid_lat_ctr="${JPgrid_LAT_CTR}" \
-    jpgrid_nx="${JPgrid_NX}" \
-    jpgrid_ny="${JPgrid_NY}" \
-    jpgrid_nhw="${JPgrid_WIDE_HALO_WIDTH}" \
-    jpgrid_delx="${JPgrid_DELX}" \
-    jpgrid_dely="${JPgrid_DELY}" \
-    jpgrid_alpha="${JPgrid_ALPHA_PARAM}" \
-    jpgrid_kappa="${JPgrid_KAPPA_PARAM}" \
+    lon_ctr="${JPgrid_LON_CTR}" \
+    lat_ctr="${JPgrid_LAT_CTR}" \
+    nx="${JPgrid_NX}" \
+    ny="${JPgrid_NY}" \
+    halo_width="${JPgrid_WIDE_HALO_WIDTH}" \
+    delx="${JPgrid_DELX}" \
+    dely="${JPgrid_DELY}" \
+    alpha="${JPgrid_ALPHA_PARAM}" \
+    kappa="${JPgrid_KAPPA_PARAM}" \
     output_varname_lon_ctr="LON_CTR" \
     output_varname_lat_ctr="LAT_CTR" \
     output_varname_nx="NX" \
     output_varname_ny="NY" \
-    output_varname_nhw="NHW" \
+    output_varname_halo_width="NHW" \
+    output_varname_stretch_factor="STRETCH_FAC" \
     output_varname_del_angle_x_sg="DEL_ANGLE_X_SG" \
     output_varname_del_angle_y_sg="DEL_ANGLE_Y_SG" \
-    output_varname_mns_nx_pls_wide_halo="NEG_NX_OF_DOM_WITH_WIDE_HALO" \
-    output_varname_mns_ny_pls_wide_halo="NEG_NY_OF_DOM_WITH_WIDE_HALO"
+    output_varname_neg_nx_of_dom_with_wide_halo="NEG_NX_OF_DOM_WITH_WIDE_HALO" \
+    output_varname_neg_ny_of_dom_with_wide_halo="NEG_NY_OF_DOM_WITH_WIDE_HALO"
 
 fi
 #
