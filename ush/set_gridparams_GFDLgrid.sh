@@ -50,18 +50,18 @@ local func_name="${FUNCNAME[0]}"
 # puts the index limits of the regional grid on the tile 6 grid, not its
 # supergrid.  These are given by
 #
-#   ISTART_RGNL_T6
-#   IEND_RGNL_T6
-#   JSTART_RGNL_T6
-#   JEND_RGNL_T6
+#   GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G
+#   GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G
+#   GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G
+#   GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G
 #
 # We can obtain the former from the latter by recalling that the super-
 # grid has twice the resolution of the original grid.  Thus,
 #
-#   istart_rgnl_T6SG = 2*ISTART_RGNL_T6 - 1
-#   iend_rgnl_T6SG = 2*IEND_RGNL_T6
-#   jstart_rgnl_T6SG = 2*JSTART_RGNL_T6 - 1
-#   jend_rgnl_T6SG = 2*JEND_RGNL_T6
+#   istart_rgnl_T6SG = 2*GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G - 1
+#   iend_rgnl_T6SG = 2*GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G
+#   jstart_rgnl_T6SG = 2*GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G - 1
+#   jend_rgnl_T6SG = 2*GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G
 #
 # These are obtained assuming that grid cells on tile 6 must either be
 # completely within the regional domain or completely outside of it,
@@ -73,10 +73,10 @@ local func_name="${FUNCNAME[0]}"
 #
 #-----------------------------------------------------------------------
 #
-istart_rgnl_T6SG=$(( 2*ISTART_RGNL_T6 - 1 ))
-iend_rgnl_T6SG=$(( 2*IEND_RGNL_T6 ))
-jstart_rgnl_T6SG=$(( 2*JSTART_RGNL_T6 - 1 ))
-jend_rgnl_T6SG=$(( 2*JEND_RGNL_T6 ))
+istart_rgnl_T6SG=$(( 2*GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G - 1 ))
+iend_rgnl_T6SG=$(( 2*GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G ))
+jstart_rgnl_T6SG=$(( 2*GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G - 1 ))
+jend_rgnl_T6SG=$(( 2*GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G ))
 #
 #-----------------------------------------------------------------------
 #
@@ -106,12 +106,12 @@ jend_rgnl_T6SG=$(( 2*JEND_RGNL_T6 ))
 # cells on the tile 6 grid -- which we denote by nhw_T6 -- we simply di-
 # vide NHW_T7 by the refinement ratio, i.e.
 #
-#   nhw_T6 = NHW_T7/REFINE_RATIO
+#   nhw_T6 = NHW_T7/GFDLgrid_REFINE_RATIO
 #
 # The corresponding halo width on the tile 6 supergrid is then given by
 #
 #   nhw_T6SG = 2*nhw_T6
-#            = 2*NHW_T7/REFINE_RATIO
+#            = 2*NHW_T7/GFDLgrid_REFINE_RATIO
 #
 # Note that nhw_T6SG must be an integer, but the expression for it de-
 # rived above may not yield an integer.  To ensure that the halo has a
@@ -119,7 +119,7 @@ jend_rgnl_T6SG=$(( 2*JEND_RGNL_T6 ))
 # result of the expression above for nhw_T6SG, i.e. we redefine nhw_T6SG
 # to be
 #
-#   nhw_T6SG = ceil(2*NHW_T7/REFINE_RATIO)
+#   nhw_T6SG = ceil(2*NHW_T7/GFDLgrid_REFINE_RATIO)
 #
 # where ceil(...) is the ceiling function, i.e. it rounds its floating
 # point argument up to the next larger integer.  Since in bash division
@@ -128,7 +128,7 @@ jend_rgnl_T6SG=$(( 2*JEND_RGNL_T6 ))
 # adding the denominator (of the argument of ceil(...) above) minus 1 to
 # the original numerator, i.e. by redefining nhw_T6SG to be
 #
-#   nhw_T6SG = (2*NHW_T7 + REFINE_RATIO - 1)/REFINE_RATIO
+#   nhw_T6SG = (2*NHW_T7 + GFDLgrid_REFINE_RATIO - 1)/GFDLgrid_REFINE_RATIO
 #
 # This trick works when dividing one positive integer by another.
 #
@@ -145,7 +145,7 @@ jend_rgnl_T6SG=$(( 2*JEND_RGNL_T6 ))
 #-----------------------------------------------------------------------
 #
 NHW_T7=$(( NH4+1 ))
-nhw_T6SG=$(( (2*NHW_T7 + REFINE_RATIO - 1)/REFINE_RATIO ))
+nhw_T6SG=$(( (2*NHW_T7 + GFDLgrid_REFINE_RATIO - 1)/GFDLgrid_REFINE_RATIO ))
 #
 #-----------------------------------------------------------------------
 #
@@ -231,7 +231,7 @@ tile 7 grid are:
 
 nhw_T6SG=$(( istart_rgnl_T6SG - istart_rgnl_wide_halo_T6SG ))
 nhw_T6=$(( nhw_T6SG/2 ))
-NHW_T7=$(( nhw_T6*REFINE_RATIO ))
+NHW_T7=$(( nhw_T6*GFDLgrid_REFINE_RATIO ))
 
 print_info_msg "$VERBOSE" "
 Values of the halo width on the tile 6 supergrid and on the tile 7 grid 
@@ -250,11 +250,11 @@ AFTER adjustments are:
 #
 nx_rgnl_T6SG=$(( iend_rgnl_T6SG - istart_rgnl_T6SG + 1 ))
 nx_rgnl_T6=$(( nx_rgnl_T6SG/2 ))
-NX_T7=$(( nx_rgnl_T6*REFINE_RATIO ))
+NX_T7=$(( nx_rgnl_T6*GFDLgrid_REFINE_RATIO ))
 
 ny_rgnl_T6SG=$(( jend_rgnl_T6SG - jstart_rgnl_T6SG + 1 ))
 ny_rgnl_T6=$(( ny_rgnl_T6SG/2 ))
-NY_T7=$(( ny_rgnl_T6*REFINE_RATIO ))
+NY_T7=$(( ny_rgnl_T6*GFDLgrid_REFINE_RATIO ))
 #
 # The following are set only for informational purposes.
 #
@@ -284,10 +284,10 @@ are:
 
 The starting and ending i and j indices on the tile 6 grid used to 
 generate this regional grid are:
-  ISTART_RGNL_T6 = ${ISTART_RGNL_T6}
-  IEND_RGNL_T6   = ${IEND_RGNL_T6}
-  JSTART_RGNL_T6 = ${JSTART_RGNL_T6}
-  JEND_RGNL_T6   = ${JEND_RGNL_T6}
+  GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G = ${GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G}
+  GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G   = ${GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G}
+  GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G = ${GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G}
+  GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G   = ${GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G}
 
 The corresponding starting and ending i and j indices on the tile 6 
 supergrid are:
@@ -298,7 +298,7 @@ supergrid are:
 
 The refinement ratio (ratio of the number of cells in tile 7 that abut
 a single cell in tile 6) is:
-  REFINE_RATIO = ${REFINE_RATIO}
+  GFDLgrid_REFINE_RATIO = ${GFDLgrid_REFINE_RATIO}
 
 The number of cells in the two horizontal directions on the regional 
 tile's/domain's (tile 7) grid WITHOUT A HALO are:
@@ -321,11 +321,11 @@ task layout, i.e. LAYOUT_X and LAYOUT_Y):
 #
 nx_wide_halo_T6SG=$(( iend_rgnl_wide_halo_T6SG - istart_rgnl_wide_halo_T6SG + 1 ))
 nx_wide_halo_T6=$(( nx_wide_halo_T6SG/2 ))
-nx_wide_halo_T7=$(( nx_wide_halo_T6*REFINE_RATIO ))
+nx_wide_halo_T7=$(( nx_wide_halo_T6*GFDLgrid_REFINE_RATIO ))
 
 ny_wide_halo_T6SG=$(( jend_rgnl_wide_halo_T6SG - jstart_rgnl_wide_halo_T6SG + 1 ))
 ny_wide_halo_T6=$(( ny_wide_halo_T6SG/2 ))
-ny_wide_halo_T7=$(( ny_wide_halo_T6*REFINE_RATIO ))
+ny_wide_halo_T7=$(( ny_wide_halo_T6*GFDLgrid_REFINE_RATIO ))
 
 print_info_msg "$VERBOSE" "
 nx_wide_halo_T7 = ${NX_T7} \

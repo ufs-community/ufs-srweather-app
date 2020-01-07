@@ -326,7 +326,7 @@ GRID_GEN_METHOD="JPgrid"
 #   sphere grid.  RES must be one of "48", "96", "192", "384", "768",
 #   "1152", and "3072".  The mapping from RES to nominal resolution
 #   (cell size) for a uniform global grid (i.e. Schmidt stretch factor
-#   STRETCH_FAC set to 1) is as follows:
+#   GFDLgrid_STRETCH_FAC set to 1) is as follows:
 #
 #     C192   -->  50km
 #     C384   -->  25km
@@ -338,28 +338,28 @@ GRID_GEN_METHOD="JPgrid"
 #   the global grid tiles varies somewhat as we move across a tile.
 #
 # * Tile 6 has arbitrarily been chosen as the tile to use to orient the
-#   global grid on the sphere (Earth).  This is done by specifying LON_-
-#   CTR_T6 and LAT_CTR_T6, which are the longitude and latitude (in de-
-#   grees) of the center of tile 6.
+#   global grid on the sphere (Earth).  This is done by specifying 
+#   GFDLgrid_LON_T6_CTR and GFDLgrid_LAT_T6_CTR, which are the longitude 
+#   and latitude (in degrees) of the center of tile 6.
 #
-# * Setting the Schmidt stretching factor STRETCH_FAC to a value greater
+# * Setting the Schmidt stretching factor GFDLgrid_STRETCH_FAC to a value greater
 #   than 1 shrinks tile 6, while setting it to a value less than 1 (but
 #   still greater than 0) expands tile 6.  The remaining 5 tiles change
 #   shape as necessary to maintain global coverage of the grid.
 #
 # * The cell size on a given global tile depends on both RES and
-#   STRETCH_FAC (since changing RES changes the number of cells in the
-#   tile, and changing STRETCH_FAC modifies the shape and size of the
+#   GFDLgrid_STRETCH_FAC (since changing RES changes the number of cells in the
+#   tile, and changing GFDLgrid_STRETCH_FAC modifies the shape and size of the
 #   tile).
 #
 # * The regional grid is embedded within tile 6 (i.e. it doesn't extend
 #   beyond the boundary of tile 6).  Its exact location within tile 6 is
 #   is determined by the starting and ending i and j indices
 #
-#     ISTART_RGNL_T6
-#     JSTART_RGNL_T6
-#     IEND_RGNL_T6
-#     JEND_RGNL_T6
+#     GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G
+#     GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G
+#     GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G
+#     GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G
 #
 #   where i is the grid index in the x direction and j is the grid index
 #   in the y direction.
@@ -371,12 +371,12 @@ GRID_GEN_METHOD="JPgrid"
 #   6).  Tile 6 is often referred to as the "parent" tile of the region-
 #   al grid.
 #
-# * REFINE_RATIO is the refinement ratio of the regional grid (tile 7)
+# * GFDLgrid_REFINE_RATIO is the refinement ratio of the regional grid (tile 7)
 #   with respect to the grid on its parent tile (tile 6), i.e. it is the
 #   number of grid cells along the boundary of the regional grid that
 #   abut one cell on tile 6.  Thus, the cell size on the regional grid
-#   depends not only on RES and STRETCH_FAC (because the cell size on
-#   tile 6 depends on these two parameters) but also on REFINE_RATIO.
+#   depends not only on RES and GFDLgrid_STRETCH_FAC (because the cell size on
+#   tile 6 depends on these two parameters) but also on GFDLgrid_REFINE_RATIO.
 #   Note that as on the tiles of the global grid, the cell size on the
 #   regional grid is not uniform but varies as we move across the grid.
 #
@@ -387,29 +387,29 @@ GRID_GEN_METHOD="JPgrid"
 # on each tile of the global grid.  Must be "48", "96", "192", "384",
 # "768", "1152", or "3072"
 #
-# LON_CTR_T6:
+# GFDLgrid_LON_T6_CTR:
 # Longitude of the center of tile 6 (in degrees).
 #
-# LAT_CTR_T6:
+# GFDLgrid_LAT_T6_CTR:
 # Latitude of the center of tile 6 (in degrees).
 #
-# STRETCH_FAC:
+# GFDLgrid_STRETCH_FAC:
 # Stretching factor used in the Schmidt transformation applied to the
 # cubed sphere grid.
 #
-# ISTART_RGNL_T6:
+# GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G:
 # i-index on tile 6 at which the regional grid (tile 7) starts.
 #
-# IEND_RGNL_T6:
+# GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G:
 # i-index on tile 6 at which the regional grid (tile 7) ends.
 #
-# JSTART_RGNL_T6:
+# GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G:
 # j-index on tile 6 at which the regional grid (tile 7) starts.
 #
-# JEND_RGNL_T6:
+# GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G:
 # j-index on tile 6 at which the regional grid (tile 7) ends.
 #
-# REFINE_RATIO:
+# GFDLgrid_REFINE_RATIO:
 # Cell refinement ratio for the regional grid, i.e. the number of cells
 # in either the x or y direction on the regional grid (tile 7) that abut
 # one cell on its parent tile (tile 6).
@@ -419,14 +419,14 @@ GRID_GEN_METHOD="JPgrid"
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
   RES="384"
-  LON_CTR_T6=-97.5
-  LAT_CTR_T6=35.5
-  STRETCH_FAC=1.5
-  ISTART_RGNL_T6=10
-  IEND_RGNL_T6=374
-  JSTART_RGNL_T6=10
-  JEND_RGNL_T6=374
-  REFINE_RATIO=3
+  GFDLgrid_LON_T6_CTR=-97.5
+  GFDLgrid_LAT_T6_CTR=35.5
+  GFDLgrid_STRETCH_FAC=1.5
+  GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=10
+  GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=374
+  GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=10
+  GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=374
+  GFDLgrid_REFINE_RATIO=3
 #
 #-----------------------------------------------------------------------
 #

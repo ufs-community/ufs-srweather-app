@@ -240,23 +240,23 @@ predefined domain:
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
-    LON_CTR_T6=-106.0
-    LAT_CTR_T6=54.0
-    STRETCH_FAC=0.63
+    GFDLgrid_LON_T6_CTR=-106.0
+    GFDLgrid_LAT_T6_CTR=54.0
+    GFDLgrid_STRETCH_FAC=0.63
     RES="384"
-    REFINE_RATIO=3
+    GFDLgrid_REFINE_RATIO=3
   
     num_margin_cells_T6_left=10
-    ISTART_RGNL_T6=$(( num_margin_cells_T6_left + 1 ))
+    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=10
-    IEND_RGNL_T6=$(( RES - num_margin_cells_T6_right ))
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=10
-    JSTART_RGNL_T6=$(( num_margin_cells_T6_bottom + 1 ))
+    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=10
-    JEND_RGNL_T6=$(( RES - num_margin_cells_T6_top ))
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_top ))
 
     DT_ATMOS="90"
 
@@ -520,23 +520,23 @@ predefined domain:
 #dlat=0.02
 
 
-    LON_CTR_T6=-97.5
-    LAT_CTR_T6=38.5
-    STRETCH_FAC=1.5
+    GFDLgrid_LON_T6_CTR=-97.5
+    GFDLgrid_LAT_T6_CTR=38.5
+    GFDLgrid_STRETCH_FAC=1.5
     RES="768"
-    REFINE_RATIO=3
+    GFDLgrid_REFINE_RATIO=3
   
     num_margin_cells_T6_left=61
-    ISTART_RGNL_T6=$(( num_margin_cells_T6_left + 1 ))
+    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=67
-    IEND_RGNL_T6=$(( RES - num_margin_cells_T6_right ))
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=165
-    JSTART_RGNL_T6=$(( num_margin_cells_T6_bottom + 1 ))
+    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=171
-    JEND_RGNL_T6=$(( RES - num_margin_cells_T6_top ))
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_top ))
 
     DT_ATMOS="18"
 
@@ -612,23 +612,23 @@ predefined domain:
 #dlon=0.03
 #dlat=0.03
 
-    LON_CTR_T6=-153.0
-    LAT_CTR_T6=61.0
-    STRETCH_FAC=1.0  # ???
+    GFDLgrid_LON_T6_CTR=-153.0
+    GFDLgrid_LAT_T6_CTR=61.0
+    GFDLgrid_STRETCH_FAC=1.0  # ???
     RES="768"
-    REFINE_RATIO=3   # ???
+    GFDLgrid_REFINE_RATIO=3   # ???
   
     num_margin_cells_T6_left=61
-    ISTART_RGNL_T6=$(( num_margin_cells_T6_left + 1 ))
+    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=67
-    IEND_RGNL_T6=$(( RES - num_margin_cells_T6_right ))
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=165
-    JSTART_RGNL_T6=$(( num_margin_cells_T6_bottom + 1 ))
+    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=171
-    JEND_RGNL_T6=$(( RES - num_margin_cells_T6_top ))
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_top ))
 
     DT_ATMOS="18"
 

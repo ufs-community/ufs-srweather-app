@@ -253,8 +253,8 @@ else
   grid_name="${GRID_GEN_METHOD}"
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-    stretch_str="S$( printf "%s" "${STRETCH_FAC}" | sed "s|\.|p|" )"
-    refine_str="RR${REFINE_RATIO}"
+    stretch_str="S$( printf "%s" "${GFDLgrid_STRETCH_FAC}" | sed "s|\.|p|" )"
+    refine_str="RR${GFDLgrid_REFINE_RATIO}"
     grid_name="${grid_name}_${CRES}_${stretch_str}_${refine_str}"
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
     nx_T7_str="NX$( printf "%s" "${NX_T7}" | sed "s|\.|p|" )"

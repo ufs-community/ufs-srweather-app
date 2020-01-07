@@ -265,9 +265,10 @@ mkdir_vrfy -p "$tmpdir"
 #   --grid_type gnomonic_ed \
 #   --nlon 2*${RES} \
 #   --grid_name C${RES}_grid \
-#   --do_schmidt --stretch_factor ${STRETCH_FAC} \
-#   --target_lon ${LON_CTR_T6} --target_lat ${LAT_CTR_T6} \
-#   --nest_grid --parent_tile 6 --refine_ratio ${REFINE_RATIO} \
+#   --do_schmidt --stretch_factor ${GFDLgrid_STRETCH_FAC} \
+#   --target_lon ${GFDLgrid_LON_T6_CTR} 
+#   --target_lat ${GFDLgrid_LAT_T6_CTR} \
+#   --nest_grid --parent_tile 6 --refine_ratio ${GFDLgrid_REFINE_RATIO} \
 #   --istart_nest ${istart_rgnl_wide_halo_T6SG} \
 #   --jstart_nest ${jstart_rgnl_wide_halo_T6SG} \
 #   --iend_nest ${iend_rgnl_wide_halo_T6SG} \
@@ -313,7 +314,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
   $USHDIR/$grid_gen_scr \
     $RES \
     $tmpdir \
-    ${STRETCH_FAC} ${LON_CTR_T6} ${LAT_CTR_T6} ${REFINE_RATIO} \
+    ${GFDLgrid_STRETCH_FAC} ${GFDLgrid_LON_T6_CTR} ${GFDLgrid_LAT_T6_CTR} ${GFDLgrid_REFINE_RATIO} \
     ${istart_rgnl_wide_halo_T6SG} ${jstart_rgnl_wide_halo_T6SG} \
     ${iend_rgnl_wide_halo_T6SG} ${jend_rgnl_wide_halo_T6SG} \
     1 $USHDIR || \

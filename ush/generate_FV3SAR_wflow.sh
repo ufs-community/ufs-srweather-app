@@ -649,13 +649,14 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # are not necessarily the same [although assuming there is only one re-
 # gional domain within tile 6, i.e. assuming there is no tile 8, 9, etc,
 # there is no reason not to center tile 7 with respect to tile 6].
-  set_file_param "${FV3_NML_FP}" "target_lon" "${LON_CTR_T6}"
-  set_file_param "${FV3_NML_FP}" "target_lat" "${LAT_CTR_T6}"
+  set_file_param "${FV3_NML_FP}" "target_lon" "${GFDLgrid_LON_T6_CTR}"
+  set_file_param "${FV3_NML_FP}" "target_lat" "${GFDLgrid_LAT_T6_CTR}"
+  set_file_param "${FV3_NML_FP}" "stretch_fac" "${GFDLgrid_STRETCH_FAC}"
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
   set_file_param "${FV3_NML_FP}" "target_lon" "${LON_RGNL_CTR}"
   set_file_param "${FV3_NML_FP}" "target_lat" "${LAT_RGNL_CTR}"
+  set_file_param "${FV3_NML_FP}" "stretch_fac" "${STRETCH_FAC}"
 fi
-set_file_param "${FV3_NML_FP}" "stretch_fac" "${STRETCH_FAC}"
 set_file_param "${FV3_NML_FP}" "bc_update_interval" "${LBC_UPDATE_INTVL_HRS}"
 #
 # For the GSD_v0 and the GSD_SAR physics suites, set the parameter lsoil
