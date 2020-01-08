@@ -51,7 +51,7 @@ cd_vrfy ${scrfunc_dir}
 #
 . ./source_util_funcs.sh
 
-#. $USHDIR/set_gridparams_JPgrid.sh
+. ./set_gridparams_GFDLgrid.sh
 . ./set_gridparams_JPgrid.sh
 #
 #-----------------------------------------------------------------------
@@ -1377,7 +1377,26 @@ check_var_valid_value \
 #
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
-  . $USHDIR/set_gridparams_GFDLgrid.sh
+  set_gridparams_GFDLgrid \
+    lon_of_t6_ctr="${GFDLgrid_LON_T6_CTR}" \
+    lat_of_t6_ctr="${GFDLgrid_LAT_T6_CTR}" \
+    res_of_t6g="${GFDLgrid_RES}" \
+    stretch_factor="${GFDLgrid_STRETCH_FAC}" \
+    refine_ratio_t6g_to_t7g="${GFDLgrid_REFINE_RATIO}" \
+    istart_of_t7_on_t6g="${GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G}" \
+    iend_of_t7_on_t6g="${GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G}" \
+    jstart_of_t7_on_t6g="${GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G}" \
+    jend_of_t7_on_t6g="${GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G}" \
+    output_varname_lon_of_t7_ctr="LON_CTR" \
+    output_varname_lat_of_t7_ctr="LAT_CTR" \
+    output_varname_nx_of_t7_on_t7g="NX" \
+    output_varname_ny_of_t7_on_t7g="NY" \
+    output_varname_halo_width_on_t7g="NHW" \
+    output_varname_stretch_factor="STRETCH_FAC" \
+    output_varname_istart_of_t7_with_halo_on_t6sg="ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG" \
+    output_varname_iend_of_t7_with_halo_on_t6sg="IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG" \
+    output_varname_jstart_of_t7_with_halo_on_t6sg="JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG" \
+    output_varname_jend_of_t7_with_halo_on_t6sg="JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG"
 #
 #-----------------------------------------------------------------------
 #
