@@ -482,12 +482,12 @@ determining an MPI task layout):
   ny_of_t7_with_halo_on_t7g=$(( ny_of_t7_with_halo_on_t6g*refine_ratio_t6g_to_t7g ))
 
   print_info_msg "$VERBOSE" "
-nx_of_t7_with_halo_on_t7g = ${nx_of_t7_on_t7g} \
+nx_of_t7_with_halo_on_t7g = ${nx_of_t7_with_halo_on_t7g} \
 (istart_of_t7_with_halo_on_t6sg = ${istart_of_t7_with_halo_on_t6sg}, \
 iend_of_t7_with_halo_on_t6sg = ${iend_of_t7_with_halo_on_t6sg})"
 
   print_info_msg "$VERBOSE" "
-ny_of_t7_with_halo_on_t7g = ${ny_of_t7_on_t7g} \
+ny_of_t7_with_halo_on_t7g = ${ny_of_t7_with_halo_on_t7g} \
 (jstart_of_t7_with_halo_on_t6sg = ${jstart_of_t7_with_halo_on_t6sg}, \
 jend_of_t7_with_halo_on_t6sg = ${jend_of_t7_with_halo_on_t6sg})"
 #
