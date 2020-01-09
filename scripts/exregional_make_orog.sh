@@ -505,7 +505,7 @@ ${NH0}-cell-wide halo..."
 nml_fn="input.shave.orog.halo${NH0}"
 shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 printf "%s %s %s %s %s\n" \
-  ${NX_T7} ${NY_T7} ${NH0} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  $NX $NY ${NH0} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
@@ -529,7 +529,7 @@ ${NH4}-cell-wide halo..."
 nml_fn="input.shave.orog.halo${NH4}"
 shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 printf "%s %s %s %s %s\n" \
-  ${NX_T7} ${NY_T7} ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \

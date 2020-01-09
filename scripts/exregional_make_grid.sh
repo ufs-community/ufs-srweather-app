@@ -458,7 +458,7 @@ halo..."
 nml_fn="input.shave.grid.halo${NH3}"
 shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${NH3}.nc"
 printf "%s %s %s %s %s\n" \
-  ${NX_T7} ${NY_T7} ${NH3} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  $NX $NY ${NH3} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
@@ -482,7 +482,7 @@ halo..."
 nml_fn="input.shave.grid.halo${NH4}"
 shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
 printf "%s %s %s %s %s\n" \
-  ${NX_T7} ${NY_T7} ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \

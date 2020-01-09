@@ -625,13 +625,13 @@ print_info_msg "$VERBOSE" "
 Setting parameters in FV3 namelist file (FV3_NML_FP):
   FV3_NML_FP = \"${FV3_NML_FP}\""
 #
-# Set npx_T7 and npy_T7, which are just NX_T7 plus 1 and NY_T7 plus 1,
+# Set npx_T7 and npy_T7, which are just NX plus 1 and NY plus 1,
 # respectively.  These need to be set in the FV3SAR Fortran namelist
 # file.  They represent the number of cell vertices in the x and y di-
 # rections on the regional grid (tile 7).
 #
-npx_T7=$((NX_T7+1))
-npy_T7=$((NY_T7+1))
+npx_T7=$((NX+1))
+npy_T7=$((NY+1))
 #
 # Set parameters.
 #
