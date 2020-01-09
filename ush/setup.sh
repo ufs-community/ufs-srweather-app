@@ -1474,21 +1474,21 @@ component if it is being used) are:
 #
 #-----------------------------------------------------------------------
 #
-rem=$(( NX_T7%LAYOUT_X ))
+rem=$(( NX%LAYOUT_X ))
 if [ $rem -ne 0 ]; then
   print_err_msg_exit "\
-The number of grid cells in the x direction (NX_T7) is not evenly divisible
+The number of grid cells in the x direction (NX) is not evenly divisible
 by the number of MPI tasks in the x direction (LAYOUT_X):
-  NX_T7 = ${NX_T7}
+  NX = $NX
   LAYOUT_X = ${LAYOUT_X}"
 fi
 
-rem=$(( NY_T7%LAYOUT_Y ))
+rem=$(( NY%LAYOUT_Y ))
 if [ $rem -ne 0 ]; then
   print_err_msg_exit "\
-The number of grid cells in the y direction (NY_T7) is not evenly divisible
+The number of grid cells in the y direction (NY) is not evenly divisible
 by the number of MPI tasks in the y direction (LAYOUT_Y):
-  NY_T7 = ${NY_T7}
+  NY = $NY
   LAYOUT_Y = ${LAYOUT_Y}"
 fi
 
@@ -1504,8 +1504,8 @@ The MPI task layout is:
 #
 #-----------------------------------------------------------------------
 #
-nx_per_task=$(( NX_T7/LAYOUT_X ))
-ny_per_task=$(( NY_T7/LAYOUT_Y ))
+nx_per_task=$(( NX/LAYOUT_X ))
+ny_per_task=$(( NY/LAYOUT_Y ))
 num_cols_per_task=$(( $nx_per_task*$ny_per_task ))
 
 rem=$(( num_cols_per_task%BLOCKSIZE ))
@@ -1514,8 +1514,8 @@ if [ $rem -ne 0 ]; then
   print_err_msg_exit "\
 The number of columns assigned to a given MPI task must be divisible by
 BLOCKSIZE:
-  nx_per_task = NX_T7/LAYOUT_X = ${NX_T7}/${LAYOUT_X} = $nx_per_task
-  ny_per_task = NY_T7/LAYOUT_Y = ${NY_T7}/${LAYOUT_Y} = $ny_per_task
+  nx_per_task = NX/LAYOUT_X = $NX/${LAYOUT_X} = $nx_per_task
+  ny_per_task = NY/LAYOUT_Y = $NY/${LAYOUT_Y} = $ny_per_task
   num_cols_per_task = nx_per_task*ny_per_task = $num_cols_per_task
   BLOCKSIZE = $BLOCKSIZE
   rem = num_cols_per_task%%BLOCKSIZE = $rem
@@ -1560,11 +1560,11 @@ fi
 #-----------------------------------------------------------------------
 #
 # If the write component is going to be used, make sure that the number
-# of grid cells in the y direction (NY_T7) is divisible by the number of
-# write tasks per group.  This is because the NY_T7 rows of the grid
+# of grid cells in the y direction (NY) is divisible by the number of
+# write tasks per group.  This is because the NY rows of the grid
 # must be distributed evenly among the write_tasks_per_group tasks in a
 # given write group, i.e. each task must receive the same number of
-# rows.  This implies that NY_T7 must be evenly divisible by write_-
+# rows.  This implies that NY must be evenly divisible by write_-
 # tasks_per_group.  If it isn't, the write component will hang or fail.
 # We check for this below.
 #
@@ -1572,16 +1572,16 @@ fi
 #
 if [ "$QUILTING" = "TRUE" ]; then
 
-  rem=$(( NY_T7%WRTCMP_write_tasks_per_group ))
+  rem=$(( NY%WRTCMP_write_tasks_per_group ))
 
   if [ $rem -ne 0 ]; then
     print_err_msg_exit "\
 The number of grid points in the y direction on the regional grid (ny_-
 T7) must be evenly divisible by the number of tasks per write group 
 (WRTCMP_write_tasks_per_group):
-  NY_T7 = ${NY_T7}
+  NY = $NY
   WRTCMP_write_tasks_per_group = $WRTCMP_write_tasks_per_group
-  NY_T7%%write_tasks_per_group = $rem"
+  NY%%write_tasks_per_group = $rem"
   fi
 
 fi
@@ -2066,8 +2066,8 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #-----------------------------------------------------------------------
 #
 NHW_T7="${NHW_T7}"
-NX_T7="${NX_T7}"
-NY_T7="${NY_T7}"
+NX="$NX"
+NY="$NY"
 istart_rgnl_wide_halo_T6SG="$istart_rgnl_wide_halo_T6SG"
 iend_rgnl_wide_halo_T6SG="$iend_rgnl_wide_halo_T6SG"
 jstart_rgnl_wide_halo_T6SG="$jstart_rgnl_wide_halo_T6SG"
