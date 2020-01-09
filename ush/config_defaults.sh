@@ -338,9 +338,9 @@ GRID_GEN_METHOD="JPgrid"
 #   the global grid tiles varies somewhat as we move across a tile.
 #
 # * Tile 6 has arbitrarily been chosen as the tile to use to orient the
-#   global grid on the sphere (Earth).  This is done by specifying 
-#   GFDLgrid_LON_T6_CTR and GFDLgrid_LAT_T6_CTR, which are the longitude 
-#   and latitude (in degrees) of the center of tile 6.
+#   global grid on the sphere (Earth).  This is done by specifying GFDL-
+#   grid_LON_T6_CTR and GFDLgrid_LAT_T6_CTR, which are the longitude and
+#   latitude (in degrees) of the center of tile 6.
 #
 # * Setting the Schmidt stretching factor GFDLgrid_STRETCH_FAC to a value greater
 #   than 1 shrinks tile 6, while setting it to a value less than 1 (but
@@ -382,20 +382,25 @@ GRID_GEN_METHOD="JPgrid"
 #
 # Definitions:
 #
-# RES:
-# Number of points in each of the two horizontal directions (x and y)
-# on each tile of the global grid.  Must be "48", "96", "192", "384",
-# "768", "1152", or "3072"
-#
 # GFDLgrid_LON_T6_CTR:
 # Longitude of the center of tile 6 (in degrees).
 #
 # GFDLgrid_LAT_T6_CTR:
 # Latitude of the center of tile 6 (in degrees).
 #
+# RES:
+# Number of points in each of the two horizontal directions (x and y)
+# on each tile of the global grid.  Must be "48", "96", "192", "384",
+# "768", "1152", or "3072"
+#
 # GFDLgrid_STRETCH_FAC:
 # Stretching factor used in the Schmidt transformation applied to the
 # cubed sphere grid.
+#
+# GFDLgrid_REFINE_RATIO:
+# Cell refinement ratio for the regional grid, i.e. the number of cells
+# in either the x or y direction on the regional grid (tile 7) that abut
+# one cell on its parent tile (tile 6).
 #
 # GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G:
 # i-index on tile 6 at which the regional grid (tile 7) starts.
@@ -409,22 +414,17 @@ GRID_GEN_METHOD="JPgrid"
 # GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G:
 # j-index on tile 6 at which the regional grid (tile 7) ends.
 #
-# GFDLgrid_REFINE_RATIO:
-# Cell refinement ratio for the regional grid, i.e. the number of cells
-# in either the x or y direction on the regional grid (tile 7) that abut
-# one cell on its parent tile (tile 6).
-#
 #-----------------------------------------------------------------------
 #
-RES="384"
 GFDLgrid_LON_T6_CTR=-97.5
 GFDLgrid_LAT_T6_CTR=35.5
+RES="384"
 GFDLgrid_STRETCH_FAC=1.5
+GFDLgrid_REFINE_RATIO=3
 GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=10
 GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=374
 GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=10
 GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=374
-GFDLgrid_REFINE_RATIO=3
 #
 #-----------------------------------------------------------------------
 #
