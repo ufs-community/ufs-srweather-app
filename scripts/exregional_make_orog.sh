@@ -241,7 +241,7 @@ export exec_dir="$EXECDIR"
 #   oro.${CRES}.tile7.nc
 #
 # and will place it in OROG_DIR.  Note that this file will include
-# orography for a halo of width NHW_T7 cells around tile 7.  The follow-
+# orography for a halo of width NHW cells around tile 7.  The follow-
 # ing will also create a work directory called tile7 under OROG_DIR.
 # This work directory can be removed after the orography file has been
 # created (it is currently not deleted).
@@ -304,8 +304,8 @@ esac
 #
 cd_vrfy ${raw_dir}
 mv_vrfy oro.${CRES}.tile${TILE_RGNL}.nc \
-        oro.${CRES}.tile${TILE_RGNL}.halo${NHW_T7}.nc
-ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${NHW_T7}.nc \
+        oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc
+ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc \
             oro.${CRES}.tile${TILE_RGNL}.nc
 cd_vrfy -
 
@@ -327,7 +327,7 @@ Setting orography filtering parameters..."
 #print_err_msg_exit "\ 
 #Call to script that generates grid file (Jim Purser version) returned 
 #with nonzero exit code."
-#${CRES}_grid.tile${TILE_RGNL}.halo${NHW_T7}.nc
+#${CRES}_grid.tile${TILE_RGNL}.halo${NHW}.nc
 
 
 #if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
@@ -401,7 +401,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Generate a filtered orography file with a wide halo (i.e. with a halo
-# width of NHW_T7 cells) for tile 7 from the corresponding raw orography
+# width of NHW cells) for tile 7 from the corresponding raw orography
 # file.
 #
 # The following will create a filtered orography file named
@@ -459,8 +459,8 @@ zero exit code."
 #
 cd_vrfy ${filter_dir}
 mv_vrfy oro.${CRES}.tile${TILE_RGNL}.nc \
-        oro.${CRES}.tile${TILE_RGNL}.halo${NHW_T7}.nc
-#ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${NHW_T7}.nc \
+        oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc
+#ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc \
 #            oro.${CRES}.tile${TILE_RGNL}.nc
 cd_vrfy -
 
@@ -485,7 +485,7 @@ Filtering of orography complete."
 # orography file without a halo and the one with a 4-cell-wide halo.
 #
 #unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.nc"
-unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.halo${NHW_T7}.nc"
+unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc"
 #
 # We perform the work in shave_dir, so change location to that directo-
 # ry.  Once it is complete, we move the resultant file from shave_dir to

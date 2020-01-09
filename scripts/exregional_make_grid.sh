@@ -228,7 +228,7 @@ mkdir_vrfy -p "$tmpdir"
 # mation on how tiles 1 through 6 are connected or that tile 7 is within
 # tile 6).  All these files will be placed in the directory specified by
 # GRID_DIR.  Note that the file for tile 7 will include a halo of
-# width NHW_T7 cells.
+# width NHW cells.
 #
 # Since tiles 1 through 6 are not needed to run the FV3SAR model and are
 # not used later on in any other preprocessing steps, it is not clear
@@ -414,7 +414,7 @@ fi
 #
 cd_vrfy $tmpdir
 mv_vrfy ${CRES}_grid.tile${TILE_RGNL}.nc \
-        ${CRES}_grid.tile${TILE_RGNL}.halo${NHW_T7}.nc
+        ${CRES}_grid.tile${TILE_RGNL}.halo${NHW}.nc
 mv_vrfy ${CRES}_mosaic.nc ${GRID_DIR}
 cd_vrfy -
 
@@ -438,7 +438,7 @@ Grid file generation complete."
 # wide halo.  This is the input grid file for generating both the grid
 # file with a 3-cell-wide halo and the one with a 4-cell-wide halo.
 #
-unshaved_fp="$tmpdir/${CRES}_grid.tile${TILE_RGNL}.halo${NHW_T7}.nc"
+unshaved_fp="$tmpdir/${CRES}_grid.tile${TILE_RGNL}.halo${NHW}.nc"
 #
 # We perform the work in tmpdir, so change location to that directory.  
 # Once it is complete, we move the resultant file from tmpdir to GRID_-

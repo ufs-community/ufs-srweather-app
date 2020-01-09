@@ -2065,7 +2065,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
-NHW_T7="${NHW_T7}"
+NHW="${NHW}"
 NX="$NX"
 NY="$NY"
 istart_rgnl_wide_halo_T6SG="$istart_rgnl_wide_halo_T6SG"
