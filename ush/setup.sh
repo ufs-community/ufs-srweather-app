@@ -1514,14 +1514,14 @@ if [ $rem -ne 0 ]; then
   print_err_msg_exit "\
 The number of columns assigned to a given MPI task must be divisible by
 BLOCKSIZE:
-  nx_per_task = NX/LAYOUT_X = $NX/${LAYOUT_X} = $nx_per_task
-  ny_per_task = NY/LAYOUT_Y = $NY/${LAYOUT_Y} = $ny_per_task
-  num_cols_per_task = nx_per_task*ny_per_task = $num_cols_per_task
+  nx_per_task = NX/LAYOUT_X = $NX/${LAYOUT_X} = ${nx_per_task}
+  ny_per_task = NY/LAYOUT_Y = $NY/${LAYOUT_Y} = ${ny_per_task}
+  num_cols_per_task = nx_per_task*ny_per_task = ${num_cols_per_task}
   BLOCKSIZE = $BLOCKSIZE
   rem = num_cols_per_task%%BLOCKSIZE = $rem
 The prime factors of num_cols_per_task are (useful for determining a va-
 lid BLOCKSIZE): 
-  prime_factors_num_cols_per_task: $prime_factors_num_cols_per_task"
+  prime_factors_num_cols_per_task: ${prime_factors_num_cols_per_task}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -1561,12 +1561,12 @@ fi
 #
 # If the write component is going to be used, make sure that the number
 # of grid cells in the y direction (NY) is divisible by the number of
-# write tasks per group.  This is because the NY rows of the grid
-# must be distributed evenly among the write_tasks_per_group tasks in a
-# given write group, i.e. each task must receive the same number of
-# rows.  This implies that NY must be evenly divisible by write_-
-# tasks_per_group.  If it isn't, the write component will hang or fail.
-# We check for this below.
+# write tasks per group.  This is because the NY rows of the grid must
+# be distributed evenly among the write_tasks_per_group tasks in a given
+# write group, i.e. each task must receive the same number of rows.  
+# This implies that NY must be evenly divisible by WRTCMP_write_tasks_-
+# per_group.  If it isn't, the write component will hang or fail.  We
+# check for this below.
 #
 #-----------------------------------------------------------------------
 #

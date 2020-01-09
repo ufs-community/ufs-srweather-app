@@ -227,8 +227,8 @@ mkdir_vrfy -p "$tmpdir"
 # tains information only about tile 7 (i.e. it does not have any infor-
 # mation on how tiles 1 through 6 are connected or that tile 7 is within
 # tile 6).  All these files will be placed in the directory specified by
-# GRID_DIR.  Note that the file for tile 7 will include a halo of
-# width NHW cells.
+# GRID_DIR.  Note that the file for tile 7 will include a halo of width
+# NHW cells.
 #
 # Since tiles 1 through 6 are not needed to run the FV3SAR model and are
 # not used later on in any other preprocessing steps, it is not clear
