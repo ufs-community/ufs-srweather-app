@@ -625,21 +625,21 @@ print_info_msg "$VERBOSE" "
 Setting parameters in FV3 namelist file (FV3_NML_FP):
   FV3_NML_FP = \"${FV3_NML_FP}\""
 #
-# Set npx_T7 and npy_T7, which are just NX plus 1 and NY plus 1,
+# Set npx and npy, which are just NX plus 1 and NY plus 1,
 # respectively.  These need to be set in the FV3SAR Fortran namelist
 # file.  They represent the number of cell vertices in the x and y di-
 # rections on the regional grid (tile 7).
 #
-npx_T7=$((NX+1))
-npy_T7=$((NY+1))
+npx=$((NX+1))
+npy=$((NY+1))
 #
 # Set parameters.
 #
 set_file_param "${FV3_NML_FP}" "blocksize" "$BLOCKSIZE"
 set_file_param "${FV3_NML_FP}" "ccpp_suite" "\'${CCPP_PHYS_SUITE}\'"
 set_file_param "${FV3_NML_FP}" "layout" "${LAYOUT_X},${LAYOUT_Y}"
-set_file_param "${FV3_NML_FP}" "npx" "${npx_T7}"
-set_file_param "${FV3_NML_FP}" "npy" "${npy_T7}"
+set_file_param "${FV3_NML_FP}" "npx" "$npx"
+set_file_param "${FV3_NML_FP}" "npy" "$npy"
 
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # Question:
