@@ -416,17 +416,15 @@ GRID_GEN_METHOD="JPgrid"
 #
 #-----------------------------------------------------------------------
 #
-if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-
-  RES="384"
-  GFDLgrid_LON_T6_CTR=-97.5
-  GFDLgrid_LAT_T6_CTR=35.5
-  GFDLgrid_STRETCH_FAC=1.5
-  GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=10
-  GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=374
-  GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=10
-  GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=374
-  GFDLgrid_REFINE_RATIO=3
+RES="384"
+GFDLgrid_LON_T6_CTR=-97.5
+GFDLgrid_LAT_T6_CTR=35.5
+GFDLgrid_STRETCH_FAC=1.5
+GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=10
+GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=374
+GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=10
+GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=374
+GFDLgrid_REFINE_RATIO=3
 #
 #-----------------------------------------------------------------------
 #
@@ -470,19 +468,15 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
-elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-
-  JPgrid_LON_CTR=-97.5
-  JPgrid_LAT_CTR=35.5
-  JPgrid_DELX="3000.0"
-  JPgrid_DELY="3000.0"
-  JPgrid_NX=1000
-  JPgrid_NY=1000
-  JPgrid_WIDE_HALO_WIDTH=6
-  JPgrid_ALPHA_PARAM="0.21423"
-  JPgrid_KAPPA_PARAM="-0.23209"
-
-fi
+JPgrid_LON_CTR=-97.5
+JPgrid_LAT_CTR=35.5
+JPgrid_DELX="3000.0"
+JPgrid_DELY="3000.0"
+JPgrid_NX=1000
+JPgrid_NY=1000
+JPgrid_WIDE_HALO_WIDTH=6
+JPgrid_ALPHA_PARAM="0.21423"
+JPgrid_KAPPA_PARAM="-0.23209"
 #
 #-----------------------------------------------------------------------
 #
