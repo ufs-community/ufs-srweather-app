@@ -151,12 +151,7 @@ This is the J-job script for the task that generates grid files.
 #-----------------------------------------------------------------------
 #
 export gtype="$GTYPE"
-
-if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-  export stretch_fac=${GFDLgrid_STRETCH_FAC}
-elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-  export stretch_fac=${STRETCH_FAC}
-fi
+export stretch_fac=${STRETCH_FAC}
 #
 #-----------------------------------------------------------------------
 #

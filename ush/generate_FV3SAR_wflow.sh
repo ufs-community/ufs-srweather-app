@@ -641,22 +641,13 @@ set_file_param "${FV3_NML_FP}" "layout" "${LAYOUT_X},${LAYOUT_Y}"
 set_file_param "${FV3_NML_FP}" "npx" "$npx"
 set_file_param "${FV3_NML_FP}" "npy" "$npy"
 
-if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+set_file_param "${FV3_NML_FP}" "target_lon" "${LON_CTR}"
+set_file_param "${FV3_NML_FP}" "target_lat" "${LAT_CTR}"
 # Question:
-# For a regional grid (i.e. one that only has a tile 7) should the co-
-# ordinates that target_lon and target_lat get set to be those of the 
-# center of tile 6 (of the parent grid) or those of tile 7?  These two
-# are not necessarily the same [although assuming there is only one re-
-# gional domain within tile 6, i.e. assuming there is no tile 8, 9, etc,
-# there is no reason not to center tile 7 with respect to tile 6].
-  set_file_param "${FV3_NML_FP}" "target_lon" "${GFDLgrid_LON_T6_CTR}"
-  set_file_param "${FV3_NML_FP}" "target_lat" "${GFDLgrid_LAT_T6_CTR}"
-  set_file_param "${FV3_NML_FP}" "stretch_fac" "${GFDLgrid_STRETCH_FAC}"
-elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-  set_file_param "${FV3_NML_FP}" "target_lon" "${JPgrid_LON_CTR}"
-  set_file_param "${FV3_NML_FP}" "target_lat" "${JPgrid_LAT_CTR}"
-  set_file_param "${FV3_NML_FP}" "stretch_fac" "${STRETCH_FAC}"
-fi
+# For a JPgrid type grid, what should stretch_fac be set to?  This de-
+# pends on how the FV3 code uses the stretch_fac parameter in the name-
+# list file.
+set_file_param "${FV3_NML_FP}" "stretch_fac" "${STRETCH_FAC}"
 set_file_param "${FV3_NML_FP}" "bc_update_interval" "${LBC_UPDATE_INTVL_HRS}"
 #
 # For the GSD_v0 and the GSD_SAR physics suites, set the parameter lsoil
