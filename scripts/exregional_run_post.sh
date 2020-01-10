@@ -257,13 +257,13 @@ else
     refine_str="RR${GFDLgrid_REFINE_RATIO}"
     grid_name="${grid_name}_${CRES}_${stretch_str}_${refine_str}"
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-    nx_str="NX$( printf "%s" "${JPgrid_NX}" | sed "s|\.|p|" )"
-    ny_str="NY$( printf "%s" "${JPgrid_NY}" | sed "s|\.|p|" )"
-    alpha_JPgrid_param_str="A"$( printf "%s" "${JPgrid_ALPHA_PARAM}" | \
+    nx_str="NX$( printf "%s" "$NX" | sed "s|\.|p|" )"
+    ny_str="NY$( printf "%s" "$NY" | sed "s|\.|p|" )"
+    JPgrid_alpha_param_str="A"$( printf "%s" "${JPgrid_ALPHA_PARAM}" | \
                                  sed "s|-|mns|" | sed "s|\.|p|" )
-    kappa_JPgrid_param_str="K"$( printf "%s" "${JPgrid_KAPPA_PARAM}" | \
+    JPgrid_kappa_param_str="K"$( printf "%s" "${JPgrid_KAPPA_PARAM}" | \
                                  sed "s|-|mns|" | sed "s|\.|p|" )
-    grid_name="${grid_name}_${nx_str}_${ny_str}_${alpha_JPgrid_param_str}_${kappa_JPgrid_param_str}"
+    grid_name="${grid_name}_${nx_str}_${ny_str}_${JPgrid_alpha_param_str}_${JPgrid_kappa_param_str}"
   fi
 
 fi

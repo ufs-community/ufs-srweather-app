@@ -2037,6 +2037,13 @@ TILE_RGNL="${TILE_RGNL}"
 NH0="${NH0}"
 NH3="${NH3}"
 NH4="${NH4}"
+
+LON_CTR="${LON_CTR}"
+LAT_CTR="${LAT_CTR}"
+NX="${NX}"
+NY="${NY}"
+NHW="${NHW}"
+STRETCH_FAC="${STRETCH_FAC}"
 EOM
 } || print_err_msg_exit "\
 Heredoc (cat) command to append new variable definitions to variable 
@@ -2065,13 +2072,10 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #
 #-----------------------------------------------------------------------
 #
-NHW="${NHW}"
-NX="$NX"
-NY="$NY"
-istart_rgnl_wide_halo_T6SG="$istart_rgnl_wide_halo_T6SG"
-iend_rgnl_wide_halo_T6SG="$iend_rgnl_wide_halo_T6SG"
-jstart_rgnl_wide_halo_T6SG="$jstart_rgnl_wide_halo_T6SG"
-jend_rgnl_wide_halo_T6SG="$jend_rgnl_wide_halo_T6SG"
+ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG="${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}"
+IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG="${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}"
+JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG="${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}"
+JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG="${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}"
 CRES="$CRES"
 EOM
 } || print_err_msg_exit "\
@@ -2102,7 +2106,6 @@ NEG_NY_OF_DOM_WITH_WIDE_HALO="${NEG_NY_OF_DOM_WITH_WIDE_HALO}"
 #
 RES=""   # This will be set after the grid generation task is complete.
 CRES=""  # This will be set after the grid generation task is complete.
-STRETCH_FAC="${STRETCH_FAC}"
 EOM
 } || print_err_msg_exit "\
 Heredoc (cat) command to append grid parameters to variable definitions
