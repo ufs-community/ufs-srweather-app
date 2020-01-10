@@ -625,10 +625,10 @@ print_info_msg "$VERBOSE" "
 Setting parameters in FV3 namelist file (FV3_NML_FP):
   FV3_NML_FP = \"${FV3_NML_FP}\""
 #
-# Set npx and npy, which are just NX plus 1 and NY plus 1,
-# respectively.  These need to be set in the FV3SAR Fortran namelist
-# file.  They represent the number of cell vertices in the x and y di-
-# rections on the regional grid (tile 7).
+# Set npx and npy, which are just NX plus 1 and NY plus 1, respectively.  
+# These need to be set in the FV3SAR Fortran namelist file.  They repre-
+# sent the number of cell vertices in the x and y directions on the re-
+# gional grid.
 #
 npx=$((NX+1))
 npy=$((NY+1))
@@ -646,7 +646,9 @@ set_file_param "${FV3_NML_FP}" "target_lat" "${LAT_CTR}"
 # Question:
 # For a JPgrid type grid, what should stretch_fac be set to?  This de-
 # pends on how the FV3 code uses the stretch_fac parameter in the name-
-# list file.
+# list file.  Recall that for a JPgrid, it gets set in the function 
+# set_gridparams_JPgrid(.sh) to something like 0.9999, but is it ok to
+# set it to that here in the FV3 namelist file?
 set_file_param "${FV3_NML_FP}" "stretch_fac" "${STRETCH_FAC}"
 set_file_param "${FV3_NML_FP}" "bc_update_interval" "${LBC_UPDATE_INTVL_HRS}"
 #
