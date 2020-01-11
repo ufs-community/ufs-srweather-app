@@ -9,9 +9,9 @@
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
-scrfunc_fn=$( basename "${scrfunc_fp}" )
-scrfunc_dir=$( dirname "${scrfunc_fp}" )
+  scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  scrfunc_fn=$( basename "${scrfunc_fp}" )
+  scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
@@ -21,7 +21,7 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-USHDIR="${scrfunc_dir}"
+  USHDIR="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
@@ -31,7 +31,7 @@ USHDIR="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/source_util_funcs.sh
+  . $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -40,7 +40,7 @@ USHDIR="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -50,12 +50,12 @@ USHDIR="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( \
+  valid_args=( \
 "verbose" \
 "global_var_defns_fp" \
 "file_group" \
-)
-process_args valid_args "$@"
+  )
+  process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
 #
@@ -65,7 +65,7 @@ process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
 #
-print_input_args valid_args
+  print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -74,7 +74,7 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-. ${global_var_defns_fp}
+  . ${global_var_defns_fp}
 #
 #-----------------------------------------------------------------------
 #
@@ -89,7 +89,7 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$verbose" "
+  print_info_msg "$verbose" "
 Creating links in the FIXsar directory to the grid files..."
 #
 #-----------------------------------------------------------------------
@@ -98,18 +98,18 @@ Creating links in the FIXsar directory to the grid files..."
 #
 #-----------------------------------------------------------------------
 #
-fns_grid=( \
+  fns_grid=( \
 "C*_mosaic.nc" \
 "C*_grid.tile${TILE_RGNL}.halo${NH3}.nc" \
 "C*_grid.tile${TILE_RGNL}.halo${NH4}.nc" \
-)
+  )
 
-fns_orog=( \
+  fns_orog=( \
 "C*_oro_data.tile${TILE_RGNL}.halo${NH0}.nc" \
 "C*_oro_data.tile${TILE_RGNL}.halo${NH4}.nc" \
-)
+  )
 
-sfc_climo_fields=( \
+  sfc_climo_fields=( \
 "facsf" \
 "maximum_snow_albedo" \
 "slope_type" \
@@ -118,14 +118,14 @@ sfc_climo_fields=( \
 "substrate_temperature" \
 "vegetation_greenness" \
 "vegetation_type" \
-)
-num_fields=${#sfc_climo_fields[@]}
-fns_sfc_climo=()
-for (( i=0; i<${num_fields}; i++ )); do
-  ii=$((2*i))
-  fns_sfc_climo[$ii]="C*.${sfc_climo_fields[$i]}.tile${TILE_RGNL}.halo${NH0}.nc"
-  fns_sfc_climo[$ii+1]="C*.${sfc_climo_fields[$i]}.tile${TILE_RGNL}.halo${NH4}.nc"
-done
+  )
+  num_fields=${#sfc_climo_fields[@]}
+  fns_sfc_climo=()
+  for (( i=0; i<${num_fields}; i++ )); do
+    ii=$((2*i))
+    fns_sfc_climo[$ii]="C*.${sfc_climo_fields[$i]}.tile${TILE_RGNL}.halo${NH0}.nc"
+    fns_sfc_climo[$ii+1]="C*.${sfc_climo_fields[$i]}.tile${TILE_RGNL}.halo${NH4}.nc"
+  done
 #
 #-----------------------------------------------------------------------
 #
@@ -134,8 +134,8 @@ done
 #
 #-----------------------------------------------------------------------
 #
-valid_vals_file_group=( "grid" "orog" "sfc_climo" )
-check_var_valid_value "file_group" "valid_vals_file_group"
+  valid_vals_file_group=( "grid" "orog" "sfc_climo" )
+  check_var_valid_value "file_group" "valid_vals_file_group"
 #
 #-----------------------------------------------------------------------
 #
@@ -144,20 +144,20 @@ check_var_valid_value "file_group" "valid_vals_file_group"
 #
 #-----------------------------------------------------------------------
 #
-fps_grid=( "${fns_grid[@]/#/${GRID_DIR}/}" )
-fps_orog=( "${fns_orog[@]/#/${OROG_DIR}/}" )
-fps_sfc_climo=( "${fns_sfc_climo[@]/#/${SFC_CLIMO_DIR}/}" )
+  fps_grid=( "${fns_grid[@]/#/${GRID_DIR}/}" )
+  fps_orog=( "${fns_orog[@]/#/${OROG_DIR}/}" )
+  fps_sfc_climo=( "${fns_sfc_climo[@]/#/${SFC_CLIMO_DIR}/}" )
 
-if [ "${file_group}" = "grid" ]; then
-  fps_all=( "${fps_grid[@]}" )
-  run_task="${RUN_TASK_MAKE_GRID}"
-elif [ "${file_group}" = "orog" ]; then
-  fps_all=( "${fps_orog[@]}" )
-  run_task="${RUN_TASK_MAKE_OROG}"
-elif [ "${file_group}" = "sfc_climo" ]; then
-  fps_all=( "${fps_sfc_climo[@]}" )
-  run_task="${RUN_TASK_MAKE_SFC_CLIMO}"
-fi
+  if [ "${file_group}" = "grid" ]; then
+    fps_all=( "${fps_grid[@]}" )
+    run_task="${RUN_TASK_MAKE_GRID}"
+  elif [ "${file_group}" = "orog" ]; then
+    fps_all=( "${fps_orog[@]}" )
+    run_task="${RUN_TASK_MAKE_OROG}"
+  elif [ "${file_group}" = "sfc_climo" ]; then
+    fps_all=( "${fps_sfc_climo[@]}" )
+    run_task="${RUN_TASK_MAKE_SFC_CLIMO}"
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -166,44 +166,44 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-i=0
-res_prev=""
-res=""
-fp_prev=""
+  i=0
+  res_prev=""
+  res=""
+  fp_prev=""
 
-for fp in ${fps_all[@]}; do
+  for fp in ${fps_all[@]}; do
 
-  fn=$( basename $fp )
+    fn=$( basename $fp )
 printf "i = %s\n" "$i"
 printf "  fn = %s\n" "$fn"
-
-  res=$( printf "%s" $fn | sed -n -r -e "s/^C([0-9]*).*/\1/p" )
-  if [ -z $res ]; then
-    print_err_msg_exit "\
+  
+    res=$( printf "%s" $fn | sed -n -r -e "s/^C([0-9]*).*/\1/p" )
+    if [ -z $res ]; then
+      print_err_msg_exit "\
 The C-resolution could not be extracted from the current file's name.
 The full path to the file (fp) is:
   fp = \"${fp}\"
 This may be because fp contains the * globbing character, which would
 imply that no files were found that match the globbing pattern specified
 in fp."
-  fi
+    fi
 
 printf "  res_prev = %s\n" "${res_prev}"
 printf "  res = %s\n" "${res}"
-  if [ $i -gt 0 ] && [ ${res} != ${res_prev} ]; then
-    print_err_msg_exit "\
+    if [ $i -gt 0 ] && [ ${res} != ${res_prev} ]; then
+      print_err_msg_exit "\
 The C-resolutions (as obtained from the file names) of the previous and 
 current file (fp_prev and fp, respectively) are different:
   fp_prev = \"${fp_prev}\"
   fp      = \"${fp}\"
 Please ensure that all files have the same C-resolution."
-  fi
+    fi
 
-  i=$((i+1))
-  fp_prev="$fp"
-  res_prev=${res}
+    i=$((i+1))
+    fp_prev="$fp"
+    res_prev=${res}
 
-done
+  done
 #
 #-----------------------------------------------------------------------
 #
@@ -241,7 +241,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-fps_all=( "${fps_all[@]/\*/$res}" )
+  fps_all=( "${fps_all[@]/\*/$res}" )
 
 echo
 printf "fps_all = ( \\ \n"
@@ -249,25 +249,25 @@ printf "\"%s\" \\ \n" "${fps_all[@]}"
 printf ")"
 echo
 
-relative_or_null=""
-if [ "${run_task}" = "TRUE" ]; then
-  relative_or_null="--relative"
-fi
+  relative_or_null=""
+  if [ "${run_task}" = "TRUE" ]; then
+    relative_or_null="--relative"
+  fi
 
 echo
 echo "FIXsar = \"$FIXsar\""
 
-cd_vrfy $FIXsar
-for fp in "${fps_all[@]}"; do
-  if [ -f "$fp" ]; then
-    ln_vrfy -sf ${relative_or_null} $fp .
-#    ln_vrfy -sf $fp .
-  else
-    print_err_msg_exit "\
+  cd_vrfy $FIXsar
+  for fp in "${fps_all[@]}"; do
+    if [ -f "$fp" ]; then
+      ln_vrfy -sf ${relative_or_null} $fp .
+#      ln_vrfy -sf $fp .
+    else
+      print_err_msg_exit "\
 Cannot create symlink because target file (fp) does not exist:
   fp = \"${fp}\""
-  fi
-done
+    fi
+  done
 #
 #-----------------------------------------------------------------------
 #
@@ -276,34 +276,34 @@ done
 #
 #-----------------------------------------------------------------------
 #
-if [ "${file_group}" = "grid" ]; then
+  if [ "${file_group}" = "grid" ]; then
 # Create link to grid file needed by the make_ic and make_lbc tasks.
-  filename="${cres}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
-  ln_vrfy -sf ${relative_or_null} $filename ${cres}_grid.tile${TILE_RGNL}.nc
-fi
+    filename="${cres}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
+    ln_vrfy -sf ${relative_or_null} $filename ${cres}_grid.tile${TILE_RGNL}.nc
+  fi
 
 # Create links to surface climatology files needed by the make_ic task.
-if [ "${file_group}" = "sfc_climo" ]; then
+  if [ "${file_group}" = "sfc_climo" ]; then
 
-  tmp=( "${sfc_climo_fields[@]/#/${cres}.}" )
-  fns_sfc_climo_with_halo=( "${tmp[@]/%/.tile${TILE_RGNL}.halo${NH4}.nc}" )
-  fns_sfc_climo_no_halo=( "${tmp[@]/%/.tile${TILE_RGNL}.nc}" )
+    tmp=( "${sfc_climo_fields[@]/#/${cres}.}" )
+    fns_sfc_climo_with_halo=( "${tmp[@]/%/.tile${TILE_RGNL}.halo${NH4}.nc}" )
+    fns_sfc_climo_no_halo=( "${tmp[@]/%/.tile${TILE_RGNL}.nc}" )
 
-  cd_vrfy $FIXsar
-  for (( i=0; i<${num_fields}; i++ )); do
-    target="${fns_sfc_climo_with_halo[$i]}"
-    symlink="${fns_sfc_climo_no_halo[$i]}"
-    if [ -f "$target" ]; then
-#      ln_vrfy -sf ${relative_or_null} $target $symlink
-      ln_vrfy -sf $target $symlink
-    else
-      print_err_msg_exit "\
+    cd_vrfy $FIXsar
+    for (( i=0; i<${num_fields}; i++ )); do
+      target="${fns_sfc_climo_with_halo[$i]}"
+      symlink="${fns_sfc_climo_no_halo[$i]}"
+      if [ -f "$target" ]; then
+#        ln_vrfy -sf ${relative_or_null} $target $symlink
+        ln_vrfy -sf $target $symlink
+      else
+        print_err_msg_exit "\
 Cannot create symlink because target file (target) does not exist:
   target = \"${target}\""
-    fi
-  done
+      fi
+    done
 
-fi
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -311,5 +311,5 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+  { restore_shell_opts; } > /dev/null 2>&1
 
