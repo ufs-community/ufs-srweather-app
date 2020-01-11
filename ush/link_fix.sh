@@ -3,35 +3,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file in which this script/function is located 
-# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
-# which the file is located (scrfunc_dir).
+# This file defines and then calls a function that i
 #
 #-----------------------------------------------------------------------
 #
-  scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
-  scrfunc_fn=$( basename "${scrfunc_fp}" )
-  scrfunc_dir=$( dirname "${scrfunc_fp}" )
-#
-#-----------------------------------------------------------------------
-#
-# This script should be located in USHDIR, so set USHDIR to this 
-# script's directory (USHDIR is needed in various places below or in
-# sourced scripts).
-#
-#-----------------------------------------------------------------------
-#
-  USHDIR="${scrfunc_dir}"
-#
-#-----------------------------------------------------------------------
-#
-# Source the function definitions file, which should be in the same di-
-# rectory as the current script.  This is needed in order to be able to
-# use the process_args() function below.
-#
-#-----------------------------------------------------------------------
-#
-  . $USHDIR/source_util_funcs.sh
+function link_fix() {
 #
 #-----------------------------------------------------------------------
 #
@@ -41,6 +17,26 @@
 #-----------------------------------------------------------------------
 #
   { save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
 #
 #-----------------------------------------------------------------------
 #
@@ -313,3 +309,4 @@ Cannot create symlink because target file (target) does not exist:
 #
   { restore_shell_opts; } > /dev/null 2>&1
 
+}
