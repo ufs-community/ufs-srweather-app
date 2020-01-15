@@ -817,18 +817,18 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# For a "GFDLgrid" type of grid, make sure RES is set to a valid value.
-# Then set the C-resolution (CRES).
+# For a "GFDLgrid" type of grid, make sure GFDLgrid_RES is set to a va-
+# lid value.  Then set the C-resolution (CRES).
 #
 #-----------------------------------------------------------------------
 #
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
   err_msg="\
 The number of grid cells per tile in each horizontal direction specified
-in RES is not supported:
-  RES = \"${RES}\""
-  check_var_valid_value "RES" "valid_vals_RES" "${err_msg}"
-  CRES="C${RES}"
+in GFLDgrid_RES is not supported:
+  GFLDgrid_RES = \"${GFLDgrid_RES}\""
+  check_var_valid_value "GFDLgrid_RES" "valid_vals_GFDLgrid_RES" "${err_msg}"
+  CRES="C${GFLDgrid_RES}"
 fi
 #
 #-----------------------------------------------------------------------

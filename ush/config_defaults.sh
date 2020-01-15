@@ -388,7 +388,7 @@ GRID_GEN_METHOD="JPgrid"
 # GFDLgrid_LAT_T6_CTR:
 # Latitude of the center of tile 6 (in degrees).
 #
-# RES:
+# GFDLgrid_RES:
 # Number of points in each of the two horizontal directions (x and y)
 # on each tile of the global grid.  Must be "48", "96", "192", "384",
 # "768", "1152", or "3072"
@@ -418,7 +418,7 @@ GRID_GEN_METHOD="JPgrid"
 #
 GFDLgrid_LON_T6_CTR=-97.5
 GFDLgrid_LAT_T6_CTR=35.5
-RES="384"
+GFDLgrid_RES="384"
 GFDLgrid_STRETCH_FAC=1.5
 GFDLgrid_REFINE_RATIO=3
 GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=10

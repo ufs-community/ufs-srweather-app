@@ -243,7 +243,7 @@ predefined domain:
     GFDLgrid_LON_T6_CTR=-106.0
     GFDLgrid_LAT_T6_CTR=54.0
     GFDLgrid_STRETCH_FAC=0.63
-    RES="384"
+    GFDLgrid_RES="384"
     GFDLgrid_REFINE_RATIO=3
   
     num_margin_cells_T6_left=10
@@ -523,7 +523,7 @@ predefined domain:
     GFDLgrid_LON_T6_CTR=-97.5
     GFDLgrid_LAT_T6_CTR=38.5
     GFDLgrid_STRETCH_FAC=1.5
-    RES="768"
+    GFDLgrid_RES="768"
     GFDLgrid_REFINE_RATIO=3
   
     num_margin_cells_T6_left=61
@@ -615,7 +615,7 @@ predefined domain:
     GFDLgrid_LON_T6_CTR=-153.0
     GFDLgrid_LAT_T6_CTR=61.0
     GFDLgrid_STRETCH_FAC=1.0  # ???
-    RES="768"
+    GFDLgrid_RES="768"
     GFDLgrid_REFINE_RATIO=3   # ???
   
     num_margin_cells_T6_left=61
