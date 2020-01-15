@@ -1,8 +1,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script and the function definitions 
-# file.
+# Source the variable definitions file and the bash utility functions. 
 #
 #-----------------------------------------------------------------------
 #

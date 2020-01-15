@@ -140,14 +140,14 @@ PTMP="/path/to/temporary/directory/ptmp"
 # tions (either in terms of actual values or placeholders) of the para-
 # meters that the write component needs.  If the write component is go-
 # ing to be used, this file is first appended to MODEL_CONFIG_FN, and
-# any placeholder values in the variable definitions in the new MODEL_-
-# CONFIG_FN file are subsequently replaced by actual values.  If a pre-
-# defined domain is being used (see PREDEF_GRID_NAME below), WRTCMP_PA-
-# RAMS_TEMPLATE_FN may be set to an empty string.  In this case, it will
-# be reset to the name of the existing template file for that predefined
-# domain.  It is assumed that the file specified by WRTCMP_PARAMS_TEMP-
-# LATE_FN is located in the templates directory TEMPLATE_DIR, which is
-# in turn defined in the setup script.
+# any placeholder values in the variable definitions in the new 
+# MODEL_CONFIG_FN file are subsequently replaced by actual values.  If a
+# predefined domain is being used (see PREDEF_GRID_NAME below), 
+# WRTCMP_PARAMS_TEMPLATE_FN may be set to an empty string.  In this 
+# case, it will be reset to the name of the existing template file for
+# that predefined domain.  It is assumed that the file specified by 
+# WRTCMP_PARAMS_TEMPLATE_FN is located in the templates directory 
+# TEMPLATE_DIR, which is in turn defined in the setup script.
 #
 #-----------------------------------------------------------------------
 #
