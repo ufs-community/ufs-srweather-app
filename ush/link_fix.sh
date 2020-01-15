@@ -66,12 +66,36 @@ function link_fix() {
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script and the function definitions
-# file.
+# Declare local variables.
 #
 #-----------------------------------------------------------------------
 #
-  . ${global_var_defns_fp}
+  local fns_grid \
+        fns_orog \
+        sfc_climo_fields \
+        num_fields \
+        fns_sfc_climo \
+        i \
+        ii \
+        valid_vals_file_group \
+        fps_grid \
+        fps_orog \
+        fps_sfc_climo \
+        fps_all \
+        run_task \
+        res_prev \
+        res \
+        fp_prev \
+        fp \
+        fn \
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+#  . ${global_var_defns_fp}
 #
 #-----------------------------------------------------------------------
 #
