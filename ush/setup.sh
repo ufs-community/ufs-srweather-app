@@ -45,12 +45,18 @@ cd_vrfy ${scrfunc_dir}
 #
 #-----------------------------------------------------------------------
 #
-# Source function definition files.
+# Source bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . ./source_util_funcs.sh
-
+#
+#-----------------------------------------------------------------------
+#
+# Source functions for setting grid parameters.
+#
+#-----------------------------------------------------------------------
+#
 . ./set_gridparams_GFDLgrid.sh
 . ./set_gridparams_JPgrid.sh
 #
@@ -70,47 +76,44 @@ cd_vrfy ${scrfunc_dir}
 #
 #-----------------------------------------------------------------------
 #
-DEFAULT_CONFIG_FN="config_defaults.sh"
-CUSTOM_CONFIG_FN="config.sh"
+DEFAULT_EXPT_CONFIG_FN="config_defaults.sh"
+EXPT_CONFIG_FN="config.sh"
 #
 #-----------------------------------------------------------------------
 #
-# Source the configuration script containing default values of experi-
-# ment variables.
+# Source the default configuration file containing default values for
+# the experiment/workflow variables.
 #
 #-----------------------------------------------------------------------
 #
-. ./${DEFAULT_CONFIG_FN}
+. ./${DEFAULT_EXPT_CONFIG_FN}
 #
 #-----------------------------------------------------------------------
 #
-# If a local configuration script exists, source that as well.  Here, by
-# "local", we mean one that contains variable settings that are relevant
-# only to the local environment (e.g. a directory setting that applies
-# only to the current user on the current machine).  Note that this lo-
-# cal script is not tracked by the repository, whereas the default con-
-# figuration script sourced above is tracked.  Any variable settings in
-# the local script will override the ones in the default script.  The 
-# purpose of having a local configuration script is to avoid having to 
-# make changes to the default configuration script that are only appli-
-# cable to one user, one machine, etc.
+# If a user-specified configuration file exists, source it.  This file
+# contains user-specified values for a subset of the experiment/workflow 
+# variables that override their default values.  Note that the user-
+# specified configuration file is not tracked by the repository, whereas
+# the default configuration file is tracked.
 #
 #-----------------------------------------------------------------------
 #
-if [ -f "${CUSTOM_CONFIG_FN}" ]; then
+if [ -f "${EXPT_CONFIG_FN}" ]; then
 #
-# We require that the variables being set in the local configuration 
-# script have counterparts in the default configuration script.  This is
-# so that we do not accidentally introduce new variables in the local
-# script without also officially introducing them in the default script.
-# Thus, before sourcing the local configuration script, we check for 
-# this.
+# We require that the variables being set in the user-specified configu-
+# ration file have counterparts in the default configuration file.  This
+# is so that we do not introduce new variables in the user-specified 
+# configuration file without also officially introducing them in the de-
+# fault configuration file.  Thus, before sourcing the user-specified 
+# configuration file, we check that all variables in the user-specified
+# configuration file are also assigned default values in the default 
+# configuration file.
 #
   . ./compare_config_scripts.sh
 #
-# Now source the local configuration script.
+# Now source the user-specified configuration file.
 #
-  . ./${CUSTOM_CONFIG_FN}
+  . ./${EXPT_CONFIG_FN}
 #
 fi
 #
@@ -1647,21 +1650,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Generate the shell script that will appear in the run directory (RUN-
-# DIR) and will contain definitions of variables needed by the various
-# scripts in the workflow.  We refer to this as the variable definitions
-# file.  We will create this file by:
+# Generate the shell script that will appear in the experiment directory 
+# (EXPTDIR) and will contain definitions of variables needed by the va-
+# rious scripts in the workflow.  We refer to this as the experiment/
+# workflow global variable definitions file.  We will create this file 
+# by:
 #
-# 1) Copying the default workflow/experiment configuration script (spe-
-#    fied by DEFAULT_CONFIG_FN and located in the shell script directory
-#    USHDIR) to the run directory and renaming it to the name specified
-#    by GLOBAL_VAR_DEFNS_FN.
+# 1) Copying the default workflow/experiment configuration file (speci-
+#    fied by DEFAULT_EXPT_CONFIG_FN and located in the shell script di-
+#    rectory specified by USHDIR) to the experiment directory and rena-
+#    ming it to the name specified by GLOBAL_VAR_DEFNS_FN.
 #
-# 2) Resetting the original values of the variables defined in this file
-#    to their current values.  This is necessary because these variables 
-#    may have been reset by the local configuration script (if one ex-
-#    ists in USHDIR) and/or by this setup script, e.g. because predef_-
-#    domain is set to a valid non-empty value.
+# 2) Resetting the default variable values in this file to their current
+#    values.  This is necessary because these variables may have been 
+#    reset by the user-specified configuration file (if one exists in 
+#    USHDIR) and/or by this setup script, e.g. because predef_domain is
+#    set to a valid non-empty value.
 #
 # 3) Appending to the variable definitions file any new variables intro-
 #    duced in this setup script that may be needed by the scripts that
@@ -1674,7 +1678,7 @@ fi
 #-----------------------------------------------------------------------
 #
 GLOBAL_VAR_DEFNS_FP="$EXPTDIR/$GLOBAL_VAR_DEFNS_FN"
-cp_vrfy ./${DEFAULT_CONFIG_FN} ${GLOBAL_VAR_DEFNS_FP}
+cp_vrfy ./${DEFAULT_EXPT_CONFIG_FN} ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #

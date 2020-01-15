@@ -41,7 +41,7 @@ ushdir="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-# Source function definition files.
+# Source bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
@@ -58,12 +58,12 @@ ushdir="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-# Source the setup script.  Note that this in turn sources the configu-
-# ration file/script (config.sh) in the current directory.  It also cre-
-# ates the run and work directories, the INPUT and RESTART subdirecto-
-# ries under the run directory, and a variable definitions file/script
-# in the run directory.  The latter gets sources by each of the scripts
-# that run the various workflow tasks.
+# Source the file that defines and then calls the setup function.  The
+# setup function in turn first sources the default configuration file 
+# (which contains default values for the experiment/workflow parameters)
+# and then sources the user-specified configuration file (which contains
+# user-specified values for a subset of the experiment/workflow parame-
+# ters that override their default values).
 #
 #-----------------------------------------------------------------------
 #
@@ -478,6 +478,13 @@ echo "RES = $RES"
   set_file_param "${GLOBAL_VAR_DEFNS_FP}" "RES" "${RES}"
   set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "${CRES}"
 
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
 else
 #
 #-----------------------------------------------------------------------
@@ -690,7 +697,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy $USHDIR/${CUSTOM_CONFIG_FN} $EXPTDIR
+cp_vrfy $USHDIR/${EXPT_CONFIG_FN} $EXPTDIR
 #
 #-----------------------------------------------------------------------
 #

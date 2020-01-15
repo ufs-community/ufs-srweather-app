@@ -2,10 +2,10 @@
 #-----------------------------------------------------------------------
 #
 # This file defines and then calls a function that checks that all vari-
-# ables defined in the local configuration script (whose file name is 
-# stored in the variable LOCAL_CONFIG_FN) are also assigned a default 
-# value in the default configuration script (whose file name is stored 
-# in the variable DEFAULT_CONFIG_FN).
+# ables defined in the user-specified experiment/workflow configuration 
+# file (whose file name is stored in the variable EXPT_CONFIG_FN) are 
+# also assigned default values in the default configuration file (whose 
+# file name is stored in the variable DEFAULT_EXPT_CONFIG_FN).
 #
 #-----------------------------------------------------------------------
 #
@@ -33,7 +33,7 @@ local func_name="${FUNCNAME[0]}"
 #
 #-----------------------------------------------------------------------
 #
-# Source function definition files.
+# Source bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
@@ -51,16 +51,16 @@ local func_name="${FUNCNAME[0]}"
 #-----------------------------------------------------------------------
 #
 # Create a list of variable settings in the default workflow/experiment
-# default script by stripping out comments, blank lines, extraneous 
-# leading whitespace, etc from that script and saving the result in the
-# variable var_list_default.  Each line of var_list_default will have 
-# the form
+# file (script) by stripping out comments, blank lines, extraneous lead-
+# ing whitespace, etc from that file and saving the result in the varia-
+# ble var_list_default.  Each line of var_list_default will have the 
+# form
 #
 #      VAR=...
 #
 # where the VAR is a variable name and ... is the value (including any 
 # trailing comments).  Then create an equivalent list for the local con-
-# figuration script and save the result in var_list_local.
+# figuration file and save the result in var_list_local.
 #
 #-----------------------------------------------------------------------
 #
@@ -69,7 +69,7 @@ sed -r \
     -e "s/^([ ]*)([^ ]+.*)/\2/g" \
     -e "/^#.*/d" \
     -e "/^$/d" \
-    ${DEFAULT_CONFIG_FN} \
+    ${DEFAULT_EXPT_CONFIG_FN} \
 )
 
 var_list_local=$( \
@@ -77,14 +77,14 @@ sed -r \
     -e "s/^([ ]*)([^ ]+.*)/\2/g" \
     -e "/^#.*/d" \
     -e "/^$/d" \
-    ${CUSTOM_CONFIG_FN} \
+    ${EXPT_CONFIG_FN} \
 )
 #
 #-----------------------------------------------------------------------
 #
 # Loop through each line of var_list_local.  For each line, extract the
 # the name of the variable that is being set (say VAR) and check that 
-# this variable is set somewhere in the default configuration script by
+# this variable is set somewhere in the default configuration file by
 # verifying that a line that starts with "VAR=" exists in var_list_de-
 # fault.
 #
@@ -100,9 +100,10 @@ while read crnt_line; do
   if [ -z "${var_name}" ]; then
 
     print_info_msg "
-Current line (crnt_line) of custom experiment/workflow configuration 
-script (CUSTOM_CONFIG_FN) does not contain a variable name (var_name):
-  CUSTOM_CONFIG_FN = \"${CUSTOM_CONFIG_FN}\"
+Current line (crnt_line) of user-specified experiment/workflow configu-
+ration file (EXPT_CONFIG_FN) does not contain a variable name (i.e. 
+var_name is empty):
+  EXPT_CONFIG_FN = \"${EXPT_CONFIG_FN}\"
   crnt_line = \"${crnt_line}\"
   var_name = \"${var_name}\"
 Skipping to next line."
@@ -116,13 +117,14 @@ Skipping to next line."
 #
     grep "^${var_name}=" <<< "${var_list_default}" > /dev/null 2>&1 || \
     print_err_msg_exit "\
-Variable (var_name) in custom configuration script (CUSTOM_CONFIG_FN) 
-not defined in default configuration script (DEFAULT_CONFIG_FN):
-  CUSTOM_CONFIG_FN = \"${CUSTOM_CONFIG_FN}\"
-  DEFAULT_CONFIG_FN = \"${DEFAULT_CONFIG_FN}\"
+The variable specified by var_name in the user-specified experiment/
+workflow configuration file (EXPT_CONFIG_FN) does not appear in the de-
+fault experiment/workflow configuration file (DEFAULT_EXPT_CONFIG_FN):
+  EXPT_CONFIG_FN = \"${EXPT_CONFIG_FN}\"
+  DEFAULT_EXPT_CONFIG_FN = \"${DEFAULT_EXPT_CONFIG_FN}\"
   var_name = \"${var_name}\"
 Please assign a default value to this variable in the default configura-
-tion script and rerun."
+tion file and rerun."
 
   fi
 
