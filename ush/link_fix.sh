@@ -3,7 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This file defines and then calls a function that i
+# This file defines a function that <need to complete>...
 #
 #-----------------------------------------------------------------------
 #
@@ -46,10 +46,11 @@ function link_fix() {
 #
 #-----------------------------------------------------------------------
 #
-  valid_args=( \
+  local valid_args=( \
 "verbose" \
-"global_var_defns_fp" \
 "file_group" \
+"res_in_existing_fixsar_filenames" \
+"output_varname_res" \
   )
   process_args valid_args "$@"
 #
@@ -207,26 +208,49 @@ Please ensure that all files have the same C-resolution."
 #
 #-----------------------------------------------------------------------
 #
-# Set RES to a null string if it is not already defined in the variable
-# defintions file.
+#  if [ "${res_in_existing_fixsar_filenames}" = "" ]; then
 #
-RES=${RES:-""}
-if [ "$RES" = "$res" ] || [ "$RES" = "" ]; then
-  cres="C${res}"
-  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "RES" "${res}"
-  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "${cres}"
-elif [ "$RES" != "$res" ]; then
-  print_err_msg_exit "\
-The resolution (RES) specified in the variable definitions file 
-(global_var_defns_fp) does not match the resolution (res) found in this
-script for the specified file group (file_group):
-  global_var_defns_fp = \"${global_var_defns_fp}\"
-  RES = \"${RES}\"
+#    print_info_msg "$verbose" "
+#Setting variable res_in_existing_fixsar_filenames to the resolution 
+#(res) extracted from the names of the specifed group of fixed files 
+#(file_group):
+#  file_group = \"${file_group}\"
+#  res = $res"
+#
+#    res_in_existing_fixsar_filenames=$res
+#
+#  elif [ "${res_in_existing_fixsar_filenames}" = "$res" ]; then
+#
+#    print_info_msg "$verbose" "
+#As expected, the value of res_in_existing_fixsar_filenames (obtained 
+#from the names of a previously considered group of fixed files, e.g. 
+#grid and/or orography files) matches the resolution (res) extracted from
+#the names of the specifed group of fixed files (file_group):
+#  file_group = \"${file_group}\"
+#  res = $res
+#  res_in_existing_fixsar_filenames = ${res_in_existing_fixsar_filenames}"
+
+  if [ "${res_in_existing_fixsar_filenames}" = "" ] || \
+     [ "${res_in_existing_fixsar_filenames}" = "$res" ]; then
+#
+# Use the eval function to set the value of the output variable.
+#
+    eval ${output_varname_res}="$res"
+
+  else
+
+    print_err_msg_exit "\
+The value of res_in_existing_fixsar_filenames (obtained from the names 
+of a previously considered group of fixed files, e.g. grid and/or oro-
+graphy files) does not match the resolution (res) extracted the names of
+the specifed group of fixed files (file_group):
   file_group = \"${file_group}\"
-  res = \"${res}\"
+  res = $res
+  res_in_existing_fixsar_filenames = ${res_in_existing_fixsar_filenames}
 This usually means that one or more of the file groups (grid, orography,
 and/or surface climatology) are defined on different grids."
-fi
+  
+  fi
 #
 #-----------------------------------------------------------------------
 #
