@@ -425,6 +425,7 @@ GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=10
 GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=374
 GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=10
 GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=374
+GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
 #
 #-----------------------------------------------------------------------
 #

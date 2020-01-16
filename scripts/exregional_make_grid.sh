@@ -313,6 +313,15 @@ mkdir_vrfy -p "$tmpdir"
 print_info_msg "$VERBOSE" "
 Starting grid file generation..."
 
+tile_rgnl=7
+res=""
+#
+#-----------------------------------------------------------------------
+#
+# Consider a GFDLgrid-type of grid.
+#
+#-----------------------------------------------------------------------
+#
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
   $USHDIR/${grid_gen_scr} \
@@ -328,22 +337,39 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 Call to script that generates grid files returned with nonzero exit 
 code."
 
-  tile_rgnl=7
-  grid_fp="$tmpdir/${CRES}_grid.tile${tile_rgnl}.nc"
-  $EXECDIR/global_equiv_resol "${grid_fp}" || \
-  print_err_msg_exit "\
+  if [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "TRUE" ]; then
+
+    res=${GFDLgrid_RES}
+    CRES="C$res"
+
+  else
+
+    grid_fp="$tmpdir/C${GFDLgrid_RES}_grid.tile${tile_rgnl}.nc"
+    $EXECDIR/global_equiv_resol "${grid_fp}" || \
+    print_err_msg_exit "\
 Call to executable that calculates equivalent global uniform cubed 
 sphere resolution returned with nonzero exit code."
 
-  RES_equiv=$( ncdump -h "${grid_fp}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
-  RES_equiv=${RES_equiv//$'\n'/}
-printf "%s\n" "RES_equiv = $RES_equiv"
-  CRES_equiv="C${RES_equiv}"
-printf "%s\n" "CRES_equiv = $CRES_equiv"
+    res=$( ncdump -h "${grid_fp}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]" ) || \
+    print_err_msg_exit "\
+Attempt to extract the equivalent global uniform cubed-sphere grid reso-
+lution from the file specified by grid_fp faild:
+  grid_fp = \"${grid_fp}\""
+    res=${res//$'\n'/}
+    CRES="C$res"
+
+    grid_fp_orig="${grid_fp}"
+    grid_fp="$tmpdir/${CRES}_grid.tile${tile_rgnl}.nc"
+    mv_vrfy ${grid_fp_orig} ${grid_fp}
+
+  fi
+
+printf "%s\n" "res = $res"
+printf "%s\n" "CRES = $CRES"
 #
 #-----------------------------------------------------------------------
 #
-# Consider JPgrid-type of grid.
+# Consider a JPgrid-type of grid.
 #
 #-----------------------------------------------------------------------
 #
@@ -376,39 +402,68 @@ Setting parameters in file:
 Call to executable that generates grid file (Jim Purser version) re-
 turned with nonzero exit code."
 
-  tile_rgnl=7
   grid_fp="$tmpdir/regional_grid.nc"
   $EXECDIR/global_equiv_resol "${grid_fp}" || \
   print_err_msg_exit "\
 Call to executable that calculates equivalent global uniform cubed 
 sphere resolution returned with nonzero exit code."
 
-  RES_equiv=$( ncdump -h "${grid_fp}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]" ) # Need error checking here.
-  RES_equiv=${RES_equiv//$'\n'/}
-printf "%s\n" "RES_equiv = $RES_equiv"
-  CRES_equiv="C${RES_equiv}"
-printf "%s\n" "CRES_equiv = $CRES_equiv"
+  res=$( ncdump -h "${grid_fp}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]" ) || \
+  print_err_msg_exit "\
+Attempt to extract the equivalent global uniform cubed-sphere grid reso-
+lution from the file specified by grid_fp faild:
+  grid_fp = \"${grid_fp}\""
+  res=${res//$'\n'/}
+  CRES="C$res"
 
   grid_fp_orig="${grid_fp}"
-  grid_fp="$tmpdir/${CRES_equiv}_grid.tile${tile_rgnl}.nc"
+  grid_fp="$tmpdir/${CRES}_grid.tile${tile_rgnl}.nc"
   mv_vrfy ${grid_fp_orig} ${grid_fp}
 
-  $EXECDIR/mosaic_file $CRES_equiv || \
+printf "%s\n" "res = $res"
+printf "%s\n" "CRES = $CRES"
+#
+# Create a grid mosaic file that relates the tiles of the cubed-sphere
+# grid.  Note that there are no "tiles" in the case of a JPgrid-type 
+# grid, but this file must nevertheless exist because the forecast mo-
+# del code looks for it.
+#
+  $EXECDIR/mosaic_file $CRES || \
   print_err_msg_exit "\
 Call to executable that creates a grid mosaic file returned with nonzero
 exit code."
-#
-# RES and CRES need to be set here in order for the rest of the script
-# (that was originally written for a grid with GRID_GEN_METHOD set to 
-# "GFDLgrid") to work for a grid with GRID_GEN_METHOD set to "JPgrid".
-#
-  RES="$RES_equiv"
-  CRES="$CRES_equiv"
-
-  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "RES" "$RES"
-  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "$CRES"
 
 fi
+#
+#-----------------------------------------------------------------------
+#
+# If there are pre-existing orography or climatology files we will be 
+# using (i.e. if RUN_TASK_MAKE_OROG or RUN_TASK_MAKE_SURF_CLIMO is set
+# to "FALSE", in which case RES_IN_FIXSAR_FILENAMES will not be set to a
+# null string), check that the grid resolution (res) calculated above 
+# matches the resolution appearing in the names of the preexisting oro-
+# graphy or surface climatology files.
+#
+#-----------------------------------------------------------------------
+#
+if [ ! -z "${RES_IN_FIXSAR_FILENAMES}" ]; then
+  if [ "$res" -ne "${RES_IN_FIXSAR_FILENAMES}" ]; then
+    print_err_msg_exit "\
+The resolution (res) calculated for the grid does not match the resolu-
+tion (RES_IN_FIXSAR_FILENAMES) appearing in the names of the orography 
+and/or surface climatology files:
+  res = $res
+  RES_IN_FIXSAR_FILENAMES = \"${RES_IN_FIXSAR_FILENAMES}\""
+  fi
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Set CRES in the variable definitions file.
+#
+#-----------------------------------------------------------------------
+#
+set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "$CRES"
 #
 #-----------------------------------------------------------------------
 #

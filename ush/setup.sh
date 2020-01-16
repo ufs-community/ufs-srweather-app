@@ -818,7 +818,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # For a "GFDLgrid" type of grid, make sure GFDLgrid_RES is set to a va-
-# lid value.  Then set the C-resolution (CRES).
+# lid value.
 #
 #-----------------------------------------------------------------------
 #
@@ -828,7 +828,6 @@ The number of grid cells per tile in each horizontal direction specified
 in GFLDgrid_RES is not supported:
   GFLDgrid_RES = \"${GFLDgrid_RES}\""
   check_var_valid_value "GFDLgrid_RES" "valid_vals_GFDLgrid_RES" "${err_msg}"
-  CRES="C${GFLDgrid_RES}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -1431,6 +1430,87 @@ elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
     output_varname_neg_ny_of_dom_with_wide_halo="NEG_NY_OF_DOM_WITH_WIDE_HALO"
 
 fi
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+RES_IN_FIXSAR_FILENAMES=""
+#
+#-----------------------------------------------------------------------
+#
+# If the grid file generation task in the workflow is going to be
+# skipped (because pregenerated files are available), create links in
+# the FIXsar directory to the pregenerated grid files.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
+  $USHDIR/link_fix.sh \
+    verbose="FALSE" \
+    file_group="grid" \
+    res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \
+    output_varname_res="RES_IN_FIXSAR_FILENAMES" || \
+  print_err_msg_exit "\
+Call to script to create links to grid files failed."
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If the orography file generation task in the workflow is going to be
+# skipped (because pregenerated files are available), create links in
+# the FIXsar directory to the pregenerated orography files.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ]; then
+  $USHDIR/link_fix.sh \
+    verbose="FALSE" \
+    file_group="orog" \
+    res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \
+    output_varname_res="RES_IN_FIXSAR_FILENAMES" || \
+  print_err_msg_exit "\
+Call to script to create links to orography files failed."
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If the surface climatology file generation task in the workflow is
+# going to be skipped (because pregenerated files are available), create
+# links in the FIXsar directory to the pregenerated surface climatology
+# files.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
+  $USHDIR/link_fix.sh \
+    verbose="FALSE" \
+    file_group="sfc_climo" || \
+    res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \
+    output_varname_res="RES_IN_FIXSAR_FILENAMES" || \
+  print_err_msg_exit "\
+Call to script to create links to surface climatology files failed."
+fi
+#
+#-----------------------------------------------------------------------
+#
+# The variable CRES is needed in constructing various file names.  If 
+# not running the make_grid task, we can set it here.  Otherwise, it 
+# will get set to a valid value by that task.
+#
+#-----------------------------------------------------------------------
+#
+CRES=""
+if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
+  CRES="C${RES_IN_FIXSAR_FILENAMES}"
+fi
+
+
+
+
+
 #
 #-----------------------------------------------------------------------
 #
@@ -2048,6 +2128,14 @@ NX="${NX}"
 NY="${NY}"
 NHW="${NHW}"
 STRETCH_FAC="${STRETCH_FAC}"
+
+RES_IN_FIXSAR_FILENAMES="${RES_IN_FIXSAR_FILENAMES}"
+#
+# If running the make_grid task, CRES will be set to a null string du-
+# the grid generation step.  It will later be set to an actual value af-
+# ter the make_grid task is complete.
+#
+CRES="$CRES"
 EOM
 } || print_err_msg_exit "\
 Heredoc (cat) command to append new variable definitions to variable 
@@ -2080,7 +2168,6 @@ ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG="${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_O
 IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG="${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}"
 JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG="${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}"
 JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG="${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}"
-CRES="$CRES"
 EOM
 } || print_err_msg_exit "\
 Heredoc (cat) command to append grid parameters to variable definitions
@@ -2103,13 +2190,6 @@ DEL_ANGLE_X_SG="${DEL_ANGLE_X_SG}"
 DEL_ANGLE_Y_SG="${DEL_ANGLE_Y_SG}"
 NEG_NX_OF_DOM_WITH_WIDE_HALO="${NEG_NX_OF_DOM_WITH_WIDE_HALO}"
 NEG_NY_OF_DOM_WITH_WIDE_HALO="${NEG_NY_OF_DOM_WITH_WIDE_HALO}"
-#
-# The following variables must be set in order to be able to use the 
-# same scripting machinary for the case of GRID_GEN_METHOD set to "JP-
-# grid" as for GRID_GEN_METHOD set to "GFDLgrid".
-#
-RES=""   # This will be set after the grid generation task is complete.
-CRES=""  # This will be set after the grid generation task is complete.
 EOM
 } || print_err_msg_exit "\
 Heredoc (cat) command to append grid parameters to variable definitions
