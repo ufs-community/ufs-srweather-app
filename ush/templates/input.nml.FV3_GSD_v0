@@ -152,8 +152,8 @@
      ltaerosol      = .T.
      lradar         = .T.
      pdfcld         = .false.
-     fhswr          = 3600.
-     fhlwr          = 3600.
+     fhswr          = 1200.
+     fhlwr          = 1200.
      ialb           = 1
      iems           = 1
      iaer           = 111

@@ -1618,7 +1618,13 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+<<<<<<< HEAD
 WRTCMP_PARAMS_TMPL_FP = ""
+=======
+
+#Initialize WRTCMP_PARAMS_TMPL_FP in case QUILTING="FALSE"
+WRTCMP_PARAMS_TMPL_FP=""
+>>>>>>> refs/remotes/origin/community_develop
 
 if [ "$QUILTING" = "TRUE" ]; then
 
