@@ -247,12 +247,17 @@ mkdir_vrfy -p "$tmpdir"
 # size specified by the argument to the --halo flag does not extend be-
 # yond the boundaries of the parent grid (tile 6).  In this case, since
 # the values passed to the --istart_nest, ..., and --jend_nest flags al-
-# ready include a halo (because these arguments are $istart_rgnl_with_-
-# halo_T6SG, $iend_rgnl_wide_halo_T6SG, $jstart_rgnl_wide_halo_T6SG, and
-# $jend_rgnl_wide_halo_T6SG), it is reasonable to pass as the argument
-# to --halo a zero.  However, make_hgrid requires that the argument to
-# --halo be at least 1, so below, we pass a 1 as the next-to-last argu-
-# ment to grid_gen_scr.
+# ready include a halo (because these arguments are 
+#
+#   ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, 
+#   ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, 
+#   ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, and
+#   ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, 
+#
+# i.e. they include "WITH_WIDE_HALO_" in their names), it is reasonable
+# to pass as the argument to --halo a zero.  However, make_hgrid re-
+# quires that the argument to --halo be at least 1, so below, we pass a
+# 1 as the next-to-last argument to grid_gen_scr.
 #
 # More information on make_hgrid:
 # ------------------------------
@@ -268,10 +273,10 @@ mkdir_vrfy -p "$tmpdir"
 #   --target_lon ${LON_CTR} 
 #   --target_lat ${LAT_CTR} \
 #   --nest_grid --parent_tile 6 --refine_ratio ${GFDLgrid_REFINE_RATIO} \
-#   --istart_nest ${istart_rgnl_wide_halo_T6SG} \
-#   --jstart_nest ${jstart_rgnl_wide_halo_T6SG} \
-#   --iend_nest ${iend_rgnl_wide_halo_T6SG} \
-#   --jend_nest ${jend_rgnl_wide_halo_T6SG} \
+#   --istart_nest ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+#   --jstart_nest ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+#   --iend_nest ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+#   --jend_nest ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
 #   --halo ${NH3} \
 #   --great_circle_algorithm
 #
@@ -280,10 +285,10 @@ mkdir_vrfy -p "$tmpdir"
 # the extents of the arrays in that file do not seem to include a halo,
 # i.e. they are based only on the values passed via the four flags
 #
-#   --istart_nest ${istart_rgnl_wide_halo_T6SG}
-#   --jstart_nest ${jstart_rgnl_wide_halo_T6SG}
-#   --iend_nest ${iend_rgnl_wide_halo_T6SG}
-#   --jend_nest ${jend_rgnl_wide_halo_T6SG}
+#   --istart_nest ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
+#   --jstart_nest ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
+#   --iend_nest ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
+#   --jend_nest ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
 #
 # According to Rusty Benson of GFDL, the flag
 #
@@ -310,12 +315,14 @@ Starting grid file generation..."
 
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
-  $USHDIR/$grid_gen_scr \
-    $RES \
+  $USHDIR/${grid_gen_scr} \
+    ${GFDLgrid_RES} \
     $tmpdir \
     ${STRETCH_FAC} ${LON_CTR} ${LAT_CTR} ${GFDLgrid_REFINE_RATIO} \
-    ${istart_rgnl_wide_halo_T6SG} ${jstart_rgnl_wide_halo_T6SG} \
-    ${iend_rgnl_wide_halo_T6SG} ${jend_rgnl_wide_halo_T6SG} \
+    ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+    ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+    ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+    ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
     1 $USHDIR || \
   print_err_msg_exit "\
 Call to script that generates grid files returned with nonzero exit 
@@ -333,38 +340,38 @@ sphere resolution returned with nonzero exit code."
 printf "%s\n" "RES_equiv = $RES_equiv"
   CRES_equiv="C${RES_equiv}"
 printf "%s\n" "CRES_equiv = $CRES_equiv"
-
+#
+#-----------------------------------------------------------------------
+#
+# Consider JPgrid-type of grid.
+#
+#-----------------------------------------------------------------------
+#
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 #
-#-----------------------------------------------------------------------
+# Copy the template namelist file for the JPgrid-type grid generation
+# code to the temporary subdirectory.  Then replace the placeholders in
+# that file with actual values.
 #
-# Set the full path to the namelist file for the executable that gene-
-# rates a regional grid using Jim Purser's method.  Then set parameters
-# in that file.
-#
-#-----------------------------------------------------------------------
-#
-  RGNL_GRID_NML_FP="$tmpdir/${RGNL_GRID_NML_FN}"
-  cp_vrfy ${TEMPLATE_DIR}/${RGNL_GRID_NML_FN} ${RGNL_GRID_NML_FP}
+  rgnl_grid_nml_fp="$tmpdir/${RGNL_GRID_NML_FN}"
+  cp_vrfy ${TEMPLATE_DIR}/${RGNL_GRID_NML_FN} ${rgnl_grid_nml_fp}
 
   print_info_msg "$VERBOSE" "
 Setting parameters in file:
-  RGNL_GRID_NML_FP = \"${RGNL_GRID_NML_FP}\""
-#
-# Set parameters.
-#
-  set_file_param "${RGNL_GRID_NML_FP}" "plon" "${JPgrid_LON_CTR}"
-  set_file_param "${RGNL_GRID_NML_FP}" "plat" "${JPgrid_LAT_CTR}"
-  set_file_param "${RGNL_GRID_NML_FP}" "delx" "${DEL_ANGLE_X_SG}"
-  set_file_param "${RGNL_GRID_NML_FP}" "dely" "${DEL_ANGLE_Y_SG}"
-  set_file_param "${RGNL_GRID_NML_FP}" "lx" "${NEG_NX_OF_DOM_WITH_WIDE_HALO}"
-  set_file_param "${RGNL_GRID_NML_FP}" "ly" "${NEG_NY_OF_DOM_WITH_WIDE_HALO}"
-  set_file_param "${RGNL_GRID_NML_FP}" "a" "${JPgrid_ALPHA_PARAM}"
-  set_file_param "${RGNL_GRID_NML_FP}" "k" "${JPgrid_KAPPA_PARAM}"
+  rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\""
+
+  set_file_param "${rgnl_grid_nml_fp}" "plon" "${LON_CTR}"
+  set_file_param "${rgnl_grid_nml_fp}" "plat" "${LAT_CTR}"
+  set_file_param "${rgnl_grid_nml_fp}" "delx" "${DEL_ANGLE_X_SG}"
+  set_file_param "${rgnl_grid_nml_fp}" "dely" "${DEL_ANGLE_Y_SG}"
+  set_file_param "${rgnl_grid_nml_fp}" "lx" "${NEG_NX_OF_DOM_WITH_WIDE_HALO}"
+  set_file_param "${rgnl_grid_nml_fp}" "ly" "${NEG_NY_OF_DOM_WITH_WIDE_HALO}"
+  set_file_param "${rgnl_grid_nml_fp}" "a" "${JPgrid_ALPHA_PARAM}"
+  set_file_param "${rgnl_grid_nml_fp}" "k" "${JPgrid_KAPPA_PARAM}"
 
   cd_vrfy $tmpdir
 
-  $EXECDIR/regional_grid ${RGNL_GRID_NML_FP} || \
+  $EXECDIR/regional_grid ${rgnl_grid_nml_fp} || \
   print_err_msg_exit "\
 Call to executable that generates grid file (Jim Purser version) re-
 turned with nonzero exit code."
