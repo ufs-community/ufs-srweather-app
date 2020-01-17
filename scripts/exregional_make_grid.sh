@@ -12,12 +12,12 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source file containing definitions of mathematical and physical con-
-# stants.
+# Source other necessary files.
 #
 #-----------------------------------------------------------------------
 #
-. ${USHDIR}/constants.sh
+. $USHDIR/constants.sh
+. $USHDIR/link_fix.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -26,7 +26,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -463,7 +463,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "$CRES"
+set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "\"$CRES\""
 #
 #-----------------------------------------------------------------------
 #
@@ -567,12 +567,13 @@ cd_vrfy -
 #
 #-----------------------------------------------------------------------
 #
-$USHDIR/link_fix.sh \
+link_fix \
   verbose="FALSE" \
-  global_var_defns_fp="${GLOBAL_VAR_DEFNS_FP}" \
-  file_group="grid" || \
+  file_group="grid" \
+  res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \                                                                              
+  output_varname_res="dummy" || \                                                                                            
 print_err_msg_exit "\
-Call to script to create links to grid files failed."
+Call to function to create links to grid files failed."
 #
 #-----------------------------------------------------------------------
 #

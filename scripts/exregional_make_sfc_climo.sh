@@ -12,6 +12,14 @@
 #
 #-----------------------------------------------------------------------
 #
+# Source other necessary files.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/link_fix.sh
+#
+#-----------------------------------------------------------------------
+#
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
 #
@@ -226,12 +234,13 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-$USHDIR/link_fix.sh \
+link_fix \
   verbose="FALSE" \
-  global_var_defns_fp="${GLOBAL_VAR_DEFNS_FP}" \
-  file_group="sfc_climo" || \
+  file_group="sfc_climo" \
+  res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \                                                                              
+  output_varname_res="dummy" || \                                                                                            
 print_err_msg_exit "\
-Call to script to create links to surface climatology files failed."
+Call to function to create links to surface climatology files failed."
 #
 #-----------------------------------------------------------------------
 #

@@ -53,12 +53,13 @@ cd_vrfy ${scrfunc_dir}
 #
 #-----------------------------------------------------------------------
 #
-# Source functions for setting grid parameters.
+# Source other necessary files.
 #
 #-----------------------------------------------------------------------
 #
 . ./set_gridparams_GFDLgrid.sh
 . ./set_gridparams_JPgrid.sh
+. ./link_fix.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -1448,13 +1449,13 @@ RES_IN_FIXSAR_FILENAMES=""
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
-  $USHDIR/link_fix.sh \
+  link_fix \
     verbose="FALSE" \
     file_group="grid" \
     res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \
     output_varname_res="RES_IN_FIXSAR_FILENAMES" || \
   print_err_msg_exit "\
-Call to script to create links to grid files failed."
+Call to function to create links to grid files failed."
 fi
 #
 #-----------------------------------------------------------------------
@@ -1466,13 +1467,13 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ]; then
-  $USHDIR/link_fix.sh \
+  link_fix \
     verbose="FALSE" \
     file_group="orog" \
     res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \
     output_varname_res="RES_IN_FIXSAR_FILENAMES" || \
   print_err_msg_exit "\
-Call to script to create links to orography files failed."
+Call to function to create links to orography files failed."
 fi
 #
 #-----------------------------------------------------------------------
@@ -1485,13 +1486,13 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
-  $USHDIR/link_fix.sh \
+  link_fix \
     verbose="FALSE" \
     file_group="sfc_climo" || \
     res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \
     output_varname_res="RES_IN_FIXSAR_FILENAMES" || \
   print_err_msg_exit "\
-Call to script to create links to surface climatology files failed."
+Call to function to create links to surface climatology files failed."
 fi
 #
 #-----------------------------------------------------------------------

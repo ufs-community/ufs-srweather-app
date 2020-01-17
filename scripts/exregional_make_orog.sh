@@ -12,12 +12,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source file containing definitions of mathematical and physical con-
-# stants.
+# Source other necessary files.
 #
 #-----------------------------------------------------------------------
 #
-. ${USHDIR}/constants.sh
+. $USHDIR/link_fix.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -555,13 +554,13 @@ cd_vrfy -
 #
 #-----------------------------------------------------------------------
 #
-
-$USHDIR/link_fix.sh \
+link_fix \
   verbose="FALSE" \
-  global_var_defns_fp="${GLOBAL_VAR_DEFNS_FP}" \
-  file_group="orog" || \
+  file_group="orog" \
+  res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \                                                                              
+  output_varname_res="dummy" || \                                                                                            
 print_err_msg_exit "\
-Call to script to create links to orography files failed."
+Call to function to create links to orography files failed."
 
 # Moved the following to exregional_make_sfc_climo.sh script since it 
 # needs to be done only if the make_sfc_climo task is run.

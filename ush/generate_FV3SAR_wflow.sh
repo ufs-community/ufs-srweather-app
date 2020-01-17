@@ -498,13 +498,13 @@ echo "RES = $RES"
 ##-----------------------------------------------------------------------
 ##
 #  if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
-#    $USHDIR/link_fix.sh \
+#    link_fix \
 #      verbose="FALSE" \
 #      file_group="grid" \
 #      res_in_existing_fixsar_filenames="${res_in_fixsar_filenames}" \
 #      output_varname_res="res_in_fixsar_filenames" || \
 #    print_err_msg_exit "\
-#Call to script to create links to grid files failed."
+#Call to function to create links to grid files failed."
 #  fi
 ##
 ##-----------------------------------------------------------------------
@@ -516,13 +516,13 @@ echo "RES = $RES"
 ##-----------------------------------------------------------------------
 ##
 #  if [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ]; then
-#    $USHDIR/link_fix.sh \
+#    link_fix \
 #      verbose="FALSE" \
 #      file_group="orog" \
 #      res_in_existing_fixsar_filenames="${res_in_fixsar_filenames}" \
 #      output_varname_res="res_in_fixsar_filenames" || \
 #    print_err_msg_exit "\
-#Call to script to create links to orography files failed."
+#Call to function to create links to orography files failed."
 #  fi
 ##
 ##-----------------------------------------------------------------------
@@ -535,13 +535,13 @@ echo "RES = $RES"
 ##-----------------------------------------------------------------------
 ##
 #  if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
-#    $USHDIR/link_fix.sh \
+#    link_fix \
 #      verbose="FALSE" \
 #      file_group="sfc_climo" || \
 #      res_in_existing_fixsar_filenames="${res_in_fixsar_filenames}" \
 #      output_varname_res="res_in_fixsar_filenames" || \
 #    print_err_msg_exit "\
-#Call to script to create links to surface climatology files failed."
+#Call to function to create links to surface climatology files failed."
 #  fi
 #
 fi
