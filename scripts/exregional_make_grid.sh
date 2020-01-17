@@ -147,7 +147,7 @@ case $MACHINE in
 #  { restore_shell_opts; } > /dev/null 2>&1
 #
 #  export APRUN="time"
-  APRUN="time"
+  export APRUN="time"
   topo_dir="/scratch1/NCEPDEV/global/glopara/fix/fix_orog"
 #
 #  ulimit -s unlimited
@@ -361,6 +361,10 @@ lution from the file specified by grid_fp faild:
     grid_fp_orig="${grid_fp}"
     grid_fp="$tmpdir/${CRES}_grid.tile${tile_rgnl}.nc"
     mv_vrfy ${grid_fp_orig} ${grid_fp}
+
+    mosaic_fp_orig="$tmpdir/C${GFDLgrid_RES}_mosaic.nc"
+    mosaic_fp="$tmpdir/${CRES}_mosaic.nc"
+    mv_vrfy ${mosaic_fp_orig} ${mosaic_fp}
 
   fi
 
