@@ -88,6 +88,7 @@ function link_fix() {
         fp_prev \
         fp \
         fn \
+        cres
 #
 #-----------------------------------------------------------------------
 #
@@ -260,6 +261,7 @@ Please ensure that all files have the same C-resolution."
 # Use the eval function to set the value of the output variable.
 #
     eval ${output_varname_res}="$res"
+    cres="C$res"
 
   else
 
