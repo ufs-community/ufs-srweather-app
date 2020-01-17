@@ -250,13 +250,13 @@ predefined domain:
     GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=10
-    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_right ))
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=10
     GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=10
-    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_top ))
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
 
     DT_ATMOS="90"
 
@@ -530,21 +530,34 @@ predefined domain:
     GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=67
-    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_right ))
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=165
     GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=171
-    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_top ))
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
 
     DT_ATMOS="18"
 
     LAYOUT_X="16"
     LAYOUT_Y="72"
-    WRTCMP_write_tasks_per_group="72"
     BLOCKSIZE=32
 
+    if [ "$QUILTING" = "TRUE" ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))
+      WRTCMP_output_grid="rotated_latlon"
+      WRTCMP_cen_lon="${GFDLgrid_LON_T6_CTR}"
+      WRTCMP_cen_lat="${GFDLgrid_LAT_T6_CTR}"
+# GSK - The following have not been tested...
+      WRTCMP_lon_lwr_left="-25.0"
+      WRTCMP_lat_lwr_left="-15.0"
+      WRTCMP_lon_upr_rght="25.0"
+      WRTCMP_lat_upr_rght="15.0"
+      WRTCMP_dlon="0.02"
+      WRTCMP_dlat="0.02"
+    fi
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
@@ -622,13 +635,13 @@ predefined domain:
     GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=67
-    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_right ))
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=165
     GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=171
-    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( RES - num_margin_cells_T6_top ))
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
 
     DT_ATMOS="18"
 
@@ -758,32 +771,6 @@ predefined domain:
   ;;
 #
 esac
-#
-#-----------------------------------------------------------------------
-#
-# Set the name of the template file containing placeholder values for
-# write-component parameters (if this file name is not already set).  
-# This file will be appended to the model_configure file, and place-
-# holder values will be replaced with actual ones.
-#
-#-----------------------------------------------------------------------
-#
-if [ "$QUILTING" = "TRUE" ]; then
-#
-# First, make sure that WRTCMP_output_grid is set to a valid value.
-#
-  err_msg="\
-The coordinate system used by the write-component output grid specified
-in WRTCMP_output_grid is not supported:
-  WRTCMP_output_grid = \"${WRTCMP_output_grid}\""
-  check_var_valid_value \
-    "WRTCMP_output_grid" "valid_vals_WRTCMP_output_grid" "${err_msg}"
-#
-# Now set the name of the write-component template file.
-#
-  WRTCMP_PARAMS_TMPL_FN=${WRTCMP_PARAMS_TMPL_FN:-"wrtcmp_${WRTCMP_output_grid}"}
-
-fi
 
 }
 #

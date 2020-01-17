@@ -818,6 +818,32 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# If quilting is enabled, set the name of the template file containing
+# placeholder values for write-component parameters (if this file name
+# is not already set).  This file will be appended to the model_confi-
+# gure file, and placeholder values will be replaced with actual ones.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$QUILTING" = "TRUE" ]; then
+#
+# First, make sure that WRTCMP_output_grid is set to a valid value.
+#
+  err_msg="\
+The coordinate system used by the write-component output grid specified
+in WRTCMP_output_grid is not supported:
+  WRTCMP_output_grid = \"${WRTCMP_output_grid}\""
+  check_var_valid_value \
+    "WRTCMP_output_grid" "valid_vals_WRTCMP_output_grid" "${err_msg}"
+#
+# Now set the name of the write-component template file.
+#
+  WRTCMP_PARAMS_TMPL_FN=${WRTCMP_PARAMS_TMPL_FN:-"wrtcmp_${WRTCMP_output_grid}"}
+
+fi
+#
+#-----------------------------------------------------------------------
+#
 # For a "GFDLgrid" type of grid, make sure GFDLgrid_RES is set to a va-
 # lid value.
 #
@@ -826,8 +852,8 @@ fi
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
   err_msg="\
 The number of grid cells per tile in each horizontal direction specified
-in GFLDgrid_RES is not supported:
-  GFLDgrid_RES = \"${GFLDgrid_RES}\""
+in GFDLgrid_RES is not supported:
+  GFDLgrid_RES = \"${GFDLgrid_RES}\""
   check_var_valid_value "GFDLgrid_RES" "valid_vals_GFDLgrid_RES" "${err_msg}"
 fi
 #
