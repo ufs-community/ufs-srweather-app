@@ -231,6 +231,15 @@ export exec_dir="$EXECDIR"
 #
 #-----------------------------------------------------------------------
 #
+# Extract the resolution from CRES and save it in the local variable 
+# res.
+#
+#-----------------------------------------------------------------------
+#
+res="${CRES:1}"
+#
+#-----------------------------------------------------------------------
+#
 # Generate an orography file corresponding to tile 7 (the regional do-
 # main) only.
 #
@@ -263,7 +272,7 @@ case $MACHINE in
 #
   printf "%s\n" "\
 ${ufs_utils_ushdir}/${orog_gen_scr} \
-$RES \
+$res \
 ${TILE_RGNL} \
 ${FIXsar} \
 ${raw_dir} \
@@ -279,7 +288,7 @@ ${tmp_dir}" \
 
 "THEIA" | "HERA" | "JET" | "ODIN")
   ${ufs_utils_ushdir}/${orog_gen_scr} \
-    $RES ${TILE_RGNL} ${FIXsar} ${raw_dir} ${UFS_UTILS_DIR} ${topo_dir} ${tmp_dir} || \
+    $res ${TILE_RGNL} ${FIXsar} ${raw_dir} ${UFS_UTILS_DIR} ${topo_dir} ${tmp_dir} || \
   print_err_msg_exit "\
 Call to script that generates raw orography file returned with nonzero
 exit code."
@@ -329,22 +338,22 @@ Setting orography filtering parameters..."
 
 
 #if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-#  RES_eff=$( bc -l <<< "$RES*${GFDLgrid_REFINE_RATIO}" )
+#  res_eff=$( bc -l <<< "$res*${GFDLgrid_REFINE_RATIO}" )
 #elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 #  grid_size_eff=$( "(${JPgrid_DELX} + ${JPgrid_DELY})/2" )
 #echo "grid_size_eff = $grid_size_eff"
-#  RES_eff=$( bc -l <<< "2*$pi_geom*$radius_Earth/(4*$grid_size_eff)" )
+#  res_eff=$( bc -l <<< "2*$pi_geom*$radius_Earth/(4*$grid_size_eff)" )
 #fi
-#RES_eff=$( printf "%.0f\n" $RES_eff )
+#res_eff=$( printf "%.0f\n" ${res_eff} )
 #echo
-#echo "RES_eff = $RES_eff"
+#echo "res_eff = $res_eff"
 
 # This will work for a JPgrid type of grid because for that case, RES 
 # in the variable definitions file gets set to RES_equiv (by the make_-
 # grid task), but this won't work for a GFDLgrid type of grid because if
 # the stretch factor is not 1 in that case, RES_equiv will not be the 
 # same as RES (because RES does not account for the stretch factor).
-RES_equiv=$RES
+RES_equiv=$res
 
 # Can also call it the "equivalent" global unstretched resolution.
 
@@ -370,28 +379,36 @@ global cubed-sphere resolution (RES_equiv) failed:
 done
 
 
-
 if [ 0 = 1 ]; then
 
-if [ $RES -eq 48 ]; then
-  export cd4=0.12; export max_slope=0.12; export n_del2_weak=4;  export peak_fac=1.1
-elif [ $RES -eq 96 ]; then
-  export cd4=0.12; export max_slope=0.12; export n_del2_weak=8;  export peak_fac=1.1
-elif [ $RES -eq 192 ]; then
-  export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.05
-elif [ $RES -eq 384 ]; then
-  export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.0
-elif [ $RES -eq 768 ]; then
-  export cd4=0.15; export max_slope=0.12; export n_del2_weak=16; export peak_fac=1.0
-elif [ $RES -eq 1152 ]; then
-  export cd4=0.15; export max_slope=0.16; export n_del2_weak=20; export peak_fac=1.0
-elif [ $RES -eq 3072 ]; then
-  export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
-else
+case "$res" in
+  48)
+    export cd4=0.12; export max_slope=0.12; export n_del2_weak=4;  export peak_fac=1.1
+    ;;
+  96)
+    export cd4=0.12; export max_slope=0.12; export n_del2_weak=8;  export peak_fac=1.1
+    ;;
+  192)
+    export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.05
+    ;;
+  384)
+    export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.0
+    ;;
+  768)
+    export cd4=0.15; export max_slope=0.12; export n_del2_weak=16; export peak_fac=1.0
+    ;;
+  1152)
+    export cd4=0.15; export max_slope=0.16; export n_del2_weak=20; export peak_fac=1.0
+    ;;
+  3072)
+    export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
+    ;;
+  *)
 # This needs to be fixed - i.e. what to do about regional grids that are
 # not based on a parent global cubed-sphere grid.
-  export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
-fi
+    export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
+    ;;
+esac
 
 fi
 
@@ -429,7 +446,6 @@ fi
 #
 print_info_msg "$VERBOSE" "
 Starting filtering of orography..."
-#echo "GTYPE = \"$GTYPE\""
 
 # The script below creates absolute symlinks in $filter_dir.  That's 
 # probably necessary for NCO but probably better to create relative 
@@ -439,7 +455,7 @@ Starting filtering of orography..."
 # script called below expects it to be in the environment.
 export gtype="$GTYPE"
 ${ufs_utils_ushdir}/${orog_fltr_scr} \
-  $RES \
+  $res \
   ${FIXsar} ${raw_dir} ${filter_dir} \
   $cd4 ${peak_fac} ${max_slope} ${n_del2_weak} \
   ${ufs_utils_ushdir} || \
