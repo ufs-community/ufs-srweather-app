@@ -367,7 +367,8 @@ files in the FIXam directory..."
 if [ "${RUN_ENVIR}" = "nco" ]; then
 
   for (( i=0; i<${NUM_FIXam_FILES}; i++ )); do
-    ln_vrfy -sf $FIXam/${FIXam_FILES_SYSDIR[$i]} ${CYCLE_DIR}/${FIXam_FILES_EXPTDIR[$i]}
+    ln_vrfy -sf $FIXam/${FIXam_FILES_SYSDIR[$i]} \
+                ${CYCLE_DIR}/${FIXam_FILES_EXPTDIR[$i]}
   done
 #
 # If not running in "nco" mode, FIXam is an actual directory (not a sym-
