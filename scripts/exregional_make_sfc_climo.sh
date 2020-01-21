@@ -235,10 +235,8 @@ esac
 #-----------------------------------------------------------------------
 #
 link_fix \
-  verbose="FALSE" \
-  file_group="sfc_climo" \
-  res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \
-  output_varname_res="dummy" || \
+  verbose="$VERBOSE" \
+  file_group="sfc_climo" || \
 print_err_msg_exit "\
 Call to function to create links to surface climatology files failed."
 #

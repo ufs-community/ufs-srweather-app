@@ -1465,6 +1465,10 @@ fi
 #-----------------------------------------------------------------------
 #
 RES_IN_FIXSAR_FILENAMES=""
+
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  mkdir_vrfy -p "$FIXsar"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1474,14 +1478,18 @@ RES_IN_FIXSAR_FILENAMES=""
 #
 #-----------------------------------------------------------------------
 #
+res_in_grid_fns=""
 if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
+
   link_fix \
-    verbose="FALSE" \
+    verbose="$VERBOSE" \
     file_group="grid" \
-    res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \
-    output_varname_res="RES_IN_FIXSAR_FILENAMES" || \
+    output_varname_res_in_filenames="res_in_grid_fns" || \
   print_err_msg_exit "\
 Call to function to create links to grid files failed."
+
+  RES_IN_FIXSAR_FILENAMES="${res_in_grid_fns}"
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -1492,14 +1500,28 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+res_in_orog_fns=""
 if [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ]; then
+
   link_fix \
-    verbose="FALSE" \
+    verbose="$VERBOSE" \
     file_group="orog" \
-    res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \
-    output_varname_res="RES_IN_FIXSAR_FILENAMES" || \
+    output_varname_res_in_filenames="res_in_orog_fns" || \
   print_err_msg_exit "\
 Call to function to create links to orography files failed."
+
+  if [ ! -z "${RES_IN_FIXSAR_FILENAMES}" ] && \
+     [ "${res_in_orog_fns}" -ne "${RES_IN_FIXSAR_FILENAMES}" ]; then
+    print_err_msg_exit "\
+The resolution extracted from the orography file names (res_in_orog_fns)
+does not match the resolution in other groups of files already consi-
+dered (RES_IN_FIXSAR_FILENAMES):
+  res_in_orog_fns = ${res_in_orog_fns}
+  RES_IN_FIXSAR_FILENAMES = ${RES_IN_FIXSAR_FILENAMES}"
+  else
+    RES_IN_FIXSAR_FILENAMES="${res_in_orog_fns}"
+  fi
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -1511,14 +1533,28 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+res_in_sfc_climo_fns=""
 if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
+
   link_fix \
-    verbose="FALSE" \
-    file_group="sfc_climo" || \
-    res_in_existing_fixsar_filenames="${RES_IN_FIXSAR_FILENAMES}" \
-    output_varname_res="RES_IN_FIXSAR_FILENAMES" || \
+    verbose="$VERBOSE" \
+    file_group="sfc_climo" \
+    output_varname_res_in_filenames="res_in_sfc_climo_fns" || \
   print_err_msg_exit "\
 Call to function to create links to surface climatology files failed."
+
+  if [ ! -z "${RES_IN_FIXSAR_FILENAMES}" ] && \
+     [ "${res_in_sfc_climo_fns}" -ne "${RES_IN_FIXSAR_FILENAMES}" ]; then
+    print_err_msg_exit "\
+The resolution extracted from the surface climatology file names (res_-
+in_sfc_climo_fns) does not match the resolution in other groups of files
+already considered (RES_IN_FIXSAR_FILENAMES):
+  res_in_sfc_climo_fns = ${res_in_sfc_climo_fns}
+  RES_IN_FIXSAR_FILENAMES = ${RES_IN_FIXSAR_FILENAMES}"
+  else
+    RES_IN_FIXSAR_FILENAMES="${res_in_sfc_climo_fns}"
+  fi
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -1749,11 +1785,6 @@ fi
 #-----------------------------------------------------------------------
 #
 mkdir_vrfy -p "$EXPTDIR"
-
-# Maybe do the following later?  Not sure yet...
-if [ "${RUN_ENVIR}" != "nco" ]; then
-  mkdir_vrfy -p $FIXsar
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1785,7 +1816,7 @@ fi
 #-----------------------------------------------------------------------
 #
 GLOBAL_VAR_DEFNS_FP="$EXPTDIR/$GLOBAL_VAR_DEFNS_FN"
-cp_vrfy ./${DEFAULT_EXPT_CONFIG_FN} ${GLOBAL_VAR_DEFNS_FP}
+cp_vrfy $USHDIR/${DEFAULT_EXPT_CONFIG_FN} ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
