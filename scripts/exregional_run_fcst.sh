@@ -212,8 +212,9 @@ fi
 
 # Symlink to mosaic file with a completely different name.
 target="${FIXsar}/${CRES}_mosaic.nc"
+symlink="grid_spec.nc"
 if [ -f "${target}" ]; then
-  ln_vrfy -sf ${relative_or_null} $target grid_spec.nc
+  ln_vrfy -sf ${relative_or_null} $target $symlink
 else
   print_err_msg_exit "\
 Cannot create symlink because target does not exist:
@@ -222,8 +223,9 @@ fi
 
 # Symlink to halo-3 grid file with "halo4" stripped from name.
 target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${NH3}.nc"
+symlink="${CRES}_grid.tile${TILE_RGNL}.nc"
 if [ -f "${target}" ]; then
-  ln_vrfy -sf ${relative_or_null} $target ${CRES}_grid.tile${TILE_RGNL}.nc
+  ln_vrfy -sf ${relative_or_null} $target $symlink
 else
   print_err_msg_exit "\
 Cannot create symlink because target does not exist:
@@ -243,8 +245,9 @@ fi
 # sumes core-hours.
 #
 target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
+symlink="grid.tile${TILE_RGNL}.halo${NH4}.nc"
 if [ -f "${target}" ]; then
-  ln_vrfy -sf $target ${relative_or_null} grid.tile${TILE_RGNL}.halo${NH4}.nc
+  ln_vrfy -sf ${relative_or_null} $target $symlink
 else
   print_err_msg_exit "\
 Cannot create symlink because target does not exist:
@@ -260,8 +263,9 @@ fi
 
 # Symlink to halo-0 orography file with "${CRES}_" and "halo0" stripped from name.
 target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
+symlink="oro_data.nc"
 if [ -f "${target}" ]; then
-  ln_vrfy -sf ${relative_or_null} $target oro_data.nc
+  ln_vrfy -sf ${relative_or_null} $target $symlink
 else
   print_err_msg_exit "\
 Cannot create symlink because target does not exist:
@@ -282,8 +286,9 @@ fi
 # sumes core-hours.
 #
 target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
+symlink="oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 if [ -f "${target}" ]; then
-  ln_vrfy -sf $target ${relative_or_null} oro_data.tile${TILE_RGNL}.halo${NH4}.nc
+  ln_vrfy -sf ${relative_or_null} $target $symlink
 else
   print_err_msg_exit "\
 Cannot create symlink because target does not exist:
@@ -313,8 +318,30 @@ Creating links with names that FV3 looks for in the INPUT subdirectory
 of the current cycle's run directory (CYCLE_DIR)..."
 
 cd_vrfy ${CYCLE_DIR}/INPUT
-ln_vrfy -sf gfs_data.tile${TILE_RGNL}.halo${NH0}.nc gfs_data.nc
-ln_vrfy -sf sfc_data.tile${TILE_RGNL}.halo${NH0}.nc sfc_data.nc
+#ln_vrfy -sf gfs_data.tile${TILE_RGNL}.halo${NH0}.nc gfs_data.nc
+#ln_vrfy -sf sfc_data.tile${TILE_RGNL}.halo${NH0}.nc sfc_data.nc
+
+relative_or_null=""
+
+target="gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+symlink="gfs_data.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf ${relative_or_null} $target $symlink
+else
+  print_err_msg_exit "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
+
+target="sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+symlink="sfc_data.nc"
+if [ -f "${target}" ]; then
+  ln_vrfy -sf ${relative_or_null} $target $symlink
+else
+  print_err_msg_exit "\
+Cannot create symlink because target does not exist:
+  target = \"$target}\""
+fi
 #
 #-----------------------------------------------------------------------
 #
