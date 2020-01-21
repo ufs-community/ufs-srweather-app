@@ -345,11 +345,11 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 #
 # If not running in "nco" mode, FIXam is an actual directory (not a sym-
 # link) in the experiment directory that contains the same files as the
-# system fix directory except that the files have renamed to the file
-# names that FV3 looks for.  Thus, when creating links to the files in
-# this directory, both the target and symlink names should be the ones
-# specified in the FIXam_FILES_EXPTDIR array (because that array con-
-# tains the file names that FV3 looks for).
+# system fix directory except that the files have been renamed to the
+# file names that FV3 looks for.  Thus, when creating links to the files
+# in this directory, both the target and symlink names should be the 
+# ones specified in the FIXam_FILES_EXPTDIR array (because that array 
+# contains the file names that FV3 looks for).
 #
 else
 
