@@ -480,11 +480,11 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-# EMC's CONUS grid.
+# EMC's 3km CONUS grid.
 #
 #-----------------------------------------------------------------------
 #
-"EMC_CONUS")
+"EMC_CONUS_3km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # Values from an EMC script.
@@ -578,6 +578,69 @@ predefined domain:
 
   fi
   ;;
+#
+#-----------------------------------------------------------------------
+#
+# EMC's coarse (?? km) CONUS grid.
+#
+#-----------------------------------------------------------------------
+#
+"EMC_CONUS_coarse")
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+
+    GFDLgrid_LON_T6_CTR=-97.5
+    GFDLgrid_LAT_T6_CTR=38.5
+    GFDLgrid_STRETCH_FAC=1.5
+    GFDLgrid_RES="96"
+    GFDLgrid_REFINE_RATIO=2
+  
+    num_margin_cells_T6_left=9
+    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
+  
+    num_margin_cells_T6_right=9
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
+  
+    num_margin_cells_T6_bottom=9
+    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
+  
+    num_margin_cells_T6_top=9
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
+
+    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
+
+    DT_ATMOS="100"
+
+    LAYOUT_X="6"
+    LAYOUT_Y="6"
+    BLOCKSIZE="26"
+
+    if [ "$QUILTING" = "TRUE" ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))
+      WRTCMP_output_grid="rotated_latlon"
+      WRTCMP_cen_lon="${GFDLgrid_LON_T6_CTR}"
+      WRTCMP_cen_lat="${GFDLgrid_LAT_T6_CTR}"
+# GSK - The following have not been tested...
+      WRTCMP_lon_lwr_left="-25.0"
+      WRTCMP_lat_lwr_left="-15.0"
+      WRTCMP_lon_upr_rght="25.0"
+      WRTCMP_lat_upr_rght="15.0"
+      WRTCMP_dlon="0.24"
+      WRTCMP_dlat="0.24"
+    fi
+
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
+predefined domain:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
+
+  fi
+  ;;
+
 #
 #-----------------------------------------------------------------------
 #
