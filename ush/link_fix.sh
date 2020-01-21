@@ -292,6 +292,25 @@ Cannot create symlink because target file (fp) does not exist:
     target="${cres}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
     symlink="${cres}_grid.tile${TILE_RGNL}.nc"
     ln_vrfy -sf $target $symlink
+#
+# The surface climatology file generation code looks for a grid file ha-
+# ving a name of the form "C${GFDLgrid_RES}_tile7.halo4.nc" (i.e. the 
+# resolution used in this file is that of the number of grid points per
+# horizontal direction per tile, just like in the global model).  Thus,
+# if we are running this code, if the grid is of GFDLgrid type, and if
+# we are not using GFDLgrid_RES in filenames (i.e. we are using the 
+# equivalent global uniform grid resolution instead), then create a 
+# link whose name uses the GFDLgrid_RES that points to the link whose
+# name uses the equivalent global uniform resolution.
+#
+    if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
+       [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
+       [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "FALSE" ]; then
+      target="${cres}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
+      symlink="C${GFDLgrid_RES}_grid.tile${TILE_RGNL}.nc"
+      ln_vrfy -sf $target $symlink
+    fi
+
   fi
 #
 #-----------------------------------------------------------------------

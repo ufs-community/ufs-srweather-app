@@ -181,15 +181,6 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Change location to the INPUT subdirectory of the current cycle's run 
-# directory.
-#
-#-----------------------------------------------------------------------
-#
-#cd_vrfy ${CYCLE_DIR}/INPUT
-#
-#-----------------------------------------------------------------------
-#
 # Create links in the INPUT subdirectory of the current cycle's run di-
 # rectory to the grid and (filtered) orography files.
 #
@@ -223,7 +214,13 @@ fi
 
 # Symlink to halo-3 grid file with "halo4" stripped from name.
 target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${NH3}.nc"
-symlink="${CRES}_grid.tile${TILE_RGNL}.nc"
+if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
+   [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
+   [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "FALSE" ]; then
+  symlink="C${GFDLgrid_RES}_grid.tile${TILE_RGNL}.nc"
+else
+  symlink="${CRES}_grid.tile${TILE_RGNL}.nc"
+fi
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target $symlink
 else
