@@ -91,7 +91,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch4/NCEPDEV/rstprod/com/gfs/prod"
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch2/NCEPDEV/fv3-cam/noscrub/Eric.Rogers/prfv3rt1"
+      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"
       ;;
     "JET")
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
@@ -241,7 +241,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch4/NCEPDEV/rstprod/com/gfs/prod"
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch2/NCEPDEV/fv3-cam/noscrub/Eric.Rogers/prfv3rt1"
+      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"
       ;;
     "JET")
       EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
