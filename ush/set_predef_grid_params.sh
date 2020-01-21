@@ -258,6 +258,8 @@ predefined domain:
     num_margin_cells_T6_top=10
     GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
 
+    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="FALSE"
+
     DT_ATMOS="90"
 
     LAYOUT_X="14"
@@ -538,6 +540,8 @@ predefined domain:
     num_margin_cells_T6_top=171
     GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
 
+    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
+
     DT_ATMOS="18"
 
     LAYOUT_X="16"
@@ -642,6 +646,8 @@ predefined domain:
   
     num_margin_cells_T6_top=171
     GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
+
+    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
 
     DT_ATMOS="18"
 
