@@ -372,6 +372,44 @@ check_var_valid_value "GTYPE" "valid_vals_GTYPE"
 #
 #-----------------------------------------------------------------------
 #
+# If running in NCO mode, a valid EMC grid must be specified.  Make sure 
+# EMC_GRID_NAME is set to a valid value.
+#
+# Note: It is probably best to eventually eliminate EMC_GRID_NAME as a
+# user-specified variable and just go with PREDEF_GRID_NAME.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  err_msg="\
+The EMC grid specified in EMC_GRID_NAME is not supported:
+  EMC_GRID_NAME = \"${EMC_GRID_NAME}\""
+  check_var_valid_value \
+    "EMC_GRID_NAME" "valid_vals_EMC_GRID_NAME" "${err_msg}"
+fi
+#
+# Map the specified EMC grid to one of the predefined grids.
+#
+case "${EMC_GRID_NAME}" in
+  "ak")
+    PREDEF_GRID_NAME="EMC_AK"
+    ;;
+  "conus")
+    PREDEF_GRID_NAME="EMC_CONUS_coarse"
+    ;;
+  "conus_orig")
+    PREDEF_GRID_NAME="EMC_CONUS_3km"
+    ;;
+  "guam"|"hi"|"pr")
+    print_err_msg_exit "\
+A predefined grid (PREDEF_GRID_NAME) has not yet been defined for this
+EMC grid (EMC_GRID_NAME):
+  EMC_GRID_NAME = \"${EMC_GRID_NAME}\""
+    ;;
+esac
+#
+#-----------------------------------------------------------------------
+#
 # Make sure PREDEF_GRID_NAME is set to a valid value.
 #
 #-----------------------------------------------------------------------
@@ -383,21 +421,6 @@ ported:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\""
   check_var_valid_value \
     "PREDEF_GRID_NAME" "valid_vals_PREDEF_GRID_NAME" "${err_msg}"
-fi
-#
-#-----------------------------------------------------------------------
-#
-# If running in NCO mode, a valid EMC grid must be specified.  Make sure 
-# EMC_GRID_NAME is set to a valid value.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  err_msg="\
-The EMC grid specified in EMC_GRID_NAME is not supported:
-  EMC_GRID_NAME = \"${EMC_GRID_NAME}\""
-  check_var_valid_value \
-    "EMC_GRID_NAME" "valid_vals_EMC_GRID_NAME" "${err_msg}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -906,7 +929,22 @@ LOGDIR="${EXPTDIR}/log"
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
   FIXam="${FIXrrfs}/fix_am"
-  FIXsar="${FIXrrfs}/fix_sar"
+#
+# Important note:  
+# In "nco" mode, it is assumed that in the build step, a symlink is cre-
+# ated at ${FIXrrfs}/fix_sar whose target is the system disk under 
+# which the fixed grid, orography, and surface climatology files are 
+# located.  For example, from the ${FIXrrfs}/fix_sar directory, an 
+# "ls -alF fix_sar" might show
+#
+#  > ls -alF fix_sar
+#  lrwxrwxrwx  1 Gerard.Ketefian det   62 Dec 20 15:43 fix_sar -> /scratch2/NCEPDEV/fv3-cam/emc.campara/fix_fv3cam/fix_sar/
+#
+#  FIXsar="${FIXrrfs}/fix_sar"
+  FIXsar="${FIXrrfs}/fix_sar/${EMC_GRID_NAME}"
+echo "AAAAAAAAAAAAAAAAAAAAAAAA"
+echo "FIXsar = \"${FIXsar}\""
+echo "BBBBBBBBBBBBBBBBBBBBBBBB"
   COMROOT="$PTMP/com"
 else
   FIXam="${EXPTDIR}/fix_am"
@@ -1472,25 +1510,71 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+#
+#
+#-----------------------------------------------------------------------
+#
+# Is this if-statement still necessary?
+if [ "${RUN_ENVIR}" = "nco" ]; then
+
+  glob_pattern="C*_mosaic.nc"
+  cd_vrfy $FIXsar
+  num_files=$( ls -1 ${glob_pattern} 2>/dev/null | wc -l )
+
+  if [ "${num_files}" -ne "1" ]; then
+    print_err_msg_exit "\
+Exactly one file must exist in directory FIXsar matching the globbing
+pattern glob_pattern:
+  FIXsar = \"${FIXsar}\"
+  glob_pattern = \"${glob_pattern}\"
+  num_files = ${num_files}"
+  fi
+
+  fn=$( ls -1 ${glob_pattern} )
+  RES_IN_FIXSAR_FILENAMES=$( printf "%s" $fn | sed -n -r -e "s/^C([0-9]*)_mosaic.nc/\1/p" )
+echo "RES_IN_FIXSAR_FILENAMES = ${RES_IN_FIXSAR_FILENAMES}"
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
+     [ "${GFDLgrid_RES}" -ne "${RES_IN_FIXSAR_FILENAMES}" ]; then
+    print_err_msg_exit "\
+The resolution extracted from the fixed file names (RES_IN_FIXSAR_FILENAMES)
+does not match the resolution specified by GFDLgrid_RES:
+  GFDLgrid_RES = ${GFDLgrid_RES}
+  RES_IN_FIXSAR_FILENAMES = ${RES_IN_FIXSAR_FILENAMES}"
+  fi
+
+#  RES_equiv=$( ncdump -h "${grid_fn}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
+#  RES_equiv=${RES_equiv//$'\n'/}
+#printf "%s\n" "RES_equiv = $RES_equiv"
+#  CRES_equiv="C${RES_equiv}"
+#printf "%s\n" "CRES_equiv = $CRES_equiv"
+#
+#  RES="$RES_equiv"
+#  CRES="$CRES_equiv"
+
+else
+#
+#-----------------------------------------------------------------------
+#
 # If the grid file generation task in the workflow is going to be
 # skipped (because pregenerated files are available), create links in
 # the FIXsar directory to the pregenerated grid files.
 #
 #-----------------------------------------------------------------------
 #
-res_in_grid_fns=""
-if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
+  res_in_grid_fns=""
+  if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
 
-  link_fix \
-    verbose="$VERBOSE" \
-    file_group="grid" \
-    output_varname_res_in_filenames="res_in_grid_fns" || \
-  print_err_msg_exit "\
-Call to function to create links to grid files failed."
+    link_fix \
+      verbose="$VERBOSE" \
+      file_group="grid" \
+      output_varname_res_in_filenames="res_in_grid_fns" || \
+    print_err_msg_exit "\
+  Call to function to create links to grid files failed."
 
-  RES_IN_FIXSAR_FILENAMES="${res_in_grid_fns}"
+    RES_IN_FIXSAR_FILENAMES="${res_in_grid_fns}"
 
-fi
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1500,29 +1584,29 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-res_in_orog_fns=""
-if [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ]; then
+  res_in_orog_fns=""
+  if [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ]; then
 
-  link_fix \
-    verbose="$VERBOSE" \
-    file_group="orog" \
-    output_varname_res_in_filenames="res_in_orog_fns" || \
-  print_err_msg_exit "\
-Call to function to create links to orography files failed."
-
-  if [ ! -z "${RES_IN_FIXSAR_FILENAMES}" ] && \
-     [ "${res_in_orog_fns}" -ne "${RES_IN_FIXSAR_FILENAMES}" ]; then
+    link_fix \
+      verbose="$VERBOSE" \
+      file_group="orog" \
+      output_varname_res_in_filenames="res_in_orog_fns" || \
     print_err_msg_exit "\
-The resolution extracted from the orography file names (res_in_orog_fns)
-does not match the resolution in other groups of files already consi-
-dered (RES_IN_FIXSAR_FILENAMES):
-  res_in_orog_fns = ${res_in_orog_fns}
-  RES_IN_FIXSAR_FILENAMES = ${RES_IN_FIXSAR_FILENAMES}"
-  else
-    RES_IN_FIXSAR_FILENAMES="${res_in_orog_fns}"
-  fi
+  Call to function to create links to orography files failed."
 
-fi
+    if [ ! -z "${RES_IN_FIXSAR_FILENAMES}" ] && \
+       [ "${res_in_orog_fns}" -ne "${RES_IN_FIXSAR_FILENAMES}" ]; then
+      print_err_msg_exit "\
+  The resolution extracted from the orography file names (res_in_orog_fns)
+  does not match the resolution in other groups of files already consi-
+  dered (RES_IN_FIXSAR_FILENAMES):
+    res_in_orog_fns = ${res_in_orog_fns}
+    RES_IN_FIXSAR_FILENAMES = ${RES_IN_FIXSAR_FILENAMES}"
+    else
+      RES_IN_FIXSAR_FILENAMES="${res_in_orog_fns}"
+    fi
+
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1533,26 +1617,28 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-res_in_sfc_climo_fns=""
-if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
+  res_in_sfc_climo_fns=""
+  if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
 
-  link_fix \
-    verbose="$VERBOSE" \
-    file_group="sfc_climo" \
-    output_varname_res_in_filenames="res_in_sfc_climo_fns" || \
-  print_err_msg_exit "\
-Call to function to create links to surface climatology files failed."
-
-  if [ ! -z "${RES_IN_FIXSAR_FILENAMES}" ] && \
-     [ "${res_in_sfc_climo_fns}" -ne "${RES_IN_FIXSAR_FILENAMES}" ]; then
+    link_fix \
+      verbose="$VERBOSE" \
+      file_group="sfc_climo" \
+      output_varname_res_in_filenames="res_in_sfc_climo_fns" || \
     print_err_msg_exit "\
-The resolution extracted from the surface climatology file names (res_-
-in_sfc_climo_fns) does not match the resolution in other groups of files
-already considered (RES_IN_FIXSAR_FILENAMES):
-  res_in_sfc_climo_fns = ${res_in_sfc_climo_fns}
-  RES_IN_FIXSAR_FILENAMES = ${RES_IN_FIXSAR_FILENAMES}"
-  else
-    RES_IN_FIXSAR_FILENAMES="${res_in_sfc_climo_fns}"
+  Call to function to create links to surface climatology files failed."
+
+    if [ ! -z "${RES_IN_FIXSAR_FILENAMES}" ] && \
+       [ "${res_in_sfc_climo_fns}" -ne "${RES_IN_FIXSAR_FILENAMES}" ]; then
+      print_err_msg_exit "\
+  The resolution extracted from the surface climatology file names (res_-
+  in_sfc_climo_fns) does not match the resolution in other groups of files
+  already considered (RES_IN_FIXSAR_FILENAMES):
+    res_in_sfc_climo_fns = ${res_in_sfc_climo_fns}
+    RES_IN_FIXSAR_FILENAMES = ${RES_IN_FIXSAR_FILENAMES}"
+    else
+      RES_IN_FIXSAR_FILENAMES="${res_in_sfc_climo_fns}"
+    fi
+
   fi
 
 fi

@@ -11,9 +11,8 @@ VERBOSE="TRUE"
 RUN_ENVIR="nco"
 PREEXISTING_DIR_METHOD="rename"
 
-EMC_GRID_NAME="conus"
-GRID_GEN_METHOD="JPgrid"
-
+EMC_GRID_NAME="conus"  # For now, this is maps to PREDEF_GRID_NAME="EMC_CONUS_coarse".
+GRID_GEN_METHOD="GFDLgrid"
 QUILTING="TRUE"
 USE_CCPP="TRUE"
 CCPP_PHYS_SUITE="FV3_GFS_2017_gfdlmp"
@@ -27,36 +26,12 @@ CYCL_HRS=( "18" )
 EXTRN_MDL_NAME_ICS="FV3GFS"
 EXTRN_MDL_NAME_LBCS="FV3GFS"
 
-RUN_TASK_MAKE_GRID="TRUE"
-RUN_TASK_MAKE_OROG="TRUE"
-RUN_TASK_MAKE_SFC_CLIMO="TRUE"
+#RUN_TASK_MAKE_GRID="FALSE"
+#RUN_TASK_MAKE_OROG="FALSE"
+#RUN_TASK_MAKE_SFC_CLIMO="FALSE"
 
 RUN="an_experiment"
 COMINgfs="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"  # Path to files from external model (FV3GFS).
-STMP="/path/to/temporary/directory/stmp"  # Path to temporary directory STMP.
-
-LAYOUT_X=50
-LAYOUT_Y=50
-BLOCKSIZE=20
-
-WRTCMP_write_groups="1"
-WRTCMP_write_tasks_per_group="${LAYOUT_Y}"
-
-WRTCMP_output_grid="lambert_conformal"
-WRTCMP_PARAMS_TMPL_FN=${WRTCMP_PARAMS_TMPL_FN:-"wrtcmp_${WRTCMP_output_grid}"}
-
-WRTCMP_cen_lon="-97.5"
-WRTCMP_cen_lat="38.5"
-WRTCMP_lon_lwr_left="-122.21414225"
-WRTCMP_lat_lwr_left="22.41403305"
-#
-# The following are used only for the case of WRTCMP_output_grid set to
-# "'lambert_conformal'".
-#
-WRTCMP_stdlat1="${WRTCMP_cen_lat}"
-WRTCMP_stdlat2="${WRTCMP_cen_lat}"
-WRTCMP_nx="1738"
-WRTCMP_ny="974"
-WRTCMP_dx="3000.0"
-WRTCMP_dy="3000.0"
+#STMP="/path/to/temporary/directory/stmp"  # Path to temporary directory STMP.
+STMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/stmp"  # Path to temporary directory STMP.
 

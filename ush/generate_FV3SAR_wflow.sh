@@ -446,39 +446,40 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
-
-  glob_pattern="C*_mosaic.nc"
-  cd_vrfy $FIXsar
-  num_files=$( ls -1 ${glob_pattern} 2>/dev/null | wc -l )
-
-  if [ "${num_files}" -ne "1" ]; then
-    print_err_msg_exit "\
-Exactly one file must exist in directory FIXsar matching the globbing
-pattern glob_pattern:
-  FIXsar = \"${FIXsar}\"
-  glob_pattern = \"${glob_pattern}\"
-  num_files = ${num_files}"
-  fi
-
-  fn=$( ls -1 ${glob_pattern} )
-  RES=$( printf "%s" $fn | sed -n -r -e "s/^C([0-9]*)_mosaic.nc/\1/p" )
-  CRES="C$RES"
-echo "RES = $RES"
-
-#  RES_equiv=$( ncdump -h "${grid_fn}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
-#  RES_equiv=${RES_equiv//$'\n'/}
-#printf "%s\n" "RES_equiv = $RES_equiv"
-#  CRES_equiv="C${RES_equiv}"
-#printf "%s\n" "CRES_equiv = $CRES_equiv"
+## Is this if-statement still necessary?
+#if [ "${RUN_ENVIR}" = "nco" ]; then
 #
-#  RES="$RES_equiv"
-#  CRES="$CRES_equiv"
-
-  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "RES" "${RES}"
-  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "${CRES}"
-
-fi
+#  glob_pattern="C*_mosaic.nc"
+#  cd_vrfy $FIXsar
+#  num_files=$( ls -1 ${glob_pattern} 2>/dev/null | wc -l )
+#
+#  if [ "${num_files}" -ne "1" ]; then
+#    print_err_msg_exit "\
+#Exactly one file must exist in directory FIXsar matching the globbing
+#pattern glob_pattern:
+#  FIXsar = \"${FIXsar}\"
+#  glob_pattern = \"${glob_pattern}\"
+#  num_files = ${num_files}"
+#  fi
+#
+#  fn=$( ls -1 ${glob_pattern} )
+#  RES=$( printf "%s" $fn | sed -n -r -e "s/^C([0-9]*)_mosaic.nc/\1/p" )
+#  CRES="C$RES"
+#echo "RES = $RES"
+#
+##  RES_equiv=$( ncdump -h "${grid_fn}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
+##  RES_equiv=${RES_equiv//$'\n'/}
+##printf "%s\n" "RES_equiv = $RES_equiv"
+##  CRES_equiv="C${RES_equiv}"
+##printf "%s\n" "CRES_equiv = $CRES_equiv"
+##
+##  RES="$RES_equiv"
+##  CRES="$CRES_equiv"
+#
+#  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "RES" "${RES}"
+#  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "${CRES}"
+#
+#fi
 #
 #-----------------------------------------------------------------------
 #
@@ -774,7 +775,7 @@ rm -f "${log_fp}"
 # temporary file and read them in outside the subshell later below.
 #
 { 
-generate_FV3SAR_wflow 2>&1
+generate_FV3SAR_wflow 2>&1  # If this exits with an error, the whole {...} group quits, so things don't work...
 retval=$?
 echo "$EXPTDIR" >> "${tmp_fp}"
 echo "$retval" >> "${tmp_fp}"
