@@ -162,7 +162,6 @@ NEMS_CONFIG_FN="nems.configure"
 
 WFLOW_XML_FN="FV3SAR_wflow.xml"
 GLOBAL_VAR_DEFNS_FN="var_defns.sh"
-WRTCMP_PARAMS_TMPL_FN=""
 WFLOW_LAUNCH_SCRIPT_FN="launch_FV3SAR_wflow.sh"
 WFLOW_LAUNCH_LOG_FN="log.launch_FV3SAR_wflow"
 #

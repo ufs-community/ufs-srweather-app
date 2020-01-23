@@ -841,32 +841,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If quilting is enabled, set the name of the template file containing
-# placeholder values for write-component parameters (if this file name
-# is not already set).  This file will be appended to the model_confi-
-# gure file, and placeholder values will be replaced with actual ones.
-#
-#-----------------------------------------------------------------------
-#
-if [ "$QUILTING" = "TRUE" ]; then
-#
-# First, make sure that WRTCMP_output_grid is set to a valid value.
-#
-  err_msg="\
-The coordinate system used by the write-component output grid specified
-in WRTCMP_output_grid is not supported:
-  WRTCMP_output_grid = \"${WRTCMP_output_grid}\""
-  check_var_valid_value \
-    "WRTCMP_output_grid" "valid_vals_WRTCMP_output_grid" "${err_msg}"
-#
-# Now set the name of the write-component template file.
-#
-  WRTCMP_PARAMS_TMPL_FN=${WRTCMP_PARAMS_TMPL_FN:-"wrtcmp_${WRTCMP_output_grid}"}
-
-fi
-#
-#-----------------------------------------------------------------------
-#
 # For a "GFDLgrid" type of grid, make sure GFDLgrid_RES is set to a va-
 # lid value.
 #
@@ -942,9 +916,6 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 #
 #  FIXsar="${FIXrrfs}/fix_sar"
   FIXsar="${FIXrrfs}/fix_sar/${EMC_GRID_NAME}"
-echo "AAAAAAAAAAAAAAAAAAAAAAAA"
-echo "FIXsar = \"${FIXsar}\""
-echo "BBBBBBBBBBBBBBBBBBBBBBBB"
   COMROOT="$PTMP/com"
 else
   FIXam="${EXPTDIR}/fix_am"
@@ -1778,29 +1749,36 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If the write component is going to be used to write output files (i.e.
-# if QUILTING is set to "TRUE"), first make sure that a name is speci-
-# fied for the template file containing the write-component output grid
-# parameters.  (This template file will be concatenated to the NEMS con-
-# figuration file specified in MODEL_CONFIG_FN.)  If so, set the full 
-# path to the file and make sure that the file exists.  
+# Initialize the full path to the template file containing placeholder 
+# values for the write component parameters.  Then, if the write component
+# is going to be used to write output files to disk (i.e. if QUILTING is
+# set to "TRUE"), set the full path to this file.  This file will be 
+# appended to the NEMS configuration file (MODEL_CONFIG_FN), and placeholder
+# values will be replaced with actual ones.  
 #
 #-----------------------------------------------------------------------
 #
 WRTCMP_PARAMS_TMPL_FP=""
 
 if [ "$QUILTING" = "TRUE" ]; then
-
-  if [ -z "${WRTCMP_PARAMS_TMPL_FN}" ]; then
-    print_err_msg_exit "\
-The write-component template file name (WRTCMP_PARAMS_TMPL_FN) must be 
-set to a non-empty value when quilting (i.e. the write-component) is 
-enabled:
-  QUILTING = \"$QUILTING\"
-  WRTCMP_PARAMS_TMPL_FN = \"${WRTCMP_PARAMS_TMPL_FN}\""
-  fi
-
-  WRTCMP_PARAMS_TMPL_FP="${TEMPLATE_DIR}/${WRTCMP_PARAMS_TMPL_FN}"
+#
+# First, make sure that WRTCMP_output_grid is set to a valid value.
+#
+  err_msg="\
+The coordinate system used by the write-component output grid specified
+in WRTCMP_output_grid is not supported:
+  WRTCMP_output_grid = \"${WRTCMP_output_grid}\""
+  check_var_valid_value \
+    "WRTCMP_output_grid" "valid_vals_WRTCMP_output_grid" "${err_msg}"
+#
+# Now set the name of the write-component template file.
+#
+  wrtcmp_params_tmpl_fn=${wrtcmp_params_tmpl_fn:-"wrtcmp_${WRTCMP_output_grid}"}
+#
+# Finally, set the full path to the write component template file and
+# make sure that the file exists.
+#
+  WRTCMP_PARAMS_TMPL_FP="${TEMPLATE_DIR}/${wrtcmp_params_tmpl_fn}"
   if [ ! -f "${WRTCMP_PARAMS_TMPL_FP}" ]; then
     print_err_msg_exit "\
 The write-component template file does not exist or is not a file:
