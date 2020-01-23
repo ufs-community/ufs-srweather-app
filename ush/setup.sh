@@ -1683,6 +1683,26 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that PRINT_ESMF is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "PRINT_ESMF" "valid_vals_PRINT_ESMF"
+#
+# Set PRINT_ESMF to either "TRUE" or "FALSE" so we don't have to consider
+# other valid values later on.
+#
+PRINT_ESMF=${PRINT_ESMF^^}
+if [ "${PRINT_ESMF}" = "TRUE" ] || \
+   [ "${PRINT_ESMF}" = "YES" ]; then
+  PRINT_ESMF="TRUE"
+elif [ "${PRINT_ESMF}" = "FALSE" ] || \
+     [ "${PRINT_ESMF}" = "NO" ]; then
+  PRINT_ESMF="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Calculate PE_MEMBER01.  This is the number of MPI tasks used for the
 # forecast, including those for the write component if QUILTING is set
 # to "TRUE".

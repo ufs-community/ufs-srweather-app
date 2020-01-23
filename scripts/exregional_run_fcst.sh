@@ -489,6 +489,7 @@ Setting parameters in file:
   model_config_fp = \"${model_config_fp}\""
 
 dot_quilting_dot="."${QUILTING,,}"."
+dot_print_esmf_dot="."${PRINT_ESMF,,}"."
 
 set_file_param "${model_config_fp}" "PE_MEMBER01" "${PE_MEMBER01}"
 set_file_param "${model_config_fp}" "dt_atmos" "${DT_ATMOS}"
@@ -499,7 +500,7 @@ set_file_param "${model_config_fp}" "start_hour" "$HH"
 set_file_param "${model_config_fp}" "nhours_fcst" "${FCST_LEN_HRS}"
 set_file_param "${model_config_fp}" "ncores_per_node" "${NCORES_PER_NODE}"
 set_file_param "${model_config_fp}" "quilting" "${dot_quilting_dot}"
-set_file_param "${model_config_fp}" "print_esmf" "${PRINT_ESMF}"
+set_file_param "${model_config_fp}" "print_esmf" "${dot_print_esmf_dot}"
 #
 #-----------------------------------------------------------------------
 #

@@ -602,7 +602,7 @@ BLOCKSIZE="24"
 #-----------------------------------------------------------------------
 #
 QUILTING="TRUE"
-PRINT_ESMF=".false."
+PRINT_ESMF="FALSE"
 
 WRTCMP_write_groups="1"
 WRTCMP_write_tasks_per_group="20"
