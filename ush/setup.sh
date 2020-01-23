@@ -1850,18 +1850,18 @@ NUM_NODES=$(( (PE_MEMBER01 + NCORES_PER_NODE - 1)/NCORES_PER_NODE ))
 #
 #-----------------------------------------------------------------------
 #
-num_fixam_files_sysdir="${#FIXam_FILES_SYSDIR[@]}"
-num_fixam_files_exptdir="${#FIXam_FILES_EXPTDIR[@]}"
-if [ "${num_fixam_files_sysdir}" -ne "${num_fixam_files_exptdir}" ]; then
+num_fixgsm_files="${#FIXgsm_FILENAMES[@]}"
+num_fixam_files="${#FIXam_FILENAMES[@]}"
+if [ "${num_fixgsm_files}" -ne "${num_fixam_files}" ]; then
   print_err_msg_exit "\
-The number of fixed files specified in FIXam_FILES_SYSDIR must be equal 
-to that specified in FIXam_FILES_EXPTDIR:
-  num_fixam_files_sysdir = ${num_fixam_files_sysdir}
-  num_fixam_files_exptdir = ${num_fixam_files_exptdir}"
+The number of fixed files specified in the array FIXgsm_FILENAMES 
+(num_fixgsm_files) must be equal to that specified in the array FIXam_FILENAMES
+(num_fixam_files):
+  num_fixgsm_files = ${num_fixgsm_files}
+  num_fixam_files = ${num_fixam_files}"
 else
-  NUM_FIXam_FILES="${num_fixam_files_sysdir}"
+  NUM_FIXam_FILES="${num_fixam_files}"
 fi
-
 #
 #-----------------------------------------------------------------------
 #

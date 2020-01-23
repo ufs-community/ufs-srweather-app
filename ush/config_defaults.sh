@@ -661,7 +661,7 @@ SFC_CLIMO_DIR="/path/to/pregenerated/surface/climo/files"
 #
 #-----------------------------------------------------------------------
 #
-FIXam_FILES_SYSDIR=( \
+FIXgsm_FILENAMES=( \
 "CFSR.SEAICE.1982.2012.monthly.clim.grb" \
 "RTGSST.1982.2012.monthly.clim.grb" \
 "seaice_newland.grb" \
@@ -699,7 +699,7 @@ FIXam_FILES_SYSDIR=( \
 )
 # "global_o3prdlos.f77" \
 
-FIXam_FILES_EXPTDIR=( \
+FIXam_FILENAMES=( \
 "CFSR.SEAICE.1982.2012.monthly.clim.grb" \
 "RTGSST.1982.2012.monthly.clim.grb" \
 "seaice_newland.grb" \

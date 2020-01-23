@@ -282,7 +282,7 @@ cd_vrfy -
 #-----------------------------------------------------------------------
 #
 # Make sure that the correct ozone production/loss fixed file is speci-
-# fied in the array FIXam_FILES_SYSDIR.  There should be two such files
+# fied in the array FIXgsm_FILENAMES.  There should be two such files
 # on disk in the system directory specified in FIXgsm.  They are named
 #
 #   ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77
@@ -299,31 +299,31 @@ cd_vrfy -
 # (CCPP_PHYS_SUITE).  The GFS physics suite uses the after-2015 parame-
 # terization, while the GSD physics suite uses the 2015 parameteriza-
 # tion.  Thus, we must ensure that the ozone production/loss fixed file
-# listed in the array FIXam_FILES_SYSDIR is the correct one for the gi-
+# listed in the array FIXgsm_FILENAMES is the correct one for the gi-
 # ven physics suite.  We do this below as follows.
 #
-# First, note that FIXam_FILES_SYSDIR should contain the name of exactly
+# First, note that FIXgsm_FILENAMES should contain the name of exactly
 # one of the ozone production/loss fixed files listed above.  We verify
 # this by trying to obtain the indices of the elements of FIXam_FILES_-
 # SYSDIR that contain the two files.  One of these indices should not
 # exist while the other one should.  If the 2015 file is the one that is
-# found in FIXam_FILES_SYSDIR, then if we're using GFS physics, we 
-# change that element in FIXam_FILES_SYSDIR to the name of the after-
+# found in FIXgsm_FILENAMES, then if we're using GFS physics, we 
+# change that element in FIXgsm_FILENAMES to the name of the after-
 # 2015 file.  Similarly, if the after-2015 file is the one that is found
-# in FIXam_FILES_SYSDIR, then if we're using GSD physics, we change that
-# element in FIXam_FILES_SYSDIR to the name of the 2015 file.  If 
+# in FIXgsm_FILENAMES, then if we're using GSD physics, we change that
+# element in FIXgsm_FILENAMES to the name of the 2015 file.  If 
 # neither file or more than one ozone production/loss file is found in
-# FIXam_FILES_SYSDIR, we print out an error message and exit.
+# FIXgsm_FILENAMES, we print out an error message and exit.
 #
 #-----------------------------------------------------------------------
 #
 ozphys_2015_fn="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
-indx_ozphys_2015=$( get_elem_inds "FIXam_FILES_SYSDIR" "${ozphys_2015_fn}" )
+indx_ozphys_2015=$( get_elem_inds "FIXgsm_FILENAMES" "${ozphys_2015_fn}" )
 read -a indx_ozphys_2015 <<< ${indx_ozphys_2015}
 num_files_ozphys_2015=${#indx_ozphys_2015[@]}
 
 ozphys_after2015_fn="global_o3prdlos.f77"
-indx_ozphys_after2015=$( get_elem_inds "FIXam_FILES_SYSDIR" "${ozphys_after2015_fn}" )
+indx_ozphys_after2015=$( get_elem_inds "FIXgsm_FILENAMES" "${ozphys_after2015_fn}" )
 read -a indx_ozphys_after2015 <<< ${indx_ozphys_after2015}
 num_files_ozphys_after2015=${#indx_ozphys_after2015[@]}
 
@@ -331,7 +331,7 @@ if [ ${num_files_ozphys_2015} -eq 1 ] && \
    [ ${num_files_ozphys_after2015} -eq 0 ]; then
 
   if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
-    FIXam_FILES_SYSDIR[${indx_ozphys_2015}]="${ozphys_after2015_fn}"
+    FIXgsm_FILENAMES[${indx_ozphys_2015}]="${ozphys_after2015_fn}"
   fi
 
 elif [ ${num_files_ozphys_2015} -eq 0 ] && \
@@ -339,14 +339,14 @@ elif [ ${num_files_ozphys_2015} -eq 0 ] && \
 
   if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
      [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-    FIXam_FILES_SYSDIR[${indx_ozphys_after2015}]="${ozphys_2015_fn}"
+    FIXgsm_FILENAMES[${indx_ozphys_after2015}]="${ozphys_2015_fn}"
   fi
 
 else
 
-  FIXam_FILES_SYSDIR_str=$( printf "\"%s\"\n" "${FIXam_FILES_SYSDIR[@]}" )
+  FIXgsm_FILENAMES_str=$( printf "\"%s\"\n" "${FIXgsm_FILENAMES[@]}" )
   print_err_msg_exit "\
-The array FIXam_FILES_SYSDIR containing the names of the fixed files in
+The array FIXgsm_FILENAMES containing the names of the fixed files in
 the system directory (FIXgsm) to copy or link to has been specified in-
 correctly because it contains no or more than one occurrence of the 
 ozone production/loss file(s) (whose names are specified in the varia-
@@ -356,11 +356,11 @@ bles ozphys_2015_fn and ozphys_after2015_fn):
   num_files_ozphys_2015_fn = \"${num_files_ozphys_2015_fn}\"
   ozphys_after2015_fn = \"${ozphys_after2015_fn}\"
   num_files_ozphys_after2015_fn = \"${num_files_ozphys_after2015_fn}\"
-  FIXam_FILES_SYSDIR = 
+  FIXgsm_FILENAMES = 
 (
-${FIXam_FILES_SYSDIR_str}
+${FIXgsm_FILENAMES_str}
 )
-Please check the contents of the FIXam_FILES_SYSDIR array and rerun."
+Please check the contents of the FIXgsm_FILENAMES array and rerun."
 
 fi
 #
@@ -490,8 +490,8 @@ fi
 #-----------------------------------------------------------------------
 #
 
-# For nco, we assume the following copy operation is done beforehand, but
-# that can be changed.
+# In NCO mode, we assume the following copy operation is done beforehand,
+# but that can be changed.
 if [ "${RUN_ENVIR}" != "nco" ]; then
 
   print_info_msg "$VERBOSE" "
@@ -502,8 +502,8 @@ Copying fixed files from system directory to the experiment directory..."
 
   cp_vrfy $FIXgsm/global_hyblev.l65.txt $FIXam
   for (( i=0; i<${NUM_FIXam_FILES}; i++ )); do
-    cp_vrfy $FIXgsm/${FIXam_FILES_SYSDIR[$i]} \
-            $FIXam/${FIXam_FILES_EXPTDIR[$i]}
+    cp_vrfy $FIXgsm/${FIXgsm_FILENAMES[$i]} \
+            $FIXam/${FIXam_FILENAMES[$i]}
   done
 
 fi

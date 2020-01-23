@@ -356,16 +356,20 @@ files in the FIXam directory..."
 # If running in "nco" mode, FIXam is simply a symlink under the workflow
 # directory that points to the system directory containing the fix 
 # files.  The files in this system directory are named as listed in the
-# FIXam_FILES_SYSDIR array.  Thus, that is the array to use to form the
-# names of the link targets, but the names of the symlinks themselves
-# must be as specified in the FIXam_FILES_EXPTDIR array (because that 
+# FIXgsm_FILENAMES array.  Thus, that is the array to use to form the
+# names of the targets of the symlinks, but the names of the symlinks themselves
+# must be as specified in the FIXam_FILENAMES array (because that 
 # array contains the file names that FV3 looks for).
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
 
   for (( i=0; i<${NUM_FIXam_FILES}; i++ )); do
-    ln_vrfy -sf $FIXam/${FIXam_FILES_SYSDIR[$i]} \
-                ${CYCLE_DIR}/${FIXam_FILES_EXPTDIR[$i]}
+# Note: Can link directly to files in FIXgsm without needing a local
+# FIXam directory, i.e. use
+#    ln_vrfy -sf $FIXgsm/${FIXgsm_FILENAMES[$i]} \
+#                ${CYCLE_DIR}/${FIXam_FILENAMES[$i]}
+    ln_vrfy -sf $FIXam/${FIXgsm_FILENAMES[$i]} \
+                ${CYCLE_DIR}/${FIXam_FILENAMES[$i]}
   done
 #
 # If not running in "nco" mode, FIXam is an actual directory (not a sym-
@@ -373,13 +377,13 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 # system fix directory except that the files have been renamed to the
 # file names that FV3 looks for.  Thus, when creating links to the files
 # in this directory, both the target and symlink names should be the 
-# ones specified in the FIXam_FILES_EXPTDIR array (because that array 
+# ones specified in the FIXam_FILENAMES array (because that array 
 # contains the file names that FV3 looks for).
 #
 else
 
   for (( i=0; i<${NUM_FIXam_FILES}; i++ )); do
-    ln_vrfy -sf --relative $FIXam/${FIXam_FILES_EXPTDIR[$i]} ${CYCLE_DIR}
+    ln_vrfy -sf --relative $FIXam/${FIXam_FILENAMES[$i]} ${CYCLE_DIR}
   done
 
 fi
