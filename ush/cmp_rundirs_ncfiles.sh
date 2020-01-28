@@ -23,12 +23,12 @@ function cmp_ncfiles_one_dir() {
   for fn in *.$fileext; do
  
     fn1="$fn" 
-    if [ -f "$fn1" ] && [ ! -h "$fn1" ]; then  # Check if regular file and not a symlink.
+    if [ -f "$fn1" ] && [ ! -L "$fn1" ]; then  # Check if regular file and not a symlink.
 
       fn2="$dir2/$subdir/$fn"
       if [ -e "$fn2" ]; then  # Check if file exists.
 
-        if [ -f "$fn2" ] && [ ! -h "$fn2" ]; then  # Check if regular file and not a symlink.
+        if [ -f "$fn2" ] && [ ! -L "$fn2" ]; then  # Check if regular file and not a symlink.
   
           printf "\nComparing file \"$fn\" in subdirectory \"$subdir\" ...\n"
           nccmp -d $fn1 $fn2
