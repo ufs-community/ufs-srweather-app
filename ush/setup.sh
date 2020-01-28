@@ -395,12 +395,12 @@ case "${EMC_GRID_NAME}" in
     PREDEF_GRID_NAME="EMC_AK"
     ;;
   "conus")
-    PREDEF_GRID_NAME="EMC_CONUS_coarse"
-    ;;
-  "conus_orig")
     PREDEF_GRID_NAME="EMC_CONUS_3km"
     ;;
-  "guam"|"hi"|"pr")
+  "conus_c96")
+    PREDEF_GRID_NAME="EMC_CONUS_coarse"
+    ;;
+  "conus_orig"|"guam"|"hi"|"pr")
     print_err_msg_exit "\
 A predefined grid (PREDEF_GRID_NAME) has not yet been defined for this
 EMC grid (EMC_GRID_NAME):
@@ -902,25 +902,58 @@ LOGDIR="${EXPTDIR}/log"
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
+
   FIXam="${FIXrrfs}/fix_am"
-#
-# Important note:  
-# In "nco" mode, it is assumed that in the build step, a symlink is cre-
-# ated at ${FIXrrfs}/fix_sar whose target is the system disk under 
-# which the fixed grid, orography, and surface climatology files are 
-# located.  For example, from the ${FIXrrfs}/fix_sar directory, an 
-# "ls -alF fix_sar" might show
-#
-#  > ls -alF fix_sar
-#  lrwxrwxrwx  1 Gerard.Ketefian det   62 Dec 20 15:43 fix_sar -> /scratch2/NCEPDEV/fv3-cam/emc.campara/fix_fv3cam/fix_sar/
-#
-#  FIXsar="${FIXrrfs}/fix_sar"
   FIXsar="${FIXrrfs}/fix_sar/${EMC_GRID_NAME}"
   COMROOT="$PTMP/com"
+#
+# In NCO mode (i.e. if RUN_ENVIR set to "nco"), it is assumed that before
+# running the experiment generation script, the path specified in FIXam 
+# already exists and is either itself the directory in which various fixed
+# files (but not the ones containing the regional grid and the orography
+# and surface climatology on that grid) are located, or it is a symlink 
+# to such a directory.  Resolve any symlinks in the path specified by 
+# FIXam and check that this is the case.
+#
+  path_resolved=$( readlink -m "$FIXam" )
+  if [ ! -d "${path_resolved}" ]; then
+    print_err_msg_exit "\
+In NCO mode (RUN_ENVIR set to \"nco\"), the path specified by FIXam after
+resolving all symlinks (path_resolved) must point to an existing directory
+before an experiment can be generated.  In this case, path_resolved is
+not a directory or does not exist:
+  RUN_ENVIR = \"${RUN_ENVIR}\"
+  FIXam = \"$FIXam\"
+  path_resolved = \"${path_resolved}\"
+Please correct and then rerun the experiment generation script."
+  fi
+#
+# In NCO mode (i.e. if RUN_ENVIR set to "nco"), it is assumed that before
+# running the experiment generation script, the path specified in FIXsar 
+# already exists and is either itself the directory in which the fixed 
+# grid, orography, and surface climatology files are located, or it is a
+# symlink to such a directory.  Resolve any symlinks in the path specified
+# by FIXsar and check that this is the case.
+#
+  path_resolved=$( readlink -m "$FIXsar" )
+  if [ ! -d "${path_resolved}" ]; then
+    print_err_msg_exit "\
+In NCO mode (RUN_ENVIR set to \"nco\"), the path specified by FIXsar after
+resolving all symlinks (path_resolved) must point to an existing directory
+before an experiment can be generated.  In this case, path_resolved is
+not a directory or does not exist:
+  RUN_ENVIR = \"${RUN_ENVIR}\"
+  FIXsar = \"$FIXsar\"
+  path_resolved = \"${path_resolved}\"
+Please correct and then rerun the experiment generation script."
+  fi
+
 else
+
   FIXam="${EXPTDIR}/fix_am"
   FIXsar="${EXPTDIR}/fix_sar"
   COMROOT=""
+
 fi
 #
 #-----------------------------------------------------------------------

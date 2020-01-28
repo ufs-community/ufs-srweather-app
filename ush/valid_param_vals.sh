@@ -7,7 +7,7 @@ valid_vals_PREDEF_GRID_NAME=( \
 "GSD_HRRR_AK_3km" "GSD_HRRR_AK_50km" \
 "GSD_HRRR3km" "GSD_HRRR13km" "GSD_HRRR25km" \
 "GSD_RAP13km" )
-valid_vals_EMC_GRID_NAME=("ak" "conus" "conus_orig" "guam" "hi" "pr")
+valid_vals_EMC_GRID_NAME=("ak" "conus" "conus_c96" "conus_orig" "guam" "hi" "pr")
 valid_vals_USE_CCPP=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_CCPP_PHYS_SUITE=("FV3_GFS_2017_gfdlmp" "FV3_GSD_v0" "FV3_GSD_SAR")
 valid_vals_GFDLgrid_RES=("48" "96" "192" "384" "768" "1152" "3072")
