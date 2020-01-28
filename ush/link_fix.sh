@@ -339,6 +339,8 @@ Cannot create symlink because target file (target) does not exist:
   target = \"${target}\""
       fi
     done
+
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -347,8 +349,6 @@ Cannot create symlink because target file (target) does not exist:
 #-----------------------------------------------------------------------
 #
     cd_vrfy -
-
-  fi
 #
 #-----------------------------------------------------------------------
 #
