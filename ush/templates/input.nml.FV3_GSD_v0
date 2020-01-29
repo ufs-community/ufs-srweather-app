@@ -36,13 +36,13 @@
 /
 
 &fv_core_nml
-     layout   =  <layout_x>,<layout_y>
+     layout   = <layout_x>,<layout_y>
      io_layout = 1,1
      npx      = <npx>
      npy      = <npy>
      ntiles   = 1,
      npz    = 64
-     !grid_type = -1
+!     grid_type = -1
      make_nh = .T.
      fv_debug = .T.
      range_warn = .T.
@@ -102,18 +102,13 @@
      z_tracer = .T.
      read_increment = .F.
      res_latlon_dynamics = "fv3_increment.nc"
-
      do_schmidt = .true.
      target_lat = <target_lat>
      target_lon = <target_lon>
      stretch_fac = <stretch_fac>
-!     nord_zs_filter = 4
-     n_zs_filter = 0
      regional = .true.
      bc_update_interval = <bc_update_interval>
-
      full_zs_filter = .F. !unreleased feature
-
      nord_zs_filter = 4
      n_zs_filter = 0 ! safety
 /
