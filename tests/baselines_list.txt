@@ -3,3 +3,7 @@ regional_002
 regional_003
 regional_004
 regional_005
+regional_006
+regional_007
+regional_008
+regional_009
