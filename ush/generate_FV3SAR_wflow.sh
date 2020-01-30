@@ -281,91 +281,6 @@ cd_vrfy -
 #
 #-----------------------------------------------------------------------
 #
-# Make sure that the correct ozone production/loss fixed file is speci-
-# fied in the array FIXgsm_FILENAMES.  There should be two such files
-# on disk in the system directory specified in FIXgsm.  They are named
-#
-#   ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77
-#
-# and
-#
-#   global_o3prdlos.f77
-#
-# The first should be used with the 2015 ozone parameterization, while
-# the second should be used with the more recent ozone parameterization
-# (referred to here as the after-2015 parameterization).
-#
-# Which of these should be used depends on the specified physics suite
-# (CCPP_PHYS_SUITE).  The GFS physics suite uses the after-2015 parame-
-# terization, while the GSD physics suite uses the 2015 parameteriza-
-# tion.  Thus, we must ensure that the ozone production/loss fixed file
-# listed in the array FIXgsm_FILENAMES is the correct one for the gi-
-# ven physics suite.  We do this below as follows.
-#
-# First, note that FIXgsm_FILENAMES should contain the name of exactly
-# one of the ozone production/loss fixed files listed above.  We verify
-# this by trying to obtain the indices of the elements of FIXam_FILES_-
-# SYSDIR that contain the two files.  One of these indices should not
-# exist while the other one should.  If the 2015 file is the one that is
-# found in FIXgsm_FILENAMES, then if we're using GFS physics, we 
-# change that element in FIXgsm_FILENAMES to the name of the after-
-# 2015 file.  Similarly, if the after-2015 file is the one that is found
-# in FIXgsm_FILENAMES, then if we're using GSD physics, we change that
-# element in FIXgsm_FILENAMES to the name of the 2015 file.  If 
-# neither file or more than one ozone production/loss file is found in
-# FIXgsm_FILENAMES, we print out an error message and exit.
-#
-#-----------------------------------------------------------------------
-#
-ozphys_2015_fn="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
-indx_ozphys_2015=$( get_elem_inds "FIXgsm_FILENAMES" "${ozphys_2015_fn}" )
-read -a indx_ozphys_2015 <<< ${indx_ozphys_2015}
-num_files_ozphys_2015=${#indx_ozphys_2015[@]}
-
-ozphys_after2015_fn="global_o3prdlos.f77"
-indx_ozphys_after2015=$( get_elem_inds "FIXgsm_FILENAMES" "${ozphys_after2015_fn}" )
-read -a indx_ozphys_after2015 <<< ${indx_ozphys_after2015}
-num_files_ozphys_after2015=${#indx_ozphys_after2015[@]}
-
-if [ ${num_files_ozphys_2015} -eq 1 ] && \
-   [ ${num_files_ozphys_after2015} -eq 0 ]; then
-
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
-    FIXgsm_FILENAMES[${indx_ozphys_2015}]="${ozphys_after2015_fn}"
-  fi
-
-elif [ ${num_files_ozphys_2015} -eq 0 ] && \
-     [ ${num_files_ozphys_after2015} -eq 1 ]; then
-
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-    FIXgsm_FILENAMES[${indx_ozphys_after2015}]="${ozphys_2015_fn}"
-  fi
-
-else
-
-  FIXgsm_FILENAMES_str=$( printf "\"%s\"\n" "${FIXgsm_FILENAMES[@]}" )
-  print_err_msg_exit "\
-The array FIXgsm_FILENAMES containing the names of the fixed files in
-the system directory (FIXgsm) to copy or link to has been specified in-
-correctly because it contains no or more than one occurrence of the 
-ozone production/loss file(s) (whose names are specified in the varia-
-bles ozphys_2015_fn and ozphys_after2015_fn):
-  FIXgsm = \"${FIXgsm}\"
-  ozphys_2015_fn = \"${ozphys_2015_fn}\"
-  num_files_ozphys_2015_fn = \"${num_files_ozphys_2015_fn}\"
-  ozphys_after2015_fn = \"${ozphys_after2015_fn}\"
-  num_files_ozphys_after2015_fn = \"${num_files_ozphys_after2015_fn}\"
-  FIXgsm_FILENAMES = 
-(
-${FIXgsm_FILENAMES_str}
-)
-Please check the contents of the FIXgsm_FILENAMES array and rerun."
-
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Copy the workflow (re)launch script to the experiment directory.
 #
 #-----------------------------------------------------------------------
@@ -587,7 +502,6 @@ set_file_param "${FV3_NML_FP}" "ccpp_suite" "\'${CCPP_PHYS_SUITE}\'"
 set_file_param "${FV3_NML_FP}" "layout" "${LAYOUT_X},${LAYOUT_Y}"
 set_file_param "${FV3_NML_FP}" "npx" "$npx"
 set_file_param "${FV3_NML_FP}" "npy" "$npy"
-
 set_file_param "${FV3_NML_FP}" "target_lon" "${LON_CTR}"
 set_file_param "${FV3_NML_FP}" "target_lat" "${LAT_CTR}"
 # Question:
@@ -598,6 +512,28 @@ set_file_param "${FV3_NML_FP}" "target_lat" "${LAT_CTR}"
 # set it to that here in the FV3 namelist file?
 set_file_param "${FV3_NML_FP}" "stretch_fac" "${STRETCH_FAC}"
 set_file_param "${FV3_NML_FP}" "bc_update_interval" "${LBC_UPDATE_INTVL_HRS}"
+
+set_file_param "${FV3_NML_FP}" "FNGLAC" "\"$FNGLAC\""
+set_file_param "${FV3_NML_FP}" "FNMXIC" "\"$FNMXIC\""
+set_file_param "${FV3_NML_FP}" "FNTSFC" "\"$FNTSFC\""
+set_file_param "${FV3_NML_FP}" "FNSNOC" "\"$FNSNOC\""
+set_file_param "${FV3_NML_FP}" "FNZORC" "\"$FNZORC\""
+set_file_param "${FV3_NML_FP}" "FNALBC" "\"$FNALBC\""
+set_file_param "${FV3_NML_FP}" "FNALBC2" "\"$FNALBC2\""
+set_file_param "${FV3_NML_FP}" "FNAISC" "\"$FNAISC\""
+set_file_param "${FV3_NML_FP}" "FNTG3C" "\"$FNTG3C\""
+set_file_param "${FV3_NML_FP}" "FNVEGC" "\"$FNVEGC\""
+set_file_param "${FV3_NML_FP}" "FNVETC" "\"$FNVETC\""
+set_file_param "${FV3_NML_FP}" "FNSOTC" "\"$FNSOTC\""
+set_file_param "${FV3_NML_FP}" "FNSMCC" "\"$FNSMCC\""
+set_file_param "${FV3_NML_FP}" "FNMSKH" "\"$FNMSKH\""
+set_file_param "${FV3_NML_FP}" "FNTSFA" "\"$FNTSFA\""
+set_file_param "${FV3_NML_FP}" "FNACNA" "\"$FNACNA\""
+set_file_param "${FV3_NML_FP}" "FNSNOA" "\"$FNSNOA\""
+set_file_param "${FV3_NML_FP}" "FNVMNC" "\"$FNVMNC\""
+set_file_param "${FV3_NML_FP}" "FNVMXC" "\"$FNVMXC\""
+set_file_param "${FV3_NML_FP}" "FNSLPC" "\"$FNSLPC\""
+set_file_param "${FV3_NML_FP}" "FNABSC" "\"$FNABSC\""
 #
 # For the GSD_v0 and the GSD_SAR physics suites, set the parameter lsoil
 # according to the external models used to obtain ICs and LBCs.
