@@ -2389,7 +2389,10 @@ FIXam_FILENAMES_str=$( printf "\"%s\" \\\\\n" "${FIXam_FILENAMES[@]}" )
 #
 #-----------------------------------------------------------------------
 #
-# Name of the ozone parameterization.
+# Name of the ozone parameterization.  If USE_CCPP is set to "FALSE", 
+# then this will be equal to OZONE_PARAM_NO_CCPP.  If USE_CCPP is set to
+# "TRUE", then the value this gets set to depends on the CCPP physics
+# suite being used.
 #
 #-----------------------------------------------------------------------
 #
