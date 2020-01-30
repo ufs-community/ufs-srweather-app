@@ -109,18 +109,39 @@ FHR="${FHR_STR}"
 #
 #-----------------------------------------------------------------------
 #
-# Fill in the xml file with parameter values that are either specified
-# in the configuration file/script (config.sh) or set in the setup
-# script sourced above.
+# Set the variable containing a generic version of the cycle directory.
+# This variable will be used in the rocoto workflow XML file.  By "generic", 
+# we mean that the year, month, day, and hour in this variable are 
+# placeholders that rocoto will replace with actual values (integers).
 #
 #-----------------------------------------------------------------------
 #
 CDATE_generic="@Y@m@d@H"
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  CYCLE_DIR="$STMP/tmpnwprd/${EMC_GRID_NAME}_${CDATE_generic}"
+#
+# Can't do this because there will be leftover directories from previous
+# runs with the same experiment settings that are difficult to remove.
+# Have to split the cycle CDATE from the grid name.
+#
+#  CYCLE_DIR="$STMP/tmpnwprd/${EMC_GRID_NAME}_${CDATE_generic}"
+
+  cycle_basedir="$STMP/tmpnwprd/${EMC_GRID_NAME}" 
+  check_for_preexist_dir ${cycle_basedir} ${PREEXISTING_DIR_METHOD}
+  CYCLE_DIR="${cycle_basedir}/${CDATE_generic}"
+
 else
+
   CYCLE_DIR="$EXPTDIR/${CDATE_generic}"
+
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Fill in the rocoto workflow XML file with parameter values that are 
+# either specified in the configuration file/script (config.sh) or set in
+# the setup script sourced above.
+#
+#-----------------------------------------------------------------------
 #
 # Computational resource parameters.
 #
@@ -354,47 +375,6 @@ resubmit FV3SAR workflow:
   fi
 
 fi
-#
-#-----------------------------------------------------------------------
-#
-#
-#
-#-----------------------------------------------------------------------
-#
-## Is this if-statement still necessary?
-#if [ "${RUN_ENVIR}" = "nco" ]; then
-#
-#  glob_pattern="C*_mosaic.nc"
-#  cd_vrfy $FIXsar
-#  num_files=$( ls -1 ${glob_pattern} 2>/dev/null | wc -l )
-#
-#  if [ "${num_files}" -ne "1" ]; then
-#    print_err_msg_exit "\
-#Exactly one file must exist in directory FIXsar matching the globbing
-#pattern glob_pattern:
-#  FIXsar = \"${FIXsar}\"
-#  glob_pattern = \"${glob_pattern}\"
-#  num_files = ${num_files}"
-#  fi
-#
-#  fn=$( ls -1 ${glob_pattern} )
-#  RES=$( printf "%s" $fn | sed -n -r -e "s/^C([0-9]*)_mosaic.nc/\1/p" )
-#  CRES="C$RES"
-#echo "RES = $RES"
-#
-##  RES_equiv=$( ncdump -h "${grid_fn}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
-##  RES_equiv=${RES_equiv//$'\n'/}
-##printf "%s\n" "RES_equiv = $RES_equiv"
-##  CRES_equiv="C${RES_equiv}"
-##printf "%s\n" "CRES_equiv = $CRES_equiv"
-##
-##  RES="$RES_equiv"
-##  CRES="$CRES_equiv"
-#
-#  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "RES" "${RES}"
-#  set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "${CRES}"
-#
-#fi
 #
 #-----------------------------------------------------------------------
 #
