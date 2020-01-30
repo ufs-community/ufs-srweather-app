@@ -3,13 +3,20 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script and the function definitions
-# file.
+# Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $SCRIPT_VAR_DEFNS_FP
-. $USHDIR/source_funcs.sh
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Source other necessary files.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/link_fix.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -22,15 +29,27 @@
 #
 #-----------------------------------------------------------------------
 #
-# Set the script name and print out an informational message informing
-# the user that we've entered this script.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "${BASH_SOURCE[0]}" )
-print_info_msg "\n\
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
 ========================================================================
-Entering script:  \"${script_name}\"
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
 This is the ex-script for the task that generates surface fields from
 climatology.
 ========================================================================"
@@ -46,20 +65,16 @@ climatology.
 #
 valid_args=( "workdir" )
 process_args valid_args "$@"
-
-# If VERBOSE is set to TRUE, print out what each valid argument has been
-# set to.
-if [ "$VERBOSE" = "TRUE" ]; then
-  num_valid_args="${#valid_args[@]}"
-  print_info_msg "\n\
-The arguments to script/function \"${script_name}\" have been set as 
-follows:
-"
-  for (( i=0; i<$num_valid_args; i++ )); do
-    line=$( declare -p "${valid_args[$i]}" )
-    printf "  $line\n"
-  done
-fi
+#
+#-----------------------------------------------------------------------
+#
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
+#
+#-----------------------------------------------------------------------
+#
+print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -97,8 +112,8 @@ input_vegetation_type_file="${SFC_CLIMO_INPUT_DIR}/vegetation_type.igbp.0.05.nc"
 input_vegetation_greenness_file="${SFC_CLIMO_INPUT_DIR}/vegetation_greenness.0.144.nc"
 mosaic_file_mdl="${FIXsar}/${CRES}_mosaic.nc"
 orog_dir_mdl="${FIXsar}"
-orog_files_mdl=${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc
-halo=${nh4_T7}
+orog_files_mdl=${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc
+halo=${NH4}
 maximum_snow_albedo_method="bilinear"
 snowfree_albedo_method="bilinear"
 vegetation_greenness_method="bilinear"
@@ -115,40 +130,30 @@ case $MACHINE in
 
 "WCOSS_C")
 # This could be wrong.  Just a guess since I don't have access to this machine.
-  APRUN_SFC=${APRUN_SFC:-"aprun -j 1 -n 6 -N 6"}
+  APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}
   ;;
 
 "WCOSS")
 # This could be wrong.  Just a guess since I don't have access to this machine.
-  APRUN_SFC=${APRUN_SFC:-"aprun -j 1 -n 6 -N 6"}
+  APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}
   ;;
 
 "THEIA")
 # Need to load intel/15.1.133.  This and all other module loads should go into a module file.
   module load intel/15.1.133
   module list
-  APRUN_SFC="mpirun -np ${SLURM_NTASKS}"
+  APRUN="mpirun -np ${SLURM_NTASKS}"
   ;;
 
 "HERA")
-  module purge
-  module load intel/18.0.5.274
-  module load impi/2018.0.4
-  module load netcdf/4.6.1
-  #module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-  export NCEPLIBS=/scratch1/NCEPDEV/global/gwv/l819/lib
-  module use -a $NCEPLIBS/modulefiles
-  module load esmflocal/8_0_48b.netcdf47
-  #module load esmf/7.1.0r
-  module list
-  APRUN_SFC="srun"
+  APRUN="srun"
   ;;
 
 *)
-  print_err_msg_exit "${script_name}" "\
+  print_err_msg_exit "\
 Run command has not been specified for this machine:
   MACHINE = \"$MACHINE\"
-  APRUN_SFC = \"$APRUN_SFC\""
+  APRUN = \"$APRUN\""
   ;;
 
 esac
@@ -159,7 +164,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-$APRUN_SFC ${EXECDIR}/sfc_climo_gen || print_err_msg_exit "${script_name}" "\
+$APRUN ${EXECDIR}/sfc_climo_gen || print_err_msg_exit "\
 Call to executable that generates surface climatology files returned 
 with nonzero exit code."
 #
@@ -169,7 +174,7 @@ with nonzero exit code."
 #
 #-----------------------------------------------------------------------
 #
-case "$gtype" in
+case "$GTYPE" in
 
 #
 # Consider, global, stetched, and nested grids.
@@ -201,7 +206,7 @@ case "$gtype" in
   for fn in *.halo.nc; do
     if [ -f $fn ]; then
       bn="${fn%.halo.nc}"
-      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${nh4_T7}.nc
+      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH4}.nc
     fi
   done
 #
@@ -214,7 +219,7 @@ case "$gtype" in
   for fn in *.nc; do
     if [ -f $fn ]; then
       bn="${fn%.nc}"
-      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${nh0_T7}.nc
+      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH0}.nc
     fi
   done
   ;;
@@ -229,13 +234,11 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-$USHDIR/link_fix.sh \
-  verbose="FALSE" \
-  script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
+link_fix \
+  verbose="$VERBOSE" \
   file_group="sfc_climo" || \
-  print_err_msg_exit "\
-Call to script to create links to surface climatology files failed.
-"
+print_err_msg_exit "\
+Call to function to create links to surface climatology files failed."
 #
 #-----------------------------------------------------------------------
 #
@@ -255,10 +258,12 @@ touch "make_sfc_climo_files_task_complete.txt"
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\n\
+print_info_msg "
 ========================================================================
 All surface climatology files generated successfully!!!
-Exiting script:  \"${script_name}\"
+
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

@@ -14,10 +14,10 @@
 ;
 ; The input arguments to this function are as follows:
 ;
-; work_dir:
-; This is the work directory created by the FV3SAR workflow.  The grid
-; specification files corresponding to the cubed-sphere tiles are within
-; subdirectories under this directory.
+; expt_dir:
+; This is the experiment directory created by the FV3SAR workflow gene-
+; ration script.  The grid specification files corresponding to the 
+; cubed-sphere tiles are within subdirectories under this directory.
 ;
 ; gtype:
 ; This is a string containing the grid type of the FV3 cubed-sphere grid
@@ -70,7 +70,7 @@ loadscript(lib_location + "adjust_longitude_range.ncl")
 undef("read_FV3SAR_grid_native")
 
 function read_FV3SAR_grid_native( \
-         work_dir:string, \
+         expt_dir:string, \
          gtype:string, \
          cres:string, \
          tile_inds:integer, \
@@ -230,11 +230,10 @@ begin
     grid_fn = cres + "_grid.tile" + n_tile
     if (strcmp_exact(gtype, "regional") .and. (n_tile .eq. 7)) then
       grid_fn = grid_fn + ".halo" + tostring(nhalo_T7) + ".nc"
-      grid_fn = work_dir + "/fix_sar/" + grid_fn
     else
       grid_fn = grid_fn + ".nc"
-      grid_fn = work_dir + "/grid/" + grid_fn
     end if
+    grid_fn = expt_dir + "/fix_sar/" + grid_fn
 
     grid_fn_all_tiles(nn) = grid_fn
     print("  grid_fn_all_tiles(" + nn + ") = " + \
@@ -719,8 +718,8 @@ msg + char_nl + \
 ; both poles lie within the tile (i.e. crossing of the IDL by a tile
 ; boundary is a necessary but not sufficient condition for one or both
 ; poles to lie within the tile).  Below, if the IDL crossing check is
-; triggered, we do we do not go further to check whether or not one or
-; both poles lie within the tile (because that test is more complex).
+; triggered, we do not go further to check whether or not one or both 
+; poles lie within the tile (because that test is more complex).
 ;
 ; **********************************************************************
 ;
@@ -933,7 +932,7 @@ msg + char_nl + \
 ; the north and south poles and the one that straddles the IDL), the in-
 ; dices of the SW, SE, NE, and NW corners of the tile will not be set 
 ; (they will remain set to their initial missing values), so the check
-; below will be triggered.  Something more comples needs to be done for
+; below will be triggered.  Something more complex needs to be done for
 ; such tiles, but we do not worry about it here for now since we're only
 ; dealing with regional domains.
 ;

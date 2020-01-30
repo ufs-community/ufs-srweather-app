@@ -12,13 +12,12 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script and the function definitions
-# file.
+# Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $SCRIPT_VAR_DEFNS_FP
-. $USHDIR/source_funcs.sh
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -31,15 +30,27 @@
 #
 #-----------------------------------------------------------------------
 #
-# Set the script name and print out an informational message informing
-# the user that we've entered this script.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "${BASH_SOURCE[0]}" )
-print_info_msg "\n\
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
 ========================================================================
-Entering script:  \"${script_name}\"
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
 This is the J-job script for the task that runs the post-processor (UPP)
 on the output files corresponding to a specified forecast hour.
 ========================================================================"
@@ -87,8 +98,8 @@ $SCRIPTSDIR/exregional_run_post.sh \
   postprd_dir="${postprd_dir}" \
   fhr_dir="${fhr_dir}" \
   fhr="${fhr}" || \
-  print_err_msg_exit "${script_name}" "\
-Call to ex-script corresponding to J-job \"${script_name}\" failed."
+print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
@@ -96,9 +107,10 @@ Call to ex-script corresponding to J-job \"${script_name}\" failed."
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\n\
+print_info_msg "
 ========================================================================
-Exiting script:  \"${script_name}\"
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

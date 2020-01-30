@@ -3,22 +3,21 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script and the function definitions
-# file.
+# Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $SCRIPT_VAR_DEFNS_FP
-. $USHDIR/source_funcs.sh
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
-# Source file containing definitions of mathematical and physical con-
-# stants.
+# Source other necessary files.
 #
 #-----------------------------------------------------------------------
 #
-. ${USHDIR}/constants.sh
+. $USHDIR/constants.sh
+. $USHDIR/link_fix.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -31,15 +30,27 @@
 #
 #-----------------------------------------------------------------------
 #
-# Set the script name and print out an informational message informing
-# the user that we've entered this script.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "${BASH_SOURCE[0]}" )
-print_info_msg "\n\
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
 ========================================================================
-Entering script:  \"${script_name}\"
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
 This is the ex-script for the task that generates grid files.
 ========================================================================"
 #
@@ -54,30 +65,22 @@ This is the ex-script for the task that generates grid files.
 #
 valid_args=( "WORKDIR_LOCAL" )
 process_args valid_args "$@"
-
-# If VERBOSE is set to TRUE, print out what each valid argument has been
-# set to.
-if [ "$VERBOSE" = "TRUE" ]; then
-  num_valid_args="${#valid_args[@]}"
-  print_info_msg "\n\
-The arguments to script/function \"${script_name}\" have been set as 
-follows:
-"
-  for (( i=0; i<$num_valid_args; i++ )); do
-    line=$( declare -p "${valid_args[$i]}" )
-    printf "  $line\n"
-  done
-fi
-
-
 #
 #-----------------------------------------------------------------------
 #
-# Set the file names of the scripts to use for generating the grid
-# files, the orography files, and for filtering the orography files,
-# respectively.  Also, set the name of the executable file used to
-# "shave" (i.e. remove the halo from) certain grid and orography
-# files.  The shaving is needed only for the gtype="regional" case.
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
+#
+#-----------------------------------------------------------------------
+#
+print_input_args valid_args
+#
+#-----------------------------------------------------------------------
+#
+# Set the file name of the script to use for generating the grid files 
+# and the name of the executable file used to "shave" (i.e. remove the 
+# halo from) certain grid files.
 #
 #-----------------------------------------------------------------------
 #
@@ -128,48 +131,29 @@ case $MACHINE in
   ;;
 
 
-"THEIA")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  . /apps/lmod/lmod/init/sh
-  module purge
-  module load intel/16.1.150
-  module load impi
-  module load hdf5/1.8.14
-  module load netcdf/4.3.0
-  module list
-
-  { restore_shell_opts; } > /dev/null 2>&1
-
-  export APRUN="time"
-  export topo_dir="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog"
-
-  ulimit -s unlimited
-  ulimit -a
-  ;;
-
-
 "HERA")
 #
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  . /apps/lmod/lmod/init/sh
-  module purge
-  module load intel/18.0.5.274
-  module load netcdf/4.7.0
-  module load hdf5/1.10.5
-  module list
-
-  { restore_shell_opts; } > /dev/null 2>&1
-
+#  { save_shell_opts; set +x; } > /dev/null 2>&1
+#
+#  . /apps/lmod/lmod/init/sh
+#  module purge
+#  module load intel/18.0.5.274
+##  module load netcdf/4.6.1
+##  module load hdf5/1.10.4
+#  module load netcdf/4.7.0
+#  module load hdf5/1.10.5
+#  module list
+#
+#  { restore_shell_opts; } > /dev/null 2>&1
+#
+#  export APRUN="time"
   export APRUN="time"
-  export topo_dir="/scratch1/NCEPDEV/global/glopara/fix/fix_orog"
-
-  ulimit -s unlimited
-  ulimit -a
+  topo_dir="/scratch1/NCEPDEV/global/glopara/fix/fix_orog"
+#
+#  ulimit -s unlimited
+#  ulimit -a
   ;;
-
+#
 
 "JET")
 #
@@ -242,8 +226,8 @@ mkdir_vrfy -p "$tmpdir"
 # tains information only about tile 7 (i.e. it does not have any infor-
 # mation on how tiles 1 through 6 are connected or that tile 7 is within
 # tile 6).  All these files will be placed in the directory specified by
-# GRID_DIR.  Note that the file for tile 7 will include a halo of
-# width nhw_T7 cells.
+# GRID_DIR.  Note that the file for tile 7 will include a halo of width
+# NHW cells.
 #
 # Since tiles 1 through 6 are not needed to run the FV3SAR model and are
 # not used later on in any other preprocessing steps, it is not clear
@@ -252,7 +236,7 @@ mkdir_vrfy -p "$tmpdir"
 # lity/executable that grid_gen_scr calls, i.e. it might be because with
 # make_hgrid, one has to either create just the 6 global tiles or create
 # the 6 global tiles plus the regional (tile 7), and then for the case
-# of a regional simulation (i.e. gtype="regional", which is always the
+# of a regional simulation (i.e. GTYPE="regional", which is always the
 # case here) just not use the 6 global tiles.
 #
 # The grid_gen_scr script called below takes its next-to-last argument
@@ -263,12 +247,17 @@ mkdir_vrfy -p "$tmpdir"
 # size specified by the argument to the --halo flag does not extend be-
 # yond the boundaries of the parent grid (tile 6).  In this case, since
 # the values passed to the --istart_nest, ..., and --jend_nest flags al-
-# ready include a halo (because these arguments are $istart_rgnl_with_-
-# halo_T6SG, $iend_rgnl_wide_halo_T6SG, $jstart_rgnl_wide_halo_T6SG, and
-# $jend_rgnl_wide_halo_T6SG), it is reasonable to pass as the argument
-# to --halo a zero.  However, make_hgrid requires that the argument to
-# --halo be at least 1, so below, we pass a 1 as the next-to-last argu-
-# ment to grid_gen_scr.
+# ready include a halo (because these arguments are 
+#
+#   ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, 
+#   ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, 
+#   ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, and
+#   ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, 
+#
+# i.e. they include "WITH_WIDE_HALO_" in their names), it is reasonable
+# to pass as the argument to --halo a zero.  However, make_hgrid re-
+# quires that the argument to --halo be at least 1, so below, we pass a
+# 1 as the next-to-last argument to grid_gen_scr.
 #
 # More information on make_hgrid:
 # ------------------------------
@@ -280,14 +269,15 @@ mkdir_vrfy -p "$tmpdir"
 #   --grid_type gnomonic_ed \
 #   --nlon 2*${RES} \
 #   --grid_name C${RES}_grid \
-#   --do_schmidt --stretch_factor ${stretch_fac} \
-#   --target_lon ${lon_ctr_T6} --target_lat ${lat_ctr_T6} \
-#   --nest_grid --parent_tile 6 --refine_ratio ${refine_ratio} \
-#   --istart_nest ${istart_rgnl_wide_halo_T6SG} \
-#   --jstart_nest ${jstart_rgnl_wide_halo_T6SG} \
-#   --iend_nest ${iend_rgnl_wide_halo_T6SG} \
-#   --jend_nest ${jend_rgnl_wide_halo_T6SG} \
-#   --halo ${nh3_T7} \
+#   --do_schmidt --stretch_factor ${STRETCH_FAC} \
+#   --target_lon ${LON_CTR} 
+#   --target_lat ${LAT_CTR} \
+#   --nest_grid --parent_tile 6 --refine_ratio ${GFDLgrid_REFINE_RATIO} \
+#   --istart_nest ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+#   --jstart_nest ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+#   --iend_nest ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+#   --jend_nest ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+#   --halo ${NH3} \
 #   --great_circle_algorithm
 #
 # This creates the 7 grid files ${CRES}_grid.tileN.nc for N=1,...,7.
@@ -295,14 +285,14 @@ mkdir_vrfy -p "$tmpdir"
 # the extents of the arrays in that file do not seem to include a halo,
 # i.e. they are based only on the values passed via the four flags
 #
-#   --istart_nest ${istart_rgnl_wide_halo_T6SG}
-#   --jstart_nest ${jstart_rgnl_wide_halo_T6SG}
-#   --iend_nest ${iend_rgnl_wide_halo_T6SG}
-#   --jend_nest ${jend_rgnl_wide_halo_T6SG}
+#   --istart_nest ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
+#   --jstart_nest ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
+#   --iend_nest ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
+#   --jend_nest ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
 #
 # According to Rusty Benson of GFDL, the flag
 #
-#   --halo ${nh3_T7}
+#   --halo ${NH3}
 #
 # only checks to make sure that the nested or regional grid combined
 # with the specified halo lies completely within the parent tile.  If
@@ -320,101 +310,164 @@ mkdir_vrfy -p "$tmpdir"
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "Starting grid file generation..."
+print_info_msg "$VERBOSE" "
+Starting grid file generation..."
 
+tile_rgnl=7
+res=""
+#
+#-----------------------------------------------------------------------
+#
+# Consider a GFDLgrid-type of grid.
+#
+#-----------------------------------------------------------------------
+#
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
-  $USHDIR/$grid_gen_scr \
-    $RES \
+  $USHDIR/${grid_gen_scr} \
+    ${GFDLgrid_RES} \
     $tmpdir \
-    ${stretch_fac} ${lon_ctr_T6} ${lat_ctr_T6} ${refine_ratio} \
-    ${istart_rgnl_wide_halo_T6SG} ${jstart_rgnl_wide_halo_T6SG} \
-    ${iend_rgnl_wide_halo_T6SG} ${jend_rgnl_wide_halo_T6SG} \
+    ${STRETCH_FAC} ${LON_CTR} ${LAT_CTR} ${GFDLgrid_REFINE_RATIO} \
+    ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+    ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+    ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
+    ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
     1 $USHDIR || \
-    print_err_msg_exit "${script_name}" "\
-Call to script that generates grid files returned with nonzero exit code."
+  print_err_msg_exit "\
+Call to script that generates grid files returned with nonzero exit 
+code."
 
-  tile_rgnl=7
-  grid_fp="$tmpdir/${CRES}_grid.tile${tile_rgnl}.nc"
-  $EXECDIR/global_equiv_resol "${grid_fp}" || \
-    print_err_msg_exit "${script_name}" "\ 
-Call to executable that calculates equivalent global uniform cubed sphere
-resolution returned with nonzero exit code."
+  if [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "TRUE" ]; then
 
-  RES_equiv=$( ncdump -h "${grid_fp}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
-  RES_equiv=${RES_equiv//$'\n'/}
-printf "%s\n" "RES_equiv = $RES_equiv"
-  CRES_equiv="C${RES_equiv}"
-printf "%s\n" "CRES_equiv = $CRES_equiv"
+    res=${GFDLgrid_RES}
+    CRES="C$res"
 
+  else
+
+    grid_fp="$tmpdir/C${GFDLgrid_RES}_grid.tile${tile_rgnl}.nc"
+    $EXECDIR/global_equiv_resol "${grid_fp}" || \
+    print_err_msg_exit "\
+Call to executable that calculates equivalent global uniform cubed 
+sphere resolution returned with nonzero exit code."
+
+    res=$( ncdump -h "${grid_fp}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]" ) || \
+    print_err_msg_exit "\
+Attempt to extract the equivalent global uniform cubed-sphere grid reso-
+lution from the file specified by grid_fp faild:
+  grid_fp = \"${grid_fp}\""
+    res=${res//$'\n'/}
+    CRES="C$res"
+
+    grid_fp_orig="${grid_fp}"
+    grid_fp="$tmpdir/${CRES}_grid.tile${tile_rgnl}.nc"
+    mv_vrfy ${grid_fp_orig} ${grid_fp}
+
+    mosaic_fp_orig="$tmpdir/C${GFDLgrid_RES}_mosaic.nc"
+    mosaic_fp="$tmpdir/${CRES}_mosaic.nc"
+    mv_vrfy ${mosaic_fp_orig} ${mosaic_fp}
+
+  fi
+
+printf "%s\n" "res = $res"
+printf "%s\n" "CRES = $CRES"
+#
+#-----------------------------------------------------------------------
+#
+# Consider a JPgrid-type of grid.
+#
+#-----------------------------------------------------------------------
+#
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 #
-#-----------------------------------------------------------------------
+# Copy the template namelist file for the JPgrid-type grid generation
+# code to the temporary subdirectory.  Then replace the placeholders in
+# that file with actual values.
 #
-# Set the full path to the namelist file for the executable that gene-
-# rates a regional grid using Jim Purser's method.  Then set parameters
-# in that file.
-#
-#-----------------------------------------------------------------------
-#
-  RGNL_GRID_NML_FP="$tmpdir/${RGNL_GRID_NML_FN}"
-  cp_vrfy ${TEMPLATE_DIR}/${RGNL_GRID_NML_FN} ${RGNL_GRID_NML_FP}
+  rgnl_grid_nml_fp="$tmpdir/${RGNL_GRID_NML_FN}"
+  cp_vrfy ${TEMPLATE_DIR}/${RGNL_GRID_NML_FN} ${rgnl_grid_nml_fp}
 
-  print_info_msg_verbose "\
+  print_info_msg "$VERBOSE" "
 Setting parameters in file:
-  RGNL_GRID_NML_FP = \"$RGNL_GRID_NML_FP\""
-#
-# Set parameters.
-#
-  set_file_param "$RGNL_GRID_NML_FP" "plon" "$lon_rgnl_ctr"
-  set_file_param "$RGNL_GRID_NML_FP" "plat" "$lat_rgnl_ctr"
-  set_file_param "$RGNL_GRID_NML_FP" "delx" "$del_angle_x_SG"
-  set_file_param "$RGNL_GRID_NML_FP" "dely" "$del_angle_y_SG"
-  set_file_param "$RGNL_GRID_NML_FP" "lx" "$mns_nx_T7_pls_wide_halo"
-  set_file_param "$RGNL_GRID_NML_FP" "ly" "$mns_ny_T7_pls_wide_halo"
-  set_file_param "$RGNL_GRID_NML_FP" "a" "$a_grid_param"
-  set_file_param "$RGNL_GRID_NML_FP" "k" "$k_grid_param"
+  rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\""
+
+  set_file_param "${rgnl_grid_nml_fp}" "plon" "${LON_CTR}"
+  set_file_param "${rgnl_grid_nml_fp}" "plat" "${LAT_CTR}"
+  set_file_param "${rgnl_grid_nml_fp}" "delx" "${DEL_ANGLE_X_SG}"
+  set_file_param "${rgnl_grid_nml_fp}" "dely" "${DEL_ANGLE_Y_SG}"
+  set_file_param "${rgnl_grid_nml_fp}" "lx" "${NEG_NX_OF_DOM_WITH_WIDE_HALO}"
+  set_file_param "${rgnl_grid_nml_fp}" "ly" "${NEG_NY_OF_DOM_WITH_WIDE_HALO}"
+  set_file_param "${rgnl_grid_nml_fp}" "a" "${JPgrid_ALPHA_PARAM}"
+  set_file_param "${rgnl_grid_nml_fp}" "k" "${JPgrid_KAPPA_PARAM}"
 
   cd_vrfy $tmpdir
 
-  $EXECDIR/regional_grid ${RGNL_GRID_NML_FP} || \
-    print_err_msg_exit "${script_name}" "\ 
-Call to executable that generates grid file (Jim Purser version) returned 
-with nonzero exit code."
+  $EXECDIR/regional_grid ${rgnl_grid_nml_fp} || \
+  print_err_msg_exit "\
+Call to executable that generates grid file (Jim Purser version) re-
+turned with nonzero exit code."
 
-  tile_rgnl=7
   grid_fp="$tmpdir/regional_grid.nc"
   $EXECDIR/global_equiv_resol "${grid_fp}" || \
-    print_err_msg_exit "${script_name}" "\ 
-Call to executable that calculates equivalent global uniform cubed sphere
-resolution returned with nonzero exit code."
+  print_err_msg_exit "\
+Call to executable that calculates equivalent global uniform cubed 
+sphere resolution returned with nonzero exit code."
 
-  RES_equiv=$( ncdump -h "${grid_fp}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]" ) # Need error checking here.
-  RES_equiv=${RES_equiv//$'\n'/}
-printf "%s\n" "RES_equiv = $RES_equiv"
-  CRES_equiv="C${RES_equiv}"
-printf "%s\n" "CRES_equiv = $CRES_equiv"
+  res=$( ncdump -h "${grid_fp}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]" ) || \
+  print_err_msg_exit "\
+Attempt to extract the equivalent global uniform cubed-sphere grid reso-
+lution from the file specified by grid_fp faild:
+  grid_fp = \"${grid_fp}\""
+  res=${res//$'\n'/}
+  CRES="C$res"
 
   grid_fp_orig="${grid_fp}"
-  grid_fp="$tmpdir/${CRES_equiv}_grid.tile${tile_rgnl}.nc"
+  grid_fp="$tmpdir/${CRES}_grid.tile${tile_rgnl}.nc"
   mv_vrfy ${grid_fp_orig} ${grid_fp}
 
-  $EXECDIR/mosaic_file $CRES_equiv || \
-    print_err_msg_exit "${script_name}" "\ 
+printf "%s\n" "res = $res"
+printf "%s\n" "CRES = $CRES"
+#
+# Create a grid mosaic file that relates the tiles of the cubed-sphere
+# grid.  Note that there are no "tiles" in the case of a JPgrid-type 
+# grid, but this file must nevertheless exist because the forecast mo-
+# del code looks for it.
+#
+  $EXECDIR/mosaic_file $CRES || \
+  print_err_msg_exit "\
 Call to executable that creates a grid mosaic file returned with nonzero
 exit code."
-#
-# RES and CRES need to be set here in order for the rest of the script
-# (that was originally written for a grid with GRID_GEN_METHOD set to 
-# "GFDLgrid") to work for a grid with GRID_GEN_METHOD set to "JPgrid".
-#
-  RES="$RES_equiv"
-  CRES="$CRES_equiv"
-
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "RES" "$RES"
-  set_file_param "${SCRIPT_VAR_DEFNS_FP}" "CRES" "$CRES"
 
 fi
+#
+#-----------------------------------------------------------------------
+#
+# If there are pre-existing orography or climatology files we will be 
+# using (i.e. if RUN_TASK_MAKE_OROG or RUN_TASK_MAKE_SURF_CLIMO is set
+# to "FALSE", in which case RES_IN_FIXSAR_FILENAMES will not be set to a
+# null string), check that the grid resolution (res) calculated above 
+# matches the resolution appearing in the names of the preexisting oro-
+# graphy or surface climatology files.
+#
+#-----------------------------------------------------------------------
+#
+if [ ! -z "${RES_IN_FIXSAR_FILENAMES}" ]; then
+  if [ "$res" -ne "${RES_IN_FIXSAR_FILENAMES}" ]; then
+    print_err_msg_exit "\
+The resolution (res) calculated for the grid does not match the resolu-
+tion (RES_IN_FIXSAR_FILENAMES) appearing in the names of the orography 
+and/or surface climatology files:
+  res = $res
+  RES_IN_FIXSAR_FILENAMES = \"${RES_IN_FIXSAR_FILENAMES}\""
+  fi
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Set CRES in the variable definitions file.
+#
+#-----------------------------------------------------------------------
+#
+set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "\"$CRES\""
 #
 #-----------------------------------------------------------------------
 #
@@ -426,11 +479,12 @@ fi
 #
 cd_vrfy $tmpdir
 mv_vrfy ${CRES}_grid.tile${TILE_RGNL}.nc \
-        ${CRES}_grid.tile${TILE_RGNL}.halo${nhw_T7}.nc
+        ${CRES}_grid.tile${TILE_RGNL}.halo${NHW}.nc
 mv_vrfy ${CRES}_mosaic.nc ${GRID_DIR}
 cd_vrfy -
 
-print_info_msg_verbose "Grid file generation complete."
+print_info_msg "$VERBOSE" "
+Grid file generation complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -449,37 +503,36 @@ print_info_msg_verbose "Grid file generation complete."
 # wide halo.  This is the input grid file for generating both the grid
 # file with a 3-cell-wide halo and the one with a 4-cell-wide halo.
 #
-unshaved_fp="$tmpdir/${CRES}_grid.tile${TILE_RGNL}.halo${nhw_T7}.nc"
+unshaved_fp="$tmpdir/${CRES}_grid.tile${TILE_RGNL}.halo${NHW}.nc"
 #
 # We perform the work in tmpdir, so change location to that directory.  
 # Once it is complete, we move the resultant file from tmpdir to GRID_-
 # DIR.
 #
-cd_vrfy ${tmpdir}
+cd_vrfy $tmpdir
 #
 # Create an input namelist file for the shave executable to generate a
 # grid file with a 3-cell-wide halo from the one with a wide halo.  Then 
 # call the shave executable.  Finally, move the resultant file to the 
 # GRID_DIR directory.
 #
-print_info_msg_verbose "\
-\"Shaving\" grid file with wide halo to obtain grid file with ${nh3_T7}-cell-
-wide halo..."
+print_info_msg "$VERBOSE" "
+\"Shaving\" grid file with wide halo to obtain grid file with ${NH3}-cell-wide
+halo..."
 
-nml_fn="input.shave.grid.halo${nh3_T7}"
-shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${nh3_T7}.nc"
+nml_fn="input.shave.grid.halo${NH3}"
+shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${NH3}.nc"
 printf "%s %s %s %s %s\n" \
-  ${nx_T7} ${ny_T7} ${nh3_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  $NX $NY ${NH3} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
-  print_err_msg_exit "${script_name}" "\
-Call to executable \"${shave_exec}\" to generate a grid file with a ${nh3_T7}-
-cell-wide-halo returned with nonzero exit code.  The namelist file
-nml_fn is in directory tmpdir: 
+print_err_msg_exit "\
+Call to executable \"${shave_exec}\" to generate a grid file with a ${NH3}-cell-wide
+halo returned with nonzero exit code.  The namelist file nml_fn is in 
+directory tmpdir: 
   tmpdir = \"${tmpdir}\"
-  nml_fn = \"${nml_fn}\"
-"
+  nml_fn = \"${nml_fn}\""
 mv_vrfy ${shaved_fp} ${GRID_DIR}
 #
 # Create an input namelist file for the shave executable to generate an
@@ -487,24 +540,23 @@ mv_vrfy ${shaved_fp} ${GRID_DIR}
 # call the shave executable.  Finally, move the resultant file to the 
 # GRID_DIR directory.
 #
-print_info_msg_verbose "\
-\"Shaving\" grid file with wide halo to obtain grid file with ${nh4_T7}-cell-
-wide halo..."
+print_info_msg "$VERBOSE" "
+\"Shaving\" grid file with wide halo to obtain grid file with ${NH4}-cell-wide
+halo..."
 
-nml_fn="input.shave.grid.halo${nh4_T7}"
-shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+nml_fn="input.shave.grid.halo${NH4}"
+shaved_fp="${tmpdir}/${CRES}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
 printf "%s %s %s %s %s\n" \
-  ${nx_T7} ${ny_T7} ${nh4_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
-  print_err_msg_exit "${script_name}" "\
-Call to executable \"${shave_exec}\" to generate a grid file with a ${nh4_T7}-
-cell-wide-halo returned with nonzero exit code.  The namelist file
-nml_fn is in directory tmpdir: 
+print_err_msg_exit "\
+Call to executable \"${shave_exec}\" to generate a grid file with a ${NH4}-cell-wide
+halo returned with nonzero exit code.  The namelist file nml_fn is in 
+directory tmpdir: 
   tmpdir = \"${tmpdir}\"
-  nml_fn = \"${nml_fn}\"
-"
+  nml_fn = \"${nml_fn}\""
 mv_vrfy ${shaved_fp} ${GRID_DIR}
 #
 # Change location back to the directory before tmpdir.
@@ -519,13 +571,11 @@ cd_vrfy -
 #
 #-----------------------------------------------------------------------
 #
-$USHDIR/link_fix.sh \
-  verbose="FALSE" \
-  script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
+link_fix \
+  verbose="$VERBOSE" \
   file_group="grid" || \
-  print_err_msg_exit "\
-Call to script to create links to grid files failed.
-"
+print_err_msg_exit "\
+Call to function to create links to grid files failed."
 #
 #-----------------------------------------------------------------------
 #
@@ -533,10 +583,12 @@ Call to script to create links to grid files failed.
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\n\
+print_info_msg "
 ========================================================================
 Grid files with various halo widths generated successfully!!!
-Exiting script:  \"${script_name}\"
+
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

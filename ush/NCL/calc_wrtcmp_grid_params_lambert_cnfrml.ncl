@@ -10,8 +10,8 @@ loadscript(lib_location + "constants.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "strpad.ncl")
 loadscript(lib_location + "repeat_str.ncl")
-loadscript(lib_location + "calc_lambert_cnfrml_coords_from_sphr.ncl")
-loadscript(lib_location + "calc_sphr_coords_from_lambert_cnfrml.ncl")
+loadscript(lib_location + "convert_sphr_coords_to_lambert_cnfrml.ncl")
+loadscript(lib_location + "convert_lambert_cnfrml_coords_to_sphr.ncl")
 
 undef("calc_wrtcmp_grid_params_lambert_cnfrml")
 
@@ -72,7 +72,7 @@ begin
 ; **********************************************************************
 ;
   lambert_coords \
-  := calc_lambert_cnfrml_coords_from_sphr( \
+  := convert_sphr_coords_to_lambert_cnfrml( \
      lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
      lon_tile_corners_face_midpts_native, \
      lat_tile_corners_face_midpts_native)
@@ -190,7 +190,7 @@ begin
   y_N = y_N - 0.5*dy
 
   sphr_coords \
-  := calc_sphr_coords_from_lambert_cnfrml( \
+  := convert_lambert_cnfrml_coords_to_sphr( \
      lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
      x_W, y_S)
   lon_SW = sphr_coords@lon
@@ -274,11 +274,9 @@ begin
       param_value := lat2
       fmt_str = "%16.8f"
     else if (strcmp_exact(param_name, "nx")) then
-;      param_value := nxm
       param_value := nx
       fmt_str = "%10.0f"
     else if (strcmp_exact(param_name, "ny")) then
-;      param_value := nym
       param_value := ny
       fmt_str = "%10.0f"
     else if (strcmp_exact(param_name, "lon1")) then
@@ -296,7 +294,7 @@ begin
     else
 
       msg := char_nl + \
-"Unknow parameter name specified for given output_coord_sys:" + char_nl + \
+"Unknown parameter name specified for given output_coord_sys:" + char_nl + \
 "  output_coord_sys = " + char_dq + output_coord_sys + char_dq + char_nl + \
 "  param_name = " + char_dq + param_name + char_dq + char_nl + \
 "Stopping."
@@ -352,6 +350,17 @@ begin
 ;
   lines_final := strpad(param_names_and_vals, " ", "right")
   lines_final := lines_final + "  " + trailing_comments
+;
+; **********************************************************************
+;
+; Print out the write-component parameter values calculated above.
+;
+; **********************************************************************
+;
+  msg := char_nl + \
+"Write-component parameters corresponding to this native grid are:" + char_nl
+  print("" + msg)
+  print("" + lines_final)
 ;
 ; **********************************************************************
 ;

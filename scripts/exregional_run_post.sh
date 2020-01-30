@@ -3,13 +3,12 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script and the function definitions
-# file.
+# Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $SCRIPT_VAR_DEFNS_FP
-. $USHDIR/source_funcs.sh
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -22,15 +21,27 @@
 #
 #-----------------------------------------------------------------------
 #
-# Set the script name and print out an informational message informing
-# the user that we've entered this script.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "${BASH_SOURCE[0]}" )
-print_info_msg "\n\
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
 ========================================================================
-Entering script:  \"${script_name}\"
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
 This is the ex-script for the task that runs the post-processor (UPP) on
 the output files corresponding to a specified forecast hour.
 ========================================================================"
@@ -46,20 +57,16 @@ the output files corresponding to a specified forecast hour.
 #
 valid_args=( "cycle_dir" "postprd_dir" "fhr_dir" "fhr" )
 process_args valid_args "$@"
-
-# If VERBOSE is set to TRUE, print out what each valid argument has been
-# set to.
-if [ "$VERBOSE" = "TRUE" ]; then
-  num_valid_args="${#valid_args[@]}"
-  print_info_msg "\n\
-The arguments to script/function \"${script_name}\" have been set as 
-follows:
-"
-  for (( i=0; i<$num_valid_args; i++ )); do
-    line=$( declare -p "${valid_args[$i]}" )
-    printf "  $line\n"
-  done
-fi
+#
+#-----------------------------------------------------------------------
+#
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
+#
+#-----------------------------------------------------------------------
+#
+print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -67,7 +74,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "Starting post-processing for fhr = $fhr hr..."
+print_info_msg "$VERBOSE" "
+Starting post-processing for fhr = $fhr hr..."
 
 case $MACHINE in
 
@@ -113,39 +121,7 @@ case $MACHINE in
 
 
 "HERA")
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-  module purge
-  
-  module load intel/19.0.4.243
-  module load impi/2019.0.4
-
-#  module use /contrib/modulefiles
-  module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-
-# Loading nceplibs modules
-  module load sigio/2.1.1
-  module load jasper/1.900.1
-  module load png/1.2.44
-  module load z/1.2.11
-  module load sfcio/1.1.1
-  module load nemsio/2.2.4
-  module load bacio/2.0.3
-  module load g2/3.1.1
-#  module load xmlparse/v2.0.0
-  module load gfsio/1.1.0
-  module load ip/3.0.2
-  module load sp/2.0.3
-  module load w3emc/2.3.1
-  module load w3nco/2.0.7
-  module load crtm/2.2.5
-#  module load netcdf/3.6.3
-  module load netcdf/4.7.0
-  module load g2tmpl/1.5.1
-  module load wrfio/1.1.1
-
-  export NDATE=/scratch3/NCEPDEV/nwprod/lib/prod_util/v1.1.0/exec/ndate
-
-  { restore_shell_opts; } > /dev/null 2>&1
+#  export NDATE=/scratch3/NCEPDEV/nwprod/lib/prod_util/v1.1.0/exec/ndate
   APRUN="srun"
   ;;
 
@@ -276,15 +252,17 @@ else
   grid_name="${GRID_GEN_METHOD}"
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-    stretch_str="S$( printf "%s" "${stretch_fac}" | sed "s|\.|p|" )"
-    refine_str="RR${refine_ratio}"
+    stretch_str="S$( printf "%s" "${STRETCH_FAC}" | sed "s|\.|p|" )"
+    refine_str="RR${GFDLgrid_REFINE_RATIO}"
     grid_name="${grid_name}_${CRES}_${stretch_str}_${refine_str}"
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-    nx_T7_str="NX$( printf "%s" "${nx_T7}" | sed "s|\.|p|" )"
-    ny_T7_str="NY$( printf "%s" "${ny_T7}" | sed "s|\.|p|" )"
-    a_grid_param_str="A$( printf "%s" "${a_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
-    k_grid_param_str="K$( printf "%s" "${k_grid_param}" | sed "s|-|mns|" | sed "s|\.|p|" )"
-    grid_name="${grid_name}_${nx_T7_str}_${ny_T7_str}_${a_grid_param_str}_${k_grid_param_str}"
+    nx_str="NX$( printf "%s" "$NX" | sed "s|\.|p|" )"
+    ny_str="NY$( printf "%s" "$NY" | sed "s|\.|p|" )"
+    JPgrid_alpha_param_str="A"$( printf "%s" "${JPgrid_ALPHA_PARAM}" | \
+                                 sed "s|-|mns|" | sed "s|\.|p|" )
+    JPgrid_kappa_param_str="K"$( printf "%s" "${JPgrid_KAPPA_PARAM}" | \
+                                 sed "s|-|mns|" | sed "s|\.|p|" )
+    grid_name="${grid_name}_${nx_str}_${ny_str}_${JPgrid_alpha_param_str}_${JPgrid_kappa_param_str}"
   fi
 
 fi
@@ -309,10 +287,12 @@ rm_vrfy -rf ${fhr_dir}
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\n\
+print_info_msg "
 ========================================================================
 Post-processing for forecast hour $fhr completed successfully.
-Exiting script:  \"${script_name}\"
+
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

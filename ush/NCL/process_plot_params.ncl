@@ -110,29 +110,30 @@ usage_msg + char_nl + \
 ;
 ; **********************************************************************
 ;
-; Verify that the run directory (run_dir) has been specified on the com-
-; mand line.  If so, verify that it exists.
+; Verify that the experiment directory (expt_dir) has been specified on
+; the command line.  If so, verify that it exists.
 ;
 ; **********************************************************************
 ;
-  if (.not. isvar("run_dir")) then
+  if (.not. isvar("expt_dir")) then
 
     msg := char_nl + \
-"The run directory (run_dir) has not been specified on the command line:" + char_nl + \
-"  isvar(" + char_dq + "run_dir" + char_dq + ") = " + isvar("run_dir") + char_nl + \
-"Please rerun with the run directory specified.  " + \
+"The experiment directory (expt_dir) has not been specified on the com-" + char_nl + \
+"mand line:" + char_nl + \
+"  isvar(" + char_dq + "expt_dir" + char_dq + ") = " + isvar("expt_dir") + char_nl + \
+"Please rerun with the experiment directory specified.  " + \
 example_usage_and_help_str
 
     print("" + msg)
     exit
 
-  else if (.not. fileexists(run_dir)) then
+  else if (.not. fileexists(expt_dir)) then
 
     msg := char_nl + \
-"The specified run directory (run_dir) does not exist:" + char_nl + \
-"  run_dir = " + char_dq + run_dir + char_dq + char_nl + \
-"  fileexists(run_dir) = " + fileexists(run_dir) + char_nl + \
-"Please rerun with an existing run directory.  " + \
+"The specified experiment directory (expt_dir) does not exist:" + char_nl + \
+"  expt_dir = " + char_dq + expt_dir + char_dq + char_nl + \
+"  fileexists(expt_dir) = " + fileexists(expt_dir) + char_nl + \
+"Please rerun with an existing experiment directory.  " + \
 example_usage_and_help_str
 
     print("" + msg)
@@ -140,37 +141,16 @@ example_usage_and_help_str
 
   end if
   end if
-;
-; **********************************************************************
-;
-; Set the work directory, i.e. the temporary directory in which the pre-
-; processing tasks of the workflow place their output files.
-;
-; **********************************************************************
-;
-; Don't need this line since we got rid of work_dirs and put all prepro-
-; cessing output in subdirectories in the experiment directory.
-;  work_dir = str_sub_str(run_dir, "expt_dirs", "work_dirs")
-  work_dir = run_dir
-
-
-
 ;
 ; **********************************************************************
 ;
 ; Set the full path to the variable definitions file.  This file con-
-; tains various run parameters that will be needed below.
+; tains various experiment and workflow parameters that will be needed
+; below.
 ;
 ; **********************************************************************
 ;
-  var_defns_fn = run_dir + "/var_defns.sh"
-
-; Need to change this to go up one level since we changed the directory 
-; structure for cycling.
-;  var_defns_fn = run_dir + "/../var_defns.sh"
-
-
-
+  var_defns_fn = expt_dir + "/var_defns.sh"
 ;
 ; **********************************************************************
 ;
@@ -178,10 +158,14 @@ example_usage_and_help_str
 ;
 ; **********************************************************************
 ;
-  cmd = "sed --silent --regexp-extended --expression " + \
-        "'s/(^gtype=)([" + char_dq + "]*)([A-Za-z]+)([" + char_dq + "]*)(.*)/\3/p' " + \
-        var_defns_fn
+  cmd = "sed --silent --regexp-extended --expression " \
+      + "'s/(^gtype=)([" + char_dq + "]*)([A-Za-z]+)([" + char_dq + "]*)(.*)/\3/p' " \
+      + var_defns_fn
   gtype := systemfunc(cmd)
+
+; This is a temporary fix.  Need this since we removed "gtype" from the
+; variable defintions file of the community workflow.
+gtype = "regional"
 ;
 ; **********************************************************************
 ;
@@ -251,15 +235,16 @@ example_usage_and_help_str
 ;
 ; **********************************************************************
 ;
-  cmd = "sed --silent --regexp-extended --expression " + \
-        "'s/^[ ]*(RES=)([" + char_dq + "]*)([0-9]+)([" + char_dq + "]*)(.*)/\3/p' " + \
-        var_defns_fn
+  cmd = "sed --silent --regexp-extended --expression " \
+      + "'s/^[ ]*(RES=)([" + char_dq + "]*)([0-9]+)([" + char_dq + "]*)(.*)/\3/p' " \
+      + var_defns_fn
   res := systemfunc(cmd)
-res := res(0)
-print("==>> res = " + res)
-;  res := tointeger(systemfunc(cmd))
-;print("==>> res = " + res)
-pause
+; 
+; Get the last occurrence of "RES=..." in the variable defintions file
+; since that's the one that matters.
+;
+  num_elems = dimsizes(res)
+  res := res(num_elems-1)
 ;
 ; **********************************************************************
 ;
@@ -301,11 +286,6 @@ end if
 ;
 ;  cres := "C" + tostring_with_format(res, "%i")
   cres := "C" + res
-print("==>> cres = " + char_dq + cres + char_dq)
-pause
-
-
-
 
 
 
@@ -1037,8 +1017,7 @@ char_dq + ".halo4" + char_dq + ")] should not be specified on the command line (
   plot_params@num_tiles_to_plot = num_tiles_to_plot
   plot_params@inds_tiles_to_plot = inds_tiles_to_plot
   plot_params@cres = cres
-  plot_params@run_dir = run_dir
-  plot_params@work_dir = work_dir
+  plot_params@expt_dir = expt_dir
 
   plot_params@horiz_dist_units = horiz_dist_units
   plot_params@horiz_area_units = horiz_area_units

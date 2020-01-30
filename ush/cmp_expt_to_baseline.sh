@@ -16,8 +16,38 @@
 #                Script has only been tested on theia
 #-----------------------------------------------------------------------
 
+# Do these need to be machine specific, e.g. by using modulefiles?
 module load intel
 module load nccmp
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Source bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. ${scrfunc_dir}/source_util_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -25,14 +55,13 @@ module load nccmp
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "${BASH_SOURCE[0]}" )
-if [ $# -ne 1 ] && [ $# -ne 2 ]; then
+if [ $# -eq 0 ] || [ $# -gt 2 ]; then
 
   printf "
-ERROR from script ${script_name}:
+ERROR from script ${scrfunc_fn}:
 Only 1 or 2 arguments may be specified.  Usage:
 
-  > ${script_name}  expt_dir  [baseline_dir]
+  > ${scrfunc_fn}  expt_dir  [baseline_dir]
 
 where expt_dir is the experiment directory and baseline_dir is an op-
 tional baseline directory.
@@ -50,12 +79,10 @@ fi
 #
 expt_dir="$1"
 if [ ! -d "${expt_dir}" ]; then
-  printf "\n
+  print_err_msg_exit "\
 The specified experiment directory (expt_dir) does not exist:
   expt_dir = \"$expt_dir\"
-Exiting script with nonzero return code.
-"
-  exit 1
+Exiting script with nonzero return code."
 fi
 #
 #-----------------------------------------------------------------------
@@ -119,11 +146,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-printf "
+print_info_msg "
 The experiment and baseline directories are:
   expt_dir = \"$expt_dir\"
-  baseline_dir = \"$baseline_dir\"
-"
+  baseline_dir = \"$baseline_dir\""
 #
 #-----------------------------------------------------------------------
 #
@@ -237,7 +263,8 @@ Exiting script with nonzero exit code.
 #-----------------------------------------------------------------------
 #
     cd ${expt_dir}/$subdir
-    num_files=$( ls -1 *.${file_ext} 2>/dev/null | wc -l )
+#    num_files=$( ls -1 *.${file_ext} 2>/dev/null | wc -l )
+    num_files=$( count_files *.${file_ext} 2>/dev/null | wc -l )
     printf "
     Number of files with extension \"${file_ext}\" in subdirectory \"$subdir\" 
     of the experiment directory is:  ${num_files}
@@ -370,5 +397,15 @@ else
 fi
 
 printf "Final result of regression test:  ${result_str}\n"
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+
 exit ${exit_code}
 

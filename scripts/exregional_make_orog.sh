@@ -3,22 +3,20 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script and the function definitions
-# file.
+# Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $SCRIPT_VAR_DEFNS_FP
-. $USHDIR/source_funcs.sh
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
-# Source file containing definitions of mathematical and physical con-
-# stants.
+# Source other necessary files.
 #
 #-----------------------------------------------------------------------
 #
-. ${USHDIR}/constants.sh
+. $USHDIR/link_fix.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -27,20 +25,32 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
-# Set the script name and print out an informational message informing
-# the user that we've entered this script.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-script_name=$( basename "${BASH_SOURCE[0]}" )
-print_info_msg "\n\
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
 ========================================================================
-Entering script:  \"${script_name}\"
-This is the ex-script for the task that generates grid files.
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the ex-script for the task that generates orography files.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -54,22 +64,16 @@ This is the ex-script for the task that generates grid files.
 #
 valid_args=( "WORKDIR_LOCAL" )
 process_args valid_args "$@"
-
-# If VERBOSE is set to TRUE, print out what each valid argument has been
-# set to.
-if [ "$VERBOSE" = "TRUE" ]; then
-  num_valid_args="${#valid_args[@]}"
-  print_info_msg "\n\
-The arguments to script/function \"${script_name}\" have been set as 
-follows:
-"
-  for (( i=0; i<$num_valid_args; i++ )); do
-    line=$( declare -p "${valid_args[$i]}" )
-    printf "  $line\n"
-  done
-fi
-
-
+#
+#-----------------------------------------------------------------------
+#
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
+#
+#-----------------------------------------------------------------------
+#
+print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -95,11 +99,10 @@ ufs_utils_ushdir="${UFS_UTILS_DIR}/ush"
 #
 #-----------------------------------------------------------------------
 #
-# Set the file names of the scripts to use for generating the grid
-# files, the orography files, and for filtering the orography files,
-# respectively.  Also, set the name of the executable file used to
-# "shave" (i.e. remove the halo from) certain grid and orography
-# files.  The shaving is needed only for the gtype="regional" case.
+# Set the file names of the scripts to use for generating the raw oro-
+# graphy files and for filtering the latter to obtain filtered orography
+# files.  Also, set the name of the executable file used to "shave" 
+# (i.e. remove the halo from) certain orography files.
 #
 #-----------------------------------------------------------------------
 #
@@ -174,23 +177,10 @@ case $MACHINE in
 
 
 "HERA")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  . /apps/lmod/lmod/init/sh
-  module purge
-  module load intel/18.0.5.274
-  module load netcdf/4.7.0
-  module load hdf5/1.10.4
-  module list
-
-  { restore_shell_opts; } > /dev/null 2>&1
-
-  export APRUN="time"
-  export topo_dir="/scratch1/NCEPDEV/global/glopara/fix/fix_orog"
-
   ulimit -s unlimited
   ulimit -a
+  export APRUN="time"
+  export topo_dir="/scratch1/NCEPDEV/global/glopara/fix/fix_orog"
   ;;
 
 
@@ -241,6 +231,15 @@ export exec_dir="$EXECDIR"
 #
 #-----------------------------------------------------------------------
 #
+# Extract the resolution from CRES and save it in the local variable 
+# res.
+#
+#-----------------------------------------------------------------------
+#
+res="${CRES:1}"
+#
+#-----------------------------------------------------------------------
+#
 # Generate an orography file corresponding to tile 7 (the regional do-
 # main) only.
 #
@@ -249,14 +248,15 @@ export exec_dir="$EXECDIR"
 #   oro.${CRES}.tile7.nc
 #
 # and will place it in OROG_DIR.  Note that this file will include
-# orography for a halo of width nhw_T7 cells around tile 7.  The follow-
+# orography for a halo of width NHW cells around tile 7.  The follow-
 # ing will also create a work directory called tile7 under OROG_DIR.
 # This work directory can be removed after the orography file has been
 # created (it is currently not deleted).
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "Starting orography file generation..."
+print_info_msg "$VERBOSE" "
+Starting orography file generation..."
 
 tmp_dir="${raw_dir}/tmp"
 
@@ -272,7 +272,7 @@ case $MACHINE in
 #
   printf "%s\n" "\
 ${ufs_utils_ushdir}/${orog_gen_scr} \
-$RES \
+$res \
 ${TILE_RGNL} \
 ${FIXsar} \
 ${raw_dir} \
@@ -288,8 +288,8 @@ ${tmp_dir}" \
 
 "THEIA" | "HERA" | "JET" | "ODIN")
   ${ufs_utils_ushdir}/${orog_gen_scr} \
-    $RES ${TILE_RGNL} ${FIXsar} ${raw_dir} ${UFS_UTILS_DIR} ${topo_dir} ${tmp_dir} || \
-    print_err_msg_exit "${script_name}" "\
+    $res ${TILE_RGNL} ${FIXsar} ${raw_dir} ${UFS_UTILS_DIR} ${topo_dir} ${tmp_dir} || \
+  print_err_msg_exit "\
 Call to script that generates raw orography file returned with nonzero
 exit code."
   ;;
@@ -311,12 +311,13 @@ esac
 #
 cd_vrfy ${raw_dir}
 mv_vrfy oro.${CRES}.tile${TILE_RGNL}.nc \
-        oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc
-ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc \
+        oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc
+ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc \
             oro.${CRES}.tile${TILE_RGNL}.nc
 cd_vrfy -
 
-print_info_msg_verbose "Orography file generation complete."
+print_info_msg "$VERBOSE" "
+Orography file generation complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -324,33 +325,35 @@ print_info_msg_verbose "Orography file generation complete."
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "Setting orography filtering parameters..."
+print_info_msg "$VERBOSE" "
+Setting orography filtering parameters..."
 
 # Need to fix the following (also above).  Then redo to get cell_size_avg.
 #cd_vrfy ${GRID_DIR}
 #$SORCDIR/regional_grid/regional_grid $RGNL_GRID_NML_FP $CRES || \
-#  print_err_msg_exit "${script_name}" "\ 
-#Call to script that generates grid file (Jim Purser version) returned with nonzero exit code."
-#${CRES}_grid.tile${TILE_RGNL}.halo${nhw_T7}.nc
+#print_err_msg_exit "\ 
+#Call to script that generates grid file (Jim Purser version) returned 
+#with nonzero exit code."
+#${CRES}_grid.tile${TILE_RGNL}.halo${NHW}.nc
 
 
 #if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-#  RES_eff=$( bc -l <<< "$RES*$refine_ratio" )
+#  res_eff=$( bc -l <<< "$res*${GFDLgrid_REFINE_RATIO}" )
 #elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-#  grid_size_eff=$( "($delx + $dely)/2" )
+#  grid_size_eff=$( "(${JPgrid_DELX} + ${JPgrid_DELY})/2" )
 #echo "grid_size_eff = $grid_size_eff"
-#  RES_eff=$( bc -l <<< "2*$pi_geom*$radius_Earth/(4*$grid_size_eff)" )
+#  res_eff=$( bc -l <<< "2*$pi_geom*$radius_Earth/(4*$grid_size_eff)" )
 #fi
-#RES_eff=$( printf "%.0f\n" $RES_eff )
+#res_eff=$( printf "%.0f\n" ${res_eff} )
 #echo
-#echo "RES_eff = $RES_eff"
+#echo "res_eff = $res_eff"
 
 # This will work for a JPgrid type of grid because for that case, RES 
 # in the variable definitions file gets set to RES_equiv (by the make_-
 # grid task), but this won't work for a GFDLgrid type of grid because if
 # the stretch factor is not 1 in that case, RES_equiv will not be the 
 # same as RES (because RES does not account for the stretch factor).
-RES_equiv=$RES
+RES_equiv=$res
 
 # Can also call it the "equivalent" global unstretched resolution.
 
@@ -362,50 +365,50 @@ peak_fac_array=(    "1.1"   "1.1"   "1.05"  "1.0"   "1.0"   "1.0"   "1.0")
 
 # Need to fix this so that the stderr from a failed call to interpol_to_arbit_CRES
 # gets sent to the stderr of this script.
-cd4=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "cd4_array" ) || \
-  print_err_msg_exit "${script_name}" "\
-Call to script that interpolated cd4 to the regional grid's equiavlent 
+var_names=( "cd4" "max_slope" "n_del2_weak" "peak_fac" )
+num_vars=${#var_names[@]}
+for (( i=0; i<${num_vars}; i++ )); do
+  var_name=${var_names[$i]}
+  eval ${var_name}=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "${var_name}_array" ) || \
+       print_err_msg_exit "\
+Call to script that interpolated ${var_name} to the regional grid's equiavlent 
 global cubed-sphere resolution (RES_equiv) failed:
-  RES_equiv = \"${RES_equiv}\"
-"
-echo "====>>>> cd4 = $cd4"
-#
-max_slope=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "max_slope_array" )
-echo "====>>>> max_slope = $max_slope"
-#
-n_del2_weak=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "n_del2_weak_array" )
-# n_del2_weak is defined to be of integer type in the filter_topo code 
-# that uses it, so round it to the nearest integer.  Otherwise, the code
-# might break on some machines/compilers.
-n_del2_weak=$( printf "%.0f" ${n_del2_weak} )   # cast to integer, Y. Wang
-echo "====>>>> n_del2_weak = $n_del2_weak"
-#
-peak_fac=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "peak_fac_array" )
-echo "====>>>> peak_fac = $peak_fac"
-#
+  RES_equiv = \"${RES_equiv}\""
+  var_value=${!var_name}
+  echo "====>>>> ${var_name} = ${var_value}"
+done
 
 
 if [ 0 = 1 ]; then
 
-if [ $RES -eq 48 ]; then
-  export cd4=0.12; export max_slope=0.12; export n_del2_weak=4;  export peak_fac=1.1
-elif [ $RES -eq 96 ]; then
-  export cd4=0.12; export max_slope=0.12; export n_del2_weak=8;  export peak_fac=1.1
-elif [ $RES -eq 192 ]; then
-  export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.05
-elif [ $RES -eq 384 ]; then
-  export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.0
-elif [ $RES -eq 768 ]; then
-  export cd4=0.15; export max_slope=0.12; export n_del2_weak=16; export peak_fac=1.0
-elif [ $RES -eq 1152 ]; then
-  export cd4=0.15; export max_slope=0.16; export n_del2_weak=20; export peak_fac=1.0
-elif [ $RES -eq 3072 ]; then
-  export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
-else
+case "$res" in
+  48)
+    export cd4=0.12; export max_slope=0.12; export n_del2_weak=4;  export peak_fac=1.1
+    ;;
+  96)
+    export cd4=0.12; export max_slope=0.12; export n_del2_weak=8;  export peak_fac=1.1
+    ;;
+  192)
+    export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.05
+    ;;
+  384)
+    export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.0
+    ;;
+  768)
+    export cd4=0.15; export max_slope=0.12; export n_del2_weak=16; export peak_fac=1.0
+    ;;
+  1152)
+    export cd4=0.15; export max_slope=0.16; export n_del2_weak=20; export peak_fac=1.0
+    ;;
+  3072)
+    export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
+    ;;
+  *)
 # This needs to be fixed - i.e. what to do about regional grids that are
 # not based on a parent global cubed-sphere grid.
-  export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
-fi
+    export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
+    ;;
+esac
 
 fi
 
@@ -413,7 +416,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Generate a filtered orography file with a wide halo (i.e. with a halo
-# width of nhw_T7 cells) for tile 7 from the corresponding raw orography
+# width of NHW cells) for tile 7 from the corresponding raw orography
 # file.
 #
 # The following will create a filtered orography file named
@@ -432,7 +435,7 @@ fi
 # mosaic file, the executable replaces the raw orography file
 # with its filtered counterpart (i.e. it gives the filtered file the
 # same name as the original raw file).  Since in this (i.e.
-# gtype="regional") case the mosaic file lists only tile 7, a filtered
+# GTYPE="regional") case the mosaic file lists only tile 7, a filtered
 # orography file is generated only for tile 7.  Thus, the grid files for
 # the first 6 tiles that were created above in GRID_DIR are not used
 # and thus do not need to be copied from GRID_DIR to filter_dir
@@ -441,22 +444,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "Starting filtering of orography..."
-echo "gtype = \"$gtype\""
+print_info_msg "$VERBOSE" "
+Starting filtering of orography..."
 
 # The script below creates absolute symlinks in $filter_dir.  That's 
 # probably necessary for NCO but probably better to create relative 
 # links for the community workflow.
 
-# Have to export gtype because it is not one of the arguments to the 
-# called script.
-export gtype
+# Have to create and export a new variable named gtype because the 
+# script called below expects it to be in the environment.
+export gtype="$GTYPE"
 ${ufs_utils_ushdir}/${orog_fltr_scr} \
-  $RES \
+  $res \
   ${FIXsar} ${raw_dir} ${filter_dir} \
   $cd4 ${peak_fac} ${max_slope} ${n_del2_weak} \
   ${ufs_utils_ushdir} || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to script that generates filtered orography file returned with non-
 zero exit code."
 #
@@ -470,12 +473,13 @@ zero exit code."
 #
 cd_vrfy ${filter_dir}
 mv_vrfy oro.${CRES}.tile${TILE_RGNL}.nc \
-        oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc
-#ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc \
+        oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc
+#ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc \
 #            oro.${CRES}.tile${TILE_RGNL}.nc
 cd_vrfy -
 
-print_info_msg_verbose "Filtering of orography complete."
+print_info_msg "$VERBOSE" "
+Filtering of orography complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -495,7 +499,7 @@ print_info_msg_verbose "Filtering of orography complete."
 # orography file without a halo and the one with a 4-cell-wide halo.
 #
 #unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.nc"
-unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.halo${nhw_T7}.nc"
+unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc"
 #
 # We perform the work in shave_dir, so change location to that directo-
 # ry.  Once it is complete, we move the resultant file from shave_dir to
@@ -508,24 +512,23 @@ cd_vrfy ${shave_dir}
 # call the shave executable.  Finally, move the resultant file to the 
 # OROG_DIR directory.
 #
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "
 \"Shaving\" orography file with wide halo to obtain orography file with 
-${nh0_T7}-cell-wide halo..."
+${NH0}-cell-wide halo..."
 
-nml_fn="input.shave.orog.halo${nh0_T7}"
-shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh0_T7}.nc"
+nml_fn="input.shave.orog.halo${NH0}"
+shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 printf "%s %s %s %s %s\n" \
-  ${nx_T7} ${ny_T7} ${nh0_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  $NX $NY ${NH0} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to \"shave\" executable to generate (filtered) orography file with
 a 4-cell wide halo returned with nonzero exit code.  The namelist file 
 nml_fn is in directory shave_dir:
   shave_dir = \"${shave_dir}\"
-  nml_fn = \"${nml_fn}\"
-"
+  nml_fn = \"${nml_fn}\""
 mv_vrfy ${shaved_fp} ${OROG_DIR}
 #
 # Create an input namelist file for the shave executable to generate an
@@ -533,24 +536,23 @@ mv_vrfy ${shaved_fp} ${OROG_DIR}
 # Then call the shave executable.  Finally, move the resultant file to
 # the OROG_DIR directory.
 #
-print_info_msg_verbose "\
+print_info_msg "$VERBOSE" "
 \"Shaving\" orography file with wide halo to obtain orography file with 
-${nh4_T7}-cell-wide halo..."
+${NH4}-cell-wide halo..."
 
-nml_fn="input.shave.orog.halo${nh4_T7}"
-shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+nml_fn="input.shave.orog.halo${NH4}"
+shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 printf "%s %s %s %s %s\n" \
-  ${nx_T7} ${ny_T7} ${nh4_T7} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
 $APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
-  print_err_msg_exit "${script_name}" "\
+print_err_msg_exit "\
 Call to \"shave\" executable to generate (filtered) orography file with
 a 4-cell wide halo returned with nonzero exit code.  The namelist file 
 nml_fn is in directory shave_dir:
   shave_dir = \"${shave_dir}\"
-  nml_fn = \"${nml_fn}\"
-"
+  nml_fn = \"${nml_fn}\""
 mv_vrfy ${shaved_fp} ${OROG_DIR}
 #
 # Change location back to the directory before shave_dir.
@@ -568,25 +570,22 @@ cd_vrfy -
 #
 #-----------------------------------------------------------------------
 #
-
-$USHDIR/link_fix.sh \
-  verbose="FALSE" \
-  script_var_defns_fp="${SCRIPT_VAR_DEFNS_FP}" \
+link_fix \
+  verbose="$VERBOSE" \
   file_group="orog" || \
-  print_err_msg_exit "\
-Call to script to create links to orography files failed.
-"
+print_err_msg_exit "\
+Call to function to create links to orography files failed."
 
 # Moved the following to exregional_make_sfc_climo.sh script since it 
 # needs to be done only if the make_sfc_climo task is run.
 
-#print_info_msg_verbose "\
+#print_info_msg "$VERBOSE" "
 #Creating links needed by the make_sfc_climo task to the 4-halo grid and
 #orography files..."
 #
 if [ 0 = 1 ]; then
 cd_vrfy ${OROG_DIR}
-ln_vrfy -sf ${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc \
+ln_vrfy -sf ${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc \
             ${CRES}_oro_data.tile${TILE_RGNL}.nc
 fi
 
@@ -603,13 +602,13 @@ fi
 if [ 0 = 1 ]; then
 cd_vrfy ${FIXsar}
 
-filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${nh0_T7}.nc"
+filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 ln_vrfy --relative -sf ${OROG_DIR}/$filename $FIXsar
 ln_vrfy -sf $filename oro_data.nc
 
-filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc"
+filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 ln_vrfy --relative -sf ${OROG_DIR}/$filename $FIXsar
-ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.halo${nh4_T7}.nc
+ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.halo${NH4}.nc
 ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.nc
 fi
 #
@@ -619,10 +618,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "\n\
+print_info_msg "
 ========================================================================
 Orography files with various halo widths generated successfully!!!
-Exiting script:  \"${script_name}\"
+
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------

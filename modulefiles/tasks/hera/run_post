@@ -1,0 +1,30 @@
+#%Module#####################################################
+## Module file for run_post task.
+#############################################################
+
+module purge
+  
+module load intel/19.0.4.243
+module load impi/2019.0.4
+
+# Load nceplibs modules.
+module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
+
+module load sigio/2.1.1
+module load jasper/1.900.1
+module load png/1.2.44
+module load z/1.2.11
+module load sfcio/1.1.1
+module load nemsio/2.2.4
+module load bacio/2.0.3
+module load g2/3.1.1
+module load gfsio/1.1.0
+module load ip/3.0.2
+module load sp/2.0.3
+module load w3emc/2.3.1
+module load w3nco/2.0.7
+module load crtm/2.2.5
+module load netcdf/4.7.0
+module load g2tmpl/1.5.1
+module load wrfio/1.1.1
+

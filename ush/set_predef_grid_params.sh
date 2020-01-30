@@ -1,19 +1,47 @@
 #
 #-----------------------------------------------------------------------
 #
+# This file defines and then calls a function that sets grid parameters
+# for the specified predefined grid.
+#
+#-----------------------------------------------------------------------
+#
+function set_predef_grid_params() {
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+local scrfunc_fn=$( basename "${scrfunc_fp}" )
+local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
 # Set grid and other parameters according to the value of the predefined
-# domain (PREDEF_GRID_NAME).  Note that the code will enter this script on-
-# ly if PREDEF_GRID_NAME has a valid (and non-empty) value.
+# domain (PREDEF_GRID_NAME).  Note that the code will enter this script 
+# only if PREDEF_GRID_NAME has a valid (and non-empty) value.
 #
 # The following needs to be updated:
 #
 # 1) Reset the experiment title (expt_title).
 # 2) Reset the grid parameters.
 # 3) If the write component is to be used (i.e. QUILTING is set to
-#    "TRUE") and the variable WRTCMP_PARAMS_TEMPLATE_FN containing the
-#    name of the write-component template file is unset or empty, set
-#    that filename variable to the appropriate preexisting template
-#    file.
+#    "TRUE") and the variable WRTCMP_PARAMS_TMPL_FN containing the name
+#    of the write-component template file is unset or empty, set that
+#    filename variable to the appropriate preexisting template file.
 #
 # For the predefined domains, we determine the starting and ending indi-
 # ces of the regional grid within tile 6 by specifying margins (in units
@@ -60,42 +88,39 @@ case ${PREDEF_GRID_NAME} in
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-62.0
-    lat_rgnl_ctr=22.0
+    JPgrid_LON_CTR=-62.0
+    JPgrid_LAT_CTR=22.0
 
-    delx="3000.0"
-    dely="3000.0"
+    JPgrid_DELX="3000.0"
+    JPgrid_DELY="3000.0"
 
-    nx_T7=2880
-    ny_T7=1920
+    JPgrid_NX=2880
+    JPgrid_NY=1920
 
-    nhw_T7=6
+    JPgrid_WIDE_HALO_WIDTH=6
 
-    dt_atmos="100"
+    DT_ATMOS="40"
 
-    layout_x="32"
-    layout_y="24"
-    blocksize="32"
+    LAYOUT_X="32"
+    LAYOUT_Y="24"
+    BLOCKSIZE="32"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="32"
-      WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
-      WRTCMP_nx="2937"
-      WRTCMP_ny="1788"
-      WRTCMP_lon_lwr_left="-97.83959"
-      WRTCMP_lat_lwr_left="-5.67929305"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_output_grid="regional_latlon"
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="25.0"
+      WRTCMP_lon_lwr_left="-114.5"
+      WRTCMP_lat_lwr_left="-5.0"
+      WRTCMP_lon_upr_rght="-9.5"
+      WRTCMP_lat_upr_rght="55.0"
+      WRTCMP_dlon="0.03"
+      WRTCMP_dlat="0.03"
     fi
 
   fi
@@ -115,42 +140,39 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-62.0
-    lat_rgnl_ctr=22.0
+    JPgrid_LON_CTR=-62.0
+    JPgrid_LAT_CTR=22.0
 
-    delx="13000.0"
-    dely="13000.0"
+    JPgrid_DELX="13000.0"
+    JPgrid_DELY="13000.0"
 
-    nx_T7=665
-    ny_T7=444
+    JPgrid_NX=665
+    JPgrid_NY=444
 
-    nhw_T7=6
+    JPgrid_WIDE_HALO_WIDTH=6
 
-    dt_atmos="180"
+    DT_ATMOS="180"
 
-    layout_x="19"
-    layout_y="12"
-    blocksize="35"
+    LAYOUT_X="19"
+    LAYOUT_Y="12"
+    BLOCKSIZE="35"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
-      WRTCMP_write_tasks_per_group="12"
-      WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
-      WRTCMP_nx="658"
-      WRTCMP_ny="412"
-      WRTCMP_lon_lwr_left="-98.0"
-      WRTCMP_lat_lwr_left="-5.33"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_write_tasks_per_group="32"
+      WRTCMP_output_grid="regional_latlon"
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="25.0"
+      WRTCMP_lon_lwr_left="-114.5"
+      WRTCMP_lat_lwr_left="-5.0"
+      WRTCMP_lon_upr_rght="-9.5"
+      WRTCMP_lat_upr_rght="55.0"
+      WRTCMP_dlon="0.13"
+      WRTCMP_dlat="0.13"
     fi
 
   fi
@@ -170,42 +192,39 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-62.0
-    lat_rgnl_ctr=22.0
+    JPgrid_LON_CTR=-62.0
+    JPgrid_LAT_CTR=22.0
 
-    delx="25000.0"
-    dely="25000.0"
+    JPgrid_DELX="25000.0"
+    JPgrid_DELY="25000.0"
 
-    nx_T7=345
-    ny_T7=230
+    JPgrid_NX=345
+    JPgrid_NY=230
 
-    nhw_T7=6
+    JPgrid_WIDE_HALO_WIDTH=6
 
-    dt_atmos="300"
+    DT_ATMOS="300"
 
-    layout_x="5"
-    layout_y="5"
-    blocksize="6"
+    LAYOUT_X="5"
+    LAYOUT_Y="5"
+    BLOCKSIZE="6"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
-      WRTCMP_write_tasks_per_group="10"
-      WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
-      WRTCMP_nx="337"
-      WRTCMP_ny="210"
-      WRTCMP_lon_lwr_left="-98.0"
-      WRTCMP_lat_lwr_left="-4.5"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_write_tasks_per_group="32"
+      WRTCMP_output_grid="regional_latlon"
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="25.0"
+      WRTCMP_lon_lwr_left="-114.5"
+      WRTCMP_lat_lwr_left="-5.0"
+      WRTCMP_lon_upr_rght="-9.5"
+      WRTCMP_lat_upr_rght="55.0"
+      WRTCMP_dlon="0.25"
+      WRTCMP_dlat="0.25"
     fi
 
   fi
@@ -221,36 +240,38 @@ predefined domain:
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
-    lon_ctr_T6=-106.0
-    lat_ctr_T6=54.0
-    stretch_fac=0.63
-    RES="384"
-    refine_ratio=3
+    GFDLgrid_LON_T6_CTR=-106.0
+    GFDLgrid_LAT_T6_CTR=54.0
+    GFDLgrid_STRETCH_FAC=0.63
+    GFDLgrid_RES="384"
+    GFDLgrid_REFINE_RATIO=3
   
     num_margin_cells_T6_left=10
-    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=10
-    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=10
-    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=10
-    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
 
-    dt_atmos="90"
+    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="FALSE"
 
-    layout_x="14"
-    layout_y="14"
-    blocksize="26"
+    DT_ATMOS="90"
+
+    LAYOUT_X="14"
+    LAYOUT_Y="14"
+    BLOCKSIZE="26"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="14"
       WRTCMP_output_grid="rotated_latlon"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${GFDLgrid_LON_T6_CTR}"
+      WRTCMP_cen_lat="${GFDLgrid_LAT_T6_CTR}"
       WRTCMP_lon_lwr_left="-57.9926"
       WRTCMP_lat_lwr_left="-50.74344"
       WRTCMP_lon_upr_rght="57.99249"
@@ -261,29 +282,29 @@ predefined domain:
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-106.0
-    lat_rgnl_ctr=54.0
+    JPgrid_LON_CTR=-106.0
+    JPgrid_LAT_CTR=54.0
 
-    delx="13000.0"
-    dely="13000.0"
+    JPgrid_DELX="13000.0"
+    JPgrid_DELY="13000.0"
 
-    nx_T7=960
-    ny_T7=960
+    JPgrid_NX=960
+    JPgrid_NY=960
 
-    nhw_T7=6
+    JPgrid_WIDE_HALO_WIDTH=6
 
-    dt_atmos="90"
+    DT_ATMOS="90"
 
-    layout_x="16"
-    layout_y="16"
-    blocksize="30"
+    LAYOUT_X="16"
+    LAYOUT_Y="16"
+    BLOCKSIZE="30"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="16"
       WRTCMP_output_grid="rotated_latlon"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
       WRTCMP_lon_lwr_left="-57.9926"
       WRTCMP_lat_lwr_left="-50.74344"
       WRTCMP_lon_upr_rght="57.99249"
@@ -309,42 +330,41 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-97.5
-    lat_rgnl_ctr=38.5
+    JPgrid_LON_CTR=-97.5
+    JPgrid_LAT_CTR=38.5
 
-    delx="25000.0"
-    dely="25000.0"
+    JPgrid_DELX="25000.0"
+    JPgrid_DELY="25000.0"
 
-    nx_T7=200
-    ny_T7=110
+    JPgrid_NX=200
+    JPgrid_NY=110
 
-    nhw_T7=6
+    JPgrid_WIDE_HALO_WIDTH=6
 
-    dt_atmos="300"
+    DT_ATMOS="300"
 
-    layout_x="2"
-    layout_y="2"
-    blocksize="2"
+    LAYOUT_X="2"
+    LAYOUT_Y="2"
+    BLOCKSIZE="2"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="2"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
       WRTCMP_nx="191"
       WRTCMP_ny="97"
       WRTCMP_lon_lwr_left="-120.72962370"
       WRTCMP_lat_lwr_left="25.11648583"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_dx="${JPgrid_DELX}"
+      WRTCMP_dy="${JPgrid_DELY}"
     fi
 
   fi
@@ -364,42 +384,41 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-97.5
-    lat_rgnl_ctr=38.5
+    JPgrid_LON_CTR=-97.5
+    JPgrid_LAT_CTR=38.5
 
-    delx="13000.0"
-    dely="13000.0"
+    JPgrid_DELX="13000.0"
+    JPgrid_DELY="13000.0"
 
-    nx_T7=390
-    ny_T7=210
+    JPgrid_NX=390
+    JPgrid_NY=210
 
-    nhw_T7=6
+    JPgrid_WIDE_HALO_WIDTH=6
 
-    dt_atmos="180"
+    DT_ATMOS="180"
 
-    layout_x="10"
-    layout_y="10"
-    blocksize="39"
+    LAYOUT_X="10"
+    LAYOUT_Y="10"
+    BLOCKSIZE="39"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="10"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
       WRTCMP_nx="383"
       WRTCMP_ny="195"
       WRTCMP_lon_lwr_left="-121.58647982"
       WRTCMP_lat_lwr_left="24.36006861"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_dx="${JPgrid_DELX}"
+      WRTCMP_dy="${JPgrid_DELY}"
     fi
 
   fi
@@ -419,42 +438,41 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-97.5
-    lat_rgnl_ctr=38.5
+    JPgrid_LON_CTR=-97.5
+    JPgrid_LAT_CTR=38.5
 
-    delx="3000.0"
-    dely="3000.0"
+    JPgrid_DELX="3000.0"
+    JPgrid_DELY="3000.0"
 
-    nx_T7=1734
-    ny_T7=1008
+    JPgrid_NX=1734
+    JPgrid_NY=1008
 
-    nhw_T7=6
+    JPgrid_WIDE_HALO_WIDTH=6
 
-    dt_atmos="100"
+    DT_ATMOS="40"
 
-    layout_x="34"
-    layout_y="24"
-    blocksize="34"
+    LAYOUT_X="34"
+    LAYOUT_Y="24"
+    BLOCKSIZE="34"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group="24"
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${lon_rgnl_ctr}"
-      WRTCMP_cen_lat="${lat_rgnl_ctr}"
-      WRTCMP_stdlat1="${lat_rgnl_ctr}"
-      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
       WRTCMP_nx="1738"
       WRTCMP_ny="974"
       WRTCMP_lon_lwr_left="-122.21414225"
       WRTCMP_lat_lwr_left="22.41403305"
-      WRTCMP_dx="$delx"
-      WRTCMP_dy="$dely"
+      WRTCMP_dx="${JPgrid_DELX}"
+      WRTCMP_dy="${JPgrid_DELY}"
     fi
 
   fi
@@ -462,11 +480,11 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-# EMC's CONUS grid.
+# EMC's 3km CONUS grid.
 #
 #-----------------------------------------------------------------------
 #
-"EMC_CONUS")
+"EMC_CONUS_3km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # Values from an EMC script.
@@ -504,47 +522,125 @@ predefined domain:
 #dlat=0.02
 
 
-    lon_ctr_T6=-97.5
-    lat_ctr_T6=38.5
-    stretch_fac=1.5
-    RES="768"
-    refine_ratio=3
+    GFDLgrid_LON_T6_CTR=-97.5
+    GFDLgrid_LAT_T6_CTR=38.5
+    GFDLgrid_STRETCH_FAC=1.5
+    GFDLgrid_RES="768"
+    GFDLgrid_REFINE_RATIO=3
   
     num_margin_cells_T6_left=61
-    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=67
-    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=165
-    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=171
-    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
 
-    dt_atmos="18"
+    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
 
-    layout_x="16"
-    layout_y="72"
-    write_tasks_per_group="72"
-    blocksize=32
+    DT_ATMOS="18"
 
+    LAYOUT_X="16"
+    LAYOUT_Y="72"
+    BLOCKSIZE=32
+
+    if [ "$QUILTING" = "TRUE" ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))
+      WRTCMP_output_grid="rotated_latlon"
+      WRTCMP_cen_lon="${GFDLgrid_LON_T6_CTR}"
+      WRTCMP_cen_lat="${GFDLgrid_LAT_T6_CTR}"
+# GSK - The following have not been tested...
+      WRTCMP_lon_lwr_left="-25.0"
+      WRTCMP_lat_lwr_left="-15.0"
+      WRTCMP_lon_upr_rght="25.0"
+      WRTCMP_lat_upr_rght="15.0"
+      WRTCMP_dlon="0.02"
+      WRTCMP_dlat="0.02"
+    fi
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    lon_rgnl_ctr=-97.5
-    lat_rgnl_ctr=38.5
+    JPgrid_LON_CTR=-97.5
+    JPgrid_LAT_CTR=38.5
 
-    delx="3000.0"
-    dely="3000.0"
+    JPgrid_DELX="3000.0"
+    JPgrid_DELY="3000.0"
 
-    nx_T7=960
-    ny_T7=960
+    JPgrid_NX=960
+    JPgrid_NY=960
 
-    nhw_T7=6
+    JPgrid_WIDE_HALO_WIDTH=6
 
   fi
   ;;
+#
+#-----------------------------------------------------------------------
+#
+# EMC's coarse (?? km) CONUS grid.
+#
+#-----------------------------------------------------------------------
+#
+"EMC_CONUS_coarse")
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+
+    GFDLgrid_LON_T6_CTR=-97.5
+    GFDLgrid_LAT_T6_CTR=38.5
+    GFDLgrid_STRETCH_FAC=1.5
+    GFDLgrid_RES="96"
+    GFDLgrid_REFINE_RATIO=2
+  
+    num_margin_cells_T6_left=9
+    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
+  
+    num_margin_cells_T6_right=9
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
+  
+    num_margin_cells_T6_bottom=9
+    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
+  
+    num_margin_cells_T6_top=9
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
+
+    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
+
+    DT_ATMOS="100"
+
+    LAYOUT_X="6"
+    LAYOUT_Y="6"
+    BLOCKSIZE="26"
+
+    if [ "$QUILTING" = "TRUE" ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))
+      WRTCMP_output_grid="rotated_latlon"
+      WRTCMP_cen_lon="${GFDLgrid_LON_T6_CTR}"
+      WRTCMP_cen_lat="${GFDLgrid_LAT_T6_CTR}"
+# GSK - The following have not been tested...
+      WRTCMP_lon_lwr_left="-25.0"
+      WRTCMP_lat_lwr_left="-15.0"
+      WRTCMP_lon_upr_rght="25.0"
+      WRTCMP_lat_upr_rght="15.0"
+      WRTCMP_dlon="0.24"
+      WRTCMP_dlat="0.24"
+    fi
+
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
+predefined domain:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
+
+  fi
+  ;;
+
 #
 #-----------------------------------------------------------------------
 #
@@ -560,8 +656,7 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
 
 # Values from an EMC script.
 
@@ -597,31 +692,33 @@ predefined domain:
 #dlon=0.03
 #dlat=0.03
 
-    lon_ctr_T6=-153.0
-    lat_ctr_T6=61.0
-    stretch_fac=1.0  # ???
-    RES="768"
-    refine_ratio=3   # ???
+    GFDLgrid_LON_T6_CTR=-153.0
+    GFDLgrid_LAT_T6_CTR=61.0
+    GFDLgrid_STRETCH_FAC=1.0  # ???
+    GFDLgrid_RES="768"
+    GFDLgrid_REFINE_RATIO=3   # ???
   
     num_margin_cells_T6_left=61
-    istart_rgnl_T6=$(( $num_margin_cells_T6_left + 1 ))
+    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
   
     num_margin_cells_T6_right=67
-    iend_rgnl_T6=$(( $RES - $num_margin_cells_T6_right ))
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
   
     num_margin_cells_T6_bottom=165
-    jstart_rgnl_T6=$(( $num_margin_cells_T6_bottom + 1 ))
+    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
   
     num_margin_cells_T6_top=171
-    jend_rgnl_T6=$(( $RES - $num_margin_cells_T6_top ))
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
 
-    dt_atmos="18"
+    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
 
-    layout_x="16"
-    layout_y="48"
-    write_groups="2"
-    write_tasks_per_group="24"
-    blocksize=32
+    DT_ATMOS="18"
+
+    LAYOUT_X="16"
+    LAYOUT_Y="48"
+    WRTCMP_write_groups="2"
+    WRTCMP_write_tasks_per_group="24"
+    BLOCKSIZE=32
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
@@ -629,40 +726,128 @@ predefined domain:
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
   PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
+
+  fi
+  ;;
+#
+#-----------------------------------------------------------------------
+#
+# 3-km HRRR Alaska grid.
+#
+#-----------------------------------------------------------------------
+#
+"GSD_HRRR_AK_3km")
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
+predefined domain:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
   GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
 "
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+
+    JPgrid_LON_CTR=-163.5 #HRRR-AK is -163.5 
+    JPgrid_LAT_CTR=62.8 #HRRR-AK is 60.8
+
+    JPgrid_DELX="3000.0"
+    JPgrid_DELY="3000.0"
+
+    JPgrid_NX=1230 #HRRR-AK is 1300
+    JPgrid_NY=850 #HRRR-AK is 920
+
+    JPgrid_WIDE_HALO_WIDTH=6
+
+    DT_ATMOS="50"
+
+    LAYOUT_X="30"
+    LAYOUT_Y="17"
+    BLOCKSIZE="25"
+
+    if [ "$QUILTING" = "TRUE" ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group="2"
+      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
+      WRTCMP_nx="1169"
+      WRTCMP_ny="762"
+      WRTCMP_lon_lwr_left="172.0"
+      WRTCMP_lat_lwr_left="49.0"
+      WRTCMP_dx="${JPgrid_DELX}"
+      WRTCMP_dy="${JPgrid_DELY}"
+    fi
+
+  fi
+  ;;
+#
+#-----------------------------------------------------------------------
+#
+# 50-km HRRR Alaska grid.
+#
+#-----------------------------------------------------------------------
+#
+"GSD_HRRR_AK_50km")
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
+predefined domain:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
+"
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+
+    JPgrid_LON_CTR=-163.5
+    JPgrid_LAT_CTR=62.8
+
+    JPgrid_DELX="50000.0"
+    JPgrid_DELY="50000.0"
+
+    JPgrid_NX=74
+    JPgrid_NY=51
+
+    JPgrid_WIDE_HALO_WIDTH=6
+
+    DT_ATMOS="600"
+
+    LAYOUT_X="2"
+    LAYOUT_Y="3"
+    BLOCKSIZE="37"
+
+    if [ "$QUILTING" = "TRUE" ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group="1"
+      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
+      WRTCMP_nx="70"
+      WRTCMP_ny="45"
+      WRTCMP_lon_lwr_left="172.0"
+      WRTCMP_lat_lwr_left="49.0"
+      WRTCMP_dx="${JPgrid_DELX}"
+      WRTCMP_dy="${JPgrid_DELY}"
+    fi
 
   fi
   ;;
 #
 esac
-#
-#-----------------------------------------------------------------------
-#
-# Set the name of the template file containing placeholder values for
-# write-component parameters (if this file name is not already set).  
-# This file will be appended to the model_configure file, and place-
-# holder values will be replaced with actual ones.
-#
-#-----------------------------------------------------------------------
-#
-if [ "$QUILTING" = "TRUE" ]; then
-#
-# First, make sure that WRTCMP_output_grid is set to a valid value.
-#
-  iselementof "$WRTCMP_output_grid" valid_vals_WRTCMP_output_grid || { \
-  valid_vals_WRTCMP_output_grid_str=$(printf "\"%s\" " "${valid_vals_WRTCMP_output_grid[@]}");
-  print_err_msg_exit "\
-The write-component coordinate system specified in WRTCMP_output_grid is 
-not supported:
-  WRTCMP_output_grid = \"$WRTCMP_output_grid\"
-WRTCMP_output_grid must be set to one of the following:
-  $valid_vals_WRTCMP_output_grid_str
-"; }
-#
-# Now set the name of the write-component template file.
-#
-  WRTCMP_PARAMS_TEMPLATE_FN=${WRTCMP_PARAMS_TEMPLATE_FN:-"wrtcmp_${WRTCMP_output_grid}"}
 
-fi
+}
+#
+#-----------------------------------------------------------------------
+#
+# Call the function defined above.
+#
+#-----------------------------------------------------------------------
+#
+set_predef_grid_params
 
