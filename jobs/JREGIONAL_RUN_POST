@@ -1,0 +1,124 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# This script runs the post-processor (UPP) on the NetCDF output files
+# of the write component of the FV3SAR model.
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the J-job script for the task that runs the post-processor (UPP)
+on the output files corresponding to a specified forecast hour.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# If it doesn't already exist, create the directory (postprd_dir) in 
+# which to store post-processing output.  (Note that postprd_dir may al-
+# ready have been created by this post-processing script run for a dif-
+# ferent forecast hour.)  Also, create a temporary work directory (FHR_-
+# DIR) for the current forecast hour being processed.  fhr_dir will be 
+# deleted later after the processing for the current forecast hour is 
+# complete.  Then change location to fhr_dir.
+#
+# Note that there may be a preexisting version of fhr_dir from previous 
+# runs of this script for the current forecast hour (e.g. from the work-
+# flow task that runs this script failing and then being called again).  
+# Thus, we first make sure preexisting versions are deleted.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  COMOUT="$COMROOT/$NET/$envir/$RUN.$PDY/$cyc"
+  postprd_dir="$COMOUT"
+else
+  postprd_dir="${CYCLE_DIR}/postprd"
+fi
+mkdir_vrfy -p "${postprd_dir}"
+
+fhr_dir="${postprd_dir}/$fhr"
+check_for_preexist_dir "${fhr_dir}" "delete"
+mkdir_vrfy -p "${fhr_dir}"
+
+cd_vrfy "${fhr_dir}"
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles. 
+#
+#-----------------------------------------------------------------------
+#
+$SCRIPTSDIR/exregional_run_post.sh \
+  cycle_dir="${CYCLE_DIR}" \
+  postprd_dir="${postprd_dir}" \
+  fhr_dir="${fhr_dir}" \
+  fhr="${fhr}" || \
+print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Print exit message.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+

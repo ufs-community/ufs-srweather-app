@@ -36,14 +36,11 @@ fields='"PWATclm", "HGTsfc"'         # Fields to plot
 nlev="50"                         # Vertical index to plot for 3D fields
 fcst_index="1,2"                    # Time index '2' or indices '1, 2' of forecast to plot or '"all"'
 #fcst_index='"all"'                    # Time index '2' or indices '1, 2' of forecast to plot or '"all"'
-#grid_dir="/scratch3/BMC/det/beck/FV3-CAM/work.C384r0p7n3_regional_RAP/INPUT"
-#grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
-#grid_dir="/scratch3/BMC/fim/Julie.Schramm/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
-grid_dir="/scratch4/BMC/gmtb/Julie.Schramm/C96fv3gfs2016092900/INPUT"
-#grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
 
-#RAP_grid_fn="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.nc"
-RAP_grid_fn="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.RAP.nc"
+grid_dir="/scratch2/BMC/gmtb/Julie.Schramm/C96fv3gfs2016092900/INPUT"
+
+#RAP_grid_fn="/scratch2/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.nc"
+RAP_grid_fn="/scratch2/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.RAP.nc"
 
 if [ 1 = 1 ]; then
 #

@@ -12,66 +12,89 @@ The following are variables that are not passed to the shell scripts
 that execute the various worklflow tasks but are used in other ways by
 the workflow XML.
 -->
-<!ENTITY ACCOUNT          "">
-<!ENTITY SCHED            ""> 
-<!ENTITY QUEUE_DEFAULT    "">
-<!ENTITY QUEUE_HPSS       "">
-<!ENTITY QUEUE_RUN_FV3SAR "">
+<!ENTITY ACCOUNT       "">
+<!ENTITY SCHED         ""> 
+<!ENTITY QUEUE_DEFAULT "">
+<!ENTITY QUEUE_HPSS    "">
+<!ENTITY QUEUE_FCST    "">
 
 <!ENTITY USHDIR  "">
+<!ENTITY JOBSDIR "">
 <!ENTITY EXPTDIR "">
+<!ENTITY LOGDIR  "">
 
-<!ENTITY EXTRN_MDL_NAME_ICSSURF "">
-<!ENTITY EXTRN_MDL_NAME_LBCS    "">
+<!ENTITY EXTRN_MDL_NAME_ICS  "">
+<!ENTITY EXTRN_MDL_NAME_LBCS "">
 
-<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF "">
-<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_LBCS    "">
+<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_ICS  "">
+<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_LBCS "">
 
 <!ENTITY DATE_FIRST_CYCL "">
-<!ENTITY DATE_LAST_CYCL "">
+<!ENTITY DATE_LAST_CYCL  "">
 <!ENTITY YYYY_FIRST_CYCL "">
-<!ENTITY MM_FIRST_CYCL "">
-<!ENTITY DD_FIRST_CYCL "">
-<!ENTITY HH_FIRST_CYCL "">
+<!ENTITY MM_FIRST_CYCL   "">
+<!ENTITY DD_FIRST_CYCL   "">
+<!ENTITY HH_FIRST_CYCL   "">
 
 <!ENTITY FHR "">
+
+<!ENTITY RUN_TASK_MAKE_GRID      "">
+<!ENTITY RUN_TASK_MAKE_OROG      "">
+<!ENTITY RUN_TASK_MAKE_SFC_CLIMO "">
 
 <!--
 The following are variables that are passed to the shell scripts that 
 execute the various workflow tasks but are not otherwise used in the 
 workflow XML.
 -->
-<!ENTITY SCRIPT_VAR_DEFNS_FP "">
+<!ENTITY GLOBAL_VAR_DEFNS_FP "">
+<!ENTITY CYCLE_DIR           "">
+
+<!-- 
+Task names.
+-->
+<!ENTITY MAKE_GRID_TN      "">
+<!ENTITY MAKE_OROG_TN      "">
+<!ENTITY MAKE_SFC_CLIMO_TN "">
+<!ENTITY GET_EXTRN_ICS_TN  "">
+<!ENTITY GET_EXTRN_LBCS_TN "">
+<!ENTITY MAKE_ICS_TN       "">
+<!ENTITY MAKE_LBCS_TN      "">
+<!ENTITY RUN_FCST_TN       "">
+<!ENTITY RUN_POST_TN       "">
 
 <!--
 SECTION 2:
 Variables that are not modified by the workflow generation script.
 -->
-<!ENTITY LOG_DIR "&EXPTDIR;/log">
 
-<!ENTITY PROC_MAKE_GRID_OROG      "1:ppn=24">
-<!ENTITY PROC_STAGE_STATIC        "1:ppn=1">
+<!ENTITY PROC_MAKE_GRID           "1:ppn=24">
+<!ENTITY PROC_MAKE_OROG           "1:ppn=24">
 <!ENTITY PROC_MAKE_SFC_CLIMO      "2:ppn=24">
 <!ENTITY PROC_GET_EXTRN_MDL_FILES "1:ppn=1">
 <!ENTITY PROC_MAKE_ICS_SURF_LBC0  "4:ppn=12">
 <!ENTITY PROC_MAKE_LBC1_TO_LBCN   "4:ppn=12">
-<!ENTITY PROC_STAGE               "1:ppn=1">
-<!ENTITY PROC_RUN_FV3SAR          "">
+<!ENTITY PROC_RUN_FCST            "">
 <!ENTITY PROC_POST                "2:ppn=24">
 
-<!ENTITY RSRC_MAKE_GRID_OROG      "<walltime>00:10:00</walltime>">
-<!ENTITY RSRC_STAGE_STATIC        "<walltime>00:10:00</walltime>">
-<!ENTITY RSRC_MAKE_SFC_CLIMO      "<walltime>01:00:00</walltime>">
-<!ENTITY RSRC_GET_EXTRN_MDL_FILES "<walltime>00:20:00</walltime>">
-<!ENTITY RSRC_MAKE_ICS_SURF_LBC0  "<walltime>00:15:00</walltime>">
-<!ENTITY RSRC_MAKE_LBC1_TO_LBCN   "<walltime>00:30:00</walltime>">
-<!ENTITY RSRC_STAGE               "<walltime>00:10:00</walltime>">
-<!ENTITY RSRC_RUN_FV3SAR          "<walltime>07:30:00</walltime>">
+<!ENTITY RSRC_MAKE_GRID           "<walltime>00:10:00</walltime>">
+<!ENTITY RSRC_MAKE_OROG           "<walltime>00:10:00</walltime>">
+<!ENTITY RSRC_MAKE_SFC_CLIMO      "<walltime>00:25:00</walltime>">
+<!ENTITY RSRC_GET_EXTRN_MDL_FILES "<walltime>00:45:00</walltime>">
+<!ENTITY RSRC_MAKE_ICS_SURF_LBC0  "<walltime>00:30:00</walltime>">
+<!ENTITY RSRC_MAKE_LBC1_TO_LBCN   "<walltime>01:00:00</walltime>">
+<!ENTITY RSRC_RUN_FCST            "<walltime>04:30:00</walltime>">
 <!ENTITY RSRC_POST                "<walltime>00:30:00</walltime>">
 
-<!ENTITY RSRV_DEFAULT    "<queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
-<!ENTITY RSRV_HPSS       "<partition>&QUEUE_HPSS;</partition><account>&ACCOUNT;</account>"> 
-<!ENTITY RSRV_RUN_FV3SAR "<queue>&QUEUE_RUN_FV3SAR;</queue><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_DEFAULT  "<queue>&QUEUE_DEFAULT;</queue><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_HPSS     "<partition>&QUEUE_HPSS;</partition><account>&ACCOUNT;</account>"> 
+<!ENTITY RSRV_RUN_FCST "<queue>&QUEUE_FCST;</queue><account>&ACCOUNT;</account>"> 
+
+<!-- 
+Shell script to load task-specific modules and then run the task (while
+killing itelf off) using the exec command.
+-->
+<!ENTITY LOAD_MODULES_RUN_TASK_FP "&USHDIR;/load_modules_run_task.sh">
 
 ]>
 
@@ -81,43 +104,50 @@ Variables that are not modified by the workflow generation script.
   <cycledef group="at_CCZ">&DATE_FIRST_CYCL;CC00 &DATE_LAST_CYCL;CC00 24:00:00</cycledef>  <!-- This line will be replaced with one or more lines with "CC" replaced by actual cycle hours, e.g. "00". -->
 
   <log>
-    <cyclestr>&LOG_DIR;/FV3SAR_wflow.log</cyclestr>
+    <cyclestr>&LOGDIR;/FV3SAR_wflow.log</cyclestr>
   </log>
 <!--
 ************************************************************************
 ************************************************************************
 -->
-  <task name="make_grid_orog" cycledefs="at_start" maxtries="4">
+  <task name="&MAKE_GRID_TN;" cycledefs="at_start" maxtries="4">
 
-    &RSRC_MAKE_GRID_OROG;
+    &RSRC_MAKE_GRID;
     &RSRV_DEFAULT;
+<!-- 
+The following command works if we do NOT call exec in LOAD_MODULES_RUN_-
+TASK_FP to run the J-job.  This just sources the LOAD_MODULES_RUN_TASK_-
+FP before running the J-job, so it is simpler than calling exec and thus
+preferred if NCO accepts it.  Note that while sourcing LOAD_MODULES_-
+RUN_TASK_FP, it also passes an argument along (the name of the task), 
+and that works in bash (but it probably won't work in sh).  
 
-    <command>&USHDIR;/make_grid_orog.sh</command>
-    <nodes>&PROC_MAKE_GRID_OROG;</nodes>
-    <jobname>make_grid_orog</jobname>
-    <join><cyclestr>&LOG_DIR;/make_grid_orog.log</cyclestr></join>
-
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
-
-  </task>
-<!--
-************************************************************************
-************************************************************************
+If this method is acceptable to NCO, then for clarity maybe we can 
+source LOAD_MODULES_RUN_TASK_FP within the J-job instead of here since 
+we have are already sourcing other files in the J-job anyway.
 -->
-  <task name="make_sfc_climo" cycledefs="at_start" maxtries="2">
+<!-- 
+    <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;"; 
+               &JOBSDIR;/JREGIONAL_MAKE_GRID;
+             }</command>
+-->
+<!-- 
+The following command works if we call exec in LOAD_MODULES_RUN_TASK_FP
+to run the J-job.  This passes the J-job script as the second argument 
+to LOAD_MODULES_RUN_TASK_FP (the first argument is the task name).  The
+J-job then uses exec to run the J-job (while also terminating the LOAD_-
+MODULES_RUN_TASK_FP script.
+-->
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;" "&JOBSDIR;/JREGIONAL_MAKE_GRID"</command>
+    <nodes>&PROC_MAKE_GRID;</nodes>
+    <jobname>&MAKE_GRID_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&MAKE_GRID_TN;.log</cyclestr></join>
 
-    &RSRC_MAKE_SFC_CLIMO;
-    &RSRV_DEFAULT;
-
-    <command>&USHDIR;/make_sfc_climo.sh</command>
-    <nodes>&PROC_MAKE_SFC_CLIMO;</nodes>
-    <jobname>make_sfc_climo</jobname>
-    <join><cyclestr>&LOG_DIR;/make_sfc_climo.log</cyclestr></join>
-
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
-      <taskdep task="make_grid_orog"/>
+      <streq><left>&RUN_TASK_MAKE_GRID;</left><right>TRUE</right></streq>
     </dependency>
 
   </task>
@@ -125,152 +155,27 @@ Variables that are not modified by the workflow generation script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="stage_static" cycledefs="at_start" maxtries="2">
+  <task name="&MAKE_OROG_TN;" cycledefs="at_start" maxtries="4">
 
-    &RSRC_STAGE_STATIC;
+    &RSRC_MAKE_OROG;
     &RSRV_DEFAULT;
 
-    <command>&USHDIR;/stage_static.sh</command>
-    <nodes>&PROC_STAGE_STATIC;</nodes>
-    <jobname>stage_static</jobname>
-    <join><cyclestr>&LOG_DIR;/stage_static.log</cyclestr></join>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_OROG_TN;" "&JOBSDIR;/JREGIONAL_MAKE_OROG"</command>
+    <nodes>&PROC_MAKE_OROG;</nodes>
+    <jobname>&MAKE_OROG_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&MAKE_OROG_TN;.log</cyclestr></join>
 
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
-
-    <dependency>
-      <taskdep task="make_sfc_climo"/>
-    </dependency>
-
-  </task>
-<!--
-************************************************************************
-************************************************************************
--->
-  <task name="get_files_ICSSURF" maxtries="3">
-
-    &RSRC_GET_EXTRN_MDL_FILES;
-    &RSRV_HPSS;
-
-    <command>&USHDIR;/get_extrn_mdl_files.sh</command>
-    <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
-    <jobname>get_files_ICSSURF</jobname>
-    <join><cyclestr>&LOG_DIR;/get_files_ICSSURF_@Y@m@d@H.log</cyclestr></join>
-
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
-    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
-    <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_ICSSURF;</value></envar>
-    <envar><name>ICSSURF_OR_LBCS</name><value>ICSSURF</value></envar>
-
-    <dependency>
-<!--
-Launch this task only if the stage_static task is complete.  We cannot
-use a taskdep to check for completion of the state_static task because 
-rocoto then assumes that stage_static must be run for each cycle, in-
-cluding the current cycle (despite the fact that cycledefs is set to 
-"at_start" for that task), before running this task for the current cy-
-cle.
--->
-      <datadep age="00:00:00:05">&EXPTDIR;/stage_static_task_complete.txt</datadep>
-    </dependency>
-
-  </task> 
-<!--
-************************************************************************
-************************************************************************
--->
-  <task name="get_files_LBCS" maxtries="3">
-
-    &RSRC_GET_EXTRN_MDL_FILES;
-    &RSRV_HPSS;
-
-    <command>&USHDIR;/get_extrn_mdl_files.sh</command>
-    <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
-    <jobname>get_files_LBCS</jobname>
-    <join><cyclestr>&LOG_DIR;/get_files_LBCS_@Y@m@d@H.log</cyclestr></join>
-
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
-    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
-    <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_LBCS;</value></envar>
-    <envar><name>ICSSURF_OR_LBCS</name><value>LBCS</value></envar>
-
-    <dependency>
-<!--
-Launch this task only if the stage_static task is complete.  We cannot
-use a taskdep to check for completion of the state_static task because 
-rocoto then assumes that stage_static must be run for each cycle, in-
-cluding the current cycle (despite the fact that cycledefs is set to 
-"at_start" for that task), before running this task for the current cy-
-cle.
--->
-      <datadep age="00:00:00:05">&EXPTDIR;/stage_static_task_complete.txt</datadep>
-    </dependency>
-
-  </task> 
-<!--
-************************************************************************
-************************************************************************
--->
-  <task name="make_ICS_surf_LBC0" maxtries="3">
-
-    &RSRC_MAKE_ICS_SURF_LBC0;
-    &RSRV_DEFAULT;
-
-    <command>&USHDIR;/make_ICS_surf_LBC0.sh</command>
-    <nodes>&PROC_MAKE_ICS_SURF_LBC0;</nodes>
-    <jobname>make_ICS_surf_LBC0</jobname>
-    <join><cyclestr>&LOG_DIR;/make_ICS_surf_LBC0_@Y@m@d@H.log</cyclestr></join>
-    
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
-    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
-
-    <dependency>
-      <taskdep task="get_files_ICSSURF"/>
-    </dependency>
-
-  </task>
-<!--
-************************************************************************
-************************************************************************
--->
-  <task name="make_LBC1_to_LBCN" maxtries="3">
-
-    &RSRC_MAKE_LBC1_TO_LBCN;
-    &RSRV_DEFAULT;
-
-    <command>&USHDIR;/make_LBC1_to_LBCN.sh</command>
-    <nodes>&PROC_MAKE_LBC1_TO_LBCN;</nodes>
-    <jobname>make_LBC1_to_LBCN</jobname>
-    <join><cyclestr>&LOG_DIR;/make_LBC1_to_LBCN_@Y@m@d@H.log</cyclestr></join>
-
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
-    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
-
-    <dependency>
-      <taskdep task="get_files_LBCS"/>
-    </dependency>
-
-  </task>
-<!--
-************************************************************************
-************************************************************************
--->
-  <task name="stage" maxtries="2">
-
-    &RSRC_STAGE;
-    &RSRV_DEFAULT;
-
-    <command>&USHDIR;/stage.sh</command>
-    <nodes>&PROC_STAGE;</nodes>
-    <jobname>stage</jobname>
-    <join><cyclestr>&LOG_DIR;/stage_@Y@m@d@H.log</cyclestr></join>
-
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
-    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
       <and>
-        <taskdep task="make_ICS_surf_LBC0"/>
-        <taskdep task="make_LBC1_to_LBCN"/>
+        <streq><left>&RUN_TASK_MAKE_OROG;</left><right>TRUE</right></streq>
+        <or>
+<!--          <taskdep task="make_grid"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
+          <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+        </or>
       </and>
     </dependency>
 
@@ -279,21 +184,33 @@ cle.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="run_FV3SAR" maxtries="3">
+  <task name="&MAKE_SFC_CLIMO_TN;" cycledefs="at_start" maxtries="2">
 
-    &RSRC_RUN_FV3SAR;
-    &RSRV_RUN_FV3SAR;
+    &RSRC_MAKE_SFC_CLIMO;
+    &RSRV_DEFAULT;
 
-    <command>&USHDIR;/run_FV3SAR.sh</command>
-    <nodes>&PROC_RUN_FV3SAR;</nodes>
-    <jobname>run_FV3SAR</jobname>
-    <join><cyclestr>&LOG_DIR;/run_FV3SAR_@Y@m@d@H.log</cyclestr></join>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_SFC_CLIMO_TN;" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"</command>
+    <nodes>&PROC_MAKE_SFC_CLIMO;</nodes>
+    <jobname>&MAKE_SFC_CLIMO_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&MAKE_SFC_CLIMO_TN;.log</cyclestr></join>
 
-    <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
-    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
-      <taskdep task="stage"/>
+      <and>
+        <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>TRUE</right></streq>
+        <or>
+<!--          <taskdep task="make_grid"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
+          <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+        </or>
+        <or>
+<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>	
+          <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
+        </or>
+      </and>
     </dependency>
 
   </task>
@@ -301,28 +218,184 @@ cle.
 ************************************************************************
 ************************************************************************
 -->
-  <metatask name="post">
+  <task name="&GET_EXTRN_ICS_TN;" maxtries="3">
+
+    &RSRC_GET_EXTRN_MDL_FILES;
+    &RSRV_HPSS;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES"</command>
+    <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
+    <jobname>&GET_EXTRN_ICS_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&GET_EXTRN_ICS_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_ICS;</value></envar>
+    <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
+
+  </task> 
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&GET_EXTRN_LBCS_TN;" maxtries="3">
+
+    &RSRC_GET_EXTRN_MDL_FILES;
+    &RSRV_HPSS;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_FILES"</command>
+    <nodes>&PROC_GET_EXTRN_MDL_FILES;</nodes>
+    <jobname>&GET_EXTRN_LBCS_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&GET_EXTRN_LBCS_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_LBCS;</value></envar>
+    <envar><name>ICS_OR_LBCS</name><value>LBCS</value></envar>
+
+  </task> 
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&MAKE_ICS_TN;" maxtries="3">
+
+    &RSRC_MAKE_ICS_SURF_LBC0;
+    &RSRV_DEFAULT;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_ICS_TN;" "&JOBSDIR;/JREGIONAL_MAKE_ICS"</command>
+    <nodes>&PROC_MAKE_ICS_SURF_LBC0;</nodes>
+    <jobname>&MAKE_ICS_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&MAKE_ICS_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <taskdep task="&GET_EXTRN_ICS_TN;"/>
+        <or>
+<!--          <taskdep task="make_grid"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
+          <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+        </or>
+        <or>
+<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>	
+          <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
+        </or>
+        <or>
+<!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_SFC_CLIMO_TN;_task_complete.txt</datadep>	
+          <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
+        </or>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&MAKE_LBCS_TN;" maxtries="3">
+
+    &RSRC_MAKE_LBC1_TO_LBCN;
+    &RSRV_DEFAULT;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_LBCS_TN;" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"</command>
+    <nodes>&PROC_MAKE_LBC1_TO_LBCN;</nodes>
+    <jobname>&MAKE_LBCS_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&MAKE_LBCS_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <taskdep task="&GET_EXTRN_LBCS_TN;"/>
+        <or>
+<!--          <taskdep task="make_grid"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
+          <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+        </or>
+        <or>
+<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>	
+          <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
+        </or>
+        <or>
+<!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_SFC_CLIMO_TN;_task_complete.txt</datadep>	
+          <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
+        </or>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&RUN_FCST_TN;" maxtries="3">
+
+    &RSRC_RUN_FCST;
+    &RSRV_RUN_FCST;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_FCST_TN;" "&JOBSDIR;/JREGIONAL_RUN_FCST"</command>
+    <nodes>&PROC_RUN_FCST;</nodes>
+    <jobname>&RUN_FCST_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&RUN_FCST_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <taskdep task="&MAKE_ICS_TN;"/>
+        <taskdep task="&MAKE_LBCS_TN;"/>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <metatask name="&RUN_POST_TN;">
     
     <var name="fhr">&FHR;</var>
     
-    <task name="post_#fhr#" maxtries="2">
+    <task name="&RUN_POST_TN;_#fhr#" maxtries="2">
     
       &RSRC_POST;
       &RSRV_DEFAULT;
 
-      <command>&USHDIR;/run_post.sh</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
       <nodes>&PROC_POST;</nodes>
-      <jobname>run_post_#fhr#</jobname>
-      <join><cyclestr>&LOG_DIR;/run_post_#fhr#_@Y@m@d@H.log</cyclestr></join>
+      <jobname>&RUN_POST_TN;_#fhr#</jobname>
+      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;_#fhr#_@Y@m@d@H.log</cyclestr></join>
 
-      <envar><name>SCRIPT_VAR_DEFNS_FP</name><value>&SCRIPT_VAR_DEFNS_FP;</value></envar>
+      <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+      <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
       <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+      <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
 
       <dependency>
         <and>
-          <datadep age="05:00"><cyclestr>&EXPTDIR;/@Y@m@d@H/dynf0#fhr#.nc</cyclestr></datadep>
-          <datadep age="05:00"><cyclestr>&EXPTDIR;/@Y@m@d@H/phyf0#fhr#.nc</cyclestr></datadep>
+          <datadep age="05:00"><cyclestr>&CYCLE_DIR;/dynf0#fhr#.nc</cyclestr></datadep>
+          <datadep age="05:00"><cyclestr>&CYCLE_DIR;/phyf0#fhr#.nc</cyclestr></datadep>
         </and>
       </dependency>
 

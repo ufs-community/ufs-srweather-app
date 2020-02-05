@@ -33,7 +33,7 @@ elif [ $nargv -eq 7 ]; then  # cubed-sphere grid
 # Set workdir_rgnl, which is the work directory for the FV3SAR (i.e. the
 # regional FV3).  workdir_rgnl will be set to an empty string if WORK-
 # DIR_OROG is unset or empty.
-  workdir_rgnl=${WORKDIR_OROG:+$WORKDIR_OROG/tile$tile}
+  workdir_rgnl=${OROG_DIR:+$OROG_DIR/tile$tile}
 # If workdir_rgnl is set to a non-empty string, set workdir to it.
   export workdir=${workdir_rgnl:-$workdir}
 elif [ $nargv -eq 8 ]; then  # input your own orography files
@@ -59,7 +59,7 @@ else
 fi
 
 export indir=$hist_dir
-export executable=$exec_dir/ml01rg2.x
+export executable=$exec_dir/orog.x
 if [ ! -s $executable ]; then
   echo "executable does not exist"
   exit 1 

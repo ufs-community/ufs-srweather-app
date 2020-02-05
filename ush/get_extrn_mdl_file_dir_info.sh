@@ -1,19 +1,12 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions script.                                                                                                         
+# Source the variable definitions file and the bash utility functions. 
 #
 #-----------------------------------------------------------------------
 #
-. $SCRIPT_VAR_DEFNS_FP
-#
-#-----------------------------------------------------------------------
-#
-# Source function definition files.
-#
-#-----------------------------------------------------------------------
-#
-. $USHDIR/source_funcs.sh
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -25,7 +18,7 @@
 # 
 #-----------------------------------------------------------------------
 #
-function get_extrn_mdl_file_dir_info () {
+function get_extrn_mdl_file_dir_info() {
 #
 #-----------------------------------------------------------------------
 #
@@ -34,7 +27,59 @@ function get_extrn_mdl_file_dir_info () {
 #
 #-----------------------------------------------------------------------
 #
-  { save_shell_opts; set -u -x; } > /dev/null 2>&1
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
+# Specify the set of valid argument names for this script/function.  
+# Then process the arguments provided to this script/function (which 
+# should consist of a set of name-value pairs of the form arg1="value1",
+# etc).
+#
+#-----------------------------------------------------------------------
+#
+  local valid_args=( \
+    "extrn_mdl_name" "anl_or_fcst" "cdate_FV3SAR" "time_offset_hrs" \
+    "varname_extrn_mdl_cdate" \
+    "varname_extrn_mdl_lbc_update_fhrs" \
+    "varname_extrn_mdl_fns" \
+    "varname_extrn_mdl_sysdir" \
+    "varname_extrn_mdl_arcv_fmt" \
+    "varname_extrn_mdl_arcv_fns" \
+    "varname_extrn_mdl_arcv_fps" \
+    "varname_extrn_mdl_arcvrel_dir" \
+  )
+  process_args valid_args "$@"
+#
+#-----------------------------------------------------------------------
+#
+# For debugging purposes, print out values of arguments passed to this
+# script/function.  Note that these will be printed out only if VERBOSE
+# is set to TRUE.
+#
+#-----------------------------------------------------------------------
+#
+  print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -42,27 +87,35 @@ function get_extrn_mdl_file_dir_info () {
 #
 #-----------------------------------------------------------------------
 #
+if [ 0 = 1 ]; then
+
   if [ "$#" -ne "13" ]; then
-    print_err_msg_exit "\
-Function \"${FUNCNAME[0]}\":  Incorrect number of arguments specified.
+
+    print_err_msg_exit "
+Incorrect number of arguments specified:
+
+  Function name:  \"${func_name}\"
+  Number of arguments specified:  $#
+
 Usage:
 
-  ${FUNCNAME[0]} \
-    extrn_mdl \
+  ${func_name} \
+    extrn_mdl_name \
     anl_or_fcst \
     cdate_FV3SAR \
     time_offset_hrs \
-    output_fn \
-    glob_var_name_filenames \
-    glob_var_name_filenames \
-    glob_var_name_arcv_file_fmt \
-    glob_var_name_arcv_filename \
-    glob_var_name_arcv_fullpath \
-    glob_var_name_arcvrel_dir
+    varname_extrn_mdl_cdate \
+    varname_extrn_mdl_lbc_update_fhrs \
+    varname_extrn_mdl_fns \
+    varname_extrn_mdl_sysdir \
+    varname_extrn_mdl_arcv_fmt \
+    varname_extrn_mdl_arcv_fns \
+    varname_extrn_mdl_arcv_fps \
+    varname_extrn_mdl_arcvrel_dir
 
 where the arguments are defined as follows:
  
-  extrn_mdl:
+  extrn_mdl_name:
   Name of the external model, i.e. the name of the model providing the
   fields from which files containing initial conditions, surface fields, 
   and/or lateral boundary conditions for the FV3SAR will be generated.
@@ -93,53 +146,43 @@ where the arguments are defined as follows:
   order to make up for the backward-in-time shift in the starting time
   of the external model.
  
-  output_fn:
-  Name of the file in which output from this function will be stored, 
-  including the names of the output variables (specified as inputs to 
-  this function; see below) and the values calculated for them.  This
-  output file is written in such a way that it can be sourced by the 
-  calling script.  We write output to this file and then have the call-
-  ing script read it in because there is no straightforward way in bash
-  to return values from a function to the calling script.
- 
-  glob_var_name_cdate:
+  varname_extrn_mdl_cdate:
   Name of the global variable that will contain the starting date and 
   hour of the external model run.
  
-  glob_var_name_lbc_update_fhrs:
+  varname_extrn_mdl_lbc_update_fhrs:
   Name of the global variable that will contain the forecast hours (re-
   lative to the starting time of the external model run, which is earli-
   er than that of the FV3SAR by time_offset_hrs hours) at which lateral
   boundary condition (LBC) output files are obtained from the external
   model (and will be used to update the LBCs of the FV3SAR).
  
-  glob_var_name_filenames:
+  varname_extrn_mdl_fns:
   Name of the global variable that will contain the names of the exter-
   nal model output files.
  
-  glob_var_name_sysdir:
+  varname_extrn_mdl_sysdir:
   Name of the global variable that will contain the system directory in
   which the externaml model output files may be stored.
  
-  glob_var_name_arcv_file_fmt:
+  varname_extrn_mdl_arcv_fmt:
   Name of the global variable that will contain the format of the ar-
   chive file on HPSS in which the externaml model output files may be 
   stored.
  
-  glob_var_name_arcv_filename:
+  varname_extrn_mdl_arcv_fns:
   Name of the global variable that will contain the name of the archive
   file on HPSS in which the externaml model output files may be stored.
  
-  glob_var_name_arcv_fullpath:
+  varname_extrn_mdl_arcv_fps:
   Name of the global variable that will contain the full path to the ar-
   chive file on HPSS in which the externaml model output files may be 
   stored.
  
-  glob_var_name_arcvrel_dir:
+  varname_extrn_mdl_arcvrel_dir:
   Name of the global variable that will contain the archive-relative di-
   rectory, i.e. the directory \"inside\" the archive file in which the ex-
   ternal model output files may be stored.
- 
 "
 
   fi
@@ -152,7 +195,7 @@ where the arguments are defined as follows:
 #
   local iarg="0"
   iarg=$(( iarg+1 ))
-  local extrn_mdl="${!iarg}"
+  local extrn_mdl_name="${!iarg}"
   iarg=$(( iarg+1 ))
   local anl_or_fcst="${!iarg}"
   iarg=$(( iarg+1 ))
@@ -161,23 +204,26 @@ where the arguments are defined as follows:
   local time_offset_hrs="${!iarg}"
 
   iarg=$(( iarg+1 ))
-  local output_fn="${!iarg}"
+  local varname_extrn_mdl_cdate="${!iarg}"
   iarg=$(( iarg+1 ))
-  local glob_var_name_cdate="${!iarg}"
+  local varname_extrn_mdl_lbc_update_fhrs="${!iarg}"
   iarg=$(( iarg+1 ))
-  local glob_var_name_lbc_update_fhrs="${!iarg}"
+  local varname_extrn_mdl_fns="${!iarg}"
   iarg=$(( iarg+1 ))
-  local glob_var_name_filenames="${!iarg}"
+  local varname_extrn_mdl_sysdir="${!iarg}"
   iarg=$(( iarg+1 ))
-  local glob_var_name_sysdir="${!iarg}"
+  local varname_extrn_mdl_arcv_fmt="${!iarg}"
   iarg=$(( iarg+1 ))
-  local glob_var_name_arcv_file_fmt="${!iarg}"
+  local varname_extrn_mdl_arcv_fns="${!iarg}"
   iarg=$(( iarg+1 ))
-  local glob_var_name_arcv_filename="${!iarg}"
+  local varname_extrn_mdl_arcv_fps="${!iarg}"
   iarg=$(( iarg+1 ))
-  local glob_var_name_arcv_fullpath="${!iarg}"
-  iarg=$(( iarg+1 ))
-  local glob_var_name_arcvrel_dir="${!iarg}"
+  local varname_extrn_mdl_arcvrel_dir="${!iarg}"
+
+
+fi
+
+
 #
 #-----------------------------------------------------------------------
 #
@@ -193,9 +239,9 @@ where the arguments are defined as follows:
   local yyyy mm dd hh mn yyyymmdd \
         lbc_update_fhrs i num_fhrs \
         yy ddd fcst_hhh fcst_hh fcst_mn \
-        filenames prefix suffix \
+        fns prefix suffix \
         sysbasedir sysdir \
-        arcv_dir arcv_file_fmt arcv_filename arcv_fullpath arcvrel_dir
+        arcv_dir arcv_fmt arcv_fns arcv_fps arcvrel_dir
 #
 #-----------------------------------------------------------------------
 #
@@ -204,14 +250,7 @@ where the arguments are defined as follows:
 #-----------------------------------------------------------------------
 #
   valid_vals_anl_or_fcst=( "ANL" "anl" "FCST" "fcst" )
-  iselementof "$anl_or_fcst" valid_vals_anl_or_fcst || { \
-    valid_vals_anl_or_fcst_str=$(printf "\"%s\" " "${valid_vals_anl_or_fcst[@]}");
-    print_err_msg_exit "\
-Value specified in anl_or_fcst is not supported:
-  anl_or_fcst = \"$anl_or_fcst\"
-anl_or_fcst must be set to one of the following:
-  $valid_vals_anl_or_fcst_str
-"; }
+  check_var_valid_value "anl_or_fcst" "valid_vals_anl_or_fcst"
 #
 # For convenience of checking input values, change contents of anl_or_-
 # fcst to uppercase.
@@ -267,7 +306,7 @@ anl_or_fcst must be set to one of the following:
 #
   lbc_update_fhrs=( "" )
 
-  if [ "$ANL_OR_FCST" = "FCST" ]; then
+  if [ "${anl_or_fcst}" = "FCST" ]; then
 
     lbc_update_fhrs=( "${LBC_UPDATE_FCST_HRS[@]}" )
 #
@@ -278,7 +317,7 @@ anl_or_fcst must be set to one of the following:
 # the start time of the external model run.
 #
     num_fhrs=${#lbc_update_fhrs[@]}
-    for (( i=0; i<=$(( $num_fhrs - 1 )); i++ )); do
+    for (( i=0; i<=$((num_fhrs-1)); i++ )); do
       lbc_update_fhrs[$i]=$(( ${lbc_update_fhrs[$i]} + time_offset_hrs ))
     done
 
@@ -291,8 +330,8 @@ anl_or_fcst must be set to one of the following:
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$extrn_mdl" = "RAPX" ] || \
-     [ "$extrn_mdl" = "HRRRX" ]; then
+  if [ "${extrn_mdl_name}" = "RAPX" ] || \
+     [ "${extrn_mdl_name}" = "HRRRX" ]; then
 #
 # Get the Julian day-of-year of the starting date and time of the exter-
 # nal model run.
@@ -313,7 +352,13 @@ anl_or_fcst must be set to one of the following:
 #
 #-----------------------------------------------------------------------
 #
-  case "$anl_or_fcst" in
+  if [ "${anl_or_fcst}" = "ANL" ]; then
+    fv3gfs_file_fmt="${FV3GFS_FILE_FMT_ICS}"
+  elif [ "${anl_or_fcst}" = "FCST" ]; then
+    fv3gfs_file_fmt="${FV3GFS_FILE_FMT_LBCS}"
+  fi
+
+  case "${anl_or_fcst}" in
 #
 #-----------------------------------------------------------------------
 #
@@ -326,33 +371,54 @@ anl_or_fcst must be set to one of the following:
     fcst_hh="00"
     fcst_mn="00"
 
-    case "$extrn_mdl" in
+    case "${extrn_mdl_name}" in
 
-    "GFS")
-#      filenames=( "atm" "sfc" "nst" )
-      filenames=( "atm" "sfc" )
+    "GSMGFS")
+#      fns=( "atm" "sfc" "nst" )
+      fns=( "atm" "sfc" )
       prefix="gfs.t${hh}z."
-      filenames=( "${filenames[@]/#/$prefix}" )
+      fns=( "${fns[@]/#/$prefix}" )
       suffix="anl.nemsio"
-      filenames=( "${filenames[@]/%/$suffix}" )
+      fns=( "${fns[@]/%/$suffix}" )
       ;;
 
+    "FV3GFS")
+    
+      if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then  
+
+#        fns=( "atm" "sfc" "nst" )
+        fns=( "atm" "sfc" )
+        prefix="gfs.t${hh}z."
+        fns=( "${fns[@]/#/$prefix}" )
+        suffix="anl.nemsio"
+        fns=( "${fns[@]/%/$suffix}" )
+
+      elif [ "${fv3gfs_file_fmt}" = "grib2" ]; then
+
+# GSK 12/16/2019:
+# Turns out that the .f000 file contains certain necessary fields that
+# are not in the .anl file, so switch to the former.
+#        fns=( "gfs.t${hh}z.pgrb2.0p25.anl" )  # Get only 0.25 degree files for now.
+        fns=( "gfs.t${hh}z.pgrb2.0p25.f000" )  # Get only 0.25 degree files for now.
+
+      fi
+      ;;
+  
     "RAPX")
-      filenames=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
+      fns=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
       ;;
 
     "HRRRX")
-      filenames=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
+      fns=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
       ;;
 
     *)
       print_err_msg_exit "\
 The external model file names have not yet been specified for this com-
-bination of external model (extrn_mdl) and analysis or forecast (anl_-
-or_fcst):
-  extrn_mdl = \"$extrn_mdl\"
-  anl_or_fcst = \"$anl_or_fcst\"
-"
+bination of external model (extrn_mdl_name) and analysis or forecast 
+(anl_or_fcst):
+  extrn_mdl_name = \"${extrn_mdl_name}\"
+  anl_or_fcst = \"${anl_or_fcst}\""
       ;;
 
     esac
@@ -368,40 +434,53 @@ or_fcst):
 
     fcst_mn="00"
 
-    case "$extrn_mdl" in
+    case "${extrn_mdl_name}" in
 
-    "GFS")
+    "GSMGFS")
       fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
       prefix="gfs.t${hh}z.atmf"
-      filenames=( "${fcst_hhh[@]/#/$prefix}" )
+      fns=( "${fcst_hhh[@]/#/$prefix}" )
       suffix=".nemsio"
-      filenames=( "${filenames[@]/%/$suffix}" )
+      fns=( "${fns[@]/%/$suffix}" )
+      ;;
+
+    "FV3GFS")
+      if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then
+        fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
+        prefix="gfs.t${hh}z.atmf"
+        fns=( "${fcst_hhh[@]/#/$prefix}" )
+        suffix=".nemsio"
+        fns=( "${fns[@]/%/$suffix}" )
+      elif [ "${fv3gfs_file_fmt}" = "grib2" ]; then
+        fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
+        prefix="gfs.t${hh}z.pgrb2.0p25.f"
+        fns=( "${fcst_hhh[@]/#/$prefix}" )
+      fi
       ;;
 
     "RAPX")
       fcst_hh=( $( printf "%02d " "${lbc_update_fhrs[@]}" ) )
       prefix="${yy}${ddd}${hh}${mn}"
-      filenames=( "${fcst_hh[@]/#/$prefix}" )
+      fns=( "${fcst_hh[@]/#/$prefix}" )
       suffix="${fcst_mn}"
-      filenames=( "${filenames[@]/%/$suffix}" )
+      fns=( "${fns[@]/%/$suffix}" )
       ;;
 
     "HRRRX")
       fcst_hh=( $( printf "%02d " "${lbc_update_fhrs[@]}" ) )
       prefix="${yy}${ddd}${hh}${mn}"
-      filenames=( "${fcst_hh[@]/#/$prefix}" )
+      fns=( "${fcst_hh[@]/#/$prefix}" )
       suffix="${fcst_mn}"
-      filenames=( "${filenames[@]/%/$suffix}" )
+      fns=( "${fns[@]/%/$suffix}" )
       ;;
 
     *)
       print_err_msg_exit "\
 The external model file names have not yet been specified for this com-
-bination of external model (extrn_mdl) and analysis or forecast (anl_-
-or_fcst):
-  extrn_mdl = \"$extrn_mdl\"
-  anl_or_fcst = \"$anl_or_fcst\"
-"
+bination of external model (extrn_mdl_name) and analysis or forecast 
+(anl_or_fcst):
+  extrn_mdl_name = \"${extrn_mdl_name}\"
+  anl_or_fcst = \"${anl_or_fcst}\""
       ;;
 
     esac
@@ -420,20 +499,55 @@ or_fcst):
 #
 #-----------------------------------------------------------------------
 #
-  if [ "$anl_or_fcst" = "ANL" ]; then
-    sysbasedir="$EXTRN_MDL_FILES_SYSBASEDIR_ICSSURF"
-  elif [ "$anl_or_fcst" = "FCST" ]; then
-    sysbasedir="$EXTRN_MDL_FILES_SYSBASEDIR_LBCS"
+  if [ "${anl_or_fcst}" = "ANL" ]; then
+    sysbasedir="${EXTRN_MDL_FILES_SYSBASEDIR_ICS}"
+  elif [ "${anl_or_fcst}" = "FCST" ]; then
+    sysbasedir="${EXTRN_MDL_FILES_SYSBASEDIR_LBCS}"
   fi
 
-  case "$extrn_mdl" in
+  case "${extrn_mdl_name}" in
 
-  "GFS")
+#
+# It is not clear which, if any, systems the (old) spectral GFS model is 
+# available on, so set sysdir for this external model to a null string.
+#
+  "GSMGFS")
+    case "$MACHINE" in
+    "WCOSS_C")
+      sysdir=""
+      ;;
+    "THEIA")
+      sysdir=""
+      ;;
+    "HERA")
+      sysdir=""
+      ;;
+    "JET")
+      sysdir=""
+      ;;
+    "ODIN")
+      sysdir=""
+      ;;
+    *)
+      print_err_msg_exit "\
+The system directory in which to look for external model output files 
+has not been specified for this external model and machine combination:
+  extrn_mdl_name = \"${extrn_mdl_name}\"
+  MACHINE = \"$MACHINE\""
+      ;;
+    esac
+    ;;
+
+
+  "FV3GFS")
     case "$MACHINE" in
     "WCOSS_C")
       sysdir="$sysbasedir/gfs.${yyyymmdd}"
       ;;
     "THEIA")
+      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
+      ;;
+    "HERA")
       sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
       ;;
     "JET")
@@ -446,12 +560,12 @@ or_fcst):
       print_err_msg_exit "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
-  extrn_mdl = \"$extrn_mdl\"
-  MACHINE = \"$MACHINE\"
-"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
+  MACHINE = \"$MACHINE\""
       ;;
     esac
     ;;
+
 
   "RAPX")
     case "$MACHINE" in
@@ -461,6 +575,9 @@ has not been specified for this external model and machine combination:
     "THEIA")
       sysdir="$sysbasedir"
       ;;
+    "HERA")
+      sysdir="$sysbasedir"
+      ;;
     "JET")
       sysdir="$sysbasedir"
       ;;
@@ -471,12 +588,12 @@ has not been specified for this external model and machine combination:
       print_err_msg_exit "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
-  extrn_mdl = \"$extrn_mdl\"
-  MACHINE = \"$MACHINE\"
-"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
+  MACHINE = \"$MACHINE\""
       ;;
     esac
     ;;
+
 
   "HRRRX")
     case "$MACHINE" in
@@ -486,6 +603,9 @@ has not been specified for this external model and machine combination:
     "THEIA")
       sysdir="$sysbasedir"
       ;;
+    "HERA")
+      sysdir="$sysbasedir"
+      ;;
     "JET")
       sysdir="$sysbasedir"
       ;;
@@ -496,19 +616,18 @@ has not been specified for this external model and machine combination:
       print_err_msg_exit "\
 The system directory in which to look for external model output files 
 has not been specified for this external model and machine combination:
-  extrn_mdl = \"$extrn_mdl\"
-  MACHINE = \"$MACHINE\"
-"
+  extrn_mdl_name = \"${extrn_mdl_name}\"
+  MACHINE = \"$MACHINE\""
       ;;
     esac
     ;;
+
 
   *)
     print_err_msg_exit "\
 The system directory in which to look for external model output files 
 has not been specified for this external model:
-  extrn_mdl = \"$extrn_mdl\"
-"
+  extrn_mdl_name = \"${extrn_mdl_name}\""
 
   esac
 #
@@ -528,77 +647,150 @@ has not been specified for this external model:
 #
 #-----------------------------------------------------------------------
 #
-  case "$extrn_mdl" in
+  case "${extrn_mdl_name}" in
 
-  "GFS")
+  "GSMGFS")
     arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
-    arcv_file_fmt="tar"
-    arcv_filename="gpfs_hps_nco_ops_com_gfs_prod_gfs.${cdate}."
-    if [ "$anl_or_fcst" = "ANL" ]; then
-      arcv_filename="${arcv_filename}anl"
+    arcv_fmt="tar"
+    arcv_fns="gpfs_hps_nco_ops_com_gfs_prod_gfs.${cdate}."
+    if [ "${anl_or_fcst}" = "ANL" ]; then
+      arcv_fns="${arcv_fns}anl"
       arcvrel_dir="."
-    elif [ "$anl_or_fcst" = "FCST" ]; then
-      arcv_filename="${arcv_filename}sigma"
+    elif [ "${anl_or_fcst}" = "FCST" ]; then
+      arcv_fns="${arcv_fns}sigma"
       arcvrel_dir="/gpfs/hps/nco/ops/com/gfs/prod/gfs.${yyyymmdd}"
     fi
-    arcv_filename="${arcv_filename}.${arcv_file_fmt}"
-    arcv_fullpath="$arcv_dir/$arcv_filename"
+    arcv_fns="${arcv_fns}.${arcv_fmt}"
+    arcv_fps="$arcv_dir/$arcv_fns"
+    ;;
+
+  "FV3GFS")
+    if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then
+ 
+      if [ "${cdate_FV3SAR}" -le "2019061206" ]; then
+        arcv_dir="/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_C/Q2FY19/prfv3rt3/${cdate_FV3SAR}"
+        arcv_fns=""
+      else
+        arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+        arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}."
+      fi
+      arcv_fmt="tar"
+      if [ "${anl_or_fcst}" = "ANL" ]; then
+        arcv_fns="${arcv_fns}gfs_nemsioa"
+        arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
+      elif [ "${anl_or_fcst}" = "FCST" ]; then
+        last_fhr_in_nemsioa="39"
+        first_lbc_fhr="${lbc_update_fhrs[0]}"
+        last_lbc_fhr="${lbc_update_fhrs[-1]}"
+        if [ "${last_lbc_fhr}" -le "${last_fhr_in_nemsioa}" ]; then
+          arcv_fns="${arcv_fns}gfs_nemsioa"
+        elif [ "${first_lbc_fhr}" -gt "${last_fhr_in_nemsioa}" ]; then
+          arcv_fns="${arcv_fns}gfs_nemsiob"
+        else
+          arcv_fns=( "${arcv_fns}gfs_nemsioa" "${arcv_fns}gfs_nemsiob" )
+        fi
+        arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
+      fi
+
+    elif [ "${fv3gfs_file_fmt}" = "grib2" ]; then
+
+      arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
+      arcv_fns="gpfs_dell1_nco_ops_com_gfs_prod_gfs.${yyyymmdd}_${hh}.gfs_pgrb2"
+      arcv_fmt="tar"
+      arcvrel_dir="./gfs.${yyyymmdd}/${hh}"
+  
+    fi
+
+    is_array arcv_fns
+    if [ "$?" = "0" ]; then
+      suffix=".${arcv_fmt}"
+      arcv_fns=( "${arcv_fns[@]/%/$suffix}" )
+      prefix="$arcv_dir/"
+      arcv_fps=( "${arcv_fns[@]/#/$prefix}" )
+    else
+      arcv_fns="${arcv_fns}.${arcv_fmt}"
+      arcv_fps="$arcv_dir/$arcv_fns"
+    fi
     ;;
 
   "RAPX")
+#
+# The zip archive files for RAPX are named such that the forecast files
+# for odd-numbered starting hours (e.g. 01, 03, ..., 23) are stored to-
+# gether with the forecast files for the corresponding preceding even-
+# numbered starting hours (e.g. 00, 02, ..., 22, respectively), in an 
+# archive file whose name contains only the even-numbered hour.  Thus, 
+# in forming the name of the archive file, if the starting hour (hh) is
+# odd, we reduce it by one to get the corresponding even-numbered hour 
+# and use that to form the archive file name.
+#
+    hh_orig=$hh
+# Convert hh to a decimal (i.e. base-10) number.  We need this because 
+# if it starts with a 0 (e.g. 00, 01, ..., 09), bash will treat it as an
+# octal number, and 08 and 09 are illegal ocatal numbers for which the
+# arithmetic operations below will fail.
+    hh=$((10#$hh))
+    if [ $(($hh%2)) = 1 ]; then
+      hh=$((hh-1))
+    fi
+# Now that the arithmetic is done, recast hh as a two-digit string be-
+# cause that is needed in constructing the names below.
+    hh=$( printf "%02d\n" $hh )
+
     arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/rap/full/wrfnat"
-    arcv_file_fmt="zip"
-    arcv_filename="${yyyy}${mm}${dd}${hh}00.${arcv_file_fmt}"
-    arcv_fullpath="$arcv_dir/$arcv_filename"
+    arcv_fmt="zip"
+    arcv_fns="${yyyy}${mm}${dd}${hh}00.${arcv_fmt}"
+    arcv_fps="$arcv_dir/$arcv_fns"
     arcvrel_dir=""
+#
+# Reset hh to its original value in case it is used again later below.
+#
+    hh=${hh_orig}
     ;;
 
   "HRRRX")
     arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/hrrr/conus/wrfnat"
-    arcv_file_fmt="zip"
-    arcv_filename="${yyyy}${mm}${dd}${hh}00.${arcv_file_fmt}"
-    arcv_fullpath="$arcv_dir/$arcv_filename"
+    arcv_fmt="zip"
+    arcv_fns="${yyyy}${mm}${dd}${hh}00.${arcv_fmt}"
+    arcv_fps="$arcv_dir/$arcv_fns"
     arcvrel_dir=""
     ;;
 
   *)
     print_err_msg_exit "\
 Archive file information has not been specified for this external model:
-  extrn_mdl = \"$extrn_mdl\"
-"
+  extrn_mdl_name = \"${extrn_mdl_name}\""
     ;;
 
   esac
 #
+# Depending on the experiment configuration, the above code may set 
+# arcv_fns and arcv_fps to either scalars or arrays.  If they are not 
+# arrays, recast them as arrays because that is what is expected in the
+# code below.
+#
+  is_array arcv_fns || arcv_fns=( "${arcv_fns}" )
+  is_array arcv_fps || arcv_fps=( "${arcv_fps}" )
+#
 #-----------------------------------------------------------------------
 #
-# Write results to the specified output file in a form that can be 
-# sourced by the calling script.
+# Use the eval function to set values of output variables.
 #
 #-----------------------------------------------------------------------
 #
-echo "HELLO1111"
-pwd
-ls -alF
-echo "HELLO2222"
-  { cat << EOM > $output_fn
-$glob_var_name_cdate="$cdate"
-$glob_var_name_lbc_update_fhrs=( $( printf "\"%s\" " "${lbc_update_fhrs[@]}" ))
-$glob_var_name_filenames=( $( printf "\"%s\" " "${filenames[@]}" ))
-$glob_var_name_sysdir="$sysdir"
-$glob_var_name_arcv_file_fmt="$arcv_file_fmt"
-$glob_var_name_arcv_filename="$arcv_filename"
-$glob_var_name_arcv_fullpath="$arcv_fullpath"
-$glob_var_name_arcvrel_dir="$arcvrel_dir"
-EOM
- } || print_err_msg_exit "\
-Heredoc (cat) command to store output variable values to file returned 
-with a nonzero status.
-"
-echo "HELLO3333"
-pwd
-ls -alF
-echo "HELLO4444"
+  lbc_update_fhrs_str="( "$( printf "\"%s\" " "${lbc_update_fhrs[@]}" )")"
+  fns_str="( "$( printf "\"%s\" " "${fns[@]}" )")"
+  arcv_fns_str="( "$( printf "\"%s\" " "${arcv_fns[@]}" )")"
+  arcv_fps_str="( "$( printf "\"%s\" " "${arcv_fps[@]}" )")"
+
+  eval ${varname_extrn_mdl_cdate}="${cdate}"
+  eval ${varname_extrn_mdl_lbc_update_fhrs}=${lbc_update_fhrs_str}
+  eval ${varname_extrn_mdl_fns}=${fns_str}
+  eval ${varname_extrn_mdl_sysdir}="${sysdir}"
+  eval ${varname_extrn_mdl_arcv_fmt}="${arcv_fmt}"
+  eval ${varname_extrn_mdl_arcv_fns}=${arcv_fns_str}
+  eval ${varname_extrn_mdl_arcv_fps}=${arcv_fps_str}
+  eval ${varname_extrn_mdl_arcvrel_dir}="${arcvrel_dir}"
 #
 #-----------------------------------------------------------------------
 #

@@ -1,0 +1,23 @@
+
+write_groups:            <write_groups>
+write_tasks_per_group:   <write_tasks_per_group>
+num_files:               2
+filename_base:           'dyn''phy'
+output_file:             'netcdf'
+write_nemsioflip:        .false.
+write_fsyncflag:         .false.
+
+output_grid:             <output_grid>     # Coordinate system of output grid.
+cen_lon:                 <cen_lon>         # central longitude
+cen_lat:                 <cen_lat>         # central latitude
+lon1:                    <lon1>            # longitude of lower-left point in non-rotated coordinate system (in degrees)
+lat1:                    <lat1>            # latitude of lower-left
+lon2:                    <lon2>            # longitude of upper-right
+lat2:                    <lat2>            # latitude of upper-right
+dlon:                    <dlon>
+dlat:                    <dlat>
+
+nfhout:                  1
+nfhmax_hf:               60
+nfhout_hf:               1
+nsout:                   -1

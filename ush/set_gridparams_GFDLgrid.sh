@@ -1,7 +1,186 @@
-# This file is always sourced by another script (i.e. it's never run in
-# its own shell), so there's no need to put the #!/bin/some_shell on the
-# first line.
+#
+#-----------------------------------------------------------------------
+#
+# This file defines and then calls a function that sets the parameters
+# for a grid that is to be generated using the "GFDLgrid" grid genera-
+# tion method (i.e. GRID_GEN_METHOD set to "GFDLgrid").
+#
+#-----------------------------------------------------------------------
+#
+function set_gridparams_GFDLgrid() {
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
+# Specify the set of valid argument names for this script/function.  
+# Then process the arguments provided to this script/function (which 
+# should consist of a set of name-value pairs of the form arg1="value1",
+# etc).
+#
+#-----------------------------------------------------------------------
+#
+  local valid_args=( \
+"lon_of_t6_ctr" \
+"lat_of_t6_ctr" \
+"res_of_t6g" \
+"stretch_factor" \
+"refine_ratio_t6g_to_t7g" \
+"istart_of_t7_on_t6g" \
+"iend_of_t7_on_t6g" \
+"jstart_of_t7_on_t6g" \
+"jend_of_t7_on_t6g" \
+"output_varname_lon_of_t7_ctr" \
+"output_varname_lat_of_t7_ctr" \
+"output_varname_nx_of_t7_on_t7g" \
+"output_varname_ny_of_t7_on_t7g" \
+"output_varname_halo_width_on_t7g" \
+"output_varname_stretch_factor" \
+"output_varname_istart_of_t7_with_halo_on_t6sg" \
+"output_varname_iend_of_t7_with_halo_on_t6sg" \
+"output_varname_jstart_of_t7_with_halo_on_t6sg" \
+"output_varname_jend_of_t7_with_halo_on_t6sg" \
+  )
+  process_args valid_args "$@"
+#
+#-----------------------------------------------------------------------
+#
+# Declare local variables.
+#
+#-----------------------------------------------------------------------
+#
+  local nx_of_t6_on_t6g \
+        ny_of_t6_on_t6g \
+        num_left_margin_cells_on_t6g \
+        num_right_margin_cells_on_t6g \
+        num_bot_margin_cells_on_t6g \
+        num_top_margin_cells_on_t6g \
+        lon_of_t7_ctr \
+        lat_of_t7_ctr \
+        istart_of_t7_on_t6sg \
+        iend_of_t7_on_t6sg \
+        jstart_of_t7_on_t6sg \
+        jend_of_t7_on_t6sg \
+        halo_width_on_t7g \
+        halo_width_on_t6sg \
+        istart_of_t7_with_halo_on_t6sg \
+        iend_of_t7_with_halo_on_t6sg \
+        jstart_of_t7_with_halo_on_t6sg \
+        jend_of_t7_with_halo_on_t6sg \
+        halo_width_on_t6sg \
+        halo_width_on_t6g \
+        halo_width_on_t7g \
+        nx_of_t7_on_t6sg \
+        nx_of_t7_on_t6g \
+        nx_of_t7_on_t7g \
+        ny_of_t7_on_t6sg \
+        ny_of_t7_on_t6g \
+        ny_of_t7_on_t7g \
+        nx_of_t6_on_t6sg \
+        ny_of_t6_on_t6sg \
+        prime_factors_nx_of_t7_on_t7g \
+        prime_factors_ny_of_t7_on_t7g \
+        nx_of_t7_with_halo_on_t6sg \
+        nx_of_t7_with_halo_on_t6g \
+        nx_of_t7_with_halo_on_t7g \
+        ny_of_t7_with_halo_on_t6sg \
+        ny_of_t7_with_halo_on_t6g \
+        ny_of_t7_with_halo_on_t7g
+#
+#-----------------------------------------------------------------------
+#
+# To simplify the grid setup, we require that tile 7 be centered on tile 
+# 6.  Note that this is not really a restriction because tile 6 can al-
+# ways be moved so that it is centered on tile 7 [the location of tile 6 
+# doesn't really matter because for a regional setup, the forecast model 
+# will only run on tile 7 (not on tiles 1-6)].
+#
+# We now check that tile 7 is centered on tile 6 by checking (1) that 
+# the number of cells (on tile 6) between the left boundaries of these 
+# two tiles is equal to that between their right boundaries and (2) that 
+# the number of cells (on tile 6) between the bottom boundaries of these
+# two tiles is equal to that between their top boundaries.  If not, we 
+# print out an error message and exit.  If so, we set the longitude and 
+# latitude of the center of tile 7 to those of tile 6 and continue.
+#
+#-----------------------------------------------------------------------
+#
+  nx_of_t6_on_t6g=${res_of_t6g}
+  ny_of_t6_on_t6g=${res_of_t6g}
 
+  num_left_margin_cells_on_t6g=$(( istart_of_t7_on_t6g - 1 ))
+  num_right_margin_cells_on_t6g=$(( nx_of_t6_on_t6g - iend_of_t7_on_t6g )) 
+
+  if [ ${num_left_margin_cells_on_t6g} -ne ${num_right_margin_cells_on_t6g} ]; then
+    print_err_msg_exit "\
+In order for tile 7 to be centered in the x direction on tile 6, the x-
+direction tile 6 cell indices at which tile 7 starts and ends (given by
+istart_of_t7_on_t6g and iend_of_t7_on_t6g, respectively) must be set 
+such that the number of tile 6 cells in the margin between the left 
+boundaries of tiles 6 and 7 (given by num_left_margin_cells_on_t6g) is
+equal to that in the margin between their right boundaries (given by 
+num_right_margin_cells_on_t6g):
+  istart_of_t7_on_t6g = ${istart_of_t7_on_t6g}
+  iend_of_t7_on_t6g = ${iend_of_t7_on_t6g}
+  num_left_margin_cells_on_t6g = ${num_left_margin_cells_on_t6g}
+  num_right_margin_cells_on_t6g = ${num_right_margin_cells_on_t6g}
+Note that the total number of cells in the x-direction on tile 6 is gi-
+ven by:
+  nx_of_t6_on_t6g = ${nx_of_t6_on_t6g}
+Please reset istart_of_t7_on_t6g and iend_of_t7_on_t6g and rerun."
+  fi
+
+  num_bot_margin_cells_on_t6g=$(( jstart_of_t7_on_t6g - 1 ))
+  num_top_margin_cells_on_t6g=$(( ny_of_t6_on_t6g - jend_of_t7_on_t6g )) 
+
+  if [ ${num_bot_margin_cells_on_t6g} -ne ${num_top_margin_cells_on_t6g} ]; then
+    print_err_msg_exit "\
+In order for tile 7 to be centered in the y direction on tile 6, the y-
+direction tile 6 cell indices at which tile 7 starts and ends (given by
+jstart_of_t7_on_t6g and jend_of_t7_on_t6g, respectively) must be set 
+such that the number of tile 6 cells in the margin between the left 
+boundaries of tiles 6 and 7 (given by num_left_margin_cells_on_t6g) is
+equal to that in the margin between their right boundaries (given by 
+num_right_margin_cells_on_t6g):
+  jstart_of_t7_on_t6g = ${jstart_of_t7_on_t6g}
+  jend_of_t7_on_t6g = ${jend_of_t7_on_t6g}
+  num_bot_margin_cells_on_t6g = ${num_bot_margin_cells_on_t6g}
+  num_top_margin_cells_on_t6g = ${num_top_margin_cells_on_t6g}
+Note that the total number of cells in the y-direction on tile 6 is gi-
+ven by:
+  ny_of_t6_on_t6g = ${ny_of_t6_on_t6g}
+Please reset jstart_of_t7_on_t6g and jend_of_t7_on_t6g and rerun."
+  fi
+
+  lon_of_t7_ctr="${lon_of_t6_ctr}"
+  lat_of_t7_ctr="${lat_of_t6_ctr}"
 #
 #-----------------------------------------------------------------------
 #
@@ -14,28 +193,28 @@
 # the number of cells in each direction on that tile's grid.  We will
 # denote these index limits by
 #
-#   istart_rgnl_T6SG
-#   iend_rgnl_T6SG
-#   jstart_rgnl_T6SG
-#   jend_rgnl_T6SG
+#   istart_of_t7_on_t6sg
+#   iend_of_t7_on_t6sg
+#   jstart_of_t7_on_t6sg
+#   jend_of_t7_on_t6sg
 #
 # The "_T6SG" suffix in these names is used to indicate that the indices
 # are on the supergrid of tile 6.  Recall, however, that we have as in-
 # puts the index limits of the regional grid on the tile 6 grid, not its
 # supergrid.  These are given by
 #
-#   istart_rgnl_T6
-#   iend_rgnl_T6
-#   jstart_rgnl_T6
-#   jend_rgnl_T6
+#   istart_of_t7_on_t6g
+#   iend_of_t7_on_t6g
+#   jstart_of_t7_on_t6g
+#   jend_of_t7_on_t6g
 #
 # We can obtain the former from the latter by recalling that the super-
 # grid has twice the resolution of the original grid.  Thus,
 #
-#   istart_rgnl_T6SG = 2*istart_rgnl_T6 - 1
-#   iend_rgnl_T6SG = 2*iend_rgnl_T6
-#   jstart_rgnl_T6SG = 2*jstart_rgnl_T6 - 1
-#   jend_rgnl_T6SG = 2*jend_rgnl_T6
+#   istart_of_t7_on_t6sg = 2*istart_of_t7_on_t6g - 1
+#   iend_of_t7_on_t6sg = 2*iend_of_t7_on_t6g
+#   jstart_of_t7_on_t6sg = 2*jstart_of_t7_on_t6g - 1
+#   jend_of_t7_on_t6sg = 2*jend_of_t7_on_t6g
 #
 # These are obtained assuming that grid cells on tile 6 must either be
 # completely within the regional domain or completely outside of it,
@@ -47,10 +226,10 @@
 #
 #-----------------------------------------------------------------------
 #
-istart_rgnl_T6SG=$(( 2*$istart_rgnl_T6 - 1 ))
-iend_rgnl_T6SG=$(( 2*$iend_rgnl_T6 ))
-jstart_rgnl_T6SG=$(( 2*$jstart_rgnl_T6 - 1 ))
-jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
+  istart_of_t7_on_t6sg=$(( 2*istart_of_t7_on_t6g - 1 ))
+  iend_of_t7_on_t6sg=$(( 2*iend_of_t7_on_t6g ))
+  jstart_of_t7_on_t6sg=$(( 2*jstart_of_t7_on_t6g - 1 ))
+  jend_of_t7_on_t6sg=$(( 2*jend_of_t7_on_t6g ))
 #
 #-----------------------------------------------------------------------
 #
@@ -60,10 +239,10 @@ jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
 # we must pass to make_hgrid the index limits (on the tile 6 supergrid)
 # of the regional grid including a halo.  We will let the variables
 #
-#   istart_rgnl_wide_halo_T6SG
-#   iend_rgnl_wide_halo_T6SG
-#   jstart_rgnl_wide_halo_T6SG
-#   jend_rgnl_wide_halo_T6SG
+#   istart_of_t7_with_halo_on_t6sg
+#   iend_of_t7_with_halo_on_t6sg
+#   jstart_of_t7_with_halo_on_t6sg
+#   jend_of_t7_with_halo_on_t6sg
 #
 # denote these limits.  The reason we include "_wide_halo" in these va-
 # riable names is that the halo of the grid that we will first generate
@@ -73,44 +252,44 @@ jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
 # the model needs later on by "shaving" layers of cells from this wide-
 # halo grid.  Next, we describe how to calculate the above indices.
 #
-# Let nhw_T7 denote the width of the "wide" halo in units of number of
+# Let halo_width_on_t7g denote the width of the "wide" halo in units of number of
 # grid cells on the regional grid (i.e. tile 7) that we'd like to have
 # along all four edges of the regional domain (left, right, bottom, and
 # top).  To obtain the corresponding halo width in units of number of
-# cells on the tile 6 grid -- which we denote by nhw_T6 -- we simply di-
-# vide nhw_T7 by the refinement ratio, i.e.
+# cells on the tile 6 grid -- which we denote by halo_width_on_t6g -- we simply di-
+# vide halo_width_on_t7g by the refinement ratio, i.e.
 #
-#   nhw_T6 = nhw_T7/refine_ratio
+#   halo_width_on_t6g = halo_width_on_t7g/refine_ratio_t6g_to_t7g
 #
 # The corresponding halo width on the tile 6 supergrid is then given by
 #
-#   nhw_T6SG = 2*nhw_T6
-#            = 2*nhw_T7/refine_ratio
+#   halo_width_on_t6sg = 2*halo_width_on_t6g
+#                      = 2*halo_width_on_t7g/refine_ratio_t6g_to_t7g
 #
-# Note that nhw_T6SG must be an integer, but the expression for it de-
+# Note that halo_width_on_t6sg must be an integer, but the expression for it de-
 # rived above may not yield an integer.  To ensure that the halo has a
-# width of at least nhw_T7 cells on the regional grid, we round up the
-# result of the expression above for nhw_T6SG, i.e. we redefine nhw_T6SG
+# width of at least halo_width_on_t7g cells on the regional grid, we round up the
+# result of the expression above for halo_width_on_t6sg, i.e. we redefine halo_width_on_t6sg
 # to be
 #
-#   nhw_T6SG = ceil(2*nhw_T7/refine_ratio)
+#   halo_width_on_t6sg = ceil(2*halo_width_on_t7g/refine_ratio_t6g_to_t7g)
 #
 # where ceil(...) is the ceiling function, i.e. it rounds its floating
 # point argument up to the next larger integer.  Since in bash division
 # of two integers returns a truncated integer and since bash has no
 # built-in ceil(...) function, we perform the rounding-up operation by
 # adding the denominator (of the argument of ceil(...) above) minus 1 to
-# the original numerator, i.e. by redefining nhw_T6SG to be
+# the original numerator, i.e. by redefining halo_width_on_t6sg to be
 #
-#   nhw_T6SG = (2*nhw_T7 + refine_ratio - 1)/refine_ratio
+#   halo_width_on_t6sg = (2*halo_width_on_t7g + refine_ratio_t6g_to_t7g - 1)/refine_ratio_t6g_to_t7g
 #
 # This trick works when dividing one positive integer by another.
 #
-# In order to calculate nhw_T6G using the above expression, we must
-# first specify nhw_T7.  Next, we specify an initial value for it by
+# In order to calculate halo_width_on_t6g using the above expression, we must
+# first specify halo_width_on_t7g.  Next, we specify an initial value for it by
 # setting it to one more than the largest-width halo that the model ac-
-# tually needs, which is nh4_T7.  We then calculate nhw_T6SG using the
-# above expression.  Note that these values of nhw_T7 and nhw_T6SG will
+# tually needs, which is NH4.  We then calculate halo_width_on_t6sg using the
+# above expression.  Note that these values of halo_width_on_t7g and halo_width_on_t6sg will
 # likely not be their final values; their final values will be calcula-
 # ted later below after calculating the starting and ending indices of
 # the regional grid with wide halo on the tile 6 supergrid and then ad-
@@ -118,30 +297,30 @@ jend_rgnl_T6SG=$(( 2*$jend_rgnl_T6 ))
 #
 #-----------------------------------------------------------------------
 #
-nhw_T7=$(( $nh4_T7 + 1 ))
-nhw_T6SG=$(( (2*nhw_T7 + refine_ratio - 1)/refine_ratio ))
+  halo_width_on_t7g=$(( NH4 + 1 ))
+  halo_width_on_t6sg=$(( (2*halo_width_on_t7g + refine_ratio_t6g_to_t7g - 1)/refine_ratio_t6g_to_t7g ))
 #
 #-----------------------------------------------------------------------
 #
-# With an initial value of nhw_T6SG now available, we can obtain the
+# With an initial value of halo_width_on_t6sg now available, we can obtain the
 # tile 6 supergrid index limits of the regional domain (including the
 # wide halo) from the index limits for the regional domain without a ha-
-# lo by simply subtracting nhw_T6SG from the lower index limits and add-
-# ing nhw_T6SG to the upper index limits, i.e.
+# lo by simply subtracting halo_width_on_t6sg from the lower index limits and add-
+# ing halo_width_on_t6sg to the upper index limits, i.e.
 #
-#   istart_rgnl_wide_halo_T6SG = istart_rgnl_T6SG - nhw_T6SG
-#   iend_rgnl_wide_halo_T6SG = iend_rgnl_T6SG + nhw_T6SG
-#   jstart_rgnl_wide_halo_T6SG = jstart_rgnl_T6SG - nhw_T6SG
-#   jend_rgnl_wide_halo_T6SG = jend_rgnl_T6SG + nhw_T6SG
+#   istart_of_t7_with_halo_on_t6sg = istart_of_t7_on_t6sg - halo_width_on_t6sg
+#   iend_of_t7_with_halo_on_t6sg = iend_of_t7_on_t6sg + halo_width_on_t6sg
+#   jstart_of_t7_with_halo_on_t6sg = jstart_of_t7_on_t6sg - halo_width_on_t6sg
+#   jend_of_t7_with_halo_on_t6sg = jend_of_t7_on_t6sg + halo_width_on_t6sg
 #
 # We calculate these next.
 #
 #-----------------------------------------------------------------------
 #
-istart_rgnl_wide_halo_T6SG=$(( $istart_rgnl_T6SG - $nhw_T6SG ))
-iend_rgnl_wide_halo_T6SG=$(( $iend_rgnl_T6SG + $nhw_T6SG ))
-jstart_rgnl_wide_halo_T6SG=$(( $jstart_rgnl_T6SG - $nhw_T6SG ))
-jend_rgnl_wide_halo_T6SG=$(( $jend_rgnl_T6SG + $nhw_T6SG ))
+  istart_of_t7_with_halo_on_t6sg=$(( istart_of_t7_on_t6sg - halo_width_on_t6sg ))
+  iend_of_t7_with_halo_on_t6sg=$(( iend_of_t7_on_t6sg + halo_width_on_t6sg ))
+  jstart_of_t7_with_halo_on_t6sg=$(( jstart_of_t7_on_t6sg - halo_width_on_t6sg ))
+  jend_of_t7_with_halo_on_t6sg=$(( jend_of_t7_on_t6sg + halo_width_on_t6sg ))
 #
 #-----------------------------------------------------------------------
 #
@@ -152,26 +331,28 @@ jend_rgnl_wide_halo_T6SG=$(( $jend_rgnl_T6SG + $nhw_T6SG ))
 # starting indices on the tile 6 supergrid of the grid with wide halo
 # must be odd while the ending indices must be even.  Thus, below, we
 # subtract 1 from the starting indices if they are even (which ensures
-# that there will be at least nhw_T7 halo cells along the left and bot-
+# that there will be at least halo_width_on_t7g halo cells along the left and bot-
 # tom boundaries), and we add 1 to the ending indices if they are odd
-# (which ensures that there will be at least nhw_T7 halo cells along the
+# (which ensures that there will be at least halo_width_on_t7g halo cells along the
 # right and top boundaries).
 #
 #-----------------------------------------------------------------------
 #
-if [ $(( istart_rgnl_wide_halo_T6SG%2 )) -eq 0 ]; then
-  istart_rgnl_wide_halo_T6SG=$(( istart_rgnl_wide_halo_T6SG - 1 ))
-fi
-if [ $(( iend_rgnl_wide_halo_T6SG%2 )) -eq 1 ]; then
-  iend_rgnl_wide_halo_T6SG=$(( iend_rgnl_wide_halo_T6SG + 1 ))
-fi
+  if [ $(( istart_of_t7_with_halo_on_t6sg%2 )) -eq 0 ]; then
+    istart_of_t7_with_halo_on_t6sg=$(( istart_of_t7_with_halo_on_t6sg - 1 ))
+  fi
 
-if [ $(( jstart_rgnl_wide_halo_T6SG%2 )) -eq 0 ]; then
-  jstart_rgnl_wide_halo_T6SG=$(( jstart_rgnl_wide_halo_T6SG - 1 ))
-fi
-if [ $(( jend_rgnl_wide_halo_T6SG%2 )) -eq 1 ]; then
-  jend_rgnl_wide_halo_T6SG=$(( jend_rgnl_wide_halo_T6SG + 1 ))
-fi
+  if [ $(( iend_of_t7_with_halo_on_t6sg%2 )) -eq 1 ]; then
+    iend_of_t7_with_halo_on_t6sg=$(( iend_of_t7_with_halo_on_t6sg + 1 ))
+  fi
+
+  if [ $(( jstart_of_t7_with_halo_on_t6sg%2 )) -eq 0 ]; then
+    jstart_of_t7_with_halo_on_t6sg=$(( jstart_of_t7_with_halo_on_t6sg - 1 ))
+  fi
+
+  if [ $(( jend_of_t7_with_halo_on_t6sg%2 )) -eq 1 ]; then
+    jend_of_t7_with_halo_on_t6sg=$(( jend_of_t7_with_halo_on_t6sg + 1 ))
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -180,7 +361,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set +x; } > /dev/null 2>&1
+  { save_shell_opts; set +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -197,119 +378,135 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg_verbose "\
+  print_info_msg "$VERBOSE" "
 Original values of the halo width on the tile 6 supergrid and on the 
 tile 7 grid are:
-  nhw_T6SG = $nhw_T6SG
-  nhw_T7   = $nhw_T7"
+  halo_width_on_t6sg = ${halo_width_on_t6sg}
+  halo_width_on_t7g  = ${halo_width_on_t7g}"
 
-nhw_T6SG=$(( $istart_rgnl_T6SG - $istart_rgnl_wide_halo_T6SG ))
-nhw_T6=$(( $nhw_T6SG/2 ))
-nhw_T7=$(( $nhw_T6*$refine_ratio ))
+  halo_width_on_t6sg=$(( istart_of_t7_on_t6sg - istart_of_t7_with_halo_on_t6sg ))
+  halo_width_on_t6g=$(( halo_width_on_t6sg/2 ))
+  halo_width_on_t7g=$(( halo_width_on_t6g*refine_ratio_t6g_to_t7g ))
 
-print_info_msg_verbose "\
+  print_info_msg "$VERBOSE" "
 Values of the halo width on the tile 6 supergrid and on the tile 7 grid 
 AFTER adjustments are:
-  nhw_T6SG = $nhw_T6SG
-  nhw_T7   = $nhw_T7"
+  halo_width_on_t6sg = ${halo_width_on_t6sg}
+  halo_width_on_t7g  = ${halo_width_on_t7g}"
 #
 #-----------------------------------------------------------------------
 #
 # Calculate the number of cells that the regional domain (without halo)
 # has in each of the two horizontal directions (say x and y).  We denote
-# these by nx_T7 and ny_T7, respectively.  These will be needed in the
-# "shave" steps later below.
+# these by nx_of_t7_on_t7g and ny_of_t7_on_t7g, respectively.  These 
+# will be needed in the "shave" steps in the grid generation task of the
+# workflow.
 #
 #-----------------------------------------------------------------------
 #
-nx_rgnl_T6SG=$(( $iend_rgnl_T6SG - $istart_rgnl_T6SG + 1 ))
-nx_rgnl_T6=$(( $nx_rgnl_T6SG/2 ))
-nx_T7=$(( $nx_rgnl_T6*$refine_ratio ))
+  nx_of_t7_on_t6sg=$(( iend_of_t7_on_t6sg - istart_of_t7_on_t6sg + 1 ))
+  nx_of_t7_on_t6g=$(( nx_of_t7_on_t6sg/2 ))
+  nx_of_t7_on_t7g=$(( nx_of_t7_on_t6g*refine_ratio_t6g_to_t7g ))
 
-ny_rgnl_T6SG=$(( $jend_rgnl_T6SG - $jstart_rgnl_T6SG + 1 ))
-ny_rgnl_T6=$(( $ny_rgnl_T6SG/2 ))
-ny_T7=$(( $ny_rgnl_T6*$refine_ratio ))
+  ny_of_t7_on_t6sg=$(( jend_of_t7_on_t6sg - jstart_of_t7_on_t6sg + 1 ))
+  ny_of_t7_on_t6g=$(( ny_of_t7_on_t6sg/2 ))
+  ny_of_t7_on_t7g=$(( ny_of_t7_on_t6g*refine_ratio_t6g_to_t7g ))
 #
 # The following are set only for informational purposes.
 #
-nx_T6=$RES
-ny_T6=$RES
-nx_T6SG=$(( $nx_T6*2 ))
-ny_T6SG=$(( $ny_T6*2 ))
+  nx_of_t6_on_t6sg=$(( 2*nx_of_t6_on_t6g ))
+  ny_of_t6_on_t6sg=$(( 2*ny_of_t6_on_t6g ))
 
-prime_factors_nx_T7=$( factor $nx_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
-prime_factors_ny_T7=$( factor $ny_T7 | sed -r -e 's/^[0-9]+: (.*)/\1/' )
+  prime_factors_nx_of_t7_on_t7g=$( factor ${nx_of_t7_on_t7g} | sed -r -e 's/^[0-9]+: (.*)/\1/' )
+  prime_factors_ny_of_t7_on_t7g=$( factor ${ny_of_t7_on_t7g} | sed -r -e 's/^[0-9]+: (.*)/\1/' )
 
-print_info_msg_verbose "\
+  print_info_msg "$VERBOSE" "
 The number of cells in the two horizontal directions (x and y) on the 
 parent tile's (tile 6) grid and supergrid are:
-  nx_T6 = $nx_T6
-  ny_T6 = $ny_T6
-  nx_T6SG = $nx_T6SG
-  ny_T6SG = $ny_T6SG
+  nx_of_t6_on_t6g = ${nx_of_t6_on_t6g}
+  ny_of_t6_on_t6g = ${ny_of_t6_on_t6g}
+  nx_of_t6_on_t6sg = ${nx_of_t6_on_t6sg}
+  ny_of_t6_on_t6sg = ${ny_of_t6_on_t6sg}
 
 The number of cells in the two horizontal directions on the tile 6 grid
-and supergrid that the regional domain (tile 7) WITHOUT A HALO encompasses
-are:
-  nx_rgnl_T6 = $nx_rgnl_T6
-  ny_rgnl_T6 = $ny_rgnl_T6
-  nx_rgnl_T6SG = $nx_rgnl_T6SG
-  ny_rgnl_T6SG = $ny_rgnl_T6SG
+and supergrid that the regional domain (tile 7) WITHOUT A HALO encompas-
+ses are:
+  nx_of_t7_on_t6g = ${nx_of_t7_on_t6g}
+  ny_of_t7_on_t6g = ${ny_of_t7_on_t6g}
+  nx_of_t7_on_t6sg = ${nx_of_t7_on_t6sg}
+  ny_of_t7_on_t6sg = ${ny_of_t7_on_t6sg}
 
-The starting and ending i and j indices on the tile 6 grid used to 
-generate this regional grid are:
-  istart_rgnl_T6 = $istart_rgnl_T6
-  iend_rgnl_T6   = $iend_rgnl_T6
-  jstart_rgnl_T6 = $jstart_rgnl_T6
-  jend_rgnl_T6   = $jend_rgnl_T6
+The starting and ending i and j indices on the tile 6 grid used to gene-
+rate this regional grid are:
+  istart_of_t7_on_t6g = ${istart_of_t7_on_t6g}
+  iend_of_t7_on_t6g   = ${iend_of_t7_on_t6g}
+  jstart_of_t7_on_t6g = ${jstart_of_t7_on_t6g}
+  jend_of_t7_on_t6g   = ${jend_of_t7_on_t6g}
 
-The corresponding starting and ending i and j indices on the tile 6 
-supergrid are:
-  istart_rgnl_T6SG = $istart_rgnl_T6SG
-  iend_rgnl_T6SG   = $iend_rgnl_T6SG
-  jstart_rgnl_T6SG = $jstart_rgnl_T6SG
-  jend_rgnl_T6SG   = $jend_rgnl_T6SG
+The corresponding starting and ending i and j indices on the tile 6 su-
+pergrid are:
+  istart_of_t7_on_t6sg = ${istart_of_t7_on_t6sg}
+  iend_of_t7_on_t6sg   = ${iend_of_t7_on_t6sg}
+  jstart_of_t7_on_t6sg = ${jstart_of_t7_on_t6sg}
+  jend_of_t7_on_t6sg   = ${jend_of_t7_on_t6sg}
 
 The refinement ratio (ratio of the number of cells in tile 7 that abut
 a single cell in tile 6) is:
-  refine_ratio = $refine_ratio
+  refine_ratio_t6g_to_t7g = ${refine_ratio_t6g_to_t7g}
 
-The number of cells in the two horizontal directions on the regional 
-tile's/domain's (tile 7) grid WITHOUT A HALO are:
-  nx_T7 = $nx_T7
-  ny_T7 = $ny_T7
+The number of cells in the two horizontal directions on the regional do-
+main's (i.e. tile 7's) grid WITHOUT A HALO are:
+  nx_of_t7_on_t7g = ${nx_of_t7_on_t7g}
+  ny_of_t7_on_t7g = ${ny_of_t7_on_t7g}
 
-The prime factors of nx_T7 and ny_T7 are (useful for determining an MPI
-task layout, i.e. layout_x and layout_y):
-  prime_factors_nx_T7: $prime_factors_nx_T7
-  prime_factors_ny_T7: $prime_factors_ny_T7"
+The prime factors of nx_of_t7_on_t7g and ny_of_t7_on_t7g are (useful for
+determining an MPI task layout):
+  prime_factors_nx_of_t7_on_t7g: ${prime_factors_nx_of_t7_on_t7g}
+  prime_factors_ny_of_t7_on_t7g: ${prime_factors_ny_of_t7_on_t7g}"
 #
 #-----------------------------------------------------------------------
 #
 # For informational purposes, calculate the number of cells in each di-
-# rection on the regional grid that includes the wide halo (of width
-# nhw_T7 cells).  We denote these by nx_wide_halo_T7 and ny_wide_halo_-
-# T7, respectively.
+# rection on the regional grid including the wide halo (of width halo_-
+# width_on_t7g cells).  We denote these by nx_of_t7_with_halo_on_t7g and
+# ny_of_t7_with_halo_on_t7g, respectively.
 #
 #-----------------------------------------------------------------------
 #
-nx_wide_halo_T6SG=$(( $iend_rgnl_wide_halo_T6SG - $istart_rgnl_wide_halo_T6SG + 1 ))
-nx_wide_halo_T6=$(( $nx_wide_halo_T6SG/2 ))
-nx_wide_halo_T7=$(( $nx_wide_halo_T6*$refine_ratio ))
+  nx_of_t7_with_halo_on_t6sg=$(( iend_of_t7_with_halo_on_t6sg - istart_of_t7_with_halo_on_t6sg + 1 ))
+  nx_of_t7_with_halo_on_t6g=$(( nx_of_t7_with_halo_on_t6sg/2 ))
+  nx_of_t7_with_halo_on_t7g=$(( nx_of_t7_with_halo_on_t6g*refine_ratio_t6g_to_t7g ))
 
-ny_wide_halo_T6SG=$(( $jend_rgnl_wide_halo_T6SG - $jstart_rgnl_wide_halo_T6SG + 1 ))
-ny_wide_halo_T6=$(( $ny_wide_halo_T6SG/2 ))
-ny_wide_halo_T7=$(( $ny_wide_halo_T6*$refine_ratio ))
+  ny_of_t7_with_halo_on_t6sg=$(( jend_of_t7_with_halo_on_t6sg - jstart_of_t7_with_halo_on_t6sg + 1 ))
+  ny_of_t7_with_halo_on_t6g=$(( ny_of_t7_with_halo_on_t6sg/2 ))
+  ny_of_t7_with_halo_on_t7g=$(( ny_of_t7_with_halo_on_t6g*refine_ratio_t6g_to_t7g ))
 
-print_info_msg_verbose "\
-nx_wide_halo_T7 = $nx_T7 \
-(istart_rgnl_wide_halo_T6SG = $istart_rgnl_wide_halo_T6SG, \
-iend_rgnl_wide_halo_T6SG = $iend_rgnl_wide_halo_T6SG)"
+  print_info_msg "$VERBOSE" "
+nx_of_t7_with_halo_on_t7g = ${nx_of_t7_with_halo_on_t7g} \
+(istart_of_t7_with_halo_on_t6sg = ${istart_of_t7_with_halo_on_t6sg}, \
+iend_of_t7_with_halo_on_t6sg = ${iend_of_t7_with_halo_on_t6sg})"
 
-print_info_msg_verbose "\
-ny_wide_halo_T7 = $ny_T7 \
-(jstart_rgnl_wide_halo_T6SG = $jstart_rgnl_wide_halo_T6SG, \
-jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"
+  print_info_msg "$VERBOSE" "
+ny_of_t7_with_halo_on_t7g = ${ny_of_t7_with_halo_on_t7g} \
+(jstart_of_t7_with_halo_on_t6sg = ${jstart_of_t7_with_halo_on_t6sg}, \
+jend_of_t7_with_halo_on_t6sg = ${jend_of_t7_with_halo_on_t6sg})"
+#
+#-----------------------------------------------------------------------
+#
+# Set output variables.
+#
+#-----------------------------------------------------------------------
+#
+  eval ${output_varname_lon_of_t7_ctr}="${lon_of_t7_ctr}"
+  eval ${output_varname_lat_of_t7_ctr}="${lat_of_t7_ctr}"
+  eval ${output_varname_nx_of_t7_on_t7g}="${nx_of_t7_on_t7g}"
+  eval ${output_varname_ny_of_t7_on_t7g}="${ny_of_t7_on_t7g}"
+  eval ${output_varname_halo_width_on_t7g}="${halo_width_on_t7g}"
+  eval ${output_varname_stretch_factor}="${stretch_factor}"
+  eval ${output_varname_istart_of_t7_with_halo_on_t6sg}="${istart_of_t7_with_halo_on_t6sg}"
+  eval ${output_varname_iend_of_t7_with_halo_on_t6sg}="${iend_of_t7_with_halo_on_t6sg}"
+  eval ${output_varname_jstart_of_t7_with_halo_on_t6sg}="${jstart_of_t7_with_halo_on_t6sg}"
+  eval ${output_varname_jend_of_t7_with_halo_on_t6sg}="${jend_of_t7_with_halo_on_t6sg}"
 #
 #-----------------------------------------------------------------------
 #
@@ -317,7 +514,7 @@ jend_rgnl_wide_halo_T6SG = $jend_rgnl_wide_halo_T6SG)"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+  { restore_shell_opts; } > /dev/null 2>&1
 
-
+}
 

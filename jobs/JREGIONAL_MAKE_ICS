@@ -1,0 +1,222 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Source the file defining the function that will be used to set various
+# external-model-related variables.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/get_extrn_mdl_file_dir_info.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; set -u -x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the J-job script for the task that generates initial condition 
+(IC), surface, and zeroth-hour lateral boundary condition (LBC0) files 
+for the FV3 (in NetCDF format).
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Set the name of and create the directory in which the output from this
+# script will be placed (if it doesn't already exist).
+#
+#-----------------------------------------------------------------------
+#
+ICS_DIR="${CYCLE_DIR}/INPUT"
+mkdir_vrfy -p "${ICS_DIR}"
+#
+#-----------------------------------------------------------------------
+#
+# Load modules and set machine-dependent parameters.
+#
+#-----------------------------------------------------------------------
+#
+case "$MACHINE" in
+#
+"WCOSS_C")
+#
+  { save_shell_opts; set +x; } > /dev/null 2>&1
+
+  { restore_shell_opts; } > /dev/null 2>&1
+  ;;
+#
+"WCOSS")
+#
+  { save_shell_opts; set +x; } > /dev/null 2>&1
+
+  { restore_shell_opts; } > /dev/null 2>&1
+  ;;
+#
+"DELL")
+#
+  { save_shell_opts; set +x; } > /dev/null 2>&1
+
+  { restore_shell_opts; } > /dev/null 2>&1
+  ;;
+#
+"THEIA")
+#
+  { save_shell_opts; set +x; } > /dev/null 2>&1
+
+  ulimit -s unlimited
+#  ulimit -a
+
+  module purge
+  module load intel/18.1.163
+  module load impi/5.1.1.109
+  module load netcdf/4.3.0
+  module load hdf5/1.8.14
+  module load wgrib2/2.0.8
+  module load contrib wrap-mpi
+  module list
+
+  np=${SLURM_NTASKS}
+  APRUN="mpirun -np ${np}"
+
+  { restore_shell_opts; } > /dev/null 2>&1
+  ;;
+#
+"HERA")
+  ulimit -s unlimited
+#  ulimit -a
+  APRUN="srun"
+  ;;
+#
+"JET")
+#
+  { save_shell_opts; set +x; } > /dev/null 2>&1
+
+  { restore_shell_opts; } > /dev/null 2>&1
+  ;;
+#
+"ODIN")
+#
+  ;;
+#
+"CHEYENNE")
+#
+  ;;
+#
+esac
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that sets various external-model-related variables.
+# See the function defintion file for the definitions of these varia-
+# bles.
+#
+#-----------------------------------------------------------------------
+#
+get_extrn_mdl_file_dir_info \
+  extrn_mdl_name="${EXTRN_MDL_NAME_ICS}" \
+  anl_or_fcst="ANL" \
+  cdate_FV3SAR="${CDATE}" \
+  time_offset_hrs="0" \
+  varname_extrn_mdl_cdate="EXTRN_MDL_CDATE" \
+  varname_extrn_mdl_lbc_update_fhrs="EXTRN_MDL_LBC_UPDATE_FHRS" \
+  varname_extrn_mdl_fns="EXTRN_MDL_FNS" \
+  varname_extrn_mdl_sysdir="EXTRN_MDL_SYSDIR" \
+  varname_extrn_mdl_arcv_fmt="EXTRN_MDL_ARCV_FMT" \
+  varname_extrn_mdl_arcv_fns="EXTRN_MDL_ARCV_FNS" \
+  varname_extrn_mdl_arcv_fps="EXTRN_MDL_ARCV_FPS" \
+  varname_extrn_mdl_arcvrel_dir="EXTRN_MDL_ARCVREL_DIR"
+#
+#-----------------------------------------------------------------------
+#
+# Find the directory in which the wgrib2 executable is located.
+#
+#-----------------------------------------------------------------------
+#
+WGRIB2_DIR=$( which wgrib2 ) || print_err_msg_exit "\
+Directory in which the wgrib2 executable is located not found:
+  WGRIB2_DIR = \"${WGRIB2_DIR}\""
+#
+#-----------------------------------------------------------------------
+#
+# Set the directory containing the external model output files.
+#
+#-----------------------------------------------------------------------
+#
+EXTRN_MDL_FILES_DIR="${CYCLE_DIR}/${EXTRN_MDL_NAME_ICS}/ICS"
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
+#
+#-----------------------------------------------------------------------
+#
+EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
+
+$SCRIPTSDIR/exregional_make_ics.sh \
+  EXTRN_MDL_FNS="${EXTRN_MDL_FNS_str}" \
+  EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_DIR}" \
+  EXTRN_MDL_CDATE="${EXTRN_MDL_CDATE}" \
+  ICS_DIR="${ICS_DIR}" \
+  WGRIB2_DIR="${WGRIB2_DIR}" \
+  APRUN="${APRUN}" || \
+print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Print exit message.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+

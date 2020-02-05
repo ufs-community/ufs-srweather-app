@@ -7,8 +7,9 @@
 ;
 loadscript(lib_location + "pause.ncl")
 loadscript(lib_location + "constants.ncl")
-loadscript(lib_location + "calc_lambert_cnfrml_coords_from_sphr.ncl")
-loadscript(lib_location + "calc_sphr_coords_from_lambert_cnfrml.ncl")
+loadscript(lib_location + "convert_from_to_sphr_coords_to_from_rotated_sphr.ncl")
+loadscript(lib_location + "convert_sphr_coords_to_lambert_cnfrml.ncl")
+loadscript(lib_location + "convert_lambert_cnfrml_coords_to_sphr.ncl")
 
 undef("get_wrtcmp_grid")
 
@@ -18,7 +19,7 @@ function get_wrtcmp_grid( \
 
 local proj_params, \
       var_name, regex_search, regex_print, sed_cmd, \
-      output_coord_sys, valid_vals_output_coord_sys, valid_vals, msg, \
+      wrtcmp_coord_sys, valid_vals_wrtcmp_coord_sys, valid_vals, msg, \
       param_names, coord_data_type, num_params, param_name, \
       lon_ctr_rad, lat_ctr_rad, lat1_rad, lat2_rad, \
       nxm, nyp, lon_cell_cntr_SW, lat_cell_cntr_SW, dx, dy, \ 
@@ -48,7 +49,8 @@ begin
 ;
 ; **********************************************************************
 ;
-; Get the coordinate system used by the write-component output grid.
+; Get the coordinate system in which the write-component output grid is 
+; specified.
 ;
 ; **********************************************************************
 ;
@@ -57,7 +59,7 @@ begin
   regex_print = "\1"
   sed_cmd = "sed -r -n -e " + char_dq + "s|" + regex_search + "|" \
           + regex_print + "|p" + char_dq + " " + wrtcmp_config_fn
-  output_coord_sys = systemfunc(sed_cmd)
+  wrtcmp_coord_sys = systemfunc(sed_cmd)
 ;
 ; **********************************************************************
 ;
@@ -65,19 +67,19 @@ begin
 ;
 ; **********************************************************************
 ;
-  valid_vals_output_coord_sys = (/ "rotated_latlon", "lambert_conformal" /)
+  valid_vals_wrtcmp_coord_sys = (/ "rotated_latlon", "lambert_conformal" /)
 
-  if (.not. strcmp_exact(valid_vals_output_coord_sys, output_coord_sys)) then
+  if (.not. strcmp_exact(valid_vals_wrtcmp_coord_sys, wrtcmp_coord_sys)) then
 
     valid_vals \
     := char_dq \
-    + str_join(valid_vals_output_coord_sys, char_dq + ", " + char_dq) \
+    + str_join(valid_vals_wrtcmp_coord_sys, char_dq + ", " + char_dq) \
     + char_dq
 
     msg := char_nl + \
-"The ouput coordinate system (output_coord_sys) is not set to a valid " + char_nl + \
-"value:" + char_nl + \
-"  output_coord_sys = " + char_dq + output_coord_sys + char_dq + char_nl + \
+"The coordinate system in which the write-component output grid is spe-" + char_nl + \
+"cified (wrtcmp_coord_sys) has not been set to a valid value:" + char_nl + \
+"  wrtcmp_coord_sys = " + char_dq + wrtcmp_coord_sys + char_dq + char_nl + \
 "Valid values are:" + char_nl + \
 "  " + valid_vals + char_nl + \
 "Please rerun with a valid grid type.  Stopping."
@@ -93,9 +95,9 @@ begin
 ; **********************************************************************
 ;
   msg := char_nl + \
-"The ouput coordinate system (output_coord_sys) used by the write-compo-" + char_nl + \
-"nent is:" + char_nl + \
-"  output_coord_sys = " + char_dq + output_coord_sys + char_dq + char_nl
+"The coordinate system in which the write-component output grid is spe-" + char_nl + \
+"cified (wrtcmp_coord_sys) is:" + char_nl + \
+"  wrtcmp_coord_sys = " + char_dq + wrtcmp_coord_sys + char_dq + char_nl
   print("" + msg)
 ;
 ; **********************************************************************
@@ -106,7 +108,19 @@ begin
 ;
 ; **********************************************************************
 ;
-  if (strcmp_exact(output_coord_sys, "lambert_conformal")) then
+  if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
+
+    param_names = (/ \
+      "cen_lon", \
+      "cen_lat", \
+      "lon1", \
+      "lat1", \
+      "lon2", \
+      "lat2", \
+      "dlon", \
+      "dlat" /)
+
+  else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then
 
     param_names = (/ \
       "cen_lon", \
@@ -123,19 +137,21 @@ begin
   else
 
     msg := char_nl + \
-"param_names has not been set for this output coordinate system:" + char_nl + \
-"  output_coord_sys = " + char_dq + output_coord_sys + char_dq + char_nl + \
+"param_names has not been set for this value of the write-component out-" + char_nl + \
+"put grid coordinate system (wrtcmp_coord_sys):" + char_nl + \
+"  wrtcmp_coord_sys = " + char_dq + wrtcmp_coord_sys + char_dq + char_nl + \
 "Stopping."
     print("" + msg)
     exit
 
+  end if
   end if
 ;
 ; **********************************************************************
 ;
 ; Set the data type (i.e. float or double) of the coordinate arrays for
 ; the write-component output grid to be "double".  Note that here, we 
-; constructing this grid from the "grid" parameters, so we can choose 
+; are constructing this grid from the "grid" parameters, so we can choose 
 ; this data type to be whatever we like (i.e. "float" or "double").
 ;
 ; **********************************************************************
@@ -151,6 +167,11 @@ begin
 ;
   num_params = dimsizes(param_names)
 
+  msg = char_nl + \
+"Reading in write-component output grid coordinate system parameters " + char_nl + \
+"from file wrtcmp_config_fn:" + char_nl + \
+"  wrtcmp_config_fn = " + char_dq + wrtcmp_config_fn + char_dq 
+
   do np=0, num_params-1
 
     param_name = param_names(np)
@@ -160,50 +181,121 @@ begin
             + regex_print + "|p" + char_dq + " " + wrtcmp_config_fn
     sed_output = systemfunc(sed_cmd)
 
-    if (strcmp_exact(param_name, "cen_lon")) then
-      lon_ctr := totype(sed_output, coord_data_type)
-    else if (strcmp_exact(param_name, "cen_lat")) then
-      lat_ctr := totype(sed_output, coord_data_type)
-    else if (strcmp_exact(param_name, "stdlat1")) then
-      lat1 := totype(sed_output, coord_data_type)
-    else if (strcmp_exact(param_name, "stdlat2")) then
-      lat2 := totype(sed_output, coord_data_type)
-    else if (strcmp_exact(param_name, "nx")) then
-;      nxp := totype(sed_output, "integer")
-      nx := totype(sed_output, "integer")
-    else if (strcmp_exact(param_name, "ny")) then
-;      nyp := totype(sed_output, "integer")
-      ny := totype(sed_output, "integer")
-    else if (strcmp_exact(param_name, "lon1")) then
-      lon_cell_cntr_SW := totype(sed_output, coord_data_type)
-    else if (strcmp_exact(param_name, "lat1")) then
-      lat_cell_cntr_SW := totype(sed_output, coord_data_type)
-    else if (strcmp_exact(param_name, "dx")) then
-      dx := totype(sed_output, coord_data_type)
-    else if (strcmp_exact(param_name, "dy")) then
-      dy := totype(sed_output, coord_data_type)
+    unrecognized_param = False
+
+    if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
+
+      if (strcmp_exact(param_name, "cen_lon")) then
+        lon_ctr := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "cen_lat")) then
+        lat_ctr := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "lon1")) then
+        rot_lon_cell_cntr_SW := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "lat1")) then
+        rot_lat_cell_cntr_SW := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "lon2")) then
+        rot_lon_cell_cntr_NE := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "lat2")) then
+        rot_lat_cell_cntr_NE := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "dlon")) then
+        dlon := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "dlat")) then
+        dlat := totype(sed_output, coord_data_type)
+      else
+        unrecognized_param = True
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+
+    else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then
+
+      if (strcmp_exact(param_name, "cen_lon")) then
+        lon_ctr := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "cen_lat")) then
+        lat_ctr := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "stdlat1")) then
+        lat1 := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "stdlat2")) then
+        lat2 := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "nx")) then
+        nx := totype(sed_output, "integer")
+      else if (strcmp_exact(param_name, "ny")) then
+        ny := totype(sed_output, "integer")
+      else if (strcmp_exact(param_name, "lon1")) then
+        lon_cell_cntr_SW := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "lat1")) then
+        lat_cell_cntr_SW := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "dx")) then
+        dx := totype(sed_output, coord_data_type)
+      else if (strcmp_exact(param_name, "dy")) then
+        dy := totype(sed_output, coord_data_type)
+      else
+        unrecognized_param = True
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+      end if
+
     else
 
       msg := char_nl + \
-"Unknown parameter name specified for given output_coord_sys:" + char_nl + \
-"  output_coord_sys = " + char_dq + output_coord_sys + char_dq + char_nl + \
-"  param_name = " + char_dq + param_name + char_dq + char_nl + \
+"Grid parameters have not yet been specified for this value of the " + char_nl + \
+"write-component output grid coordinate system (wrtcmp_coord_sys):" +  char_nl + \
+"  wrtcmp_coord_sys = " + char_dq + wrtcmp_coord_sys + char_dq + char_nl + \
 "Stopping."
       print("" + msg)
       exit
 
     end if
     end if
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+;
+    if (unrecognized_param) then
+
+      msg := char_nl + \
+"Unknown parameter name specified for the given write-component output" + char_nl + \
+"grid coordinate system (wrtcmp_coord_sys):" + char_nl + \
+"  wrtcmp_coord_sys = " + char_dq + wrtcmp_coord_sys + char_dq + char_nl + \
+"  param_name = " + char_dq + param_name + char_dq + char_nl + \
+"Stopping."
+      print("" + msg)
+      exit
+
     end if
 
   end do
+
+
+
+  if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
+    dx = dlon
+    dy = dlat
+    nx = (rot_lon_cell_cntr_NE - rot_lon_cell_cntr_SW)/dlon + 1
+    nx := round(nx, 3)
+    ny = (rot_lat_cell_cntr_NE - rot_lat_cell_cntr_SW)/dlat + 1
+    ny := round(ny, 3)
+print("")
+print("nx = " + nx)
+print("ny = " + ny)
+pause
+  end if
+
 ;
 ; **********************************************************************
 ;
@@ -212,37 +304,50 @@ begin
 ;
 ; **********************************************************************
 ;
-  if (strcmp_exact(output_coord_sys, "lambert_conformal")) then
+;  msg = char_nl + \
+;"Values of write-component output grid coordinate system parameters read" + char_nl + \
+;"in from the model_configure file are:"
+;
+;  do np=0, num_params-1
+;    param_name = param_names(np)
+;    param_value = $param_name$
+;    msg = char_nl + \
+;"  " + param_name + " = " + param_value
+;  end do
 
-    print("")
-    print("" + separator_line)
-
-    msg = char_nl + \
-"Values of write-component output grid coordinate system parameters read" + char_nl + \
-"in from the model_configure file are:" + char_nl + \
-"  lon_ctr = " + lon_ctr + char_nl + \
-"  lat_ctr = " + lat_ctr + char_nl + \
-"  lat1 = " + lat1 + char_nl + \
-"  lat2 = " + lat2 + char_nl + \
-"  nx = " + nx + char_nl + \
-"  ny = " + ny + char_nl + \
-"  lon_cell_cntr_SW = " + lon_cell_cntr_SW + char_nl + \
-"  lat_cell_cntr_SW = " + lat_cell_cntr_SW + char_nl + \
-"  dx = " + dx + char_nl + \
-"  dy = " + dy + char_nl
-    print("" + msg)
-
-  else
-
-    msg := char_nl + \
-"Values of write-component output grid coordinate system parameters have" + \
-"not been set for this output coordinate system:" + char_nl + \
-"  output_coord_sys = " + char_dq + output_coord_sys + char_dq + char_nl + \
-"Stopping."
-    print("" + msg)
-    exit
-
-  end if
+;  if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
+;
+;  else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then
+;
+;    print("")
+;    print("" + separator_line)
+;
+;    msg = char_nl + \
+;"Values of write-component output grid coordinate system parameters read" + char_nl + \
+;"in from the model_configure file are:" + char_nl + \
+;"  lon_ctr = " + lon_ctr + char_nl + \
+;"  lat_ctr = " + lat_ctr + char_nl + \
+;"  lat1 = " + lat1 + char_nl + \
+;"  lat2 = " + lat2 + char_nl + \
+;"  nx = " + nx + char_nl + \
+;"  ny = " + ny + char_nl + \
+;"  lon_cell_cntr_SW = " + lon_cell_cntr_SW + char_nl + \
+;"  lat_cell_cntr_SW = " + lat_cell_cntr_SW + char_nl + \
+;"  dx = " + dx + char_nl + \
+;"  dy = " + dy + char_nl
+;    print("" + msg)
+;
+;  else
+;
+;    msg := char_nl + \
+;"Grid parameters have not yet been specified for this value of the " + char_nl + \
+;"write-component output grid coordinate system (wrtcmp_coord_sys):" +  char_nl + \
+;"  wrtcmp_coord_sys = " + char_dq + wrtcmp_coord_sys + char_dq + char_nl + \
+;"Stopping."
+;    print("" + msg)
+;    exit
+;
+;  end if
 ;
 ; **********************************************************************
 ;
@@ -251,43 +356,30 @@ begin
 ; **********************************************************************
 ;
   angle_units = "deg"
-
-;  nx = nxp - 1
-;  ny = nyp - 1
-
 ;
 ; **********************************************************************
 ;
-; Use the given spherical coordinates (lon_cell_cntr_SW, lat_cell_cntr_SW) of the southwest
-; corner of the grid to calculate the Lambert conformal coordinates 
-; (x_cell_cntr_SW, y_cell_cntr_SW) of that corner.
+; Use the given spherical coordinates (lon_cell_cntr_SW, lat_cell_cntr_-
+; SW) of the southwest corner of the grid to calculate the Lambert con-
+; formal coordinates (x_cell_cntr_SW, y_cell_cntr_SW) of that corner.
 ;
 ; **********************************************************************
 ;
-  lambert_coords \
-  := calc_lambert_cnfrml_coords_from_sphr( \
-     lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
-     lon_cell_cntr_SW, lat_cell_cntr_SW)
-  x_cell_cntr_SW = lambert_coords@x 
-  y_cell_cntr_SW = lambert_coords@y
+  if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
+    x_cell_cntr_SW = rot_lon_cell_cntr_SW
+    y_cell_cntr_SW = rot_lat_cell_cntr_SW
+  else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then
+    lambert_cnfrml_coords \
+    := convert_sphr_coords_to_lambert_cnfrml( \
+       lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
+       lon_cell_cntr_SW, lat_cell_cntr_SW)
+    x_cell_cntr_SW = lambert_cnfrml_coords@x 
+    y_cell_cntr_SW = lambert_cnfrml_coords@y
+  end if
+  end if
 
   x_min = x_cell_cntr_SW - 0.5d+0*dx
   y_min = y_cell_cntr_SW - 0.5d+0*dy
-
-print("")
-print("x_cell_cntr_SW = " + x_cell_cntr_SW)
-print("x_min = " + x_min)
-print("dx = " + dx)
-print("nx = " + nx)
-;print("2*x_min/dx = " + 2*x_min/dx)
-
-print("")
-print("y_cell_cntr_SW = " + y_cell_cntr_SW)
-print("y_min = " + y_min)
-print("dy = " + dy)
-print("ny = " + ny)
-;print("2*y_min/dy = " + 2*y_min/dy)
-pause
 ;
 ; **********************************************************************
 ;
@@ -302,19 +394,6 @@ pause
 
   x_verts_vec := dx*i_vec + x_min
   y_verts_vec := dy*j_vec + y_min
-
-print("")
-;print("x_verts_vec = " + x_verts_vec)
-print("x_verts_vec(0) = " + x_verts_vec(0))
-print("x_verts_vec(nx) = " + x_verts_vec(nx))
-print("(x_verts_vec(nx) - x_verts_vec(0))/dx = " + (x_verts_vec(nx) - x_verts_vec(0))/dx)
-pause
-print("")
-;print("y_verts_vec = " + y_verts_vec)
-print("y_verts_vec(0) = " + y_verts_vec(0))
-print("y_verts_vec(ny) = " + y_verts_vec(ny))
-print("(y_verts_vec(ny) - y_verts_vec(0))/dy = " + (y_verts_vec(ny) - y_verts_vec(0))/dy)
-pause
 ;
 ; **********************************************************************
 ;
@@ -343,11 +422,22 @@ pause
 ;
 ; **********************************************************************
 ;
-  sphr_coords := calc_sphr_coords_from_lambert_cnfrml( \
-                 lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
-                 x_verts, y_verts)
-  lon_verts = sphr_coords@lon
-  lat_verts = sphr_coords@lat
+  if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
+    sphr_coords \
+    := convert_from_to_sphr_coords_to_from_rotated_sphr( \
+       lon_ctr, lat_ctr, angle_units, -1, \
+       x_verts, y_verts)
+    lon_verts = sphr_coords@lon_out
+    lat_verts = sphr_coords@lat_out
+  else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then
+    sphr_coords \
+    := convert_lambert_cnfrml_coords_to_sphr( \
+       lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
+       x_verts, y_verts)
+    lon_verts = sphr_coords@lon
+    lat_verts = sphr_coords@lat
+  end if
+  end if
 ;
 ; **********************************************************************
 ;
@@ -377,15 +467,22 @@ pause
 ;
 ; **********************************************************************
 ;
-;print("")
-;print("x_cntrs = " + x_cntrs)
-;pause
-
-  sphr_coords := calc_sphr_coords_from_lambert_cnfrml( \
-                 lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
-                 x_cntrs, y_cntrs)
-  lon_cntrs = sphr_coords@lon
-  lat_cntrs = sphr_coords@lat
+  if (strcmp_exact(wrtcmp_coord_sys, "rotated_latlon")) then
+    sphr_coords \
+    := convert_from_to_sphr_coords_to_from_rotated_sphr( \
+       lon_ctr, lat_ctr, angle_units, -1, \
+       x_cntrs, y_cntrs)
+    lon_cntrs = sphr_coords@lon_out
+    lat_cntrs = sphr_coords@lat_out
+  else if (strcmp_exact(wrtcmp_coord_sys, "lambert_conformal")) then
+    sphr_coords \
+    := convert_lambert_cnfrml_coords_to_sphr( \
+       lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
+       x_cntrs, y_cntrs)
+    lon_cntrs = sphr_coords@lon
+    lat_cntrs = sphr_coords@lat
+  end if
+  end if
 ;
 ; **********************************************************************
 ;
@@ -471,10 +568,6 @@ pause
 ;
   rem_nx = mod(nx, 2)
   rem_ny = mod(ny, 2)
-print("")
-print("rem_nx = " + rem_nx)
-print("rem_ny = " + rem_ny)
-pause
 
   if ((rem_nx .eq. 0) .and. (rem_ny .eq. 0)) then
     i_cntr = nx/2
@@ -500,17 +593,6 @@ pause
   end if
   end if
   end if
-print("")
-print("lon_cntrs(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2) = " + lon_cntrs(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2))
-print("")
-print("lon_verts(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2) = " + lon_verts(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2))
-pause
-
-print("")
-print("lat_cntrs(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2) = " + lat_cntrs(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2))
-print("")
-print("lat_verts(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2) = " + lat_verts(j_cntr-2:j_cntr+2, i_cntr-2:i_cntr+2))
-pause
 ;
 ; **********************************************************************
 ;
