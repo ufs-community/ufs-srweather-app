@@ -10,6 +10,7 @@ valid_vals_PREDEF_GRID_NAME=( \
 valid_vals_EMC_GRID_NAME=("ak" "conus" "conus_c96" "conus_orig" "guam" "hi" "pr")
 valid_vals_USE_CCPP=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_CCPP_PHYS_SUITE=("FV3_GFS_2017_gfdlmp" "FV3_GSD_v0" "FV3_GSD_SAR")
+valid_vals_OZONE_PARAM_NO_CCPP=("ozphys_2015" "ozphys")
 valid_vals_GFDLgrid_RES=("48" "96" "192" "384" "768" "1152" "3072")
 valid_vals_EXTRN_MDL_NAME_ICS=("GSMGFS" "FV3GFS" "RAPX" "HRRRX")
 valid_vals_EXTRN_MDL_NAME_LBCS=("GSMGFS" "FV3GFS" "RAPX" "HRRRX")

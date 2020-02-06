@@ -138,6 +138,9 @@ function set_gridparams_GFDLgrid() {
   num_left_margin_cells_on_t6g=$(( istart_of_t7_on_t6g - 1 ))
   num_right_margin_cells_on_t6g=$(( nx_of_t6_on_t6g - iend_of_t7_on_t6g )) 
 
+# This if-statement can hopefully be removed once EMC agrees to make their
+# GFDLgrid type grids (tile 7) symmetric about tile 6.
+if [ "${RUN_ENVIR}" != "nco" ]; then
   if [ ${num_left_margin_cells_on_t6g} -ne ${num_right_margin_cells_on_t6g} ]; then
     print_err_msg_exit "\
 In order for tile 7 to be centered in the x direction on tile 6, the x-
@@ -156,10 +159,14 @@ ven by:
   nx_of_t6_on_t6g = ${nx_of_t6_on_t6g}
 Please reset istart_of_t7_on_t6g and iend_of_t7_on_t6g and rerun."
   fi
+fi
 
   num_bot_margin_cells_on_t6g=$(( jstart_of_t7_on_t6g - 1 ))
   num_top_margin_cells_on_t6g=$(( ny_of_t6_on_t6g - jend_of_t7_on_t6g )) 
 
+# This if-statement can hopefully be removed once EMC agrees to make their
+# GFDLgrid type grids (tile 7) symmetric about tile 6.
+if [ "${RUN_ENVIR}" != "nco" ]; then
   if [ ${num_bot_margin_cells_on_t6g} -ne ${num_top_margin_cells_on_t6g} ]; then
     print_err_msg_exit "\
 In order for tile 7 to be centered in the y direction on tile 6, the y-
@@ -178,6 +185,7 @@ ven by:
   ny_of_t6_on_t6g = ${ny_of_t6_on_t6g}
 Please reset jstart_of_t7_on_t6g and jend_of_t7_on_t6g and rerun."
   fi
+fi
 
   lon_of_t7_ctr="${lon_of_t6_ctr}"
   lat_of_t7_ctr="${lat_of_t6_ctr}"

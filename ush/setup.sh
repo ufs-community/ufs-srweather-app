@@ -60,6 +60,7 @@ cd_vrfy ${scrfunc_dir}
 . ./set_gridparams_GFDLgrid.sh
 . ./set_gridparams_JPgrid.sh
 . ./link_fix.sh
+. ./set_fix_filenames.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -1872,27 +1873,28 @@ NUM_NODES=$(( (PE_MEMBER01 + NCORES_PER_NODE - 1)/NCORES_PER_NODE ))
 #
 #-----------------------------------------------------------------------
 #
-# Ensure that the number of fixed files listed in the array FIXam_FILES_-
-# SYSDIR (which lists the files to be copied from the system directory)
-# is equal to the number of fixed files listed in the array FIXam_FILES_-
-# EXPTDIR (which lists the files to be copied into the experiment di-
-# rectory; we need this array because the files may be renamed as they
-# are copied).
+# Make sure that OZONE_PARAM_NO_CCPP is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-num_fixgsm_files="${#FIXgsm_FILENAMES[@]}"
-num_fixam_files="${#FIXam_FILENAMES[@]}"
-if [ "${num_fixgsm_files}" -ne "${num_fixam_files}" ]; then
-  print_err_msg_exit "\
-The number of fixed files specified in the array FIXgsm_FILENAMES 
-(num_fixgsm_files) must be equal to that specified in the array FIXam_FILENAMES
-(num_fixam_files):
-  num_fixgsm_files = ${num_fixgsm_files}
-  num_fixam_files = ${num_fixam_files}"
-else
-  NUM_FIXam_FILES="${num_fixam_files}"
-fi
+check_var_valid_value "OZONE_PARAM_NO_CCPP" "valid_vals_OZONE_PARAM_NO_CCPP"
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that sets the ozone parameterization being used, the
+# number of global fixed files in the FIXgsm and/or FIXam directories 
+# (each should have the same number), and the arrays containing the names
+# of these files. 
+#
+#-----------------------------------------------------------------------
+#
+set_fix_filenames \
+  ccpp_phys_suite_fp="${CCPP_PHYS_SUITE_IN_CCPP_FP}" \
+  ozone_param_no_ccpp="OZONE_PARAM_NO_CCPP" \
+  output_varname_ozone_param="OZONE_PARAM" \
+  output_varname_num_fixam_files="NUM_FIXam_FILES" \
+  output_varname_fixgsm_fns="FIXgsm_FILENAMES" \
+  output_varname_fixam_fns="FIXam_FILENAMES"
 #
 #-----------------------------------------------------------------------
 #
@@ -1936,6 +1938,7 @@ GLOBAL_VAR_DEFNS_FP="$EXPTDIR/$GLOBAL_VAR_DEFNS_FN"
 cp_vrfy $USHDIR/${DEFAULT_EXPT_CONFIG_FN} ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
+#
 #
 #
 #-----------------------------------------------------------------------
@@ -2379,7 +2382,21 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+FIXgsm_FILENAMES_str=$( printf "\"%s\" \\\\\n" "${FIXgsm_FILENAMES[@]}" )
+FIXam_FILENAMES_str=$( printf "\"%s\" \\\\\n" "${FIXam_FILENAMES[@]}" )
+
 { cat << EOM >> ${GLOBAL_VAR_DEFNS_FP}
+#
+#-----------------------------------------------------------------------
+#
+# Name of the ozone parameterization.  If USE_CCPP is set to "FALSE", 
+# then this will be equal to OZONE_PARAM_NO_CCPP.  If USE_CCPP is set to
+# "TRUE", then the value this gets set to depends on the CCPP physics
+# suite being used.
+#
+#-----------------------------------------------------------------------
+#
+OZONE_PARAM="${OZONE_PARAM}"
 #
 #-----------------------------------------------------------------------
 #
@@ -2388,6 +2405,21 @@ fi
 #-----------------------------------------------------------------------
 #
 NUM_FIXam_FILES="${NUM_FIXam_FILES}"
+#
+#-----------------------------------------------------------------------
+#
+# The names of the files in the FIXgsm system directory and the FIXam
+# directory (located in the experiment directory).
+#
+#-----------------------------------------------------------------------
+#
+FIXgsm_FILENAMES=( \\
+${FIXgsm_FILENAMES_str}
+)
+
+FIXam_FILENAMES=( \\
+${FIXam_FILENAMES_str}
+)
 #
 #-----------------------------------------------------------------------
 #
@@ -2422,11 +2454,12 @@ EXTRN_MDL_LBCS_OFFSET_HRS="${EXTRN_MDL_LBCS_OFFSET_HRS}"
 #
 #-----------------------------------------------------------------------
 #
-# Boundary condition update times (in units of forecast hours).
+# Boundary condition update times (in units of forecast hours).  Note that
+# LBC_UPDATE_FCST_HRS is an array, even if it has only one element.
 #
 #-----------------------------------------------------------------------
 #
-LBC_UPDATE_FCST_HRS=(${LBC_UPDATE_FCST_HRS[@]})  # LBC_UPDATE_FCST_HRS is an array, even if it has only one element.
+LBC_UPDATE_FCST_HRS=(${LBC_UPDATE_FCST_HRS[@]})
 #
 #-----------------------------------------------------------------------
 #
