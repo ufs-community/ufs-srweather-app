@@ -719,11 +719,11 @@ Call to function get_manage_externals_config_property failed."
 UFS_WTHR_MDL_DIR="$HOMErrfs/${UFS_WTHR_MDL_DIR}"
 if [ ! -d "${UFS_WTHR_MDL_DIR}" ]; then
   print_err_msg_exit "\
-The base directory in which the FV3 source code should be located (NEMS-
-fv3gfs_DIR) does not exist:
+The base directory in which the FV3 source code should be located
+(UFS_WTHR_MDL_DIR) does not exist:
   UFS_WTHR_MDL_DIR = \"${UFS_WTHR_MDL_DIR}\"
-Please clone the external repository containing the code in this direct-
-ory, build the executable, and then rerun the workflow."
+Please clone the external repository containing the code in this directory,
+build the executable, and then rerun the workflow."
 fi
 #
 # Get the base directory of the UFS_UTILS codes (except for chgres).
