@@ -725,6 +725,68 @@ predefined domain:
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
+# Values taken from pre-generated files in /scratch4/NCEPDEV/fv3-cam/save/Benjamin.Blake/regional_workflow/fix/fix_sar
+# Longitude and latitude for center of domain
+    lon_rgnl_ctr=-97.5
+    lat_rgnl_ctr=38.5
+
+# Projected grid spacing in meters...in the static files (e.g. "C768_grid.tile7.nc"), the "dx" is actually the resolution
+# of the supergrid, which is HALF of this dx
+    delx="3000.0"
+    dely="3000.0"
+
+# Number of x and y points for your domain (halo not included)
+    nx_T7=1344
+    ny_T7=1152
+
+# Number of halo points for a wide grid (before trimming)...this should almost always be 6 for now
+# Within the model we actually have a 4-point halo and a 3-point halo
+    nhw_T7=6
+
+# Side note: FV3 is lagrangian and vertical coordinates are dynamically remapped during model integration (!!!)
+# 'ksplit' is the factor that determines the timestep for this process (divided
+
+# Physics timestep in seconds, actual dynamics timestep can be a subset of this.
+# This is the time step for the largest atmosphere model loop.  It corresponds to the frequency with which the 
+# top-level routine in the dynamics is called as well as the frequency with which the physics is called.
+#
+# Preliminary standard values: 18 for 3-km runs, 90 for 13-km runs per config_defaults.sh
+
+    dt_atmos="18"
+
+#Factors for MPI decomposition. nx_T7 must be divisible by layout_x, ny_T7 must be divisible by layout_y
+    layout_x="12"
+    layout_y="12"
+
+#Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
+#This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
+# For Theia, must be ~40 or less
+# Check setup.sh for more details
+    blocksize="32"
+
+#This section is all for the write component, which you need for output during model integration
+    if [ "$QUILTING" = "TRUE" ]; then
+#Write component reserves MPI tasks for writing output. The number of "groups" is usually 1, but if you have a case where group 1 is not done writing before the next write step, you need group 2, etc.
+      WRTCMP_write_groups="1"
+#Number of tasks per write group. Ny must be divisible my this number. layout_y is usually a good value
+      WRTCMP_write_tasks_per_group="24"
+#lambert_conformal or rotated_latlon. lambert_conformal not well tested and probably doesn't work for our purposes
+      WRTCMP_output_grid="lambert_conformal"
+#These should always be set the same as compute grid
+      WRTCMP_cen_lon="${lon_rgnl_ctr}"
+      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_stdlat1="${lat_rgnl_ctr}"
+      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+#Write component grid must always be <= compute grid (without haloes)
+      WRTCMP_nx="191"
+      WRTCMP_ny="97"
+#Lower left latlon (southwest corner)
+      WRTCMP_lon_lwr_left="-121.587"
+      WRTCMP_lat_lwr_left="24.360"
+      WRTCMP_dx="$delx"
+      WRTCMP_dy="$dely"
+    fi
+
     print_err_msg_exit "\
 The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
 predefined domain:
@@ -841,6 +903,90 @@ predefined domain:
 
   fi
   ;;
+#
+#
+#-----------------------------------------------------------------------
+#
+# EMC's Hawaii grid.
+#
+#-----------------------------------------------------------------------
+#
+"EMC_HI")
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
+predefined domain:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
+
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+
+# Values taken from pre-generated files in /scratch4/NCEPDEV/fv3-cam/save/Benjamin.Blake/regional_workflow/fix/fix_sar/hi/C768_grid.tile7.nc
+# Longitude and latitude for center of domain
+    lon_rgnl_ctr=-157.0
+    lat_rgnl_ctr=20.0
+
+# Projected grid spacing in meters...in the static files (e.g. "C768_grid.tile7.nc"), the "dx" is actually the resolution
+# of the supergrid, which is HALF of this dx (plus or minus some grid stretch factor)
+    delx="3000.0"
+    dely="3000.0"
+
+# Number of x and y points for your domain (halo not included)
+    nx_T7=880
+    ny_T7=736
+
+# Number of halo points for a wide grid (before trimming)...this should almost always be 6 for now
+# Within the model we actually have a 4-point halo and a 3-point halo
+    nhw_T7=6
+
+# Side note: FV3 is lagrangian and vertical coordinates are dynamically remapped during model integration (!!!)
+# 'ksplit' is the factor that determines the timestep for this process (divided
+
+# Physics timestep in seconds, actual dynamics timestep can be a subset of this.
+# This is the time step for the largest atmosphere model loop.  It corresponds to the frequency with which the 
+# top-level routine in the dynamics is called as well as the frequency with which the physics is called.
+#
+# Preliminary standard values: 18 for 3-km runs, 90 for 13-km runs per config_defaults.sh
+
+    dt_atmos="18"
+
+#Factors for MPI decomposition. nx_T7 must be divisible by layout_x, ny_T7 must be divisible by layout_y
+    layout_x="10"
+    layout_y="8"
+#Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
+#This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
+# For Theia, must be ~40 or less
+# Check setup.sh for more details
+    blocksize="32"
+
+#This section is all for the write component, which you need for output during model integration
+    if [ "$QUILTING" = "TRUE" ]; then
+#Write component reserves MPI tasks for writing output. The number of "groups" is usually 1, but if you have a case where group 1 is not done writing before the next write step, you need group 2, etc.
+      WRTCMP_write_groups="1"
+#Number of tasks per write group. Ny must be divisible my this number. layout_y is usually a good value
+      WRTCMP_write_tasks_per_group="23"
+#lambert_conformal or rotated_latlon. lambert_conformal not well tested and probably doesn't work for our purposes
+      WRTCMP_output_grid="lambert_conformal"
+#These should always be set the same as compute grid
+      WRTCMP_cen_lon="${lon_rgnl_ctr}"
+      WRTCMP_cen_lat="${lat_rgnl_ctr}"
+      WRTCMP_stdlat1="${lat_rgnl_ctr}"
+      WRTCMP_stdlat2="${lat_rgnl_ctr}"
+#Write component grid must always be <= compute grid (without haloes)
+      WRTCMP_nx="191"
+      WRTCMP_ny="97"
+#Lower left latlon (southwest corner)
+      WRTCMP_lon_lwr_left="-150.587"
+      WRTCMP_lat_lwr_left="14.623"
+      WRTCMP_dx="$delx"
+      WRTCMP_dy="$dely"
+    fi
+
+   fi
+   ;;
+
 #
 esac
 
