@@ -592,28 +592,31 @@ predefined domain:
     GFDLgrid_LON_T6_CTR=-97.5
     GFDLgrid_LAT_T6_CTR=38.5
     GFDLgrid_STRETCH_FAC=1.5
+#    GFDLgrid_RES="48"
+#    GFDLgrid_REFINE_RATIO=2
     GFDLgrid_RES="96"
-    GFDLgrid_REFINE_RATIO=2
+    GFDLgrid_REFINE_RATIO=3
   
-    num_margin_cells_T6_left=9
+    num_margin_cells_T6_left=11
     GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
   
-    num_margin_cells_T6_right=9
+    num_margin_cells_T6_right=11
     GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
   
-    num_margin_cells_T6_bottom=9
+    num_margin_cells_T6_bottom=16
     GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
   
-    num_margin_cells_T6_top=9
+    num_margin_cells_T6_top=12
     GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
 
     GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
 
-    DT_ATMOS="100"
+    DT_ATMOS="225"
 
     LAYOUT_X="6"
-    LAYOUT_Y="6"
-    BLOCKSIZE="26"
+    LAYOUT_Y="4"
+#    BLOCKSIZE="27"
+    BLOCKSIZE="37"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"

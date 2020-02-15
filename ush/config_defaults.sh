@@ -297,10 +297,15 @@ FV3GFS_FILE_FMT_LBCS="nemsio"
 # variable defintions file (GLOBAL_VAR_DEFNS_FN) is not the same as the
 # one that was used for the static build. 
 #
+# OZONE_PARAM_NO_CCPP:
+# The ozone parameterization to use if NOT using a CCPP-enabled forecast
+# model executable.
+#
 #-----------------------------------------------------------------------
 #
 USE_CCPP="FALSE"
 CCPP_PHYS_SUITE="FV3_GSD_v0"
+OZONE_PARAM_NO_CCPP="ozphys"
 #
 #-----------------------------------------------------------------------
 #
@@ -756,93 +761,34 @@ SFC_CLIMO_DIR="/path/to/pregenerated/surface/climo/files"
 #
 #-----------------------------------------------------------------------
 #
-# Set the arrays that specify the file names in the system and experiment's
-# FIXam directories.  Definitions:
-#
-# FIXgsm_FILENAMES:
-# This array contains the names of the fixed files in the system's FIXgsm
-# directory that the experiment generation script will either copy or 
-# create links to. 
-#
-# FIXam_FILENAMES:
-# This array contains the names of the files in the local FIXam directory
-# that are either copies of or symlinks to the files listed in the 
-# FIXgsm_FILENAMES array in the FIXgsm directory.
+# Set the names of (some of the) global data files that are assumed to 
+# exist in a system directory (this directory is machine-dependent; the
+# the experiment generation script will set it and store it in the variable
+# FIXgsm).  These file names also appear directly in the forecast model's
+# input namelist file.
 #
 #-----------------------------------------------------------------------
 #
-FIXgsm_FILENAMES=( \
-"CFSR.SEAICE.1982.2012.monthly.clim.grb" \
-"RTGSST.1982.2012.monthly.clim.grb" \
-"seaice_newland.grb" \
-"global_climaeropac_global.txt" \
-"global_albedo4.1x1.grb" \
-"global_glacier.2x2.grb" \
-"global_h2o_pltc.f77" \
-"global_maxice.2x2.grb" \
-"global_mxsnoalb.uariz.t126.384.190.rg.grb" \
-"ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77" \
-"global_shdmax.0.144x0.144.grb" \
-"global_shdmin.0.144x0.144.grb" \
-"global_slope.1x1.grb" \
-"global_snoclim.1.875.grb" \
-"global_snowfree_albedo.bosu.t126.384.190.rg.grb" \
-"global_soilmgldas.t126.384.190.grb" \
-"global_soiltype.statsgo.t126.384.190.rg.grb" \
-"global_tg3clim.2.6x1.5.grb" \
-"global_vegfrac.0.144.decpercent.grb" \
-"global_vegtype.igbp.t126.384.190.rg.grb" \
-"global_zorclim.1x1.grb" \
-"global_sfc_emissivity_idx.txt" \
-"global_solarconstant_noaa_an.txt" \
-"fix_co2_proj/global_co2historicaldata_2010.txt" \
-"fix_co2_proj/global_co2historicaldata_2011.txt" \
-"fix_co2_proj/global_co2historicaldata_2012.txt" \
-"fix_co2_proj/global_co2historicaldata_2013.txt" \
-"fix_co2_proj/global_co2historicaldata_2014.txt" \
-"fix_co2_proj/global_co2historicaldata_2015.txt" \
-"fix_co2_proj/global_co2historicaldata_2016.txt" \
-"fix_co2_proj/global_co2historicaldata_2017.txt" \
-"fix_co2_proj/global_co2historicaldata_2018.txt" \
-"global_co2historicaldata_glob.txt" \
-"co2monthlycyc.txt" \
-)
-# "global_o3prdlos.f77" \
+FNGLAC="global_glacier.2x2.grb"
+FNMXIC="global_maxice.2x2.grb"
+FNTSFC="RTGSST.1982.2012.monthly.clim.grb"
+FNSNOC="global_snoclim.1.875.grb"
+FNZORC="igbp"
+FNALBC="global_snowfree_albedo.bosu.t126.384.190.rg.grb"
+FNALBC2="global_albedo4.1x1.grb"
+FNAISC="CFSR.SEAICE.1982.2012.monthly.clim.grb"
+FNTG3C="global_tg3clim.2.6x1.5.grb"
+FNVEGC="global_vegfrac.0.144.decpercent.grb"
+FNVETC="global_vegtype.igbp.t126.384.190.rg.grb"
+FNSOTC="global_soiltype.statsgo.t126.384.190.rg.grb"
+FNSMCC="global_soilmgldas.t126.384.190.grb"
+FNMSKH="seaice_newland.grb"
+FNTSFA=""
+FNACNA=""
+FNSNOA=""
+FNVMNC="global_shdmin.0.144x0.144.grb"
+FNVMXC="global_shdmax.0.144x0.144.grb"
+FNSLPC="global_slope.1x1.grb"
+FNABSC="global_mxsnoalb.uariz.t126.384.190.rg.grb"
 
-FIXam_FILENAMES=( \
-"CFSR.SEAICE.1982.2012.monthly.clim.grb" \
-"RTGSST.1982.2012.monthly.clim.grb" \
-"seaice_newland.grb" \
-"aerosol.dat" \
-"global_albedo4.1x1.grb" \
-"global_glacier.2x2.grb" \
-"global_h2oprdlos.f77" \
-"global_maxice.2x2.grb" \
-"global_mxsnoalb.uariz.t126.384.190.rg.grb" \
-"global_o3prdlos.f77" \
-"global_shdmax.0.144x0.144.grb" \
-"global_shdmin.0.144x0.144.grb" \
-"global_slope.1x1.grb" \
-"global_snoclim.1.875.grb" \
-"global_snowfree_albedo.bosu.t126.384.190.rg.grb" \
-"global_soilmgldas.t126.384.190.grb" \
-"global_soiltype.statsgo.t126.384.190.rg.grb" \
-"global_tg3clim.2.6x1.5.grb" \
-"global_vegfrac.0.144.decpercent.grb" \
-"global_vegtype.igbp.t126.384.190.rg.grb" \
-"global_zorclim.1x1.grb" \
-"sfc_emissivity_idx.txt" \
-"solarconstant_noaa_an.txt" \
-"co2historicaldata_2010.txt" \
-"co2historicaldata_2011.txt" \
-"co2historicaldata_2012.txt" \
-"co2historicaldata_2013.txt" \
-"co2historicaldata_2014.txt" \
-"co2historicaldata_2015.txt" \
-"co2historicaldata_2016.txt" \
-"co2historicaldata_2017.txt" \
-"co2historicaldata_2018.txt" \
-"co2historicaldata_glob.txt" \
-"co2monthlycyc.txt" \
-)
 
