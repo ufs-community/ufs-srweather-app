@@ -756,14 +756,14 @@ predefined domain:
     DT_ATMOS="18"
 
 #Factors for MPI decomposition. JPgrid_NX must be divisible by LAYOUT_X, JPgrid_NY must be divisible by LAYOUT_Y
-    LAYOUT_X="12"
-    LAYOUT_Y="12"
+    LAYOUT_X="28"
+    LAYOUT_Y="16"
 
 #Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
 #This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
 # For Theia, must be ~40 or less
 # Check setup.sh for more details
-    BLOCKSIZE="32"
+    BLOCKSIZE="24"
 
 #This section is all for the write component, which you need for output during model integration
     if [ "$QUILTING" = "TRUE" ]; then
