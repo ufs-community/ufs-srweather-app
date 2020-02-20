@@ -727,18 +727,20 @@ predefined domain:
 
 # Values taken from pre-generated files in /scratch4/NCEPDEV/fv3-cam/save/Benjamin.Blake/regional_workflow/fix/fix_sar
 # With move to Hera, those files were lost; a backup can be found here: /scratch2/BMC/det/kavulich/fix/fix_sar
+
 # Longitude and latitude for center of domain
-    JPgrid_LON_CTR=-97.5
-    JPgrid_LAT_CTR=38.5
+    JPgrid_LON_CTR=-153.0
+    JPgrid_LAT_CTR=61.0
 
 # Projected grid spacing in meters...in the static files (e.g. "C768_grid.tile7.nc"), the "dx" is actually the resolution
 # of the supergrid, which is HALF of this dx
     JPgrid_DELX="3000.0"
     JPgrid_DELY="3000.0"
 
-# Number of x and y points for your domain (halo not included)
-    JPgrid_NX=1344
-    JPgrid_NY=1152
+# Number of x and y points for your domain (halo not included);
+# Divide "supergrid" values from /scratch2/BMC/det/kavulich/fix/fix_sar/ak/C768_grid.tile7.halo4.nc by 2 and subtract 8 to eliminate halo
+    JPgrid_NX=1344 # Supergrid value 2704
+    JPgrid_NY=1152 # Supergrid value 2320
 
 # Number of halo points for a wide grid (before trimming)...this should almost always be 6 for now
 # Within the model we actually have a 4-point halo and a 3-point halo
@@ -779,8 +781,8 @@ predefined domain:
       WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
       WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
 #Write component grid must always be <= compute grid (without haloes)
-      WRTCMP_nx="191"
-      WRTCMP_ny="97"
+      WRTCMP_nx="1340"
+      WRTCMP_ny="1132"
 #Lower left latlon (southwest corner)
       WRTCMP_lon_lwr_left="-121.587"
       WRTCMP_lat_lwr_left="24.360"
@@ -972,8 +974,8 @@ predefined domain:
       WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
       WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
 #Write component grid must always be <= compute grid (without haloes)
-      WRTCMP_nx="191"
-      WRTCMP_ny="97"
+      WRTCMP_nx="871"
+      WRTCMP_ny="724"
 #Lower left latlon (southwest corner)
       WRTCMP_lon_lwr_left="-150.587"
       WRTCMP_lat_lwr_left="14.623"
@@ -1058,8 +1060,8 @@ predefined domain:
       WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
       WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
 #Write component grid must always be <= compute grid (without haloes)
-      WRTCMP_nx="191"
-      WRTCMP_ny="97"
+      WRTCMP_nx="1162"
+      WRTCMP_ny="864"
 #Lower left latlon (southwest corner)
       WRTCMP_lon_lwr_left="-77.846"
       WRTCMP_lat_lwr_left="12.341"
@@ -1142,8 +1144,8 @@ predefined domain:
       WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
       WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
 #Write component grid must always be <= compute grid (without haloes)
-      WRTCMP_nx="191"
-      WRTCMP_ny="97"
+      WRTCMP_nx="871"
+      WRTCMP_ny="724"
 #Lower left latlon (southwest corner)
       WRTCMP_lon_lwr_left="138.941"
       WRTCMP_lat_lwr_left="9.658"
