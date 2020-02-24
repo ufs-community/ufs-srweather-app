@@ -784,8 +784,8 @@ predefined domain:
       WRTCMP_nx="1340"
       WRTCMP_ny="1132"
 #Lower left latlon (southwest corner)
-      WRTCMP_lon_lwr_left="-121.587"
-      WRTCMP_lat_lwr_left="24.360"
+      WRTCMP_lon_lwr_left="151.5"
+      WRTCMP_lat_lwr_left="42.360"
       WRTCMP_dx="$JPgrid_DELX"
       WRTCMP_dy="$JPgrid_DELY"
     fi
@@ -977,8 +977,8 @@ predefined domain:
       WRTCMP_nx="871"
       WRTCMP_ny="724"
 #Lower left latlon (southwest corner)
-      WRTCMP_lon_lwr_left="-150.587"
-      WRTCMP_lat_lwr_left="14.623"
+      WRTCMP_lon_lwr_left="189.399"
+      WRTCMP_lat_lwr_left="9.712"
       WRTCMP_dx="$JPgrid_DELX"
       WRTCMP_dy="$JPgrid_DELY"
     fi
@@ -1063,8 +1063,8 @@ predefined domain:
       WRTCMP_nx="1162"
       WRTCMP_ny="864"
 #Lower left latlon (southwest corner)
-      WRTCMP_lon_lwr_left="-77.846"
-      WRTCMP_lat_lwr_left="12.341"
+      WRTCMP_lon_lwr_left="273.012"
+      WRTCMP_lat_lwr_left="5.603"
       WRTCMP_dx="$JPgrid_DELX"
       WRTCMP_dy="$JPgrid_DELY"
     fi
@@ -1147,8 +1147,8 @@ predefined domain:
       WRTCMP_nx="871"
       WRTCMP_ny="724"
 #Lower left latlon (southwest corner)
-      WRTCMP_lon_lwr_left="138.941"
-      WRTCMP_lat_lwr_left="9.658"
+      WRTCMP_lon_lwr_left="132.984"
+      WRTCMP_lat_lwr_left="4.820"
       WRTCMP_dx="$JPgrid_DELX"
       WRTCMP_dy="$JPgrid_DELY"
     fi
