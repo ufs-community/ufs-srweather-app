@@ -291,15 +291,16 @@ case "${EXTRN_MDL_NAME_ICS}" in
 # external model file type, and physics suite).
 #
     if [ "${USE_CCPP}" = "TRUE" ]; then
-      if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
+      if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+         [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
+         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
         tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
         tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
-      else
-        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
       fi
 #
 # If CCPP is not being used, the only physics suite that can be used is
@@ -348,13 +349,14 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
   fi
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
-    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
+    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
       numsoil_out="9"
-    else
-      numsoil_out="4"
     fi
   fi
   
@@ -376,7 +378,10 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
   internal_GSD=".false."
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
-    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
+    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
