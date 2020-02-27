@@ -104,6 +104,15 @@ case "${CCPP_PHYS_SUITE}" in
 "FV3_GSD_v0" | "FV3_GSD_SAR")
   phys_suite="GSD"
   ;;
+"FV3_CPT_v0")
+  phys_suite="CPT"
+  ;;
+"FV3_GFS_v15p2")
+  phys_suite="v15p2"
+  ;;
+"FV3_GFS_v16beta")
+  phys_suite="v16beta"
+  ;;
 
 *)
   print_err_msg_exit "\
@@ -282,7 +291,10 @@ case "${EXTRN_MDL_NAME_ICS}" in
 # external model file type, and physics suite).
 #
     if [ "${USE_CCPP}" = "TRUE" ]; then
-      if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
+      if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+         [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
+         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
         tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
@@ -337,7 +349,10 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
   fi
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
-    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
+    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
@@ -363,7 +378,10 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
   internal_GSD=".false."
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
-    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ]; then
+    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then

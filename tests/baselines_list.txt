@@ -7,3 +7,6 @@ regional_006
 regional_007
 regional_008
 regional_009
+regional_010
+regional_011
+regional_012
