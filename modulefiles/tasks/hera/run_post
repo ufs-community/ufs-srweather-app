@@ -21,10 +21,10 @@ module load g2/3.1.1
 module load gfsio/1.1.0
 module load ip/3.0.2
 module load sp/2.0.3
-module load w3emc/2.3.1
 module load w3nco/2.0.7
 module load crtm/2.2.5
-module load netcdf/4.7.0
 module load g2tmpl/1.5.1
 module load wrfio/1.1.1
-
+module load hdf5_parallel/1.10.6
+module load netcdf_parallel/4.7.4
+module load w3emc_para/2.4.0
