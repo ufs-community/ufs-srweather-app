@@ -15,11 +15,16 @@ This step will checkout EMC\_post, NEMSfv3gfs and its submodules, UFS\_UTILS\_ch
 cd sorc
 ./build_all.sh
 ```
+NOTE: You must not have the conda module loaded for the build to succeed.
+
 This step will also copy the executables to the `exec` directory and link the fix files.
 4. Create a `config.sh` file in the `ush` directory (see Users Guide).
 5. Generate a workflow:
 ```
 cd ush
+module use /scratch2/BMC/zrtrr/cholt/modulefiles
+module load conda
+conda activate regional_workflow
 generate_FV3SAR_wflow.sh
 ```
 This will create an experiment directory in `$EXPT_SUBDIR` with a rocoto xml file FV3SAR_wflow.xml. It will also output information specific to your experiment.

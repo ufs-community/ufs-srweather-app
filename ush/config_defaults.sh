@@ -143,7 +143,11 @@ PTMP="/path/to/temporary/directory/ptmp"
 # a "JPgrid" type of regional grid.
 #
 # FV3_NML_FN:
-# Name of file containing the forecast model's namelist settings.
+# Name of Fortran namelist file containing the forecast model's base namelist.
+#
+# FV3_NML_CONFIG:
+# Name of YAML configuration file containing the forecast model's namelist
+# settings for various configurations.
 #
 # DIAG_TABLE_FN:
 # Name of file that specifies the fields that the forecast model will 
@@ -190,7 +194,8 @@ RGNL_GRID_NML_FN="regional_grid.nml"
 DATA_TABLE_FN="data_table"
 DIAG_TABLE_FN="diag_table"
 FIELD_TABLE_FN="field_table"
-FV3_NML_FN="input.nml"
+FV3_NML_FN="input.nml.FV3"
+FV3_NML_CONFIG="FV3.input.yml"
 MODEL_CONFIG_FN="model_configure"
 NEMS_CONFIG_FN="nems.configure"
 

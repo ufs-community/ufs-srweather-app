@@ -390,14 +390,21 @@ elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 Setting parameters in file:
   rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\""
 
-  set_file_param "${rgnl_grid_nml_fp}" "plon" "${LON_CTR}"
-  set_file_param "${rgnl_grid_nml_fp}" "plat" "${LAT_CTR}"
-  set_file_param "${rgnl_grid_nml_fp}" "delx" "${DEL_ANGLE_X_SG}"
-  set_file_param "${rgnl_grid_nml_fp}" "dely" "${DEL_ANGLE_Y_SG}"
-  set_file_param "${rgnl_grid_nml_fp}" "lx" "${NEG_NX_OF_DOM_WITH_WIDE_HALO}"
-  set_file_param "${rgnl_grid_nml_fp}" "ly" "${NEG_NY_OF_DOM_WITH_WIDE_HALO}"
-  set_file_param "${rgnl_grid_nml_fp}" "a" "${JPgrid_ALPHA_PARAM}"
-  set_file_param "${rgnl_grid_nml_fp}" "k" "${JPgrid_KAPPA_PARAM}"
+  settings="
+  'regional_grid_nml': {
+      'plon': ${LON_CTR},
+      'plat': ${LAT_CTR},
+      'delx': ${DEL_ANGLE_X_SG},
+      'dely': ${DEL_ANGLE_Y_SG},
+      'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO},
+      'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO},
+      'a': ${JPgrid_ALPHA_PARAM},
+      'k': ${JPgrid_KAPPA_PARAM},
+   }
+  "
+
+  ${USHDIR}/set_namelist.py -q -o ${rgnl_grid_nml_fp} -u "{$settings}" ||
+     (echo "set_namlist.py failed!" && exit 1)
 
   cd_vrfy $tmpdir
 
