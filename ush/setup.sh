@@ -323,16 +323,11 @@ Then remove this message and rerun."
 #
 "CHEYENNE")
 #
-  print_err_msg_exit "\
-Don't know how to set several parameters on MACHINE=\"$MACHINE\".
-Please specify the correct parameters for this machine in the setup script.  
-Then remove this message and rerun."
-
-  NCORES_PER_NODE=
-  SCHED=""
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
+  NCORES_PER_NODE=36
+  SCHED="pbs"
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"regular"}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
-  QUEUE_FCST=${QUEUE_FCST:-""}
+  QUEUE_FCST=${QUEUE_FCST:-"regular"}
 #
 esac
 #
@@ -682,6 +677,10 @@ case $MACHINE in
 "ODIN")
   FIXgsm="/scratch/ywang/fix/theia_fix/fix_am"
   SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"
+  ;;
+"CHEYENNE")
+  FIXgsm="/glade/p/ral/jntp/UFS_CAM/fix_am"
+  SFC_CLIMO_INPUT_DIR="/glade/p/ral/jntp/UFS_CAM/climo_fields_netcdf"
   ;;
 
 *)
