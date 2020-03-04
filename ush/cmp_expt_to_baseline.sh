@@ -263,8 +263,8 @@ Exiting script with nonzero exit code.
 #-----------------------------------------------------------------------
 #
     cd ${expt_dir}/$subdir
-#    num_files=$( ls -1 *.${file_ext} 2>/dev/null | wc -l )
-    num_files=$( count_files *.${file_ext} 2>/dev/null | wc -l )
+    num_files=$( ls -1 *.${file_ext} 2>/dev/null | wc -l )
+#   num_files=$( count_files *.${file_ext} 2>/dev/null | wc -l )
     printf "
     Number of files with extension \"${file_ext}\" in subdirectory \"$subdir\" 
     of the experiment directory is:  ${num_files}
@@ -343,7 +343,7 @@ done # Loop over subdirectories.
 #
 msg="Summary of regression test:"
 msglen=${#msg}
-msg="$msg  ${result_str}"
+msg="$msg"
 printf "\n%s\n" "$msg"
 printf "%0.s=" $(seq 1 $msglen)
 printf "\n"
