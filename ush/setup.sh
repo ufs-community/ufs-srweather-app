@@ -775,7 +775,7 @@ Call to function get_manage_externals_config_property failed."
 EMC_POST_DIR="$HOMErrfs/${EMC_POST_DIR}"
 if [ ! -d "${EMC_POST_DIR}" ]; then
   print_err_msg_exit "\
-The base directory in which the ECM_post source code should be located
+The base directory in which the EMC_post source code should be located
 (EMC_POST_DIR) does not exist:
   EMS_POST_DIR = \"${EMC_POST_DIR}\"
 Please clone the external repository containing the code in this directory,
