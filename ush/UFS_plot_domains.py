@@ -161,7 +161,7 @@ def get_lambert_points(gnomonic_map, lambert_map,pps):
 
 # Call the function we just defined to generate a polygon roughly approximating the lambert "rectangle" in gnomonic space
 
-verts3,codes3=get_lambert_points(map2, map3,10)
+verts3,codes3=get_lambert_points(map1, map3,10)
 
 # Now draw!
 
