@@ -5,6 +5,8 @@
 #              ufs_weather_model/test.  This script is usually called
 #              from ./build_all.sh.
 #
+# Note:  Only the CCPP build of the UFS MR Weather Model is supported.
+#
 # Usage: ./build_forecast.sh
 #
 #==========================================================================
@@ -26,7 +28,7 @@ if [ ! -d "../exec" ]; then
 fi
 
 target=${target}.intel
-CCPP=${CCPP:-"false"}
+CCPP=${CCPP:-"true"}
 
 cd ufs_weather_model
 FV3=$( pwd -P )/FV3
@@ -35,5 +37,5 @@ cd tests
 if [ $CCPP  = true ] || [ $CCPP = TRUE ] ; then
   ./compile.sh "$FV3" "$target" "CCPP=Y STATIC=N 32BIT=Y REPRO=Y"
 else
-  ./compile.sh "$FV3" "$target" "NCEP64LEV=Y HYDRO=N 32BIT=Y" 1
+  echo "The non-CCPP build of the UFS MR Weather Model is not supported"
 fi
