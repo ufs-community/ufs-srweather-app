@@ -6,8 +6,8 @@ Introduction
 
 The UFS Short-Range Weather Application (UFS-SR-Weather-App) provides an
 end-to-end system to run the pre-processing tasks, the regional `UFS Weather Model 
-<https://ufs-mrweather-app.readthedocs.io/en/ufs-v1.0.0/>`_, and
-the Unified Post Processor (UPP).
+<https://ufs-weather-model.readthedocs.io/en/ufs-v1.0.0/>`_, and
+the Unified Post Processor (:term:`UPP`).
 
 How To Use This Document
 ========================

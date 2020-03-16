@@ -14,3 +14,4 @@ UFS Short-Range Weather App Users Guide
    SystemRequirements
    Quickstart
    FAQ
+   Glossary
