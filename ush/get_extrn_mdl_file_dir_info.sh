@@ -528,6 +528,9 @@ bination of external model (extrn_mdl_name) and analysis or forecast
     "ODIN")
       sysdir=""
       ;;
+    "CHEYENNE")
+      sysdir=""
+      ;;
     *)
       print_err_msg_exit "\
 The system directory in which to look for external model output files 
@@ -555,6 +558,9 @@ has not been specified for this external model and machine combination:
       ;;
     "ODIN")
       sysdir="$sysbasedir/${yyyymmdd}"
+      ;;
+    "CHEYENNE")
+      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
       ;;
     *)
       print_err_msg_exit "\
@@ -584,6 +590,9 @@ has not been specified for this external model and machine combination:
     "ODIN")
       sysdir="$sysbasedir"
       ;;
+    "CHEYENNE")
+      sysdir="$sysbasedir"
+      ;;
     *)
       print_err_msg_exit "\
 The system directory in which to look for external model output files 
@@ -610,6 +619,9 @@ has not been specified for this external model and machine combination:
       sysdir="$sysbasedir"
       ;;
     "ODIN")
+      sysdir="$sysbasedir"
+      ;;
+    "CHEYENNE")
       sysdir="$sysbasedir"
       ;;
     *)

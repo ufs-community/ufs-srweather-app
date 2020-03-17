@@ -323,16 +323,11 @@ Then remove this message and rerun."
 #
 "CHEYENNE")
 #
-  print_err_msg_exit "\
-Don't know how to set several parameters on MACHINE=\"$MACHINE\".
-Please specify the correct parameters for this machine in the setup script.  
-Then remove this message and rerun."
-
-  NCORES_PER_NODE=
-  SCHED=""
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
+  NCORES_PER_NODE=36
+  SCHED="pbs"
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"regular"}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
-  QUEUE_FCST=${QUEUE_FCST:-""}
+  QUEUE_FCST=${QUEUE_FCST:-"regular"}
 #
 esac
 #
@@ -683,6 +678,10 @@ case $MACHINE in
   FIXgsm="/scratch/ywang/fix/theia_fix/fix_am"
   SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"
   ;;
+"CHEYENNE")
+  FIXgsm="/glade/p/ral/jntp/UFS_CAM/fix_am"
+  SFC_CLIMO_INPUT_DIR="/glade/p/ral/jntp/UFS_CAM/climo_fields_netcdf"
+  ;;
 
 *)
   print_err_msg_exit "\
@@ -707,7 +706,7 @@ esac
 mng_extrns_cfg_fn="$HOMErrfs/Externals.cfg"
 property_name="local_path"
 #
-# Get the base directory of the FV3 forecast model code code.
+# Get the base directory of the FV3 forecast model code.
 #
 external_name="ufs_weather_model"
 UFS_WTHR_MDL_DIR=$( \
@@ -762,6 +761,25 @@ The base directory in which the chgres source code should be located
   CHGRES_DIR = \"${CHGRES_DIR}\"
 Please clone the external repository containing the code in this direct-
 ory, build the executable, and then rerun the workflow."
+fi
+#
+# Get the base directory of the EMC_post code.
+#
+external_name="EMC_post"
+EMC_POST_DIR=$( \
+get_manage_externals_config_property \
+"${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
+print_err_msg_exit "\
+Call to function get_manage_externals_config_property failed."
+
+EMC_POST_DIR="$HOMErrfs/${EMC_POST_DIR}"
+if [ ! -d "${EMC_POST_DIR}" ]; then
+  print_err_msg_exit "\
+The base directory in which the EMC_post source code should be located
+(EMC_POST_DIR) does not exist:
+  EMS_POST_DIR = \"${EMC_POST_DIR}\"
+Please clone the external repository containing the code in this directory,
+build the executable, and then rerun the workflow."
 fi
 #
 #-----------------------------------------------------------------------
