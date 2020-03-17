@@ -274,9 +274,9 @@ cd_vrfy "${MODULES_DIR}/tasks/$machine"
 # that is defined.  That needs to be fixed.  Until then, we have to use
 # a hard-coded module file, which may or may not be compatible with the
 # modules used in the UFS_UTILS repo to build the orog code.
-#ln_vrfy -fs "${UFS_UTILS_DIR}/modulefiles/fv3gfs/orog.$machine" \
-#            "${MAKE_OROG_TN}"
-ln_vrfy -fs "${MAKE_OROG_TN}.hardcoded" "${MAKE_OROG_TN}"
+ln_vrfy -fs "${UFS_UTILS_DIR}/modulefiles/fv3gfs/orog.$machine" \
+            "${MAKE_OROG_TN}"
+#ln_vrfy -fs "${MAKE_OROG_TN}.hardcoded" "${MAKE_OROG_TN}"
 
 ln_vrfy -fs "${UFS_UTILS_DIR}/modulefiles/modulefile.sfc_climo_gen.$machine" \
             "${MAKE_SFC_CLIMO_TN}"

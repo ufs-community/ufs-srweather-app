@@ -150,22 +150,10 @@ case $MACHINE in
   ;;
 #
 "JET")
-#
-  . /apps/lmod/lmod/init/sh
-  module purge
-  module load intel/15.0.3.187
-  module load impi/5.1.1.109
-  module load szip
-  module load hdf5
-  module load netcdf4/4.2.1.1
-  module load contrib wrap-mpi
-  module list
-
-#  . $USHDIR/set_stack_limit_jet.sh
   ulimit -s unlimited
   ulimit -a
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
+  APRUN="srun"
+  LD_LIBRARY_PATH="${UFS_WTHR_MDL_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
   ;;
 #
 "ODIN")

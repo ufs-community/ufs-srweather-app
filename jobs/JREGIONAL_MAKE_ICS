@@ -124,10 +124,9 @@ case "$MACHINE" in
   ;;
 #
 "JET")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  { restore_shell_opts; } > /dev/null 2>&1
+  ulimit -s unlimited
+#  ulimit -a
+  APRUN="srun"
   ;;
 #
 "ODIN")
