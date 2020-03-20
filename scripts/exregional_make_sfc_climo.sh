@@ -246,18 +246,6 @@ Call to function to create links to surface climatology files failed."
 #
 #-----------------------------------------------------------------------
 #
-# GSK 20190430:
-# This is to make rocoto aware that the make_sfc_climo task has completed
-# (so that other tasks can be launched).  This should be done through 
-# rocoto's dependencies, but not sure how to do it yet.
-#
-#-----------------------------------------------------------------------
-#
-cd_vrfy $EXPTDIR
-touch "make_sfc_climo_files_task_complete.txt"
-#
-#-----------------------------------------------------------------------
-#
 # Print message indicating successful completion of script.
 #
 #-----------------------------------------------------------------------
