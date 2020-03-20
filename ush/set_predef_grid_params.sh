@@ -975,12 +975,12 @@ predefined domain:
       WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
       WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
 #Write component grid should be close to the JPgrid values unless you are doing something weird
-      WRTCMP_nx="440"
-      WRTCMP_ny="368"
+      WRTCMP_nx="420"
+      WRTCMP_ny="348"
 
 #Lower left latlon (southwest corner)
-      WRTCMP_lon_lwr_left="-163.2"
-      WRTCMP_lat_lwr_left="14.9"
+      WRTCMP_lon_lwr_left="-162.8"
+      WRTCMP_lat_lwr_left="15.2"
       WRTCMP_dx="$JPgrid_DELX"
       WRTCMP_dy="$JPgrid_DELY"
     fi
@@ -1148,11 +1148,11 @@ predefined domain:
       WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
       WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
 #Write component grid must always be <= compute grid (without haloes)
-      WRTCMP_nx="871"
-      WRTCMP_ny="724"
-#Lower left latlon (southwest corner) (taken from 2019070100/INPUT/grid.tile7.halo4.nc)
-      WRTCMP_lon_lwr_left="132.856"
-      WRTCMP_lat_lwr_left="4.70778"
+      WRTCMP_nx="420"
+      WRTCMP_ny="348"
+#Lower left latlon (southwest corner) Used /scratch2/NCEPDEV/fv3-cam/Dusan.Jovic/dbrowse/fv3grid utility to find best value 
+      WRTCMP_lon_lwr_left="140"
+      WRTCMP_lat_lwr_left="10"
       WRTCMP_dx="$JPgrid_DELX"
       WRTCMP_dy="$JPgrid_DELY"
     fi
