@@ -450,6 +450,7 @@ the forecast model directory sturcture to the experiment directory..."
 # Thompson microphysics parameterization to the experiment directory.
 #
   if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
      [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
     print_info_msg "$VERBOSE" "
 Copying the fixed file containing cloud condensation nuclei (CCN) data 
