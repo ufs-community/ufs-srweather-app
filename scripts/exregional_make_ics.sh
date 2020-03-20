@@ -359,6 +359,7 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
       numsoil_out="9"
     fi
   fi
+<<<<<<< HEAD
  
   if [ "${MACHINE}" = "HERA" ]; then
    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_HRRRX"  # Maybe make this a fix file?
@@ -366,6 +367,10 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
    geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
   fi
 
+=======
+  
+  geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_HRRRX"  # Maybe make this a fix file?
+>>>>>>> upstream/community_develop
   replace_vgtyp=".false."
   replace_sotyp=".false."
   replace_vgfrc=".false."
@@ -394,12 +399,16 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
     fi
   fi
 
+<<<<<<< HEAD
   if [ "${MACHINE}" = "HERA" ]; then
    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_RAPX"  # Maybe make this a fix file?
   elif [ "${MACHINE}" = "JET" ]; then
    geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
   fi
 
+=======
+  geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_RAPX"  # Maybe make this a fix file?
+>>>>>>> upstream/community_develop
   replace_vgtyp=".false."
   replace_sotyp=".false."
   replace_vgfrc=".false."
