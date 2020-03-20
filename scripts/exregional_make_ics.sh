@@ -361,7 +361,7 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
   fi
  
   if [ "${MACHINE}" = "HERA" ]; then
-   geogrid_file_input_grid="/scratch2/BMC/det/beck/SAR-FV3/geo_em.d01.nc_HRRRX"  # Maybe make this a fix file?
+   geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_HRRRX"  # Maybe make this a fix file?
   elif [ "${MACHINE}" = "JET" ]; then
    geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
   fi
@@ -395,7 +395,7 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
   fi
 
   if [ "${MACHINE}" = "HERA" ]; then
-   geogrid_file_input_grid="/scratch2/BMC/det/beck/SAR-FV3/geo_em.d01.nc_RAPX"  # Maybe make this a fix file?
+   geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_RAPX"  # Maybe make this a fix file?
   elif [ "${MACHINE}" = "JET" ]; then
    geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
   fi
