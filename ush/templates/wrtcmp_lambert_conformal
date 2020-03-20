@@ -19,7 +19,7 @@ lat1:                    <lat1>         # Latitude of grid point at lower-left c
 dx:                      <dx>           # Grid cell size in x direction, in meters.
 dy:                      <dy>           # Grid cell size in y direction, in meters.
 
-nfhout:                  1
-nfhmax_hf:               60
-nfhout_hf:               1
-nsout:                   -1
+nfhout:                  1              # Output frequency in hours after forecast hour "nfhmax_hf"
+nfhmax_hf:               60             # Number of forecast hours until output frequency "nfhout" takes affect
+nfhout_hf:               1              # Output frequency in hours until forecast hour "nfhmax_hf"
+nsout:                   -1             # Output frequency in time steps (positive values override "nfhout" and "nfhout_hf")
