@@ -4,8 +4,8 @@
 "grid_spec",              -1,  "months",   1, "days",  "time"
 "atmos_static",           -1,  "hours",    1, "hours", "time"
 #"atmos_4xdaily",           1,  "hours",    1, "days",  "time"
-"fv3_history",             0,  "hours",    1, "hours", "time"
-"fv3_history2d",           0,  "hours",    1, "hours", "time"
+"fv3_history",             1,  "years",    1, "hours", "time"
+"fv3_history2d",           1,  "years",    1, "hours", "time"
 
 #
 #=======================

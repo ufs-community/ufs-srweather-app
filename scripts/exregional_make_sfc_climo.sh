@@ -149,6 +149,10 @@ case $MACHINE in
   APRUN="srun"
   ;;
 
+"JET")
+  APRUN="srun"
+  ;;
+
 *)
   print_err_msg_exit "\
 Run command has not been specified for this machine:
@@ -239,18 +243,6 @@ link_fix \
   file_group="sfc_climo" || \
 print_err_msg_exit "\
 Call to function to create links to surface climatology files failed."
-#
-#-----------------------------------------------------------------------
-#
-# GSK 20190430:
-# This is to make rocoto aware that the make_sfc_climo task has completed
-# (so that other tasks can be launched).  This should be done through 
-# rocoto's dependencies, but not sure how to do it yet.
-#
-#-----------------------------------------------------------------------
-#
-cd_vrfy $EXPTDIR
-touch "make_sfc_climo_files_task_complete.txt"
 #
 #-----------------------------------------------------------------------
 #

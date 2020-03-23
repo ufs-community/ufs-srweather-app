@@ -1,0 +1,30 @@
+#%Module#####################################################
+## Module file for make_ics task.
+#############################################################
+
+module load intel/18.0.5.274
+module load impi/2018.4.274
+module load szip
+module load hdf5
+module load netcdf/4.2.1.1
+
+module use /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib/modulefiles
+module load esmflocal/ESMF_8_0_0_beta_snapshot_21
+
+module load w3nco-intel-sandybridge/2.0.6
+module load sp-intel-sandybridge/2.0.2
+module load bacio-intel-sandybridge/2.0.2
+module load sigio-intel-sandybridge/2.0.1
+module load sfcio-intel-sandybridge/1.0.0
+module load nemsio-intel-sandybridge/2.2.3
+
+export FCOMP=mpiifort
+#export FFLAGS="-O3 -fp-model precise -g -traceback -r8 -i4 -qopenmp -convert big_endian -assume byterecl"
+# for debugging
+export FFLAGS="-O0 -g -traceback -r8 -i4 -qopenmp -convert big_endian -check bounds -warn unused -assume byterecl"
+
+export WGRIB2API_LIB="/apps/wgrib2/2.0.8/intel/18.0.5.274/lib/libwgrib2_api.a"
+export WGRIB2API_INC="/apps/wgrib2/2.0.8/intel/18.0.5.274/lib"
+export WGRIB2_LIB="/apps/wgrib2/2.0.8/intel/18.0.5.274/lib/libwgrib2.a"
+export WGRIB2_DIR="/apps/wgrib2/2.0.8/intel/18.0.5.274/bin"
+module load wgrib2/2.0.8
