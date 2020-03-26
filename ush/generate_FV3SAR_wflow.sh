@@ -298,8 +298,20 @@ cat "${MAKE_LBCS_TN}.local" >> "${MAKE_LBCS_TN}"
 ln_vrfy -fs "${UFS_WTHR_MDL_DIR}/NEMS/src/conf/modules.nems" \
             "${RUN_FCST_TN}"
 
-ln_vrfy -fs "${EMC_POST_DIR}/modulefiles/post/v8.0.0-$machine" \
+
+#Only some platforms build EMC_post using modules
+case $MACHINE in
+
+"CHEYENNE")
+  print_info_msg "No post modulefile needed for $MACHINE"
+  ;;
+
+*)
+  ln_vrfy -fs "${EMC_POST_DIR}/modulefiles/post/v8.0.0-$machine" \
             "${RUN_POST_TN}"
+  ;;
+
+esac
 
 cd_vrfy -
 #

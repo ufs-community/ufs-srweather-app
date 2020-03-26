@@ -679,8 +679,8 @@ case $MACHINE in
   SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"
   ;;
 "CHEYENNE")
-  FIXgsm="/glade/p/ral/jntp/UFS_CAM/fix_am"
-  SFC_CLIMO_INPUT_DIR="/glade/p/ral/jntp/UFS_CAM/climo_fields_netcdf"
+  FIXgsm="/glade/p/ral/jntp/UFS_CAM/fix/fix_am"
+  SFC_CLIMO_INPUT_DIR="/glade/p/ral/jntp/UFS_CAM/fix/climo_fields_netcdf"
   ;;
 
 *)
