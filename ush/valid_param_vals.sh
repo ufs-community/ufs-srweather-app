@@ -2,7 +2,7 @@ valid_vals_RUN_ENVIR=("nco" "community")
 valid_vals_VERBOSE=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_MACHINE=("WCOSS_C" "WCOSS" "DELL" "THEIA" "HERA" "JET" "ODIN" "CHEYENNE")
 valid_vals_PREDEF_GRID_NAME=( \
-"EMC_CONUS_3km" "EMC_CONUS_coarse" "EMC_AK" \
+"EMC_CONUS_3km" "EMC_CONUS_coarse" "EMC_AK" "EMC_HI" "EMC_PR" "EMC_GU" \
 "GSD_HAFSV0.A3km" "GSD_HAFSV0.A13km" "GSD_HAFSV0.A25km" \
 "GSD_HRRR_AK_3km" "GSD_HRRR_AK_50km" \
 "GSD_HRRR3km" "GSD_HRRR13km" "GSD_HRRR25km" \
