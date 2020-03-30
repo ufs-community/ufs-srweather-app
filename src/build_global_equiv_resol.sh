@@ -73,9 +73,7 @@ elif [ $platform = "cheyenne" ]; then
   export HDF5=$NETCDF     #HDF5 used in Makefile_cheyenne
 elif [ $platform = "jet" ]; then
   HDF5_DIR=$HDF5
-  NETCDF_DIR=$NETCDF4
-  HDF5_HOME=$HDF5
-  NETCDF_HOME=$NETCDF4
+  NETCDF_DIR=$NETCDF
 fi
 #
 # Create alias for "make".

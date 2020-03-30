@@ -30,11 +30,11 @@ elif [ ${target} == "odin" ]; then
 
 elif [ ${target} == "cheyenne" ]; then
 
-    ln -sfn /glade/p/ral/jntp/GMTB/FV3GFS_V1_RELEASE/fix/fix_am/ fix_am
+    ln -sfn /glade/p/ral/jntp/GMTB/FV3GFS_V1_RELEASE/fix/fix_am fix_am
 
 elif [ ${target} == "jet" ]; then
 
-    ln -sfn regional/build_regional/fix/fix_am fix_am
+    ln -sfn /lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_am fix_am
 
 else
 
