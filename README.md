@@ -22,8 +22,7 @@ This step will also copy the executables to the `exec` directory and link the fi
 5. Generate a workflow:
 ```
 cd ush
-module use /scratch2/BMC/zrtrr/cholt/modulefiles
-module load conda
+module load contrib miniconda3
 conda activate regional_workflow
 generate_FV3SAR_wflow.sh
 ```
