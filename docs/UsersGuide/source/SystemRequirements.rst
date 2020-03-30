@@ -6,7 +6,7 @@ System Requirements
 The UFS Short-Range Weather Application is supported on the NOAA HPC Hera and NCAR
 Supercomputer Cheyenne.  Intel and GNU are the currently supported
 compilers for building the pre-processing utilities, the UFS Weather Model,
-and the Unified Post Processor (UPP).
+and the Unified Post Processor (:term:`UPP`).
 
 Software/Operating System Requirements
 ======================================
@@ -30,9 +30,9 @@ running all tasks in the UFS Short-Range Weather Application.
 
 NCEP Libraries
 ==============
-A number of the NCEP (National Center for Environmental Prediction) production
+A number of the :term:`NCEP` (National Center for Environmental Prediction) production
 libraries are necessary for building and running the pre-processing utilities,
-the UFS Weather Model and UPP.  These libraries are not part of the
+the :term:`UFS` :term:`Weather Model` and :term:`UPP`.  These libraries are not part of the
 UFS Short-Range Weather Application source code distribution.  If they are not already installed on
 your computer platform, you may have to clone the source code from the
 `github repository <https://github.com/NOAA-EMC/NCEPLIBS>`_ and follow the build instructions
