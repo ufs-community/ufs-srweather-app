@@ -147,9 +147,10 @@ fi
 #
 set_file_param "${WFLOW_XML_FP}" "ACCOUNT" "$ACCOUNT"
 set_file_param "${WFLOW_XML_FP}" "SCHED" "$SCHED"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_DEFAULT" "${QUEUE_DEFAULT}"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_HPSS" "${QUEUE_HPSS}"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_FCST" "${QUEUE_FCST}"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_DEFAULT" "<${QUEUE_DEFAULT_TAG}>${QUEUE_DEFAULT}</${QUEUE_DEFAULT_TAG}>"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_HPSS" "<${QUEUE_HPSS_TAG}>${QUEUE_HPSS}</${QUEUE_HPSS_TAG}>"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_FCST" "<${QUEUE_FCST_TAG}>${QUEUE_FCST}</${QUEUE_FCST_TAG}>"
+set_file_param "${WFLOW_XML_FP}" "NCORES_PER_NODE" "${NCORES_PER_NODE}"
 set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FCST" "${PROC_RUN_FCST}"
 #
 # Directories.

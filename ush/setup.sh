@@ -324,9 +324,10 @@ Then remove this message and rerun."
 "CHEYENNE")
 #
   NCORES_PER_NODE=36
-  SCHED="pbs"
+  SCHED="pbspro"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"regular"}
-  QUEUE_HPSS=${QUEUE_HPSS:-""}
+  QUEUE_HPSS=${QUEUE_HPSS:-"regular"}
+  QUEUE_HPSS_TAG="queue"       # pbspro does not support "partition" tag
   QUEUE_FCST=${QUEUE_FCST:-"regular"}
 #
 esac
