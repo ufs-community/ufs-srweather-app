@@ -78,11 +78,6 @@ def load_config(arg):
     with YAML's safe loader and return the resulting dict.
     '''
 
-    # Check for existence of file
-    if not os.path.exists(arg):
-        msg = f'{arg} does not exist!'
-        raise argparse.ArgumentTypeError(msg)
-
     return yaml.safe_load(arg)
 
 def path_ok(arg):
