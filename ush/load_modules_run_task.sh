@@ -249,6 +249,9 @@ task (task_name) does not exist:
   modulefile_path = \"${modulefile_path}\"
 This is likely because the forecast model code has not yet been built."
 
+  elif [ "${task_name}" = "${RUN_POST_TN}" ] && [ "${machine}" = "CHEYENNE" ]; then
+    print_info_msg "Modulefile not required for task \"${task_name}\" on machine \"${machine}\""
+
   else
 
     print_err_msg_exit "\

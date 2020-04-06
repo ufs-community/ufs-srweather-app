@@ -107,19 +107,6 @@ case $MACHINE in
   ;;
 
 
-"THEIA")
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-  module purge
-  module load intel
-  module load impi 
-  module load netcdf
-  module load contrib wrap-mpi
-  { restore_shell_opts; } > /dev/null 2>&1
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
-  ;;
-
-
 "HERA")
 #  export NDATE=/scratch3/NCEPDEV/nwprod/lib/prod_util/v1.1.0/exec/ndate
   APRUN="srun"
@@ -133,6 +120,13 @@ case $MACHINE in
 
 "ODIN")
   APRUN="srun -n 1"
+  ;;
+
+
+"CHEYENNE")
+  module list
+
+  APRUN="mpirun -np ${NPROCS}"
   ;;
 
 
