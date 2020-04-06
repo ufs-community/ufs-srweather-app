@@ -154,28 +154,6 @@ case $MACHINE in
   ;;
 
 
-"THEIA")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  . /apps/lmod/lmod/init/sh
-  module purge
-  module load intel/16.1.150
-  module load impi
-  module load hdf5/1.8.14
-  module load netcdf/4.3.0
-  module list
-
-  { restore_shell_opts; } > /dev/null 2>&1
-
-  export APRUN="time"
-  export topo_dir="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog"
-
-  ulimit -s unlimited
-  ulimit -a
-  ;;
-
-
 "HERA")
   ulimit -s unlimited
   ulimit -a
@@ -201,6 +179,11 @@ case $MACHINE in
   ulimit -a
   ;;
 
+
+"CHEYENNE")
+  export APRUN="time"
+  export topo_dir="/glade/p/ral/jntp/UFS_CAM/fix/fix_orog"
+  ;;
 
 esac
 #
@@ -271,7 +254,7 @@ ${tmp_dir}" \
   ;;
 
 
-"THEIA" | "HERA" | "JET" | "ODIN")
+"HERA" | "JET" | "ODIN" | "CHEYENNE")
   ${ufs_utils_ushdir}/${orog_gen_scr} \
     $res ${TILE_RGNL} ${FIXsar} ${raw_dir} ${UFS_UTILS_DIR} ${topo_dir} ${tmp_dir} || \
   print_err_msg_exit "\

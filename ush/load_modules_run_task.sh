@@ -119,6 +119,10 @@ case "$MACHINE" in
     . /apps/lmod/lmod/init/sh
     ;;
 #
+  "CHEYENNE")
+    . /glade/u/apps/ch/opt/lmod/8.1.7/lmod/8.1.7/init/sh
+    ;;
+#
   *) 
     print_err_msg_exit "\
 The script to source to initialize lmod (module loads) has not yet been
