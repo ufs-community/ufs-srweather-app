@@ -52,7 +52,7 @@ workflow XML.
 -->
 <!ENTITY GLOBAL_VAR_DEFNS_FP "">
 <!ENTITY CYCLE_DIR           "">
-
+<!ENTITY UFS_WTHR_MDL_DIR    "">
 <!-- 
 Task names.
 -->
@@ -382,7 +382,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>NPROCS</name><value>&NPROCS_RUN_FCST;</value></envar>
-
+    <envar><name>LD_LIBRARY_PATH</name><value>&UFS_WTHR_MDL_DIR;/FV3/ccpp/lib/</value></envar>
     <dependency>
       <and>
         <taskdep task="&MAKE_ICS_TN;"/>

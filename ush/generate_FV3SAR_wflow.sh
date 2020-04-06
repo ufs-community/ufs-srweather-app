@@ -154,7 +154,7 @@ set_file_param "${WFLOW_XML_FP}" "QUEUE_FCST" "<${QUEUE_FCST_TAG}>${QUEUE_FCST}<
 set_file_param "${WFLOW_XML_FP}" "NCORES_PER_NODE" "${NCORES_PER_NODE}"
 set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FCST" "${PROC_RUN_FCST}"
 set_file_param "${WFLOW_XML_FP}" "NPROCS_RUN_FCST" "${NPROCS_RUN_FCST}"
-
+set_file_param "${WFLOW_XML_FP}" "UFS_WTHR_MDL_DIR" "${UFS_WTHR_MDL_DIR}"
 #
 # Directories.
 #
