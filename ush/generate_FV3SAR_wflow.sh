@@ -96,6 +96,7 @@ cp_vrfy ${TEMPLATE_XML_FP} ${WFLOW_XML_FP}
 #-----------------------------------------------------------------------
 #
 PROC_RUN_FCST="${NUM_NODES}:ppn=${NCORES_PER_NODE}"
+NPROCS_RUN_FCST=$(( ${NUM_NODES} * ${NCORES_PER_NODE} ))
 
 FHR=( $( seq 0 1 ${FCST_LEN_HRS} ) )
 i=0
@@ -152,6 +153,8 @@ set_file_param "${WFLOW_XML_FP}" "QUEUE_HPSS" "<${QUEUE_HPSS_TAG}>${QUEUE_HPSS}<
 set_file_param "${WFLOW_XML_FP}" "QUEUE_FCST" "<${QUEUE_FCST_TAG}>${QUEUE_FCST}</${QUEUE_FCST_TAG}>"
 set_file_param "${WFLOW_XML_FP}" "NCORES_PER_NODE" "${NCORES_PER_NODE}"
 set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FCST" "${PROC_RUN_FCST}"
+set_file_param "${WFLOW_XML_FP}" "NPROCS_RUN_FCST" "${NPROCS_RUN_FCST}"
+
 #
 # Directories.
 #

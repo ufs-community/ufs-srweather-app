@@ -71,6 +71,7 @@ Core/node specifications
 -->
 <!ENTITY NCORES_PER_NODE   "">
 <!ENTITY PROC_RUN_FCST     "">
+<!ENTITY NPROCS_RUN_FCST   "">
 
 
 <!--
@@ -83,8 +84,11 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY PROC_MAKE_SFC_CLIMO      "2:ppn=24">
 <!ENTITY PROC_GET_EXTRN_MDL_FILES "1:ppn=1">
 <!ENTITY PROC_MAKE_ICS_SURF_LBC0  "4:ppn=12">
+<!ENTITY NPROCS_MAKE_ICS_SURF_LBC0 "48">
 <!ENTITY PROC_MAKE_LBC1_TO_LBCN   "4:ppn=12">
+<!ENTITY NPROCS_MAKE_LBC1_TO_LBCN "48">
 <!ENTITY PROC_POST                "2:ppn=24">
+<!ENTITY NPROCS_POST              "48">
 
 <!ENTITY RSRC_MAKE_GRID           "<walltime>00:10:00</walltime>">
 <!ENTITY RSRC_MAKE_OROG           "<walltime>00:10:00</walltime>">
@@ -291,6 +295,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>NPROCS</name><value>&NPROCS_MAKE_ICS_SURF_LBC0;</value></envar>
 
     <dependency>
       <and>
@@ -333,6 +338,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>NPROCS</name><value>&NPROCS_MAKE_LBC1_TO_LBCN;</value></envar>
 
     <dependency>
       <and>
@@ -375,6 +381,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_DIR;</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>NPROCS</name><value>&NPROCS_RUN_FCST;</value></envar>
 
     <dependency>
       <and>
@@ -409,6 +416,7 @@ MODULES_RUN_TASK_FP script.
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
       <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
+      <envar><name>NPROCS</name><value>&NPROCS_POST;</value></envar>
 
       <dependency>
         <and>
