@@ -136,6 +136,7 @@ case $MACHINE in
   module list
 
   APRUN="mpirun -np ${NPROCS}"
+  LD_LIBRARY_PATH="${UFS_WTHR_MDL_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
   ;;
 #
 esac
