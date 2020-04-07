@@ -145,7 +145,6 @@ case $MACHINE in
   { restore_shell_opts; } > /dev/null 2>&1
 
   export APRUN="time"
-#  . $USHDIR/set_stack_limit_jet.sh
   ulimit -a
   ;;
 
