@@ -81,6 +81,7 @@ Variables that are not modified by the workflow generation script.
 <!ENTITY PROC_MAKE_GRID           "1:ppn=24">
 <!ENTITY PROC_MAKE_OROG           "1:ppn=24">
 <!ENTITY PROC_MAKE_SFC_CLIMO      "2:ppn=24">
+<!ENTITY NPROCS_MAKE_SFC_CLIMO    "48">
 <!ENTITY PROC_GET_EXTRN_MDL_FILES "1:ppn=1">
 <!ENTITY PROC_MAKE_ICS_SURF_LBC0  "4:ppn=12">
 <!ENTITY NPROCS_MAKE_ICS_SURF_LBC0 "48">
@@ -211,6 +212,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>NPROCS</name><value>&NPROCS_MAKE_SFC_CLIMO;</value></envar>
 
     <dependency>
       <and>

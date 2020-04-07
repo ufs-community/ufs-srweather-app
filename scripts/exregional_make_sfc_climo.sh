@@ -147,7 +147,7 @@ case $MACHINE in
   ;;
 
 "CHEYENNE")
-  export APRUN="time"
+  APRUN="mpirun -np ${NPROCS}"
   ;;
 
 *)
