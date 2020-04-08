@@ -294,7 +294,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
       if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
+         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
         tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
@@ -354,18 +354,20 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
        [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
       numsoil_out="9"
     fi
   fi
- 
+#
+# These geogrid files need to be moved to more permanent locations.
+#
   if [ "${MACHINE}" = "HERA" ]; then
-   geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_HRRRX"  # Maybe make this a fix file?
+    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_HRRRX"
   elif [ "${MACHINE}" = "JET" ]; then
-   geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
+    geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
   fi
 
   replace_vgtyp=".false."
@@ -389,18 +391,20 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
       numsoil_out="9"
     fi
   fi
-
+#
+# These geogrid files need to be moved to more permanent locations.
+#
   if [ "${MACHINE}" = "HERA" ]; then
-   geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_RAPX"  # Maybe make this a fix file?
+    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_RAPX"
   elif [ "${MACHINE}" = "JET" ]; then
-   geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
+    geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
   fi
 
   replace_vgtyp=".false."
@@ -490,9 +494,9 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 { cat > fort.41 <<EOF
 &config
  fix_dir_target_grid="${FIXsar}"
- mosaic_file_target_grid="${FIXsar}/${CRES}_mosaic.nc"
+ mosaic_file_target_grid="${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
  orog_dir_target_grid="${FIXsar}"
- orog_files_target_grid="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
+ orog_files_target_grid="${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
  vcoord_file_target_grid="${FIXam}/global_hyblev.l65.txt"
  mosaic_file_input_grid=""
  orog_dir_input_grid=""

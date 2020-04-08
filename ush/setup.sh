@@ -240,6 +240,14 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that DOT_OR_USCORE is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "DOT_OR_USCORE" "valid_vals_DOT_OR_USCORE"
+#
+#-----------------------------------------------------------------------
+#
 # Convert machine name to upper case if necessary.  Then make sure that
 # MACHINE is set to a valid value.
 #

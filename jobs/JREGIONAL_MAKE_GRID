@@ -145,22 +145,12 @@ This is the J-job script for the task that generates grid files.
 #
 #-----------------------------------------------------------------------
 #
-# Export select variables.
-#
-#-----------------------------------------------------------------------
-#
-export gtype="$GTYPE"
-export stretch_fac=${STRETCH_FAC}
-#
-#-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.
 #
 #-----------------------------------------------------------------------
 #
-${SCRIPTSDIR}/exregional_make_grid.sh \
-  WORKDIR_LOCAL="ABCD" || \
+${SCRIPTSDIR}/exregional_make_grid.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

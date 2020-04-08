@@ -52,8 +52,7 @@ This is the J-job script for the task that generates orography files.
 #
 #-----------------------------------------------------------------------
 #
-${SCRIPTSDIR}/exregional_make_orog.sh \
-  WORKDIR_LOCAL="ABCD" || \
+${SCRIPTSDIR}/exregional_make_orog.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

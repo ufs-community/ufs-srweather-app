@@ -88,8 +88,22 @@ cd_vrfy "${fhr_dir}"
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that fhr is a non-empty string consisting of only digits.  
+#
+#-----------------------------------------------------------------------
+#
+fhr=$( printf "%s" "${fhr}" | sed -n -r -e "s/^([0-9]+)$/\1/p" )
+if [ -z "$fhr" ]; then
+  print_err_msg_exit "\
+The forecast hour (fhr) must be a non-empty string consisting of only 
+digits:
+  fhr = \"${fhr}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Call the ex-script for this J-job and pass to it the necessary varia-
-# bles. 
+# bles.
 #
 #-----------------------------------------------------------------------
 #
