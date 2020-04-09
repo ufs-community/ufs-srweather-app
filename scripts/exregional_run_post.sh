@@ -55,7 +55,12 @@ the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "cycle_dir" "postprd_dir" "fhr_dir" "fhr" )
+valid_args=( \
+"cycle_dir" \
+"postprd_dir" \
+"fhr_dir" \
+"fhr" \
+)
 process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------

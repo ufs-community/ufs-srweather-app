@@ -25,7 +25,7 @@ function print_input_args() {
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file in which this script/function is located 
+# Get the full path to the file in which this script/function is located
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
 #
@@ -48,16 +48,16 @@ function print_input_args() {
 # Get information about the script or function that calls this function.
 # Note that caller_name will be set as follows:
 #
-# 1) If the caller is a function, caller_name will be set to the name of 
+# 1) If the caller is a function, caller_name will be set to the name of
 #    that function.
-# 2) If the caller is a sourced script, caller_name will be set to 
-#    "script".  Note that a sourced script cannot be the top level 
+# 2) If the caller is a sourced script, caller_name will be set to
+#    "script".  Note that a sourced script cannot be the top level
 #    script since by defintion, it is sourced by another script or func-
 #    tion.
 # 3) If the caller is the top-level script, caller_name will be set to
 #    "main".
 #
-# Thus, if caller_name is set to "script" or "main", the caller is a 
+# Thus, if caller_name is set to "script" or "main", the caller is a
 # script, and if it is set to anything else, the caller is a function.
 #
 #-----------------------------------------------------------------------
@@ -85,9 +85,9 @@ Usage:
 
   ${func_name}  array_name_valid_caller_args
 
-where array_name_valid_caller_args is the name of the array containing 
+where array_name_valid_caller_args is the name of the array containing
 the names of valid arguments that can be passed to the calling script or
-function. 
+function.
 "
 
   fi
@@ -108,18 +108,29 @@ function.
 #
 #-----------------------------------------------------------------------
 #
-# Set the array containing the names of the arguments that can be passed
-# to the calling script/function.
+# Get the array containing the list of valid argument names that can be 
+# passed to the calling script/function.  Note that if this is set to an
+# empty array in the calling script/function [e.g. using the notation 
+# some_array=()], then it will (for whatever reason) not be defined in
+# the scope of this function.  For this reason, we need the if-statement
+# below to check for this case.  Then get the number of valid arguments. 
 #
 #-----------------------------------------------------------------------
 #
   array_name_valid_caller_args="$1"
-  valid_caller_args="${array_name_valid_caller_args}[@]"
-  valid_caller_args=("${!valid_caller_args}")
+  valid_arg_names_0th="${array_name_valid_caller_args}[0]"
+  if [ ${!valid_arg_names_0th:-"__unset__"} = "__unset__" ]; then
+    valid_caller_args=()
+  else
+    valid_caller_args_at="${array_name_valid_caller_args}[@]"
+    valid_caller_args=("${!valid_caller_args_at}")
+  fi
+  num_valid_caller_args="${#valid_caller_args[@]}"
 #
 #-----------------------------------------------------------------------
 #
-# Set the message to print to stdout.
+# Set the message to print to stdout.  Note that if the number of valid
+# arguments is zero, then we simply print out a message stating this fact.
 #
 #-----------------------------------------------------------------------
 #
@@ -130,7 +141,17 @@ function.
     script_or_function="function \"${caller_name}\""
   fi
 
-  msg="
+  if [ ${num_valid_caller_args} -eq 0 ]; then
+
+    msg="
+No arguments have been passed to ${script_or_function} in file
+
+  \"${caller_fp}\"
+"
+
+  else
+
+    msg="
 The arguments to ${script_or_function} in file
 
   \"${caller_fp}\"
@@ -138,11 +159,12 @@ The arguments to ${script_or_function} in file
 have been set as follows:
 "
 
-  num_valid_caller_args="${#valid_caller_args[@]}"
-  for (( i=0; i<${num_valid_caller_args}; i++ )); do
-    line=$( declare -p "${valid_caller_args[$i]}" )
-    msg=$( printf "%s\n%s" "$msg" "  $line" )
-  done
+    for (( i=0; i<${num_valid_caller_args}; i++ )); do
+      line=$( declare -p "${valid_caller_args[$i]}" )
+      msg=$( printf "%s\n%s" "$msg" "  $line" )
+    done
+
+  fi
 #
 #-----------------------------------------------------------------------
 #

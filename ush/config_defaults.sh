@@ -151,6 +151,19 @@ PTMP="/path/to/temporary/directory/ptmp"
 #
 #-----------------------------------------------------------------------
 #
+# Set the sparator character(s) to use in the names of the grid, mosaic,
+# and orography fixed files.
+#
+# Ideally, the same separator should be used in the names of these fixed
+# files as the surface climatology fixed files (which always use a "."
+# as the separator), i.e. ideally, DOT_OR_USCORE should be set to "."
+#
+#-----------------------------------------------------------------------
+#
+DOT_OR_USCORE="_"
+#
+#-----------------------------------------------------------------------
+#
 # Set file names.  Definitions:
 #
 # RGNL_GRID_NML_FN:

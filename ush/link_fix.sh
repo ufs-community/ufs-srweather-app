@@ -125,15 +125,116 @@ Creating links in the FIXsar directory to the grid files..."
 # Create globbing patterns for grid, orography, and surface climatology
 # files.
 #
+#
+# For grid files (i.e. file_group set to "grid"), symlinks are created
+# in the FIXsar directory to files (of the same names) in the GRID_DIR.
+# These symlinks/files and the reason each is needed is listed below:
+#
+# 1) "C*.mosaic.halo${NHW}.nc"
+#    This mosaic file for the wide-halo grid (i.e. the grid with a ${NHW}-
+#    cell-wide halo) is needed as an input to the orography filtering 
+#    executable in the orography generation task.  The filtering code
+#    extracts from this mosaic file the name of the file containing the
+#    grid on which it will generate filtered topography.  Note that the
+#    orography generation and filtering are both performed on the wide-
+#    halo grid.  The filtered orography file on the wide-halo grid is then
+#    shaved down to obtain the filtered orography files with ${NH3}- and
+#    ${NH4}-cell-wide halos.
+#
+#    The raw orography generation step in the make_orog task requires the
+#    following symlinks/files:
+#
+#    a) C*.mosaic.halo${NHW}.nc
+#       The script for the make_orog task extracts the name of the grid
+#       file from this mosaic file; this name should be 
+#       "C*.grid.tile${TILE_RGNL}.halo${NHW}.nc".
+#
+#    b) C*.grid.tile${TILE_RGNL}.halo${NHW}.nc
+#       This is the 
+#       The script for the make_orog task passes the name of the grid 
+#       file (extracted above from the mosaic file) to the orography 
+#       generation executable.  The executable then
+#       reads in this grid file and generates a raw orography
+#       file on the grid.  The raw orography file is initially renamed "out.oro.nc",
+#       but for clarity, it is then renamed "C*.raw_orog.tile${TILE_RGNL}.halo${NHW}.nc".
+#
+#    c) The fixed files thirty.second.antarctic.new.bin, landcover30.fixed, 
+#       and gmted2010.30sec.int.
+#
+#    The orography filtering step in the make_orog task requires the 
+#    following symlinks/files:
+#
+#    a) C*.mosaic.halo${NHW}.nc
+#       This is the mosaic file for the wide-halo grid.  The orography
+#       filtering executable extracts from this file the name of the grid
+#       file containing the wide-halo grid (which should be 
+#       "${CRES}.grid.tile${TILE_RGNL}.halo${NHW}.nc").  The executable then
+#       looks for this grid file IN THE DIRECTORY IN WHICH IT IS RUNNING.
+#       Thus, before running the executable, the script creates a symlink in this run directory that
+#       points to the location of the actual wide-halo grid file.
+#
+#    b) C*.raw_orog.tile${TILE_RGNL}.halo${NHW}.nc
+#       This is the raw orography file on the wide-halo grid.  The script
+#       for the make_orog task copies this file to a new file named 
+#       "C*.filtered_orog.tile${TILE_RGNL}.halo${NHW}.nc" that will be
+#       used as input to the orography filtering executable.  The executable
+#       will then overwrite the contents of this file with the filtered orography.
+#       Thus, the output of the orography filtering executable will be
+#       the file C*.filtered_orog.tile${TILE_RGNL}.halo${NHW}.nc.
+#
+#    The shaving step in the make_orog task requires the following:
+#
+#    a) C*.filtered_orog.tile${TILE_RGNL}.halo${NHW}.nc
+#       This is the filtered orography file on the wide-halo grid.
+#       This gets shaved down to two different files:
+#
+#        i) ${CRES}.oro_data.tile${TILE_RGNL}.halo${NH0}.nc
+#           This is the filtered orography file on the halo-0 grid.
+#
+#       ii) ${CRES}.oro_data.tile${TILE_RGNL}.halo${NH4}.nc
+#           This is the filtered orography file on the halo-4 grid.
+#
+#       Note that the file names of the shaved files differ from that of
+#       the initial unshaved file on the wide-halo grid in that the field
+#       after ${CRES} is now "oro_data" (not "filtered_orog") to comply
+#       with the naming convention used more generally.
+#
+# 2) "C*.mosaic.halo${NH4}.nc"
+#    This mosaic file for the grid with a 4-cell-wide halo is needed as
+#    an input to the surface climatology generation executable.  The 
+#    surface climatology generation code reads from this file the number
+#    of tiles (which should be 1 for a regional grid) and the tile names.
+#    More importantly, using the ESMF function ESMF_GridCreateMosaic(),
+#    it creates a data object of type esmf_grid; the grid information
+#    in this object is obtained from the grid file specified in the mosaic
+#    file, which should be "C*.grid.tile${TILE_RGNL}.halo${NH4}.nc".  The
+#    dimensions specified in this grid file must match the ones specified
+#    in the (filtered) orography file "C*.oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
+#    that is also an input to the surface climatology generation executable.
+#    If they do not, then the executable will crash with an ESMF library
+#    error (something like "Arguments are incompatible").
+#
+#    Thus, for the make_sfc_climo task, the following symlinks/files must
+#    exist:
+#    a) "C*.mosaic.halo${NH4}.nc"
+#    b) "C*.grid.tile${TILE_RGNL}.halo${NH4}.nc"
+#    c) "C*.oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
+#
+# 3) 
+#
+#
 #-----------------------------------------------------------------------
 #
   case "${file_group}" in
 #
   "grid")
     fns=( \
-"C*_mosaic.nc" \
-"C*_grid.tile${TILE_RGNL}.halo${NH3}.nc" \
-"C*_grid.tile${TILE_RGNL}.halo${NH4}.nc" \
+"C*${DOT_OR_USCORE}mosaic.halo${NHW}.nc" \
+"C*${DOT_OR_USCORE}mosaic.halo${NH4}.nc" \
+"C*${DOT_OR_USCORE}mosaic.halo${NH3}.nc" \
+"C*${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NHW}.nc" \
+"C*${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc" \
+"C*${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc" \
         )
     fps=( "${fns[@]/#/${GRID_DIR}/}" )
     run_task="${RUN_TASK_MAKE_GRID}"
@@ -141,8 +242,8 @@ Creating links in the FIXsar directory to the grid files..."
 #
   "orog")
     fns=( \
-"C*_oro_data.tile${TILE_RGNL}.halo${NH0}.nc" \
-"C*_oro_data.tile${TILE_RGNL}.halo${NH4}.nc" \
+"C*${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc" \
+"C*${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc" \
         )
     fps=( "${fns[@]/#/${OROG_DIR}/}" )
     run_task="${RUN_TASK_MAKE_OROG}"
@@ -289,26 +390,45 @@ Cannot create symlink because target file (fp) does not exist:
 #-----------------------------------------------------------------------
 #
   if [ "${file_group}" = "grid" ]; then
-    target="${cres}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
-    symlink="${cres}_grid.tile${TILE_RGNL}.nc"
-    ln_vrfy -sf $target $symlink
+
+    target="${cres}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
+    symlink="${cres}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
+    if [ -f "${target}" ]; then
+      ln_vrfy -sf $target $symlink
+    else
+      print_err_msg_exit "\
+Cannot create symlink because the target file (target) in the directory 
+specified by FIXsar does not exist:
+  FIXsar = \"${FIXsar}\"
+  target = \"${target}\""
+    fi
 #
-# The surface climatology file generation code looks for a grid file ha-
-# ving a name of the form "C${GFDLgrid_RES}_tile7.halo4.nc" (i.e. the 
-# resolution used in this file is that of the number of grid points per
-# horizontal direction per tile, just like in the global model).  Thus,
-# if we are running this code, if the grid is of GFDLgrid type, and if
-# we are not using GFDLgrid_RES in filenames (i.e. we are using the 
-# equivalent global uniform grid resolution instead), then create a 
-# link whose name uses the GFDLgrid_RES that points to the link whose
-# name uses the equivalent global uniform resolution.
+# The surface climatology file generation code looks for a grid file 
+# having a name of the form "C${GFDLgrid_RES}_grid.tile7.halo4.nc" (i.e.
+# the resolution used in this file is that of the number of grid points
+# per horizontal direction per tile, just like in the global model).  
+# Thus, if we are running this code, if the grid is of GFDLgrid type, and
+# if we are not using GFDLgrid_RES in filenames (i.e. we are using the 
+# equivalent global uniform grid resolution instead), then create a link
+# whose name uses the GFDLgrid_RES that points to the link whose name uses
+# the equivalent global uniform resolution.
 #
     if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
        [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
        [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "FALSE" ]; then
-      target="${cres}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
-      symlink="C${GFDLgrid_RES}_grid.tile${TILE_RGNL}.nc"
-      ln_vrfy -sf $target $symlink
+
+      target="${cres}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
+      symlink="C${GFDLgrid_RES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
+      if [ -f "${target}" ]; then
+        ln_vrfy -sf $target $symlink
+      else
+        print_err_msg_exit "\
+Cannot create symlink because the target file (target) in the directory 
+specified by FIXsar does not exist:
+  FIXsar = \"${FIXsar}\"
+  target = \"${target}\""
+      fi
+
     fi
 
   fi

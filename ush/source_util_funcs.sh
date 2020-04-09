@@ -164,6 +164,15 @@ function source_util_funcs() {
 #-----------------------------------------------------------------------
 #
   . ${bashutils_dir}/get_manage_externals_config_property.sh
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing the function that returns to stdout the 
+# contents of a character (i.e. string) variable in a netcdf file.
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/get_charvar_from_netcdf.sh
 
 }
 source_util_funcs
