@@ -1,3 +1,14 @@
+# This configuration file maintains all the community-supported sets of namelist
+# options. To build a namelist for one of these configurations, use the Python
+# helper script ush/set_namelist.py and provide this file and the desired
+# section via the -c option.
+#
+# The FV3_GSD_v0 section is empty as it provides the "base namelist" to which
+# all the modifications here are provided. Please see
+# ush/templates/FV3.input.yml for the full set of namelist options that are used
+# for FV3 in that configuration.
+
+
 FV3_GSD_v0:
 
 FV3_GSD_SAR:

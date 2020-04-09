@@ -10,7 +10,7 @@ heirarchy for the Fortran namelist. An example of modifying an FV3 namelist:
 
     Configuration file contains:
 
-    fv_core_0nml:
+    fv_core_nml:
       k_split: 4
       n_split: 5
 
@@ -22,6 +22,13 @@ heirarchy for the Fortran namelist. An example of modifying an FV3 namelist:
     exist, it will be automatically created. It is up to the user to ensure that
     configuration settings are provided under the correct sections and variable
     names.
+
+The optional base configuration file (provided via the -c command line argument)
+contains the known set of configurations used and supported by the community, if
+using the one provided in ush/templates/FV3.input.yml. If maintaining this file
+for a different set of configurations, ensure that the heirarchy is such that it
+names the configuration at the top level (section), and the subsequent sections
+match those in the F90 namelist that will be updated.
 
 Expected behavior:
 
@@ -109,27 +116,34 @@ def parse_args():
         description='Update a Fortran namelist with user-defined settings.'
     )
 
+    # Required
+    parser.add_argument('-o', '--outnml',
+                        dest='outnml',
+                        help='Required: Full path to output Fortran namelist.',
+                        required=True,
+                        type=path_ok,
+                        )
+
+    # Optional
     parser.add_argument('-c', '--config',
-                        help='Full path to the YAML user config file, \
-                        and the top-level section to use.',
+                        help='Full path to a YAML config file containing multiple \
+                        configurations, and the top-level section to use. Optional.',
+                        metavar=('[FILE,', 'SECTION]'),
                         nargs=2,
                         )
     parser.add_argument('-n', '--basenml',
                         dest='nml',
-                        help='Full path the input Fortran namelist',
-                        )
-    parser.add_argument('-o', '--outnml',
-                        dest='outnml',
-                        help='Full path to output Fortran namelist',
-                        required=True,
-                        type=path_ok,
+                        help='Full path the input Fortran namelist. Optional.',
                         )
     parser.add_argument('-q', '--quiet',
                         action='store_true',
-                        help='Suppress all output',
+                        help='If provided, suppress all output.',
                         )
     parser.add_argument('-u', '--user_config',
-                        help='Command-line user config options in YAML-formatted string',
+                        help='Command-line user config options in YAML-formatted \
+                        string. These options will override any provided in an \
+                        input file. Optional.',
+                        metavar='YAML STRING',
                         type=load_config,
                         )
     return parser.parse_args()
