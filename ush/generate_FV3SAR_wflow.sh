@@ -600,13 +600,36 @@ The experiment directory is:
 
   > EXPTDIR=\"$EXPTDIR\"
 
-To launch the workflow, first ensure that you have a compatible version
+"
+case $MACHINE in
+
+"CHEYENNE")
+  print_info_msg "To launch the workflow, first ensure that you have a compatible version
+of rocoto in your \$PATH. On Cheyenne, version 1.3.1 has been pre-built; you can load it
+in your \$PATH with one of the following commands, depending on your default shell:
+
+bash:
+  > export PATH=\${PATH}:/glade/p/ral/jntp/tools/rocoto/rocoto-1.3.1/bin/
+
+tcsh:
+  > setenv PATH \${PATH}:/glade/p/ral/jntp/tools/rocoto/rocoto-1.3.1/bin/
+"
+  ;;
+
+*)
+  print_info_msg "To launch the workflow, first ensure that you have a compatible version
 of rocoto loaded.  For example, to load version 1.3.1 of rocoto, use
 
   > module load rocoto/1.3.1
 
 (This version has been tested on hera; later versions may also work but
-have not been tested.)  To launch the workflow, change location to the 
+have not been tested.)  
+"
+  ;;
+
+esac
+print_info_msg "
+To launch the workflow, change location to the 
 experiment directory (EXPTDIR) and issue the rocotrun command, as fol-
 lows:
 
