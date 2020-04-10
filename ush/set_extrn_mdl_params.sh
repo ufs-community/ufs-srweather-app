@@ -97,7 +97,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch1/NCEPDEV/rstprod/com/gfs/prod"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
+      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/public/data/grids/gfs/nemsio"
       ;;
     "ODIN")
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch/ywang/test_runs/FV3_regional/gfs"
@@ -126,7 +126,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/public/data/grids/rap/full/wrfnat/grib2"
+      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/misc/whome/rtrr/rap"
       ;;
     *)
       print_err_msg_exit "\
@@ -149,7 +149,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/public/data/grids/hrrr/conus/wrfnat/grib2"
+      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/misc/whome/rtrr/hrrr"
       ;;
     *)
       print_err_msg_exit "\
@@ -259,7 +259,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch1/NCEPDEV/rstprod/com/gfs/prod"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/lfs3/projects/hpc-wof1/ywang/regional_fv3/gfs"
+      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/public/data/grids/gfs/nemsio"
       ;;
     "ODIN")
       EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch/ywang/test_runs/FV3_regional/gfs"
@@ -286,7 +286,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/public/data/grids/rap/full/wrfnat/grib2"
+      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/misc/whome/rtrr/rap"
       ;;
     *)
       print_err_msg_exit "\
@@ -311,7 +311,7 @@ this machine and external model combination:
       EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/public/data/grids/hrrr/conus/wrfnat/grib2"
+      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/misc/whome/rtrr/hrrr"
       ;;
 
     *)
