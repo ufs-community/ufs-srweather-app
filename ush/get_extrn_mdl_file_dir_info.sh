@@ -390,9 +390,9 @@ fi
 #        fns=( "atm" "sfc" "nst" )
         fns=( "atm" "sfc" )
         if [ "${MACHINE}" = "JET" ]; then
-           prefix="${yy}${ddd}${hh}00.gfs.t${hh}z."
+            prefix="${yy}${ddd}${hh}00.gfs.t${hh}z."
         else
-           prefix="gfs.t${hh}z."
+            prefix="gfs.t${hh}z."
         fi
         fns=( "${fns[@]/#/$prefix}" )
         suffix="anl.nemsio"
@@ -410,19 +410,19 @@ fi
       ;;
   
     "RAPX")
-     if [ "${MACHINE}" = "JET" ]; then
-      fns=( "wrfnat_130_${fcst_hh}.grib2" )
-     else
-      fns=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
-     fi
+      if [ "${MACHINE}" = "JET" ]; then
+        fns=( "wrfnat_130_${fcst_hh}.grib2" )
+      else
+        fns=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
+      fi
       ;;
 
     "HRRRX")
-     if [ "${MACHINE}" = "JET" ]; then
-      fns=( "wrfnat_hrconus_${fcst_hh}.grib2" )
-     else
-      fns=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
-     fi
+      if [ "${MACHINE}" = "JET" ]; then
+        fns=( "wrfnat_hrconus_${fcst_hh}.grib2" )
+      else
+        fns=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
+      fi
       ;;
 
     *)
@@ -450,28 +450,28 @@ bination of external model (extrn_mdl_name) and analysis or forecast
     case "${extrn_mdl_name}" in
 
     "GSMGFS")
-      fcst_hh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
+      fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
       prefix="gfs.t${hh}z.atmf"
-      fns=( "${fcst_hh[@]/#/$prefix}" )
+      fns=( "${fcst_hhh[@]/#/$prefix}" )
       suffix=".nemsio"
       fns=( "${fns[@]/%/$suffix}" )
       ;;
 
     "FV3GFS")
       if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then
-        fcst_hh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
+        fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
         if [ "${MACHINE}" = "JET" ]; then
            prefix="${yy}${ddd}${hh}00.gfs.t${hh}z.atmf"
         else
            prefix="gfs.t${hh}z.atmf"
         fi
-        fns=( "${fcst_hh[@]/#/$prefix}" )
+        fns=( "${fcst_hhh[@]/#/$prefix}" )
         suffix=".nemsio"
         fns=( "${fns[@]/%/$suffix}" )
       elif [ "${fv3gfs_file_fmt}" = "grib2" ]; then
-        fcst_hh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
+        fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
         prefix="gfs.t${hh}z.pgrb2.0p25.f"
-        fns=( "${fcst_hh[@]/#/$prefix}" )
+        fns=( "${fcst_hhh[@]/#/$prefix}" )
       fi
       ;;
 
