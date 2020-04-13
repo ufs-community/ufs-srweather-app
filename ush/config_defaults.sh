@@ -54,16 +54,28 @@ RUN_ENVIR="nco"
 # or is set to an empty string, it will be (re)set to a machine-dependent 
 # value.
 #
+# QUEUE_DEFAULT_TAG:
+# The rocoto xml tag to use for specifying the default queue. For most
+# platforms this should be "queue"
+#
 # QUEUE_HPSS:
 # The queue to which the tasks that get or create links to external model
 # files [which are needed to generate initial conditions (ICs) and lateral
 # boundary conditions (LBCs)] are submitted.  If this is not set or is 
 # set to an empty string, it will be (re)set to a machine-dependent value.
 #
+# QUEUE_HPSS_TAG:
+# The rocoto xml tag to use for specifying the HPSS queue. For slurm-based
+# platforms this is typically "partition", for others it may be "queue"
+#
 # QUEUE_FCST:
 # The queue to which the task that runs a forecast is submitted.  If this
 # is not set or set to an empty string, it will be (re)set to a machine-
 # dependent value.
+#
+# QUEUE_FCST_TAG:
+# The rocoto xml tag to use for specifying the fcst queue. For most
+# platforms this should be "queue"
 #
 # mach_doc_end
 #
@@ -72,8 +84,11 @@ RUN_ENVIR="nco"
 MACHINE="BIG_COMPUTER"
 ACCOUNT="project_name"
 QUEUE_DEFAULT="batch_queue"
+QUEUE_DEFAULT_TAG="queue"
 QUEUE_HPSS="hpss_queue"
+QUEUE_HPSS_TAG="partition"
 QUEUE_FCST="production_queue"
+QUEUE_FCST_TAG="queue"
 #
 #-----------------------------------------------------------------------
 #

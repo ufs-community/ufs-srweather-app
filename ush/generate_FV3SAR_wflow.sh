@@ -96,6 +96,7 @@ cp_vrfy ${TEMPLATE_XML_FP} ${WFLOW_XML_FP}
 #-----------------------------------------------------------------------
 #
 PROC_RUN_FCST="${NUM_NODES}:ppn=${NCORES_PER_NODE}"
+NPROCS_RUN_FCST=$(( ${NUM_NODES} * ${NCORES_PER_NODE} ))
 
 FHR=( $( seq 0 1 ${FCST_LEN_HRS} ) )
 i=0
@@ -147,10 +148,12 @@ fi
 #
 set_file_param "${WFLOW_XML_FP}" "ACCOUNT" "$ACCOUNT"
 set_file_param "${WFLOW_XML_FP}" "SCHED" "$SCHED"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_DEFAULT" "${QUEUE_DEFAULT}"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_HPSS" "${QUEUE_HPSS}"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_FCST" "${QUEUE_FCST}"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_DEFAULT" "<${QUEUE_DEFAULT_TAG}>${QUEUE_DEFAULT}</${QUEUE_DEFAULT_TAG}>"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_HPSS" "<${QUEUE_HPSS_TAG}>${QUEUE_HPSS}</${QUEUE_HPSS_TAG}>"
+set_file_param "${WFLOW_XML_FP}" "QUEUE_FCST" "<${QUEUE_FCST_TAG}>${QUEUE_FCST}</${QUEUE_FCST_TAG}>"
+set_file_param "${WFLOW_XML_FP}" "NCORES_PER_NODE" "${NCORES_PER_NODE}"
 set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FCST" "${PROC_RUN_FCST}"
+set_file_param "${WFLOW_XML_FP}" "NPROCS_RUN_FCST" "${NPROCS_RUN_FCST}"
 #
 # Directories.
 #
@@ -298,8 +301,20 @@ cat "${MAKE_LBCS_TN}.local" >> "${MAKE_LBCS_TN}"
 ln_vrfy -fs "${UFS_WTHR_MDL_DIR}/NEMS/src/conf/modules.nems" \
             "${RUN_FCST_TN}"
 
-ln_vrfy -fs "${EMC_POST_DIR}/modulefiles/post/v8.0.0-$machine" \
+
+#Only some platforms build EMC_post using modules
+case $MACHINE in
+
+"CHEYENNE")
+  print_info_msg "No post modulefile needed for $MACHINE"
+  ;;
+
+*)
+  ln_vrfy -fs "${EMC_POST_DIR}/modulefiles/post/v8.0.0-$machine" \
             "${RUN_POST_TN}"
+  ;;
+
+esac
 
 cd_vrfy -
 #
@@ -585,13 +600,36 @@ The experiment directory is:
 
   > EXPTDIR=\"$EXPTDIR\"
 
-To launch the workflow, first ensure that you have a compatible version
+"
+case $MACHINE in
+
+"CHEYENNE")
+  print_info_msg "To launch the workflow, first ensure that you have a compatible version
+of rocoto in your \$PATH. On Cheyenne, version 1.3.1 has been pre-built; you can load it
+in your \$PATH with one of the following commands, depending on your default shell:
+
+bash:
+  > export PATH=\${PATH}:/glade/p/ral/jntp/tools/rocoto/rocoto-1.3.1/bin/
+
+tcsh:
+  > setenv PATH \${PATH}:/glade/p/ral/jntp/tools/rocoto/rocoto-1.3.1/bin/
+"
+  ;;
+
+*)
+  print_info_msg "To launch the workflow, first ensure that you have a compatible version
 of rocoto loaded.  For example, to load version 1.3.1 of rocoto, use
 
   > module load rocoto/1.3.1
 
 (This version has been tested on hera; later versions may also work but
-have not been tested.)  To launch the workflow, change location to the 
+have not been tested.)  
+"
+  ;;
+
+esac
+print_info_msg "
+To launch the workflow, change location to the 
 experiment directory (EXPTDIR) and issue the rocotrun command, as fol-
 lows:
 

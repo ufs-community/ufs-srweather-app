@@ -108,40 +108,6 @@ case $MACHINE in
   APRUN="mpirun -l -np ${PE_MEMBER01}"
   ;;
 #
-"THEIA")
-#
-
-  if [ "${USE_CCPP}" = "TRUE" ]; then
-  
-# Need to change to the experiment directory to correctly load necessary 
-# modules for CCPP-version of FV3SAR in lines below
-    cd_vrfy ${EXPTDIR}
-  
-    set +x
-    source ./module-setup.sh
-    module use $( pwd -P )
-    module load modules.fv3
-    module load contrib wrap-mpi
-    module list
-    set -x
-  
-  else
-  
-    . /apps/lmod/lmod/init/sh
-    module purge
-    module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
-    module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0 
-    module load contrib wrap-mpi 
-    module list
-  
-  fi
-
-  ulimit -s unlimited
-  ulimit -a
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
-  ;;
-#
 "HERA")
   ulimit -s unlimited
   ulimit -a
@@ -163,6 +129,14 @@ case $MACHINE in
   ulimit -s unlimited
   ulimit -a
   APRUN="srun -n ${PE_MEMBER01}"
+  ;;
+#
+"CHEYENNE")
+#
+  module list
+
+  APRUN="mpirun -np ${NPROCS}"
+  LD_LIBRARY_PATH="${UFS_WTHR_MDL_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
   ;;
 #
 esac

@@ -118,27 +118,6 @@ case $MACHINE in
   ;;
 
 
-"THEIA")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  . /apps/lmod/lmod/init/sh
-  module purge
-  module load intel/16.1.150
-  module load impi
-  module load hdf5/1.8.14
-  module load netcdf/4.3.0
-  module list
-
-  { restore_shell_opts; } > /dev/null 2>&1
-
-  export APRUN="time"
-
-  ulimit -s unlimited
-  ulimit -a
-  ;;
-
-
 "HERA")
   ulimit -s unlimited
   ulimit -a
@@ -161,6 +140,11 @@ case $MACHINE in
   ulimit -a
   ;;
 
+
+"CHEYENNE")
+  export APRUN="time"
+  export topo_dir="/glade/p/ral/jntp/UFS_CAM/fix/fix_orog"
+  ;;
 
 esac
 #
@@ -334,7 +318,7 @@ ${tmp_dir}" \
   ;;
 
 
-"THEIA" | "HERA" | "JET" | "ODIN")
+"CHEYENNE" | "HERA" | "JET" | "ODIN")
   $APRUN "${exec_fp}" < "${input_redirect_fn}" || \
     print_err_msg_exit "\
 Call to executable (exec_fp) that generates the raw orography file returned 

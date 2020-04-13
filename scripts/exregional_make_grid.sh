@@ -157,6 +157,11 @@ case $MACHINE in
   ulimit -a
   ;;
 
+"CHEYENNE")
+
+  export APRUN="time"
+  export topo_dir="/glade/p/ral/jntp/UFS_CAM/fix/fix_orog"
+  ;;
 
 esac
 #
