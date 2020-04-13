@@ -80,7 +80,7 @@ case ${PREDEF_GRID_NAME} in
 #
 #-----------------------------------------------------------------------
 #
-"GSL_HAFSV0.A3km")
+"GSD_HAFSV0.A3km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
@@ -132,7 +132,7 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-"GSL_HAFSV0.A13km")
+"GSD_HAFSV0.A13km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
@@ -184,7 +184,7 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-"GSL_HAFSV0.A25km")
+"GSD_HAFSV0.A25km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
@@ -232,11 +232,11 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-# Emulation of GSL's RAP grid.
+# Emulation of GSD's RAP grid.
 #
 #-----------------------------------------------------------------------
 #
-"GSL_RAP13km")
+"GSD_RAP13km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
@@ -318,11 +318,11 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-# GSL's CONUS domain with ~150km cells.
+# GSD's CONUS domain with ~150km cells.
 #
 #-----------------------------------------------------------------------
 #
-"GSL_HRRR25km")
+"GSD_HRRR25km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
@@ -372,11 +372,11 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-# GSL's CONUS domain with ~13km cells.
+# GSD's CONUS domain with ~13km cells.
 #
 #-----------------------------------------------------------------------
 #
-"GSL_HRRR13km")
+"GSD_HRRR13km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
@@ -426,11 +426,11 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-# GSL's CONUS domain with ~3km cells.
+# GSD's CONUS domain with ~3km cells.
 #
 #-----------------------------------------------------------------------
 #
-"GSL_HRRR3km")
+"GSD_HRRR3km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
@@ -470,18 +470,16 @@ predefined domain:
       WRTCMP_write_groups="1"
       WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))
       WRTCMP_output_grid="lambert_conformal"
-      WRTCMP_cen_lon="${GFDLgrid_LON_T6_CTR}"
-      WRTCMP_cen_lat="${GFDLgrid_LAT_T6_CTR}"
-      WRTCMP_stdlat1="${GFDLgrid_LAT_T6_CTR}"
-      WRTCMP_stdlat2="${GFDLgrid_LAT_T6_CTR}"
-      WRTCMP_nx="1650"
-      WRTCMP_ny="930"
-    #lon1:                    -122.21414225
-    #lat1:                    22.41403305
-      WRTCMP_lon_lwr_left="-122.0"
-      WRTCMP_lat_lwr_left="22.5"
+      WRTCMP_cen_lon="-97.5"
+      WRTCMP_cen_lat="38.5"
+      WRTCMP_stdlat1="38.5"
+      WRTCMP_stdlat2="38.5"
+      WRTCMP_nx="1738"
+      WRTCMP_ny="974"
+      WRTCMP_lon_lwr_left="-122.21414225"
+      WRTCMP_lat_lwr_left="22.41403305"
       WRTCMP_dx="3000.0"
-      WRTCMP_dy="3000.0" 
+      WRTCMP_dy="3000.0"
     fi
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
@@ -844,7 +842,7 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-"GSL_RRFSAK_3km")
+"GSD_RRFSAK_3km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then 
 
@@ -934,7 +932,7 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-"GSL_HRRR_AK_50km")
+"GSD_HRRR_AK_50km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
