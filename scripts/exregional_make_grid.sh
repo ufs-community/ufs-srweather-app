@@ -130,20 +130,6 @@ case $MACHINE in
 
 "JET")
 #
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  . /apps/lmod/lmod/init/sh
-  module purge
-  module load newdefaults
-  module load intel/15.0.3.187
-  module load impi/5.1.1.109
-  module load szip
-  module load hdf5
-  module load netcdf4/4.2.1.1
-  module list
-
-  { restore_shell_opts; } > /dev/null 2>&1
-
   export APRUN="time"
   ulimit -a
   ;;
