@@ -130,7 +130,7 @@ case $MACHINE in
 
 "JET")
 #
-  export APRUN="time"
+  APRUN="time"
   ulimit -a
   ;;
 
