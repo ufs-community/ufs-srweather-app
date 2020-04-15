@@ -55,6 +55,12 @@ $Build_chgres_cube && {
 echo " .... Building chgres_cube .... "
 cd $UFS_UTILS_CHGRES_GRIB2
 ./build_chgres_cube.sh > $logs_dir/build_chgres_cube.log 2>&1
+if [ $? -eq 0 ] ; then
+  echo "chgres_cube build SUCCEEDED"
+else
+  echo "chgres_cube build FAILED see $logs_dir/build_chgres_cube.log"
+  exit 1
+fi
 }
 
 #------------------------------------
@@ -64,6 +70,12 @@ $Build_orog && {
 echo " .... Building orog .... "
 cd $UFS_UTILS_DEV
 ./build_orog.sh > $logs_dir/build_orog.log 2>&1
+if [ $? -eq 0 ] ; then
+  echo "orog build SUCCEEDED"
+else
+  echo "orog build FAILED see $logs_dir/build_orog.log"
+  exit 1
+fi
 }
 
 #------------------------------------
@@ -73,6 +85,12 @@ $Build_nctools && {
 echo " .... Building fre-nctools .... "
 cd $UFS_UTILS_DEV
 ./build_fre-nctools.sh > $logs_dir/build_fre-nctools.log 2>&1
+if [ $? -eq 0 ] ; then
+  echo "fre-nctools build SUCCEEDED"
+else
+  echo "fre-nctools build FAILED see $logs_dir/build_fre-nctools.log"
+  exit 1
+fi
 }
 
 #------------------------------------
@@ -82,6 +100,12 @@ $Build_sfc_climo_gen && {
 echo " .... Building sfc_climo_gen .... "
 cd $UFS_UTILS_DEV
 ./build_sfc_climo_gen.sh > $logs_dir/build_sfc_climo_gen.log 2>&1
+if [ $? -eq 0 ] ; then
+  echo "sfc_climo_gen build SUCCEEDED"
+else
+  echo "sfc_climo_gen build FAILED see $logs_dir/build_sfc_climo_gen.log"
+  exit 1
+fi
 }
 
 #------------------------------------
@@ -91,6 +115,12 @@ $Build_regional_grid && {
 echo " .... Building regional_grid .... "
 cd $build_dir
 ./build_regional_grid.sh > $logs_dir/build_regional_grid.log 2>&1
+if [ $? -eq 0 ] ; then
+  echo "regional_grid build SUCCEEDED"
+else
+  echo "regional_grid build FAILED see $logs_dir/build_regional_grid.log"
+  exit 1
+fi
 }
 
 #------------------------------------
@@ -100,6 +130,12 @@ $Build_global_equiv_resol && {
 echo " .... Building global_equiv_resol .... "
 cd $build_dir
 ./build_global_equiv_resol.sh > $logs_dir/build_global_equiv_resol.log 2>&1
+if [ $? -eq 0 ] ; then
+  echo "global_equiv_resol build SUCCEEDED"
+else
+  echo "global_equiv_resol build FAILED see $logs_dir/build_global_equiv_resol.log"
+  exit 1
+fi
 }
 
 #------------------------------------
@@ -109,6 +145,12 @@ $Build_mosaic_file && {
 echo " .... Building mosaic_file .... "
 cd $build_dir
 ./build_mosaic_file.sh > $logs_dir/build_mosaic_file.log 2>&1
+if [ $? -eq 0 ] ; then
+  echo "mosaic_file build SUCCEEDED"
+else
+  echo "mosaic_file build FAILED see $logs_dir/build_mosaic.log"
+  exit 1
+fi
 }
 
 cd $build_dir

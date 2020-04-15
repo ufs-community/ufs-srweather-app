@@ -55,6 +55,12 @@ echo " .... Library build not currently supported .... "
 $Build_forecast && {
 echo " .... Building forecast .... "
 ./build_forecast.sh > $logs_dir/build_forecast.log 2>&1
+if [ $? -eq 0 ] ; then
+  echo "Forecast build SUCCEEDED"
+else
+  echo "Forecast build FAILED see $logs_dir/build_forecast.log"
+  exit 1
+fi
 }
 
 #------------------------------------
@@ -63,6 +69,12 @@ echo " .... Building forecast .... "
 $Build_post && {
 echo " .... Building post .... "
 ./build_post.sh > $logs_dir/build_post.log 2>&1
+if [ $? -eq 0 ] ; then
+  echo "Post build SUCCEEDED"
+else
+  echo "Post build FAILED see $logs_dir/build_post.log"
+  exit 1
+fi
 }
 
 #------------------------------------
@@ -71,6 +83,12 @@ echo " .... Building post .... "
 $Build_utils && {
 echo " .... Building utils .... "
 ./build_utils.sh > $logs_dir/build_utils.log 2>&1
+if [ $? -eq 0 ] ; then
+  echo "Utils build SUCCEEDED"
+else
+  echo "Utils build FAILED see $logs_dir/build_utils.log"
+  exit 1
+fi
 }
 
 #------------------------------------
