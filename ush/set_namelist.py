@@ -2,8 +2,11 @@
 
 '''
 This utility updates a Fortran namelist file using the f90nml package. The
-settings that are modified are pulled from variables set by the bash environment
-from which the script is called, and/or a YAML user configuration file.
+settings that are modified are supplied via command line YAML-formatted string
+and/or YAML configuration files.
+
+Additionally, the tool can be used to create a YAML file from an input namelist,
+or the difference between two namelists.
 
 The user configuration file should contain a heirarchy that follows the
 heirarchy for the Fortran namelist. An example of modifying an FV3 namelist:
@@ -17,11 +20,10 @@ heirarchy for the Fortran namelist. An example of modifying an FV3 namelist:
     gfs_physics_nml:
       do_sppt: True
 
-    The output namelist will differ from the input namelist by only these three
-    settings. If one of these sections and/or variables did not previously
-    exist, it will be automatically created. It is up to the user to ensure that
-    configuration settings are provided under the correct sections and variable
-    names.
+The output namelist will differ from the input namelist by only these three
+settings. If one of these sections and/or variables did not previously exist, it
+will be automatically created. It is up to the user to ensure that configuration
+settings are provided under the correct sections and variable names.
 
 The optional base configuration file (provided via the -c command line argument)
 contains the known set of configurations used and supported by the community, if
@@ -29,6 +31,26 @@ using the one provided in ush/templates/FV3.input.yml. If maintaining this file
 for a different set of configurations, ensure that the heirarchy is such that it
 names the configuration at the top level (section), and the subsequent sections
 match those in the F90 namelist that will be updated.
+
+Examples
+
+  To show help options:
+
+    set_namelist.py -h
+
+  To produce a namelist (fv3_expt.nml) by specifying a physics package:
+
+    set_namelist.py -n templates/input.nml.FV3 -c templates/FV3.input.yml FV3_GSD_SAR
+        -o fv3_expt.nml
+
+  To produce a YAML file (fv3_namelist.yml) from a user namelist:
+
+    set_namelist.py -i my_namelist.nml -o fv3_namelist.nml -t yaml
+
+  To produce a YAML file (fv3_my_namelist.yml) with differences from base nml:
+
+    set_namelist.py -n templates/input.nml.FV3 -i my_namelist.nml -t yaml
+        -o fv3_my_namelist.nml
 
 Expected behavior:
 
@@ -38,10 +60,14 @@ Expected behavior:
       designated output location if no user-settings are provided.
     - Command-line-entered settings over-ride settings in YAML configuration
       file.
-
+    - Given a user namelist, the script can dump a YAML file.
+    - Given a user namelist and a base namelist, the script can dump the
+      difference in the two to a YAML file that can be included as a section
+      in the supported configs.
 '''
 
 import argparse
+import collections
 import os
 
 import f90nml
@@ -60,10 +86,7 @@ def config_exists(arg):
     file_name = arg[0]
     section_name = arg[1]
 
-    # Check for existence of file
-    if not os.path.exists(file_name):
-        msg = f'{file_name} does not exist!'
-        raise argparse.ArgumentTypeError(msg)
+    file_exists(file_name)
 
     # Load the YAML file into a dictionary
     with open(file_name, 'r') as fn:
@@ -77,6 +100,16 @@ def config_exists(arg):
         raise argparse.ArgumentTypeError(msg)
 
     return [cfg, section_name]
+
+def file_exists(arg):
+
+    ''' Check for existence of file '''
+
+    if not os.path.exists(arg):
+        msg = f'{arg} does not exist!'
+        raise argparse.ArgumentTypeError(msg)
+
+    return arg
 
 def load_config(arg):
 
@@ -117,9 +150,9 @@ def parse_args():
     )
 
     # Required
-    parser.add_argument('-o', '--outnml',
-                        dest='outnml',
-                        help='Required: Full path to output Fortran namelist.',
+    parser.add_argument('-o', '--outfile',
+                        help='Required: Full path to output file. This is a \
+                        namelist by default.',
                         required=True,
                         type=path_ok,
                         )
@@ -131,13 +164,20 @@ def parse_args():
                         metavar=('[FILE,', 'SECTION]'),
                         nargs=2,
                         )
+    parser.add_argument('-i', '--input_nml',
+                        help='Path to a user namelist. Use with -n and \
+                        -t yaml to get a YAML file to use with workflow.',
+                        type=file_exists,
+                        )
     parser.add_argument('-n', '--basenml',
                         dest='nml',
                         help='Full path the input Fortran namelist. Optional.',
+                        type=file_exists,
                         )
-    parser.add_argument('-q', '--quiet',
-                        action='store_true',
-                        help='If provided, suppress all output.',
+    parser.add_argument('-t', '--type',
+                        choices=['nml', 'yaml'],
+                        default='nml',
+                        help='Output file type.',
                         )
     parser.add_argument('-u', '--user_config',
                         help='Command-line user config options in YAML-formatted \
@@ -146,7 +186,59 @@ def parse_args():
                         metavar='YAML STRING',
                         type=load_config,
                         )
+
+    # Flags
+    parser.add_argument('-q', '--quiet',
+                        action='store_true',
+                        help='If provided, suppress all output.',
+                        )
     return parser.parse_args()
+
+def dict_diff(dict1, dict2):
+
+    '''
+    Produces a dictionary of how dict2 differs from dict1
+    '''
+
+    diffs = {}
+
+    # Loop through dict1 sections and key/value pairs
+    for sect, items in dict1.items():
+        for key, val in items.items():
+
+            # If dict 2 has a different value, record the dict2 value
+            if val != dict2.get(sect, {}).get(key, ''):
+                if not diffs.get(sect):
+                    diffs[sect] = {}
+                diffs[sect][key] = dict2.get(sect, {}).get(key)
+
+    # Loop through dict2 sections and key/value pairs to catch any settings that
+    # may be present in the 2nd dict that weren't in the first.
+    for sect, items in dict2.items():
+        for key, val in items.items():
+
+            # If dict1 has a diffent value than dict2, record the dict2 value
+            if val != dict1.get(sect, {}).get(key, ''):
+
+                # Check to make sure it hasn't already been recorded
+                if diffs.get(sect, {}).get(key, 'DNE') == 'DNE':
+                    if not diffs.get(sect):
+                        diffs[sect] = {}
+                    diffs[sect][key] = val
+    return diffs
+
+def to_dict(odict):
+
+    ''' Recursively convert OrderedDict to Python dict. '''
+
+    if not isinstance(odict, collections.OrderedDict):
+        return odict
+
+    ret = dict(odict)
+    for key, value in ret.items():
+        if isinstance(value, collections.OrderedDict):
+            ret[key] = to_dict(value)
+    return ret
 
 def update_dict(dest, newdict, quiet=False):
 
@@ -196,7 +288,7 @@ def main(cla):
 
     ''' Using input command line arguments (cla), update a Fortran namelist file. '''
 
-    # Load namelist into dict
+    # Load base namelist into dict
     nml = f90nml.Namelist()
     if cla.nml is not None:
         nml = f90nml.read(cla.nml)
@@ -211,9 +303,25 @@ def main(cla):
     if cla.user_config:
         update_dict(nml, cla.user_config.items(), quiet=cla.quiet)
 
-    # Write the resulting namelist to a file
-    with open(cla.outnml, 'w') as fn:
-        nml.write(fn)
+    # Write the resulting file
+    with open(cla.outfile, 'w') as fn:
+        if cla.type == 'nml':
+            nml.write(fn)
+
+        if cla.type == 'yaml':
+            if cla.input_nml:
+                base_nml = f90nml.read(cla.nml) if cla.nml else {}
+                input_nml = f90nml.read(cla.input_nml)
+
+                # Determine how input_nml differs from base_nml
+                diff = dict_diff(base_nml, input_nml)
+
+                # Write diffs to YAML file
+                yaml.dump(diff, fn)
+
+            else:
+                # Write the namelist to YAML file
+                yaml.dump(to_dict(nml.todict()), fn)
 
 
 if __name__ == '__main__':
