@@ -101,7 +101,7 @@ case "${CCPP_PHYS_SUITE}" in
   phys_suite="GFS"
   ;;
 
-"FV3_GSD_v0" | "FV3_GSD_SAR")
+"FV3_GSD_v0" | "FV3_GSD_SAR" | "FV3_GSD_SAR_v1" )
   phys_suite="GSD"
   ;;
 "FV3_CPT_v0")
@@ -294,9 +294,10 @@ case "${EXTRN_MDL_NAME_ICS}" in
       if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
+         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
         tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+           [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
@@ -350,17 +351,25 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
       numsoil_out="9"
     fi
   fi
-  
-  geogrid_file_input_grid="/scratch2/BMC/det/beck/SAR-FV3/geo_em.d01.nc_HRRRX"  # Maybe make this a fix file?
+#
+# These geogrid files need to be moved to more permanent locations.
+#
+  if [ "${MACHINE}" = "HERA" ]; then
+    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_HRRRX"
+  elif [ "${MACHINE}" = "JET" ]; then
+    geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
+  fi
+
   replace_vgtyp=".false."
   replace_sotyp=".false."
   replace_vgfrc=".false."
@@ -378,18 +387,26 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
   internal_GSD=".false."
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
-    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+   if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
       numsoil_out="9"
     fi
   fi
+#
+# These geogrid files need to be moved to more permanent locations.
+#
+  if [ "${MACHINE}" = "HERA" ]; then
+    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_RAPX"
+  elif [ "${MACHINE}" = "JET" ]; then
+    geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
+  fi
 
-  geogrid_file_input_grid="/scratch2/BMC/det/beck/SAR-FV3/geo_em.d01.nc_RAPX"  # Maybe make this a fix file?
   replace_vgtyp=".false."
   replace_sotyp=".false."
   replace_vgfrc=".false."
@@ -467,22 +484,14 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 # fix_dir_target_grid="${BASEDIR}/JP_grid_HRRR_like_fix_files_chgres_cube"
 # base_install_dir="${SORCDIR}/chgres_cube.fd"
 
-#
-# As an alternative to the cat command below, we can have a template for
-# the namelist file and use the set_file_param(.sh) function to set 
-# namelist entries in it.  The set_file_param function will print out a
-# message and exit if it fails to set a variable in the file.
-#
-
 settings="
 'config': {
  'fix_dir_target_grid': ${FIXsar},
- 'mosaic_file_target_grid': ${FIXsar}/${CRES}_mosaic.nc,
  'orog_dir_target_grid': ${FIXsar},
- 'orog_files_target_grid': ${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc,
+ 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc,
  'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
- 'mosaic_file_input_grid': ,
- 'orog_dir_input_grid': ,
+ 'mosaic_file_input_grid': '',
+ 'orog_dir_input_grid': '',
  'base_install_dir': ${CHGRES_DIR},
  'wgrib2_path': ${WGRIB2_DIR},
  'data_dir_input_grid': ${EXTRN_MDL_FILES_DIR},
@@ -495,7 +504,7 @@ settings="
  'convert_atm': True,
  'convert_sfc': True,
  'convert_nst': False,
- 'regional': ,
+ 'regional': 1,
  'halo_bndy': ${NH4},
  'input_type': ${input_type},
  'external_model': ${external_model},
@@ -513,6 +522,7 @@ settings="
 
 ${USHDIR}/set_namelist.py -q -o fort.41 -u "{$settings}" ||
      (echo "set_namlist.py failed!" && exit 1)
+
 #
 #-----------------------------------------------------------------------
 #

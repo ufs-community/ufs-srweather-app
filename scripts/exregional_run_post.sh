@@ -55,7 +55,12 @@ the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "cycle_dir" "postprd_dir" "fhr_dir" "fhr" )
+valid_args=( \
+"cycle_dir" \
+"postprd_dir" \
+"fhr_dir" \
+"fhr" \
+)
 process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
@@ -107,19 +112,6 @@ case $MACHINE in
   ;;
 
 
-"THEIA")
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-  module purge
-  module load intel
-  module load impi 
-  module load netcdf
-  module load contrib wrap-mpi
-  { restore_shell_opts; } > /dev/null 2>&1
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
-  ;;
-
-
 "HERA")
 #  export NDATE=/scratch3/NCEPDEV/nwprod/lib/prod_util/v1.1.0/exec/ndate
   APRUN="srun"
@@ -127,46 +119,19 @@ case $MACHINE in
 
 
 "JET")
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-  module purge 
-  . /apps/lmod/lmod/init/sh 
-  module load newdefaults
-  module load intel/15.0.3.187
-  module load impi/5.1.1.109
-  module load szip
-  module load hdf5
-  module load netcdf4/4.2.1.1
-  
-  set libdir /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-  
-  export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-
-  module use /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib/modulefiles
-  module load bacio-intel-sandybridge
-  module load sp-intel-sandybridge
-  module load ip-intel-sandybridge
-  module load w3nco-intel-sandybridge
-  module load w3emc-intel-sandybridge
-  module load nemsio-intel-sandybridge
-  module load sfcio-intel-sandybridge
-  module load sigio-intel-sandybridge
-  module load g2-intel-sandybridge
-  module load g2tmpl-intel-sandybridge
-  module load gfsio-intel-sandybridge
-  module load crtm-intel-sandybridge
-  
-  module use /lfs3/projects/hfv3gfs/emc.nemspara/soft/modulefiles
-  module load esmf/7.1.0r_impi_optim
-  module load contrib wrap-mpi
-  { restore_shell_opts; } > /dev/null 2>&1
-
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
+  APRUN="srun"
   ;;
 
 
 "ODIN")
   APRUN="srun -n 1"
+  ;;
+
+
+"CHEYENNE")
+  module list
+
+  APRUN="mpirun -np ${NPROCS}"
   ;;
 
 

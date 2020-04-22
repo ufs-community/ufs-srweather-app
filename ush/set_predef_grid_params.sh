@@ -434,11 +434,53 @@ predefined domain:
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
-    print_err_msg_exit "\
-The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
-predefined domain:
-  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
+    GFDLgrid_LON_T6_CTR=-97.5
+    GFDLgrid_LAT_T6_CTR=38.5
+    GFDLgrid_STRETCH_FAC=1.0001
+    GFDLgrid_RES="96"
+    GFDLgrid_REFINE_RATIO=36
+ 
+    #num_margin_#num_margin_cells_T6_left=9
+    #GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
+    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G="26"
+
+    #num_margin_cells_T6_right=9
+    #GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G="71"
+
+    #num_margin_cells_T6_bottom=9
+    #GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
+    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G="36"
+
+    #num_margin_cells_T6_top=9
+    #GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G="61"
+
+    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="FALSE"
+
+    DT_ATMOS="40"
+
+    LAYOUT_X="36"
+    LAYOUT_Y="24"
+    BLOCKSIZE="26"
+
+    QUILTING="TRUE"
+
+    if [ "$QUILTING" = "TRUE" ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))
+      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_cen_lon="-97.5"
+      WRTCMP_cen_lat="38.5"
+      WRTCMP_stdlat1="38.5"
+      WRTCMP_stdlat2="38.5"
+      WRTCMP_nx="1738"
+      WRTCMP_ny="974"
+      WRTCMP_lon_lwr_left="-122.21414225"
+      WRTCMP_lat_lwr_left="22.41403305"
+      WRTCMP_dx="3000.0"
+      WRTCMP_dy="3000.0"
+    fi
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
@@ -725,11 +767,71 @@ predefined domain:
 
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    print_err_msg_exit "\
-The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
-predefined domain:
-  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
+# Values taken from pre-generated files in /scratch4/NCEPDEV/fv3-cam/save/Benjamin.Blake/regional_workflow/fix/fix_sar
+# With move to Hera, those files were lost; a backup can be found here: /scratch2/BMC/det/kavulich/fix/fix_sar
+
+# Longitude and latitude for center of domain
+    JPgrid_LON_CTR=-153.0
+    JPgrid_LAT_CTR=61.0
+
+# Projected grid spacing in meters...in the static files (e.g. "C768_grid.tile7.nc"), the "dx" is actually the resolution
+# of the supergrid, which is HALF of this dx
+    JPgrid_DELX="3000.0"
+    JPgrid_DELY="3000.0"
+
+# Number of x and y points for your domain (halo not included);
+# Divide "supergrid" values from /scratch2/BMC/det/kavulich/fix/fix_sar/ak/C768_grid.tile7.halo4.nc by 2 and subtract 8 to eliminate halo
+    JPgrid_NX=1344 # Supergrid value 2704
+    JPgrid_NY=1152 # Supergrid value 2320
+
+# Number of halo points for a wide grid (before trimming)...this should almost always be 6 for now
+# Within the model we actually have a 4-point halo and a 3-point halo
+    JPgrid_WIDE_HALO_WIDTH=6
+
+# Side note: FV3 is lagrangian and vertical coordinates are dynamically remapped during model integration
+# 'ksplit' is the factor that determines the timestep for this process (divided
+
+# Physics timestep in seconds, actual dynamics timestep can be a subset of this.
+# This is the time step for the largest atmosphere model loop.  It corresponds to the frequency with which the 
+# top-level routine in the dynamics is called as well as the frequency with which the physics is called.
+#
+# Preliminary standard values: 18 for 3-km runs, 90 for 13-km runs per config_defaults.sh
+
+    DT_ATMOS="18"
+
+#Factors for MPI decomposition. JPgrid_NX must be divisible by LAYOUT_X, JPgrid_NY must be divisible by LAYOUT_Y
+    LAYOUT_X="28"
+    LAYOUT_Y="16"
+
+#Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
+#This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
+# For Theia, must be ~40 or less
+# Check setup.sh for more details
+    BLOCKSIZE="24"
+
+#This section is all for the write component, which you need for output during model integration
+    if [ "$QUILTING" = "TRUE" ]; then
+#Write component reserves MPI tasks for writing output. The number of "groups" is usually 1, but if you have a case where group 1 is not done writing before the next write step, you need group 2, etc.
+      WRTCMP_write_groups="1"
+#Number of tasks per write group. Ny must be divisible my this number. LAYOUT_Y is usually a good value
+      WRTCMP_write_tasks_per_group="24"
+#lambert_conformal or rotated_latlon. lambert_conformal not well tested and probably doesn't work for our purposes
+      WRTCMP_output_grid="lambert_conformal"
+#These should always be set the same as compute grid
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
+#Write component grid must always be <= compute grid (without haloes)
+      WRTCMP_nx="1344"
+      WRTCMP_ny="1152"
+#Lower left latlon (southwest corner)
+      WRTCMP_lon_lwr_left="-177.0"
+      WRTCMP_lat_lwr_left="42.5"
+      WRTCMP_dx="$JPgrid_DELX"
+      WRTCMP_dy="$JPgrid_DELY"
+    fi
+
 
   fi
   ;;
@@ -740,26 +842,62 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
-"GSD_HRRR_AK_3km")
+"GSD_RRFSAK_3km")
 
-  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then 
 
-    print_err_msg_exit "\
-The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
-predefined domain:
-  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
-"
+    GFDLgrid_LON_T6_CTR=-160.8
+    GFDLgrid_LAT_T6_CTR=63.0
+    GFDLgrid_STRETCH_FAC=1.161
+    GFDLgrid_RES="768"
+    GFDLgrid_REFINE_RATIO=4
+  
+    num_margin_cells_T6_left=204
+    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
+  
+    num_margin_cells_T6_right=204
+    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
+  
+    num_margin_cells_T6_bottom=249
+    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
+  
+    num_margin_cells_T6_top=249
+    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
+
+    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="FALSE"
+
+    DT_ATMOS="18"
+
+    LAYOUT_X="24"
+    LAYOUT_Y="24"
+    BLOCKSIZE="15"
+
+    if [ "$QUILTING" = "TRUE" ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group="2"
+      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_cen_lon="${GFDLgrid_LON_T6_CTR}"
+      WRTCMP_cen_lat="${GFDLgrid_LAT_T6_CTR}"
+      WRTCMP_stdlat1="${GFDLgrid_LAT_T6_CTR}"
+      WRTCMP_stdlat2="${GFDLgrid_LAT_T6_CTR}"
+      WRTCMP_nx="1320"
+      WRTCMP_ny="950"
+      WRTCMP_lon_lwr_left="173.734"
+      WRTCMP_lat_lwr_left="46.740347"
+      WRTCMP_dx="3000.0"
+      WRTCMP_dy="3000.0"
+    fi
+
   elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-    JPgrid_LON_CTR=-163.5 #HRRR-AK is -163.5 
-    JPgrid_LAT_CTR=62.8 #HRRR-AK is 60.8
+    JPgrid_LON_CTR=-161.5
+    JPgrid_LAT_CTR=63.0
 
     JPgrid_DELX="3000.0"
     JPgrid_DELY="3000.0"
 
-    JPgrid_NX=1230 #HRRR-AK is 1300
-    JPgrid_NY=850 #HRRR-AK is 920
+    JPgrid_NX=1380
+    JPgrid_NY=1020
 
     JPgrid_WIDE_HALO_WIDTH=6
 
@@ -777,10 +915,10 @@ predefined domain:
       WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
       WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
       WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
-      WRTCMP_nx="1169"
-      WRTCMP_ny="762"
-      WRTCMP_lon_lwr_left="172.0"
-      WRTCMP_lat_lwr_left="49.0"
+      WRTCMP_nx="1320"
+      WRTCMP_ny="950"
+      WRTCMP_lon_lwr_left="173.734"
+      WRTCMP_lat_lwr_left="46.740347"
       WRTCMP_dx="${JPgrid_DELX}"
       WRTCMP_dy="${JPgrid_DELY}"
     fi
@@ -841,6 +979,266 @@ predefined domain:
 
   fi
   ;;
+#
+#
+#-----------------------------------------------------------------------
+#
+# EMC's Hawaii grid.
+#
+#-----------------------------------------------------------------------
+#
+"EMC_HI")
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
+predefined domain:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
+
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+
+# Values taken from pre-generated files in /scratch4/NCEPDEV/fv3-cam/save/Benjamin.Blake/regional_workflow/fix/fix_sar/hi/C768_grid.tile7.nc
+# With move to Hera, those files were lost; a backup can be found here: /scratch2/BMC/det/kavulich/fix/fix_sar
+# Longitude and latitude for center of domain
+    JPgrid_LON_CTR=-157.0
+    JPgrid_LAT_CTR=20.0
+
+# Projected grid spacing in meters...in the static files (e.g. "C768_grid.tile7.nc"), the "dx" is actually the resolution
+# of the supergrid, which is HALF of this dx (plus or minus some grid stretch factor)
+    JPgrid_DELX="3000.0"
+    JPgrid_DELY="3000.0"
+
+# Number of x and y points for your domain (halo not included);
+# Divide "supergrid" values from /scratch2/BMC/det/kavulich/fix/fix_sar/hi/C768_grid.tile7.halo4.nc by 2 and subtract 8 to eliminate halo
+    JPgrid_NX=432 # Supergrid value 880
+    JPgrid_NY=360 # Supergrid value 736
+
+# Number of halo points for a wide grid (before trimming)...this should almost always be 6 for now
+# Within the model we actually have a 4-point halo and a 3-point halo
+    JPgrid_WIDE_HALO_WIDTH=6
+
+# Side note: FV3 is lagrangian and vertical coordinates are dynamically remapped during model integration
+# 'ksplit' is the factor that determines the timestep for this process (divided
+
+# Physics timestep in seconds, actual dynamics timestep can be a subset of this.
+# This is the time step for the largest atmosphere model loop.  It corresponds to the frequency with which the 
+# top-level routine in the dynamics is called as well as the frequency with which the physics is called.
+#
+# Preliminary standard values: 18 for 3-km runs, 90 for 13-km runs per config_defaults.sh
+
+    DT_ATMOS="18"
+
+#Factors for MPI decomposition. JPgrid_NX must be divisible by LAYOUT_X, JPgrid_NY must be divisible by LAYOUT_Y
+    LAYOUT_X="8"
+    LAYOUT_Y="8"
+#Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
+#This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
+# For Theia, must be ~40 or less
+# Check setup.sh for more details
+    BLOCKSIZE="27"
+
+#This section is all for the write component, which you need for output during model integration
+    if [ "$QUILTING" = "TRUE" ]; then
+#Write component reserves MPI tasks for writing output. The number of "groups" is usually 1, but if you have a case where group 1 is not done writing before the next write step, you need group 2, etc.
+      WRTCMP_write_groups="1"
+#Number of tasks per write group. Ny must be divisible my this number. LAYOUT_Y is usually a good value
+      WRTCMP_write_tasks_per_group="8"
+#lambert_conformal or rotated_latlon. lambert_conformal not well tested and probably doesn't work for our purposes
+      WRTCMP_output_grid="lambert_conformal"
+#These should usually be set the same as compute grid
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
+#Write component grid should be close to the JPgrid values unless you are doing something weird
+      WRTCMP_nx="420"
+      WRTCMP_ny="348"
+
+#Lower left latlon (southwest corner)
+      WRTCMP_lon_lwr_left="-162.8"
+      WRTCMP_lat_lwr_left="15.2"
+      WRTCMP_dx="$JPgrid_DELX"
+      WRTCMP_dy="$JPgrid_DELY"
+    fi
+
+   fi
+   ;;
+
+#
+#-----------------------------------------------------------------------
+#
+# EMC's Puerto Rico grid.
+#
+#-----------------------------------------------------------------------
+#
+"EMC_PR")
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
+predefined domain:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
+"
+
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+
+# Values taken from pre-generated files in /scratch4/NCEPDEV/fv3-cam/save/Benjamin.Blake/regional_workflow/fix/fix_sar/pr/C768_grid.tile7.nc
+# With move to Hera, those files were lost; a backup can be found here: /scratch2/BMC/det/kavulich/fix/fix_sar
+# Longitude and latitude for center of domain
+    JPgrid_LON_CTR=-69.0
+    JPgrid_LAT_CTR=18.0
+
+# Projected grid spacing in meters...in the static files (e.g. "C768_grid.tile7.nc"), the "dx" is actually the resolution
+# of the supergrid, which is HALF of this dx (plus or minus some grid stretch factor)
+    JPgrid_DELX="3000.0"
+    JPgrid_DELY="3000.0"
+
+# Number of x and y points for your domain (halo not included);
+# Divide "supergrid" values from /scratch2/BMC/det/kavulich/fix/fix_sar/pr/C768_grid.tile7.halo4.nc by 2 and subtract 8 to eliminate halo
+    JPgrid_NX=576 # Supergrid value 1168
+    JPgrid_NY=432 # Supergrid value 880
+
+# Number of halo points for a wide grid (before trimming)...this should almost always be 6 for now
+# Within the model we actually have a 4-point halo and a 3-point halo
+    JPgrid_WIDE_HALO_WIDTH=6
+
+# Side note: FV3 is lagrangian and vertical coordinates are dynamically remapped during model integration
+# 'ksplit' is the factor that determines the timestep for this process (divided
+
+# Physics timestep in seconds, actual dynamics timestep can be a subset of this.
+# This is the time step for the largest atmosphere model loop.  It corresponds to the frequency with which the 
+# top-level routine in the dynamics is called as well as the frequency with which the physics is called.
+#
+# Preliminary standard values: 18 for 3-km runs, 90 for 13-km runs per config_defaults.sh
+
+    DT_ATMOS="18"
+
+#Factors for MPI decomposition. JPgrid_NX must be divisible by LAYOUT_X, JPgrid_NY must be divisible by LAYOUT_Y
+    LAYOUT_X="16"
+    LAYOUT_Y="8"
+
+#Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
+#This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
+# For Theia, must be ~40 or less
+# Check setup.sh for more details
+    BLOCKSIZE="24"
+
+#This section is all for the write component, which you need for output during model integration
+    if [ "$QUILTING" = "TRUE" ]; then
+#Write component reserves MPI tasks for writing output. The number of "groups" is usually 1, but if you have a case where group 1 is not done writing before the next write step, you need group 2, etc.
+      WRTCMP_write_groups="1"
+#Number of tasks per write group. Ny must be divisible my this number. LAYOUT_Y is usually a good value
+      WRTCMP_write_tasks_per_group="24"
+#lambert_conformal or rotated_latlon. lambert_conformal not well tested and probably doesn't work for our purposes
+      WRTCMP_output_grid="lambert_conformal"
+#These should always be set the same as compute grid
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
+#Write component grid must always be <= compute grid (without haloes)
+      WRTCMP_nx="576"
+      WRTCMP_ny="432"
+#Lower left latlon (southwest corner)
+      WRTCMP_lon_lwr_left="-77"
+      WRTCMP_lat_lwr_left="12"
+      WRTCMP_dx="$JPgrid_DELX"
+      WRTCMP_dy="$JPgrid_DELY"
+    fi
+
+  fi
+  ;;
+#
+#-----------------------------------------------------------------------
+#
+# EMC's Guam grid.
+#
+#-----------------------------------------------------------------------
+#
+"EMC_GU")
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
+predefined domain:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\"
+"
+
+  elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+
+# Values taken from pre-generated files in /scratch4/NCEPDEV/fv3-cam/save/Benjamin.Blake/regional_workflow/fix/fix_sar/guam/C768_grid.tile7.nc
+# With move to Hera, those files were lost; a backup can be found here: /scratch2/BMC/det/kavulich/fix/fix_sar
+# Longitude and latitude for center of domain
+    JPgrid_LON_CTR=146.0
+    JPgrid_LAT_CTR=15.0
+
+# Projected grid spacing in meters...in the static files (e.g. "C768_grid.tile7.nc"), the "dx" is actually the resolution
+# of the supergrid, which is HALF of this dx (plus or minus some grid stretch factor)
+    JPgrid_DELX="3000.0"
+    JPgrid_DELY="3000.0"
+
+# Number of x and y points for your domain (halo not included);
+# Divide "supergrid" values from /scratch2/BMC/det/kavulich/fix/fix_sar/guam/C768_grid.tile7.halo4.nc by 2 and subtract 8 to eliminate halo
+    JPgrid_NX=432 # Supergrid value 880
+    JPgrid_NY=360 # Supergrid value 736
+
+# Number of halo points for a wide grid (before trimming)...this should almost always be 6 for now
+# Within the model we actually have a 4-point halo and a 3-point halo
+    JPgrid_WIDE_HALO_WIDTH=6
+
+# Side note: FV3 is lagrangian and vertical coordinates are dynamically remapped during model integration
+# 'ksplit' is the factor that determines the timestep for this process (divided
+
+# Physics timestep in seconds, actual dynamics timestep can be a subset of this.
+# This is the time step for the largest atmosphere model loop.  It corresponds to the frequency with which the 
+# top-level routine in the dynamics is called as well as the frequency with which the physics is called.
+#
+# Preliminary standard values: 18 for 3-km runs, 90 for 13-km runs per config_defaults.sh
+
+    DT_ATMOS="18"
+
+#Factors for MPI decomposition. JPgrid_NX must be divisible by LAYOUT_X, JPgrid_NY must be divisible by LAYOUT_Y
+    LAYOUT_X="16"
+    LAYOUT_Y="12"
+#Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
+#This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
+# For Theia, must be ~40 or less
+# Check setup.sh for more details
+    BLOCKSIZE="27"
+
+#This section is all for the write component, which you need for output during model integration
+    if [ "$QUILTING" = "TRUE" ]; then
+#Write component reserves MPI tasks for writing output. The number of "groups" is usually 1, but if you have a case where group 1 is not done writing before the next write step, you need group 2, etc.
+      WRTCMP_write_groups="1"
+#Number of tasks per write group. Ny must be divisible my this number. LAYOUT_Y is usually a good value
+      WRTCMP_write_tasks_per_group="24"
+#lambert_conformal or rotated_latlon. lambert_conformal not well tested and probably doesn't work for our purposes
+      WRTCMP_output_grid="lambert_conformal"
+#These should always be set the same as compute grid
+      WRTCMP_cen_lon="${JPgrid_LON_CTR}"
+      WRTCMP_cen_lat="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat1="${JPgrid_LAT_CTR}"
+      WRTCMP_stdlat2="${JPgrid_LAT_CTR}"
+#Write component grid must always be <= compute grid (without haloes)
+      WRTCMP_nx="420"
+      WRTCMP_ny="348"
+#Lower left latlon (southwest corner) Used /scratch2/NCEPDEV/fv3-cam/Dusan.Jovic/dbrowse/fv3grid utility to find best value 
+      WRTCMP_lon_lwr_left="140"
+      WRTCMP_lat_lwr_left="10"
+      WRTCMP_dx="$JPgrid_DELX"
+      WRTCMP_dy="$JPgrid_DELY"
+    fi
+
+  fi
+  ;;
+
+
 #
 esac
 

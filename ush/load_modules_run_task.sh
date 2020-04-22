@@ -119,6 +119,10 @@ case "$MACHINE" in
     . /apps/lmod/lmod/init/sh
     ;;
 #
+  "CHEYENNE")
+    . /glade/u/apps/ch/opt/lmod/8.1.7/lmod/8.1.7/init/sh
+    ;;
+#
   *) 
     print_err_msg_exit "\
 The script to source to initialize lmod (module loads) has not yet been
@@ -225,17 +229,23 @@ modulefile_name="${task_name}"
 #
 #-----------------------------------------------------------------------
 #
-modulefile_path=$( readlink -f "${modules_dir}/${modulefile_name}" )
 
-if [ ! -f "${modulefile_path}" ]; then
+if [ "${task_name}" = "${RUN_POST_TN}" ] && [ "${machine}" = "cheyenne" ]; then
+    print_info_msg "Modulefile not required for task \"${task_name}\" on machine \"${machine}\""
 
-  if [ "${task_name}" = "${MAKE_OROG_TN}" ] || \
-     [ "${task_name}" = "${MAKE_SFC_CLIMO_TN}" ] || \
-     [ "${task_name}" = "${MAKE_ICS_TN}" ] || \
-     [ "${task_name}" = "${MAKE_LBCS_TN}" ] || \
-     [ "${task_name}" = "${RUN_FCST_TN}" ]; then
+else
 
-    print_err_msg_exit "\
+   modulefile_path=$( readlink -f "${modules_dir}/${modulefile_name}" )
+
+   if [ ! -f "${modulefile_path}" ]; then
+
+     if [ "${task_name}" = "${MAKE_OROG_TN}" ] || \
+        [ "${task_name}" = "${MAKE_SFC_CLIMO_TN}" ] || \
+        [ "${task_name}" = "${MAKE_ICS_TN}" ] || \
+        [ "${task_name}" = "${MAKE_LBCS_TN}" ] || \
+        [ "${task_name}" = "${RUN_FCST_TN}" ]; then
+
+       print_err_msg_exit "\
 The target (modulefile_path) of the symlink (modulefile_name) in the 
 task modules directory (modules_dir) that points to module file for this
 task (task_name) does not exist:
@@ -245,60 +255,63 @@ task (task_name) does not exist:
   modulefile_path = \"${modulefile_path}\"
 This is likely because the forecast model code has not yet been built."
 
-  else
+     else
 
-    print_err_msg_exit "\
+       print_err_msg_exit "\
 The module file (modulefile_path) specified for this task (task_name)
 does not exist:
   task_name = \"${task_name}\"
-  modulefile_path = \"${modulefile_path}\""
+  modulefile_path = \"${modulefile_path}\"
+  machine = \"${machine}\""
 
-  fi
+     fi
 
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Purge modules and load the module file for the specified task on the 
-# current machine.
-#
-#-----------------------------------------------------------------------
-#
-print_info_msg "$VERBOSE" "
+   fi
+   #
+   #-----------------------------------------------------------------------
+   #
+   # Purge modules and load the module file for the specified task on the 
+   # current machine.
+   #
+   #-----------------------------------------------------------------------
+   #
+   print_info_msg "$VERBOSE" "
 Loading modules for task \"${task_name}\" ..."
  
-module purge
+   module purge
 
-module use "${modules_dir}" || print_err_msg_exit "\
+   module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
 
-#
-# Some of the task module files that are symlinks to module files in the
-# external repositories are in fact shell scripts (they shouldn't be; 
-# such cases should be fixed in the external repositories).  For such
-# files, we source the "module" file.  For true module files, we use the
-# "module load" command.
-#
-case "${task_name}" in
-#
-"${MAKE_ICS_TN}" | "${MAKE_LBCS_TN}" | "${MAKE_SFC_CLIMO_TN}")
-  . ${modulefile_path} || print_err_msg_exit "\                                                                                           
+   #
+   # Some of the task module files that are symlinks to module files in the
+   # external repositories are in fact shell scripts (they shouldn't be; 
+   # such cases should be fixed in the external repositories).  For such
+   # files, we source the "module" file.  For true module files, we use the
+   # "module load" command.
+   #
+   case "${task_name}" in
+   #
+   "${MAKE_ICS_TN}" | "${MAKE_LBCS_TN}" | "${MAKE_SFC_CLIMO_TN}")
+     . ${modulefile_path} || print_err_msg_exit "\                                                                                           
 Sourcing of \"module\" file (modulefile_path; really a shell script) for
 the specified task (task_name) failed:
   task_name = \"${task_name}\"
   modulefile_path = \"${modulefile_path}\""
   ;;
-#
-*)
-  module load ${modulefile_name} || print_err_msg_exit "\
+   #
+   *)
+     module load ${modulefile_name} || print_err_msg_exit "\
 Loading of module file (modulefile_name; in directory specified by mod-
 ules_dir) for the specified task (task_name) failed:
   task_name = \"${task_name}\"
   modulefile_name = \"${modulefile_name}\"
   modules_dir = \"${modules_dir}\""
-  ;;
-#
-esac
+     ;;
+   #
+   esac
+
+fi #End if statement for tasks that load no modules
 
 module list
 #

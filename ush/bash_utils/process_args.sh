@@ -154,7 +154,7 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-#
+# Declare local variables.
 #
 #-----------------------------------------------------------------------
 #
@@ -166,11 +166,47 @@ where the arguments are defined as follows:
         i valid_arg_name arg_already_specified \
         arg_val_pair arg_name arg_value is_array \
         err_msg cmd_line
-
+#
+#-----------------------------------------------------------------------
+#
+# Get the array containing the list of valid argument names that can be 
+# passed to the calling script/function.  Note that if this is set to an
+# empty array in the calling script/function [e.g. using the notation 
+# some_array=()], then it will (for whatever reason) not be defined in
+# the scope of this function.  For this reason, we need the if-statement
+# below to check for this case.
+#
+#-----------------------------------------------------------------------
+#
   array_name_valid_arg_names="$1"
-  valid_arg_names_at="${array_name_valid_arg_names}[@]"
-  valid_arg_names=("${!valid_arg_names_at}")
+  valid_arg_names_0th="${array_name_valid_arg_names}[0]"
+  if [ ${!valid_arg_names_0th:-"__unset__"} = "__unset__" ]; then
+    valid_arg_names=()
+  else
+    valid_arg_names_at="${array_name_valid_arg_names}[@]"
+    valid_arg_names=("${!valid_arg_names_at}")
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# Get the number of valid arguments.  Also, set a string containing the
+# list of all valid arguments with each one placed in double quotes.
+#
+#-----------------------------------------------------------------------
+#
   num_valid_args=${#valid_arg_names[@]}
+  if [ ${num_valid_args} -eq 0 ]; then
+    valid_arg_names_str=""
+  else
+    valid_arg_names_str=$( printf "\"%s\" " "${valid_arg_names[@]}" )
+  fi
+
+#
+# Instead of the if-statement above, the following could be used, but it
+# is too difficult to understand...
+#
+#    valid_arg_names_str=$( printf "\"%s\" " ${valid_arg_names[@]+"${valid_arg_names[@]}"} )
+
 #
 #-----------------------------------------------------------------------
 #
@@ -191,7 +227,6 @@ where the arguments are defined as follows:
 #-----------------------------------------------------------------------
 #
   if [ "${num_arg_val_pairs}" -gt "${num_valid_args}" ]; then
-    valid_arg_names_str=$(printf "\"%s\" " "${valid_arg_names[@]}");
     print_err_msg_exit "\
 The number of argument-value pairs specified on the command line (num_-
 arg_val_pairs) must be less than or equal to the number of valid argu-
@@ -200,6 +235,54 @@ ments (num_valid_args) specified in the array valid_arg_names:
   num_valid_args = ${num_valid_args}
   valid_arg_names = ( ${valid_arg_names_str})"
   fi
+#
+#-----------------------------------------------------------------------
+#
+# If the number of valid arguments is zero, i.e. the array valid_arg_names
+# contains no elements, then there are no script/function arguments to 
+# set.  In this case, reset the shell options to what they were before
+# entering this function and simply return to the calling script/function.
+#
+#-----------------------------------------------------------------------
+#
+  if [ ${num_valid_args} -eq 0 ]; then
+    { restore_shell_opts; } > /dev/null 2>&1
+    return
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that none of the elements of the array containing the list 
+# of valid arguments contain spaces or are empty.
+#
+#-----------------------------------------------------------------------
+#
+  for (( i=0; i<${num_valid_args}; i++ )); do
+
+    valid_arg_name="${valid_arg_names[$i]}"
+
+# Remove spaces (if any exist) from the current valid argument name.
+    valid_arg_name_no_spaces=$( \
+      printf "%s\n" "${valid_arg_name}" | sed -r -e 's/[[:space:]]//g' )
+
+    if [ "${valid_arg_name_no_spaces}" != "${valid_arg_name}" ]; then
+      print_err_msg_exit "\
+The name of an argument in the list of valid arguments (valid_arg_names)
+cannot contain any spaces, but the element with index i=${i} contains at
+least one space:
+  valid_arg_names = ( ${valid_arg_names_str})
+  valid_arg_names[$i] = \"${valid_arg_names[$i]}\""
+    fi
+
+    if [ -z ${valid_arg_name} ]; then
+      print_err_msg_exit "\
+The list of valid arguments (valid_arg_names) cannot contain empty elements, 
+but the element with index i=${i} is empty:
+  valid_arg_names = ( ${valid_arg_names_str})
+  valid_arg_names[$i] = \"${valid_arg_names[$i]}\""
+    fi
+
+  done
 #
 #-----------------------------------------------------------------------
 #

@@ -102,7 +102,7 @@ case "${CCPP_PHYS_SUITE}" in
   phys_suite="GFS"
   ;;
 
-"FV3_GSD_v0" | "FV3_GSD_SAR")
+"FV3_GSD_v0" | "FV3_GSD_SAR" | "FV3_GSD_SAR_v1")
   phys_suite="GSD"
   ;;
 "FV3_CPT_v0" )
@@ -280,9 +280,10 @@ case "${EXTRN_MDL_NAME_LBCS}" in
       if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
+         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
         tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+           [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
@@ -323,8 +324,9 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   if [ "${USE_CCPP}" = "TRUE" ]; then
     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
@@ -421,9 +423,9 @@ list file has not specified for this external model:
 settings="
 'config': {
  'fix_dir_target_grid': ${FIXsar},
- 'mosaic_file_target_grid': ${FIXsar}/${CRES}_mosaic.nc,
+ 'mosaic_file_target_grid': ${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc,
  'orog_dir_target_grid': ${FIXsar},
- 'orog_files_target_grid': ${CRES}_oro_data.tile7.halo${NH4}.nc,
+ 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile7.halo${NH4}.nc,
  'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
  'mosaic_file_input_grid': '',
  'orog_dir_input_grid': '',
@@ -450,6 +452,7 @@ settings="
 
 ${USHDIR}/set_namelist.py -q -o fort.41 -u "{$settings}" ||
      (echo "set_namlist.py failed!" && exit 1)
+
 #
 # Run chgres_cube.
 #

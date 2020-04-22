@@ -1,11 +1,11 @@
 <YYYYMMDD>.<HH>Z.<CRES>.32bit.non-hydro.regional
 <YYYY> <MM> <DD> <HH> 0 0
 
-"grid_spec",              -1,  "months",   1, "days",  "time"
-"atmos_static",           -1,  "hours",    1, "hours", "time"
-#"atmos_4xdaily",           1,  "hours",    1, "days",  "time"
-"fv3_history",             0,  "hours",    1, "hours", "time"
-"fv3_history2d",           0,  "hours",    1, "hours", "time"
+"grid_spec",              -1,  "months",  1, "days",  "time"
+"atmos_static",           -1,  "hours",   1, "hours", "time"
+#"atmos_4xdaily",          1,  "hours",   1, "days",  "time"
+"fv3_history",             1,  "years",   1, "hours", "time"
+"fv3_history2d",           1,  "years",   1, "hours", "time"
 
 #
 #=======================
@@ -319,6 +319,12 @@
 # Prognostic/diagnostic variables from RUC LSM
 "gfs_sfc",     "snowfall_acc",     "snowfall_acc",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "swe_snowfall_acc", "swe_snowfall_acc", "fv3_history2d",  "all",  .false.,  "none",  2
+# Stochastic physics
+"gfs_phys",    "sppt_wts",      "sppt_wts",      "fv3_history",  "all", .false., "none", 2
+"gfs_phys",    "skebu_wts",     "skebu_wts",     "fv3_history",  "all", .false., "none", 2
+"gfs_phys",    "skebv_wts",     "skebv_wts",     "fv3_history",  "all", .false., "none", 2
+"dynamics",    "diss_est",      "diss_est",      "fv3_history",  "all", .false., "none", 2
+"gfs_phys",    "shum_wts",      "shum_wts",      "fv3_history",  "all", .false., "none", 2
 
 #=============================================================================================
 #
