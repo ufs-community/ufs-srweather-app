@@ -474,47 +474,45 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 # message and exit if it fails to set a variable in the file.
 #
 
-{ cat > fort.41 <<EOF
-&config
- fix_dir_target_grid="${FIXsar}"
- mosaic_file_target_grid="${FIXsar}/${CRES}_mosaic.nc"
- orog_dir_target_grid="${FIXsar}"
- orog_files_target_grid="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
- vcoord_file_target_grid="${FIXam}/global_hyblev.l65.txt"
- mosaic_file_input_grid=""
- orog_dir_input_grid=""
- base_install_dir="${CHGRES_DIR}"
- wgrib2_path="${WGRIB2_DIR}"
- data_dir_input_grid="${EXTRN_MDL_FILES_DIR}"
- atm_files_input_grid="${fn_atm_nemsio}"
- sfc_files_input_grid="${fn_sfc_nemsio}"
- grib2_file_input_grid="${fn_grib2}"
- cycle_mon=${mm}
- cycle_day=${dd}
- cycle_hour=${hh}
- convert_atm=.true.
- convert_sfc=.true.
- convert_nst=.false.
- regional=1
- halo_bndy=${NH4}
- input_type="${input_type}"
- external_model="${external_model}"
- tracers_input=${tracers_input}
- tracers=${tracers}
- phys_suite="${phys_suite}"
- internal_GSD=${internal_GSD}
- numsoil_out=${numsoil_out}
- geogrid_file_input_grid="${geogrid_file_input_grid}"
- replace_vgtyp=${replace_vgtyp}
- replace_sotyp=${replace_sotyp}
- replace_vgfrc=${replace_vgfrc}
- tg3_from_soil=${tg3_from_soil}
-/
-EOF
-} || print_err_msg_exit "\
-\"cat\" command to create a namelist file for chgres_cube to generate ICs,
-surface fields, and the 0-th hour (initial) LBCs returned with nonzero 
-status."
+settings="
+'config': {
+ 'fix_dir_target_grid': ${FIXsar},
+ 'mosaic_file_target_grid': ${FIXsar}/${CRES}_mosaic.nc,
+ 'orog_dir_target_grid': ${FIXsar},
+ 'orog_files_target_grid': ${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc,
+ 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
+ 'mosaic_file_input_grid': ,
+ 'orog_dir_input_grid': ,
+ 'base_install_dir': ${CHGRES_DIR},
+ 'wgrib2_path': ${WGRIB2_DIR},
+ 'data_dir_input_grid': ${EXTRN_MDL_FILES_DIR},
+ 'atm_files_input_grid': ${fn_atm_nemsio},
+ 'sfc_files_input_grid': ${fn_sfc_nemsio},
+ 'grib2_file_input_grid': ${fn_grib2},
+ 'cycle_mon': ${mm},
+ 'cycle_day': ${dd},
+ 'cycle_hour': ${hh},
+ 'convert_atm': True,
+ 'convert_sfc': True,
+ 'convert_nst': False,
+ 'regional': ,
+ 'halo_bndy': ${NH4},
+ 'input_type': ${input_type},
+ 'external_model': ${external_model},
+ 'tracers_input': ${tracers_input},
+ 'tracers': ${tracers},
+ 'phys_suite': ${phys_suite},
+ 'internal_GSD': ${internal_GSD},
+ 'numsoil_out': ${numsoil_out},
+ 'geogrid_file_input_grid': ${geogrid_file_input_grid},
+ 'replace_vgtyp': ${replace_vgtyp},
+ 'replace_sotyp': ${replace_sotyp},
+ 'replace_vgfrc': ${replace_vgfrc},
+ 'tg3_from_soil': ${tg3_from_soil},
+"
+
+${USHDIR}/set_namelist.py -q -o fort.41 -u "{$settings}" ||
+     (echo "set_namlist.py failed!" && exit 1)
 #
 #-----------------------------------------------------------------------
 #

@@ -417,40 +417,39 @@ list file has not specified for this external model:
 # QUESTION:
 # Do numsoil_out, ..., tg3_from_soil need to be in this namelist (as 
 # they are for the ICs namelist)?
-  { cat > fort.41 <<EOF
-&config
- fix_dir_target_grid="${FIXsar}"
- mosaic_file_target_grid="${FIXsar}/${CRES}_mosaic.nc"
- orog_dir_target_grid="${FIXsar}"
- orog_files_target_grid="${CRES}_oro_data.tile7.halo${NH4}.nc"
- vcoord_file_target_grid="${FIXam}/global_hyblev.l65.txt"
- mosaic_file_input_grid=""
- orog_dir_input_grid=""
- base_install_dir="${CHGRES_DIR}"
- wgrib2_path="${WGRIB2_DIR}"
- data_dir_input_grid="${EXTRN_MDL_FILES_DIR}"
- atm_files_input_grid="${fn_atm_nemsio}"
- sfc_files_input_grid="${fn_sfc_nemsio}"
- grib2_file_input_grid="${fn_grib2}"
- cycle_mon=${mm}
- cycle_day=${dd}
- cycle_hour=${hh}
- convert_atm=.true.
- convert_sfc=.false.
- convert_nst=.false.
- regional=2
- halo_bndy=${NH4}
- input_type="${input_type}"
- external_model="${external_model}"
- tracers_input=${tracers_input}
- tracers=${tracers}
- phys_suite="${phys_suite}"
-/
-EOF
-  } || print_err_msg_exit "\
-\"cat\" command to create a namelist file for chgres_cube to generate LBCs
-for all boundary update times (except the 0-th forecast hour) returned 
-with nonzero status."
+
+settings="
+'config': {
+ 'fix_dir_target_grid': ${FIXsar},
+ 'mosaic_file_target_grid': ${FIXsar}/${CRES}_mosaic.nc,
+ 'orog_dir_target_grid': ${FIXsar},
+ 'orog_files_target_grid': ${CRES}_oro_data.tile7.halo${NH4}.nc,
+ 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
+ 'mosaic_file_input_grid': '',
+ 'orog_dir_input_grid': '',
+ 'base_install_dir': ${CHGRES_DIR},
+ 'wgrib2_path': ${WGRIB2_DIR},
+ 'data_dir_input_grid': ${EXTRN_MDL_FILES_DIR},
+ 'atm_files_input_grid': ${fn_atm_nemsio},
+ 'sfc_files_input_grid': ${fn_sfc_nemsio},
+ 'grib2_file_input_grid': ${fn_grib2},
+ 'cycle_mon': ${mm},
+ 'cycle_day': ${dd},
+ 'cycle_hour': ${hh},
+ 'convert_atm': True,
+ 'convert_sfc': False,
+ 'convert_nst': False,
+ 'regional': 2,
+ 'halo_bndy': ${NH4},
+ 'input_type': ${input_type},
+ 'external_model': ${external_model},
+ 'tracers_input': ${tracers_input},
+ 'tracers': ${tracers},
+ 'phys_suite': ${phys_suite},
+"
+
+${USHDIR}/set_namelist.py -q -o fort.41 -u "{$settings}" ||
+     (echo "set_namlist.py failed!" && exit 1)
 #
 # Run chgres_cube.
 #
