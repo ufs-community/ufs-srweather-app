@@ -310,11 +310,10 @@ def main(cla):
 
         if cla.type == 'yaml':
             if cla.input_nml:
-                base_nml = f90nml.read(cla.nml) if cla.nml else {}
                 input_nml = f90nml.read(cla.input_nml)
 
-                # Determine how input_nml differs from base_nml
-                diff = dict_diff(base_nml, input_nml)
+                # Determine how input_nml differs from the configured namelist
+                diff = dict_diff(nml, input_nml)
 
                 # Write diffs to YAML file
                 yaml.dump(diff, fn)
