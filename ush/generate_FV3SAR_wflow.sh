@@ -573,8 +573,8 @@ settings="
    },
 "
 
-$USHDIR/set_namelist.py -q -c $FV3_NML_CONFIG_FP $CCPP_PHYS_SUITE -n $FV3_NML_BASE_FP -o ${FV3_NML_FP} -u "{$settings}" ||
-  (echo "set_namlist.py failed!" && exit 1)
+$USHDIR/set_namelist.py -q -c $FV3_NML_CONFIG_FP $CCPP_PHYS_SUITE -n $FV3_NML_BASE_FP -o ${FV3_NML_FP} -u "{$settings}" \
+||  (echo "set_namlist.py failed!" && exit 1)
 #
 #-----------------------------------------------------------------------
 #
@@ -667,7 +667,7 @@ For automatic resubmission of the workflow (say every 3 minutes), the
 following line can be added to the user's crontab (use \"crontab -e\" to
 edit the cron table): 
 
-*/3 * * * * cd $EXPTDIR && ${rocotorun_cmd}
+*/3 * * * * cd $EXPTDIR && ./launch_FV3SAR_wflow.sh
 
 Done.
 "

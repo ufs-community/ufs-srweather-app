@@ -258,15 +258,15 @@ case "${EXTRN_MDL_NAME_ICS}" in
   fn_sfc_nemsio="${EXTRN_MDL_FNS[1]}"
   input_type="gfs_gaussian" # For spectral GFS Gaussian grid in nemsio format.
 
-  tracers_input="\"spfh\",\"clwmr\",\"o3mr\""
-  tracers="\"sphum\",\"liq_wat\",\"o3mr\""
+  tracers_input="[\"spfh\",\"clwmr\",\"o3mr\"]"
+  tracers="[\"sphum\",\"liq_wat\",\"o3mr\"]"
  
-  internal_GSD=".false."
+  internal_GSD=False
   numsoil_out="4"
-  replace_vgtyp=".true."
-  replace_sotyp=".true."
-  replace_vgfrc=".true."
-  tg3_from_soil=".false."
+  replace_vgtyp=True
+  replace_sotyp=True
+  replace_vgfrc=True
+  tg3_from_soil=False
 
   ;;
 
@@ -281,7 +281,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
     fn_sfc_nemsio="${EXTRN_MDL_FNS[1]}"
     input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
 
-    tracers_input="\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\""
+    tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
 
 #
 # If CCPP is being used, then the list of atmospheric tracers to include
@@ -295,20 +295,20 @@ case "${EXTRN_MDL_NAME_ICS}" in
          [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
-        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+        tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
-        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
+        tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\"]"
       fi
 #
 # If CCPP is not being used, the only physics suite that can be used is
 # GFS.
 #
     else
-      tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+      tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
     fi
 
   elif [ "${FV3GFS_FILE_FMT_ICS}" = "grib2" ]; then
@@ -320,12 +320,12 @@ case "${EXTRN_MDL_NAME_ICS}" in
 
   fi
 
-  internal_GSD=".false."
+  internal_GSD=False
   numsoil_out="4"
-  replace_vgtyp=".true."
-  replace_sotyp=".true."
-  replace_vgfrc=".true."
-  tg3_from_soil=".false."
+  replace_vgtyp=True
+  replace_sotyp=True
+  replace_vgfrc=True
+  tg3_from_soil=False
 
   ;;
 
@@ -346,7 +346,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
 Setting the chgres_cube namelist setting \"internal_GSD\" to \".true.\" in
 order to read in land surface model (LSM) variables available in the
 HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
-    internal_GSD=".true."
+    internal_GSD=True
   fi
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
@@ -370,10 +370,10 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
     geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
   fi
 
-  replace_vgtyp=".false."
-  replace_sotyp=".false."
-  replace_vgfrc=".false."
-  tg3_from_soil=".true."
+  replace_vgtyp=False
+  replace_sotyp=False
+  replace_vgfrc=False
+  tg3_from_soil=True
 
   ;;
 
@@ -384,7 +384,7 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
 
-  internal_GSD=".false."
+  internal_GSD=False
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
@@ -407,10 +407,10 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
     geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
   fi
 
-  replace_vgtyp=".false."
-  replace_sotyp=".false."
-  replace_vgfrc=".false."
-  tg3_from_soil=".true."
+  replace_vgtyp=False
+  replace_sotyp=False
+  replace_vgfrc=False
+  tg3_from_soil=True
 
   ;;
 
@@ -487,6 +487,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 settings="
 'config': {
  'fix_dir_target_grid': ${FIXsar},
+ 'mosaic_file_target_grid': ${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc,
  'orog_dir_target_grid': ${FIXsar},
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc,
  'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
@@ -518,6 +519,7 @@ settings="
  'replace_sotyp': ${replace_sotyp},
  'replace_vgfrc': ${replace_vgfrc},
  'tg3_from_soil': ${tg3_from_soil},
+}
 "
 
 ${USHDIR}/set_namelist.py -q -o fort.41 -u "{$settings}" ||

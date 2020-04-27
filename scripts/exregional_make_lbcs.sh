@@ -248,8 +248,8 @@ case "${EXTRN_MDL_NAME_LBCS}" in
 
   input_type="gfs_gaussian" # For spectral GFS Gaussian grid in nemsio format.
 
-  tracers_input="\"spfh\",\"clwmr\",\"o3mr\""
-  tracers="\"sphum\",\"liq_wat\",\"o3mr\""
+  tracers_input="[\"spfh\",\"clwmr\",\"o3mr\"]"
+  tracers="[\"sphum\",\"liq_wat\",\"o3mr\"]"
 
   numsoil_out="4"
   replace_vgtyp=".true."
@@ -268,7 +268,7 @@ case "${EXTRN_MDL_NAME_LBCS}" in
 
     input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
 
-    tracers_input="\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\""
+    tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
 #
 # If CCPP is being used, then the list of atmospheric tracers to include
 # in the output file depends on the physics suite.  Hopefully, this me-
@@ -281,20 +281,20 @@ case "${EXTRN_MDL_NAME_LBCS}" in
          [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
-        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+        tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
-        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
+        tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\"]"
       fi
 #
 # If CCPP is not being used, the only physics suite that can be used is
 # GFS.
 #
     else
-      tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+      tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
     fi
 
   elif [ "${FV3GFS_FILE_FMT_LBCS}" = "grib2" ]; then
@@ -448,6 +448,7 @@ settings="
  'tracers_input': ${tracers_input},
  'tracers': ${tracers},
  'phys_suite': ${phys_suite},
+ }
 "
 
 ${USHDIR}/set_namelist.py -q -o fort.41 -u "{$settings}" ||
