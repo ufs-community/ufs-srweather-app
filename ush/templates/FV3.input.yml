@@ -279,7 +279,7 @@ FV3_GFS_v16beta:
     do_ysu: !!python/none
     effr_in: True
     hybedmf: False
-    iaer: 5111
+    iaer: 111
     icliq_sw: 2
     iopt_dveg: 1
     iovr_lw: 3
