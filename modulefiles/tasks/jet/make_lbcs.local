@@ -2,4 +2,4 @@ module load wgrib2/2.0.8
 
 module load contrib
 module load miniconda3
-system "conda activate regional_workflow"
+conda activate regional_workflow
