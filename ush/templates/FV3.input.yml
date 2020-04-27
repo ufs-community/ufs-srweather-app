@@ -231,7 +231,6 @@ FV3_GFS_v15p2:
   surf_map_nml:
 
 FV3_GFS_v16beta:
-  amip_interp_nml: !!python/none
   atmos_model_nml:
     ccpp_suite: FV3_GFS_v16
     fdiag: 3
@@ -279,7 +278,7 @@ FV3_GFS_v16beta:
     do_ysu: !!python/none
     effr_in: True
     hybedmf: False
-    iaer: 111
+    iaer: 5111
     icliq_sw: 2
     iopt_dveg: 1
     iovr_lw: 3
@@ -302,6 +301,9 @@ FV3_GFS_v16beta:
   mpp_io_nml:
     deflate_level: 1
     shuffle: 1
+  namsfc:
+    landice: True
+    ldebug: False
   nam_sfcperts: !!python/none
   nam_stochy: !!python/none
   surf_map_nml: !!python/none
@@ -400,6 +402,4 @@ FV3_CPT_v0:
     xkzm_m: 0.5
     xkzm_s: 1.0
   nam_sfcperts: !!python/none
-  namsfc:
-    ldebug: false
   surf_map_nml: !!python/none
