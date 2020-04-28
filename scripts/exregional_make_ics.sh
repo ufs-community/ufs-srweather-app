@@ -234,13 +234,13 @@ esac
 external_model=""
 fn_atm_nemsio=""
 fn_sfc_nemsio=""
-fn_grib2=""
+fn_grib2="\"\""
 input_type=""
 tracers_input="\"\""
 tracers="\"\""
 internal_GSD=""
 numsoil_out=""
-geogrid_file_input_grid=""
+geogrid_file_input_grid="\"\""
 replace_vgtyp=""
 replace_sotyp=""
 replace_vgfrc=""
@@ -499,9 +499,9 @@ settings="
  'atm_files_input_grid': ${fn_atm_nemsio},
  'sfc_files_input_grid': ${fn_sfc_nemsio},
  'grib2_file_input_grid': ${fn_grib2},
- 'cycle_mon': ${mm},
- 'cycle_day': ${dd},
- 'cycle_hour': ${hh},
+ 'cycle_mon': $((10#$mm)),
+ 'cycle_day': $((10#$dd)),
+ 'cycle_hour': $((10#$hh)),
  'convert_atm': True,
  'convert_sfc': True,
  'convert_nst': False,
