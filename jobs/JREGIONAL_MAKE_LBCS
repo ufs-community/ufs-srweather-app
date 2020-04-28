@@ -136,7 +136,7 @@ case "$MACHINE" in
   ;;
 #
 "CHEYENNE")
-#
+  APRUN="mpirun -np ${NPROCS}"
   ;;
 #
 esac

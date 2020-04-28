@@ -280,7 +280,7 @@ case "${EXTRN_MDL_NAME_LBCS}" in
       if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
+         [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
         tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
@@ -326,7 +326,7 @@ case "${EXTRN_MDL_NAME_LBCS}" in
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] ; then
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
       numsoil_out="4"
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
@@ -422,9 +422,9 @@ list file has not specified for this external model:
   { cat > fort.41 <<EOF
 &config
  fix_dir_target_grid="${FIXsar}"
- mosaic_file_target_grid="${FIXsar}/${CRES}_mosaic.nc"
+ mosaic_file_target_grid="${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
  orog_dir_target_grid="${FIXsar}"
- orog_files_target_grid="${CRES}_oro_data.tile7.halo${NH4}.nc"
+ orog_files_target_grid="${CRES}${DOT_OR_USCORE}oro_data.tile7.halo${NH4}.nc"
  vcoord_file_target_grid="${FIXam}/global_hyblev.l65.txt"
  mosaic_file_input_grid=""
  orog_dir_input_grid=""

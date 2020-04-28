@@ -55,14 +55,13 @@ This is the ex-script for the task that generates orography files.
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  
-# Then process the arguments provided to this script/function (which 
-# should consist of a set of name-value pairs of the form arg1="value1",
-# etc).
+# Specify the set of valid argument names for this script/function.  Then
+# process the arguments provided to this script/function (which should
+# consist of a set of name-value pairs of the form arg1="value1", etc).
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "WORKDIR_LOCAL" )
+valid_args=()
 process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
@@ -74,41 +73,6 @@ process_args valid_args "$@"
 #-----------------------------------------------------------------------
 #
 print_input_args valid_args
-#
-#-----------------------------------------------------------------------
-#
-# Create the (cycle-independent) subdirectories under the experiment di-
-# rectory (EXPTDIR) that are needed by the various steps and substeps in
-# this script.
-#
-#-----------------------------------------------------------------------
-#
-check_for_preexist_dir ${OROG_DIR} ${PREEXISTING_DIR_METHOD}
-mkdir_vrfy -p "${OROG_DIR}"
-
-raw_dir="${OROG_DIR}/raw_topo"
-mkdir_vrfy -p "${raw_dir}"
-
-filter_dir="${OROG_DIR}/filtered_topo"
-mkdir_vrfy -p "${filter_dir}"
-
-shave_dir="${OROG_DIR}/shave_tmp"
-mkdir_vrfy -p "${shave_dir}"
-
-ufs_utils_ushdir="${UFS_UTILS_DIR}/ush"
-#
-#-----------------------------------------------------------------------
-#
-# Set the file names of the scripts to use for generating the raw oro-
-# graphy files and for filtering the latter to obtain filtered orography
-# files.  Also, set the name of the executable file used to "shave" 
-# (i.e. remove the halo from) certain orography files.
-#
-#-----------------------------------------------------------------------
-#
-orog_gen_scr="fv3gfs_make_orog.sh"
-orog_fltr_scr="fv3gfs_filter_topo.sh"
-shave_exec="shave.x"
 #
 #-----------------------------------------------------------------------
 #
@@ -126,8 +90,9 @@ export OMP_STACKSIZE=2048m
 #
 # Load modules and set various computational parameters and directories.
 #
-# topo_dir specifies the directory in which input files needed for gene-
-# rating the orography (topography) files are located.
+# Note: 
+# These module loads should all be moved to modulefiles.  This has been
+# done for Hera but must still be done for other machines.
 #
 #-----------------------------------------------------------------------
 #
@@ -147,29 +112,6 @@ case $MACHINE in
   export NODES=1
   export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
   export KMP_AFFINITY=disabled
-  export topo_dir="/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_orog"
-
-  ulimit -s unlimited
-  ulimit -a
-  ;;
-
-
-"THEIA")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
-
-  . /apps/lmod/lmod/init/sh
-  module purge
-  module load intel/16.1.150
-  module load impi
-  module load hdf5/1.8.14
-  module load netcdf/4.3.0
-  module list
-
-  { restore_shell_opts; } > /dev/null 2>&1
-
-  export APRUN="time"
-  export topo_dir="/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog"
 
   ulimit -s unlimited
   ulimit -a
@@ -180,7 +122,6 @@ case $MACHINE in
   ulimit -s unlimited
   ulimit -a
   export APRUN="time"
-  export topo_dir="/scratch1/NCEPDEV/global/glopara/fix/fix_orog"
   ;;
 
 
@@ -188,45 +129,149 @@ case $MACHINE in
   ulimit -s unlimited
   ulimit -a
   export APRUN="time"
-  export topo_dir="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_orog"
   ;;
 
 
 "ODIN")
 #
   export APRUN="srun -n 1"
-  export topo_dir="/scratch/ywang/fix/theia_fix/fix_orog"
 
   ulimit -s unlimited
   ulimit -a
   ;;
 
 
+"CHEYENNE")
+  export APRUN="time"
+  export topo_dir="/glade/p/ral/jntp/UFS_CAM/fix/fix_orog"
+  ;;
+
 esac
 #
 #-----------------------------------------------------------------------
 #
-# Set and export the variable exec_dir.  This is needed by both the raw
-# and filtered orography generation scripts called below (it would be 
-# better to pass it in as an argument).
+# Create the (cycle-independent) subdirectories under the experiment
+# directory (EXPTDIR) that are needed by the various steps and substeps
+# in this script.
 #
 #-----------------------------------------------------------------------
 #
-export exec_dir="$EXECDIR"
+check_for_preexist_dir ${OROG_DIR} ${PREEXISTING_DIR_METHOD}
+mkdir_vrfy -p "${OROG_DIR}"
+
+raw_dir="${OROG_DIR}/raw_topo"
+mkdir_vrfy -p "${raw_dir}"
+
+filter_dir="${OROG_DIR}/filtered_topo"
+mkdir_vrfy -p "${filter_dir}"
+
+shave_dir="${OROG_DIR}/shave_tmp"
+mkdir_vrfy -p "${shave_dir}"
 #
 #-----------------------------------------------------------------------
 #
-# Extract the resolution from CRES and save it in the local variable 
-# res.
+# Set the system directory from which topography data will be copied into
+# the experiment directory so it can be remapped onto the forecast model's
+# grid.
 #
 #-----------------------------------------------------------------------
 #
-res="${CRES:1}"
+topo_dir=$( readlink -f "${FIXgsm}/../fix_orog" )
 #
 #-----------------------------------------------------------------------
 #
-# Generate an orography file corresponding to tile 7 (the regional do-
-# main) only.
+# Preparatory steps before calling raw orography generation code.
+#
+#-----------------------------------------------------------------------
+#
+# Set the name and path to the executable that generates the raw orography
+# file and make sure that it exists.
+#
+exec_fn="orog.x"
+exec_fp="$EXECDIR/${exec_fn}"
+if [ ! -f "${exec_fp}" ]; then
+  print_err_msg_exit "\
+The executable (exec_fp) for generating the orography file does not exist:
+  exec_fp = \"${exec_fp}\"
+Please ensure that you've built this executable."
+fi
+#
+# Create a temporary (work) directory in which to generate the raw orography
+# file and change location to it.
+# 
+tmp_dir="${raw_dir}/tmp"
+mkdir_vrfy -p "${tmp_dir}"
+cd_vrfy "${tmp_dir}"
+#
+# Copy topography and related data files from the system directory (topo_dir)
+# to the temporary directory.
+#
+cp_vrfy ${topo_dir}/thirty.second.antarctic.new.bin fort.15
+cp_vrfy ${topo_dir}/landcover30.fixed .
+cp_vrfy ${topo_dir}/gmted2010.30sec.int fort.235
+#
+#-----------------------------------------------------------------------
+#
+# The orography filtering code reads in from the grid mosaic file the
+# the number of tiles, the name of the grid file for each tile, and the
+# dimensions (nx and ny) of each tile.  Next, set the name of the grid
+# mosaic file and create a symlink to it in filter_dir.
+#
+# Note that in the namelist file for the orography filtering code (created
+# later below), the mosaic file name is saved in a variable called
+# "grid_file".  It would have been better to call this "mosaic_file"
+# instead so it doesn't get confused with the grid file for a given tile...
+#
+#-----------------------------------------------------------------------
+#
+mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NHW}.nc"
+mosaic_fp="$FIXsar/${mosaic_fn}"
+
+grid_fn=$( get_charvar_from_netcdf "${mosaic_fp}" "gridfiles" )
+grid_fp="${FIXsar}/${grid_fn}"
+#
+#-----------------------------------------------------------------------
+#
+# Set input parameters for the orography generation executable and write
+# them to a text file.
+#
+# Note that it doesn't matter what lonb and latb are set to below because
+# if we specify an input grid file to the executable read in (which is 
+# what we do below), then if lonb and latb are not set to the dimensions
+# of the grid specified in that file (divided by 2 since the grid file
+# specifies a "supergrid"), then lonb and latb effectively get reset to
+# the dimensions specified in the grid file.
+#
+#-----------------------------------------------------------------------
+#
+mtnres=1
+#lonb=$res
+#latb=$res
+lonb=0
+latb=0
+jcap=0
+NR=0
+NF1=0
+NF2=0
+efac=0
+blat=0
+
+input_redirect_fn="INPS"
+orogfile="none"
+
+echo $mtnres $lonb $latb $jcap $NR $NF1 $NF2 $efac $blat > "${input_redirect_fn}"
+#
+# The following two inputs are read in as strings, so they must be quoted
+# in the input file.
+#
+echo "\"${grid_fp}\"" >> "${input_redirect_fn}"
+echo "\"$orogfile\"" >> "${input_redirect_fn}"
+cat "${input_redirect_fn}"
+#
+#-----------------------------------------------------------------------
+#
+# Call the executable to generate the raw orography file corresponding 
+# to tile 7 (the regional domain) only.
 #
 # The following will create an orography file named
 #
@@ -243,7 +288,6 @@ res="${CRES:1}"
 print_info_msg "$VERBOSE" "
 Starting orography file generation..."
 
-tmp_dir="${raw_dir}/tmp"
 
 case $MACHINE in
 
@@ -255,6 +299,9 @@ case $MACHINE in
 # but in the future we will have more.  First, create an input file for
 # cfp.
 #
+  ufs_utils_ushdir="${UFS_UTILS_DIR}/ush"
+  res="0"  # What should this be set to???
+
   printf "%s\n" "\
 ${ufs_utils_ushdir}/${orog_gen_scr} \
 $res \
@@ -271,196 +318,190 @@ ${tmp_dir}" \
   ;;
 
 
-"THEIA" | "HERA" | "JET" | "ODIN")
-  ${ufs_utils_ushdir}/${orog_gen_scr} \
-    $res ${TILE_RGNL} ${FIXsar} ${raw_dir} ${UFS_UTILS_DIR} ${topo_dir} ${tmp_dir} || \
-  print_err_msg_exit "\
-Call to script that generates raw orography file returned with nonzero
-exit code."
+"CHEYENNE" | "HERA" | "JET" | "ODIN")
+  $APRUN "${exec_fp}" < "${input_redirect_fn}" || \
+    print_err_msg_exit "\
+Call to executable (exec_fp) that generates the raw orography file returned 
+with nonzero exit code:
+  exec_fp = \"${exec_fp}\""
   ;;
 
 
 esac
 #
-#-----------------------------------------------------------------------
+# Change location to the original directory.
 #
-# For clarity, rename the tile 7 orography file such that its new name
-# contains the halo size.  Then create a link whose name doesn't contain
-# the halo size that points to this file.  This link must be present in 
-# order for the filtering script called below to work properly (because
-# that script does not allow the user to specify the name of the input
-# raw orography file; it takes the resolution (RES) as an argument and
-# forms the file name from CRES).
-#
-#-----------------------------------------------------------------------
-#
-cd_vrfy ${raw_dir}
-mv_vrfy oro.${CRES}.tile${TILE_RGNL}.nc \
-        oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc
-ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc \
-            oro.${CRES}.tile${TILE_RGNL}.nc
 cd_vrfy -
+#
+#-----------------------------------------------------------------------
+#
+# Move the raw orography file from the temporary directory to raw_dir.
+# In the process, rename it such that its name includes CRES and the halo
+# width.
+#
+#-----------------------------------------------------------------------
+#
+raw_orog_fp_orig="${tmp_dir}/out.oro.nc"
+raw_orog_fn_prefix="${CRES}${DOT_OR_USCORE}raw_orog"
+fn_suffix_with_halo="tile${TILE_RGNL}.halo${NHW}.nc"
+raw_orog_fn="${raw_orog_fn_prefix}.${fn_suffix_with_halo}"
+raw_orog_fp="${raw_dir}/${raw_orog_fn}"
+mv_vrfy "${raw_orog_fp_orig}" "${raw_orog_fp}"
 
 print_info_msg "$VERBOSE" "
 Orography file generation complete."
 #
 #-----------------------------------------------------------------------
 #
-# Set paramters used in filtering of the orography.
+# Note that the orography filtering code assumes that the regional grid
+# is a GFDLgrid type of grid; it is not designed to handle JPgrid type
+# regional grids.  If the flag "regional" in the orography filtering 
+# namelist file is set to .TRUE. (which it always is will be here; see
+# below), then filtering code will first calculate a resolution (i.e. 
+# number of grid points) value named res_regional for the assumed GFDLgrid
+# type regional grid using the formula
+#
+#   res_regional = res*stretch_fac*real(refine_ratio)
+#
+# Here res, stretch_fac, and refine_ratio are the values passed to the
+# code via the namelist.  res and stretch_fac are assumed to be the 
+# resolution (in terms of number of grid points) and the stretch factor
+# of the (GFDLgrid type) regional grid's parent global cubed-sphere grid,
+# and refine_ratio is the ratio of the number of grid cells on the regional
+# grid to a single cell on tile 6 of the parent global grid.  After
+# calculating res_regional, the code interpolates/extrapolates between/
+# beyond a set of (currently 7) resolution values for which the four 
+# filtering parameters (n_del2_weak, cd4, max_slope, peak_fac) are provided
+# (by GFDL) to obtain the corresponding values of these parameters at a
+# resolution of res_regional.  These interpolated/extrapolated values are
+# then used to perform the orography filtering.
+#
+# The above approach works for a GFDLgrid type of grid.  To handle JPgrid
+# type grids, we set res in the namelist to the orography filtering code
+# the equivalent global uniform cubed-sphere resolution of the regional
+# grid, we set stretch_fac to 1 (since the equivalent resolution assumes
+# a uniform global grid), and we set refine_ratio to 1.  This will cause
+# res_regional above to be set to the equivalent global uniform cubed-
+# sphere resolution, so the filtering parameter values will be interpolated/
+# extrapolated to that resolution value.
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "
-Setting orography filtering parameters..."
+if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 
-# Need to fix the following (also above).  Then redo to get cell_size_avg.
-#cd_vrfy ${GRID_DIR}
-#$SORCDIR/regional_grid/regional_grid $RGNL_GRID_NML_FP $CRES || \
-#print_err_msg_exit "\ 
-#Call to script that generates grid file (Jim Purser version) returned 
-#with nonzero exit code."
-#${CRES}_grid.tile${TILE_RGNL}.halo${NHW}.nc
+# Note:
+# It is also possible to use the equivalent global uniform cubed-sphere
+# resolution when filtering on a GFDLgrid type grid by setting the namelist
+# parameters as follows:
+#
+#  res="${CRES:1}"
+#  stretch_fac="1" (or "0.999" if "1" makes it crash)
+#  refine_ratio="1"
+#
+# Really depends on what EMC wants to do.
 
+  res="${GFDLgrid_RES}"
+#  stretch_fac="${GFDLgrid_STRETCH_FAC}"
+  refine_ratio="${GFDLgrid_REFINE_RATIO}"
 
-#if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-#  res_eff=$( bc -l <<< "$res*${GFDLgrid_REFINE_RATIO}" )
-#elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
-#  grid_size_eff=$( "(${JPgrid_DELX} + ${JPgrid_DELY})/2" )
-#echo "grid_size_eff = $grid_size_eff"
-#  res_eff=$( bc -l <<< "2*$pi_geom*$radius_Earth/(4*$grid_size_eff)" )
-#fi
-#res_eff=$( printf "%.0f\n" ${res_eff} )
-#echo
-#echo "res_eff = $res_eff"
+elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 
-# This will work for a JPgrid type of grid because for that case, RES 
-# in the variable definitions file gets set to RES_equiv (by the make_-
-# grid task), but this won't work for a GFDLgrid type of grid because if
-# the stretch factor is not 1 in that case, RES_equiv will not be the 
-# same as RES (because RES does not account for the stretch factor).
-RES_equiv=$res
-
-# Can also call it the "equivalent" global unstretched resolution.
-
-RES_array=(         "48"    "96"    "192"   "384"   "768"   "1152"  "3072")
-cd4_array=(         "0.12"  "0.12"  "0.15"  "0.15"  "0.15"  "0.15"  "0.15")
-max_slope_array=(   "0.12"  "0.12"  "0.12"  "0.12"  "0.12"  "0.16"  "0.30")
-n_del2_weak_array=( "4"     "8"     "12"    "12"    "16"    "20"    "24")
-peak_fac_array=(    "1.1"   "1.1"   "1.05"  "1.0"   "1.0"   "1.0"   "1.0")
-
-# Need to fix this so that the stderr from a failed call to interpol_to_arbit_CRES
-# gets sent to the stderr of this script.
-var_names=( "cd4" "max_slope" "n_del2_weak" "peak_fac" )
-num_vars=${#var_names[@]}
-for (( i=0; i<${num_vars}; i++ )); do
-  var_name=${var_names[$i]}
-  eval ${var_name}=$( interpol_to_arbit_CRES "${RES_equiv}" "RES_array" "${var_name}_array" ) || \
-       print_err_msg_exit "\
-Call to script that interpolated ${var_name} to the regional grid's equiavlent 
-global cubed-sphere resolution (RES_equiv) failed:
-  RES_equiv = \"${RES_equiv}\""
-  var_value=${!var_name}
-  echo "====>>>> ${var_name} = ${var_value}"
-done
-
-
-if [ 0 = 1 ]; then
-
-case "$res" in
-  48)
-    export cd4=0.12; export max_slope=0.12; export n_del2_weak=4;  export peak_fac=1.1
-    ;;
-  96)
-    export cd4=0.12; export max_slope=0.12; export n_del2_weak=8;  export peak_fac=1.1
-    ;;
-  192)
-    export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.05
-    ;;
-  384)
-    export cd4=0.15; export max_slope=0.12; export n_del2_weak=12; export peak_fac=1.0
-    ;;
-  768)
-    export cd4=0.15; export max_slope=0.12; export n_del2_weak=16; export peak_fac=1.0
-    ;;
-  1152)
-    export cd4=0.15; export max_slope=0.16; export n_del2_weak=20; export peak_fac=1.0
-    ;;
-  3072)
-    export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
-    ;;
-  *)
-# This needs to be fixed - i.e. what to do about regional grids that are
-# not based on a parent global cubed-sphere grid.
-    export cd4=0.15; export max_slope=0.30; export n_del2_weak=24; export peak_fac=1.0
-    ;;
-esac
+  res="${CRES:1}"
+#  stretch_fac="${STRETCH_FAC}"
+  refine_ratio="1"
 
 fi
-
 #
-#-----------------------------------------------------------------------
+# Set the name and path to the executable and make sure that it exists.
 #
-# Generate a filtered orography file with a wide halo (i.e. with a halo
-# width of NHW cells) for tile 7 from the corresponding raw orography
-# file.
+exec_fn="filter_topo"
+exec_fp="$EXECDIR/${exec_fn}"
+if [ ! -f "${exec_fp}" ]; then
+  print_err_msg_exit "\
+The executable (exec_fp) for filtering the raw orography does not exist:
+  exec_fp = \"${exec_fp}\"
+Please ensure that you've built this executable."
+fi
 #
-# The following will create a filtered orography file named
+# The orography filtering executable replaces the contents of the given
+# raw orography file with a file containing the filtered orography.  The
+# name of the input raw orography file is in effect specified by the
+# namelist variable topo_file; the orography filtering code assumes that
+# this name is constructed by taking the value of topo_file and appending
+# to it the string ".tile${N}.nc", where N is the tile number (which for
+# a regional grid, is always 7).  (Note that topo_file may start with a
+# a path to the orography file that the filtering code will read in and
+# replace.) Thus, we now copy the raw orography file (whose full path is
+# specified by raw_orog_fp) to filter_dir and in the process rename it
+# such that its new name:
 #
-#   oro.${CRES}.tile7.nc
+# (1) indicates that it contains filtered orography data (because that
+#     is what it will contain once the orography filtering executable
+#     successfully exits); and
+# (2) ends with the string ".tile${N}.nc" expected by the orography
+#     filtering code.
 #
-# and will place it in filter_dir.
+fn_suffix_without_halo="tile${TILE_RGNL}.nc"
+filtered_orog_fn_prefix="${CRES}${DOT_OR_USCORE}filtered_orog"
+filtered_orog_fp_prefix="${filter_dir}/${filtered_orog_fn_prefix}"
+filtered_orog_fp="${filtered_orog_fp_prefix}.${fn_suffix_without_halo}"
+cp_vrfy "${raw_orog_fp}" "${filtered_orog_fp}"
 #
-# The orography filtering script orog_fltr_scr copies to filter_dir the
-# tile 7 grid file and the grid mosaic file that were created in GRID_-
-# DIR by the make_grid task as well as the raw tile 7 orography file 
-# (with a wide halo) created above in OROG_DIR.  It also copies the exe-
-# cutable that performs the fil-
-# tering from EXECDIR to filter_dir and creates a namelist file that
-# the executable needs as input.  When run, for each tile listed in the
-# mosaic file, the executable replaces the raw orography file
-# with its filtered counterpart (i.e. it gives the filtered file the
-# same name as the original raw file).  Since in this (i.e.
-# GTYPE="regional") case the mosaic file lists only tile 7, a filtered
-# orography file is generated only for tile 7.  Thus, the grid files for
-# the first 6 tiles that were created above in GRID_DIR are not used
-# and thus do not need to be copied from GRID_DIR to filter_dir
-# (to get this behavior required a small change to the orog_fltr_scr
-# script that GSK has made).
+# The orography filtering executable looks for the grid file specified
+# in the grid mosaic file (more specifically, specified by the gridfiles
+# variable in the mosaic file) in the directory in which the executable
+# is running.  Recall that above, we already extracted the name of the
+# grid file from the mosaic file and saved it in the variable grid_fn,
+# and we saved the full path to this grid file in the variable grid_fp.
+# Thus, we now create a symlink in the filter_dir directory (where the
+# filtering executable will run) with the same name as the grid file and
+# point it to the actual grid file specified by grid_fp.
 #
-#-----------------------------------------------------------------------
+ln_vrfy -fs --relative "${grid_fp}" "${filter_dir}/${grid_fn}"
+#
+# Create the namelist file (in the filter_dir directory) that the orography
+# filtering executable will read in.
+#
+cat > "${filter_dir}/input.nml" <<EOF
+&filter_topo_nml
+  grid_file = "${mosaic_fp}"
+  topo_file = "${filtered_orog_fp_prefix}"
+  mask_field = "land_frac"
+  regional = .true.
+  stretch_fac = ${STRETCH_FAC}
+  refine_ratio = ${refine_ratio}
+  res = $res
+/
+EOF
+#
+# Change location to the filter_dir directory.  This must be done because
+# the orography filtering executable looks for a namelist file named
+# input.nml in the directory in which it is running (not the directory
+# in which it is located).  Thus, since above we created the input.nml
+# file in filter_dir, we must also run the executable out of this directory.
+#
+cd_vrfy "${filter_dir}"
+#
+# Run the orography filtering executable.
 #
 print_info_msg "$VERBOSE" "
 Starting filtering of orography..."
 
-# The script below creates absolute symlinks in $filter_dir.  That's 
-# probably necessary for NCO but probably better to create relative 
-# links for the community workflow.
-
-# Have to create and export a new variable named gtype because the 
-# script called below expects it to be in the environment.
-export gtype="$GTYPE"
-${ufs_utils_ushdir}/${orog_fltr_scr} \
-  $res \
-  ${FIXsar} ${raw_dir} ${filter_dir} \
-  $cd4 ${peak_fac} ${max_slope} ${n_del2_weak} \
-  ${ufs_utils_ushdir} || \
-print_err_msg_exit "\
-Call to script that generates filtered orography file returned with non-
-zero exit code."
+$APRUN "${exec_fp}" || \
+  print_err_msg_exit "\
+Call to executable that generates filtered orography file returned with
+non-zero exit code."
 #
-#-----------------------------------------------------------------------
+# For clarity, rename the filtered orography file in filter_dir
+# such that its new name contains the halo size.
 #
-# For clarity, rename the tile 7 filtered orography file in filter_dir
-# such that its new name contains the halo size.  Then create a link
-# whose name doesn't contain the halo size that points to the file.
+filtered_orog_fn_orig=$( basename "${filtered_orog_fp}" )
+filtered_orog_fn="${filtered_orog_fn_prefix}.${fn_suffix_with_halo}"
+filtered_orog_fp=$( dirname "${filtered_orog_fp}" )"/${filtered_orog_fn}"
+mv_vrfy "${filtered_orog_fn_orig}" "${filtered_orog_fn}"
 #
-#-----------------------------------------------------------------------
+# Change location to the original directory.
 #
-cd_vrfy ${filter_dir}
-mv_vrfy oro.${CRES}.tile${TILE_RGNL}.nc \
-        oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc
-#ln_vrfy -sf oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc \
-#            oro.${CRES}.tile${TILE_RGNL}.nc
 cd_vrfy -
 
 print_info_msg "$VERBOSE" "
@@ -469,86 +510,98 @@ Filtering of orography complete."
 #-----------------------------------------------------------------------
 #
 # Partially "shave" the halo from the (filtered) orography file having a
-# wide halo to generate two new orography files -- one without a halo
-# and another with a 4-cell-wide halo.  These are needed as inputs by 
-# FV3 as well as by the chgres_cube code to generate lateral boundary 
-# condtion files.
-# also sfc_climo???
+# wide halo to generate two new orography files -- one without a halo and
+# another with a 4-cell-wide halo.  These are needed as inputs by the
+# surface climatology file generation code (sfc_climo; if it is being
+# run), the initial and boundary condition generation code (chgres_cube),
+# and the forecast model.
 #
 #-----------------------------------------------------------------------
 #
-
+# Set the name and path to the executable and make sure that it exists.
+#
+exec_fn="shave.x"
+exec_fp="$EXECDIR/${exec_fn}"
+if [ ! -f "${exec_fp}" ]; then
+  print_err_msg_exit "\
+The executable (exec_fp) for \"shaving\" down the halo in the orography
+file does not exist:
+  exec_fp = \"${exec_fp}\"
+Please ensure that you've built this executable."
+fi
 #
 # Set the full path to the "unshaved" orography file, i.e. the one with
-# a wide halo.  This is the input orography file for generating both the 
+# a wide halo.  This is the input orography file for generating both the
 # orography file without a halo and the one with a 4-cell-wide halo.
 #
-#unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.nc"
-unshaved_fp="${filter_dir}/oro.${CRES}.tile${TILE_RGNL}.halo${NHW}.nc"
+unshaved_fp="${filtered_orog_fp}"
 #
-# We perform the work in shave_dir, so change location to that directo-
-# ry.  Once it is complete, we move the resultant file from shave_dir to
-# OROG_DIR.
+# We perform the work in shave_dir, so change location to that directory.
+# Once it is complete, we move the resultant file from shave_dir to OROG_DIR.
 #
-cd_vrfy ${shave_dir}
+cd_vrfy "${shave_dir}"
 #
 # Create an input namelist file for the shave executable to generate an
-# orography file without a halo from the one with a wide halo.  Then 
-# call the shave executable.  Finally, move the resultant file to the 
-# OROG_DIR directory.
+# orography file without a halo from the one with a wide halo.  Then call
+# the shave executable.  Finally, move the resultant file to the OROG_DIR
+# directory.
 #
 print_info_msg "$VERBOSE" "
-\"Shaving\" orography file with wide halo to obtain orography file with 
-${NH0}-cell-wide halo..."
+\"Shaving\" filtered orography file with a ${NHW}-cell-wide halo to obtain
+a filtered orography file with a ${NH0}-cell-wide halo..."
 
 nml_fn="input.shave.orog.halo${NH0}"
-shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
+shaved_fp="${shave_dir}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 printf "%s %s %s %s %s\n" \
   $NX $NY ${NH0} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
-$APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
+$APRUN ${exec_fp} < ${nml_fn} || \
 print_err_msg_exit "\
-Call to \"shave\" executable to generate (filtered) orography file with
-a 4-cell wide halo returned with nonzero exit code.  The namelist file 
-nml_fn is in directory shave_dir:
-  shave_dir = \"${shave_dir}\"
-  nml_fn = \"${nml_fn}\""
+Call to executable (exec_fp) to generate a (filtered) orography file with
+a ${NH0}-cell-wide halo from the orography file with a {NHW}-cell-wide halo
+returned with nonzero exit code:
+  exec_fp = \"${exec_fp}\"
+The namelist file (nml_fn) used in this call is in directory shave_dir:
+  nml_fn = \"${nml_fn}\"
+  shave_dir = \"${shave_dir}\""
 mv_vrfy ${shaved_fp} ${OROG_DIR}
 #
 # Create an input namelist file for the shave executable to generate an
-# orography file with a 4-cell-wide halo from the one with a wide halo.  
+# orography file with a 4-cell-wide halo from the one with a wide halo.
 # Then call the shave executable.  Finally, move the resultant file to
 # the OROG_DIR directory.
 #
 print_info_msg "$VERBOSE" "
-\"Shaving\" orography file with wide halo to obtain orography file with 
-${NH4}-cell-wide halo..."
+\"Shaving\" filtered orography file with a ${NHW}-cell-wide halo to obtain
+a filtered orography file with a ${NH4}-cell-wide halo..."
 
 nml_fn="input.shave.orog.halo${NH4}"
-shaved_fp="${shave_dir}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
+shaved_fp="${shave_dir}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 printf "%s %s %s %s %s\n" \
   $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
-$APRUN $EXECDIR/${shave_exec} < ${nml_fn} || \
+$APRUN ${exec_fp} < ${nml_fn} || \
 print_err_msg_exit "\
-Call to \"shave\" executable to generate (filtered) orography file with
-a 4-cell wide halo returned with nonzero exit code.  The namelist file 
-nml_fn is in directory shave_dir:
-  shave_dir = \"${shave_dir}\"
-  nml_fn = \"${nml_fn}\""
-mv_vrfy ${shaved_fp} ${OROG_DIR}
+Call to executable (exec_fp) to generate a (filtered) orography file with
+a ${NH4}-cell-wide halo from the orography file with a {NHW}-cell-wide halo
+returned with nonzero exit code:
+  exec_fp = \"${exec_fp}\"
+The namelist file (nml_fn) used in this call is in directory shave_dir:
+  nml_fn = \"${nml_fn}\"
+  shave_dir = \"${shave_dir}\""
+mv_vrfy "${shaved_fp}" "${OROG_DIR}"
 #
-# Change location back to the directory before shave_dir.
+# Change location to the original directory.
 #
 cd_vrfy -
 #
 #-----------------------------------------------------------------------
 #
-# Add links in ORIG_DIR directory to the orography file with a 4-cell-
-# wide halo such that the link name do not contain the halo width.  
-# These links are needed by the make_sfc_climo task.
+# Add link in ORIG_DIR directory to the orography file with a 4-cell-wide
+# halo such that the link name do not contain the halo width.  These links
+# are needed by the make_sfc_climo task.
 #
 # NOTE: It would be nice to modify the sfc_climo_gen_code to read in
 # files that have the halo size in their names.
@@ -560,42 +613,6 @@ link_fix \
   file_group="orog" || \
 print_err_msg_exit "\
 Call to function to create links to orography files failed."
-
-# Moved the following to exregional_make_sfc_climo.sh script since it 
-# needs to be done only if the make_sfc_climo task is run.
-
-#print_info_msg "$VERBOSE" "
-#Creating links needed by the make_sfc_climo task to the 4-halo grid and
-#orography files..."
-#
-if [ 0 = 1 ]; then
-cd_vrfy ${OROG_DIR}
-ln_vrfy -sf ${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc \
-            ${CRES}_oro_data.tile${TILE_RGNL}.nc
-fi
-
-
-#
-#-----------------------------------------------------------------------
-#
-# Create symlinks in the FIXSAR directory pointing to the orography 
-# files.  These symlinks are needed by the make_orog, make_sfc_climo, 
-# make_ic, make_lbc, and/or run_fcst tasks.
-#
-#-----------------------------------------------------------------------
-#
-if [ 0 = 1 ]; then
-cd_vrfy ${FIXsar}
-
-filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
-ln_vrfy --relative -sf ${OROG_DIR}/$filename $FIXsar
-ln_vrfy -sf $filename oro_data.nc
-
-filename="${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
-ln_vrfy --relative -sf ${OROG_DIR}/$filename $FIXsar
-ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.halo${NH4}.nc
-ln_vrfy -sf $filename oro_data.tile${TILE_RGNL}.nc
-fi
 #
 #-----------------------------------------------------------------------
 #

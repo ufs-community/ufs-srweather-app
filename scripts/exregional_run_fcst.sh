@@ -108,40 +108,6 @@ case $MACHINE in
   APRUN="mpirun -l -np ${PE_MEMBER01}"
   ;;
 #
-"THEIA")
-#
-
-  if [ "${USE_CCPP}" = "TRUE" ]; then
-  
-# Need to change to the experiment directory to correctly load necessary 
-# modules for CCPP-version of FV3SAR in lines below
-    cd_vrfy ${EXPTDIR}
-  
-    set +x
-    source ./module-setup.sh
-    module use $( pwd -P )
-    module load modules.fv3
-    module load contrib wrap-mpi
-    module list
-    set -x
-  
-  else
-  
-    . /apps/lmod/lmod/init/sh
-    module purge
-    module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
-    module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0 
-    module load contrib wrap-mpi 
-    module list
-  
-  fi
-
-  ulimit -s unlimited
-  ulimit -a
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
-  ;;
-#
 "HERA")
   ulimit -s unlimited
   ulimit -a
@@ -163,6 +129,14 @@ case $MACHINE in
   ulimit -s unlimited
   ulimit -a
   APRUN="srun -n ${PE_MEMBER01}"
+  ;;
+#
+"CHEYENNE")
+#
+  module list
+
+  APRUN="mpirun -np ${NPROCS}"
+  LD_LIBRARY_PATH="${UFS_WTHR_MDL_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
   ;;
 #
 esac
@@ -190,7 +164,8 @@ if [ "${RUN_TASK_MAKE_GRID}" = "TRUE" ]; then
 fi
 
 # Symlink to mosaic file with a completely different name.
-target="${FIXsar}/${CRES}_mosaic.nc"
+#target="${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"   # Should this point to this halo4 file or a halo3 file???
+target="${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc"   # Should this point to this halo4 file or a halo3 file???
 symlink="grid_spec.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target $symlink
@@ -200,15 +175,22 @@ Cannot create symlink because target does not exist:
   target = \"$target}\""
 fi
 
-# Symlink to halo-3 grid file with "halo4" stripped from name.
-target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${NH3}.nc"
-if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
-   [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
-   [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "FALSE" ]; then
-  symlink="C${GFDLgrid_RES}_grid.tile${TILE_RGNL}.nc"
-else
-  symlink="${CRES}_grid.tile${TILE_RGNL}.nc"
-fi
+## Symlink to halo-3 grid file with "halo3" stripped from name.
+#target="${FIXsar}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
+#if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
+#   [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
+#   [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "FALSE" ]; then
+#  symlink="C${GFDLgrid_RES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
+#else
+#  symlink="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
+#fi
+
+# Symlink to halo-3 grid file with "halo3" stripped from name.
+mosaic_fn="grid_spec.nc"
+grid_fn=$( get_charvar_from_netcdf "${mosaic_fn}" "gridfiles" )
+
+target="${FIXsar}/${grid_fn}"
+symlink="${grid_fn}"
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target $symlink
 else
@@ -229,7 +211,7 @@ fi
 # Note that even though the message says "Stopped", the task still con-
 # sumes core-hours.
 #
-target="${FIXsar}/${CRES}_grid.tile${TILE_RGNL}.halo${NH4}.nc"
+target="${FIXsar}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
 symlink="grid.tile${TILE_RGNL}.halo${NH4}.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target $symlink
@@ -247,7 +229,7 @@ if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ]; then
 fi
 
 # Symlink to halo-0 orography file with "${CRES}_" and "halo0" stripped from name.
-target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${FIXsar}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="oro_data.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target $symlink
@@ -270,7 +252,7 @@ fi
 # Note that even though the message says "Stopped", the task still con-
 # sumes core-hours.
 #
-target="${FIXsar}/${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
+target="${FIXsar}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 symlink="oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 if [ -f "${target}" ]; then
   ln_vrfy -sf ${relative_or_null} $target $symlink

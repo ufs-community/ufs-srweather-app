@@ -110,9 +110,9 @@ input_slope_type_file="${SFC_CLIMO_INPUT_DIR}/slope_type.1.0.nc"
 input_soil_type_file="${SFC_CLIMO_INPUT_DIR}/soil_type.statsgo.0.05.nc"
 input_vegetation_type_file="${SFC_CLIMO_INPUT_DIR}/vegetation_type.igbp.0.05.nc"
 input_vegetation_greenness_file="${SFC_CLIMO_INPUT_DIR}/vegetation_greenness.0.144.nc"
-mosaic_file_mdl="${FIXsar}/${CRES}_mosaic.nc"
+mosaic_file_mdl="${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
 orog_dir_mdl="${FIXsar}"
-orog_files_mdl=${CRES}_oro_data.tile${TILE_RGNL}.halo${NH4}.nc
+orog_files_mdl=${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc
 halo=${NH4}
 maximum_snow_albedo_method="bilinear"
 snowfree_albedo_method="bilinear"
@@ -138,19 +138,16 @@ case $MACHINE in
   APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}
   ;;
 
-"THEIA")
-# Need to load intel/15.1.133.  This and all other module loads should go into a module file.
-  module load intel/15.1.133
-  module list
-  APRUN="mpirun -np ${SLURM_NTASKS}"
-  ;;
-
 "HERA")
   APRUN="srun"
   ;;
 
 "JET")
   APRUN="srun"
+  ;;
+
+"CHEYENNE")
+  APRUN="mpirun -np ${NPROCS}"
   ;;
 
 *)
@@ -164,13 +161,27 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Run the code.
+# Generate the surface climatology files.
 #
 #-----------------------------------------------------------------------
 #
-$APRUN ${EXECDIR}/sfc_climo_gen || print_err_msg_exit "\
-Call to executable that generates surface climatology files returned 
-with nonzero exit code."
+# Set the name and path to the executable and make sure that it exists.
+#
+exec_fn="sfc_climo_gen"
+exec_fp="$EXECDIR/${exec_fn}"
+if [ ! -f "${exec_fp}" ]; then
+  print_err_msg_exit "\
+The executable (exec_fp) for generating the surface climatology files
+does not exist:
+  exec_fp = \"${exec_fp}\"
+Please ensure that you've built this executable."
+fi
+
+$APRUN ${exec_fp} || \
+print_err_msg_exit "\
+Call to executable (exec_fp) to generate surface climatology files returned
+with nonzero exit code:
+  exec_fp = \"${exec_fp}\""
 #
 #-----------------------------------------------------------------------
 #
@@ -215,7 +226,7 @@ case "$GTYPE" in
   done
 #
 # Move all remaining files ending with ".nc" (which are the files for a
-# grid that doesn't include a halo) to the SFC_CLIMO_DIR directory.  
+# grid that doesn't include a halo) to the SFC_CLIMO_DIR directory.
 # In the process, rename them so that the file names start with the C-
 # resolution (followed by a dot) and contain the string "halo0" to indi-
 # cate that the grids in these files do not contain a halo.

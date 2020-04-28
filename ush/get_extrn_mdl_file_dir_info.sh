@@ -331,7 +331,8 @@ fi
 #-----------------------------------------------------------------------
 #
   if [ "${extrn_mdl_name}" = "RAPX" ] || \
-     [ "${extrn_mdl_name}" = "HRRRX" ]; then
+     [ "${extrn_mdl_name}" = "HRRRX" ] || \
+     [ "${extrn_mdl_name}" = "FV3GFS" -a "${MACHINE}" = "JET" ]; then
 #
 # Get the Julian day-of-year of the starting date and time of the exter-
 # nal model run.
@@ -388,7 +389,11 @@ fi
 
 #        fns=( "atm" "sfc" "nst" )
         fns=( "atm" "sfc" )
-        prefix="gfs.t${hh}z."
+        if [ "${MACHINE}" = "JET" ]; then
+          prefix="${yy}${ddd}${hh}00.gfs.t${hh}z."
+        else
+          prefix="gfs.t${hh}z."
+        fi
         fns=( "${fns[@]/#/$prefix}" )
         suffix="anl.nemsio"
         fns=( "${fns[@]/%/$suffix}" )
@@ -405,11 +410,19 @@ fi
       ;;
   
     "RAPX")
-      fns=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
+      if [ "${MACHINE}" = "JET" ]; then
+        fns=( "wrfnat_130_${fcst_hh}.grib2" )
+      else
+        fns=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
+      fi
       ;;
 
     "HRRRX")
-      fns=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
+      if [ "${MACHINE}" = "JET" ]; then
+        fns=( "wrfnat_hrconus_${fcst_hh}.grib2" )
+      else
+        fns=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
+      fi
       ;;
 
     *)
@@ -447,7 +460,11 @@ bination of external model (extrn_mdl_name) and analysis or forecast
     "FV3GFS")
       if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then
         fcst_hhh=( $( printf "%03d " "${lbc_update_fhrs[@]}" ) )
-        prefix="gfs.t${hh}z.atmf"
+        if [ "${MACHINE}" = "JET" ]; then
+          prefix="${yy}${ddd}${hh}00.gfs.t${hh}z.atmf"
+        else
+          prefix="gfs.t${hh}z.atmf"
+        fi
         fns=( "${fcst_hhh[@]/#/$prefix}" )
         suffix=".nemsio"
         fns=( "${fns[@]/%/$suffix}" )
@@ -460,17 +477,33 @@ bination of external model (extrn_mdl_name) and analysis or forecast
 
     "RAPX")
       fcst_hh=( $( printf "%02d " "${lbc_update_fhrs[@]}" ) )
-      prefix="${yy}${ddd}${hh}${mn}"
+      if [ "${MACHINE}" = "JET" ]; then 
+        prefix="wrfnat_130_"
+      else
+        prefix="${yy}${ddd}${hh}${mn}"
+      fi
       fns=( "${fcst_hh[@]/#/$prefix}" )
-      suffix="${fcst_mn}"
+      if [ "${MACHINE}" = "JET" ]; then
+        suffix=".grib2"
+      else
+        suffix="${fcst_mn}"
+      fi
       fns=( "${fns[@]/%/$suffix}" )
       ;;
 
     "HRRRX")
       fcst_hh=( $( printf "%02d " "${lbc_update_fhrs[@]}" ) )
-      prefix="${yy}${ddd}${hh}${mn}"
+      if [ "${MACHINE}" = "JET" ]; then
+        prefix="wrfnat_hrconus_"
+      else
+        prefix="${yy}${ddd}${hh}${mn}"
+      fi
       fns=( "${fcst_hh[@]/#/$prefix}" )
-      suffix="${fcst_mn}"
+      if [ "${MACHINE}" = "JET" ]; then
+        suffix=".grib2"
+      else
+        suffix="${fcst_mn}"
+      fi
       fns=( "${fns[@]/%/$suffix}" )
       ;;
 
@@ -554,7 +587,7 @@ has not been specified for this external model and machine combination:
       sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
       ;;
     "JET")
-      sysdir="$sysbasedir/${yyyymmdd}"
+      sysdir="$sysbasedir"
       ;;
     "ODIN")
       sysdir="$sysbasedir/${yyyymmdd}"
@@ -585,7 +618,7 @@ has not been specified for this external model and machine combination:
       sysdir="$sysbasedir"
       ;;
     "JET")
-      sysdir="$sysbasedir"
+      sysdir="$sysbasedir/${yyyymmdd}${hh}/postprd"
       ;;
     "ODIN")
       sysdir="$sysbasedir"
@@ -616,7 +649,7 @@ has not been specified for this external model and machine combination:
       sysdir="$sysbasedir"
       ;;
     "JET")
-      sysdir="$sysbasedir"
+      sysdir="$sysbasedir/${yyyymmdd}${hh}/postprd"
       ;;
     "ODIN")
       sysdir="$sysbasedir"
