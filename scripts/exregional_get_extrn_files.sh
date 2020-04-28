@@ -234,6 +234,18 @@ elif [ "${DATA_SRC}" = "HPSS" ]; then
 #
 #-----------------------------------------------------------------------
 #
+  if [ "${MACHINE}" = "JET" ]; then
+    searchstring="gfs"
+    icount=0
+    echo ${EXTRN_MDL_FNS[@]}
+    for ss in ${EXTRN_MDL_FNS[@]}; do
+        trest=${ss#*$searchstring}
+        EXTRN_MDL_FNS[$icount]=gfs$trest
+        icount=$(( $icount + 1 ))
+	echo "icount=" $icount
+    done
+    echo ${EXTRN_MDL_FNS[@]}
+  fi
   prefix=${EXTRN_MDL_ARCVREL_DIR:+${EXTRN_MDL_ARCVREL_DIR}/}
   EXTRN_MDL_FPS=( "${EXTRN_MDL_FNS[@]/#/$prefix}" )
 
