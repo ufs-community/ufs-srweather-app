@@ -434,7 +434,7 @@ settings="
  'data_dir_input_grid': ${EXTRN_MDL_FILES_DIR},
  'atm_files_input_grid': ${fn_atm_nemsio},
  'sfc_files_input_grid': ${fn_sfc_nemsio},
- 'grib2_file_input_grid': ${fn_grib2},
+ 'grib2_file_input_grid': \"${fn_grib2}\",
  'cycle_mon': ${mm},
  'cycle_day': ${dd},
  'cycle_hour': ${hh},

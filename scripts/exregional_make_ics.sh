@@ -337,7 +337,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
 
-  internal_GSD=".false."
+  internal_GSD=False
   cdate_min_HRRRX="2019111500"
   if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" -o \
        "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ] && \
@@ -498,7 +498,7 @@ settings="
  'data_dir_input_grid': ${EXTRN_MDL_FILES_DIR},
  'atm_files_input_grid': ${fn_atm_nemsio},
  'sfc_files_input_grid': ${fn_sfc_nemsio},
- 'grib2_file_input_grid': ${fn_grib2},
+ 'grib2_file_input_grid': \"${fn_grib2}\",
  'cycle_mon': ${mm},
  'cycle_day': ${dd},
  'cycle_hour': ${hh},
