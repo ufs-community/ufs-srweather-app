@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 This utility updates a Fortran namelist file using the f90nml package. The
