@@ -292,7 +292,7 @@ Call to \"module use\" command failed."
    #
    case "${task_name}" in
    #
-   "${MAKE_GRID_TN}" | "${MAKE_ICS_TN}" | "${MAKE_LBCS_TN}" | "${MAKE_SFC_CLIMO_TN}")
+   "${MAKE_ICS_TN}" | "${MAKE_LBCS_TN}" | "${MAKE_SFC_CLIMO_TN}")
      . ${modulefile_path} || print_err_msg_exit "\                                                                                           
 Sourcing of \"module\" file (modulefile_path; really a shell script) for
 the specified task (task_name) failed:
