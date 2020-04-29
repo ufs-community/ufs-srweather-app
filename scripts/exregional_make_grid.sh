@@ -367,7 +367,6 @@ Setting parameters in file:
     !!!!!!!!!!!!!!!!!!!!!!
   
     set_namelist.py failed!
-    Check documentation to ensure that the proper python environment is available
 
     !!!!!!!!!!!!!!!!!!!!!!
     "
