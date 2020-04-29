@@ -77,6 +77,7 @@ ushdir="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
+
 TEMPLATE_XML_FP="${TEMPLATE_DIR}/${WFLOW_XML_FN}"
 WFLOW_XML_FP="$EXPTDIR/${WFLOW_XML_FN}"
 #
@@ -573,8 +574,18 @@ settings="
    },
 "
 
-$USHDIR/set_namelist.py -q -c $FV3_NML_CONFIG_FP $CCPP_PHYS_SUITE -n $FV3_NML_BASE_FP -o ${FV3_NML_FP} -u "{$settings}" \
-||  (echo "set_namlist.py failed!" && exit 1)
+$USHDIR/set_namelist.py -q -c $FV3_NML_CONFIG_FP $CCPP_PHYS_SUITE -n $FV3_NML_BASE_FP -o ${FV3_NML_FP} -u "{$settings}" 
+if [[ $? -ne 0 ]]; then
+  echo "
+  !!!!!!!!!!!!!!!!!!!!!!
+
+  set_namelist.py failed!
+  Check documentation to ensure that the proper python environment is available
+
+  !!!!!!!!!!!!!!!!!!!!!!
+  "
+  exit 1
+fi
 #
 #-----------------------------------------------------------------------
 #

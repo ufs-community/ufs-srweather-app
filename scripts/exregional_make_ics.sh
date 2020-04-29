@@ -234,7 +234,7 @@ esac
 external_model=""
 fn_atm_nemsio=""
 fn_sfc_nemsio=""
-fn_grib2="\"\""
+fn_grib2=""
 input_type=""
 tracers_input="\"\""
 tracers="\"\""
@@ -522,8 +522,18 @@ settings="
 }
 "
 
-${USHDIR}/set_namelist.py -q -o fort.41 -u "{$settings}" ||
-     (echo "set_namlist.py failed!" && exit 1)
+${USHDIR}/set_namelist.py -q -o fort.41 -u "{$settings}"
+if [[ $? -ne 0 ]]; then
+  echo "
+  !!!!!!!!!!!!!!!!!!!!!!
+
+  set_namelist.py failed!
+  Check documentation to ensure that the proper python environment is available
+
+  !!!!!!!!!!!!!!!!!!!!!!
+  "
+  exit 1
+fi
 
 #
 #-----------------------------------------------------------------------

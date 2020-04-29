@@ -361,8 +361,18 @@ Setting parameters in file:
    }
   "
 
-  ${USHDIR}/set_namelist.py -q -o ${rgnl_grid_nml_fp} -u "{$settings}" ||
-     (echo "set_namlist.py failed!" && exit 1)
+  ${USHDIR}/set_namelist.py -q -o ${rgnl_grid_nml_fp} -u "{$settings}"
+  if [[ $? -ne 0 ]]; then
+    echo "
+    !!!!!!!!!!!!!!!!!!!!!!
+  
+    set_namelist.py failed!
+    Check documentation to ensure that the proper python environment is available
+
+    !!!!!!!!!!!!!!!!!!!!!!
+    "
+    exit 1
+  fi
 
 #
 # Call the executable that generates the grid file.
