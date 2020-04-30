@@ -77,6 +77,7 @@ ushdir="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
+
 TEMPLATE_XML_FP="${TEMPLATE_DIR}/${WFLOW_XML_FN}"
 WFLOW_XML_FP="$EXPTDIR/${WFLOW_XML_FN}"
 #
@@ -439,10 +440,6 @@ print_info_msg "$VERBOSE" "
 cp_vrfy "${FIELD_TABLE_TMPL_FP}" "${FIELD_TABLE_FP}"
 
 print_info_msg "$VERBOSE" "
-  Copying the template FV3 namelist file to the experiment directory..."
-cp_vrfy "${FV3_NML_TMPL_FP}" "${FV3_NML_FP}"
-
-print_info_msg "$VERBOSE" "
   Copying the template NEMS configuration file to the experiment direct-
   ory..."
 cp_vrfy "${NEMS_CONFIG_TMPL_FP}" "${NEMS_CONFIG_FP}"
@@ -496,47 +493,18 @@ npy=$((NY+1))
 #
 # Set parameters.
 #
-set_file_param "${FV3_NML_FP}" "blocksize" "$BLOCKSIZE"
-set_file_param "${FV3_NML_FP}" "ccpp_suite" "\'${CCPP_PHYS_SUITE}\'"
-set_file_param "${FV3_NML_FP}" "layout" "${LAYOUT_X},${LAYOUT_Y}"
-set_file_param "${FV3_NML_FP}" "npx" "$npx"
-set_file_param "${FV3_NML_FP}" "npy" "$npy"
-set_file_param "${FV3_NML_FP}" "target_lon" "${LON_CTR}"
-set_file_param "${FV3_NML_FP}" "target_lat" "${LAT_CTR}"
+
 # Question:
 # For a JPgrid type grid, what should stretch_fac be set to?  This de-
 # pends on how the FV3 code uses the stretch_fac parameter in the name-
 # list file.  Recall that for a JPgrid, it gets set in the function 
 # set_gridparams_JPgrid(.sh) to something like 0.9999, but is it ok to
 # set it to that here in the FV3 namelist file?
-set_file_param "${FV3_NML_FP}" "stretch_fac" "${STRETCH_FAC}"
-set_file_param "${FV3_NML_FP}" "bc_update_interval" "${LBC_UPDATE_INTVL_HRS}"
 
-set_file_param "${FV3_NML_FP}" "FNGLAC" "\"$FNGLAC\""
-set_file_param "${FV3_NML_FP}" "FNMXIC" "\"$FNMXIC\""
-set_file_param "${FV3_NML_FP}" "FNTSFC" "\"$FNTSFC\""
-set_file_param "${FV3_NML_FP}" "FNSNOC" "\"$FNSNOC\""
-set_file_param "${FV3_NML_FP}" "FNZORC" "\"$FNZORC\""
-set_file_param "${FV3_NML_FP}" "FNALBC" "\"$FNALBC\""
-set_file_param "${FV3_NML_FP}" "FNALBC2" "\"$FNALBC2\""
-set_file_param "${FV3_NML_FP}" "FNAISC" "\"$FNAISC\""
-set_file_param "${FV3_NML_FP}" "FNTG3C" "\"$FNTG3C\""
-set_file_param "${FV3_NML_FP}" "FNVEGC" "\"$FNVEGC\""
-set_file_param "${FV3_NML_FP}" "FNVETC" "\"$FNVETC\""
-set_file_param "${FV3_NML_FP}" "FNSOTC" "\"$FNSOTC\""
-set_file_param "${FV3_NML_FP}" "FNSMCC" "\"$FNSMCC\""
-set_file_param "${FV3_NML_FP}" "FNMSKH" "\"$FNMSKH\""
-set_file_param "${FV3_NML_FP}" "FNTSFA" "\"$FNTSFA\""
-set_file_param "${FV3_NML_FP}" "FNACNA" "\"$FNACNA\""
-set_file_param "${FV3_NML_FP}" "FNSNOA" "\"$FNSNOA\""
-set_file_param "${FV3_NML_FP}" "FNVMNC" "\"$FNVMNC\""
-set_file_param "${FV3_NML_FP}" "FNVMXC" "\"$FNVMXC\""
-set_file_param "${FV3_NML_FP}" "FNSLPC" "\"$FNSLPC\""
-set_file_param "${FV3_NML_FP}" "FNABSC" "\"$FNABSC\""
-#
 # For the GSD_v0 and the GSD_SAR physics suites, set the parameter lsoil
 # according to the external models used to obtain ICs and LBCs.
 #
+
 if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
    [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 
@@ -544,12 +512,12 @@ if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
        "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] && \
      [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" -o \
        "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
-    set_file_param "${FV3_NML_FP}" "lsoil" "4"
+    lsoil=4
   elif [ "${EXTRN_MDL_NAME_ICS}" = "RAPX" -o \
          "${EXTRN_MDL_NAME_ICS}" = "HRRRX" ] && \
        [ "${EXTRN_MDL_NAME_LBCS}" = "RAPX" -o \
          "${EXTRN_MDL_NAME_LBCS}" = "HRRRX" ]; then
-    set_file_param "${FV3_NML_FP}" "lsoil" "9"
+    lsoil=9
   else
     print_err_msg_exit "\
 The value to set the variable lsoil to in the FV3 namelist file (FV3_-
@@ -562,6 +530,61 @@ Please change one or more of these parameters or provide a value for
 lsoil (and change workflow generation script(s) accordingly) and rerun."
   fi
 
+fi
+
+settings="
+'atmos_model_nml': {
+    'blocksize': ${BLOCKSIZE},
+    'ccpp_suite': ${CCPP_PHYS_SUITE},
+  },
+'fv_core_nml': {
+    'layout': [${LAYOUT_X}, ${LAYOUT_Y}],
+    'npx': ${npx},
+    'npy': ${npy},
+    'target_lat': ${LAT_CTR},
+    'target_lon': ${LON_CTR},
+    'stretch_fac': ${STRETCH_FAC},
+    'bc_update_interval': ${LBC_UPDATE_INTVL_HRS},
+  },
+'gfs_physics_nml': {
+    'lsoil': ${lsoil:-null},
+  },
+'namsfc': {
+     'FNSMCC': ${FNSMCC},
+     'FNSOTC': ${FNSOTC},
+     'FNVETC': ${FNVETC},
+     'FNABSC': ${FNABSC},
+     'FNALBC': ${FNALBC},
+     'FNGLAC': ${FNGLAC},
+     'FNMXIC': ${FNMXIC},
+     'FNTSFC': ${FNTSFC},
+     'FNSNOC': ${FNSNOC},
+     'FNZORC': ${FNZORC},
+     'FNALBC2': ${FNALBC2},
+     'FNAISC': ${FNAISC},
+     'FNTG3C': ${FNTG3C},
+     'FNVEGC': ${FNVEGC},
+     'FNMSKH': ${FNMSKH},
+     'FNTSFA': ${FNTSFA},
+     'FNACNA': ${FNACNA},
+     'FNSNOA': ${FNSNOA},
+     'FNVMNC': ${FNVMNC},
+     'FNVMXC': ${FNVMXC},
+     'FNSLPC': ${FNSLPC},
+   },
+"
+
+$USHDIR/set_namelist.py -q -c $FV3_NML_CONFIG_FP $CCPP_PHYS_SUITE -n $FV3_NML_BASE_FP -o ${FV3_NML_FP} -u "{$settings}" 
+if [[ $? -ne 0 ]]; then
+  echo "
+  !!!!!!!!!!!!!!!!!!!!!!
+
+  set_namelist.py failed!
+  Check documentation to ensure that the proper python environment is available
+
+  !!!!!!!!!!!!!!!!!!!!!!
+  "
+  exit 1
 fi
 #
 #-----------------------------------------------------------------------
@@ -655,7 +678,7 @@ For automatic resubmission of the workflow (say every 3 minutes), the
 following line can be added to the user's crontab (use \"crontab -e\" to
 edit the cron table): 
 
-*/3 * * * * cd $EXPTDIR && ${rocotorun_cmd}
+*/3 * * * * cd $EXPTDIR && ./launch_FV3SAR_wflow.sh
 
 Done.
 "
@@ -754,7 +777,7 @@ rm "${tmp_fp}"
 # ful, move the log file in which the "tee" command saved the output of
 # the function to the experiment directory.
 #
-if [ $retval -eq 0 ]; then
+if [[ $retval -eq 0 ]]; then
   mv "${log_fp}" "$exptdir"
 #
 # If the call to the generate_FV3SAR_wflow function above was not suc-

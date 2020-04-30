@@ -19,4 +19,8 @@ module load sp/2.0.2
 module load sfcio/1.1.0
 module load sigio/2.1.0
 
-module load wgrib2/2.0.8 
+module load wgrib2/2.0.8
+
+module load contrib
+module load miniconda3
+conda activate regional_workflow
