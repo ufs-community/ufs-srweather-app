@@ -232,7 +232,7 @@ input_type=""
 tracers_input="\"\""
 tracers="\"\""
 numsoil_out=""
-geogrid_file_input_grid=""
+geogrid_file_input_grid="\"\""
 replace_vgtyp=""
 replace_sotyp=""
 replace_vgfrc=""
@@ -248,8 +248,8 @@ case "${EXTRN_MDL_NAME_LBCS}" in
 
   input_type="gfs_gaussian" # For spectral GFS Gaussian grid in nemsio format.
 
-  tracers_input="\"spfh\",\"clwmr\",\"o3mr\""
-  tracers="\"sphum\",\"liq_wat\",\"o3mr\""
+  tracers_input="[\"spfh\",\"clwmr\",\"o3mr\"]"
+  tracers="[\"sphum\",\"liq_wat\",\"o3mr\"]"
 
   numsoil_out="4"
   replace_vgtyp=".true."
@@ -268,7 +268,7 @@ case "${EXTRN_MDL_NAME_LBCS}" in
 
     input_type="gaussian"     # For FV3-GFS Gaussian grid in nemsio format.
 
-    tracers_input="\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\""
+    tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
 #
 # If CCPP is being used, then the list of atmospheric tracers to include
 # in the output file depends on the physics suite.  Hopefully, this me-
@@ -281,20 +281,20 @@ case "${EXTRN_MDL_NAME_LBCS}" in
          [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
-        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+        tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
-        tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\""
+        tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\"]"
       fi
 #
 # If CCPP is not being used, the only physics suite that can be used is
 # GFS.
 #
     else
-      tracers="\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\""
+      tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
     fi
 
   elif [ "${FV3GFS_FILE_FMT_LBCS}" = "grib2" ]; then
@@ -419,40 +419,50 @@ list file has not specified for this external model:
 # QUESTION:
 # Do numsoil_out, ..., tg3_from_soil need to be in this namelist (as 
 # they are for the ICs namelist)?
-  { cat > fort.41 <<EOF
-&config
- fix_dir_target_grid="${FIXsar}"
- mosaic_file_target_grid="${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
- orog_dir_target_grid="${FIXsar}"
- orog_files_target_grid="${CRES}${DOT_OR_USCORE}oro_data.tile7.halo${NH4}.nc"
- vcoord_file_target_grid="${FIXam}/global_hyblev.l65.txt"
- mosaic_file_input_grid=""
- orog_dir_input_grid=""
- base_install_dir="${CHGRES_DIR}"
- wgrib2_path="${WGRIB2_DIR}"
- data_dir_input_grid="${EXTRN_MDL_FILES_DIR}"
- atm_files_input_grid="${fn_atm_nemsio}"
- sfc_files_input_grid="${fn_sfc_nemsio}"
- grib2_file_input_grid="${fn_grib2}"
- cycle_mon=${mm}
- cycle_day=${dd}
- cycle_hour=${hh}
- convert_atm=.true.
- convert_sfc=.false.
- convert_nst=.false.
- regional=2
- halo_bndy=${NH4}
- input_type="${input_type}"
- external_model="${external_model}"
- tracers_input=${tracers_input}
- tracers=${tracers}
- phys_suite="${phys_suite}"
-/
-EOF
-  } || print_err_msg_exit "\
-\"cat\" command to create a namelist file for chgres_cube to generate LBCs
-for all boundary update times (except the 0-th forecast hour) returned 
-with nonzero status."
+
+settings="
+'config': {
+ 'fix_dir_target_grid': ${FIXsar},
+ 'mosaic_file_target_grid': ${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc,
+ 'orog_dir_target_grid': ${FIXsar},
+ 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile7.halo${NH4}.nc,
+ 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
+ 'mosaic_file_input_grid': '',
+ 'orog_dir_input_grid': '',
+ 'base_install_dir': ${CHGRES_DIR},
+ 'wgrib2_path': ${WGRIB2_DIR},
+ 'data_dir_input_grid': ${EXTRN_MDL_FILES_DIR},
+ 'atm_files_input_grid': ${fn_atm_nemsio},
+ 'sfc_files_input_grid': ${fn_sfc_nemsio},
+ 'grib2_file_input_grid': \"${fn_grib2}\",
+ 'cycle_mon': $((10#$mm)),
+ 'cycle_day': $((10#$dd)),
+ 'cycle_hour': $((10#$hh)),
+ 'convert_atm': True,
+ 'convert_sfc': False,
+ 'convert_nst': False,
+ 'regional': 2,
+ 'halo_bndy': ${NH4},
+ 'input_type': ${input_type},
+ 'external_model': ${external_model},
+ 'tracers_input': ${tracers_input},
+ 'tracers': ${tracers},
+ 'phys_suite': ${phys_suite},
+ }
+"
+
+${USHDIR}/set_namelist.py -q -o fort.41 -u "{$settings}" 
+if [[ $? -ne 0 ]]; then
+  echo "
+  !!!!!!!!!!!!!!!!!!!!!!
+
+  set_namelist.py failed!
+
+  !!!!!!!!!!!!!!!!!!!!!!
+  "
+  exit 1
+fi
+
 #
 # Run chgres_cube.
 #

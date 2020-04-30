@@ -339,25 +339,40 @@ nonzero exit code.
 #
 elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
 #
-# Copy the template namelist file for the JPgrid-type grid generation
-# code to the temporary subdirectory.  Then replace the placeholders in
-# that file with actual values.
+# Create the namelist file for the JPgrid-type grid generation
+# code, and write it to the temporary subdirectory.
 #
   rgnl_grid_nml_fp="$tmpdir/${RGNL_GRID_NML_FN}"
-  cp_vrfy "${TEMPLATE_DIR}/${RGNL_GRID_NML_FN}" "${rgnl_grid_nml_fp}"
 
   print_info_msg "$VERBOSE" "
 Setting parameters in file:
   rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\""
 
-  set_file_param "${rgnl_grid_nml_fp}" "plon" "${LON_CTR}"
-  set_file_param "${rgnl_grid_nml_fp}" "plat" "${LAT_CTR}"
-  set_file_param "${rgnl_grid_nml_fp}" "delx" "${DEL_ANGLE_X_SG}"
-  set_file_param "${rgnl_grid_nml_fp}" "dely" "${DEL_ANGLE_Y_SG}"
-  set_file_param "${rgnl_grid_nml_fp}" "lx" "${NEG_NX_OF_DOM_WITH_WIDE_HALO}"
-  set_file_param "${rgnl_grid_nml_fp}" "ly" "${NEG_NY_OF_DOM_WITH_WIDE_HALO}"
-  set_file_param "${rgnl_grid_nml_fp}" "a" "${JPgrid_ALPHA_PARAM}"
-  set_file_param "${rgnl_grid_nml_fp}" "k" "${JPgrid_KAPPA_PARAM}"
+  settings="
+  'regional_grid_nml': {
+      'plon': ${LON_CTR},
+      'plat': ${LAT_CTR},
+      'delx': ${DEL_ANGLE_X_SG},
+      'dely': ${DEL_ANGLE_Y_SG},
+      'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO},
+      'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO},
+      'a': ${JPgrid_ALPHA_PARAM},
+      'k': ${JPgrid_KAPPA_PARAM},
+   }
+  "
+
+  ${USHDIR}/set_namelist.py -q -o ${rgnl_grid_nml_fp} -u "{$settings}"
+  if [[ $? -ne 0 ]]; then
+    echo "
+    !!!!!!!!!!!!!!!!!!!!!!
+  
+    set_namelist.py failed!
+
+    !!!!!!!!!!!!!!!!!!!!!!
+    "
+    exit 1
+  fi
+
 #
 # Call the executable that generates the grid file.
 #
