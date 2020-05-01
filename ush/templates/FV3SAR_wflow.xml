@@ -10,10 +10,8 @@ the shell scripts
 <!ENTITY ACCOUNT       "{{ account }}">
 <!ENTITY SCHED         "{{ sched }}">
 <!ENTITY QUEUE_DEFAULT "<{{ queue_default_tag }}>{{ queue_default }}</{{ queue_default_tag }}>">
-<!ENTITY QUEUE_HPSS    "<{{ queue_hpss_tag }}>{{ queue_default }}</{{ queue_hpss_tag }}>">
-<!ENTITY QUEUE_FCST    "<{{ queue_fcst_tag }}>{{ queue_default }}</{{ queue_fcst_tag }}>">
-<!ENTITY QUEUE_HPSS    "{{ queue_hpss }}">
-<!ENTITY QUEUE_FCST    "{{ queue_fcst }}">
+<!ENTITY QUEUE_HPSS    "<{{ queue_hpss_tag }}>{{ queue_hpss }}</{{ queue_hpss_tag }}>">
+<!ENTITY QUEUE_FCST    "<{{ queue_fcst_tag }}>{{ queue_fcst }}</{{ queue_fcst_tag }}>">
 
 <!ENTITY RUN_TASK_MAKE_GRID      "{{ run_task_make_grid | upper }}">
 <!ENTITY RUN_TASK_MAKE_OROG      "{{ run_task_make_orog | upper }}">
