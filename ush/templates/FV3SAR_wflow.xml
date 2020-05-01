@@ -3,90 +3,70 @@
 <!DOCTYPE workflow [
 
 <!--
-SECTION 1:
-Variables that are modified by the workflow generation script.
+User-specific variables that are needed for batch job submission and
+workflow control. They are used within the XML and are not passed to
+the shell scripts 
 -->
+<!ENTITY ACCOUNT       "{{ account }}">
+<!ENTITY SCHED         "{{ sched }}">
+<!ENTITY QUEUE_DEFAULT "<{{ queue_default_tag }}>{{ queue_default }}</{{ queue_default_tag }}>">
+<!ENTITY QUEUE_HPSS    "<{{ queue_hpss_tag }}>{{ queue_hpss }}</{{ queue_hpss_tag }}>">
+<!ENTITY QUEUE_FCST    "<{{ queue_fcst_tag }}>{{ queue_fcst }}</{{ queue_fcst_tag }}>">
+
+<!ENTITY RUN_TASK_MAKE_GRID      "{{ run_task_make_grid | upper }}">
+<!ENTITY RUN_TASK_MAKE_OROG      "{{ run_task_make_orog | upper }}">
+<!ENTITY RUN_TASK_MAKE_SFC_CLIMO "{{ run_task_make_sfc_climo | upper }}">
 
 <!--
-The following are variables that are not passed to the shell scripts 
-that execute the various worklflow tasks but are used in other ways by
-the workflow XML.
+The following are variables that are passed to the ex-scripts through
+<envar> tags but are not otherwise used in the workflow XML.
 -->
-<!ENTITY ACCOUNT       "">
-<!ENTITY SCHED         ""> 
-<!ENTITY QUEUE_DEFAULT "">
-<!ENTITY QUEUE_HPSS    "">
-<!ENTITY QUEUE_FCST    "">
-<!ENTITY QUEUE_DEFAULT_TAG "">
-<!ENTITY QUEUE_HPSS_TAG    "">
-<!ENTITY QUEUE_FCST_TAG    "">
+<!ENTITY USHDIR  "{{ ushdir }}">
+<!ENTITY JOBSDIR "{{ jobsdir }}">
+<!ENTITY EXPTDIR "{{ exptdir }}">
+<!ENTITY LOGDIR  "{{ logdir }}">
 
-<!ENTITY USHDIR  "">
-<!ENTITY JOBSDIR "">
-<!ENTITY EXPTDIR "">
-<!ENTITY LOGDIR  "">
+<!ENTITY EXTRN_MDL_NAME_ICS  "{{ extrn_mdl_name_ics }}">
+<!ENTITY EXTRN_MDL_NAME_LBCS "{{ extrn_mdl_name_lbcs }}">
 
-<!ENTITY EXTRN_MDL_NAME_ICS  "">
-<!ENTITY EXTRN_MDL_NAME_LBCS "">
-
-<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_ICS  "">
-<!ENTITY EXTRN_MDL_FILES_SYSBASEDIR_LBCS "">
-
-<!ENTITY DATE_FIRST_CYCL "">
-<!ENTITY DATE_LAST_CYCL  "">
-<!ENTITY YYYY_FIRST_CYCL "">
-<!ENTITY MM_FIRST_CYCL   "">
-<!ENTITY DD_FIRST_CYCL   "">
-<!ENTITY HH_FIRST_CYCL   "">
-
-<!ENTITY FHR "">
-
-<!ENTITY RUN_TASK_MAKE_GRID      "">
-<!ENTITY RUN_TASK_MAKE_OROG      "">
-<!ENTITY RUN_TASK_MAKE_SFC_CLIMO "">
+<!ENTITY GLOBAL_VAR_DEFNS_FP "{{ global_var_defns_fp }}">
+<!ENTITY CYCLE_DIR           "{{ cycle_dir }}">
 
 <!--
-The following are variables that are passed to the shell scripts that 
-execute the various workflow tasks but are not otherwise used in the 
-workflow XML.
+Rocoto task names.
 -->
-<!ENTITY GLOBAL_VAR_DEFNS_FP "">
-<!ENTITY CYCLE_DIR           "">
-<!-- 
-Task names.
--->
-<!ENTITY MAKE_GRID_TN      "">
-<!ENTITY MAKE_OROG_TN      "">
-<!ENTITY MAKE_SFC_CLIMO_TN "">
-<!ENTITY GET_EXTRN_ICS_TN  "">
-<!ENTITY GET_EXTRN_LBCS_TN "">
-<!ENTITY MAKE_ICS_TN       "">
-<!ENTITY MAKE_LBCS_TN      "">
-<!ENTITY RUN_FCST_TN       "">
-<!ENTITY RUN_POST_TN       "">
+
+<!ENTITY MAKE_GRID_TN      "{{ make_grid_tn }}">
+<!ENTITY MAKE_OROG_TN      "{{ make_orog_tn }}">
+<!ENTITY MAKE_SFC_CLIMO_TN "{{ make_sfc_climo_tn }}">
+<!ENTITY GET_EXTRN_ICS_TN  "{{ get_extrn_ics_tn }}">
+<!ENTITY GET_EXTRN_LBCS_TN "{{ get_extrn_lbcs_tn }}">
+<!ENTITY MAKE_ICS_TN       "{{ make_ics_tn }}">
+<!ENTITY MAKE_LBCS_TN      "{{ make_lbcs_tn }}">
+<!ENTITY RUN_FCST_TN       "{{ run_fcst_tn }}">
+<!ENTITY RUN_POST_TN       "{{ run_post_tn }}">
 
 <!--
-Core/node specifications
--->
-<!ENTITY NCORES_PER_NODE   "">
-<!ENTITY PROC_RUN_FCST     "">
-<!ENTITY NPROCS_RUN_FCST   "">
-
-
-<!--
-SECTION 2:
-Variables that are not modified by the workflow generation script.
+Task compute resources
 -->
 
-<!ENTITY PROC_MAKE_GRID           "1:ppn=24">
-<!ENTITY PROC_MAKE_OROG           "1:ppn=24">
-<!ENTITY PROC_MAKE_SFC_CLIMO      "2:ppn=24">
-<!ENTITY NPROCS_MAKE_SFC_CLIMO    "48">
-<!ENTITY PROC_GET_EXTRN_MDL_FILES "1:ppn=1">
-<!ENTITY PROC_MAKE_ICS_SURF_LBC0  "4:ppn=12">
+<!ENTITY PROC_MAKE_GRID            "1:ppn=24">
+<!ENTITY PROC_MAKE_OROG            "1:ppn=24">
+<!ENTITY PROC_GET_EXTRN_MDL_FILES  "1:ppn=1">
+
+<!ENTITY PROC_MAKE_SFC_CLIMO       "2:ppn=24">
+<!ENTITY NPROCS_MAKE_SFC_CLIMO     "48">
+
+<!ENTITY PROC_MAKE_ICS_SURF_LBC0   "4:ppn=12">
 <!ENTITY NPROCS_MAKE_ICS_SURF_LBC0 "48">
-<!ENTITY PROC_MAKE_LBC1_TO_LBCN   "4:ppn=12">
-<!ENTITY NPROCS_MAKE_LBC1_TO_LBCN "48">
+
+<!ENTITY PROC_MAKE_LBC1_TO_LBCN    "4:ppn=12">
+<!ENTITY NPROCS_MAKE_LBC1_TO_LBCN  "48">
+
+<!ENTITY PROC_RUN_FCST             "{{ proc_run_fcst }}">
+<!ENTITY NPROCS_RUN_FCST           "{{ nprocs_run_fcst }}">
+<!ENTITY NCORES_PER_NODE           "{{ ncores_per_node }}">
+
 <!ENTITY PROC_POST                "2:ppn=24">
 <!ENTITY NPROCS_POST              "48">
 
@@ -105,7 +85,7 @@ Variables that are not modified by the workflow generation script.
 
 <!-- 
 Shell script to load task-specific modules and then run the task (while
-killing itelf off) using the exec command.
+killing itself off) using the exec command.
 -->
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "&USHDIR;/load_modules_run_task.sh">
 
@@ -113,12 +93,40 @@ killing itelf off) using the exec command.
 
 <workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20">
 
-  <cycledef group="at_start">00 &HH_FIRST_CYCL; &DD_FIRST_CYCL; &MM_FIRST_CYCL; &YYYY_FIRST_CYCL; *</cycledef>
-  <cycledef group="at_CCZ">&DATE_FIRST_CYCL;CC00 &DATE_LAST_CYCL;CC00 24:00:00</cycledef>  <!-- This line will be replaced with one or more lines with "CC" replaced by actual cycle hours, e.g. "00". -->
+  {# Double quotes are required inside the strftime! Expect an error from reading the template if using single quotes. #}
+  <cycledef group="at_start">{{ date_first_cycl.strftime("%M %H %d %m %Y *") }}</cycledef>
+  <cycledef group="forecast">{{ date_first_cycl.strftime("%Y%m%d%H%M") }} {{ date_last_cycl.strftime("%Y%m%d%H%M") }} {{ cycl_freq }}</cycledef>
 
   <log>
     <cyclestr>&LOGDIR;/FV3SAR_wflow.log</cyclestr>
   </log>
+
+<!-- 
+The following command works if we do NOT call exec in LOAD_MODULES_RUN_-
+TASK_FP to run the J-job.  This just sources the LOAD_MODULES_RUN_TASK_-
+FP before running the J-job, so it is simpler than calling exec and thus
+preferred if NCO accepts it.  Note that while sourcing LOAD_MODULES_-
+RUN_TASK_FP, it also passes an argument along (the name of the task),
+and that works in bash (but it probably won't work in sh).
+
+If this method is acceptable to NCO, then for clarity maybe we can
+source LOAD_MODULES_RUN_TASK_FP within the J-job instead of here since
+we have are already sourcing other files in the J-job anyway.
+-->
+<!-- 
+    <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;";
+               &JOBSDIR;/JREGIONAL_MAKE_GRID;
+             }</command>
+-->
+<!-- 
+The following command works if we call exec in LOAD_MODULES_RUN_TASK_FP
+to run the J-job.  This passes the J-job script as the second argument
+to LOAD_MODULES_RUN_TASK_FP (the first argument is the task name).  The
+J-job then uses exec to run the J-job (while also terminating the LOAD_-
+MODULES_RUN_TASK_FP script.
+-->
+
+{% if run_task_make_grid %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -127,30 +135,6 @@ killing itelf off) using the exec command.
 
     &RSRC_MAKE_GRID;
     &RSRV_DEFAULT;
-<!-- 
-The following command works if we do NOT call exec in LOAD_MODULES_RUN_-
-TASK_FP to run the J-job.  This just sources the LOAD_MODULES_RUN_TASK_-
-FP before running the J-job, so it is simpler than calling exec and thus
-preferred if NCO accepts it.  Note that while sourcing LOAD_MODULES_-
-RUN_TASK_FP, it also passes an argument along (the name of the task), 
-and that works in bash (but it probably won't work in sh).  
-
-If this method is acceptable to NCO, then for clarity maybe we can 
-source LOAD_MODULES_RUN_TASK_FP within the J-job instead of here since 
-we have are already sourcing other files in the J-job anyway.
--->
-<!-- 
-    <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;"; 
-               &JOBSDIR;/JREGIONAL_MAKE_GRID;
-             }</command>
--->
-<!-- 
-The following command works if we call exec in LOAD_MODULES_RUN_TASK_FP
-to run the J-job.  This passes the J-job script as the second argument 
-to LOAD_MODULES_RUN_TASK_FP (the first argument is the task name).  The
-J-job then uses exec to run the J-job (while also terminating the LOAD_-
-MODULES_RUN_TASK_FP script.
--->
     <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;" "&JOBSDIR;/JREGIONAL_MAKE_GRID"</command>
     <nodes>&PROC_MAKE_GRID;</nodes>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -160,11 +144,11 @@ MODULES_RUN_TASK_FP script.
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
-    <dependency>
-      <streq><left>&RUN_TASK_MAKE_GRID;</left><right>TRUE</right></streq>
-    </dependency>
-
   </task>
+
+{% endif %}
+
+{% if run_task_make_orog %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -184,17 +168,17 @@ MODULES_RUN_TASK_FP script.
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 
     <dependency>
-      <and>
-        <streq><left>&RUN_TASK_MAKE_OROG;</left><right>TRUE</right></streq>
-        <or>
-<!--          <taskdep task="make_grid"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
-          <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
-        </or>
-      </and>
+      <or>
+<!--        <taskdep task="make_grid"/> -->
+        <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>
+        <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+      </or>
     </dependency>
 
   </task>
+{% endif %}
+
+{% if run_task_make_sfc_climo %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -216,21 +200,22 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
       <and>
-        <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>TRUE</right></streq>
         <or>
 <!--          <taskdep task="make_grid"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>	
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
       </and>
     </dependency>
 
   </task>
+{% endif %}
+
 <!--
 ************************************************************************
 ************************************************************************
@@ -253,7 +238,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>EXTRN_MDL_NAME</name><value>&EXTRN_MDL_NAME_ICS;</value></envar>
     <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
 
-  </task> 
+  </task>
 <!--
 ************************************************************************
 ************************************************************************
@@ -303,17 +288,17 @@ MODULES_RUN_TASK_FP script.
         <taskdep task="&GET_EXTRN_ICS_TN;"/>
         <or>
 <!--          <taskdep task="make_grid"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>	
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_SFC_CLIMO_TN;_task_complete.txt</datadep>	
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_SFC_CLIMO_TN;_task_complete.txt</datadep>
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -346,17 +331,17 @@ MODULES_RUN_TASK_FP script.
         <taskdep task="&GET_EXTRN_LBCS_TN;"/>
         <or>
 <!--          <taskdep task="make_grid"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>	
+          <datadep age="00:00:00:05">&LOGDIR;/make_grid_task_complete.txt</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>	
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_OROG_TN;_task_complete.txt</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
-          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_SFC_CLIMO_TN;_task_complete.txt</datadep>	
+          <datadep age="00:00:00:05">&LOGDIR;/&MAKE_SFC_CLIMO_TN;_task_complete.txt</datadep>
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -397,7 +382,7 @@ MODULES_RUN_TASK_FP script.
 -->
   <metatask name="&RUN_POST_TN;">
     
-    <var name="fhr">&FHR;</var>
+    <var name="fhr"> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </var>
     
     <task name="&RUN_POST_TN;_#fhr#" maxtries="2">
     

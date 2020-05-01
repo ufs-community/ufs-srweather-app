@@ -83,14 +83,6 @@ WFLOW_XML_FP="$EXPTDIR/${WFLOW_XML_FN}"
 #
 #-----------------------------------------------------------------------
 #
-# Copy the xml template file to the run directory.
-#
-#-----------------------------------------------------------------------
-#
-cp_vrfy ${TEMPLATE_XML_FP} ${WFLOW_XML_FP}
-#
-#-----------------------------------------------------------------------
-#
 # Set local variables that will be used later below to replace place-
 # holder values in the workflow xml file.
 #
@@ -98,16 +90,6 @@ cp_vrfy ${TEMPLATE_XML_FP} ${WFLOW_XML_FP}
 #
 PROC_RUN_FCST="${NUM_NODES}:ppn=${NCORES_PER_NODE}"
 NPROCS_RUN_FCST=$(( ${NUM_NODES} * ${NCORES_PER_NODE} ))
-
-FHR=( $( seq 0 1 ${FCST_LEN_HRS} ) )
-i=0
-FHR_STR=$( printf "%02d" "${FHR[i]}" )
-numel=${#FHR[@]}
-for i in $(seq 1 $(($numel-1)) ); do
-  hour=$( printf "%02d" "${FHR[i]}" )
-  FHR_STR="${FHR_STR} $hour"
-done
-FHR="${FHR_STR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -144,115 +126,48 @@ fi
 # the setup script sourced above.
 #
 #-----------------------------------------------------------------------
-#
-# Computational resource parameters.
-#
-set_file_param "${WFLOW_XML_FP}" "ACCOUNT" "$ACCOUNT"
-set_file_param "${WFLOW_XML_FP}" "SCHED" "$SCHED"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_DEFAULT" "<${QUEUE_DEFAULT_TAG}>${QUEUE_DEFAULT}</${QUEUE_DEFAULT_TAG}>"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_HPSS" "<${QUEUE_HPSS_TAG}>${QUEUE_HPSS}</${QUEUE_HPSS_TAG}>"
-set_file_param "${WFLOW_XML_FP}" "QUEUE_FCST" "<${QUEUE_FCST_TAG}>${QUEUE_FCST}</${QUEUE_FCST_TAG}>"
-set_file_param "${WFLOW_XML_FP}" "NCORES_PER_NODE" "${NCORES_PER_NODE}"
-set_file_param "${WFLOW_XML_FP}" "PROC_RUN_FCST" "${PROC_RUN_FCST}"
-set_file_param "${WFLOW_XML_FP}" "NPROCS_RUN_FCST" "${NPROCS_RUN_FCST}"
-#
-# Directories.
-#
-set_file_param "${WFLOW_XML_FP}" "USHDIR" "$USHDIR"
-set_file_param "${WFLOW_XML_FP}" "JOBSDIR" "$JOBSDIR"
-set_file_param "${WFLOW_XML_FP}" "EXPTDIR" "$EXPTDIR"
-set_file_param "${WFLOW_XML_FP}" "LOGDIR" "$LOGDIR"
-set_file_param "${WFLOW_XML_FP}" "CYCLE_DIR" "${CYCLE_DIR}"
-#
-# Files.
-#
-set_file_param "${WFLOW_XML_FP}" "GLOBAL_VAR_DEFNS_FP" "${GLOBAL_VAR_DEFNS_FP}"
-#
-# External model information.
-#
-set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_ICS" "${EXTRN_MDL_NAME_ICS}"
-set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_NAME_LBCS" "${EXTRN_MDL_NAME_LBCS}"
-set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_ICS" "${EXTRN_MDL_FILES_SYSBASEDIR_ICS}"
-set_file_param "${WFLOW_XML_FP}" "EXTRN_MDL_FILES_SYSBASEDIR_LBCS" "${EXTRN_MDL_FILES_SYSBASEDIR_LBCS}"
-#
-# Cycle-specific information.
-#
-set_file_param "${WFLOW_XML_FP}" "DATE_FIRST_CYCL" "${DATE_FIRST_CYCL}"
-set_file_param "${WFLOW_XML_FP}" "DATE_LAST_CYCL" "${DATE_LAST_CYCL}"
-set_file_param "${WFLOW_XML_FP}" "YYYY_FIRST_CYCL" "${YYYY_FIRST_CYCL}"
-set_file_param "${WFLOW_XML_FP}" "MM_FIRST_CYCL" "${MM_FIRST_CYCL}"
-set_file_param "${WFLOW_XML_FP}" "DD_FIRST_CYCL" "${DD_FIRST_CYCL}"
-set_file_param "${WFLOW_XML_FP}" "HH_FIRST_CYCL" "${HH_FIRST_CYCL}"
-set_file_param "${WFLOW_XML_FP}" "FHR" "$FHR"
-#
-# Rocoto workflow task names.
-#
-set_file_param "${WFLOW_XML_FP}" "MAKE_GRID_TN" "${MAKE_GRID_TN}"
-set_file_param "${WFLOW_XML_FP}" "MAKE_OROG_TN" "${MAKE_OROG_TN}"
-set_file_param "${WFLOW_XML_FP}" "MAKE_SFC_CLIMO_TN" "${MAKE_SFC_CLIMO_TN}"
-set_file_param "${WFLOW_XML_FP}" "GET_EXTRN_ICS_TN" "${GET_EXTRN_ICS_TN}"
-set_file_param "${WFLOW_XML_FP}" "GET_EXTRN_LBCS_TN" "${GET_EXTRN_LBCS_TN}"
-set_file_param "${WFLOW_XML_FP}" "MAKE_ICS_TN" "${MAKE_ICS_TN}"
-set_file_param "${WFLOW_XML_FP}" "MAKE_LBCS_TN" "${MAKE_LBCS_TN}"
-set_file_param "${WFLOW_XML_FP}" "RUN_FCST_TN" "${RUN_FCST_TN}"
-set_file_param "${WFLOW_XML_FP}" "RUN_POST_TN" "${RUN_POST_TN}"
-#
-# Flags that determine whether or not certain tasks are launched.
-#
-set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_GRID" "${RUN_TASK_MAKE_GRID}"
-set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_OROG" "${RUN_TASK_MAKE_OROG}"
-set_file_param "${WFLOW_XML_FP}" "RUN_TASK_MAKE_SFC_CLIMO" "${RUN_TASK_MAKE_SFC_CLIMO}"
-#
-#-----------------------------------------------------------------------
-#
-# Extract from CDATE the starting year, month, day, and hour of the
-# forecast.  These are needed below for various operations.
-#
-#-----------------------------------------------------------------------
-#
-YYYY_FIRST_CYCL=${DATE_FIRST_CYCL:0:4}
-MM_FIRST_CYCL=${DATE_FIRST_CYCL:4:2}
-DD_FIRST_CYCL=${DATE_FIRST_CYCL:6:2}
-HH_FIRST_CYCL=${CYCL_HRS[0]}
-#
-#-----------------------------------------------------------------------
-#
-# Replace the dummy line in the XML defining a generic cycle hour with
-# one line per cycle hour containing actual values.
-#
-#-----------------------------------------------------------------------
-#
-regex_search="(^\s*<cycledef\s+group=\"at_)(CC)(Z\">)(\&DATE_FIRST_CYCL;)(CC00)(\s+)(\&DATE_LAST_CYCL;)(CC00)(.*</cycledef>)(.*)"
-i=0
-for cycl in "${CYCL_HRS[@]}"; do
-  regex_replace="\1${cycl}\3\4${cycl}00 \7${cycl}00\9"
-  crnt_line=$( sed -n -r -e "s%${regex_search}%${regex_replace}%p" "${WFLOW_XML_FP}" )
-  if [ "$i" -eq "0" ]; then
-    all_cycledefs="${crnt_line}"
-  else
-    all_cycledefs=$( printf "%s\n%s" "${all_cycledefs}" "${crnt_line}" )
-  fi
-  i=$((i+1))
-done
-#
-# Replace all actual newlines in the variable all_cycledefs with back-
-# slash-n's.  This is needed in order for the sed command below to work
-# properly (i.e. to avoid it failing with an "unterminated `s' command"
-# message).
-#
-all_cycledefs=${all_cycledefs//$'\n'/\\n}
-#
-# Replace all ampersands in the variable all_cycledefs with backslash-
-# ampersands.  This is needed because the ampersand has a special mean-
-# ing when it appears in the replacement string (here named regex_re-
-# place) and thus must be escaped.
-#
-all_cycledefs=${all_cycledefs//&/\\\&}
-#
-# Perform the subsutitution.
-#
-sed -i -r -e "s|${regex_search}|${all_cycledefs}|g" "${WFLOW_XML_FP}"
 
+settings="
+  'account': $ACCOUNT
+  'sched': $SCHED
+  'queue_default': $QUEUE_DEFAULT
+  'queue_default_tag': $QUEUE_DEFAULT_TAG
+  'queue_hpss': $QUEUE_HPSS
+  'queue_hpss_tag': $QUEUE_HPSS_TAG
+  'queue_fcst': $QUEUE_FCST
+  'queue_fcst_tag': $QUEUE_FCST_TAG
+  'proc_run_fcst': $PROC_RUN_FCST
+  'nprocs_run_fcst': $NPROCS_RUN_FCST
+  'ncores_per_node': $NCORES_PER_NODE
+  'ushdir': $USHDIR
+  'jobsdir': $JOBSDIR
+  'exptdir': $EXPTDIR
+  'logdir': $LOGDIR
+  'cycle_dir': $CYCLE_DIR
+  'global_var_defns_fp': $GLOBAL_VAR_DEFNS_FP
+  'extrn_mdl_name_ics': $EXTRN_MDL_NAME_ICS
+  'extrn_mdl_name_lbcs': $EXTRN_MDL_NAME_LBCS
+  'extrn_mdl_files_sysbasedir_ics': $EXTRN_MDL_FILES_SYSBASEDIR_ICS
+  'extrn_mdl_files_sysbasedir_lbcs': $EXTRN_MDL_FILES_SYSBASEDIR_LBCS
+  'date_first_cycl': !datetime $DATE_FIRST_CYCL${CYCL_HRS[0]}
+  'date_last_cycl': !datetime $DATE_LAST_CYCL${CYCL_HRS[0]}
+  'cycl_freq': !!str 24:00:00
+  'fcst_len_hrs': $FCST_LEN_HRS
+  'make_grid_tn': $MAKE_GRID_TN
+  'make_orog_tn': $MAKE_OROG_TN
+  'make_sfc_climo_tn': $MAKE_SFC_CLIMO_TN
+  'get_extrn_ics_tn': $GET_EXTRN_ICS_TN
+  'get_extrn_lbcs_tn': $GET_EXTRN_LBCS_TN
+  'make_ics_tn': $MAKE_ICS_TN
+  'make_lbcs_tn': $MAKE_LBCS_TN
+  'run_fcst_tn': $RUN_FCST_TN
+  'run_post_tn': $RUN_POST_TN
+  'run_task_make_grid': $RUN_TASK_MAKE_GRID
+  'run_task_make_orog': $RUN_TASK_MAKE_OROG
+  'run_task_make_sfc_climo': $RUN_TASK_MAKE_SFC_CLIMO
+"
+
+$USHDIR/create_xml.py -q -u "${settings}" -t $TEMPLATE_XML_FP -o $WFLOW_XML_FP || exit 1
 
 #
 #-----------------------------------------------------------------------
