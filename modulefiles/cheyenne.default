@@ -1,0 +1,16 @@
+#%Module#####################################################
+## Default module file for NCAR/UCAR Cheyenne, intel, mpt
+#############################################################
+module purge
+module load ncarenv/1.3
+module load intel/19.0.2
+module load ncarcompilers/0.5.0
+module load mpt/2.19
+module load netcdf/4.6.3
+# No hdf5 loaded since netcdf and hdf5 reside together on cheyenne
+
+# Add directory to path that contains binaries needed for the regional workflow on Cheyenne
+prepend-path PATH /glade/p/ral/jntp/UFS_CAM/bin
+
+# Set NCEPLIBS_DIR, used by post
+setenv NCEPLIBS_DIR /glade/p/ral/jntp/UPP/pre-compiled_libraries/NCEPlibs_intel_18.0.5
