@@ -19,21 +19,25 @@ fi
 cd EMC_post
 
 if [ "$target" = "jet" ] ; then
-./compile jet
+  ./compile jet
 elif [ "$target" = "hera" ] ; then
-./compile hera
+  ./compile hera
 elif [ "$target" = "wcoss_cray" ] ; then
-./compile wcross_cray
+  ./compile wcross_cray
 elif [ "$target" = "wcoss_dell_p3" ] ; then
-./compile wcoss_dell_p3
+  ./compile wcoss_dell_p3
 elif [ "$target" = "wcoss" ] ; then
-./compile wcoss
+  ./compile wcoss
 elif [ "$target" = "cheyenne" ] ; then
-export NCEPLIBS_DIR=/glade/p/ral/jntp/UPP/pre-compiled_libraries/NCEPlibs_intel_18.0.5
-./configure << EOT
+  #Definitely need to make this bit machine-agnostic in the future...
+  . /glade/u/apps/ch/opt/lmod/8.1.7/lmod/8.1.7/init/sh
+  moduledir=$(readlink -f ../../regional_workflow/modulefiles/)
+  module use $moduledir
+  module load cheyenne.default
+  ./configure << EOT
 4
 EOT
-./compile
+  ./compile
 elif [ "$target" = "gaea" ] ; then
     echo "Not doing anything for 'gaea', if statement reserved for future use"
 elif [ "$target" = "odin" ] ; then
