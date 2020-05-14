@@ -31,7 +31,11 @@ cd modulefiles/${target}
 module use $(pwd)
 module load fv3
 cd ${model_top_dir}
-export CMAKE_Platform=${target}
+
+# CMake 3.15 or higher is required.
+if [ "$platform" == "cheyenne" ] ; then
+  module load cmake/3.16.4
+fi
 
 #---------------------------------------------------------------------------------
 # Build static executable using cmake for all valid suites in workflow
