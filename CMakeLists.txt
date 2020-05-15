@@ -85,22 +85,21 @@ is_enabled(BUILD_SHARED_LIBS enable_shared)
 is_enabled(STATUS_PARALLEL HAS_PARALLEL)
 
 # Generate file from template.
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/ufs-srweather-app.settings.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/ufs-srweather-app.settings"
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/ufs_srweather_app.settings.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app.settings"
   @ONLY)
 
 # Read in settings file, print out.
 # Avoid using system-specific calls so that this
 # might also work on Windows.
-FILE(READ "${CMAKE_CURRENT_BINARY_DIR}/ufs-srweather-app.settings"
+FILE(READ "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app.settings"
   UFS-SRWEATHER-APP_SETTINGS)
 MESSAGE(${UFS-SRWEATHER-APP_SETTINGS})
 
-# Install ufs-srweather-app.settings file into same location
-# as the libraries.
-INSTALL(FILES "${netCDF_BINARY_DIR}/ufs-srweather-app.settings"
-  DESTINATION include
-  COMPONENT libraries)
+# Install ufs_srweather_app.settings file into same location
+# as the app.
+INSTALL(FILES "${CMAKE_BINARY_DIR}/ufs_srweather_app.settings"
+  DESTINATION bin)
 
 #####
 # Create 'ufs_srweather_app_meta.h' include file.
