@@ -3,7 +3,7 @@
 
 # General
 ---------
-Version:		@SRWA_VERSION@
+SRWA Version:		@SRWA_VERSION@
 Configured On:		@CONFIG_DATE@
 Host System:		@host_cpu@-@host_vendor@-@host_os@
 Build Directory: 	@abs_top_builddir@
