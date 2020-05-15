@@ -9,8 +9,15 @@ if (${CMAKE_VERSION} VERSION_LESS 3.12)
   cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
-# set the project name
+# Set the project name and version.
 project(ufs-srweather-app VERSION 1.0)
+
+# Set extended version info.
+SET(SRWA_VERSION_MAJOR 1)
+SET(SRWA_VERSION_MINOR 0)
+SET(SRWA_VERSION_PATCH 0)
+SET(SRWA_VERSION_NOTE "-development")
+SET(SRWA_VERSION ${SRWA_VERSION_MAJOR}.${SRWA_VERSION_MINOR}.${SRWA_VERSION_PATCH}${SRWA_VERSION_NOTE})
 
 #Add custom CMake Module
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/"
@@ -27,7 +34,7 @@ FUNCTION(is_disabled feature ret_val)
     SET(${ret_val} "no" PARENT_SCOPE)
   ELSE()
     SET(${ret_val} "yes" PARENT_SCOPE)
-    SET("NC_${ret_val}" 1 PARENT_SCOPE)
+    SET("SRWA_${ret_val}" 1 PARENT_SCOPE)
   ENDIF(${feature})
 ENDFUNCTION()
 
@@ -40,10 +47,10 @@ ENDFUNCTION()
 FUNCTION(is_enabled feature ret_val)
   IF(${feature})
     SET(${ret_val} "yes" PARENT_SCOPE)
-    SET("NC_${ret_val}" 1 PARENT_SCOPE)
+    SET("SRWA_${ret_val}" 1 PARENT_SCOPE)
   ELSE()
     SET(${ret_val} "no" PARENT_SCOPE)
-    SET("NC_${ret_val}" 0 PARENT_SCOPE)
+    SET("SRWA_${ret_val}" 0 PARENT_SCOPE)
   ENDIF(${feature})
 ENDFUNCTION()
 
@@ -127,5 +134,11 @@ INSTALL(FILES "${netCDF_BINARY_DIR}/ufs-srweather-app.settings"
   COMPONENT libraries)
 
 #####
-# End ufs-srweather-app.settings section.
+# Create 'ufs_srweather_app_meta.h' include file.
 #####
+configure_file(
+  ufs_srweather_app_meta.h.in
+  ufs_srweather_app_meta.h @ONLY)
+
+FILE(COPY "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app_meta.h" DESTINATION include)
+
