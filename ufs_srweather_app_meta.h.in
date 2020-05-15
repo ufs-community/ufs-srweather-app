@@ -8,7 +8,6 @@
  * include this file unless you want to probe the capabilities
  * of the build. 
  *
- * Ed Hartnett, 5/15/20
  */
 
 #ifndef UFS_SRWEATHER_APP_META_H
