@@ -28,7 +28,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/"
 # returned.
 #
 # Also creates a version of the ret_val prepended with 'NC',
-# when feature is true, which is used to generate netcdf_meta.h.
+# when feature is true, which is used to generate ufs_srweather_app_meta.h.
 FUNCTION(is_disabled feature ret_val)
   IF(${feature})
     SET(${ret_val} "no" PARENT_SCOPE)
@@ -43,7 +43,7 @@ ENDFUNCTION()
 # returned.
 #
 # Also creates a version of the ret_val prepended with 'NC',
-# when feature is true, which is used to generate netcdf_meta.h.
+# when feature is true, which is used to generate ufs_srweather_app_meta.h.
 FUNCTION(is_enabled feature ret_val)
   IF(${feature})
     SET(${ret_val} "yes" PARENT_SCOPE)
@@ -53,15 +53,6 @@ FUNCTION(is_enabled feature ret_val)
     SET("SRWA_${ret_val}" 0 PARENT_SCOPE)
   ENDIF(${feature})
 ENDFUNCTION()
-
-# Find netCDF.
-#include(FindNetCDF)
-#find_package (NetCDF REQUIRED)
-
-#include_directories("${NETCDF_INCLUDES}")
-
-# Create a config.h.
-#configure_file(config.h.cmake.in config.h)
 
 # Turn on testing.
 enable_testing()
@@ -74,9 +65,7 @@ include(CTest)
 # Configure and print the ufs-srweather-app.settings file.
 #####
 
-# Set variables to mirror those used by autoconf.
-# This way we don't need to maintain two separate template
-# files.
+# Set variables.
 SET(host_cpu "${cpu}")
 SET(host_vendor "${osname}")
 SET(host_os "${osrel}")
@@ -90,30 +79,10 @@ SET(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
 SET(CPPFLAGS "${CMAKE_CPP_FLAGS} ${CMAKE_CPP_FLAGS_${CMAKE_BUILD_TYPE}}")
 SET(LDFLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
 
+# Determine output yes/no values.
 is_disabled(BUILD_SHARED_LIBS enable_static)
 is_enabled(BUILD_SHARED_LIBS enable_shared)
-
-is_enabled(ENABLE_V2_API HAS_NC2)
-is_enabled(ENABLE_NETCDF_4 HAS_NC4)
-is_enabled(ENABLE_HDF4 HAS_HDF4)
-is_enabled(ENABLE_NETCDF_4 HAS_HDF5)
-is_enabled(USE_SZIP HAS_SZLIB)
-is_enabled(USE_SZIP HAS_SZLIB_WRITE)
-is_enabled(STATUS_PNETCDF HAS_PNETCDF)
 is_enabled(STATUS_PARALLEL HAS_PARALLEL)
-is_enabled(ENABLE_PARALLEL4 HAS_PARALLEL4)
-is_enabled(ENABLE_DAP HAS_DAP)
-is_enabled(ENABLE_DAP HAS_DAP2)
-is_enabled(ENABLE_DAP4 HAS_DAP4)
-is_enabled(ENABLE_BYTERANGE HAS_BYTERANGE)
-is_enabled(ENABLE_DISKLESS HAS_DISKLESS)
-is_enabled(USE_MMAP HAS_MMAP)
-is_enabled(JNA HAS_JNA)
-is_enabled(ENABLE_ZERO_LENGTH_COORD_BOUND RELAX_COORD_BOUND)
-is_enabled(USE_CDF5 HAS_CDF5)
-is_enabled(ENABLE_ERANGE_FILL HAS_ERANGE_FILL)
-is_enabled(HAVE_H5Z_SZIP HAS_SZLIB)
-is_enabled(HDF5_HAS_PAR_FILTERS HAS_PAR_FILTERS)
 
 # Generate file from template.
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/ufs-srweather-app.settings.in"
