@@ -121,7 +121,7 @@ case $MACHINE in
 "HERA")
   ulimit -s unlimited
   ulimit -a
-  export APRUN="time"
+  APRUN="time"
   ;;
 
 
@@ -142,8 +142,7 @@ case $MACHINE in
 
 
 "CHEYENNE")
-  export APRUN="time"
-  export topo_dir="/glade/p/ral/jntp/UFS_CAM/fix/fix_orog"
+  APRUN="time"
   ;;
 
 esac
@@ -156,7 +155,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir ${OROG_DIR} ${PREEXISTING_DIR_METHOD}
+check_for_preexist_dir_file "${OROG_DIR}" "${PREEXISTING_DIR_METHOD}"
 mkdir_vrfy -p "${OROG_DIR}"
 
 raw_dir="${OROG_DIR}/raw_topo"

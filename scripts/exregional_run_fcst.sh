@@ -134,8 +134,8 @@ case $MACHINE in
 "CHEYENNE")
 #
   module list
-
-  APRUN="mpirun -np ${NPROCS}"
+  nprocs=$(( NNODES_RUN_FCST*PPN_RUN_FCST ))
+  APRUN="mpirun -np $nprocs"
   LD_LIBRARY_PATH="${UFS_WTHR_MDL_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
   ;;
 #
@@ -312,51 +312,48 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Create links in the current cycle's run directory to "fix" files in 
-# the main experiment directory.
+# Create links in the current cycle directory to fixed (i.e. static) files
+# in the FIXam directory.  These links have names that are set to the 
+# names of files that the forecast model expects to exist in the current
+# working directory when the forecast model executable is called (and 
+# that is just the cycle directory).
 #
 #-----------------------------------------------------------------------
 #
 cd_vrfy ${CYCLE_DIR}
 
 print_info_msg "$VERBOSE" "
-Creating links in the current cycle's run directory to static (fix) 
-files in the FIXam directory..."
-#
-# If running in "nco" mode, FIXam is simply a symlink under the workflow
-# directory that points to the system directory containing the fix 
-# files.  The files in this system directory are named as listed in the
-# FIXgsm_FILENAMES array.  Thus, that is the array to use to form the
-# names of the targets of the symlinks, but the names of the symlinks themselves
-# must be as specified in the FIXam_FILENAMES array (because that 
-# array contains the file names that FV3 looks for).
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
+Creating links in the current cycle directory (CYCLE_DIR) to fixed (i.e.
+static) files in the FIXam directory:
+  FIXam = \"${FIXam}\"
+  CYCLE_DIR = \"${CYCLE_DIR}\""
 
-  for (( i=0; i<${NUM_FIXam_FILES}; i++ )); do
-# Note: Can link directly to files in FIXgsm without needing a local
-# FIXam directory, i.e. use
-#    ln_vrfy -sf $FIXgsm/${FIXgsm_FILENAMES[$i]} \
-#                ${CYCLE_DIR}/${FIXam_FILENAMES[$i]}
-    ln_vrfy -sf $FIXam/${FIXgsm_FILENAMES[$i]} \
-                ${CYCLE_DIR}/${FIXam_FILENAMES[$i]}
-  done
-#
-# If not running in "nco" mode, FIXam is an actual directory (not a sym-
-# link) in the experiment directory that contains the same files as the
-# system fix directory except that the files have been renamed to the
-# file names that FV3 looks for.  Thus, when creating links to the files
-# in this directory, both the target and symlink names should be the 
-# ones specified in the FIXam_FILENAMES array (because that array 
-# contains the file names that FV3 looks for).
-#
-else
-
-  for (( i=0; i<${NUM_FIXam_FILES}; i++ )); do
-    ln_vrfy -sf --relative $FIXam/${FIXam_FILENAMES[$i]} ${CYCLE_DIR}
-  done
-
+relative_or_null=""
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  relative_or_null="--relative"
 fi
+
+regex_search="^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
+num_symlinks=${#CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[@]}
+for (( i=0; i<${num_symlinks}; i++ )); do
+
+  mapping="${CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[$i]}"
+  symlink=$( printf "%s\n" "$mapping" | \
+             sed -n -r -e "s/${regex_search}/\1/p" )
+  target=$( printf "%s\n" "$mapping" | \
+            sed -n -r -e "s/${regex_search}/\2/p" )
+
+  symlink="${CYCLE_DIR}/$symlink"
+  target="$FIXam/$target"
+  if [ -f "${target}" ]; then
+    ln_vrfy -sf ${relative_or_null} $target $symlink
+  else
+    print_err_msg_exit "\
+  Cannot create symlink because target does not exist:
+    target = \"$target}\""
+  fi
+
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -379,19 +376,24 @@ print_info_msg "$VERBOSE" "
 Creating links in the current cycle's run directory to cycle-independent
 model input files in the main experiment directory..."
 
-ln_vrfy -sf -t ${CYCLE_DIR} ${DATA_TABLE_FP}
-ln_vrfy -sf -t ${CYCLE_DIR} ${FIELD_TABLE_FP}
-ln_vrfy -sf -t ${CYCLE_DIR} ${FV3_NML_FP}
-ln_vrfy -sf -t ${CYCLE_DIR} ${NEMS_CONFIG_FP}
+relative_or_null=""
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  relative_or_null="--relative"
+fi
+
+ln_vrfy -sf ${relative_or_null} ${DATA_TABLE_FP} ${CYCLE_DIR}
+ln_vrfy -sf ${relative_or_null} ${FIELD_TABLE_FP} ${CYCLE_DIR}
+ln_vrfy -sf ${relative_or_null} ${FV3_NML_FP} ${CYCLE_DIR}
+ln_vrfy -sf ${relative_or_null} ${NEMS_CONFIG_FP} ${CYCLE_DIR}
 
 if [ "${USE_CCPP}" = "TRUE" ]; then
 
-  ln_vrfy -sf -t ${CYCLE_DIR} ${CCPP_PHYS_SUITE_FP}
+  ln_vrfy -sf ${relative_or_null} ${CCPP_PHYS_SUITE_FP} ${CYCLE_DIR} 
 
   if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
      [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
      [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-    ln_vrfy -sf -t ${CYCLE_DIR} $EXPTDIR/CCN_ACTIVATE.BIN
+    ln_vrfy -sf ${relative_or_null} $EXPTDIR/CCN_ACTIVATE.BIN ${CYCLE_DIR}
   fi
 
 fi
@@ -523,29 +525,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Copy the FV3SAR executable to the run directory.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${USE_CCPP}" = "TRUE" ]; then
-  FV3SAR_EXEC="${UFS_WTHR_MDL_DIR}/tests/fv3.exe"
-else
-  FV3SAR_EXEC="${UFS_WTHR_MDL_DIR}/tests/fv3_32bit.exe"
-fi
-
-if [ -f $FV3SAR_EXEC ]; then
-  print_info_msg "$VERBOSE" "
-Copying the FV3SAR executable to the run directory..."
-  cp_vrfy ${FV3SAR_EXEC} ${CYCLE_DIR}/fv3_gfs.x
-else
-  print_err_msg_exit "\
-The FV3SAR executable specified in FV3SAR_EXEC does not exist:
-  FV3SAR_EXEC = \"$FV3SAR_EXEC\"
-Build FV3SAR and rerun."
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Set and export variables.
 #
 #-----------------------------------------------------------------------
@@ -557,14 +536,14 @@ export OMP_STACKSIZE=1024m
 #-----------------------------------------------------------------------
 #
 # Run the FV3SAR model.  Note that we have to launch the forecast from
-# the current cycle's run directory because the FV3 executable will look
-# for input files in the current directory.  Since those files have been 
-# staged in the run directory, the current directory must be the run di-
-# rectory (which it already is).
+# the current cycle's directory because the FV3 executable will look for 
+# input files in the current directory.  Since those files have been 
+# staged in the cycle directory, the current directory must be the cycle
+# directory (which it already is).
 #
 #-----------------------------------------------------------------------
 #
-$APRUN ./fv3_gfs.x || print_err_msg_exit "\
+$APRUN ${FV3_EXEC_FP} || print_err_msg_exit "\
 Call to executable to run FV3SAR forecast returned with nonzero exit 
 code."
 #

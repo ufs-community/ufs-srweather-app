@@ -2,12 +2,12 @@
 #-----------------------------------------------------------------------
 #
 # This file defines a function that checks for a preexisting version of
-# the specified directory and, if present, deals with it according to 
-# the method specified by the argument preexisting_dir_method.
+# the specified directory or file and, if present, deals with it according
+# to the specified method.
 #
 #-----------------------------------------------------------------------
 #
-function check_for_preexist_dir() {
+function check_for_preexist_dir_file() {
 #
 #-----------------------------------------------------------------------
 #
@@ -54,16 +54,16 @@ Incorrect number of arguments specified:
 
 Usage:
 
-  ${func_name}  dir  preexisting_dir_method
+  ${func_name}  dir_or_file  method
 
 where the arguments are defined as follows:
 
-  dir:
-  Name of directory to check for a preexisting version.
+  dir_or_file:
+  Name of directory or file to check for a preexisting version.
 
-  preexisting_dir_method:
-  String specifying the action to take if a preexisting version of dir
-  is found.  Valid values are \"delete\", \"rename\", and \"quit\".
+  method:
+  String specifying the action to take if a preexisting version of 
+  dir_or_file is found.  Valid values are \"delete\", \"rename\", and \"quit\".
 "
 
   fi
@@ -74,49 +74,46 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  local dir="$1"
-  local preexisting_dir_method="$2"
+  local dir_or_file="$1"
+  local method="$2"
 #
 #-----------------------------------------------------------------------
 #
-# Set the valid values that preexisting_dir_method can take on and check
-# to make sure the specified value is valid.
+# Set the valid values that method can take on and check to make sure 
+# the specified value is valid.
 #
 #-----------------------------------------------------------------------
 #
-  local valid_vals_preexisting_dir_method=( "delete" "rename" "quit" )
-  check_var_valid_value "preexisting_dir_method" \
-                        "valid_vals_preexisting_dir_method"
+  local valid_vals_method=( "delete" "rename" "quit" )
+  check_var_valid_value "method" "valid_vals_method"
 #
 #-----------------------------------------------------------------------
 #
-# Check if dir already exists.  If so, act depending on the value of
-# preexisting_dir_method.
+# Check if dir_or_file already exists.  If so, act depending on the value
+# of method.
 #
 #-----------------------------------------------------------------------
 #
-  if [ -d "$dir" ]; then
+  if [ -e "${dir_or_file}" ]; then
 
-    case ${preexisting_dir_method} in
+    case "$method" in
 #
 #-----------------------------------------------------------------------
 #
-# If preexisting_dir_method is set to "delete", we remove the preexist-
-# ing directory in order to be able to create a new one (the creation of
-# a new directory is performed in another script).
+# If method is set to "delete", we remove the preexisting directory or
+# file.
 #
 #-----------------------------------------------------------------------
 #
     "delete")
 
-      rm_vrfy -rf "$dir"
+      rm_vrfy -rf "${dir_or_file}"
       ;;
 #
 #-----------------------------------------------------------------------
 #
-# If preexisting_dir_method is set to "rename", we move the preexisting
-# directory in order to be able to create a new one (the creation of a
-# new directory is performed in another script).
+# If method is set to "rename", we move (rename) the preexisting directory
+# or file.
 #
 #-----------------------------------------------------------------------
 #
@@ -124,36 +121,35 @@ where the arguments are defined as follows:
 
       local i=1
       local old_indx=$( printf "%03d" "$i" )
-      local old_dir="${dir}_old${old_indx}"
-      while [ -d "${old_dir}" ]; do
+      local old_dir_or_file="${dir_or_file}_old${old_indx}"
+      while [ -e "${old_dir_or_file}" ]; do
         i=$[$i+1]
         old_indx=$( printf "%03d" "$i" )
-        old_dir="${dir}_old${old_indx}"
+        old_dir_or_file="${dir_or_file}_old${old_indx}"
       done
 
       print_info_msg "$VERBOSE" "
-Specified directory (dir) already exists:
-  dir = \"$dir\"
-Moving (renaming) preexisting directory to:
-  old_dir = \"${old_dir}\""
+Specified directory or file (dir_or_file) already exists:
+  dir_or_file = \"${dir_or_file}\"
+Moving (renaming) preexisting directory or file to:
+  old_dir_or_file = \"${old_dir_or_file}\""
 
-      mv_vrfy "$dir" "${old_dir}"
+      mv_vrfy "${dir_or_file}" "${old_dir_or_file}"
       ;;
 #
 #-----------------------------------------------------------------------
 #
-# If preexisting_dir_method is set to "quit", we simply exit with a non-
-# zero status.  Note that "exit" is different than "return" because it
-# will cause the calling script (in which this file/function is sourced)
-# to stop execution.
+# If method is set to "quit", we simply exit with a nonzero status.  Note
+# that "exit" is different than "return" because it will cause the calling
+# script (in which this file/function is sourced) to stop execution.
 #
 #-----------------------------------------------------------------------
 #
     "quit")
 
       print_err_msg_exit "\
-Specified directory (dir) already exists:
-  dir = \"$dir\""
+Specified directory or file (dir_or_file) already exists:
+  dir_or_file = \"${dir_or_file}\""
       ;;
 
     esac

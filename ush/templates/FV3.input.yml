@@ -1,12 +1,13 @@
-# This configuration file maintains all the community-supported sets of namelist
-# options. To build a namelist for one of these configurations, use the Python
-# helper script ush/set_namelist.py and provide this file and the desired
-# section via the -c option.
-#
-# The FV3_GSD_v0 section is empty as it provides the "base namelist" to which
-# all the modifications here are provided. Please see
-# ush/templates/FV3.input.yml for the full set of namelist options that are used
-# for FV3 in that configuration.
+# This configuration file maintains all the community-supported sets of 
+# namelist options. To build a namelist for one of these configurations, 
+# use the Python helper script ush/set_namelist.py and provide this file
+# and the desired section via the -c option.
+
+# The FV3_GSD_v0 section is empty as it provides the "base namelist" to 
+# which all the modifications here are provided. Please see 
+#   ush/templates/FV3.input.yml
+# for the full set of namelist options that are used for FV3 in that 
+# configuration.
 
 
 FV3_GSD_v0:
@@ -41,7 +42,7 @@ FV3_GFS_2017_gfdlmp:
     avg_max_length: 3600.0
   fms_nml:
     domains_stack_size: 1800200
-  fv_core_nml:
+  fv_core_nml: &gfs_2017_gfdlmp_fv_core
     agrid_vel_rst: False
     d4_bg: 0.15
     delt_max: 0.008
@@ -53,7 +54,7 @@ FV3_GFS_2017_gfdlmp:
     nord_zs_filter: !!python/none
     range_warn: False
     vtdm4: 0.075
-  gfs_physics_nml:
+  gfs_physics_nml: &gfs_2017_gfdlmp_phys
     avg_max_length: 3600.0
     bl_mynn_tkeadvect: !!python/none
     bl_mynn_edmf: !!python/none
@@ -130,14 +131,53 @@ FV3_GFS_2017_gfdlmp:
     tau_i2s: 1000.0
     tau_l2v: 180.0
     tau_v2l: 90.0
+    use_ccn: True
+    use_ppm: False
     vg_max: 12.0
     vi_max: 1.0
     vr_max: 12.0
     vs_max: 2.0
-    use_ccn: True
-    use_ppm: False
     z_slope_ice: True
     z_slope_liq: True
+
+FV3_GFS_2017_gfdlmp_regional:
+  atmos_model_nml:
+    avg_max_length: 3600.0
+  fms_nml:
+    domains_stack_size: 1800200
+  fv_core_nml:
+    <<: *gfs_2017_gfdlmp_fv_core
+    k_split: 2
+  gfs_physics_nml:
+    <<: *gfs_2017_gfdlmp_phys
+    cplflx: False
+    do_sfcperts: False
+    do_shum: False
+    do_skeb: False
+    do_sppt: False
+    iopt_alb: 2
+    iopt_btr: 1
+    iopt_crs: 1
+    iopt_dveg: 2
+    iopt_frz: 1
+    iopt_inf: 1
+    iopt_rad: 1
+    iopt_run: 1
+    iopt_sfc: 1
+    iopt_snf: 4
+    iopt_stc: 1
+    iopt_tbot: 2
+    lgfdlmprad: True
+    lheatstrg: False
+    lsm: 1
+    nstf_name: [2, 0, 0, 0, 0]
+    oz_phys: False
+    oz_phys_2015: True
+    satmedmf: False
+  gfdl_cloud_microphysics_nml:
+    <<: *gfs_gfdl_cloud_mp
+  nam_sfcperts: !!python/none
+  nam_stochy: !!python/none
 
 FV3_GFS_v15p2:
   atmos_model_nml:

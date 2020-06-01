@@ -529,40 +529,6 @@ predefined domain:
 "EMC_CONUS_3km")
 
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-# Values from an EMC script.
-
-### rocoto items
-#
-#fcstnodes=76
-#bcnodes=11
-#postnodes=2
-#goespostnodes=15
-#goespostthrottle=3
-#sh=00
-#eh=12
-#
-### namelist items
-#
-#task_layout_x=16
-#task_layout_y=48
-#npx=1921
-#npy=1297
-#target_lat=38.5
-#target_lon=-97.5
-#
-### model config items
-#
-##write_groups=3            # Already defined in community workflow.
-##write_tasks_per_group=48  # Already defined in community workflow.
-#cen_lon=$target_lon
-#cen_lat=$target_lat
-#lon1=-25.0
-#lat1=-15.0
-#lon2=25.0
-#lat2=15.0
-#dlon=0.02
-#dlat=0.02
-
 
     GFDLgrid_LON_T6_CTR=-97.5
     GFDLgrid_LAT_T6_CTR=38.5
@@ -588,7 +554,7 @@ predefined domain:
 
     LAYOUT_X="16"
     LAYOUT_Y="72"
-    BLOCKSIZE=32
+    BLOCKSIZE=36
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"

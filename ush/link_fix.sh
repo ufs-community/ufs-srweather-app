@@ -249,23 +249,17 @@ Creating links in the FIXsar directory to the grid files..."
     run_task="${RUN_TASK_MAKE_OROG}"
     ;;
 #
+# The following list of symlinks (which have the same names as their
+# target files) need to be created made in order for the make_ics and
+# make_lbcs tasks (i.e. tasks involving chgres_cube) to work.
+#
   "sfc_climo")
-    sfc_climo_fields=( \
-"facsf" \
-"maximum_snow_albedo" \
-"slope_type" \
-"snowfree_albedo" \
-"soil_type" \
-"substrate_temperature" \
-"vegetation_greenness" \
-"vegetation_type" \
-                     )
-    num_fields=${#sfc_climo_fields[@]}
+    num_fields=${#SFC_CLIMO_FIELDS[@]}
     fns=()
     for (( i=0; i<${num_fields}; i++ )); do
       ii=$((2*i))
-      fns[$ii]="C*.${sfc_climo_fields[$i]}.tile${TILE_RGNL}.halo${NH0}.nc"
-      fns[$ii+1]="C*.${sfc_climo_fields[$i]}.tile${TILE_RGNL}.halo${NH4}.nc"
+      fns[$ii]="C*.${SFC_CLIMO_FIELDS[$i]}.tile${TILE_RGNL}.halo${NH0}.nc"
+      fns[$ii+1]="C*.${SFC_CLIMO_FIELDS[$i]}.tile${TILE_RGNL}.halo${NH4}.nc"
     done
     fps=( "${fns[@]/#/${SFC_CLIMO_DIR}/}" )
     run_task="${RUN_TASK_MAKE_SFC_CLIMO}"
@@ -444,13 +438,35 @@ specified by FIXsar does not exist:
 #
   if [ "${file_group}" = "sfc_climo" ]; then
 
-    tmp=( "${sfc_climo_fields[@]/#/${cres}.}" )
+    tmp=( "${SFC_CLIMO_FIELDS[@]/#/${cres}.}" )
     fns_sfc_climo_with_halo_in_fn=( "${tmp[@]/%/.tile${TILE_RGNL}.halo${NH4}.nc}" )
     fns_sfc_climo_no_halo_in_fn=( "${tmp[@]/%/.tile${TILE_RGNL}.nc}" )
 
     for (( i=0; i<${num_fields}; i++ )); do
       target="${fns_sfc_climo_with_halo_in_fn[$i]}"
       symlink="${fns_sfc_climo_no_halo_in_fn[$i]}"
+      if [ -f "$target" ]; then
+        ln_vrfy -sf $target $symlink
+      else
+        print_err_msg_exit "\
+Cannot create symlink because target file (target) does not exist:
+  target = \"${target}\""
+      fi
+    done
+#
+# In order to be able to specify the surface climatology file names in 
+# the forecast model's namelist file, in the FIXsar directory a symlink
+# must be created for each surface climatology field that has "tile1" in
+# its name (and no "halo") and which points to the corresponding "tile7.halo0" 
+# file.
+#
+    tmp=( "${SFC_CLIMO_FIELDS[@]/#/${cres}.}" )
+    fns_sfc_climo_tile7_halo0_in_fn=( "${tmp[@]/%/.tile${TILE_RGNL}.halo${NH0}.nc}" )
+    fns_sfc_climo_tile1_no_halo_in_fn=( "${tmp[@]/%/.tile1.nc}" )
+
+    for (( i=0; i<${num_fields}; i++ )); do
+      target="${fns_sfc_climo_tile7_halo0_in_fn[$i]}"
+      symlink="${fns_sfc_climo_tile1_no_halo_in_fn[$i]}"
       if [ -f "$target" ]; then
         ln_vrfy -sf $target $symlink
       else
@@ -468,7 +484,7 @@ Cannot create symlink because target file (target) does not exist:
 #
 #-----------------------------------------------------------------------
 #
-    cd_vrfy -
+  cd_vrfy -
 #
 #-----------------------------------------------------------------------
 #

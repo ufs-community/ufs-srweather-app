@@ -5,7 +5,7 @@
 # ables defined in the user-specified experiment/workflow configuration 
 # file (whose file name is stored in the variable EXPT_CONFIG_FN) are 
 # also assigned default values in the default configuration file (whose 
-# file name is stored in the variable DEFAULT_EXPT_CONFIG_FN).
+# file name is stored in the variable EXPT_DEFAULT_CONFIG_FN).
 #
 #-----------------------------------------------------------------------
 #
@@ -69,7 +69,7 @@ sed -r \
     -e "s/^([ ]*)([^ ]+.*)/\2/g" \
     -e "/^#.*/d" \
     -e "/^$/d" \
-    ${DEFAULT_EXPT_CONFIG_FN} \
+    ${EXPT_DEFAULT_CONFIG_FN} \
 )
 
 var_list_local=$( \
@@ -119,9 +119,9 @@ Skipping to next line."
     print_err_msg_exit "\
 The variable specified by var_name in the user-specified experiment/
 workflow configuration file (EXPT_CONFIG_FN) does not appear in the de-
-fault experiment/workflow configuration file (DEFAULT_EXPT_CONFIG_FN):
+fault experiment/workflow configuration file (EXPT_DEFAULT_CONFIG_FN):
   EXPT_CONFIG_FN = \"${EXPT_CONFIG_FN}\"
-  DEFAULT_EXPT_CONFIG_FN = \"${DEFAULT_EXPT_CONFIG_FN}\"
+  EXPT_DEFAULT_CONFIG_FN = \"${EXPT_DEFAULT_CONFIG_FN}\"
   var_name = \"${var_name}\"
 Please assign a default value to this variable in the default configura-
 tion file and rerun."

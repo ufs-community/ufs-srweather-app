@@ -49,12 +49,11 @@ climatology.
 #-----------------------------------------------------------------------
 #
 # Create the output directory for the surface climatology files.  If it
-# already exists, deal with it as specified by the variable preexist-
-# ing_dir_method.
+# already exists, deal with it as specified by PREEXISTING_DIR_METHOD.
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir ${SFC_CLIMO_DIR} ${PREEXISTING_DIR_METHOD}
+check_for_preexist_dir_file "${SFC_CLIMO_DIR}" "${PREEXISTING_DIR_METHOD}"
 mkdir_vrfy -p "${SFC_CLIMO_DIR}"
 #
 #-----------------------------------------------------------------------
@@ -64,7 +63,7 @@ mkdir_vrfy -p "${SFC_CLIMO_DIR}"
 #-----------------------------------------------------------------------
 #
 workdir="${SFC_CLIMO_DIR}/tmp"
-check_for_preexist_dir $workdir "delete"
+check_for_preexist_dir_file "$workdir" "delete"
 mkdir_vrfy $workdir
 #
 #-----------------------------------------------------------------------

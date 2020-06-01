@@ -147,7 +147,8 @@ case $MACHINE in
   ;;
 
 "CHEYENNE")
-  APRUN="mpirun -np ${NPROCS}"
+  nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
+  APRUN="mpirun -np $nprocs"
   ;;
 
 *)

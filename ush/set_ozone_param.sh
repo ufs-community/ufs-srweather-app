@@ -3,27 +3,29 @@
 #
 # This file defines a function that:
 # 
-# (1) Determines the ozone parameterization being used.
+# (1) Determines the ozone parameterization being used by checking in the
+#     CCPP physics suite XML.
 #
-# (2) Sets the names of the global fixed files in the FIXgsm system 
-#     directory and the FIXam directory (which is under the experiment
-#     directory).  Note that the files in FIXgsm are either copied to
-#     FIXam, or symlinks are created in FIXam that point to the files in
-#     FIXgsm.  However, if copying files, they may get renamed, and if 
-#     linking to the files, the symlinks in FIXam may have different names
-#     than the files in FIXgsm.  For this reason, this function sets two
-#     filename arrays.  The first (fixgsm_fns) contains the names of the
-#     files in the FIXgsm directory, and the second (fixam_fns) contains
-#     the names of the corresponding files or symlinks in the FIXsam
-#     directory.  Note also that the name of the ozone production/loss
-#     file in FIXgsm depends on the ozone parameterization being used.
+# (2) Sets the name of the global ozone production/loss file in the FIXgsm
+#     FIXgsm system directory to copy to the experiment's FIXam directory.
 #
-# (3) Checks that the number of file names in fixgsm_fns is the same as
-#     the one in fixam_fns.
+# (3) Resets the last element of the workflow array variable
+#     FIXgsm_FILES_TO_COPY_TO_FIXam that contains the files to copy from
+#     FIXgsm to FIXam (this last element is initially set to a dummy 
+#     value) to the name of the ozone production/loss file set in the
+#     previous step.
+#
+# (4) Resets the element of the workflow array variable 
+#     CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING (this array contains the 
+#     mapping between the symlinks to create in any cycle directory and
+#     the files in the FIXam directory that are their targets) that 
+#     specifies the mapping for the ozone symlink/file such that the 
+#     target FIXam file name is set to the name of the ozone production/
+#     loss file set above.
 #
 #-----------------------------------------------------------------------
 #
-function set_fix_filenames() {
+function set_ozone_param() {
 #
 #-----------------------------------------------------------------------
 #
@@ -66,9 +68,6 @@ function set_fix_filenames() {
 "ccpp_phys_suite_fp" \
 "ozone_param_no_ccpp" \
 "output_varname_ozone_param" \
-"output_varname_num_fixam_files" \
-"output_varname_fixgsm_fns" \
-"output_varname_fixam_fns" \
   )
   process_args valid_args "$@"
 #
@@ -91,12 +90,15 @@ function set_fix_filenames() {
   local ozone_param \
         regex_search \
         fixgsm_ozone_fn \
-        fixgsm_fns \
-        fixam_fns \
-        num_fixgsm_files \
-        num_fixam_files \
-        fixgsm_fns_str \
-        fixam_fns_str
+        i \
+        ozone_symlink \
+        fixgsm_ozone_fn_is_set \
+        regex_search \
+        num_symlinks \
+        mapping \
+        symlink \
+        mapping_ozone \
+        msg
 #
 #-----------------------------------------------------------------------
 #
@@ -153,6 +155,17 @@ specified in the CCPP physics suite file (ccpp_phys_suite_fp):
 #
 #-----------------------------------------------------------------------
 #
+# Set the last element of the array FIXgsm_FILES_TO_COPY_TO_FIXam to the
+# name of the ozone production/loss file to copy from the FIXgsm to the
+# FIXam directory.
+#
+#-----------------------------------------------------------------------
+#
+i=$(( ${#FIXgsm_FILES_TO_COPY_TO_FIXam[@]} - 1 ))
+FIXgsm_FILES_TO_COPY_TO_FIXam[$i]="${fixgsm_ozone_fn}"
+#
+#-----------------------------------------------------------------------
+#
 # Set the arrays that specify the file names in the system's FIXgsm and
 # the experiment's FIXam directories.  Note that these files are copied
 # from the FIXgsm to FIXam directory, or symlinks are created in the FIXam
@@ -164,108 +177,59 @@ specified in the CCPP physics suite file (ccpp_phys_suite_fp):
 #
 #-----------------------------------------------------------------------
 #
-  fixgsm_fns=( \
-"$FNGLAC" \
-"$FNMXIC" \
-"$FNTSFC" \
-"$FNSNOC" \
-"$FNALBC" \
-"$FNALBC2" \
-"$FNAISC" \
-"$FNTG3C" \
-"$FNVEGC" \
-"$FNVETC" \
-"$FNSOTC" \
-"$FNSMCC" \
-"$FNMSKH" \
-"$FNVMNC" \
-"$FNVMXC" \
-"$FNSLPC" \
-"$FNABSC" \
-"global_climaeropac_global.txt" \
-"global_h2o_pltc.f77" \
-"global_zorclim.1x1.grb" \
-"global_sfc_emissivity_idx.txt" \
-"global_solarconstant_noaa_an.txt" \
-"fix_co2_proj/global_co2historicaldata_2010.txt" \
-"fix_co2_proj/global_co2historicaldata_2011.txt" \
-"fix_co2_proj/global_co2historicaldata_2012.txt" \
-"fix_co2_proj/global_co2historicaldata_2013.txt" \
-"fix_co2_proj/global_co2historicaldata_2014.txt" \
-"fix_co2_proj/global_co2historicaldata_2015.txt" \
-"fix_co2_proj/global_co2historicaldata_2016.txt" \
-"fix_co2_proj/global_co2historicaldata_2017.txt" \
-"fix_co2_proj/global_co2historicaldata_2018.txt" \
-"global_co2historicaldata_glob.txt" \
-"co2monthlycyc.txt" \
-  )
+ozone_symlink="global_o3prdlos.f77"
+fixgsm_ozone_fn_is_set="FALSE"
+regex_search="^[ ]*([^| ]*)[ ]*[|][ ]*([^| ]*)[ ]*$"
+num_symlinks=${#CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[@]}
 
-  fixgsm_fns+=( "${fixgsm_ozone_fn}" )
-#
-#-----------------------------------------------------------------------
-#
-# Next, set the array fixam_fns.  This contains the names of the files in
-# the experiment's FIXam directory that are either copies of or symlinks
-# to the files listed in the fixgsm_fns array in the FIXgsm directory.
-# Note that the ozone production/loss file in the FIXam directory should
-# always be named "global_o3prdlos.f77" (because that's the file the 
-# forecast model tries to read in).
-#
-#-----------------------------------------------------------------------
-#
-  fixam_fns=( \
-"$FNGLAC" \
-"$FNMXIC" \
-"$FNTSFC" \
-"$FNSNOC" \
-"$FNALBC" \
-"$FNALBC2" \
-"$FNAISC" \
-"$FNTG3C" \
-"$FNVEGC" \
-"$FNVETC" \
-"$FNSOTC" \
-"$FNSMCC" \
-"$FNMSKH" \
-"$FNVMNC" \
-"$FNVMXC" \
-"$FNSLPC" \
-"$FNABSC" \
-"aerosol.dat" \
-"global_h2oprdlos.f77" \
-"global_zorclim.1x1.grb" \
-"sfc_emissivity_idx.txt" \
-"solarconstant_noaa_an.txt" \
-"co2historicaldata_2010.txt" \
-"co2historicaldata_2011.txt" \
-"co2historicaldata_2012.txt" \
-"co2historicaldata_2013.txt" \
-"co2historicaldata_2014.txt" \
-"co2historicaldata_2015.txt" \
-"co2historicaldata_2016.txt" \
-"co2historicaldata_2017.txt" \
-"co2historicaldata_2018.txt" \
-"co2historicaldata_glob.txt" \
-"co2monthlycyc.txt" \
-"global_o3prdlos.f77" \
-  )
-#
-#-----------------------------------------------------------------------
-#
-# Ensure that the number of fixed file names in the array fixgsm_fns is
-# equal to the number in the array fixam_fns.
-#
-#-----------------------------------------------------------------------
-#
-  num_fixgsm_files="${#fixgsm_fns[@]}"
-  num_fixam_files="${#fixam_fns[@]}"
-  if [ "${num_fixgsm_files}" -ne "${num_fixam_files}" ]; then
-    print_err_msg_exit "\
-The number of fixed files specified in the array fixgsm_fns (num_fixgsm_files)
-must be equal to that specified in the array fixam_fns (num_fixam_files):
-  num_fixgsm_files = ${num_fixgsm_files}
-  num_fixam_files = ${num_fixam_files}"
+for (( i=0; i<${num_symlinks}; i++ )); do
+  mapping="${CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[$i]}"
+  symlink=$( printf "%s\n" "$mapping" | \
+             sed -n -r -e "s/${regex_search}/\1/p" )
+  if [ "$symlink" = "${ozone_symlink}" ]; then
+    regex_search="^[ ]*([^| ]+[ ]*)[|][ ]*([^| ]*)[ ]*$"
+    mapping_ozone=$( printf "%s\n" "$mapping" | \
+                     sed -n -r -e "s/${regex_search}/\1/p" )
+    mapping_ozone="${mapping_ozone}| ${fixgsm_ozone_fn}"
+    CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[$i]="${mapping_ozone}"
+    fixgsm_ozone_fn_is_set="TRUE"
+    break
   fi
+done
+#
+#-----------------------------------------------------------------------
+#
+# If fixgsm_ozone_fn_is_set is set to "TRUE", then the appropriate element
+# of the array CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING was set successfully.
+# In this case, print out the new version of this array.  Otherwise, print
+# out an error message and exit.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${fixgsm_ozone_fn_is_set}" = "TRUE" ]; then
+
+  msg="
+After setting the file name of the ozone production/loss file in the
+FIXgsm directory (based on the ozone parameterization specified in the
+CCPP suite definition file), the array specifying the mapping between
+the symlinks that need to be created in the cycle directories and the
+files in the FIXgsm directory is:
+
+CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = ( \\
+"
+  msg="$msg"$( printf "\"%s\" \\\\\n" "${CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[@]}" )
+  msg="$msg"$( printf "\n)" )
+  print_info_msg "$msg"
+
+else
+
+  print_err_msg_exit "\
+Unable to set name of the ozone production/loss file in the FIXgsm directory
+in the array that specifies the mapping between the symlinks that need to
+be created in the cycle directories and the files in the FIXgsm directory:
+  fixgsm_ozone_fn_is_set = \"${fixgsm_ozone_fn_is_set}\""
+
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -273,13 +237,7 @@ must be equal to that specified in the array fixam_fns (num_fixam_files):
 #
 #-----------------------------------------------------------------------
 #
-  fixgsm_fns_str="("$( printf "\"%s\" " "${fixgsm_fns[@]}" )")"
-  fixam_fns_str="("$( printf "\"%s\" " "${fixam_fns[@]}" )")"
-
   eval ${output_varname_ozone_param}="${ozone_param}"
-  eval ${output_varname_num_fixam_files}=${num_fixam_files}
-  eval ${output_varname_fixgsm_fns}=${fixgsm_fns_str}
-  eval ${output_varname_fixam_fns}=${fixam_fns_str}
 #
 #-----------------------------------------------------------------------
 #

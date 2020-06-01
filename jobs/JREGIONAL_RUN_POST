@@ -81,7 +81,7 @@ fi
 mkdir_vrfy -p "${postprd_dir}"
 
 fhr_dir="${postprd_dir}/$fhr"
-check_for_preexist_dir "${fhr_dir}" "delete"
+check_for_preexist_dir_file "${fhr_dir}" "delete"
 mkdir_vrfy -p "${fhr_dir}"
 
 cd_vrfy "${fhr_dir}"
@@ -97,6 +97,16 @@ if [ -z "$fhr" ]; then
   print_err_msg_exit "\
 The forecast hour (fhr) must be a non-empty string consisting of only 
 digits:
+  fhr = \"${fhr}\""
+fi
+#
+# Add check to make sure fhr contains exactly two digits.  This restriction
+# needs to be removed at some point.
+#
+fhr=$( printf "%s" "${fhr}" | sed -n -r -e "s/^([0-9]{2})$/\1/p" )
+if [ -z "$fhr" ]; then
+  print_err_msg_exit "\
+Currently, the forecast hour (fhr) must consist of exactly two digits:
   fhr = \"${fhr}\""
 fi
 #

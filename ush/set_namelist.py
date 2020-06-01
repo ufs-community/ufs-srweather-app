@@ -306,7 +306,7 @@ def main(cla):
     # Write the resulting file
     with open(cla.outfile, 'w') as fn:
         if cla.type == 'nml':
-            nml.write(fn)
+            nml.write(fn, sort=True)
 
         if cla.type == 'yaml':
             if cla.input_nml:

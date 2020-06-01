@@ -387,7 +387,6 @@ fi
     
       if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then  
 
-#        fns=( "atm" "sfc" "nst" )
         fns=( "atm" "sfc" )
         if [ "${MACHINE}" = "JET" ]; then
           prefix="${yy}${ddd}${hh}00.gfs.t${hh}z."

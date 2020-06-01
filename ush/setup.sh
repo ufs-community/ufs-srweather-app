@@ -60,7 +60,7 @@ cd_vrfy ${scrfunc_dir}
 . ./set_gridparams_GFDLgrid.sh
 . ./set_gridparams_JPgrid.sh
 . ./link_fix.sh
-. ./set_fix_filenames.sh
+. ./set_ozone_param.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -73,22 +73,13 @@ cd_vrfy ${scrfunc_dir}
 #
 #-----------------------------------------------------------------------
 #
-# Set the names of the default and local workflow/experiment configura-
-# tion scripts.
+# Set the name of the configuration file containing default values for
+# the experiment/workflow variables.  Then source the file.
 #
 #-----------------------------------------------------------------------
 #
-DEFAULT_EXPT_CONFIG_FN="config_defaults.sh"
-EXPT_CONFIG_FN="config.sh"
-#
-#-----------------------------------------------------------------------
-#
-# Source the default configuration file containing default values for
-# the experiment/workflow variables.
-#
-#-----------------------------------------------------------------------
-#
-. ./${DEFAULT_EXPT_CONFIG_FN}
+  EXPT_DEFAULT_CONFIG_FN="config_defaults.sh"
+. ./${EXPT_DEFAULT_CONFIG_FN}
 #
 #-----------------------------------------------------------------------
 #
@@ -273,7 +264,7 @@ Don't know how to set several parameters on MACHINE=\"$MACHINE\".
 Please specify the correct parameters for this machine in the setup script.  
 Then remove this message and rerun." 
   NCORES_PER_NODE=""
-  SCHED=""
+  SCHED="${SCHED:-}"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
   QUEUE_FCST=${QUEUE_FCST:-""}
@@ -287,25 +278,16 @@ Please specify the correct parameters for this machine in the setup script.
 Then remove this message and rerun."
 
   NCORES_PER_NODE=""
-  SCHED=""
+  SCHED="${SCHED:-}"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
-  QUEUE_FCST=${QUEUE_FCST:-""}
-  ;;
-#
-"THEIA")
-#
-  NCORES_PER_NODE=24
-  SCHED="slurm"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
-  QUEUE_HPSS=${QUEUE_HPSS:-"service"}
   QUEUE_FCST=${QUEUE_FCST:-""}
   ;;
 #
 "HERA")
 #
   NCORES_PER_NODE=24
-  SCHED="slurm"
+  SCHED="${SCHED:-slurm}"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
   QUEUE_FCST=${QUEUE_FCST:-""}
@@ -314,7 +296,7 @@ Then remove this message and rerun."
 "JET")
 #
   NCORES_PER_NODE=24
-  SCHED="slurm"
+  SCHED="${SCHED:-slurm}"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
   QUEUE_FCST=${QUEUE_FCST:-"batch"}
@@ -323,7 +305,7 @@ Then remove this message and rerun."
 "ODIN")
 #
   NCORES_PER_NODE=24
-  SCHED="slurm"
+  SCHED="${SCHED:-slurm}"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
   QUEUE_HPSS=${QUEUE_HPSS:-""}
   QUEUE_FCST=${QUEUE_FCST:-""}
@@ -332,13 +314,22 @@ Then remove this message and rerun."
 "CHEYENNE")
 #
   NCORES_PER_NODE=36
-  SCHED="pbspro"
+  SCHED="${SCHED:-pbspro}"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"regular"}
   QUEUE_HPSS=${QUEUE_HPSS:-"regular"}
   QUEUE_HPSS_TAG="queue"       # pbspro does not support "partition" tag
   QUEUE_FCST=${QUEUE_FCST:-"regular"}
 #
 esac
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that the job scheduler set above is valid.
+#
+#-----------------------------------------------------------------------
+#
+SCHED="${SCHED,,}"
+check_var_valid_value "SCHED" "valid_vals_SCHED"
 #
 #-----------------------------------------------------------------------
 #
@@ -511,8 +502,7 @@ if [ -z "${DATE_OR_NULL}" ]; then
   print_err_msg_exit "\
 DATE_FIRST_CYCL must be a string consisting of exactly 8 digits of the 
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
-month, DD is the 2-digit day-of-month, and HH is the 2-digit hour-of-
-day.
+month, and DD is the 2-digit day-of-month.
   DATE_FIRST_CYCL = \"${DATE_FIRST_CYCL}\""
 fi
 
@@ -522,8 +512,7 @@ if [ -z "${DATE_OR_NULL}" ]; then
   print_err_msg_exit "\
 DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the 
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
-month, DD is the 2-digit day-of-month, and HH is the 2-digit hour-of-
-day.
+month, and DD is the 2-digit day-of-month.
   DATE_LAST_CYCL = \"${DATE_LAST_CYCL}\""
 fi
 #
@@ -793,22 +782,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the names of the various tasks in the rocoto workflow XML.
-#
-#-----------------------------------------------------------------------
-#
-MAKE_GRID_TN="make_grid"
-MAKE_OROG_TN="make_orog"
-MAKE_SFC_CLIMO_TN="make_sfc_climo"
-GET_EXTRN_ICS_TN="get_extrn_ics"
-GET_EXTRN_LBCS_TN="get_extrn_lbcs"
-MAKE_ICS_TN="make_ics"
-MAKE_LBCS_TN="make_lbcs"
-RUN_FCST_TN="run_fcst"
-RUN_POST_TN="run_post"
-#
-#-----------------------------------------------------------------------
-#
 # The forecast length (in integer hours) cannot contain more than 3 cha-
 # racters.  Thus, its maximum value is 999.  Check whether the specified
 # forecast length exceeds this maximum value.  If so, print out a warn-
@@ -817,11 +790,11 @@ RUN_POST_TN="run_post"
 #-----------------------------------------------------------------------
 #
 FCST_LEN_HRS_MAX="999"
-if [ "$FCST_LEN_HRS" -gt "$FCST_LEN_HRS_MAX" ]; then
+if [ "${FCST_LEN_HRS}" -gt "${FCST_LEN_HRS_MAX}" ]; then
   print_err_msg_exit "\
 Forecast length is greater than maximum allowed length:
-  FCST_LEN_HRS = $FCST_LEN_HRS
-  FCST_LEN_HRS_MAX = $FCST_LEN_HRS_MAX"
+  FCST_LEN_HRS = ${FCST_LEN_HRS}
+  FCST_LEN_HRS_MAX = ${FCST_LEN_HRS_MAX}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -837,8 +810,8 @@ rem=$(( ${FCST_LEN_HRS}%${LBC_UPDATE_INTVL_HRS} ))
 
 if [ "$rem" -ne "0" ]; then
   print_err_msg_exit "\
-The forecast length (FCST_LEN_HRS) is not evenly divisible by the later-
-al boundary conditions update interval (LBC_UPDATE_INTVL_HRS):
+The forecast length (FCST_LEN_HRS) is not evenly divisible by the lateral
+boundary conditions update interval (LBC_UPDATE_INTVL_HRS):
   FCST_LEN_HRS = $FCST_LEN_HRS
   LBC_UPDATE_INTVL_HRS = $LBC_UPDATE_INTVL_HRS
   rem = FCST_LEN_HRS%%LBC_UPDATE_INTVL_HRS = $rem"
@@ -858,8 +831,8 @@ LBC_UPDATE_FCST_HRS=($( seq ${LBC_UPDATE_INTVL_HRS} \
 #
 #-----------------------------------------------------------------------
 #
-# If PREDEF_GRID_NAME is set to a non-empty string, set or reset parame-
-# ters according to the predefined domain specified.
+# If PREDEF_GRID_NAME is set to a non-empty string, set or reset parameters
+# according to the predefined domain specified.
 #
 #-----------------------------------------------------------------------
 #
@@ -869,8 +842,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# For a "GFDLgrid" type of grid, make sure GFDLgrid_RES is set to a va-
-# lid value.
+# For a "GFDLgrid" type of grid, make sure GFDLgrid_RES is set to a valid
+# value.
 #
 #-----------------------------------------------------------------------
 #
@@ -911,17 +884,36 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the full path to the experiment directory.  Then check if it al-
-# ready exists and if so, deal with it as specified by PREEXISTING_DIR_-
-# METHOD.
+# Set the full path to the experiment directory.  Then check if it already
+# exists and if so, deal with it as specified by PREEXISTING_DIR_METHOD.
 #
 #-----------------------------------------------------------------------
 #
 # May have to make setting of EXPTDIR dependent on RUN_ENVIR later on.
 EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
-check_for_preexist_dir $EXPTDIR ${PREEXISTING_DIR_METHOD}
-
+check_for_preexist_dir_file "$EXPTDIR" "${PREEXISTING_DIR_METHOD}"
+#
+#-----------------------------------------------------------------------
+#
+# Set other directories that depend on EXPTDIR.
+#
+# LOGDIR:
+# Directory in which the log files from the workflow tasks will be placed.
+#
+# CYCLE_BASEDIR:
+# The base directory in which the directories for the various cycles will
+# be placed.
+#
+#-----------------------------------------------------------------------
+#
 LOGDIR="${EXPTDIR}/log"
+
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  CYCLE_BASEDIR="$STMP/tmpnwprd/${EMC_GRID_NAME}" 
+else
+  CYCLE_BASEDIR="$EXPTDIR"
+fi
+check_for_preexist_dir_file "${CYCLE_BASEDIR}" "${PREEXISTING_DIR_METHOD}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1038,8 +1030,8 @@ NEMS_CONFIG_TMPL_FN="${NEMS_CONFIG_FN}"
 DATA_TABLE_TMPL_FP="${TEMPLATE_DIR}/${DATA_TABLE_TMPL_FN}"
 DIAG_TABLE_TMPL_FP="${TEMPLATE_DIR}/${DIAG_TABLE_TMPL_FN}"
 FIELD_TABLE_TMPL_FP="${TEMPLATE_DIR}/${FIELD_TABLE_TMPL_FN}"
-FV3_NML_BASE_FP="${TEMPLATE_DIR}/${FV3_NML_FN}"
-FV3_NML_CONFIG_FP="${TEMPLATE_DIR}/${FV3_NML_CONFIG}"
+FV3_NML_BASE_FP="${TEMPLATE_DIR}/${FV3_NML_BASE_FN}"
+FV3_NML_YAML_CONFIG_FP="${TEMPLATE_DIR}/${FV3_NML_YAML_CONFIG_FN}"
 MODEL_CONFIG_TMPL_FP="${TEMPLATE_DIR}/${MODEL_CONFIG_TMPL_FN}"
 NEMS_CONFIG_TMPL_FP="${TEMPLATE_DIR}/${NEMS_CONFIG_TMPL_FN}"
 #
@@ -1107,8 +1099,17 @@ fi
 #
 DATA_TABLE_FP="${EXPTDIR}/${DATA_TABLE_FN}"
 FIELD_TABLE_FP="${EXPTDIR}/${FIELD_TABLE_FN}"
-FV3_NML_FP="${EXPTDIR}/${FV3_NML_FN%.*}"
+FV3_NML_FN="${FV3_NML_BASE_FN%.*}"
+FV3_NML_FP="${EXPTDIR}/${FV3_NML_FN}"
 NEMS_CONFIG_FP="${EXPTDIR}/${NEMS_CONFIG_FN}"
+#
+#-----------------------------------------------------------------------
+#
+# Set the full path to the forecast model executable.
+#
+#-----------------------------------------------------------------------
+#
+FV3_EXEC_FP="${EXECDIR}/${FV3_EXEC_FN}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1128,6 +1129,15 @@ if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
 else
   CRONTAB_LINE=""
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Set the full path to the script that, for a given task, loads the
+# necessary module files and runs the tasks.
+#
+#-----------------------------------------------------------------------
+#
+LOAD_MODULES_RUN_TASK_FP="$USHDIR/load_modules_run_task.sh"
 #
 #-----------------------------------------------------------------------
 #
@@ -1546,10 +1556,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Is this if-statement still necessary?
 if [ "${RUN_ENVIR}" = "nco" ]; then
 
-  glob_pattern="C*_mosaic.nc"
+  suffix="${DOT_OR_USCORE}mosaic.halo${NH3}.nc"
+  glob_pattern="C*$suffix"
   cd_vrfy $FIXsar
   num_files=$( ls -1 ${glob_pattern} 2>/dev/null | wc -l )
 
@@ -1563,9 +1573,8 @@ pattern glob_pattern:
   fi
 
   fn=$( ls -1 ${glob_pattern} )
-  RES_IN_FIXSAR_FILENAMES=$( printf "%s" $fn | sed -n -r -e "s/^C([0-9]*)_mosaic.nc/\1/p" )
-echo "RES_IN_FIXSAR_FILENAMES = ${RES_IN_FIXSAR_FILENAMES}"
-
+  RES_IN_FIXSAR_FILENAMES=$( \
+    printf "%s" $fn | sed -n -r -e "s/^C([0-9]*)$suffix/\1/p" )
   if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
      [ "${GFDLgrid_RES}" -ne "${RES_IN_FIXSAR_FILENAMES}" ]; then
     print_err_msg_exit "\
@@ -1575,22 +1584,13 @@ does not match the resolution specified by GFDLgrid_RES:
   RES_IN_FIXSAR_FILENAMES = ${RES_IN_FIXSAR_FILENAMES}"
   fi
 
-#  RES_equiv=$( ncdump -h "${grid_fn}" | grep -o ":RES_equiv = [0-9]\+" | grep -o "[0-9]")
-#  RES_equiv=${RES_equiv//$'\n'/}
-#printf "%s\n" "RES_equiv = $RES_equiv"
-#  CRES_equiv="C${RES_equiv}"
-#printf "%s\n" "CRES_equiv = $CRES_equiv"
-#
-#  RES="$RES_equiv"
-#  CRES="$CRES_equiv"
-
 else
 #
 #-----------------------------------------------------------------------
 #
-# If the grid file generation task in the workflow is going to be
-# skipped (because pregenerated files are available), create links in
-# the FIXsar directory to the pregenerated grid files.
+# If the grid file generation task in the workflow is going to be skipped
+# (because pregenerated files are available), create links in the FIXsar
+# directory to the pregenerated grid files.
 #
 #-----------------------------------------------------------------------
 #
@@ -1879,24 +1879,25 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Calculate the number of nodes (NUM_NODES) to request from the job
-# scheduler.  This is just PE_MEMBER01 dividied by the number of cores
-# per node (NCORES_PER_NODE) rounded up to the nearest integer, i.e.
+# Calculate the number of nodes (NNODES_RUN_FCST) to request from the job
+# scheduler for the forecast task (RUN_FCST_TN).  This is just PE_MEMBER01
+# dividied by the number of processes per node we want to request for this
+# task (PPN_RUN_FCST), then rounded up to the nearest integer, i.e.
 #
-#   NUM_NODES = ceil(PE_MEMBER01/NCORES_PER_NODE)
+#   NNODES_RUN_FCST = ceil(PE_MEMBER01/PPN_RUN_FCST)
 #
 # where ceil(...) is the ceiling function, i.e. it rounds its floating
-# point argument up to the next larger integer.  Since in bash division
-# of two integers returns a truncated integer and since bash has no
+# point argument up to the next larger integer.  Since in bash, division
+# of two integers returns a truncated integer, and since bash has no
 # built-in ceil(...) function, we perform the rounding-up operation by
 # adding the denominator (of the argument of ceil(...) above) minus 1 to
-# the original numerator, i.e. by redefining NUM_NODES to be
+# the original numerator, i.e. by redefining NNODES_RUN_FCST to be
 #
-#   NUM_NODES = (PE_MEMBER01 + NCORES_PER_NODE - 1)/NCORES_PER_NODE
+#   NNODES_RUN_FCST = (PE_MEMBER01 + PPN_RUN_FCST - 1)/PPN_RUN_FCST
 #
 #-----------------------------------------------------------------------
 #
-NUM_NODES=$(( (PE_MEMBER01 + NCORES_PER_NODE - 1)/NCORES_PER_NODE ))
+NNODES_RUN_FCST=$(( (PE_MEMBER01 + PPN_RUN_FCST - 1)/PPN_RUN_FCST ))
 #
 #-----------------------------------------------------------------------
 #
@@ -1905,23 +1906,78 @@ NUM_NODES=$(( (PE_MEMBER01 + NCORES_PER_NODE - 1)/NCORES_PER_NODE ))
 #-----------------------------------------------------------------------
 #
 check_var_valid_value "OZONE_PARAM_NO_CCPP" "valid_vals_OZONE_PARAM_NO_CCPP"
+
+
+
+
+
+
 #
 #-----------------------------------------------------------------------
 #
-# Call the function that sets the ozone parameterization being used, the
-# number of global fixed files in the FIXgsm and/or FIXam directories 
-# (each should have the same number), and the arrays containing the names
-# of these files. 
+# This if-statement is a temporary fix that makes corrections to the suite 
+# definition file for the "FV3_GFS_2017_gfdlmp_regional" physics suite 
+# that EMC uses.  The corrections are:
+#
+# 1) Add a "fast_physics" group name to the beginning of the file.
+# 2) Replace the ozphys parameterization with the ozphys_2015 parameterization.
+#
+# Note that this must be done before the call to the function set_ozone_param 
+# below because that function reads in the ozone parameterization in the
+# suite definition file to set the ozone parameterization being used; 
+# thus, the suite definition file must have the correct ozone parameterization
+# specified before the call to set_ozone_param.
+#
+# IMPORTANT:
+# This if-statement must be removed once these corrections are made to
+# the suite definition file in the dtc/develop branch of the NCAR fork
+# of the fv3atm repository.
 #
 #-----------------------------------------------------------------------
 #
-set_fix_filenames \
+if [ "${USE_CCPP}" = "TRUE" ] && \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ]; then
+
+  grep "fast_physics" "${CCPP_PHYS_SUITE_IN_CCPP_FP}" || { \
+    fast_phys_group='\
+  <group name=\"fast_physics\">\
+    <subcycle loop=\"1\">\
+      <scheme>fv_sat_adj</scheme>\
+    </subcycle>\
+  </group>' ;
+    sed -i -r "5i${fast_phys_group}" "${CCPP_PHYS_SUITE_IN_CCPP_FP}" || \
+      print_err_msg_exit "\
+Attempt to insert the \"fast_physics\" group into the suite definition
+file (CCPP_PHYS_SUITE_IN_CCPP_FP) failed:
+  CCPP_PHYS_SUITE_IN_CCPP_FP = \"${CCPP_PHYS_SUITE_IN_CCPP_FP}\"" ;
+  }
+
+  grep "<scheme>ozphys</scheme>" "${CCPP_PHYS_SUITE_IN_CCPP_FP}" && { \
+    sed -i "s/ozphys/ozphys_2015/g" "${CCPP_PHYS_SUITE_IN_CCPP_FP}" || \
+      print_err_msg_exit "\
+Attempt to replace the \"ozphys\" scheme with the \"ozphys_2015\" scheme
+in the suite definition file (CCPP_PHYS_SUITE_IN_CCPP_FP) failed:
+  CCPP_PHYS_SUITE_IN_CCPP_FP = \"${CCPP_PHYS_SUITE_IN_CCPP_FP}\"" ;
+  }
+
+fi
+
+
+
+
+
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that sets the ozone parameterization being used and
+# modifies related parameters accordingly. 
+#
+#-----------------------------------------------------------------------
+#
+set_ozone_param \
   ccpp_phys_suite_fp="${CCPP_PHYS_SUITE_IN_CCPP_FP}" \
   ozone_param_no_ccpp="OZONE_PARAM_NO_CCPP" \
-  output_varname_ozone_param="OZONE_PARAM" \
-  output_varname_num_fixam_files="NUM_FIXam_FILES" \
-  output_varname_fixgsm_fns="FIXgsm_FILENAMES" \
-  output_varname_fixam_fns="FIXam_FILENAMES"
+  output_varname_ozone_param="OZONE_PARAM"
 #
 #-----------------------------------------------------------------------
 #
@@ -1941,7 +1997,7 @@ mkdir_vrfy -p "$EXPTDIR"
 # by:
 #
 # 1) Copying the default workflow/experiment configuration file (speci-
-#    fied by DEFAULT_EXPT_CONFIG_FN and located in the shell script di-
+#    fied by EXPT_DEFAULT_CONFIG_FN and located in the shell script di-
 #    rectory specified by USHDIR) to the experiment directory and rena-
 #    ming it to the name specified by GLOBAL_VAR_DEFNS_FN.
 #
@@ -1962,7 +2018,7 @@ mkdir_vrfy -p "$EXPTDIR"
 #-----------------------------------------------------------------------
 #
 GLOBAL_VAR_DEFNS_FP="$EXPTDIR/$GLOBAL_VAR_DEFNS_FN"
-cp_vrfy $USHDIR/${DEFAULT_EXPT_CONFIG_FN} ${GLOBAL_VAR_DEFNS_FP}
+cp_vrfy $USHDIR/${EXPT_DEFAULT_CONFIG_FN} ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -2047,18 +2103,19 @@ read -r -d '' str_to_insert << EOM
 #
 EOM
 #
-# Replace all occurrences of actual newlines in the variable str_to_in-
-# sert with escaped backslash-n.  This is needed for the sed command be-
-# low to work properly (i.e. to avoid it failing with an "unterminated
-# `s' command" message).
+# Replace all occurrences of actual newlines in the variable str_to_insert
+# with escaped backslash-n.  This is needed for the sed command below to
+# work properly (i.e. to avoid it failing with an "unterminated `s' command"
+# message).
 #
 str_to_insert=${str_to_insert//$'\n'/\\n}
 #
 # Insert str_to_insert into GLOBAL_VAR_DEFNS_FP right after the line
-# containing the name of the interpreter.
+# containing the name of the interpreter (i.e. the line that starts with
+# the string "#!", e.g. "#!/bin/bash").
 #
-REGEXP="(^#!.*)"
-sed -i -r -e "s|$REGEXP|\1\n\n$str_to_insert\n|g" ${GLOBAL_VAR_DEFNS_FP}
+regexp="(^#!.*)"
+sed -i -r -e "s|$regexp|\1\n\n${str_to_insert}\n|g" ${GLOBAL_VAR_DEFNS_FP}
 
 
 
@@ -2224,7 +2281,9 @@ done <<< "${line_list}"
 #
 #-----------------------------------------------------------------------
 #
-# Workflow launcher script and cron table line.
+# Full path to workflow launcher script, its log file, and the line that
+# gets added to the cron table to launch this script if USE_CRON_TO_RELAUNCH
+# is set to TRUE.
 #
 #-----------------------------------------------------------------------
 #
@@ -2261,6 +2320,7 @@ SFC_CLIMO_INPUT_DIR="${SFC_CLIMO_INPUT_DIR}"
 
 EXPTDIR="$EXPTDIR"
 LOGDIR="$LOGDIR"
+CYCLE_BASEDIR="${CYCLE_BASEDIR}"
 GRID_DIR="${GRID_DIR}"
 OROG_DIR="${OROG_DIR}"
 SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
@@ -2272,6 +2332,9 @@ SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
 #-----------------------------------------------------------------------
 #
 GLOBAL_VAR_DEFNS_FP="${GLOBAL_VAR_DEFNS_FP}"
+# Try this at some point instead of hard-coding it as above; it's a more
+# flexible approach (if it works).
+#GLOBAL_VAR_DEFNS_FP=$( readlink -f "${BASH_SOURCE[0]}" )
 
 DATA_TABLE_TMPL_FN="${DATA_TABLE_TMPL_FN}"
 DIAG_TABLE_TMPL_FN="${DIAG_TABLE_TMPL_FN}"
@@ -2283,7 +2346,7 @@ DATA_TABLE_TMPL_FP="${DATA_TABLE_TMPL_FP}"
 DIAG_TABLE_TMPL_FP="${DIAG_TABLE_TMPL_FP}"
 FIELD_TABLE_TMPL_FP="${FIELD_TABLE_TMPL_FP}"
 FV3_NML_BASE_FP="${FV3_NML_BASE_FP}"
-FV3_NML_CONFIG_FP="${FV3_NML_CONFIG_FP}"
+FV3_NML_YAML_CONFIG_FP="${FV3_NML_YAML_CONFIG_FP}"
 MODEL_CONFIG_TMPL_FP="${MODEL_CONFIG_TMPL_FP}"
 NEMS_CONFIG_TMPL_FP="${NEMS_CONFIG_TMPL_FP}"
 
@@ -2293,26 +2356,15 @@ CCPP_PHYS_SUITE_FP="${CCPP_PHYS_SUITE_FP}"
 
 DATA_TABLE_FP="${DATA_TABLE_FP}"
 FIELD_TABLE_FP="${FIELD_TABLE_FP}"
+FV3_NML_FN="${FV3_NML_FN}"   # This may not be necessary...
 FV3_NML_FP="${FV3_NML_FP}"
 NEMS_CONFIG_FP="${NEMS_CONFIG_FP}"
 
+FV3_EXEC_FP="${FV3_EXEC_FP}"
+
+LOAD_MODULES_RUN_TASK_FP="${LOAD_MODULES_RUN_TASK_FP}"
+
 WRTCMP_PARAMS_TMPL_FP="${WRTCMP_PARAMS_TMPL_FP}"
-#
-#-----------------------------------------------------------------------
-#
-# Names of the tasks in the rocoto workflow XML.
-#
-#-----------------------------------------------------------------------
-#
-MAKE_GRID_TN="${MAKE_GRID_TN}"
-MAKE_OROG_TN="${MAKE_OROG_TN}"
-MAKE_SFC_CLIMO_TN="${MAKE_SFC_CLIMO_TN}"
-GET_EXTRN_ICS_TN="${GET_EXTRN_ICS_TN}"
-GET_EXTRN_LBCS_TN="${GET_EXTRN_LBCS_TN}"
-MAKE_ICS_TN="${MAKE_ICS_TN}"
-MAKE_LBCS_TN="${MAKE_LBCS_TN}"
-RUN_FCST_TN="${RUN_FCST_TN}"
-RUN_POST_TN="${RUN_POST_TN}"
 #
 #-----------------------------------------------------------------------
 #
@@ -2409,9 +2461,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-FIXgsm_FILENAMES_str=$( printf "\"%s\" \\\\\n" "${FIXgsm_FILENAMES[@]}" )
-FIXam_FILENAMES_str=$( printf "\"%s\" \\\\\n" "${FIXam_FILENAMES[@]}" )
-
 { cat << EOM >> ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -2424,29 +2473,6 @@ FIXam_FILENAMES_str=$( printf "\"%s\" \\\\\n" "${FIXam_FILENAMES[@]}" )
 #-----------------------------------------------------------------------
 #
 OZONE_PARAM="${OZONE_PARAM}"
-#
-#-----------------------------------------------------------------------
-#
-# Number of files expected in the FIXam directory.
-#
-#-----------------------------------------------------------------------
-#
-NUM_FIXam_FILES="${NUM_FIXam_FILES}"
-#
-#-----------------------------------------------------------------------
-#
-# The names of the files in the FIXgsm system directory and the FIXam
-# directory (located in the experiment directory).
-#
-#-----------------------------------------------------------------------
-#
-FIXgsm_FILENAMES=( \\
-${FIXgsm_FILENAMES_str}
-)
-
-FIXam_FILENAMES=( \\
-${FIXam_FILENAMES_str}
-)
 #
 #-----------------------------------------------------------------------
 #

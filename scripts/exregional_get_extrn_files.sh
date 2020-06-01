@@ -371,9 +371,7 @@ file HTAR_LOG_FN in the directory EXTRN_MDL_FILES_DIR for details:
 # leading "/" because htar strips it before writing the file path to the
 # log file.
 #
-        if [ "${FP:0:1}" = "/" ]; then
-          FP=${FP:1}
-        fi
+        FP=${FP#/}
 
         grep -n "${FP}" "${HTAR_LOG_FN}" > /dev/null 2>&1 || \
         print_err_msg_exit "\
@@ -387,6 +385,56 @@ details:
   HTAR_LOG_FN = \"${HTAR_LOG_FN}\""
 
       done
+
+    done
+#
+#-----------------------------------------------------------------------
+#
+# For each external model file that was supposed to have been extracted
+# from the set of specified archive files, loop through the extraction 
+# log files and check that it appears exactly once in one of the log files.  
+# If it doesn't appear at all, then it means that file was not extracted,
+# and if it appears more than once, then something else is wrong.  In 
+# either case, print out an error message and exit.
+#
+#-----------------------------------------------------------------------
+#
+    for (( nfile=0; nfile<${num_files_to_extract}; nfile++ )); do
+      extrn_mdl_fp="${EXTRN_MDL_FPS[$nfile]}"
+#
+# If the file path is absolute (i.e. starts with a "/"), then drop the
+# leading "/" because htar strips it before writing the file path to the
+# log file.
+#
+      extrn_mdl_fp=${extrn_mdl_fp#/}
+
+      num_occurs=0
+      for (( narcv=0; narcv<${num_arcv_files}; narcv++ )); do
+        narcv_formatted=$( printf "%02d" $narcv )
+        HTAR_LOG_FN="log.htar_xvf.${narcv_formatted}"
+        grep -n ${extrn_mdl_fp} ${HTAR_LOG_FN} > /dev/null 2>&1 && { \
+          num_occurs=$((num_occurs+1)); \
+        }
+      done
+
+      if [ ${num_occurs} -eq 0 ]; then
+        print_err_msg_exit "\
+The current external model file (extrn_mdl_fp) does not appear in any of
+the archive extraction log files:
+  extrn_mdl_fp = \"${extrn_mdl_fp}\"
+Thus, it was not extracted, likely because it doesn't exist in any of the 
+archive files."
+      elif [ ${num_occurs} -gt 1 ]; then
+        print_err_msg_exit "\
+The current external model file (extrn_mdl_fp) appears more than once in
+the archive extraction log files:
+  extrn_mdl_fp = \"${extrn_mdl_fp}\"
+The number of times it occurs in the log files is:
+  num_occurs = ${num_occurs}
+Thus, it was extracted from more than one archive file, with the last one
+that was extracted overwriting all previous ones.  This should normally 
+not happen."
+      fi
 
     done
 #

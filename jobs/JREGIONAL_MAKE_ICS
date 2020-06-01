@@ -134,7 +134,8 @@ case "$MACHINE" in
   ;;
 #
 "CHEYENNE")
-  APRUN="mpirun -np ${NPROCS}"
+  nprocs=$(( NNODES_MAKE_ICS*PPN_MAKE_ICS ))
+  APRUN="mpirun -np $nprocs"
   ;;
 #
 esac
