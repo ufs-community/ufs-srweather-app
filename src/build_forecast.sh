@@ -22,7 +22,8 @@ else
   export MOD_PATH=${cwd}/lib/modulefiles
 fi
 
-target=${target}.intel
+export COMPILER=intel
+target=${target}.${COMPILER}
 
 cd ufs_weather_model
 model_top_dir=`pwd`
