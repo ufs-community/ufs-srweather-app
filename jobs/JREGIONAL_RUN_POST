@@ -57,18 +57,18 @@ on the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-# If it doesn't already exist, create the directory (postprd_dir) in 
-# which to store post-processing output.  (Note that postprd_dir may al-
-# ready have been created by this post-processing script run for a dif-
-# ferent forecast hour.)  Also, create a temporary work directory (FHR_-
-# DIR) for the current forecast hour being processed.  fhr_dir will be 
-# deleted later after the processing for the current forecast hour is 
-# complete.  Then change location to fhr_dir.
+# If it doesn't already exist, create the directory (postprd_dir) in which 
+# to store post-processing output.  (Note that postprd_dir may already 
+# have been created by this post-processing script run for a different 
+# forecast hour.)  Also, create a temporary work directory (fhr_dir) for 
+# the current forecast hour being processed.  fhr_dir will be deleted 
+# later after the processing for the current forecast hour is complete.  
+# Then change location to fhr_dir.
 #
 # Note that there may be a preexisting version of fhr_dir from previous 
-# runs of this script for the current forecast hour (e.g. from the work-
-# flow task that runs this script failing and then being called again).  
-# Thus, we first make sure preexisting versions are deleted.
+# runs of this script for the current forecast hour (and current cycle), 
+# e.g. from the workflow task that runs this script failing and then being 
+# called again.  Thus, we first make sure preexisting versions are deleted.
 #
 #-----------------------------------------------------------------------
 #

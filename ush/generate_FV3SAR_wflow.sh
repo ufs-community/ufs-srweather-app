@@ -359,7 +359,7 @@ fi
 #
 # Copy fixed files from system directory to the FIXam directory (which
 # is under the experiment directory).  Note that some of these files get
-# renamed.
+# renamed during the copy process.
 #
 #-----------------------------------------------------------------------
 #
@@ -436,6 +436,28 @@ directory..."
   fi
 
 fi
+
+
+#
+#-----------------------------------------------------------------------
+#
+# This if-statement is a temporary fix that makes corrections to the suite
+# definition file for the "FV3_GFS_2017_gfdlmp_regional" physics suite
+# that EMC uses. 
+#
+# IMPORTANT:
+# This if-statement must be removed once these corrections are made to
+# the suite definition file in the dtc/develop branch of the NCAR fork
+# of the fv3atm repository.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${USE_CCPP}" = "TRUE" ] && \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ]; then
+  mv_vrfy "${CCPP_PHYS_SUITE_FP}.tmp" "${CCPP_PHYS_SUITE_FP}"
+fi
+
+
 
 
 
@@ -570,7 +592,7 @@ settings="\
     'npx': $npx,
     'npy': $npy,
     'layout': [${LAYOUT_X}, ${LAYOUT_Y}],
-    'bc_update_interval': ${LBC_UPDATE_INTVL_HRS},
+    'bc_update_interval': ${LBC_SPEC_INTVL_HRS},
   }
 'gfs_physics_nml': {
     'lsoil': ${lsoil:-null},

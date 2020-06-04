@@ -13,7 +13,7 @@
 #-----------------------------------------------------------------------
 #
 # Source the file defining the function that will be used to set various
-# external-model-related variables.
+# external-model-associated variables.
 #
 #-----------------------------------------------------------------------
 #
@@ -58,109 +58,40 @@ for the FV3 (in NetCDF format).
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of and create the directory in which the output from this
-# script will be placed (if it doesn't already exist).
-#
-#-----------------------------------------------------------------------
-#
-ICS_DIR="${CYCLE_DIR}/INPUT"
-mkdir_vrfy -p "${ICS_DIR}"
-#
-#-----------------------------------------------------------------------
-#
-# Load modules and set machine-dependent parameters.
+# Set machine-dependent parameters.
 #
 #-----------------------------------------------------------------------
 #
 case "$MACHINE" in
-#
-"WCOSS_C")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
 
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"WCOSS")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
+  "WCOSS_C")
+    ;;
 
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"DELL")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
+  "WCOSS")
+    ;;
 
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"THEIA")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
+  "DELL")
+    ;;
 
-  ulimit -s unlimited
-#  ulimit -a
+  "HERA")
+    ulimit -s unlimited
+    APRUN="srun"
+    ;;
 
-  module purge
-  module load intel/18.1.163
-  module load impi/5.1.1.109
-  module load netcdf/4.3.0
-  module load hdf5/1.8.14
-  module load wgrib2/2.0.8
-  module load contrib wrap-mpi
-  module list
+  "JET")
+    ulimit -s unlimited
+    APRUN="srun"
+    ;;
 
-  np=${SLURM_NTASKS}
-  APRUN="mpirun -np ${np}"
+  "ODIN")
+    ;;
 
-  { restore_shell_opts; } > /dev/null 2>&1
-  ;;
-#
-"HERA")
-  ulimit -s unlimited
-#  ulimit -a
-  APRUN="srun"
-  ;;
-#
-"JET")
-  ulimit -s unlimited
-#  ulimit -a
-  APRUN="srun"
-  ;;
-#
-"ODIN")
-#
-  ;;
-#
-"CHEYENNE")
-  nprocs=$(( NNODES_MAKE_ICS*PPN_MAKE_ICS ))
-  APRUN="mpirun -np $nprocs"
-  ;;
-#
+  "CHEYENNE")
+    nprocs=$(( NNODES_MAKE_ICS*PPN_MAKE_ICS ))
+    APRUN="mpirun -np $nprocs"
+    ;;
+
 esac
-#
-#-----------------------------------------------------------------------
-#
-# Call the function that sets various external-model-related variables.
-# See the function defintion file for the definitions of these varia-
-# bles.
-#
-#-----------------------------------------------------------------------
-#
-get_extrn_mdl_file_dir_info \
-  extrn_mdl_name="${EXTRN_MDL_NAME_ICS}" \
-  anl_or_fcst="ANL" \
-  cdate_FV3SAR="${CDATE}" \
-  time_offset_hrs="0" \
-  varname_extrn_mdl_cdate="EXTRN_MDL_CDATE" \
-  varname_extrn_mdl_lbc_update_fhrs="EXTRN_MDL_LBC_UPDATE_FHRS" \
-  varname_extrn_mdl_fns="EXTRN_MDL_FNS" \
-  varname_extrn_mdl_sysdir="EXTRN_MDL_SYSDIR" \
-  varname_extrn_mdl_arcv_fmt="EXTRN_MDL_ARCV_FMT" \
-  varname_extrn_mdl_arcv_fns="EXTRN_MDL_ARCV_FNS" \
-  varname_extrn_mdl_arcv_fps="EXTRN_MDL_ARCV_FPS" \
-  varname_extrn_mdl_arcvrel_dir="EXTRN_MDL_ARCVREL_DIR"
 #
 #-----------------------------------------------------------------------
 #
@@ -168,33 +99,29 @@ get_extrn_mdl_file_dir_info \
 #
 #-----------------------------------------------------------------------
 #
-WGRIB2_DIR=$( which wgrib2 ) || print_err_msg_exit "\
-Directory in which the wgrib2 executable is located not found:
-  WGRIB2_DIR = \"${WGRIB2_DIR}\""
+wgrib2_dir=$( which wgrib2 ) || print_err_msg_exit "\
+Directory in which the wgrib2 executable is located could not be found:
+  wgrib2_dir = \"${wgrib2_dir}\""
 #
 #-----------------------------------------------------------------------
 #
-# Set the directory containing the external model output files.
+# Set the name of and create the directory in which the output from this
+# script will be placed (if that directory doesn't already exist).
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_FILES_DIR="${CYCLE_DIR}/${EXTRN_MDL_NAME_ICS}/ICS"
+ics_dir="${CYCLE_DIR}/INPUT"
+mkdir_vrfy -p "${ics_dir}"
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary varia-
-# bles.
+# Call the ex-script for this J-job and pass to it the necessary variables.
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_FNS_str="( "$( printf "\"%s\" " "${EXTRN_MDL_FNS[@]}" )")"
-
 $SCRIPTSDIR/exregional_make_ics.sh \
-  EXTRN_MDL_FNS="${EXTRN_MDL_FNS_str}" \
-  EXTRN_MDL_FILES_DIR="${EXTRN_MDL_FILES_DIR}" \
-  EXTRN_MDL_CDATE="${EXTRN_MDL_CDATE}" \
-  ICS_DIR="${ICS_DIR}" \
-  WGRIB2_DIR="${WGRIB2_DIR}" \
+  ics_dir="${ics_dir}" \
+  wgrib2_dir="${wgrib2_dir}" \
   APRUN="${APRUN}" || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
@@ -213,8 +140,7 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-# Restore the shell options saved at the beginning of this script/func-
-# tion.
+# Restore the shell options saved at the beginning of this script/function.
 #
 #-----------------------------------------------------------------------
 #

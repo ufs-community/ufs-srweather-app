@@ -166,14 +166,13 @@ FIXgsm_FILES_TO_COPY_TO_FIXam[$i]="${fixgsm_ozone_fn}"
 #
 #-----------------------------------------------------------------------
 #
-# Set the arrays that specify the file names in the system's FIXgsm and
-# the experiment's FIXam directories.  Note that these files are copied
-# from the FIXgsm to FIXam directory, or symlinks are created in the FIXam
-# directory that point to the files in the FIXgsm directory.  
-#
-# First, set the array fixgsm_fns.  This contains the names of the fixed
-# files in the system's FIXgsm directory that the experiment generation
-# script will either copy or create links to. 
+# Set the element in the array CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING that
+# specifies the mapping between the symlink for the ozone production/loss
+# file that must be created in each cycle directory and its target in the 
+# FIXam directory.  The name of the symlink is alrady in the array, but
+# the target is not because it depends on the ozone parameterization that 
+# the physics suite uses.  Since we determined the ozone parameterization
+# above, we now set the target of the symlink accordingly.
 #
 #-----------------------------------------------------------------------
 #
