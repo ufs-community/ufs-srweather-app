@@ -8,6 +8,6 @@ module load intel/18.0.5.274
 module load netcdf/4.7.0
 module load hdf5/1.10.5
 
-module load contrib
+module use -a /contrib/miniconda3/modulefiles
 module load miniconda3
 system "conda activate regional_workflow"

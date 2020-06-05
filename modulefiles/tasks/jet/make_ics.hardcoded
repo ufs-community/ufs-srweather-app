@@ -29,6 +29,6 @@ export WGRIB2_LIB="/apps/wgrib2/2.0.8/intel/18.0.5.274/lib/libwgrib2.a"
 export WGRIB2_DIR="/apps/wgrib2/2.0.8/intel/18.0.5.274/bin"
 module load wgrib2/2.0.8
 
-module load contrib
+module use -a /contrib/miniconda3/modulefiles
 module load miniconda3
 conda activate regional_workflow
