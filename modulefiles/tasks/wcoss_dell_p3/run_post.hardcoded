@@ -1,0 +1,48 @@
+#%Module######################################################################
+## module for WCOSS-Dell
+##############################################################################
+
+# From default environment
+
+module load ips/18.0.1.163
+module load impi/18.0.1
+module load lsf/10.1
+module load EnvVars/1.0.2
+
+module load HPSS/5.0.2.5
+module load prod_util/1.1.0
+module load prod_envir/1.1.0
+module load g2tmpl/1.5.0
+#module load crtm/2.2.6
+module load grib_util/1.1.0
+
+module load NCO/4.7.0
+module load HDF5-serial/1.10.1
+module load NetCDF/4.5.0
+module load CFP/2.0.1
+setenv USE_CFP YES
+
+module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
+module load gempak/7.3.1
+
+
+# post specific modules
+
+module load jasper/1.900.1                    
+module load libpng/1.2.59
+module load zlib/1.2.11 
+module load sfcio/1.0.0
+module load nemsio/2.2.3 
+
+module load sigio/2.1.0
+module load bacio/2.0.2
+module load g2/3.1.0           
+module load gfsio/1.1.0            
+module load ip/3.0.1          
+module load sp/2.0.2        
+module load w3emc/2.3.0          
+module load w3nco/2.0.6
+module load wrfio/1.1.1
+module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
+module load crtm/2.3.0
+

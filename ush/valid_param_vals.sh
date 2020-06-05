@@ -1,7 +1,7 @@
 valid_vals_RUN_ENVIR=("nco" "community")
 valid_vals_VERBOSE=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
-valid_vals_MACHINE=("WCOSS_C" "WCOSS" "DELL" "THEIA" "HERA" "JET" "ODIN" "CHEYENNE")
-valid_vals_SCHED=("slurm" "pbspro" "none")
+valid_vals_MACHINE=("WCOSS_CRAY" "WCOSS_DELL_P3" "THEIA" "HERA" "JET" "ODIN" "CHEYENNE")
+valid_vals_SCHED=("slurm" "pbspro" "lsf" "lsfcray" "none")
 valid_vals_PREDEF_GRID_NAME=( \
 "EMC_CONUS_3km" \
 "EMC_CONUS_coarse" \

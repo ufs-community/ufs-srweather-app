@@ -532,7 +532,10 @@ bination of external model (extrn_mdl_name) and analysis or forecast
 #
   "GSMGFS")
     case "$MACHINE" in
-    "WCOSS_C")
+    "WCOSS_CRAY")
+      sysdir=""
+      ;;
+    "WCOSS_DELL_P3")
       sysdir=""
       ;;
     "HERA")
@@ -560,8 +563,11 @@ has not been specified for this external model and machine combination:
 
   "FV3GFS")
     case "$MACHINE" in
-    "WCOSS_C")
-      sysdir="$sysbasedir/gfs.${yyyymmdd}"
+    "WCOSS_CRAY")
+      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
+      ;;
+    "WCOSS_DELL_P3")
+      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
       ;;
     "HERA")
       sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
@@ -588,7 +594,10 @@ has not been specified for this external model and machine combination:
 
   "RAPX")
     case "$MACHINE" in
-    "WCOSS_C")
+    "WCOSS_CRAY")
+      sysdir="$sysbasedir"
+      ;;
+    "WCOSS_DELL_P3")
       sysdir="$sysbasedir"
       ;;
     "HERA")
@@ -616,7 +625,10 @@ has not been specified for this external model and machine combination:
 
   "HRRRX")
     case "$MACHINE" in
-    "WCOSS_C")
+    "WCOSS_CRAY")
+      sysdir="$sysbasedir"
+      ;;
+    "WCOSS_DELL_P3")
       sysdir="$sysbasedir"
       ;;
     "HERA")

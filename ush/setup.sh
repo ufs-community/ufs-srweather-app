@@ -257,31 +257,24 @@ check_var_valid_value "MACHINE" "valid_vals_MACHINE"
 #
 case $MACHINE in
 #
-"WCOSS_C")
+"WCOSS_CRAY")
 #
-  print_err_msg_exit "\
-Don't know how to set several parameters on MACHINE=\"$MACHINE\".
-Please specify the correct parameters for this machine in the setup script.  
-Then remove this message and rerun." 
-  NCORES_PER_NODE=""
-  SCHED="${SCHED:-}"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
-  QUEUE_HPSS=${QUEUE_HPSS:-""}
-  QUEUE_FCST=${QUEUE_FCST:-""}
+  NCORES_PER_NODE="24"
+  SCHED="lsfcray"
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"dev"}
+  QUEUE_HPSS=${QUEUE_HPSS:-"dev_transfer"}
+  QUEUE_HPSS_TAG="queue"       # lsfcray does not support "partition" tag
+  QUEUE_FCST=${QUEUE_FCST:-"dev"}
   ;;
 #
-"WCOSS")
+"WCOSS_DELL_P3")
 #
-  print_err_msg_exit "\
-Don't know how to set several parameters on MACHINE=\"$MACHINE\".
-Please specify the correct parameters for this machine in the setup script.  
-Then remove this message and rerun."
-
-  NCORES_PER_NODE=""
-  SCHED="${SCHED:-}"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
-  QUEUE_HPSS=${QUEUE_HPSS:-""}
-  QUEUE_FCST=${QUEUE_FCST:-""}
+  NCORES_PER_NODE=24
+  SCHED="lsf"
+  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"dev"}
+  QUEUE_HPSS=${QUEUE_HPSS:-"dev_transfer"}
+  QUEUE_HPSS_TAG="queue"       # lsf does not support "partition" tag
+  QUEUE_FCST=${QUEUE_FCST:-"dev"}
   ;;
 #
 "HERA")
@@ -642,13 +635,13 @@ TEMPLATE_DIR="$USHDIR/templates"
 
 case $MACHINE in
 
-"WCOSS_C")
+"WCOSS_CRAY")
   FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
   SFC_CLIMO_INPUT_DIR=""
   ;;
 
-"WCOSS")
-  FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
+"WCOSS_DELL_P3")
+  FIXgsm="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
   SFC_CLIMO_INPUT_DIR=""
   ;;
 

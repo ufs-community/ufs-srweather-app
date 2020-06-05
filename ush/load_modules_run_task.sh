@@ -103,11 +103,11 @@ able to use \"module load ...\" to load necessary modules ..."
 
 case "$MACHINE" in
 #
-  "WCOSS_C")
+  "WCOSS_CRAY")
     . /opt/modules/default/init/sh
     ;;
 #
-  "DELL")
+  "WCOSS_DELL_P3")
     . /usrx/local/prod/lmod/lmod/init/sh
     ;;
 #

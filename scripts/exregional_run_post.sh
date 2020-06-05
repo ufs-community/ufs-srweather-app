@@ -84,30 +84,30 @@ Starting post-processing for fhr = $fhr hr..."
 
 case $MACHINE in
 
-"WCOSS_C" | "WCOSS" )
-#  { save_shell_opts; set +x; } > /dev/null 2>&1
-  module purge
-  . $MODULESHOME/init/ksh
-  module load PrgEnv-intel ESMF-intel-haswell/3_1_0rp5 cfp-intel-sandybridge iobuf craype-hugepages2M craype-haswell
-#  module load cfp-intel-sandybridge/1.1.0
-  module use /gpfs/hps/nco/ops/nwprod/modulefiles
-  module load prod_envir
-#  module load prod_util
-  module load prod_util/1.0.23
-  module load grib_util/1.0.3
-  module load crtm-intel/2.2.5
-  module list
-#  { restore_shell_opts; } > /dev/null 2>&1
+"WCOSS_CRAY")
 
 # Specify computational resources.
-  export NODES=8
-  export ntasks=96
-  export ptile=12
+  export NODES=2
+  export ntasks=48
+  export ptile=24
   export threads=1
   export MP_LABELIO=yes
   export OMP_NUM_THREADS=$threads
 
   APRUN="aprun -j 1 -n${ntasks} -N${ptile} -d${threads} -cc depth"
+  ;;
+
+"WCOSS_DELL_P3")
+
+# Specify computational resources.
+  export NODES=2
+  export ntasks=48
+  export ptile=24
+  export threads=1
+  export MP_LABELIO=yes
+  export OMP_NUM_THREADS=$threads
+ 
+  APRUN="mpirun"
   ;;
 
 "HERA")

@@ -64,13 +64,14 @@ for the FV3 (in NetCDF format).
 #
 case "$MACHINE" in
 
-  "WCOSS_C")
+  "WCOSS_CRAY")
+    ulimit -s unlimited
+    APRUN="aprun -b -j1 -n48 -N12 -d1 -cc depth"
     ;;
 
-  "WCOSS")
-    ;;
-
-  "DELL")
+  "WCOSS_DELL_P3")
+    ulimit -s unlimited
+    APRUN="mpirun"
     ;;
 
   "HERA")

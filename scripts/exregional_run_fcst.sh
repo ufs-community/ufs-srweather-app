@@ -76,33 +76,14 @@ print_input_args valid_args
 #
 case $MACHINE in
 #
-"WCOSS_C" | "WCOSS")
+"WCOSS_CRAY")
 #
-
-  if [ "${USE_CCPP}" = "TRUE" ]; then
-  
-# Needed to change to the experiment directory because the module files
-# for the CCPP-enabled version of FV3 have been copied to there.
-
-    cd_vrfy ${CYCLE_DIR}
-  
-    set +x
-    source ./module-setup.sh
-    module use $( pwd -P )
-    module load modules.fv3
-    module list
-    set -x
-  
-  else
-  
-    . /apps/lmod/lmod/init/sh
-    module purge
-    module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
-    module load intel/16.1.150 impi/5.1.1.109 netcdf/4.3.0 
-    module list
-  
-  fi
-
+  ulimit -s unlimited
+  ulimit -a
+  APRUN="aprun -b -j1 -n${PE_MEMBER01} -N24 -d1 -cc depth"
+  ;;
+#
+"WCOSS_DELL_P3")
   ulimit -s unlimited
   ulimit -a
   APRUN="mpirun -l -np ${PE_MEMBER01}"
