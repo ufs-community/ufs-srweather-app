@@ -888,43 +888,59 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# May have to make setting of EXPTDIR dependent on RUN_ENVIR later on.
 EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
 check_for_preexist_dir_file "$EXPTDIR" "${PREEXISTING_DIR_METHOD}"
 #
 #-----------------------------------------------------------------------
 #
-# Set other directories that depend on EXPTDIR.
+# Set other directories, some of which may depend on EXPTDIR (depending
+# on whether we're running in NCO or community mode, i.e. whether RUN_ENVIR 
+# is set to "nco" or "community").  Definitions:
 #
 # LOGDIR:
 # Directory in which the log files from the workflow tasks will be placed.
 #
+# FIXam:
+# This is the directory that will contain the fixed files or symlinks to
+# the fixed files containing various fields on global grids (which are
+# usually much coarser than the native FV3SAR grid).
+#
+# FIXsar:
+# This is the directory that will contain the fixed files or symlinks to
+# the fixed files containing the grid, orography, and surface climatology
+# on the native FV3SAR grid.
+#
 # CYCLE_BASEDIR:
 # The base directory in which the directories for the various cycles will
 # be placed.
+#
+# COMROOT:
+# In NCO mode, this is the full path to the "com" directory under which 
+# output from the RUN_POST_TN task will be placed.  Note that this output
+# is not placed directly under COMROOT but several directories further
+# down.  More specifically, for a cycle starting at yyyymmddhh, it is at
+#
+#   $COMROOT/$NET/$envir/$RUN.$yyyymmdd/$hh
+#
+# Below, we set COMROOT in terms of PTMP as COMROOT="$PTMP/com".  COMOROOT 
+# is not used by the workflow in community mode.
+#
+# COMOUT_BASEDIR:
+# In NCO mode, this is the base directory directly under which the output 
+# from the RUN_POST_TN task will be placed, i.e. it is the cycle-independent 
+# portion of the RUN_POST_TN task's output directory.  It is given by
+#
+#   $COMROOT/$NET/$envir
+#
+# COMOUT_BASEDIR is not used by the workflow in community mode.
 #
 #-----------------------------------------------------------------------
 #
 LOGDIR="${EXPTDIR}/log"
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  CYCLE_BASEDIR="$STMP/tmpnwprd/${EMC_GRID_NAME}" 
-else
-  CYCLE_BASEDIR="$EXPTDIR"
-fi
-check_for_preexist_dir_file "${CYCLE_BASEDIR}" "${PREEXISTING_DIR_METHOD}"
-#
-#-----------------------------------------------------------------------
-#
-#
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
 
   FIXam="${FIXrrfs}/fix_am"
-  FIXsar="${FIXrrfs}/fix_sar/${EMC_GRID_NAME}"
-  COMROOT="$PTMP/com"
 #
 # In NCO mode (i.e. if RUN_ENVIR set to "nco"), it is assumed that before
 # running the experiment generation script, the path specified in FIXam 
@@ -937,15 +953,18 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
   path_resolved=$( readlink -m "$FIXam" )
   if [ ! -d "${path_resolved}" ]; then
     print_err_msg_exit "\
-In NCO mode (RUN_ENVIR set to \"nco\"), the path specified by FIXam after
-resolving all symlinks (path_resolved) must point to an existing directory
-before an experiment can be generated.  In this case, path_resolved is
-not a directory or does not exist:
+In order to be able to generate a forecast experiment in NCO mode (i.e. 
+when RUN_ENVIR set to \"nco\"), the path specified by FIXam after resolving 
+all symlinks (path_resolved) must be an existing directory (but in this
+case isn't):
   RUN_ENVIR = \"${RUN_ENVIR}\"
   FIXam = \"$FIXam\"
   path_resolved = \"${path_resolved}\"
-Please correct and then rerun the experiment generation script."
+Please ensure that path_resolved is an existing directory and then rerun 
+the experiment generation script."
   fi
+
+  FIXsar="${FIXrrfs}/fix_sar/${EMC_GRID_NAME}"
 #
 # In NCO mode (i.e. if RUN_ENVIR set to "nco"), it is assumed that before
 # running the experiment generation script, the path specified in FIXsar 
@@ -957,21 +976,32 @@ Please correct and then rerun the experiment generation script."
   path_resolved=$( readlink -m "$FIXsar" )
   if [ ! -d "${path_resolved}" ]; then
     print_err_msg_exit "\
-In NCO mode (RUN_ENVIR set to \"nco\"), the path specified by FIXsar after
-resolving all symlinks (path_resolved) must point to an existing directory
-before an experiment can be generated.  In this case, path_resolved is
-not a directory or does not exist:
+In order to be able to generate a forecast experiment in NCO mode (i.e. 
+when RUN_ENVIR set to \"nco\"), the path specified by FIXsar after resolving 
+all symlinks (path_resolved) must be an existing directory (but in this
+case isn't):
   RUN_ENVIR = \"${RUN_ENVIR}\"
   FIXsar = \"$FIXsar\"
   path_resolved = \"${path_resolved}\"
-Please correct and then rerun the experiment generation script."
+Please ensure that path_resolved is an existing directory and then rerun 
+the experiment generation script."
   fi
 
+  CYCLE_BASEDIR="$STMP/tmpnwprd/$RUN"
+  check_for_preexist_dir_file "${CYCLE_BASEDIR}" "${PREEXISTING_DIR_METHOD}"
+
+  COMROOT="$PTMP/com"
+
+  COMOUT_BASEDIR="$COMROOT/$NET/$envir"
+  check_for_preexist_dir_file "${COMOUT_BASEDIR}" "${PREEXISTING_DIR_METHOD}"
+  
 else
 
   FIXam="${EXPTDIR}/fix_am"
   FIXsar="${EXPTDIR}/fix_sar"
+  CYCLE_BASEDIR="$EXPTDIR"
   COMROOT=""
+  COMOUT_BASEDIR=""
 
 fi
 #
@@ -2352,6 +2382,7 @@ FIXgsm="$FIXgsm"
 FIXupp="$FIXupp"
 FIXgsd="$FIXgsd"
 COMROOT="$COMROOT"
+COMOUT_BASEDIR="${COMOUT_BASEDIR}"
 TEMPLATE_DIR="${TEMPLATE_DIR}"
 UFS_WTHR_MDL_DIR="${UFS_WTHR_MDL_DIR}"
 UFS_UTILS_DIR="${UFS_UTILS_DIR}"

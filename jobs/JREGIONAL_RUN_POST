@@ -73,7 +73,7 @@ on the output files corresponding to a specified forecast hour.
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  COMOUT="$COMROOT/$NET/$envir/$RUN.$PDY/$cyc"
+  COMOUT="${COMOUT_BASEDIR}/$RUN.$PDY/$cyc"
   postprd_dir="$COMOUT"
 else
   postprd_dir="${CYCLE_DIR}/postprd"

@@ -120,10 +120,10 @@ fi
 # following if-statement will not be needed since process_args() will 
 # catch the case of missing required arguments.
 # 
-  if [ -z "${expts_file}" ] || \
-     [ -z "${machine}" ] || \
-     [ -z "${account}" ]; then
-    print_err_msg_exit "\
+if [ -z "${expts_file}" ] || \
+   [ -z "${machine}" ] || \
+   [ -z "${account}" ]; then
+  print_err_msg_exit "\
 An experiments list file (expts_file), a machine name (machine), and an
 account name (account) must be specified as input arguments to this 
 script.  One or more of these is currently set to an empty string:
@@ -137,24 +137,23 @@ this script:
     machine=\"name_of_machine_to_run_on\" \\
     account=\"name_of_hpc_account_to_use\" \\
     ..."
-  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the experiments list file and verify that it ex-
-# ists.
+# Get the full path to the experiments list file and verify that it exists.
 #
 #-----------------------------------------------------------------------
 #
-  expts_list_fp=$( readlink -f "${expts_file}" )
+expts_list_fp=$( readlink -f "${expts_file}" )
 
-  if [ ! -f "${expts_list_fp}" ]; then
-    print_err_msg_exit "\
+if [ ! -f "${expts_list_fp}" ]; then
+  print_err_msg_exit "\
 The experiments list file (expts_file) specified as an argument to this
 script (and with full path given by expts_list_fp) does not exist:
   expts_file = \"${expts_file}\"
   expts_list_fp = \"${expts_list_fp}\""
-  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -200,10 +199,10 @@ ${all_lines_str}
 #-----------------------------------------------------------------------
 #
 # Loop through the elements of all_lines and modify each line to remove
-# leading and trailing whitespace and any whitespace before and after 
-# the field separator character (which is the pipe character, "|").  Al-
-# so, drop any elements that are empty after this processing, and save
-# the resulting set of non-empty elements in the array expts_list.
+# leading and trailing whitespace and any whitespace before and after the
+# field separator character (which is the pipe character, "|").  Also, 
+# drop any elements that are empty after this processing, and save the 
+# resulting set of non-empty elements in the array expts_list.
 #
 #-----------------------------------------------------------------------
 #
@@ -424,10 +423,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the values of those parameters in the experiment configuration 
-# file that need to be adjusted from their baseline values (as specified
-# in the current line of the experiments list file) to obtain the confi-
-# guration file for the current experiment.
+# Set the values of those parameters in the experiment configuration file 
+# that need to be adjusted from their baseline values (as specified in 
+# the current line of the experiments list file) to obtain the configuration 
+# file for the current experiment.
 #
 #-----------------------------------------------------------------------
 #
@@ -436,13 +435,11 @@ fi
     set_bash_param "${expt_config_fp}" "${modvar_name[$j]}" "${modvar_value[$j]}"
   done
 #
-# Create a symlink called "config.sh" in ushdir that points to the cur-
-# rent experiment's configuration file.  This must be done because the 
-# experiment/workflow generation script assumes that this is the name 
-# and location of the configuration file to use to generate a new expe-
-# riment and corresponding workflow.
+# Move the current experiment's configuration file into the directory in
+# which the experiment generation script expects to find it, and in the 
+# process rename the file to the name that the experiment generation script
+# expects it to have.
 #
-#  ln_vrfy -fs "${expt_config_fp}" "$ushdir/config.sh"
   mv_vrfy -f "${expt_config_fp}" "$ushdir/config.sh"
 #
 #-----------------------------------------------------------------------

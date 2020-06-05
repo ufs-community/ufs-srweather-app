@@ -169,7 +169,7 @@ EXPT_SUBDIR=""
 # the cycle date (cdate) is given by cdate="${yyyymmdd}${hh}"], the 
 # directory in which the aforementioned files will be located is:
 #
-#   $STMP/tmpnwprd/${EMC_GRID_NAME}/$cdate
+#   $STMP/tmpnwprd/$RUN/$cdate
 #
 # NET, envir, RUN:
 # Variables used in forming the path to the directory that will contain
@@ -1074,18 +1074,18 @@ PPN_GET_EXTRN_ICS="1"
 PPN_GET_EXTRN_LBCS="1"
 PPN_MAKE_ICS="12"
 PPN_MAKE_LBCS="12"
-PPN_RUN_FCST="24"
+PPN_RUN_FCST="24"  # This may have to be changed depending on the number of threads used.
 PPN_RUN_POST="24"
 #
 # Walltimes.
 #
-WTIME_MAKE_GRID="00:10:00"
-WTIME_MAKE_OROG="00:10:00"
-WTIME_MAKE_SFC_CLIMO="00:10:00"
+WTIME_MAKE_GRID="00:20:00"
+WTIME_MAKE_OROG="00:20:00"
+WTIME_MAKE_SFC_CLIMO="00:20:00"
 WTIME_GET_EXTRN_ICS="00:45:00"
 WTIME_GET_EXTRN_LBCS="00:45:00"
-WTIME_MAKE_ICS="00:15:00"
-WTIME_MAKE_LBCS="00:15:00"
+WTIME_MAKE_ICS="00:30:00"
+WTIME_MAKE_LBCS="00:30:00"
 WTIME_RUN_FCST="04:30:00"
 WTIME_RUN_POST="00:15:00"
 

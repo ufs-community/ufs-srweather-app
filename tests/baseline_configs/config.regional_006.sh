@@ -1,29 +1,19 @@
 #
-# MACHINE will be set by the workflow launch script (launch_FV3SAR_-
-# wflow.sh) to value passed in as an argument to that script.
+# The values of the variables MACHINE, ACCOUNT, and EXPT_SUBDIR are required
+# inputs to the script that launces the WE2E test experiments.  That script 
+# will use those inputs to fill in the values of these variables below.
 #
 MACHINE=""
-#
-# ACCOUNT will be set by the workflow launch script (launch_FV3SAR_-
-# wflow.sh) to value passed in as an argument to that script.
-#
 ACCOUNT=""
-#
-# EXPT_SUBDIR will be set by the workflow launch script (launch_FV3SAR_-
-# wflow.sh) to a value obtained from the name of this file.
-#
 EXPT_SUBDIR=""
 #
-# USE_CRON_TO_RELAUNCH may be reset by the workflow launch script
-# (launch_FV3SAR_wflow.sh) to value passed in as an argument to that
-# script, but in case it is not, we give it a default value here.
+# The values of the variables USE_CRON_TO_RELAUNCH and CRON_RELAUNCH_INTVL_MNTS
+# are optional inputs to the script that launces the WE2E test experiments.  
+# If one or both of these values are specified, then that script will 
+# replace the default values of these variables below with those values.
+# Otherwise, it will keep the default values.
 #
 USE_CRON_TO_RELAUNCH="TRUE"
-#
-# CRON_RELAUNCH_INTVL_MNTS may be reset by the workflow launch script
-# (launch_FV3SAR_wflow.sh) to value passed in as an argument to that
-# script, but in case it is not, we give it a default value here.
-#
 CRON_RELAUNCH_INTVL_MNTS="02"
 
 

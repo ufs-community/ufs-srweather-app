@@ -260,7 +260,7 @@ predefined domain:
 
     GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="FALSE"
 
-    DT_ATMOS="90"
+    DT_ATMOS="50"
 
     LAYOUT_X="14"
     LAYOUT_Y="14"
@@ -293,7 +293,7 @@ predefined domain:
 
     JPgrid_WIDE_HALO_WIDTH=6
 
-    DT_ATMOS="90"
+    DT_ATMOS="50"
 
     LAYOUT_X="16"
     LAYOUT_Y="16"
