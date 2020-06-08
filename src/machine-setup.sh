@@ -33,6 +33,9 @@ if [ "$platform" = "no_platform_specified" ]; then
     elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
         # We are on NOAA Luna or Surge
         platform=wcoss_cray
+    elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
+        # We are on NOAA Venus or Mars
+        platform=wcoss_dell_p3
     elif [[ -d /dcom && -d /hwrf ]] ; then
         # We are on NOAA Tide or Gyre
         platform=wcoss
@@ -112,13 +115,12 @@ elif [ "$target" = "wcoss_cray" ] ; then
     module use /opt/modulefiles
     module load modules
 
-elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
+elif [ "$target" = "wcoss_dell_p3" ] ; then
     # We are on NOAA Venus or Mars
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
         source /usrx/local/prod/lmod/lmod/init/$__ms_shell
     fi
-    target=wcoss_dell_p3
     module purge 
     module use /usrx/local/dev/modulefiles
 

@@ -23,7 +23,7 @@ if [ "$target" = "jet" ] ; then
 elif [ "$target" = "hera" ] ; then
   ./compile hera
 elif [ "$target" = "wcoss_cray" ] ; then
-  ./compile wcross_cray
+  ./compile cray-intel
 elif [ "$target" = "wcoss_dell_p3" ] ; then
   ./compile wcoss_dell_p3
 elif [ "$target" = "wcoss" ] ; then
