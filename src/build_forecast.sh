@@ -22,7 +22,8 @@ else
   export MOD_PATH=${cwd}/lib/modulefiles
 fi
 
-target=${target}.intel
+export COMPILER=intel
+target=${target}.${COMPILER}
 
 cd ufs_weather_model
 model_top_dir=`pwd`
@@ -43,7 +44,7 @@ fi
 #---------------------------------------------------------------------------------
 export CCPP_SUITES="FV3_GFS_2017_gfdlmp,FV3_GSD_v0,FV3_GSD_SAR,FV3_CPT_v0,FV3_GFS_v15p2,FV3_GFS_v16beta"
 
-./build.sh
+./build.sh || echo "FAIL:  build_forecast.sh failed, see ${cwd}/logs/build_forecast.log"
 
 #---------------------------------------------------------------------------------
 # Copy executable (named ufs_weather_model) to tests dir so workflow can find it
