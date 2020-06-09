@@ -258,7 +258,7 @@ cp_vrfy "${CHGRES_DIR}/modulefiles/chgres_cube.$machine" \
         "${MAKE_LBCS_TN}"
 cat "${MAKE_LBCS_TN}.local" >> "${MAKE_LBCS_TN}"
 
-ln_vrfy -fs "${UFS_WTHR_MDL_DIR}/NEMS/src/conf/modules.nems" \
+ln_vrfy -fs "${UFS_WTHR_MDL_DIR}/modulefiles/$machine.intel/fv3" \
             "${RUN_FCST_TN}"
 #
 # Only some platforms build EMC_post using modules.

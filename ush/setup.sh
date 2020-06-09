@@ -619,15 +619,18 @@ HH_FIRST_CYCL=${CYCL_HRS[0]}
 # directory of the current script.  Get the path to this latter directo-
 # ry and save it in HOMErrfs.
 #
-HOMErrfs=${scrfunc_dir%/*}
+SR_WX_APP_TOP_DIR=${scrfunc_dir%/*/*}
+# GSK to do:  Get HOMErrfs from Externals.cfg 
+HOMErrfs="${SR_WX_APP_TOP_DIR}/regional_workflow"
 
 USHDIR="$HOMErrfs/ush"
 SCRIPTSDIR="$HOMErrfs/scripts"
 JOBSDIR="$HOMErrfs/jobs"
 SORCDIR="$HOMErrfs/sorc"
+SRC_DIR="${SR_WX_APP_TOP_DIR}/src"
 PARMDIR="$HOMErrfs/parm"
 MODULES_DIR="$HOMErrfs/modulefiles"
-EXECDIR="$HOMErrfs/exec"
+EXECDIR="${SR_WX_APP_TOP_DIR}/exec"
 FIXrrfs="$HOMErrfs/fix"
 FIXupp="$FIXrrfs/fix_upp"
 FIXgsd="$FIXrrfs/fix_gsd"
@@ -694,7 +697,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-mng_extrns_cfg_fn="$HOMErrfs/Externals.cfg"
+mng_extrns_cfg_fn=$( readlink -f "$SR_WX_APP_TOP_DIR/Externals.cfg" )
 property_name="local_path"
 #
 # Get the base directory of the FV3 forecast model code.
@@ -706,7 +709,7 @@ get_manage_externals_config_property \
 print_err_msg_exit "\
 Call to function get_manage_externals_config_property failed."
 
-UFS_WTHR_MDL_DIR="$HOMErrfs/${UFS_WTHR_MDL_DIR}"
+UFS_WTHR_MDL_DIR="${SR_WX_APP_TOP_DIR}/${UFS_WTHR_MDL_DIR}"
 if [ ! -d "${UFS_WTHR_MDL_DIR}" ]; then
   print_err_msg_exit "\
 The base directory in which the FV3 source code should be located
@@ -725,7 +728,7 @@ get_manage_externals_config_property \
 print_err_msg_exit "\
 Call to function get_manage_externals_config_property failed."
 
-UFS_UTILS_DIR="$HOMErrfs/${UFS_UTILS_DIR}"
+UFS_UTILS_DIR="${SR_WX_APP_TOP_DIR}/${UFS_UTILS_DIR}"
 if [ ! -d "${UFS_UTILS_DIR}" ]; then
   print_err_msg_exit "\
 The base directory in which the UFS utilities source codes should be lo-
@@ -744,7 +747,7 @@ get_manage_externals_config_property \
 print_err_msg_exit "\
 Call to function get_manage_externals_config_property failed."
 
-CHGRES_DIR="$HOMErrfs/${CHGRES_DIR}"
+CHGRES_DIR="${SR_WX_APP_TOP_DIR}/${CHGRES_DIR}"
 if [ ! -d "${CHGRES_DIR}" ]; then
   print_err_msg_exit "\
 The base directory in which the chgres source code should be located 
@@ -763,7 +766,7 @@ get_manage_externals_config_property \
 print_err_msg_exit "\
 Call to function get_manage_externals_config_property failed."
 
-EMC_POST_DIR="$HOMErrfs/${EMC_POST_DIR}"
+EMC_POST_DIR="${SR_WX_APP_TOP_DIR}/${EMC_POST_DIR}"
 if [ ! -d "${EMC_POST_DIR}" ]; then
   print_err_msg_exit "\
 The base directory in which the EMC_post source code should be located
@@ -857,7 +860,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-EXPT_BASEDIR="${EXPT_BASEDIR:-${HOMErrfs}/../expt_dirs}"
+EXPT_BASEDIR="${EXPT_BASEDIR:-${SR_WX_APP_TOP_DIR}/../expt_dirs}"
 EXPT_BASEDIR="$( readlink -f ${EXPT_BASEDIR} )"
 mkdir_vrfy -p "${EXPT_BASEDIR}"
 #
@@ -2360,11 +2363,13 @@ CRONTAB_LINE="${CRONTAB_LINE}"
 #
 #-----------------------------------------------------------------------
 #
+SR_WX_APP_TOP_DIR="$SR_WX_APP_TOP_DIR"
 HOMErrfs="$HOMErrfs"
 USHDIR="$USHDIR"
 SCRIPTSDIR="$SCRIPTSDIR"
 JOBSDIR="$JOBSDIR"
 SORCDIR="$SORCDIR"
+SRC_DIR="$SRC_DIR"
 PARMDIR="$PARMDIR"
 MODULES_DIR="${MODULES_DIR}"
 EXECDIR="$EXECDIR"
