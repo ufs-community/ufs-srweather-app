@@ -70,7 +70,7 @@ if [ "$target" = "jet" ] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     module purge
-    export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+    export NCEPLIBS=/lfs4/HFIP/hfv3gfs/nwprod/NCEPLIBS/modulefiles
     echo NCEPLIBS HARD SET to  $NCEPLIBS in `pwd`/module_setup.sh.inc
     module use $NCEPLIBS/modulefiles
 elif [ "$target" = "theia" ] || [ "$target" = "hera" ] ; then
