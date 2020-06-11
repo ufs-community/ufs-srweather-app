@@ -2,7 +2,7 @@ set __ms_shell=csh
 
 eval "if ( -d / ) set __ms_shell=tcsh"
 
-if ( { test -d /lfs3 } ) then 
+if ( { test -d /lfs4 } ) then 
     if ( ! { module help >& /dev/null } ) then
             source /apps/lmod/lmod/init/$__ms_shell
     endif

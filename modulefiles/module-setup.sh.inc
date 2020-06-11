@@ -16,7 +16,7 @@ else
     __ms_shell=sh
 fi
 
-if [[ -d /lfs3 ]] ; then
+if [[ -d /lfs4 ]] ; then
     # We are on NOAA Jet
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/lmod/init/$__ms_shell

@@ -105,8 +105,8 @@ PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
 
 #On Jet:
 #COMINgfs="/lfs1/projects/hwrf-data/hafs-input/COMGFS"
-#STMP="/lfs3/BMC/wrfruc/beck/NCO_dirs/stmp"
-#PTMP="/lfs3/BMC/wrfruc/beck/NCO_dirs/ptmp"
+#STMP=""
+#PTMP=""
 
 #
 # In NCO mode, the user must manually (e.g. after doing the build step)

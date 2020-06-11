@@ -51,7 +51,6 @@ RUN_TASK_MAKE_SFC_CLIMO="FALSE"
 SFC_CLIMO_DIR="/scratch2/BMC/det/FV3SAR_pregen/sfc_climo/GSD_HRRR25km"
 
 #On Jet
-#GRID_DIR="/lfs3/projects/wrfruc/beck/FV3SAR_pregen/grid/GSD_HRRR25km"
-#OROG_DIR="/lfs3/projects/wrfruc/beck/FV3SAR_pregen/orog/GSD_HRRR25km"
-#SFC_CLIMO_DIR="/lfs3/projects/wrfruc/beck/FV3SAR_pregen/sfc_climo/GSD_HRRR25km"
-
+#GRID_DIR=""
+#OROG_DIR=""
+#SFC_CLIMO_DIR=""

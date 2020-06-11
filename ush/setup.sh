@@ -664,7 +664,7 @@ case $MACHINE in
   ;;
 
 "JET")
-  FIXgsm="/lfs3/projects/hpc-wof1/ywang/regional_fv3/fix/fix_am"
+  FIXgsm="/lfs4/HFIP/gsd-fv3-hfip/FV3/fix/fix_am"
   SFC_CLIMO_INPUT_DIR="/lfs1/HFIP/hwrf-data/git/fv3gfs/fix/fix_sfc_climo"
   ;;
 
