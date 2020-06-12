@@ -17,7 +17,7 @@
 # 4. If all went well, you should see one of two different messages at the end:
 #    - If your fork is already up-to-date, you should see "Already up-to-date."
 #    - If your fork is not up-to-date, this script initiates a fast-forward merge to bring your fork 
-#      up to date with the community_develop of the main repository (https://github.com/NOAA-EMC/regional_workflow). 
+#      up to date with the develop of the main repository (https://github.com/NOAA-EMC/regional_workflow). 
 #      Near the end git will print a line of statistics describing what changed, which will look 
 #      something like this:
 #
@@ -25,7 +25,7 @@
 #
 #      followed by a few more lines and this final message:
 #
-#         Branch community_develop set up to track remote branch community_develop from origin.
+#         Branch develop set up to track remote branch develop from origin.
 
 # Notes:
 # - This is a preliminary version of what will hopefully be a more detailed script in the future. 
@@ -36,10 +36,10 @@ use strict;
 my $username;
 my $go_on = "";
 
-# First off: check if we are on community_develop, and quit if we are not. We want the branch switch to be transparent to users
+# First off: check if we are on develop, and quit if we are not. We want the branch switch to be transparent to users
 my $curr_branch = `git rev-parse --abbrev-ref HEAD`;
 chomp $curr_branch;
-die "\nERROR ERROR ERROR:\nYou are currently on the branch $curr_branch\n\nThis script must be run from the community_develop branch.\n\nCheck out the community_develop branch, then run this script, then check out your working branch $curr_branch when the update is finished\n\n" unless $curr_branch eq "community_develop";
+die "\nERROR ERROR ERROR:\nYou are currently on the branch $curr_branch\n\nThis script must be run from the develop branch.\n\nCheck out the develop branch, then run this script, then check out your working branch $curr_branch when the update is finished\n\n" unless $curr_branch eq "develop";
 
 
 # Prompt user for their username
@@ -67,11 +67,11 @@ print "\nStep 1: Setting main repository as a remote repository named 'upstream'
 print "\nStep 2: Setting the 'push' url for 'upstream' to the user's fork, to avoid accidentally pushing to the main repository\n\n";
 ! system("git", "remote", "set-url", "--push", "upstream", $fork) or die "Can not add set push repository '$fork': $!\n";
 
-# Checkout community_develop, fetch "upstream" commits, and perform a fastforward merge
+# Checkout develop, fetch "upstream" commits, and perform a fastforward merge
 print "\nStep 3: Fetching 'upstream' commits, and performing fastforward merge\n\n";
-! system("git", "fetch", "upstream", "community_develop") or die "Can not fetch upstream changes from : $!\nSomething has gone seriously wrong! Perhaps you don't have internet access?\n";
-! system("git", "merge", "--ff-only", "upstream/community_develop") or die "\nCan not perform fastforward merge from upstream/community_develop: $!\n\nTroubleshooting info:\n\n 1. If you receive a message 'fatal: 'upstream/community_develop' does not point to a commit', your git version may be too old. On yellowstone, try `module load git`\n 2. If you receive a message' fatal: Not possible to fast-forward, aborting.', you have likely made local changes to the community_develop branch of your fork. All work should be done on branches of your fork, not the community_develop!\n";
+! system("git", "fetch", "upstream", "develop") or die "Can not fetch upstream changes from : $!\nSomething has gone seriously wrong! Perhaps you don't have internet access?\n";
+! system("git", "merge", "--ff-only", "upstream/develop") or die "\nCan not perform fastforward merge from upstream/develop: $!\n\nTroubleshooting info:\n\n 1. If you receive a message 'fatal: 'upstream/develop' does not point to a commit', your git version may be too old. On yellowstone, try `module load git`\n 2. If you receive a message' fatal: Not possible to fast-forward, aborting.', you have likely made local changes to the develop branch of your fork. All work should be done on branches of your fork, not the develop!\n";
 
-# Finally, push updated community_develop to the Github copy of your fork:
-print "\nStep 4: Pushing updated community_develop to fork\n\n";
-! system("git", "push", "-u", "origin", "community_develop") or die "\nCan not push updates to origin/community_develop : $!\n";
+# Finally, push updated develop to the Github copy of your fork:
+print "\nStep 4: Pushing updated develop to fork\n\n";
+! system("git", "push", "-u", "origin", "develop") or die "\nCan not push updates to origin/develop : $!\n";
