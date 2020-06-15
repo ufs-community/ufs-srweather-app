@@ -24,6 +24,7 @@ fi
 
 export COMPILER=intel
 target=${target}.${COMPILER}
+export CMAKE_Platform=${target}
 
 cd ufs_weather_model
 model_top_dir=`pwd`
