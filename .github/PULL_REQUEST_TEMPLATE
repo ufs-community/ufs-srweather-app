@@ -1,0 +1,24 @@
+- Use this template to give a detailed message describing the change you want to make to the code.
+
+- You may delete any sections labeled "optional".
+
+- If you are unclear on what should be written here, see https://github.com/wrf-model/WRF/wiki/Making-a-good-pull-request-message for some guidance. 
+
+- The title of this pull request should be a brief summary (ideally less than 100 characters) of the changes included in this PR.
+
+- Use the "Preview" tab to see what your PR will look like when you hit "Create pull request"
+
+# --- Delete this line and those above before hitting "Create pull request" ---
+
+## DESCRIPTION OF CHANGES: 
+One or more paragraphs describing the problem, solution, and required changes.
+
+## TESTS CONDUCTED: 
+Explicitly state what tests were run on these changes, or if any are still pending (for README or other text-only changes, just put "None required". Make note of the compilers used, the platform/machine, and other relevant details as necessary. For more complicated changes, or those resulting in scientific changes, please be explicit!
+
+## ISSUE (optional): 
+If this PR is resolving or referencing one or more issues, in this repository or elewhere, list them here. For example, "Fixes issue mentioned in #123" or "Related to bug in https://github.com/NOAA-EMC/other_repository/pull/63"
+
+## CONTRIBUTORS (optional): 
+If others have contributed to this work aside from the PR author, list them here
+
