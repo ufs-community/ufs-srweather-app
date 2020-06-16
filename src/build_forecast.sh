@@ -23,7 +23,6 @@ else
 fi
 
 export COMPILER=intel
-target=${target}.${COMPILER}
 export CMAKE_Platform=${target}
 if [ $target = 'wcoss_cray' -o $target = 'wcoss_dell_p3' ]; then
   target=${target}
