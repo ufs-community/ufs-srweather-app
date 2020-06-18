@@ -107,7 +107,7 @@ case "${CCPP_PHYS_SUITE}" in
 "FV3_GFS_2017_gfdlmp" | "FV3_GFS_2017_gfdlmp_regional")
   phys_suite="GFS"
   ;;
-"FV3_GSD_v0" | "FV3_GSD_SAR" | "FV3_GSD_SAR_v1")
+"FV3_GSD_v0" | "FV3_GSD_SAR" | "FV3_GSD_SAR_v1" | "FV3_RRFS_v0" )
   phys_suite="GSD"
   ;;
 "FV3_CPT_v0" )
@@ -289,6 +289,7 @@ case "${EXTRN_MDL_NAME_LBCS}" in
         tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
+           [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v0" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
@@ -330,6 +331,7 @@ case "${EXTRN_MDL_NAME_LBCS}" in
     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
       numsoil_out="4"

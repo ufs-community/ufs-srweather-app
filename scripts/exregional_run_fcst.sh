@@ -373,6 +373,7 @@ if [ "${USE_CCPP}" = "TRUE" ]; then
 
   if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
      [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v0" ] || \
      [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
     ln_vrfy -sf ${relative_or_null} $EXPTDIR/CCN_ACTIVATE.BIN ${CYCLE_DIR}
   fi
