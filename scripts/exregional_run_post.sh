@@ -225,16 +225,16 @@ else
 
 fi
 
-mv_vrfy BGDAWP.GrbF${fhr} ${postprd_dir}/HRRR.t${cyc}z.bgdawp${fhr}.${tmmark}
-mv_vrfy BGRD3D.GrbF${fhr} ${postprd_dir}/HRRR.t${cyc}z.bgrd3d${fhr}.${tmmark}
+mv_vrfy BGDAWP.GrbF${fhr} ${postprd_dir}/RRFS.t${cyc}z.bgdawp${fhr}.${tmmark}
+mv_vrfy BGRD3D.GrbF${fhr} ${postprd_dir}/RRFS.t${cyc}z.bgrd3d${fhr}.${tmmark}
 
 #Link output for transfer to Jet
 
 START_DATE=`echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/'`
 basetime=`date +%y%j%H%M -d "${START_DATE}"`
-ln_vrfy -fs ${postprd_dir}/HRRR.t${cyc}z.bgdawp${fhr}.${tmmark} \
+ln_vrfy -fs ${postprd_dir}/RRFS.t${cyc}z.bgdawp${fhr}.${tmmark} \
             ${postprd_dir}/BGDAWP_${basetime}${fhr}00
-ln_vrfy -fs ${postprd_dir}/HRRR.t${cyc}z.bgrd3d${fhr}.${tmmark} \
+ln_vrfy -fs ${postprd_dir}/RRFS.t${cyc}z.bgrd3d${fhr}.${tmmark} \
             ${postprd_dir}/BGRD3D_${basetime}${fhr}00
 
 rm_vrfy -rf ${fhr_dir}
