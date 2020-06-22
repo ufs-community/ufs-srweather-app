@@ -392,12 +392,6 @@ Copying cycle-dependent model input files from the templates directory
 to the current cycle's run directory..." 
 
 print_info_msg "$VERBOSE" "
-  Copying the template diagnostics table file to the current cycle's run
-  directory..."
-diag_table_fp="${CYCLE_DIR}/${DIAG_TABLE_FN}"
-cp_vrfy "${DIAG_TABLE_TMPL_FP}" "${diag_table_fp}"
-
-print_info_msg "$VERBOSE" "
   Copying the template model configuration file to the current cycle's
   run directory..."
 model_config_fp="${CYCLE_DIR}/${MODEL_CONFIG_FN}"
@@ -414,7 +408,6 @@ YYYY=${CDATE:0:4}
 MM=${CDATE:4:2}
 DD=${CDATE:6:2}
 HH=${CDATE:8:2}
-YYYYMMDD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
@@ -422,16 +415,38 @@ YYYYMMDD=${CDATE:0:8}
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "
-Setting parameters in file:
-  diag_table_fp = \"${diag_table_fp}\""
 
-set_file_param "${diag_table_fp}" "CRES" "$CRES"
-set_file_param "${diag_table_fp}" "YYYY" "$YYYY"
-set_file_param "${diag_table_fp}" "MM" "$MM"
-set_file_param "${diag_table_fp}" "DD" "$DD"
-set_file_param "${diag_table_fp}" "HH" "$HH"
-set_file_param "${diag_table_fp}" "YYYYMMDD" "$YYYYMMDD"
+diag_table_fp="${CYCLE_DIR}/${DIAG_TABLE_FN}"
+
+print_info_msg "$VERBOSE" "
+  Using the template diagnostics table file:
+
+      diag_table_tmpl_fp = ${DIAG_TABLE_TMPL_FP}
+
+  to create:
+
+      diag_table_fp = \"${diag_table_fp}\""
+
+settings="
+  starttime: !datetime ${CDATE}
+  cres: ${CRES}
+"
+
+$USHDIR/fill_jinja_template.py -q -u "${settings}" -t "${DIAG_TABLE_TMPL_FP}" -o "${diag_table_fp}"
+
+if [[ $? -ne 0 ]] ; then
+  echo "
+  !!!!!!!!!!!!!!!!!
+
+  fill_jinja_template.py failed!
+
+  !!!!!!!!!!!!!!!!!
+  "
+
+  exit 1
+fi
+
+
 #
 #-----------------------------------------------------------------------
 #

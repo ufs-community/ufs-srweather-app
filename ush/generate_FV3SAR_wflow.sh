@@ -184,28 +184,28 @@ settings="\
 # Forecast length (same for all cycles).
 #
   'fcst_len_hrs': ${FCST_LEN_HRS}"
-#
-# For debugging purposes, print out what "settings" has been set to.
-#
+
 print_info_msg $VERBOSE "
 The variable \"settings\" specifying values of the rococo XML variables
 has been set as follows:
-
+#-----------------------------------------------------------------------
 settings =
 $settings"
+
 #
 # Set the full path to the template rocoto XML file.  Then call a python
 # script to generate the experiment's actual XML file from this template
 # file.
 #
 template_xml_fp="${TEMPLATE_DIR}/${WFLOW_XML_FN}"
-$USHDIR/create_xml.py -q \
-                      -t ${template_xml_fp} \
-                      -u "$settings" \
-                      -o ${WFLOW_XML_FP} || \
+$USHDIR/fill_jinja_template.py -q \
+                               -u "${settings}" \
+                               -t ${template_xml_fp} \
+                               -o ${WFLOW_XML_FP} || \
   print_err_msg_exit "\
-Call to python script create_xml.py to create a rocoto workflow XML file
-from a template file failed.  Parameters passed to this script are:
+Call to python script fill_jinja_template.py to create a rocoto workflow
+XML file from a template file failed.  Parameters passed to this script
+are:
   Full path to template rocoto XML file:
     template_xml_fp = \"${template_xml_fp}\"
   Full path to output rocoto XML file:
@@ -213,6 +213,7 @@ from a template file failed.  Parameters passed to this script are:
   Namelist settings specified on command line:
     settings =
 $settings"
+
 #
 #-----------------------------------------------------------------------
 #
@@ -269,6 +270,7 @@ fi
 #
 # Only some platforms build EMC_post using modules.
 #
+
 case $MACHINE in
 
   "CHEYENNE")

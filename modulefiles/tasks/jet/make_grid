@@ -10,4 +10,6 @@ module load hdf5/1.10.5
 
 module use -a /contrib/miniconda3/modulefiles
 module load miniconda3
-system "conda activate regional_workflow"
+if [module-info mode load] {
+  system "conda activate regional_workflow"
+}

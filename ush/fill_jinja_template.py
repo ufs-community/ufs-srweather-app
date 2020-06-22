@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 This utility fills in a user-supplied Jinja template from either a YAML file, or
