@@ -28,6 +28,10 @@ elif [ ${target} == "odin" ]; then
 
     ln -sfn /scratch/ywang/fix/theia_fix/fix_am fix_am
 
+elif [ ${target} == "stampede" ]; then
+
+    ln -sfn /work/00315/tg455890/stampede2/regional_fv3/fix_am fix_am
+
 elif [ ${target} == "cheyenne" ]; then
 
     ln -sfn /glade/p/ral/jntp/GMTB/FV3GFS_V1_RELEASE/fix/fix_am fix_am

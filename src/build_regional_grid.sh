@@ -8,7 +8,7 @@ if [ $# -eq 0 ]; then
   echo "No 'platform' argument supplied"
   echo "Using directory structure to determine machine settings"
   platform=''
-else 
+else
   platform=$1
 fi
 #
@@ -28,7 +28,7 @@ exec_dir=`pwd`/../exec
 mkdir -p ${exec_dir}
 #
 # Change directory to where the source code is located.
-# 
+#
 srcDir=`pwd`/../regional_workflow/sorc/${package_name}.fd/
 cd ${srcDir}
 #
@@ -74,6 +74,9 @@ elif [ $platform = "cheyenne" ]; then
 elif [ $platform = "jet" ]; then
   HDF5_DIR=$HDF5
   NETCDF_DIR=$NETCDF
+elif [ $platform = "stampede" ]; then
+  HDF5_DIR=$TACC_HDF5_DIR
+  NETCDF_DIR=$TACC_NETCDF_DIR
 fi
 #
 # Create alias for "make".
@@ -92,7 +95,7 @@ echo "//////////////////////////////////////////////////////////////////////////
 echo
 set -x
 #
-# Copy all source code and the makefile to the temporary directory.  
+# Copy all source code and the makefile to the temporary directory.
 # Then clean and build from scratch.
 #
 cp $srcDir/*.f90 $tmpDir
