@@ -261,7 +261,11 @@ if [ -f ${modulefile_local} ]; then
   cat "${modulefile_local}" >> "${MAKE_LBCS_TN}"
 fi
 
-cp_vrfy "${UFS_WTHR_MDL_DIR}/modulefiles/$machine.intel/fv3" "${RUN_FCST_TN}"
+if [ $MACHINE = "WCOSS_CRAY" -o $MACHINE = "WCOSS_DELL_P3" ] ; then
+  cp_vrfy "${UFS_WTHR_MDL_DIR}/modulefiles/$machine/fv3" "${RUN_FCST_TN}"
+else
+  cp_vrfy "${UFS_WTHR_MDL_DIR}/modulefiles/$machine.intel/fv3" "${RUN_FCST_TN}"
+fi
 modulefile_local="${RUN_FCST_TN}.local"
 if [ -f ${modulefile_local} ]; then
   cat "${modulefile_local}" >> "${RUN_FCST_TN}"
@@ -275,6 +279,16 @@ case $MACHINE in
 
   "CHEYENNE")
     print_info_msg "No post modulefile needed for $MACHINE"
+    ;;
+
+  "WCOSS_CRAY")
+    cp_vrfy "${EMC_POST_DIR}/modulefiles/post/v8.0.0-cray-intel" \
+            "${RUN_POST_TN}"
+    modulefile_local="${RUN_POST_TN}.local"
+    if [ -f ${modulefile_local} ]; then
+      cat "${modulefile_local}" >> "${RUN_POST_TN}"
+    fi
+
     ;;
 
   *)

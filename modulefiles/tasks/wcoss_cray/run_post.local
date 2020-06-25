@@ -1,0 +1,13 @@
+module load modules
+
+module load xt-lsfhpc
+module load ncep
+module load alps
+module load dvs
+module load xpmem
+module load ugni
+module load craype-network-aries
+module load switch
+module load rca
+module load gni-headers
+module load udreg
