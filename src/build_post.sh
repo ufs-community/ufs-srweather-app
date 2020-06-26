@@ -41,7 +41,9 @@ EOT
 elif [ "$target" = "gaea" ] ; then
     echo "Not doing anything for 'gaea', if statement reserved for future use"
 elif [ "$target" = "odin" ] ; then
-    echo "Not doing anything for 'odin', if statement reserved for future use"
+    ./compile odin
+elif [ "$target" = "stampede" ] ; then
+    ./compile stampede
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
