@@ -1,0 +1,13 @@
+#%Module#####################################################
+## Module file for regional_grid
+#############################################################
+module load PrgEnv-intel
+module swap intel/19.0.5.281
+module load cray-mpich/7.7.10
+module load cray-libsci
+module load cray-netcdf-hdf5parallel
+module load cray-parallel-netcdf
+module load cray-hdf5-parallel
+
+export NETCDF=/opt/cray/pe/netcdf-hdf5parallel/4.6.3.2/INTEL/19.0
+export HDF5=/opt/cray/pe/hdf5-parallel/1.10.5.2/INTEL/19.0

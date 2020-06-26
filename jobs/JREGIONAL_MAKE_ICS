@@ -85,11 +85,15 @@ case "$MACHINE" in
     ;;
 
   "ODIN")
+    APRUN="srun"
     ;;
 
   "CHEYENNE")
     nprocs=$(( NNODES_MAKE_ICS*PPN_MAKE_ICS ))
     APRUN="mpirun -np $nprocs"
+    ;;
+  "STAMPEDE")
+    APRUN="ibrun"
     ;;
 
 esac
