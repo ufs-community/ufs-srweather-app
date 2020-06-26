@@ -1,5 +1,6 @@
-<YYYYMMDD>.<HH>Z.<CRES>.32bit.non-hydro.regional
-<YYYY> <MM> <DD> <HH> 0 0
+{{ starttime.strftime("%Y%m%d.%H") }}Z.{{ cres }}.32bit.non-hydro.regional
+{{ starttime.strftime("%Y %m %d %H %M %S") }}
+
 #output files
 "grid_spec",     -1,  "months",  1,  "days",   "time"
 #"atmos_4xdaily",  1,  "hours",   1,  "days",   "time"
