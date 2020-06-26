@@ -128,6 +128,11 @@ case $MACHINE in
   APRUN="mpirun -np $nprocs"
   ;;
 
+"STAMPEDE")
+  nprocs=$(( NNODES_RUN_POST*PPN_RUN_POST ))
+  APRUN="ibrun -n $nprocs"
+  ;;
+
 esac
 #
 #-----------------------------------------------------------------------

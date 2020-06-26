@@ -545,10 +545,13 @@ bination of external model (extrn_mdl_name) and analysis or forecast
       sysdir=""
       ;;
     "ODIN")
-      sysdir=""
+      sysdir="$sysbasedir"
       ;;
     "CHEYENNE")
       sysdir=""
+      ;;
+    "STAMPEDE")
+      sysdir="$sysbasedir"
       ;;
     *)
       print_err_msg_exit "\

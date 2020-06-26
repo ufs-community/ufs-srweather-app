@@ -145,6 +145,11 @@ case $MACHINE in
   APRUN="time"
   ;;
 
+"STAMPEDE")
+  export APRUN="time"
+  export topo_dir="/work/00315/tg455890/stampede2/regional_fv3/fix_orog"
+  ;;
+
 esac
 #
 #-----------------------------------------------------------------------
@@ -317,7 +322,7 @@ ${tmp_dir}" \
   ;;
 
 
-"CHEYENNE" | "HERA" | "JET" | "ODIN")
+"CHEYENNE" | "HERA" | "JET" | "ODIN" | "STAMPEDE")
   $APRUN "${exec_fp}" < "${input_redirect_fn}" || \
     print_err_msg_exit "\
 Call to executable (exec_fp) that generates the raw orography file returned 

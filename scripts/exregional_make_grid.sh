@@ -148,6 +148,13 @@ case $MACHINE in
   APRUN="time"
   ;;
 
+"STAMPEDE")
+#
+  export APRUN="time"
+
+  ulimit -s unlimited
+  ulimit -a
+  ;;
 esac
 #
 #-----------------------------------------------------------------------
