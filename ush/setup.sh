@@ -312,16 +312,7 @@ case $MACHINE in
   QUEUE_HPSS=${QUEUE_HPSS:-"regular"}
   QUEUE_HPSS_TAG="queue"       # pbspro does not support "partition" tag
   QUEUE_FCST=${QUEUE_FCST:-"regular"}
-  ;;
 #
-"STAMPEDE")
-#
-  NCORES_PER_NODE=68
-  SCHED="slurm"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"normal"}
-  QUEUE_HPSS=${QUEUE_HPSS:-"development"}
-  QUEUE_FCST=${QUEUE_FCST:-"normal"}
-  ;;
 esac
 #
 #-----------------------------------------------------------------------
@@ -679,16 +670,11 @@ case $MACHINE in
 
 "ODIN")
   FIXgsm="/scratch/ywang/fix/theia_fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/scratch/ywang/fix/climo_fields_netcdf"
+  SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"
   ;;
 "CHEYENNE")
   FIXgsm="/glade/p/ral/jntp/UFS_CAM/fix/fix_am"
   SFC_CLIMO_INPUT_DIR="/glade/p/ral/jntp/UFS_CAM/fix/climo_fields_netcdf"
-  ;;
-
-"STAMPEDE")
-  FIXgsm="/work/00315/tg455890/stampede2/regional_fv3/fix_am"
-  SFC_CLIMO_INPUT_DIR="/work/00315/tg455890/stampede2/regional_fv3/climo_fields_netcdf"
   ;;
 
 *)

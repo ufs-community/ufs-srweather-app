@@ -68,13 +68,10 @@ else
       EXTRN_MDL_FILES_SYSBASEDIR_ICS=""
       ;;
     "ODIN")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch/ywang/EPIC/GDAS/2019053000_mem001"
+      EXTRN_MDL_FILES_SYSBASEDIR_ICS=""
       ;;
     "CHEYENNE")
       EXTRN_MDL_FILES_SYSBASEDIR_ICS="/glade/p/ral/jntp/UFS_CAM/COMGFS"
-      ;;
-    "STAMPEDE")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch/00315/tg455890/GDAS/20190530/2019053000_mem001"
       ;;
     *)
       print_err_msg_exit "\
@@ -226,13 +223,10 @@ else
       EXTRN_MDL_FILES_SYSBASEDIR_LBCS=""
       ;;
     "ODIN")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch/ywang/EPIC/GDAS/2019053000_mem001"
+      EXTRN_MDL_FILES_SYSBASEDIR_LBCS=""
       ;;
     "CHEYENNE")
       EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/glade/p/ral/jntp/UFS_CAM/COMGFS"
-      ;;
-    "STAMPEDE")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch/00315/tg455890/GDAS/20190530/2019053000_mem001"
       ;;
     *)
       print_err_msg_exit "\
