@@ -36,13 +36,13 @@ FV3_GSD_SAR_v1:
   gfs_physics_nml:
     <<: *gsd_sar_phys
     lsm: 1
-    ttendlim: 0.005
+    lsoil_lsm: 4
 
 FV3_RRFS_v0:
   gfs_physics_nml:
     <<: *gsd_sar_phys
     lsm: 2
-    ttendlim: 0.005
+    lsoil_lsm: 4
 
 FV3_GFS_2017_gfdlmp:
   atmos_model_nml:
