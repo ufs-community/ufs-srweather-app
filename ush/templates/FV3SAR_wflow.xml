@@ -6,8 +6,7 @@ generate_workflow.sh step of preparing a regional workflow configured
 experiment.
 
 See README.xml_templating.md for information on using the Templating mechanisms.
-#}
-
+-#}
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE workflow [
 
