@@ -1,5 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
+{#
 
+This is a Jinja-enabled Rocoto XML template. It is filled in using the
+fill_template.py script, and is done automatically by the
+generate_workflow.sh step of preparing a regional workflow configured
+experiment.
+
+See README.xml_templating.md for information on using the Templating mechanisms.
+#}
+
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE workflow [
 
 <!--
