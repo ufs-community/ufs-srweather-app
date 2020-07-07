@@ -75,7 +75,7 @@ FV3_GFS_2017_gfdlmp:
     do_mynnsfclay: !!python/none
     do_sfcperts: !!python/none
     effr_in: True
-    fhcyc: 24.0
+    fhcyc: 0.0
     fhlwr: 3600.0
     fhswr: 3600.0
     hybedmf: True
@@ -227,7 +227,7 @@ FV3_GFS_v15p2:
     do_ugwp: False
     do_ysu: False
     effr_in: False
-    fhcyc: 24.0
+    fhcyc: 0.0
     fhlwr: 3600.0
     fhswr: 3600.0
     fhzero: 6.0
@@ -389,7 +389,7 @@ FV3_CPT_v0:
     do_sfcperts: !!python/none
     do_shoc: False
     effr_in: True
-    fhcyc: 24.0
+    fhcyc: 0.0
     fhlwr: 3600.0
     fhswr: 3600.0
     fhzero: 6.0
