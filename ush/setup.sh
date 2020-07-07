@@ -231,6 +231,66 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that DO_SHUM is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "DO_SHUM" "valid_vals_DO_SHUM"
+#
+# Set DO_SHUM to either "TRUE" or "FALSE" so we don't
+# have to consider other valid values later on.
+#
+DO_SHUM=${DO_SHUM^^}
+if [ "${DO_SHUM}" = "TRUE" ] || \
+   [ "${DO_SHUM}" = "YES" ]; then
+  DO_SHUM="true"
+elif [ "${DO_SHUM}" = "FALSE" ] || \
+     [ "${DO_SHUM}" = "NO" ]; then
+  DO_SHUM="false"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that DO_SPPT is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "DO_SPPT" "valid_vals_DO_SPPT"
+#
+# Set DO_SPPT to either "TRUE" or "FALSE" so we don't
+# have to consider other valid values later on.
+#
+DO_SPPT=${DO_SPPT^^}
+if [ "${DO_SPPT}" = "TRUE" ] || \
+   [ "${DO_SPPT}" = "YES" ]; then
+  DO_SPPT="true"
+elif [ "${DO_SPPT}" = "FALSE" ] || \
+     [ "${DO_SPPT}" = "NO" ]; then
+  DO_SPPT="false"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that DO_SKEB is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "DO_SKEB" "valid_vals_DO_SKEB"
+#
+# Set DO_SKEB to either "TRUE" or "FALSE" so we don't
+# have to consider other valid values later on.
+#
+DO_SKEB=${DO_SKEB^^}
+if [ "${DO_SKEB}" = "TRUE" ] || \
+   [ "${DO_SKEB}" = "YES" ]; then
+  DO_SKEB="true"
+elif [ "${DO_SKEB}" = "FALSE" ] || \
+     [ "${DO_SKEB}" = "NO" ]; then
+  DO_SKEB="false"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that DOT_OR_USCORE is set to a valid value.
 #
 #-----------------------------------------------------------------------

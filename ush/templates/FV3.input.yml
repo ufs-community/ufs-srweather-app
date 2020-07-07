@@ -5,7 +5,7 @@
 
 # The FV3_GSD_v0 section is empty as it provides the "base namelist" to 
 # which all the modifications here are provided. Please see 
-#   ush/templates/FV3.input.yml
+#   ush/templates/input.nml.FV3
 # for the full set of namelist options that are used for FV3 in that 
 # configuration.
 
@@ -74,9 +74,6 @@ FV3_GFS_2017_gfdlmp:
     do_mynnedmf: !!python/none
     do_mynnsfclay: !!python/none
     do_sfcperts: !!python/none
-    do_shum: !!python/none
-    do_skeb: !!python/none
-    do_sppt: !!python/none
     effr_in: True
     fhcyc: 24.0
     fhlwr: 3600.0
@@ -159,9 +156,6 @@ FV3_GFS_2017_gfdlmp_regional:
     <<: *gfs_2017_gfdlmp_phys
     cplflx: False
     do_sfcperts: False
-    do_shum: False
-    do_skeb: False
-    do_sppt: False
     iopt_alb: 2
     iopt_btr: 1
     iopt_crs: 1
@@ -194,7 +188,6 @@ FV3_GFS_v15p2:
     domains_stack_size: 1800200
   fv_core_nml: &gfs_v15_fv_core
     agrid_vel_rst: False
-    bc_update_interval: 6
     d2_bg_k1: 0.15
     d2_bg_k2: 0.02
     dnats: 1
@@ -395,9 +388,6 @@ FV3_CPT_v0:
     do_mynnsfclay: !!python/none
     do_sfcperts: !!python/none
     do_shoc: False
-    do_shum: !!python/none
-    do_skeb: !!python/none
-    do_sppt: !!python/none
     effr_in: True
     fhcyc: 24.0
     fhlwr: 3600.0

@@ -390,6 +390,32 @@ FV3GFS_FILE_FMT_LBCS="nemsio"
 #
 #-----------------------------------------------------------------------
 #
+# Set default stochastic physics options
+# For detailed documentation of these parameters, see:
+# https://stochastic-physics.readthedocs.io/en/ufs_public_release/namelist_options.html
+#
+#-----------------------------------------------------------------------
+#
+DO_SHUM="false"
+DO_SPPT="false"
+DO_SKEB="false"
+SHUM_MAG="0.006" #Variable "shum" in input.nml
+SHUM_LSCALE="150000"
+SHUM_TSCALE="21600" #Variable "shum_tau" in input.nml
+SHUM_INT="3600" #Variable "shumint" in input.nml
+SPPT_MAG="1.0" #Variable "sppt" in input.nml
+SPPT_LSCALE="150000"
+SPPT_TSCALE="21600" #Variable "sppt_tau" in input.nml
+SPPT_INT="3600" #Variable "spptint" in input.nml
+SKEB_MAG="0.5" #Variable "skeb" in input.nml
+SKEB_LSCALE="150000"
+SKEB_TSCALE="21600" #Variable "skeb_tau" in input.nml
+SKEB_INT="3600" #Variable "skebint" in input.nml
+SKEB_VDOF="10"
+USE_ZMTNBLCK="false"
+#
+#-----------------------------------------------------------------------
+#
 # Set CCPP-associated parameters.  Definitions:
 #
 # USE_CCPP:
