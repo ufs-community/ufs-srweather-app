@@ -519,9 +519,9 @@ bination of external model (extrn_mdl_name) and analysis or forecast
 #-----------------------------------------------------------------------
 #
   if [ "${anl_or_fcst}" = "ANL" ]; then
-    sysbasedir="${EXTRN_MDL_FILES_SYSBASEDIR_ICS}"
+    sysbasedir="${EXTRN_MDL_SYSBASEDIR_ICS}"
   elif [ "${anl_or_fcst}" = "FCST" ]; then
-    sysbasedir="${EXTRN_MDL_FILES_SYSBASEDIR_LBCS}"
+    sysbasedir="${EXTRN_MDL_SYSBASEDIR_LBCS}"
   fi
 
   case "${extrn_mdl_name}" in

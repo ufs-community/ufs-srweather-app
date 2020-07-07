@@ -79,8 +79,8 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-extrn_mdl_files_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME_LBCS}/LBCS"
-extrn_mdl_var_defns_fp="${extrn_mdl_files_dir}/${EXTRN_MDL_LBCS_VAR_DEFNS_FN}"
+extrn_mdl_staging_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME_LBCS}/LBCS"
+extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_LBCS_VAR_DEFNS_FN}"
 . ${extrn_mdl_var_defns_fp}
 #
 #-----------------------------------------------------------------------
@@ -459,7 +459,7 @@ list file has not specified for this external model:
  'orog_dir_input_grid': '',
  'base_install_dir': ${CHGRES_DIR},
  'wgrib2_path': ${wgrib2_dir},
- 'data_dir_input_grid': ${extrn_mdl_files_dir},
+ 'data_dir_input_grid': ${extrn_mdl_staging_dir},
  'atm_files_input_grid': ${fn_atm_nemsio},
  'sfc_files_input_grid': ${fn_sfc_nemsio},
  'grib2_file_input_grid': \"${fn_grib2}\",
@@ -517,7 +517,7 @@ The external model from which the LBCs files are to be generated is:
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"                         
 The external model files that are inputs to the executable (exec_fp) are 
 located in the following directory:                                      
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\""                      
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""                      
 #
 # Move LBCs file for the current lateral boundary update time to the LBCs
 # work directory.  Note that we rename the file by including in its name

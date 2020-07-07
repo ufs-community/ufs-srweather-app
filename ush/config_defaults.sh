@@ -1114,5 +1114,41 @@ WTIME_MAKE_ICS="00:30:00"
 WTIME_MAKE_LBCS="00:30:00"
 WTIME_RUN_FCST="04:30:00"
 WTIME_RUN_POST="00:15:00"
+#
+#-----------------------------------------------------------------------
+#
+# User-staged external model directories and files.  Definitions:
+#
+# EXTRN_MDL_SOURCE_DIR_ICS:
+# Directory in which to look for external model files for generating ICs.
+# If this is set to a non-empty string, the workflow looks in this directory
+# (specifically, in a subdirectory under this directory named $CDATE, 
+# where CDATE is the starting date and cycle hour of the forecast, in the
+# form YYYYMMDDHH) for the external model files specified by the array 
+# EXTRN_MDL_FILES_ICS (these files will be used to generate the ICs on 
+# the native FV3SAR grid.  If this is set to an empty string, then the 
+# workflow will look for the external model files for generating ICS in 
+# a default machine-dependent location.  In this case, the EXTRN_MDL_FILES_ICS 
+# is not used.
+# 
+# EXTRN_MDL_FILES_ICS:
+# Array containing the names of the files to search for in the directory
+# specified by EXTRN_MDL_SOURCE_DIR_ICS.  This variable is not used if 
+# EXTRN_MDL_SOURCE_DIR_ICS is set to a null (i.e. empty) string.
+#
+# EXTRN_MDL_SOURCE_DIR_LBCS:
+# Analogous to EXTRN_MDL_SOURCE_DIR_ICS but for LBCs instead of ICs.
+#
+# EXTRN_MDL_FILES_LBCS:
+# Analogous to EXTRN_MDL_FILES_ICS but for LBCs instead of ICs.
+#
+#-----------------------------------------------------------------------
+#
+EXTRN_MDL_SOURCE_DIR_ICS=""
+EXTRN_MDL_FILES_ICS=( "file1" "file2" )
+
+EXTRN_MDL_SOURCE_DIR_LBCS=""
+EXTRN_MDL_FILES_LBCS=( "file1" "file2" )
+
 
 

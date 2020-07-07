@@ -18,3 +18,4 @@ regional_013
 regional_014
 regional_015
 regional_016
+user_staged_extrn_files

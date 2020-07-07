@@ -57,12 +57,13 @@ boundary condition files for the FV3 will be generated.
 #
 valid_args=( \
 "ics_or_lbcs" \
+"use_user_staged_extrn_files" \
 "extrn_mdl_cdate" \
 "extrn_mdl_lbc_spec_fhrs" \
 "extrn_mdl_fns_on_disk" \
 "extrn_mdl_fns_in_arcv" \
-"extrn_mdl_sysdir" \
-"extrn_mdl_files_dir" \
+"extrn_mdl_source_dir" \
+"extrn_mdl_staging_dir" \
 "extrn_mdl_arcv_fmt" \
 "extrn_mdl_arcv_fns" \
 "extrn_mdl_arcv_fps" \
@@ -82,60 +83,120 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-# We first check whether the external model files exist on the system 
-# disk (and are older than a certain age).  If so, we simply copy them 
-# from the system disk to the location specified by extrn_mdl_files_dir.  
-# If not, we try to fetch them from HPSS.
-#
-# Start by setting extrn_mdl_fps_on_disk to the full paths of the external 
-# model files on the system disk.  These are the paths that will be searched
-# below to see if these files actually exist on disk.  Then count the 
-# number of such files that actually exist on disk (i.e. have not yet
-# been scrubbed) and are older than a specified age (to make sure that 
-# they are not still being written to).
+# Set num_files_to_copy to the number of external model files that need
+# to be copied or linked to from/at a location on disk.  Then set 
+# extrn_mdl_fps_on_disk to the full paths of the external model files 
+# on disk.
 #
 #-----------------------------------------------------------------------
 #
 num_files_to_copy="${#extrn_mdl_fns_on_disk[@]}"
-prefix="${extrn_mdl_sysdir}/"
+prefix="${extrn_mdl_source_dir}/"
 extrn_mdl_fps_on_disk=( "${extrn_mdl_fns_on_disk[@]/#/$prefix}" )
-
+#
+#-----------------------------------------------------------------------
+#
+# Loop through the list of external model files and check whether they
+# all exist on disk.  The counter num_files_found_on_disk keeps track of
+# the number of external model files that were actually found on disk in
+# the directory specified by extrn_mdl_source_dir.
+#
+# If the location extrn_mdl_source_dir is a user-specified directory (i.e.
+# if use_user_staged_extrn_files is set to "TRUE"), then if/when we encounter 
+# the first file that does not exist, we exit the script with an error 
+# message.  If extrn_mdl_source_dir is a system directory (i.e. if 
+# use_user_staged_extrn_files is not set to "TRUE"), then if/when we 
+# encounter the first file that does not exist or exists but is younger
+# than a certain age, we break out of the loop and try to fetch all the 
+# necessary external model files from HPSS.  The age cutoff is to ensure
+# that files are not still being written to.
+#
+#-----------------------------------------------------------------------
+#
 num_files_found_on_disk="0"
 min_age="5"  # Minimum file age, in minutes.
+
 for fp in "${extrn_mdl_fps_on_disk[@]}"; do
-
+  #
+  # If the external model file exists, then...
+  #
   if [ -f "$fp" ]; then
+    #
+    # Increment the counter that keeps track of the number of external
+    # model files found on disk and print out an informational message.
+    #
+    num_files_found_on_disk=$(( num_files_found_on_disk+1 ))
+    print_info_msg "
+File fp exists on disk:
+  fp = \"$fp\""
+    #
+    # If we are NOT searching for user-staged external model files, then
+    # we also check that the current file is at least min_age minutes old.
+    # If not, we try searching for all the external model files on HPSS. 
+    #
+    if [ "${use_user_staged_extrn_files}" != "TRUE" ]; then
 
-    if [ $( find "$fp" -mmin +${min_age} ) ]; then
+      if [ $( find "$fp" -mmin +${min_age} ) ]; then
 
-      num_files_found_on_disk=$(( num_files_found_on_disk+1 ))
-      print_info_msg "
-File fp exists on system disk and is older than the minimum required age
-of min_age minutes:
+        print_info_msg "
+File fp is older than the minimum required age of min_age minutes:
   fp = \"$fp\"
   min_age = ${min_age} minutes"
 
-    else
+      else
 
-      print_info_msg "
-File fp exists on system disk and but is NOT older than the minumum 
-required age of min_age minutes:
+        print_info_msg "
+File fp is NOT older than the minumum required age of min_age minutes:
   fp = \"$fp\"
   min_age = ${min_age} minutes
 Will try fetching all external model files from HPSS.  Not checking 
-presence and age of remaining external model files on system disk."
+presence and age of remaining external model files on disk."
+        break
+
+      fi
+
+    fi
+  #
+  # If the external model file does not exist, then...
+  #
+  else
+    #
+    # If an external model file is not found and we are searching for it
+    # in a user-specified directory, print out an error message and exit.
+    #
+    if [ "${use_user_staged_extrn_files}" = "TRUE" ]; then
+
+      varname_extrn_mdl_source_dir="EXTRN_MDL_SOURCE_DIR_${ics_or_lbcs}"
+      varname_extrn_mdl_files="EXTRN_MDL_FILES_${ics_or_lbcs}"
+      varname_extrn_mdl_files_at="${varname_extrn_mdl_files}[@]"
+      extrn_mdl_files=("${!varname_extrn_mdl_files_at}")
+
+      print_err_msg_exit "\
+File fp does NOT exist on disk:
+  fp = \"$fp\"
+Please ensure that the directory specified by ${varname_extrn_mdl_source_dir} 
+exists and that all the files specified in the array ${varname_extrn_mdl_files} 
+exist within it:
+  ${varname_extrn_mdl_source_dir} = \"${!varname_extrn_mdl_source_dir}\"
+  ${varname_extrn_mdl_files} = ( $( printf "\"%s\" " "${extrn_mdl_files[@]}" ))
+Note that ${varname_extrn_mdl_source_dir} and ${varname_extrn_mdl_files} are both
+user-specified workflow variables that can be set in the workflow user
+configuration file ${EXPT_CONFIG_FN}."
+    #
+    # If an external model file is not found and we are searching for it
+    # in a system directory, give up on the system directory and try instead 
+    # to get all the external model files from HPSS.
+    #
+    else
+
+      print_info_msg "
+File fp does NOT exist on disk:
+  fp = \"$fp\"
+Will try fetching all external model files from HPSS.  Not checking 
+presence and age of remaining external model files on disk."
       break
 
     fi
-
-  else
-
-    print_info_msg "
-File fp does NOT exist on system disk:
-  fp = \"$fp\"
-Will try fetching all external model files from HPSS.  Not checking 
-presence and age of remaining external model files on system disk."
-    break
 
   fi
 
@@ -157,7 +218,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # If the source of the external model files is "disk", copy the files
-# from the system disk to a local directory.
+# from the source directory on disk to a staging directory.
 #
 #-----------------------------------------------------------------------
 #
@@ -168,24 +229,40 @@ if [ "${data_src}" = "disk" ]; then
   if [ "${RUN_ENVIR}" = "nco" ]; then
 
     print_info_msg "
-Creating links in local directory (extrn_mdl_files_dir) to external model 
-files on disk (extrn_mdl_fns_on_disk) in the system directory (extrn_mdl_sysdir):
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\"
-  extrn_mdl_sysdir = \"${extrn_mdl_sysdir}\"
+Creating links in staging directory (extrn_mdl_staging_dir) to external 
+model files on disk (extrn_mdl_fns_on_disk) in the source directory 
+(extrn_mdl_source_dir):
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\"
+  extrn_mdl_source_dir = \"${extrn_mdl_source_dir}\"
   extrn_mdl_fns_on_disk = ${extrn_mdl_fns_on_disk_str}"
 
-    ln_vrfy -sf -t ${extrn_mdl_files_dir} ${extrn_mdl_fps_on_disk[@]}
+    ln_vrfy -sf -t ${extrn_mdl_staging_dir} ${extrn_mdl_fps_on_disk[@]}
 
   else
 
-    print_info_msg "
-Copying external model files on disk (extrn_mdl_fns_on_disk) from system 
-directory (extrn_mdl_sysdir) to local directory (extrn_mdl_files_dir):
-  extrn_mdl_sysdir = \"${extrn_mdl_sysdir}\"
+    #
+    # If the external model files are user-staged, then simply link to 
+    # them.  Otherwise, if they are on the system disk, copy them to the
+    # staging directory.
+    #
+    if [ "${use_user_staged_extrn_files}" = "TRUE" ]; then
+      print_info_msg "
+Creating symlinks in the staging directory (extrn_mdl_staging_dir) to the
+external model files on disk (extrn_mdl_fns_on_disk) in the source directory 
+(extrn_mdl_source_dir):
+  extrn_mdl_source_dir = \"${extrn_mdl_source_dir}\"
   extrn_mdl_fns_on_disk = ${extrn_mdl_fns_on_disk_str}
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\""
-
-    cp_vrfy ${extrn_mdl_fps_on_disk[@]} ${extrn_mdl_files_dir}
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
+      ln_vrfy -sf -t ${extrn_mdl_staging_dir} ${extrn_mdl_fps_on_disk[@]}
+    else
+      print_info_msg "
+Copying external model files on disk (extrn_mdl_fns_on_disk) from source
+directory (extrn_mdl_source_dir) to staging directory (extrn_mdl_staging_dir):
+  extrn_mdl_source_dir = \"${extrn_mdl_source_dir}\"
+  extrn_mdl_fns_on_disk = ${extrn_mdl_fns_on_disk_str}
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
+      cp_vrfy ${extrn_mdl_fps_on_disk[@]} ${extrn_mdl_staging_dir}
+    fi
 
   fi
 #
@@ -199,9 +276,8 @@ directory (extrn_mdl_sysdir) to local directory (extrn_mdl_files_dir):
 
     print_info_msg "
 ========================================================================
-Successfully copied or linked to external model files on system disk 
-needed for generating initial conditions and surface fields for the FV3
-forecast!!!
+Successfully copied or linked to external model files on disk needed for
+generating initial conditions and surface fields for the FV3 forecast!!!
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
@@ -211,9 +287,8 @@ In directory:    \"${scrfunc_dir}\"
 
     print_info_msg "
 ========================================================================
-Successfully copied or linked to external model files on system disk 
-needed for generating lateral boundary conditions for the FV3 fore-
-cast!!!
+Successfully copied or linked to external model files on disk needed for
+generating lateral boundary conditions for the FV3 forecast!!!
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
@@ -246,11 +321,11 @@ elif [ "${data_src}" = "HPSS" ]; then
   print_info_msg "
 Fetching external model files from HPSS.  The full paths to these files 
 in the archive file(s) (extrn_mdl_fps_in_arcv), the archive files on HPSS 
-in which these files are stored (extrn_mdl_arcv_fps), and the local 
-directory into which they will be copied (extrn_mdl_files_dir) are:
+in which these files are stored (extrn_mdl_arcv_fps), and the staging
+directory to which they will be copied (extrn_mdl_staging_dir) are:
   extrn_mdl_fps_in_arcv = ${extrn_mdl_fps_in_arcv_str}
   extrn_mdl_arcv_fps = ${extrn_mdl_arcv_fps_str}
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\""
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
 #
 #-----------------------------------------------------------------------
 #
@@ -303,8 +378,8 @@ directory into which they will be copied (extrn_mdl_files_dir) are:
       htar -tvf ${arcv_fp} ${extrn_mdl_fps_in_arcv[@]} >& ${htar_log_fn} || \
       print_err_msg_exit "\
 htar file list operation (\"htar -tvf ...\") failed.  Check the log file 
-htar_log_fn in the directory extrn_mdl_files_dir for details:
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\"
+htar_log_fn in the staging directory (extrn_mdl_staging_di)r for details:
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\"
   htar_log_fn = \"${htar_log_fn}\""
 
       i=0
@@ -341,8 +416,9 @@ it would not be needed."
       htar -xvf ${arcv_fp} ${files_in_crnt_arcv[@]} >& ${htar_log_fn} || \
       print_err_msg_exit "\
 htar file extract operation (\"htar -xvf ...\") failed.  Check the log 
-file htar_log_fn in the directory extrn_mdl_files_dir for details:
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\"
+file htar_log_fn in the staging directory (extrn_mdl_staging_dir) for 
+details:
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\"
   htar_log_fn = \"${htar_log_fn}\""
 #
 # Note that the htar file extract operation above may return with a 0 
@@ -368,9 +444,9 @@ file htar_log_fn in the directory extrn_mdl_files_dir for details:
 External model file fp not extracted from tar archive file arcv_fp:
   arcv_fp = \"${arcv_fp}\"
   fp = \"$fp\"
-Check the log file htar_log_fn in the directory extrn_mdl_files_dir for 
-details:
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\"
+Check the log file htar_log_fn in the staging directory (extrn_mdl_staging_dir) 
+for details:
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\"
   htar_log_fn = \"${htar_log_fn}\""
 
       done
@@ -528,8 +604,8 @@ that can be used as a guide for the \"zip\" case."
     hsi get "${arcv_fp}" >& ${hsi_log_fn} || \
     print_err_msg_exit "\
 hsi file get operation (\"hsi get ...\") failed.  Check the log file 
-hsi_log_fn in the directory extrn_mdl_files_dir for details:
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\"
+hsi_log_fn in the staging directory (extrn_mdl_staging_dir) for details:
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\"
   hsi_log_fn = \"${hsi_log_fn}\""
 #
 #-----------------------------------------------------------------------
@@ -543,10 +619,10 @@ hsi_log_fn in the directory extrn_mdl_files_dir for details:
     unzip -l -v ${arcv_fn} >& ${unzip_log_fn} || \
     print_err_msg_exit "\
 unzip operation to list the contents of the zip archive file arcv_fn in
-the directory extrn_mdl_files_dir failed.  Check the log file unzip_log_fn 
-in that directory for details:
+the staging directory (extrn_mdl_staging_dir) failed.  Check the log 
+file unzip_log_fn in that directory for details:
   arcv_fn = \"${arcv_fn}\"
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\"
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\"
   unzip_log_fn = \"${unzip_log_fn}\""
 #
 #-----------------------------------------------------------------------
@@ -564,9 +640,9 @@ in that directory for details:
       grep -n "${fp}" "${unzip_log_fn}" > /dev/null 2>&1 || \
       print_err_msg_exit "\
 External model file fp does not exist in the zip archive file arcv_fn in 
-the directory extrn_mdl_files_dir.  Check the log file unzip_log_fn in 
-that directory for the contents of the zip archive:
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\"
+the staging directory (extrn_mdl_staging_dir).  Check the log file 
+unzip_log_fn in that directory for the contents of the zip archive:
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\"
   arcv_fn = \"${arcv_fn}\"
   fp = \"$fp\"
   unzip_log_fn = \"${unzip_log_fn}\""
@@ -585,17 +661,18 @@ that directory for the contents of the zip archive:
     unzip -o "${arcv_fn}" ${extrn_mdl_fps_in_arcv[@]} >& ${unzip_log_fn} || \
     print_err_msg_exit "\
 unzip file extract operation (\"unzip -o ...\") failed.  Check the log 
-file unzip_log_fn in the directory extrn_mdl_files_dir for details:
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\"
+file unzip_log_fn in the staging directory (extrn_mdl_staging_dir) for 
+details:
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\"
   unzip_log_fn = \"${unzip_log_fn}\""
 #
 # NOTE:
 # If extrn_mdl_arcvrel_dir is not empty, the unzip command above will 
-# create a subdirectory under extrn_mdl_files_dir and place the external 
+# create a subdirectory under extrn_mdl_staging_dir and place the external 
 # model files there.  We have not encoutntered this for the RAPX and HRRRX 
 # models, but it may happen for other models in the future.  In that case, 
 # extra code must be included here to move the external model files from 
-# the subdirectory up to extrn_mdl_files_dir and then the subdirectory 
+# the subdirectory up to extrn_mdl_staging_dir and then the subdirectory 
 # (analogous to what is done above for the case of extrn_mdl_arcv_fmt set 
 # to "tar".
 #
@@ -648,7 +725,7 @@ if [ "${ics_or_lbcs}" = "ICS" ]; then
 elif [ "${ics_or_lbcs}" = "LBCS" ]; then
   extrn_mdl_var_defns_fn="${EXTRN_MDL_LBCS_VAR_DEFNS_FN}"
 fi
-extrn_mdl_var_defns_fp="${extrn_mdl_files_dir}/${extrn_mdl_var_defns_fn}"
+extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${extrn_mdl_var_defns_fn}"
 check_for_preexist_dir_file "${extrn_mdl_var_defns_fp}" "delete"
 
 if [ "${data_src}" = "disk" ]; then
@@ -660,7 +737,7 @@ fi
 settings="\
 DATA_SRC=\"${data_src}\"
 EXTRN_MDL_CDATE=\"${extrn_mdl_cdate}\"
-EXTRN_MDL_FILES_DIR=\"${extrn_mdl_files_dir}\"
+EXTRN_MDL_STAGING_DIR=\"${extrn_mdl_staging_dir}\"
 EXTRN_MDL_FNS=${extrn_mdl_fns_str}"
 #
 # If the external model files obtained above were for generating LBCS (as

@@ -79,8 +79,8 @@ print_input_args valid_args
 #                                                                        
 #----------------------------------------------------------------------- 
 #                                                                        
-extrn_mdl_files_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME_ICS}/ICS"             
-extrn_mdl_var_defns_fp="${extrn_mdl_files_dir}/${EXTRN_MDL_ICS_VAR_DEFNS_FN}"      
+extrn_mdl_staging_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME_ICS}/ICS"             
+extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_ICS_VAR_DEFNS_FN}"      
 . ${extrn_mdl_var_defns_fp}                                                   
 #
 #-----------------------------------------------------------------------
@@ -529,7 +529,7 @@ settings="
  'orog_dir_input_grid': '',
  'base_install_dir': ${CHGRES_DIR},
  'wgrib2_path': ${wgrib2_dir},
- 'data_dir_input_grid': ${extrn_mdl_files_dir},
+ 'data_dir_input_grid': ${extrn_mdl_staging_dir},
  'atm_files_input_grid': ${fn_atm_nemsio},
  'sfc_files_input_grid': ${fn_sfc_nemsio},
  'grib2_file_input_grid': \"${fn_grib2}\",
@@ -593,7 +593,7 @@ The external model from which the ICs files are to be generated is:
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
 The external model files that are inputs to the executable (exec_fp) are
 located in the following directory:
-  extrn_mdl_files_dir = \"${extrn_mdl_files_dir}\""
+  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
 #
 #-----------------------------------------------------------------------
 #

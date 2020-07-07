@@ -46,7 +46,7 @@ local func_name="${FUNCNAME[0]}"
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
 
-  EXTRN_MDL_FILES_SYSBASEDIR_ICS="$COMINgfs"
+  EXTRN_MDL_SYSBASEDIR_ICS="$COMINgfs"
 
 else
 
@@ -56,25 +56,25 @@ else
   "GSMGFS")
     case $MACHINE in
     "WCOSS_CRAY")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS=""
+      EXTRN_MDL_SYSBASEDIR_ICS=""
       ;;
     "WCOSS_DELL_P3")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS=""
+      EXTRN_MDL_SYSBASEDIR_ICS=""
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS=""
+      EXTRN_MDL_SYSBASEDIR_ICS=""
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS=""
+      EXTRN_MDL_SYSBASEDIR_ICS=""
       ;;
     "ODIN")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch/ywang/EPIC/GDAS/2019053000_mem001"
+      EXTRN_MDL_SYSBASEDIR_ICS="/scratch/ywang/EPIC/GDAS/2019053000_mem001"
       ;;
     "CHEYENNE")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/glade/p/ral/jntp/UFS_CAM/COMGFS"
+      EXTRN_MDL_SYSBASEDIR_ICS="/glade/p/ral/jntp/UFS_CAM/COMGFS"
       ;;
     "STAMPEDE")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch/00315/tg455890/GDAS/20190530/2019053000_mem001"
+      EXTRN_MDL_SYSBASEDIR_ICS="/scratch/00315/tg455890/GDAS/20190530/2019053000_mem001"
       ;;
     *)
       print_err_msg_exit "\
@@ -91,22 +91,22 @@ this machine and external model combination:
   "FV3GFS")
     case $MACHINE in
     "WCOSS_CRAY")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/gpfs/dell1/nco/ops/com/gfs/prod"
+      EXTRN_MDL_SYSBASEDIR_ICS="/gpfs/dell1/nco/ops/com/gfs/prod"
       ;;
     "WCOSS_DELL_P3")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/gpfs/dell1/nco/ops/com/gfs/prod"
+      EXTRN_MDL_SYSBASEDIR_ICS="/gpfs/dell1/nco/ops/com/gfs/prod"
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch1/NCEPDEV/rstprod/com/gfs/prod"
+      EXTRN_MDL_SYSBASEDIR_ICS="/scratch1/NCEPDEV/rstprod/com/gfs/prod"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/public/data/grids/gfs/nemsio"
+      EXTRN_MDL_SYSBASEDIR_ICS="/public/data/grids/gfs/nemsio"
       ;;
     "ODIN")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch/ywang/test_runs/FV3_regional/gfs"
+      EXTRN_MDL_SYSBASEDIR_ICS="/scratch/ywang/test_runs/FV3_regional/gfs"
       ;;
     "CHEYENNE")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/glade/p/ral/jntp/UFS_CAM/COMGFS"
+      EXTRN_MDL_SYSBASEDIR_ICS="/glade/p/ral/jntp/UFS_CAM/COMGFS"
       ;;
     *)
       print_err_msg_exit "\
@@ -123,10 +123,10 @@ this machine and external model combination:
   "RAPX")
     case $MACHINE in
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
+      EXTRN_MDL_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/misc/whome/rtrr/rap"
+      EXTRN_MDL_SYSBASEDIR_ICS="/misc/whome/rtrr/rap"
       ;;
     *)
       print_err_msg_exit "\
@@ -143,10 +143,10 @@ this machine and external model combination:
   "HRRRX")
     case $MACHINE in
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
+      EXTRN_MDL_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_ICS="/misc/whome/rtrr/hrrr"
+      EXTRN_MDL_SYSBASEDIR_ICS="/misc/whome/rtrr/hrrr"
       ;;
     *)
       print_err_msg_exit "\
@@ -204,7 +204,7 @@ esac
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
 
-  EXTRN_MDL_FILES_SYSBASEDIR_LBCS="$COMINgfs"
+  EXTRN_MDL_SYSBASEDIR_LBCS="$COMINgfs"
 
 else
 
@@ -214,25 +214,25 @@ else
   "GSMGFS")
     case $MACHINE in
     "WCOSS_CRAY")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS=""
+      EXTRN_MDL_SYSBASEDIR_LBCS=""
       ;;
     "WCOSS_DELL_P3")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS=""
+      EXTRN_MDL_SYSBASEDIR_LBCS=""
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS=""
+      EXTRN_MDL_SYSBASEDIR_LBCS=""
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS=""
+      EXTRN_MDL_SYSBASEDIR_LBCS=""
       ;;
     "ODIN")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch/ywang/EPIC/GDAS/2019053000_mem001"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/scratch/ywang/EPIC/GDAS/2019053000_mem001"
       ;;
     "CHEYENNE")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/glade/p/ral/jntp/UFS_CAM/COMGFS"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/glade/p/ral/jntp/UFS_CAM/COMGFS"
       ;;
     "STAMPEDE")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch/00315/tg455890/GDAS/20190530/2019053000_mem001"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/scratch/00315/tg455890/GDAS/20190530/2019053000_mem001"
       ;;
     *)
       print_err_msg_exit "\
@@ -250,22 +250,22 @@ this machine and external model combination:
   
     case $MACHINE in
     "WCOSS_CRAY")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/gpfs/dell1/nco/ops/com/gfs/prod"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/gpfs/dell1/nco/ops/com/gfs/prod"
       ;;
     "WCOSS_DELL_P3")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/gpfs/dell1/nco/ops/com/gfs/prod"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/gpfs/dell1/nco/ops/com/gfs/prod"
       ;;
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch1/NCEPDEV/rstprod/com/gfs/prod"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/scratch1/NCEPDEV/rstprod/com/gfs/prod"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/public/data/grids/gfs/nemsio"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/public/data/grids/gfs/nemsio"
       ;;
     "ODIN")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch/ywang/test_runs/FV3_regional/gfs"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/scratch/ywang/test_runs/FV3_regional/gfs"
       ;;
     "CHEYENNE")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/glade/p/ral/jntp/UFS_CAM/COMGFS"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/glade/p/ral/jntp/UFS_CAM/COMGFS"
       ;;
     *)
       print_err_msg_exit "\
@@ -283,10 +283,10 @@ this machine and external model combination:
   
     case $MACHINE in
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/misc/whome/rtrr/rap"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/misc/whome/rtrr/rap"
       ;;
     *)
       print_err_msg_exit "\
@@ -305,10 +305,10 @@ this machine and external model combination:
   
     case $MACHINE in
     "HERA")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
       ;;
     "JET")
-      EXTRN_MDL_FILES_SYSBASEDIR_LBCS="/misc/whome/rtrr/hrrr"
+      EXTRN_MDL_SYSBASEDIR_LBCS="/misc/whome/rtrr/hrrr"
       ;;
 
     *)

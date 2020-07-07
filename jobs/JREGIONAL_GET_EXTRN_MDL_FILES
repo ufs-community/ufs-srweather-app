@@ -186,15 +186,15 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of and then create the directory in which to store the 
+# Set the name of and then create the directory in which to stage the 
 # external model files for the current cycle (if it doesn't already exist).  
 # Then change location to that directory.
 #
 #-----------------------------------------------------------------------
 #
-extrn_mdl_files_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME}/${ICS_OR_LBCS}"
-mkdir_vrfy -p "${extrn_mdl_files_dir}"
-cd_vrfy "${extrn_mdl_files_dir}"
+extrn_mdl_staging_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME}/${ICS_OR_LBCS}"
+mkdir_vrfy -p "${extrn_mdl_staging_dir}"
+cd_vrfy "${extrn_mdl_staging_dir}"
 #
 #-----------------------------------------------------------------------
 #
@@ -222,6 +222,41 @@ Call to function get_extrn_mdl_file_dir_info failed."
 #
 #-----------------------------------------------------------------------
 #
+# Set the directory in which to check for the external model files (which
+# we refer to here as the "source" directory) to the default one set above 
+# for the current machine and external model.
+#
+#-----------------------------------------------------------------------
+#
+use_user_staged_extrn_files="FALSE"
+extrn_mdl_source_dir="${extrn_mdl_sysdir}"
+#
+#-----------------------------------------------------------------------
+#
+# If the user has specified that the external model files to be used for
+# generating ICs or LBCs are staged, then reset extrn_mdl_source_dir to the
+# user-specified directory in which these files are staged, and reset 
+# extrn_mdl_fns_on_disk to the user-specified array containing the names 
+# of the files.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${ICS_OR_LBCS}" = "ICS" ] && \
+   [ ! -z "${EXTRN_MDL_SOURCE_DIR_ICS}" ]; then
+  use_user_staged_extrn_files="TRUE"
+  extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_DIR_ICS}/$CDATE"
+  extrn_mdl_fns_on_disk=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_ICS[@]}" ))
+fi
+
+if [ "${ICS_OR_LBCS}" = "LBCS" ] && \
+   [ ! -z "${EXTRN_MDL_SOURCE_DIR_LBCS}" ]; then
+  use_user_staged_extrn_files="TRUE"
+  extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_DIR_LBCS}/$CDATE"
+  extrn_mdl_fns_on_disk=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Call the ex-script for this J-job and pass to it the necessary variables.
 #
 #-----------------------------------------------------------------------
@@ -234,12 +269,13 @@ extrn_mdl_arcv_fps_str="( "$( printf "\"%s\" " "${extrn_mdl_arcv_fps[@]}" )")"
 
 $SCRIPTSDIR/exregional_get_extrn_mdl_files.sh \
   ics_or_lbcs="${ICS_OR_LBCS}" \
+  use_user_staged_extrn_files="${use_user_staged_extrn_files}" \
   extrn_mdl_cdate="${extrn_mdl_cdate}" \
   extrn_mdl_lbc_spec_fhrs="${extrn_mdl_lbc_spec_fhrs_str}" \
   extrn_mdl_fns_on_disk="${extrn_mdl_fns_on_disk_str}" \
   extrn_mdl_fns_in_arcv="${extrn_mdl_fns_in_arcv_str}" \
-  extrn_mdl_sysdir="${extrn_mdl_sysdir}" \
-  extrn_mdl_files_dir="${extrn_mdl_files_dir}" \
+  extrn_mdl_source_dir="${extrn_mdl_source_dir}" \
+  extrn_mdl_staging_dir="${extrn_mdl_staging_dir}" \
   extrn_mdl_arcv_fmt="${extrn_mdl_arcv_fmt}" \
   extrn_mdl_arcv_fns="${extrn_mdl_arcv_fns_str}" \
   extrn_mdl_arcv_fps="${extrn_mdl_arcv_fps_str}" \

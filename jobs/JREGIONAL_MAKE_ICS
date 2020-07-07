@@ -12,15 +12,6 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the file defining the function that will be used to set various
-# external-model-associated variables.
-#
-#-----------------------------------------------------------------------
-#
-. $USHDIR/get_extrn_mdl_file_dir_info.sh
-#
-#-----------------------------------------------------------------------
-#
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
 #
