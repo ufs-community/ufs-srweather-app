@@ -21,7 +21,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file in which this script/function is located 
+# Get the full path to the file in which this script/function is located
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
 #
@@ -42,15 +42,15 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that generates initial condition 
-(IC), surface, and zeroth hour lateral boundary condition (LBC0) files 
+This is the ex-script for the task that generates initial condition
+(IC), surface, and zeroth hour lateral boundary condition (LBC0) files
 for FV3 (in NetCDF format).
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  Then 
-# process the arguments provided to this script/function (which should 
+# Specify the set of valid argument names for this script/function.  Then
+# process the arguments provided to this script/function (which should
 # consist of a set of name-value pairs of the form arg1="value1", etc).
 #
 #-----------------------------------------------------------------------
@@ -71,17 +71,17 @@ process_args valid_args "$@"
 #-----------------------------------------------------------------------
 #
 print_input_args valid_args
-#                                                                        
-#----------------------------------------------------------------------- 
-#                                                                        
-# Source the file containing definitions of variables associated with the 
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing definitions of variables associated with the
 # external model for ICs.
-#                                                                        
-#----------------------------------------------------------------------- 
-#                                                                        
-extrn_mdl_staging_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME_ICS}/ICS"             
-extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_ICS_VAR_DEFNS_FN}"      
-. ${extrn_mdl_var_defns_fp}                                                   
+#
+#-----------------------------------------------------------------------
+#
+extrn_mdl_staging_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME_ICS}/for_ICS"
+extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_ICS_VAR_DEFNS_FN}"
+. ${extrn_mdl_var_defns_fp}
 #
 #-----------------------------------------------------------------------
 #
@@ -121,7 +121,7 @@ case "${CCPP_PHYS_SUITE}" in
   ;;
 *)
   print_err_msg_exit "\
-Physics-suite-dependent namelist variables have not yet been specified 
+Physics-suite-dependent namelist variables have not yet been specified
 for this physics suite:
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
   ;;
@@ -136,7 +136,7 @@ esac
 # subset of these all variables are set (since some may be irrelevant).
 #
 # external_model:
-# Name of the external model from which we are obtaining the fields 
+# Name of the external model from which we are obtaining the fields
 # needed to generate the ICs.
 #
 # fn_atm_nemsio:
@@ -150,22 +150,22 @@ esac
 # input_type:
 # The "type" of input being provided to chgres.  This contains a combi-
 # nation of information on the external model, external model file for-
-# mat, and maybe other parameters.  For clarity, it would be best to 
+# mat, and maybe other parameters.  For clarity, it would be best to
 # eliminate this variable in chgres and replace with with 2 or 3 others
 # (e.g. extrn_mdl, extrn_mdl_file_format, etc).
-# 
+#
 # tracers_input:
 # List of atmospheric tracers to read in from the external model file
 # containing these tracers.
 #
 # tracers:
-# Names to use in the output NetCDF file for the atmospheric tracers 
+# Names to use in the output NetCDF file for the atmospheric tracers
 # specified in tracers_input.  With the possible exception of GSD phys-
 # ics, the elements of this array should have a one-to-one correspond-
 # ence with the elements in tracers_input, e.g. if the third element of
 # tracers_input is the name of the O3 mixing ratio, then the third ele-
 # ment of tracers should be the name to use for the O3 mixing ratio in
-# the output file.  For GSD physics, three additional tracers -- ice, 
+# the output file.  For GSD physics, three additional tracers -- ice,
 # rain, and water number concentrations -- may be specified at the end
 # of tracers, and these will be calculated by chgres.
 #
@@ -178,19 +178,19 @@ esac
 # The number of soil layers to include in the output NetCDF file.
 #
 # replace_FIELD, where FIELD="vgtyp", "sotyp", or "vgfrc":
-# Logical variable indicating whether or not to obtain the field in 
+# Logical variable indicating whether or not to obtain the field in
 # question from climatology instead of the external model.  The field in
 # question is one of vegetation type (FIELD="vgtyp"), soil type (FIELD=
 # "sotyp"), and vegetation fraction (FIELD="vgfrc").  If replace_FIELD
 # is set to ".true.", then the field is obtained from climatology (re-
 # gardless of whether or not it exists in an external model file).  If
-# it is set to ".false.", then the field is obtained from the external 
+# it is set to ".false.", then the field is obtained from the external
 # model.  If the external model file does not provide this field, then
 # chgres prints out an error message and stops.
 #
 # tg3_from_soil:
 # Logical variable indicating whether or not to set the tg3 soil tempe-  # Needs to be verified.
-# rature field to the temperature of the deepest soil layer. 
+# rature field to the temperature of the deepest soil layer.
 #
 #-----------------------------------------------------------------------
 #
@@ -202,30 +202,30 @@ esac
 #
 #   "spfh","o3mr","clwmr"
 #
-# Note also that these are hardcoded in the code (file input_data.F90, 
+# Note also that these are hardcoded in the code (file input_data.F90,
 # subroutine read_input_atm_gfs_spectral_file), so that subroutine will
 # break if tracers_input(:) is not specified as above.
 #
-# Note that there are other fields too ["hgt" (surface height (togography?)), 
+# Note that there are other fields too ["hgt" (surface height (togography?)),
 # pres (surface pressure), ugrd, vgrd, and tmp (temperature)] in the atmanl file, but those
 # are not considered tracers (they're categorized as dynamics variables,
 # I guess).
 #
-# Another note:  The way things are set up now, tracers_input(:) and 
+# Another note:  The way things are set up now, tracers_input(:) and
 # tracers(:) are assumed to have the same number of elements (just the
 # atmospheric tracer names in the input and output files may be differ-
 # ent).  There needs to be a check for this in the chgres_cube code!!
-# If there was a varmap table that specifies how to handle missing 
+# If there was a varmap table that specifies how to handle missing
 # fields, that would solve this problem.
 #
-# Also, it seems like the order of tracers in tracers_input(:) and 
-# tracers(:) must match, e.g. if ozone mixing ratio is 3rd in 
+# Also, it seems like the order of tracers in tracers_input(:) and
+# tracers(:) must match, e.g. if ozone mixing ratio is 3rd in
 # tracers_input(:), it must also be 3rd in tracers(:).  How can this be checked?
 #
-# NOTE: Really should use a varmap table for GFS, just like we do for 
+# NOTE: Really should use a varmap table for GFS, just like we do for
 # RAP/HRRR.
 #
-# A non-prognostic variable that appears in the field_table for GSD physics 
+# A non-prognostic variable that appears in the field_table for GSD physics
 # is cld_amt.  Why is that in the field_table at all (since it is a non-
 # prognostic field), and how should we handle it here??
 
@@ -266,7 +266,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
 
   tracers_input="[\"spfh\",\"clwmr\",\"o3mr\"]"
   tracers="[\"sphum\",\"liq_wat\",\"o3mr\"]"
- 
+
   internal_GSD=False
   numsoil_out="4"
   replace_vgtyp=True
@@ -293,7 +293,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
 #
 # If CCPP is being used, then the list of atmospheric tracers to include
 # in the output file depends on the physics suite.  Hopefully, this me-
-# thod of specifying output tracers will be replaced with a variable 
+# thod of specifying output tracers will be replaced with a variable
 # table (which should be specific to each combination of external model,
 # external model file type, and physics suite).
 #
@@ -430,7 +430,7 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
 
 *)
   print_err_msg_exit "\
-External-model-dependent namelist variables have not yet been specified 
+External-model-dependent namelist variables have not yet been specified
 for this external model:
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
   ;;
@@ -454,14 +454,14 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 #-----------------------------------------------------------------------
 #
 exec_fn="chgres_cube.exe"
-exec_fp="$EXECDIR/${exec_fn}"                                            
-if [ ! -f "${exec_fp}" ]; then                                           
-  print_err_msg_exit "\                                                  
+exec_fp="$EXECDIR/${exec_fn}"
+if [ ! -f "${exec_fp}" ]; then
+  print_err_msg_exit "\
 The executable (exec_fp) for generating initial conditions on the FV3SAR
-native grid does not exist:                  
-  exec_fp = \"${exec_fp}\"                                               
-Please ensure that you've built this executable."                        
-fi                                                                       
+native grid does not exist:
+  exec_fp = \"${exec_fp}\"
+Please ensure that you've built this executable."
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -472,17 +472,17 @@ fi
 # For GFS physics, the character arrays tracers_input(:) and tracers(:)
 # must be specified in the namelist file.  tracers_input(:) contains the
 # tracer name to look for in the external model file(s), while tracers(:)
-# contains the names to use for the tracers in the output NetCDF files 
-# that chgres creates (that will be read in by FV3).  Since when FV3 
+# contains the names to use for the tracers in the output NetCDF files
+# that chgres creates (that will be read in by FV3).  Since when FV3
 # reads these NetCDF files it looks for atmospheric traces as specified
-# in the file field_table, tracers(:) should be set to the names in 
+# in the file field_table, tracers(:) should be set to the names in
 # field_table.
 #
 # NOTE: This process should be automated where the set of elements that
 # tracers(:) should be set to is obtained from reading in field_table.
 #
 # To know how to set tracers_input(:), you have to know the names of the
-# variables in the input atmospheric nemsio file (usually this file is 
+# variables in the input atmospheric nemsio file (usually this file is
 # named gfs.t00z.atmanl.nemsio).
 #
 # It is not quite clear how these should be specified.  Here are a list
@@ -561,8 +561,8 @@ settings="
 nml_fn="fort.41"
 ${USHDIR}/set_namelist.py -q -u "$settings" -o ${nml_fn} || \
   print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the namelist 
-file read in by the ${exec_fn} executable failed.  Parameters passed to 
+Call to python script set_namelist.py to set the variables in the namelist
+file read in by the ${exec_fn} executable failed.  Parameters passed to
 this script are:
   Name of output namelist file:
     nml_fn = \"${nml_fn}\"
@@ -580,13 +580,13 @@ $settings"
 # Often when the chgres_cube.exe run fails, it still returns a zero re-
 # turn code, so the failure isn't picked up the the logical OR (||) be-
 # low.  That should be fixed.  This might be due to the APRUN command -
-# maybe that is returning a zero exit code even though the exit code 
+# maybe that is returning a zero exit code even though the exit code
 # of chgres_cube is nonzero.
 # A similar thing happens in the forecast task.
 #
 ${APRUN} ${exec_fp} || \
   print_err_msg_exit "\
-Call to executable (exec_fp) to generate surface and initial conditions 
+Call to executable (exec_fp) to generate surface and initial conditions
 (ICs) files for the FV3SAR failed:
   exec_fp = \"${exec_fp}\"
 The external model from which the ICs files are to be generated is:
@@ -598,7 +598,7 @@ located in the following directory:
 #-----------------------------------------------------------------------
 #
 # Move initial condition, surface, control, and 0-th hour lateral bound-
-# ary files to ICs_BCs directory. 
+# ary files to ICs_BCs directory.
 #
 #-----------------------------------------------------------------------
 #

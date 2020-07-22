@@ -1,10 +1,10 @@
 #
 #-----------------------------------------------------------------------
 #
-# This file defines a function that sets the values of the variables in 
+# This file defines a function that sets the values of the variables in
 # the forecast model's namelist file that specify the paths to the surface
-# climatology files on the FV3SAR native grid (which are either pregenerated 
-# or created by the MAKE_SFC_CLIMO_TN task).  Note that the workflow 
+# climatology files on the FV3SAR native grid (which are either pregenerated
+# or created by the MAKE_SFC_CLIMO_TN task).  Note that the workflow
 # generation scripts create symlinks to these surface climatology files
 # in the FIXsar directory, and the values in the namelist file that get
 # set by this function are relative or full paths to these links.
@@ -121,19 +121,24 @@ regex_search="^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
 #suffix="tile${TILE_RGNL}.halo4.nc"
 suffix="tileX.nc"
 #
-# Create a multiline variable that consists of a yaml-compliant string 
-# specifying the values that the namelist variables that specify the 
-# surface climatology file paths need to be set to (one namelist variable 
-# per line, plus a header and footer).  Below, this variable will be 
+# Create a multiline variable that consists of a yaml-compliant string
+# specifying the values that the namelist variables that specify the
+# surface climatology file paths need to be set to (one namelist variable
+# per line, plus a header and footer).  Below, this variable will be
 # passed to a python script that will create the namelist file.
 #
-# Note that the array FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING contains 
-# the mapping between the namelist variables and the surface climatology 
+# Note that the array FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING contains
+# the mapping between the namelist variables and the surface climatology
 # fields.  Here, we loop through this array and process each element to
 # construct each line of "settings".
 #
 settings="\
 'namsfc': {"
+
+dummy_run_dir="$EXPTDIR/any_cyc"
+if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+  dummy_run_dir="${dummy_run_dir}/any_ensmem"
+fi
 
 num_nml_vars=${#FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING[@]}
 for (( i=0; i<${num_nml_vars}; i++ )); do
@@ -158,12 +163,11 @@ for (( i=0; i<${num_nml_vars}; i++ )); do
 # the experiment directory).
 #
   if [ "${RUN_ENVIR}" != "nco" ]; then
-    fp=$( realpath --canonicalize-missing \
-                   --relative-to="$EXPTDIR/any_cycle_dir" "$fp" )
+    fp=$( realpath --canonicalize-missing --relative-to="${dummy_run_dir}" "$fp" )
   fi
 #
 # Add a line to the variable "settings" that specifies (in a yaml-compliant
-# format) the name of the current namelist variable and the value it should 
+# format) the name of the current namelist variable and the value it should
 # be set to.
 #
   settings="$settings
@@ -177,7 +181,7 @@ settings="$settings
 # For debugging purposes, print out what "settings" has been set to.
 #
 print_info_msg $VERBOSE "
-The variable \"settings\" specifying values of the namelist variables 
+The variable \"settings\" specifying values of the namelist variables
 has been set as follows:
 
 settings =
@@ -187,7 +191,7 @@ $settings"
 #
 # Rename the FV3 namelist file for the experiment by appending the string
 # ".base" to its name.  The call to the set_namelist.py script below will
-# use this file as the base (i.e. starting) namelist file, and it will 
+# use this file as the base (i.e. starting) namelist file, and it will
 # modify it as specified by the varaible "settings" above, saving the
 # result in a new FV3 namelist file for the experiment.  Once this is
 # done, we remove the base namelist file since it is no longer needed.
@@ -203,7 +207,7 @@ $USHDIR/set_namelist.py -q \
                         -o ${FV3_NML_FP} || \
   print_err_msg_exit "\
 Call to python script set_namelist.py to set the variables in the FV3
-namelist file that specify the paths to the surface climatology files 
+namelist file that specify the paths to the surface climatology files
 failed.  Parameters passed to this script are:
   Full path to base namelist file:
     fv3_nml_base_fp = \"${fv3_nml_base_fp}\"

@@ -58,12 +58,13 @@ the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-# Create the INPUT and RESTART directories under the cycle directory.
+# Create the INPUT and RESTART directories under the run directory.
 #
 #-----------------------------------------------------------------------
 #
-mkdir_vrfy -p ${CYCLE_DIR}/INPUT
-mkdir_vrfy -p ${CYCLE_DIR}/RESTART
+run_dir="${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}"
+mkdir_vrfy -p ${run_dir}/INPUT
+mkdir_vrfy -p ${run_dir}/RESTART
 #
 #-----------------------------------------------------------------------
 #
@@ -73,7 +74,9 @@ mkdir_vrfy -p ${CYCLE_DIR}/RESTART
 #-----------------------------------------------------------------------
 #
 $SCRIPTSDIR/exregional_run_fcst.sh \
-  CYCLE_DIR="${CYCLE_DIR}" || \
+  cycle_dir="${CYCLE_DIR}" \
+  ensmem_indx="${ENSMEM_INDX}" \
+  slash_ensmem_subdir="${SLASH_ENSMEM_SUBDIR}" || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

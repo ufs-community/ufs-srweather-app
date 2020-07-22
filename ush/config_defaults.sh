@@ -229,14 +229,20 @@ DOT_OR_USCORE="_"
 # Name of file containing the namelist settings for the code that generates
 # a "JPgrid" type of regional grid.
 #
-# FV3_NML_BASE_FN:
-# Name of Fortran namelist file containing the forecast model's base 
+# FV3_NML_BASE_SUITE_FN:
+# Name of Fortran namelist file containing the forecast model's base suite
 # namelist, i.e. the portion of the namelist that is common to all physics
 # suites.
 #
 # FV3_NML_YAML_CONFIG_FN:
 # Name of YAML configuration file containing the forecast model's namelist
 # settings for various physics suites.
+#
+# FV3_NML_BASE_ENS_FN:
+# Name of Fortran namelist file containing the forecast model's base 
+# ensemble namelist, i.e. the the namelist file that is the starting point 
+# from which the namelist files for each of the enesemble members are
+# generated.
 #
 # DIAG_TABLE_FN:
 # Name of file that specifies the fields that the forecast model will 
@@ -304,8 +310,9 @@ RGNL_GRID_NML_FN="regional_grid.nml"
 DATA_TABLE_FN="data_table"
 DIAG_TABLE_FN="diag_table"
 FIELD_TABLE_FN="field_table"
-FV3_NML_BASE_FN="input.nml.FV3"
+FV3_NML_BASE_SUITE_FN="input.nml.FV3"
 FV3_NML_YAML_CONFIG_FN="FV3.input.yml"
+FV3_NML_BASE_ENS_FN="input.nml.base_ens"
 MODEL_CONFIG_FN="model_configure"
 NEMS_CONFIG_FN="nems.configure"
 FV3_EXEC_FN="fv3_gfs.x"
@@ -390,29 +397,39 @@ FV3GFS_FILE_FMT_LBCS="nemsio"
 #
 #-----------------------------------------------------------------------
 #
-# Set default stochastic physics options
-# For detailed documentation of these parameters, see:
-# https://stochastic-physics.readthedocs.io/en/ufs_public_release/namelist_options.html
+# User-staged external model directories and files.  Definitions:
+#
+# EXTRN_MDL_SOURCE_DIR_ICS:
+# Directory in which to look for external model files for generating ICs.
+# If this is set to a non-empty string, the workflow looks in this directory
+# (specifically, in a subdirectory under this directory named "YYYYMMDDHH"
+# consisting of the starting date and cycle hour of the forecast, where 
+# YYYY is the 4-digit year, MM the 2-digit month, DD the 2-digit day of
+# the month, and HH the 2-digit hour of the day) for the external model 
+# files specified by the array EXTRN_MDL_FILES_ICS (these files will be 
+# used to generate the ICs on the native FV3SAR grid.  If this is set to 
+# an empty string, then the workflow will look for the external model 
+# files for generating ICS in a default machine-dependent location.  In 
+# this case, EXTRN_MDL_FILES_ICS is not used.
+# 
+# EXTRN_MDL_FILES_ICS:
+# Array containing the names of the files to search for in the directory
+# specified by EXTRN_MDL_SOURCE_DIR_ICS.  This variable is not used if 
+# EXTRN_MDL_SOURCE_DIR_ICS is set to a null (i.e. empty) string.
+#
+# EXTRN_MDL_SOURCE_DIR_LBCS:
+# Analogous to EXTRN_MDL_SOURCE_DIR_ICS but for LBCs instead of ICs.
+#
+# EXTRN_MDL_FILES_LBCS:
+# Analogous to EXTRN_MDL_FILES_ICS but for LBCs instead of ICs.
 #
 #-----------------------------------------------------------------------
 #
-DO_SHUM="false"
-DO_SPPT="false"
-DO_SKEB="false"
-SHUM_MAG="0.006" #Variable "shum" in input.nml
-SHUM_LSCALE="150000"
-SHUM_TSCALE="21600" #Variable "shum_tau" in input.nml
-SHUM_INT="3600" #Variable "shumint" in input.nml
-SPPT_MAG="1.0" #Variable "sppt" in input.nml
-SPPT_LSCALE="150000"
-SPPT_TSCALE="21600" #Variable "sppt_tau" in input.nml
-SPPT_INT="3600" #Variable "spptint" in input.nml
-SKEB_MAG="0.5" #Variable "skeb" in input.nml
-SKEB_LSCALE="150000"
-SKEB_TSCALE="21600" #Variable "skeb_tau" in input.nml
-SKEB_INT="3600" #Variable "skebint" in input.nml
-SKEB_VDOF="10"
-USE_ZMTNBLCK="false"
+EXTRN_MDL_SOURCE_DIR_ICS=""
+EXTRN_MDL_FILES_ICS=( "ICS_file1" "ICS_file2" "..." )
+
+EXTRN_MDL_SOURCE_DIR_LBCS=""
+EXTRN_MDL_FILES_LBCS=( "LBCS_file1" "LBCS_file2" "..." )
 #
 #-----------------------------------------------------------------------
 #
@@ -1117,38 +1134,55 @@ WTIME_RUN_POST="00:15:00"
 #
 #-----------------------------------------------------------------------
 #
-# User-staged external model directories and files.  Definitions:
+# Set parameters associated with running ensembles.  Definitions:
 #
-# EXTRN_MDL_SOURCE_DIR_ICS:
-# Directory in which to look for external model files for generating ICs.
-# If this is set to a non-empty string, the workflow looks in this directory
-# (specifically, in a subdirectory under this directory named $CDATE, 
-# where CDATE is the starting date and cycle hour of the forecast, in the
-# form YYYYMMDDHH) for the external model files specified by the array 
-# EXTRN_MDL_FILES_ICS (these files will be used to generate the ICs on 
-# the native FV3SAR grid.  If this is set to an empty string, then the 
-# workflow will look for the external model files for generating ICS in 
-# a default machine-dependent location.  In this case, the EXTRN_MDL_FILES_ICS 
-# is not used.
+# DO_ENSEMBLE:
+# Flag that determines whether to run a set of ensemble forecasts (for
+# each set of specified cycles).  If this is set to "TRUE", NUM_ENS_MEMBERS
+# forecasts are run for each cycle, each with a different set of stochastic
+# seed values.  Otherwise, a single forecast is run for each cycle.
+#
+# NUM_ENS_MEMBERS:
+# The number of ensemble members to run if DO_ENSEMBLE is set to "TRUE".
+# This variable also controls the naming of the ensemble member directories.  
+# For example, if this is set to "8", the member directories will be named 
+# mem1, mem2, ..., mem8.  If it is set to "08" (note the leading zero), 
+# the member directories will be named mem01, mem02, ..., mem08.  Note, 
+# however, that after reading in the number of characters in this string
+# (in order to determine how many leading zeros, if any, should be placed
+# in the names of the member directories), the workflow generation scripts
+# strip away those leading zeros.  Thus, in the variable definitions file 
+# (GLOBAL_VAR_DEFNS_FN), this variable appear with its leading zeros 
+# stripped.  This variable is not used if DO_ENSEMBLE is not set to "TRUE".
 # 
-# EXTRN_MDL_FILES_ICS:
-# Array containing the names of the files to search for in the directory
-# specified by EXTRN_MDL_SOURCE_DIR_ICS.  This variable is not used if 
-# EXTRN_MDL_SOURCE_DIR_ICS is set to a null (i.e. empty) string.
+#-----------------------------------------------------------------------
 #
-# EXTRN_MDL_SOURCE_DIR_LBCS:
-# Analogous to EXTRN_MDL_SOURCE_DIR_ICS but for LBCs instead of ICs.
-#
-# EXTRN_MDL_FILES_LBCS:
-# Analogous to EXTRN_MDL_FILES_ICS but for LBCs instead of ICs.
+DO_ENSEMBLE="FALSE"
+NUM_ENS_MEMBERS="1"
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_SOURCE_DIR_ICS=""
-EXTRN_MDL_FILES_ICS=( "file1" "file2" )
-
-EXTRN_MDL_SOURCE_DIR_LBCS=""
-EXTRN_MDL_FILES_LBCS=( "file1" "file2" )
-
-
+# Set default stochastic physics options
+# For detailed documentation of these parameters, see:
+# https://stochastic-physics.readthedocs.io/en/ufs_public_release/namelist_options.html
+#
+#-----------------------------------------------------------------------
+#
+DO_SHUM="false"
+DO_SPPT="false"
+DO_SKEB="false"
+SHUM_MAG="0.006" #Variable "shum" in input.nml
+SHUM_LSCALE="150000"
+SHUM_TSCALE="21600" #Variable "shum_tau" in input.nml
+SHUM_INT="3600" #Variable "shumint" in input.nml
+SPPT_MAG="1.0" #Variable "sppt" in input.nml
+SPPT_LSCALE="150000"
+SPPT_TSCALE="21600" #Variable "sppt_tau" in input.nml
+SPPT_INT="3600" #Variable "spptint" in input.nml
+SKEB_MAG="0.5" #Variable "skeb" in input.nml
+SKEB_LSCALE="150000"
+SKEB_TSCALE="21600" #Variable "skeb_tau" in input.nml
+SKEB_INT="3600" #Variable "skebint" in input.nml
+SKEB_VDOF="10"
+USE_ZMTNBLCK="false"
 

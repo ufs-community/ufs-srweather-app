@@ -192,7 +192,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-extrn_mdl_staging_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME}/${ICS_OR_LBCS}"
+extrn_mdl_staging_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
 mkdir_vrfy -p "${extrn_mdl_staging_dir}"
 cd_vrfy "${extrn_mdl_staging_dir}"
 #

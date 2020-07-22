@@ -56,7 +56,8 @@ the output files corresponding to a specified forecast hour.
 #-----------------------------------------------------------------------
 #
 valid_args=( \
-"cycle_dir" \
+"cdate" \
+"run_dir" \
 "postprd_dir" \
 "fhr_dir" \
 "fhr" \
@@ -150,12 +151,12 @@ cp_vrfy ${EXECDIR}/ncep_post .
 #-----------------------------------------------------------------------
 #
 # Get the cycle date and hour (in formats of yyyymmdd and hh, respect-
-# ively) from CDATE.
+# ively) from cdate.
 #
 #-----------------------------------------------------------------------
 #
-yyyymmdd=${CDATE:0:8}
-hh=${CDATE:8:2}
+yyyymmdd=${cdate:0:8}
+hh=${cdate:8:2}
 cyc=$hh
 tmmark="tm$hh"
 #
@@ -166,21 +167,20 @@ tmmark="tm$hh"
 #
 #-----------------------------------------------------------------------
 #
-dyn_file="${cycle_dir}/dynf0${fhr}.nc"
-phy_file="${cycle_dir}/phyf0${fhr}.nc"
+dyn_file="${run_dir}/dynf0${fhr}.nc"
+phy_file="${run_dir}/phyf0${fhr}.nc"
 
-#POST_TIME=$( ${NDATE} +${fhr} ${CDATE} )
-POST_TIME=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours" "+%Y%m%d%H" )
-POST_YYYY=${POST_TIME:0:4}
-POST_MM=${POST_TIME:4:2}
-POST_DD=${POST_TIME:6:2}
-POST_HH=${POST_TIME:8:2}
+post_time=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours" "+%Y%m%d%H" )
+post_yyyy=${post_time:0:4}
+post_mm=${post_time:4:2}
+post_dd=${post_time:6:2}
+post_hh=${post_time:8:2}
 
 cat > itag <<EOF
 ${dyn_file}
 netcdf
 grib2
-${POST_YYYY}-${POST_MM}-${POST_DD}_${POST_HH}:00:00
+${post_yyyy}-${post_mm}-${post_dd}_${post_hh}:00:00
 FV3R
 ${phy_file}
 
@@ -234,9 +234,14 @@ mv_vrfy BGDAWP.GrbF${fhr} ${postprd_dir}/RRFS.t${cyc}z.bgdawp${fhr}.${tmmark}
 mv_vrfy BGRD3D.GrbF${fhr} ${postprd_dir}/RRFS.t${cyc}z.bgrd3d${fhr}.${tmmark}
 
 #Link output for transfer to Jet
+# Should the following be done only if on jet??
 
-START_DATE=`echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/'`
-basetime=`date +%y%j%H%M -d "${START_DATE}"`
+# Seems like start_date is the same as "$yyyymmdd $hh", where yyyymmdd
+# and hh are calculated above, i.e. start_date is just cdate but with a
+# space inserted between the dd and hh.  If so, just use "$yyyymmdd $hh"
+# instead of calling sed.
+start_date=$( echo "${cdate}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/' )
+basetime=$( date +%y%j%H%M -d "${start_date}" )
 ln_vrfy -fs ${postprd_dir}/RRFS.t${cyc}z.bgdawp${fhr}.${tmmark} \
             ${postprd_dir}/BGDAWP_${basetime}${fhr}00
 ln_vrfy -fs ${postprd_dir}/RRFS.t${cyc}z.bgrd3d${fhr}.${tmmark} \

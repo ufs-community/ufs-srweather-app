@@ -47,6 +47,9 @@ ushdir="${scrfunc_dir}"
 #
 . $ushdir/source_util_funcs.sh
 . $ushdir/set_FV3nml_sfc_climo_filenames.sh
+. $ushdir/set_FV3nml_stoch_params.sh
+. $ushdir/create_model_config_files.sh
+. $ushdir/create_diag_table_files.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -90,6 +93,15 @@ WFLOW_XML_FP="$EXPTDIR/${WFLOW_XML_FN}"
 #
 #-----------------------------------------------------------------------
 #
+ensmem_indx_name="\"\""
+uscore_ensmem_name="\"\""
+slash_ensmem_subdir="\"\""
+if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+  ensmem_indx_name="mem"
+  uscore_ensmem_name="_mem#${ensmem_indx_name}#"
+  slash_ensmem_subdir="/mem#${ensmem_indx_name}#"
+fi
+
 settings="\
 #
 # Parameters needed by the job scheduler.
@@ -177,13 +189,25 @@ settings="\
 #
 # Parameters that determine the set of cycles to run.
 #
-  'date_first_cycl': !datetime ${DATE_FIRST_CYCL}${CYCL_HRS[0]}
-  'date_last_cycl': !datetime ${DATE_LAST_CYCL}${CYCL_HRS[0]}
+  'date_first_cycl': ${DATE_FIRST_CYCL}
+  'date_last_cycl': ${DATE_LAST_CYCL}
+  'cdate_first_cycl': !datetime ${DATE_FIRST_CYCL}${CYCL_HRS[0]}
+  'cycl_hrs': [ $( printf "\'%s\', " "${CYCL_HRS[@]}" ) ]
   'cycl_freq': !!str 24:00:00
 #
 # Forecast length (same for all cycles).
 #
-  'fcst_len_hrs': ${FCST_LEN_HRS}"
+  'fcst_len_hrs': ${FCST_LEN_HRS}
+#
+# Ensemble-related parameters.
+#
+  'do_ensemble': ${DO_ENSEMBLE}
+  'num_ens_members': ${NUM_ENS_MEMBERS}
+  'ndigits_ensmem_names': !!str ${NDIGITS_ENSMEM_NAMES}
+  'ensmem_indx_name': ${ensmem_indx_name}
+  'uscore_ensmem_name': ${uscore_ensmem_name}
+  'slash_ensmem_subdir': ${slash_ensmem_subdir}
+" # End of "settings" variable.
 
 print_info_msg $VERBOSE "
 The variable \"settings\" specifying values of the rococo XML variables
@@ -213,18 +237,42 @@ are:
   Namelist settings specified on command line:
     settings =
 $settings"
-
 #
 #-----------------------------------------------------------------------
 #
-# For select workflow tasks, copy module files from the various cloned 
-# external repositories to the appropriate subdirectory under the 
-# workflow directory tree.  In principle, this is better than having 
-# hard-coded module files for tasks because the copied module files will
-# always be up to date.  However, it does require that these module files 
-# in the external repositories be coded correctly, e.g. that they really
-# be lua module files and not contain any shell commands 
-# (like "export SOME_VARIABLE").
+# Create the cycle directories.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "$VERBOSE" "
+Creating the cycle directories..."
+
+for (( i=0; i<${NUM_CYCLES}; i++ )); do
+  cdate="${ALL_CDATES[$i]}"
+  cycle_dir="${CYCLE_BASEDIR}/$cdate"
+  mkdir_vrfy -p "${cycle_dir}"
+done
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that creates the model configuration file within each 
+# cycle directory.
+#
+#-----------------------------------------------------------------------
+#
+create_model_config_files || print_err_msg_exit "\
+Call to function to create a model configuration file under each cycle
+directory failed."
+#
+#-----------------------------------------------------------------------
+#
+# For select workflow tasks, copy module files from the various cloned
+# external repositories to the appropriate subdirectory under the workflow
+# directory tree.  In principle, this is better than having hard-coded
+# module files for tasks because the copied module files will always be
+# up-to-date.  However, it does require that these module files in the
+# external repositories be coded correctly, e.g. that they really be lua
+# module files and not contain any shell commands (like "export SOME_VARIABLE").
 #
 #-----------------------------------------------------------------------
 #
@@ -236,11 +284,16 @@ cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/fv3gfs/orog.$machine" "${MAKE_OROG_TN}"
 cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/modulefile.sfc_climo_gen.$machine" "${MAKE_SFC_CLIMO_TN}"
 cp_vrfy -f "${CHGRES_DIR}/modulefiles/chgres_cube.$machine" "${MAKE_ICS_TN}"
 cp_vrfy -f "${CHGRES_DIR}/modulefiles/chgres_cube.$machine" "${MAKE_LBCS_TN}"
-cp_vrfy -f "${UFS_WTHR_MDL_DIR}/modulefiles/$machine.intel/fv3" "${RUN_FCST_TN}"
+if [ $MACHINE = "WCOSS_CRAY" -o $MACHINE = "WCOSS_DELL_P3" ] ; then
+  cp_vrfy -f "${UFS_WTHR_MDL_DIR}/modulefiles/$machine/fv3" "${RUN_FCST_TN}"
+else
+  cp_vrfy -f "${UFS_WTHR_MDL_DIR}/modulefiles/$machine.intel/fv3" "${RUN_FCST_TN}"
+fi
 
 task_names=( "${MAKE_GRID_TN}" "${MAKE_OROG_TN}" "${MAKE_SFC_CLIMO_TN}" "${MAKE_ICS_TN}" "${MAKE_LBCS_TN}" "${RUN_FCST_TN}" )
 #
-# Only some platforms build EMC_post using modules, and some machines require a different EMC_post modulefile name.
+# Only some platforms build EMC_post using modules, and some machines 
+# require a different EMC_post modulefile name.
 #
 if [ "${MACHINE}" = "CHEYENNE" ]; then
   print_info_msg "No post modulefile needed for ${MACHINE}"
@@ -427,7 +480,7 @@ fi
 #
 # This if-statement is a temporary fix that makes corrections to the suite
 # definition file for the "FV3_GFS_2017_gfdlmp_regional" physics suite
-# that EMC uses. 
+# that EMC uses.
 #
 # IMPORTANT:
 # This if-statement must be removed once these corrections are made to
@@ -613,6 +666,11 @@ settings="\
 settings="$settings
 'namsfc': {"
 
+dummy_run_dir="$EXPTDIR/any_cyc"
+if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+  dummy_run_dir="${dummy_run_dir}/any_ensmem"
+fi
+
 regex_search="^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
 num_nml_vars=${#FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING[@]}
 for (( i=0; i<${num_nml_vars}; i++ )); do
@@ -632,8 +690,7 @@ for (( i=0; i<${num_nml_vars}; i++ )); do
 # the experiment directory).
 #
     if [ "${RUN_ENVIR}" != "nco" ]; then
-      fp=$( realpath --canonicalize-missing \
-                     --relative-to="$EXPTDIR/any_cycle_dir" "$fp" )
+      fp=$( realpath --canonicalize-missing --relative-to="${dummy_run_dir}" "$fp" )
     fi
   fi
 #
@@ -646,19 +703,11 @@ for (( i=0; i<${num_nml_vars}; i++ )); do
 
 done
 #
-# Add to "settings" several namelist variable name-and-value pairs that
-# are constant.  These should probably be added to the base namelist file
-# (FV3_NML_BASE_FP) and this step removed.
+# Add the closing curly bracket to "settings".
 #
 settings="$settings
-#    'FNZORC': \"igbp\",
-#    'FNTSFA': \"\",
-#    'FNACNA': \"\",
-#    'FNSNOA': \"\",
   }"
-#
-# For debugging purposes, print out what "settings" has been set to.
-#
+
 print_info_msg $VERBOSE "
 The variable \"settings\" specifying values of the namelist variables
 has been set as follows:
@@ -669,17 +718,17 @@ $settings"
 #-----------------------------------------------------------------------
 #
 # Call the set_namelist.py script to create a new FV3 namelist file (full
-# path specified by FV3_NML_FP) using the file FV3_NML_BASE_FP as the base
-# (i.e. starting) namelist file, with physics-suite-dependent modifications
-# to the base file specified in the yaml configuration file FV3_NML_YAML_CONFIG_FP
-# (for the physics suite specified by CCPP_PHYS_SUITE), and with additional
-# physics-suite-independent modificaitons specified in the variable
-# "settings" set above.
+# path specified by FV3_NML_FP) using the file FV3_NML_BASE_SUITE_FP as
+# the base (i.e. starting) namelist file, with physics-suite-dependent
+# modifications to the base file specified in the yaml configuration file
+# FV3_NML_YAML_CONFIG_FP (for the physics suite specified by CCPP_PHYS_SUITE),
+# and with additional physics-suite-independent modificaitons specified
+# in the variable "settings" set above.
 #
 #-----------------------------------------------------------------------
 #
 $USHDIR/set_namelist.py -q \
-                        -n ${FV3_NML_BASE_FP} \
+                        -n ${FV3_NML_BASE_SUITE_FP} \
                         -c ${FV3_NML_YAML_CONFIG_FP} ${CCPP_PHYS_SUITE} \
                         -u "$settings" \
                         -o ${FV3_NML_FP} || \
@@ -687,7 +736,7 @@ $USHDIR/set_namelist.py -q \
 Call to python script set_namelist.py to generate an FV3 namelist file
 failed.  Parameters passed to this script are:
   Full path to base namelist file:
-    FV3_NML_BASE_FP = \"${FV3_NML_BASE_FP}\"
+    FV3_NML_BASE_SUITE_FP = \"${FV3_NML_BASE_SUITE_FP}\"
   Full path to yaml configuration file for various physics suites:
     FV3_NML_YAML_CONFIG_FP = \"${FV3_NML_YAML_CONFIG_FP}\"
   Physics suite to extract from yaml configuration file:
@@ -710,7 +759,21 @@ $settings"
 # configurations is not known until the grid is created.
 #
 if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
-  set_FV3nml_sfc_climo_filenames
+
+  set_FV3nml_sfc_climo_filenames || print_err_msg_exit "\
+Call to function to set surface climatology file names in the FV3 namelist
+file failed."
+
+  if [ "${DO_ENSEMBLE}" = TRUE ]; then
+    set_FV3nml_stoch_params || print_err_msg_exit "\
+Call to function to set stochastic parameters in the FV3 namelist files
+for the various ensemble members failed."
+  fi
+
+  create_diag_table_files || print_err_msg_exit "\
+Call to function to create a diagnostics table file under each cycle 
+directory failed."
+
 fi
 #
 #-----------------------------------------------------------------------

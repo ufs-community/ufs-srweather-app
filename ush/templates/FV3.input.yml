@@ -356,7 +356,6 @@ FV3_CPT_v0:
     domains_stack_size: 1800200
   fv_core_nml:
     <<: *gfs_v15_fv_core
-    consv_te: 1.0
     dnats: 0
     fv_sg_adj: 450
     k_split: 6

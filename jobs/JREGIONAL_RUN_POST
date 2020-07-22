@@ -57,13 +57,21 @@ on the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
+# Set the run directory.
+#
+#-----------------------------------------------------------------------
+#
+run_dir="${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}"
+#
+#-----------------------------------------------------------------------
+#
 # If it doesn't already exist, create the directory (postprd_dir) in which 
 # to store post-processing output.  (Note that postprd_dir may already 
 # have been created by this post-processing script run for a different 
-# forecast hour.)  Also, create a temporary work directory (fhr_dir) for 
-# the current forecast hour being processed.  fhr_dir will be deleted 
-# later after the processing for the current forecast hour is complete.  
-# Then change location to fhr_dir.
+# forecast hour of the same cycle and/or ensemble member.)  Also, create 
+# a temporary work directory (fhr_dir) for the current forecast hour.  
+# fhr_dir will be deleted later after the processing for the current 
+# forecast hour is complete.  Then change location to fhr_dir.
 #
 # Note that there may be a preexisting version of fhr_dir from previous 
 # runs of this script for the current forecast hour (and current cycle), 
@@ -73,10 +81,10 @@ on the output files corresponding to a specified forecast hour.
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  COMOUT="${COMOUT_BASEDIR}/$RUN.$PDY/$cyc"
+  COMOUT="${COMOUT_BASEDIR}/$RUN.$PDY/$cyc${SLASH_ENSMEM_SUBDIR}"
   postprd_dir="$COMOUT"
 else
-  postprd_dir="${CYCLE_DIR}/postprd"
+  postprd_dir="${run_dir}/postprd"
 fi
 mkdir_vrfy -p "${postprd_dir}"
 
@@ -118,7 +126,8 @@ fi
 #-----------------------------------------------------------------------
 #
 $SCRIPTSDIR/exregional_run_post.sh \
-  cycle_dir="${CYCLE_DIR}" \
+  cdate="${CDATE}" \
+  run_dir="${run_dir}" \
   postprd_dir="${postprd_dir}" \
   fhr_dir="${fhr_dir}" \
   fhr="${fhr}" || \

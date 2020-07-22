@@ -106,7 +106,7 @@ Directory in which the wgrib2 executable is located could not be found:
 #
 #-----------------------------------------------------------------------
 #
-ics_dir="${CYCLE_DIR}/INPUT"
+ics_dir="${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}/INPUT"
 mkdir_vrfy -p "${ics_dir}"
 #
 #-----------------------------------------------------------------------
