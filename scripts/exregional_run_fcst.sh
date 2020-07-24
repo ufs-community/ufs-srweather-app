@@ -12,6 +12,14 @@
 #
 #-----------------------------------------------------------------------
 #
+# Source other necessary files.
+#
+#-----------------------------------------------------------------------
+#
+. $USHDIR/create_model_config_file.sh
+#
+#-----------------------------------------------------------------------
+#
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
 #
@@ -56,6 +64,7 @@ specified cycle.
 #-----------------------------------------------------------------------
 #
 valid_args=( \
+"cdate" \
 "cycle_dir" \
 "ensmem_indx" \
 "slash_ensmem_subdir" \
@@ -409,15 +418,28 @@ if [ "${USE_CCPP}" = "TRUE" ]; then
   fi
 
 fi
+#-----------------------------------------------------------------------
+#
+# Call the function that creates the model configuration file within each
+# cycle directory.
 #
 #-----------------------------------------------------------------------
 #
-# If running enemble forecasts, create links to the cycle-specific 
-# diagnostic tables file and model configuration file in the cycle 
-# directory.  Note that these links should not be made if not running
-# ensemble forecasts because in that case, the cycle directory is the
-# run directory (and we would be creating a symlink with the name of a
-# file that already exists).
+create_model_config_file \
+  cdate="$cdate" \
+  run_dir="${run_dir}" || print_err_msg_exit "\
+Call to function to create a model configuration file for the current 
+cycle's (cdate) run directory (run_dir) failed:
+  cdate = \"${cdate}\"
+  run_dir = \"${run_dir}\""
+#
+#-----------------------------------------------------------------------
+#
+# If running enemble forecasts, create a link to the cycle-specific 
+# diagnostic tables file in the cycle directory.  Note that this link 
+# should not be made if not running ensemble forecasts because in that 
+# case, the cycle directory is the run directory (and we would be creating 
+# a symlink with the name of a file that already exists).
 #
 #-----------------------------------------------------------------------
 #
@@ -425,8 +447,6 @@ if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
   relative_or_null="--relative"
   diag_table_fp="${cycle_dir}/${DIAG_TABLE_FN}"
   ln_vrfy -sf ${relative_or_null} ${diag_table_fp} ${run_dir}
-  model_config_fp="${cycle_dir}/${MODEL_CONFIG_FN}"
-  ln_vrfy -sf ${relative_or_null} ${model_config_fp} ${run_dir}
 fi
 #
 #-----------------------------------------------------------------------

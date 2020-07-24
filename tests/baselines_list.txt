@@ -1,6 +1,6 @@
 GSD_RAP13km
-community_ensemble_2mems
 community_ensemble_008mems
+community_ensemble_2mems
 nco_conus
 nco_conus_c96
 nco_ensemble

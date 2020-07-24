@@ -41,14 +41,13 @@ ushdir="${scrfunc_dir}"
 #
 #-----------------------------------------------------------------------
 #
-# Source bash utility functions.
+# Source bash utility functions and other necessary files.
 #
 #-----------------------------------------------------------------------
 #
 . $ushdir/source_util_funcs.sh
 . $ushdir/set_FV3nml_sfc_climo_filenames.sh
 . $ushdir/set_FV3nml_stoch_params.sh
-. $ushdir/create_model_config_files.sh
 . $ushdir/create_diag_table_files.sh
 #
 #-----------------------------------------------------------------------
@@ -252,17 +251,6 @@ for (( i=0; i<${NUM_CYCLES}; i++ )); do
   cycle_dir="${CYCLE_BASEDIR}/$cdate"
   mkdir_vrfy -p "${cycle_dir}"
 done
-#
-#-----------------------------------------------------------------------
-#
-# Call the function that creates the model configuration file within each 
-# cycle directory.
-#
-#-----------------------------------------------------------------------
-#
-create_model_config_files || print_err_msg_exit "\
-Call to function to create a model configuration file under each cycle
-directory failed."
 #
 #-----------------------------------------------------------------------
 #
