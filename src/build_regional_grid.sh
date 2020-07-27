@@ -83,9 +83,10 @@ fi
 #
 if [ $platform = "cray" ]; then
   alias make="make HDF5_HOME=${HDF5} NETCDF_HOME=${NETCDF} NC_BLKSZ=64K SITE=${platform}"
-else
-  #alias make="make HDF5_HOME=${HDF5_DIR} NETCDF_HOME=${NETCDF_DIR} NC_BLKSZ=64K SITE=${platform}"
+elif [ $platform = "hera" ]; then
   alias make="make NETCDF_HOME=${NETCDF_DIR} NC_BLKSZ=64K SITE=${platform}"
+else
+  alias make="make HDF5_HOME=${HDF5_DIR} NETCDF_HOME=${NETCDF_DIR} NC_BLKSZ=64K SITE=${platform}"
 fi
 
 set +x
