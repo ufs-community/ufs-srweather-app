@@ -65,7 +65,7 @@ elif [ $platform = "theia" ]; then
   HDF5_DIR=$HDF5
   NETCDF_DIR=$NETCDF
 elif [ $platform = "hera" ]; then
-  HDF5_DIR=$HDF5
+#  HDF5_DIR=$HDF5
   NETCDF_DIR=$NETCDF
 elif [ $platform = "cheyenne" ]; then
   NETCDF_DIR=$NETCDF
@@ -84,7 +84,8 @@ fi
 if [ $platform = "cray" ]; then
   alias make="make HDF5_HOME=${HDF5} NETCDF_HOME=${NETCDF} NC_BLKSZ=64K SITE=${platform}"
 else
-  alias make="make HDF5_HOME=${HDF5_DIR} NETCDF_HOME=${NETCDF_DIR} NC_BLKSZ=64K SITE=${platform}"
+  #alias make="make HDF5_HOME=${HDF5_DIR} NETCDF_HOME=${NETCDF_DIR} NC_BLKSZ=64K SITE=${platform}"
+  alias make="make NETCDF_HOME=${NETCDF_DIR} NC_BLKSZ=64K SITE=${platform}"
 fi
 
 set +x

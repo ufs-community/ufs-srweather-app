@@ -78,15 +78,15 @@ fi
 }
 
 #------------------------------------
-# build utils
+# build UTILS
 #------------------------------------
-$Build_utils && {
-echo " .... Building utils .... "
-./build_utils.sh > $logs_dir/build_utils.log 2>&1
+$Build_UFS_UTILS && {
+echo " .... Building UFS_UTILS .... "
+./build_UFS_UTILS.sh > $logs_dir/build_UFS_UTILS.log 2>&1
 if [ $? -eq 0 ] ; then
-  echo "Utils build SUCCEEDED"
+  echo "UFS_UTILS build SUCCEEDED"
 else
-  echo "Utils build FAILED see $logs_dir/build_utils.log"
+  echo "UFS_UTILS build FAILED see $logs_dir/build_UFS_UTILS.log"
   exit 1
 fi
 }

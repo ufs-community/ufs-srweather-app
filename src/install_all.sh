@@ -20,12 +20,12 @@ fi
 #------------------------------------
 # install forecast
 #------------------------------------
-#${CP} NEMSfv3gfs/fv3.exe                             ../exec/regional_forecast.x
+#${CP} NEMSfv3gfs/fv3.exe                               ../exec/regional_forecast.x
 
 #------------------------------------
 # install post
 #------------------------------------
- ${CP} EMC_post/exec/*                         ../exec/ncep_post
+ ${CP} EMC_post/exec/*                                 ../exec/ncep_post
 
 #------------------------------------
 # install chgres
@@ -35,17 +35,17 @@ fi
 #------------------------------------
 # install chgres_cube
 #------------------------------------
- ${CP} UFS_UTILS_chgres_grib2/exec/chgres_cube.exe     ../exec/chgres_cube.exe
+ ${CP} UFS_UTILS/exec/chgres_cube                      ../exec/chgres_cube.exe
 
 #------------------------------------
 # install orog
 #------------------------------------
- ${CP} UFS_UTILS_develop/exec/orog.x                   ../exec/orog.x
+ ${CP} UFS_UTILS/exec/orog                             ../exec/orog.x
 
 #------------------------------------
 # install sfc_climo_gen
 #------------------------------------
- ${CP} UFS_UTILS_develop/exec/sfc_climo_gen            ../exec/sfc_climo_gen
+ ${CP} UFS_UTILS/exec/sfc_climo_gen                    ../exec/sfc_climo_gen
 
 #------------------------------------
 # install regional_grid
@@ -55,13 +55,11 @@ fi
 #------------------------------------
 # install fre-nctools
 #------------------------------------
- ${CP} UFS_UTILS_develop/exec/make_hgrid               ../exec/make_hgrid
- ${CP} UFS_UTILS_develop/exec/make_hgrid_parallel      ../exec/make_hgrid_parallel
- ${CP} UFS_UTILS_develop/exec/make_solo_mosaic         ../exec/make_solo_mosaic
- ${CP} UFS_UTILS_develop/exec/fregrid                  ../exec/fregrid
- ${CP} UFS_UTILS_develop/exec/fregrid_parallel         ../exec/fregrid_parallel
- ${CP} UFS_UTILS_develop/exec/filter_topo              ../exec/filter_topo
- ${CP} UFS_UTILS_develop/exec/shave.x                  ../exec/shave.x
+ ${CP} UFS_UTILS/exec/make_hgrid                       ../exec/make_hgrid
+ ${CP} UFS_UTILS/exec/make_solo_mosaic                 ../exec/make_solo_mosaic
+ ${CP} UFS_UTILS/exec/fregrid                          ../exec/fregrid
+ ${CP} UFS_UTILS/exec/filter_topo                      ../exec/filter_topo
+ ${CP} UFS_UTILS/exec/shave                            ../exec/shave.x
 
 #------------------------------------
 # install gsi
