@@ -347,9 +347,9 @@ predefined domain:
 
     DT_ATMOS="300"
 
-    LAYOUT_X="2"
+    LAYOUT_X="20"
     LAYOUT_Y="2"
-    BLOCKSIZE="2"
+    BLOCKSIZE="10"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
@@ -460,9 +460,9 @@ predefined domain:
 
     DT_ATMOS="40"
 
-    LAYOUT_X="36"
-    LAYOUT_Y="24"
-    BLOCKSIZE="26"
+    LAYOUT_X="18"
+    LAYOUT_Y="12"
+    BLOCKSIZE="46"
 
     QUILTING="TRUE"
 
@@ -497,9 +497,9 @@ predefined domain:
 
     DT_ATMOS="40"
 
-    LAYOUT_X="34"
-    LAYOUT_Y="24"
-    BLOCKSIZE="34"
+    LAYOUT_X="18"
+    LAYOUT_Y="12"
+    BLOCKSIZE="46"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"

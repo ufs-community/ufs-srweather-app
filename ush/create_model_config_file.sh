@@ -48,6 +48,7 @@ function create_model_config_file() {
   local valid_args=(
 cdate \
 run_dir \
+nthreads \
   )
   process_args valid_args "$@"
 #
@@ -115,6 +116,7 @@ cycle directory..."
   set_file_param "${model_config_fp}" "ncores_per_node" "${NCORES_PER_NODE}"
   set_file_param "${model_config_fp}" "quilting" "${dot_quilting_dot}"
   set_file_param "${model_config_fp}" "print_esmf" "${dot_print_esmf_dot}"
+  set_file_param "${model_config_fp}" "atmos_nthreads" "${nthreads:-1}"
 #
 #-----------------------------------------------------------------------
 #

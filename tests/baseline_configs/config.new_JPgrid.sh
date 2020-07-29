@@ -52,8 +52,8 @@ JPgrid_WIDE_HALO_WIDTH=6
 DT_ATMOS="40"
 
 LAYOUT_X="8"
-LAYOUT_Y="6"
-BLOCKSIZE="26"
+LAYOUT_Y="12"
+BLOCKSIZE="13"
 
 if [ "$QUILTING" = "TRUE" ]; then
   WRTCMP_write_groups="1"

@@ -13,7 +13,7 @@ dt_atmos:                <dt_atmos>
 cpl:                     .false.
 calendar:                'julian'
 memuse_verbose:          .false.
-atmos_nthreads:          2
+atmos_nthreads:          <threads>
 use_hyper_thread:        .false.
 ncores_per_node:         <ncores_per_node>
 debug_affinity:          .true.

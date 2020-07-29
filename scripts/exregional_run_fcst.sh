@@ -107,6 +107,7 @@ case $MACHINE in
   ulimit -a
   APRUN="srun"
   LD_LIBRARY_PATH="${UFS_WTHR_MDL_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  OMP_NUM_THREADS=4
   ;;
 #
 "JET")
@@ -114,6 +115,7 @@ case $MACHINE in
   ulimit -a
   APRUN="srun"
   LD_LIBRARY_PATH="${UFS_WTHR_MDL_DIR}/FV3/ccpp/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  OMP_NUM_THREADS=4
   ;;
 #
 "ODIN")
@@ -427,6 +429,7 @@ fi
 #
 create_model_config_file \
   cdate="$cdate" \
+  nthreads=${OMP_NUM_THREADS:-1} \
   run_dir="${run_dir}" || print_err_msg_exit "\
 Call to function to create a model configuration file for the current 
 cycle's (cdate) run directory (run_dir) failed:
@@ -456,8 +459,9 @@ fi
 #-----------------------------------------------------------------------
 #
 export KMP_AFFINITY=scatter
-export OMP_NUM_THREADS=1 #Needs to be 1 for dynamic build of CCPP with GFDL fast physics, was 2 before.
+export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1} #Needs to be 1 for dynamic build of CCPP with GFDL fast physics, was 2 before.
 export OMP_STACKSIZE=1024m
+
 #
 #-----------------------------------------------------------------------
 #
