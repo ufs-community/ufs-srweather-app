@@ -671,14 +671,6 @@ NUM_CYCLES="${#ALL_CDATES[@]}"
 # This directory includes subdirectories for FV3, NEMS, and FMS.  If
 # USE_CCPP is set to "TRUE", it also includes a subdirectory for CCPP.
 #
-# FIXgsm:
-# System directory in which the fixed (i.e. time-independent) files that
-# are needed to run the FV3SAR model are located.
-#
-# SFC_CLIMO_INPUT_DIR:
-# Directory in which the sfc_climo_gen code looks for surface climatolo-
-# gy input files.
-#
 # FIXupp:
 # System directory from which to copy necessary fixed files for UPP.
 #
@@ -715,55 +707,68 @@ TEMPLATE_DIR="$USHDIR/templates"
 case $MACHINE in
 
 "WCOSS_CRAY")
-  FIXgsm="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
-  SFC_CLIMO_INPUT_DIR=""
+  FIXgsm=${FIXgsm:-"/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"}
+  TOPO_DIR=${TOPO_DIR:-"/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog"}
+  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-""}
   ;;
 
 "WCOSS_DELL_P3")
-  FIXgsm="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
-  SFC_CLIMO_INPUT_DIR=""
+  FIXgsm=${FIXgsm:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"}
+  TOPO_DIR=${TOPO_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog"}
+  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-""}
   ;;
 
 "DELL")
-  FIXgsm="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"
-  SFC_CLIMO_INPUT_DIR=""
+  FIXgsm=${FIXgsm:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"}
+  TOPO_DIR=${TOPO_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog"}
+  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-""}
   ;;
 
 "THEIA")
-  FIXgsm="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/scratch4/NCEPDEV/da/noscrub/George.Gayno/climo_fields_netcdf"
+  FIXgsm=${FIXgsm:-"/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_am"}
+  TOPO_DIR=${TOPO_DIR:-"/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix/fix_orog"}
+  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/scratch4/NCEPDEV/da/noscrub/George.Gayno/climo_fields_netcdf"}
   ;;
 
 "HERA")
-  FIXgsm="/scratch1/NCEPDEV/global/glopara/fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"
+  FIXgsm=${FIXgsm:-"/scratch1/NCEPDEV/global/glopara/fix/fix_am"}
+  TOPO_DIR=${TOPO_DIR:-"/scratch1/NCEPDEV/global/glopara/fix/fix_orog"}
+  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"}
   ;;
 
 "JET")
-  FIXgsm="/lfs4/HFIP/gsd-fv3-hfip/FV3/fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/lfs1/HFIP/hwrf-data/git/fv3gfs/fix/fix_sfc_climo"
+  FIXgsm=${FIXgsm:-"/lfs4/HFIP/gsd-fv3-hfip/FV3/fix/fix_am"}
+  TOPO_DIR=${TOPO_DIR:-"/lfs4/HFIP/gsd-fv3-hfip/FV3/fix/fix_orog"}
+  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/lfs1/HFIP/hwrf-data/git/fv3gfs/fix/fix_sfc_climo"}
   ;;
 
 "ODIN")
-  FIXgsm="/scratch/ywang/fix/theia_fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/scratch/ywang/fix/climo_fields_netcdf"
+  FIXgsm=${FIXgsm:-"/scratch/ywang/fix/theia_fix/fix_am"}
+  TOPO_DIR=${TOPO_DIR:-"/scratch/ywang/fix/theia_fix/fix_orog"}
+  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/scratch/ywang/fix/climo_fields_netcdf"}
   ;;
 "CHEYENNE")
-  FIXgsm="/glade/p/ral/jntp/UFS_CAM/fix/fix_am"
-  SFC_CLIMO_INPUT_DIR="/glade/p/ral/jntp/UFS_CAM/fix/climo_fields_netcdf"
+  FIXgsm=${FIXgsm:-"/glade/p/ral/jntp/UFS_CAM/fix/fix_am"}
+  TOPO_DIR=${TOPO_DIR:-"/glade/p/ral/jntp/UFS_CAM/fix/fix_orog"}
+  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/glade/p/ral/jntp/UFS_CAM/fix/climo_fields_netcdf"}
   ;;
 
 "STAMPEDE")
-  FIXgsm="/work/00315/tg455890/stampede2/regional_fv3/fix_am"
-  SFC_CLIMO_INPUT_DIR="/work/00315/tg455890/stampede2/regional_fv3/climo_fields_netcdf"
+  FIXgsm=${FIXgsm:-"/work/00315/tg455890/stampede2/regional_fv3/fix_am"}
+  TOPO_DIR=${TOPO_DIR:-"/work/00315/tg455890/stampede2/regional_fv3/fix_orog"}
+  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/work/00315/tg455890/stampede2/regional_fv3/climo_fields_netcdf"}
   ;;
 
 *)
   print_err_msg_exit "\
-Directories have not been specified for this machine:
-  MACHINE = \"$MACHINE\""
-  ;;
+One or more fix file directories have not been specified for this machine:
+  MACHINE = \"$MACHINE\"
+  FIXgsm = \"${FIXgsm:-\"\"}
+  TOPO_DIR = \"${TOPO_DIR:-\"\"}
+  SFC_CLIMO_INPUT_DIR = \"${SFC_CLIMO_INPUT_DIR:-\"\"}
 
+You can specify the missing location(s) in config.sh"
+  ;;
 esac
 #
 #-----------------------------------------------------------------------
@@ -2488,6 +2493,7 @@ UFS_WTHR_MDL_DIR="${UFS_WTHR_MDL_DIR}"
 UFS_UTILS_DIR="${UFS_UTILS_DIR}"
 CHGRES_DIR="${CHGRES_DIR}"
 SFC_CLIMO_INPUT_DIR="${SFC_CLIMO_INPUT_DIR}"
+TOPO_DIR=${TOPO_DIR}
 
 EXPTDIR="$EXPTDIR"
 LOGDIR="$LOGDIR"

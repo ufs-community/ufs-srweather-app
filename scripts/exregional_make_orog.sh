@@ -147,7 +147,6 @@ case $MACHINE in
 
 "STAMPEDE")
   export APRUN="time"
-  export topo_dir="/work/00315/tg455890/stampede2/regional_fv3/fix_orog"
   ;;
 
 esac
@@ -172,15 +171,6 @@ mkdir_vrfy -p "${filter_dir}"
 shave_dir="${OROG_DIR}/shave_tmp"
 mkdir_vrfy -p "${shave_dir}"
 #
-#-----------------------------------------------------------------------
-#
-# Set the system directory from which topography data will be copied into
-# the experiment directory so it can be remapped onto the forecast model's
-# grid.
-#
-#-----------------------------------------------------------------------
-#
-topo_dir=$( readlink -f "${FIXgsm}/../fix_orog" )
 #
 #-----------------------------------------------------------------------
 #
@@ -207,12 +197,12 @@ tmp_dir="${raw_dir}/tmp"
 mkdir_vrfy -p "${tmp_dir}"
 cd_vrfy "${tmp_dir}"
 #
-# Copy topography and related data files from the system directory (topo_dir)
+# Copy topography and related data files from the system directory (TOPO_DIR)
 # to the temporary directory.
 #
-cp_vrfy ${topo_dir}/thirty.second.antarctic.new.bin fort.15
-cp_vrfy ${topo_dir}/landcover30.fixed .
-cp_vrfy ${topo_dir}/gmted2010.30sec.int fort.235
+cp_vrfy ${TOPO_DIR}/thirty.second.antarctic.new.bin fort.15
+cp_vrfy ${TOPO_DIR}/landcover30.fixed .
+cp_vrfy ${TOPO_DIR}/gmted2010.30sec.int fort.235
 #
 #-----------------------------------------------------------------------
 #
@@ -313,7 +303,7 @@ ${TILE_RGNL} \
 ${FIXsar} \
 ${raw_dir} \
 ${UFS_UTILS_DIR} \
-${topo_dir} \
+${TOPO_DIR} \
 ${tmp_dir}" \
   >> ${tmp_dir}/orog.file1
 
