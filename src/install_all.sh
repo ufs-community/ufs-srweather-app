@@ -50,7 +50,7 @@ fi
 #------------------------------------
 # install regional_esg_grid
 #------------------------------------
- ${CP} UFS_UTILS/exec/regional_esg_grid                    ../exec/regional_grid
+ ${CP} UFS_UTILS/exec/regional_esg_grid                ../exec/regional_grid
 
 #------------------------------------
 # install other utilities
