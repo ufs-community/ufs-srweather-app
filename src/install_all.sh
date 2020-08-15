@@ -48,18 +48,19 @@ fi
  ${CP} UFS_UTILS/exec/sfc_climo_gen                    ../exec/sfc_climo_gen
 
 #------------------------------------
-# install regional_grid
+# install regional_esg_grid
 #------------------------------------
-# ${CP} regional_utils.fd/exec/regional_grid            ../exec/regional_grid.x
+ ${CP} UFS_UTILS/exec/regional_esg_grid                    ../exec/regional_grid
 
 #------------------------------------
-# install fre-nctools
+# install other utilities
 #------------------------------------
  ${CP} UFS_UTILS/exec/make_hgrid                       ../exec/make_hgrid
  ${CP} UFS_UTILS/exec/make_solo_mosaic                 ../exec/make_solo_mosaic
  ${CP} UFS_UTILS/exec/fregrid                          ../exec/fregrid
  ${CP} UFS_UTILS/exec/filter_topo                      ../exec/filter_topo
  ${CP} UFS_UTILS/exec/shave                            ../exec/shave.x
+ ${CP} UFS_UTILS/exec/global_equiv_resol               ../exec/global_equiv_resol
 
 #------------------------------------
 # install gsi
