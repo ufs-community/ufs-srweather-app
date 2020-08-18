@@ -1,7 +1,7 @@
 ;
 ; **********************************************************************
 ;
-; File name: read_FV3SAR_gridfield_native.ncl
+; File name: read_FV3LAM_gridfield_native.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
@@ -18,9 +18,9 @@ loadscript(lib_location + "calc_field_stats.ncl")
 
 load "get_gridfield_info.ncl"
 
-undef("read_FV3SAR_gridfield_native")
+undef("read_FV3LAM_gridfield_native")
 
-function read_FV3SAR_gridfield_native( \
+function read_FV3LAM_gridfield_native( \
          field_names_by_tile[*]:string, \
          file_names_by_tile[*]:string, \
          gtype:string, \
@@ -108,7 +108,7 @@ begin
 ;
 ; **********************************************************************
 ;
-  id_str := "Message from procedure/function read_FV3SAR_gridfield_native():"
+  id_str := "Message from procedure/function read_FV3LAM_gridfield_native():"
 ;
 ; **********************************************************************
 ;
@@ -648,7 +648,7 @@ begin
 ;
 ; Set to missing values the variables containing the vertical and time
 ; dimensions of the field on each tile.  These need to be returned only
-; for consistency with the read_FV3SAR_field_native(...) function.
+; for consistency with the read_FV3LAM_field_native(...) function.
 ;
 ; **********************************************************************
 ;

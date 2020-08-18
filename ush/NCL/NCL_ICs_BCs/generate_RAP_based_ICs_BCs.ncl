@@ -14,9 +14,9 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/contrib/cd_string.ncl"
 
 load "pause.ncl"
 load "strcmp.ncl"
-load "interpolate_RAP_to_SARFV3.ncl"
+load "interpolate_RAP_to_FV3LAM.ncl"
 load "read_RAP_grid.ncl"
-load "read_FV3SAR_grid_halo.ncl"
+load "read_FV3LAM_grid_halo.ncl"
 load "calc_field_stats.ncl"
 load "read_RAP_horiz_field.ncl"
 load "adjust_longitude_range.ncl"
@@ -99,7 +99,7 @@ end if
 ; **********************************************************************
 ;                                                                      *
 ; Check whether draw_RAP_grid has been specified on the command line.  
-; If not, set it to False.  Do same for draw_SARFV3_grid.
+; If not, set it to False.  Do same for draw_FV3LAM_grid.
 ;                                                                      *
 ; **********************************************************************
 ;
@@ -107,8 +107,8 @@ end if
     draw_RAP_grid = False
   end if
 
-  if (.not. isvar("draw_SARFV3_grid")) then
-    draw_SARFV3_grid = False
+  if (.not. isvar("draw_FV3LAM_grid")) then
+    draw_FV3LAM_grid = False
   end if
 ;
 ; **********************************************************************
@@ -303,10 +303,10 @@ end if
   region_names = new((/ num_regions /), "string")
   region_bounds = new((/ num_regions, 4 /), "float")
 ;  region_draw_RAP_grid = new((/ num_regions /), "logical")
-;  region_draw_SARFV3_grid = new((/ num_regions /), "logical")
+;  region_draw_FV3LAM_grid = new((/ num_regions /), "logical")
   draw_grid_by_region = True
   draw_grid_by_region@RAP = new((/ num_regions /), "logical")
-  draw_grid_by_region@SARFV3 = new((/ num_regions /), "logical")
+  draw_grid_by_region@FV3LAM = new((/ num_regions /), "logical")
 
   do i=0, num_regions-1
 ;print("")
@@ -316,9 +316,9 @@ end if
     region_names(i) = curnt_region[0]
     region_bounds(i,:) = curnt_region[1]
 ;    region_draw_RAP_grid(i) = curnt_region[2]
-;    region_draw_SARFV3_grid(i) = curnt_region[3]
+;    region_draw_FV3LAM_grid(i) = curnt_region[3]
     draw_grid_by_region@RAP(i) = curnt_region[2]
-    draw_grid_by_region@SARFV3(i) = curnt_region[3]
+    draw_grid_by_region@FV3LAM(i) = curnt_region[3]
 ;pause
   end do
 
@@ -330,8 +330,8 @@ end if
 ;;print(region_draw_RAP_grid)
 ;print(draw_grid_by_region@RAP)
 ;print("")
-;;print(region_draw_SARFV3_grid)
-;print(draw_grid_by_region@SARFV3)
+;;print(region_draw_FV3LAM_grid)
+;print(draw_grid_by_region@FV3LAM)
 ;pause
 
 
@@ -397,7 +397,7 @@ print("")
 print("==============================================================")
 print("==============================================================")
 print("")
-print("Reading in SARFV3 grid...")
+print("Reading in FV3LAM grid...")
 print("")
 print("==============================================================")
 print("==============================================================")
@@ -414,24 +414,24 @@ print("")
 ;  nh = 4
   nh = 50
 
-;  SARFV3_grid_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3gfs/fix/fix_fv3/rgnl_C384_strch_1p8_rfn_5_HRRR"
-  SARFV3_grid_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/rgnl_C384_strch_1p5_rfn_3_descriptive_str/filter_topo"
+;  FV3LAM_grid_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/fv3gfs/fix/fix_fv3/rgnl_C384_strch_1p8_rfn_5_HRRR"
+  FV3LAM_grid_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_dirs/rgnl_C384_strch_1p5_rfn_3_descriptive_str/filter_topo"
   CRES = "C384"
-  SARFV3_halo4_grid_file = CRES + "_grid.tile7.halo4.nc"
-  SARFV3_halo4_grid_file_full = SARFV3_grid_dir + "/" + SARFV3_halo4_grid_file
+  FV3LAM_halo4_grid_file = CRES + "_grid.tile7.halo4.nc"
+  FV3LAM_halo4_grid_file_full = FV3LAM_grid_dir + "/" + FV3LAM_halo4_grid_file
 
-  out := read_FV3SAR_grid_halo(SARFV3_halo4_grid_file_full, nh)
+  out := read_FV3LAM_grid_halo(FV3LAM_halo4_grid_file_full, nh)
 
-;;  num_cells_SARFV3 = out@num_cells_total
-;  lon_cntrs_by_cell_SARFV3 = out@lon_cntrs_by_cell
-;  lat_cntrs_by_cell_SARFV3 = out@lat_cntrs_by_cell
-;  lon_verts_by_cell_SARFV3 = out@lon_verts_by_cell
-;  lat_verts_by_cell_SARFV3 = out@lat_verts_by_cell
+;;  num_cells_FV3LAM = out@num_cells_total
+;  lon_cntrs_by_cell_FV3LAM = out@lon_cntrs_by_cell
+;  lat_cntrs_by_cell_FV3LAM = out@lat_cntrs_by_cell
+;  lon_verts_by_cell_FV3LAM = out@lon_verts_by_cell
+;  lat_verts_by_cell_FV3LAM = out@lat_verts_by_cell
 
-  lon_cntrs_by_cell@SARFV3 = out@lon_cntrs_by_cell
-  lat_cntrs_by_cell@SARFV3 = out@lat_cntrs_by_cell
-  lon_verts_by_cell@SARFV3 = out@lon_verts_by_cell
-  lat_verts_by_cell@SARFV3 = out@lat_verts_by_cell
+  lon_cntrs_by_cell@FV3LAM = out@lon_cntrs_by_cell
+  lat_cntrs_by_cell@FV3LAM = out@lat_cntrs_by_cell
+  lon_verts_by_cell@FV3LAM = out@lon_verts_by_cell
+  lat_verts_by_cell@FV3LAM = out@lat_verts_by_cell
 
 
 
@@ -667,7 +667,7 @@ print("")
 print("==============================================================")
 print("==============================================================")
 print("")
-print("Interpolating RAP field onto halo of SARFV3 regional domain...")
+print("Interpolating RAP field onto halo of FV3LAM regional domain...")
 print("")
 print("==============================================================")
 print("==============================================================")
@@ -696,8 +696,8 @@ print("")
         gen_weights = False
 
         src_grid_filename = "src_grid_RAP.nc"
-        dst_grid_filename = "dst_grid_SARFV3halo" + nh + ".nc"
-        weights_filename = "weights_RAP_to_SARFV3halo" + nh + ".nc"
+        dst_grid_filename = "dst_grid_FV3LAMhalo" + nh + ".nc"
+        weights_filename = "weights_RAP_to_FV3LAMhalo" + nh + ".nc"
 
         print("")
         print("Source grid, destination grid, and weights files are:")
@@ -711,13 +711,13 @@ print("")
               fileexists(dst_grid_filename) .and. \
               fileexists(weights_filename)) then
             print("")
-            print("Source grid (RAP), destination grid (SARFV3), and " + \
+            print("Source grid (RAP), destination grid (FV3LAM), and " + \
                   "weights files " + char_nl + \
                   "already exist.  Not regenerating these files.")
             gen_weights = False
           else
             print("")
-            print("Source grid (RAP), destination grid (SARFV3), and/or " + \
+            print("Source grid (RAP), destination grid (FV3LAM), and/or " + \
                   "weights file do " + char_nl + \
                   "not exist and must be generated.")
             gen_weights = True
@@ -732,7 +732,7 @@ print("")
           print("")
           print("gen_weights has been set to True, but the source grid (RAP) " + \
                 "file, the destination " + char_nl + \
-                "grid (SARFV3) file, and/or the weights file does/do not exist:")
+                "grid (FV3LAM) file, and/or the weights file does/do not exist:")
           print("  fileexists(src_grid_filename) = " + fileexists(src_grid_filename))
           print("  fileexists(dst_grid_filename) = " + fileexists(dst_grid_filename))
           print("  fileexists(weights_filename) = " + fileexists(weights_filename))
@@ -744,42 +744,42 @@ print("")
 ; **********************************************************************
 ;                                                                      *
 ; Perform interpolation (regridding) of the field on the RAP grid to the
-; halo of the SARFV3 grid.
+; halo of the FV3LAM grid.
 ;                                                                      *
 ; **********************************************************************
 ;
-;        out := interpolate_RAP_to_SARFV3( \
+;        out := interpolate_RAP_to_FV3LAM( \
 ;               lon_cntrs_by_cell_RAP, lat_cntrs_by_cell_RAP, \
 ;               lon_verts_by_cell_RAP, lat_verts_by_cell_RAP, \
-;               lon_cntrs_by_cell_SARFV3, lat_cntrs_by_cell_SARFV3, \
-;               lon_verts_by_cell_SARFV3, lat_verts_by_cell_SARFV3, \
+;               lon_cntrs_by_cell_FV3LAM, lat_cntrs_by_cell_FV3LAM, \
+;               lon_verts_by_cell_FV3LAM, lat_verts_by_cell_FV3LAM, \
 ;               field_by_cell_RAP, \
 ;               gen_weights, \
 ;               src_grid_filename, dst_grid_filename, weights_filename)
 
-        out := interpolate_RAP_to_SARFV3( \
+        out := interpolate_RAP_to_FV3LAM( \
                lon_cntrs_by_cell@RAP, lat_cntrs_by_cell@RAP, \
                lon_verts_by_cell@RAP, lat_verts_by_cell@RAP, \
-               lon_cntrs_by_cell@SARFV3, lat_cntrs_by_cell@SARFV3, \
-               lon_verts_by_cell@SARFV3, lat_verts_by_cell@SARFV3, \
+               lon_cntrs_by_cell@FV3LAM, lat_cntrs_by_cell@FV3LAM, \
+               lon_verts_by_cell@FV3LAM, lat_verts_by_cell@FV3LAM, \
                field_by_cell@RAP, \
                gen_weights, \
                src_grid_filename, dst_grid_filename, weights_filename)
 
-        field_by_cell@SARFV3 = out@field_by_cell_SARFV3
+        field_by_cell@FV3LAM = out@field_by_cell_FV3LAM
 ;
 ; **********************************************************************
 ;                                                                      *
 ; Calculate and print out basic statistics of the regridded field on the
-; SARFV3 grid.
+; FV3LAM grid.
 ;                                                                      *
 ; **********************************************************************
 ;
         print_field_stats = True
         out := calc_field_stats( \
-               field_by_cell@SARFV3, field_desc, field_units, print_field_stats)
-;        field_min_SARFV3 = out@field_min
-;        field_max_SARFV3 = out@field_max
+               field_by_cell@FV3LAM, field_desc, field_units, print_field_stats)
+;        field_min_FV3LAM = out@field_min
+;        field_max_FV3LAM = out@field_max
 
 
 
@@ -801,18 +801,18 @@ print("")
 ;
 ; **********************************************************************
 ;                                                                      *
-; If plot_RAP_fields or plot_SARFV3_fields is set to True, plot the 
+; If plot_RAP_fields or plot_FV3LAM_fields is set to True, plot the 
 ;                                                                      *
 ; **********************************************************************
 ;
-        if (plot_RAP_fields .or. plot_SARFV3_fields) then
+        if (plot_RAP_fields .or. plot_FV3LAM_fields) then
 
 print("")
 print("")
 print("==============================================================")
 print("==============================================================")
 print("")
-print("Plotting RAP and/or (interpolated) SARFV3 fields...")
+print("Plotting RAP and/or (interpolated) FV3LAM fields...")
 print("")
 print("==============================================================")
 print("==============================================================")
@@ -903,19 +903,19 @@ print("")
 ;                                                                      *
 ; **********************************************************************
 ;
-            if (plot_SARFV3_fields) then
+            if (plot_FV3LAM_fields) then
 
-              model_name = "SARFV3"
+              model_name = "FV3LAM"
 
               out := plot_model_field_generic( \
                      model_name, \
-                     lon_cntrs_by_cell@SARFV3, lat_cntrs_by_cell@SARFV3, \
-                     lon_verts_by_cell@SARFV3, lat_verts_by_cell@SARFV3, \
-                     field_by_cell@SARFV3, \
+                     lon_cntrs_by_cell@FV3LAM, lat_cntrs_by_cell@FV3LAM, \
+                     lon_verts_by_cell@FV3LAM, lat_verts_by_cell@FV3LAM, \
+                     field_by_cell@FV3LAM, \
                      field_name, field_desc, field_units, \
                      func_t, func_z, \
                      fcst_hr, k, \
-                     draw_grid_by_region@SARFV3(s), \
+                     draw_grid_by_region@FV3LAM(s), \
                      plot_options)
 
             end if

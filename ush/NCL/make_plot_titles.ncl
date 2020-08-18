@@ -52,7 +52,7 @@ function make_plot_titles( \
 local inds_tiles_to_plot_str, fmt_str, vert_indx_str, \
       func_code_zoom, \
       left_str, right_str, main_str, \
-      num_newlines_FV3SAR, num_newlines_RAP, num_newlines_to_add, \
+      num_newlines_FV3LAM, num_newlines_RAP, num_newlines_to_add, \
       line, field_min_str, field_max_str, \
       num_lines, line_lengths, line_length_max, num_pad_spaces_before, \
       add_half_horiz_space, vert_offset_one_line, vert_offsets, \
@@ -87,7 +87,7 @@ begin
 ;
 ; First, consider the case in which the RAP grid and/or a RAP field is
 ; displayed in the plot.  In this case, the main middle string will be
-; blank, the left string will contain the FV3SAR grid and/or field in-
+; blank, the left string will contain the FV3-LAM grid and/or field in-
 ; formation, and the right string will contain the RAP grid and/or field
 ; information.
 ;
@@ -98,7 +98,7 @@ begin
     main_str = ""
 
     left_str \
-    := "~F30~FV3SAR field info:~C~" \
+    := "~F30~FV3-LAM field info:~C~" \
      + "~F29~" + field_desc + " (" + char_dq + field_name + char_dq + ")" \
      + " [" + field_units + "]"
 
@@ -113,7 +113,7 @@ begin
     if (show_tile_bdies) then
       left_str = left_str + "~C~" + "Tile boundaries in " + tile_bdy_color
     end if
-    num_newlines_FV3SAR \
+    num_newlines_FV3LAM \
     = dimsizes(str_index_of_substr(left_str, "~C~", 0))
 
     right_str \
@@ -130,7 +130,7 @@ begin
 ; newlines so that they both have the same number (looks better in the
 ; plot.
 ;
-    num_newlines_to_add = num_newlines_FV3SAR - num_newlines_RAP
+    num_newlines_to_add = num_newlines_FV3LAM - num_newlines_RAP
     if (num_newlines_to_add .ge. 1) then
       right_str = right_str + repeat_str("~C~ ", num_newlines_to_add)
 ; For some reason, after the last newline (~C~), the spacing isn't quite
@@ -212,7 +212,7 @@ begin
     main_str := new(1, "string")
 
     line := field_desc + " (" + char_dq + field_name + char_dq \
-          + ") on FV3SAR grid"
+          + ") on FV3-LAM grid"
     main_str := array_append_record(main_str, line, 0)
 
     main_str := main_str(1:)

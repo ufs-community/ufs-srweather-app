@@ -4,7 +4,7 @@
 #-----------------------------------------------------------------------
 #
 # This script runs the post-processor (UPP) on the NetCDF output files
-# of the write component of the FV3SAR model.
+# of the write component of the FV3-LAM model.
 #
 #-----------------------------------------------------------------------
 #

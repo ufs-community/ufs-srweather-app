@@ -20,8 +20,8 @@ BC_interval_hrs="3"
 plot_RAP_fields="True"
 #plot_RAP_fields="False"
 
-plot_SARFV3_fields="True"
-#plot_SARFV3_fields="False"
+plot_FV3LAM_fields="True"
+#plot_FV3LAM_fields="False"
 
 #grid_dir="/scratch3/BMC/det/beck/FV3-CAM/work.C384r0p7n3_regional_RAP/INPUT"
 #grid_dir="/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/work_FV3_regional_C96_2018032900/INPUT"
@@ -48,37 +48,37 @@ ncl -n generate_RAP_based_ICs_BCs.ncl \
   fcst_len_hrs=${fcst_len_hrs} \
   BC_interval_hrs=${BC_interval_hrs} \
   plot_RAP_fields=${plot_RAP_fields} \
-  plot_SARFV3_fields=${plot_SARFV3_fields} \
+  plot_FV3LAM_fields=${plot_FV3LAM_fields} \
   'regions=[/ [/ "GLOBE",    (/-180,  180, -90,  90/), False, False /], \
-              [/ "SARFV3",   (/-140,  -60,  20,  55/), False, False /], \
-              [/ "SARFV3NW", (/-145, -135,  50,  60/),  True, True  /], \
-              [/ "SARFV3SE", (/ -75,  -70,  20,  25/),  True, False /], \
+              [/ "FV3LAM",   (/-140,  -60,  20,  55/), False, False /], \
+              [/ "FV3LAMNW", (/-145, -135,  50,  60/),  True, True  /], \
+              [/ "FV3LAMSE", (/ -75,  -70,  20,  25/),  True, False /], \
               [/ "dummy_list_element_dont_remove" /] \
            /]' \
   map_proj=\"cyln\" 
 
 #  'regions=[/ [/ "GLOBE",    (/-180,  180, -90,  90/), False, False /], \
-#              [/ "SARFV3",   (/-140,  -60,  20,  55/), False, False /], \
-#              [/ "SARFV3NW", (/-135, -130,  45,  50/),  True, True  /], \
-#              [/ "SARFV3SE", (/ -75,  -70,  20,  25/),  True, False /], \
+#              [/ "FV3LAM",   (/-140,  -60,  20,  55/), False, False /], \
+#              [/ "FV3LAMNW", (/-135, -130,  45,  50/),  True, True  /], \
+#              [/ "FV3LAMSE", (/ -75,  -70,  20,  25/),  True, False /], \
 #              [/ "dummy_list_element_dont_remove" /] \
 #           /]' \
 
-#  'regions=[/ [/ "SARFV3NW", (/-135, -130,  45,  50/),  True, True  /], \
+#  'regions=[/ [/ "FV3LAMNW", (/-135, -130,  45,  50/),  True, True  /], \
 #              [/ "dummy_list_element_dont_remove" /] \
 #           /]' \
 
-#  'regions=[/ [/ "SARFV3",   (/-140,  -60,  20,  55/), False, False /], \
+#  'regions=[/ [/ "FV3LAM",   (/-140,  -60,  20,  55/), False, False /], \
 #              [/ "dummy_list_element_dont_remove" /] \
 #           /]' \
 
 #  draw_RAP_grid=False \
-#  draw_SARFV3_grid=True \
+#  draw_FV3LAM_grid=True \
 #  plot_subregs=True \
 #  subreg_names=\(/\"haloAll\",\"haloNW\",\"haloSE\"/\) \
 #  subreg_coords=\(/\(/-140,-60,20,55/\),\(/-135,-130,45,50/\),\(/-75,-70,20,25/\)/\) \
 #  subreg_draw_RAP_grid=\(/False,True,False/\) \
-#  subreg_draw_SARFV3_grid=\(/False,True,True/\) \
+#  subreg_draw_FV3LAM_grid=\(/False,True,True/\) \
 
 #  bbb=\[/\[/\"globe\",\(/-140,-60,20,55/\),True,True/\],\[/\"RAP\",\(/-140,-60,20,55/\),True,True/\],\[/\"RAPNW\",\(/-140,-60,20,55/\),False,False/\],\[/\"dummy\"/\]/\] \
 #  bbb=\[/\[/\"globe\",\(/-140,-60,20,55/\),True,True/\],\

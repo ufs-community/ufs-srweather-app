@@ -60,7 +60,7 @@ function get_extrn_mdl_file_dir_info() {
   local valid_args=( \
     "extrn_mdl_name" \
     "anl_or_fcst" \
-    "cdate_FV3SAR" \
+    "cdate_FV3LAM" \
     "time_offset_hrs" \
     "varname_extrn_mdl_cdate" \
     "varname_extrn_mdl_lbc_spec_fhrs" \
@@ -105,7 +105,7 @@ Usage:
   ${func_name} \
     extrn_mdl_name \
     anl_or_fcst \
-    cdate_FV3SAR \
+    cdate_FV3LAM \
     time_offset_hrs \
     varname_extrn_mdl_cdate \
     varname_extrn_mdl_lbc_spec_fhrs \
@@ -121,13 +121,13 @@ where the arguments are defined as follows:
   extrn_mdl_name:
   Name of the external model, i.e. the name of the model providing the
   fields from which files containing initial conditions, surface fields, 
-  and/or lateral boundary conditions for the FV3SAR will be generated.
+  and/or lateral boundary conditions for the FV3-LAM will be generated.
  
   anl_or_fcst:
   Flag that specifies whether the external model files we are interested
   in obtaining are analysis or forecast files.  
  
-  cdate_FV3SAR:
+  cdate_FV3LAM:
   The cycle date and time (hours only) for which we want to obtain file
   and directory information.  This has the form YYYYMMDDHH, where YYYY
   is the four-digit starting year of the cycle, MM is the two-digit 
@@ -137,15 +137,15 @@ where the arguments are defined as follows:
   time_offset_hrs:
   The number of hours by which to shift back in time the start time of
   the external model forecast from the specified cycle start time of the
-  FV3SAR (cdate_FV3SAR).  When getting directory and file information on
+  FV3-LAM (cdate_FV3LAM).  When getting directory and file information on
   external model analysis files, this is normally set to 0.  When get-
   ting directory and file information on external model forecast files,
   this may be set to a nonzero value to obtain information for an exter-
-  nal model run that started time_offset_hrs hours before cdate_FV3SAR 
-  (instead of exactly at cdate_FV3SAR).  Note that in this case, the 
+  nal model run that started time_offset_hrs hours before cdate_FV3LAM 
+  (instead of exactly at cdate_FV3LAM).  Note that in this case, the 
   forecast hours (relative to the external model run's start time) at
   which the lateral boundary conditions will be updated must be shifted
-  forward by time_offset_hrs hours relative to those for the FV3SAR in
+  forward by time_offset_hrs hours relative to those for the FV3-LAM in
   order to make up for the backward-in-time shift in the starting time
   of the external model.
  
@@ -156,9 +156,9 @@ where the arguments are defined as follows:
   varname_extrn_mdl_lbc_spec_fhrs:
   Name of the global variable that will contain the forecast hours (re-
   lative to the starting time of the external model run, which is earli-
-  er than that of the FV3SAR by time_offset_hrs hours) at which lateral
+  er than that of the FV3-LAM by time_offset_hrs hours) at which lateral
   boundary condition (LBC) output files are obtained from the external
-  model (and will be used to update the LBCs of the FV3SAR).
+  model (and will be used to update the LBCs of the FV3-LAM).
  
   varname_extrn_mdl_fns:
   Name of the global variable that will contain the names of the exter-
@@ -219,20 +219,20 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Extract from cdate_FV3SAR the starting year, month, day, and hour of 
-# the FV3SAR cycle.  Then subtract the temporal offset specified in 
-# time_offset_hrs (assumed to be given in units of hours) from cdate_FV3SAR 
+# Extract from cdate_FV3LAM the starting year, month, day, and hour of 
+# the FV3-LAM cycle.  Then subtract the temporal offset specified in 
+# time_offset_hrs (assumed to be given in units of hours) from cdate_FV3LAM
 # to obtain the starting date and time of the external model, express the 
 # result in YYYYMMDDHH format, and save it in cdate.  This is the starting 
 # time of the external model forecast.
 #
 #-----------------------------------------------------------------------
 #
-  yyyy=${cdate_FV3SAR:0:4}
-  mm=${cdate_FV3SAR:4:2}
-  dd=${cdate_FV3SAR:6:2}
-  hh=${cdate_FV3SAR:8:2}
-  yyyymmdd=${cdate_FV3SAR:0:8}
+  yyyy=${cdate_FV3LAM:0:4}
+  mm=${cdate_FV3LAM:4:2}
+  dd=${cdate_FV3LAM:6:2}
+  hh=${cdate_FV3LAM:8:2}
+  yyyymmdd=${cdate_FV3LAM:0:8}
 
   cdate=$( date --utc --date "${yyyymmdd} ${hh} UTC - ${time_offset_hrs} hours" "+%Y%m%d%H" )
 #
@@ -701,8 +701,8 @@ has not been specified for this external model:
   "FV3GFS")
     if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then
  
-      if [ "${cdate_FV3SAR}" -le "2019061206" ]; then
-        arcv_dir="/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_C/Q2FY19/prfv3rt3/${cdate_FV3SAR}"
+      if [ "${cdate_FV3LAM}" -le "2019061206" ]; then
+        arcv_dir="/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_C/Q2FY19/prfv3rt3/${cdate_FV3LAM}"
         arcv_fns=""
       else
         arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"

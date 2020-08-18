@@ -98,7 +98,7 @@ begin
 ; **********************************************************************
 ;
 ; Set the dimension names we expect to see in the file(s) from which we
-; will read in the FV3SAR field.  This depends on the file base name.  
+; will read in the FV3-LAM field.  This depends on the file base name.  
 ; These dimension names will be used to check the consistency of the di-
 ; mensions of the specified field.
 ;

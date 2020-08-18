@@ -121,7 +121,7 @@ These all work together like this:
 In `ush/generate_workflow.sh`, the `run_task_make_grid` flag is set to "False" to
 turn off running verification.
 
-In `ush/templates/FV3SAR_wflow.xml`:
+In `ush/templates/FV3LAM_wflow.xml`:
 
 1. Set an entity for use in dependencies.
 2. Add a Jinja if statement around the optional task.

@@ -2,12 +2,12 @@
 #-----------------------------------------------------------------------
 #
 # This file defines and then calls a function that sets the parameters
-# for a grid that is to be generated using the "JPgrid" grid generation 
-# method (i.e. GRID_GEN_METHOD set to "JPgrid").
+# for a grid that is to be generated using the "ESGgrid" grid generation 
+# method (i.e. GRID_GEN_METHOD set to "ESGgrid").
 #
 #-----------------------------------------------------------------------
 #
-function set_gridparams_JPgrid() {
+function set_gridparams_ESGgrid() {
 #
 #-----------------------------------------------------------------------
 #
@@ -103,7 +103,7 @@ function set_gridparams_JPgrid() {
 #
 #-----------------------------------------------------------------------
 #
-# For a JPgrid-type grid, the orography filtering is performed by pass-
+# For a ESGgrid-type grid, the orography filtering is performed by pass-
 # ing to the orography filtering the parameters for an "equivalent" glo-
 # bal uniform cubed-sphere grid.  These are the parameters that a global
 # uniform cubed-sphere grid needs to have in order to have a nominal 

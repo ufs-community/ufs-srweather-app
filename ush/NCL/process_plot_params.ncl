@@ -252,7 +252,7 @@ example_usage_and_help_str
 ;
 ; **********************************************************************
 ;
-; Note:  Can't use this for JPgrid because that has no such standard values.
+; Note:  Can't use this for ESGgrid because that has no such standard values.
 ; At some point, change this if-statement so that it's entered only for 
 ; GFDLgrid.
 if (False) then

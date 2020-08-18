@@ -9,7 +9,7 @@
 #
 #-----------------------------------------------------------------------
 #
-function generate_FV3SAR_wflow() {
+function generate_FV3LAM_wflow() {
 #
 #-----------------------------------------------------------------------
 #
@@ -435,7 +435,7 @@ added:
 
     print_info_msg "
 Adding the following line to the cron table in order to automatically
-resubmit FV3SAR workflow:
+resubmit FV3-LAM workflow:
   CRONTAB_LINE = \"${CRONTAB_LINE}\""
 
     ( crontab -l; echo "${CRONTAB_LINE}" ) | crontab -
@@ -522,7 +522,7 @@ the forecast model directory sturcture to the experiment directory..."
 Copying the fixed file containing cloud condensation nuclei (CCN) data
 (needed by the Thompson microphysics parameterization) to the experiment
 directory..."
-    cp_vrfy "$FIXgsd/CCN_ACTIVATE.BIN" "$EXPTDIR"
+    cp_vrfy "${FIXgsm}/CCN_ACTIVATE.BIN" "$EXPTDIR"
   fi
 
 fi
@@ -599,7 +599,7 @@ fi
 if [ ! -e "${FV3_EXEC_FP}" ] || \
    [ "${exec_fp}" -nt "${FV3_EXEC_FP}" ]; then
   print_info_msg "$VERBOSE" "
-Copying the FV3SAR executable (exec_fp) to the executables directory
+Copying the FV3-LAM executable (exec_fp) to the executables directory
 (EXECDIR):
   exec_fp = \"${exec_fp}\"
   EXECDIR = \"$EXECDIR\""
@@ -610,7 +610,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set parameters in the FV3SAR namelist file.
+# Set parameters in the FV3-LAM namelist file.
 #
 #-----------------------------------------------------------------------
 #
@@ -619,7 +619,7 @@ Setting parameters in FV3 namelist file (FV3_NML_FP):
   FV3_NML_FP = \"${FV3_NML_FP}\""
 #
 # Set npx and npy, which are just NX plus 1 and NY plus 1, respectively.
-# These need to be set in the FV3SAR Fortran namelist file.  They represent
+# These need to be set in the FV3-LAM Fortran namelist file.  They represent
 # the number of cell vertices in the x and y directions on the regional
 # grid.
 #
@@ -672,9 +672,9 @@ settings="\
     'target_lat': ${LAT_CTR},
 #
 # Question:
-# For a JPgrid type grid, what should stretch_fac be set to?  This depends
+# For a ESGgrid type grid, what should stretch_fac be set to?  This depends
 # on how the FV3 code uses the stretch_fac parameter in the namelist file.
-# Recall that for a JPgrid, it gets set in the function set_gridparams_JPgrid(.sh)
+# Recall that for a ESGgrid, it gets set in the function set_gridparams_ESGgrid(.sh)
 # to something like 0.9999, but is it ok to set it to that here in the
 # FV3 namelist file?
 #
@@ -803,7 +803,7 @@ $settings"
 # If not running the MAKE_GRID_TN task (which implies the workflow will
 # use pregenerated grid files), set the namelist variables specifying
 # the paths to surface climatology files.  These files are located in
-# (or have symlinks that point to them) in the FIXsar directory.
+# (or have symlinks that point to them) in the FIXLAM directory.
 #
 # Note that if running the MAKE_GRID_TN task, this action usually cannot
 # be performed here but must be performed in that task because the names
@@ -922,7 +922,7 @@ For automatic resubmission of the workflow (say every 3 minutes), the
 following line can be added to the user's crontab (use \"crontab -e\" to
 edit the cron table):
 
-*/3 * * * * cd $EXPTDIR && ./launch_FV3SAR_wflow.sh
+*/3 * * * * cd $EXPTDIR && ./launch_FV3LAM_wflow.sh
 
 Done.
 "
@@ -983,11 +983,11 @@ rm -f "${tmp_fp}"
 # Set the name of and full path to the log file in which the output from
 # the experiment/workflow generation function will be saved.
 #
-log_fn="log.generate_FV3SAR_wflow"
+log_fn="log.generate_FV3LAM_wflow"
 log_fp="$ushdir/${log_fn}"
 rm -f "${log_fp}"
 #
-# Call the generate_FV3SAR_wflow function defined above to generate the
+# Call the generate_FV3LAM_wflow function defined above to generate the
 # experiment/workflow.  Note that we pipe the output of the function
 # (and possibly other commands) to the "tee" command in order to be able
 # to both save it to a file and print it out to the screen (stdout).
@@ -1000,7 +1000,7 @@ rm -f "${log_fp}"
 # temporary file and read them in outside the subshell later below.
 #
 {
-generate_FV3SAR_wflow 2>&1  # If this exits with an error, the whole {...} group quits, so things don't work...
+generate_FV3LAM_wflow 2>&1  # If this exits with an error, the whole {...} group quits, so things don't work...
 retval=$?
 echo "$EXPTDIR" >> "${tmp_fp}"
 echo "$retval" >> "${tmp_fp}"
@@ -1008,8 +1008,8 @@ echo "$retval" >> "${tmp_fp}"
 #
 # Read in experiment/workflow variables needed later below from the tem-
 # porary file created in the subshell above containing the call to the
-# generate_FV3SAR_wflow function.  These variables are not directly
-# available here because the call to generate_FV3SAR_wflow above takes
+# generate_FV3LAM_wflow function.  These variables are not directly
+# available here because the call to generate_FV3LAM_wflow above takes
 # place in a subshell (due to the fact that we are then piping its out-
 # put to the "tee" command).  Then remove the temporary file.
 #
@@ -1017,14 +1017,14 @@ exptdir=$( sed "1q;d" "${tmp_fp}" )
 retval=$( sed "2q;d" "${tmp_fp}" )
 rm "${tmp_fp}"
 #
-# If the call to the generate_FV3SAR_wflow function above was success-
+# If the call to the generate_FV3LAM_wflow function above was success-
 # ful, move the log file in which the "tee" command saved the output of
 # the function to the experiment directory.
 #
 if [ $retval -eq 0 ]; then
   mv "${log_fp}" "$exptdir"
 #
-# If the call to the generate_FV3SAR_wflow function above was not suc-
+# If the call to the generate_FV3LAM_wflow function above was not suc-
 # cessful, print out an error message and exit with a nonzero return
 # code.
 #

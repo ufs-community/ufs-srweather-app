@@ -1,7 +1,7 @@
 ;
 ; **********************************************************************
 ;
-; File name: read_FV3SAR_field_wrtcmp.ncl
+; File name: read_FV3LAM_field_wrtcmp.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
@@ -15,9 +15,9 @@ loadscript(lib_location + "special_chars.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "calc_field_stats.ncl")
 
-undef("read_FV3SAR_field_wrtcmp")
+undef("read_FV3LAM_field_wrtcmp")
 
-function read_FV3SAR_field_wrtcmp( \
+function read_FV3LAM_field_wrtcmp( \
          field_name:string, \
          horiz_dist_units:string, \
          horiz_area_units:string, \

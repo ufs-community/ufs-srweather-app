@@ -25,7 +25,7 @@ loadscript(lib_location + "strcmp_exact.ncl")
 
 load "calc_wrtcmp_grid_params_rotated_latlon.ncl"
 load "calc_wrtcmp_grid_params_lambert_cnfrml.ncl"
-load "read_FV3SAR_grid_native.ncl"
+load "read_FV3LAM_grid_native.ncl"
 
 begin
 ;
@@ -169,14 +169,14 @@ begin
 ;
 ; **********************************************************************
 ;
-; Read in the native FV3SAR grid.
+; Read in the native FV3-LAM grid.
 ;
 ; **********************************************************************
 ;
   remove_rgnl_halo = True
   get_tile_bdies = False
 
-  grid_info := read_FV3SAR_grid_native( \
+  grid_info := read_FV3LAM_grid_native( \
                expt_dir, \
                gtype, \
                CRES, \
@@ -211,7 +211,7 @@ begin
 ; output from the grid-read operation above.  Then call the function 
 ; that calculates the write-component grid parameters for a lambert-
 ; conformal grid that is guaranteed to lie completely inside the native
-; FV3SAR grid.
+; FV3-LAM grid.
 ;
 ; **********************************************************************
 ;

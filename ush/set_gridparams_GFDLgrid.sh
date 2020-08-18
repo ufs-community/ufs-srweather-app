@@ -255,7 +255,7 @@ fi
 # denote these limits.  The reason we include "_wide_halo" in these va-
 # riable names is that the halo of the grid that we will first generate
 # will be wider than the halos that are actually needed as inputs to the
-# FV3SAR model (i.e. the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos
+# FV3LAM model (i.e. the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos
 # described above).  We will generate the grids with narrower halos that
 # the model needs later on by "shaving" layers of cells from this wide-
 # halo grid.  Next, we describe how to calculate the above indices.

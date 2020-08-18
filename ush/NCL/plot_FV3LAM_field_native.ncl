@@ -18,10 +18,10 @@
 
 ;help = True
 
-expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR25km"
-expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
-expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR3km"
-expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HAFSV0.A"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3LAM_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR25km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3LAM_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3LAM_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR3km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3LAM_demo_PASPBL_20190725/expt_dirs/test_GSD_HAFSV0.A"
 
 
 tile_inds := (/ 1, 7, 4 /)
@@ -215,11 +215,11 @@ loadscript(lib_location + "get_rect_grid_bdy.ncl")
 loadscript(lib_location + "set_cnLevels_lbLabels.ncl")
 
 load "process_plot_params.ncl"
-load "read_FV3SAR_grid_native.ncl"
-load "read_FV3SAR_gridfield_native.ncl"
-load "read_FV3SAR_field_native.ncl"
-load "read_FV3SAR_grid_wrtcmp.ncl"
-load "read_FV3SAR_field_wrtcmp.ncl"
+load "read_FV3LAM_grid_native.ncl"
+load "read_FV3LAM_gridfield_native.ncl"
+load "read_FV3LAM_field_native.ncl"
+load "read_FV3LAM_grid_wrtcmp.ncl"
+load "read_FV3LAM_field_wrtcmp.ncl"
 load "read_RAP_grid.ncl"
 load "read_RAP_field.ncl"
 load "plot_horiz_field.ncl"
@@ -563,7 +563,7 @@ pause
 ;
 ; **********************************************************************
 ;
-; Read in the FV3SAR grid.
+; Read in the FV3-LAM grid.
 ;
 ; **********************************************************************
 ;
@@ -576,15 +576,15 @@ pause
 ; "native", since then it will have the flexibility to plot fields on
 ; either the native or the wrtcmp grid.
 
-;  read_FV3SAR_wrtcmp = True
-  read_FV3SAR_wrtcmp = False
+;  read_FV3LAM_wrtcmp = True
+  read_FV3LAM_wrtcmp = False
 
-  if (read_FV3SAR_wrtcmp) then
+  if (read_FV3LAM_wrtcmp) then
 
-  FV3SAR_wrtcmp_fn = expt_dir + "/" + CDATE + "/" + "dynf000.nc"
+  FV3LAM_wrtcmp_fn = expt_dir + "/" + CDATE + "/" + "dynf000.nc"
   get_domain_bdy = True
-  grid_info := read_FV3SAR_grid_wrtcmp( \
-               FV3SAR_wrtcmp_fn, \
+  grid_info := read_FV3LAM_grid_wrtcmp( \
+               FV3LAM_wrtcmp_fn, \
                get_domain_bdy)
 
   fp_wrtcmp = grid_info@fp
@@ -596,11 +596,11 @@ pause
   lat_verts_unstruc = grid_info@lat_verts_unstruc
   lon_bdy = grid_info@lon_bdy
   lat_bdy = grid_info@lat_bdy
-  coord_data_type_FV3SAR = grid_info@coord_data_type
+  coord_data_type_FV3LAM = grid_info@coord_data_type
 
   else
 
-  grid_info := read_FV3SAR_grid_native( \
+  grid_info := read_FV3LAM_grid_native( \
                expt_dir, \
                gtype, \
                cres, \
@@ -641,7 +641,7 @@ pause
   lat_tile_corners_face_midpts_tiles_to_plot \
   = grid_info@lat_tile_corners_face_midpts_all_tiles
 
-  coord_data_type_FV3SAR = grid_info@coord_data_type
+  coord_data_type_FV3LAM = grid_info@coord_data_type
 
   end if
 ;
@@ -651,8 +651,8 @@ pause
 ;
 ; **********************************************************************
 ;
-  lon_bdy_all_bdies := new(1, coord_data_type_FV3SAR)
-  lat_bdy_all_bdies := new(1, coord_data_type_FV3SAR)
+  lon_bdy_all_bdies := new(1, coord_data_type_FV3LAM)
+  lat_bdy_all_bdies := new(1, coord_data_type_FV3LAM)
 ;
 ; **********************************************************************
 ;
@@ -783,33 +783,33 @@ pause
 ; **********************************************************************
 ;
 ; If the RAP coordinate arrays are not of the same data type as the FV3-
-; SAR coordinate arrays, convert the data type of the former to that of
+; LAM coordinate arrays, convert the data type of the former to that of
 ; the latter.
 ;
 ; **********************************************************************
 ;
-    if (.not. strcmp_exact(coord_data_type_FV3SAR, coord_data_type_RAP)) then
+    if (.not. strcmp_exact(coord_data_type_FV3LAM, coord_data_type_RAP)) then
 
       lon_cntrs_unstruc_RAP \
-      := totype(lon_cntrs_unstruc_RAP, coord_data_type_FV3SAR)
+      := totype(lon_cntrs_unstruc_RAP, coord_data_type_FV3LAM)
 
       lat_cntrs_unstruc_RAP \
-      := totype(lat_cntrs_unstruc_RAP, coord_data_type_FV3SAR)
+      := totype(lat_cntrs_unstruc_RAP, coord_data_type_FV3LAM)
 
       lon_verts_unstruc_RAP \
-      := totype(lon_verts_unstruc_RAP, coord_data_type_FV3SAR)
+      := totype(lon_verts_unstruc_RAP, coord_data_type_FV3LAM)
 
       lat_verts_unstruc_RAP \
-      := totype(lat_verts_unstruc_RAP, coord_data_type_FV3SAR)
+      := totype(lat_verts_unstruc_RAP, coord_data_type_FV3LAM)
 
     end if
 ;
 ; **********************************************************************
 ;
-; Prepend RAP coordinates to the corresponding arrays for the FV3SAR.
+; Prepend RAP coordinates to the corresponding arrays for the FV3LAM.
 ; This is done for plotting convenience.  Note that the RAP coordinates
 ; are prepended insted of appended so that the RAP grid (and any field
-; associated with it) is drawn first and the FV3SAR tiles (and any 
+; associated with it) is drawn first and the FV3LAM tiles (and any 
 ; fields on them) are then drawn on top.
 ;
 ; **********************************************************************
@@ -843,33 +843,33 @@ pause
 ; **********************************************************************
 ;
 ; If the write-component coordinate arrays are not of the same data type
-; as the FV3SAR coordinate arrays, convert the data type of the former
+; as the FV3LAM coordinate arrays, convert the data type of the former
 ; to that of the latter.
 ;
 ; **********************************************************************
 ;
-    if (.not. strcmp_exact(coord_data_type_FV3SAR, coord_data_type_wrtcmp)) then
+    if (.not. strcmp_exact(coord_data_type_FV3LAM, coord_data_type_wrtcmp)) then
 
       lon_cntrs_unstruc_wrtcmp \
-      := totype(lon_cntrs_unstruc_wrtcmp, coord_data_type_FV3SAR)
+      := totype(lon_cntrs_unstruc_wrtcmp, coord_data_type_FV3LAM)
 
       lat_cntrs_unstruc_wrtcmp \
-      := totype(lat_cntrs_unstruc_wrtcmp, coord_data_type_FV3SAR)
+      := totype(lat_cntrs_unstruc_wrtcmp, coord_data_type_FV3LAM)
 
       lon_verts_unstruc_wrtcmp \
-      := totype(lon_verts_unstruc_wrtcmp, coord_data_type_FV3SAR)
+      := totype(lon_verts_unstruc_wrtcmp, coord_data_type_FV3LAM)
 
       lat_verts_unstruc_wrtcmp \
-      := totype(lat_verts_unstruc_wrtcmp, coord_data_type_FV3SAR)
+      := totype(lat_verts_unstruc_wrtcmp, coord_data_type_FV3LAM)
 
     end if
 ;
 ; **********************************************************************
 ;
-; Prepend write-component coordinates to the corresponding arrays for the FV3SAR.
+; Prepend write-component coordinates to the corresponding arrays for the FV3LAM.
 ; This is done for plotting convenience.  Note that the write-component coordinates
 ; are prepended insted of appended so that the write-component grid (and any field
-; associated with it) is drawn first and the FV3SAR tiles (and any 
+; associated with it) is drawn first and the FV3LAM tiles (and any 
 ; fields on them) are then drawn on top.
 ;
 ; **********************************************************************
@@ -904,9 +904,9 @@ pause
 
     num_bdies_to_plot = num_bdies_to_plot + 1
 
-    if (.not. strcmp_exact(coord_data_type_FV3SAR, coord_data_type_RAP)) then
-      lon_bdy_RAP := totype(lon_bdy_RAP, coord_data_type_FV3SAR)
-      lat_bdy_RAP := totype(lat_bdy_RAP, coord_data_type_FV3SAR)
+    if (.not. strcmp_exact(coord_data_type_FV3LAM, coord_data_type_RAP)) then
+      lon_bdy_RAP := totype(lon_bdy_RAP, coord_data_type_FV3LAM)
+      lat_bdy_RAP := totype(lat_bdy_RAP, coord_data_type_FV3LAM)
     end if
 
     lon_bdy_all_bdies \
@@ -929,9 +929,9 @@ pause
 
     num_bdies_to_plot = num_bdies_to_plot + 1
 
-    if (.not. strcmp_exact(coord_data_type_FV3SAR, coord_data_type_wrtcmp)) then
-      lon_bdy_wrtcmp := totype(lon_bdy_wrtcmp, coord_data_type_FV3SAR)
-      lat_bdy_wrtcmp := totype(lat_bdy_wrtcmp, coord_data_type_FV3SAR)
+    if (.not. strcmp_exact(coord_data_type_FV3LAM, coord_data_type_wrtcmp)) then
+      lon_bdy_wrtcmp := totype(lon_bdy_wrtcmp, coord_data_type_FV3LAM)
+      lat_bdy_wrtcmp := totype(lat_bdy_wrtcmp, coord_data_type_FV3LAM)
     end if
 
     lon_bdy_all_bdies \
@@ -1024,7 +1024,7 @@ pause
 ;
 ; **********************************************************************
 ;
-; Read in the FV3SAR field for the current forecast hour and vertical 
+; Read in the FV3LAM field for the current forecast hour and vertical 
 ; index.
 ;
 ; **********************************************************************
@@ -1032,7 +1032,7 @@ pause
       if (is_gridfield) then
 
         field_info \
-        := read_FV3SAR_gridfield_native( \
+        := read_FV3LAM_gridfield_native( \
            field_names_by_tile, \
            file_names_by_tile, \
            gtype, inds_tiles_to_plot, \
@@ -1047,7 +1047,7 @@ pause
       else
 
         field_info \
-        := read_FV3SAR_field_native( \
+        := read_FV3LAM_field_native( \
            field_names_by_tile, \
            file_names_by_tile, \
            gtype, inds_tiles_to_plot, \
@@ -1061,7 +1061,7 @@ pause
 
       end if
 
-;      fp_field_FV3SAR = field_info@fp  ; This would in general be an array or list of file pointers.
+;      fp_field_FV3LAM = field_info@fp  ; This would in general be an array or list of file pointers.
       field_desc := field_info@field_desc
       field_units := field_info@field_units
       nz_by_tile := field_info@nz_by_tile
@@ -1071,10 +1071,10 @@ pause
       field_max_tiles_to_plot := field_info@field_max_by_tile
       field_median_tiles_to_plot := field_info@field_median_by_tile
       field_mean_tiles_to_plot := field_info@field_mean_by_tile
-      field_data_type_FV3SAR := field_info@field_data_type
+      field_data_type_FV3LAM := field_info@field_data_type
 ; Not sure why setting field_name to "none" doesn't do this, but do this
 ; here temporarily to make the field transparent.
-;field_unstruc = default_fillvalue(field_data_type_FV3SAR)
+;field_unstruc = default_fillvalue(field_data_type_FV3LAM)
 ;
 ; **********************************************************************
 ;
@@ -1124,8 +1124,8 @@ inds_tiles_to_plot_str + " ..."
 ; **********************************************************************
 ;
 ; Initialize the 1-D unstructured array that will contain the field val-
-; ues on all grids (FV3SAR and possibly also RAP) and initialize it to 
-; the field values on the FV3SAR tile grids.
+; ues on all grids (FV3LAM and possibly also RAP) and initialize it to 
+; the field values on the FV3LAM tile grids.
 ;
 ; **********************************************************************
 ;
@@ -1174,23 +1174,23 @@ inds_tiles_to_plot_str + " ..."
 ;
 ; **********************************************************************
 ;
-; For plotting convenience, we will combine the fields on the FV3SAR andi
+; For plotting convenience, we will combine the fields on the FV3LAM andi
 ; RAP grids into a single array.  For this purpose, if necessary we 
-; first convert the data type of the RAP field to that of the FV3SAR
+; first convert the data type of the RAP field to that of the FV3LAM
 ; field.
 ;
 ; **********************************************************************
 ;
-        if (.not. strcmp_exact(field_data_type_FV3SAR, field_data_type_RAP)) then
+        if (.not. strcmp_exact(field_data_type_FV3LAM, field_data_type_RAP)) then
           field_unstruc_RAP \
-          := totype(field_unstruc_RAP, field_data_type_FV3SAR)
+          := totype(field_unstruc_RAP, field_data_type_FV3LAM)
         end if
 ;
 ; **********************************************************************
 ;
 ; For plotting convenience, prepend the RAP field to the array contain-
-; ing the FV3SAR field.  We prepend instead of append so that the RAP 
-; field is drawn first and the FV3SAR field on the tiles are then drawn
+; ing the FV3LAM field.  We prepend instead of append so that the RAP 
+; field is drawn first and the FV3LAM field on the tiles are then drawn
 ; on top.
 ;
 ; **********************************************************************
@@ -1322,7 +1322,7 @@ inds_tiles_to_plot_str + " ..."
 ; **********************************************************************
 ;
 ; Calculate "nice" contour level values to use for making a color con-
-; tour plot of the combined FV3SAR and RAP field.
+; tour plot of the combined FV3LAM and RAP field.
 ;
 ; **********************************************************************
 ;

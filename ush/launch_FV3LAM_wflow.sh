@@ -36,28 +36,28 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 # 1) Call this script from the experiment directory:
 #    > cd /path/to/experiment/directory
-#    > launch_FV3SAR_wflow.sh
+#    > launch_FV3LAM_wflow.sh
 #
 # 2) Call this script from the experiment directory but using "./" be-
 #    fore the script name:
 #    > cd /path/to/experiment/directory
-#    > ./launch_FV3SAR_wflow.sh
+#    > ./launch_FV3LAM_wflow.sh
 #
 # 3) Call this script from any directory using the absolute path to the
 #    symlink in the experiment directory:
-#    > /path/to/experiment/directory/launch_FV3SAR_wflow.sh
+#    > /path/to/experiment/directory/launch_FV3LAM_wflow.sh
 #
 # 4) Call this script from a directory that is several levels up from
 #    the experiment directory (but not necessarily at the root directo-
 #    ry):
 #    > cd /path/to
-#    > experiment/directory/launch_FV3SAR_wflow.sh
+#    > experiment/directory/launch_FV3LAM_wflow.sh
 #
 # Note that given just a file name, e.g. the name of this script without
 # any path before it, the "dirname" command will return a ".", e.g. in 
 # bash, 
 #
-#   > exptdir=$( dirname "launch_FV3SAR_wflow.sh" )
+#   > exptdir=$( dirname "launch_FV3LAM_wflow.sh" )
 #   > echo $exptdir
 #
 # will print out ".".

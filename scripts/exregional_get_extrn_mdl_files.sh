@@ -631,7 +631,7 @@ file unzip_log_fn in that directory for details:
 # of each external model file.  If any are missing, then the corresponding 
 # files are not in the zip file and thus cannot be extracted.  In that 
 # case, print out a message and exit the script because initial condition 
-# and surface field files for the FV3SAR cannot be generated without all 
+# and surface field files for the FV3-LAM cannot be generated without all 
 # the external model files.
 #
 #-----------------------------------------------------------------------
@@ -690,7 +690,7 @@ details:
     print_info_msg "
 ========================================================================
 External model files needed for generating initial condition and surface 
-fields for the FV3SAR successfully fetched from HPSS!!!
+fields for the FV3-LAM successfully fetched from HPSS!!!
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
@@ -701,7 +701,7 @@ In directory:    \"${scrfunc_dir}\"
     print_info_msg "
 ========================================================================
 External model files needed for generating lateral boundary conditions
-on the halo of the FV3SAR's regional grid successfully fetched from 
+on the halo of the FV3-LAM's regional grid successfully fetched from 
 HPSS!!!
 
 Exiting script:  \"${scrfunc_fn}\"

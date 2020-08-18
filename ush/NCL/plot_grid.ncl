@@ -185,10 +185,10 @@ loadscript(lib_location + "get_rect_grid_bdy.ncl")
 loadscript(lib_location + "set_cnLevels_lbLabels.ncl")
 
 load "process_plot_params.ncl"
-load "read_FV3SAR_grid_native.ncl"
-load "read_FV3SAR_field_native.ncl"
-load "read_FV3SAR_grid_wrtcmp.ncl"
-load "read_FV3SAR_field_wrtcmp.ncl"
+load "read_FV3LAM_grid_native.ncl"
+load "read_FV3LAM_field_native.ncl"
+load "read_FV3LAM_grid_wrtcmp.ncl"
+load "read_FV3LAM_field_wrtcmp.ncl"
 load "read_RAP_grid.ncl"
 load "read_RAP_field.ncl"
 load "plot_horiz_field.ncl"
@@ -406,19 +406,19 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 ;
 ; **********************************************************************
 ;
-; Read in the FV3SAR grid.
+; Read in the FV3-LAM grid.
 ;
 ; **********************************************************************
 ;
-read_FV3SAR_wrtcmp = True
-;read_FV3SAR_wrtcmp = False
+read_FV3LAM_wrtcmp = True
+;read_FV3LAM_wrtcmp = False
 
-if (read_FV3SAR_wrtcmp) then
+if (read_FV3LAM_wrtcmp) then
 
-  FV3SAR_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "dynf000.nc"
+  FV3LAM_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "dynf000.nc"
   get_domain_bdy = True
-  grid_info := read_FV3SAR_grid_wrtcmp( \
-               FV3SAR_wrtcmp_fn, \
+  grid_info := read_FV3LAM_grid_wrtcmp( \
+               FV3LAM_wrtcmp_fn, \
                get_domain_bdy)
 
   fp_wrtcmp = grid_info@fp
@@ -430,7 +430,7 @@ if (read_FV3SAR_wrtcmp) then
   lat_verts_unstruc = grid_info@lat_verts_unstruc
   lon_bdy = grid_info@lon_bdy
   lat_bdy = grid_info@lat_bdy
-  coord_data_type_FV3SAR = grid_info@coord_data_type
+  coord_data_type_FV3LAM = grid_info@coord_data_type
 
 else
 
@@ -438,7 +438,7 @@ else
                 ; or be a requird input that gets processed along with the other
                 ; command linea arguments?
 
-  grid_info := read_FV3SAR_grid_native( \
+  grid_info := read_FV3LAM_grid_native( \
                work_dir, \
                gtype, \
                cres, \
@@ -479,7 +479,7 @@ else
   lat_tile_corners_face_midpts_tiles_to_plot \
   = grid_info@lat_tile_corners_face_midpts_all_tiles
 
-  coord_data_type_FV3SAR = grid_info@coord_data_type
+  coord_data_type_FV3LAM = grid_info@coord_data_type
 
 end if
 ;
@@ -507,7 +507,7 @@ num_vert = dimsizes(vert_inds_to_plot)
 
 
 ; Must set to 0 for write-component files since those each contain output for only one time.
-if (read_FV3SAR_wrtcmp) then
+if (read_FV3LAM_wrtcmp) then
   time_inds_to_plot = 0*time_inds_to_plot
 end if
 
@@ -547,15 +547,15 @@ do n=0, num_fcst_hrs-1
 ;
 ; **********************************************************************
 ;
-if (read_FV3SAR_wrtcmp) then
+if (read_FV3LAM_wrtcmp) then
 ;
 ; Set the file name.  This depends on the time index/ forecast output hour.
 ;
 
-;  FV3SAR_wrtcmp_fn = run_dir + "/dynf000.nc"
-;  FV3SAR_wrtcmp_fn = run_dir + "/phyf000.nc"
-;  FV3SAR_wrtcmp_fn = run_dir + "/phyf" + fcst_hr_str + ".nc"
-  FV3SAR_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "phyf" + fcst_hr_str + ".nc"
+;  FV3LAM_wrtcmp_fn = run_dir + "/dynf000.nc"
+;  FV3LAM_wrtcmp_fn = run_dir + "/phyf000.nc"
+;  FV3LAM_wrtcmp_fn = run_dir + "/phyf" + fcst_hr_str + ".nc"
+  FV3LAM_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "phyf" + fcst_hr_str + ".nc"
 
 ;
 ; **********************************************************************
@@ -595,7 +595,7 @@ if (read_FV3SAR_wrtcmp) then
 ;  t_filedim_names = (/ "time" /)
 
   var_info := check_filevar_existence_dims( \
-              FV3SAR_wrtcmp_fn, \
+              FV3LAM_wrtcmp_fn, \
               field_name, \
               nx, ny, \
               vert_inds_to_plot, \
@@ -622,20 +622,20 @@ if (read_FV3SAR_wrtcmp) then
 ;
 ; **********************************************************************
 ;
-; Read the specified field on the FV3SAR write-component grid.
+; Read the specified field on the FV3-LAM write-component grid.
 ;
 ; **********************************************************************
 ;
   field_info \
-  := read_FV3SAR_field_wrtcmp( \
+  := read_FV3LAM_field_wrtcmp( \
      field_name, \
      horiz_dist_units, horiz_area_units, \
-     FV3SAR_wrtcmp_fn, \
+     FV3LAM_wrtcmp_fn, \
      nx, ny, \
      vert_indx, time_indx, \
      func_xy_only, func_xyz_only, func_xyt_only, func_xyzt_only)
 
-  fp_field_FV3SAR = field_info@fp
+  fp_field_FV3LAM = field_info@fp
   field_desc = field_info@field_desc
   field_units = field_info@field_units
   field_unstruc = field_info@field_unstruc
@@ -643,7 +643,7 @@ if (read_FV3SAR_wrtcmp) then
   field_max = field_info@field_max
   field_median = field_info@field_median
   field_mean = field_info@field_mean
-  field_data_type_FV3SAR = field_info@field_data_type
+  field_data_type_FV3LAM = field_info@field_data_type
 
   plot_title = field_desc + " [" + field_units + "]"
   print("")
@@ -978,7 +978,7 @@ n_tile_prev + " to " + char_nl + \
 ; **********************************************************************
 ;
   field_info \
-  := read_FV3SAR_field_native( \
+  := read_FV3LAM_field_native( \
      field_names_by_tile, \
      file_names_by_tile, \
      gtype, inds_tiles_to_plot, \
@@ -990,7 +990,7 @@ n_tile_prev + " to " + char_nl + \
      func_xy_only, func_xyz_only, func_xyt_only, func_xyzt_only, \
      average_in_x, average_in_y)
 
-;  fp_field_FV3SAR = field_info@fp  ; This would in general be an array or list of file pointers.
+;  fp_field_FV3LAM = field_info@fp  ; This would in general be an array or list of file pointers.
   field_desc = field_info@field_desc
   field_units = field_info@field_units
   field_unstruc = field_info@field_all_tiles_unstruc
@@ -998,7 +998,7 @@ n_tile_prev + " to " + char_nl + \
   field_max_all_tiles = field_info@field_max_all_tiles
   field_median_all_tiles = field_info@field_median_all_tiles
   field_mean_all_tiles = field_info@field_mean_all_tiles
-  field_data_type_FV3SAR = field_info@field_data_type
+  field_data_type_FV3LAM = field_info@field_data_type
 
   plot_title = field_desc + " [" + field_units + "]"
   print("")
@@ -1014,7 +1014,7 @@ n_tile_prev + " to " + char_nl + \
   temp := tostring(inds_tiles_to_plot)
   temp := str_join(temp, ", ")
   temp := str_concat( (/"[tile(s) ", temp, "]"/) )
-  msg := "Calculating statistics of field over all FV3SAR tiles to be plotted " + \
+  msg := "Calculating statistics of field over all FV3-LAM tiles to be plotted " + \
          temp + " ..."
   print("")
   print("" + separator_line)
@@ -1029,7 +1029,7 @@ n_tile_prev + " to " + char_nl + \
   print("")
   print("" + msg)
 
-  msg := "Done calculating statistics of field over all FV3SAR tiles to be plotted."
+  msg := "Done calculating statistics of field over all FV3-LAM tiles to be plotted."
   print("")
   print("" + msg)
   print("" + separator_line)
@@ -1184,7 +1184,7 @@ end if
 ; **********************************************************************
 ;
 ; If plot_RAP_field is set to True, combine the coordinate arrays for
-; the FV3SAR and the RAP into a single set of arrays for plotting.
+; the FV3-LAM and the RAP into a single set of arrays for plotting.
 ;
 ; **********************************************************************
 ;
@@ -1193,45 +1193,45 @@ end if
 ; **********************************************************************
 ;
 ; If the RAP coordinate arrays are not of the same data type as the FV3-
-; SAR coordinate arrays, convert the data type of the former to that of
+; LAM coordinate arrays, convert the data type of the former to that of
 ; the latter.
 ;
 ; **********************************************************************
 ;
-    if (.not. strcmp_exact(coord_data_type_FV3SAR, coord_data_type_RAP)) then
+    if (.not. strcmp_exact(coord_data_type_FV3LAM, coord_data_type_RAP)) then
 
       lon_cntrs_unstruc_RAP \
-      := totype(lon_cntrs_unstruc_RAP, coord_data_type_FV3SAR)
+      := totype(lon_cntrs_unstruc_RAP, coord_data_type_FV3LAM)
 
       lat_cntrs_unstruc_RAP \
-      := totype(lat_cntrs_unstruc_RAP, coord_data_type_FV3SAR)
+      := totype(lat_cntrs_unstruc_RAP, coord_data_type_FV3LAM)
 
       lon_verts_unstruc_RAP \
-      := totype(lon_verts_unstruc_RAP, coord_data_type_FV3SAR)
+      := totype(lon_verts_unstruc_RAP, coord_data_type_FV3LAM)
 
       lat_verts_unstruc_RAP \
-      := totype(lat_verts_unstruc_RAP, coord_data_type_FV3SAR)
+      := totype(lat_verts_unstruc_RAP, coord_data_type_FV3LAM)
 
     end if
 ;
 ; **********************************************************************
 ;
-; If the RAP field is not of the same data type as the FV3SAR field, 
+; If the RAP field is not of the same data type as the FV3-LAM field, 
 ; convert the data type of the former to that of the latter.
 ;
 ; **********************************************************************
 ;
-    if (.not. strcmp_exact(field_data_type_FV3SAR, field_data_type_RAP)) then
+    if (.not. strcmp_exact(field_data_type_FV3LAM, field_data_type_RAP)) then
 
       field_unstruc_RAP \
-      := totype(field_unstruc_RAP, field_data_type_FV3SAR)
+      := totype(field_unstruc_RAP, field_data_type_FV3LAM)
 
     end if
 ;
 ; **********************************************************************
 ;
 ; Prepend RAP coordinates and fields to the corresponding arrays for the
-; FV3SAR so that the RAP grid is drawn first and the FV3SAR tiles are
+; FV3-LAM so that the RAP grid is drawn first and the FV3-LAM tiles are
 ; then drawn on top.
 ;
 ; **********************************************************************
@@ -1258,7 +1258,7 @@ end if
 ;
 ; **********************************************************************
 ;
-    msg := "Calculating statistics of combined field on FV3SAR and RAP grids ..."
+    msg := "Calculating statistics of combined field on FV3-LAM and RAP grids ..."
     print("")
     print("" + separator_line)
     print("" + msg)
@@ -1277,7 +1277,7 @@ end if
     field_median := field_stat_info@field_median
     field_mean := field_stat_info@field_mean
 
-    msg := "Done calculating statistics of combined field on FV3SAR and RAP grids."
+    msg := "Done calculating statistics of combined field on FV3-LAM and RAP grids."
     print("")
     print("" + msg)
     print("" + separator_line)
@@ -1285,7 +1285,7 @@ end if
 ; **********************************************************************
 ;
 ; If show_RAP_bdy is set to True, prepend the RAP boundary coordinates
-; to those for the FV3SAR tiles.
+; to those for the FV3-LAM tiles.
 ;
 ; **********************************************************************
 ;
@@ -1293,9 +1293,9 @@ end if
 ;
 ; Perform data conversion if necessary.
 ;
-      if (strcmp_exact(coord_data_type_FV3SAR, coord_data_type_RAP) .eq. False) then
-        lon_bdy_RAP := totype(lon_bdy_RAP, coord_data_type_FV3SAR)
-        lat_bdy_RAP := totype(lat_bdy_RAP, coord_data_type_FV3SAR)
+      if (strcmp_exact(coord_data_type_FV3LAM, coord_data_type_RAP) .eq. False) then
+        lon_bdy_RAP := totype(lon_bdy_RAP, coord_data_type_FV3LAM)
+        lat_bdy_RAP := totype(lat_bdy_RAP, coord_data_type_FV3LAM)
       end if
 
       if (.not. show_tile_bdies) then
@@ -1452,7 +1452,7 @@ bdy_opts@bdy_dash_patterns = 1
 ; Old way of calling plot_horiz_field + changes to get it to work with
 ; new way, but doesn't work.  Use the new call further below, but some
 ; input arguments not yet defined.  Should be defined as in file 
-; plot_FV3SAR_field_native.ncl.
+; plot_FV3LAM_field_native.ncl.
 ;  plot_info := plot_horiz_field( \
 ;               fn_graphics, \
 ;               lon_cntrs_unstruc, lat_cntrs_unstruc, \

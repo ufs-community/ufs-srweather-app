@@ -449,7 +449,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-  $ushdir/generate_FV3SAR_wflow.sh || \
+  $ushdir/generate_FV3LAM_wflow.sh || \
     print_err_msg_exit "\
 Could not generate an experiment/workflow for the test specified by 
 expt_name:

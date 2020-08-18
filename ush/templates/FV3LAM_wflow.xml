@@ -81,7 +81,7 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 {%- endfor %}
 
   <log>
-    <cyclestr>&LOGDIR;/FV3SAR_wflow.log</cyclestr>
+    <cyclestr>&LOGDIR;/FV3LAM_wflow.log</cyclestr>
   </log>
 
 <!-- 

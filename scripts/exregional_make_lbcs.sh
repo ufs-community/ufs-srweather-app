@@ -369,7 +369,7 @@ exec_fn="chgres_cube.exe"
 exec_fp="$EXECDIR/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
-The executable (exec_fp) for generating initial conditions on the FV3SAR
+The executable (exec_fp) for generating initial conditions on the FV3-LAM
 native grid does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
@@ -378,7 +378,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Loop through the LBC update times and run chgres for each such time to
-# obtain an LBC file for each that can be used as input to the FV3SAR.
+# obtain an LBC file for each that can be used as input to the FV3-LAM.
 #
 #-----------------------------------------------------------------------
 #
@@ -450,9 +450,9 @@ list file has not specified for this external model:
 #
   settings="
 'config': {
- 'fix_dir_target_grid': ${FIXsar},
- 'mosaic_file_target_grid': ${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc,
- 'orog_dir_target_grid': ${FIXsar},
+ 'fix_dir_target_grid': ${FIXLAM},
+ 'mosaic_file_target_grid': ${FIXLAM}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc,
+ 'orog_dir_target_grid': ${FIXLAM},
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile7.halo${NH4}.nc,
  'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
  'mosaic_file_input_grid': '',
@@ -510,7 +510,7 @@ $settings"
   ${APRUN} ${exec_fp} || \
     print_err_msg_exit "\
 Call to executable (exec_fp) to generate lateral boundary conditions (LBCs)
-file for the FV3SAR for forecast hour fhr failed:
+file for the FV3-LAM for forecast hour fhr failed:
   exec_fp = \"${exec_fp}\"
   fhr = \"$fhr\"
 The external model from which the LBCs files are to be generated is:
@@ -521,11 +521,11 @@ located in the following directory:
 #
 # Move LBCs file for the current lateral boundary update time to the LBCs
 # work directory.  Note that we rename the file by including in its name
-# the forecast hour of the FV3SAR (which is not necessarily the same as
+# the forecast hour of the FV3-LAM (which is not necessarily the same as
 # that of the external model since their start times may be offset).
 #
-  fcst_hhh_FV3SAR=$( printf "%03d" "${LBC_SPEC_FCST_HRS[$i]}" )
-  mv_vrfy gfs_bndy.nc ${lbcs_dir}/gfs_bndy.tile7.${fcst_hhh_FV3SAR}.nc
+  fcst_hhh_FV3LAM=$( printf "%03d" "${LBC_SPEC_FCST_HRS[$i]}" )
+  mv_vrfy gfs_bndy.nc ${lbcs_dir}/gfs_bndy.tile7.${fcst_hhh_FV3LAM}.nc
 
 done
 #

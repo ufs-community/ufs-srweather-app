@@ -1,15 +1,15 @@
 ;
 ; **********************************************************************
 ;
-; File name: read_FV3SAR_grid_wrtcmp.ncl
+; File name: read_FV3LAM_grid_wrtcmp.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
 ; ^^^^^^^^^^^
 ; This function returns the dimensions, cell center coordinates, and
-; cell vertex coordinates of the grid that discretizes the FV3SAR's 
+; cell vertex coordinates of the grid that discretizes the FV3-LAM's 
 ; write-component output domain.  The file to read is specified by 
-; FV3SAR_wrtcmp_fn.  If get_domain_bdy is set to True, this function
+; FV3LAM_wrtcmp_fn.  If get_domain_bdy is set to True, this function
 ; also returns the coordinates of the cell vertices lying on the bounda-
 ; ry of the domain.
 ;
@@ -20,10 +20,10 @@ loadscript(lib_location + "constants.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "get_rect_grid_bdy.ncl")
 
-undef("read_FV3SAR_grid_wrtcmp")
+undef("read_FV3LAM_grid_wrtcmp")
 
-function read_FV3SAR_grid_wrtcmp( \
-         FV3SAR_wrtcmp_fn:string, \
+function read_FV3LAM_grid_wrtcmp( \
+         FV3LAM_wrtcmp_fn:string, \
          get_domain_bdy:logical)
 
 local fp, \
@@ -54,17 +54,17 @@ begin
 ;
 ; **********************************************************************
 ;
-; Open the specified FV3SAR wrtcmp-generated output file for reading.
+; Open the specified FV3-LAM wrtcmp-generated output file for reading.
 ;
 ; **********************************************************************
 ;
   print("")
   print("" + separator_line)
-  print("Reading in FV3SAR's write-component grid coordinates from file ...")
+  print("Reading in FV3LAM's write-component grid coordinates from file ...")
   print("")
-  print("  FV3SAR_wrtcmp_fn = " + char_dq + FV3SAR_wrtcmp_fn + char_dq)
+  print("  FV3LAM_wrtcmp_fn = " + char_dq + FV3LAM_wrtcmp_fn + char_dq)
 
-  fp = addfile(FV3SAR_wrtcmp_fn, "r")
+  fp = addfile(FV3LAM_wrtcmp_fn, "r")
 ;
 ; **********************************************************************
 ;
@@ -228,7 +228,7 @@ lat_verts = lat_verts*degs_per_rad
   end do
 
   print("")
-  print("Done reading in FV3SAR's write-component grid coordinates from file.")
+  print("Done reading in FV3-LAM's write-component grid coordinates from file.")
   print("" + separator_line)
 ;
 ; **********************************************************************

@@ -1,7 +1,7 @@
 ;
 ; **********************************************************************
 ;
-; File name: read_FV3SAR_field_native.ncl
+; File name: read_FV3LAM_field_native.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
@@ -18,9 +18,9 @@ loadscript(lib_location + "calc_field_stats.ncl")
 
 load "get_gridfield_info.ncl"
 
-undef("read_FV3SAR_field_native")
+undef("read_FV3LAM_field_native")
 
-function read_FV3SAR_field_native( \
+function read_FV3LAM_field_native( \
          field_names_by_tile[*]:string, \
          file_names_by_tile[*]:string, \
          gtype:string, \
@@ -72,7 +72,7 @@ begin
 ;
 ; **********************************************************************
 ;
-  id_str := "Message from procedure/function read_FV3SAR_field_native():"
+  id_str := "Message from procedure/function read_FV3LAM_field_native():"
 ;
 ; **********************************************************************
 ;

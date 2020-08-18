@@ -1,27 +1,27 @@
 #
-# MACHINE will be set by the workflow launch script (launch_FV3SAR_-
+# MACHINE will be set by the workflow launch script (launch_FV3LAM_-
 # wflow.sh) to value passed in as an argument to that script.
 #
 MACHINE=""
 #
-# ACCOUNT will be set by the workflow launch script (launch_FV3SAR_-
+# ACCOUNT will be set by the workflow launch script (launch_FV3LAM_-
 # wflow.sh) to value passed in as an argument to that script.
 #
 ACCOUNT=""
 #
-# EXPT_SUBDIR will be set by the workflow launch script (launch_FV3SAR_-
+# EXPT_SUBDIR will be set by the workflow launch script (launch_FV3LAM_-
 # wflow.sh) to a value obtained from the name of this file.
 #
 EXPT_SUBDIR=""
 #
 # USE_CRON_TO_RELAUNCH may be reset by the workflow launch script
-# (launch_FV3SAR_wflow.sh) to value passed in as an argument to that
+# (launch_FV3LAM_wflow.sh) to value passed in as an argument to that
 # script, but in case it is not, we give it a default value here.
 #
 USE_CRON_TO_RELAUNCH="TRUE"
 #
 # CRON_RELAUNCH_INTVL_MNTS may be reset by the workflow launch script
-# (launch_FV3SAR_wflow.sh) to value passed in as an argument to that
+# (launch_FV3LAM_wflow.sh) to value passed in as an argument to that
 # script, but in case it is not, we give it a default value here.
 #
 CRON_RELAUNCH_INTVL_MNTS="02"
@@ -37,7 +37,7 @@ RUN_ENVIR="community"
 PREEXISTING_DIR_METHOD="rename"
 
 PREDEF_GRID_NAME="GSD_RAP13km"
-GRID_GEN_METHOD="JPgrid"
+GRID_GEN_METHOD="ESGgrid"
 QUILTING="TRUE"
 USE_CCPP="TRUE"
 CCPP_PHYS_SUITE="FV3_GSD_v0"

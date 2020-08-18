@@ -43,15 +43,15 @@ PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"  # Path to direct
 
 #
 # In NCO mode, the user must manually (e.g. after doing the build step)
-# create the symlink "${FIXrrfs}/fix_sar" that points to EMC's FIXsar 
+# create the symlink "${FIXrrfs}/fix_sar" that points to EMC's FIXLAM
 # directory on the machine.  For example, on hera, the symlink's target
 # needs to be
 #
 #   /scratch2/NCEPDEV/fv3-cam/emc.campara/fix_fv3cam/fix_sar
 #
-# The experiment generation script will then set FIXsar to 
+# The experiment generation script will then set FIXLAM to 
 #
-#   FIXsar="${FIXrrfs}/fix_sar/${EMC_GRID_NAME}"
+#   FIXLAM="${FIXrrfs}/fix_lam/${EMC_GRID_NAME}"
 #
 # where EMC_GRID_NAME has the value set above.
 #

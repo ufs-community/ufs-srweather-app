@@ -10,12 +10,12 @@ import numpy as np
 
 
 # Computational grid definitions
-JPgrid_LON_CTR=-153.0
-JPgrid_LAT_CTR=61.0
-JPgrid_DELX=3000.0
-JPgrid_DELY=3000.0
-JPgrid_NX=1344
-JPgrid_NY=1152
+ESGgrid_LON_CTR=-153.0
+ESGgrid_LAT_CTR=61.0
+ESGgrid_DELX=3000.0
+ESGgrid_DELY=3000.0
+ESGgrid_NX=1344
+ESGgrid_NY=1152
 
 # Write component grid definitions
 
@@ -23,8 +23,8 @@ WRTCMP_nx=1340
 WRTCMP_ny=1132
 WRTCMP_lon_lwr_left=151.5
 WRTCMP_lat_lwr_left=42.360
-WRTCMP_dx=JPgrid_DELX
-WRTCMP_dy=JPgrid_DELY
+WRTCMP_dx=ESGgrid_DELX
+WRTCMP_dy=ESGgrid_DELY
 
 # Plot-specific definitions
 
@@ -39,11 +39,11 @@ plot_res='i' # background map resolution
 
 
 
-JPgrid_width  = JPgrid_NX * JPgrid_DELX
-JPgrid_height = JPgrid_NY * JPgrid_DELY
+ESGgrid_width  = ESGgrid_NX * ESGgrid_DELX
+ESGgrid_height = ESGgrid_NY * ESGgrid_DELY
 
-big_grid_width=np.ceil(JPgrid_width*1.25)
-big_grid_height=np.ceil(JPgrid_height*1.25)
+big_grid_width=np.ceil(ESGgrid_width*1.25)
+big_grid_height=np.ceil(ESGgrid_height*1.25)
 
 WRTCMP_width  = WRTCMP_nx * WRTCMP_dx
 WRTCMP_height = WRTCMP_ny * WRTCMP_dy
@@ -53,15 +53,15 @@ fig = plt.figure()
 #ax1 = plt.axes
 ax1 = plt.subplot2grid((1,1), (0,0))
 
-map1 = Basemap(projection='gnom', resolution=plot_res, lon_0 = JPgrid_LON_CTR, lat_0 = JPgrid_LAT_CTR, 
+map1 = Basemap(projection='gnom', resolution=plot_res, lon_0 = ESGgrid_LON_CTR, lat_0 = ESGgrid_LAT_CTR, 
                width = big_grid_width, height=big_grid_height)
 
 map1.drawmapboundary(fill_color='#9999FF')
 map1.fillcontinents(color='#ddaa66',lake_color='#9999FF')
 map1.drawcoastlines()
 
-map2 = Basemap(projection='gnom', lon_0 = JPgrid_LON_CTR, lat_0 = JPgrid_LAT_CTR, 
-               width = JPgrid_width, height=JPgrid_height)
+map2 = Basemap(projection='gnom', lon_0 = ESGgrid_LON_CTR, lat_0 = ESGgrid_LAT_CTR, 
+               width = ESGgrid_width, height=ESGgrid_height)
 
 #map2.drawmapboundary(fill_color='#9999FF')
 #map2.fillcontinents(color='#ddaa66',lake_color='#9999FF')
@@ -69,7 +69,7 @@ map2 = Basemap(projection='gnom', lon_0 = JPgrid_LON_CTR, lat_0 = JPgrid_LAT_CTR
 
 
 map3 = Basemap(llcrnrlon= WRTCMP_lon_lwr_left, llcrnrlat=WRTCMP_lat_lwr_left, width=WRTCMP_width, height=WRTCMP_height,
-             resolution=plot_res, projection='lcc', lat_0 = JPgrid_LAT_CTR, lon_0 = JPgrid_LON_CTR)
+             resolution=plot_res, projection='lcc', lat_0 = ESGgrid_LAT_CTR, lon_0 = ESGgrid_LON_CTR)
 
 #map3.drawmapboundary(fill_color='#9999FF')
 #map3.fillcontinents(color='#ddaa66',lake_color='#9999FF',alpha=0.5)

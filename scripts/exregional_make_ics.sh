@@ -376,7 +376,7 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
 # These geogrid files need to be moved to more permanent locations.
 #
   if [ "${MACHINE}" = "HERA" ]; then
-    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_HRRRX"
+    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-LAM/geo_em.d01.nc_HRRRX"
   elif [ "${MACHINE}" = "JET" ]; then
     geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
   fi
@@ -415,7 +415,7 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
 # These geogrid files need to be moved to more permanent locations.
 #
   if [ "${MACHINE}" = "HERA" ]; then
-    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-SAR/geo_em.d01.nc_RAPX"
+    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-LAM/geo_em.d01.nc_RAPX"
   elif [ "${MACHINE}" = "JET" ]; then
     geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
   fi
@@ -457,7 +457,7 @@ exec_fn="chgres_cube.exe"
 exec_fp="$EXECDIR/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
-The executable (exec_fp) for generating initial conditions on the FV3SAR
+The executable (exec_fp) for generating initial conditions on the FV3-LAM
 native grid does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
@@ -508,7 +508,7 @@ fi
 # config.C768.nest.atm.theia.nml:23: tracers_input="sphum","liq_wat","o3mr","ice_wat","rainwat","snowwat","graupel"
 
 
-# fix_dir_target_grid="${BASEDIR}/JP_grid_HRRR_like_fix_files_chgres_cube"
+# fix_dir_target_grid="${BASEDIR}/ESG_grid_HRRR_like_fix_files_chgres_cube"
 # base_install_dir="${SORCDIR}/chgres_cube.fd"
 
 #
@@ -520,9 +520,9 @@ fi
 #
 settings="
 'config': {
- 'fix_dir_target_grid': ${FIXsar},
- 'mosaic_file_target_grid': ${FIXsar}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc,
- 'orog_dir_target_grid': ${FIXsar},
+ 'fix_dir_target_grid': ${FIXLAM},
+ 'mosaic_file_target_grid': ${FIXLAM}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc,
+ 'orog_dir_target_grid': ${FIXLAM},
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc,
  'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
  'mosaic_file_input_grid': '',
@@ -587,7 +587,7 @@ $settings"
 ${APRUN} ${exec_fp} || \
   print_err_msg_exit "\
 Call to executable (exec_fp) to generate surface and initial conditions
-(ICs) files for the FV3SAR failed:
+(ICs) files for the FV3-LAM failed:
   exec_fp = \"${exec_fp}\"
 The external model from which the ICs files are to be generated is:
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"

@@ -153,7 +153,7 @@ jjob_fp="$2"
 # and loads modules.
 #
 # The regional_workflow repository contains module files for all the
-# workflow tasks in the template rocoto XML file for the FV3SAR work-
+# workflow tasks in the template rocoto XML file for the FV3-LAM work-
 # flow.  The full path to a module file for a given task is
 #
 #   $HOMErrfs/modulefiles/$machine/${task_name}

@@ -219,10 +219,10 @@ cp_vrfy ${TOPO_DIR}/gmted2010.30sec.int fort.235
 #-----------------------------------------------------------------------
 #
 mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NHW}.nc"
-mosaic_fp="$FIXsar/${mosaic_fn}"
+mosaic_fp="$FIXLAM/${mosaic_fn}"
 
 grid_fn=$( get_charvar_from_netcdf "${mosaic_fp}" "gridfiles" )
-grid_fp="${FIXsar}/${grid_fn}"
+grid_fp="${FIXLAM}/${grid_fn}"
 #
 #-----------------------------------------------------------------------
 #
@@ -300,7 +300,7 @@ case $MACHINE in
 ${ufs_utils_ushdir}/${orog_gen_scr} \
 $res \
 ${TILE_RGNL} \
-${FIXsar} \
+${FIXLAM} \
 ${raw_dir} \
 ${UFS_UTILS_DIR} \
 ${TOPO_DIR} \
@@ -348,7 +348,7 @@ Orography file generation complete."
 #-----------------------------------------------------------------------
 #
 # Note that the orography filtering code assumes that the regional grid
-# is a GFDLgrid type of grid; it is not designed to handle JPgrid type
+# is a GFDLgrid type of grid; it is not designed to handle ESGgrid type
 # regional grids.  If the flag "regional" in the orography filtering 
 # namelist file is set to .TRUE. (which it always is will be here; see
 # below), then filtering code will first calculate a resolution (i.e. 
@@ -370,7 +370,7 @@ Orography file generation complete."
 # resolution of res_regional.  These interpolated/extrapolated values are
 # then used to perform the orography filtering.
 #
-# The above approach works for a GFDLgrid type of grid.  To handle JPgrid
+# The above approach works for a GFDLgrid type of grid.  To handle ESGgrid
 # type grids, we set res in the namelist to the orography filtering code
 # the equivalent global uniform cubed-sphere resolution of the regional
 # grid, we set stretch_fac to 1 (since the equivalent resolution assumes
@@ -398,7 +398,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #  stretch_fac="${GFDLgrid_STRETCH_FAC}"
   refine_ratio="${GFDLgrid_REFINE_RATIO}"
 
-elif [ "${GRID_GEN_METHOD}" = "JPgrid" ]; then
+elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
 
   res="${CRES:1}"
 #  stretch_fac="${STRETCH_FAC}"

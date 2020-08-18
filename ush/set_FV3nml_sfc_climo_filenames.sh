@@ -3,10 +3,10 @@
 #
 # This file defines a function that sets the values of the variables in
 # the forecast model's namelist file that specify the paths to the surface
-# climatology files on the FV3SAR native grid (which are either pregenerated
+# climatology files on the FV3LAM native grid (which are either pregenerated
 # or created by the MAKE_SFC_CLIMO_TN task).  Note that the workflow
 # generation scripts create symlinks to these surface climatology files
-# in the FIXsar directory, and the values in the namelist file that get
+# in the FIXLAM directory, and the values in the namelist file that get
 # set by this function are relative or full paths to these links.
 #
 #-----------------------------------------------------------------------
@@ -156,7 +156,7 @@ for (( i=0; i<${num_nml_vars}; i++ )); do
 #
 # Set the full path to the surface climatology file.
 #
-  fp="${FIXsar}/${CRES}.${sfc_climo_field_name}.$suffix"
+  fp="${FIXLAM}/${CRES}.${sfc_climo_field_name}.$suffix"
 #
 # If not in NCO mode, for portability and brevity change fp so that it
 # is a relative path (relative to any cycle directory immediately under

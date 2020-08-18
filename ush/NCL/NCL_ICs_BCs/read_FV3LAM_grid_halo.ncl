@@ -1,12 +1,12 @@
 ;
 ; **********************************************************************
 ;
-; File name: read_FV3SAR_grid_halo.ncl
+; File name: read_FV3LAM_grid_halo.ncl
 ; Author: Gerard Ketefian
 ;
 ; Description:
 ; ^^^^^^^^^^^
-; This function reads in the coordinates of the FV3SAR regional grid 
+; This function reads in the coordinates of the FV3-LAM regional grid 
 ; from the specified grid file and extracts from it the coordinates of
 ; the halo.
 ;
@@ -15,9 +15,9 @@
 load "strcmp.ncl"
 load "adjust_longitude_range.ncl"
 
-undef("read_FV3SAR_grid_halo")
+undef("read_FV3LAM_grid_halo")
 
-function read_FV3SAR_grid_halo(grid_file:string, nh:integer)
+function read_FV3LAM_grid_halo(grid_file:string, nh:integer)
 
 local f_grid, \
       two_nx, two_ny, nx, ny, nxp, nyp, \
@@ -60,7 +60,7 @@ begin
 ;
 ; **********************************************************************
 ;
-; Open the FV3SAR grid file containing grid information.
+; Open the FV3-LAM grid file containing grid information.
 ;
 ; **********************************************************************
 ;
