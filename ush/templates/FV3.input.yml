@@ -94,8 +94,6 @@ FV3_GFS_2017_gfdlmp:
     satmedmf: !!python/none
     shal_cnv: False
     ttendlim: !!python/none
-  nam_sfcperts: !!python/none
-  nam_stochy: !!python/none
   gfdl_cloud_microphysics_nml: &gfs_gfdl_cloud_mp
     c_cracw: 0.8
     c_paut: 0.5
@@ -177,8 +175,6 @@ FV3_GFS_2017_gfdlmp_regional:
     satmedmf: False
   gfdl_cloud_microphysics_nml:
     <<: *gfs_gfdl_cloud_mp
-  nam_sfcperts: !!python/none
-  nam_stochy: !!python/none
 
 FV3_GFS_v15p2:
   atmos_model_nml:
@@ -263,8 +259,6 @@ FV3_GFS_v15p2:
     xkzm_h: 1.0
     xkzm_m: 1.0
     xkzminv: 0.3
-  nam_sfcperts: !!python/none
-  nam_stochy: !!python/none
   namsfc:
     landice: True
     ldebug: False
@@ -327,8 +321,6 @@ FV3_GFS_v16beta:
     lgfdlmprad: True
     lheatstrg: True
     lsoil: 4
-    nam_sfcperts: !!python/none
-    nam_stochy: !!python/none
     nstf_name: [2, 1, 0, 0, 0]
     prautco: [0.00015, 0.00015]
     psautco: [0.0008, 0.0005]
@@ -344,8 +336,6 @@ FV3_GFS_v16beta:
   namsfc:
     landice: True
     ldebug: False
-  nam_sfcperts: !!python/none
-  nam_stochy: !!python/none
   surf_map_nml: !!python/none
 
 FV3_CPT_v0:
