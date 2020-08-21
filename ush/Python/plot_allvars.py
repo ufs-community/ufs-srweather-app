@@ -23,6 +23,8 @@
 #                            desired on the maps.
 #                          -File structure should be:
 #                            CARTOPY_DIR/shapefiles/natural_earth/cultural/*.shp
+#                          -More information regarding files needed to setup
+#                            display maps in Cartopy, see SRW App Users' Guide
 #
 #           		To create plots for forecast hour 24 from 5/7 00Z cycle:
 #                        python plot_allvars.py 2020050700 24 /path/to/expt_dirs
@@ -53,7 +55,6 @@ from scipy import ndimage
 from netCDF4 import Dataset
 import pyproj
 import argparse
-import yaml
 import cartopy
 
 #--------------Define some functions ------------------#
@@ -104,9 +105,8 @@ def compress_and_save(filename):
   plt.savefig(ram, format='png', bbox_inches='tight', dpi=150)
   ram.seek(0)
   im = Image.open(ram)
-  im2 = im.convert('RGB').convert('P', palette=Image.ADAPTIVE)
+  im2 = im.convert('RGB')#.convert('P', palette=Image.ADAPTIVE)
   im2.save(filename, format='PNG')
-
 
 def cmap_t2m():
  # Create colormap for 2-m temperature
@@ -217,11 +217,6 @@ def rotate_wind(true_lat,lov_lon,earth_lons,uin,vin,proj,inverse=False):
 
 #-------------Start of script -------------------------#
 
-# Load environment variables within yaml file
-inf = open('env.yaml', 'r')
-envf= yaml.load(inf, Loader=yaml.SafeLoader)
-inf.close()
-
 # Define required positional arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("Cycle date/time in YYYYMMDDHH format")
@@ -252,7 +247,7 @@ EXPT_SUBDIR = str(sys.argv[4])
 CARTOPY_DIR = str(sys.argv[5])
 
 # Define the location of the input file
-data1 = pygrib.open(EXPT_BASEDIR+'/'+EXPT_SUBDIR+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.bgdawp'+fhour+'.tm00.grib2')
+data1 = pygrib.open(EXPT_BASEDIR+'/'+EXPT_SUBDIR+'/'+ymdh+'/postprd/RRFS.t'+cyc+'z.bgdawp'+fhour+'.tm00.grib2')
 
 # Get the lats and lons
 grids = [data1]
@@ -356,7 +351,7 @@ u250, v250 = rotate_wind(Lat0,Lon0,lon,u250,v250,'lcc',inverse=False)
 wspd250 = np.sqrt(u250**2 + v250**2)
 
 # Total precipitation
-qpf = data1.select(name='Total Precipitation',lengthOfTimeRange=fhr)[0].values * 0.0393701
+#qpf = data1.select(name='Total Precipitation',lengthOfTimeRange=fhr)[0].values * 0.0393701
 
 # Composite reflectivity
 refc = data1.select(name='Maximum/Composite radar reflectivity')[0].values 
@@ -415,7 +410,6 @@ def plot_all(dom):
 
   # Define where Cartopy Maps are located    
   cartopy.config['data_dir'] = CARTOPY_DIR
-  os.environ["CARTOPY_USER_BACKGROUNDS"]=CARTOPY_DIR+'/raster_files'
 
   back_res='50m'
   back_img='on'
@@ -447,9 +441,13 @@ def plot_all(dom):
                     back_res,edgecolor='red',facecolor='none',
                     linewidth=fline_wd,alpha=falpha)
 
+  # All lat lons are earth relative, so setup the associated projection correct for that data
+  transform = ccrs.PlateCarree() 
+
   # high-resolution background images
   if back_img=='on':
-    ax.background_img(name='NE', resolution='high')
+     img = plt.imread(CARTOPY_DIR+'/raster_files/NE1_50M_SR_W.tif')
+     ax.imshow(img, origin='upper', transform=transform)
 
 #  ax.add_feature(land)
   ax.add_feature(lakes)
@@ -457,10 +455,6 @@ def plot_all(dom):
   ax.add_feature(borders)
   ax.add_feature(coastline)
 
-
-  # All lat lons are earth relative, so setup the associated projection correct for that data
-  transform = ccrs.PlateCarree()
- 
   # Map/figure has been set up here, save axes instances for use again later
   keep_ax_lst = ax.get_children()[:]
 
@@ -503,7 +497,7 @@ def plot_all(dom):
 
   units = '\xb0''F'
   clevs = np.linspace(-16,134,51)
-  cm = cmap_t2m()
+  cm = plt.cm.Spectral_r #cmap_t2m()
   norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
 
   cs_1 = plt.pcolormesh(lon_shift,lat_shift,tmp2m,transform=transform,cmap=cm,norm=norm)
@@ -558,7 +552,9 @@ def plot_all(dom):
   clear_plotables(ax,keep_ax_lst,fig)
 
   units = 'kts'
-  skip = 50
+  # Places a wind barb every 90-100km, optimized for CONUS domain
+  skip = round(88.64*(dx/1000.)**-.97)
+  print('skipping every '+str(skip)+' grid points to plot')
   barblength = 4
 
   clevs = [5,10,15,20,25,30,35,40,45,50,55,60]
@@ -682,39 +678,37 @@ def plot_all(dom):
   t3 = round(t2-t1, 3)
   print(('%.3f seconds to plot 250 mb WIND for: '+dom) % t3)
 
-
 #################################
   # Plot Total QPF
 #################################
-  if (fhr > 0):		# Do not make total QPF plot for forecast hour 0
-    t1 = time.perf_counter()
-    print(('Working on total qpf for '+dom))
+#  if (fhr > 0):		# Do not make total QPF plot for forecast hour 0
+#    t1 = time.perf_counter()
+#    print(('Working on total qpf for '+dom))
+#
+#    # Clear off old plottables but keep all the map info
+#    cbar1.remove()
+#    clear_plotables(ax,keep_ax_lst,fig)
+#
+#    units = 'in'
+#    clevs = [0.01,0.1,0.25,0.5,0.75,1,1.25,1.5,1.75,2,2.5,3,4,5,7,10,15,20]
+#    clevsdif = [-3,-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5,3]
+#    colorlist = ['chartreuse','limegreen','green','blue','dodgerblue','deepskyblue','cyan','mediumpurple','mediumorchid','darkmagenta','darkred','crimson','orangered','darkorange','goldenrod','gold','yellow']  
+#    cm = matplotlib.colors.ListedColormap(colorlist)
+#    norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
+#
+#    cs_1 = plt.pcolormesh(lon_shift,lat_shift,qpf,transform=transform,cmap=cm,vmin=0.01,norm=norm)
+#    cs_1.cmap.set_under('white',alpha=0.)
+#    cs_1.cmap.set_over('pink')
+#    cbar1 = plt.colorbar(cs_1,orientation='horizontal',pad=0.05,shrink=0.6,ticks=clevs,extend='max')
+#    cbar1.set_label(units,fontsize=8)
+#    cbar1.ax.set_xticklabels(clevs)
+#    cbar1.ax.tick_params(labelsize=8)
+#    ax.text(.5,1.03,'FV3-LAM '+fhour+'-hr Accumulated Precipitation ('+units+') \n initialized: '+itime+' valid: '+vtime + ' (f'+fhour+')',horizontalalignment='center',fontsize=8,transform=ax.transAxes,bbox=dict(facecolor='white',alpha=0.85,boxstyle='square,pad=0.2'))
 
-    # Clear off old plottables but keep all the map info
-    cbar1.remove()
-    clear_plotables(ax,keep_ax_lst,fig)
-
-    units = 'in'
-    clevs = [0.01,0.1,0.25,0.5,0.75,1,1.25,1.5,1.75,2,2.5,3,4,5,7,10,15,20]
-    clevsdif = [-3,-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5,3]
-    colorlist = ['chartreuse','limegreen','green','blue','dodgerblue','deepskyblue','cyan','mediumpurple','mediumorchid','darkmagenta','darkred','crimson','orangered','darkorange','goldenrod','gold','yellow']  
-    cm = matplotlib.colors.ListedColormap(colorlist)
-    norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
-
-    cs_1 = plt.pcolormesh(lon_shift,lat_shift,qpf,transform=transform,cmap=cm,vmin=0.01,norm=norm)
-    cs_1.cmap.set_under('white',alpha=0.)
-    cs_1.cmap.set_over('pink')
-    cbar1 = plt.colorbar(cs_1,orientation='horizontal',pad=0.05,shrink=0.6,ticks=clevs,extend='max')
-    cbar1.set_label(units,fontsize=8)
-    cbar1.ax.set_xticklabels(clevs)
-    cbar1.ax.tick_params(labelsize=8)
-    ax.text(.5,1.03,'FV3-LAM '+fhour+'-hr Accumulated Precipitation ('+units+') \n initialized: '+itime+' valid: '+vtime + ' (f'+fhour+')',horizontalalignment='center',fontsize=8,transform=ax.transAxes,bbox=dict(facecolor='white',alpha=0.85,boxstyle='square,pad=0.2'))
-
-    compress_and_save('qpf_'+dom+'_f'+fhour+'.png')
-    t2 = time.perf_counter()
-    t3 = round(t2-t1, 3)
-    print(('%.3f seconds to plot total qpf for: '+dom) % t3)
-
+#    compress_and_save('qpf_'+dom+'_f'+fhour+'.png')
+#    t2 = time.perf_counter()
+#    t3 = round(t2-t1, 3)
+#    print(('%.3f seconds to plot total qpf for: '+dom) % t3)
 
 #################################
   # Plot composite reflectivity
