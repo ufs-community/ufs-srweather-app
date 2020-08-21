@@ -100,14 +100,14 @@ RUN="${EXPT_SUBDIR}"
 envir="${EXPT_SUBDIR}"
 
 #On Hera:
-#COMINgfs="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"
-#STMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
-#PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
+COMINgfs="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"
+STMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
+PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
 
 #On Jet:
-COMINgfs="/lfs1/HFIP/hwrf-data/hafs-input/COMGFS"
-STMP="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
-PTMP="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
+#COMINgfs="/lfs1/HFIP/hwrf-data/hafs-input/COMGFS"
+#STMP="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
+#PTMP="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
 
 #
 # In NCO mode, the user must manually (e.g. after doing the build step)
