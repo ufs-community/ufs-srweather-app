@@ -311,6 +311,14 @@ case "${EXTRN_MDL_NAME_ICS}" in
 # For GSD physics, add three additional tracers (the ice, rain and water
 # number concentrations) that are required for Thompson microphysics.
         tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"ice_nc\",\"rain_nc\",\"water_nc\"]"
+      else
+        print_err_msg_exit "\
+The parameter \"tracers\" has not been defined for this combination of 
+external model (EXTRN_MDL_NAME_ICS), physics suite (CCPP_PHYS_SUITE), and 
+FV3GFS file type (FV3GFS_FILE_FMT_ICS):
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
+  FV3GFS_FILE_FMT_ICS = \"${FV3GFS_FILE_FMT_ICS}\""
       fi
 #
 # If CCPP is not being used, the only physics suite that can be used is
@@ -361,6 +369,7 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
@@ -370,6 +379,12 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
       numsoil_out="9"
+    else
+      print_err_msg_exit "\
+The parameter \"numsoil_out\" has not been defined for this combination 
+of external model (EXTRN_MDL_NAME_ICS) and physics suite (CCPP_PHYS_SUITE):
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
     fi
   fi
 #
@@ -400,6 +415,7 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
 
   if [ "${USE_CCPP}" = "TRUE" ]; then
     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v0" ] || \
@@ -409,6 +425,12 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
     elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
          [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
       numsoil_out="9"
+    else
+      print_err_msg_exit "\
+The parameter \"numsoil_out\" has not been defined for this combination 
+of external model (EXTRN_MDL_NAME_ICS) and physics suite (CCPP_PHYS_SUITE):
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
     fi
   fi
 #

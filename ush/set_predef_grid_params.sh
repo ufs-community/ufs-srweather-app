@@ -490,16 +490,16 @@ predefined domain:
     ESGgrid_DELX="3000.0"
     ESGgrid_DELY="3000.0"
 
-    ESGgrid_NX=1734
+    ESGgrid_NX=1728
     ESGgrid_NY=1008
 
     ESGgrid_WIDE_HALO_WIDTH=6
 
     DT_ATMOS="40"
 
-    LAYOUT_X="18"
-    LAYOUT_Y="12"
-    BLOCKSIZE="46"
+    LAYOUT_X="32"
+    LAYOUT_Y="16"
+    BLOCKSIZE="27"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
@@ -509,7 +509,7 @@ predefined domain:
       WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"
       WRTCMP_stdlat1="${ESGgrid_LAT_CTR}"
       WRTCMP_stdlat2="${ESGgrid_LAT_CTR}"
-      WRTCMP_nx="1738"
+      WRTCMP_nx="1726"
       WRTCMP_ny="974"
       WRTCMP_lon_lwr_left="-122.21414225"
       WRTCMP_lat_lwr_left="22.41403305"
