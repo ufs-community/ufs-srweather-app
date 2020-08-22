@@ -29,6 +29,7 @@ valid_vals_CCPP_PHYS_SUITE=( \
 "FV3_GFS_v15p2" \
 "FV3_GFS_v16beta" \
 "FV3_GSD_SAR_v1" \
+"FV3_RRFS_v1beta" \
 "FV3_RRFS_v0" )
 valid_vals_OZONE_PARAM_NO_CCPP=("ozphys_2015" "ozphys")
 valid_vals_GFDLgrid_RES=("48" "96" "192" "384" "768" "1152" "3072")

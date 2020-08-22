@@ -44,6 +44,18 @@ FV3_RRFS_v0:
     lsm: 2
     lsoil_lsm: 4
 
+FV3_RRFS_v1beta:
+  gfs_physics_nml:
+    <<: *gsd_sar_phys
+    lsm: 2
+    lsoil_lsm: 4
+    imfshalcnv: -1
+    IMFDEEPCNV: -1
+    DO_MYNNSFCLAY: true
+    GWD_OPT: 3
+  atmos_model_nml:
+    fdiag: 3
+
 FV3_GFS_2017_gfdlmp:
   atmos_model_nml:
     avg_max_length: 3600.0
@@ -429,3 +441,4 @@ FV3_CPT_v0:
     xkzm_s: 1.0
   nam_sfcperts: !!python/none
   surf_map_nml: !!python/none
+

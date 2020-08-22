@@ -342,6 +342,9 @@ raw_orog_fn="${raw_orog_fn_prefix}.${fn_suffix_with_halo}"
 raw_orog_fp="${raw_dir}/${raw_orog_fn}"
 mv_vrfy "${raw_orog_fp_orig}" "${raw_orog_fp}"
 
+# copy two files for drag_suite to the orog directory (temporary)
+cp_vrfy /scratch2/BMC/gsd-fv3-test/she/orog/* ${OROG_DIR}    # temporary code
+
 print_info_msg "$VERBOSE" "
 Orography file generation complete."
 #
