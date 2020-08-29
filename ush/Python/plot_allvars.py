@@ -237,7 +237,7 @@ cyc = str(hour).zfill(2)
 print(year, month, day, hour)
 
 fhr = int(sys.argv[2])
-fhour = str(fhr).zfill(2)
+fhour = str(fhr).zfill(3)
 print('fhour '+fhour)
 itime = ymdh
 vtime = ndate(itime,int(fhr))
@@ -247,7 +247,7 @@ EXPT_SUBDIR = str(sys.argv[4])
 CARTOPY_DIR = str(sys.argv[5])
 
 # Define the location of the input file
-data1 = pygrib.open(EXPT_BASEDIR+'/'+EXPT_SUBDIR+'/'+ymdh+'/postprd/RRFS.t'+cyc+'z.bgdawp'+fhour+'.tm00.grib2')
+data1 = pygrib.open(EXPT_BASEDIR+'/'+EXPT_SUBDIR+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.bgdawpf'+fhour+'.tm00.grib2')
 
 # Get the lats and lons
 grids = [data1]

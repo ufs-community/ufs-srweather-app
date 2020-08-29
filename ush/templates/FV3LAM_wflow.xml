@@ -375,7 +375,7 @@ MODULES_RUN_TASK_FP script.
 -->
   <metatask name="&RUN_POST_TN;{{ uscore_ensmem_name }}">
 
-    <var name="fhr"> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </var>
+    <var name="fhr"> {% for h in range(0, fcst_len_hrs+1) %}{{ " %03d" % h  }}{% endfor %} </var>
 
     <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#" maxtries="1">
 
