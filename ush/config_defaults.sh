@@ -397,6 +397,19 @@ FV3GFS_FILE_FMT_LBCS="nemsio"
 #
 #-----------------------------------------------------------------------
 #
+# Set NOMADS online data associated parameters. Definitions:
+#
+# NOMADS:
+# Flag controlling whether or not using NOMADS online data
+#
+# NOMADS_file_type
+# Flag controlling the format of data
+#
+NOMADS="FALSE"
+NOMADS_file_type="nemsio"
+#
+#-----------------------------------------------------------------------
+#
 # User-staged external model directories and files.  Definitions:
 #
 # EXTRN_MDL_SOURCE_DIR_ICS:

@@ -24,3 +24,4 @@ regional_014
 regional_015
 regional_016
 user_staged_extrn_files
+user_download_extrn_files

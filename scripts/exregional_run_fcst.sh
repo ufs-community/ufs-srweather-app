@@ -447,6 +447,15 @@ if [ "${USE_CCPP}" = "TRUE" ]; then
 fi
 #-----------------------------------------------------------------------
 #
+# If running enemble forecasts, create links to the cycle-specific 
+# diagnostic tables file and model configuration file in the cycle 
+# directory.  Note that these links should not be made if not running
+# ensemble forecasts because in that case, the cycle directory is the
+# run directory (and we would be creating a symlink with the name of a
+# file that already exists).
+#
+#-----------------------------------------------------------------------
+#
 # Call the function that creates the model configuration file within each
 # cycle directory.
 #
@@ -475,6 +484,8 @@ if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
   relative_or_null="--relative"
   diag_table_fp="${cycle_dir}/${DIAG_TABLE_FN}"
   ln_vrfy -sf ${relative_or_null} ${diag_table_fp} ${run_dir}
+  model_config_fp="${cycle_dir}/${MODEL_CONFIG_FN}"
+  ln_vrfy -sf ${relative_or_null} ${model_config_fp} ${run_dir}
 fi
 #
 #-----------------------------------------------------------------------
