@@ -180,6 +180,9 @@ def parse_submodules_desc_section(section_items, file_path):
             path = item[1].strip()
         elif name == 'url':
             url = item[1].strip()
+        elif name == 'branch':
+            # We do not care about branch since we have a hash - silently ignore
+            pass
         else:
             msg = 'WARNING: Ignoring unknown {} property, in {}'
             msg = msg.format(item[0], file_path) # fool pylint
@@ -261,18 +264,18 @@ def read_gitmodules_file(root_dir, file_name):
     return externals_description
 
 def create_externals_description(
-        model_data, model_format='cfg', components=None, parent_repo=None):
+        model_data, model_format='cfg', components=None, exclude=None, parent_repo=None):
     """Create the a externals description object from the provided data
     """
     externals_description = None
     if model_format == 'dict':
         externals_description = ExternalsDescriptionDict(
-            model_data, components=components)
+            model_data, components=components, exclude=exclude)
     elif model_format == 'cfg':
         major, _, _ = get_cfg_schema_version(model_data)
         if major == 1:
             externals_description = ExternalsDescriptionConfigV1(
-                model_data, components=components, parent_repo=parent_repo)
+                model_data, components=components, exclude=exclude, parent_repo=parent_repo)
         else:
             msg = ('Externals description file has unsupported schema '
                    'version "{0}".'.format(major))
@@ -707,7 +710,7 @@ class ExternalsDescriptionDict(ExternalsDescription):
 
     """
 
-    def __init__(self, model_data, components=None):
+    def __init__(self, model_data, components=None, exclude=None):
         """Parse a native dictionary into a externals description.
         """
         ExternalsDescription.__init__(self)
@@ -719,8 +722,13 @@ class ExternalsDescriptionDict(ExternalsDescription):
         self._input_patch = 0
         self._verify_schema_version()
         if components:
-            for key in model_data.items():
+            for key in list(model_data.keys()):
                 if key not in components:
+                    del model_data[key]
+
+        if exclude:
+            for key in list(model_data.keys()):
+                if key in exclude:
                     del model_data[key]
 
         self.update(model_data)
@@ -733,7 +741,7 @@ class ExternalsDescriptionConfigV1(ExternalsDescription):
 
     """
 
-    def __init__(self, model_data, components=None, parent_repo=None):
+    def __init__(self, model_data, components=None, exclude=None, parent_repo=None):
         """Convert the config data into a standardized dict that can be used to
         construct the source objects
 
@@ -746,7 +754,7 @@ class ExternalsDescriptionConfigV1(ExternalsDescription):
             get_cfg_schema_version(model_data)
         self._verify_schema_version()
         self._remove_metadata(model_data)
-        self._parse_cfg(model_data, components=components)
+        self._parse_cfg(model_data, components=components, exclude=exclude)
         self._check_user_input()
 
     @staticmethod
@@ -758,7 +766,7 @@ class ExternalsDescriptionConfigV1(ExternalsDescription):
         """
         model_data.remove_section(DESCRIPTION_SECTION)
 
-    def _parse_cfg(self, cfg_data, components=None):
+    def _parse_cfg(self, cfg_data, components=None, exclude=None):
         """Parse a config_parser object into a externals description.
         """
         def list_to_dict(input_list, convert_to_lower_case=True):
@@ -775,7 +783,7 @@ class ExternalsDescriptionConfigV1(ExternalsDescription):
 
         for section in cfg_data.sections():
             name = config_string_cleaner(section.lower().strip())
-            if components and name not in components:
+            if (components and name not in components) or (exclude and name in exclude):
                 continue
             self[name] = {}
             self[name].update(list_to_dict(cfg_data.items(section)))
