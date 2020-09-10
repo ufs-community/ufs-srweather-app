@@ -1219,16 +1219,6 @@ SKEB_VDOF="10"
 USE_ZMTNBLCK="false"
 #
 #-----------------------------------------------------------------------
-# 
-# HALO_BLEND:
-# Number of rows into the computational domain that should be blended 
-# with the LBCs.
-#
-#-----------------------------------------------------------------------
-#
-HALO_BLEND=10
-#
-#-----------------------------------------------------------------------
 #
 # GWD_RRFS_v1beta_BASEDIR:
 # Temporary workflow variable specifies the base directory in which to 

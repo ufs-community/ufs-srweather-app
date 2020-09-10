@@ -2,6 +2,4 @@ module load wgrib2
 
 module use -a /contrib/miniconda3/modulefiles
 module load miniconda3
-if [module-info mode load] {
-  system "conda activate regional_workflow"
-}
+conda activate regional_workflow

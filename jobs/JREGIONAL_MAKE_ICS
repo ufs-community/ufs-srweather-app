@@ -91,6 +91,16 @@ esac
 #
 #-----------------------------------------------------------------------
 #
+# Find the directory in which the wgrib2 executable is located.
+#
+#-----------------------------------------------------------------------
+#
+wgrib2_dir=$( which wgrib2 ) || print_err_msg_exit "\
+Directory in which the wgrib2 executable is located could not be found:
+  wgrib2_dir = \"${wgrib2_dir}\""
+#
+#-----------------------------------------------------------------------
+#
 # Set the name of and create the directory in which the output from this
 # script will be placed (if that directory doesn't already exist).
 #
@@ -107,6 +117,7 @@ mkdir_vrfy -p "${ics_dir}"
 #
 $SCRIPTSDIR/exregional_make_ics.sh \
   ics_dir="${ics_dir}" \
+  wgrib2_dir="${wgrib2_dir}" \
   APRUN="${APRUN}" || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."

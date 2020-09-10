@@ -799,7 +799,7 @@ Please clone the external repository containing the code in this directory,
 build the executable, and then rerun the workflow."
 fi
 #
-# Get the base directory of the UFS_UTILS codes.
+# Get the base directory of the UFS_UTILS codes (except for chgres).
 #
 external_name="ufs_utils"
 UFS_UTILS_DIR=$( \
@@ -816,6 +816,25 @@ cated (UFS_UTILS_DIR) does not exist:
   UFS_UTILS_DIR = \"${UFS_UTILS_DIR}\"
 Please clone the external repository containing the code in this direct-
 ory, build the executables, and then rerun the workflow."
+fi
+#
+# Get the base directory of the chgres code.
+#
+external_name="ufs_utils_chgres"
+CHGRES_DIR=$( \
+get_manage_externals_config_property \
+"${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
+print_err_msg_exit "\
+Call to function get_manage_externals_config_property failed."
+
+CHGRES_DIR="${SR_WX_APP_TOP_DIR}/${CHGRES_DIR}"
+if [ ! -d "${CHGRES_DIR}" ]; then
+  print_err_msg_exit "\
+The base directory in which the chgres source code should be located 
+(CHGRES_DIR) does not exist:
+  CHGRES_DIR = \"${CHGRES_DIR}\"
+Please clone the external repository containing the code in this direct-
+ory, build the executable, and then rerun the workflow."
 fi
 #
 # Get the base directory of the EMC_post code.
@@ -2479,9 +2498,10 @@ COMOUT_BASEDIR="${COMOUT_BASEDIR}"
 TEMPLATE_DIR="${TEMPLATE_DIR}"
 UFS_WTHR_MDL_DIR="${UFS_WTHR_MDL_DIR}"
 UFS_UTILS_DIR="${UFS_UTILS_DIR}"
-SFC_CLIMO_INPUT_DIR="${SFC_CLIMO_INPUT_DIR}"
-TOPO_DIR="${TOPO_DIR}"
 EMC_POST_DIR="${EMC_POST_DIR}"
+CHGRES_DIR="${CHGRES_DIR}"
+SFC_CLIMO_INPUT_DIR="${SFC_CLIMO_INPUT_DIR}"
+TOPO_DIR=${TOPO_DIR}
 
 EXPTDIR="$EXPTDIR"
 LOGDIR="$LOGDIR"

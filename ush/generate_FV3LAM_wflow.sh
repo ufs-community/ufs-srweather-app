@@ -333,11 +333,10 @@ machine=${MACHINE,,}
 
 cd_vrfy "${MODULES_DIR}/tasks/$machine"
 
-cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/build.$machine" "${MAKE_GRID_TN}"
-cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/build.$machine" "${MAKE_OROG_TN}"
-cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/build.$machine" "${MAKE_SFC_CLIMO_TN}"
-cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/build.$machine" "${MAKE_ICS_TN}"
-cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/build.$machine" "${MAKE_LBCS_TN}"
+cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/fv3gfs/orog.$machine" "${MAKE_OROG_TN}"
+cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/modulefile.sfc_climo_gen.$machine" "${MAKE_SFC_CLIMO_TN}"
+cp_vrfy -f "${CHGRES_DIR}/modulefiles/chgres_cube.$machine" "${MAKE_ICS_TN}"
+cp_vrfy -f "${CHGRES_DIR}/modulefiles/chgres_cube.$machine" "${MAKE_LBCS_TN}"
 if [ $MACHINE = "WCOSS_CRAY" -o $MACHINE = "WCOSS_DELL_P3" ] ; then
   cp_vrfy -f "${UFS_WTHR_MDL_DIR}/modulefiles/$machine/fv3" "${RUN_FCST_TN}"
 else
@@ -631,15 +630,18 @@ npy=$((NY+1))
 # For the FV3_GSD_v0 and the FV3_GSD_SAR physics suites, set the parameter
 # lsoil according to the external models used to obtain ICs and LBCs.
 #
-if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] -o \
+if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
    [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 
-  if [ "${EXTRN_MDL_NAME_ICS}" = "NAM" -o \ 
-       "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" -o \
-       "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
+  if [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" -o \
+       "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] && \
+     [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" -o \
+       "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
     lsoil=4
   elif [ "${EXTRN_MDL_NAME_ICS}" = "RAPX" -o \
-         "${EXTRN_MDL_NAME_ICS}" = "HRRRX" ]; then
+         "${EXTRN_MDL_NAME_ICS}" = "HRRRX" ] && \
+       [ "${EXTRN_MDL_NAME_LBCS}" = "RAPX" -o \
+         "${EXTRN_MDL_NAME_LBCS}" = "HRRRX" ]; then
     lsoil=9
   else
     print_err_msg_exit "\
@@ -648,26 +650,11 @@ has not been specified for the following combination of physics suite and
 external models for ICs and LBCs:
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
 Please change one or more of these parameters or provide a value for lsoil
 (and change workflow generation script(s) accordingly) and rerun."
   fi
 
-fi
-#
-# Set magnitude of stochastic ad-hoc schemes to -999.0 if they are not
-# being used. This is required at the moment, since "do_shum/sppt/skeb"
-# does not override the use of the scheme unless the magnitude is also
-# specifically set to -999.0.  If all "do_shum/sppt/skeb" are set to
-# "false," then none will run, regardless of the magnitude values. 
-#
-if [ "${DO_SHUM}" = "false" ]; then
-  SHUM_MAG=-999.0
-fi
-if [ "${DO_SKEB}" = "false" ]; then
-  SKEB_MAG=-999.0
-fi
-if [ "${DO_SPPT}" = "false" ]; then
-  SPPT_MAG=-999.0
 fi
 #
 # Create a multiline variable that consists of a yaml-compliant string
