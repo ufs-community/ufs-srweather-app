@@ -16,11 +16,6 @@ EXPT_SUBDIR=""
 USE_CRON_TO_RELAUNCH="TRUE"
 CRON_RELAUNCH_INTVL_MNTS="02"
 
-
-QUEUE_DEFAULT="batch"
-QUEUE_HPSS="service"
-QUEUE_FCST="batch"
-
 VERBOSE="TRUE"
 
 RUN_ENVIR="nco"
@@ -98,16 +93,6 @@ EXTRN_MDL_NAME_LBCS="FV3GFS"
 #
 RUN="${EXPT_SUBDIR}"
 envir="${EXPT_SUBDIR}"
-
-#On Hera:
-COMINgfs="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"
-STMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
-PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
-
-#On Jet:
-#COMINgfs="/lfs1/HFIP/hwrf-data/hafs-input/COMGFS"
-#STMP=""
-#PTMP=""
 
 DO_ENSEMBLE="TRUE"
 NUM_ENS_MEMBERS="2"

@@ -229,31 +229,28 @@ Creating links in the FIXLAM directory to the grid files..."
 #
   "grid")
     fns=( \
-"C*${DOT_OR_USCORE}mosaic.halo${NHW}.nc" \
-"C*${DOT_OR_USCORE}mosaic.halo${NH4}.nc" \
-"C*${DOT_OR_USCORE}mosaic.halo${NH3}.nc" \
-"C*${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NHW}.nc" \
-"C*${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc" \
-"C*${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc" \
+    "C*${DOT_OR_USCORE}mosaic.halo${NHW}.nc" \
+    "C*${DOT_OR_USCORE}mosaic.halo${NH4}.nc" \
+    "C*${DOT_OR_USCORE}mosaic.halo${NH3}.nc" \
+    "C*${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NHW}.nc" \
+    "C*${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc" \
+    "C*${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc" \
         )
     fps=( "${fns[@]/#/${GRID_DIR}/}" )
     run_task="${RUN_TASK_MAKE_GRID}"
     ;;
 #
   "orog")
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-    fns=( \
-    "C*${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc" \
-    "C*${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc" \
-    "C*${DOT_OR_USCORE}oro_data_ss.tile${TILE_RGNL}.halo${NH0}.nc" \
-    "C*${DOT_OR_USCORE}oro_data_ls.tile${TILE_RGNL}.halo${NH0}.nc" \
-        )
-  else
     fns=( \
     "C*${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc" \
     "C*${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc" \
         )
-  fi
+    if [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
+      fns+=( \
+      "C*${DOT_OR_USCORE}oro_data_ss.tile${TILE_RGNL}.halo${NH0}.nc" \
+      "C*${DOT_OR_USCORE}oro_data_ls.tile${TILE_RGNL}.halo${NH0}.nc" \
+           )
+    fi
 
     fps=( "${fns[@]/#/${OROG_DIR}/}" )
     run_task="${RUN_TASK_MAKE_OROG}"

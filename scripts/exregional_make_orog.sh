@@ -355,14 +355,8 @@ mv_vrfy "${raw_orog_fp_orig}" "${raw_orog_fp}"
 #-----------------------------------------------------------------------
 #
 if [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-    cp_vrfy ${GWD_RRFS_v1beta_DIR}/* ${OROG_DIR}
-else
-    print_err_msg_exit "\
-The location from which to copy the files needed by the gravity wave drag
-parameterization in the current physics suite (CCPP_PHYS_SUITE) has not
-been specified for this machine (MACHINE):
-    CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
-    MACHINE = \"${MACHINE}\""
+  cp_vrfy ${GWD_RRFS_v1beta_DIR}/*_ls*.nc ${OROG_DIR}
+  cp_vrfy ${GWD_RRFS_v1beta_DIR}/*_ss*.nc ${OROG_DIR}
 fi
 
 print_info_msg "$VERBOSE" "

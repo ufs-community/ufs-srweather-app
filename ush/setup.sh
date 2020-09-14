@@ -344,7 +344,7 @@ case $MACHINE in
   SCHED="${SCHED:-slurm}"
   QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
   QUEUE_HPSS=${QUEUE_HPSS:-"service"}
-  QUEUE_FCST=${QUEUE_FCST:-""}
+  QUEUE_FCST=${QUEUE_FCST:-"batch"}
   ;;
 #
 "JET")
@@ -942,25 +942,25 @@ fi
 #
 GWD_RRFS_v1beta_DIR="${GWD_RRFS_v1beta_BASEDIR}/${PREDEF_GRID_NAME}"
 if [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-    if [ -z "${PREDEF_GRID_NAME}" ]; then
-        print_err_msg_exit "\
+  if [ -z "${PREDEF_GRID_NAME}" ]; then
+    print_err_msg_exit "\
 A predefined grid name (PREDEF_GRID_NAME) must be specified when using 
 the FV3_RRFS_v1beta physic suite:
-    CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
-    PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\""
-    else        
-        if [ ! -d "${GWD_RRFS_v1beta_DIR}" ]; then
-            print_err_msg_exit "\
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\""
+  else        
+    if [ ! -d "${GWD_RRFS_v1beta_DIR}" ]; then
+      print_err_msg_exit "\
 The directory (GWD_RRFS_v1beta_DIR) that should contain the gravity wave 
 drag-related orography files for the FV3_RRFS_v1beta does not exist:
-GWD_RRFS_v1beta_DIR = \"${GWD_RRFS_v1beta_DIR}\""
-        elif [ ! "$( ls -A ${GWD_RRFS_v1beta_DIR} )" ]; then
-            print_err_msg_exit "\
+  GWD_RRFS_v1beta_DIR = \"${GWD_RRFS_v1beta_DIR}\""
+    elif [ ! "$( ls -A ${GWD_RRFS_v1beta_DIR} )" ]; then
+      print_err_msg_exit "\
 The directory (GWD_RRFS_v1beta_DIR) that should contain the gravity wave 
 drag related orography files for the FV3_RRFS_v1beta is empty:
-GWD_RRFS_v1beta_DIR = \"${GWD_RRFS_v1beta_DIR}\""
-        fi      
-    fi
+  GWD_RRFS_v1beta_DIR = \"${GWD_RRFS_v1beta_DIR}\""
+    fi      
+  fi
 fi
 #
 #-----------------------------------------------------------------------

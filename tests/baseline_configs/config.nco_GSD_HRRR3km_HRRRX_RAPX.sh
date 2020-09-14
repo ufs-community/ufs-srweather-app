@@ -16,11 +16,6 @@ EXPT_SUBDIR=""
 USE_CRON_TO_RELAUNCH="TRUE"
 CRON_RELAUNCH_INTVL_MNTS="02"
 
-
-QUEUE_DEFAULT="batch"
-QUEUE_HPSS="service"
-QUEUE_FCST="batch"
-
 VERBOSE="TRUE"
 
 RUN_ENVIR="nco"
@@ -99,17 +94,6 @@ EXTRN_MDL_NAME_LBCS="RAPX"
 RUN="${EXPT_SUBDIR}"
 envir="${EXPT_SUBDIR}"
 
-#On Hera:
-COMINgfs="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"
-STMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
-PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
-
-#On Jet:
-#COMINgfs="/lfs1/HFIP/hwrf-data/hafs-input/COMGFS"
-#STMP="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
-#PTMP="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
-
-
 #
 # In NCO mode, the user must manually (e.g. after doing the build step)
 # create the symlink "${FIXrrfs}/fix_sar" that points to EMC's FIXsar
@@ -124,18 +108,4 @@ PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
 #
 # where EMC_GRID_NAME has the value set above.
 #
-
-# If want to use user-staged external model files:
-
-#On Hera:
-#EXTRN_MDL_SOURCE_DIR_ICS="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/staged_extrn_mdl_files/HRRRX"
-#EXTRN_MDL_FILES_ICS=( "hrrrx.out.for_f000" )
-#EXTRN_MDL_SOURCE_DIR_LBCS="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/staged_extrn_mdl_files/RAPX"
-#EXTRN_MDL_FILES_LBCS=( "rapx.out.for_f003" "rapx.out.for_f006" )
-
-#On Jet:
-#EXTRN_MDL_SOURCE_DIR_ICS="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/staged_extrn_mdl_files/HRRRX"
-#EXTRN_MDL_FILES_ICS=( "hrrrx.out.for_f000" )
-#EXTRN_MDL_SOURCE_DIR_LBCS="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/staged_extrn_mdl_files/RAPX"
-#EXTRN_MDL_FILES_LBCS=( "rapx.out.for_f003" "rapx.out.for_f006" )
 

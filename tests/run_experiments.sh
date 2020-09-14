@@ -395,6 +395,14 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+#
+#
+#-----------------------------------------------------------------------
+#
+  MACHINE="${machine^^}"
+#
+#-----------------------------------------------------------------------
+#
 # Set any parameters in the experiment configuration file that have been
 # assigned a value in the arguments list to this script (and thus are 
 # not empty).  Any parameters that have not been assigned a value in the
@@ -406,7 +414,7 @@ fi
 #-----------------------------------------------------------------------
 #
   if [ ! -z "$machine" ]; then
-    set_bash_param "${expt_config_fp}" "MACHINE" "$machine"
+    set_bash_param "${expt_config_fp}" "MACHINE" "${MACHINE}"
   fi
 
   if [ ! -z "$account" ]; then
@@ -419,6 +427,284 @@ fi
 
   if [ ! -z "${cron_relaunch_intvl_mnts}" ]; then
     set_bash_param "${expt_config_fp}" "CRON_RELAUNCH_INTVL_MNTS" "${cron_relaunch_intvl_mnts}"
+  fi
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+# Might be better to source both config_defaults.sh and the configuration
+# file for the test.  That way, variables will have default values and 
+# we don't have to check whether or not they're set.  Also, do the sourcing
+# just once if possible instead of many times as below.
+#
+
+  PREDEF_GRID_NAME=$( 
+    . ${expt_config_fp} 
+    if [ -z "${PREDEF_GRID_NAME+x}" ]; then
+      echo ""
+    else
+      echo "${PREDEF_GRID_NAME}" 
+    fi
+  )
+#echo "PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\""
+#exit
+
+  RUN_TASK_MAKE_GRID=$( . ${expt_config_fp} ; echo "${RUN_TASK_MAKE_GRID}" )
+
+  if [ ${RUN_TASK_MAKE_GRID} = "FALSE" ]; then
+
+    if [ "$MACHINE" = "HERA" ]; then
+      GRID_DIR="/scratch2/BMC/det/FV3LAM_pregen/grid/${PREDEF_GRID_NAME}"
+    elif [ "$MACHINE" = "CHEYENNE" ]; then
+      GRID_DIR="/glade/p/ral/jntp/UFS_CAM/FV3LAM_pregen/grid/${PREDEF_GRID_NAME}"
+    else
+      print_err_msg_exit "\
+The directory (GRID_DIR) in which the pregenerated grid files are located
+has not been specified for this machine (MACHINE):
+  MACHINE= \"${MACHINE}\""
+    fi
+
+    { cat << EOM >> ${expt_config_fp}
+#
+# Directory containing the pregenerated grid files.
+#
+GRID_DIR="${GRID_DIR}"
+EOM
+    } || print_err_msg_exit "\
+Heredoc (cat) command to append the variable GRID_DIR containing the 
+pregenerated grid files to the workflow configuration file returned 
+with a nonzero status."
+
+  fi
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+  RUN_TASK_MAKE_OROG=$( . ${expt_config_fp} ; echo "${RUN_TASK_MAKE_OROG}" )
+
+  if [ ${RUN_TASK_MAKE_OROG} = "FALSE" ]; then
+
+    if [ "$MACHINE" = "HERA" ]; then
+      OROG_DIR="/scratch2/BMC/det/FV3LAM_pregen/orog/${PREDEF_GRID_NAME}"
+    elif [ "$MACHINE" = "CHEYENNE" ]; then
+      OROG_DIR="/glade/p/ral/jntp/UFS_CAM/FV3LAM_pregen/orog/${PREDEF_GRID_NAME}"
+    else
+      print_err_msg_exit "\
+The directory (OROG_DIR) in which the pregenerated grid files are located
+has not been specified for this machine (MACHINE):
+  MACHINE= \"${MACHINE}\""
+    fi
+
+    { cat << EOM >> ${expt_config_fp}
+#
+# Directory containing the pregenerated grid files.
+#
+OROG_DIR="${OROG_DIR}"
+EOM
+    } || print_err_msg_exit "\
+Heredoc (cat) command to append the variable OROG_DIR containing the 
+pregenerated orography files to the workflow configuration file returned 
+with a nonzero status."
+
+  fi
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+  RUN_TASK_MAKE_SFC_CLIMO=$( . ${expt_config_fp} ; echo "${RUN_TASK_MAKE_SFC_CLIMO}" )
+
+  if [ ${RUN_TASK_MAKE_SFC_CLIMO} = "FALSE" ]; then
+
+    if [ "$MACHINE" = "HERA" ]; then
+      SFC_CLIMO_DIR="/scratch2/BMC/det/FV3LAM_pregen/sfc_climo/${PREDEF_GRID_NAME}"
+    elif [ "$MACHINE" = "CHEYENNE" ]; then
+      SFC_CLIMO_DIR="/glade/p/ral/jntp/UFS_CAM/FV3LAM_pregen/sfc_climo/${PREDEF_GRID_NAME}"
+    else
+      print_err_msg_exit "\
+The directory (SFC_CLIMO_DIR) in which the pregenerated grid files are 
+located has not been specified for this machine (MACHINE):
+  MACHINE= \"${MACHINE}\""
+    fi
+
+    { cat << EOM >> ${expt_config_fp}
+#
+# Directory containing the pregenerated grid files.
+#
+SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
+EOM
+    } || print_err_msg_exit "\
+Heredoc (cat) command to append the variable SFC_CLIMO_DIR containing 
+the pregenerated grid files to the workflow configuration file returned 
+with a nonzero status."
+
+  fi
+
+#On hera:
+
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+  CCPP_PHYS_SUITE=$( . ${expt_config_fp} ; echo "${CCPP_PHYS_SUITE}" )
+
+  if [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
+
+    if [ "$MACHINE" = "HERA" ]; then
+      GWD_RRFS_v1beta_BASEDIR="/scratch2/BMC/det/FV3LAM_pregen/orog"
+    elif [ "$MACHINE" = "JET" ]; then
+      GWD_RRFS_v1beta_BASEDIR="/lfs4/BMC/wrfruc/FV3LAM_pregen/orog"
+    elif [ "$MACHINE" = "CHEYENNE" ]; then
+      GWD_RRFS_v1beta_BASEDIR="/glade/p/ral/jntp/UFS_CAM/FV3LAM_pregen/orog"
+    else
+      print_err_msg_exit "\
+The base directory (GWD_RRFS_v1beta_BASEDIR) in which the orography 
+statistics files needed by the gravity wave drag parameterization in 
+the current physics suite (CCPP_PHYS_SUITE) should be located has not 
+been specified for this machine (MACHINE):
+  CCPP_PHYS_SUITE= \"${CCPP_PHYS_SUIT}\"
+  MACHINE= \"${MACHINE}\""
+    fi
+
+    { cat << EOM >> ${expt_config_fp}
+#
+# Directory containing the orography statistics files needed by the 
+# gravity wave drag parameterization.
+#
+GWD_RRFS_v1beta_BASEDIR="${GWD_RRFS_v1beta_BASEDIR}"
+EOM
+    } || print_err_msg_exit "\
+Heredoc (cat) command to append the variable GWD_RRFS_v1beta_BASEDIR 
+containing the orography statistics files needed by the gravity wave 
+drag parameterization to the workflow configuration file returned with 
+a nonzero status."
+
+  fi
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+  RUN_ENVIR=$( . ${expt_config_fp} ; echo "${RUN_ENVIR}" )
+
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+
+# Note:  Need COMINgfs only if using FV3GFS or GSMGFS as the external 
+# model for ICs or LBCs.  Modify the logic below later.
+
+    if [ "$MACHINE" = "HERA" ]; then
+      COMINgfs="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"
+      STMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
+      PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
+    elif [ "$MACHINE" = "JET" ]; then
+      COMINgfs="/lfs1/HFIP/hwrf-data/hafs-input/COMGFS"
+      STMP="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
+      PTMP="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
+    elif [ "$MACHINE" = "CHEYENNE" ]; then
+      COMINgfs="/glade/scratch/ketefian/NCO_dirs/COMGFS"
+      STMP="/glade/scratch/ketefian/NCO_dirs/stmp"
+      PTMP="/glade/scratch/ketefian/NCO_dirs/ptmp"
+    else
+      print_err_msg_exit "\
+The directories COMINgfs, STMP, and PTMP that need to be specified when
+running the workflow in NCO-mode (i.e. RUN_ENVIR set to \"nco\") have 
+not been specified for this machine (MACHINE):
+  MACHINE= \"${MACHINE}\""
+    fi
+
+    { cat << EOM >> ${expt_config_fp}
+#
+# Directories COMINgfs, STMP, and PTMP that need to be specified when
+# running the workflow in NCO-mode (i.e. RUN_ENVIR set to "nco").
+#
+COMINgfs="${COMINgfs}"
+STMP="${STMP}"
+PTMP="${PTMP}"
+EOM
+    } || print_err_msg_exit "\
+Heredoc (cat) command to append variables specifying user-staged external 
+model files and locations to the workflow configuration file returned with 
+a nonzero status."
+
+  fi
+#
+#-----------------------------------------------------------------------
+#
+#
+#
+#-----------------------------------------------------------------------
+#
+  do_user_staged_extrn="TRUE"  # Change this to an input argument at some point.
+
+  if [ ${do_user_staged_extrn} = "TRUE" ]; then
+
+    EXTRN_MDL_NAME_ICS=$( . ${expt_config_fp} ; echo "${EXTRN_MDL_NAME_ICS}" )
+    EXTRN_MDL_NAME_LBCS=$( . ${expt_config_fp} ; echo "${EXTRN_MDL_NAME_LBCS}" )
+    FCST_LEN_HRS=$( . ${expt_config_fp} ; echo "${FCST_LEN_HRS}" )
+    LBC_SPEC_INTVL_HRS=$( . ${expt_config_fp} ; echo "${LBC_SPEC_INTVL_HRS}" )
+
+    if [ "$MACHINE" = "HERA" ]; then
+      extrn_mdl_source_baseir="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/staged_extrn_mdl_files"
+    elif [ "$MACHINE" = "JET" ]; then
+      extrn_mdl_source_baseir="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/staged_extrn_mdl_files"
+    elif [ "$MACHINE" = "CHEYENNE" ]; then
+      extrn_mdl_source_baseir="/glade/p/ral/jntp/UFS_CAM/staged_extrn_mdl_files"
+    else
+      print_err_msg_exit "\
+The base directory (extrn_mdl_source_baseir) in which the user-staged 
+external model files should be located has not been specified for this 
+machine (MACHINE):
+  MACHINE= \"${MACHINE}\""
+    fi
+
+    EXTRN_MDL_SOURCE_DIR_ICS="${extrn_mdl_source_baseir}/${EXTRN_MDL_NAME_ICS}"
+    if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
+       [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ]; then
+      EXTRN_MDL_FILES_ICS=( "gfs.atmanl.nemsio" "gfs.sfcanl.nemsio" )
+    elif [ "${EXTRN_MDL_NAME_ICS}" = "HRRRX" ] || \
+         [ "${EXTRN_MDL_NAME_ICS}" = "RAPX" ]; then
+      EXTRN_MDL_FILES_ICS=( "${EXTRN_MDL_NAME_ICS,,}.out.for_f000" )
+    fi
+
+    EXTRN_MDL_SOURCE_DIR_LBCS="${extrn_mdl_source_baseir}/${EXTRN_MDL_NAME_LBCS}"
+    EXTRN_MDL_FILES_LBCS=( $( seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS} ) )
+    if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
+       [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
+      EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/#/gfs.atmf00}" )
+      EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/%/.nemsio}" )
+    elif [ "${EXTRN_MDL_NAME_LBCS}" = "HRRRX" ] || \
+         [ "${EXTRN_MDL_NAME_LBCS}" = "RAPX" ]; then
+      EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/#/${EXTRN_MDL_NAME_LBCS,,}.out.for_f00}" )
+    fi
+
+    { cat << EOM >> ${expt_config_fp}
+#
+# Locations and names of user-staged external model files for generating
+# ICs and LBCs.
+#
+EXTRN_MDL_SOURCE_DIR_ICS="${EXTRN_MDL_SOURCE_DIR_ICS}"
+EXTRN_MDL_FILES_ICS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_ICS[@]}" ))
+EXTRN_MDL_SOURCE_DIR_LBCS="${EXTRN_MDL_SOURCE_DIR_LBCS}"
+EXTRN_MDL_FILES_LBCS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))
+EOM
+    } || print_err_msg_exit "\
+Heredoc (cat) command to append variables specifying user-staged external 
+model files and locations to the workflow configuration file returned with 
+a nonzero status."
+
   fi
 #
 #-----------------------------------------------------------------------

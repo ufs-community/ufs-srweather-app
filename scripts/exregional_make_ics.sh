@@ -107,7 +107,7 @@ case "${CCPP_PHYS_SUITE}" in
 "FV3_GFS_2017_gfdlmp" | "FV3_GFS_2017_gfdlmp_regional" )
   phys_suite="GFS"
   ;;
-"FV3_GSD_v0" | "FV3_GSD_SAR" | "FV3_GSD_SAR_v1" |"FV3_RRFS_v0" |"FV3_RRFS_v1beta")
+"FV3_GSD_v0" | "FV3_GSD_SAR" | "FV3_RRFS_v1beta")
   phys_suite="GSD"
   ;;
 "FV3_CPT_v0")
@@ -305,8 +305,6 @@ case "${EXTRN_MDL_NAME_ICS}" in
          [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
         tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
       elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-           [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
-           [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v0" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
            [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
 # For GSD physics, add three additional tracers (the ice, rain and water
@@ -371,8 +369,6 @@ HRRRX grib2 files created after about \"${cdate_min_HRRRX}\"..."
   if [ "${USE_CCPP}" = "TRUE" ]; then
     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
@@ -396,6 +392,8 @@ of external model (EXTRN_MDL_NAME_ICS) and physics suite (CCPP_PHYS_SUITE):
     geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-LAM/geo_em.d01.nc_HRRRX"
   elif [ "${MACHINE}" = "JET" ]; then
     geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
+  elif [ "${MACHINE}" = "CHEYENNE" ]; then
+    geogrid_file_input_grid="/glade/p/ral/jntp/UFS_CAM/fix/geo_em.d01.nc_HRRRX"
   fi
 
   replace_vgtyp=False
@@ -419,8 +417,6 @@ of external model (EXTRN_MDL_NAME_ICS) and physics suite (CCPP_PHYS_SUITE):
     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v0" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
        [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
@@ -443,6 +439,8 @@ of external model (EXTRN_MDL_NAME_ICS) and physics suite (CCPP_PHYS_SUITE):
     geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-LAM/geo_em.d01.nc_RAPX"
   elif [ "${MACHINE}" = "JET" ]; then
     geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
+  elif [ "${MACHINE}" = "CHEYENNE" ]; then
+    geogrid_file_input_grid="/glade/p/ral/jntp/UFS_CAM/fix/geo_em.d01.nc_RAPX"
   fi
 
   replace_vgtyp=False

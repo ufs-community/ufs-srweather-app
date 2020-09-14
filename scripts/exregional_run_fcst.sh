@@ -16,7 +16,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/create_model_config_file.sh
+. $USHDIR/create_model_configure_file.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -252,11 +252,16 @@ Cannot create symlink because target does not exist:
   target = \"$target\""
 fi
 #
-# two files for drag_suite scheme
-# this is only for the drag parameterization in the FV3_RRFS_v1beta physics suite
+# If using the FV3_RRFS_v1beta physics suite, there are two files (that
+# contain statistics of the orography) that are needed by the drag 
+# parameterization in that suite.  Below, symlinks to these are created
+# in the run directory.  Note that the symlinks must have specific names
+# that the FV3 model is hardcoded to recognize ("${CRES}_" and "halo0" 
+# must be stripped from the file names).  We use those below.
 #
 if [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-  # Symlink to orographic statistics fields file with "${CRES}_" and "halo0" stripped from name.
+# Symlink to orographic statistics fields file with "${CRES}_" and "halo0" 
+# stripped from name.
   target="${FIXLAM}/${CRES}${DOT_OR_USCORE}oro_data_ls.tile${TILE_RGNL}.halo${NH0}.nc"
   symlink="oro_data_ls.nc"
   if [ -f "${target}" ]; then
@@ -437,22 +442,12 @@ if [ "${USE_CCPP}" = "TRUE" ]; then
   ln_vrfy -sf ${relative_or_null} ${CCPP_PHYS_SUITE_FP} ${run_dir} 
 
   if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR_v1" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v0" ] || \
      [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
      [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
     ln_vrfy -sf ${relative_or_null} $EXPTDIR/CCN_ACTIVATE.BIN ${run_dir}
   fi
 
 fi
-#-----------------------------------------------------------------------
-#
-# If running enemble forecasts, create links to the cycle-specific 
-# diagnostic tables file and model configuration file in the cycle 
-# directory.  Note that these links should not be made if not running
-# ensemble forecasts because in that case, the cycle directory is the
-# run directory (and we would be creating a symlink with the name of a
-# file that already exists).
 #
 #-----------------------------------------------------------------------
 #
@@ -461,7 +456,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-create_model_config_file \
+create_model_configure_file \
   cdate="$cdate" \
   nthreads=${OMP_NUM_THREADS:-1} \
   run_dir="${run_dir}" || print_err_msg_exit "\
@@ -472,7 +467,7 @@ cycle's (cdate) run directory (run_dir) failed:
 #
 #-----------------------------------------------------------------------
 #
-# If running enemble forecasts, create a link to the cycle-specific 
+# If running ensemble forecasts, create a link to the cycle-specific 
 # diagnostic tables file in the cycle directory.  Note that this link 
 # should not be made if not running ensemble forecasts because in that 
 # case, the cycle directory is the run directory (and we would be creating 
@@ -484,8 +479,6 @@ if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
   relative_or_null="--relative"
   diag_table_fp="${cycle_dir}/${DIAG_TABLE_FN}"
   ln_vrfy -sf ${relative_or_null} ${diag_table_fp} ${run_dir}
-  model_config_fp="${cycle_dir}/${MODEL_CONFIG_FN}"
-  ln_vrfy -sf ${relative_or_null} ${model_config_fp} ${run_dir}
 fi
 #
 #-----------------------------------------------------------------------

@@ -18,10 +18,6 @@ CRON_RELAUNCH_INTVL_MNTS="02"
 
 DOT_OR_USCORE="."
 
-QUEUE_DEFAULT="batch"
-QUEUE_HPSS="service"
-QUEUE_FCST="batch"
-
 VERBOSE="TRUE"
 
 RUN_ENVIR="community"
