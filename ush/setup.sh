@@ -244,10 +244,10 @@ check_var_valid_value "DO_SHUM" "valid_vals_DO_SHUM"
 DO_SHUM=${DO_SHUM^^}
 if [ "${DO_SHUM}" = "TRUE" ] || \
    [ "${DO_SHUM}" = "YES" ]; then
-  DO_SHUM="true"
+  DO_SHUM="TRUE"
 elif [ "${DO_SHUM}" = "FALSE" ] || \
      [ "${DO_SHUM}" = "NO" ]; then
-  DO_SHUM="false"
+  DO_SHUM="FALSE"
 fi
 #
 #-----------------------------------------------------------------------
@@ -264,10 +264,10 @@ check_var_valid_value "DO_SPPT" "valid_vals_DO_SPPT"
 DO_SPPT=${DO_SPPT^^}
 if [ "${DO_SPPT}" = "TRUE" ] || \
    [ "${DO_SPPT}" = "YES" ]; then
-  DO_SPPT="true"
+  DO_SPPT="TRUE"
 elif [ "${DO_SPPT}" = "FALSE" ] || \
      [ "${DO_SPPT}" = "NO" ]; then
-  DO_SPPT="false"
+  DO_SPPT="FALSE"
 fi
 #
 #-----------------------------------------------------------------------
@@ -284,11 +284,32 @@ check_var_valid_value "DO_SKEB" "valid_vals_DO_SKEB"
 DO_SKEB=${DO_SKEB^^}
 if [ "${DO_SKEB}" = "TRUE" ] || \
    [ "${DO_SKEB}" = "YES" ]; then
-  DO_SKEB="true"
+  DO_SKEB="TRUE"
 elif [ "${DO_SKEB}" = "FALSE" ] || \
      [ "${DO_SKEB}" = "NO" ]; then
-  DO_SKEB="false"
+  DO_SKEB="FALSE"
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Set magnitude of stochastic ad-hoc schemes to -999.0 if they are not
+# being used. This is required at the moment, since "do_shum/sppt/skeb"
+# does not override the use of the scheme unless the magnitude is also
+# specifically set to -999.0.  If all "do_shum/sppt/skeb" are set to
+# "false," then none will run, regardless of the magnitude values. 
+#
+#-----------------------------------------------------------------------
+#
+if [ "${DO_SHUM}" = "FALSE" ]; then
+  SHUM_MAG=-999.0
+fi
+if [ "${DO_SKEB}" = "FALSE" ]; then
+  SKEB_MAG=-999.0
+fi
+if [ "${DO_SPPT}" = "FALSE" ]; then
+  SPPT_MAG=-999.0
+fi
+
 #
 #-----------------------------------------------------------------------
 #
