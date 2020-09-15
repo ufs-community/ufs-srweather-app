@@ -669,6 +669,7 @@ settings="\
 'fv_core_nml': {
     'target_lon': ${LON_CTR},
     'target_lat': ${LAT_CTR},
+    'nrows_blend': ${HALO_BLEND},
 #
 # Question:
 # For a ESGgrid type grid, what should stretch_fac be set to?  This depends

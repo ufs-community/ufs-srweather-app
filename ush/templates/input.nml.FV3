@@ -103,6 +103,7 @@
     nord = 2
     nord_zs_filter = 4
     npz = 64
+    nrows_blend = 10
     ntiles = 1
     nudge_qv = .false.
     nwat = 6
