@@ -522,6 +522,63 @@ predefined domain:
 #
 #-----------------------------------------------------------------------
 #
+# GSD's sub-CONUS domain with ~3km cells.
+#
+#-----------------------------------------------------------------------
+#
+"GSD_SUBCONUS3km")
+
+  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
+
+    print_err_msg_exit "\
+The parameters for a \"${GRID_GEN_METHOD}\" type grid have not yet been specified for this
+predefined domain:
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\"
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
+
+  elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
+
+    ESGgrid_LON_CTR=-97.5
+    ESGgrid_LAT_CTR=35.0
+
+    ESGgrid_DELX="3000.0"
+    ESGgrid_DELY="3000.0"
+
+    ESGgrid_NX=840
+    ESGgrid_NY=600
+
+    ESGgrid_WIDE_HALO_WIDTH=6
+
+    DT_ATMOS="40"
+
+#    LAYOUT_X="12"
+#    LAYOUT_Y="10"
+#    BLOCKSIZE="30"
+    LAYOUT_X="30"
+    LAYOUT_Y="24"
+    BLOCKSIZE="35"
+
+    if [ "$QUILTING" = "TRUE" ]; then
+      WRTCMP_write_groups="1"
+      WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))
+      WRTCMP_output_grid="lambert_conformal"
+      WRTCMP_cen_lon="${ESGgrid_LON_CTR}"
+      WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"
+      WRTCMP_stdlat1="${ESGgrid_LAT_CTR}"
+      WRTCMP_stdlat2="${ESGgrid_LAT_CTR}"
+      WRTCMP_nx="825"
+      WRTCMP_ny="580"
+      WRTCMP_lon_lwr_left="-109.8"
+      WRTCMP_lat_lwr_left="26.5"
+      WRTCMP_dx="${ESGgrid_DELX}"
+      WRTCMP_dy="${ESGgrid_DELY}"
+    fi
+
+  fi
+  ;;
+#
+#-----------------------------------------------------------------------
+#
 # EMC's 3km CONUS grid.
 #
 #-----------------------------------------------------------------------
