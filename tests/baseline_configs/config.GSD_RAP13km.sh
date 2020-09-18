@@ -1,33 +1,3 @@
-#
-# MACHINE will be set by the workflow launch script (launch_FV3LAM_-
-# wflow.sh) to value passed in as an argument to that script.
-#
-MACHINE=""
-#
-# ACCOUNT will be set by the workflow launch script (launch_FV3LAM_-
-# wflow.sh) to value passed in as an argument to that script.
-#
-ACCOUNT=""
-#
-# EXPT_SUBDIR will be set by the workflow launch script (launch_FV3LAM_-
-# wflow.sh) to a value obtained from the name of this file.
-#
-EXPT_SUBDIR=""
-#
-# USE_CRON_TO_RELAUNCH may be reset by the workflow launch script
-# (launch_FV3LAM_wflow.sh) to value passed in as an argument to that
-# script, but in case it is not, we give it a default value here.
-#
-USE_CRON_TO_RELAUNCH="TRUE"
-#
-# CRON_RELAUNCH_INTVL_MNTS may be reset by the workflow launch script
-# (launch_FV3LAM_wflow.sh) to value passed in as an argument to that
-# script, but in case it is not, we give it a default value here.
-#
-CRON_RELAUNCH_INTVL_MNTS="02"
-
-VERBOSE="TRUE"
-
 RUN_ENVIR="community"
 PREEXISTING_DIR_METHOD="rename"
 

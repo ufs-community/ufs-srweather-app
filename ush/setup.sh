@@ -1124,7 +1124,7 @@ the experiment generation script."
 
   COMOUT_BASEDIR="$COMROOT/$NET/$envir"
   check_for_preexist_dir_file "${COMOUT_BASEDIR}" "${PREEXISTING_DIR_METHOD}"
-  
+
 else
 
   FIXam="${EXPTDIR}/fix_am"
@@ -1224,6 +1224,12 @@ if [ "${USE_CCPP}" = "TRUE" ]; then
   CCPP_PHYS_SUITE_FN="suite_${CCPP_PHYS_SUITE}.xml"
   CCPP_PHYS_SUITE_IN_CCPP_FP="${UFS_WTHR_MDL_DIR}/FV3/ccpp/suites/${CCPP_PHYS_SUITE_FN}"
   CCPP_PHYS_SUITE_FP="${EXPTDIR}/${CCPP_PHYS_SUITE_FN}"
+  if [ ! -f "${CCPP_PHYS_SUITE_IN_CCPP_FP}" ]; then
+    print_err_msg_exit "\
+The CCPP suite definition file (CCPP_PHYS_SUITE_IN_CCPP_FP) does not exist
+in the local clone of the ufs-weather-model:
+  CCPP_PHYS_SUITE_IN_CCPP_FP = \"${CCPP_PHYS_SUITE_IN_CCPP_FP}\""
+  fi
 fi
 #
 #-----------------------------------------------------------------------

@@ -15,10 +15,10 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-# The current script should be located in the "tests" subdirectory of 
-# the workflow directory, which we denote by homerrfs.  Thus, the work-
-# flow directory (homerrfs) is the one above the directory of the cur-
-# rent script.  Set HOMRErrfs accordingly.
+# The current script should be located in the "tests" subdirectory of the 
+# workflow's top-level directory, which we denote by homerrfs.  Thus, 
+# homerrfs is the directory one level above the directory in which the 
+# current script is located.  Set homerrfs accordingly.
 #
 #-----------------------------------------------------------------------
 #
@@ -65,6 +65,9 @@ valid_args=( \
 "account" \
 "use_cron_to_relaunch" \
 "cron_relaunch_intvl_mnts" \
+"stmp" \
+"ptmp" \
+"verbose" \
 )
 process_args valid_args "$@"
 #
@@ -138,6 +141,14 @@ this script:
     account=\"name_of_hpc_account_to_use\" \\
     ..."
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Source the default workflow configuration file.
+#
+#-----------------------------------------------------------------------
+#
+. ${ushdir}/config_defaults.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -382,7 +393,7 @@ fi
 # baseline and the experiment.
 #
   expt_config_fp="$ushdir/config.${expt_name}.sh"
-  cp_vrfy "${baseline_config_fp}" "${expt_config_fp}"
+#  cp_vrfy "${baseline_config_fp}" "${expt_config_fp}"
 #
 #-----------------------------------------------------------------------
 #
@@ -391,15 +402,61 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-  set_bash_param "${expt_config_fp}" "EXPT_SUBDIR" "${expt_subdir}"
+#  set_bash_param "${expt_config_fp}" "EXPT_SUBDIR" "${expt_subdir}"
 #
 #-----------------------------------------------------------------------
 #
+# Source the experiment configuration file.
 #
+#-----------------------------------------------------------------------
+#
+#  . ${expt_config_fp}
+#
+#-----------------------------------------------------------------------
+#
+# Source the experiment baseline configuration file.
+#
+#-----------------------------------------------------------------------
+#
+  . ${baseline_config_fp}
+#
+#-----------------------------------------------------------------------
+#
+# Set MACHINE, ACCOUNT, and EXPT_SUBDIR using the values provided on the 
+# command line or set above.  These override any values set in the default 
+# workflow configuration file sourced above.  Then write them to the actual 
+# workflow configuration file for the test.
 #
 #-----------------------------------------------------------------------
 #
   MACHINE="${machine^^}"
+  ACCOUNT="${account}"
+  EXPT_SUBDIR="${expt_subdir}"
+  USE_CRON_TO_RELAUNCH=${use_cron_to_relaunch:-"TRUE"}
+  CRON_RELAUNCH_INTVL_MNTS=${cron_relaunch_intvl_mnts:-"02"}
+  VERBOSE=${verbose:-"TRUE"}
+
+  { cat << EOM >> ${expt_config_fp}
+#
+# The machine and account.
+#
+MACHINE="${MACHINE}"
+ACCOUNT="${ACCOUNT}"
+EXPT_SUBDIR="${EXPT_SUBDIR}"
+#
+# Whether or not to resubmit the worfklow to the job submission system
+# using cron.
+#
+USE_CRON_TO_RELAUNCH="${USE_CRON_TO_RELAUNCH}"
+CRON_RELAUNCH_INTVL_MNTS="${CRON_RELAUNCH_INTVL_MNTS}"
+VERBOSE="${VERBOSE}"
+
+EOM
+  } || print_err_msg_exit "\
+Heredoc (cat) command failed."
+
+# Append test-specific values to the workflow configuration file.
+  cat "${baseline_config_fp}" >> "${expt_config_fp}"
 #
 #-----------------------------------------------------------------------
 #
@@ -413,21 +470,23 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-  if [ ! -z "$machine" ]; then
-    set_bash_param "${expt_config_fp}" "MACHINE" "${MACHINE}"
-  fi
-
-  if [ ! -z "$account" ]; then
-    set_bash_param "${expt_config_fp}" "ACCOUNT" "$account"
-  fi
-
-  if [ ! -z "${use_cron_to_relaunch}" ]; then
-    set_bash_param "${expt_config_fp}" "USE_CRON_TO_RELAUNCH" "${use_cron_to_relaunch}"
-  fi
-
-  if [ ! -z "${cron_relaunch_intvl_mnts}" ]; then
-    set_bash_param "${expt_config_fp}" "CRON_RELAUNCH_INTVL_MNTS" "${cron_relaunch_intvl_mnts}"
-  fi
+##  if [ ! -z "$machine" ]; then
+##    set_bash_param "${expt_config_fp}" "MACHINE" "${MACHINE}"
+##  fi
+#  set_bash_param "${expt_config_fp}" "MACHINE" "${MACHINE}"
+##
+##  if [ ! -z "$account" ]; then
+##    set_bash_param "${expt_config_fp}" "ACCOUNT" "$account"
+##  fi
+#  set_bash_param "${expt_config_fp}" "ACCOUNT" "$account"
+#
+#  if [ ! -z "${use_cron_to_relaunch}" ]; then
+#    set_bash_param "${expt_config_fp}" "USE_CRON_TO_RELAUNCH" "${use_cron_to_relaunch}"
+#  fi
+#
+#  if [ ! -z "${cron_relaunch_intvl_mnts}" ]; then
+#    set_bash_param "${expt_config_fp}" "CRON_RELAUNCH_INTVL_MNTS" "${cron_relaunch_intvl_mnts}"
+#  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -435,25 +494,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Might be better to source both config_defaults.sh and the configuration
-# file for the test.  That way, variables will have default values and 
-# we don't have to check whether or not they're set.  Also, do the sourcing
-# just once if possible instead of many times as below.
-#
-
-  PREDEF_GRID_NAME=$( 
-    . ${expt_config_fp} 
-    if [ -z "${PREDEF_GRID_NAME+x}" ]; then
-      echo ""
-    else
-      echo "${PREDEF_GRID_NAME}" 
-    fi
-  )
-#echo "PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\""
-#exit
-
-  RUN_TASK_MAKE_GRID=$( . ${expt_config_fp} ; echo "${RUN_TASK_MAKE_GRID}" )
-
   if [ ${RUN_TASK_MAKE_GRID} = "FALSE" ]; then
 
     if [ "$MACHINE" = "HERA" ]; then
@@ -486,8 +526,6 @@ with a nonzero status."
 #
 #-----------------------------------------------------------------------
 #
-  RUN_TASK_MAKE_OROG=$( . ${expt_config_fp} ; echo "${RUN_TASK_MAKE_OROG}" )
-
   if [ ${RUN_TASK_MAKE_OROG} = "FALSE" ]; then
 
     if [ "$MACHINE" = "HERA" ]; then
@@ -520,8 +558,6 @@ with a nonzero status."
 #
 #-----------------------------------------------------------------------
 #
-  RUN_TASK_MAKE_SFC_CLIMO=$( . ${expt_config_fp} ; echo "${RUN_TASK_MAKE_SFC_CLIMO}" )
-
   if [ ${RUN_TASK_MAKE_SFC_CLIMO} = "FALSE" ]; then
 
     if [ "$MACHINE" = "HERA" ]; then
@@ -547,9 +583,6 @@ the pregenerated grid files to the workflow configuration file returned
 with a nonzero status."
 
   fi
-
-#On hera:
-
 #
 #-----------------------------------------------------------------------
 #
@@ -557,8 +590,6 @@ with a nonzero status."
 #
 #-----------------------------------------------------------------------
 #
-  CCPP_PHYS_SUITE=$( . ${expt_config_fp} ; echo "${CCPP_PHYS_SUITE}" )
-
   if [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
 
     if [ "$MACHINE" = "HERA" ]; then
@@ -598,31 +629,31 @@ a nonzero status."
 #
 #-----------------------------------------------------------------------
 #
-  RUN_ENVIR=$( . ${expt_config_fp} ; echo "${RUN_ENVIR}" )
-
   if [ "${RUN_ENVIR}" = "nco" ]; then
 
-# Note:  Need COMINgfs only if using FV3GFS or GSMGFS as the external 
-# model for ICs or LBCs.  Modify the logic below later.
+    nco_dirs=$( readlink -f "$homerrfs/../../nco_dirs" ) 
+    STMP=${stmp:-"${nco_dirs}/stmp"}
+    PTMP=${ptmp:-"${nco_dirs}/ptmp"}
 
-    if [ "$MACHINE" = "HERA" ]; then
-      COMINgfs="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"
-      STMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
-      PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
-    elif [ "$MACHINE" = "JET" ]; then
-      COMINgfs="/lfs1/HFIP/hwrf-data/hafs-input/COMGFS"
-      STMP="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"
-      PTMP="/mnt/lfs1/BMC/fim/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"
-    elif [ "$MACHINE" = "CHEYENNE" ]; then
-      COMINgfs="/glade/scratch/ketefian/NCO_dirs/COMGFS"
-      STMP="/glade/scratch/ketefian/NCO_dirs/stmp"
-      PTMP="/glade/scratch/ketefian/NCO_dirs/ptmp"
-    else
-      print_err_msg_exit "\
+    if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
+       [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ] || \
+       [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
+       [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then 
+
+      if [ "$MACHINE" = "HERA" ]; then
+        COMINgfs="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"
+      elif [ "$MACHINE" = "JET" ]; then
+        COMINgfs="/lfs1/HFIP/hwrf-data/hafs-input/COMGFS"
+      elif [ "$MACHINE" = "CHEYENNE" ]; then
+        COMINgfs="/glade/scratch/ketefian/NCO_dirs/COMGFS"
+      else
+        print_err_msg_exit "\
 The directories COMINgfs, STMP, and PTMP that need to be specified when
 running the workflow in NCO-mode (i.e. RUN_ENVIR set to \"nco\") have 
 not been specified for this machine (MACHINE):
   MACHINE= \"${MACHINE}\""
+      fi
+
     fi
 
     { cat << EOM >> ${expt_config_fp}
@@ -651,10 +682,10 @@ a nonzero status."
 
   if [ ${do_user_staged_extrn} = "TRUE" ]; then
 
-    EXTRN_MDL_NAME_ICS=$( . ${expt_config_fp} ; echo "${EXTRN_MDL_NAME_ICS}" )
-    EXTRN_MDL_NAME_LBCS=$( . ${expt_config_fp} ; echo "${EXTRN_MDL_NAME_LBCS}" )
-    FCST_LEN_HRS=$( . ${expt_config_fp} ; echo "${FCST_LEN_HRS}" )
-    LBC_SPEC_INTVL_HRS=$( . ${expt_config_fp} ; echo "${LBC_SPEC_INTVL_HRS}" )
+#    EXTRN_MDL_NAME_ICS=$( . ${expt_config_fp} ; echo "${EXTRN_MDL_NAME_ICS}" )
+#    EXTRN_MDL_NAME_LBCS=$( . ${expt_config_fp} ; echo "${EXTRN_MDL_NAME_LBCS}" )
+#    FCST_LEN_HRS=$( . ${expt_config_fp} ; echo "${FCST_LEN_HRS}" )
+#    LBC_SPEC_INTVL_HRS=$( . ${expt_config_fp} ; echo "${LBC_SPEC_INTVL_HRS}" )
 
     if [ "$MACHINE" = "HERA" ]; then
       extrn_mdl_source_baseir="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/staged_extrn_mdl_files"
