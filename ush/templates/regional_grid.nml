@@ -73,18 +73,6 @@
 ! --
 ! Analogous to lx but in the y direction.
 !
-! a:
-! -
-! "a" parameter of the generalized gnomonic mapping centered at (plon,
-! plat).
-!
-! k:
-! -
-! "k" parameter of the generalized gnomonic mapping centered at (plon,
-! plat).
-!
-! See NCEP Office Note XXX, 2018 by Jim Purser
-!
 !***********************************************************************
 !
 
@@ -95,6 +83,4 @@
   dely = <dely>
   lx   = <lx>
   ly   = <ly>
-  a    = <a>
-  k    = <k>
 /

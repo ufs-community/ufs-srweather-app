@@ -285,35 +285,15 @@ Call to \"module use\" command failed."
   #
   if [ ${use_default_modulefile} -eq 0 ]; then
 
-    #
-    # Some of the task module files that are symlinks to module files in the
-    # external repositories are in fact shell scripts (they shouldn't be;
-    # such cases should be fixed in the external repositories).  For such
-    # files, we source the "module" file.  For true module files, we use the
-    # "module load" command.
-    #
-    case "${task_name}" in
-
-      "${MAKE_ICS_TN}" | "${MAKE_LBCS_TN}" | "${MAKE_SFC_CLIMO_TN}")
-        . ${modulefile_path} || print_err_msg_exit "\
-        Sourcing of \"module\" file (modulefile_path; really a shell script) for
-        the specified task (task_name) failed:
-          task_name = \"${task_name}\"
-          modulefile_path = \"${modulefile_path}\""
-
-        ;;
-      *)
-        module use "${modules_dir}" || print_err_msg_exit "\
-        Call to \"module use\" command failed."
-
-        module load ${modulefile_name} || print_err_msg_exit "\
-        Loading of module file (modulefile_name; in directory specified by mod-
-        ules_dir) for the specified task (task_name) failed:
-           task_name = \"${task_name}\"
-           modulefile_name = \"${modulefile_name}\"
-           modules_dir = \"${modules_dir}\""
-        ;;
-    esac
+     module use "${modules_dir}" || print_err_msg_exit "\
+     Call to \"module use\" command failed."
+    
+     module load ${modulefile_name} || print_err_msg_exit "\
+     Loading of module file (modulefile_name; in directory specified by mod-
+     ules_dir) for the specified task (task_name) failed:
+        task_name = \"${task_name}\"
+        modulefile_name = \"${modulefile_name}\"
+        modules_dir = \"${modules_dir}\""
 
   else # using default modulefile
 

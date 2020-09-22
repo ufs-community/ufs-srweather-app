@@ -31,6 +31,20 @@ FV3_GSD_SAR:
     iopt_stc: 1
     iopt_tbot: 2
     shal_cnv: false
+    do_deep: False
+
+FV3_GSD_SAR_v1:
+  gfs_physics_nml:
+    <<: *gsd_sar_phys
+    lsm: 1
+    lsoil_lsm: 4
+
+FV3_RRFS_v0:
+  gfs_physics_nml:
+    <<: *gsd_sar_phys
+    lsm: 2
+    lsoil_lsm: 4
+    do_deep: False
 
 FV3_RRFS_v1beta:
   gfs_physics_nml:
@@ -41,6 +55,7 @@ FV3_RRFS_v1beta:
     IMFDEEPCNV: -1
     DO_MYNNSFCLAY: true
     GWD_OPT: 3
+    do_deep: False
   atmos_model_nml:
     fdiag: 3
 
