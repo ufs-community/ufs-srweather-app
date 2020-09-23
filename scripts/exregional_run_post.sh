@@ -144,7 +144,21 @@ esac
 #
 rm_vrfy -f fort.*
 cp_vrfy ${EMC_POST_DIR}/parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
-cp_vrfy ${EMC_POST_DIR}/parm/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
+if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+  cp_vrfy ${CUSTOM_POST_CONFIG_PATH} ./postxconfig-NT.txt
+  print_info_msg "
+  ====================================================================
+  Using user-defined UPP flat file:
+  ${CUSTOM_POST_CONFIG_PATH}
+  ===================================================================="
+else
+  cp_vrfy ${EMC_POST_DIR}/parm/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
+  print_info_msg "
+  ====================================================================
+  Using default UPP flat file:
+  ${EMC_POST_DIR}/parm/postxconfig-NT-fv3sar.txt
+  ===================================================================="
+fi
 cp_vrfy ${EMC_POST_DIR}/parm/params_grib2_tbl_new ./params_grib2_tbl_new
 cp_vrfy ${EXECDIR}/ncep_post .
 #

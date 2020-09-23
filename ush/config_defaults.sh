@@ -1166,6 +1166,28 @@ WTIME_RUN_POST="00:15:00"
 #
 #-----------------------------------------------------------------------
 #
+# Set parameters associated with defining a customized post configuration file
+#
+# USE_CUSTOM_POST_CONFIG_FILE:
+# Flag that determines whether a user provided custom configuration file
+# should be used for post-processing the model data. If this is set to
+# "TRUE", then the workflow will link the custom configuration file from
+# the user-defined path specified in CUSTOM_POST_CONFIG_PATH. Otherwise,
+# if set to "FALSE" (default), this parameter is not used and the default
+# configuration file will be used for post-processing.
+#
+# CUSTOM_POST_CONFIG_PATH:
+# The full path pointing to the cusomized post flat file, including filename,
+# to be used for post-processing. This is only used if CUSTOM_POST_CONFIG_FILE
+# is set to "TRUE".
+#
+#-----------------------------------------------------------------------
+#
+USE_CUSTOM_POST_CONFIG_FILE="FALSE"
+CUSTOM_POST_CONFIG_PATH=""
+#
+#-----------------------------------------------------------------------
+#
 # Set parameters associated with running ensembles.  Definitions:
 #
 # DO_ENSEMBLE:

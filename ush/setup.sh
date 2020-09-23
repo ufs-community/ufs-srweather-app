@@ -860,6 +860,42 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that USE_CUSTOM_POST_CONFIG_FILE is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value \
+   "USE_CUSTOM_POST_CONFIG_FILE" "valid_vals_USE_CUSTOM_POST_CONFIG_FILE"
+#
+# Set USE_CUSTOM_POST_CONFIG_FILE to either "TRUE" or "FALSE" so we don't
+# have to consider other valid values later on.
+#
+USE_CUSTOM_POST_CONFIG_FILE=${USE_CUSTOM_POST_CONFIG_FILE^^}
+if [ "$USE_CUSTOM_POST_CONFIG_FILE" = "TRUE" ] || \
+   [ "$USE_CUSTOM_POST_CONFIG_FILE" = "YES" ]; then
+  USE_CUSTOM_POST_CONFIG_FILE="TRUE"
+elif [ "$USE_CUSTOM_POST_CONFIG_FILE" = "FALSE" ] || \
+     [ "$USE_CUSTOM_POST_CONFIG_FILE" = "NO" ]; then
+  USE_CUSTOM_POST_CONFIG_FILE="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Check that the path exists for a user-defined custom post config file
+#
+if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+  if [ -f "${CUSTOM_POST_CONFIG_PATH}" ]; then
+    print_info_msg "
+    Using custom post config file in path: \"${CUSTOM_POST_CONFIG_PATH}\""
+  else
+    print_err_msg_exit "
+    Cannot use custom post config file because file does not exist:
+    \"${CUSTOM_POST_CONFIG_PATH}\""
+  fi
+fi
+#
+#-----------------------------------------------------------------------
+#
 # The forecast length (in integer hours) cannot contain more than 3 cha-
 # racters.  Thus, its maximum value is 999.  Check whether the specified
 # forecast length exceeds this maximum value.  If so, print out a warn-
