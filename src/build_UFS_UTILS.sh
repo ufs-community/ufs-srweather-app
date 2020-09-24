@@ -1,8 +1,12 @@
 #!/bin/sh
 #==========================================================================
 #
-# Description: Builds chgres, chgres_cube, orog, fre-nctools, sfc_climo_gen,
-#              regional_esg_grid, global_equiv_resol, and make_solo_mosaic.
+# Description: 
+# Builds all codes in UFS_UTILS.  Note that this script does not copy 
+# over the executables it builds to the eventual destination directory 
+# at ufs-srweather-app/exec.  That step is performed in install_all.sh, 
+# and that script copies only a subset of the executables built by this 
+# one.
 #
 # Usage: ./build_UFS_UTILS.sh
 #
