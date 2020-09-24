@@ -152,11 +152,11 @@ if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   ${CUSTOM_POST_CONFIG_PATH}
   ===================================================================="
 else
-  cp_vrfy ${EMC_POST_DIR}/parm/postxconfig-NT-fv3sar.txt ./postxconfig-NT.txt
+  cp_vrfy ${EMC_POST_DIR}/parm/postxconfig-NT-fv3lam.txt ./postxconfig-NT.txt
   print_info_msg "
   ====================================================================
   Using default UPP flat file:
-  ${EMC_POST_DIR}/parm/postxconfig-NT-fv3sar.txt
+  ${EMC_POST_DIR}/parm/postxconfig-NT-fv3lam.txt
   ===================================================================="
 fi
 cp_vrfy ${EMC_POST_DIR}/parm/params_grib2_tbl_new ./params_grib2_tbl_new
