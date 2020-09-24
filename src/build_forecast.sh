@@ -47,16 +47,17 @@ fi
 # Build static executable using cmake for all valid suites in workflow
 # defined in regional_workflow/ush/valid_param_vals.sh
 #---------------------------------------------------------------------------------
-export CCPP_SUITES="\
-FV3_CPT_v0,\
-FV3_GFS_2017_gfdlmp,\
-FV3_GFS_2017_gfdlmp_regional,\
-FV3_GSD_SAR,\
-FV3_GSD_v0,\
-FV3_GFS_v15p2,\
-FV3_GFS_v16beta,\
-FV3_RRFS_v1beta\
-"
+
+# Read in the array of valid physics suite from the file in the workflow
+# that specifies valid values for various parameters.  In this case, it
+# is the valid values for CCPP_PHYS_SUITE.  Note that the result (stored
+# in CCPP_SUITES) is a string consisting of a comma-separated list of all
+# the valid (allowed) CCPP physics suites.
+CCPP_SUITES=$( 
+  . ../../regional_workflow/ush/valid_param_vals.sh 
+  printf "%s," "${valid_vals_CCPP_PHYS_SUITE[@]}"
+)
+export CCPP_SUITES="${CCPP_SUITES:0: -1}"  # Remove comma after last suite.
 
 ./build.sh || echo "FAIL:  build_forecast.sh failed, see ${cwd}/logs/build_forecast.log"
 
