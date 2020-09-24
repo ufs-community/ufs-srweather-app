@@ -2,7 +2,7 @@
 #==========================================================================
 #
 # Description: Builds chgres, chgres_cube, orog, fre-nctools, sfc_climo_gen,
-#              regional_grid, global_equiv_resol, and mosaic_file.
+#              regional_esg_grid, global_equiv_resol, and make_solo_mosaic.
 #
 # Usage: ./build_UFS_UTILS.sh
 #

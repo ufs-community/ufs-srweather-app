@@ -25,42 +25,26 @@ fi
 #------------------------------------
 # install post
 #------------------------------------
+$Build_post && {
  ${CP} EMC_post/exec/*                                 ../exec/ncep_post
+}
 
 #------------------------------------
-# install chgres
+# install needed utilities from UFS_UTILS.
 #------------------------------------
+$Build_UFS_UTILS && {
 # ${CP} regional_utils.fd/exec/global_chgres            ../exec/regional_chgres.x
-
-#------------------------------------
-# install chgres_cube
-#------------------------------------
  ${CP} UFS_UTILS/exec/chgres_cube                      ../exec/chgres_cube.exe
-
-#------------------------------------
-# install orog
-#------------------------------------
  ${CP} UFS_UTILS/exec/orog                             ../exec/orog.x
-
-#------------------------------------
-# install sfc_climo_gen
-#------------------------------------
  ${CP} UFS_UTILS/exec/sfc_climo_gen                    ../exec/sfc_climo_gen
-
-#------------------------------------
-# install regional_esg_grid
-#------------------------------------
- ${CP} UFS_UTILS/exec/regional_esg_grid                ../exec/regional_grid
-
-#------------------------------------
-# install other utilities
-#------------------------------------
+ ${CP} UFS_UTILS/exec/regional_esg_grid                ../exec/regional_esg_grid
  ${CP} UFS_UTILS/exec/make_hgrid                       ../exec/make_hgrid
  ${CP} UFS_UTILS/exec/make_solo_mosaic                 ../exec/make_solo_mosaic
  ${CP} UFS_UTILS/exec/fregrid                          ../exec/fregrid
  ${CP} UFS_UTILS/exec/filter_topo                      ../exec/filter_topo
  ${CP} UFS_UTILS/exec/shave                            ../exec/shave.x
  ${CP} UFS_UTILS/exec/global_equiv_resol               ../exec/global_equiv_resol
+}
 
 #------------------------------------
 # install gsi
