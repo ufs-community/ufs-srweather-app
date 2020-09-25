@@ -16,10 +16,6 @@ CYCL_HRS=( "00" )
 EXTRN_MDL_NAME_ICS="RAPX"
 EXTRN_MDL_NAME_LBCS="RAPX"
 
-RUN_TASK_MAKE_GRID="TRUE"
-RUN_TASK_MAKE_OROG="TRUE"
-RUN_TASK_MAKE_SFC_CLIMO="TRUE"
-
 #
 # For a coarse grid such as this, the number of MPI processes (= NNODES*PPN) 
 # can't be too large for the make_ics and make_lbcs tasks (both of which 

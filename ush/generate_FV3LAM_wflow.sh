@@ -228,6 +228,18 @@ settings="\
   'wtime_run_fcst': ${WTIME_RUN_FCST}
   'wtime_run_post': ${WTIME_RUN_POST}
 #
+# Maximum number of tries for each task.
+#
+  'maxtries_make_grid': ${MAXTRIES_MAKE_GRID}
+  'maxtries_make_orog': ${MAXTRIES_MAKE_OROG}
+  'maxtries_make_sfc_climo': ${MAXTRIES_MAKE_SFC_CLIMO}
+  'maxtries_get_extrn_ics': ${MAXTRIES_GET_EXTRN_ICS}
+  'maxtries_get_extrn_lbcs': ${MAXTRIES_GET_EXTRN_LBCS}
+  'maxtries_make_ics': ${MAXTRIES_MAKE_ICS}
+  'maxtries_make_lbcs': ${MAXTRIES_MAKE_LBCS}
+  'maxtries_run_fcst': ${MAXTRIES_RUN_FCST}
+  'maxtries_run_post': ${MAXTRIES_RUN_POST}
+#
 # Flags that specify whether to run the preprocessing tasks.
 #
   'run_task_make_grid': ${RUN_TASK_MAKE_GRID}
@@ -526,8 +538,6 @@ directory..."
   fi
 
 fi
-
-
 #
 #-----------------------------------------------------------------------
 #

@@ -412,18 +412,21 @@ NOMADS_file_type="nemsio"
 #
 # User-staged external model directories and files.  Definitions:
 #
-# EXTRN_MDL_SOURCE_DIR_ICS:
+# USE_USER_STAGED_EXTRN_FILES:
+# Flag that determines whether or not the workflow will look for the 
+# external model files needed for generating ICs and LBCs in user-specified
+# directories.
+#
+# EXTRN_MDL_SOURCE_DIR_ICS:                                                # Should this be renamed BASEDIR?  Same question for EXTRN_MDL_SOURCE_DIR_LBCS.
 # Directory in which to look for external model files for generating ICs.
-# If this is set to a non-empty string, the workflow looks in this directory
-# (specifically, in a subdirectory under this directory named "YYYYMMDDHH"
-# consisting of the starting date and cycle hour of the forecast, where 
-# YYYY is the 4-digit year, MM the 2-digit month, DD the 2-digit day of
-# the month, and HH the 2-digit hour of the day) for the external model 
-# files specified by the array EXTRN_MDL_FILES_ICS (these files will be 
-# used to generate the ICs on the native FV3-LAM grid.  If this is set to 
-# an empty string, then the workflow will look for the external model 
-# files for generating ICS in a default machine-dependent location.  In 
-# this case, EXTRN_MDL_FILES_ICS is not used.
+# If USE_USER_STAGED_EXTRN_FILES is set to "TRUE", the workflow looks in 
+# this directory (specifically, in a subdirectory under this directory 
+# named "YYYYMMDDHH" consisting of the starting date and cycle hour of 
+# the forecast, where YYYY is the 4-digit year, MM the 2-digit month, DD 
+# the 2-digit day of the month, and HH the 2-digit hour of the day) for 
+# the external model files specified by the array EXTRN_MDL_FILES_ICS 
+# (these files will be used to generate the ICs on the native FV3-LAM 
+# grid).
 # 
 # EXTRN_MDL_FILES_ICS:
 # Array containing the names of the files to search for in the directory
@@ -438,10 +441,10 @@ NOMADS_file_type="nemsio"
 #
 #-----------------------------------------------------------------------
 #
-EXTRN_MDL_SOURCE_DIR_ICS=""
+USE_USER_STAGED_EXTRN_FILES="TRUE"
+EXTRN_MDL_SOURCE_DIR_ICS="/dir/containing/user/staged/extrn/mdl/files/for/ICs"
 EXTRN_MDL_FILES_ICS=( "ICS_file1" "ICS_file2" "..." )
-
-EXTRN_MDL_SOURCE_DIR_LBCS=""
+EXTRN_MDL_SOURCE_DIR_LBCS="/dir/containing/user/staged/extrn/mdl/files/for/LBCs"
 EXTRN_MDL_FILES_LBCS=( "LBCS_file1" "LBCS_file2" "..." )
 #
 #-----------------------------------------------------------------------
@@ -1111,8 +1114,9 @@ CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING=( \
 # Set the names of the various workflow tasks.  Then, for each task, set
 # the parameters to pass to the job scheduler (e.g. slurm) that will submit
 # a job for each task to be run.  These parameters include the number of
-# nodes to use to run the job, the MPI processes per node, and the maximum
-# walltime to allow for the job to complete.
+# nodes to use to run the job, the MPI processes per node, the maximum
+# walltime to allow for the job to complete, and the maximum number of
+# times to attempt to run each task.
 #
 #-----------------------------------------------------------------------
 #
@@ -1164,27 +1168,40 @@ WTIME_MAKE_LBCS="00:30:00"
 WTIME_RUN_FCST="04:30:00"
 WTIME_RUN_POST="00:15:00"
 #
+# Maximum number of attempts.
+#
+MAXTRIES_MAKE_GRID="1"
+MAXTRIES_MAKE_OROG="1"
+MAXTRIES_MAKE_SFC_CLIMO="1"
+MAXTRIES_GET_EXTRN_ICS="1"
+MAXTRIES_GET_EXTRN_LBCS="1"
+MAXTRIES_MAKE_ICS="1"
+MAXTRIES_MAKE_LBCS="1"
+MAXTRIES_RUN_FCST="1"
+MAXTRIES_RUN_POST="1"
+#
 #-----------------------------------------------------------------------
 #
-# Set parameters associated with defining a customized post configuration file
+# Set parameters associated with defining a customized post configuration 
+# file.
 #
 # USE_CUSTOM_POST_CONFIG_FILE:
-# Flag that determines whether a user provided custom configuration file
+# Flag that determines whether a user-provided custom configuration file
 # should be used for post-processing the model data. If this is set to
-# "TRUE", then the workflow will link the custom configuration file from
-# the user-defined path specified in CUSTOM_POST_CONFIG_PATH. Otherwise,
-# if set to "FALSE" (default), this parameter is not used and the default
-# configuration file will be used for post-processing.
+# "TRUE", then the workflow will use the custom post-processing (UPP) 
+# configuration file specified in CUSTOM_POST_CONFIG_FP. Otherwise, a 
+# default configuration file provided in the EMC_post repository will be 
+# used.
 #
-# CUSTOM_POST_CONFIG_PATH:
-# The full path pointing to the cusomized post flat file, including filename,
-# to be used for post-processing. This is only used if CUSTOM_POST_CONFIG_FILE
+# CUSTOM_POST_CONFIG_FP:
+# The full path to the custom post flat file, including filename, to be 
+# used for post-processing. This is only used if CUSTOM_POST_CONFIG_FILE
 # is set to "TRUE".
 #
 #-----------------------------------------------------------------------
 #
 USE_CUSTOM_POST_CONFIG_FILE="FALSE"
-CUSTOM_POST_CONFIG_PATH=""
+CUSTOM_POST_CONFIG_FP=""
 #
 #-----------------------------------------------------------------------
 #

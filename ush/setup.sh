@@ -79,7 +79,7 @@ cd_vrfy ${scrfunc_dir}
 #
 #-----------------------------------------------------------------------
 #
-  EXPT_DEFAULT_CONFIG_FN="config_defaults.sh"
+EXPT_DEFAULT_CONFIG_FN="config_defaults.sh"
 . ./${EXPT_DEFAULT_CONFIG_FN}
 #
 #-----------------------------------------------------------------------
@@ -798,7 +798,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-mng_extrns_cfg_fn=$( readlink -f "$SR_WX_APP_TOP_DIR/Externals.cfg" )
+mng_extrns_cfg_fn=$( readlink -f "${SR_WX_APP_TOP_DIR}/Externals.cfg" )
 property_name="local_path"
 #
 # Get the base directory of the FV3 forecast model code.
@@ -865,7 +865,7 @@ fi
 #-----------------------------------------------------------------------
 #
 check_var_valid_value \
-   "USE_CUSTOM_POST_CONFIG_FILE" "valid_vals_USE_CUSTOM_POST_CONFIG_FILE"
+  "USE_CUSTOM_POST_CONFIG_FILE" "valid_vals_USE_CUSTOM_POST_CONFIG_FILE"
 #
 # Set USE_CUSTOM_POST_CONFIG_FILE to either "TRUE" or "FALSE" so we don't
 # have to consider other valid values later on.
@@ -881,16 +881,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Check that the path exists for a user-defined custom post config file
+# If using a custom post configuration file, make sure that it exists.
+#
+#-----------------------------------------------------------------------
 #
 if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
-  if [ -f "${CUSTOM_POST_CONFIG_PATH}" ]; then
-    print_info_msg "
-    Using custom post config file in path: \"${CUSTOM_POST_CONFIG_PATH}\""
-  else
+  if [ ! -f "${CUSTOM_POST_CONFIG_FP}" ]; then
     print_err_msg_exit "
-    Cannot use custom post config file because file does not exist:
-    \"${CUSTOM_POST_CONFIG_PATH}\""
+The custom post configuration specified by CUSTOM_POST_CONFIG_FP does not 
+exist:
+  CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\""
   fi
 fi
 #
@@ -1003,15 +1003,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If the base directory (EXPT_BASEDIR) in which the experiment subdirec-
-# tory (EXPT_SUBDIR) will be located is not set or is set to an empty 
-# string, set it to a default location that is at the same level as the
-# workflow directory (HOMErrfs).  Then create EXPT_BASEDIR if it doesn't
+# If the base directory (EXPT_BASEDIR) in which the experiment subdirectory 
+# (EXPT_SUBDIR) will be located does not start with a "/", then it is 
+# either set to a null string or contains a relative directory.  In both 
+# cases, prepend to it the absolute path of the default directory under 
+# which the experiment directories are placed.  If EXPT_BASEDIR was set 
+# to a null string, it will get reset to this default experiment directory, 
+# and if it was set to a relative directory, it will get reset to an 
+# absolute directory that points to the relative directory under the 
+# default experiment directory.  Then create EXPT_BASEDIR if it doesn't 
 # already exist.
 #
 #-----------------------------------------------------------------------
 #
-EXPT_BASEDIR="${EXPT_BASEDIR:-${SR_WX_APP_TOP_DIR}/../expt_dirs}"
+if [ "${EXPT_BASEDIR:0:1}" != "/" ]; then
+  EXPT_BASEDIR="${SR_WX_APP_TOP_DIR}/../expt_dirs/${EXPT_BASEDIR}"
+fi
 EXPT_BASEDIR="$( readlink -f ${EXPT_BASEDIR} )"
 mkdir_vrfy -p "${EXPT_BASEDIR}"
 #
@@ -1285,6 +1292,24 @@ FIELD_TABLE_FP="${EXPTDIR}/${FIELD_TABLE_FN}"
 FV3_NML_FN="${FV3_NML_BASE_SUITE_FN%.*}"
 FV3_NML_FP="${EXPTDIR}/${FV3_NML_FN}"
 NEMS_CONFIG_FP="${EXPTDIR}/${NEMS_CONFIG_FN}"
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that USE_USER_STAGED_EXTRN_FILES is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "USE_USER_STAGED_EXTRN_FILES" "valid_vals_USE_USER_STAGED_EXTRN_FILES"
+#
+# Set USE_USER_STAGED_EXTRN_FILES to either "TRUE" or "FALSE" so we don't 
+# have to consider other valid values later on.
+#
+USE_USER_STAGED_EXTRN_FILES=${USE_USER_STAGED_EXTRN_FILES^^}
+if [ "${USE_USER_STAGED_EXTRN_FILES}" = "YES" ]; then
+  USE_USER_STAGED_EXTRN_FILES="TRUE"
+elif [ "${USE_USER_STAGED_EXTRN_FILES}" = "NO" ]; then
+  USE_USER_STAGED_EXTRN_FILES="FALSE"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -2523,7 +2548,7 @@ CRONTAB_LINE="${CRONTAB_LINE}"
 #
 #-----------------------------------------------------------------------
 #
-SR_WX_APP_TOP_DIR="$SR_WX_APP_TOP_DIR"
+SR_WX_APP_TOP_DIR="${SR_WX_APP_TOP_DIR}"
 HOMErrfs="$HOMErrfs"
 USHDIR="$USHDIR"
 SCRIPTSDIR="$SCRIPTSDIR"
@@ -2710,7 +2735,7 @@ OZONE_PARAM="${OZONE_PARAM}"
 #
 #-----------------------------------------------------------------------
 #
-# If EXTRN_MDL_SOURCE_DIR_ICS is set to a null string, this is the system 
+# If USE_USER_STAGED_EXTRN_FILES is set to "FALSE", this is the system 
 # directory in which the workflow scripts will look for the files generated 
 # by the external model specified in EXTRN_MDL_NAME_ICS.  These files will 
 # be used to generate the input initial condition and surface files for 
@@ -2722,7 +2747,7 @@ EXTRN_MDL_SYSBASEDIR_ICS="${EXTRN_MDL_SYSBASEDIR_ICS}"
 #
 #-----------------------------------------------------------------------
 #
-# If EXTRN_MDL_SOURCE_DIR_LBCS is set to a null string, this is the system 
+# If USE_USER_STAGED_EXTRN_FILES is set to "FALSE", this is the system 
 # directory in which the workflow scripts will look for the files generated 
 # by the external model specified in EXTRN_MDL_NAME_LBCS.  These files 
 # will be used to generate the input lateral boundary condition files for 

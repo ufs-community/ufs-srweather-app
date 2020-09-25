@@ -173,7 +173,7 @@ Please ensure that you've built this executable."
       --mosaic "${mosaic_fp_prefix}" || \
     print_err_msg_exit "\
 Call to executable (exec_fp) that generates a grid mosaic file for a 
-GFDLgrid-type regional grid returned with nonzero exit code:
+regional grid returned with nonzero exit code:
   exec_fp = \"${exec_fp}\"" 
 #
 #-----------------------------------------------------------------------

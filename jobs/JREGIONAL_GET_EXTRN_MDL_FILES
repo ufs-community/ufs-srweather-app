@@ -228,7 +228,6 @@ Call to function get_extrn_mdl_file_dir_info failed."
 #
 #-----------------------------------------------------------------------
 #
-use_user_staged_extrn_files="FALSE"
 extrn_mdl_source_dir="${extrn_mdl_sysdir}"
 #
 #-----------------------------------------------------------------------
@@ -241,18 +240,14 @@ extrn_mdl_source_dir="${extrn_mdl_sysdir}"
 #
 #-----------------------------------------------------------------------
 #
-if [ "${ICS_OR_LBCS}" = "ICS" ] && \
-   [ ! -z "${EXTRN_MDL_SOURCE_DIR_ICS}" ]; then
-  use_user_staged_extrn_files="TRUE"
-  extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_DIR_ICS}/$CDATE"
-  extrn_mdl_fns_on_disk=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_ICS[@]}" ))
-fi
-
-if [ "${ICS_OR_LBCS}" = "LBCS" ] && \
-   [ ! -z "${EXTRN_MDL_SOURCE_DIR_LBCS}" ]; then
-  use_user_staged_extrn_files="TRUE"
-  extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_DIR_LBCS}/$CDATE"
-  extrn_mdl_fns_on_disk=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))
+if [ "${USE_USER_STAGED_EXTRN_FILES}" = "TRUE" ]; then
+  if [ "${ICS_OR_LBCS}" = "ICS" ]; then
+    extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_DIR_ICS}/$CDATE"
+    extrn_mdl_fns_on_disk=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_ICS[@]}" ))
+  elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
+    extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_DIR_LBCS}/$CDATE"
+    extrn_mdl_fns_on_disk=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))
+  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -269,7 +264,7 @@ extrn_mdl_arcv_fps_str="( "$( printf "\"%s\" " "${extrn_mdl_arcv_fps[@]}" )")"
 
 $SCRIPTSDIR/exregional_get_extrn_mdl_files.sh \
   ics_or_lbcs="${ICS_OR_LBCS}" \
-  use_user_staged_extrn_files="${use_user_staged_extrn_files}" \
+  use_user_staged_extrn_files="${USE_USER_STAGED_EXTRN_FILES}" \
   extrn_mdl_cdate="${extrn_mdl_cdate}" \
   extrn_mdl_lbc_spec_fhrs="${extrn_mdl_lbc_spec_fhrs_str}" \
   extrn_mdl_fns_on_disk="${extrn_mdl_fns_on_disk_str}" \
