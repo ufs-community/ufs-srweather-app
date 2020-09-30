@@ -417,7 +417,7 @@ NOMADS_file_type="nemsio"
 # external model files needed for generating ICs and LBCs in user-specified
 # directories.
 #
-# EXTRN_MDL_SOURCE_DIR_ICS:                                                # Should this be renamed BASEDIR?  Same question for EXTRN_MDL_SOURCE_DIR_LBCS.
+# EXTRN_MDL_SOURCE_BASEDIR_ICS:
 # Directory in which to look for external model files for generating ICs.
 # If USE_USER_STAGED_EXTRN_FILES is set to "TRUE", the workflow looks in 
 # this directory (specifically, in a subdirectory under this directory 
@@ -426,25 +426,26 @@ NOMADS_file_type="nemsio"
 # the 2-digit day of the month, and HH the 2-digit hour of the day) for 
 # the external model files specified by the array EXTRN_MDL_FILES_ICS 
 # (these files will be used to generate the ICs on the native FV3-LAM 
-# grid).
+# grid).  This variable is not used if USE_USER_STAGED_EXTRN_FILES is 
+# set to "FALSE".
 # 
 # EXTRN_MDL_FILES_ICS:
 # Array containing the names of the files to search for in the directory
-# specified by EXTRN_MDL_SOURCE_DIR_ICS.  This variable is not used if 
-# EXTRN_MDL_SOURCE_DIR_ICS is set to a null (i.e. empty) string.
+# specified by EXTRN_MDL_SOURCE_BASEDIR_ICS.  This variable is not used
+# if USE_USER_STAGED_EXTRN_FILES is set to "FALSE".
 #
-# EXTRN_MDL_SOURCE_DIR_LBCS:
-# Analogous to EXTRN_MDL_SOURCE_DIR_ICS but for LBCs instead of ICs.
+# EXTRN_MDL_SOURCE_BASEDIR_LBCS:
+# Analogous to EXTRN_MDL_SOURCE_BASEDIR_ICS but for LBCs instead of ICs.
 #
 # EXTRN_MDL_FILES_LBCS:
 # Analogous to EXTRN_MDL_FILES_ICS but for LBCs instead of ICs.
 #
 #-----------------------------------------------------------------------
 #
-USE_USER_STAGED_EXTRN_FILES="TRUE"
-EXTRN_MDL_SOURCE_DIR_ICS="/dir/containing/user/staged/extrn/mdl/files/for/ICs"
+USE_USER_STAGED_EXTRN_FILES="FALSE"
+EXTRN_MDL_SOURCE_BASEDIR_ICS="/base/dir/containing/user/staged/extrn/mdl/files/for/ICs"
 EXTRN_MDL_FILES_ICS=( "ICS_file1" "ICS_file2" "..." )
-EXTRN_MDL_SOURCE_DIR_LBCS="/dir/containing/user/staged/extrn/mdl/files/for/LBCs"
+EXTRN_MDL_SOURCE_BASEDIR_LBCS="/base/dir/containing/user/staged/extrn/mdl/files/for/LBCs"
 EXTRN_MDL_FILES_LBCS=( "LBCS_file1" "LBCS_file2" "..." )
 #
 #-----------------------------------------------------------------------

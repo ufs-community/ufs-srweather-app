@@ -1313,6 +1313,32 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# If USE_USER_STAGED_EXTRN_FILES is set to TRUE, make sure that the user-
+# specified directories under which the external model files should be 
+# located actually exist.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${USE_USER_STAGED_EXTRN_FILES}" = "TRUE" ]; then
+
+  if [ ! -d "${EXTRN_MDL_SOURCE_BASEDIR_ICS}" ]; then
+    print_err_msg_exit "\
+The directory (EXTRN_MDL_SOURCE_BASEDIR_ICS) in which the user-staged 
+external model files for generating ICs should be located does not exist:
+  EXTRN_MDL_SOURCE_BASEDIR_ICS = \"${EXTRN_MDL_SOURCE_BASEDIR_ICS}\""
+  fi
+
+  if [ ! -d "${EXTRN_MDL_SOURCE_BASEDIR_LBCS}" ]; then
+    print_err_msg_exit "\
+The directory (EXTRN_MDL_SOURCE_BASEDIR_LBCS) in which the user-staged 
+external model files for generating LBCs should be located does not exist:
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS = \"${EXTRN_MDL_SOURCE_BASEDIR_LBCS}\""
+  fi
+
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that DO_ENSEMBLE is set to a valid value.  Then set the names
 # of the ensemble members.  These will be used to set the ensemble member
 # directories.  Also, set the full path to the FV3 namelist file corresponding

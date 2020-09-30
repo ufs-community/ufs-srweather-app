@@ -101,11 +101,11 @@ extrn_mdl_fps_on_disk=( "${extrn_mdl_fns_on_disk[@]/#/$prefix}" )
 # the number of external model files that were actually found on disk in
 # the directory specified by extrn_mdl_source_dir.
 #
-# If the location extrn_mdl_source_dir is a user-specified directory (i.e.
-# if use_user_staged_extrn_files is set to "TRUE"), then if/when we encounter 
-# the first file that does not exist, we exit the script with an error 
-# message.  If extrn_mdl_source_dir is a system directory (i.e. if 
-# use_user_staged_extrn_files is not set to "TRUE"), then if/when we 
+# If the location extrn_mdl_source_dir is a user-specified directory 
+# (i.e. if use_user_staged_extrn_files is set to "TRUE"), then if/when we 
+# encounter the first file that does not exist, we exit the script with 
+# an error message.  If extrn_mdl_source_dir is a system directory (i.e. 
+# if use_user_staged_extrn_files is not set to "TRUE"), then if/when we 
 # encounter the first file that does not exist or exists but is younger
 # than a certain age, we break out of the loop and try to fetch all the 
 # necessary external model files from HPSS.  The age cutoff is to ensure
@@ -166,22 +166,14 @@ presence and age of remaining external model files on disk."
     #
     if [ "${use_user_staged_extrn_files}" = "TRUE" ]; then
 
-      varname_extrn_mdl_source_dir="EXTRN_MDL_SOURCE_DIR_${ics_or_lbcs}"
-      varname_extrn_mdl_files="EXTRN_MDL_FILES_${ics_or_lbcs}"
-      varname_extrn_mdl_files_at="${varname_extrn_mdl_files}[@]"
-      extrn_mdl_files=("${!varname_extrn_mdl_files_at}")
-
       print_err_msg_exit "\
 File fp does NOT exist on disk:
   fp = \"$fp\"
-Please ensure that the directory specified by ${varname_extrn_mdl_source_dir} 
-exists and that all the files specified in the array ${varname_extrn_mdl_files} 
-exist within it:
-  ${varname_extrn_mdl_source_dir} = \"${!varname_extrn_mdl_source_dir}\"
-  ${varname_extrn_mdl_files} = ( $( printf "\"%s\" " "${extrn_mdl_files[@]}" ))
-Note that ${varname_extrn_mdl_source_dir} and ${varname_extrn_mdl_files} are both
-user-specified workflow variables that can be set in the workflow user
-configuration file ${EXPT_CONFIG_FN}."
+Please ensure that the directory specified by extrn_mdl_source_dir exists 
+and that all the files specified in the array extrn_mdl_fns_on_disk exist
+within it:
+  extrn_mdl_source_dir = \"${extrn_mdl_source_dir}\"
+  extrn_mdl_fns_on_disk = ( $( printf "\"%s\" " "${extrn_mdl_fns_on_disk[@]}" ))"
     #
     # If an external model file is not found and we are searching for it
     # in a system directory, give up on the system directory and try instead 

@@ -749,7 +749,7 @@ machine (MACHINE):
   MACHINE= \"${MACHINE}\""
     fi
 
-    EXTRN_MDL_SOURCE_DIR_ICS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_ICS}"
+    EXTRN_MDL_SOURCE_BASEDIR_ICS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_ICS}"
     if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ]; then
       EXTRN_MDL_FILES_ICS=( "gfs.atmanl.nemsio" "gfs.sfcanl.nemsio" )
@@ -758,7 +758,7 @@ machine (MACHINE):
       EXTRN_MDL_FILES_ICS=( "${EXTRN_MDL_NAME_ICS,,}.out.for_f000" )
     fi
 
-    EXTRN_MDL_SOURCE_DIR_LBCS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_LBCS}"
+    EXTRN_MDL_SOURCE_BASEDIR_LBCS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_LBCS}"
 #
 # Make sure that the forecast length is evenly divisible by the interval
 # between the times at which the lateral boundary conditions will be
@@ -789,9 +789,9 @@ boundary conditions specification interval (LBC_SPEC_INTVL_HRS):
 # Locations and names of user-staged external model files for generating
 # ICs and LBCs.
 #
-EXTRN_MDL_SOURCE_DIR_ICS=\"${EXTRN_MDL_SOURCE_DIR_ICS}\"
+EXTRN_MDL_SOURCE_BASEDIR_ICS=\"${EXTRN_MDL_SOURCE_BASEDIR_ICS}\"
 EXTRN_MDL_FILES_ICS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_ICS[@]}" ))
-EXTRN_MDL_SOURCE_DIR_LBCS=\"${EXTRN_MDL_SOURCE_DIR_LBCS}\"
+EXTRN_MDL_SOURCE_BASEDIR_LBCS=\"${EXTRN_MDL_SOURCE_BASEDIR_LBCS}\"
 EXTRN_MDL_FILES_LBCS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))"
 
   fi

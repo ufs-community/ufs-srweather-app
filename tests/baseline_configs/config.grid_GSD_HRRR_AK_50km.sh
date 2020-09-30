@@ -4,8 +4,10 @@ PREEXISTING_DIR_METHOD="rename"
 PREDEF_GRID_NAME="GSD_HRRR_AK_50km"
 GRID_GEN_METHOD="ESGgrid"
 QUILTING="TRUE"
+
 USE_CCPP="TRUE"
 CCPP_PHYS_SUITE="FV3_GSD_SAR"
+
 FCST_LEN_HRS="06"
 LBC_SPEC_INTVL_HRS="6"
 
@@ -15,7 +17,7 @@ CYCL_HRS=( "00" )
 
 EXTRN_MDL_NAME_ICS="RAPX"
 EXTRN_MDL_NAME_LBCS="RAPX"
-
+USE_USER_STAGED_EXTRN_FILES="TRUE"
 #
 # For a coarse grid such as this, the number of MPI processes (= NNODES*PPN) 
 # can't be too large for the make_ics and make_lbcs tasks (both of which 
@@ -36,5 +38,3 @@ WTIME_MAKE_LBCS="00:30:00"
 NNODES_RUN_POST="1"
 PPN_RUN_POST="12"
 WTIME_RUN_POST="00:30:00"
-
-

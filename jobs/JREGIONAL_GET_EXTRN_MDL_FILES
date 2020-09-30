@@ -233,21 +233,35 @@ extrn_mdl_source_dir="${extrn_mdl_sysdir}"
 #-----------------------------------------------------------------------
 #
 # If the user has specified that the external model files to be used for
-# generating ICs or LBCs are staged, then reset extrn_mdl_source_dir to the
-# user-specified directory in which these files are staged, and reset 
+# generating ICs or LBCs are staged, then reset extrn_mdl_source_dir to 
+# the user-specified directory in which these files are staged, and reset 
 # extrn_mdl_fns_on_disk to the user-specified array containing the names 
 # of the files.
 #
 #-----------------------------------------------------------------------
 #
 if [ "${USE_USER_STAGED_EXTRN_FILES}" = "TRUE" ]; then
+
   if [ "${ICS_OR_LBCS}" = "ICS" ]; then
-    extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_DIR_ICS}/$CDATE"
-    extrn_mdl_fns_on_disk=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_ICS[@]}" ))
+    extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/$CDATE"
+    extrn_mdl_fns_on_disk=( $( printf "%s " "${EXTRN_MDL_FILES_ICS[@]}" ))
   elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
-    extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_DIR_LBCS}/$CDATE"
-    extrn_mdl_fns_on_disk=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))
+    extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/$CDATE"
+    extrn_mdl_fns_on_disk=( $( printf "%s " "${EXTRN_MDL_FILES_LBCS[@]}" ))
   fi
+
+  if [ ! -d "${extrn_mdl_source_dir}" ]; then
+    print_err_msg_exit "\
+The directory extrn_mdl_source_dir containing the user-staged external
+model files does not exist:
+  extrn_mdl_source_dir = \"${extrn_mdl_source_dir}\"
+Please ensure that the directory specified by extrn_mdl_source_dir exists
+and that all the files specified in the array extrn_mdl_fns_on_disk exist
+within it:
+  extrn_mdl_source_dir = \"${extrn_mdl_source_dir}\"
+  extrn_mdl_fns_on_disk = ( $( printf "\"%s\" " "${extrn_mdl_fns_on_disk[@]}" ))"
+  fi
+
 fi
 #
 #-----------------------------------------------------------------------
