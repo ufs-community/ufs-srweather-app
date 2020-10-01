@@ -23,12 +23,12 @@ else
 fi
 
 export COMPILER=intel
-export CMAKE_Platform=${target}
 if [ $target = 'wcoss_cray' -o $target = 'wcoss_dell_p3' ]; then
   target=${target}
 else
   target=${target}.${COMPILER}
 fi
+export CMAKE_Platform=${target}
 
 cd ufs_weather_model
 model_top_dir=`pwd`
@@ -53,8 +53,8 @@ fi
 # is the valid values for CCPP_PHYS_SUITE.  Note that the result (stored
 # in CCPP_SUITES) is a string consisting of a comma-separated list of all
 # the valid (allowed) CCPP physics suites.
-CCPP_SUITES=$( 
-  . ../../regional_workflow/ush/valid_param_vals.sh 
+CCPP_SUITES=$(
+  . ../../regional_workflow/ush/valid_param_vals.sh
   printf "%s," "${valid_vals_CCPP_PHYS_SUITE[@]}"
 )
 export CCPP_SUITES="${CCPP_SUITES:0: -1}"  # Remove comma after last suite.
