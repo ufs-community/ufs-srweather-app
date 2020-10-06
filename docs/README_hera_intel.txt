@@ -39,8 +39,7 @@ export CMAKE_CXX_COMPILER=mpiicpc
 export CMAKE_Fortran_COMPILER=mpiifort
 export CMAKE_Platform=hera.intel
 
-git clone -b feature/cmake git@github.com:kgerheiser/ufs-srweather-app
-#git clone -b release/public-v1 git@github.com:ufs-community/ufs-srweather-app
+git clone -b release/public-v1 git@github.com:ufs-community/ufs-srweather-app
 
 cd ufs-srweather-app/
 ./manage_externals/checkout_externals
@@ -49,4 +48,3 @@ mkdir build
 cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=..
 make
-
