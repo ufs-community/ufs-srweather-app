@@ -11,10 +11,13 @@ export FC=ifort
 
 NCEPLIBS_INSTALL=/scratch1/BMC/gmtb/software/NCEPLIBS-ufs-v2.0.0/intel-18.0.5.274/impi-2018.0.4
 
-module use -a ${NCEPLIBS_INSTALL}/modules
+module use ${NCEPLIBS_INSTALL}/modules
+
+module load libpng/1.6.35
 
 module load bacio/2.4.1
 module load g2/3.4.1
+module load g2tmpl/1.9.1
 module load ip/3.3.3
 module load nemsio/2.5.2
 module load sp/2.3.3
@@ -28,11 +31,8 @@ module load nemsiogfs/2.5.3
 module load landsfcutil/2.4.1
 module load wgrib2/2.0.8
 module load netcdf/4.7.4
-
-module use -a /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-module load hdf5_parallel/1.10.6.release
-module load netcdf_parallel/4.7.4.release
-module load esmf/8.0.0_ParallelNetCDF
+module load esmf/8.0.0
+module load crtm/2.3.0
 
 export CMAKE_C_COMPILER=mpiicc
 export CMAKE_CXX_COMPILER=mpiicpc
