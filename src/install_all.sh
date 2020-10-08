@@ -26,7 +26,7 @@ fi
 # install post
 #------------------------------------
 $Build_post && {
- ${CP} EMC_post/exec/*                                 ../bin/ncep_post
+ ${CP} EMC_post/exec/*                                 ../bin/nceppost.x
 }
 
 #------------------------------------
