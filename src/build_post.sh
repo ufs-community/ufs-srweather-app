@@ -22,6 +22,8 @@ if [ "$target" = "jet" ] ; then
   ./compile jet
 elif [ "$target" = "hera" ] ; then
   ./compile hera
+elif [ "$target" = "orion" ] ; then
+  ./compile orion
 elif [ "$target" = "wcoss_cray" ] ; then
   ./compile cray-intel
 elif [ "$target" = "wcoss_dell_p3" ] ; then
