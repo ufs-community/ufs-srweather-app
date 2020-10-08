@@ -55,8 +55,6 @@ function set_gridparams_ESGgrid() {
 "halo_width" \
 "delx" \
 "dely" \
-"alpha" \
-"kappa" \
 "output_varname_lon_ctr" \
 "output_varname_lat_ctr" \
 "output_varname_nx" \

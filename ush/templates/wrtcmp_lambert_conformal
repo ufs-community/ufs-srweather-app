@@ -12,10 +12,10 @@ cen_lon:                 <cen_lon>      # Reference longitude, in degrees.
 cen_lat:                 <cen_lat>      # Reference latitude, in degrees.
 stdlat1:                 <stdlat1>      # Latitude of first standard parallel, in degrees.
 stdlat2:                 <stdlat2>      # Latitude of second standard parallel, in degrees.
-nx:                      <nx>           # Number of points along x-axis in Lambert conformal (x,y) plane.
-ny:                      <ny>           # Number of points along y-axis in Lambert conformal (x,y) plane.
-lon1:                    <lon1>         # Longitude of grid point at lower-left corner of grid, in degrees.
-lat1:                    <lat1>         # Latitude of grid point at lower-left corner of grid, in degrees.
+nx:                      <nx>           # Number of grid cells along x-axis in Lambert conformal (x,y) plane.
+ny:                      <ny>           # Number of grid cells along y-axis in Lambert conformal (x,y) plane.
+lon1:                    <lon1>         # Longitude of center of grid cell at bottom-left corner of grid, in degrees.
+lat1:                    <lat1>         # Latitude of center of grid cell at bottom-left corner of grid, in degrees.
 dx:                      <dx>           # Grid cell size in x direction, in meters.
 dy:                      <dy>           # Grid cell size in y direction, in meters.
 

@@ -708,14 +708,6 @@ GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
 #   NOTE: Probably don't need to make this a user-specified variable.  
 #         Just set it in the function set_gridparams_ESGgrid.sh.
 #
-# ESGgrid_ALPHA_PARAM:
-# The alpha parameter used in the Jim Purser map projection/grid generation
-# method.
-#
-# ESGgrid_KAPPA_PARAM:
-# The kappa parameter used in the Jim Purser map projection/grid generation
-# method.
-#
 #-----------------------------------------------------------------------
 #
 ESGgrid_LON_CTR="-97.5"
@@ -725,8 +717,6 @@ ESGgrid_DELY="3000.0"
 ESGgrid_NX="1000"
 ESGgrid_NY="1000"
 ESGgrid_WIDE_HALO_WIDTH="6"
-ESGgrid_ALPHA_PARAM="0.21423"
-ESGgrid_KAPPA_PARAM="-0.23209"
 #
 #-----------------------------------------------------------------------
 #

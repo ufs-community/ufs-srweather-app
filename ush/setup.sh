@@ -480,7 +480,7 @@ case "${EMC_GRID_NAME}" in
   "conus_c96")
     PREDEF_GRID_NAME="EMC_CONUS_coarse"
     ;;
-  "GSD_HRRR25km" | "GSD_HRRR13km" | "GSD_HRRR3km" | "GSD_SUBCONUS3km")
+  "RRFS_CONUS_25km" | "RRFS_CONUS_13km" | "RRFS_CONUS_3km" | "RRFS_SUBCONUS_3km")
     PREDEF_GRID_NAME="${EMC_GRID_NAME}"
     ;;
   "conus_orig" | "guam" | "hi" | "pr")
@@ -1019,7 +1019,7 @@ fi
 if [ "${EXPT_BASEDIR:0:1}" != "/" ]; then
   EXPT_BASEDIR="${SR_WX_APP_TOP_DIR}/../expt_dirs/${EXPT_BASEDIR}"
 fi
-EXPT_BASEDIR="$( readlink -f ${EXPT_BASEDIR} )"
+EXPT_BASEDIR="$( readlink -m ${EXPT_BASEDIR} )"
 mkdir_vrfy -p "${EXPT_BASEDIR}"
 #
 #-----------------------------------------------------------------------
@@ -1768,8 +1768,6 @@ elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
     halo_width="${ESGgrid_WIDE_HALO_WIDTH}" \
     delx="${ESGgrid_DELX}" \
     dely="${ESGgrid_DELY}" \
-    alpha="${ESGgrid_ALPHA_PARAM}" \
-    kappa="${ESGgrid_KAPPA_PARAM}" \
     output_varname_lon_ctr="LON_CTR" \
     output_varname_lat_ctr="LAT_CTR" \
     output_varname_nx="NX" \

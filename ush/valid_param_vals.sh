@@ -12,12 +12,15 @@ valid_vals_PREDEF_GRID_NAME=( \
 "GSD_HAFSV0.A3km" \
 "GSD_HAFSV0.A13km" \
 "GSD_HAFSV0.A25km" \
-"GSD_RRFSAK_3km" \
+"RRFS_AK_13km" \
+"RRFS_AK_3km" \
 "GSD_HRRR_AK_50km" \
-"GSD_HRRR25km" \
-"GSD_HRRR13km" \
-"GSD_HRRR3km" \
-"GSD_SUBCONUS3km" \
+"RRFS_CONUS_25km" \
+"RRFS_CONUS_13km" \
+"RRFS_CONUS_3km" \
+"RRFS_SUBCONUS_3km" \
+"CONUS_25km_GFDLgrid" \
+"CONUS_3km_GFDLgrid" \
 "GSD_RAP13km" \
 )
 valid_vals_EMC_GRID_NAME=( \
@@ -28,10 +31,10 @@ valid_vals_EMC_GRID_NAME=( \
 "guam" \
 "hi" \
 "pr" \
-"GSD_HRRR25km" \
-"GSD_HRRR13km" \
-"GSD_HRRR3km" \
-"GSD_SUBCONUS3km" \
+"RRFS_CONUS_25km" \
+"RRFS_CONUS_13km" \
+"RRFS_CONUS_3km" \
+"RRFS_SUBCONUS_3km" \
 "GSD_RAP13km" \
 )
 valid_vals_USE_CCPP=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
