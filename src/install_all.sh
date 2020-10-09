@@ -5,10 +5,10 @@ build_dir=`pwd`
 
 CP='cp -rp'
 
-# Check final exec folder exists
-if [ ! -d "../exec" ]; then
-  echo "Creating ../exec folder"
-  mkdir ../exec
+# Check final bin folder exists
+if [ ! -d "../bin" ]; then
+  echo "Creating ../bin folder"
+  mkdir ../bin
 fi
 
 #------------------------------------
@@ -20,30 +20,30 @@ fi
 #------------------------------------
 # install forecast
 #------------------------------------
-#${CP} NEMSfv3gfs/fv3.exe                               ../exec/regional_forecast.x
+#${CP} NEMSfv3gfs/fv3.exe                               ../bin/regional_forecast.x
 
 #------------------------------------
 # install post
 #------------------------------------
 $Build_post && {
- ${CP} EMC_post/exec/*                                 ../exec/ncep_post
+ ${CP} EMC_post/exec/*                                 ../bin/ncep_post
 }
 
 #------------------------------------
 # install needed utilities from UFS_UTILS.
 #------------------------------------
 $Build_UFS_UTILS && {
-# ${CP} regional_utils.fd/exec/global_chgres            ../exec/regional_chgres.x
- ${CP} UFS_UTILS/exec/chgres_cube                      ../exec/chgres_cube.exe
- ${CP} UFS_UTILS/exec/orog                             ../exec/orog.x
- ${CP} UFS_UTILS/exec/sfc_climo_gen                    ../exec/sfc_climo_gen
- ${CP} UFS_UTILS/exec/regional_esg_grid                ../exec/regional_esg_grid
- ${CP} UFS_UTILS/exec/make_hgrid                       ../exec/make_hgrid
- ${CP} UFS_UTILS/exec/make_solo_mosaic                 ../exec/make_solo_mosaic
- ${CP} UFS_UTILS/exec/fregrid                          ../exec/fregrid
- ${CP} UFS_UTILS/exec/filter_topo                      ../exec/filter_topo
- ${CP} UFS_UTILS/exec/shave                            ../exec/shave.x
- ${CP} UFS_UTILS/exec/global_equiv_resol               ../exec/global_equiv_resol
+# ${CP} regional_utils.fd/exec/global_chgres            ../bin/regional_chgres.x
+ ${CP} UFS_UTILS/exec/chgres_cube                      ../bin/chgres_cube
+ ${CP} UFS_UTILS/exec/orog                             ../bin/orog
+ ${CP} UFS_UTILS/exec/sfc_climo_gen                    ../bin/sfc_climo_gen
+ ${CP} UFS_UTILS/exec/regional_esg_grid                ../bin/regional_esg_grid
+ ${CP} UFS_UTILS/exec/make_hgrid                       ../bin/make_hgrid
+ ${CP} UFS_UTILS/exec/make_solo_mosaic                 ../bin/make_solo_mosaic
+ ${CP} UFS_UTILS/exec/fregrid                          ../bin/fregrid
+ ${CP} UFS_UTILS/exec/filter_topo                      ../bin/filter_topo
+ ${CP} UFS_UTILS/exec/shave                            ../bin/shave
+ ${CP} UFS_UTILS/exec/global_equiv_resol               ../bin/global_equiv_resol
 }
 
 #------------------------------------
