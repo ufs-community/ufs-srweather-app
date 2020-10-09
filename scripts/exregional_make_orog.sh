@@ -181,7 +181,7 @@ mkdir_vrfy -p "${shave_dir}"
 # Set the name and path to the executable that generates the raw orography
 # file and make sure that it exists.
 #
-exec_fn="orog.x"
+exec_fn="orog"
 exec_fp="$EXECDIR/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
@@ -531,7 +531,7 @@ Filtering of orography complete."
 #
 # Set the name and path to the executable and make sure that it exists.
 #
-exec_fn="shave.x"
+exec_fn="shave"
 exec_fp="$EXECDIR/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\

@@ -589,12 +589,28 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${USE_CCPP}" = "TRUE" ]; then
-  exec_fn="fv3.exe"
+  exec_fn="NEMS.exe"
 else
-  exec_fn="fv3_32bit.exe"
+    print_err_msg_exit "\
+Running this workflow without CCPP is not supported at this time.
+Please set USE_CCPP=TRUE in your config.sh file.
+"
 fi
 
-exec_fp="${UFS_WTHR_MDL_DIR}/tests/${exec_fn}"
+exec_fp="${SR_WX_APP_TOP_DIR}/bin/${exec_fn}"
+#Check for the old build location for fv3 executable
+if [ ! -f "${exec_fp}" ]; then
+  exec_fp_alt="${UFS_WTHR_MDL_DIR}/build/${exec_fn}"
+  if [ ! -f "${exec_fp_alt}" ]; then
+    print_err_msg_exit "\
+The executable (exec_fp) for running the forecast model does not exist:
+  exec_fp = \"${exec_fp}\"
+Please ensure that you've built this executable."
+  else
+    exec_fp="${exec_fp_alt}"
+  fi
+fi
+
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
 The executable (exec_fp) for running the forecast model does not exist:

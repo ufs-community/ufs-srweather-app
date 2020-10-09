@@ -715,7 +715,7 @@ SORCDIR="$HOMErrfs/sorc"
 SRC_DIR="${SR_WX_APP_TOP_DIR}/src"
 PARMDIR="$HOMErrfs/parm"
 MODULES_DIR="$HOMErrfs/modulefiles"
-EXECDIR="${SR_WX_APP_TOP_DIR}/exec"
+EXECDIR="${SR_WX_APP_TOP_DIR}/bin"
 FIXrrfs="$HOMErrfs/fix"
 TEMPLATE_DIR="$USHDIR/templates"
 

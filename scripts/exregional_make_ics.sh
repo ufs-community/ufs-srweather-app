@@ -493,7 +493,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 #
 #-----------------------------------------------------------------------
 #
-exec_fn="chgres_cube.exe"
+exec_fn="chgres_cube"
 exec_fp="$EXECDIR/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
