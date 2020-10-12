@@ -1277,3 +1277,27 @@ HALO_BLEND=0
 #-----------------------------------------------------------------------
 #
 GWD_RRFS_v1beta_BASEDIR=""
+#
+#-----------------------------------------------------------------------
+#
+# USE_FVCOM:
+# Flag set to update surface conditions in FV3-LAM with fields generated
+# from the Finite Volume Community Ocean Model (FVCOM). This will
+# replace lake/sea surface temperature, ice surface temperature, and ice
+# placement. FVCOM data must already be interpolated to the desired
+# FV3-LAM grid. This flag will be used in make_ics to modify sfc_data.nc
+# after chgres_cube is run by running the routine process_FVCOM.exe
+#
+# FVCOM_DIR:
+# User defined directory where FVCOM data already interpolated to FV3-LAM
+# grid is located. File name in this path should be "fvcom.nc" to allow
+#
+# FVCOM_FILE:
+# Name of file located in FVCOM_DIR that has FVCOM data interpolated to 
+# FV3-LAM grid. This file will be copied later to a new location and name
+# changed to fvcom.nc
+#------------------------------------------------------------------------
+#
+USE_FVCOM="FALSE"
+FVCOM_DIR="/user/defined/dir/to/fvcom/data"
+FVCOM_FILE="fvcom.nc"

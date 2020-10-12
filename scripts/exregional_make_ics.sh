@@ -611,6 +611,48 @@ mv_vrfy gfs.bndy.nc ${ics_dir}/gfs_bndy.tile${TILE_RGNL}.000.nc
 #
 #-----------------------------------------------------------------------
 #
+# Process FVCOM Data
+#
+#-----------------------------------------------------------------------
+#
+if [ "${USE_FVCOM}" = "TRUE" ]; then
+
+  fvcom_exec_fn="fvcom_to_FV3"
+  fvcom_exec_fp="$EXECDIR/${fvcom_exec_fn}"
+  if [ ! -f "${fvcom_exec_fp}" ]; then
+    print_err_msg_exit "\
+The executable (fvcom_exec_fp) for processing FVCOM data onto FV3-LAM
+native grid does not exist:
+  fvcom_exec_fp = \"${fvcom_exec_fp}\"
+Please ensure that you've built this executable."
+  fi
+  cp_vrfy ${fvcom_exec_fp} ${ics_dir}/.
+  fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
+  if [ ! -f "${fvcom_data_fp}" ]; then
+    print_err_msg_exit "\
+The file or path (fvcom_data_fp) does not exist:
+  fvcom_data_fp = \"${fvcom_data_fp}\"
+Please check the following user defined variables:
+  FVCOM_DIR = \"${FVCOM_DIR}\"
+  FVCOM_FILE= \"${FVCOM_FILE}\" "
+  fi
+
+  cp_vrfy ${fvcom_data_fp} ${ics_dir}/fvcom.nc  
+  cd_vrfy ${ics_dir}
+  ${APRUN} ${fvcom_exec_fn} sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc || \
+  print_err_msg_exit "\
+Call to executable (fvcom_exe) to modify sfc fields for FV3-LAM failed:
+  fvcom_exe = \"${fvcom_exe}\"
+The following variables were being used:
+  FVCOM_DIR = \"${FVCOM_DIR}\"
+  FVCOM_FILE = \"${FVCOM_FILE}\"
+  ics_dir = \"${ics_dir}\"
+  fvcom_exe_dir = \"${fvcom_exe_dir}\"
+  fvcom_exe = \"${fvcom_exe}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Print message indicating successful completion of script.
 #
 #-----------------------------------------------------------------------
