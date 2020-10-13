@@ -35,7 +35,6 @@ WRTCMP_lat_lwr_left="22.41403305"
 WRTCMP_dx="${ESGgrid_DELX}"
 WRTCMP_dy="${ESGgrid_DELY}"
 
-USE_CCPP="TRUE"
 CCPP_PHYS_SUITE="FV3_GFS_2017_gfdlmp_regional"
 
 FCST_LEN_HRS="06"

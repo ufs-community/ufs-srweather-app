@@ -437,16 +437,11 @@ else
   ln_vrfy -sf ${relative_or_null} ${FV3_NML_FP} ${run_dir}
 fi
 
-if [ "${USE_CCPP}" = "TRUE" ]; then
-
-  ln_vrfy -sf ${relative_or_null} ${CCPP_PHYS_SUITE_FP} ${run_dir} 
-
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-    ln_vrfy -sf ${relative_or_null} $EXPTDIR/CCN_ACTIVATE.BIN ${run_dir}
-  fi
-
+ln_vrfy -sf ${relative_or_null} ${CCPP_PHYS_SUITE_FP} ${run_dir} 
+if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
+  ln_vrfy -sf ${relative_or_null} $EXPTDIR/CCN_ACTIVATE.BIN ${run_dir}
 fi
 #
 #-----------------------------------------------------------------------

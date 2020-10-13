@@ -50,7 +50,6 @@ if [ "$QUILTING" = "TRUE" ]; then
   WRTCMP_dlat="0.24"
 fi
 
-USE_CCPP="TRUE"
 CCPP_PHYS_SUITE="FV3_GFS_2017_gfdlmp"
 
 FCST_LEN_HRS="06"

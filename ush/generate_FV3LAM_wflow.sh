@@ -510,33 +510,27 @@ print_info_msg "$VERBOSE" "
   ory..."
 cp_vrfy "${NEMS_CONFIG_TMPL_FP}" "${NEMS_CONFIG_FP}"
 #
-# If using CCPP ...
-#
-if [ "${USE_CCPP}" = "TRUE" ]; then
-#
 # Copy the CCPP physics suite definition file from its location in the
 # clone of the FV3 code repository to the experiment directory (EXPT-
 # DIR).
 #
-  print_info_msg "$VERBOSE" "
+print_info_msg "$VERBOSE" "
 Copying the CCPP physics suite definition XML file from its location in
 the forecast model directory sturcture to the experiment directory..."
-  cp_vrfy "${CCPP_PHYS_SUITE_IN_CCPP_FP}" "${CCPP_PHYS_SUITE_FP}"
+cp_vrfy "${CCPP_PHYS_SUITE_IN_CCPP_FP}" "${CCPP_PHYS_SUITE_FP}"
 #
-# If using the GSD_v0 or GSD_SAR physics suite, copy the fixed file con-
-# taining cloud condensation nuclei (CCN) data that is needed by the
-# Thompson microphysics parameterization to the experiment directory.
+# If using a physics suite that includes the Thompson microphysics 
+# parameterization, copy the fixed file containing cloud condensation 
+# nuclei (CCN) data that is needed by that parameterization.
 #
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-    print_info_msg "$VERBOSE" "
+if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
+  print_info_msg "$VERBOSE" "
 Copying the fixed file containing cloud condensation nuclei (CCN) data
 (needed by the Thompson microphysics parameterization) to the experiment
 directory..."
-    cp_vrfy "${FIXgsm}/CCN_ACTIVATE.BIN" "$EXPTDIR"
-  fi
-
+  cp_vrfy "${FIXgsm}/CCN_ACTIVATE.BIN" "$EXPTDIR"
 fi
 #
 #-----------------------------------------------------------------------
@@ -552,8 +546,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${USE_CCPP}" = "TRUE" ] && \
-   [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ]; then
+if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ]; then
   mv_vrfy "${CCPP_PHYS_SUITE_FP}.tmp" "${CCPP_PHYS_SUITE_FP}"
 fi
 
@@ -588,15 +581,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${USE_CCPP}" = "TRUE" ]; then
-  exec_fn="NEMS.exe"
-else
-    print_err_msg_exit "\
-Running this workflow without CCPP is not supported at this time.
-Please set USE_CCPP=TRUE in your config.sh file.
-"
-fi
-
+exec_fn="NEMS.exe"
 exec_fp="${SR_WX_APP_TOP_DIR}/bin/${exec_fn}"
 #Check for the old build location for fv3 executable
 if [ ! -f "${exec_fp}" ]; then

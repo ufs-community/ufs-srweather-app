@@ -66,7 +66,6 @@ function set_ozone_param() {
 #
   local valid_args=( \
 "ccpp_phys_suite_fp" \
-"ozone_param_no_ccpp" \
 "output_varname_ozone_param" \
   )
   process_args valid_args "$@"
@@ -114,9 +113,8 @@ function set_ozone_param() {
 #     being used, then we set the variable ozone_param to the string 
 #     "ozphys".
 #
-# If the forecast model executable is CCPP-enabled, then we check the 
-# CCPP physics suite file to determine the parameterization being used.
-# If this file contains the line
+# We check the CCPP physics suite definition file (SDF) to determine the 
+# parameterization being used.  If this file contains the line
 #
 #   <scheme>ozphys_2015</scheme>
 #
@@ -125,21 +123,14 @@ function set_ozone_param() {
 #
 #   <scheme>ozphys</scheme>
 #
-# then the after-2015 parameterization is being used.  (The suite file 
-# should contain exactly one of these lines; not both or neither; check
-# for this.)  If the forecast model executable is not CCPP-enabled, then
-# the ozone parameterization must be specified by the user.  This user-
-# specified value is passed in as an argument (ozone_param_no_ccpp), and
-# ozone_param simply gets set to this value.
+# then the after-2015 parameterization is being used.  (The SDF should
+# contain exactly one of these lines; not both nor neither; we check for 
+# this.)  
 #
 #-----------------------------------------------------------------------
 #
-  if [ "${USE_CCPP}" = "FALSE" ]; then
-    ozone_param="${ozone_param_no_ccpp}"
-  else
-    regex_search="^[ ]*<scheme>(ozphys.*)<\/scheme>[ ]*$"
-    ozone_param=$( sed -r -n -e "s/${regex_search}/\1/p" "${ccpp_phys_suite_fp}" )
-  fi
+  regex_search="^[ ]*<scheme>(ozphys.*)<\/scheme>[ ]*$"
+  ozone_param=$( sed -r -n -e "s/${regex_search}/\1/p" "${ccpp_phys_suite_fp}" )
 
   if [ "${ozone_param}" = "ozphys_2015" ]; then
     fixgsm_ozone_fn="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"

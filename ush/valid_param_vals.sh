@@ -37,7 +37,6 @@ valid_vals_EMC_GRID_NAME=( \
 "RRFS_SUBCONUS_3km" \
 "GSD_RAP13km" \
 )
-valid_vals_USE_CCPP=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_CCPP_PHYS_SUITE=( \
 "FV3_CPT_v0" \
 "FV3_GFS_2017_gfdlmp" \
@@ -48,7 +47,6 @@ valid_vals_CCPP_PHYS_SUITE=( \
 "FV3_GFS_v16beta" \
 "FV3_RRFS_v1beta" \
 ) 
-valid_vals_OZONE_PARAM_NO_CCPP=("ozphys_2015" "ozphys")
 valid_vals_GFDLgrid_RES=("48" "96" "192" "384" "768" "1152" "3072")
 valid_vals_EXTRN_MDL_NAME_ICS=("GSMGFS" "FV3GFS" "RAPX" "HRRRX" "NAM")
 valid_vals_EXTRN_MDL_NAME_LBCS=("GSMGFS" "FV3GFS" "RAPX" "HRRRX" "NAM")

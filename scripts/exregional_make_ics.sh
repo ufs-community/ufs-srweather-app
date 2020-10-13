@@ -352,21 +352,19 @@ case "${EXTRN_MDL_NAME_ICS}" in
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
 #
-# Set soil levels based on LSM in CCPP SDF (RUC-LSM or Noah/Noah MP)
+# Set soil levels based on LSM in CCPP SDF (RUC-LSM or Noah/Noah MP).
 #
-  if [ "${USE_CCPP}" = "TRUE" ]; then
-    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
-      nsoill_out="4"
-    elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-         [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-      nsoill_out="9"
-    fi
+  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
+    nsoill_out="4"
+  elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
+    nsoill_out="9"
   fi
 #
 # These geogrid files need to be moved to more permanent locations.
@@ -397,20 +395,18 @@ case "${EXTRN_MDL_NAME_ICS}" in
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
 #
-# Set soil levels based on CCPP SDF
+# Set soil levels based on CCPP SDF.
 #
-  if [ "${USE_CCPP}" = "TRUE" ]; then
-    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
-      nsoill_out="4"
-    elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-         [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-      nsoill_out="9"
-    fi
+  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
+    nsoill_out="4"
+  elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
+    nsoill_out="9"
   fi
 #
 # These geogrid files need to be moved to more permanent locations.
@@ -441,20 +437,19 @@ case "${EXTRN_MDL_NAME_ICS}" in
   input_type="grib2"
 
 #
-# Use Thompson climatology for ice- and water-friendly aerosols if CCPP suite uses Thompson MP
+# Use Thompson climatology for ice- and water-friendly aerosols if CCPP 
+# suite uses Thompson MP
 #
-  if [ "${USE_CCPP}" = "TRUE" ]; then
-    if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \       
-       [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
-      thomp_mp_climo_file=""
-    elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-         [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-         [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
-      thomp_mp_climo_file="${FIXam}/Thompson_MP_MONTHLY_CLIMO.nc"
-    fi
+  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \       
+     [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
+     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
+    thomp_mp_climo_file=""
+  elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
+       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
+       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
+    thomp_mp_climo_file="${FIXam}/Thompson_MP_MONTHLY_CLIMO.nc"
   fi
 
   nsoill_out="4" #If the CCPP suites uses RUC-LSM, the scheme will interpolate from 4 to 9 soil levels.
