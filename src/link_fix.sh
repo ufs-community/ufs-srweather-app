@@ -7,9 +7,9 @@ pwd=$(pwd -P)
 
 # prepare fixed data directories
 
-RGNL_WFLOW_DIR=$( pwd )/..
+RGNL_WFLOW_DIR=$( pwd )/../regional_workflow
 cd ${RGNL_WFLOW_DIR}
-mkdir -p fix/fix_fv3
+mkdir -p fix
 cd fix
 
 if [ ${target} == "theia" ]; then
@@ -20,9 +20,9 @@ elif [ ${target} == "hera" ]; then
 
     ln -sfn /scratch1/NCEPDEV/global/glopara/fix/fix_am fix_am
 
-elif [[ ${target} == "wcoss_dell_p3" || ${target} == "wcoss" ||  ${target} == "wcoss_cray" ]]; then
+elif [[ ${target} == "wcoss_dell_p3" || ${target} == "wcoss_cray" ]]; then
 
-    ln -sfn /gpfs/dell2/emc/modeling/noscrub/emc.campara/fix_fv3cam fix_am
+    ln -sfn /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am fix_am
 
 elif [ ${target} == "odin" ]; then
 
