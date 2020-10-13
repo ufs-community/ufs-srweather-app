@@ -603,6 +603,9 @@ has not been specified for this external model and machine combination:
     "CHEYENNE")
       sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
       ;;
+    "STAMPEDE")
+      sysdir="$sysbasedir"
+      ;;
     *)
       print_err_msg_exit "\
 The system directory in which to look for external model output files 
