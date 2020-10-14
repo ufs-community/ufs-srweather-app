@@ -99,7 +99,7 @@ export OMP_STACKSIZE=2048m
 case $MACHINE in
 
 
-"WCOSS_C" | "WCOSS")
+"WCOSS_CRAY")
 #
   { save_shell_opts; set +x; } > /dev/null 2>&1
 
@@ -117,6 +117,11 @@ case $MACHINE in
   ulimit -a
   ;;
 
+"WCOSS_DELL_P3")
+  ulimit -s unlimited
+  ulimit -a
+  APRUN="mpirun"
+  ;;
 
 "HERA")
   ulimit -s unlimited
@@ -286,7 +291,7 @@ Starting orography file generation..."
 case $MACHINE in
 
 
-"WCOSS_C" | "WCOSS")
+"WCOSS_CRAY")
 #
 # On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for
 # the orography.  For now, we have only one tile in the regional case,
@@ -309,6 +314,19 @@ ${tmp_dir}" \
 
   aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp ${tmp_dir}/orog.file1
   rm_vrfy ${tmp_dir}/orog.file1
+  ;;
+
+
+"WCOSS_DELL_P3")
+
+  ufs_utils_ushdir="${UFS_UTILS_DIR}/ush"
+  res="0"  # What should this be set to???
+
+  "${exec_fp}" < "${input_redirect_fn}" || \
+    print_err_msg_exit "\
+Call to executable (exec_fp) that generates the raw orography file returned
+with nonzero exit code:
+  exec_fp = \"${exec_fp}\""
   ;;
 
 

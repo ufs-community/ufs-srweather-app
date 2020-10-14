@@ -128,14 +128,21 @@ EOF
 #
 case $MACHINE in
 
-"WCOSS_C")
-# This could be wrong.  Just a guess since I don't have access to this machine.
+"WCOSS_CRAY")
   APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}
   ;;
 
-"WCOSS")
-# This could be wrong.  Just a guess since I don't have access to this machine.
-  APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}
+"WCOSS_DELL_P3")
+
+# Specify computational resources.
+  export NODES=2
+  export ntasks=48
+  export ptile=24
+  export threads=1
+  export MP_LABELIO=yes
+  export OMP_NUM_THREADS=$threads
+
+  APRUN="mpirun"
   ;;
 
 "HERA")

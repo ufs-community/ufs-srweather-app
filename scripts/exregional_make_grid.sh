@@ -103,7 +103,7 @@ export OMP_STACKSIZE=2048m
 case $MACHINE in
 
 
-"WCOSS_C" | "WCOSS")
+"WCOSS_CRAY")
 #
   { save_shell_opts; set +x; } > /dev/null 2>&1
 
@@ -121,6 +121,18 @@ case $MACHINE in
   ulimit -a
   ;;
 
+"WCOSS_DELL_P3")
+#
+  { save_shell_opts; set +x; } > /dev/null 2>&1
+
+  module list
+
+  { restore_shell_opts; } > /dev/null 2>&1
+
+  export APRUN="mpirun"
+
+  ulimit -s unlimited
+  ;;
 
 "HERA")
 #
