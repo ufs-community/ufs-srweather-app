@@ -32,7 +32,7 @@ fi
 # Set the full path of the directory where the binaries (executables) 
 # will be placed (and where the workflow scripts will look for them).
 #
-BIN_DIR=$( readlink -m "../bin" )
+export BIN_DIR=$( readlink -m "../bin" )
 #
 # If the binaries directory doesn't already exist, create it.
 #
