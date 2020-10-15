@@ -49,49 +49,6 @@ hour zero).
 #
 #-----------------------------------------------------------------------
 #
-# Set machine-dependent parameters.
-#
-#-----------------------------------------------------------------------
-#
-case "$MACHINE" in
-
-  "WCOSS_CRAY")
-    ulimit -s unlimited
-    APRUN="aprun -b -j1 -n48 -N12 -d1 -cc depth"
-    ;;
-
-  "WCOSS_DELL_P3")
-    ulimit -s unlimited
-    APRUN="mpirun"
-    ;;
-
-  "HERA")
-    ulimit -s unlimited
-    APRUN="srun"
-    ;;
-
-  "JET")
-    ulimit -s unlimited
-    APRUN="srun"
-    ;;
-
-  "ODIN")
-    APRUN="srun"
-    ;;
-
-  "CHEYENNE")
-    nprocs=$(( NNODES_MAKE_LBCS*PPN_MAKE_LBCS ))
-    APRUN="mpirun -np $nprocs"
-    ;;
-
-  "STAMPEDE")
-    APRUN="ibrun"
-    ;;
-
-esac
-#
-#-----------------------------------------------------------------------
-#
 # Set the name of and create the directory in which the output from this
 # script will be placed (if it doesn't already exist).
 #
@@ -107,8 +64,7 @@ mkdir_vrfy -p "${lbcs_dir}"
 #-----------------------------------------------------------------------
 #
 $SCRIPTSDIR/exregional_make_lbcs.sh \
-  lbcs_dir="${lbcs_dir}" \
-  APRUN="${APRUN}" || \
+  lbcs_dir="${lbcs_dir}" || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

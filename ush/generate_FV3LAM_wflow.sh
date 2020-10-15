@@ -532,23 +532,6 @@ Copying the fixed file containing cloud condensation nuclei (CCN) data
 directory..."
   cp_vrfy "${FIXgsm}/CCN_ACTIVATE.BIN" "$EXPTDIR"
 fi
-#
-#-----------------------------------------------------------------------
-#
-# This if-statement is a temporary fix that makes corrections to the suite
-# definition file for the "FV3_GFS_2017_gfdlmp_regional" physics suite
-# that EMC uses.
-#
-# IMPORTANT:
-# This if-statement must be removed once these corrections are made to
-# the suite definition file in the dtc/develop branch of the NCAR fork
-# of the fv3atm repository.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ]; then
-  mv_vrfy "${CCPP_PHYS_SUITE_FP}.tmp" "${CCPP_PHYS_SUITE_FP}"
-fi
 
 
 
