@@ -11,11 +11,6 @@ else
   export MOD_PATH=${cwd}/lib/modulefiles
 fi
 
-# Check final exec folder exists
-if [ ! -d "../exec" ]; then
-  mkdir ../exec
-fi
-
 cd EMC_post
 
 if [ "$target" = "jet" ] ; then
