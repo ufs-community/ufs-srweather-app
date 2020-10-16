@@ -203,9 +203,9 @@ After setting the file name of the ozone production/loss file in the
 FIXgsm directory (based on the ozone parameterization specified in the
 CCPP suite definition file), the array specifying the mapping between
 the symlinks that need to be created in the cycle directories and the
-files in the FIXgsm directory is:
+files in the FIXam directory is:
 
-CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = ( \\
+  CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = ( \\
 "
   msg="$msg"$( printf "\"%s\" \\\\\n" "${CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[@]}" )
   msg="$msg"$( printf "\n)" )

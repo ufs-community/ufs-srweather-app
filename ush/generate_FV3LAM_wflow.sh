@@ -519,25 +519,6 @@ Copying the CCPP physics suite definition XML file from its location in
 the forecast model directory sturcture to the experiment directory..."
 cp_vrfy "${CCPP_PHYS_SUITE_IN_CCPP_FP}" "${CCPP_PHYS_SUITE_FP}"
 #
-# If using a physics suite that includes the Thompson microphysics 
-# parameterization, copy the fixed file containing cloud condensation 
-# nuclei (CCN) data that is needed by that parameterization.
-#
-if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-   [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ] || \
-   [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-  print_info_msg "$VERBOSE" "
-Copying the fixed file containing cloud condensation nuclei (CCN) data
-(needed by the Thompson microphysics parameterization) to the experiment
-directory..."
-  cp_vrfy "${FIXgsm}/CCN_ACTIVATE.BIN" "$EXPTDIR"
-fi
-
-
-
-
-
-#
 #-----------------------------------------------------------------------
 #
 # Copy the forecast model executable from its location in the directory

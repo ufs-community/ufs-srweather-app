@@ -62,6 +62,7 @@ cd_vrfy ${scrfunc_dir}
 . ./set_gridparams_ESGgrid.sh
 . ./link_fix.sh
 . ./set_ozone_param.sh
+. ./set_thompson_mp_fix_files.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -2116,7 +2117,19 @@ mkdir_vrfy -p "$EXPTDIR"
 
 
 
-
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that, if the Thompson microphysics parameterization
+# is being called by the physics suite, modifies certain workflow arrays
+# to ensure that fixed files needed by this parameterization are copied
+# to the FIXam directory and appropriate symlinks to them are created in
+# the run directories. 
+#
+#-----------------------------------------------------------------------
+#
+set_thompson_mp_fix_files \
+  ccpp_phys_suite_fp="${CCPP_PHYS_SUITE_IN_CCPP_FP}" 
 
 
 
