@@ -28,10 +28,17 @@ if [ ! -d $logs_dir  ]; then
   mkdir $logs_dir
 fi
 
-# Check final exec folder exists
-if [ ! -d "../exec" ]; then
-  echo "Creating ../exec folder"
-  mkdir ../exec
+#
+# Set the full path of the directory where the binaries (executables) 
+# will be placed (and where the workflow scripts will look for them).
+#
+export BIN_DIR=$( readlink -m "../bin" )
+#
+# If the binaries directory doesn't already exist, create it.
+#
+if [ ! -d "${BIN_DIR}" ]; then
+  echo "Creating binaries directory: BIN_DIR = \"${BIN_DIR}\""
+  mkdir "${BIN_DIR}"
 fi
 
 #------------------------------------

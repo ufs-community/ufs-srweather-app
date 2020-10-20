@@ -10,7 +10,9 @@ if (${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
 
 # Set the project name and version.
-project(ufs-srweather-app VERSION 1.0)
+project(ufs-srweather-app VERSION 1.0 LANGUAGES C CXX Fortran)
+
+find_package(MPI REQUIRED COMPONENTS C CXX Fortran)
 
 # Set extended version info.
 SET(SRWA_VERSION_MAJOR 1)
@@ -139,3 +141,4 @@ configure_file(
 
 FILE(COPY "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app_meta.h" DESTINATION include)
 
+add_subdirectory(src)
