@@ -54,7 +54,6 @@ FV3_RRFS_v1beta:
     imfshalcnv: -1
     IMFDEEPCNV: -1
     DO_MYNNSFCLAY: true
-    GWD_OPT: 3
     do_deep: False
   atmos_model_nml:
     fdiag: 3

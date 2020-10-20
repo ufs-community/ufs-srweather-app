@@ -363,25 +363,6 @@ mv_vrfy "${raw_orog_fp_orig}" "${raw_orog_fp}"
 #
 #-----------------------------------------------------------------------
 #
-# Copy the two orography files needed for the drag suite in the FV3_RRFS_v1beta
-# physics suite.
-# 
-# Note that the following is a temporary fix. We need a long-term solution 
-# that calls a script or program to generates the necessary files (instead 
-# of copying them).
-#
-#-----------------------------------------------------------------------
-#
-if [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-  cp_vrfy ${GWD_RRFS_v1beta_DIR}/*_ls*.nc ${OROG_DIR}
-  cp_vrfy ${GWD_RRFS_v1beta_DIR}/*_ss*.nc ${OROG_DIR}
-fi
-
-print_info_msg "$VERBOSE" "
-Orography file generation complete."
-#
-#-----------------------------------------------------------------------
-#
 # Note that the orography filtering code assumes that the regional grid
 # is a GFDLgrid type of grid; it is not designed to handle ESGgrid type
 # regional grids.  If the flag "regional" in the orography filtering 

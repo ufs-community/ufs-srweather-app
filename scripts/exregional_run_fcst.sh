@@ -254,36 +254,6 @@ Cannot create symlink because target does not exist:
   target = \"$target\""
 fi
 #
-# If using the FV3_RRFS_v1beta physics suite, there are two files (that
-# contain statistics of the orography) that are needed by the drag
-# parameterization in that suite.  Below, symlinks to these are created
-# in the run directory.  Note that the symlinks must have specific names
-# that the FV3 model is hardcoded to recognize ("${CRES}_" and "halo0"
-# must be stripped from the file names).  We use those below.
-#
-if [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-# Symlink to orographic statistics fields file with "${CRES}_" and "halo0"
-# stripped from name.
-  target="${FIXLAM}/${CRES}${DOT_OR_USCORE}oro_data_ls.tile${TILE_RGNL}.halo${NH0}.nc"
-  symlink="oro_data_ls.nc"
-  if [ -f "${target}" ]; then
-    ln_vrfy -sf ${relative_or_null} $target $symlink
-  else
-    print_err_msg_exit "\
-Cannot create symlink because target does not exist:
-  target = \"$target}\""
-  fi
-  target="${FIXLAM}/${CRES}${DOT_OR_USCORE}oro_data_ss.tile${TILE_RGNL}.halo${NH0}.nc"
-  symlink="oro_data_ss.nc"
-  if [ -f "${target}" ]; then
-    ln_vrfy -sf ${relative_or_null} $target $symlink
-  else
-    print_err_msg_exit "\
-Cannot create symlink because target does not exist:
-  target = \"$target}\""
-  fi
-fi
-#
 # Symlink to halo-4 orography file with "${CRES}_" stripped from name.
 #
 # If this link is not created, then the code hangs with an error message

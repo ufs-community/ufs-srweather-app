@@ -930,40 +930,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If using the FV3_RRFS_v1beta physics suite, make sure that the directory
-# from which certain fixed orography files will be copied to the experiment 
-# directory actually exists.  Note that this is temporary code.  It should
-# be removed once there is a script that will create these orography files
-# for any grid.
-#
-#-----------------------------------------------------------------------
-#
-GWD_RRFS_v1beta_DIR="${GWD_RRFS_v1beta_BASEDIR}/${PREDEF_GRID_NAME}"
-if [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-  if [ -z "${PREDEF_GRID_NAME}" ]; then
-    print_err_msg_exit "\
-A predefined grid name (PREDEF_GRID_NAME) must be specified when using 
-the FV3_RRFS_v1beta physic suite:
-  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
-  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\""
-  else        
-    if [ ! -d "${GWD_RRFS_v1beta_DIR}" ]; then
-      print_err_msg_exit "\
-The directory (GWD_RRFS_v1beta_DIR) that should contain the gravity wave 
-drag-related orography files for the FV3_RRFS_v1beta does not exist:
-  GWD_RRFS_v1beta_DIR = \"${GWD_RRFS_v1beta_DIR}\""
-    elif [ ! "$( ls -A ${GWD_RRFS_v1beta_DIR} )" ]; then
-      print_err_msg_exit "\
-The directory (GWD_RRFS_v1beta_DIR) that should contain the gravity wave 
-drag related orography files for the FV3_RRFS_v1beta is empty:
-  GWD_RRFS_v1beta_DIR = \"${GWD_RRFS_v1beta_DIR}\""
-    fi      
-  fi
-fi
-#
-#
-#-----------------------------------------------------------------------
-#
 # If the base directory (EXPT_BASEDIR) in which the experiment subdirectory 
 # (EXPT_SUBDIR) will be located does not start with a "/", then it is 
 # either set to a null string or contains a relative directory.  In both 
@@ -2473,7 +2439,6 @@ CYCLE_BASEDIR="${CYCLE_BASEDIR}"
 GRID_DIR="${GRID_DIR}"
 OROG_DIR="${OROG_DIR}"
 SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
-GWD_RRFS_v1beta_DIR="${GWD_RRFS_v1beta_DIR}"
 
 NDIGITS_ENSMEM_NAMES="${NDIGITS_ENSMEM_NAMES}"
 ENSMEM_NAMES=( $( printf "\"%s\" " "${ENSMEM_NAMES[@]}" ))
