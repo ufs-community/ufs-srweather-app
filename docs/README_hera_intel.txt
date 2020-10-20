@@ -47,4 +47,4 @@ cd ufs-srweather-app/
 mkdir build
 cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=..
-make
+make -j 4
