@@ -639,9 +639,9 @@ envir=\"\${EXPT_SUBDIR}\"
 #
 # The experiment generation script will then set FIXsar to
 #
-#   FIXsar=\"\${FIXrrfs}/fix_sar/\${EMC_GRID_NAME}\"
+#   FIXsar=\"\${FIXrrfs}/fix_sar/\${PREDEF_GRID_NAME}\"
 #
-# where EMC_GRID_NAME has the value set above.
+# where PREDEF_GRID_NAME has the value set above.
 #"
 #
 # Set COMINgfs.

@@ -23,20 +23,6 @@ valid_vals_PREDEF_GRID_NAME=( \
 "CONUS_3km_GFDLgrid" \
 "GSD_RAP13km" \
 )
-valid_vals_EMC_GRID_NAME=( \
-"ak" \
-"conus" \
-"conus_c96" \
-"conus_orig" \
-"guam" \
-"hi" \
-"pr" \
-"RRFS_CONUS_25km" \
-"RRFS_CONUS_13km" \
-"RRFS_CONUS_3km" \
-"RRFS_SUBCONUS_3km" \
-"GSD_RAP13km" \
-)
 valid_vals_CCPP_PHYS_SUITE=( \
 "FV3_CPT_v0" \
 "FV3_GFS_2017_gfdlmp" \

@@ -397,7 +397,7 @@ MODULES_RUN_TASK_FP script.
 
       <dependency>
         <or>
-          <taskdep task="&RUN_FCST_TN;"/>
+          <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
           <and>
             <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#.nc</cyclestr></datadep>
             <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#.nc</cyclestr></datadep>

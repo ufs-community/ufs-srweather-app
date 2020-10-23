@@ -474,47 +474,6 @@ check_var_valid_value "GTYPE" "valid_vals_GTYPE"
 #
 #-----------------------------------------------------------------------
 #
-# If running in NCO mode, a valid EMC grid must be specified.  Make sure 
-# EMC_GRID_NAME is set to a valid value.
-#
-# Note: It is probably best to eventually eliminate EMC_GRID_NAME as a
-# user-specified variable and just go with PREDEF_GRID_NAME.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  err_msg="\
-The EMC grid specified in EMC_GRID_NAME is not supported:
-  EMC_GRID_NAME = \"${EMC_GRID_NAME}\""
-  check_var_valid_value \
-    "EMC_GRID_NAME" "valid_vals_EMC_GRID_NAME" "${err_msg}"
-fi
-#
-# Map the specified EMC grid to one of the predefined grids.
-#
-case "${EMC_GRID_NAME}" in
-  "ak")
-    PREDEF_GRID_NAME="EMC_AK"
-    ;;
-  "conus")
-    PREDEF_GRID_NAME="EMC_CONUS_3km"
-    ;;
-  "conus_c96")
-    PREDEF_GRID_NAME="EMC_CONUS_coarse"
-    ;;
-  "RRFS_CONUS_25km" | "RRFS_CONUS_13km" | "RRFS_CONUS_3km" | "RRFS_SUBCONUS_3km")
-    PREDEF_GRID_NAME="${EMC_GRID_NAME}"
-    ;;
-  "conus_orig" | "guam" | "hi" | "pr")
-    print_err_msg_exit "\
-A predefined grid (PREDEF_GRID_NAME) has not yet been defined for this
-EMC grid (EMC_GRID_NAME):
-  EMC_GRID_NAME = \"${EMC_GRID_NAME}\""
-    ;;
-esac
-#
-#-----------------------------------------------------------------------
-#
 # Make sure PREDEF_GRID_NAME is set to a valid value.
 #
 #-----------------------------------------------------------------------
@@ -1045,7 +1004,7 @@ Please ensure that path_resolved is an existing directory and then rerun
 the experiment generation script."
   fi
 
-  FIXLAM="${FIXrrfs}/fix_lam/${EMC_GRID_NAME}"
+  FIXLAM="${FIXrrfs}/fix_lam/${PREDEF_GRID_NAME}"
 #
 # In NCO mode (i.e. if RUN_ENVIR set to "nco"), it is assumed that before
 # running the experiment generation script, the path specified in FIXLAM 

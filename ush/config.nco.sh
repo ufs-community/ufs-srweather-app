@@ -2,16 +2,12 @@ MACHINE="hera"
 ACCOUNT="an_account"
 EXPT_SUBDIR="test_nco"
 
-QUEUE_DEFAULT="batch"
-QUEUE_HPSS="service"
-QUEUE_FCST="batch"
-
 VERBOSE="TRUE"
 
 RUN_ENVIR="nco"
 PREEXISTING_DIR_METHOD="rename"
 
-EMC_GRID_NAME="conus_c96"  # For now (20200130), this is maps to PREDEF_GRID_NAME="EMC_CONUS_coarse".
+PREDEF_GRID_NAME="EMC_CONUS_coarse"
 GRID_GEN_METHOD="GFDLgrid"
 
 QUILTING="TRUE"
@@ -50,8 +46,8 @@ PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"  # Path to direct
 #
 # The experiment generation script will then set FIXLAM to 
 #
-#   FIXLAM="${FIXrrfs}/fix_lam/${EMC_GRID_NAME}"
+#   FIXLAM="${FIXrrfs}/fix_lam/${PREDEF_GRID_NAME}"
 #
-# where EMC_GRID_NAME has the value set above.
+# where PREDEF_GRID_NAME has the value set above.
 #
 
