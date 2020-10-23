@@ -179,7 +179,9 @@ begin
   
   indx_start := new(num_grids, "integer")
   indx_end := new(num_grids, "integer")
-  
+
+print("num_grids = " + num_grids)
+;pause
   do i=0, num_grids-1
     if (i .eq. 0) then
       indx_start(i) = 0
@@ -192,6 +194,7 @@ begin
 print("")
 print("(nx_all_grids, ny_all_grids) = " + \
       "(" + nx_all_grids + ", " + ny_all_grids + ")")
+pause
 ;
 ; **********************************************************************
 ;
@@ -275,8 +278,10 @@ print("indx_end(i) = " + indx_end(i))
 ;
     lon_cntrs_crnt_grid_unstruc \
     := lon_cntrs_unstruc(indx_start(i):indx_end(i))
+;print("dimsizes(lon_cntrs_crnt_grid_unstruc) = " + dimsizes(lon_cntrs_crnt_grid_unstruc))
     lat_cntrs_crnt_grid_unstruc \
     := lat_cntrs_unstruc(indx_start(i):indx_end(i))
+;print("dimsizes(lat_cntrs_crnt_grid_unstruc) = " + dimsizes(lat_cntrs_crnt_grid_unstruc))
   
     rsrc@sfXArray = lon_cntrs_crnt_grid_unstruc
     rsrc@sfYArray = lat_cntrs_crnt_grid_unstruc
@@ -285,24 +290,47 @@ print("indx_end(i) = " + indx_end(i))
 ; These resources must be set in order if the cnFillMode resource is set
 ; to "CellFill".
 ;
+;print("XXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+;print("dimsizes(lon_verts_unstruc) = " + dimsizes(lon_verts_unstruc))
+;print("indx_start(i) = " + indx_start(i))
+;print("indx_end(i) = " + indx_end(i))
+;pause
     lon_verts_crnt_grid_unstruc \
     := lon_verts_unstruc(indx_start(i):indx_end(i),:)
+;print("dimsizes(lon_verts_crnt_grid_unstruc) = " + dimsizes(lon_verts_crnt_grid_unstruc))
     lat_verts_crnt_grid_unstruc \
     := lat_verts_unstruc(indx_start(i):indx_end(i),:)
+;print("dimsizes(lat_verts_crnt_grid_unstruc) = " + dimsizes(lat_verts_crnt_grid_unstruc))
   
     rsrc@sfXCellBounds = lon_verts_crnt_grid_unstruc
     rsrc@sfYCellBounds = lat_verts_crnt_grid_unstruc
 ;
-; If the grid_opts@plot_grid(i) is set to True, draw the cell edges 
+; If the grid_opts@plot_gridlines(i) is set to True, draw the cell edges 
 ; (gridlines) of the current grid.
 ;
-    if (grid_opts@plot_grid(i)) then
+;print("DDDDDDDD")
+;print(grid_opts)
+;print("EEEEEE  i = " + i)
+;print("        dimsizes(grid_opts@plot_gridlines(i)) = " + dimsizes(grid_opts@plot_gridlines(i)))
+;print(dimsizes(grid_opts@plot_gridlines(i)))
+;print(dimsizes(grid_opts@plot_gridlines))
+;tmp := grid_opts@plot_gridlines(i)
+tmp := grid_opts@plot_gridlines
+;print("FFFFFFFFFFFFFF")
+;print("KKKKKKKKKK tmp(i) = " + tmp(i))
+;print("GGGGGGGGGGG")
+;print(dimsizes(tmp))
+;print("HHHHHHHHHHH")
+;exit
+;    if (grid_opts@plot_gridlines(i)) then
+;    if ( False ) then
+    if (tmp(i)) then
 ;
 ; The resource cnCellFillMissingValEdgeColor should ideally set the cell
 ; edge color of those cells that contain missing values, but it seems to
 ; have no effect - at least when the field on the current grid contains
 ; all missing/fill values.  For this reason, when the field on a grid 
-; contains all missing/fill values and grid_opts@plot_grid(i) for that 
+; contains all missing/fill values and grid_opts@plot_gridlines(i) for that 
 ; grid is set to True (i.e. we want to see the gridlines but not a field
 ; on that grid), we resort to the method below in which we set the cn-
 ; CellFillEdgeColor resource to the color we want for the gridlines, and
@@ -328,6 +356,7 @@ print("indx_end(i) = " + indx_end(i))
 ; Extract the portion of the field array that contains the field values
 ; on the current grid.
 ;
+;print("dimsizes(field_unstruc) = " + dimsizes(field_unstruc))
     field_crnt_grid_unstruc \
     := field_unstruc(indx_start(i):indx_end(i))
 ;
@@ -335,7 +364,7 @@ print("indx_end(i) = " + indx_end(i))
 ; ues, then reset at least one value to a non-missing value (e.g. zero),
 ; and set the opacity of the field to 0 (transparent).  We do this in
 ; order to be able to see the gridlines in cases in which all values in
-; the field on the current grid are missing, and grid_opts@plot_grid(i)
+; the field on the current grid are missing, and grid_opts@plot_gridlines(i)
 ; is set to True (because in that case, the cnCellFillMissingValEdgeCo-
 ; lor resource doesn't seem to have an effect, so we use the cnCellFill-
 ; EdgeColor resource instead along with setting the opacity to 0).
@@ -432,6 +461,14 @@ print("indx_end(i) = " + indx_end(i))
 ;
       rsrc@mpDataBaseVersion = "MediumRes"
 ;      rsrc@mpDataBaseVersion = "HighRes"
+;      rsrc@mpDataBaseVersion = "Dynamic"
+      rsrc@mpDataSetName = "Earth..4"
+
+;      rsrc@mpOutlineBoundarySets = "USStates"
+;      rsrc@mpOutlineBoundarySets = "AllBoundaries"
+;      rsrc@mpOutlineSpecifiers = (/ "United States:states", "Canada:states", "Mexico:states" /)
+      rsrc@mpOutlineSpecifiers = (/ "land:states" /)
+;      rsrc@mpOutlineDrawOrder = "PostDraw"
 ;
 ; Plot curves of constant longitude and latitude (regardless of the plot
 ; projection).
@@ -978,6 +1015,8 @@ print("indx_end(i) = " + indx_end(i))
 
     id_grid_bdies := new(num_bdies, "graphic")
     bdy_indx_end := -1
+;print("")
+;print("dimsizes(id_grid_bdies) = " + dimsizes(id_grid_bdies))
 
     do i=0, num_bdies-1
 
@@ -988,15 +1027,25 @@ print("indx_end(i) = " + indx_end(i))
       if (show_grid_bdy(i)) then
 
         resp := True
-        resp@gsLineColor = bdy_opts@bdy_colors(i)
-        resp@gsLineThicknessF = bdy_opts@bdy_line_thicknesses(i)
-        resp@gsLineDashPattern = bdy_opts@bdy_dash_patterns(i)
+        resp@gsLineColor := bdy_opts@bdy_colors(i)
+        resp@gsLineThicknessF := bdy_opts@bdy_line_thicknesses(i)
+        resp@gsLineDashPattern := bdy_opts@bdy_dash_patterns(i)
         lon_crnt_bdy := lon_bdy_all_bdies(bdy_indx_start:bdy_indx_end)
         lat_crnt_bdy := lat_bdy_all_bdies(bdy_indx_start:bdy_indx_end)
+
+print("")
+print("i = " + i)
+print("num_bdies = " + num_bdies)
+print("bdy_opts@bdy_colors(i) = " + bdy_opts@bdy_colors(i))
+print("bdy_indx_start = " + bdy_indx_start)
+print("bdy_indx_end = " + bdy_indx_end)
+;print(resp)
 
         id_grid_bdies(i) \
         = gsn_add_polyline( \
           wks, contour_map, lon_crnt_bdy, lat_crnt_bdy, resp)
+;        gsn_add_polyline( \
+;        wks, contour_map, lon_crnt_bdy, lat_crnt_bdy, resp)
 
       end if
   

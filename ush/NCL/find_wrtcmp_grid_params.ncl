@@ -9,6 +9,21 @@
 ;help = True
 
 expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/test_latest_20191002/expt_dirs/test_sheleg_GSD_HRRR3km_01"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_GSD_HRRR13km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/suite_FV3_GSD_SAR"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/suite_FV3_GSD_SAR_3km_works03"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/suite_FV3_GSD_SAR_3km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_RRFS_SUBCONUS_3km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_CONUS_25km_GFDLgrid"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_CONUS_3km_GFDLgrid"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_RRFS_AK_3km"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_RRFS_AK_13km"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_RRFS_AK_13km_old001"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_13km_HRRRX_RAPX"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_3km_FV3GFS_FV3GFS"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try03/grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try03/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
+
 
 ;
 ; **********************************************************************
@@ -85,16 +100,17 @@ begin
   var_defns_fp = expt_dir + "/var_defns.sh"
 
   param_names = (/ \
-"WRTCMP_PARAMS_TEMPLATE_FP", \
+"WRTCMP_PARAMS_TMPL_FP", \
 "WRTCMP_output_grid", \
-"gtype", \
+"GTYPE", \
 "CRES", \
-"delx", \
-"dely", \
-"nh4_T7" /)
+"ESGgrid_DELX", \
+"ESGgrid_DELY", \
+"NH4" /)
 
   num_params = dimsizes(param_names)
   do np=0, num_params-1
+print("np = " + np)
 
     param_name = param_names(np)
     regex_search = "^\s*" + param_name + "=(" + char_dq + "([^" \
@@ -104,23 +120,28 @@ begin
             + "s/" + regex_search + "/" + regex_print + "/p" + char_sq \
             + " " + var_defns_fp
     sed_output = systemfunc(sed_cmd)
+print("sed_output = " + sed_output)
 ;
 ; Convert the output from the sed command (which will be a string) to 
 ; the appropriate NCL data type.
 ;
-    if (strcmp_exact(param_name, "WRTCMP_PARAMS_TEMPLATE_FP")) then
-      WRTCMP_PARAMS_TEMPLATE_FP = tostring(sed_output)
+    if (strcmp_exact(param_name, "WRTCMP_PARAMS_TMPL_FP")) then
+      WRTCMP_PARAMS_TMPL_FP = tostring(sed_output)
     else if (strcmp_exact(param_name, "WRTCMP_output_grid")) then
       WRTCMP_output_grid = tostring(sed_output)
-    else if (strcmp_exact(param_name, "gtype")) then
-      gtype = tostring(sed_output)
+    else if (strcmp_exact(param_name, "GTYPE")) then
+      GTYPE = tostring(sed_output)
     else if (strcmp_exact(param_name, "CRES")) then
       CRES = tostring(sed_output)
-    else if (strcmp_exact(param_name, "delx")) then
+    else if (strcmp_exact(param_name, "ESGgrid_DELX")) then
       dx_native = todouble(sed_output)
-    else if (strcmp_exact(param_name, "dely")) then
+;dx_native = 25122.693954919   ; Need if using the CONUS_25km_GFDLgrid grid
+;dx_native = 2964.19334212185  ; Need if using the CONUS_3km_GFDLgrid grid
+    else if (strcmp_exact(param_name, "ESGgrid_DELY")) then
       dy_native = todouble(sed_output)
-    else if (strcmp_exact(param_name, "nh4_T7")) then
+;dy_native = 25122.693954919   ; Need if using the CONUS_25km_GFDLgrid grid
+;dy_native = 2964.19334212185  ; Need if using the CONUS_3km_GFDLgrid grid
+    else if (strcmp_exact(param_name, "NH4")) then
       nhalo_T7 = tointeger(sed_output)
     else
 
@@ -145,11 +166,12 @@ begin
 ;
 ; **********************************************************************
 ;
-; Check that gtype has the proper value.
+; Check that GTYPE has the proper value.
 ;
 ; **********************************************************************
 ;
-  if (strcmp_exact(gtype, "regional")) then
+print("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
+  if (strcmp_exact(GTYPE, "regional")) then
 
     inds_tiles_to_plot = (/ 7 /)
 
@@ -157,9 +179,9 @@ begin
 
     msg := char_nl + \
 "ERROR:  " + curnt_script_proc_func_name + ":" + char_nl + \
-"This script is designed to handle only regional grids.  Thus, gtype" + char_nl + \
+"This script is designed to handle only regional grids.  Thus, GTYPE" + char_nl + \
 "may only be set to " + char_dq + "regional" + char_dq + ":" + char_nl + \
-"  gtype = " + char_dq + gtype + char_dq + char_nl + \
+"  GTYPE = " + char_dq + GTYPE + char_dq + char_nl + \
 "Stopping." + char_nl
 
     print("" + msg)
@@ -173,12 +195,13 @@ begin
 ;
 ; **********************************************************************
 ;
+print("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
   remove_rgnl_halo = True
   get_tile_bdies = False
 
   grid_info := read_FV3LAM_grid_native( \
                expt_dir, \
-               gtype, \
+               GTYPE, \
                CRES, \
                inds_tiles_to_plot, \
                get_tile_bdies, \
@@ -192,6 +215,14 @@ begin
   = grid_info@lon_tile_corners_face_midpts_all_tiles
   lat_tile_corners_face_midpts_tiles_to_plot \
   = grid_info@lat_tile_corners_face_midpts_all_tiles
+
+;lon_tile_corners_face_midpts_tiles_to_plot \
+;= where(lon_tile_corners_face_midpts_tiles_to_plot .gt. 0.0d+0, \
+;  lon_tile_corners_face_midpts_tiles_to_plot - 360.0d+0, \
+;  lon_tile_corners_face_midpts_tiles_to_plot)
+;print("lon_tile_corners_face_midpts_tiles_to_plot, lat_tile_corners_face_midpts_tiles_to_plot = " + \
+;      lon_tile_corners_face_midpts_tiles_to_plot + ", " + lat_tile_corners_face_midpts_tiles_to_plot)
+;pause
 ;
 ; **********************************************************************
 ;
@@ -202,7 +233,7 @@ begin
 ; **********************************************************************
 ;
   wrtcmp_config_fp = expt_dir + "/aaaa"
-  sys_output = systemfunc("cp " + WRTCMP_PARAMS_TEMPLATE_FP + \
+  sys_output = systemfunc("cp " + WRTCMP_PARAMS_TMPL_FP + \
                           " " + wrtcmp_config_fp) 
 ;
 ; **********************************************************************

@@ -340,16 +340,16 @@ predefined domain:
     ESGgrid_DELX="25000.0"
     ESGgrid_DELY="25000.0"
 
-    ESGgrid_NX=204
-    ESGgrid_NY=114
+    ESGgrid_NX=200
+    ESGgrid_NY=112
 
     ESGgrid_WIDE_HALO_WIDTH=6
 
     DT_ATMOS="300"
 
-    LAYOUT_X="6"
+    LAYOUT_X="5"
     LAYOUT_Y="2"
-    BLOCKSIZE="34"
+    BLOCKSIZE="40"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
@@ -359,10 +359,10 @@ predefined domain:
       WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"
       WRTCMP_stdlat1="${ESGgrid_LAT_CTR}"
       WRTCMP_stdlat2="${ESGgrid_LAT_CTR}"
-      WRTCMP_nx="201"
-      WRTCMP_ny="109"
-      WRTCMP_lon_lwr_left="-121.52372751"
-      WRTCMP_lat_lwr_left="23.57183129"
+      WRTCMP_nx="197"
+      WRTCMP_ny="107"
+      WRTCMP_lon_lwr_left="-121.12455072"
+      WRTCMP_lat_lwr_left="23.89394570"
       WRTCMP_dx="${ESGgrid_DELX}"
       WRTCMP_dy="${ESGgrid_DELY}"
     fi
@@ -394,16 +394,16 @@ predefined domain:
     ESGgrid_DELX="13000.0"
     ESGgrid_DELY="13000.0"
 
-    ESGgrid_NX=400
-    ESGgrid_NY=232
+    ESGgrid_NX=384
+    ESGgrid_NY=224
 
     ESGgrid_WIDE_HALO_WIDTH=6
 
-    DT_ATMOS="180"
+    DT_ATMOS="45"
 
     LAYOUT_X="16"
     LAYOUT_Y="8"
-    BLOCKSIZE="29"
+    BLOCKSIZE="32"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
@@ -413,10 +413,10 @@ predefined domain:
       WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"
       WRTCMP_stdlat1="${ESGgrid_LAT_CTR}"
       WRTCMP_stdlat2="${ESGgrid_LAT_CTR}"
-      WRTCMP_nx="397"
-      WRTCMP_ny="225"
-      WRTCMP_lon_lwr_left="-121.93788248"
-      WRTCMP_lat_lwr_left="22.51531359"
+      WRTCMP_nx="381"
+      WRTCMP_ny="217"
+      WRTCMP_lon_lwr_left="-121.11782706"
+      WRTCMP_lat_lwr_left="23.18443988"
       WRTCMP_dx="${ESGgrid_DELX}"
       WRTCMP_dy="${ESGgrid_DELY}"
     fi
@@ -448,16 +448,16 @@ predefined domain:
     ESGgrid_DELX="3000.0"
     ESGgrid_DELY="3000.0"
 
-    ESGgrid_NX=1740
-    ESGgrid_NY=1036
+    ESGgrid_NX=1680
+    ESGgrid_NY=1024
 
     ESGgrid_WIDE_HALO_WIDTH=6
 
     DT_ATMOS="40"
 
     LAYOUT_X="30"
-    LAYOUT_Y="14"
-    BLOCKSIZE="29"
+    LAYOUT_Y="16"
+    BLOCKSIZE="32"
 
     if [ "$QUILTING" = "TRUE" ]; then
       WRTCMP_write_groups="1"
@@ -467,10 +467,10 @@ predefined domain:
       WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"
       WRTCMP_stdlat1="${ESGgrid_LAT_CTR}"
       WRTCMP_stdlat2="${ESGgrid_LAT_CTR}"
-      WRTCMP_nx="1738"
-      WRTCMP_ny="1012"
-      WRTCMP_lon_lwr_left="-122.07320852"
-      WRTCMP_lat_lwr_left="21.93831404"
+      WRTCMP_nx="1678"
+      WRTCMP_ny="1002"
+      WRTCMP_lon_lwr_left="-121.29805882"
+      WRTCMP_lat_lwr_left="22.26588883"
       WRTCMP_dx="${ESGgrid_DELX}"
       WRTCMP_dy="${ESGgrid_DELY}"
     fi

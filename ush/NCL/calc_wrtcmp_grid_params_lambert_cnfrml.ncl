@@ -28,7 +28,7 @@ local lon_ctr, lat_ctr, lat1, lat2, \
       num_gap_cells, \
       dx, x_SW, x_NE, Lx, Lx_ovr_dx, nx, frac_x, x_increment, \
       dy, y_SW, y_NE, Ly, Ly_ovr_dy, ny, frac_y, y_increment, \
-      sphr_coords, lon_SW, lat_SW, \
+      sphr_coords, lonctr_ll_cell, latctr_ll_cell, \
       param_names, num_params, param_names_and_vals, trailing_comments, \ 
       np, param_name, param_value, param_value_str, \
       regex_search, regex_print, sed_cmd, \
@@ -119,8 +119,8 @@ begin
 ;
   dx = dx_native 
   dy = dy_native 
-;  num_margin_cells = 1
-  num_margin_cells = 5
+  num_margin_cells = 1
+;  num_margin_cells = 5
 ;  num_margin_cells = 100
 ;
 ; **********************************************************************
@@ -156,16 +156,16 @@ begin
 ;
 ; **********************************************************************
 ;
-
   y_S_native_max = max((/y_SW_native, y_S_native, y_SE_native/))
   y_N_native_min = min((/y_NW_native, y_N_native, y_NE_native/))
 
   y_S = y_S_native_max + num_margin_cells*dy
   y_N = y_N_native_min - num_margin_cells*dy
 
-  y_S_tmp = y_S
-  y_N_tmp = y_N
-  y_S = -min(abs((/y_S_tmp, y_N_tmp/)))
+; The following forces the write-component domain in Lambert conformal
+; space (i.e. the xy-plane) to be symmetric (about (x,y)=(0,0)) in the y 
+; direction.  Can't remember why I wanted to enforece this...
+  y_S = -min(abs((/y_S, y_N/)))
   y_N = -y_S
 
   Ly = y_N - y_S
@@ -178,23 +178,28 @@ begin
 ;
 ; **********************************************************************
 ;
-; Calculate the spherical coordinates of the southwest corner of the na-
-; tive grid from its Lambert coordinates.
+; Calculate the spherical coordinates of the southwest corner of the 
+; native grid from its Lambert coordinates.  
+;
+; Note that the coordinates that the write-component takes as input are 
+; those of the center of the grid cell at the lower-left corner of the 
+; grid.  However, the Lambert coordinates (x_W, y_S) caluclated above 
+; are those of the lower-left vertex (not center) of that cell.  Thus, 
+; we first add half a grid distance in the x and y directions to the 
+; Lambert coordinates of the vertex to obtain the Lambert coordinates of 
+; the cell center.  We then convert the result to spherical coordinates.
 ;
 ; **********************************************************************
 ;
-  x_W = x_W + 0.5*dx
-  x_E = x_E - 0.5*dx
-
-  y_S = y_S + 0.5*dy
-  y_N = y_N - 0.5*dy
+  xctr_ll_cell = x_W + 0.5*dx
+  yctr_ll_cell = y_S + 0.5*dy
 
   sphr_coords \
   := convert_lambert_cnfrml_coords_to_sphr( \
      lon_ctr, lat_ctr, lat1, lat2, rad_Earth, angle_units, \
-     x_W, y_S)
-  lon_SW = sphr_coords@lon
-  lat_SW = sphr_coords@lat
+     xctr_ll_cell, yctr_ll_cell)
+  lonctr_ll_cell = sphr_coords@lon
+  latctr_ll_cell = sphr_coords@lat
 ;
 ; **********************************************************************
 ;
@@ -280,10 +285,10 @@ begin
       param_value := ny
       fmt_str = "%10.0f"
     else if (strcmp_exact(param_name, "lon1")) then
-      param_value := lon_SW
+      param_value := lonctr_ll_cell
       fmt_str = "%16.8f"
     else if (strcmp_exact(param_name, "lat1")) then
-      param_value := lat_SW
+      param_value := latctr_ll_cell
       fmt_str = "%16.8f"
     else if (strcmp_exact(param_name, "dx")) then
       param_value := dx

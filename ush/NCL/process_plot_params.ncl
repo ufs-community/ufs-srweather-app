@@ -236,7 +236,7 @@ example_usage_and_help_str
 ; **********************************************************************
 ;
   cmd = "sed --silent --regexp-extended --expression " \
-      + "'s/^[ ]*(RES=)([" + char_dq + "]*)([0-9]+)([" + char_dq + "]*)(.*)/\3/p' " \
+      + "'s/^[ ]*(CRES=)([" + char_dq + "]*)C([0-9]+)([" + char_dq + "]*)(.*)/\3/p' " \
       + var_defns_fn
   res := systemfunc(cmd)
 ; 

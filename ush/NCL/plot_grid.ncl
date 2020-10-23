@@ -20,20 +20,91 @@
 
 ;run_dir = "ABCD"
 ;run_dir = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL"
-run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1734_NY1008_A0p21423_Kmns0p23209_HRRR_test_HRRRgrid02"
-run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01"
+;run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1734_NY1008_A0p21423_Kmns0p23209_HRRR_test_HRRRgrid02"
+;run_dir = "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01"
+
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/regional_001_old001"
+expt_dir = "/scratch2/BMC/det/beck/SAR-FV3/run_dirs/real_time2"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/regional_007"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/GFDLgrid_debug_verif"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/GFDLgrid_debug_verif_preprocess_good"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/GFDLgrid_AK_3km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/new_JPgrid"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/RTMA_grid_25km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/regional_003"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/GSD_RAP13km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/GSD_RAP13km_works02"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/RRFS_HRRR3km_from_regional_003"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/regional_002_GSD_HRRR3km"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/nco_GSD_HRRR3km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_rrfs_v1beta/expt_dirs/regional_002"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_rrfs_v1beta/expt_dirs/FV3_RRFS_v1beta"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_rrfs_v1beta/expt_dirs/FV3_RRFS_v1beta_3km"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/regional_002_25km"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/regional_002_13km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_rrfs_v1beta/expt_dirs/subconus"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_rrfs_v1beta/expt_dirs/nco_GSD_SUBCONUS3km_HRRRX_RAPX_works01"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_WE2E_testing/expt_dirs/try13/regional_002"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_WE2E_testing/expt_dirs/try13/nco_GSD_HRRR3km_HRRRX_RAPX"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_WE2E_testing/expt_dirs/try15/suite_FV3_GSD_SAR_3km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_GSD_HRRR13km"
 
 CDATE="2017090712"
+CDATE="2019052000"
+;CDATE="2020031212"
+;CDATE="2017090700"
+CDATE="2019070100"
+;CDATE="2020080100"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/suite_FV3_GSD_SAR_3km_works03"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/suite_FV3_GSD_SAR_3km"
+CDATE="2019052000"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_GSD_HRRR13km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_RRFS_CONUS_13km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_RRFS_CONUS_13km_HRRRX_RAPX"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_13km_FV3GFS_FV3GFS"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try03/grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
+CDATE="2019070100"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_13km_HRRRX_RAPX"
+;CDATE="2020080100"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_3km_FV3GFS_FV3GFS"
+;CDATE="2019070100"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_RRFS_SUBCONUS_3km"
+;CDATE="2019070100"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_CONUS_3km_GFDLgrid"
+;CDATE="2019070100"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_CONUS_25km_GFDLgrid"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try03/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
+CDATE="2019070100"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/suite_FV3_GSD_SAR"
+;CDATE="2019052000"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_RRFS_AK_3km"
+;CDATE="2019052000"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_RRFS_AK_13km"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/expt_dirs/try01/grid_RRFS_AK_13km_old001"
+;CDATE="2019052000"
 
 
-tile_inds := (/ 1, 7, 4 /)
+run_dir = expt_dir + "/" + CDATE
+print("AAAAAA  run_dir = " + run_dir)
+
+;tile_inds := (/ 1, 7, 4 /)
 ;tile_inds := (/ 1, 4 /)
 ;tile_inds := (/ 5, 6 /)
-tile_inds := (/ 5, 7 /)
+;tile_inds := (/ 5, 7 /)
 ;tile_inds := (/ 5, 6, 7 /)
 ;tile_inds := (/ 5 /)
 ;tile_inds := (/ 6 /)
-;tile_inds := (/ 7 /)
+tile_inds := (/ 7 /)
 ;tile_inds := (/ 6, 7 /)
 
 ;subreg_limits := (/ -180, 180, -90, 90 /)
@@ -53,15 +124,22 @@ tile_inds := (/ 5, 7 /)
 remove_rgnl_halo = True
 ;remove_rgnl_halo = False
 
-;plot_RAP_field = True
-plot_RAP_field = False
+plot_RAP_field = True
+;plot_RAP_field = False
 
+field_name_RAP = "XLAT_M"
+;field_name_RAP = "cell_area"
+;field_name_RAP = "VGTYP_P0_L1_GLC0"
+
+show_RAP_bdy = True
 RAP_bdy_color = "red"
 
 RAP_dir = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
+RAP_dir = "/scratch1/BMC/gsd-fv3-dev/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 ;RAP_grid_fn = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL/plot_grid.ncl"
 ;RAP_grid_fn = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.RAP.nc"
 RAP_grid_fn = RAP_dir + "/geo_em.d01.RAP.nc"
+RAP_grid_fn = RAP_dir + "/geo_em.d01.HRRR.nc"
 
 
 map_proj = "cyln"
@@ -74,6 +152,7 @@ map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map proje
 ;map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
 ;map_proj_ctr = (/ 6.0, 54.0 /) ; RAP domain corner.
 
+;map_proj_ctr = (/ -161.5, 63.0 /)  ; Alaska
 
 ;map_proj_ctr = (/ -98.5, 30.0 /)
 
@@ -84,14 +163,142 @@ plot_subreg = True
 ;subreg_limits := (/ -180, 180, -90, 90 /)
 ;subreg_limits := (/ -75, -45, 30, 60 /)
 
+
+
+
+subreg_limits := (/ -128, -67, 23, 51 /) ; HRRR domain if using "cyln" map projection.
 subreg_limits := (/ -135, -60, 20, 55 /) ; HRRR domain if using "cyln" map projection.
 ;subreg_limits := (/ -125, -70, 20, 55 /) ; HRRR domain if using "ortho" map projection.
-;subreg_limits := (/ -145, -90, 30, 60 /) ; Northwest corner of HRRR domain.
-;subreg_limits := (/ -135, -125, 40, 50 /) ; Northwest corner of HRRR domain, zoomed.
-;subreg_limits := (/ -123, -121, 48, 50 /) ; Northwest corner of HRRR domain, zoomed more.
-;subreg_limits := (/ -120, -115, 30, 35 /)
-;subreg_limits := (/ -125, -120, 15, 25 /) ; Southwest corner of HRRR domain.
-subreg_limits := (/ -120, -75, 20, 55 /) ; Center of HRRR domain.
+;subreg_limits := (/ -105, -95, 20, 30 /) ; Center of southern edge of HRRR domain.
+
+;subreg_limits := (/ -128, -118, 32, 42 /) ; Center of western edge of HRRR domain.
+
+;subreg_limits := (/ -120, -75, 20, 55 /) ; Center of HRRR domain, zoomed.
+;subreg_limits := (/ -110, -85, 30, 45 /) ; Center of HRRR domain, zoomed more.
+;subreg_limits := (/ -100, -97, 36, 39 /) ; Center of HRRR domain, zoomed more.
+
+;subreg_limits := (/ -135, -60, 20, 55 /)
+
+
+
+; Zoom in on midpoint of southern edge of CONUS domain.
+;subreg_limits := (/ -103.5, -93.5, 22.5, 26.5 /) ; 10deg x 4deg
+;subreg_limits := (/ -100.0, -95.0, 24.0, 26.0 /) ; 5deg x 2deg
+;subreg_limits := (/ -99.5, -97.5, 24, 25 /) ; 2deg x 1deg
+;subreg_limits := (/ -99, -98, 24.15, 24.65 /) ; 1deg x 0.5deg
+
+; Zoom in on midpoint of eastern edge of CONUS domain.
+;subreg_limits := (/ -71, -66, 33.5, 38.5 /) ; 5deg x 5deg
+
+; Zoom in on midpoint of northern edge of CONUS domain.
+;subreg_limits := (/ -103.5, -93.5, 50.2, 54.2 /) ; 10deg x 4deg
+;subreg_limits := (/ -100.0, -95.0, 51.3, 53.3 /) ; 5deg x 2deg
+;subreg_limits := (/ -99.5, -97.5, 51.9, 52.9 /) ; 2deg x 1deg
+;subreg_limits := (/ -99, -98, 52.3, 52.8 /) ; 1deg x 0.5deg
+
+; Zoom in on midpoint of western edge of CONUS domain.
+;subreg_limits := (/ -128, -123, 33.5, 38.5 /) ; 5deg x 5deg
+
+; Zoom in on northwest corner of CONUS domain.
+;subreg_limits := (/ -129, -99, 32, 52 /) ; 20deg x 20deg
+;subreg_limits := (/ -131, -121, 40, 50 /) ; 10deg x 10deg
+;subreg_limits := (/ -133, -128, 44, 49 /) ; 5deg x 5deg
+;subreg_limits := (/ -133.5, -131.5, 46.2, 48.2 /) ; 2deg x 2deg
+;subreg_limits := (/ -134, -133, 47, 48 /) ; 1deg x 1deg
+
+; Zoom in on southwest corner of CONUS domain.
+;subreg_limits := (/ -125, -105, 22, 42 /) ; 20deg x 20deg
+;subreg_limits := (/ -124, -114, 22, 32 /) ; 10deg x 10deg
+;subreg_limits := (/ -124, -119, 21, 26 /) ; 5deg x 5deg
+;subreg_limits := (/ -123.3, -121.3, 21.2, 23.2 /) ; 2deg x 2deg
+;subreg_limits := (/ -123.1, -122.1, 21.2, 22.2 /) ; 1deg x 1deg
+;subreg_limits := (/ -122.95, -122.45, 21.45, 21.95 /) ; 0.5deg x 0.5deg
+;subreg_limits := (/ -122.9, -122.8, 21.45, 21.55 /) ; 0.1deg x 0.1deg
+;subreg_limits := (/ -122.85, -122.83, 21.49, 21.51 /) ; 0.02deg x 0.02deg
+
+; Zoom in on southeast corner of CONUS domain.
+;subreg_limits := (/ -68, -88, 22, 42 /) ; 20deg x 20deg
+;subreg_limits := (/ -70, -80, 20, 30 /) ; 10deg x 10deg
+;subreg_limits := (/ -71, -76, 21, 26 /) ; 5deg x 5deg
+;subreg_limits := (/ -71.9, -73.9, 21.4, 23.4 /) ; 2deg x 2deg
+;subreg_limits := (/ -72, -73, 21.2, 22.2 /) ; 1deg x 1deg
+;subreg_limits := (/ -72.0, -72.5, 21.45, 21.95 /) ; 0.5deg x 0.5deg
+;subreg_limits := (/ -72.1, -72.2, 21.45, 21.55 /) ; 0.1deg x 0.1deg
+;subreg_limits := (/ -72.15, -72.17, 21.49, 21.51 /) ; 0.02deg x 0.02deg
+
+; Zoom in on northeast corner of CONUS domain.
+;subreg_limits := (/ -66, -86, 32, 52 /) ; 20deg x 20deg
+;subreg_limits := (/ -64, -74, 40, 50 /) ; 10deg x 10deg.
+;subreg_limits := (/ -62, -67, 44, 49 /) ; 5deg x 5deg.
+;subreg_limits := (/ -61.5, -63.5, 46.2, 48.2 /) ; 2deg x 2deg.
+;subreg_limits := (/ -61.2, -62.2, 47, 48 /) ; 1deg x 1deg.
+
+
+
+
+; EMC's 25km BIG CONUS grid.
+;subreg_limits := (/ -145, -50, 10, 65 /) 
+
+; Zoom in on northwest corner of BIG CONUS domain.
+;subreg_limits := (/ -139, -136, 51, 54 /) ; 3deg x 3deg
+
+; Zoom in on southwest corner of BIG CONUS domain.
+;subreg_limits := (/ -123, -120, 14, 17 /) ; 3deg x 3deg
+
+; Zoom in on southeast corner of BIG CONUS domain.
+;subreg_limits := (/ -75, -72, 14, 17 /) ; 3deg x 3deg
+
+; Zoom in on northeast corner of BIG CONUS domain.
+;subreg_limits := (/ -59, -56, 51, 54 /) ; 3deg x 3deg
+
+
+
+
+; EMC's 3km BIG CONUS grid.
+;subreg_limits := (/ -145, -50, 10, 65 /) 
+
+; Zoom in on northwest corner of BIG CONUS domain.
+;subreg_limits := (/ -137, -134, 47, 50 /) ; 3deg x 3deg
+
+; Zoom in on southwest corner of BIG CONUS domain.
+;subreg_limits := (/ -125, -122, 18.5, 21.5 /) ; 3deg x 3deg
+
+; Zoom in on southeast corner of BIG CONUS domain.
+;subreg_limits := (/ -74, -71, 18.5, 21.5 /) ; 3deg x 3deg
+
+; Zoom in on northeast corner of BIG CONUS domain.
+;subreg_limits := (/ -61, -58, 47, 50 /) ; 3deg x 3deg
+
+
+
+
+; Alaska domain subregions:
+;subreg_limits := (/ -210, -120, 45, 80 /) ; whole AK domain; won't work with cyln projection
+
+; Zoom in on northwest corner of Alaska domain.
+;subreg_limits := (/ 141, 145, 66, 70 /) ; 4deg x 4deg
+;subreg_limits := (/ 142, 144, 66, 70 /) ; 2deg x 4deg
+;subreg_limits := (/ 142, 144, 67, 69 /) ; 2deg x 2deg
+
+; Zoom in on southwest corner of Alaska domain.
+;subreg_limits := (/ 170, 174, 44, 48 /) ; 4deg x 4deg
+;subreg_limits := (/ 170, 173, 44, 47 /) ; 3deg x 3deg
+;subreg_limits := (/ 171, 173, 45, 47 /) ; 2deg x 2deg
+
+; Zoom in on southeast corner of Alaska domain.
+;subreg_limits := (/ -137, -133, 44, 48 /) ; 4deg x 4deg
+;subreg_limits := (/ -136, -133, 44, 47 /) ; 3deg x 3deg
+;subreg_limits := (/ -135.5, -133.5, 44.8, 46.8 /) ; 2deg x 2deg
+
+; Zoom in on northeast corner of Alaska domain.
+;subreg_limits := (/ -108, -102, 65, 71 /) ; 6deg x 6deg
+;subreg_limits := (/ -107, -103, 66, 70 /) ; 4deg x 4deg
+;subreg_limits := (/ -106, -104, 66, 70 /) ; 2deg x 4deg
+;subreg_limits := (/ -106, -104, 67, 69 /) ; 2deg x 2deg
+
+
+;subreg_limits := (/ -135, -60, 15, 60 /) ; RTMA domain if using "ortho" map projection.
+;subreg_limits := (/ -128, -126, 34, 36 /) ; Center of western boundary of CONUS
 
 ;subreg_limits := (/ -15, 0, 0, 15 /)
 ;subreg_limits := (/ -30, 0, 0, 30 /)
@@ -129,7 +336,7 @@ field_name = "area"
 
 ;field_name = "abcd"
 
-;field_name = "orog_raw"
+field_name = "orog_raw"
 ;field_name = "orog_filt"
 
 ;field_name = "time"
@@ -139,13 +346,14 @@ field_name = "area"
 
 field_name = "sltyp"
 field_name = "dswrf"
+field_name = "zsurf"
 
 
 show_tile_bdies = True
 ;show_tile_bdies = False
 
-;show_tile_grids = True
-show_tile_grids = False
+show_tile_grids = True
+;show_tile_grids = False
 
 
 file_basename = "atmos_static"
@@ -153,13 +361,11 @@ file_basename = "atmos_static"
 file_basename = "fv3_history2d"
 
 
-;show_wrtcmp_grid = True
+show_wrtcmp_grid = True
 show_wrtcmp_grid = False
 
 show_wrtcmp_bdy = True
 ;show_wrtcmp_bdy = False
-
-wrtcmp_bdy_color = "green"
 
 
 separator_line \
@@ -183,6 +389,7 @@ loadscript(lib_location + "repeat_str.ncl")
 loadscript(lib_location + "calc_field_stats.ncl")
 loadscript(lib_location + "get_rect_grid_bdy.ncl")
 loadscript(lib_location + "set_cnLevels_lbLabels.ncl")
+loadscript(lib_location + "append_to_snumeric_array.ncl")
 
 load "process_plot_params.ncl"
 load "read_FV3LAM_grid_native.ncl"
@@ -373,9 +580,11 @@ char_dq + "ncgm" + char_dq + "." + char_nl
   gtype = plot_params@gtype
   num_tiles_to_plot = plot_params@num_tiles_to_plot
   inds_tiles_to_plot = plot_params@inds_tiles_to_plot
+;print("XXXXXXXXXXXXXXX")
+;print("inds_tiles_to_plot = " + inds_tiles_to_plot)
+
   cres = plot_params@cres
-  run_dir = plot_params@run_dir
-  work_dir = plot_params@work_dir
+  expt_dir = plot_params@expt_dir
 
   horiz_dist_units = plot_params@horiz_dist_units
   horiz_area_units = plot_params@horiz_area_units
@@ -401,45 +610,111 @@ char_dq + "ncgm" + char_dq + "." + char_nl
 
   plot_subreg = plot_params@plot_subreg
   subreg_limits = plot_params@subreg_limits
-
-
 ;
 ; **********************************************************************
 ;
-; Read in the FV3-LAM grid.
+;
 ;
 ; **********************************************************************
 ;
-read_FV3LAM_wrtcmp = True
-;read_FV3LAM_wrtcmp = False
+native = True
+;native = False
+native@plot_gridlines = True
+native@plot_gridlines = False
+;native@gridline_color = "black"
+native@gridline_color = "red"
+native@plot_bdy = True
+native@bdy_color = native@gridline_color
+native@bdy_line_thickness = 4.0
+;native@bdy_line_thickness = 16.0
+native@bdy_dash_pattern = 1
 
-if (read_FV3LAM_wrtcmp) then
+halo = True
+;halo = False
+halo@plot_gridlines = True
+;halo@plot_gridlines = False
+halo@gridline_color = "orange"
+halo@plot_bdy = True
+;halo@plot_bdy = False 
+halo@bdy_color = halo@gridline_color
+halo@bdy_line_thickness = 4.0
+halo@bdy_dash_pattern = 1
 
-  FV3LAM_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "dynf000.nc"
-  get_domain_bdy = True
-  grid_info := read_FV3LAM_grid_wrtcmp( \
-               FV3LAM_wrtcmp_fn, \
-               get_domain_bdy)
+wrtcmp = True
+;wrtcmp = False
+wrtcmp@plot_gridlines = True
+wrtcmp@plot_gridlines = False
+;wrtcmp@gridline_color = "green"
+wrtcmp@gridline_color = "blue"
+wrtcmp@plot_bdy = True
+wrtcmp@bdy_color = wrtcmp@gridline_color
+wrtcmp@bdy_line_thickness = 6.0
+wrtcmp@bdy_dash_pattern = 1
 
-  fp_wrtcmp = grid_info@fp
-  nx = grid_info@nx
-  ny = grid_info@ny
-  lon_cntrs_unstruc = grid_info@lon_cntrs_unstruc
-  lat_cntrs_unstruc = grid_info@lat_cntrs_unstruc
-  lon_verts_unstruc = grid_info@lon_verts_unstruc
-  lat_verts_unstruc = grid_info@lat_verts_unstruc
-  lon_bdy = grid_info@lon_bdy
-  lat_bdy = grid_info@lat_bdy
-  coord_data_type_FV3LAM = grid_info@coord_data_type
+extrnl = True
+;extrnl = False
+;extrnl@plot_gridlines = True
+extrnl@plot_gridlines = False
+;extrnl@gridline_color = "red"
+extrnl@gridline_color = "green"
+extrnl@plot_bdy = True
+extrnl@bdy_color = extrnl@gridline_color
+extrnl@bdy_line_thickness = 4.0
+extrnl@bdy_dash_pattern = 1
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+;
+grid_opts = True
+grid_opts@plot_gridlines := new(1, logical)
+grid_opts@gridline_colors := new(1, string)
 
-else
+bdy_opts = True
+bdy_opts@num_bdies = 0
+bdy_opts@plot_bdy = new(1, logical)
+bdy_opts@bdy_colors = new(1, string)
+bdy_opts@bdy_line_thicknesses = new(1, float)
+bdy_opts@bdy_dash_patterns = new(1, integer)
+;
+; **********************************************************************
+;
+; Initialize arrays to single-element arrays.  These will be appended to
+; as necessary.
+;
+; **********************************************************************
+;
+num_grids := 0
+
+nx_all := new(1, integer)
+ny_all := new(1, integer)
+lon_cntrs_unstruc := new(1, double)
+lat_cntrs_unstruc := new(1, double)
+lon_verts_unstruc := new((/1,4/), double)
+lat_verts_unstruc := new((/1,4/), double)
+lon_bdy := new(1, double)
+lat_bdy := new(1, double)
+field_unstruc := new(1, double)
+;
+; **********************************************************************
+;
+; If native is set to True, read in the native FV3LAM grid.
+;
+; **********************************************************************
+;
+if (native .or. halo) then
+;if (native) then
+
+  num_grids = num_grids + 1
 
   nhalo_T7 = 4  ; Should this be at the top, i.e. defined as a global variable????
                 ; or be a requird input that gets processed along with the other
                 ; command linea arguments?
 
   grid_info := read_FV3LAM_grid_native( \
-               work_dir, \
+               expt_dir, \
                gtype, \
                cres, \
                inds_tiles_to_plot, \
@@ -447,877 +722,350 @@ else
                nhalo_T7, \
                remove_rgnl_halo)
 
-  grid_fn_tiles_to_plot = grid_info@grid_fn_all_tiles
-
-  nhSG_tiles_to_plot = grid_info@nhSG_all_tiles
-  nxhSG_tiles_to_plot = grid_info@nxhSG_all_tiles
-  nyhSG_tiles_to_plot = grid_info@nyhSG_all_tiles
-  nxSG_tiles_to_plot = grid_info@nxSG_all_tiles
-  nySG_tiles_to_plot = grid_info@nySG_all_tiles
-
-  nh_tiles_to_plot = grid_info@nh_all_tiles
-  nxh_tiles_to_plot = grid_info@nxh_all_tiles
-  nyh_tiles_to_plot = grid_info@nyh_all_tiles
-  nx_tiles_to_plot = grid_info@nx_all_tiles
-  ny_tiles_to_plot = grid_info@ny_all_tiles
-
-  remove_halo_tiles_to_plot = grid_info@remove_halo_all_tiles
-
-  lon_cntrs_unstruc = grid_info@lon_cntrs_all_tiles_unstruc
-  lat_cntrs_unstruc = grid_info@lat_cntrs_all_tiles_unstruc
-  lon_verts_unstruc = grid_info@lon_verts_all_tiles_unstruc
-  lat_verts_unstruc = grid_info@lat_verts_all_tiles_unstruc
-
-  lon_bdy = grid_info@lon_bdy_all_tiles
-  lat_bdy = grid_info@lat_bdy_all_tiles
-
-  lon_tile_cntr_tiles_to_plot = grid_info@lon_tile_cntr_all_tiles
-  lat_tile_cntr_tiles_to_plot = grid_info@lat_tile_cntr_all_tiles
-
-  lon_tile_corners_face_midpts_tiles_to_plot \
-  = grid_info@lon_tile_corners_face_midpts_all_tiles
-  lat_tile_corners_face_midpts_tiles_to_plot \
-  = grid_info@lat_tile_corners_face_midpts_all_tiles
-
-  coord_data_type_FV3LAM = grid_info@coord_data_type
-
-end if
-;
-; **********************************************************************
-;
-;
-;
-; **********************************************************************
-;
-time_inds_to_plot := (/ 0, 2 /) ; This must be specified on the command line.
-time_inds_to_plot := (/ 0 /) ; This must be specified on the command line.
-
-
-fcst_output_hrs := (/ 0, 1, 2, 3, 4, 5, 6 /)  ; Read this in from file, e.g. var_defns.sh.
-;fcst_output_hrs := (/ 0, 2, 4, 6 /)  ; Read this in from file, e.g. var_defns.sh.
-fcst_output_hrs := (/ 0 /)  ; Read this in from file, e.g. var_defns.sh.
-fcst_output_hrs := (/ 5 /)  ; Read this in from file, e.g. var_defns.sh.
-
-fcst_hrs_to_plot := fcst_output_hrs(time_inds_to_plot)
-num_fcst_hrs = dimsizes(fcst_hrs_to_plot)
-
-vert_inds_to_plot := (/ 0, 10 /)
-vert_inds_to_plot := (/ 0 /)
-num_vert = dimsizes(vert_inds_to_plot)
-
-
-; Must set to 0 for write-component files since those each contain output for only one time.
-if (read_FV3LAM_wrtcmp) then
-  time_inds_to_plot = 0*time_inds_to_plot
-end if
-
-
-do n=0, num_fcst_hrs-1
-  do k=0, num_vert-1
-
-    print("")
-    print("")
-    print("" + separator_line)
-    print("" + separator_line)
-    print("n = " + n + "; k = " + k)
-    print("" + separator_line)
-    print("" + separator_line)
-
-    vert_indx = vert_inds_to_plot(k)
-    time_indx = time_inds_to_plot(n)
-    fcst_hr = fcst_hrs_to_plot(n)
-
-    fmt_str = "%03i"
-    vert_indx_str = sprinti(fmt_str, vert_indx)
-    fcst_hr_str = sprinti(fmt_str, fcst_hr)
-
-;print("")
-;    print("fcst_hr = " + fcst_hr)
-;    print("fcst_hr_str = " + fcst_hr_str)
-;print("")
-;    print("vert_indx = " + vert_indx)
-;    print("vert_indx_str = " + vert_indx_str)
-;pause
-
-
-;
-; **********************************************************************
-;
-; If we want to plot output files generated by the write-component ...
-;
-; **********************************************************************
-;
-if (read_FV3LAM_wrtcmp) then
-;
-; Set the file name.  This depends on the time index/ forecast output hour.
-;
-
-;  FV3LAM_wrtcmp_fn = run_dir + "/dynf000.nc"
-;  FV3LAM_wrtcmp_fn = run_dir + "/phyf000.nc"
-;  FV3LAM_wrtcmp_fn = run_dir + "/phyf" + fcst_hr_str + ".nc"
-  FV3LAM_wrtcmp_fn = run_dir + "/" + CDATE + "/" + "phyf" + fcst_hr_str + ".nc"
-
-;
-; **********************************************************************
-;
-; Call a function that runs various checks on the specified field.  This
-; function will:
-;
-; 1) Verify that the field exists as a as a variable in the file.
-; 2) Verify that its functional dependence on space and time is one of
-;    the following:
-;    a) Function of only the two horizontal directions but not the ver-
-;       tical direction or time.  In this case, the func_xy_only attrib-
-;       ute of the returned variable will be set to True. 
-;    b) Function of only the two horizontal directions and the vertical
-;       direction but not time.  In this case, the func_xyz_only attrib-
-;       ute of the returned variable will be set to True. 
-;    c) Function of only the two horizontal directions and time but not
-;       the vertical direction.  In this case, the func_xyt_only attrib-
-;       ute of the returned variable will be set to True. 
-;    d) Function of the two horizontal directions, the vertical direc-
-;       tion, and time.  In this case, the func_xyzt_only attribute of
-;       the returned variable will be set to True. 
-; 3) Verify that the specified vertical and/or time indices do not ex-
-;    ceed the array bounds of the variable that represents the specified
-;    field.
-; 4) Return:
-;    a) The rank, dimension names, and dimension sizes of the variable
-;       that represents the field.
-;    b) The functional dependence of the field on x, y, z, and t.
-;
-; **********************************************************************
-;
-
-;  x_filedim_names = (/ "grid_xt" /)
-;  y_filedim_names = (/ "grid_yt" /)
-;  z_filedim_names = (/ "pfull", "phalf" /)
-;  t_filedim_names = (/ "time" /)
-
-  var_info := check_filevar_existence_dims( \
-              FV3LAM_wrtcmp_fn, \
-              field_name, \
-              nx, ny, \
-              vert_inds_to_plot, \
-              time_inds_to_plot)
-;              x_filedim_names, \
-;              y_filedim_names, \
-;              z_filedim_names, \
-;              t_filedim_names, \
-
-  var_rank = var_info@var_rank
-  var_dim_names = var_info@var_dim_names
-  var_dim_sizes = var_info@var_dim_sizes
-  func_xy_only = var_info@func_xy_only
-  func_xyz_only = var_info@func_xyz_only
-  func_xyt_only = var_info@func_xyt_only
-  func_xyzt_only = var_info@func_xyzt_only
-
-;print("")
-;print("func_xy_only = " + func_xy_only)
-;print("func_xyz_only = " + func_xyz_only)
-;print("func_xyt_only = " + func_xyt_only)
-;print("func_xyzt_only = " + func_xyzt_only)
-
-;
-; **********************************************************************
-;
-; Read the specified field on the FV3-LAM write-component grid.
-;
-; **********************************************************************
-;
-  field_info \
-  := read_FV3LAM_field_wrtcmp( \
-     field_name, \
-     horiz_dist_units, horiz_area_units, \
-     FV3LAM_wrtcmp_fn, \
-     nx, ny, \
-     vert_indx, time_indx, \
-     func_xy_only, func_xyz_only, func_xyt_only, func_xyzt_only)
-
-  fp_field_FV3LAM = field_info@fp
-  field_desc = field_info@field_desc
-  field_units = field_info@field_units
-  field_unstruc = field_info@field_unstruc
-  field_min = field_info@field_min
-  field_max = field_info@field_max
-  field_median = field_info@field_median
-  field_mean = field_info@field_mean
-  field_data_type_FV3LAM = field_info@field_data_type
-
-  plot_title = field_desc + " [" + field_units + "]"
-  print("")
-  print("plot_title = " + char_dq + plot_title + char_dq)
-;
-; **********************************************************************
-;
-; If we want to plot output files generated by the FMS (?) on FV3's na-
-; tive cubed-sphere grid ...
-;
-; **********************************************************************
-;
-else
-;
-; **********************************************************************
-;
-;
-;
-; **********************************************************************
-;
-  file_name_base = "fv3_history"  ; Should be a global input.
-;
-; **********************************************************************
-;
-; Set the dimension names we expect to see in the file(s) from which we
-; will read in the field.  This depends on the file name base.  These
-; dimension names will be used to check the consistency of the dimen-
-; sions of the specified field.
-;
-; **********************************************************************
-;
-
-;  if (strcmp_exact(file_name_base, "grid_spec")) then
-;    x_filedim_names = (/ "grid_x", "grid_xt" /)
-;    y_filedim_names = (/ "grid_y", "grid_yt" /)
-;    z_filedim_names = (/ "phalf", "pfull" /)
-;    t_filedim_names = (/ "time" /)
-;  else if (strcmp_exact(file_name_base, "atmos_static") .or. \
-;           strcmp_exact(file_name_base, "fv3_history") .or. \
-;           strcmp_exact(file_name_base, "fv3_history2d") .or. \
-;           strcmp_exact(file_name_base, "ref3D")) then
-;    x_filedim_names = (/ "grid_xt" /)
-;    y_filedim_names = (/ "grid_yt" /)
-;    z_filedim_names = (/ "phalf", "pfull" /)
-;    t_filedim_names = (/ "time" /)
-;  else
-;    msg := char_nl + \
-;"Unknown file base name (file_name_base) specified:" + char_nl + \
-;"  file_name_base = " + char_dq + file_name_base + char_dq + char_nl + \
-;"Stopping."
-;    exit
-;  end if
-;  end if
-
-;
-; **********************************************************************
-;
-; Loop through the specified tiles and form the file name corresponding
-; to each tile (from which the field will be read in).
-;
-; **********************************************************************
-;
-  file_names_by_tile = new((/ num_tiles_to_plot /), "string")
-  field_names_by_tile = new((/ num_tiles_to_plot /), "string")
-
-  print("")
-  print("" + separator_line)
-  msg := \
-"Setting file and field name for each specified tile ..." + char_nl + \
-"[The field name for a tile will be set to " + char_dq + "none" + char_dq + \
-" if a file for that tile " + char_nl + \
-"does not exist, e.g. if the tile in consideration is #5, but we are on a " + char_nl + \
-"regional grid (in which case files/fields are only available on tile #7).]"
-  print("" + msg)
-
-  do nn=0, num_tiles_to_plot-1
-
-    print("")
-    msg := "nn = " + nn
-    print("" + msg)
-    underline = repeat_str("-", strlen(msg))
-    print("" + underline)
-
-    n_tile = inds_tiles_to_plot(nn)
-    print("")
-    print("  n_tile = " + n_tile)
-;
-; **********************************************************************
-;
-; Generate the file name for the current tile.
-;
-; **********************************************************************
-;
-    file_name := run_dir + "/" + file_name_base
-    if (.not. strcmp_exact(gtype, "regional")) then
-      file_name := file_name + ".tile" + tostring(n_tile)
-    end if
-    file_name := file_name + ".nc"
-    file_names_by_tile(nn) = file_name
-
-    print("  file_names_by_tile(" + nn + ") = " + \
-          char_dq + file_names_by_tile(nn) + char_dq) 
-;
-; **********************************************************************
-;
-;
-;
-; **********************************************************************
-;
-    field_names_by_tile(nn) = field_name
-    if (strcmp_exact(gtype, "regional") .and. (n_tile .ne. 7)) then
-      field_names_by_tile(nn) = "none"
-      msg := char_nl + \
-"  The specified field is not available on the current tile:" + char_nl + \
-"    n_tile = " + n_tile + char_nl + \
-"    field_name = " + char_dq + field_name + char_dq + char_nl + \
-"  Setting the field name for the current tile to " + char_dq + "none" + char_dq + ":" + char_nl + \
-"    field_names_by_tile(" + nn + ") = " + char_dq + field_names_by_tile(nn) + char_dq
-      print("" + msg)
-    else
-      print("  field_names_by_tile(" + nn + ") = " + \
-            char_dq + field_names_by_tile(nn) + char_dq)
-    end if
-;
-; **********************************************************************
-;
-; Perform checks on variable.
-;
-; **********************************************************************
-;
-    if (.not. strcmp_exact(field_names_by_tile(nn), "none")) then
-
-      if ((nn .gt. 0) .and. isvar("var_info")) then
-        var_info_prev_tile := var_info
-      end if
-
-      var_info := check_filevar_existence_dims( \
-                  file_names_by_tile(nn), \
-                  field_names_by_tile(nn), \
-                  nx_tiles_to_plot(nn), ny_tiles_to_plot(nn), \
-                  vert_inds_to_plot, \
-                  time_inds_to_plot)
-;                  x_filedim_names, \
-;                  y_filedim_names, \
-;                  z_filedim_names, \
-;                  t_filedim_names, \
-
-      fp_field_file = var_info@fp  
-      var_rank = var_info@var_rank
-      var_dim_names = var_info@var_dim_names
-      var_dim_sizes = var_info@var_dim_sizes
-      func_xy_only = var_info@func_xy_only
-      func_xyz_only = var_info@func_xyz_only
-      func_xyt_only = var_info@func_xyt_only
-      func_xyzt_only = var_info@func_xyzt_only
-      average_in_x = var_info@average_in_x
-      average_in_y = var_info@average_in_y
-
-      if ((nn .gt. 0) .and. isvar("var_info_prev_tile")) then
-
-        n_tile_prev = inds_tiles_to_plot(nn-1)
-
-        var_rank_prev_tile := var_info_prev_tile@var_rank
-        var_dim_names_prev_tile := var_info_prev_tile@var_dim_names
-        var_dim_sizes_prev_tile := var_info_prev_tile@var_dim_sizes
-        func_xy_only_prev_tile := var_info_prev_tile@func_xy_only
-        func_xyz_only_prev_tile := var_info_prev_tile@func_xyz_only
-        func_xyt_only_prev_tile := var_info_prev_tile@func_xyt_only
-        func_xyzt_only_prev_tile := var_info_prev_tile@func_xyzt_only
-        average_in_x_prev_tile := var_info_prev_tile@average_in_x
-        average_in_y_prev_tile := var_info_prev_tile@average_in_y
-
-        if (var_rank .eq. var_rank_prev_tile) then
-          var_dim_names_differ := False
-          do i=0, var_rank_prev_tile-1
-            if (.not. strcmp_exact(var_dim_names, var_dim_names_prev_tile(i))) then
-              var_dim_names_differ := True
-              break
-            end if
-          end do
-        end if
-
-        if (var_rank .ne. var_rank_prev_tile) then
-
-          msg := char_nl + \
-"The variable's rank (var_rank) changed from tile " + n_tile_prev + \
-" to tile " + n_tile + ":" + char_nl + \
-"  var_rank_prev_tile = " + var_rank_prev_tile + char_nl + \
-"  var_rank = " + var_rank + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (var_dim_names_differ) then
-
-          var_dim_names_prev_tile_str \
-          := str_join(var_dim_names_prev_tile, char_dq + ", " + char_dq)
-          var_dim_names_prev_tile_str \
-          := "(" + char_dq + var_dim_names_prev_tile_str + char_dq + ")"
-
-          var_dim_names_str \
-          := str_join(var_dim_names, char_dq + ", " + char_dq)
-          var_dim_names_str \
-          := "(" + char_dq + var_dim_names_str + char_dq + ")"
-
-          msg := char_nl + \
-"The variable's dimension names (var_dim_names) changed from tile " + \
-n_tile_prev + " to " + char_nl + \
-"tile " + n_tile + ":" + char_nl + \
-"  var_dim_names_prev_tile = " + var_dim_names_prev_tile_str + char_nl + \
-"  var_dim_names = " + var_dim_names_str + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (any(var_dim_sizes .ne. var_dim_sizes_prev_tile)) then
-
-          var_dim_sizes_prev_tile_str \
-          := "(" + str_join(tostring(var_dim_sizes_prev_tile), ", ") + ")"
-          var_dim_sizes_str \
-          := "(" + str_join(tostring(var_dim_sizes), ", ") + ")"
-
-          msg := char_nl + \
-"The variable's dimension sizes (var_dim_sizes) changed from tile " + \
-n_tile_prev + " to " + char_nl + \
-"tile " + n_tile + ":" + char_nl + \
-"  var_dim_sizes_prev_tile = " + var_dim_sizes_prev_tile_str + char_nl + \
-"  var_dim_sizes = " + var_dim_sizes_str + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (func_xy_only .ne. func_xy_only_prev_tile) then
-
-          msg := char_nl + \
-"The variable's functional dependence status on only the horizontal " + char_nl + \
-"coordinates x and y (func_xy_only) changed from tile " + n_tile_prev + " to " + \
-"tile " + n_tile + ":" + char_nl + \
-"  func_xy_only_prev_tile = " + func_xy_only_prev_tile + char_nl + \
-"  func_xy_only = " + func_xy_only + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (func_xyz_only .ne. func_xyz_only_prev_tile) then
-
-          msg := char_nl + \
-"The variable's functional dependence status on only the horizontal " + char_nl + \
-"coordinates x and y and the vertical coordinate (func_xyz_only) " + char_nl + \
-"changed from tile " + n_tile_prev + " to tile " + n_tile + ":" + char_nl + \
-"  func_xyz_only_prev_tile = " + func_xyz_only_prev_tile + char_nl + \
-"  func_xyz_only = " + func_xyz_only + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (func_xyt_only .ne. func_xyt_only_prev_tile) then
-
-          msg := char_nl + \
-"The variable's functional dependence status on only the horizontal " + char_nl + \
-"coordinates x and y and time (func_xyt_only) changed from tile " + n_tile_prev + char_nl + \
-"to tile " + n_tile + ":" + char_nl + \
-"  func_xyt_only_prev_tile = " + func_xyt_only_prev_tile + char_nl + \
-"  func_xyt_only = " + func_xyt_only + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (func_xyzt_only .ne. func_xyzt_only_prev_tile) then
-
-          msg := char_nl + \
-"The variable's functional dependence status on the horizontal coordinates " + char_nl + \
-"x and y, the vertical coordinate, and time (func_xyzt_only) changed from " + char_nl + \
-"tile " + n_tile_prev + " to tile " + n_tile + ":" + char_nl + \
-"  func_xyzt_only_prev_tile = " + func_xyzt_only_prev_tile + char_nl + \
-"  func_xyzt_only = " + func_xyzt_only + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (average_in_x .ne. average_in_x_prev_tile) then
-
-          msg := char_nl + \
-"The averaging in the x direction needed to obtain the variable's values " + char_nl + \
-"at cell centers (average_in_x) changed from tile " + n_tile_prev + \
-" to tile " + n_tile + ":" + char_nl + \
-"  average_in_x_prev_tile = " + average_in_x_prev_tile + char_nl + \
-"  average_in_x = " + average_in_x + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        else if (average_in_y .ne. average_in_y_prev_tile) then
-
-          msg := char_nl + \
-"The averaging in the x direction needed to obtain the variable's values " + char_nl + \
-"at cell centers (average_in_y) changed from tile " + n_tile_prev + \
-" to tile " + n_tile + ":" + char_nl + \
-"  average_in_y_prev_tile = " + average_in_y_prev_tile + char_nl + \
-"  average_in_y = " + average_in_y + char_nl + \
-"Stopping."
-          print("" + msg)
-          exit
-
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-
-      end if
-
-    end if
-
-  end do
-
-  print("")
-  print("Done setting file and field name for each specified tile.")
-  print("" + separator_line)
-
-
-
-;
-; **********************************************************************
-;
-;
-;
-; **********************************************************************
-;
-  field_info \
-  := read_FV3LAM_field_native( \
-     field_names_by_tile, \
-     file_names_by_tile, \
-     gtype, inds_tiles_to_plot, \
-     nh_tiles_to_plot, \
-     nxh_tiles_to_plot, nyh_tiles_to_plot, \
-     nx_tiles_to_plot, ny_tiles_to_plot, \
-     remove_halo_tiles_to_plot, \
-     vert_indx, time_indx, \
-     func_xy_only, func_xyz_only, func_xyt_only, func_xyzt_only, \
-     average_in_x, average_in_y)
-
-;  fp_field_FV3LAM = field_info@fp  ; This would in general be an array or list of file pointers.
-  field_desc = field_info@field_desc
-  field_units = field_info@field_units
-  field_unstruc = field_info@field_all_tiles_unstruc
-  field_min_all_tiles = field_info@field_min_all_tiles
-  field_max_all_tiles = field_info@field_max_all_tiles
-  field_median_all_tiles = field_info@field_median_all_tiles
-  field_mean_all_tiles = field_info@field_mean_all_tiles
-  field_data_type_FV3LAM = field_info@field_data_type
-
-  plot_title = field_desc + " [" + field_units + "]"
-  print("")
-  print("plot_title = " + char_dq + plot_title + char_dq)
-;
-; **********************************************************************
-;
-; Calculate and print out basic statistics of the field over all tiles
-; to be plotted.
-;
-; **********************************************************************
-;
-  temp := tostring(inds_tiles_to_plot)
-  temp := str_join(temp, ", ")
-  temp := str_concat( (/"[tile(s) ", temp, "]"/) )
-  msg := "Calculating statistics of field over all FV3-LAM tiles to be plotted " + \
-         temp + " ..."
-  print("")
-  print("" + separator_line)
-  print("" + msg)
-
-;  print_field_stats = True
-  print_field_stats = False
-  field_stat_info \
-  := calc_field_stats( \
-     field_unstruc, field_desc, field_units, print_field_stats)
-  msg := "  " + field_stat_info@msg
-  print("")
-  print("" + msg)
-
-  msg := "Done calculating statistics of field over all FV3-LAM tiles to be plotted."
-  print("")
-  print("" + msg)
-  print("" + separator_line)
-;
-; **********************************************************************
-;
-; Save field statistics in appropriate variables.
-;
-; **********************************************************************
-;
-  field_min := field_stat_info@field_min
-  field_max := field_stat_info@field_max
-  field_median := field_stat_info@field_median
-  field_mean := field_stat_info@field_mean
-
-end if
-
-
-
-
-
-;
-; **********************************************************************
-;
-; If plot_RAP_field is set to True, read in the coordinates of the RAP
-; grid and possibly also a field on that grid.
-;
-; **********************************************************************
-;
-  if (plot_RAP_field) then
-;
-; **********************************************************************
-;
-; Read in the RAP grid from file.
-;
-; **********************************************************************
-;
-    grid_info := read_RAP_grid(RAP_grid_fn, show_RAP_bdy)
-  
-;    fp_RAP_grid = grid_info@fp
-    nx_RAP = grid_info@nx
-    ny_RAP = grid_info@ny
-    lon_cntrs_unstruc_RAP = grid_info@lon_cntrs_unstruc
-    lat_cntrs_unstruc_RAP = grid_info@lat_cntrs_unstruc
-    lon_verts_unstruc_RAP = grid_info@lon_verts_unstruc
-    lat_verts_unstruc_RAP = grid_info@lat_verts_unstruc
-    lon_bdy_RAP = grid_info@lon_bdy
-    lat_bdy_RAP = grid_info@lat_bdy
-    coord_data_type_RAP = grid_info@coord_data_type
-;
-; **********************************************************************
-;
-; Calculate the coordinates of the center of the RAP domain.
-;
-; **********************************************************************
-;
-if (False) then
-
-    rem_x = mod(nx_RAP, 2)
-    rem_y = mod(ny_RAP, 2)
-
-    if ((rem_x .eq. 0) .and. (rem_y .eq. 0)) then
-      i_cntr = nx_RAP/2
-      j_cntr = ny_RAP/2
-      lon_RAP_cntr = lon_verts_RAP(j_cntr,i_cntr)
-      lat_RAP_cntr = lat_verts_RAP(j_cntr,i_cntr)
-    else if ((rem_x .eq. 1) .and. (rem_y .eq. 0)) then
-      i_cntr = (nx_RAP - 1)/2
-      j_cntr = ny_RAP/2
-      lon_vpts_RAP := fg->XLONG_V(:,:,:)
-      lat_vpts_RAP := fg->XLAT_V(:,:,:)
-      lon_vpts_RAP := rm_single_dims(lon_vpts_RAP)
-      lat_vpts_RAP := rm_single_dims(lat_vpts_RAP)
-      lon_RAP_cntr = lon_vpts_RAP(j_cntr,i_cntr)
-      lat_RAP_cntr = lat_vpts_RAP(j_cntr,i_cntr)
-    else if ((rem_x .eq. 0) .and. (rem_y .eq. 1)) then
-      i_cntr = nx_RAP/2
-      j_cntr = (ny_RAP - 1)/2
-      lon_upts_RAP := fg->XLONG_U(:,:,:)
-      lat_upts_RAP := fg->XLAT_U(:,:,:)
-      lon_upts_RAP := rm_single_dims(lon_upts_RAP)
-      lat_upts_RAP := rm_single_dims(lat_upts_RAP)
-      lon_RAP_cntr = lon_upts_RAP(j_cntr,i_cntr)
-      lat_RAP_cntr = lat_upts_RAP(j_cntr,i_cntr)
-    else if ((rem_x .eq. 1) .and. (rem_y .eq. 1)) then
-      i_cntr = (nx_RAP - 1)/2
-      j_cntr = (ny_RAP - 1)/2
-      lon_RAP_cntr = lon_cntrs_RAP(j_cntr,i_cntr)
-      lat_RAP_cntr = lat_cntrs_RAP(j_cntr,i_cntr)
-    end if
-    end if
-    end if
-    end if
-
-    print("")
-    print("lon_RAP_cntr = " + lon_RAP_cntr + " deg")
-    print("lat_RAP_cntr = " + lat_RAP_cntr + " deg")
-
-end if
-;
-; **********************************************************************
-;
-; Read in the specified field on the RAP domain.
-;
-; **********************************************************************
-;
-  field_info := read_RAP_field( \
-                field_name, \
-                horiz_dist_units, \
-                horiz_area_units, \
-                RAP_grid_fn, \
-                nx_RAP, \
-                ny_RAP)
-
-;  fp_field_RAP = field_info@fp
-  field_desc_RAP = field_info@field_desc
-  field_units_RAP = field_info@field_units
-  field_unstruc_RAP = field_info@field_unstruc
-  field_min_RAP = field_info@field_min
-  field_max_RAP = field_info@field_max
-  field_median_RAP = field_info@field_median
-  field_mean_RAP = field_info@field_mean
-  field_data_type_RAP = field_info@field_data_type
-
-  plot_title_RAP = field_desc_RAP + " [" + field_units_RAP + "]"
-  print("")
-  print("plot_title_RAP = " + char_dq + plot_title_RAP + char_dq)
-
-end if
-
-
-
-
-
-
-
-
-
-
-
-;
-; **********************************************************************
-;
-;
-;
-; **********************************************************************
-;
-  fn_graphics = cres + "_grid_f" + fcst_hr_str + "_k" + vert_indx_str
-
-  coord_fill_val := default_fillvalue(typeof(lon_cntrs_unstruc))
-;
-; **********************************************************************
-;
-; If plot_RAP_field is set to True, combine the coordinate arrays for
-; the FV3-LAM and the RAP into a single set of arrays for plotting.
-;
-; **********************************************************************
-;
-  if (plot_RAP_field) then
-;
-; **********************************************************************
-;
-; If the RAP coordinate arrays are not of the same data type as the FV3-
-; LAM coordinate arrays, convert the data type of the former to that of
-; the latter.
-;
-; **********************************************************************
-;
-    if (.not. strcmp_exact(coord_data_type_FV3LAM, coord_data_type_RAP)) then
-
-      lon_cntrs_unstruc_RAP \
-      := totype(lon_cntrs_unstruc_RAP, coord_data_type_FV3LAM)
-
-      lat_cntrs_unstruc_RAP \
-      := totype(lat_cntrs_unstruc_RAP, coord_data_type_FV3LAM)
-
-      lon_verts_unstruc_RAP \
-      := totype(lon_verts_unstruc_RAP, coord_data_type_FV3LAM)
-
-      lat_verts_unstruc_RAP \
-      := totype(lat_verts_unstruc_RAP, coord_data_type_FV3LAM)
-
-    end if
-;
-; **********************************************************************
-;
-; If the RAP field is not of the same data type as the FV3-LAM field, 
-; convert the data type of the former to that of the latter.
-;
-; **********************************************************************
-;
-    if (.not. strcmp_exact(field_data_type_FV3LAM, field_data_type_RAP)) then
-
-      field_unstruc_RAP \
-      := totype(field_unstruc_RAP, field_data_type_FV3LAM)
-
-    end if
-;
-; **********************************************************************
-;
-; Prepend RAP coordinates and fields to the corresponding arrays for the
-; FV3-LAM so that the RAP grid is drawn first and the FV3-LAM tiles are
-; then drawn on top.
-;
-; **********************************************************************
-;
-    lon_cntrs_unstruc \
-    := array_append_record(lon_cntrs_unstruc_RAP, lon_cntrs_unstruc, 0)
-
-    lat_cntrs_unstruc \
-    := array_append_record(lat_cntrs_unstruc_RAP, lat_cntrs_unstruc, 0)
-
-    lon_verts_unstruc \
-    := array_append_record(lon_verts_unstruc_RAP, lon_verts_unstruc, 0)
-
-    lat_verts_unstruc \
-    := array_append_record(lat_verts_unstruc_RAP, lat_verts_unstruc, 0)
-
-    field_unstruc \
-    := array_append_record(field_unstruc_RAP, field_unstruc, 0)
-;
-; **********************************************************************
-;
-; Calculate and print out basic statistics of the field, now including
-; the RAP field.
-;
-; **********************************************************************
-;
-    msg := "Calculating statistics of combined field on FV3-LAM and RAP grids ..."
-    print("")
-    print("" + separator_line)
-    print("" + msg)
-
-;    print_field_stats = True
-    print_field_stats = False
-    field_stat_info \
-    := calc_field_stats( \
-       field_unstruc, field_desc, field_units, print_field_stats)
-    msg := "  " + field_stat_info@msg
-    print("")
-    print("" + msg)
-  
-    field_min := field_stat_info@field_min
-    field_max := field_stat_info@field_max
-    field_median := field_stat_info@field_median
-    field_mean := field_stat_info@field_mean
-
-    msg := "Done calculating statistics of combined field on FV3-LAM and RAP grids."
-    print("")
-    print("" + msg)
-    print("" + separator_line)
-;
-; **********************************************************************
-;
-; If show_RAP_bdy is set to True, prepend the RAP boundary coordinates
-; to those for the FV3-LAM tiles.
-;
-; **********************************************************************
-;
-    if (show_RAP_bdy) then
-;
-; Perform data conversion if necessary.
-;
-      if (strcmp_exact(coord_data_type_FV3LAM, coord_data_type_RAP) .eq. False) then
-        lon_bdy_RAP := totype(lon_bdy_RAP, coord_data_type_FV3LAM)
-        lat_bdy_RAP := totype(lat_bdy_RAP, coord_data_type_FV3LAM)
-      end if
-
-      if (.not. show_tile_bdies) then
-
-        lon_bdy := lon_bdy_RAP
-        lat_bdy := lat_bdy_RAP
-
-      else
-
-;        lon_bdy_RAP := array_append_record(lon_bdy_RAP, coord_fill_val, 0)
-        lon_bdy := array_append_record(coord_fill_val, lon_bdy, 0)
-        lon_bdy := array_append_record(lon_bdy_RAP, lon_bdy, 0)
-
-;        lat_bdy_RAP := array_append_record(lat_bdy_RAP, coord_fill_val, 0)
-        lat_bdy := array_append_record(coord_fill_val, lat_bdy, 0)
-        lat_bdy := array_append_record(lat_bdy_RAP, lat_bdy, 0)
-
-      end if
-
-    end if
-
+  if (remove_rgnl_halo) then
+    nx_all := append_to_snumeric_array(nx_all, grid_info@nx_all_tiles)
+    ny_all := append_to_snumeric_array(ny_all, grid_info@ny_all_tiles)
+  else
+    nx_all := append_to_snumeric_array(nx_all, grid_info@nxh_all_tiles)
+    ny_all := append_to_snumeric_array(ny_all, grid_info@nyh_all_tiles)
   end if
+
+  lon_cntrs_unstruc \
+  := append_to_snumeric_array(lon_cntrs_unstruc, grid_info@lon_cntrs_all_tiles_unstruc)
+  lat_cntrs_unstruc \
+  := append_to_snumeric_array(lat_cntrs_unstruc, grid_info@lat_cntrs_all_tiles_unstruc)
+
+  lon_verts_unstruc \
+  := append_to_snumeric_array(lon_verts_unstruc, grid_info@lon_verts_all_tiles_unstruc)
+  lat_verts_unstruc \
+  := append_to_snumeric_array(lat_verts_unstruc, grid_info@lat_verts_all_tiles_unstruc)
+
+  lon_bdy := append_to_snumeric_array(lon_bdy, grid_info@lon_bdy_all_tiles)
+  lat_bdy := append_to_snumeric_array(lat_bdy, grid_info@lat_bdy_all_tiles)
+
+  grid_opts@plot_gridlines \
+  := array_append_record(grid_opts@plot_gridlines, native@plot_gridlines, 0)
+  grid_opts@gridline_colors \
+  := array_append_record(grid_opts@gridline_colors, native@gridline_color, 0)
+
+  if (native@plot_bdy) then
+    bdy_opts@num_bdies = bdy_opts@num_bdies + 1
+    bdy_opts@plot_bdy \
+    := array_append_record(bdy_opts@plot_bdy, native@plot_bdy, 0)
+    bdy_opts@bdy_colors \
+    := array_append_record(bdy_opts@bdy_colors, native@bdy_color, 0)
+    bdy_opts@bdy_line_thicknesses \
+    := array_append_record(bdy_opts@bdy_line_thicknesses, native@bdy_line_thickness, 0)
+    bdy_opts@bdy_dash_patterns \
+    := array_append_record(bdy_opts@bdy_dash_patterns, native@bdy_dash_pattern, 0)
+  end if
+
+end if
+;
+; **********************************************************************
+;
+; If halo is set to True, then ...
+;
+; **********************************************************************
+;
+if (halo) then
+
+  num_grids = num_grids + 1
+
+;  nhalo_T7 = 4  ; Should this be at the top, i.e. defined as a global variable????
+;                ; or be a requird input that gets processed along with the other
+;                ; command linea arguments?
+;
+;  grid_info := read_FV3LAM_grid_native( \
+;               expt_dir, \
+;               gtype, \
+;               cres, \
+;               inds_tiles_to_plot, \
+;               show_tile_bdies, \
+;               nhalo_T7, \
+;               False)
+
+  nx_all := append_to_snumeric_array(nx_all, grid_info@nxh_all_tiles)
+  ny_all := append_to_snumeric_array(ny_all, grid_info@nyh_all_tiles)
+
+  lon_cntrs_unstruc \
+  := append_to_snumeric_array(lon_cntrs_unstruc, grid_info@lon_halo_cntrs_all_tiles_unstruc)
+  lat_cntrs_unstruc \
+  := append_to_snumeric_array(lat_cntrs_unstruc, grid_info@lat_halo_cntrs_all_tiles_unstruc)
+
+  lon_verts_unstruc \
+  := append_to_snumeric_array(lon_verts_unstruc, grid_info@lon_halo_verts_all_tiles_unstruc)
+  lat_verts_unstruc \
+  := append_to_snumeric_array(lat_verts_unstruc, grid_info@lat_halo_verts_all_tiles_unstruc)
+
+  lon_bdy := append_to_snumeric_array(lon_bdy, grid_info@lon_halo_bdy_all_tiles)
+  lat_bdy := append_to_snumeric_array(lat_bdy, grid_info@lat_halo_bdy_all_tiles)
+
+  grid_opts@plot_gridlines \
+  := array_append_record(grid_opts@plot_gridlines, halo@plot_gridlines, 0)
+  grid_opts@gridline_colors \
+  := array_append_record(grid_opts@gridline_colors, halo@gridline_color, 0)
+
+  if (halo@plot_bdy) then
+    bdy_opts@num_bdies = bdy_opts@num_bdies + 1
+    bdy_opts@plot_bdy \
+    := array_append_record(bdy_opts@plot_bdy, halo@plot_bdy, 0)
+    bdy_opts@bdy_colors \
+    := array_append_record(bdy_opts@bdy_colors, halo@bdy_color, 0)
+    bdy_opts@bdy_line_thicknesses \
+    := array_append_record(bdy_opts@bdy_line_thicknesses, halo@bdy_line_thickness, 0)
+    bdy_opts@bdy_dash_patterns \
+    := array_append_record(bdy_opts@bdy_dash_patterns, halo@bdy_dash_pattern, 0)
+  end if
+
+end if
+;
+; **********************************************************************
+;
+; If wrtcmp is set to True, read in the write-component grid.
+;
+; **********************************************************************
+;
+if (wrtcmp) then
+
+  num_grids = num_grids + 1
+
+  FV3LAM_wrtcmp_fn = run_dir + "/" + "dynf000.nc"
+  get_domain_bdy = True
+  grid_info := read_FV3LAM_grid_wrtcmp( \
+               FV3LAM_wrtcmp_fn, \
+               get_domain_bdy)
+
+  nx_all := append_to_snumeric_array(nx_all, grid_info@nx)
+  ny_all := append_to_snumeric_array(ny_all, grid_info@ny)
+
+  lon_cntrs_unstruc \
+  := append_to_snumeric_array(lon_cntrs_unstruc, grid_info@lon_cntrs_unstruc)
+  lat_cntrs_unstruc \
+  := append_to_snumeric_array(lat_cntrs_unstruc, grid_info@lat_cntrs_unstruc)
+
+  lon_verts_unstruc \
+  := append_to_snumeric_array(lon_verts_unstruc, grid_info@lon_verts_unstruc)
+  lat_verts_unstruc \
+  := append_to_snumeric_array(lat_verts_unstruc, grid_info@lat_verts_unstruc)
+
+  lon_bdy := append_to_snumeric_array(lon_bdy, grid_info@lon_bdy)
+  lat_bdy := append_to_snumeric_array(lat_bdy, grid_info@lat_bdy)
+
+  grid_opts@plot_gridlines \
+  := array_append_record(grid_opts@plot_gridlines, wrtcmp@plot_gridlines, 0)
+  grid_opts@gridline_colors \
+  := array_append_record(grid_opts@gridline_colors, wrtcmp@gridline_color, 0)
+
+  if (wrtcmp@plot_bdy) then
+    bdy_opts@num_bdies = bdy_opts@num_bdies + 1
+    bdy_opts@plot_bdy \
+    := array_append_record(bdy_opts@plot_bdy, wrtcmp@plot_bdy, 0)
+    bdy_opts@bdy_colors \
+    := array_append_record(bdy_opts@bdy_colors, wrtcmp@bdy_color, 0)
+    bdy_opts@bdy_line_thicknesses \
+    := array_append_record(bdy_opts@bdy_line_thicknesses, wrtcmp@bdy_line_thickness, 0)
+    bdy_opts@bdy_dash_patterns \
+    := array_append_record(bdy_opts@bdy_dash_patterns, wrtcmp@bdy_dash_pattern, 0)
+  end if
+
+end if
+
+print("")
+printVarSummary(wrtcmp)
+;
+; **********************************************************************
+;
+; If extrnl is set to True, read in the FV3LAM grid.
+;
+; **********************************************************************
+;
+if (extrnl) then
+
+  num_grids = num_grids + 1
+
+  grid_info := read_RAP_grid(RAP_grid_fn, show_RAP_bdy)
+
+  nx_all := append_to_snumeric_array(nx_all, grid_info@nx)
+  ny_all := append_to_snumeric_array(ny_all, grid_info@ny)
+
+  lon_cntrs_unstruc \
+  := append_to_snumeric_array(lon_cntrs_unstruc, grid_info@lon_cntrs_unstruc)
+  lat_cntrs_unstruc \
+  := append_to_snumeric_array(lat_cntrs_unstruc, grid_info@lat_cntrs_unstruc)
+
+  lon_verts_unstruc \
+  := append_to_snumeric_array(lon_verts_unstruc, grid_info@lon_verts_unstruc)
+  lat_verts_unstruc \
+  := append_to_snumeric_array(lat_verts_unstruc, grid_info@lat_verts_unstruc)
+
+  lon_bdy := append_to_snumeric_array(lon_bdy, grid_info@lon_bdy)
+  lat_bdy := append_to_snumeric_array(lat_bdy, grid_info@lat_bdy)
+
+  grid_opts@plot_gridlines \
+  := array_append_record(grid_opts@plot_gridlines, extrnl@plot_gridlines, 0)
+  grid_opts@gridline_colors \
+  := array_append_record(grid_opts@gridline_colors, extrnl@gridline_color, 0)
+
+  if (extrnl@plot_bdy) then
+    bdy_opts@num_bdies = bdy_opts@num_bdies + 1
+    bdy_opts@plot_bdy \
+    := array_append_record(bdy_opts@plot_bdy, extrnl@plot_bdy, 0)
+    bdy_opts@bdy_colors \
+    := array_append_record(bdy_opts@bdy_colors, extrnl@bdy_color, 0)
+    bdy_opts@bdy_line_thicknesses \
+    := array_append_record(bdy_opts@bdy_line_thicknesses, extrnl@bdy_line_thickness, 0)
+    bdy_opts@bdy_dash_patterns \
+    := array_append_record(bdy_opts@bdy_dash_patterns, extrnl@bdy_dash_pattern, 0)
+  end if
+
+end if
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+;
+nx_all := nx_all(1:)
+ny_all := ny_all(1:)
+lon_cntrs_unstruc := lon_cntrs_unstruc(1:)
+lat_cntrs_unstruc := lat_cntrs_unstruc(1:)
+lon_verts_unstruc := lon_verts_unstruc(1:,:)
+lat_verts_unstruc := lat_verts_unstruc(1:,:)
+lon_bdy := lon_bdy(1:)
+lat_bdy := lat_bdy(1:)
+;field_unstruc := new(1, double)
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+;
+n := dimsizes(grid_opts@plot_gridlines)
+if (n .gt. 1) then
+  grid_opts@plot_gridlines := grid_opts@plot_gridlines(1:)
+  grid_opts@gridline_colors := (/ grid_opts@gridline_colors(1:) /)
+end if
+
+bdy_opts@plot_bdy := (/ bdy_opts@plot_bdy(1:) /)
+bdy_opts@bdy_colors := bdy_opts@bdy_colors(1:)
+bdy_opts@bdy_line_thicknesses := bdy_opts@bdy_line_thicknesses(1:)
+bdy_opts@bdy_dash_patterns := bdy_opts@bdy_dash_patterns(1:)
+bdy_opts@num_bdy_pts_all_bdies := 2*(nx_all + ny_all) + 1
+
+print("")
+printVarSummary(grid_opts)
+print("")
+printVarSummary(bdy_opts)
+;
+; **********************************************************************
+;
+;
+;
+; **********************************************************************
+;
+
+;grid_opts := True
+;grid_opts@plot_gridlines := new(1, logical)
+;grid_opts@gridline_colors := new(1, string)
+;
+;bdy_opts := True
+;bdy_opts@num_bdies = 0
+;bdy_opts@plot_bdy = new(1, logical)
+;bdy_opts@bdy_colors = new(1, string)
+;bdy_opts@bdy_line_thicknesses = new(1, float)
+;bdy_opts@bdy_dash_patterns = new(1, integer)
+
+
+;print("AAAAAA  native = " + native)
+;if (native) then
+;
+;  grid_opts@plot_gridlines \
+;  := array_append_record(grid_opts@plot_gridlines, native@plot_gridlines, 0)
+;  grid_opts@gridline_colors \
+;  := array_append_record(grid_opts@gridline_colors, native@gridline_color, 0)
+;
+;  if (native@plot_bdy) then
+;    bdy_opts@num_bdies = bdy_opts@num_bdies + 1
+;    bdy_opts@plot_bdy \
+;    := array_append_record(bdy_opts@plot_bdy, native@plot_bdy, 0)
+;    bdy_opts@bdy_colors \
+;    := array_append_record(bdy_opts@bdy_colors, native@bdy_color, 0)
+;    bdy_opts@bdy_line_thicknesses \
+;    := array_append_record(bdy_opts@bdy_line_thicknesses, native@bdy_line_thickness, 0)
+;    bdy_opts@bdy_dash_patterns \
+;    := array_append_record(bdy_opts@bdy_dash_patterns, native@bdy_dash_pattern, 0)
+;  end if
+;
+;end if
+
+;print("AAAAAA  wrtcmp = " + wrtcmp)
+;if (wrtcmp) then
+;
+;  grid_opts@plot_gridlines \
+;  := array_append_record(grid_opts@plot_gridlines, wrtcmp@plot_gridlines, 0)
+;  grid_opts@gridline_colors \
+;  := array_append_record(grid_opts@gridline_colors, wrtcmp@gridline_color, 0)
+;
+;  if (wrtcmp@plot_bdy) then
+;    bdy_opts@num_bdies = bdy_opts@num_bdies + 1
+;    bdy_opts@plot_bdy \
+;    := array_append_record(bdy_opts@plot_bdy, wrtcmp@plot_bdy, 0)
+;    bdy_opts@bdy_colors \
+;    := array_append_record(bdy_opts@bdy_colors, wrtcmp@bdy_color, 0)
+;    bdy_opts@bdy_line_thicknesses \
+;    := array_append_record(bdy_opts@bdy_line_thicknesses, wrtcmp@bdy_line_thickness, 0)
+;    bdy_opts@bdy_dash_patterns \
+;    := array_append_record(bdy_opts@bdy_dash_patterns, wrtcmp@bdy_dash_pattern, 0)
+;  end if
+;
+;end if
+
+;print("AAAAAA  extrnl = " + extrnl)
+;if (extrnl) then
+;
+;  grid_opts@plot_gridlines 
+;  := array_append_record(grid_opts@plot_gridlines, extrnl@plot_gridlines, 0)
+;  grid_opts@gridline_colors \
+;  := array_append_record(grid_opts@gridline_colors, extrnl@gridline_color, 0)
+;
+;  if (extrnl@plot_bdy) then
+;    bdy_opts@num_bdies = bdy_opts@num_bdies + 1
+;    bdy_opts@plot_bdy \
+;    := array_append_record(bdy_opts@plot_bdy, extrnl@plot_bdy, 0)
+;    bdy_opts@bdy_colors \
+;    := array_append_record(bdy_opts@bdy_colors, extrnl@bdy_color, 0)
+;    bdy_opts@bdy_line_thicknesses \
+;    := array_append_record(bdy_opts@bdy_line_thicknesses, extrnl@bdy_line_thickness, 0)
+;    bdy_opts@bdy_dash_patterns \
+;    := array_append_record(bdy_opts@bdy_dash_patterns, extrnl@bdy_dash_pattern, 0)
+;  end if
+;
+;end if
+
+;print("")
+;printVarSummary(grid_opts)
+;
+;n := dimsizes(grid_opts@plot_gridlines)
+;if (n .gt. 1) then
+;  grid_opts@plot_gridlines := grid_opts@plot_gridlines(1:)
+;  grid_opts@gridline_colors := (/ grid_opts@gridline_colors(1:) /)
+;end if
+;
+;bdy_opts@plot_bdy := (/ bdy_opts@plot_bdy(1:) /)
+;bdy_opts@bdy_colors := bdy_opts@bdy_colors(1:)
+;bdy_opts@bdy_line_thicknesses := bdy_opts@bdy_line_thicknesses(1:)
+;bdy_opts@bdy_dash_patterns := bdy_opts@bdy_dash_patterns(1:)
+;bdy_opts@num_bdy_pts_all_bdies = 2*(nx_all + ny_all) + 1
+;
+;print("")
+;printVarSummary(grid_opts)
+;print("")
+;printVarSummary(bdy_opts)
+
+;exit
 ;
 ; **********************************************************************
 ;
@@ -1351,9 +1099,12 @@ end if
         plot_opts@subreg_limits = subreg_limits
       end if
 
-left_str = "AAA"
-main_str = "BBB"
-right_str = "CCC"
+;left_str = "AAA"
+;main_str = "BBB"
+;right_str = "CCC"
+left_str = ""
+main_str = ""
+right_str = ""
 
       plot_opts@left_str = left_str
       plot_opts@main_str = main_str
@@ -1365,6 +1116,17 @@ right_str = "CCC"
 ;
 ; **********************************************************************
 ;
+nx_big = sum(nx_all)
+ny_big = sum(ny_all)
+field_unstruc := new(nx_big*ny_big, double)
+
+  field_min := min(field_unstruc)
+  field_max := max(field_unstruc)
+
+;print("field_min = " + field_min)
+;print("field_max = " + field_max)
+;pause
+
   print("")
   print("" + separator_line)
   msg := \
@@ -1386,85 +1148,11 @@ right_str = "CCC"
   print("Done calculating " + char_dq + "nice" + char_dq + " contour values.")
   print("" + separator_line)
 
-
-;
-; **********************************************************************
-;
-; Set the arrays containing the number of grid points in the x and y di-
-; rections for all tiles and grids to be plotted.
-;
-; **********************************************************************
-;
-;nx_all_grids := nx
-;ny_all_grids := ny
-
-;      nx_all_grids \
-;      := where(remove_halo_tiles_to_plot, \
-;               nx_tiles_to_plot, nxh_tiles_to_plot)
-;      ny_all_grids \
-;      := where(remove_halo_tiles_to_plot, \
-;               ny_tiles_to_plot, nyh_tiles_to_plot)
-
-;      if (show_RAP_grid .or. plot_RAP_field) then
-;        nx_all_grids := array_append_record(nx_RAP, nx_all_grids, 0)
-;        ny_all_grids := array_append_record(ny_RAP, ny_all_grids, 0)
-;      end if
-
-;      if (show_wrtcmp_grid) then
-;        nx_all_grids := array_append_record(nx_wrtcmp, nx_all_grids, 0)
-;        ny_all_grids := array_append_record(ny_wrtcmp, ny_all_grids, 0)
-;      end if
-
-
-
-;
-; **********************************************************************
-;
-;
-;
-; **********************************************************************
-;
-
-grid_opts := True
-;grid_opts@num_grids = num_grids_to_plot
-grid_opts@num_grids = 1
-;grid_opts@plot_grid = plot_grid
-grid_opts@plot_grid = show_wrtcmp_grid
-;grid_opts@gridline_colors = gridline_colors
-grid_opts@gridline_colors = wrtcmp_bdy_color
-
-
-bdy_opts := True
-;bdy_opts@num_bdies = num_bdies_to_plot
-bdy_opts@num_bdies = 1
-;bdy_opts@num_bdy_pts_all_bdies = num_bdy_pts_all_bdies
-bdy_opts@num_bdy_pts_all_bdies = 2*(nx + ny) + 1
-;bdy_opts@plot_bdy = plot_bdy
-bdy_opts@plot_bdy = show_wrtcmp_bdy
-;bdy_opts@bdy_colors = bdy_colors
-bdy_opts@bdy_colors = wrtcmp_bdy_color
-;bdy_opts@bdy_line_thicknesses = bdy_line_thicknesses
-bdy_opts@bdy_line_thicknesses = 4.0
-;bdy_opts@bdy_dash_patterns = bdy_dash_patterns
-bdy_opts@bdy_dash_patterns = 1
-
-
-; Old way of calling plot_horiz_field + changes to get it to work with
-; new way, but doesn't work.  Use the new call further below, but some
-; input arguments not yet defined.  Should be defined as in file 
-; plot_FV3LAM_field_native.ncl.
-;  plot_info := plot_horiz_field( \
-;               fn_graphics, \
-;               lon_cntrs_unstruc, lat_cntrs_unstruc, \
-;               lon_verts_unstruc, lat_verts_unstruc, \
-;               lon_bdy, lat_bdy, \
-;               field_unstruc, \
-;               plot_options)
-
-
+;  fn_graphics = cres + "_grid_f" + fcst_hr_str + "_k" + vert_indx_str
+  fn_graphics = cres + "_grids"
   plot_info := plot_horiz_field( \
                fn_graphics, \
-               nx, ny, \
+               nx_all, ny_all, \
                lon_cntrs_unstruc, lat_cntrs_unstruc, \
                lon_verts_unstruc, lat_verts_unstruc, \
                lon_bdy, lat_bdy, \
@@ -1474,14 +1162,9 @@ bdy_opts@bdy_dash_patterns = 1
                plot_opts)
 
 
-
-print("BYE!!!!!!!!!!!!!!!!!!!!!!!")
-
-
-
-
-  end do
-end do
+print("")
+print("BYE")
+exit
 
 
 end

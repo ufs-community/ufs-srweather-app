@@ -18,11 +18,14 @@
 
 ;help = True
 
-expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3LAM_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR25km"
-expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3LAM_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
-expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3LAM_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR3km"
-expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3LAM_demo_PASPBL_20190725/expt_dirs/test_GSD_HAFSV0.A"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR25km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR13km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HRRR3km"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/FV3SAR_demo_PASPBL_20190725/expt_dirs/test_GSD_HAFSV0.A"
 
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/regional_001_old001"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/expt_dirs/regional_003_works01"
+CDATE="2019052000"
 
 tile_inds := (/ 1, 7, 4 /)
 ;tile_inds := (/ 1, 4 /)
@@ -48,6 +51,7 @@ file_basename = "atmos_static"
 file_basename = "fv3_history2d"
 
 file_basename = "phyf000"
+file_basename = "C401_oro_data.tile7.halo0.nc"
 
 ; This is a temporary change for plotting ICs.
 ;file_basename = "sfc_data.tile7"
@@ -63,7 +67,7 @@ field_name = "sqrt_cell_area"
 ;field_name = "angle_cell_dx"
 ;field_name = "angle_cell_dy"
 
-;field_name = "orog_raw"
+field_name = "orog_raw"
 ;field_name = "orog_filt"
 
 ;field_name = "time"
@@ -74,7 +78,7 @@ field_name = "sqrt_cell_area"
 ;field_name = "spfh"
 ;field_name = "cnwat"
 ;field_name = "zsurf"
-field_name = "sltyp"
+;field_name = "sltyp"
 ;field_name = "slc"
 ;field_name = "smc"
 ;field_name = "stc"
@@ -86,16 +90,17 @@ field_name = "sltyp"
 ;field_name = "rainwat"
 
 ;field_name = "none"
+;field_name = "c0"
 
 
 map_proj = "cyln"
-;map_proj = "ortho"
+map_proj = "ortho"
 ;
 ; This should be set to (0,0) for "cyln" map projection.
 ;
 map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map projection.
 ;map_proj_ctr = (/ -106.0, 54.0 /) ; RAP domain.
-;map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
+map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
 
 ;map_proj_ctr = (/ 6.0, 54.0 /) ; RAP domain corner.
 
@@ -141,7 +146,7 @@ remove_rgnl_halo = True
 
 
 show_RAP_bdy = True
-;show_RAP_bdy = False
+show_RAP_bdy = False
 
 RAP_bdy_color = "red"
 
@@ -159,7 +164,8 @@ field_name_RAP = "sqrt_cell_area"
 ; This is for HRRR grib2 file.
 field_name_RAP = "VGTYP_P0_L1_GLC0"
 
-RAP_dir = "/scratch1/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
+;RAP_dir = "/scratch1/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
+RAP_dir = "/scratch1/BMC/gsd-fv3-dev/Gerard.Ketefian/regional_FV3_EMC_visit_20180509"
 ;RAP_grid_fn = "/home/Gerard/fv3_regional/fv3sar_workflow/ush/NCL/plot_grid.ncl"
 ;RAP_grid_fn = "/scratch3/BMC/fim/Gerard.Ketefian/regional_FV3_EMC_visit_20180509/geo_em.d01.RAP.nc"
 ;RAP_grid_fn = RAP_dir + "/geo_em.d01.RAP.nc"
@@ -226,6 +232,7 @@ load "plot_horiz_field.ncl"
 load "set_file_field_names.ncl"
 load "get_wrtcmp_grid.ncl"
 load "calc_wrtcmp_grid_params_lambert_cnfrml.ncl"
+load "calc_wrtcmp_grid_params.ncl"
 load "make_plot_titles.ncl"
 
 begin
@@ -505,14 +512,15 @@ end if
   show_wrtcmp_grid = False
 
   show_wrtcmp_bdy = True
-;  show_wrtcmp_bdy = False
+  show_wrtcmp_bdy = False
 
   wrtcmp_bdy_color = "green"
 
 
 ;  rd := "/scratch3/BMC/det/Gerard.Ketefian/UFS_CAM_test_instructions/expt_dirs/NX1800_NY1120_A0p21423_Kmns0p23209_HRRR_test_cycl_slurm_01/2017090700"
 ;  rd := "/scratch3/BMC/det/Gerard.Ketefian"
-  rd := run_dir + "/2019052000"
+;  rd := run_dir + "/2019052000"
+  rd := expt_dir + "/" + CDATE + "00"
 
   wrtcmp_config_fn := rd + "/model_configure"
 ;  wrtcmp_config_tmpl_fn = wrtcmp_config_fn + ".tmpl"
@@ -523,6 +531,7 @@ end if
 ;
 ; **********************************************************************
 ;
+;if (False) then
   if (show_wrtcmp_grid .or. show_wrtcmp_bdy) then
 print("")
 print("wrtcmp_config_fn = " + char_dq + wrtcmp_config_fn + char_dq)
@@ -546,20 +555,23 @@ pause
     print("lat_grid_cntr_wrtcmp = " + lat_grid_cntr_wrtcmp + " deg")
 pause
 
-
-    out := calc_wrtcmp_grid_params( \
-           wrtcmp_config_fn, \
-           lon_ctr_native, lat_ctr_native, \
-           lon_tile_corners_face_midpts_native, \
-           lat_tile_corners_face_midpts_native, \
-           dx_native, dy_native, \
-           angle_units)
-
-print("")
-print("out = " + out)
-pause
+;lon_ctr_native = lon_grid_cntr_wrtcmp
+;lat_ctr_native = lat_grid_cntr_wrtcmp
+;
+;    out := calc_wrtcmp_grid_params( \
+;           wrtcmp_config_fn, \
+;           lon_ctr_native, lat_ctr_native, \
+;           lon_tile_corners_face_midpts_native, \
+;           lat_tile_corners_face_midpts_native, \
+;           dx_native, dy_native, \
+;           angle_units)
+;
+;print("")
+;print("out = " + out)
+;pause
 
   end if
+;end if
 ;
 ; **********************************************************************
 ;
@@ -989,6 +1001,8 @@ pause
      horiz_area_units)
 
   file_names_by_tile := file_field_info@file_names_by_tile
+;file_names_by_tile := expt_dir + "/fix_sar/C401_oro_data.tile7.halo0.nc"
+file_names_by_tile := expt_dir + "/fix_lam/C401_oro_data.tile7.halo0.nc"
   field_names_by_tile := file_field_info@field_names_by_tile
   func_xy_only := file_field_info@func_xy_only
   func_xyz_only := file_field_info@func_xyz_only
@@ -1045,6 +1059,8 @@ pause
            )
 
       else
+print("")
+print("XXXXXXXXXXX")
 
         field_info \
         := read_FV3LAM_field_native( \
@@ -1130,6 +1146,7 @@ inds_tiles_to_plot_str + " ..."
 ; **********************************************************************
 ;
       field_unstruc_all_grids := field_unstruc
+print("AAAAAAA   dimsizes(field_unstruc_all_grids) = " + dimsizes(field_unstruc_all_grids))
 ;
 ; **********************************************************************
 ;
@@ -1146,6 +1163,10 @@ inds_tiles_to_plot_str + " ..."
 ;
 ; **********************************************************************
 ;
+field_name_RAP = "AAAA"
+field_desc_RAP = "BBBB"
+field_units_RAP = "CCCC"
+
       if (show_RAP_grid .or. plot_RAP_field) then
 ;
 ; **********************************************************************
@@ -1198,6 +1219,8 @@ inds_tiles_to_plot_str + " ..."
         field_unstruc_all_grids \
         := array_append_record( \
            field_unstruc_RAP, field_unstruc_all_grids, 0)
+print("")
+print("BBBBBB   dimsizes(field_unstruc_all_grids) = " + dimsizes(field_unstruc_all_grids))
 
       end if
 ;
@@ -1263,6 +1286,7 @@ inds_tiles_to_plot_str + " ..."
 ;
 ; **********************************************************************
 ;
+nn=0
       title_info \
       := make_plot_titles( \
          inds_tiles_to_plot, \
@@ -1282,6 +1306,9 @@ inds_tiles_to_plot_str + " ..."
       left_str := title_info@left_str
       main_str := title_info@main_str
       right_str := title_info@right_str
+left_str := ""
+main_str := ""
+right_str := ""
 ;
 ; **********************************************************************
 ;
@@ -1437,9 +1464,10 @@ inds_tiles_to_plot_str + " ..."
       extrnl_tag = "extrnl"
 
       bdy_plot_order := new(num_bdies_to_plot, "string")
-bdy_plot_order(0) = wrtcmp_tag
-bdy_plot_order(1) = extrnl_tag
-bdy_plot_order(2) = native_tag
+;bdy_plot_order(0) = wrtcmp_tag
+;bdy_plot_order(1) = extrnl_tag
+;bdy_plot_order(2) = native_tag
+bdy_plot_order(0) = native_tag
 
       indx_ptr_start := new(num_bdies_to_plot, "integer")
       indx_ptr_end := new(num_bdies_to_plot, "integer")
@@ -1600,6 +1628,10 @@ end if
 
 ; Temporarily make the field all missing/fill values, so we can see grids/boundaries.
 ;field_unstruc_all_grids = field_unstruc_all_grids@_FillValue
+
+print("nx_all_grids = " + nx_all_grids)
+print("")
+print("CCCCCCC   dimsizes(field_unstruc_all_grids) = " + dimsizes(field_unstruc_all_grids))
 
       plot_info := plot_horiz_field( \
                    fn_graphics, \

@@ -19,6 +19,7 @@ loadscript(lib_location + "special_chars.ncl")
 loadscript(lib_location + "constants.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "get_rect_grid_bdy.ncl")
+loadscript(lib_location + "interpol_extrapol_linear.ncl")
 
 undef("read_FV3LAM_grid_wrtcmp")
 
@@ -90,15 +91,12 @@ begin
 ; Read in the cell vertex coordinates.
 ; 
 ; **********************************************************************
-; 
+;
   if (strcmp_exact(coord_sys, "rotated_latlon") .or. \
       strcmp_exact(coord_sys, "lambert_conformal")) then
 
-    lon_verts := fp->grid_xt(:,:)
-    lat_verts := fp->grid_yt(:,:)
-
-lon_verts = lon_verts*degs_per_rad
-lat_verts = lat_verts*degs_per_rad
+    lon_cntrs := fp->lon(:,:)
+    lat_cntrs := fp->lat(:,:)
 
   else
 
@@ -116,9 +114,9 @@ lat_verts = lat_verts*degs_per_rad
 ;
 ; **********************************************************************
 ;
-  dims := dimsizes(lon_verts)
-  nx = dims(1) - 1
-  ny = dims(0) - 1
+  dims := dimsizes(lon_cntrs)
+  nx = dims(1)
+  ny = dims(0)
 
   print("")
   print("  nx = " + nx)
@@ -126,23 +124,210 @@ lat_verts = lat_verts*degs_per_rad
 ;
 ; **********************************************************************
 ;
-; Calculate cell center coordinates from cell vertex coordinates.
+; Calculate cell vertex coordinates from cell center coordinates.  For
+; vertices that are in the interior of the write-component domain, we
+; simply averate the four neighboring cell center coordinates to obtain
+; the coordinates of the vertex.  For vertices that lie on the boundary
+; of the domain, we perform linear extrapolation using the coordinates 
+; of vertices that lie within the domain (and whose coordinates we have
+; already calculated using the coordinates of the cell centers).
 ;
 ; **********************************************************************
 ;
-;  lon_cntrs := new((/ ny, nx /), coord_data_type)
-  lon_cntrs = lon_verts(0:ny-1,0:nx-1) \
-            + lon_verts(0:ny-1,1:nx) \
-            + lon_verts(1:ny,1:nx) \
-            + lon_verts(1:ny,0:nx-1)
-  lon_cntrs = 0.25d+0*lon_cntrs
+  lon_verts := new((/ ny+1, nx+1 /), coord_data_type)
+  lat_verts := new((/ ny+1, nx+1 /), coord_data_type)
+;lon_verts = -98.5d+0
+;lat_verts = 37.5d+0
+;
+; Average the coordinates of the four neighboring center points around 
+; each vertex that is in the interior of the domain/grid to obtain the 
+; coordinates of that internal vertex.
+;
+  lon_verts(1:ny-1,1:nx-1) \
+  = (lon_cntrs(0:ny-2,0:nx-2) \
+  + lon_cntrs(0:ny-2,1:nx-1) \
+  + lon_cntrs(1:ny-1,1:nx-1) \
+  + lon_cntrs(1:ny-1,0:nx-2))/4.0d+0
 
-;  lat_cntrs := new((/ ny, nx /), coord_data_type)
-  lat_cntrs = lat_verts(0:ny-1,0:nx-1) \
-            + lat_verts(0:ny-1,1:nx) \
-            + lat_verts(1:ny,1:nx) \
-            + lat_verts(1:ny,0:nx-1)
-  lat_cntrs = 0.25d+0*lat_cntrs
+  lat_verts(1:ny-1,1:nx-1) \
+  = (lat_cntrs(0:ny-2,0:nx-2) \
+  + lat_cntrs(0:ny-2,1:nx-1) \
+  + lat_cntrs(1:ny-1,1:nx-1) \
+  + lat_cntrs(1:ny-1,0:nx-2))/4.0d+0
+;
+; Create integer (index) arrays needed in the extrapolations below in the
+; x direction.
+;
+  ivec1 := new(ny-1, "integer")
+  ivec2 := new(ny-1, "integer")
+  ivec3 := new(ny-1, "integer")
+;
+; Extrapolate to obtain coordinates of vertices along the left boundary
+; (but not including the vertices on the bottom-left and top-left corners
+; of the grid).
+;
+  i1 = 1
+  i2 = 2
+  i3 = 0
+  ivec1 = i1
+  ivec2 = i2
+  ivec3 = i3
+  lon_verts(1:ny-1,i3) \
+  = interpol_extrapol_linear( \
+    ivec1, lon_verts(1:ny-1,i1), ivec2, lon_verts(1:ny-1,i2), ivec3)
+  lat_verts(1:ny-1,i3) \
+  = interpol_extrapol_linear( \
+    ivec1, lat_verts(1:ny-1,i1), ivec2, lat_verts(1:ny-1,i2), ivec3)
+;
+; Extrapolate to obtain coordinates of vertices along the right boundary
+; (but not including the vertices on the bottom-right and top-right corners
+; of the grid).
+;
+  i1 = nx - 2
+  i2 = nx - 1
+  i3 = nx
+  ivec1 = i1
+  ivec2 = i2
+  ivec3 = i3
+  lon_verts(1:ny-1,i3) \
+  = interpol_extrapol_linear( \
+    ivec1, lon_verts(1:ny-1,i1), ivec2, lon_verts(1:ny-1,i2), ivec3)
+  lat_verts(1:ny-1,i3) \
+  = interpol_extrapol_linear( \
+    ivec1, lat_verts(1:ny-1,i1), ivec2, lat_verts(1:ny-1,i2), ivec3)
+;
+; Create integer (index) arrays needed in the extrapolations below in the
+; y direction.
+;
+  jvec1 := new(nx-1, "integer")
+  jvec2 := new(nx-1, "integer")
+  jvec3 := new(nx-1, "integer")
+;
+; Extrapolate to obtain coordinates of vertices along the bottom boundary
+; (but not including the vertices on the bottom-left and bottom-right 
+; corners of the grid).
+;
+  j1 = 1
+  j2 = 2
+  j3 = 0
+  jvec1 = j1
+  jvec2 = j2
+  jvec3 = j3
+  lon_verts(j3,1:nx-1) \
+  = interpol_extrapol_linear( \
+    jvec1, lon_verts(j1,1:nx-1), jvec2, lon_verts(j2,1:nx-1), jvec3)
+  lat_verts(j3,1:nx-1) \
+  = interpol_extrapol_linear( \
+    jvec1, lat_verts(j1,1:nx-1), jvec2, lat_verts(j2,1:nx-1), jvec3)
+;
+; Extrapolate to obtain coordinates of vertices along the top boundary
+; (but not including the vertices on the top-left and top-right corners
+; of the grid).
+;
+  j1 = ny - 2
+  j2 = ny - 1
+  j3 = ny
+  jvec1 = j1
+  jvec2 = j2
+  jvec3 = j3
+  lon_verts(j3,1:nx-1) \
+  = interpol_extrapol_linear( \
+    jvec1, lon_verts(j1,1:nx-1), jvec2, lon_verts(j2,1:nx-1), jvec3)
+  lat_verts(j3,1:nx-1) \
+  = interpol_extrapol_linear( \
+    jvec1, lat_verts(j1,1:nx-1), jvec2, lat_verts(j2,1:nx-1), jvec3)
+;
+; **********************************************************************
+;
+; Extrapolate to obtain the coordinates of the vertex on the bottom-left 
+; corner of the grid.
+;
+; **********************************************************************
+;
+  i1 = 1
+  i2 = 2
+  i3 = 0
+  j3 = 0
+  lon_verts(j3,i3) \
+  = interpol_extrapol_linear( \
+    i1, lon_verts(j3,i1), i2, lon_verts(j3,i2), i3)
+
+  j1 = 1
+  j2 = 2
+  j3 = 0
+  i3 = 0
+  lat_verts(j3,i3) \
+  = interpol_extrapol_linear( \
+    j1, lat_verts(j1,i3), i2, lat_verts(j2,i3), j3)
+;
+; **********************************************************************
+;
+; Extrapolate to obtain the coordinates of the vertex on the bottom-right
+; corner of the grid.
+;
+; **********************************************************************
+;
+  i1 = nx - 2
+  i2 = nx - 1
+  i3 = nx
+  j3 = 0
+  lon_verts(j3,i3) \
+  = interpol_extrapol_linear( \
+    i1, lon_verts(j3,i1), i2, lon_verts(j3,i2), i3)
+
+  j1 = 1
+  j2 = 2
+  j3 = 0
+  i3 = nx
+  lat_verts(j3,i3) \
+  = interpol_extrapol_linear( \
+    j1, lat_verts(j1,i3), j2, lat_verts(j2,i3), j3)
+;
+; **********************************************************************
+;
+; Extrapolate to obtain the coordinates of the vertex on the top-right
+; corner of the grid.
+;
+; **********************************************************************
+;
+  i1 = nx - 2
+  i2 = nx - 1
+  i3 = nx
+  j3 = ny
+  lon_verts(j3,i3) \
+  = interpol_extrapol_linear( \
+    i1, lon_verts(j3,i1), i2, lon_verts(j3,i2), i3)
+
+  j1 = ny - 2
+  j2 = ny - 1
+  j3 = ny
+  i3 = nx
+  lat_verts(j3,i3) \
+  = interpol_extrapol_linear( \
+    j1, lat_verts(j1,i3), j2, lat_verts(j2,i3), j3)
+;
+; **********************************************************************
+;
+; Extrapolate to obtain the coordinates of the vertex on the top-left 
+; corner of the grid.
+;
+; **********************************************************************
+;
+  i1 = 1
+  i2 = 2
+  i3 = 0
+  j3 = ny
+  lon_verts(j3,i3) \
+  = interpol_extrapol_linear( \
+    i1, lon_verts(j3,i1), i2, lon_verts(j3,i2), i3)
+
+  j1 = ny - 2
+  j2 = ny - 1
+  j3 = ny
+  i3 = 0
+  lat_verts(j3,i3) \
+  = interpol_extrapol_linear( \
+    j1, lat_verts(j1,i3), j2, lat_verts(j2,i3), j3)
 ;
 ; **********************************************************************
 ;
