@@ -1131,7 +1131,7 @@ dot_ccpp_phys_suite_or_null=".${CCPP_PHYS_SUITE}"
 DATA_TABLE_TMPL_FN="${DATA_TABLE_FN}"
 DIAG_TABLE_TMPL_FN="${DIAG_TABLE_FN}${dot_ccpp_phys_suite_or_null}"
 FIELD_TABLE_TMPL_FN="${FIELD_TABLE_FN}${dot_ccpp_phys_suite_or_null}"
-MODEL_CONFIG_TMPL_FN="${MODEL_CONFIG_FN}${dot_ccpp_phys_suite_or_null}"
+MODEL_CONFIG_TMPL_FN="${MODEL_CONFIG_FN}"
 NEMS_CONFIG_TMPL_FN="${NEMS_CONFIG_FN}"
 
 DATA_TABLE_TMPL_FP="${TEMPLATE_DIR}/${DATA_TABLE_TMPL_FN}"
@@ -1979,42 +1979,19 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Initialize the full path to the template file containing placeholder 
-# values for the write component parameters.  Then, if the write component
-# is going to be used to write output files to disk (i.e. if QUILTING is
-# set to "TRUE"), set the full path to this file.  This file will be 
-# appended to the NEMS configuration file (MODEL_CONFIG_FN), and placeholder
-# values will be replaced with actual ones.  
+# If the write-component is going to be used to write output files to 
+# disk (i.e. if QUILTING is set to "TRUE"), make sure that the grid type 
+# used by the write-component (WRTCMP_output_grid) is set to a valid value.
 #
 #-----------------------------------------------------------------------
 #
-WRTCMP_PARAMS_TMPL_FP=""
-
 if [ "$QUILTING" = "TRUE" ]; then
-#
-# First, make sure that WRTCMP_output_grid is set to a valid value.
-#
   err_msg="\
 The coordinate system used by the write-component output grid specified
 in WRTCMP_output_grid is not supported:
   WRTCMP_output_grid = \"${WRTCMP_output_grid}\""
   check_var_valid_value \
     "WRTCMP_output_grid" "valid_vals_WRTCMP_output_grid" "${err_msg}"
-#
-# Now set the name of the write-component template file.
-#
-  wrtcmp_params_tmpl_fn=${wrtcmp_params_tmpl_fn:-"wrtcmp_${WRTCMP_output_grid}"}
-#
-# Finally, set the full path to the write component template file and
-# make sure that the file exists.
-#
-  WRTCMP_PARAMS_TMPL_FP="${TEMPLATE_DIR}/${wrtcmp_params_tmpl_fn}"
-  if [ ! -f "${WRTCMP_PARAMS_TMPL_FP}" ]; then
-    print_err_msg_exit "\
-The write-component template file does not exist or is not a file:
-  WRTCMP_PARAMS_TMPL_FP = \"${WRTCMP_PARAMS_TMPL_FP}\""
-  fi
-
 fi
 #
 #-----------------------------------------------------------------------
@@ -2483,8 +2460,6 @@ NEMS_CONFIG_FP="${NEMS_CONFIG_FP}"
 FV3_EXEC_FP="${FV3_EXEC_FP}"
 
 LOAD_MODULES_RUN_TASK_FP="${LOAD_MODULES_RUN_TASK_FP}"
-
-WRTCMP_PARAMS_TMPL_FP="${WRTCMP_PARAMS_TMPL_FP}"
 #
 #-----------------------------------------------------------------------
 #

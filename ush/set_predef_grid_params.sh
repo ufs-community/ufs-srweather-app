@@ -34,7 +34,9 @@ local func_name="${FUNCNAME[0]}"
 # domain (PREDEF_GRID_NAME).  Note that the code will enter this script 
 # only if PREDEF_GRID_NAME has a valid (and non-empty) value.
 #
-# The following needs to be updated:
+####################
+# The following comments need to be updated:
+####################
 #
 # 1) Reset the experiment title (expt_title).
 # 2) Reset the grid parameters.

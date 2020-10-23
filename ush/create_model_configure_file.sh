@@ -68,15 +68,14 @@ nthreads \
 #
 #-----------------------------------------------------------------------
 #
-  local i \
-        model_config_fp \
-        yyyy \
+  local yyyy \
         mm \
         dd \
         hh \
-        mm \
         dot_quilting_dot \
-        dot_print_esmf_dot
+        dot_print_esmf_dot \
+        settings \
+        model_config_fp
 #
 #-----------------------------------------------------------------------
 #
@@ -89,12 +88,6 @@ Creating a model configuration file (\"${MODEL_CONFIG_FN}\") in the specified
 run directory (run_dir):
   run_dir = \"${run_dir}\""
 #
-# Copy template model configure files from the templates directory to the 
-# run directory.
-#
-  model_config_fp="${run_dir}/${MODEL_CONFIG_FN}"
-  cp_vrfy "${MODEL_CONFIG_TMPL_FP}" "${model_config_fp}"
-#
 # Extract from cdate the starting year, month, day, and hour of the forecast.
 #
   yyyy=${cdate:0:4}
@@ -106,65 +99,106 @@ run directory (run_dir):
 #
   dot_quilting_dot="."${QUILTING,,}"."
   dot_print_esmf_dot="."${PRINT_ESMF,,}"."
-
-  set_file_param "${model_config_fp}" "PE_MEMBER01" "${PE_MEMBER01}"
-  set_file_param "${model_config_fp}" "dt_atmos" "${DT_ATMOS}"
-  set_file_param "${model_config_fp}" "start_year" "$yyyy"
-  set_file_param "${model_config_fp}" "start_month" "$mm"
-  set_file_param "${model_config_fp}" "start_day" "$dd"
-  set_file_param "${model_config_fp}" "start_hour" "$hh"
-  set_file_param "${model_config_fp}" "nhours_fcst" "${FCST_LEN_HRS}"
-  set_file_param "${model_config_fp}" "ncores_per_node" "${NCORES_PER_NODE}"
-  set_file_param "${model_config_fp}" "quilting" "${dot_quilting_dot}"
-  set_file_param "${model_config_fp}" "print_esmf" "${dot_print_esmf_dot}"
-  set_file_param "${model_config_fp}" "atmos_nthreads" "${nthreads:-1}"
 #
 #-----------------------------------------------------------------------
 #
-# If the write component is to be used, then a set of parameters, including 
-# those that define the write component's output grid, need to be specified 
-# in the model configuration file (model_config_fp).  This is done by 
-# appending a template file (in which some write-component parameters are 
-# set to actual values while others are set to placeholders) to model_config_fp 
-# and then replacing the placeholder values in the (new) model_config_fp 
-# file with actual values.  The full path of this template file is specified 
-# in the workflow variable WRTCMP_PARAMS_TMPL_FP.
+# Create a multiline variable that consists of a yaml-compliant string
+# specifying the values that the jinja variables in the template 
+# model_configure file should be set to.
 #
 #-----------------------------------------------------------------------
+#
+  settings="\
+  'PE_MEMBER01': ${PE_MEMBER01}
+  'start_year': $yyyy
+  'start_month': $mm
+  'start_day': $dd
+  'start_hour': $hh
+  'nhours_fcst': ${FCST_LEN_HRS}
+  'dt_atmos': ${DT_ATMOS}
+  'atmos_nthreads': ${nthreads:-1}
+  'ncores_per_node': ${NCORES_PER_NODE}
+  'quilting': ${dot_quilting_dot}
+  'print_esmf': ${dot_print_esmf_dot}
+  'output_grid': ${WRTCMP_output_grid}"
+#  'output_grid': \'${WRTCMP_output_grid}\'"
+#
+# If the write-component is to be used, then specify a set of computational
+# parameters and a set of grid parameters.  The latter depends on the type
+# (coordinate system) of the grid that the write-component will be using.
 #
   if [ "$QUILTING" = "TRUE" ]; then
 
-    cat ${WRTCMP_PARAMS_TMPL_FP} >> ${model_config_fp}
+    settings="${settings}
+  'write_groups': ${WRTCMP_write_groups}
+  'write_tasks_per_group': ${WRTCMP_write_tasks_per_group}
+  'cen_lon': ${WRTCMP_cen_lon}
+  'cen_lat': ${WRTCMP_cen_lat}
+  'lon1': ${WRTCMP_lon_lwr_left}
+  'lat1': ${WRTCMP_lat_lwr_left}"
 
-    set_file_param "${model_config_fp}" "write_groups" "${WRTCMP_write_groups}"
-    set_file_param "${model_config_fp}" "write_tasks_per_group" "${WRTCMP_write_tasks_per_group}"
+    if [ "${WRTCMP_output_grid}" = "lambert_conformal" ]; then
 
-    set_file_param "${model_config_fp}" "output_grid" "\'${WRTCMP_output_grid}\'"
-    set_file_param "${model_config_fp}" "cen_lon" "${WRTCMP_cen_lon}"
-    set_file_param "${model_config_fp}" "cen_lat" "${WRTCMP_cen_lat}"
-    set_file_param "${model_config_fp}" "lon1" "${WRTCMP_lon_lwr_left}"
-    set_file_param "${model_config_fp}" "lat1" "${WRTCMP_lat_lwr_left}"
+      settings="${settings}
+  'stdlat1': ${WRTCMP_stdlat1}
+  'stdlat2': ${WRTCMP_stdlat2}
+  'nx': ${WRTCMP_nx}
+  'ny': ${WRTCMP_ny}
+  'dx': ${WRTCMP_dx}
+  'dy': ${WRTCMP_dy}
+  'lon2': \"\"
+  'lat2': \"\"
+  'dlon': \"\"
+  'dlat': \"\""
 
-    if [ "${WRTCMP_output_grid}" = "rotated_latlon" ]; then
-      set_file_param "${model_config_fp}" "lon2" "${WRTCMP_lon_upr_rght}"
-      set_file_param "${model_config_fp}" "lat2" "${WRTCMP_lat_upr_rght}"
-      set_file_param "${model_config_fp}" "dlon" "${WRTCMP_dlon}"
-      set_file_param "${model_config_fp}" "dlat" "${WRTCMP_dlat}"
-    elif [ "${WRTCMP_output_grid}" = "lambert_conformal" ]; then
-      set_file_param "${model_config_fp}" "stdlat1" "${WRTCMP_stdlat1}"
-      set_file_param "${model_config_fp}" "stdlat2" "${WRTCMP_stdlat2}"
-      set_file_param "${model_config_fp}" "nx" "${WRTCMP_nx}"
-      set_file_param "${model_config_fp}" "ny" "${WRTCMP_ny}"
-      set_file_param "${model_config_fp}" "dx" "${WRTCMP_dx}"
-      set_file_param "${model_config_fp}" "dy" "${WRTCMP_dy}"
-    elif [ "${WRTCMP_output_grid}" = "regional_latlon" ]; then
-      set_file_param "${model_config_fp}" "lon2" "${WRTCMP_lon_upr_rght}"
-      set_file_param "${model_config_fp}" "lat2" "${WRTCMP_lat_upr_rght}"
-      set_file_param "${model_config_fp}" "dlon" "${WRTCMP_dlon}"
-      set_file_param "${model_config_fp}" "dlat" "${WRTCMP_dlat}"
+    elif [ "${WRTCMP_output_grid}" = "regional_latlon" ] || \
+         [ "${WRTCMP_output_grid}" = "rotated_latlon" ]; then
+
+      settings="${settings}
+  'lon2': ${WRTCMP_lon_upr_rght}
+  'lat2': ${WRTCMP_lat_upr_rght}
+  'dlon': ${WRTCMP_dlon}
+  'dlat': ${WRTCMP_dlat}
+  'stdlat1': \"\"
+  'stdlat2': \"\"
+  'nx': \"\"
+  'ny': \"\"
+  'dx': \"\"
+  'dy': \"\""
+
     fi
 
   fi
+
+  print_info_msg $VERBOSE "
+The variable \"settings\" specifying values to be used in the \"${MODEL_CONFIG_FN}\"
+file has been set as follows:
+#-----------------------------------------------------------------------
+settings =
+$settings"
+#
+#-----------------------------------------------------------------------
+#
+# Call a python script to generate the experiment's actual MODEL_CONFIG_FN
+# file from the template file.
+#
+#-----------------------------------------------------------------------
+#
+  model_config_fp="${run_dir}/${MODEL_CONFIG_FN}"
+  $USHDIR/fill_jinja_template.py -q \
+                                 -u "${settings}" \
+                                 -t ${MODEL_CONFIG_TMPL_FP} \
+                                 -o ${model_config_fp} || \
+  print_err_msg_exit "\
+Call to python script fill_jinja_template.py to create a \"${MODEL_CONFIG_FN}\"
+file from a jinja2 template failed.  Parameters passed to this script are:
+  Full path to template rocoto XML file:
+    MODEL_CONFIG_TMPL_FP = \"${MODEL_CONFIG_TMPL_FP}\"
+  Full path to output rocoto XML file:
+    model_config_fp = \"${model_config_fp}\"
+  Namelist settings specified on command line:
+    settings =
+$settings"
 #
 #-----------------------------------------------------------------------
 #
