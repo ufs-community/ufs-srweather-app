@@ -115,8 +115,4 @@ echo;echo " .... Installing executables .... "
 echo;echo " .... Installation finished .... "
 echo;echo " .... Linking fix files .... "
 
-./link_fix.sh
-
-echo;echo " .... Linking fix files finished .... "
-
 exit 0
