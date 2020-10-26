@@ -92,8 +92,12 @@ expt_name="${EXPT_SUBDIR}"
 #-----------------------------------------------------------------------
 #
 if [ "$MACHINE" != "CHEYENNE" ]; then
-  module purge
-  module load rocoto
+  if [ "$MACHINE" = "ORION" ]; then
+    module load contrib rocoto
+  else
+    module purge
+    module load rocoto
+  fi
 fi
 #
 #-----------------------------------------------------------------------

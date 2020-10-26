@@ -360,72 +360,86 @@ check_var_valid_value "MACHINE" "valid_vals_MACHINE"
 #-----------------------------------------------------------------------
 #
 case $MACHINE in
-#
-"WCOSS_CRAY")
-#
-  NCORES_PER_NODE="24"
-  SCHED="lsfcray"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"dev"}
-  QUEUE_HPSS=${QUEUE_HPSS:-"dev_transfer"}
-  QUEUE_HPSS_TAG="queue"       # lsfcray does not support "partition" tag
-  QUEUE_FCST=${QUEUE_FCST:-"dev"}
-  ;;
-#
-"WCOSS_DELL_P3")
-#
-  NCORES_PER_NODE=24
-  SCHED="lsf"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"dev"}
-  QUEUE_HPSS=${QUEUE_HPSS:-"dev_transfer"}
-  QUEUE_HPSS_TAG="queue"       # lsf does not support "partition" tag
-  QUEUE_FCST=${QUEUE_FCST:-"dev"}
-  ;;
-#
-"HERA")
-#
-  NCORES_PER_NODE=24
-  SCHED="${SCHED:-slurm}"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
-  QUEUE_HPSS=${QUEUE_HPSS:-"service"}
-  QUEUE_FCST=${QUEUE_FCST:-"batch"}
-  ;;
-#
-"JET")
-#
-  NCORES_PER_NODE=24
-  SCHED="${SCHED:-slurm}"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
-  QUEUE_HPSS=${QUEUE_HPSS:-"service"}
-  QUEUE_FCST=${QUEUE_FCST:-"batch"}
-  ;;
-#
-"ODIN")
-#
-  NCORES_PER_NODE=24
-  SCHED="${SCHED:-slurm}"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-""}
-  QUEUE_HPSS=${QUEUE_HPSS:-""}
-  QUEUE_FCST=${QUEUE_FCST:-""}
-  ;;
-#
-"CHEYENNE")
-#
-  NCORES_PER_NODE=36
-  SCHED="${SCHED:-pbspro}"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"regular"}
-  QUEUE_HPSS=${QUEUE_HPSS:-"regular"}
-  QUEUE_HPSS_TAG="queue"       # pbspro does not support "partition" tag
-  QUEUE_FCST=${QUEUE_FCST:-"regular"}
-  ;;
-#
-"STAMPEDE")
-#
-  NCORES_PER_NODE=68
-  SCHED="slurm"
-  QUEUE_DEFAULT=${QUEUE_DEFAULT:-"normal"}
-  QUEUE_HPSS=${QUEUE_HPSS:-"development"}
-  QUEUE_FCST=${QUEUE_FCST:-"normal"}
-  ;;
+
+  "WCOSS_CRAY")
+    NCORES_PER_NODE="24"
+    SCHED="lsfcray"
+    QUEUE_DEFAULT=${QUEUE_DEFAULT:-"dev"}
+    QUEUE_HPSS=${QUEUE_HPSS:-"dev_transfer"}
+    QUEUE_FCST=${QUEUE_FCST:-"dev"}
+    ;;
+
+  "WCOSS_DELL_P3")
+    NCORES_PER_NODE=24
+    SCHED="lsf"
+    QUEUE_DEFAULT=${QUEUE_DEFAULT:-"dev"}
+    QUEUE_HPSS=${QUEUE_HPSS:-"dev_transfer"}
+    QUEUE_FCST=${QUEUE_FCST:-"dev"}
+    ;;
+
+  "HERA")
+    NCORES_PER_NODE=40
+    SCHED="${SCHED:-slurm}"
+    PARTITION_DEFAULT=${PARTITION_DEFAULT:-"hera"}
+    QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
+    PARTITION_HPSS=${PARTITION_HPSS:-"service"}
+    QUEUE_HPSS=${QUEUE_HPSS:-"batch"}
+    PARTITION_FCST=${PARTITION_FCST:-"hera"}
+    QUEUE_FCST=${QUEUE_FCST:-"batch"}
+    ;;
+
+  "ORION")
+    NCORES_PER_NODE=40
+    SCHED="${SCHED:-slurm}"
+    PARTITION_DEFAULT=${PARTITION_DEFAULT:-"orion"}
+    QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
+    PARTITION_HPSS=${PARTITION_HPSS:-"service"}
+    QUEUE_HPSS=${QUEUE_HPSS:-"batch"}
+    PARTITION_FCST=${PARTITION_FCST:-"orion"}
+    QUEUE_FCST=${QUEUE_FCST:-"batch"}
+    ;;
+
+  "JET")
+    NCORES_PER_NODE=24
+    SCHED="${SCHED:-slurm}"
+    PARTITION_DEFAULT=${PARTITION_DEFAULT:-"sjet,vjet,kjet,xjet"}
+    QUEUE_DEFAULT=${QUEUE_DEFAULT:-"batch"}
+    PARTITION_HPSS=${PARTITION_HPSS:-"service"}
+    QUEUE_HPSS=${QUEUE_HPSS:-"batch"}
+    PARTITION_FCST=${PARTITION_FCST:-"sjet,vjet,kjet,xjet"}
+    QUEUE_FCST=${QUEUE_FCST:-"batch"}
+    ;;
+
+  "ODIN")
+    NCORES_PER_NODE=24
+    SCHED="${SCHED:-slurm}"
+    PARTITION_DEFAULT=${PARTITION_DEFAULT:-"workq"}
+    QUEUE_DEFAULT=${QUEUE_DEFAULT:-"workq"}
+    PARTITION_HPSS=${PARTITION_HPSS:-"workq"}
+    QUEUE_HPSS=${QUEUE_HPSS:-"workq"}
+    PARTITION_FCST=${PARTITION_FCST:-"workq"}
+    QUEUE_FCST=${QUEUE_FCST:-"workq"}
+    ;;
+
+  "CHEYENNE")
+    NCORES_PER_NODE=36
+    SCHED="${SCHED:-pbspro}"
+    QUEUE_DEFAULT=${QUEUE_DEFAULT:-"regular"}
+    QUEUE_HPSS=${QUEUE_HPSS:-"regular"}
+    QUEUE_FCST=${QUEUE_FCST:-"regular"}
+    ;;
+
+  "STAMPEDE")
+    NCORES_PER_NODE=68
+    SCHED="slurm"
+    PARTITION_DEFAULT=${PARTITION_DEFAULT:-"normal"}
+    QUEUE_DEFAULT=${QUEUE_DEFAULT:-"normal"}
+    PARTITION_HPSS=${PARTITION_HPSS:-"normal"}
+    QUEUE_HPSS=${QUEUE_HPSS:-"normal"}
+    PARTITION_FCST=${PARTITION_FCST:-"normal"}
+    QUEUE_FCST=${QUEUE_FCST:-"normal"}
+    ;;
+
 esac
 #
 #-----------------------------------------------------------------------
@@ -652,57 +666,64 @@ TEMPLATE_DIR="$USHDIR/templates"
 
 case $MACHINE in
 
-"WCOSS_CRAY")
-  FIXgsm=${FIXgsm:-"/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"}
-  TOPO_DIR=${TOPO_DIR:-"/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog"}
-  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_sfc_climo"}
-  ;;
+  "WCOSS_CRAY")
+    FIXgsm=${FIXgsm:-"/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"}
+    TOPO_DIR=${TOPO_DIR:-"/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix/fix_sfc_climo"}
+    ;;
 
-"WCOSS_DELL_P3")
-  FIXgsm=${FIXgsm:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"}
-  TOPO_DIR=${TOPO_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog"}
-  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_sfc_climo"}
-  ;;
+  "WCOSS_DELL_P3")
+    FIXgsm=${FIXgsm:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_am"}
+    TOPO_DIR=${TOPO_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_sfc_climo"}
+    ;;
 
-"HERA")
-  FIXgsm=${FIXgsm:-"/scratch1/NCEPDEV/global/glopara/fix/fix_am"}
-  TOPO_DIR=${TOPO_DIR:-"/scratch1/NCEPDEV/global/glopara/fix/fix_orog"}
-  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"}
-  ;;
+  "HERA")
+    FIXgsm=${FIXgsm:-"/scratch1/NCEPDEV/global/glopara/fix/fix_am"}
+    TOPO_DIR=${TOPO_DIR:-"/scratch1/NCEPDEV/global/glopara/fix/fix_orog"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"}
+    ;;
 
-"JET")
-  FIXgsm=${FIXgsm:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_am"}
-  TOPO_DIR=${TOPO_DIR:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_orog"}
-  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/lfs1/HFIP/hwrf-data/git/fv3gfs/fix/fix_sfc_climo"}
-  ;;
+  "ORION")
+    FIXgsm=${FIXgsm:-"/work/noaa/fv3-cam/emc.campara/fix_fv3cam/fix_am"}
+    TOPO_DIR=${TOPO_DIR:-"/work/noaa/fv3-cam/emc.campara/fix_fv3cam/fix_orog"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/work/noaa/gsd-fv3-dev/gsketefia/UFS/climo_fields_netcdf"}
+    ;;
 
-"ODIN")
-  FIXgsm=${FIXgsm:-"/scratch/ywang/fix/theia_fix/fix_am"}
-  TOPO_DIR=${TOPO_DIR:-"/scratch/ywang/fix/theia_fix/fix_orog"}
-  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/scratch/ywang/fix/climo_fields_netcdf"}
-  ;;
-"CHEYENNE")
-  FIXgsm=${FIXgsm:-"/glade/p/ral/jntp/UFS_CAM/fix/fix_am"}
-  TOPO_DIR=${TOPO_DIR:-"/glade/p/ral/jntp/UFS_CAM/fix/fix_orog"}
-  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/glade/p/ral/jntp/UFS_CAM/fix/climo_fields_netcdf"}
-  ;;
+  "JET")
+    FIXgsm=${FIXgsm:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_am"}
+    TOPO_DIR=${TOPO_DIR:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_orog"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/lfs1/HFIP/hwrf-data/git/fv3gfs/fix/fix_sfc_climo"}
+    ;;
 
-"STAMPEDE")
-  FIXgsm=${FIXgsm:-"/work/00315/tg455890/stampede2/regional_fv3/fix_am"}
-  TOPO_DIR=${TOPO_DIR:-"/work/00315/tg455890/stampede2/regional_fv3/fix_orog"}
-  SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/work/00315/tg455890/stampede2/regional_fv3/climo_fields_netcdf"}
-  ;;
+  "ODIN")
+    FIXgsm=${FIXgsm:-"/scratch/ywang/fix/theia_fix/fix_am"}
+    TOPO_DIR=${TOPO_DIR:-"/scratch/ywang/fix/theia_fix/fix_orog"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/scratch/ywang/fix/climo_fields_netcdf"}
+    ;;
 
-*)
-  print_err_msg_exit "\
+  "CHEYENNE")
+    FIXgsm=${FIXgsm:-"/glade/p/ral/jntp/UFS_CAM/fix/fix_am"}
+    TOPO_DIR=${TOPO_DIR:-"/glade/p/ral/jntp/UFS_CAM/fix/fix_orog"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/glade/p/ral/jntp/UFS_CAM/fix/climo_fields_netcdf"}
+    ;;
+
+  "STAMPEDE")
+    FIXgsm=${FIXgsm:-"/work/00315/tg455890/stampede2/regional_fv3/fix_am"}
+    TOPO_DIR=${TOPO_DIR:-"/work/00315/tg455890/stampede2/regional_fv3/fix_orog"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/work/00315/tg455890/stampede2/regional_fv3/climo_fields_netcdf"}
+    ;;
+
+  *)
+    print_err_msg_exit "\
 One or more fix file directories have not been specified for this machine:
   MACHINE = \"$MACHINE\"
   FIXgsm = \"${FIXgsm:-\"\"}
   TOPO_DIR = \"${TOPO_DIR:-\"\"}
   SFC_CLIMO_INPUT_DIR = \"${SFC_CLIMO_INPUT_DIR:-\"\"}
-
 You can specify the missing location(s) in config.sh"
-  ;;
+    ;;
+
 esac
 #
 #-----------------------------------------------------------------------

@@ -122,58 +122,60 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-# Set the run machine-dependent run command.
+# Set the machine-dependent run command.
 #
 #-----------------------------------------------------------------------
 #
 case $MACHINE in
 
-"WCOSS_CRAY")
-  APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}
-  ;;
+  "WCOSS_CRAY")
+    APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}
+    ;;
 
-"WCOSS_DELL_P3")
-
+  "WCOSS_DELL_P3")
 # Specify computational resources.
-  export NODES=2
-  export ntasks=48
-  export ptile=24
-  export threads=1
-  export MP_LABELIO=yes
-  export OMP_NUM_THREADS=$threads
+    export NODES=2
+    export ntasks=48
+    export ptile=24
+    export threads=1
+    export MP_LABELIO=yes
+    export OMP_NUM_THREADS=$threads
+    APRUN="mpirun"
+    ;;
 
-  APRUN="mpirun"
-  ;;
+  "HERA")
+    APRUN="srun"
+    ;;
 
-"HERA")
-  APRUN="srun"
-  ;;
+  "ORION")
+    APRUN="srun"
+    ;;
 
-"JET")
-  APRUN="srun"
-  ;;
+  "JET")
+    APRUN="srun"
+    ;;
 
-"CHEYENNE")
-  nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
-  APRUN="mpirun -np $nprocs"
-  ;;
+  "CHEYENNE")
+    nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
+    APRUN="mpirun -np $nprocs"
+    ;;
 
-"ODIN")
-  nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
-  APRUN="srun -n $nprocs"
-  ;;
+  "ODIN")
+    nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
+    APRUN="srun -n $nprocs"
+    ;;
 
-"STAMPEDE")
-  nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
-  APRUN="ibrun -np ${nprocs}"
-  ;;
+  "STAMPEDE")
+    nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
+    APRUN="ibrun -np ${nprocs}"
+    ;;
 
-*)
-  print_err_msg_exit "\
+  *)
+    print_err_msg_exit "\
 Run command has not been specified for this machine:
   MACHINE = \"$MACHINE\"
   APRUN = \"$APRUN\""
-  ;;
+    ;;
 
 esac
 #

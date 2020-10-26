@@ -115,6 +115,10 @@ case "$MACHINE" in
     . /apps/lmod/lmod/init/sh
     ;;
 #
+  "ORION")
+    . /apps/lmod/lmod/init/sh
+    ;;
+#
   "JET")
     . /apps/lmod/lmod/init/sh
     ;;
@@ -271,23 +275,23 @@ Call to \"module use\" command failed."
   #
   if [ ${use_default_modulefile} -eq 0 ]; then
 
-     module use "${modules_dir}" || print_err_msg_exit "\
-     Call to \"module use\" command failed."
+     module use -a "${modules_dir}" || print_err_msg_exit "\
+Call to \"module use\" command failed."
     
-     module load ${modulefile_name} || print_err_msg_exit "\
-     Loading of module file (modulefile_name; in directory specified by mod-
-     ules_dir) for the specified task (task_name) failed:
-        task_name = \"${task_name}\"
-        modulefile_name = \"${modulefile_name}\"
-        modules_dir = \"${modules_dir}\""
+     module load "${modulefile_name}" || print_err_msg_exit "\
+Loading of module file (modulefile_name; in directory specified by mod-
+ules_dir) for the specified task (task_name) failed:
+  task_name = \"${task_name}\"
+  modulefile_name = \"${modulefile_name}\"
+  modules_dir = \"${modules_dir}\""
 
   else # using default modulefile
 
-    module load ${default_modulefile_name} || print_err_msg_exit "\
-    Loading of default module file failed:
-      task_name = \"${task_name}\"
-      default_modulefile_name = \"${default_modulefile_name}\"
-      default_modules_dir = \"${default_modules_dir}\""
+    module load "${default_modulefile_name}" || print_err_msg_exit "\
+Loading of default module file failed:
+  task_name = \"${task_name}\"
+  default_modulefile_name = \"${default_modulefile_name}\"
+  default_modules_dir = \"${default_modules_dir}\""
 
   fi
 

@@ -2,10 +2,6 @@ MACHINE="hera"
 ACCOUNT="an_account"
 EXPT_SUBDIR="test_community"
 
-QUEUE_DEFAULT="batch"
-QUEUE_HPSS="service"
-QUEUE_FCST="batch"
-
 VERBOSE="TRUE"
 
 RUN_ENVIR="community"

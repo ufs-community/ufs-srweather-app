@@ -10,6 +10,6 @@ export ENSMEM_INDX=""
 
 num_fcst_hrs=${FCST_LEN_HRS}
 for (( i=0; i<=$((num_fcst_hrs)); i++ )); do
-  export fhr=`printf "%02i" ${i}`
+  export fhr=`printf "%03i" ${i}`
   ${JOBSDIR}/JREGIONAL_RUN_POST
 done

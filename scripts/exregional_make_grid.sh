@@ -82,8 +82,6 @@ print_input_args valid_args
 #
 # The orography code runs with threads.  On Cray, the code is optimized
 # for six threads.  Do not change.
-# Note that OMP_NUM_THREADS and OMP_STACKSIZE only affect the threaded   <== I don't think this is true.  Remove??
-# executions on Cray; they don't affect executions on theia.
 #
 #-----------------------------------------------------------------------
 #
@@ -92,88 +90,75 @@ export OMP_STACKSIZE=2048m
 #
 #-----------------------------------------------------------------------
 #
-# Load modules and set various computational parameters and directories.
-#
-# Note:
-# These module loads should all be moved to modulefiles.  This has been
-# done for Hera but must still be done for other machines.
+# Set the machine-dependent run command.  Also, set resource limits as
+# necessary.
 #
 #-----------------------------------------------------------------------
 #
 case $MACHINE in
 
+  "WCOSS_CRAY")
+    { save_shell_opts; set +x; } > /dev/null 2>&1
+    . $MODULESHOME/init/sh
+    module load PrgEnv-intel cfp-intel-sandybridge/1.1.0
+    module list
+    { restore_shell_opts; } > /dev/null 2>&1
+    export NODES=1
+    export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
+    export KMP_AFFINITY=disabled
+    ulimit -s unlimited
+    ulimit -a
+    ;;
 
-"WCOSS_CRAY")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
+  "WCOSS_DELL_P3")
+    { save_shell_opts; set +x; } > /dev/null 2>&1
+    module list
+    { restore_shell_opts; } > /dev/null 2>&1
+    export APRUN="mpirun"
+    ulimit -s unlimited
+    ;;
 
-  . $MODULESHOME/init/sh
-  module load PrgEnv-intel cfp-intel-sandybridge/1.1.0
-  module list
+  "HERA")
+    APRUN="time"
+    ;;
 
-  { restore_shell_opts; } > /dev/null 2>&1
+  "ORION")
+    APRUN="time"
+    ;;
 
-  export NODES=1
-  export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
-  export KMP_AFFINITY=disabled
+  "JET")
+    APRUN="time"
+    ulimit -a
+    ;;
 
-  ulimit -s unlimited
-  ulimit -a
-  ;;
+  "ODIN")
+    export APRUN="srun -n 1"
+    ulimit -s unlimited
+    ulimit -a
+    ;;
 
-"WCOSS_DELL_P3")
-#
-  { save_shell_opts; set +x; } > /dev/null 2>&1
+  "CHEYENNE")
+    APRUN="time"
+    ;;
 
-  module list
+  "STAMPEDE")
+    export APRUN="time"
+    ulimit -s unlimited
+    ulimit -a
+    ;;
 
-  { restore_shell_opts; } > /dev/null 2>&1
+  *)
+    print_err_msg_exit "\
+Run command has not been specified for this machine:
+  MACHINE = \"$MACHINE\"
+  APRUN = \"$APRUN\""
+    ;;
 
-  export APRUN="mpirun"
-
-  ulimit -s unlimited
-  ;;
-
-"HERA")
-#
-  APRUN="time"
-#
-#  ulimit -s unlimited
-#  ulimit -a
-  ;;
-#
-
-"JET")
-#
-  APRUN="time"
-  ulimit -a
-  ;;
-
-
-"ODIN")
-#
-  export APRUN="srun -n 1"
-
-  ulimit -s unlimited
-  ulimit -a
-  ;;
-
-"CHEYENNE")
-  APRUN="time"
-  ;;
-
-"STAMPEDE")
-#
-  export APRUN="time"
-
-  ulimit -s unlimited
-  ulimit -a
-  ;;
 esac
 #
 #-----------------------------------------------------------------------
 #
-# Create the (cycle-independent) subdirectories under the experiment 
+# Create the (cycle-independent) subdirectories under the experiment
 # directory (EXPTDIR) that are needed by the various steps and substeps
 # in this script.
 #
@@ -219,12 +204,12 @@ mkdir_vrfy -p "$tmpdir"
 # size specified by the argument to the --halo flag does not extend be-
 # yond the boundaries of the parent grid (tile 6).  In this case, since
 # the values passed to the --istart_nest, ..., and --jend_nest flags al-
-# ready include a halo (because these arguments are 
+# ready include a halo (because these arguments are
 #
-#   ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, 
-#   ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, 
+#   ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG},
+#   ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG},
 #   ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, and
-#   ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, 
+#   ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG},
 #
 # i.e. they include "WITH_WIDE_HALO_" in their names), it is reasonable
 # to pass as the argument to --halo a zero.  However, make_hgrid re-
@@ -242,7 +227,7 @@ mkdir_vrfy -p "$tmpdir"
 #   --nlon 2*${RES} \
 #   --grid_name C${RES}_grid \
 #   --do_schmidt --stretch_factor ${STRETCH_FAC} \
-#   --target_lon ${LON_CTR} 
+#   --target_lon ${LON_CTR}
 #   --target_lat ${LAT_CTR} \
 #   --nest_grid --parent_tile 6 --refine_ratio ${GFDLgrid_REFINE_RATIO} \
 #   --istart_nest ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
@@ -347,7 +332,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
     --halo 1 \
     --great_circle_algorithm || \
   print_err_msg_exit "\
-Call to executable (exec_fp) that generates grid files returned with 
+Call to executable (exec_fp) that generates grid files returned with
 nonzero exit code.
   exec_fp = \"${exec_fp}\""
 #
@@ -365,15 +350,15 @@ elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
   rgnl_grid_nml_fp="$tmpdir/${RGNL_GRID_NML_FN}"
 
   print_info_msg "$VERBOSE" "
-Creating namelist file (rgnl_grid_nml_fp) to be read in by the grid 
+Creating namelist file (rgnl_grid_nml_fp) to be read in by the grid
 generation executable (exec_fp):
   rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\"
   exec_fp = \"${exec_fp}\""
 #
-# Create a multiline variable that consists of a yaml-compliant string 
-# specifying the values that the namelist variables need to be set to 
-# (one namelist variable per line, plus a header and footer).  Below, 
-# this variable will be passed to a python script that will create the 
+# Create a multiline variable that consists of a yaml-compliant string
+# specifying the values that the namelist variables need to be set to
+# (one namelist variable per line, plus a header and footer).  Below,
+# this variable will be passed to a python script that will create the
 # namelist file.
 #
   settings="
@@ -391,8 +376,8 @@ generation executable (exec_fp):
 #
   ${USHDIR}/set_namelist.py -q -u "$settings" -o ${rgnl_grid_nml_fp} || \
     print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the 
-regional_esg_grid namelist file failed.  Parameters passed to this script 
+Call to python script set_namelist.py to set the variables in the
+regional_esg_grid namelist file failed.  Parameters passed to this script
 are:
   Full path to output namelist file:
     rgnl_grid_nml_fp = \"${rgn_grid_nml_fp}\"
@@ -406,9 +391,9 @@ $settings"
     print_err_msg_exit "\
 Call to executable (exec_fp) that generates a ESGgrid-type regional grid
 returned with nonzero exit code:
-  exec_fp = \"${exec_fp}\"" 
+  exec_fp = \"${exec_fp}\""
 #
-# Set the name of the regional grid file generated by the above call.  
+# Set the name of the regional grid file generated by the above call.
 # This must be the same name as in the regional_esg_grid code.
 #
   grid_fn="regional_grid.nc"
@@ -496,7 +481,7 @@ mv_vrfy "${grid_fp_orig}" "${grid_fp}"
 # be using (i.e. if RUN_TASK_MAKE_OROG or RUN_TASK_MAKE_SURF_CLIMO is set
 # to "FALSE", in which case RES_IN_FIXLAM_FILENAMES will not be set to a
 # null string), check that the grid resolution contained in the variable
-# CRES set above matches the resolution appearing in the names of the 
+# CRES set above matches the resolution appearing in the names of the
 # preexisting orography and/or surface climatology files.
 #
 #-----------------------------------------------------------------------
@@ -505,7 +490,7 @@ if [ ! -z "${RES_IN_FIXLAM_FILENAMES}" ]; then
   res="${CRES:1}"
   if [ "$res" -ne "${RES_IN_FIXLAM_FILENAMES}" ]; then
     print_err_msg_exit "\
-The resolution (res) calculated for the grid does not match the resolution 
+The resolution (res) calculated for the grid does not match the resolution
 (RES_IN_FIXLAM_FILENAMES) appearing in the names of the orography and/or
 surface climatology files:
   res = \"$res\"
@@ -515,10 +500,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Partially "shave" the halo from the grid file having a wide halo to 
+# Partially "shave" the halo from the grid file having a wide halo to
 # generate two new grid files -- one with a 3-grid-wide halo and another
 # with a 4-cell-wide halo.  These are needed as inputs by the forecast
-# model as well as by the code (chgres_cube) that generates the lateral 
+# model as well as by the code (chgres_cube) that generates the lateral
 # boundary condition files.                                             <== Are these also needed by make_sfc_climo???
 #
 #-----------------------------------------------------------------------
@@ -529,27 +514,27 @@ exec_fn="shave"
 exec_fp="$EXECDIR/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
-The executable (exec_fp) for \"shaving\" down the halo in the grid file 
+The executable (exec_fp) for \"shaving\" down the halo in the grid file
 does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
 fi
 #
 # Set the full path to the "unshaved" grid file, i.e. the one with a wide
-# halo.  This is the input grid file for generating both the grid file 
+# halo.  This is the input grid file for generating both the grid file
 # with a 3-cell-wide halo and the one with a 4-cell-wide halo.
 #
 unshaved_fp="${grid_fp}"
 #
-# We perform the work in tmpdir, so change location to that directory.  
-# Once it is complete, we will move the resultant file from tmpdir to 
+# We perform the work in tmpdir, so change location to that directory.
+# Once it is complete, we will move the resultant file from tmpdir to
 # GRID_DIR.
 #
 cd_vrfy "$tmpdir"
 #
 # Create an input namelist file for the shave executable to generate a
-# grid file with a 3-cell-wide halo from the one with a wide halo.  Then 
-# call the shave executable.  Finally, move the resultant file to the 
+# grid file with a 3-cell-wide halo from the one with a wide halo.  Then
+# call the shave executable.  Finally, move the resultant file to the
 # GRID_DIR directory.
 #
 print_info_msg "$VERBOSE" "
@@ -574,8 +559,8 @@ The namelist file (nml_fn) used in this call is in directory tmpdir:
 mv_vrfy ${shaved_fp} ${GRID_DIR}
 #
 # Create an input namelist file for the shave executable to generate a
-# grid file with a 4-cell-wide halo from the one with a wide halo.  Then 
-# call the shave executable.  Finally, move the resultant file to the 
+# grid file with a 4-cell-wide halo from the one with a wide halo.  Then
+# call the shave executable.  Finally, move the resultant file to the
 # GRID_DIR directory.
 #
 print_info_msg "$VERBOSE" "
@@ -647,7 +632,7 @@ halo failed."
 #
 #-----------------------------------------------------------------------
 #
-# Create symlinks in the FIXLAM directory to the grid and mosaic files 
+# Create symlinks in the FIXLAM directory to the grid and mosaic files
 # generated above in the GRID_DIR directory.
 #
 #-----------------------------------------------------------------------
@@ -661,28 +646,28 @@ failed."
 #
 #-----------------------------------------------------------------------
 #
-# Call a function (set_FV3nml_sfc_climo_filenames) to set the values of 
-# those variables in the forecast model's namelist file that specify the 
-# paths to the surface climatology files.  These files will either already 
+# Call a function (set_FV3nml_sfc_climo_filenames) to set the values of
+# those variables in the forecast model's namelist file that specify the
+# paths to the surface climatology files.  These files will either already
 # be avaialable in a user-specified directory (SFC_CLIMO_DIR) or will be
-# generated by the MAKE_SFC_CLIMO_TN task.  They (or symlinks to them) 
+# generated by the MAKE_SFC_CLIMO_TN task.  They (or symlinks to them)
 # will be placed (or wll already exist) in the FIXLAM directory.
 #
-# Also, if running ensemble forecasts, call a function (set_FV3nml_stoch_params) 
-# to create a new FV3 namelist file for each ensemble member that contains 
-# a unique set of stochastic parameters (i.e. relative to the namelist 
+# Also, if running ensemble forecasts, call a function (set_FV3nml_stoch_params)
+# to create a new FV3 namelist file for each ensemble member that contains
+# a unique set of stochastic parameters (i.e. relative to the namelist
 # files of the other members).
 #
-# Note that unless RUN_TASK_MAKE_GRID is set to "FALSE", the call to 
-# set_FV3nml_sfc_climo_filenames has to be performed here instead of 
-# earlier during experiment generation because the surface climatology 
-# file names depend on the grid resolution variable CRES, and that may 
+# Note that unless RUN_TASK_MAKE_GRID is set to "FALSE", the call to
+# set_FV3nml_sfc_climo_filenames has to be performed here instead of
+# earlier during experiment generation because the surface climatology
+# file names depend on the grid resolution variable CRES, and that may
 # not be available until the above steps in this script have been performed.
 #
-# Similarly, unless RUN_TASK_MAKE_GRID is set to "FALSE", the call to 
-# set_FV3nml_stoch_params must be performed here because it uses the 
+# Similarly, unless RUN_TASK_MAKE_GRID is set to "FALSE", the call to
+# set_FV3nml_stoch_params must be performed here because it uses the
 # namelist file generated by the call to set_FV3nml_sfc_climo_filenames
-# as a starting point (base) and modifies it to add the stochastic 
+# as a starting point (base) and modifies it to add the stochastic
 # parameters.  Thus, the changes made by set_FV3nml_sfc_climo_filenames
 # must already be in the base namelist file.
 #
@@ -699,7 +684,7 @@ for the various ensemble members failed."
 fi
 
 create_diag_table_files || print_err_msg_exit "\
-Call to function to create a diagnostics table file under each cycle 
+Call to function to create a diagnostics table file under each cycle
 directory failed."
 #
 #-----------------------------------------------------------------------

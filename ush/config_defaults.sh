@@ -51,36 +51,51 @@ RUN_ENVIR="nco"
 # order for the experiment generation script to set it depending on the
 # machine.
 #
+# PARTITION_DEFAULT:
+# If using the slurm job scheduler (i.e. if SCHED is set to "slurm"), 
+# the default partition to which to submit workflow tasks.  If a task 
+# does not have a specific variable that specifies the partition to which 
+# it will be submitted (e.g. PARTITION_HPSS, PARTITION_FCST; see below), 
+# it will be submitted to the partition specified by this variable.  If 
+# this is not set or is set to an empty string, it will be (re)set to a 
+# machine-dependent value.  This is not used if SCHED is not set to 
+# "slurm".
+#
 # QUEUE_DEFAULT:
-# The default queue to which workflow tasks are submitted.  If a task
-# does not have a specific variable that specifies the queue to which it
-# will be submitted (e.g. QUEUE_HPSS, QUEUE_FCST; see below), it will be
-# submitted to the queue specified by this variable.  If this is not set
+# The default queue or QOS (if using the slurm job scheduler, where QOS
+# is Quality of Service) to which workflow tasks are submitted.  If a 
+# task does not have a specific variable that specifies the queue to which 
+# it will be submitted (e.g. QUEUE_HPSS, QUEUE_FCST; see below), it will 
+# be submitted to the queue specified by this variable.  If this is not 
+# set or is set to an empty string, it will be (re)set to a machine-
+# dependent value.
+#
+# PARTITION_HPSS:
+# If using the slurm job scheduler (i.e. if SCHED is set to "slurm"), 
+# the partition to which the tasks that get or create links to external 
+# model files [which are needed to generate initial conditions (ICs) and 
+# lateral boundary conditions (LBCs)] are submitted.  If this is not set 
+# or is set to an empty string, it will be (re)set to a machine-dependent 
+# value.  This is not used if SCHED is not set to "slurm".
+#
+# QUEUE_HPSS:
+# The queue or QOS to which the tasks that get or create links to external 
+# model files [which are needed to generate initial conditions (ICs) and 
+# lateral boundary conditions (LBCs)] are submitted.  If this is not set 
 # or is set to an empty string, it will be (re)set to a machine-dependent 
 # value.
 #
-# QUEUE_DEFAULT_TAG:
-# The rocoto xml tag to use for specifying the default queue. For most
-# platforms this should be "queue"
-#
-# QUEUE_HPSS:
-# The queue to which the tasks that get or create links to external model
-# files [which are needed to generate initial conditions (ICs) and lateral
-# boundary conditions (LBCs)] are submitted.  If this is not set or is 
-# set to an empty string, it will be (re)set to a machine-dependent value.
-#
-# QUEUE_HPSS_TAG:
-# The rocoto xml tag to use for specifying the HPSS queue. For slurm-based
-# platforms this is typically "partition", for others it may be "queue"
+# PARTITION_FCST:
+# If using the slurm job scheduler (i.e. if SCHED is set to "slurm"), 
+# the partition to which the task that runs forecasts is submitted.  If 
+# this is not set or set to an empty string, it will be (re)set to a 
+# machine-dependent value.  This is not used if SCHED is not set to 
+# "slurm".
 #
 # QUEUE_FCST:
-# The queue to which the task that runs a forecast is submitted.  If this
-# is not set or set to an empty string, it will be (re)set to a machine-
-# dependent value.
-#
-# QUEUE_FCST_TAG:
-# The rocoto xml tag to use for specifying the fcst queue. For most
-# platforms this should be "queue"
+# The queue or QOS to which the task that runs a forecast is submitted.  
+# If this is not set or set to an empty string, it will be (re)set to a 
+# machine-dependent value.
 #
 # mach_doc_end
 #
@@ -89,12 +104,12 @@ RUN_ENVIR="nco"
 MACHINE="BIG_COMPUTER"
 ACCOUNT="project_name"
 SCHED=""
+PARTITION_DEFAULT=""
 QUEUE_DEFAULT=""
-QUEUE_DEFAULT_TAG="queue"
+PARTITION_HPSS=""
 QUEUE_HPSS=""
-QUEUE_HPSS_TAG="partition"
+PARTITION_FCST=""
 QUEUE_FCST=""
-QUEUE_FCST_TAG="queue"
 #
 #-----------------------------------------------------------------------
 #
