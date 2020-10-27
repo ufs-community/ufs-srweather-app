@@ -11,12 +11,11 @@
 # Instructions:		Make sure all the necessary modules can be imported.
 #                       Five command line arguments are needed:
 #                       1. Cycle date/time in YYYYMMDDHH format
-#                       2. Forecast hour
-#                       3. EXPT_BASEDIR: Experiment base directory
-#                       4. EXPT_SUBDIR:  Experiment named directory
+#                       2. Forecast hour in HHH format
+#                       3. EXPT_DIR: Experiment directory
 #                          -Postprocessed data should be found in the directory:
-#                            EXPT_BASEDIR/EXPT_SUBDIR/YYYYMMDDHH/postprd/
-#                       5. CARTOPY_DIR:  Base directory of cartopy shapefiles
+#                            EXPT_DIR/YYYYMMDDHH/postprd/
+#                       4. CARTOPY_DIR:  Base directory of cartopy shapefiles
 #                          -Shapefiles cannot be directly downloaded to NOAA
 #                            machines from the internet, so shapefiles need to
 #                            be downloaded if geopolitical boundaries are
@@ -220,9 +219,8 @@ def rotate_wind(true_lat,lov_lon,earth_lons,uin,vin,proj,inverse=False):
 # Define required positional arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("Cycle date/time in YYYYMMDDHH format")
-parser.add_argument("Forecast hour in HH format")
-parser.add_argument("Path to experiment base directory")
-parser.add_argument("Path to experiment named directory")
+parser.add_argument("Forecast hour in HHH format")
+parser.add_argument("Path to experiment directory")
 parser.add_argument("Path to base directory of cartopy shapefiles")
 args = parser.parse_args()
               
@@ -242,12 +240,11 @@ print('fhour '+fhour)
 itime = ymdh
 vtime = ndate(itime,int(fhr))
 
-EXPT_BASEDIR = str(sys.argv[3])
-EXPT_SUBDIR = str(sys.argv[4])
-CARTOPY_DIR = str(sys.argv[5])
+EXPT_DIR = str(sys.argv[3])
+CARTOPY_DIR = str(sys.argv[4])
 
 # Define the location of the input file
-data1 = pygrib.open(EXPT_BASEDIR+'/'+EXPT_SUBDIR+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.bgdawpf'+fhour+'.tm00.grib2')
+data1 = pygrib.open(EXPT_DIR+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.bgdawpf'+fhour+'.tm00.grib2')
 
 # Get the lats and lons
 grids = [data1]
@@ -351,7 +348,7 @@ u250, v250 = rotate_wind(Lat0,Lon0,lon,u250,v250,'lcc',inverse=False)
 wspd250 = np.sqrt(u250**2 + v250**2)
 
 # Total precipitation
-#qpf = data1.select(name='Total Precipitation',lengthOfTimeRange=fhr)[0].values * 0.0393701
+qpf = data1.select(name='Total Precipitation',lengthOfTimeRange=fhr)[0].values * 0.0393701
 
 # Composite reflectivity
 refc = data1.select(name='Maximum/Composite radar reflectivity')[0].values 
@@ -552,8 +549,8 @@ def plot_all(dom):
   clear_plotables(ax,keep_ax_lst,fig)
 
   units = 'kts'
-  # Places a wind barb every 90-100km, optimized for CONUS domain
-  skip = round(88.64*(dx/1000.)**-.97)
+  # Places a wind barb every ~180 km, optimized for CONUS domain
+  skip = round(177.28*(dx/1000.)**-.97)
   print('skipping every '+str(skip)+' grid points to plot')
   barblength = 4
 
@@ -620,7 +617,7 @@ def plot_all(dom):
   clear_plotables(ax,keep_ax_lst,fig)
 
   units = 'x10${^5}$ s${^{-1}}$'
-  skip = 70
+  skip = round(177.28*(dx/1000.)**-.97)
   barblength = 4
 
   vortlevs = [16,20,24,28,32,36,40]
@@ -656,7 +653,8 @@ def plot_all(dom):
   clear_plotables(ax,keep_ax_lst,fig)
 
   units = 'kts'
-  skip = 70
+  skip = round(177.28*(dx/1000.)**-.97)
+
   barblength = 4
 
   clevs = [50,60,70,80,90,100,110,120,130,140,150]
@@ -681,34 +679,34 @@ def plot_all(dom):
 #################################
   # Plot Total QPF
 #################################
-#  if (fhr > 0):		# Do not make total QPF plot for forecast hour 0
-#    t1 = time.perf_counter()
-#    print(('Working on total qpf for '+dom))
-#
-#    # Clear off old plottables but keep all the map info
-#    cbar1.remove()
-#    clear_plotables(ax,keep_ax_lst,fig)
-#
-#    units = 'in'
-#    clevs = [0.01,0.1,0.25,0.5,0.75,1,1.25,1.5,1.75,2,2.5,3,4,5,7,10,15,20]
-#    clevsdif = [-3,-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5,3]
-#    colorlist = ['chartreuse','limegreen','green','blue','dodgerblue','deepskyblue','cyan','mediumpurple','mediumorchid','darkmagenta','darkred','crimson','orangered','darkorange','goldenrod','gold','yellow']  
-#    cm = matplotlib.colors.ListedColormap(colorlist)
-#    norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
-#
-#    cs_1 = plt.pcolormesh(lon_shift,lat_shift,qpf,transform=transform,cmap=cm,vmin=0.01,norm=norm)
-#    cs_1.cmap.set_under('white',alpha=0.)
-#    cs_1.cmap.set_over('pink')
-#    cbar1 = plt.colorbar(cs_1,orientation='horizontal',pad=0.05,shrink=0.6,ticks=clevs,extend='max')
-#    cbar1.set_label(units,fontsize=8)
-#    cbar1.ax.set_xticklabels(clevs)
-#    cbar1.ax.tick_params(labelsize=8)
-#    ax.text(.5,1.03,'FV3-LAM '+fhour+'-hr Accumulated Precipitation ('+units+') \n initialized: '+itime+' valid: '+vtime + ' (f'+fhour+')',horizontalalignment='center',fontsize=8,transform=ax.transAxes,bbox=dict(facecolor='white',alpha=0.85,boxstyle='square,pad=0.2'))
+  if (fhr > 0):		# Do not make total QPF plot for forecast hour 0
+    t1 = time.perf_counter()
+    print(('Working on total qpf for '+dom))
 
-#    compress_and_save('qpf_'+dom+'_f'+fhour+'.png')
-#    t2 = time.perf_counter()
-#    t3 = round(t2-t1, 3)
-#    print(('%.3f seconds to plot total qpf for: '+dom) % t3)
+    # Clear off old plottables but keep all the map info
+    cbar1.remove()
+    clear_plotables(ax,keep_ax_lst,fig)
+
+    units = 'in'
+    clevs = [0.01,0.1,0.25,0.5,0.75,1,1.25,1.5,1.75,2,2.5,3,4,5,7,10,15,20]
+    clevsdif = [-3,-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5,3]
+    colorlist = ['chartreuse','limegreen','green','blue','dodgerblue','deepskyblue','cyan','mediumpurple','mediumorchid','darkmagenta','darkred','crimson','orangered','darkorange','goldenrod','gold','yellow']  
+    cm = matplotlib.colors.ListedColormap(colorlist)
+    norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
+
+    cs_1 = plt.pcolormesh(lon_shift,lat_shift,qpf,transform=transform,cmap=cm,vmin=0.01,norm=norm)
+    cs_1.cmap.set_under('white',alpha=0.)
+    cs_1.cmap.set_over('pink')
+    cbar1 = plt.colorbar(cs_1,orientation='horizontal',pad=0.05,shrink=0.6,ticks=clevs,extend='max')
+    cbar1.set_label(units,fontsize=8)
+    cbar1.ax.set_xticklabels(clevs)
+    cbar1.ax.tick_params(labelsize=8)
+    ax.text(.5,1.03,'FV3-LAM '+fhour+'-hr Accumulated Precipitation ('+units+') \n initialized: '+itime+' valid: '+vtime + ' (f'+fhour+')',horizontalalignment='center',fontsize=8,transform=ax.transAxes,bbox=dict(facecolor='white',alpha=0.85,boxstyle='square,pad=0.2'))
+
+    compress_and_save('qpf_'+dom+'_f'+fhour+'.png')
+    t2 = time.perf_counter()
+    t3 = round(t2-t1, 3)
+    print(('%.3f seconds to plot total qpf for: '+dom) % t3)
 
 #################################
   # Plot composite reflectivity
