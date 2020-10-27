@@ -148,7 +148,8 @@ elif [ "$target" = "gaea" ] ; then
 	echo load the module command 1>&2
         source /etc/profile
     fi
-    module purge
+    # Don't purge on gaea, or hell will break loose
+    #module purge
 elif [ "$target" = "odin" ] ; then
     echo "Not doing anything for 'odin', if statement reserved for future use"
 elif [[ "$target" =~ "stampede" ]] ; then
