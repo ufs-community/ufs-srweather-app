@@ -665,7 +665,7 @@ details:
 # NOTE:
 # If extrn_mdl_arcvrel_dir is not empty, the unzip command above will 
 # create a subdirectory under extrn_mdl_staging_dir and place the external 
-# model files there.  We have not encoutntered this for the RAPX and HRRRX 
+# model files there.  We have not encountered this for the RAP and HRRR 
 # models, but it may happen for other models in the future.  In that case, 
 # extra code must be included here to move the external model files from 
 # the subdirectory up to extrn_mdl_staging_dir and then the subdirectory 

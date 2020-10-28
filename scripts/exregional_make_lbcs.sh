@@ -160,8 +160,8 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GSD_v0" | \
   "FV3_GSD_SAR" | \
   "FV3_RRFS_v1beta" )
-    if [ "${EXTRN_MDL_NAME_LBCS}" = "RAPX" ] || \
-       [ "${EXTRN_MDL_NAME_LBCS}" = "HRRRX" ]; then
+    if [ "${EXTRN_MDL_NAME_LBCS}" = "RAP" ] || \
+       [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ]; then
       varmap_file="GSDphys_var_map.txt"
     elif [ "${EXTRN_MDL_NAME_LBCS}" = "NAM" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
@@ -349,9 +349,16 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   ;;
 
 
-"RAPX")
+"RAP")
 
   external_model="RAP"
+  input_type="grib2"
+
+  ;;
+
+"HRRR")
+
+  external_model="HRRR"
   input_type="grib2"
 
   ;;
@@ -439,10 +446,10 @@ for (( i=0; i<${num_fhrs}; i++ )); do
        fn_grib2="${EXTRN_MDL_FNS[$i]}"
      fi
     ;;
-  "RAPX")
+  "RAP")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;  
-  "HRRRX")
+  "HRRR")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
   "NAM")

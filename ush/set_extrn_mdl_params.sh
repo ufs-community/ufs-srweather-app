@@ -109,7 +109,7 @@ else
     esac
     ;;
 
-  "RAPX")
+  "RAP")
     case $MACHINE in
     "HERA")
       EXTRN_MDL_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
@@ -126,7 +126,7 @@ else
     esac
     ;;
 
-  "HRRRX")
+  "HRRR")
     case $MACHINE in
     "HERA")
       EXTRN_MDL_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
@@ -175,10 +175,10 @@ case ${EXTRN_MDL_NAME_LBCS} in
   "FV3GFS")
     EXTRN_MDL_LBCS_OFFSET_HRS="0"
     ;;
-  "RAPX")
+  "RAP")
     EXTRN_MDL_LBCS_OFFSET_HRS="3"
     ;;
-  "HRRRX")
+  "HRRR")
     EXTRN_MDL_LBCS_OFFSET_HRS="0"
     ;;
 esac
@@ -263,7 +263,7 @@ else
     esac
     ;;
 
-  "RAPX")
+  "RAP")
     case $MACHINE in
     "HERA")
       EXTRN_MDL_SYSBASEDIR_LBCS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
@@ -280,7 +280,7 @@ else
     esac
     ;;
 
-  "HRRRX")
+  "HRRR")
     case $MACHINE in
     "HERA")
       EXTRN_MDL_SYSBASEDIR_LBCS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"

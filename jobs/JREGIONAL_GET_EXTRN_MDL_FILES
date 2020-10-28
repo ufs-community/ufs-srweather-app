@@ -120,8 +120,8 @@ earlier than the implementation date of this model:
   fi
   ;;
 
-"RAPX")
-# Examination of the HPSS archives shows that the RAP data goes back to
+"RAP")
+# Examination of the HPSS archives shows that the RAPX data goes back to
 # July 01, 2015.
   CDATE_min="2015070100"
   if [ "$CDATE" -lt "$CDATE_min" ]; then
@@ -135,7 +135,7 @@ earlier than the implementation date of this model:
   fi
   ;;
 
-"HRRRX")
+"HRRR")
 # From the HRRR home page (https://rapidrefresh.noaa.gov/hrrr), the 
 # implementation of the first version of the operational HRRR was 
 # September 30, 2014.

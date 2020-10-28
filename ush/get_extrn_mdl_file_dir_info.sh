@@ -290,8 +290,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-  if [ "${extrn_mdl_name}" = "RAPX" ] || \
-     [ "${extrn_mdl_name}" = "HRRRX" ] || \
+  if [ "${extrn_mdl_name}" = "RAP" ] || \
+     [ "${extrn_mdl_name}" = "HRRR" ] || \
      [ "${extrn_mdl_name}" = "NAM" ] || \
      [ "${extrn_mdl_name}" = "FV3GFS" -a "${MACHINE}" = "JET" ]; then
 #
@@ -379,7 +379,11 @@ fi
       fi
       ;;
   
-    "RAPX")
+    "RAP")
+#
+# Note that this is GSL RAPX data, not operational NCEP RAP data.  An option for the latter
+# may be added in the future.
+#
       if [ "${MACHINE}" = "JET" ]; then
         fns_on_disk=( "wrfnat_130_${fcst_hh}.grib2" )
       else
@@ -388,7 +392,11 @@ fi
       fns_in_arcv=( "${yy}${ddd}${hh}${mn}${fcst_hh}${fcst_mn}" )
       ;;
 
-    "HRRRX")
+    "HRRR")
+#
+# Note that this is GSL HRRRX data, not operational NCEP HRRR data.  An option for the latter
+# may be added in the future.
+#
       if [ "${MACHINE}" = "JET" ]; then
         fns_on_disk=( "wrfnat_hrconus_${fcst_hh}.grib2" )
       else
@@ -466,7 +474,11 @@ and analysis or forecast (anl_or_fcst):
       fi
       ;;
 
-    "RAPX")
+    "RAP")
+#
+# Note that this is GSL RAPX data, not operational NCEP RAP data.  An option for the latter
+# may be added in the future.
+#
       fcst_hh=( $( printf "%02d " "${lbc_spec_fhrs[@]}" ) )
 
       if [ "${MACHINE}" = "JET" ]; then 
@@ -485,7 +497,11 @@ and analysis or forecast (anl_or_fcst):
       fns_in_arcv=( "${fns_in_arcv[@]/%/$suffix}" )
       ;;
 
-    "HRRRX")
+    "HRRR")
+#
+# Note that this is GSL HRRRX data, not operational NCEP HRRR data.  An option for the latter
+# may be added in the future.
+#
       fcst_hh=( $( printf "%02d " "${lbc_spec_fhrs[@]}" ) )
 
       if [ "${MACHINE}" = "JET" ]; then
@@ -623,7 +639,7 @@ has not been specified for this external model and machine combination:
     ;;
 
 
-  "RAPX")
+  "RAP")
     case "$MACHINE" in
     "WCOSS_CRAY")
       sysdir="$sysbasedir"
@@ -657,7 +673,7 @@ has not been specified for this external model and machine combination:
     ;;
 
 
-  "HRRRX")
+  "HRRR")
     case "$MACHINE" in
     "WCOSS_CRAY")
       sysdir="$sysbasedir"
@@ -814,7 +830,11 @@ has not been specified for this external model:
     fi
     ;;
 
-  "RAPX")
+
+  "RAP")
+#
+# Note that this is GSL RAPX data, not operational NCEP RAP data.  An option for the latter
+# may be added in the future.
 #
 # The zip archive files for RAPX are named such that the forecast files
 # for odd-numbered starting hours (e.g. 01, 03, ..., 23) are stored 
@@ -849,7 +869,11 @@ has not been specified for this external model:
     hh=${hh_orig}
     ;;
 
-  "HRRRX")
+  "HRRR")
+#
+# Note that this is GSL HRRRX data, not operational NCEP HRRR data.  An option for the latter
+# may be added in the future.
+#
     arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/hrrr/conus/wrfnat"
     arcv_fmt="zip"
     arcv_fns="${yyyy}${mm}${dd}${hh}00.${arcv_fmt}"

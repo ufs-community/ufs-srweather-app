@@ -608,8 +608,8 @@ if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
      [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ] || \
      [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
     lsoil=4
-  elif [ "${EXTRN_MDL_NAME_ICS}" = "RAPX" ] || \
-       [ "${EXTRN_MDL_NAME_ICS}" = "HRRRX" ]; then
+  elif [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
+       [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then
     lsoil=9
   else
     print_err_msg_exit "\

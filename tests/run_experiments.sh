@@ -720,8 +720,8 @@ machine (MACHINE):
     if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ]; then
       EXTRN_MDL_FILES_ICS=( "gfs.atmanl.nemsio" "gfs.sfcanl.nemsio" )
-    elif [ "${EXTRN_MDL_NAME_ICS}" = "HRRRX" ] || \
-         [ "${EXTRN_MDL_NAME_ICS}" = "RAPX" ]; then
+    elif [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ] || \
+         [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ]; then
       EXTRN_MDL_FILES_ICS=( "${EXTRN_MDL_NAME_ICS,,}.out.for_f000" )
     fi
 
@@ -746,8 +746,8 @@ boundary conditions specification interval (LBC_SPEC_INTVL_HRS):
        [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
       EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/#/gfs.atmf}" )
       EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/%/.nemsio}" )
-    elif [ "${EXTRN_MDL_NAME_LBCS}" = "HRRRX" ] || \
-         [ "${EXTRN_MDL_NAME_LBCS}" = "RAPX" ]; then
+    elif [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ] || \
+         [ "${EXTRN_MDL_NAME_LBCS}" = "RAP" ]; then
       EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/#/${EXTRN_MDL_NAME_LBCS,,}.out.for_f}" )
     fi
 

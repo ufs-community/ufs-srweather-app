@@ -539,7 +539,7 @@ predefined domain:
 # A CONUS domain of GFDLgrid type with ~25km cells.
 # Note:
 # This grid is larger than the HRRR domain and thus cannot be initialized
-# using the HRRRX.
+# using HRRR/HRRRX data.
 #
 #-----------------------------------------------------------------------
 #
@@ -603,7 +603,7 @@ predefined domain:
 # A CONUS domain of GFDLgrid type with ~3km cells.
 # Note:
 # This grid is larger than the HRRR domain and thus cannot be initialized
-# using the HRRRX.
+# using HRRR/HRRRX data.
 #
 #-----------------------------------------------------------------------
 #
