@@ -5,7 +5,6 @@ git clone -b release/public-v1 git@github.com:ufs-community/ufs-srweather-app
 cd ufs-srweather-app/
 ./manage_externals/checkout_externals
 
-
 module purge
 module load ncarenv/1.3
 module load intel/19.1.1

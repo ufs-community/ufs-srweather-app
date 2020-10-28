@@ -1,5 +1,10 @@
 #Setup instructions for MSU Orion using Intel-19.1.0.166 (bash shell)
 
+git clone -b release/public-v1 git@github.com:ufs-community/ufs-srweather-app
+
+cd ufs-srweather-app/
+./manage_externals/checkout_externals
+
 module purge
 module load intel/2020
 module load impi/2020

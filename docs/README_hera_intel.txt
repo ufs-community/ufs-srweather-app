@@ -1,5 +1,10 @@
 #Setup instructions for NOAA RDHPC Hera using Intel-18.0.5.274 (bash shell)
 
+git clone -b release/public-v1 git@github.com:ufs-community/ufs-srweather-app
+
+cd ufs-srweather-app/
+./manage_externals/checkout_externals
+
 module purge
 module load intel/18.0.5.274
 module load impi/2018.0.4
@@ -13,11 +18,6 @@ export CMAKE_C_COMPILER=mpiicc
 export CMAKE_CXX_COMPILER=mpiicpc
 export CMAKE_Fortran_COMPILER=mpiifort
 export CMAKE_Platform=hera.intel
-
-git clone -b release/public-v1 git@github.com:ufs-community/ufs-srweather-app
-
-cd ufs-srweather-app/
-./manage_externals/checkout_externals
 
 mkdir build
 cd build
