@@ -1,0 +1,16 @@
+# Simple setup instructions for the UFS SRW App 
+# For more details, see the "Getting Started" guide:
+# https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
+
+git clone -b release/public-v1 https://github.com/ufs-community/ufs-srweather-app.git
+
+cd ufs-srweather-app/
+./manage_externals/checkout_externals
+
+# Prior to building, you must set up the environment so cmake can find the appropriate
+# compilers and libraries. For instructions specific to supported platforms, see the
+# included "README" files in this directory
+
+mkdir build && cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=..
+make -j 8

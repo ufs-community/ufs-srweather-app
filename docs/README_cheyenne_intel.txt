@@ -1,10 +1,5 @@
 #Setup instructions for CISL Cheyenne using Intel-19.1.1 (bash shell)
 
-git clone -b release/public-v1 git@github.com:ufs-community/ufs-srweather-app
-
-cd ufs-srweather-app/
-./manage_externals/checkout_externals
-
 module purge
 module load ncarenv/1.3
 module load intel/19.1.1
@@ -22,7 +17,3 @@ export CMAKE_CXX_COMPILER=mpicxx
 export CMAKE_Fortran_COMPILER=mpif90
 export CMAKE_Platform=cheyenne.intel
 
-mkdir build
-cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=..
-make -j 4

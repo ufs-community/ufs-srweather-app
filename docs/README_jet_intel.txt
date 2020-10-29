@@ -1,10 +1,5 @@
 #Setup instructions for NOAA RDHPC Jet using Intel-18.0.5.274 (bash shell)
 
-git clone -b release/public-v1 git@github.com:ufs-community/ufs-srweather-app
-
-cd ufs-srweather-app/
-./manage_externals/checkout_externals
-
 module purge
 module use /contrib/sutils/modulefiles
 module load sutils
@@ -23,7 +18,3 @@ export CMAKE_CXX_COMPILER=mpiicpc
 export CMAKE_Fortran_COMPILER=mpiifort
 export CMAKE_Platform=jet.intel
 
-mkdir build
-cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=..
-make -j 8
