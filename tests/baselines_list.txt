@@ -1,4 +1,5 @@
 DOT_OR_USCORE
+GST_release_public_v1
 community_ensemble_008mems
 community_ensemble_2mems
 get_extrn_files_from_hpss_FV3GFS_FV3GFS
