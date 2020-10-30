@@ -4,7 +4,8 @@
 export NCEPLIBS=/usr/local/NCEPLIBS-ufs-v2.0.0
 
 # Need this environment script to be executable
-chmod +x ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh
+chmod +x ${NCEPLIBS}/bin/setenv_nceplibs.sh
+${NCEPLIBS}/bin/setenv_nceplibs.sh
 
 export CC=gcc-10
 export FC=gfortran-10
