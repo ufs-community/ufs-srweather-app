@@ -9,7 +9,9 @@ cd ufs-srweather-app/
 
 # Prior to building, you must set up the environment so cmake can find the appropriate
 # compilers and libraries. For instructions specific to supported platforms, see the
-# included "README" files in this directory
+# included "README" files in this directory. The README files give instructions assuming
+# a bash or ksh login shell, for csh and tcsh users you will have to modify the commands
+# for setting envronment variables.
 
 mkdir build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=..
