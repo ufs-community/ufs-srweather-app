@@ -3,24 +3,22 @@ valid_vals_VERBOSE=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_MACHINE=("WCOSS_CRAY" "WCOSS_DELL_P3" "HERA" "ORION" "JET" "ODIN" "CHEYENNE" "STAMPEDE")
 valid_vals_SCHED=("slurm" "pbspro" "lsf" "lsfcray" "none")
 valid_vals_PREDEF_GRID_NAME=( \
-"EMC_CONUS_3km" \
-"EMC_CONUS_coarse" \
-"EMC_AK" \
-"EMC_HI" \
-"EMC_PR" \
-"EMC_GU" \
-"GSD_HAFSV0.A3km" \
-"GSD_HAFSV0.A13km" \
-"GSD_HAFSV0.A25km" \
-"RRFS_AK_13km" \
-"RRFS_AK_3km" \
-"GSD_HRRR_AK_50km" \
 "RRFS_CONUS_25km" \
 "RRFS_CONUS_13km" \
 "RRFS_CONUS_3km" \
 "RRFS_SUBCONUS_3km" \
+"RRFS_AK_13km" \
+"RRFS_AK_3km" \
 "CONUS_25km_GFDLgrid" \
 "CONUS_3km_GFDLgrid" \
+"EMC_AK" \
+"EMC_HI" \
+"EMC_PR" \
+"EMC_GU" \
+"GSL_HAFSV0.A_25km" \
+"GSL_HAFSV0.A_13km" \
+"GSL_HAFSV0.A_3km" \
+"GSD_HRRR_AK_50km" \
 "GSD_RAP13km" \
 )
 valid_vals_CCPP_PHYS_SUITE=( \

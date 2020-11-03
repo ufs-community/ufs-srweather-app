@@ -1997,7 +1997,7 @@ The number of grid points in the y direction on the regional grid (ny_-
 T7) must be evenly divisible by the number of tasks per write group 
 (WRTCMP_write_tasks_per_group):
   NY = $NY
-  WRTCMP_write_tasks_per_group = $WRTCMP_write_tasks_per_group
+  WRTCMP_write_tasks_per_group = ${WRTCMP_write_tasks_per_group}
   NY%%write_tasks_per_group = $rem"
   fi
 

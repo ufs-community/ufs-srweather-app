@@ -615,7 +615,7 @@ if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
     print_err_msg_exit "\
 The value to set the variable lsoil to in the FV3 namelist file (FV3_NML_FP)
 has not been specified for the following combination of physics suite and
-external model ICs:
+external model for ICs:
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
 Please change one or more of these parameters or provide a value for lsoil
