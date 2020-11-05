@@ -221,10 +221,10 @@ face climatology files does not exist:
   SFC_CLIMO_DIR = \"${SFC_CLIMO_DIR}\""
 fi
 #
-# If RUN_TASK_MAKE_SFC_CLIMO is set to "TRUE" and the variable specify-
-# ing the directory in which to look for pregenerated grid and orography
-# files (i.e. SFC_CLIMO_DIR) is not empty, then for clarity reset the 
-# latter to an empty string (because it will not be used).
+# If RUN_TASK_MAKE_SFC_CLIMO is set to "TRUE" and the variable specifying 
+# the directory in which to look for pregenerated grid and orography files 
+# (i.e. SFC_CLIMO_DIR) is not empty, then for clarity reset the latter to 
+# an empty string (because it will not be used).
 #
 if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
    [ -n "${SFC_CLIMO_DIR}" ]; then
@@ -892,6 +892,19 @@ LBC_SPEC_FCST_HRS=($( seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} \
 if [ ! -z "${PREDEF_GRID_NAME}" ]; then
   . $USHDIR/set_predef_grid_params.sh
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure GRID_GEN_METHOD is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+err_msg="\
+The horizontal grid generation method specified in GRID_GEN_METHOD is 
+not supported:
+  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
+check_var_valid_value \
+  "GRID_GEN_METHOD" "valid_vals_GRID_GEN_METHOD" "${err_msg}"
 #
 #-----------------------------------------------------------------------
 #
@@ -1613,19 +1626,6 @@ fi
 NH0=0
 NH3=3
 NH4=4
-#
-#-----------------------------------------------------------------------
-#
-# Make sure GRID_GEN_METHOD is set to a valid value.
-#
-#-----------------------------------------------------------------------
-#
-err_msg="\
-The horizontal grid generation method specified in GRID_GEN_METHOD is 
-not supported:
-  GRID_GEN_METHOD = \"${GRID_GEN_METHOD}\""
-check_var_valid_value \
-  "GRID_GEN_METHOD" "valid_vals_GRID_GEN_METHOD" "${err_msg}"
 #
 #-----------------------------------------------------------------------
 #
