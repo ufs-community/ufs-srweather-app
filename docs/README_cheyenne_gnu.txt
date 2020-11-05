@@ -7,12 +7,10 @@ module load mpt/2.19
 module load ncarcompilers/0.5.0
 module load cmake/3.16.4
 
-module use -a /glade/p/ral/jntp/UFS_SRW_app/temp/NCEPLIBS-ufs-v2.0.0/gnu-9.1.0/mpt-2.19/modules/
-module load esmf/8.0.0
+module use /glade/p/ral/jntp/GMTB/tools/NCEPLIBS-ufs-v2.0.0/gnu-9.1.0/mpt-2.19/modules
 module load NCEPLIBS/2.0.0
 
 export CMAKE_C_COMPILER=mpicc
 export CMAKE_CXX_COMPILER=mpicxx
 export CMAKE_Fortran_COMPILER=mpif90
-export CMAKE_Platform=cheyenne.intel
-
+export CMAKE_Platform=cheyenne.gnu
