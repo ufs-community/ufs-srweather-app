@@ -1,13 +1,6 @@
 # This is the main cmake file for ufs-srweather-app.
-#
-# Ed Hartnett 5/14/20
 
-# This will use any cmake between 3.1 and 3.15, prefering later
-# versions with updated policies.
-cmake_minimum_required(VERSION 3.1...3.15)
-if (${CMAKE_VERSION} VERSION_LESS 3.12)
-  cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
+cmake_minimum_required(VERSION 3.15)
 
 # Set the project name and version.
 project(ufs-srweather-app VERSION 1.0 LANGUAGES C CXX Fortran)
@@ -20,10 +13,6 @@ SET(SRWA_VERSION_MINOR 0)
 SET(SRWA_VERSION_PATCH 0)
 SET(SRWA_VERSION_NOTE "-development")
 SET(SRWA_VERSION ${SRWA_VERSION_MAJOR}.${SRWA_VERSION_MINOR}.${SRWA_VERSION_PATCH}${SRWA_VERSION_NOTE})
-
-#Add custom CMake Module
-SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/"
-  CACHE INTERNAL "Location of our custom CMake modules.")
 
 # A function used to create autotools-style 'yes/no' definitions.
 # If a variable is set, it 'yes' is returned. Otherwise, 'no' is
@@ -69,15 +58,15 @@ include(CTest)
 
 # Determine the configure date.
 IF(DEFINED ENV{SOURCE_DATE_EPOCH})
-	EXECUTE_PROCESS(
-	  COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}"
-	  OUTPUT_VARIABLE CONFIG_DATE
-	  )
+  EXECUTE_PROCESS(
+    COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}"
+    OUTPUT_VARIABLE CONFIG_DATE
+    )
 ELSE()
-	EXECUTE_PROCESS(
-	  COMMAND date
-	  OUTPUT_VARIABLE CONFIG_DATE
-	  )
+  EXECUTE_PROCESS(
+    COMMAND date
+    OUTPUT_VARIABLE CONFIG_DATE
+    )
 ENDIF()
 IF(CONFIG_DATE)
 	string(STRIP ${CONFIG_DATE} CONFIG_DATE)
