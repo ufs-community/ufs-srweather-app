@@ -1,3 +1,4 @@
+#%Module
 module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
 module load miniconda3
 if [module-info mode load] {

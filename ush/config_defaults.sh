@@ -1242,7 +1242,7 @@ USE_ZMTNBLCK="false"
 #
 #-----------------------------------------------------------------------
 #
-HALO_BLEND=0
+HALO_BLEND=10
 #
 #-----------------------------------------------------------------------
 #
@@ -1262,8 +1262,18 @@ HALO_BLEND=0
 # Name of file located in FVCOM_DIR that has FVCOM data interpolated to 
 # FV3-LAM grid. This file will be copied later to a new location and name
 # changed to fvcom.nc
+#
 #------------------------------------------------------------------------
 #
 USE_FVCOM="FALSE"
 FVCOM_DIR="/user/defined/dir/to/fvcom/data"
 FVCOM_FILE="fvcom.nc"
+#
+#-----------------------------------------------------------------------
+#
+# COMPILER:
+# Type of compiler invoked during the build step. 
+#
+#------------------------------------------------------------------------
+#
+COMPILER="intel"

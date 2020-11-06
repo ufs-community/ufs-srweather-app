@@ -1,2 +1,3 @@
+#%Module
 module unload python/2.7.14
 module load python/3.6.3

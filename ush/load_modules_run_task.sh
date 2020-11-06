@@ -147,6 +147,22 @@ jjob_fp="$2"
 #
 #-----------------------------------------------------------------------
 #
+# Sourcing ufs-srweather-app README file (in directory specified by mod-
+# ules_dir) for the specified task
+#
+#-----------------------------------------------------------------------
+#
+machine=${MACHINE,,}
+env_fn="README_${machine}_${COMPILER}.txt"
+env_fp="${SR_WX_APP_TOP_DIR}/docs/${env_fn}"
+source "${env_fp}" || print_err_msg_exit "\
+Sourcing platform- and compiler-specific environment file (env_fp) for the 
+workflow task specified by task_name failed:
+  task_name = \"${task_name}\"
+  env_fp = \"${env_fp}\""
+#
+#-----------------------------------------------------------------------
+#
 # Set the directory (modules_dir) in which the module files for the va-
 # rious workflow tasks are located.  Also, set the name of the module
 # file for the specified task.
@@ -170,12 +186,16 @@ jjob_fp="$2"
 #
 #-----------------------------------------------------------------------
 #
-machine=${MACHINE,,}
 modules_dir="$HOMErrfs/modulefiles/tasks/$machine"
 modulefile_name="${task_name}"
 default_modules_dir="$HOMErrfs/modulefiles"
 default_modulefile_name="${machine}.default"
 use_default_modulefile=0
+#######
+####### The following lines (199-276) can be removed once we confirm
+####### that the new method of setting environment variables and loading
+####### modules will remain permanent.
+#######
 #
 #-----------------------------------------------------------------------
 #
@@ -191,81 +211,78 @@ use_default_modulefile=0
 #
 #-----------------------------------------------------------------------
 #
-if [ "${machine}" = "unknown" ]; then
+#if [ "${machine}" = "unknown" ]; then
 #
 # This if-statement allows for a graceful exit in the case in which module 
 # files are not needed for the task.
 # This is not currently used but reserved for future development.
 #
-  print_info_msg "
-Module files are not needed for this task (task_name) and machine (machine):
-  task_name = \"${task_name}\"
-  machine = \"${machine}\""
+#  print_info_msg "
+#Module files are not needed for this task (task_name) and machine (machine):
+#  task_name = \"${task_name}\"
+#  machine = \"${machine}\""
 
-else
+#else
 
-  modulefile_path=$( readlink -f "${modules_dir}/${modulefile_name}" )
+#  modulefile_path=$( readlink -f "${modules_dir}/${modulefile_name}" )
 
-  if [ ! -f "${modulefile_path}" ]; then
+#  if [ ! -f "${modulefile_path}" ]; then
 
-    default_modulefile_path=$( readlink -f "${default_modules_dir}/${default_modulefile_name}" )
-    if [ -f "${default_modulefile_path}" ]; then
+#    default_modulefile_path=$( readlink -f "${default_modules_dir}/${default_modulefile_name}" )
+#    if [ -f "${default_modulefile_path}" ]; then
 #
 # If the task-specific modulefile does not exist but a default one does, 
 # use it!
 #
-      print_info_msg "$VERBOSE" "
-A task-specific modulefile (modulefile_path) does not exist for this task 
-(task_name) and machine (machine) combination:
-  task_name = \"${task_name}\"
-  machine = \"${machine}\"
-  modulefile_path = \"${modulefile_path}\"
-Will attempt to use the default modulefile (default_modulefile_path):
-  default_modulefile_path = \"${default_modulefile_path}\""
-
-      modules_dir="${default_modules_dir}"
-      use_default_modulefile=1
-
-    elif [ "${task_name}" = "${MAKE_OROG_TN}" ] || \
-         [ "${task_name}" = "${MAKE_SFC_CLIMO_TN}" ] || \
-         [ "${task_name}" = "${MAKE_ICS_TN}" ] || \
-         [ "${task_name}" = "${MAKE_LBCS_TN}" ] || \
-         [ "${task_name}" = "${RUN_FCST_TN}" ]; then
-
-      print_err_msg_exit "\
-The target (modulefile_path) of the symlink (modulefile_name) in the task
-modules directory (modules_dir) that points to module file for this task
-(task_name) does not exist:
-  task_name = \"${task_name}\"
-  modulefile_name = \"${modulefile_name}\"
-  modules_dir = \"${modules_dir}\"
-  modulefile_path = \"${modulefile_path}\"
-This is likely because the forecast model code has not yet been built."
-
-    else
-
-      print_err_msg_exit "\
-The module file (modulefile_path) specified for this task (task_name)
-does not exist:
-  task_name = \"${task_name}\"
-  modulefile_path = \"${modulefile_path}\"
-  machine = \"${machine}\""
-
-    fi
-
-  fi
+#      print_info_msg "$VERBOSE" "
+#A task-specific modulefile (modulefile_path) does not exist for this task 
+#(task_name) and machine (machine) combination:
+#  task_name = \"${task_name}\"
+#  machine = \"${machine}\"
+#  modulefile_path = \"${modulefile_path}\"
+#Will attempt to use the default modulefile (default_modulefile_path):
+#  default_modulefile_path = \"${default_modulefile_path}\""
+#
+#      modules_dir="${default_modules_dir}"
+#      use_default_modulefile=1
+#
+#    elif [ "${task_name}" = "${MAKE_OROG_TN}" ] || \
+#         [ "${task_name}" = "${MAKE_SFC_CLIMO_TN}" ] || \
+#         [ "${task_name}" = "${MAKE_ICS_TN}" ] || \
+#         [ "${task_name}" = "${MAKE_LBCS_TN}" ] || \
+#         [ "${task_name}" = "${RUN_FCST_TN}" ]; then
+#
+#      print_err_msg_exit "\
+#The target (modulefile_path) of the symlink (modulefile_name) in the task
+#modules directory (modules_dir) that points to module file for this task
+#(task_name) does not exist:
+#  task_name = \"${task_name}\"
+#  modulefile_name = \"${modulefile_name}\"
+#  modules_dir = \"${modules_dir}\"
+#  modulefile_path = \"${modulefile_path}\"
+#This is likely because the forecast model code has not yet been built."
+#
+#   else
+#
+#      print_err_msg_exit "\
+#The module file (modulefile_path) specified for this task (task_name)
+#does not exist:
+#  task_name = \"${task_name}\"
+#  modulefile_path = \"${modulefile_path}\"
+#  machine = \"${machine}\""
+#
+#    fi
+#
+#  fi
 #
 #-----------------------------------------------------------------------
 #
-# Purge modules and load the module file for the specified task on the
-# current machine.
+# Load the module file for the specified task on the current machine.
 #
 #-----------------------------------------------------------------------
 #
   print_info_msg "$VERBOSE" "
 Loading modules for task \"${task_name}\" ..."
-
-  module purge
 
   module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
@@ -273,31 +290,37 @@ Call to \"module use\" command failed."
   #
   # If NOT using the default modulefile...
   #
-  if [ ${use_default_modulefile} -eq 0 ]; then
-
-     module use -a "${modules_dir}" || print_err_msg_exit "\
-Call to \"module use\" command failed."
-    
-     module load "${modulefile_name}" || print_err_msg_exit "\
-Loading of module file (modulefile_name; in directory specified by mod-
+#  if [ ${use_default_modulefile} -eq 0 ]; then
+#
+#     module use -a "${modules_dir}" || print_err_msg_exit "\
+#Call to \"module use\" command failed."
+#    
+    #
+    # Load the .local module file if available for the given task
+    #
+    modulefile_local="${task_name}.local"
+    if [ -f ${modules_dir}/${modulefile_local} ]; then
+      module load "${modulefile_local}" || print_err_msg_exit "\
+Loading .local module file (in directory specified by mod-
 ules_dir) for the specified task (task_name) failed:
   task_name = \"${task_name}\"
-  modulefile_name = \"${modulefile_name}\"
-  modules_dir = \"${modules_dir}\""
+  modulefile_local = \"${modulefile_local}\"
+  modules_dir = \"${modules_dir}\""    
+    fi
 
-  else # using default modulefile
-
-    module load "${default_modulefile_name}" || print_err_msg_exit "\
-Loading of default module file failed:
-  task_name = \"${task_name}\"
-  default_modulefile_name = \"${default_modulefile_name}\"
-  default_modules_dir = \"${default_modules_dir}\""
-
-  fi
+#  else # using default modulefile
+#
+#    module load "${default_modulefile_name}" || print_err_msg_exit "\
+#Loading of default module file failed:
+#  task_name = \"${task_name}\"
+#  default_modulefile_name = \"${default_modulefile_name}\"
+#  default_modules_dir = \"${default_modules_dir}\""
+#
+#  fi
 
   module list
 
-fi #End if statement for tasks that load no modules
+#fi #End if statement for tasks that load no modules
 #
 #-----------------------------------------------------------------------
 #

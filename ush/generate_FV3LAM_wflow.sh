@@ -330,54 +330,55 @@ done
 #
 #-----------------------------------------------------------------------
 #
-# For select workflow tasks, copy module files from the various cloned
-# external repositories to the appropriate subdirectory under the workflow
-# directory tree.  In principle, this is better than having hard-coded
-# module files for tasks because the copied module files will always be
-# up-to-date.  However, it does require that these module files in the
-# external repositories be coded correctly, e.g. that they really be lua
-# module files and not contain any shell commands (like "export SOME_VARIABLE").
+# For select workflow tasks, copy the system-specific environment and
+# module settings README file from the ufs-srweather-app repository to 
+# the appropriate subdirectory under the workflow directory tree.  In 
+# principle, sourcing this file is better than having hard-coded module
+# files for tasks because the copied module files will always be 
+# up-to-date.
 #
 #-----------------------------------------------------------------------
 #
-machine=${MACHINE,,}
+#machine=${MACHINE,,}
 
-cd_vrfy "${MODULES_DIR}/tasks/$machine"
+#cd_vrfy "${MODULES_DIR}/tasks/$machine"
 
-cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/build.$machine" "${MAKE_GRID_TN}"
-cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/build.$machine" "${MAKE_OROG_TN}"
-cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/build.$machine" "${MAKE_SFC_CLIMO_TN}"
-cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/build.$machine" "${MAKE_ICS_TN}"
-cp_vrfy -f "${UFS_UTILS_DIR}/modulefiles/build.$machine" "${MAKE_LBCS_TN}"
-if [ $MACHINE = "WCOSS_CRAY" -o $MACHINE = "WCOSS_DELL_P3" ] ; then
-  cp_vrfy -f "${UFS_WTHR_MDL_DIR}/modulefiles/$machine/fv3" "${RUN_FCST_TN}"
-else
-  cp_vrfy -f "${UFS_WTHR_MDL_DIR}/modulefiles/$machine.intel/fv3" "${RUN_FCST_TN}"
-fi
+#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${MAKE_GRID_TN}"
+#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${MAKE_OROG_TN}"
+#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${MAKE_SFC_CLIMO_TN}"
+#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${MAKE_ICS_TN}"
+#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${MAKE_LBCS_TN}"
+#if [ $MACHINE = "WCOSS_CRAY" -o $MACHINE = "WCOSS_DELL_P3" ] ; then
+#  cp_vrfy -f "${UFS_WTHR_MDL_DIR}/modulefiles/${machine}/fv3" "${RUN_FCST_TN}"
+#else
+#  cp_vrfy -f "${UFS_WTHR_MDL_DIR}/modulefiles/${machine}.intel/fv3" "${RUN_FCST_TN}"
+#fi
+#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${RUN_FCST_TN}"
 
 task_names=( "${MAKE_GRID_TN}" "${MAKE_OROG_TN}" "${MAKE_SFC_CLIMO_TN}" "${MAKE_ICS_TN}" "${MAKE_LBCS_TN}" "${RUN_FCST_TN}" )
 #
 # Only some platforms build EMC_post using modules, and some machines 
 # require a different EMC_post modulefile name.
 #
-if [ "${MACHINE}" = "CHEYENNE" ]; then
-  print_info_msg "No post modulefile needed for ${MACHINE}"
-elif [ "${MACHINE}" = "WCOSS_CRAY" ]; then
-  cp_vrfy -f "${EMC_POST_DIR}/modulefiles/post/v8.0.0-cray-intel" "${RUN_POST_TN}"
-  task_names+=("${RUN_POST_TN}")
-else
-  cp_vrfy -f "${EMC_POST_DIR}/modulefiles/post/v8.0.0-$machine" "${RUN_POST_TN}"
-  task_names+=("${RUN_POST_TN}")
-fi
+#if [ "${MACHINE}" = "CHEYENNE" ]; then
+#  print_info_msg "No post modulefile needed for ${MACHINE}"
+#elif [ "${MACHINE}" = "WCOSS_CRAY" ]; then
+#  cp_vrfy -f "${EMC_POST_DIR}/modulefiles/post/v8.0.0-cray-intel" "${RUN_POST_TN}"
+#  cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${RUN_POST_TN}"
+#  task_names+=("${RUN_POST_TN}")
+#else
+#  cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${RUN_POST_TN}"
+#  task_names+=("${RUN_POST_TN}")
+#fi
 
-for task in "${task_names[@]}"; do
-  modulefile_local="${task}.local"
-  if [ -f ${modulefile_local} ]; then
-    cat "${modulefile_local}" >> "${task}"
-  fi
-done
+#for task in "${task_names[@]}"; do
+#  modulefile_local="${task}.local"
+#  if [ -f ${modulefile_local} ]; then
+#    cat "${modulefile_local}" >> "${task}"
+#  fi
+#done
 
-cd_vrfy -
+#cd_vrfy -
 #
 #-----------------------------------------------------------------------
 #
