@@ -45,6 +45,7 @@ if [ ! -f "$ENV_FILE" ]; then
   exit 64
 fi
 
+# If build directory already exists, offer a choice
 BUILD_DIR=${MYDIR}/build
 
 if [ -d "${BUILD_DIR}" ]; then
@@ -64,7 +65,12 @@ if [ -d "${BUILD_DIR}" ]; then
   done
 fi
 
-# Sourcing the README file for this platform/compiler combination will execute all the build commands
+# Source the README file for this platform/compiler combination, then build the code
 . $ENV_FILE
+
+mkdir -p ${BUILD_DIR}
+cd ${BUILD_DIR}
+cmake .. -DCMAKE_INSTALL_PREFIX=..
+make -j ${BUILD_JOBS:-4}
 
 exit 0
