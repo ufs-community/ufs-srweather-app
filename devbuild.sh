@@ -6,7 +6,7 @@ MYDIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
 
 usage () {
   echo "Usage: "
-  echo "  ./build.sh PLATFORM COMPILER"
+  echo "  $0 PLATFORM COMPILER"
   echo ""
   echo "PLATFORM: Name of machine you are building on"
   echo "COMPILER: (optional) compiler to use; valid options are 'intel', 'gnu'"
