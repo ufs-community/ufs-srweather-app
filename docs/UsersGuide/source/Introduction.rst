@@ -14,7 +14,7 @@ https://ufscommunity.org/#/science/aboutapps). The configuration described here 
 Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain
 and on time scales from less than an hour out to several days. The SRW Application v1.0 includes a
 prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system
-end-to-end, which are documented within the users’ guide and supported through a community forum.
+end-to-end, which are documented within the user's guide and supported through a community forum.
 Future work will include expanding the capabilities of the application to include data assimilation
 (DA) and a verification package (e.g. METplus) as part of the workflow. This documentation provides an
 overview of the release components, a description of the supported capabilities, a quick start guide
@@ -25,29 +25,29 @@ Pre-processor Utilities and Initial Conditions
 
 The SRW Application includes a number of pre-processing utilities to initialize and prepare the
 model for integration. For the limited area model (LAM), it is necessary to first generate a
-regional grid ``make_grid`` along with orography ``make_orog`` and surface climatology ``make_sfc_climo``
-files on that grid. There are additional utilities included to handle the correct number of halo
-points and topography filtering. The ``chgres_cube`` pre-processing software is used to convert
-the raw initial condition files to the format needed as input to the FV3-LAM. Additional information
-about the UFS pre-processor utilities can be found in the `UFS_UTILS User’s Guide 
-<https://ufs-utils.readthedocs.io/en/ufs-v1.0.0/>`_.
+regional grid ``regional_esg_grid/make_hgrid`` along with orography ``orog`` and surface climatology ``sfc_climo_gen``
+files on that grid. There are additional utilities included to handle the correct number of halo ``shave``
+points and topography filtering ``filter_topo``. The pre-processing software ``chgres_cube``
+is used to convert the raw external model data into initial and lateral boundary condition files in netCDF
+format, needed as input to the FV3-LAM. Additional information about the UFS pre-processor utilities can
+be found in the `UFS_UTILS User’s Guide <https://ufs-utils.readthedocs.io/en/ufs-v1.0.0/>`_.
 
 The SRW Application can be initialized from a range of operational initial condition files. It is
 possible to initialize the model from GFS, NAM, RAP, and HRRR files in Gridded Binary v2 (GRIB2)
 format for past dates. Please note, for GFS data, dates prior to 1 January 2018 may work but are
-not guaranteed. Public archives of model data can be accessed through the National Centers for
-Environmental Information (NCEI) or through the NOAA Operational Model Archive and Distribution
-System (NOMADS). Raw initial condition files may be pre-staged on disk by the user or automatically
-downloaded for specified date ranges by using an online data archive script available in the release.
+not guaranteed. Public archives of model data can be accessed through the `National Centers for
+Environmental Information <https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-forcast-system-gfs>`_
+(NCEI) or through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`_
+(NOMADS). Raw external model data may be pre-staged on disk by the user.
 
 
 Forecast Model
 ==============
 
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
-(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability. The dynamical core
-is the computational part of a model that solves the equations of fluid motion. A User’s Guide
-for the UFS :term:`Weather Model` is `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`_. 
+(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability :cite:`BlackEtAl2020`.
+The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s
+Guide for the UFS :term:`Weather Model` is `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`_. 
 
 Supported model resolutions in this release include a 3-, 13-, and 25-km predefined Contiguous
 U.S. (CONUS) domain, all with 64 vertical levels. Preliminary tools for users to define their
@@ -73,8 +73,8 @@ and CCPP technical aspects are described in the `CCPP Technical Documentation
 beyond the physics options that can optimize various aspects of the model for use with each
 of the supported suites. 
 
-The UFS SRW App supports the use of both grib2 and :term:`nemsio` input data. The UFS Weather Model
-ingests initial and boundary condition files produced by :term:`chgres_cube` and outputs files in
+The SRW App supports the use of both GRIB2 and :term:`nemsio` input data. The UFS Weather Model
+ingests initial and lateral boundary condition files produced by :term:`chgres_cube` and outputs files in
 NetCDF format on a specific projection (e.g., Lambert Conformal) in the horizontal and model
 levels in the vertical.
 
@@ -109,10 +109,10 @@ The SRW Application has a portable build system and a user-friendly, modular, an
 expandable workflow framework.
 
 An umbrella CMake-based build system is used for building the components necessary
-for running the end-to-end regional workflow: the UFS Weather Model and the pre- and
+for running the end-to-end SRW Application: the UFS Weather Model and the pre- and
 post-processing software. Additional libraries (:term:`NCEPLIBS-external` and :term:`NCEPLIBS`) necessary
 for the application are not included in the SRW Application build system, but are available
-pre-built on configured platforms. There is a small set of system libraries and utilities
+pre-built on pre-configured platforms. There is a small set of system libraries and utilities
 that are assumed to be present on the target computer: the CMake build software, a Fortran,
 C, and C++ compiler, and MPI library.
 
@@ -129,7 +129,7 @@ forecast model, and post-processing steps.
 
 This SRW Application release has been tested on a variety of platforms widely used by
 researchers, such as the NOAA Research and Development High-Performance Computing Systems
-(RDHPCS), including  Hera, Orion, Gaea, and Jet; NOAA’s Weather and Climate Operational
+(RDHPCS), including  Hera, Orion, and Jet; NOAA’s Weather and Climate Operational
 Supercomputing System (WCOSS); the National Center for Atmospheric Research (NCAR) Cheyenne
 system; NSSL’s HPC machine, Odin; the National Science Foundation Stampede2 system; and
 generic Linux and macOS systems using Intel and GNU compilers. Four `levels of support
@@ -195,9 +195,6 @@ use.  A list of available documentation is shown in :numref:`Table %s <list_of_d
    | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/v5.0.0                                   |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | Stochastic Physics         | https://stochastic-physics.readthedocs.io/en/ufs-v2.0.0                         |
-   | User's Guide               |                                                                                 |
-   +----------------------------+---------------------------------------------------------------------------------+
    | ESMF manual                | http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_8_0_0/ESMF_refdoc  |
    +----------------------------+---------------------------------------------------------------------------------+
    | Unified Post Processor     | https://upp.readthedocs.io/en/ufs-v2.0.0                                        |
@@ -244,3 +241,4 @@ UFS forum at https://forums.ufscommunity.org/.
    Variables presented as ``AaBbCc123`` in this document typically refer to variables
    in scripts, names of files and directories.
 
+.. bibliography:: references.bib
