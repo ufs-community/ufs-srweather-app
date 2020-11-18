@@ -145,44 +145,45 @@ workflow is run, is shown in :numref:`Table %s <ExptDirStructure>`.
 
 .. table::  Files and sub-directory initially created in the experimental directory. 
 
-   +---------------------------+--------------------------------------------------------------------+
-   | **File Name**             | **Description**                                                    |
-   +===========================+====================================================================+
-   | config.sh                 | User-specified configuration file (link to description)            |
-   +---------------------------+--------------------------------------------------------------------+
-   | data_table                | Cycle-independent input file (empty)                               |
-   +---------------------------+--------------------------------------------------------------------+
-   | field_table               | Scalar fields in the forecast model                                |
-   |                           | (link to UFS Wx Model)                                             |
-   +---------------------------+--------------------------------------------------------------------+
-   | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                |
-   +---------------------------+--------------------------------------------------------------------+
-   | input.nml                 | Namelist for the UFS Weather model                                 |
-   |                           | (link to UFS Wx Model)                                             |
-   +---------------------------+--------------------------------------------------------------------+
-   | launch_FV3LAM_wflow.sh    | Symlink to the shell script of                                     |
-   |                           | ``ufs-srweather-app/regional_workflow/ush/launch_FV3LAM_wflow.sh`` |
-   |                           | that can be used to (re)launch the Rocoto workflow.                |
-   |                           | Each time this script is called, it appends to a log               |
-   |                           | file named ``log.launch_FV3LAM_wflow``.                            |
-   +---------------------------+--------------------------------------------------------------------+
-   | log.generate_FV3LAM_wflow | Log of the output from the experiment generation script            |
-   |                           | ``generate_FV3LAM_wflow.sh``                                       |
-   +---------------------------+--------------------------------------------------------------------+
-   | nems.configure            | NEMS configuration file (link to UFS Wx Model)                     |
-   +---------------------------+--------------------------------------------------------------------+
-   | suite_{CCPP}.xml          | CCPP suite definition file used by the forecast model              |
-   +---------------------------+--------------------------------------------------------------------+
-   | var_defns.sh              | Shell script defining the experiment parameters. It contains all   |
-   |                           | of the primary parameters specified in the default and             |
-   |                           | user-specified configuration files plus many secondary parameters  |
-   |                           | that are derived from the primary ones by the experiment           |
-   |                           | generation script. This file is sourced by various other scripts   |
-   |                           | in order to make all the experiment variables available to these   |
-   |                           | scripts.                                                           |
-   +---------------------------+--------------------------------------------------------------------+
-   |  YYYYMMDDHH               | Cycle directory (empty)                                            |
-   +---------------------------+--------------------------------------------------------------------+
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   | **File Name**             | **Description**                                                                                    |
+   +===========================+====================================================================================================+
+   | config.sh                 | User-specified configuration file (TODO: link to description)                                      |
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   | data_table                | Cycle-independent input file (empty)                                                               |
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   | field_table               | Scalar fields in the forecast model                                                                |
+   |                           | https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#field-table-file         |
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                |
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   | input.nml                 | Namelist for the UFS Weather model                                                                 |
+   |                           | https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#namelist-file-input-nml  | 
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   | launch_FV3LAM_wflow.sh    | Symlink to the shell script of                                                                     |
+   |                           | ``ufs-srweather-app/regional_workflow/ush/launch_FV3LAM_wflow.sh``                                 |
+   |                           | that can be used to (re)launch the Rocoto workflow.                                                |
+   |                           | Each time this script is called, it appends to a log                                               |
+   |                           | file named ``log.launch_FV3LAM_wflow``.                                                            |
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   | log.generate_FV3LAM_wflow | Log of the output from the experiment generation script                                            |
+   |                           | ``generate_FV3LAM_wflow.sh``                                                                       |
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   | nems.configure            | NEMS configuration file                                                                            |
+   |                           | https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#nems-configure-file      |
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   | suite_{CCPP}.xml          | CCPP suite definition file used by the forecast model                                              |
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   | var_defns.sh              | Shell script defining the experiment parameters. It contains all                                   |
+   |                           | of the primary parameters specified in the default and                                             |
+   |                           | user-specified configuration files plus many secondary parameters                                  |
+   |                           | that are derived from the primary ones by the experiment                                           |
+   |                           | generation script. This file is sourced by various other scripts                                   |
+   |                           | in order to make all the experiment variables available to these                                   |
+   |                           | scripts.                                                                                           |
+   +---------------------------+----------------------------------------------------------------------------------------------------+
+   |  YYYYMMDDHH               | Cycle directory (empty)                                                                            |
+   +---------------------------+----------------------------------------------------------------------------------------------------+
 
 In addition, the *community* mode creates the ``fix_am`` and ``fix_lam`` directories in ``EXPT_SUBDIR``.
 The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files
@@ -225,7 +226,7 @@ sub-directories are created, as described in :numref:`Table %s <CreatedByWorkflo
    |                           | created to contain cycle-specific files for each cycle that the    |
    |                           | experiment runs. If ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL``     |
    |                           | were different, and/or ``CYCL_HRS`` contained more than one        |
-   |                           | element in the ‘config.sh’ file, then more than one cycle          |
+   |                           | element in the ``config.sh`` file, then more than one cycle        |
    |                           | directory would be created under the experiment directory.         |
    +---------------------------+--------------------------------------------------------------------+
    | grid                      | Directory generated by the ``make_grid`` task containing grid      |
@@ -250,5 +251,5 @@ sub-directories are created, as described in :numref:`Table %s <CreatedByWorkflo
    |                           | the status of the workflow.                                        |
    +---------------------------+--------------------------------------------------------------------+
 
-The output files for an experiment are described in Chapter 7 (link to Inputs and Outputs).
-The workflow tasks are described in the next chapter.
+The output files for an experiment are described in Chapter 7 (TODO: link to Inputs and Outputs).
+The workflow tasks are described in the next chapter (TOTO: Add link).
