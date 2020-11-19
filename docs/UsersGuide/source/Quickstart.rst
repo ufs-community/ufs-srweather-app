@@ -165,11 +165,6 @@ On Cheyenne:
 
    module load ncarenv
    ncar_pylib /glade/p/ral/jntp/UFS_CAM/ncar_pylib_20200427
-
-Load the rocoto module:
-
-.. code-block:: console
-
    module use -a /glade/p/ral/jntp/UFS_SRW_app/modules
    module load rocoto 
 

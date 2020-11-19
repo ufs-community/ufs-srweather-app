@@ -6,6 +6,8 @@ Code Repositories and Directory Structure
 This chapter describes the code repositories that comprise the UFS SRW Application,
 without describing any of the components in detail.
 
+.. _HierarchicalRepoStr:
+
 Hierarchical Repository Structure
 =================================
 The umbrella repository for the UFS SRW Application is named ufs-srweather-app and is
@@ -133,6 +135,8 @@ contents of these subdirectories are described in :numref:`Table %s <Subdirector
    +-------------------------+---------------------------------------------------------+
    | ush                     | Utility scripts used by the workflow                    |
    +-------------------------+---------------------------------------------------------+
+
+.. _ExperimentDirSection:
 
 Experiment Directory Structure
 ==============================
