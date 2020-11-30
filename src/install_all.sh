@@ -27,7 +27,6 @@ $Build_post && {
 # install needed utilities from UFS_UTILS.
 #------------------------------------
 $Build_UFS_UTILS && {
-# ${CP} regional_utils.fd/exec/global_chgres            ${BIN_DIR}/regional_chgres.x
  ${CP} UFS_UTILS/exec/chgres_cube                      ${BIN_DIR}/chgres_cube
  ${CP} UFS_UTILS/exec/orog                             ${BIN_DIR}/orog
  ${CP} UFS_UTILS/exec/sfc_climo_gen                    ${BIN_DIR}/sfc_climo_gen
@@ -38,6 +37,8 @@ $Build_UFS_UTILS && {
  ${CP} UFS_UTILS/exec/filter_topo                      ${BIN_DIR}/filter_topo
  ${CP} UFS_UTILS/exec/shave                            ${BIN_DIR}/shave
  ${CP} UFS_UTILS/exec/global_equiv_resol               ${BIN_DIR}/global_equiv_resol
+ ${CP} UFS_UTILS/exec/fvcom_to_FV3                     ${BIN_DIR}/fvcom_to_FV3
+ ${CP} UFS_UTILS/exec/vcoord_gen                       ${BIN_DIR}/vcoord_gen
 }
 
 #------------------------------------
