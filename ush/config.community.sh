@@ -26,9 +26,16 @@ FV3GFS_FILE_FMT_LBCS="grib2"
 
 WTIME_RUN_FCST="01:00:00"
 
+#
+# Uncomment the following line in order to use user-staged external model 
+# files with locations and names as specified by EXTRN_MDL_SOURCE_BASEDIR_ICS/
+# LBCS and EXTRN_MDL_FILES_ICS/LBCS.
+#
+#USE_USER_STAGED_EXTRN_FILES="TRUE"
+#
 # The following is specifically for Hera.  It will have to be modified
 # if on another platform, using other dates, other external models, etc.
-USE_USER_STAGED_EXTRN_FILES="TRUE"
+#
 EXTRN_MDL_SOURCE_BASEDIR_ICS="/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS"
 EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
 EXTRN_MDL_SOURCE_BASEDIR_LBCS="/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS"

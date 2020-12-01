@@ -680,19 +680,19 @@ case $MACHINE in
   "HERA")
     FIXgsm=${FIXgsm:-"/scratch1/NCEPDEV/global/glopara/fix/fix_am"}
     TOPO_DIR=${TOPO_DIR:-"/scratch1/NCEPDEV/global/glopara/fix/fix_orog"}
-    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/scratch1/NCEPDEV/da/George.Gayno/ufs_utils.git/climo_fields_netcdf"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/scratch1/NCEPDEV/global/glopara/fix/fix_sfc_climo"}
     ;;
 
   "ORION")
-    FIXgsm=${FIXgsm:-"/work/noaa/fv3-cam/emc.campara/fix_fv3cam/fix_am"}
-    TOPO_DIR=${TOPO_DIR:-"/work/noaa/fv3-cam/emc.campara/fix_fv3cam/fix_orog"}
-    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/work/noaa/gsd-fv3-dev/gsketefia/UFS/climo_fields_netcdf"}
+    FIXgsm=${FIXgsm:-"/work/noaa/global/glopara/fix/fix_am"}
+    TOPO_DIR=${TOPO_DIR:-"/work/noaa/global/glopara/fix/fix_orog"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/work/noaa/global/glopara/fix/fix_sfc_climo"}
     ;;
 
   "JET")
     FIXgsm=${FIXgsm:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_am"}
     TOPO_DIR=${TOPO_DIR:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_orog"}
-    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/lfs1/HFIP/hwrf-data/git/fv3gfs/fix/fix_sfc_climo"}
+    SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_sfc_climo"}
     ;;
 
   "ODIN")

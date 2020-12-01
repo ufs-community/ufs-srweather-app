@@ -421,13 +421,9 @@ case "${EXTRN_MDL_NAME_ICS}" in
     nsoill_out="9"
   fi
 #
-# These geogrid files need to be moved to more permanent locations.
+# Path to the HRRRX geogrid file.
 #
-  if [ "${MACHINE}" = "HERA" ]; then
-    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-LAM/geo_em.d01.nc_HRRRX"
-  elif [ "${MACHINE}" = "JET" ]; then
-    geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
-  fi
+  geogrid_file_input_grid="${FIXgsm}/geo_em.d01.nc_HRRRX"
 
   #Note that vgfrc, shdmin/shdmax (minmax_vgfrc), and lai fields are only available in HRRRX 
   #files after mid-July 2019, and only so long as the record order didn't change afterward
@@ -463,15 +459,9 @@ case "${EXTRN_MDL_NAME_ICS}" in
     nsoill_out="9"
   fi
 #
-# These geogrid files need to be moved to more permanent locations.
+# Path to the RAPX geogrid file.
 #
-  if [ "${MACHINE}" = "HERA" ]; then
-    geogrid_file_input_grid="/scratch2/BMC/det/beck/FV3-LAM/geo_em.d01.nc_RAPX"
-  elif [ "${MACHINE}" = "JET" ]; then
-    geogrid_file_input_grid="/misc/whome/rtrr/HRRR/static/WPS/geo_em.d01.nc"
-  elif [ "${MACHINE}" = "CHEYENNE" ]; then
-    geogrid_file_input_grid="/glade/p/ral/jntp/UFS_CAM/fix/geo_em.d01.nc_RAPX"
-  fi
+  geogrid_file_input_grid="${FIXgsm}/geo_em.d01.nc_RAPX"
 
   vgtyp_from_climo=True
   sotyp_from_climo=False
