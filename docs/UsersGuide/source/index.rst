@@ -11,7 +11,8 @@ UFS Short-Range Weather App Users Guide
    :maxdepth: 3
 
    Introduction
-   SystemRequirements
    Quickstart
+   CodeReposAndDirs
+   SRWAppOverview
    FAQ
    Glossary
