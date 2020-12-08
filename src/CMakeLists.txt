@@ -8,7 +8,7 @@ ExternalProject_Add(UFS_UTILS
   )
 
 if(NOT CCPP_SUITES)
-  set(CCPP_SUITES "FV3_GFS_v15p2,FV3_RRFS_v1beta")
+  set(CCPP_SUITES "FV3_GFS_v15p2,FV3_RRFS_v1alpha")
 endif()
 
 ExternalProject_Add(ufs_weather_model
