@@ -7,7 +7,7 @@
 # The SRW App can be downloaded directly from github, either by using `git clone` or by downloading
 # from the web.
 
-git clone -b release/public-v1 https://github.com/ufs-community/ufs-srweather-app.git
+git clone https://github.com/ufs-community/ufs-srweather-app.git
 
 cd ufs-srweather-app/
 ./manage_externals/checkout_externals
