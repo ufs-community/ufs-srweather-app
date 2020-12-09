@@ -114,7 +114,7 @@ forecast model, and post-processor:
    make dir
    cd build
    cmake .. -DCMAKE_INSTALL_PREFIX=..
-   make -j 8 
+   make -j 8 >& build.out &
 
 where ``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``,
 and ``share`` directories containing various components of the SRW App will be created, and its
@@ -211,8 +211,8 @@ configuration file also contains documentation describing the experiment paramet
    +======================+============================================================+
    | Experiment mode      | RUN_ENVIR                                                  | 
    +----------------------+------------------------------------------------------------+
-   | Machine and queue    | MACHINE, ACCOUNT, SCHED, QUEUE_DEFAULT, QUEUE_DEFAULT_TAG, |
-   |                      | QUEUE_HPSS, QUEUE_HPSS_TAG, QUEUE_FCST, QUEUE_FCST_TAG     |
+   | Machine and queue    | MACHINE, ACCOUNT, SCHED, PARTITION_DEFAULT, QUEUE_DEFAULT, |
+   |                      | PARTITION_HPSS, QUEUE_HPSS, PARTITION_FCST, QUEUE_FCST     |
    +----------------------+------------------------------------------------------------+
    | Cron                 | USE_CRON_TO_RELAUNCH, CRON_RELAUNCH_INTVL_MNTS             |
    +----------------------+------------------------------------------------------------+
@@ -223,7 +223,8 @@ configuration file also contains documentation describing the experiment paramet
    | Separator            | DOT_OR_USCORE                                              |
    +----------------------+------------------------------------------------------------+
    | File name            | EXPT_CONFIG_FN, RGNL_GRID_NML_FN, DATA_TABLE_FN,           |
-   |                      | DIAG_TABLE_FN, FIELD_TABLE_FN, FV3_NML_YALM_CONFIG_FN,     |
+   |                      | DIAG_TABLE_FN, FIELD_TABLE_FN, FV3_NML_BASE_SUITE_FN,      |
+   |                      | FV3_NML_YALM_CONFIG_FN, FV3_NML_BASE_ENS_FN,               |
    |                      | MODEL_CONFIG_FN, NEMS_CONFIG_FN, FV3_EXEC_FN,              |
    |                      | WFLOW_XML_FN, GLOBAL_VAR_DEFNS_FN,                         |
    |                      | EXTRN_MDL_ICS_VAR_DEFNS_FN, EXTRN_MDL_LBCS_VAR_DEFNS_FN,   |
@@ -241,7 +242,7 @@ configuration file also contains documentation describing the experiment paramet
    |                      | EXTRN_MDL_FILES_ICS, EXTRN_MDL_SOURCE_BASEDIR_LBCS,        |
    |                      | EXTRN_MDL_FILES_LBCS                                       |
    +----------------------+------------------------------------------------------------+
-   | CCPP                 | USE_CCPP, CCPP_PHYS_SUITE, OZONE_PARAM_NO_CCPP             |
+   | CCPP                 | CCPP_PHYS_SUITE                                            |
    +----------------------+------------------------------------------------------------+
    | GRID                 | GRID_GEN_METHOD                                            |
    +----------------------+------------------------------------------------------------+
@@ -259,10 +260,14 @@ configuration file also contains documentation describing the experiment paramet
    +----------------------+------------------------------------------------------------+
    | Input configuration  | DT_ATMOS, LAYOUT_X, LAYOUT_Y, BLOCKSIZE, QUILTING,         |
    |                      | PRINT_ESMF, WRTCMP_write_groups,                           |
-   |                      | WRTCMP_write_tasks_per_group                               |
+   |                      | WRTCMP_write_tasks_per_group, WRTCMP_output_grid,          |
+   |                      | WRTCMP_cen_lon, WRTCMP_cen_lat, WRTCMP_lon_lwr_left,       |
+   |                      | WRTCMP_lat_lwr_left, WRTCMP_lon_upr_rght,                  |
+   |                      | WRTCMP_lat_upr_rght, WRTCMP_dlon, WRTCMP_dlat,             |
+   |                      | WRTCMP_stdlat1, WRTCMP_stdlat2, WRTCMP_nx, WRTCMP_ny,      |
+   |                      | WRTCMP_dx, WRTCMP_dy                                       |
    +----------------------+------------------------------------------------------------+
-   | Pre-existing grid    | PREDEF_GRID_NAME, EMC_GRID_NAME, PREEXISTING_DIR_METHOD,   |
-   |                      | VERBOSE                                                    |
+   | Pre-existing grid    | PREDEF_GRID_NAME, PREEXISTING_DIR_METHOD, VERBOSE          |
    +----------------------+------------------------------------------------------------+
    | Cycle-independent    | RUN_TASK_MAKE_GRID, GRID_DIR, RUN_TASK_MAKE_OROG,          |
    |                      | OROG_DIR, RUN_TASK_MAKE_SFC_CLIMO, SFC_CLIMO_DIR           |
@@ -309,6 +314,8 @@ configuration file also contains documentation describing the experiment paramet
    +----------------------+------------------------------------------------------------+
    | FVCOM                | USE_FVCOM, FVCOM_DIR, FVCOM_FILE                           |
    +----------------------+------------------------------------------------------------+
+   | Compiler             | COMPILER                                                   |
+   +----------------------+------------------------------------------------------------+
  
 .. _UserSpecificConfig:
 
@@ -335,37 +342,60 @@ new values in the ``config_default.sh`` and ``config.community.sh`` scripts, res
 
 .. table::   Configuration variables specified in the config.community.sh script.
 
-   +-------------------------+----------------------+--------------------------------+
-   | **Parameter**           | **Default Value**    | **New Value**                  |
-   +=========================+======================+================================+
-   | MACHINE                 | "BIG_COMPUTER"       | "hera"                         |
-   +-------------------------+----------------------+--------------------------------+
-   | ACCOUNT                 | "project_name"       | "an_account"                   |
-   +-------------------------+----------------------+--------------------------------+
-   | EXPT_SUBDIR             | ""                   | "test_community"               |
-   +-------------------------+----------------------+--------------------------------+
-   | QUEUE_DEFAULT           | "batch_queue"        | "batch"                        |
-   +-------------------------+----------------------+--------------------------------+
-   | QUEUE_HPSS              | "hpss_queue"         | "service"                      |
-   +-------------------------+----------------------+--------------------------------+
-   | QUEUE_FCST              | "production_queue"   | "batch"                        |
-   +-------------------------+----------------------+--------------------------------+
-   | RUN_ENVIR               | "nco"                | "community"                    |
-   +-------------------------+----------------------+--------------------------------+
-   | PREEXISTING_DIR_METHOD  | "delete"             | "rename"                       |
-   +-------------------------+----------------------+--------------------------------+
-   | PREDEF_GRID_NAME        | ""                   | "RRFS_CONUS_25km"              |
-   +-------------------------+----------------------+--------------------------------+
-   | CCPP_PHYS_SUITE         | "FV3_GSD_V0"         | "FV3_GFS_v15p2"                |
-   +-------------------------+----------------------+--------------------------------+
-   | FCST_LEN_HRS            | "24"                 | "6"                            |
-   +-------------------------+----------------------+--------------------------------+
-   | DATE_FIRST_CYCL         | "YYYYMMDD"           | "20190701"                     |
-   +-------------------------+----------------------+--------------------------------+
-   | DATE_LAST_CYCL          | "YYYYMMDD"           | "20190701"                     |
-   +-------------------------+----------------------+--------------------------------+
-   | CYCL_HRS                |  (“HH1” “HH2”)       | "00"                           |
-   +-------------------------+----------------------+--------------------------------+
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | **Parameter**                  | **Default Value** | **New Value**                                          |
+   +================================+===================+========================================================+
+   | MACHINE                        | "BIG_COMPUTER"    | "hera"                                                 |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | ACCOUNT                        | "project_name"    | "an_account"                                           |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | EXPT_SUBDIR                    | ""                | "test_community"                                       |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | VERBOSE                        | "TRUE"            | "TRUE"                                                 |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_ENVIR                      | "nco"             | "community"                                            |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | PREEXISTING_DIR_METHOD         | "delete"          | "rename"                                               |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | PREDEF_GRID_NAME               | ""                | "RRFS_CONUS_25km"                                      |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | GRID_GEN_METHOD                | "ESGgrid"         | "ESGgrid"                                              |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | QUILTING                       | "TRUE"            | "TRUE"                                                 |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | CCPP_PHYS_SUITE                | "FV3_GSD_V0"      | "FV3_GFS_v15p2"                                        |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | FCST_LEN_HRS                   | "24"              | "48"                                                   |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | LBC_SPEC_INTVL_HRS             | "6"               | "6"                                                    |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | DATE_FIRST_CYCL                | "YYYYMMDD"        | "20190701"                                             |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | DATE_LAST_CYCL                 | "YYYYMMDD"        | "20190701"                                             |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | CYCL_HRS                       | ("HH1" "HH2")     | "00"                                                   |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | EXTRN_MDL_NAME_ICS             |  "FV3GFS"         | "FV3GFS"                                               |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | EXTRN_MDL_NAME_LBCS            |  "FV3GFS"         | "FV3GFS"                                               |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | FV3GFS_FILE_FMT_ICS            |  "nemsio"         | "grib2"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | FV3GFS_FILE_FMT_LBCS           |  "nemsio"         | "grib2"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | WTIME_RUN_FCST                 |  "04:30:00"       | "01:00:00"                                             |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | USE_USER_STAGED_EXTRN_FILES    |  "FALSE"          | "TRUE"                                                 |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | EXTRN_MDL_SOURCE_BASE_DIR_ICS  |  ""               | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | EXTRN_MDL_FILES_ICS            | ""                | "gfs.pgrb2.0p25.f000"                                  |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006"                                  |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+
 
 .. _LoadPythonEnv:
 
@@ -427,8 +457,8 @@ to set up their experiment with ease. :numref:`Figure %s <WorkflowGeneration>` s
 of generating a workflow experiment. First, it sets up the configuration parameters by running
 the ``setup.sh`` script. Second, it copies the time-independent (FIX) files and other necessary
 input files such as ``data_table``, ``field_table``, ``nems.configure``, ``model_configure``,
-and CCPP suite file from the templates directory to the experiment directory (``EXPT_SUBDIR``).
-Third, it copies the weather model executable (``NEMS.exe``) from the ``bin`` directory to ``EXPT_SUBDIR``,
+and CCPP suite file from the templates directory to the experiment directory (``EXPTDIR``).
+Third, it copies the weather model executable (``NEMS.exe``) from the ``bin`` directory to ``EXPTDIR``,
 and creates the input namelist file ``input.nml`` for the weather model based on the ``input.nml.FV3``
 file in the templates directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml``
 that is executed when running the experiment with the Rocoto workflow manager.
@@ -686,7 +716,7 @@ The steps to run the standalone scripts are as follows:
 
    .. code-block:: console
 
-      cp ufs-srweather-app/regional-workflow/ush/wrappers/* .
+      cp ufs-srweather-app/regional_workflow/ush/wrappers/* .
 
 #. RUN each of the listed scripts in the order given.  Scripts with the same stage number
    may be run simultaneously.
