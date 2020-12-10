@@ -545,7 +545,7 @@ cp_vrfy "${CCPP_PHYS_SUITE_IN_CCPP_FP}" "${CCPP_PHYS_SUITE_FP}"
 #
 #-----------------------------------------------------------------------
 #
-exec_fn="NEMS.exe"
+exec_fn="ufs_model"
 exec_fp="${SR_WX_APP_TOP_DIR}/bin/${exec_fn}"
 #Check for the old build location for fv3 executable
 if [ ! -f "${exec_fp}" ]; then
