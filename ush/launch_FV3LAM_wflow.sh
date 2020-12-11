@@ -91,13 +91,14 @@ expt_name="${EXPT_SUBDIR}"
 #
 #-----------------------------------------------------------------------
 #
-if [ "$MACHINE" != "CHEYENNE" ]; then
-  if [ "$MACHINE" = "ORION" ]; then
-    module load contrib rocoto
-  else
-    module purge
-    module load rocoto
-  fi
+if [ "$MACHINE" = "CHEYENNE" ]; then
+  module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
+  module load rocoto
+elif [ "$MACHINE" = "ORION" ]; then
+  module load contrib rocoto
+else
+  module purge
+  module load rocoto
 fi
 #
 #-----------------------------------------------------------------------
