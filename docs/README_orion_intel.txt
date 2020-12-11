@@ -1,15 +1,14 @@
-#Setup instructions for NOAA RDHPC Jet using Intel-18.0.5.274 (bash shell)
+#Setup instructions for MSU Orion using Intel-19.1.0.166 (bash shell)
 
-module purge
-module use /contrib/sutils/modulefiles
-module load sutils
-module load cmake/3.16.1
+module load contrib noaatools
 
-module use /lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack
-module load hpc/1.1.0
+module load cmake/3.17.3
+
+module use /apps/contrib/NCEP/test/hpc-stack-nco/modulefiles/stack
+
+module load hpc/1.0.0-beta1
 module load hpc-intel/18.0.5.274
-module load hpc-impi/2018.4.274
-
+module load hpc-impi/2018.0.4
 module load jasper/2.0.22
 module load zlib/1.2.11
 module load png/1.6.35
@@ -34,9 +33,8 @@ module load landsfcutil/2.4.1
 module load nemsiogfs/2.5.3
 module load wgrib2/2.0.8
 
-
 export CMAKE_C_COMPILER=mpiicc
 export CMAKE_CXX_COMPILER=mpiicpc
 export CMAKE_Fortran_COMPILER=mpiifort
-export CMAKE_Platform=jet.intel
+export CMAKE_Platform=orion.intel
 

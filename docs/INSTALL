@@ -1,0 +1,33 @@
+# Simple setup instructions for the UFS SRW App 
+# For more details, see the "Getting Started" guide:
+# https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
+
+# Getting the UFS SRW App code
+#
+# The SRW App can be downloaded directly from github, either by using `git clone` or by downloading
+# from the web.
+
+git clone https://github.com/ufs-community/ufs-srweather-app.git
+
+cd ufs-srweather-app/
+./manage_externals/checkout_externals
+
+# Prior to building, you must set up the environment so cmake can find the appropriate compilers
+# and libraries. For instructions specific to supported platforms, see the included "README" files
+# in this directory. These README files give instructions assuming a bash or ksh login shell, for
+# csh and tcsh users you will have to modify the commands for setting envronment variables.
+
+# Supported CMake flags:
+#  -DCMAKE_INSTALL_PREFIX Location where the bin/ include/ lib/ and share/ directories containing
+#                         the various components of the SRW App will be created. Recommended value
+#                         is "..", one directory up from the build directory
+#  -DCCPP_SUITES          A comma-separated list of CCPP suites to build with the UFS weather 
+#                         model. See the User's Guide for a full list of available suites. The 
+#                         default is to build with the released supported suites: FV3_GFS_v15p2 and
+#                         FV3_RRFS_v1beta
+
+mkdir build && cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=..
+make -j 8
+
+
