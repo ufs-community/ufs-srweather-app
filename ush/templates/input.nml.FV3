@@ -139,7 +139,8 @@
     debug = .false.
     do_mynnedmf = .true.
     do_mynnsfclay = .false.
-    do_sfcperts = .false.
+    lndp_type = 0
+    n_var_lndp = 0
     do_shum = .false.
     do_skeb = .false.
     do_sppt = .false.
