@@ -1,2 +1,2 @@
-sphinxcontrib-bibtex
+sphinxcontrib-bibtex = {version = "<2.0.0"}
 sphinx_rtd_theme
