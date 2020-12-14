@@ -1901,63 +1901,6 @@ component if it is being used) are:
 #
 #-----------------------------------------------------------------------
 #
-# Make sure that the number of cells in the x and y direction are divi-
-# sible by the MPI task dimensions LAYOUT_X and LAYOUT_Y, respectively.
-#
-#-----------------------------------------------------------------------
-#
-rem=$(( NX%LAYOUT_X ))
-if [ $rem -ne 0 ]; then
-  print_err_msg_exit "\
-The number of grid cells in the x direction (NX) is not evenly divisible
-by the number of MPI tasks in the x direction (LAYOUT_X):
-  NX = $NX
-  LAYOUT_X = ${LAYOUT_X}"
-fi
-
-rem=$(( NY%LAYOUT_Y ))
-if [ $rem -ne 0 ]; then
-  print_err_msg_exit "\
-The number of grid cells in the y direction (NY) is not evenly divisible
-by the number of MPI tasks in the y direction (LAYOUT_Y):
-  NY = $NY
-  LAYOUT_Y = ${LAYOUT_Y}"
-fi
-
-print_info_msg "$VERBOSE" "
-The MPI task layout is:
-  LAYOUT_X = ${LAYOUT_X}
-  LAYOUT_Y = ${LAYOUT_Y}"
-#
-#-----------------------------------------------------------------------
-#
-# Make sure that, for a given MPI task, the number columns (which is 
-# equal to the number of horizontal cells) is divisible by BLOCKSIZE.
-#
-#-----------------------------------------------------------------------
-#
-nx_per_task=$(( NX/LAYOUT_X ))
-ny_per_task=$(( NY/LAYOUT_Y ))
-num_cols_per_task=$(( $nx_per_task*$ny_per_task ))
-
-rem=$(( num_cols_per_task%BLOCKSIZE ))
-if [ $rem -ne 0 ]; then
-  prime_factors_num_cols_per_task=$( factor $num_cols_per_task | sed -r -e 's/^[0-9]+: (.*)/\1/' )
-  print_err_msg_exit "\
-The number of columns assigned to a given MPI task must be divisible by
-BLOCKSIZE:
-  nx_per_task = NX/LAYOUT_X = $NX/${LAYOUT_X} = ${nx_per_task}
-  ny_per_task = NY/LAYOUT_Y = $NY/${LAYOUT_Y} = ${ny_per_task}
-  num_cols_per_task = nx_per_task*ny_per_task = ${num_cols_per_task}
-  BLOCKSIZE = $BLOCKSIZE
-  rem = num_cols_per_task%%BLOCKSIZE = $rem
-The prime factors of num_cols_per_task are (useful for determining a va-
-lid BLOCKSIZE): 
-  prime_factors_num_cols_per_task: ${prime_factors_num_cols_per_task}"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # If the write-component is going to be used to write output files to 
 # disk (i.e. if QUILTING is set to "TRUE"), make sure that the grid type 
 # used by the write-component (WRTCMP_output_grid) is set to a valid value.
@@ -1971,35 +1914,6 @@ in WRTCMP_output_grid is not supported:
   WRTCMP_output_grid = \"${WRTCMP_output_grid}\""
   check_var_valid_value \
     "WRTCMP_output_grid" "valid_vals_WRTCMP_output_grid" "${err_msg}"
-fi
-#
-#-----------------------------------------------------------------------
-#
-# If the write component is going to be used, make sure that the number
-# of grid cells in the y direction (NY) is divisible by the number of
-# write tasks per group.  This is because the NY rows of the grid must
-# be distributed evenly among the write_tasks_per_group tasks in a given
-# write group, i.e. each task must receive the same number of rows.  
-# This implies that NY must be evenly divisible by WRTCMP_write_tasks_-
-# per_group.  If it isn't, the write component will hang or fail.  We
-# check for this below.
-#
-#-----------------------------------------------------------------------
-#
-if [ "$QUILTING" = "TRUE" ]; then
-
-  rem=$(( NY%WRTCMP_write_tasks_per_group ))
-
-  if [ $rem -ne 0 ]; then
-    print_err_msg_exit "\
-The number of grid points in the y direction on the regional grid (ny_-
-T7) must be evenly divisible by the number of tasks per write group 
-(WRTCMP_write_tasks_per_group):
-  NY = $NY
-  WRTCMP_write_tasks_per_group = ${WRTCMP_write_tasks_per_group}
-  NY%%write_tasks_per_group = $rem"
-  fi
-
 fi
 #
 #-----------------------------------------------------------------------

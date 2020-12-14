@@ -16,7 +16,7 @@ loadscript(lib_location + "convert_lambert_cnfrml_coords_to_sphr.ncl")
 undef("calc_wrtcmp_grid_params_lambert_cnfrml")
 
 function calc_wrtcmp_grid_params_lambert_cnfrml( \
-         wrtcmp_config_fn:string, \
+         model_config_tmpl_fp:string, \
          lon_ctr_native:snumeric, lat_ctr_native:snumeric, \
          lon_tile_corners_face_midpts_native[8]:snumeric, \
          lat_tile_corners_face_midpts_native[8]:snumeric, \
@@ -244,16 +244,16 @@ begin
   param_value := char_sq + "lambert_conformal" + char_sq
   param_value_str := tostring(param_value)
 
-  regex_search = "^(\s*" + param_name + ":\s+)(<" + param_name + ">)(\s*)(.*)"
+  regex_search = "^(\s*" + param_name + ":\s+)('\{\{ " + param_name + " \}\}')(\s*)(.*)"
 
   regex_print = "\1" + param_value_str
   sed_cmd = "sed -n -r -e " + char_dq + "s|" + regex_search + "|" \
-          + regex_print + "|p" + char_dq + " " + wrtcmp_config_fn
+          + regex_print + "|p" + char_dq + " " + model_config_tmpl_fp
   param_names_and_vals(np) = systemfunc(sed_cmd)
 
   regex_print = "\4"
   sed_cmd = "sed -n -r -e " + char_dq + "s|" + regex_search + "|" \
-          + regex_print + "|p" + char_dq + " " + wrtcmp_config_fn
+          + regex_print + "|p" + char_dq + " " + model_config_tmpl_fp
   trailing_comments(np) = systemfunc(sed_cmd)
 ;
 ; **********************************************************************
@@ -326,22 +326,24 @@ begin
 ;
 ; Set the regular expression to search for.
 ;
-    regex_search = "^(\s*" + param_name + ":\s+)(<" + param_name + ">)(\s*)(.*)"
+    regex_search = "^(\s*" + param_name + ":\s+)(\{\{ " + param_name + " \}\})(\s*)(.*)"
 ;
 ; Get the parameter name and value without the trailing comment (if any).
 ;
     regex_print = "\1" + param_value_str
     sed_cmd = "sed -n -r -e " + char_dq + "s|" + regex_search + "|" \
-            + regex_print + "|p" + char_dq + " " + wrtcmp_config_fn
-    param_names_and_vals(np) = systemfunc(sed_cmd)
+            + regex_print + "|p" + char_dq + " " + model_config_tmpl_fp
+    tmp := systemfunc(sed_cmd)
+    param_names_and_vals(np) = tmp(0)
 ;
 ; Get the trailing name and comment.
 ;
     regex_print = "\4"
     sed_cmd = "sed -n -r -e " + char_dq + "s|" + regex_search + "|" \
-            + regex_print + "|p" + char_dq + " " + wrtcmp_config_fn
-    trailing_comments(np) = systemfunc(sed_cmd)
-    
+            + regex_print + "|p" + char_dq + " " + model_config_tmpl_fp
+    tmp := systemfunc(sed_cmd)
+    trailing_comments(np) = tmp(0)
+
   end do
 ;
 ; **********************************************************************

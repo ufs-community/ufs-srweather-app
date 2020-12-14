@@ -91,8 +91,6 @@ FV3_GFS_2017_gfdlmp:
     do_deep: False
     do_mynnedmf: !!python/none
     do_mynnsfclay: !!python/none
-    lndp_type: !!python/none
-    n_var_lndp: !!python/none
     effr_in: True
     fhcyc: 0.0
     fhlwr: 3600.0
@@ -104,10 +102,12 @@ FV3_GFS_2017_gfdlmp:
     imp_physics: 11
     lgfdlmprad: True
     lheatstrg: !!python/none
-    ltaerosol: !!python/none
+    lndp_type: !!python/none
     lsm: !!python/none
     lsoil: !!python/none
     lsoil_lsm: !!python/none
+    ltaerosol: !!python/none
+    n_var_lndp: !!python/none
     oz_phys: True
     oz_phys_2015: False
     satmedmf: !!python/none
@@ -172,8 +172,6 @@ FV3_GFS_2017_gfdlmp_regional:
   gfs_physics_nml:
     <<: *gfs_2017_gfdlmp_phys
     cplflx: False
-    lndp_type: 0
-    n_var_lndp: 0
     iopt_alb: 2
     iopt_btr: 1
     iopt_crs: 1
@@ -188,7 +186,9 @@ FV3_GFS_2017_gfdlmp_regional:
     iopt_tbot: 2
     lgfdlmprad: True
     lheatstrg: False
+    lndp_type: 0
     lsm: 1
+    n_var_lndp: 0
     nstf_name: [2, 0, 0, 0, 0]
     oz_phys: False
     oz_phys_2015: True
@@ -327,8 +327,6 @@ FV3_GFS_v16beta:
     cdmbgwd: [4.0, 0.15, 1.0, 1.0]
     do_myjpbl: !!python/none
     do_myjsfc: !!python/none
-    lndp_type: !!python/none
-    n_var_lndp: !!python/none
     do_tofd: True
     do_ysu: !!python/none
     effr_in: True
@@ -340,7 +338,9 @@ FV3_GFS_v16beta:
     isatmedmf: 1
     lgfdlmprad: True
     lheatstrg: True
+    lndp_type: !!python/none
     lsoil: 4
+    n_var_lndp: !!python/none
     nstf_name: [2, 1, 0, 0, 0]
     prautco: [0.00015, 0.00015]
     psautco: [0.0008, 0.0005]
@@ -395,8 +395,6 @@ FV3_CPT_v0:
     do_sb_physics: True
     do_mynnedmf: !!python/none
     do_mynnsfclay: !!python/none
-    lndp_type: !!python/none
-    n_var_lndp: !!python/none
     do_shoc: False
     effr_in: True
     fhcyc: 0.0
@@ -422,6 +420,7 @@ FV3_CPT_v0:
     iopt_snf: 4
     iopt_stc: 1
     iopt_tbot: 2
+    lndp_type: !!python/none
     lradar: False
     lsm: 1
     lsoil: !!python/none
@@ -436,6 +435,7 @@ FV3_CPT_v0:
     mg_do_liq_liu: True
     mg_qcvar: 1.0
     mg_ts_auto_ice: [180.0, 900.0]
+    n_var_lndp: !!python/none
     ncld: 2
     pdfflag: 4
     random_clds: True

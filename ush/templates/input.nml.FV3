@@ -139,8 +139,6 @@
     debug = .false.
     do_mynnedmf = .true.
     do_mynnsfclay = .false.
-    lndp_type = 0
-    n_var_lndp = 0
     do_shum = .false.
     do_skeb = .false.
     do_sppt = .false.
@@ -169,11 +167,13 @@
     ivegsrc = 1
     ldiag3d = .false.
     lheatstrg = .false.
+    lndp_type = 0
     lradar = .true.
     lsm = 3
     lsoil_lsm = 9
     ltaerosol = .true.
     lwhtr = .true.
+    n_var_lndp = 0
     ncld = 5
     nst_anl = .true.
     nstf_name = 2,1,1,0,5

@@ -330,7 +330,7 @@ FV3_NML_YAML_CONFIG_FN="FV3.input.yml"
 FV3_NML_BASE_ENS_FN="input.nml.base_ens"
 MODEL_CONFIG_FN="model_configure"
 NEMS_CONFIG_FN="nems.configure"
-FV3_EXEC_FN="fv3_gfs.x"
+FV3_EXEC_FN="ufs_model"
 
 WFLOW_XML_FN="FV3LAM_wflow.xml"
 GLOBAL_VAR_DEFNS_FN="var_defns.sh"
@@ -476,7 +476,7 @@ EXTRN_MDL_FILES_LBCS=( "LBCS_file1" "LBCS_file2" "..." )
 #
 #-----------------------------------------------------------------------
 #
-CCPP_PHYS_SUITE="FV3_GSD_v0"
+CCPP_PHYS_SUITE="FV3_GFS_v15p2"
 #
 #-----------------------------------------------------------------------
 #
@@ -719,6 +719,14 @@ ESGgrid_WIDE_HALO_WIDTH="6"
 # As described in the forecast model documentation, "It corresponds to
 # the frequency with which the top level routine in the dynamics is called
 # as well as the frequency with which the physics is called."
+#
+# Note that if using one of the predefined grids (i.e. if PREDEF_GRID_NAME
+# is not set to a null string, either below or in the custom workflow
+# configuration file specified by EXPT_CONFIG_FN), then DT_ATMOS is 
+# overwritten by the value for that predefined grid.  The predefined
+# grid parameters are specified in the script 
+#
+#   $HOMErrfs/ush/set_predef_grid_params.sh
 #
 #-----------------------------------------------------------------------
 #

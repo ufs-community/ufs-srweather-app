@@ -22,8 +22,13 @@ expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_predef_grids/ex
 expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_13km_HRRRX_RAPX"
 expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_3km_FV3GFS_FV3GFS"
 expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try03/grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
-expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try03/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_bugfix_adjust_CONUS_grids/expt_dirs/try03/grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
 
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_maximize_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
+
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_maximize_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
+
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_maximize_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
 
 ;
 ; **********************************************************************
@@ -100,7 +105,7 @@ begin
   var_defns_fp = expt_dir + "/var_defns.sh"
 
   param_names = (/ \
-"WRTCMP_PARAMS_TMPL_FP", \
+"MODEL_CONFIG_TMPL_FP", \
 "WRTCMP_output_grid", \
 "GTYPE", \
 "CRES", \
@@ -125,8 +130,8 @@ print("sed_output = " + sed_output)
 ; Convert the output from the sed command (which will be a string) to 
 ; the appropriate NCL data type.
 ;
-    if (strcmp_exact(param_name, "WRTCMP_PARAMS_TMPL_FP")) then
-      WRTCMP_PARAMS_TMPL_FP = tostring(sed_output)
+    if (strcmp_exact(param_name, "MODEL_CONFIG_TMPL_FP")) then
+      MODEL_CONFIG_TMPL_FP = tostring(sed_output)
     else if (strcmp_exact(param_name, "WRTCMP_output_grid")) then
       WRTCMP_output_grid = tostring(sed_output)
     else if (strcmp_exact(param_name, "GTYPE")) then
@@ -226,18 +231,6 @@ print("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
 ;
 ; **********************************************************************
 ;
-; Set the full path to the file that will contain a copy of the write-
-; component template file with placeholders replaced with actual values.  
-; Then copy the template file to that file.
-;
-; **********************************************************************
-;
-  wrtcmp_config_fp = expt_dir + "/aaaa"
-  sys_output = systemfunc("cp " + WRTCMP_PARAMS_TMPL_FP + \
-                          " " + wrtcmp_config_fp) 
-;
-; **********************************************************************
-;
 ; Extract and save into new, appropriately dimensioned variables the 
 ; output from the grid-read operation above.  Then call the function 
 ; that calculates the write-component grid parameters for a lambert-
@@ -267,7 +260,7 @@ print("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
     if (strcmp_exact(WRTCMP_output_grid, "rotated_latlon")) then
 
       out := calc_wrtcmp_grid_params_rotated_latlon( \
-             wrtcmp_config_fp, \
+             MODEL_CONFIG_TMPL_FP, \
              lon_grid_cntr_native, lat_grid_cntr_native, \
              lon_tile_corners_face_midpts_native, \
              lat_tile_corners_face_midpts_native, \
@@ -277,7 +270,7 @@ print("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
     else if (strcmp_exact(WRTCMP_output_grid, "lambert_conformal")) then
 
       out := calc_wrtcmp_grid_params_lambert_cnfrml( \
-             wrtcmp_config_fp, \
+             MODEL_CONFIG_TMPL_FP, \
              lon_grid_cntr_native, lat_grid_cntr_native, \
              lon_tile_corners_face_midpts_native, \
              lat_tile_corners_face_midpts_native, \

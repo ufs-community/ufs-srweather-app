@@ -330,58 +330,6 @@ done
 #
 #-----------------------------------------------------------------------
 #
-# For select workflow tasks, copy the system-specific environment and
-# module settings README file from the ufs-srweather-app repository to 
-# the appropriate subdirectory under the workflow directory tree.  In 
-# principle, sourcing this file is better than having hard-coded module
-# files for tasks because the copied module files will always be 
-# up-to-date.
-#
-#-----------------------------------------------------------------------
-#
-#machine=${MACHINE,,}
-
-#cd_vrfy "${MODULES_DIR}/tasks/$machine"
-
-#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${MAKE_GRID_TN}"
-#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${MAKE_OROG_TN}"
-#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${MAKE_SFC_CLIMO_TN}"
-#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${MAKE_ICS_TN}"
-#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${MAKE_LBCS_TN}"
-#if [ $MACHINE = "WCOSS_CRAY" -o $MACHINE = "WCOSS_DELL_P3" ] ; then
-#  cp_vrfy -f "${UFS_WTHR_MDL_DIR}/modulefiles/${machine}/fv3" "${RUN_FCST_TN}"
-#else
-#  cp_vrfy -f "${UFS_WTHR_MDL_DIR}/modulefiles/${machine}.intel/fv3" "${RUN_FCST_TN}"
-#fi
-#cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${RUN_FCST_TN}"
-
-task_names=( "${MAKE_GRID_TN}" "${MAKE_OROG_TN}" "${MAKE_SFC_CLIMO_TN}" "${MAKE_ICS_TN}" "${MAKE_LBCS_TN}" "${RUN_FCST_TN}" )
-#
-# Only some platforms build EMC_post using modules, and some machines 
-# require a different EMC_post modulefile name.
-#
-#if [ "${MACHINE}" = "CHEYENNE" ]; then
-#  print_info_msg "No post modulefile needed for ${MACHINE}"
-#elif [ "${MACHINE}" = "WCOSS_CRAY" ]; then
-#  cp_vrfy -f "${EMC_POST_DIR}/modulefiles/post/v8.0.0-cray-intel" "${RUN_POST_TN}"
-#  cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${RUN_POST_TN}"
-#  task_names+=("${RUN_POST_TN}")
-#else
-#  cp_vrfy -f "${SR_WX_APP_TOP_DIR}/docs/README_${machine}_intel.txt" "${RUN_POST_TN}"
-#  task_names+=("${RUN_POST_TN}")
-#fi
-
-#for task in "${task_names[@]}"; do
-#  modulefile_local="${task}.local"
-#  if [ -f ${modulefile_local} ]; then
-#    cat "${modulefile_local}" >> "${task}"
-#  fi
-#done
-
-#cd_vrfy -
-#
-#-----------------------------------------------------------------------
-#
 # Create a symlink in the experiment directory that points to the workflow
 # (re)launch script.
 #
@@ -518,68 +466,6 @@ print_info_msg "$VERBOSE" "
 Copying the CCPP physics suite definition XML file from its location in
 the forecast model directory sturcture to the experiment directory..."
 cp_vrfy "${CCPP_PHYS_SUITE_IN_CCPP_FP}" "${CCPP_PHYS_SUITE_FP}"
-#
-#-----------------------------------------------------------------------
-#
-# Copy the forecast model executable from its location in the directory
-# in which the forecast model repository was cloned (UFS_WTHR_MDL_DIR)
-# to the executables directory (EXECDIR).
-#
-# Note that if there is already an experiment that is running the forecast
-# task (so that the forecast model executable in EXECDIR is in use) and
-# the user tries to generate another experiment, the generation of this
-# second experiment will fail because the operating system won't allow
-# the existing executable in EXECDIR to be overwritten (because it is
-# "busy", i.e. in use by the first experiment).  For this reason, below,
-# we try to prevent this situation by comparing the ages of the source
-# and target executables and attempting the copy only if the source one
-# is newer (or if the target doesn't exist).  This will very likely prevent
-# the situation described above, but it doesn't guarantee that it will
-# never happen (it will still happen if an experiment is running a forecast
-# while the user rebuilts the forecast model and attempts to generate a
-# new experiment.  For this reason, this copy operation should really be
-# performed duirng the build step, not here.
-#
-# Question:
-# Why doesn't the build script(s) perform this action?  It should...
-#
-#-----------------------------------------------------------------------
-#
-exec_fn="ufs_model"
-exec_fp="${SR_WX_APP_TOP_DIR}/bin/${exec_fn}"
-#Check for the old build location for fv3 executable
-if [ ! -f "${exec_fp}" ]; then
-  exec_fp_alt="${UFS_WTHR_MDL_DIR}/build/${exec_fn}"
-  if [ ! -f "${exec_fp_alt}" ]; then
-    print_err_msg_exit "\
-The executable (exec_fp) for running the forecast model does not exist:
-  exec_fp = \"${exec_fp}\"
-Please ensure that you've built this executable."
-  else
-    exec_fp="${exec_fp_alt}"
-  fi
-fi
-
-if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable (exec_fp) for running the forecast model does not exist:
-  exec_fp = \"${exec_fp}\"
-Please ensure that you've built this executable."
-fi
-#
-# Make a copy of the executable in the executables directory only if a
-# copy doens't already exist or if a copy does exist but is older than
-# the original.
-#
-if [ ! -e "${FV3_EXEC_FP}" ] || \
-   [ "${exec_fp}" -nt "${FV3_EXEC_FP}" ]; then
-  print_info_msg "$VERBOSE" "
-Copying the FV3-LAM executable (exec_fp) to the executables directory
-(EXECDIR):
-  exec_fp = \"${exec_fp}\"
-  EXECDIR = \"$EXECDIR\""
-  cp_vrfy "${exec_fp}" "${FV3_EXEC_FP}"
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -916,6 +802,10 @@ fi
 { restore_shell_opts; } > /dev/null 2>&1
 
 }
+
+
+
+
 #
 #-----------------------------------------------------------------------
 #

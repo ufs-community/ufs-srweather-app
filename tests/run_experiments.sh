@@ -748,10 +748,10 @@ boundary conditions specification interval (LBC_SPEC_INTVL_HRS):
     EXTRN_MDL_FILES_LBCS=( $( printf "%03d " "${lbc_spec_times_hrs[@]}" ) ) 
     if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
        [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
-      if [ "${FV3GFS_FILE_FMT_ICS}" = "nemsio" ]; then
+      if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
         EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/#/gfs.atmf}" )
         EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/%/.nemsio}" )
-      elif [ "${FV3GFS_FILE_FMT_ICS}" = "grib2" ]; then
+      elif [ "${FV3GFS_FILE_FMT_LBCS}" = "grib2" ]; then
         EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/#/gfs.pgrb2.0p25.f}" )
       fi
     elif [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ] || \
