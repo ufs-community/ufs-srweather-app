@@ -9,8 +9,8 @@ module load cmake/3.16.4
 
 module use /glade/p/ral/jntp/GMTB/tools/hpc-stack-nco-20201113/modulefiles/stack
 module load hpc/1.0.0-beta1
-module load hpc-intel/18.0.5.274
-module load hpc-impi/2018.0.4
+module load hpc-intel/19.1.1
+module load hpc-mpt/2.22
 module load jasper/2.0.22
 module load zlib/1.2.11
 module load png/1.6.35
