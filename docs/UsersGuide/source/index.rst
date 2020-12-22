@@ -14,5 +14,6 @@ UFS Short-Range Weather App Users Guide
    Quickstart
    CodeReposAndDirs
    SRWAppOverview
+   InputOutputFiles
    FAQ
    Glossary
