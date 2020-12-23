@@ -111,8 +111,8 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
 Additional information related to the ``diag_table_[CCPP]``, ``field_table_[CCPP]``, ``input.nml.FV3``,
 ``model_conigure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide
 <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#input-files>`_,
-while information on the ``regional_grid.nml`` can be found in the UFS_UTILS User’s Guide
-<TODO add link>.
+while information on the ``regional_grid.nml`` can be found in the `UFS_UTILS User’s Guide
+<https://ufs-utils.readthedocs.io/en/ufs-v2.0.0/index.html>`_.
 
 Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -132,4 +132,92 @@ directory. Finally, these files are updated with the variables specified in ``va
 .. figure:: _static/FV3LAM_wflow_input_path.png
 
     *Migratory route of input files*
+
+Output Files
+============
+
+The location of the output files written to disk is defined by the experiment directory,
+``EXPTDIR/YYYYMMDDHH``, as set in ``config.sh``. 
+
+Initial and boundary condition files
+------------------------------------
+The external model data used by *chgres_cube* (as part of the pre-processing utilities) are located
+in the experiment run directory under ``EXPTDIR/YYYYMMDDHH/{EXTRN_MDL_NAME_ICS/LBCS}``.
+
+Pre-processing (UFS_UTILS)
+--------------------------
+The files output by the pre-processing utilities reside in the ``INPUT`` directory under the
+experiment run directory ``EXPTDIR/YYYYMMDDHH/INPUT`` and consist of the following:
+
+* ``C403_grid.tile7.halo3.nc``
+* ``gfs_bndy.tile7.000.nc``
+* ``gfs_bndy.tile7.006.nc``
+* ``gfs_ctrl.nc``
+* ``gfs_data.nc -> gfs_data.tile7.halo0.nc``
+* ``grid_spec.nc -> ../../grid/C403_mosaic.halo3.nc``
+* ``grid.tile7.halo4.nc -> ../../grid/C403_grid.tile7.halo4.nc``
+* ``oro_data.nc -> ../../orog/C403_oro_data.tile7.halo0.nc``
+* ``sfc_data.nc -> sfc_data.tile7.halo0.nc``
+
+These output files are used as inputs for the UFS weather model, and are described in the `Users Guide 
+<https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#grid-description-and-initial-condition-files>`_.
+
+UFS Weather Model
+-----------------
+As mentioned previously, the workflow can be run in ‘community’ or ‘nco’ mode, which determines
+the location and names of the output files.  In addition to this option, output can also be in
+netCDF or nemsio format.  The output file format is set in the ``model_configure`` files using the
+``output_file`` variable.  At this time, due to limitations in the post-processing component, only netCDF
+format output is recommended for the SRW application.
+
+.. note::
+   In summary, the fully supported options for this release include running in ‘community’ mode with netCDF format output files.
+
+In this case, the netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH`` directory. The bases of
+the file names are specified in the input file ``model_configure`` and are set to the following in the SRW Application:
+
+* ``dynfHHH.nc``
+* ``phyfHHH.nc``
+
+Additional details may be found in the UFS Weather Model `Users Guide
+<https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#output-files>`_.
+
+Unified Post Processor (UPP)
+----------------------------
+Documentation for the UPP output files can be found `here <https://upp.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html>`_.
+
+For the SRW Application, the weather model netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH/postprd``
+directory and have the naming convention (file->linked to):
+
+* ``BGRD3D_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.bgrd3df{fhr}.tmXX.grib2``
+* ``BGDAWP_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.bgdawpf{fhr}.tmXX.grib2``
+
+The default setting for the output file names uses ``rrfs`` for ``{domain}``.  This may be overridden by
+the user in the ``config.sh`` settings.
+
+If you wish to modify the fields or levels that are output from the UPP, you will need to make
+modifications to file ``fv3lam.xml``, which resides in the UPP repository distributed with the UFS SRW
+Application. Specifically, if the code was cloned in the directory ``ufs-srweather-app``, the file will be
+located in ``ufs-srweather-app/src/EMC_post/parm``.
+
+.. note::
+   This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
+
+Use the directions in the `UPP User's Guide <https://upp.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#control-file>`_
+for details on how to make modifications to the ``fv3lam.xml`` file and for remaking the flat text file that
+the UPP reads, which is called ``postxconfig-NT-fv3lam.txt`` (default).
+
+Once you have created the new flat text file reflecting your changes, you will need to modify your
+``config.sh`` to point the workflow to the new text file. In your ``config.sh``, set the following:
+
+.. code-block:: console
+
+   USE_CUSTOM_POST_CONFIG_FILE=”TRUE”
+   CUSTOM_POST_CONFIG_PATH=”/path/to/custom/postxconfig-NT-fv3lam.txt”
+
+which tells the workflow to use the custom file located in the user-defined path. The path should
+include the filename. If this is set to true and the file path is not found, then an error will occur
+when trying to generate the SRW Application workflow.
+
+You may then start your case workflow as usual and the UPP will use the new flat ``*.txt`` file.
 
