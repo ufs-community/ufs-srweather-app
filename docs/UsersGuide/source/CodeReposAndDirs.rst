@@ -260,5 +260,5 @@ sub-directories are created, as described in :numref:`Table %s <CreatedByWorkflo
    |                           | the status of the workflow.                                        |
    +---------------------------+--------------------------------------------------------------------+
 
-The output files for an experiment are described in Chapter 7 (TODO: link to Inputs and Outputs).
+The output files for an experiment are described in :numref:`Section %s <OutputFiles>`.
 The workflow tasks are described in :numref:`Section %s <WorkflowTaskDescription>`).
