@@ -8,7 +8,7 @@ module rm NetCDF-intel-sandybridge/4.2
 module load intel/19.0.5.281
 module load xt-lsfhpc/9.1.3
 module load craype-sandybridge
-module load python/2.7.14
+module load python/3.6.3
 module load cmake/3.16.2
 module load git/2.18.0
 

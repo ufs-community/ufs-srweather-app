@@ -8,7 +8,7 @@ module load ips/18.0.1.163
 module load impi/18.0.1
 module load lsf/10.1
 module load cmake/3.16.2
-module load python/2.7.14
+module load python/3.6.3
 
 module use /usrx/local/nceplibs/dev/NCEPLIBS/cmake/install/NCEPLIBS-ufs-v2.0.0/ips-18.0.1.163/impi-18.0.1/modules
 module load NCEPLIBS/2.0.0
