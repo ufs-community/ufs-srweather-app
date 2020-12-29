@@ -1,26 +1,53 @@
-#Setup instructions for WCOSS-Cray using Intel-19.0.5.281 (bash shell)
+#Setup instructions for WCOSS-Cray using Intel-18.1.163 (bash shell)
 
-. /opt/modules/3.2.10.3/init/sh
 module purge
-module load PrgEnv-intel/5.2.82
+
+module load PrgEnv-intel
 module rm intel
+module load intel/18.1.163
 module rm NetCDF-intel-sandybridge/4.2
-module load intel/19.0.5.281
 module load xt-lsfhpc/9.1.3
-module load craype-sandybridge
+module load craype-haswell
 module load python/3.6.3
 module load cmake/3.16.2
-module load git/2.18.0
+module load gcc/5.3.0
+#
+module use /usrx/local/dev/modulefiles
+module load NetCDF-intel-sandybridge/4.7.4
+module load HDF5-parallel-intel-sandybridge/1.10.6
 
-module use /usrx/local/nceplibs/NCEPLIBS/NCEPLIBS-ufs-v2.0.0/intel-19.0.5.281/impi-2019/modules
-module load NCEPLIBS/2.0.0
-module load esmf jasper libpng libjpeg netcdf
+## WCOSS cray for WW3
+module load jasper-gnu-sandybridge/1.900.1
+module load zlib-intel-sandybridge/1.2.7
+module load png-intel-sandybridge/1.2.49
+export PNG_ROOT="/usrx/local/prod//png/1.2.49/intel/sandybridge"
 
-export CC=cc
-export FC=ftn
-export CXX=CC
+## NCEP libraries
+module use /usrx/local/nceplibs/NCEPLIBS/cmake/install/NCEPLIBS-v1.3.0/modules
+module load bacio/2.4.1
+module load crtm/2.3.0
+module load g2/3.4.1
+module load g2tmpl/1.9.1
+module load ip/3.3.3
+module load nemsio/2.5.2
+module load sp/2.3.3
+module load w3emc/2.7.3
+module load w3nco/2.4.1
+module load upp/10.0.0
+module load gfsio/1.4.1
+module load sfcio/1.4.1
+module load sigio/2.3.2
+module load landsfcutil/2.4.1
+module load nemsiogfs/2.5.3
+module load wgrib2/2.0.8
 
+module use /gpfs/hps3/emc/nems/noscrub/emc.nemspara/soft/modulefiles
+module load esmf/8.1.0bs27
+
+
+## load cmake
 export CMAKE_C_COMPILER=cc
 export CMAKE_CXX_COMPILER=CC
 export CMAKE_Fortran_COMPILER=ftn
 export CMAKE_Platform=wcoss_cray
+
