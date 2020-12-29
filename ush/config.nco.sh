@@ -22,24 +22,12 @@ CYCL_HRS=( "18" )
 EXTRN_MDL_NAME_ICS="FV3GFS"
 EXTRN_MDL_NAME_LBCS="FV3GFS"
 
+#
 # The following must be modified for different platforms and users.
+#
 RUN="an_experiment"
 COMINgfs="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"     # Path to directory containing files from the external model (FV3GFS).
+FIXLAM_NCO_BASEDIR="/scratch2/BMC/det/FV3LAM_pregen"            # Path to directory containing the pregenerated grid, orography, and surface climatology "fixed" files to use for the experiment.
 STMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/stmp"  # Path to directory STMP that mostly contains input files.
 PTMP="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/NCO_dirs/ptmp"  # Path to directory PTMP in which the experiment's output files will be placed.
-
-#
-# In NCO mode, the user must manually (e.g. after doing the build step)
-# create the symlink "${FIXrrfs}/fix_sar" that points to EMC's FIXLAM
-# directory on the machine.  For example, on hera, the symlink's target
-# needs to be
-#
-#   /scratch2/NCEPDEV/fv3-cam/emc.campara/fix_fv3cam/fix_sar
-#
-# The experiment generation script will then set FIXLAM to 
-#
-#   FIXLAM="${FIXrrfs}/fix_lam/${PREDEF_GRID_NAME}"
-#
-# where PREDEF_GRID_NAME has the value set above.
-#
 

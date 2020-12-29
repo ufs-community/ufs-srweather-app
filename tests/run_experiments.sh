@@ -493,6 +493,13 @@ VERBOSE=\"${VERBOSE}\""
      [ ${RUN_TASK_MAKE_OROG} = "FALSE" ] || \
      [ ${RUN_TASK_MAKE_SFC_CLIMO} = "FALSE" ]; then
 
+# Note:
+# Now that the "grid", "orog", and "sfc_climo" sub-subdirectories under
+# pregen_basedir have been removed, we don't need the variable pregen_basedir
+# and can instead have the variable "pregen_dir" that gets set to 
+# ${pregen_basedir}/${PREDEF_GRID_NAME}, and pregen_dir can then be used
+# to set GRID_DIR, OROG_DIR, and/or SFC_CLIMO_DIR below.
+
     if [ "$MACHINE" = "HERA" ]; then
       pregen_basedir="/scratch2/BMC/det/FV3LAM_pregen"
     elif [ "$MACHINE" = "CHEYENNE" ]; then
@@ -510,19 +517,7 @@ specified for this machine (MACHINE):
 # Directory for pregenerated grid files.
 #
   if [ ${RUN_TASK_MAKE_GRID} = "FALSE" ]; then
-
-    GRID_DIR="${pregen_basedir}/grid/${PREDEF_GRID_NAME}"
-    if [ "$MACHINE" = "HERA" ]; then
-      GRID_DIR="/scratch2/BMC/det/FV3LAM_pregen/grid/${PREDEF_GRID_NAME}"
-    elif [ "$MACHINE" = "CHEYENNE" ]; then
-      GRID_DIR="/glade/p/ral/jntp/UFS_CAM/FV3LAM_pregen/grid/${PREDEF_GRID_NAME}"
-    else
-      print_err_msg_exit "\
-The directory (GRID_DIR) in which the pregenerated grid files are located
-has not been specified for this machine (MACHINE):
-  MACHINE= \"${MACHINE}\""
-    fi
-
+    GRID_DIR="${pregen_basedir}/${PREDEF_GRID_NAME}"
     str=${str}"
 #
 # Directory containing the pregenerated grid files.
@@ -534,18 +529,7 @@ GRID_DIR=\"${GRID_DIR}\""
 # Directory for pregenerated orography files.
 #
   if [ ${RUN_TASK_MAKE_OROG} = "FALSE" ]; then
-
-    if [ "$MACHINE" = "HERA" ]; then
-      OROG_DIR="/scratch2/BMC/det/FV3LAM_pregen/orog/${PREDEF_GRID_NAME}"
-    elif [ "$MACHINE" = "CHEYENNE" ]; then
-      OROG_DIR="/glade/p/ral/jntp/UFS_CAM/FV3LAM_pregen/orog/${PREDEF_GRID_NAME}"
-    else
-      print_err_msg_exit "\
-The directory (OROG_DIR) in which the pregenerated grid files are located
-has not been specified for this machine (MACHINE):
-  MACHINE= \"${MACHINE}\""
-    fi
-
+    OROG_DIR="${pregen_basedir}/${PREDEF_GRID_NAME}"
     str=${str}"
 #
 # Directory containing the pregenerated orography files.
@@ -557,18 +541,7 @@ OROG_DIR=\"${OROG_DIR}\""
 # Directory for pregenerated surface climatology files.
 #
   if [ ${RUN_TASK_MAKE_SFC_CLIMO} = "FALSE" ]; then
-
-    if [ "$MACHINE" = "HERA" ]; then
-      SFC_CLIMO_DIR="/scratch2/BMC/det/FV3LAM_pregen/sfc_climo/${PREDEF_GRID_NAME}"
-    elif [ "$MACHINE" = "CHEYENNE" ]; then
-      SFC_CLIMO_DIR="/glade/p/ral/jntp/UFS_CAM/FV3LAM_pregen/sfc_climo/${PREDEF_GRID_NAME}"
-    else
-      print_err_msg_exit "\
-The directory (SFC_CLIMO_DIR) in which the pregenerated grid files are
-located has not been specified for this machine (MACHINE):
-  MACHINE= \"${MACHINE}\""
-    fi
-
+    SFC_CLIMO_DIR="${pregen_basedir}/${PREDEF_GRID_NAME}"
     str=${str}"
 #
 # Directory containing the pregenerated surface climatology files.
@@ -628,21 +601,7 @@ SFC_CLIMO_DIR=\"${SFC_CLIMO_DIR}\""
 #   \$PTMP/com/\$NET/\$RUN/\$RUN.\$yyyymmdd/\$hh
 #
 RUN=\"\${EXPT_SUBDIR}\"
-envir=\"\${EXPT_SUBDIR}\"
-#
-# In NCO mode, the user must manually (e.g. after doing the build step)
-# create the symlink \"\${FIXrrfs}/fix_sar\" that points to EMC's FIXsar
-# directory on the machine.  For example, on hera, the symlink's target
-# needs to be
-#
-#   /scratch2/NCEPDEV/fv3-cam/emc.campara/fix_fv3cam/fix_sar
-#
-# The experiment generation script will then set FIXsar to
-#
-#   FIXsar=\"\${FIXrrfs}/fix_sar/\${PREDEF_GRID_NAME}\"
-#
-# where PREDEF_GRID_NAME has the value set above.
-#"
+envir=\"\${EXPT_SUBDIR}\""
 #
 # Set COMINgfs.
 #
@@ -653,10 +612,13 @@ envir=\"\${EXPT_SUBDIR}\"
 
       if [ "$MACHINE" = "HERA" ]; then
         COMINgfs="/scratch1/NCEPDEV/hwrf/noscrub/hafs-input/COMGFS"
+        FIXLAM_NCO_BASEDIR="/scratch2/BMC/det/FV3LAM_pregen"
       elif [ "$MACHINE" = "JET" ]; then
         COMINgfs="/lfs1/HFIP/hwrf-data/hafs-input/COMGFS"
+        FIXLAM_NCO_BASEDIR="/needs/to/be/specified"
       elif [ "$MACHINE" = "CHEYENNE" ]; then
         COMINgfs="/glade/scratch/ketefian/NCO_dirs/COMGFS"
+        FIXLAM_NCO_BASEDIR="/needs/to/be/specified"
       else
         print_err_msg_exit "\
 The directory (COMINgfs) that needs to be specified when running the
@@ -672,7 +634,15 @@ for this machine (MACHINE):
 # mode (RUN_ENVIR set to \"nco\") AND using the FV3GFS or the GSMGFS as
 # the external model for ICs and/or LBCs.
 #
-COMINgfs=\"${COMINgfs}\""
+COMINgfs=\"${COMINgfs}\"
+#
+# The base directory in which the pregenerated grid, orography, and surface 
+# climatology \"fixed\" files used in NCO mode are located.  In NCO mode,
+# the workflow scripts will create a symlink (at the location specified 
+# by FIXLAM) to a subdirectory under FIXLAM_NCO_BASDEDIR.  (The name of 
+# the subdirectory is the name of the grid specified by PREDEF_GRID_NAME.)
+#
+FIXLAM_NCO_BASEDIR=\"${FIXLAM_NCO_BASEDIR}\""
 
     fi
 #

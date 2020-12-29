@@ -13,8 +13,8 @@
 # 1) grid_gen_scr:
 #
 #    This script generates grid files that will be used by subsequent
-#    preprocessing steps.  It places its output in the temporary direc-
-#    tory defined in GRID_DIR.  Note that:
+#    preprocessing steps.  It places its output in the directory defined 
+#    by GRID_DIR.  Note that:
 #
 #    a) This script creates grid files for each of the 7 tiles of the
 #       cubed sphere grid (where tiles 1 through 6 cover the globe, and
@@ -44,7 +44,7 @@
 # 2) orog_gen_scr:
 #
 #    This script generates the orography file.  It places its output in
-#    the temporary directory defined in OROG_DIR.  Note that:
+#    the directory defined by OROG_DIR.  Note that:
 #
 #    a) This script generates an orography file only on tile 7.
 #

@@ -407,16 +407,39 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Copy fixed files from system directory to the FIXam directory (which
-# is under the experiment directory).  Note that some of these files get
-# renamed during the copy process.
+# Create the FIXam directory under the experiment directory.  In NCO mode,
+# this will be a symlink to the directory specified in FIXgsm, while in
+# community mode, it will be an actual directory with files copied into
+# it from FIXgsm.
 #
 #-----------------------------------------------------------------------
 #
+# First, consider NCO mode.
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
 
-# In NCO mode, we assume the following copy operation is done beforehand,
-# but that can be changed.
-if [ "${RUN_ENVIR}" != "nco" ]; then
+  ln_vrfy -fsn "$FIXgsm" "$FIXam"
+#
+# Resolve the target directory that the FIXam symlink points to and check 
+# that it exists.
+#
+  path_resolved=$( readlink -m "$FIXam" )
+  if [ ! -d "${path_resolved}" ]; then
+    print_err_msg_exit "\
+In order to be able to generate a forecast experiment in NCO mode (i.e.
+when RUN_ENVIR set to \"nco\"), the path specified by FIXam after resolving
+all symlinks (path_resolved) must be an existing directory (but in this
+case isn't):
+  RUN_ENVIR = \"${RUN_ENVIR}\"
+  FIXam = \"$FIXam\"
+  path_resolved = \"${path_resolved}\"
+Please ensure that path_resolved is an existing directory and then rerun
+the experiment generation script."
+  fi
+#
+# Now consider community mode.
+#
+else
 
   print_info_msg "$VERBOSE" "
 Copying fixed files from system directory (FIXgsm) to a subdirectory

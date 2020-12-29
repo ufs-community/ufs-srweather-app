@@ -350,7 +350,6 @@ fn_suffix_with_halo="tile${TILE_RGNL}.halo${NHW}.nc"
 raw_orog_fn="${raw_orog_fn_prefix}.${fn_suffix_with_halo}"
 raw_orog_fp="${raw_dir}/${raw_orog_fn}"
 mv_vrfy "${raw_orog_fp_orig}" "${raw_orog_fp}"
-
 #
 #-----------------------------------------------------------------------
 #
