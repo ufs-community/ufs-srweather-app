@@ -210,7 +210,8 @@ For all platforms, the workflow can then be generated with the command:
 
    ./generate_FV3LAM_wflow.sh
 
-The generated workflow will be in ``ufs-srweather-app/../expt_dirs/$EXPT_SUBDIR``.
+The generated workflow will be in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``.  The
+settings for these paths can be found in the output from the ``./generate_FV3LAM_wflow.sh`` script.
 
 Run the Workflow Using Rocoto
 =============================
@@ -220,7 +221,7 @@ described in :numref:`Section %s <RunUsingStandaloneScripts>`. To run the workfl
 
 .. code-block:: console
 
-   cd ufs-srweather-app/../expt_dirs/$EXPT_SUBDIR
+   cd $EXPTDIR
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
