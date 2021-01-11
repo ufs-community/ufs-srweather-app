@@ -87,6 +87,8 @@ Generating the workflow experiment requires three steps:
 
 The first two steps depend on the platform being used and are described here for each Level 1 platform.
 
+.. _SetUpConfigFile:
+
 Set up ``config.sh`` file
 -------------------------
 The workflow requires a file called ``config.sh`` to specify the values of your experiment parameters.
@@ -152,6 +154,8 @@ project code for the account parameter:
    MACHINE=”wcoss_cray” or MACHINE=”wcoss_dell_p3”
    ACCOUNT="my_account"
    EXPT_SUBDIR="my_expt_name"
+
+.. _SetUpPythonEnv:
 
 Set up the Python and other Environment Parameters
 --------------------------------------------------

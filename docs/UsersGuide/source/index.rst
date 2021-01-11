@@ -15,5 +15,6 @@ UFS Short-Range Weather App Users Guide
    CodeReposAndDirs
    SRWAppOverview
    InputOutputFiles
+   WE2Etests
    FAQ
    Glossary
