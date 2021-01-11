@@ -185,7 +185,17 @@ cp_vrfy ${EXECDIR}/ncep_post .
 yyyymmdd=${cdate:0:8}
 hh=${cdate:8:2}
 cyc=$hh
-tmmark="tm$hh"
+#
+#-----------------------------------------------------------------------
+#
+# The tmmark is a reference value used in real-time, DA-enabled NCEP models.
+# It represents the delay between the onset of the DA cycle and the free
+# forecast.  With no DA in the SRW App at the moment, it is hard-wired to
+# tm00 for now. 
+#
+#-----------------------------------------------------------------------
+#
+tmmark="tm00"
 #
 #-----------------------------------------------------------------------
 #
