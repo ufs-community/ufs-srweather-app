@@ -61,11 +61,11 @@
     d2_bg = 0.0
     d2_bg_k1 = 0.20
     d2_bg_k2 = 0.04
-    d4_bg = 0.12
+    d4_bg = 0.15
     d_con = 1.0
     d_ext = 0.0
     dddmp = 0.1
-    delt_max = 0.002
+    delt_max = 0.008
     dnats = 0
     do_sat_adj = .false.
     do_schmidt = .true.
@@ -75,22 +75,22 @@
     external_ic = .true.
     fill = .true.
     full_zs_filter = .false.
-    fv_debug = .true.
+    fv_debug = .false.
     fv_sg_adj = 300
     gfs_phil = .false.
-    hord_dp = -6
+    hord_dp = 6
     hord_mt = 6
     hord_tm = 6
-    hord_tr = 8
+    hord_tr = 10
     hord_vt = 6
     hydrostatic = .false.
     io_layout = 1,1
     k_split = 4
     ke_bg = 0.0
-    kord_mt = 11
-    kord_tm = -11
-    kord_tr = 11
-    kord_wz = 11
+    kord_mt = 9
+    kord_tm = -9
+    kord_tr = 9
+    kord_wz = 9
     make_nh = .true.
     mountain = .false.
     n_split = 5
@@ -101,7 +101,6 @@
     nggps_ic = .true.
     no_dycore = .false.
     nord = 2
-    nord_zs_filter = 4
     npz = 64
     nrows_blend = 10
     ntiles = 1
@@ -118,7 +117,7 @@
     rf_cutoff = 20.e2
     tau = 5.0
     use_hydro_pressure = .false.
-    vtdm4 = 0.02
+    vtdm4 = 0.075
     warm_start = .false.
     z_tracer = .true.
 /
@@ -133,8 +132,8 @@
     bl_mynn_tkeadvect = .true.
     cal_pre = .false.
     cdmbgwd = 3.5,0.25
-    cnvcld = .true.
-    cnvgwd = .true.
+    cnvcld = .false.
+    cnvgwd = .false.
     cplflx = .false.
     debug = .false.
     do_mynnedmf = .true.
@@ -175,8 +174,9 @@
     lwhtr = .true.
     n_var_lndp = 0
     ncld = 5
+    nsradar_reset = 3600
     nst_anl = .true.
-    nstf_name = 2,1,1,0,5
+    nstf_name = 2,1,0,0,0
     oz_phys = .false.
     oz_phys_2015 = .true.
     pdfcld = .false.
@@ -185,10 +185,10 @@
     random_clds = .false.
     redrag = .true.
     satmedmf = .false.
-    shal_cnv = .true.
+    shal_cnv = .false.
     swhtr = .true.
     trans_trac = .true.
-    ttendlim = 50.0
+    ttendlim = -999
     use_ufo = .true.
 /
 

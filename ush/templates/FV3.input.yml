@@ -16,8 +16,6 @@ FV3_GSD_v0:
 
 FV3_GSD_SAR: 
   gfs_physics_nml: &gsd_sar_phys
-    cnvcld: false
-    cnvgwd: false
     effr_in: True
     imfdeepcnv: 0
     imfshalcnv: 0
@@ -33,7 +31,6 @@ FV3_GSD_SAR:
     iopt_snf: 4
     iopt_stc: 1
     iopt_tbot: 2
-    shal_cnv: false
     do_deep: False
 
 FV3_RRFS_v1alpha:
@@ -85,8 +82,6 @@ FV3_GFS_2017_gfdlmp:
     bl_mynn_edmf: !!python/none
     bl_mynn_edmf_mom: !!python/none
     cdmbgwd: [3.5, 0.01]
-    cnvcld: False
-    cnvgwd: False
     cplflx: !!python/none
     do_deep: False
     do_mynnedmf: !!python/none
@@ -111,7 +106,7 @@ FV3_GFS_2017_gfdlmp:
     oz_phys: True
     oz_phys_2015: False
     satmedmf: !!python/none
-    shal_cnv: False
+    shal_cnv: True
     ttendlim: !!python/none
   gfdl_cloud_microphysics_nml: &gfs_gfdl_cloud_mp
     c_cracw: 0.8
@@ -234,6 +229,8 @@ FV3_GFS_v15p2:
     bl_mynn_edmf: !!python/none
     bl_mynn_edmf_mom: !!python/none
     bl_mynn_tkeadvect: !!python/none
+    cnvcld: True
+    cnvgwd: True    
     cplflx: !!python/none
     do_myjpbl: False
     do_myjsfc: False
@@ -273,6 +270,7 @@ FV3_GFS_v15p2:
     lsoil: !!python/none
     lsoil_lsm: !!python/none
     ltaerosol: !!python/none
+    shal_cnv: True
     shinhong: False
     trans_trac: False
     ttendlim: !!python/none
@@ -441,6 +439,7 @@ FV3_CPT_v0:
     random_clds: True
     ras: False
     rhcmax: 0.9999999
+    shal_cnv: True
     shcnvcw: False
     shoc_cld: False
     shoc_parm: [7000.0, 1.0, 2.0, 0.7, -999.0]
