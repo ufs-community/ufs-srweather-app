@@ -97,11 +97,11 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-  DT_ATMOS="300"
+  DT_ATMOS="${DT_ATMOS:-300}"
 
-  LAYOUT_X="5"
-  LAYOUT_Y="2"
-  BLOCKSIZE="40"
+  LAYOUT_X="${LAYOUT_X:-5}"
+  LAYOUT_Y="${LAYOUT_Y:-2}"
+  BLOCKSIZE="${BLOCKSIZE:-40}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -141,11 +141,11 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-  DT_ATMOS="45"
+  DT_ATMOS="${DT_ATMOS:-45}"
 
-  LAYOUT_X="16"
-  LAYOUT_Y="10"
-  BLOCKSIZE="32"
+  LAYOUT_X="${LAYOUT_X:-16}"
+  LAYOUT_Y="${LAYOUT_Y:-10}"
+  BLOCKSIZE="${BLOCKSIZE:-32}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -185,11 +185,11 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-  DT_ATMOS="40"
+  DT_ATMOS="${DT_ATMOS:-40}"
 
-  LAYOUT_X="30"
-  LAYOUT_Y="16"
-  BLOCKSIZE="32"
+  LAYOUT_X="${LAYOUT_X:-30}"
+  LAYOUT_Y="${LAYOUT_Y:-16}"
+  BLOCKSIZE="${BLOCKSIZE:-32}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -229,11 +229,11 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-  DT_ATMOS="40"
+  DT_ATMOS="${DT_ATMOS:-40}"
 
-  LAYOUT_X="30"
-  LAYOUT_Y="24"
-  BLOCKSIZE="35"
+  LAYOUT_X="${LAYOUT_X:-30}"
+  LAYOUT_Y="${LAYOUT_Y:-24}"
+  BLOCKSIZE="${BLOCKSIZE:-35}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -276,12 +276,12 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-#  DT_ATMOS="50"
-  DT_ATMOS="10"
+#  DT_ATMOS="${DT_ATMOS:-50}"
+  DT_ATMOS="${DT_ATMOS:-10}"
 
-  LAYOUT_X="16"
-  LAYOUT_Y="12"
-  BLOCKSIZE="40"
+  LAYOUT_X="${LAYOUT_X:-16}"
+  LAYOUT_Y="${LAYOUT_Y:-12}"
+  BLOCKSIZE="${BLOCKSIZE:-40}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -355,11 +355,11 @@ case ${PREDEF_GRID_NAME} in
 #
 #    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="FALSE"
 #
-#    DT_ATMOS="18"
+#    DT_ATMOS="${DT_ATMOS:-18}"
 #
-#    LAYOUT_X="24"
-#    LAYOUT_Y="24"
-#    BLOCKSIZE="15"
+#    LAYOUT_X="${LAYOUT_X:-24}"
+#    LAYOUT_Y="${LAYOUT_Y:-24}"
+#    BLOCKSIZE="${BLOCKSIZE:-15}"
 #
 #    if [ "$QUILTING" = "TRUE" ]; then
 #      WRTCMP_write_groups="1"
@@ -392,12 +392,12 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-#  DT_ATMOS="50"
-  DT_ATMOS="10"
+#  DT_ATMOS="${DT_ATMOS:-50}"
+  DT_ATMOS="${DT_ATMOS:-10}"
 
-  LAYOUT_X="30"
-  LAYOUT_Y="17"
-  BLOCKSIZE="40"
+  LAYOUT_X="${LAYOUT_X:-30}"
+  LAYOUT_Y="${LAYOUT_Y:-17}"
+  BLOCKSIZE="${BLOCKSIZE:-40}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -450,11 +450,11 @@ case ${PREDEF_GRID_NAME} in
 
 #  GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="FALSE"
 
-  DT_ATMOS="225"
+  DT_ATMOS="${DT_ATMOS:-225}"
 
-  LAYOUT_X="6"
-  LAYOUT_Y="4"
-  BLOCKSIZE="36"
+  LAYOUT_X="${LAYOUT_X:-6}"
+  LAYOUT_Y="${LAYOUT_Y:-4}"
+  BLOCKSIZE="${BLOCKSIZE:-36}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -505,11 +505,11 @@ case ${PREDEF_GRID_NAME} in
 
 #  GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="FALSE"
 
-  DT_ATMOS="18"
+  DT_ATMOS="${DT_ATMOS:-18}"
 
-  LAYOUT_X="30"
-  LAYOUT_Y="22"
-  BLOCKSIZE="35"
+  LAYOUT_X="${LAYOUT_X:-30}"
+  LAYOUT_Y="${LAYOUT_Y:-22}"
+  BLOCKSIZE="${BLOCKSIZE:-35}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -590,13 +590,13 @@ case ${PREDEF_GRID_NAME} in
 #
 #    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
 #
-#    DT_ATMOS="18"
+#    DT_ATMOS="${DT_ATMOS:-18}"
 #
-#    LAYOUT_X="16"
-#    LAYOUT_Y="48"
+#    LAYOUT_X="${LAYOUT_X:-16}"
+#    LAYOUT_Y="${LAYOUT_Y:-48}"
 #    WRTCMP_write_groups="2"
 #    WRTCMP_write_tasks_per_group="24"
-#    BLOCKSIZE=32
+#    BLOCKSIZE="${BLOCKSIZE:-32}"
 #
 #  elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
 
@@ -632,17 +632,17 @@ case ${PREDEF_GRID_NAME} in
 #
 # Preliminary standard values: 18 for 3-km runs, 90 for 13-km runs per config_defaults.sh
 
-  DT_ATMOS="18"
+  DT_ATMOS="${DT_ATMOS:-18}"
 
 #Factors for MPI decomposition. ESGgrid_NX must be divisible by LAYOUT_X, ESGgrid_NY must be divisible by LAYOUT_Y
-  LAYOUT_X="28"
-  LAYOUT_Y="16"
+  LAYOUT_X="${LAYOUT_X:-28}"
+  LAYOUT_Y="${LAYOUT_Y:-16}"
 
 #Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
 #This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
 # For Theia, must be ~40 or less
 # Check setup.sh for more details
-  BLOCKSIZE="24"
+  BLOCKSIZE="${BLOCKSIZE:-24}"
 
 #This section is all for the write component, which you need for output during model integration
   if [ "$QUILTING" = "TRUE" ]; then
@@ -707,16 +707,16 @@ case ${PREDEF_GRID_NAME} in
 #
 # Preliminary standard values: 18 for 3-km runs, 90 for 13-km runs per config_defaults.sh
 
-  DT_ATMOS="18"
+  DT_ATMOS="${DT_ATMOS:-18}"
 
 #Factors for MPI decomposition. ESGgrid_NX must be divisible by LAYOUT_X, ESGgrid_NY must be divisible by LAYOUT_Y
-  LAYOUT_X="8"
-  LAYOUT_Y="8"
+  LAYOUT_X="${LAYOUT_X:-8}"
+  LAYOUT_Y="${LAYOUT_Y:-8}"
 #Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
 #This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
 # For Theia, must be ~40 or less
 # Check setup.sh for more details
-  BLOCKSIZE="27"
+  BLOCKSIZE="${BLOCKSIZE:-27}"
 
 #This section is all for the write component, which you need for output during model integration
   if [ "$QUILTING" = "TRUE" ]; then
@@ -782,17 +782,17 @@ case ${PREDEF_GRID_NAME} in
 #
 # Preliminary standard values: 18 for 3-km runs, 90 for 13-km runs per config_defaults.sh
 
-  DT_ATMOS="18"
+  DT_ATMOS="${DT_ATMOS:-18}"
 
 #Factors for MPI decomposition. ESGgrid_NX must be divisible by LAYOUT_X, ESGgrid_NY must be divisible by LAYOUT_Y
-  LAYOUT_X="16"
-  LAYOUT_Y="8"
+  LAYOUT_X="${LAYOUT_X:-16}"
+  LAYOUT_Y="${LAYOUT_Y:-8}"
 
 #Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
 #This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
 # For Theia, must be ~40 or less
 # Check setup.sh for more details
-  BLOCKSIZE="24"
+  BLOCKSIZE="${BLOCKSIZE:-24}"
 
 #This section is all for the write component, which you need for output during model integration
   if [ "$QUILTING" = "TRUE" ]; then
@@ -857,16 +857,16 @@ case ${PREDEF_GRID_NAME} in
 #
 # Preliminary standard values: 18 for 3-km runs, 90 for 13-km runs per config_defaults.sh
 
-  DT_ATMOS="18"
+  DT_ATMOS="${DT_ATMOS:-18}"
 
 #Factors for MPI decomposition. ESGgrid_NX must be divisible by LAYOUT_X, ESGgrid_NY must be divisible by LAYOUT_Y
-  LAYOUT_X="16"
-  LAYOUT_Y="12"
+  LAYOUT_X="${LAYOUT_X:-16}"
+  LAYOUT_Y="${LAYOUT_Y:-12}"
 #Take number of points on a tile (nx/lx*ny/ly), must divide by block size to get an integer.
 #This integer must be small enough to fit into a processor's cache, so it is machine-dependent magic
 # For Theia, must be ~40 or less
 # Check setup.sh for more details
-  BLOCKSIZE="27"
+  BLOCKSIZE="${BLOCKSIZE:-27}"
 
 #This section is all for the write component, which you need for output during model integration
   if [ "$QUILTING" = "TRUE" ]; then
@@ -913,11 +913,11 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-  DT_ATMOS="300"
+  DT_ATMOS="${DT_ATMOS:-300}"
 
-  LAYOUT_X="5"
-  LAYOUT_Y="5"
-  BLOCKSIZE="6"
+  LAYOUT_X="${LAYOUT_X:-5}"
+  LAYOUT_Y="${LAYOUT_Y:-5}"
+  BLOCKSIZE="${BLOCKSIZE:-6}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -955,11 +955,11 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-  DT_ATMOS="180"
+  DT_ATMOS="${DT_ATMOS:-180}"
 
-  LAYOUT_X="19"
-  LAYOUT_Y="12"
-  BLOCKSIZE="35"
+  LAYOUT_X="${LAYOUT_X:-19}"
+  LAYOUT_Y="${LAYOUT_Y:-12}"
+  BLOCKSIZE="${BLOCKSIZE:-35}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -997,11 +997,11 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-  DT_ATMOS="40"
+  DT_ATMOS="${DT_ATMOS:-40}"
 
-  LAYOUT_X="32"
-  LAYOUT_Y="24"
-  BLOCKSIZE="32"
+  LAYOUT_X="${LAYOUT_X:-32}"
+  LAYOUT_Y="${LAYOUT_Y:-24}"
+  BLOCKSIZE="${BLOCKSIZE:-32}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -1039,11 +1039,11 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-  DT_ATMOS="600"
+  DT_ATMOS="${DT_ATMOS:-600}"
 
-  LAYOUT_X="2"
-  LAYOUT_Y="3"
-  BLOCKSIZE="37"
+  LAYOUT_X="${LAYOUT_X:-2}"
+  LAYOUT_Y="${LAYOUT_Y:-3}"
+  BLOCKSIZE="${BLOCKSIZE:-37}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
@@ -1127,11 +1127,11 @@ case ${PREDEF_GRID_NAME} in
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
-  DT_ATMOS="50"
+  DT_ATMOS="${DT_ATMOS:-50}"
 
-  LAYOUT_X="16"
-  LAYOUT_Y="16"
-  BLOCKSIZE="30"
+  LAYOUT_X="${LAYOUT_X:-16}"
+  LAYOUT_Y="${LAYOUT_Y:-16}"
+  BLOCKSIZE="${BLOCKSIZE:-30}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
