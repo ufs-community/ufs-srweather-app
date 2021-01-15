@@ -133,7 +133,11 @@ MODULES_RUN_TASK_FP script.
 
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;" "&JOBSDIR;/JREGIONAL_MAKE_GRID"</command>
+  {% if machine in ["WCOSS_DELL_P3", "WCOSS_CRAY"]  %}
+    <nodes>{{ nnodes_make_grid }}:ppn=1</nodes>
+  {% else %}
     <nodes>{{ nnodes_make_grid }}:ppn={{ ppn_make_grid }}</nodes>
+  {% endif %}
     <walltime>{{ wtime_make_grid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&MAKE_GRID_TN;</jobname>
@@ -153,7 +157,11 @@ MODULES_RUN_TASK_FP script.
 
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_OROG_TN;" "&JOBSDIR;/JREGIONAL_MAKE_OROG"</command>
+  {% if machine in ["WCOSS_DELL_P3", "WCOSS_CRAY"]  %}
+    <nodes>{{ nnodes_make_orog }}:ppn=1</nodes>
+  {% else %}
     <nodes>{{ nnodes_make_orog }}:ppn={{ ppn_make_orog }}</nodes>
+  {% endif %}
     <walltime>{{ wtime_make_orog }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&MAKE_OROG_TN;</jobname>
@@ -214,7 +222,13 @@ MODULES_RUN_TASK_FP script.
   <task name="&GET_EXTRN_ICS_TN;" maxtries="{{ maxtries_get_extrn_ics }}">
 
     &RSRV_HPSS;
+  {% if machine in ["WCOSS_CRAY"] %}
+    <shared/>
+  {% endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+  {% if machine in ["WCOSS_DELL_P3"] %}
+    <memory>2048M</memory><native>-R affinity[core]</native>
+  {% endif %}
     <nodes>{{ nnodes_get_extrn_ics }}:ppn={{ ppn_get_extrn_ics }}</nodes>
     <walltime>{{ wtime_get_extrn_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -236,7 +250,13 @@ MODULES_RUN_TASK_FP script.
   <task name="&GET_EXTRN_LBCS_TN;" maxtries="{{ maxtries_get_extrn_lbcs }}">
 
     &RSRV_HPSS;
+  {% if machine in ["WCOSS_CRAY"] %}
+    <shared/>
+  {% endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+  {% if machine in ["WCOSS_DELL_P3"] %}
+    <memory>2048M</memory><native>-R affinity[core]</native>
+  {% endif %}
     <nodes>{{ nnodes_get_extrn_lbcs }}:ppn={{ ppn_get_extrn_lbcs }}</nodes>
     <walltime>{{ wtime_get_extrn_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>

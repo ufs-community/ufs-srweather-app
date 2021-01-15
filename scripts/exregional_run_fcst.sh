@@ -92,7 +92,12 @@ case $MACHINE in
   "WCOSS_CRAY")
     ulimit -s unlimited
     ulimit -a
-    APRUN="aprun -b -j1 -n${PE_MEMBER01} -N24 -d1 -cc depth"
+
+    if [ ${PE_MEMBER01} -gt 24 ];then
+      APRUN="aprun -b -j1 -n${PE_MEMBER01} -N24 -d1 -cc depth"
+    else
+      APRUN="aprun -b -j1 -n24 -N24 -d1 -cc depth"
+    fi
     ;;
 
   "WCOSS_DELL_P3")
@@ -174,7 +179,7 @@ the grid and (filtered) orography files ..."
 cd_vrfy ${run_dir}/INPUT
 
 relative_or_null=""
-if [ "${RUN_TASK_MAKE_GRID}" = "TRUE" ]; then
+if [ "${RUN_TASK_MAKE_GRID}" = "TRUE" ] && [ "${MACHINE}" != "WCOSS_CRAY" ]; then
   relative_or_null="--relative"
 fi
 
@@ -239,7 +244,7 @@ fi
 
 
 relative_or_null=""
-if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ]; then
+if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ] && [ "${MACHINE}" != "WCOSS_CRAY" ] ; then
   relative_or_null="--relative"
 fi
 
@@ -345,7 +350,7 @@ static) files in the FIXam directory:
   run_dir = \"${run_dir}\""
 
 relative_or_null=""
-if [ "${RUN_ENVIR}" != "nco" ]; then
+if [ "${RUN_ENVIR}" != "nco" ] && [ "${MACHINE}" != "WCOSS_CRAY" ] ; then
   relative_or_null="--relative"
 fi
 
@@ -395,7 +400,7 @@ Creating links in the current run directory to cycle-independent model
 input files in the main experiment directory..."
 
 relative_or_null=""
-if [ "${RUN_ENVIR}" != "nco" ]; then
+if [ "${RUN_ENVIR}" != "nco" ] && [ "${MACHINE}" != "WCOSS_CRAY" ] ; then
   relative_or_null="--relative"
 fi
 
@@ -436,7 +441,11 @@ cycle's (cdate) run directory (run_dir) failed:
 #-----------------------------------------------------------------------
 #
 if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
-  relative_or_null="--relative"
+  if [ "${MACHINE}" = "WCOSS_CRAY" ]; then
+    relative_or_null=""
+  else
+    relative_or_null="--relative"
+  fi
   diag_table_fp="${cycle_dir}/${DIAG_TABLE_FN}"
   ln_vrfy -sf ${relative_or_null} ${diag_table_fp} ${run_dir}
 fi

@@ -351,7 +351,7 @@ Please ensure that all files have the same resolution."
 #-----------------------------------------------------------------------
 #
   relative_or_null=""
-  if [ "${run_task}" = "TRUE" ]; then
+  if [ "${run_task}" = "TRUE" ] && [ "${MACHINE}" != "WCOSS_CRAY" ] ; then
     relative_or_null="--relative"
   fi
 

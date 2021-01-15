@@ -1,2 +1,7 @@
 #%Module
+
 module load lsf/10.1
+
+module use /usrx/local/nceplibs/dev/modulefiles
+module load srw-app-python/1.0.0
+

@@ -1,3 +1,15 @@
 #%Module
-module unload python/2.7.14
-module load python/3.6.3
+
+module use /opt/cray/ari/modulefiles
+module load alps
+module load gni-headers
+module load pmi/5.0.11
+module load rca
+module load udreg
+module load ugni
+module load xpmem
+
+module use /usrx/local/nceplibs/modulefiles
+module load srw-app-python/1.0.0
+
+module list

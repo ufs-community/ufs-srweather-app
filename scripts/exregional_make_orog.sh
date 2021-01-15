@@ -287,50 +287,12 @@ cat "${input_redirect_fn}"
 print_info_msg "$VERBOSE" "
 Starting orography file generation..."
 
-case $MACHINE in
-
-  "WCOSS_CRAY")
-#
-# On WCOSS and WCOSS_C, use cfp to run multiple tiles simulatneously for
-# the orography.  For now, we have only one tile in the regional case,
-# but in the future we will have more.  First, create an input file for
-# cfp.
-#
-    ufs_utils_ushdir="${UFS_UTILS_DIR}/ush"
-    res="0"  # What should this be set to???
-    printf "%s\n" "\
-${ufs_utils_ushdir}/${orog_gen_scr} \
-$res \
-${TILE_RGNL} \
-${FIXLAM} \
-${raw_dir} \
-${UFS_UTILS_DIR} \
-${TOPO_DIR} \
-${tmp_dir}" \
-    >> ${tmp_dir}/orog.file1
-    aprun -j 1 -n 4 -N 4 -d 6 -cc depth cfp ${tmp_dir}/orog.file1
-    rm_vrfy ${tmp_dir}/orog.file1
-    ;;
-
-  "WCOSS_DELL_P3")
-    ufs_utils_ushdir="${UFS_UTILS_DIR}/ush"
-    res="0"  # What should this be set to???
-    "${exec_fp}" < "${input_redirect_fn}" || \
+$APRUN "${exec_fp}" < "${input_redirect_fn}" || \
       print_err_msg_exit "\
 Call to executable (exec_fp) that generates the raw orography file returned
 with nonzero exit code:
   exec_fp = \"${exec_fp}\""
-    ;;
 
-  "CHEYENNE" | "HERA" | "ORION" | "JET" | "ODIN" | "STAMPEDE")
-    $APRUN "${exec_fp}" < "${input_redirect_fn}" || \
-      print_err_msg_exit "\
-Call to executable (exec_fp) that generates the raw orography file returned
-with nonzero exit code:
-  exec_fp = \"${exec_fp}\""
-    ;;
-
-esac
 #
 # Change location to the original directory.
 #
@@ -457,7 +419,13 @@ cp_vrfy "${raw_orog_fp}" "${filtered_orog_fp}"
 # filtering executable will run) with the same name as the grid file and
 # point it to the actual grid file specified by grid_fp.
 #
-ln_vrfy -fs --relative "${grid_fp}" "${filter_dir}/${grid_fn}"
+
+if [ "${MACHINE}" = "WCOSS_CRAY" ]; then
+  ln_vrfy -fs "${grid_fp}" "${filter_dir}/${grid_fn}"
+else
+  ln_vrfy -fs --relative "${grid_fp}" "${filter_dir}/${grid_fn}"
+fi
+
 #
 # Create the namelist file (in the filter_dir directory) that the orography
 # filtering executable will read in.
