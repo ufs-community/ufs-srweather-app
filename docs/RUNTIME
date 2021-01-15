@@ -1,0 +1,13 @@
+# Users should load the appropriate python environment for the workflow. 
+# The workflow requires Python 3, with the packages 'PyYAML', 'Jinja2', and 'f90nml' available.
+
+# For users' convenience, the python environment for the workflow is put in 'ufs-srweather-app/env/wflow_[machine].env'.
+# When generating a workflow experiment or running a workflow, users can use this file for a specific machine.
+
+# For example, on Hera:
+
+cd ufs-srweather-app/env
+source wflow_hera.env
+
+cd ../regional_workflow/ush
+./generate_FV3LAM_wflow.sh
