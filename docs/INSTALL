@@ -13,9 +13,9 @@ cd ufs-srweather-app/
 ./manage_externals/checkout_externals
 
 # Prior to building, you must set up the environment so cmake can find the appropriate compilers
-# and libraries. For instructions specific to supported platforms, see the included "README" files
-# in this directory. These README files give instructions assuming a bash or ksh login shell, for
-# csh and tcsh users you will have to modify the commands for setting envronment variables.
+# # and libraries. For instructions specific to supported platforms, see the "build_[machine]_[compiler].env 
+# # files in the "env" directory. These files give instructions assuming a bash or ksh login shell, for
+# # csh and tcsh users you will have to modify the commands for setting envronment variables.
 
 # Supported CMake flags:
 #  -DCMAKE_INSTALL_PREFIX Location where the bin/ include/ lib/ and share/ directories containing
