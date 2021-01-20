@@ -429,10 +429,12 @@ FV3GFS_FILE_FMT_LBCS="nemsio"
 # Set NOMADS online data associated parameters. Definitions:
 #
 # NOMADS:
-# Flag controlling whether or not using NOMADS online data
+# Flag controlling whether or not using NOMADS online data.
 #
-# NOMADS_file_type
-# Flag controlling the format of data
+# NOMADS_file_type:
+# Flag controlling the format of data.
+#
+#-----------------------------------------------------------------------
 #
 NOMADS="FALSE"
 NOMADS_file_type="nemsio"
@@ -510,13 +512,26 @@ CCPP_PHYS_SUITE="FV3_GFS_v15p2"
 #   This will generate a regional grid using the map projection developed
 #   by Jim Purser of EMC.
 #
-# Note that if using a predefined grid (PREDEDF_GRID_NAME set to a valid
-# non-empty value), this parameter is overwritten by the method used to
-# generate that grid.  
+# Note that:
+#
+# 1) If the experiment is using one of the predefined grids (i.e. if 
+#    PREDEF_GRID_NAME is set to the name of one of the valid predefined 
+#    grids), then GRID_GEN_METHOD will be reset to the value of 
+#    GRID_GEN_METHOD for that grid.  This will happen regardless of 
+#    whether or not GRID_GEN_METHOD is assigned a value in the user-
+#    specified experiment configuration file, i.e. any value it may be
+#    assigned in the experiment configuration file will be overwritten.
+#
+# 2) If the experiment is not using one of the predefined grids (i.e. if 
+#    PREDEF_GRID_NAME is set to a null string), then GRID_GEN_METHOD must 
+#    be set in the experiment configuration file.  Otherwise, it will 
+#    remain set to a null string, and the experiment generation will 
+#    fail because the generation scripts check to ensure that it is set 
+#    to a non-empty string before creating the experiment directory.
 #
 #-----------------------------------------------------------------------
 #
-GRID_GEN_METHOD="ESGgrid"
+GRID_GEN_METHOD=""
 #
 #-----------------------------------------------------------------------
 #
@@ -656,18 +671,46 @@ GRID_GEN_METHOD="ESGgrid"
 # in the file names, so we allow for that here by setting this flag to
 # "TRUE".
 #
+# Note that:
+#
+# 1) If the experiment is using one of the predefined grids (i.e. if 
+#    PREDEF_GRID_NAME is set to the name of one of the valid predefined
+#    grids), then:
+#
+#    a) If the value of GRID_GEN_METHOD for that grid is "GFDLgrid", then
+#       these parameters will get reset to the values for that grid.  
+#       This will happen regardless of whether or not they are assigned 
+#       values in the user-specified experiment configuration file, i.e. 
+#       any values they may be assigned in the experiment configuration 
+#       file will be overwritten.
+#
+#    b) If the value of GRID_GEN_METHOD for that grid is "ESGgrid", then
+#       these parameters will not be used and thus do not need to be reset
+#       to non-empty strings.
+#
+# 2) If the experiment is not using one of the predefined grids (i.e. if 
+#    PREDEF_GRID_NAME is set to a null string), then:
+#
+#    a) If GRID_GEN_METHOD is set to "GFDLgrid" in the user-specified 
+#       experiment configuration file, then these parameters must be set
+#       in that configuration file.
+#
+#    b) If GRID_GEN_METHOD is set to "ESGgrid" in the user-specified 
+#       experiment configuration file, then these parameters will not be 
+#       used and thus do not need to be reset to non-empty strings.
+#
 #-----------------------------------------------------------------------
 #
-GFDLgrid_LON_T6_CTR=-97.5
-GFDLgrid_LAT_T6_CTR=35.5
-GFDLgrid_RES="384"
-GFDLgrid_STRETCH_FAC=1.5
-GFDLgrid_REFINE_RATIO=3
-GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=10
-GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=374
-GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=10
-GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=374
-GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
+GFDLgrid_LON_T6_CTR=""
+GFDLgrid_LAT_T6_CTR=""
+GFDLgrid_RES=""
+GFDLgrid_STRETCH_FAC=""
+GFDLgrid_REFINE_RATIO=""
+GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=""
+GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=""
+GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=""
+GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=""
+GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES=""
 #
 #-----------------------------------------------------------------------
 #
@@ -711,68 +754,90 @@ GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="TRUE"
 # 4-cell-wide halos that we will eventually end up with.  Note that the
 # grid and orography files with the wide halo are only needed as intermediates
 # in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos;
-# they are not needed by the forecast model.  Usually, there is no reason
-# to change this parameter from its default value set here.
+# they are not needed by the forecast model.  
+# NOTE: Probably don't need to make ESGgrid_WIDE_HALO_WIDTH a user-specified 
+#       variable.  Just set it in the function set_gridparams_ESGgrid.sh.
 #
-#   NOTE: Probably don't need to make this a user-specified variable.  
-#         Just set it in the function set_gridparams_ESGgrid.sh.
+# Note that:
 #
-#-----------------------------------------------------------------------
+# 1) If the experiment is using one of the predefined grids (i.e. if 
+#    PREDEF_GRID_NAME is set to the name of one of the valid predefined
+#    grids), then:
 #
-ESGgrid_LON_CTR="-97.5"
-ESGgrid_LAT_CTR="35.5"
-ESGgrid_DELX="3000.0"
-ESGgrid_DELY="3000.0"
-ESGgrid_NX="1000"
-ESGgrid_NY="1000"
-ESGgrid_WIDE_HALO_WIDTH="6"
+#    a) If the value of GRID_GEN_METHOD for that grid is "GFDLgrid", then
+#       these parameters will not be used and thus do not need to be reset
+#       to non-empty strings.
 #
-#-----------------------------------------------------------------------
+#    b) If the value of GRID_GEN_METHOD for that grid is "ESGgrid", then
+#       these parameters will get reset to the values for that grid.  
+#       This will happen regardless of whether or not they are assigned 
+#       values in the user-specified experiment configuration file, i.e. 
+#       any values they may be assigned in the experiment configuration 
+#       file will be overwritten.
 #
-# Set DT_ATMOS.  This is the main forecast model integraton time step.  
-# As described in the forecast model documentation, "It corresponds to
-# the frequency with which the top level routine in the dynamics is called
-# as well as the frequency with which the physics is called."
+# 2) If the experiment is not using one of the predefined grids (i.e. if 
+#    PREDEF_GRID_NAME is set to a null string), then:
 #
-# Note that if using one of the predefined grids and if DT_ATMOS is not 
-# explicitly set in the user-specified experiment configuration file 
-# (EXPT_CONFIG_FN), then the default value of DT_ATMOS specified here 
-# will be overwritten by its default value for that predefined grid. 
+#    a) If GRID_GEN_METHOD is set to "GFDLgrid" in the user-specified 
+#       experiment configuration file, then these parameters will not be 
+#       used and thus do not need to be reset to non-empty strings.
 #
-#-----------------------------------------------------------------------
-#
-DT_ATMOS="18"
-#
-#-----------------------------------------------------------------------
-#
-# Set LAYOUT_X and LAYOUT_Y.  These are the number of MPI tasks (processes)
-# to use in the two horizontal directions (x and y) of the regional grid
-# when running the forecast model.
-#
-# Note that if using one of the predefined grids and if LAYOUT_X and/or
-# LAYOUT_Y are not explicitly set in the user-specified experiment 
-# configuration file (EXPT_CONFIG_FN), then the default values of LAYOUT_X
-# and/or LAYOUT_Y specified here will be overwritten by their default 
-# values for that predefined grid. 
+#    b) If GRID_GEN_METHOD is set to "ESGgrid" in the user-specified 
+#       experiment configuration file, then these parameters must be set
+#       in that configuration file.
 #
 #-----------------------------------------------------------------------
 #
-LAYOUT_X="20"
-LAYOUT_Y="20"
+ESGgrid_LON_CTR=""
+ESGgrid_LAT_CTR=""
+ESGgrid_DELX=""
+ESGgrid_DELY=""
+ESGgrid_NX=""
+ESGgrid_NY=""
+ESGgrid_WIDE_HALO_WIDTH=""
 #
 #-----------------------------------------------------------------------
 #
-# Set BLOCKSIZE.  This is the amount of data that is passed into the 
-# cache at a time.
+# Set computational parameters for the forecast.  Definitions:
 #
-# Note that if using one of the predefined grids and if BLOCKSIZE is not 
-# explicitly set in the user-specified experiment configuration file 
-# (EXPT_CONFIG_FN), then the default value of BLOCKSIZE specified here 
-# will be overwritten by its default value for that predefined grid. 
+# DT_ATMOS:
+# The main forecast model integraton time step.  As described in the 
+# forecast model documentation, "It corresponds to the frequency with 
+# which the top level routine in the dynamics is called as well as the 
+# frequency with which the physics is called."
+#
+# LAYOUT_X, LAYOUT_Y:
+# The number of MPI tasks (processes) to use in the two horizontal 
+# directions (x and y) of the regional grid when running the forecast 
+# model.
+#
+# BLOCKSIZE:
+# The amount of data that is passed into the cache at a time.
+#
+# Here, we set these parameters to null strings.  This is so that, for 
+# any one of these parameters:
+#
+# 1) If the experiment is using a predefined grid, then if the user 
+#    sets the parameter in the user-specified experiment configuration 
+#    file (EXPT_CONFIG_FN), that value will be used in the forecast(s).
+#    Otherwise, the default value of the parameter for that predefined 
+#    grid will be used.
+#
+# 2) If the experiment is not using a predefined grid (i.e. it is using
+#    a custom grid whose parameters are specified in the experiment 
+#    configuration file), then the user must specify a value for the 
+#    parameter in that configuration file.  Otherwise, the parameter 
+#    will remain set to a null string, and the experiment generation 
+#    will fail because the generation scripts check to ensure that all 
+#    the parameters defined in this section are set to non-empty strings
+#    before creating the experiment directory.
 #
 #-----------------------------------------------------------------------
 #
-BLOCKSIZE="24"
+DT_ATMOS=""
+LAYOUT_X=""
+LAYOUT_Y=""
+BLOCKSIZE=""
 #
 #-----------------------------------------------------------------------
 #
