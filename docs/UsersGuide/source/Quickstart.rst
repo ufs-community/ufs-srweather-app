@@ -73,8 +73,9 @@ Run ``cmake`` to set up the ``Makefile``, then run ``make``:
    make -j 8  >& build.out &
 
 Output from the build will be in the ``ufs-srweather-app/build/build.out`` file.
-When the build completes, you should see twelve pre- and post-processing executables in
-the ``ufs-srweather-app/bin`` directory which are described in :numref:`Table %s <exec_description>`.
+When the build completes, you should see the forecast model executable ``NEMS.exe`` and eleven
+pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory which are
+described in :numref:`Table %s <exec_description>`.
 
 Generate the Workflow Experiment
 ================================
@@ -85,6 +86,8 @@ Generating the workflow experiment requires three steps:
 * Run the generate_FV3LAM_wflow.sh script
 
 The first two steps depend on the platform being used and are described here for each Level 1 platform.
+
+.. _SetUpConfigFile:
 
 Set up ``config.sh`` file
 -------------------------
@@ -152,6 +155,8 @@ project code for the account parameter:
    ACCOUNT="my_account"
    EXPT_SUBDIR="my_expt_name"
 
+.. _SetUpPythonEnv:
+
 Set up the Python and other Environment Parameters
 --------------------------------------------------
 Next, it is necessary to load the appropriate Python environment for the workflow.
@@ -185,6 +190,8 @@ On Orion:
    module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
    module load miniconda3
    conda activate regional_workflow
+   module load contrib/0.1
+   module load rocoto/1.3.2
 
 On WCOSS, append the following to your PYTHONPATH:
 
@@ -207,7 +214,8 @@ For all platforms, the workflow can then be generated with the command:
 
    ./generate_FV3LAM_wflow.sh
 
-The generated workflow will be in ``ufs-srweather-app/../expt_dirs/$EXPT_SUBDIR``.
+The generated workflow will be in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``.  The
+settings for these paths can be found in the output from the ``./generate_FV3LAM_wflow.sh`` script.
 
 Run the Workflow Using Rocoto
 =============================
@@ -217,7 +225,7 @@ described in :numref:`Section %s <RunUsingStandaloneScripts>`. To run the workfl
 
 .. code-block:: console
 
-   cd ufs-srweather-app/../expt_dirs/$EXPT_SUBDIR
+   cd $EXPTDIR
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
@@ -228,6 +236,10 @@ to the user's crontab (use ``crontab -e`` to edit the cron table):
 
    */3 * * * * cd /glade/p/ral/jntp/$USER/expt_dirs/test_CONUS_25km_GFSv15p2 && /glade/p/ral/jntp/tools/rocoto/rocoto-1.3.1/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
+.. note::
+
+   Currently cron is only available on the orion-login-1 node, so please use that node.
+   
 The workflow run is completed when all tasks have “SUCCEEDED”, and the rocotostat command will output the following:
 
 .. code-block:: console

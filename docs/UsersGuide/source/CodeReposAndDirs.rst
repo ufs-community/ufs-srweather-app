@@ -73,6 +73,8 @@ scripts are presented in parentheses.  Some directories have been removed for br
    ├── (build)
    ├── docs  
    │     └── UsersGuide
+   ├── (include)
+   ├── (lib)
    ├── manage_externals
    ├── regional_workflow
    │     ├── docs
@@ -80,6 +82,7 @@ scripts are presented in parentheses.  Some directories have been removed for br
    │     ├── env     
    │     ├── (fix)
    │     ├── jobs
+   │     ├── modulefiles
    │     ├── scripts
    │     ├── tests
    │     │     └── baseline_configs
@@ -142,7 +145,7 @@ Experiment Directory Structure
 ==============================
 When the ``generate_FV3LAM_wflow.sh`` script is run, the user-defined experimental directory
 ``EXPTDIR=/path-to/ufs-srweather-app/../expt_dirs/${EXPT_SUBDIR}`` is created, where ``EXPT_SUBDIR``
-is specified in the ``config.sh`` file. The contents of the ``EXPT_SUBDIR`` directory, before the
+is specified in the ``config.sh`` file. The contents of the ``EXPTDIR`` directory, before the
 workflow is run, is shown in :numref:`Table %s <ExptDirStructure>`.
 
 .. _ExptDirStructure:
@@ -190,7 +193,7 @@ workflow is run, is shown in :numref:`Table %s <ExptDirStructure>`.
    |  YYYYMMDDHH               | Cycle directory (empty)                                                                               |
    +---------------------------+-------------------------------------------------------------------------------------------------------+
 
-In addition, the *community* mode creates the ``fix_am`` and ``fix_lam`` directories in ``EXPT_SUBDIR``.
+In addition, the *community* mode creates the ``fix_am`` and ``fix_lam`` directories in ``EXPTDIR``.
 The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files
 after the grid, orography, and/or surface climatology generation tasks are run. 
 
@@ -212,7 +215,7 @@ after the grid, orography, and/or surface climatology generation tasks are run.
    +-------------------------+----------------------------------------------------------+
 
 Once the workflow is launched with the ``launch_FV3LAM_wflow.sh`` script, a log file named
-``log.launch_FV3LAM_wflow`` will be created (or appended to if it already exists) in ``EXPT_SUBDIR``.
+``log.launch_FV3LAM_wflow`` will be created (or appended to if it already exists) in ``EXPTDIR``.
 Once the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks and the ``get_extrn_ics``
 and ``get_extrn_lbc`` tasks for the YYYYMMDDHH cycle have completed successfully, new files and
 sub-directories are created, as described in :numref:`Table %s <CreatedByWorkflow>`.
@@ -257,5 +260,5 @@ sub-directories are created, as described in :numref:`Table %s <CreatedByWorkflo
    |                           | the status of the workflow.                                        |
    +---------------------------+--------------------------------------------------------------------+
 
-The output files for an experiment are described in Chapter 7 (TODO: link to Inputs and Outputs).
+The output files for an experiment are described in :numref:`Section %s <OutputFiles>`.
 The workflow tasks are described in :numref:`Section %s <WorkflowTaskDescription>`).
