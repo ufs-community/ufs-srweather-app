@@ -173,7 +173,8 @@ case "${CCPP_PHYS_SUITE}" in
 #
   *)
   print_err_msg_exit "\
-A variable mapping table has not yet been defined for this physics suite:
+The variable \"varmap_file\" has not yet been specified for this physics
+suite (CCPP_PHYS_SUITE):
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
   ;;
 #
@@ -272,134 +273,66 @@ fn_grib2=""
 input_type=""
 tracers_input="\"\""
 tracers="\"\""
+#
+# If the physics suite uses Thompson microphysics and if the external 
+# model for LBCs is one that does not provide the aerosol fields needed 
+# by Thompson microphysics (currently only the HRRR and RAP provide
+# aerosol data), set the variable thomp_mp_climo_file in the chgres_cube 
+# namelist to the full path of the file containing aerosol climatology 
+# data.  In this case, this file will be used to generate approximate 
+# aerosol fields in the LBCs that Thompson MP can use.  Otherwise, set 
+# thomp_mp_climo_file to a null string.
+#
 thomp_mp_climo_file=""
+if [ "${THOMPSON_MP_USED}" = "TRUE" ] && \
+   [ "${EXTRN_MDL_NAME_LBCS}" != "HRRR" -a \
+     "${EXTRN_MDL_NAME_LBCS}" != "RAP" ]; then
+  thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
+fi
 
 case "${EXTRN_MDL_NAME_LBCS}" in
 
-
 "GSMGFS")
-
   external_model="GSMGFS"
-
   input_type="gfs_gaussian_nemsio" # For spectral GFS Gaussian grid in nemsio format.
-
   tracers_input="[\"spfh\",\"clwmr\",\"o3mr\"]"
   tracers="[\"sphum\",\"liq_wat\",\"o3mr\"]"
-# 
-# Use Thompson climatology for ice- and water-friendly aerosols if CCPP suite uses Thompson MP
-#
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
-     thomp_mp_climo_file=""
-  elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1alpha" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-     thomp_mp_climo_file="${FIXam}/Thompson_MP_MONTHLY_CLIMO.nc"
-  else
-    print_err_msg_exit "\
-    The chosen CCPP physics suite is unsupported at this time:
-    CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
-  fi
-
-
   ;;
-
 
 "FV3GFS")
-
-#
-# Use Thompson climatology for ice- and water-friendly aerosols if CCPP suite uses Thompson MP
-#
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
-     thomp_mp_climo_file=""
-  elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1alpha" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-     thomp_mp_climo_file="${FIXam}/Thompson_MP_MONTHLY_CLIMO.nc"
-  else
-    print_err_msg_exit "\
-    The chosen CCPP physics suite is unsupported at this time:
-    CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
-  fi
-
   if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
-
     external_model="FV3GFS"
-
     input_type="gaussian_nemsio"     # For FV3-GFS Gaussian grid in nemsio format.
-
     tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
     tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
-
   elif [ "${FV3GFS_FILE_FMT_LBCS}" = "grib2" ]; then
-
     external_model="GFS"
-
     fn_grib2="${EXTRN_MDL_FNS[0]}"
     input_type="grib2"
-
   fi
-
   ;;
 
-
 "RAP")
-
   external_model="RAP"
   input_type="grib2"
-
   ;;
 
 "HRRR")
-
   external_model="HRRR"
   input_type="grib2"
-
   ;;
 
-
 "NAM")
-
   external_model="NAM"
   input_type="grib2"
-#
-# Use Thompson climatology for ice- and water-friendly aerosols if CCPP suite uses Thompson MP
-#
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ]; then
-     thomp_mp_climo_file=""
-  elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1alpha" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-     thomp_mp_climo_file="${FIXam}/Thompson_MP_MONTHLY_CLIMO.nc"
-  else
-    print_err_msg_exit "\
-    The chosen CCPP physics suite is unsupported at this time:
-    CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
-  fi
-
   ;;
 
 *)
   print_err_msg_exit "\
 External-model-dependent namelist variables have not yet been specified
-for this external model:
+for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
   ;;
-
 
 esac
 #
@@ -444,15 +377,15 @@ for (( i=0; i<${num_fhrs}; i++ )); do
     fn_atm_nemsio="${EXTRN_MDL_FNS[$i]}"
     ;;
   "FV3GFS")
-     if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
-       fn_atm_nemsio="${EXTRN_MDL_FNS[$i]}"
-     elif [ "${FV3GFS_FILE_FMT_LBCS}" = "grib2" ]; then
-       fn_grib2="${EXTRN_MDL_FNS[$i]}"
-     fi
+    if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+      fn_atm_nemsio="${EXTRN_MDL_FNS[$i]}"
+    elif [ "${FV3GFS_FILE_FMT_LBCS}" = "grib2" ]; then
+      fn_grib2="${EXTRN_MDL_FNS[$i]}"
+    fi
     ;;
   "RAP")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;  
+    ;;
   "HRRR")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
@@ -462,7 +395,7 @@ for (( i=0; i<${num_fhrs}; i++ )); do
   *)
     print_err_msg_exit "\
 The external model output file name to use in the chgres_cube FORTRAN name-
-list file has not specified for this external model:
+list file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
     ;;
   esac
@@ -494,6 +427,17 @@ list file has not specified for this external model:
 # (one namelist variable per line, plus a header and footer).  Below,
 # this variable will be passed to a python script that will create the
 # namelist file.
+#
+# IMPORTANT:
+# If we want a namelist variable to be removed from the namelist file,
+# in the "settings" variable below, we need to set its value to the
+# string "null".  This is equivalent to setting its value to
+#    !!python/none
+# in the base namelist file specified by FV3_NML_BASE_SUITE_FP or the
+# suite-specific yaml settings file specified by FV3_NML_YAML_CONFIG_FP.
+#
+# It turns out that setting the variable to an empty string also works
+# to remove it from the namelist!  Which is better to use??
 #
 settings="
 'config': {
