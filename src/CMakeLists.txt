@@ -8,7 +8,7 @@ ExternalProject_Add(UFS_UTILS
   )
 
 if(NOT CCPP_SUITES)
-  set(CCPP_SUITES "FV3_CPT_v0,FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GSD_SAR,FV3_GSD_v0,FV3_GFS_v15p2,FV3_GFS_v16beta,FV3_RRFS_v1beta")
+  set(CCPP_SUITES "FV3_CPT_v0,FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GSD_SAR,FV3_GSD_v0,FV3_GFS_v15p2,FV3_GFS_v16beta,FV3_RRFS_v1beta,FV3_HRRR")
 endif()
 
 ExternalProject_Add(ufs_weather_model
