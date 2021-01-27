@@ -531,6 +531,7 @@ fi
 #
 # NOTE:
 # May want to remove lsoil from FV3.input.yml (and maybe input.nml.FV3).
+# Also, may want to set lsm here as well depending on SDF_USES_RUC_LSM.
 #
 lsoil="4"
 if [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" -o \

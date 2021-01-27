@@ -16,6 +16,7 @@ FV3_GSD_v0:
 
 FV3_GSD_SAR: 
   gfs_physics_nml: &gsd_sar_phys
+    do_deep: False
     effr_in: True
     imfdeepcnv: 0
     imfshalcnv: 0
@@ -31,7 +32,6 @@ FV3_GSD_SAR:
     iopt_snf: 4
     iopt_stc: 1
     iopt_tbot: 2
-    do_deep: False
 
 FV3_RRFS_v1alpha:
   gfs_physics_nml:
@@ -58,6 +58,33 @@ FV3_RRFS_v1beta:
     lsoil_lsm: 4
   atmos_model_nml:
     fdiag: 3
+
+FV3_HRRR:
+  fv_core_nml:
+    hord_dp: -5
+    hord_mt: 5
+    hord_tm: 5
+    hord_vt: 5
+    kord_mt: 9
+    kord_tm: -9
+    kord_tr: 9
+    kord_wz: 9
+    nord_tr: 2
+    nrows_blend: 10
+    regional_bcs_from_gsi: False
+    write_restart_with_bcs: False
+  gfs_physics_nml:
+    <<: *gsd_sar_phys
+    cdmbgwd: [3.5, 1.0]
+    do_mynnsfclay: True
+    do_sfcperts: !!python/none
+    effr_in: True
+    gwd_opt: 3
+    iaer: 5111
+    icliq_sw: 2
+    imfdeepcnv: -1
+    imfshalcnv: -1
+    iovr: 3
 
 FV3_GFS_2017_gfdlmp:
   atmos_model_nml:

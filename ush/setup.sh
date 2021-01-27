@@ -977,6 +977,39 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# If using the FV3_HRRR physics suite, make sure that the directory from 
+# which certain fixed orography files will be copied to the experiment 
+# directory actually exists.  Note that this is temporary code.  It should
+# be removed once there is a script or code available that will create 
+# these orography files for any grid.
+#
+#-----------------------------------------------------------------------
+#
+GWD_HRRRsuite_DIR="${GWD_HRRRsuite_BASEDIR}/${PREDEF_GRID_NAME}"
+if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
+  if [ -z "${PREDEF_GRID_NAME}" ]; then
+    print_err_msg_exit "\
+A predefined grid name (PREDEF_GRID_NAME) must be specified when using 
+the FV3_HRRR physics suite:
+  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
+  PREDEF_GRID_NAME = \"${PREDEF_GRID_NAME}\""
+  else        
+    if [ ! -d "${GWD_HRRRsuite_DIR}" ]; then
+      print_err_msg_exit "\
+The directory (GWD_HRRRsuite_DIR) that should contain the gravity wave 
+drag-related orography files for the FV3_HRRR suite does not exist:
+  GWD_HRRRsuite_DIR = \"${GWD_HRRRsuite_DIR}\""
+    elif [ ! "$( ls -A ${GWD_HRRRsuite_DIR} )" ]; then
+      print_err_msg_exit "\
+The directory (GWD_HRRRsuite_DIR) that should contain the gravity wave 
+drag related orography files for the FV3_HRRR suite is empty:
+  GWD_HRRRsuite_DIR = \"${GWD_HRRRsuite_DIR}\""
+    fi      
+  fi
+fi
+#
+#-----------------------------------------------------------------------
+#
 # If the base directory (EXPT_BASEDIR) in which the experiment subdirectory 
 # (EXPT_SUBDIR) will be located does not start with a "/", then it is 
 # either set to a null string or contains a relative directory.  In both 
@@ -2336,6 +2369,7 @@ CYCLE_BASEDIR="${CYCLE_BASEDIR}"
 GRID_DIR="${GRID_DIR}"
 OROG_DIR="${OROG_DIR}"
 SFC_CLIMO_DIR="${SFC_CLIMO_DIR}"
+GWD_HRRRsuite_DIR="${GWD_HRRRsuite_DIR}"
 
 NDIGITS_ENSMEM_NAMES="${NDIGITS_ENSMEM_NAMES}"
 ENSMEM_NAMES=( $( printf "\"%s\" " "${ENSMEM_NAMES[@]}" ))

@@ -283,6 +283,33 @@ fi
 
 
 #
+# If using the FV3_HRRR physics suite, there are two files (that contain 
+# statistics of the orography) that are needed by the gravity wave drag 
+# parameterization in that suite.  Below, create symlinks to these files
+# in the run directory.  Note that the symlinks must have specific names 
+# that the FV3 model is hardcoded to recognize, and those are the names 
+# we use below.
+#
+if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
+
+  fileids=( "ss" "ls" )
+  for fileid in "${fileids[@]}"; do
+    target="${FIXLAM}/${CRES}${DOT_OR_USCORE}oro_data_${fileid}.tile${TILE_RGNL}.halo${NH0}.nc"
+    symlink="oro_data_${fileid}.nc"
+    if [ -f "${target}" ]; then
+      ln_vrfy -sf ${relative_or_null} $target $symlink
+    else
+      print_err_msg_exit "\
+Cannot create symlink because target does not exist:
+  target = \"${target}\"
+  symlink = \"${symlink}\""
+    fi
+  done
+
+fi
+
+
+#
 #-----------------------------------------------------------------------
 #
 # The FV3 model looks for the following files in the INPUT subdirectory

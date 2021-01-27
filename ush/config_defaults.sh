@@ -1374,3 +1374,24 @@ FVCOM_FILE="fvcom.nc"
 #------------------------------------------------------------------------
 #
 COMPILER="intel"
+#
+#-----------------------------------------------------------------------
+#
+# GWD_HRRRsuite_BASEDIR:
+# Temporary workflow variable specifies the base directory in which to 
+# look for certain fixed orography statistics files needed only by the 
+# gravity wave drag parameterization in the FV3_HRRR physics suite.  This 
+# variable is added in order to avoid including hard-coded paths in the 
+# workflow scripts.  Currently, the workflow simply copies the necessary 
+# files from a subdirectory under this directory (named according to the 
+# specified predefined grid) to the orography directory (OROG_DIR) under 
+# the experiment directory.  
+#
+# Note that this variable is only used when using the FV3_HRRR physics 
+# suite.  It should be removed from the workflow once there is a script 
+# or code available that generates these files for any grid.
+#
+#-----------------------------------------------------------------------
+#
+GWD_HRRRsuite_BASEDIR=""
+
