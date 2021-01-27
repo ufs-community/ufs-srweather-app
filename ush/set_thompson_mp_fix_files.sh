@@ -3,9 +3,9 @@
 #
 # This file defines a function that first checks whether the Thompson
 # microphysics parameterization is being called by the selected physics
-# suite.  If not, it sets the output variable specified by
-# output_varname_thompson_mp_used to "FALSE" and exits.  If so, it sets
-# this variable to "TRUE" and modifies the workflow arrays
+# suite.  If not, it sets the output variable whose name is specified by
+# output_varname_sdf_uses_thompson_mp to "FALSE" and exits.  If so, it 
+# sets this variable to "TRUE" and modifies the workflow arrays
 # FIXgsm_FILES_TO_COPY_TO_FIXam and CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
 # to ensure that fixed files needed by the Thompson microphysics
 # parameterization are copied to the FIXam directory and that appropriate
@@ -55,7 +55,7 @@ function set_thompson_mp_fix_files() {
   local valid_args=( \
     "ccpp_phys_suite_fp" \
     "thompson_mp_climo_fn" \
-    "output_varname_thompson_mp_used" \
+    "output_varname_sdf_uses_thompson_mp" \
     )
   process_args valid_args "$@"
 #
@@ -78,7 +78,7 @@ function set_thompson_mp_fix_files() {
   local thompson_mp_name \
         regex_search \
         thompson_mp_name_or_null \
-        thompson_mp_used \
+        sdf_uses_thompson_mp \
         thompson_mp_fix_files \
         num_files \
         mapping \
@@ -96,9 +96,9 @@ function set_thompson_mp_fix_files() {
   thompson_mp_name_or_null=$( sed -r -n -e "s/${regex_search}/\1/p" "${ccpp_phys_suite_fp}" )
 
   if [ "${thompson_mp_name_or_null}" = "${thompson_mp_name}" ]; then
-    thompson_mp_used="TRUE"
+    sdf_uses_thompson_mp="TRUE"
   elif [ -z "${thompson_mp_name_or_null}" ]; then
-    thompson_mp_used="FALSE"
+    sdf_uses_thompson_mp="FALSE"
   else
     print_err_msg_exit "\
 Unexpected value returned for thompson_mp_name_or_null:
@@ -113,7 +113,7 @@ string."
 #
 #-----------------------------------------------------------------------
 #
-  if [ "${thompson_mp_used}" = "TRUE" ]; then
+  if [ "${sdf_uses_thompson_mp}" = "TRUE" ]; then
 #
 #-----------------------------------------------------------------------
 #
@@ -176,7 +176,7 @@ values of these parameters are as follows:
 #
 #-----------------------------------------------------------------------
 #
-  eval ${output_varname_thompson_mp_used}="${thompson_mp_used}"
+  eval ${output_varname_sdf_uses_thompson_mp}="${sdf_uses_thompson_mp}"
 #
 #-----------------------------------------------------------------------
 #

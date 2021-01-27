@@ -63,6 +63,7 @@ cd_vrfy ${scrfunc_dir}
 . ./link_fix.sh
 . ./set_ozone_param.sh
 . ./set_thompson_mp_fix_files.sh
+. ./check_ruc_lsm.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -1953,7 +1954,18 @@ fi
 NNODES_RUN_FCST=$(( (PE_MEMBER01 + PPN_RUN_FCST - 1)/PPN_RUN_FCST ))
 
 
-
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that checks whether the RUC land surface model (LSM)
+# is being called by the physics suite and sets the workflow variable 
+# SDF_USES_RUC_LSM to "TRUE" or "FALSE" accordingly.
+#
+#-----------------------------------------------------------------------
+#
+check_ruc_lsm \
+  ccpp_phys_suite_fp="${CCPP_PHYS_SUITE_IN_CCPP_FP}" \
+  output_varname_sdf_uses_ruc_lsm="SDF_USES_RUC_LSM"
 #
 #-----------------------------------------------------------------------
 #
@@ -1977,15 +1989,15 @@ THOMPSON_MP_CLIMO_FP="$FIXam/${THOMPSON_MP_CLIMO_FN}"
 # to ensure that fixed files needed by this parameterization are copied
 # to the FIXam directory and appropriate symlinks to them are created in
 # the run directories.  This function also sets the workflow variable
-# THOMPSON_MP_USED that indicates whether Thompson MP is called by the
-# physics suite.
+# SDF_USES_THOMPSON_MP that indicates whether Thompson MP is called by 
+# the physics suite.
 #
 #-----------------------------------------------------------------------
 #
 set_thompson_mp_fix_files \
   ccpp_phys_suite_fp="${CCPP_PHYS_SUITE_IN_CCPP_FP}" \
   thompson_mp_climo_fn="${THOMPSON_MP_CLIMO_FN}" \
-  output_varname_thompson_mp_used="THOMPSON_MP_USED"
+  output_varname_sdf_uses_thompson_mp="SDF_USES_THOMPSON_MP"
 #
 #-----------------------------------------------------------------------
 #
@@ -2379,7 +2391,8 @@ THOMPSON_MP_CLIMO_FP="${THOMPSON_MP_CLIMO_FP}"
 #
 #-----------------------------------------------------------------------
 #
-THOMPSON_MP_USED="${THOMPSON_MP_USED}"
+SDF_USES_RUC_LSM="${SDF_USES_RUC_LSM}"
+SDF_USES_THOMPSON_MP="${SDF_USES_THOMPSON_MP}"
 #
 #-----------------------------------------------------------------------
 #

@@ -508,30 +508,35 @@ Setting parameters in FV3 namelist file (FV3_NML_FP):
 npx=$((NX+1))
 npy=$((NY+1))
 #
-# For the physics suites that use RUC-LSM, set the parameter
-# lsoil according to the external models used to obtain ICs and LBCs.
+# For the physics suites that use RUC LSM, set the parameter kice to 9,
+# Otherwise, leave it unspecified (which means it gets set to the default
+# value in the forecast model).
 #
-if [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-   [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-
-  if [ "${EXTRN_MDL_NAME_ICS}" = "NAM" ] || \
-     [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ] || \
-     [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
-    lsoil=4
-  elif [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
-       [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then
-    lsoil=9
-  else
-    print_err_msg_exit "\
-The value to set the variable lsoil to in the FV3 namelist file (FV3_NML_FP)
-has not been specified for the following combination of physics suite and
-external model for ICs:
-  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\"
-  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
-Please change one or more of these parameters or provide a value for lsoil
-(and change workflow generation script(s) accordingly) and rerun."
-  fi
-
+# NOTE:
+# May want to remove kice from FV3.input.yml (and maybe input.nml.FV3).
+#
+kice=""
+if [ "${SDF_USES_RUC_LSM}" = "TRUE" ]; then
+  kice="9"
+fi
+#
+# Set lsoil, which is the number of input soil levels provided in the 
+# chgres_cube output NetCDF file.  This is the same as the parameter 
+# nsoill_out in the namelist file for chgres_cube.  [On the other hand, 
+# the parameter lsoil_lsm (not set here but set in input.nml.FV3 and/or 
+# FV3.input.yml) is the number of soil levels that the LSM scheme in the
+# forecast model will run with.]  Here, we use the same approach to set
+# lsoil as the one used to set nsoill_out in exregional_make_ics.sh.  
+# See that script for details.
+#
+# NOTE:
+# May want to remove lsoil from FV3.input.yml (and maybe input.nml.FV3).
+#
+lsoil="4"
+if [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" -o \
+     "${EXTRN_MDL_NAME_ICS}" = "RAP" ] && \
+   [ "${SDF_USES_RUC_LSM}" = "TRUE" ]; then
+  lsoil="9"
 fi
 #
 # Create a multiline variable that consists of a yaml-compliant string
@@ -539,6 +544,17 @@ fi
 # suite-independent need to be set to.  Below, this variable will be
 # passed to a python script that will in turn set the values of these
 # variables in the namelist file.
+#
+# IMPORTANT:
+# If we want a namelist variable to be removed from the namelist file,
+# in the "settings" variable below, we need to set its value to the
+# string "null".  This is equivalent to setting its value to 
+#    !!python/none
+# in the base namelist file specified by FV3_NML_BASE_SUITE_FP or the 
+# suite-specific yaml settings file specified by FV3_NML_YAML_CONFIG_FP.
+#
+# It turns out that setting the variable to an empty string also works
+# to remove it from the namelist!  Which is better to use??
 #
 settings="\
 'atmos_model_nml': {
@@ -564,6 +580,7 @@ settings="\
     'bc_update_interval': ${LBC_SPEC_INTVL_HRS},
   }
 'gfs_physics_nml': {
+    'kice': ${kice:-null},
     'lsoil': ${lsoil:-null},
     'do_shum': ${DO_SHUM},
     'do_sppt': ${DO_SPPT},

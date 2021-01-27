@@ -302,22 +302,73 @@ lai_from_climo=""
 tg3_from_soil=""
 convert_nst=""
 #
-# If the physics suite uses Thompson microphysics and if the external
-# model for ICs is one that does not provide the aerosol fields needed
-# by Thompson microphysics (currently only the HRRR and RAP provide
-# aerosol data), set the variable thomp_mp_climo_file in the chgres_cube
-# namelist to the full path of the file containing aerosol climatology
-# data.  In this case, this file will be used to generate approximate
+#-----------------------------------------------------------------------
+#
+# If the external model is not one that uses the RUC land surface model
+# (LSM) -- which currently includes all valid external models except the
+# HRRR and the RAP -- then we set the number of soil levels to include
+# in the output NetCDF file that chgres_cube generates (nsoill_out; this
+# is a variable in the namelist that chgres_cube reads in) to 4.  This 
+# is because FV3 can handle this regardless of the LSM that it is using
+# (which is specified in the suite definition file, or SDF), as follows.  
+# If the SDF does not use the RUC LSM (i.e. it uses the Noah or Noah MP 
+# LSM), then it will expect to see 4 soil layers; and if the SDF uses 
+# the RUC LSM, then the RUC LSM itself has the capability to regrid from 
+# 4 soil layers to the 9 layers that it uses.
+#
+# On the other hand, if the external model is one that uses the RUC LSM
+# (currently meaning that it is either the HRRR or the RAP), then what
+# we set nsoill_out to depends on whether the RUC or the Noah/Noah MP
+# LSM is used in the SDF.  If the SDF uses RUC, then both the external
+# model and FV3 use RUC (which expects 9 soil levels), so we simply set
+# nsoill_out to 9.  In this case, chgres_cube does not need to do any
+# regridding of soil levels (because the number of levels in is the same
+# as the number out).  If the SDF uses the Noah or Noah MP LSM, then the
+# output from chgres_cube must contain 4 soil levels because that is what
+# these LSMs expect, and the code in FV3 does not have the capability to
+# regrid from the 9 levels in the external model to the 4 levels expected
+# by Noah/Noah MP.  In this case, chgres_cube does the regridding from 
+# 9 to 4 levels.
+#
+# In summary, we can set nsoill_out to 4 unless the external model is
+# the HRRR or RAP AND the forecast model is using the RUC LSM.
+#
+#-----------------------------------------------------------------------
+#
+nsoill_out="4"
+if [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" -o \
+     "${EXTRN_MDL_NAME_ICS}" = "RAP" ] && \
+   [ "${SDF_USES_RUC_LSM}" = "TRUE" ]; then
+  nsoill_out="9"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If the external model for ICs is one that does not provide the aerosol
+# fields needed by Thompson microphysics (currently only the HRRR and 
+# RAP provide aerosol data) and if the physics suite uses Thompson 
+# microphysics, set the variable thomp_mp_climo_file in the chgres_cube 
+# namelist to the full path of the file containing aerosol climatology 
+# data.  In this case, this file will be used to generate approximate 
 # aerosol fields in the ICs that Thompson MP can use.  Otherwise, set
 # thomp_mp_climo_file to a null string.
 #
+#-----------------------------------------------------------------------
+#
 thomp_mp_climo_file=""
-if [ "${THOMPSON_MP_USED}" = "TRUE" ] && \
-   [ "${EXTRN_MDL_NAME_ICS}" != "HRRR" -a \
-     "${EXTRN_MDL_NAME_ICS}" != "RAP" ]; then
+if [ "${EXTRN_MDL_NAME_ICS}" != "HRRR" -a \
+     "${EXTRN_MDL_NAME_ICS}" != "RAP" ] && \
+   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
-
+#
+#-----------------------------------------------------------------------
+#
+# Set other chgres_cube namelist variables depending on the external
+# model used.
+#
+#-----------------------------------------------------------------------
+#
 case "${EXTRN_MDL_NAME_ICS}" in
 
 "GSMGFS")
@@ -328,7 +379,6 @@ case "${EXTRN_MDL_NAME_ICS}" in
   convert_nst=False
   tracers_input="[\"spfh\",\"clwmr\",\"o3mr\"]"
   tracers="[\"sphum\",\"liq_wat\",\"o3mr\"]"
-  nsoill_out="4" #If the CCPP suites uses RUC-LSM, the scheme will interpolate from 4 to 9 soil levels.
   vgtyp_from_climo=True
   sotyp_from_climo=True
   vgfrc_from_climo=True
@@ -352,7 +402,6 @@ case "${EXTRN_MDL_NAME_ICS}" in
     input_type="grib2"
     convert_nst=False
   fi
-  nsoill_out="4" #If the CCPP suites uses RUC-LSM, the scheme will interpolate from 4 to 9 soil levels.
   vgtyp_from_climo=True
   sotyp_from_climo=True
   vgfrc_from_climo=True
@@ -365,27 +414,6 @@ case "${EXTRN_MDL_NAME_ICS}" in
   external_model="HRRR"
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
-#
-# Set soil levels based on LSM in CCPP SDF (RUC-LSM or Noah/Noah MP).
-#
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1alpha" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-    nsoill_out="4"
-  elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-    nsoill_out="9"
-  else
-    print_err_msg_exit "\
-The variable \"nsoill_out\" has not yet been specified for this external
-IC model (EXTRN_MDL_NAME_ICS) and physics suite (CCPP_PHYS_SUITE) combination:
-  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
-  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
-  fi
 #
 # Path to the HRRRX geogrid file.
 #
@@ -406,27 +434,6 @@ IC model (EXTRN_MDL_NAME_ICS) and physics suite (CCPP_PHYS_SUITE) combination:
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
 #
-# Set soil levels based on CCPP SDF.
-#
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_2017_gfdlmp_regional" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_CPT_v0" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16beta" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1alpha" ] || \
-     [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
-    nsoill_out="4"
-  elif [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_v0" ] || \
-       [ "${CCPP_PHYS_SUITE}" = "FV3_GSD_SAR" ]; then
-    nsoill_out="9"
-  else
-    print_err_msg_exit "\
-The variable \"nsoill_out\" has not yet been specified for this external
-IC model (EXTRN_MDL_NAME_ICS) and physics suite (CCPP_PHYS_SUITE) combination:
-  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
-  CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
-  fi
-#
 # Path to the RAPX geogrid file.
 #
   geogrid_file_input_grid="${FIXgsm}/geo_em.d01.nc_RAPX"
@@ -443,7 +450,6 @@ IC model (EXTRN_MDL_NAME_ICS) and physics suite (CCPP_PHYS_SUITE) combination:
   external_model="NAM"
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
-  nsoill_out="4" #If the CCPP suites uses RUC-LSM, the scheme will interpolate from 4 to 9 soil levels.
   vgtyp_from_climo=True
   sotyp_from_climo=True
   vgfrc_from_climo=True

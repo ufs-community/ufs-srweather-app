@@ -274,22 +274,33 @@ input_type=""
 tracers_input="\"\""
 tracers="\"\""
 #
-# If the physics suite uses Thompson microphysics and if the external 
-# model for LBCs is one that does not provide the aerosol fields needed 
-# by Thompson microphysics (currently only the HRRR and RAP provide
-# aerosol data), set the variable thomp_mp_climo_file in the chgres_cube 
-# namelist to the full path of the file containing aerosol climatology 
-# data.  In this case, this file will be used to generate approximate 
-# aerosol fields in the LBCs that Thompson MP can use.  Otherwise, set 
+#-----------------------------------------------------------------------
+#
+# If the external model for LBCs is one that does not provide the aerosol
+# fields needed by Thompson microphysics (currently only the HRRR and
+# RAP provide aerosol data) and if the physics suite uses Thompson
+# microphysics, set the variable thomp_mp_climo_file in the chgres_cube
+# namelist to the full path of the file containing aerosol climatology
+# data.  In this case, this file will be used to generate approximate
+# aerosol fields in the LBCs that Thompson MP can use.  Otherwise, set
 # thomp_mp_climo_file to a null string.
 #
+#-----------------------------------------------------------------------
+#
 thomp_mp_climo_file=""
-if [ "${THOMPSON_MP_USED}" = "TRUE" ] && \
-   [ "${EXTRN_MDL_NAME_LBCS}" != "HRRR" -a \
-     "${EXTRN_MDL_NAME_LBCS}" != "RAP" ]; then
+if [ "${EXTRN_MDL_NAME_LBCS}" != "HRRR" -a \
+     "${EXTRN_MDL_NAME_LBCS}" != "RAP" ] && \
+   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
-
+#
+#-----------------------------------------------------------------------
+#
+# Set other chgres_cube namelist variables depending on the external
+# model used.
+#
+#-----------------------------------------------------------------------
+#
 case "${EXTRN_MDL_NAME_LBCS}" in
 
 "GSMGFS")
