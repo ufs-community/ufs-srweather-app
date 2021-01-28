@@ -1307,7 +1307,7 @@ NUM_ENS_MEMBERS="1"
 #
 #-----------------------------------------------------------------------
 #
-# Set default stochastic physics options
+# Set default ad-hoc stochastic physics options.
 # For detailed documentation of these parameters, see:
 # https://stochastic-physics.readthedocs.io/en/ufs_public_release/namelist_options.html
 #
@@ -1330,6 +1330,30 @@ SKEB_TSCALE="21600" #Variable "skeb_tau" in input.nml
 SKEB_INT="3600" #Variable "skebint" in input.nml
 SKEB_VDOF="10"
 USE_ZMTNBLCK="false"
+#
+#-----------------------------------------------------------------------
+#
+# Set default SPP stochastic physics options.
+# Each SPP option is an array, applicable (in order) to the scheme/parameter
+# listed in SPP_VAR_LIST. Enter each value of the array in config.sh as 
+# shown below without commas or single quotes (e.g., SPP_VAR_LIST=
+# ( "pbl" "lsm" "mp" ). Both commas and single quotes will be added by
+# Jinja when creating the namelist.
+#
+# Note that SPP is currently only available for specific physics schemes 
+# used in the RAP/HRRR physics suite.  Users need to be aware of which SDF
+# is chosen when turning this option on. 
+#
+#-----------------------------------------------------------------------
+#
+DO_SPP="false"
+SPP_VAR_LIST=( "pbl" )
+SPP_MAG_LIST=( "0.2" ) #Variable "spp_prt_list" in input.nml
+SPP_LSCALE=( "150000.0" )
+SPP_TSCALE=( "21600.0" ) #Variable "spp_tau" in input.nml
+SPP_SIGTOP1=( "0.1" )
+SPP_SIGTOP2=( "0.025" )
+SPP_STDDEV_CUTOFF=( "1.5" )
 #
 #-----------------------------------------------------------------------
 # 

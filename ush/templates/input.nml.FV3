@@ -140,6 +140,7 @@
     do_mynnsfclay = .false.
     do_shum = .false.
     do_skeb = .false.
+    do_spp = .false.
     do_sppt = .false.
     dspheat = .true.
     fhcyc = 0.0
@@ -173,6 +174,7 @@
     ltaerosol = .true.
     lwhtr = .true.
     n_var_lndp = 0
+    n_var_spp = 0
     ncld = 5
     nsradar_reset = 3600
     nst_anl = .true.
@@ -203,6 +205,17 @@
     iseed_lndp=2010,
     lndp_var_list = 'smc', 'vgf',
     lndp_prt_list = 0.2,0.1,
+/
+
+&nam_spperts
+    iseed_spp = 4
+    spp_lscale = 150000.0
+    spp_prt_list = 0.2
+    spp_sigtop1 = 0.1
+    spp_sigtop2 = 0.025
+    spp_stddev_cutoff = 1.5
+    spp_tau = 21600.0
+    spp_var_list = ''
 /
 
 &nam_stochy

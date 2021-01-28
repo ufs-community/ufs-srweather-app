@@ -292,6 +292,26 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that DO_SPP is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "DO_SPP" "valid_vals_DO_SPP"
+#
+# Set DO_SPP to either "TRUE" or "FALSE" so we don't
+# have to consider other valid values later on.
+#
+DO_SPP=${DO_SPP^^}
+if [ "${DO_SPP}" = "TRUE" ] || \
+   [ "${DO_SPP}" = "YES" ]; then
+  DO_SPP="TRUE"
+elif [ "${DO_SPP}" = "FALSE" ] || \
+     [ "${DO_SPP}" = "NO" ]; then
+  DO_SPP="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Set magnitude of stochastic ad-hoc schemes to -999.0 if they are not
 # being used. This is required at the moment, since "do_shum/sppt/skeb"
 # does not override the use of the scheme unless the magnitude is also
@@ -308,6 +328,18 @@ if [ "${DO_SKEB}" = "FALSE" ]; then
 fi
 if [ "${DO_SPPT}" = "FALSE" ]; then
   SPPT_MAG=-999.0
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If running with SPP, count the number of entries in SPP_VAR_LIST to
+# correctly set N_VAR_SPP, otherwise set it to zero. 
+#
+#-----------------------------------------------------------------------
+#
+N_VAR_SPP=0
+if [ "${DO_SPP}" = "TRUE" ]; then
+  N_VAR_SPP=${#SPP_VAR_LIST[@]}
 fi
 #
 #-----------------------------------------------------------------------
@@ -2518,7 +2550,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Continue appending variable defintions to the variable definitions 
+# Continue appending variable definitions to the variable definitions 
 # file.
 #
 #-----------------------------------------------------------------------
@@ -2608,6 +2640,15 @@ FVCOM_FILE="${FVCOM_FILE}"
 #
 NCORES_PER_NODE="${NCORES_PER_NODE}"
 PE_MEMBER01="${PE_MEMBER01}"
+#
+#-----------------------------------------------------------------------
+#
+# IF DO_SPP="TRUE," N_VAR_SPP is the number of parameterizations that
+# are perturbed with SPP, otherwise N_VAR_SPP=0.
+#
+#-----------------------------------------------------------------------
+#
+N_VAR_SPP="${N_VAR_SPP}"
 EOM
 } || print_err_msg_exit "\
 Heredoc (cat) command to append new variable definitions to variable 
