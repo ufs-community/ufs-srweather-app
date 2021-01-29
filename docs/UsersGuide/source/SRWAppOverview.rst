@@ -411,7 +411,7 @@ On Cheyenne:
 .. code-block:: console
 
    module load ncarenv
-   ncar_pylib /glade/p/ral/jntp/UFS_CAM/ncar_pylib_20200427
+   ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/regional_workflow
 
 Load the rocoto module:
 

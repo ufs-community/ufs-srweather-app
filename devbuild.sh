@@ -35,7 +35,7 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
   exit 0
 fi
 
-ENV_FILE="docs/README_${PLATFORM}_${COMPILER}.txt"
+ENV_FILE="env/build_${PLATFORM}_${COMPILER}.env"
 if [ ! -f "$ENV_FILE" ]; then
   echo "ERROR: environment file ($ENV_FILE) does not exist for this platform/compiler combination"
   echo "PLATFORM=$PLATFORM"

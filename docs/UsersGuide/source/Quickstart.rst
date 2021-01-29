@@ -45,16 +45,17 @@ into the appropriate directories under your ``regional_workflow`` and ``src`` di
 Set up the Build Environment
 ============================
 Instructions for loading the proper modules and/or setting the correct environment variables can be
-found in the ``docs/`` directory in files named ``README_<platform>_<compiler>.txt``.  For the most part,
-the commands in those files can be directly copy-pasted, but you may need to modify certain variables
-such as the path to NCEP libraries for your individual platform:
+found in the ``env/`` directory in files named ``build_<platform>_<compiler>.env``.
+The commands in these files can be directly copy-pasted to the command line or the file can be sourced.
+You may need to modify certain variables such as the path to NCEP libraries for your individual platform,
+or use ``setenv`` rather than ``export`` depending on your environment:
 
 .. code-block:: console
 
-   $ ls -l docs/
-      -rw-rw-r-- 1 user ral 1228 Oct  9 10:09 README_cheyenne_intel.txt
-      -rw-rw-r-- 1 user ral 1134 Oct  9 10:09 README_hera_intel.txt
-      -rw-rw-r-- 1 user ral 1228 Oct  9 10:09 README_jet_intel.txt
+   $ ls -l env/
+      -rw-rw-r-- 1 user ral 466 Jan  21 10:09 build_cheyenne_intel.env
+      -rw-rw-r-- 1 user ral 461 Jan  21 10:09 build_hera_intel.env
+      -rw-rw-r-- 1 user ral 543 Jan  21 10:09 build_jet_intel.env
 
 Build the Executables
 =====================
@@ -164,47 +165,9 @@ The workflow requires Python 3, with the packages 'PyYAML', 'Jinja2', and 'f90nm
 This Python environment has already been set up on Level 1 platforms, and can be activated in
 the following way:
 
-On Cheyenne:
-
 .. code-block:: console
 
-   module load ncarenv
-   ncar_pylib /glade/p/ral/jntp/UFS_CAM/ncar_pylib_20200427
-   module use -a /glade/p/ral/jntp/UFS_SRW_app/modules
-   module load rocoto 
-
-
-On Hera and Jet:
-
-.. code-block:: console
-
-   module use -a /contrib/miniconda3/modulefiles
-   module load miniconda3
-   conda activate regional_workflow
-   module load rocoto
-
-On Orion:
-
-.. code-block:: console
-
-   module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-   module load miniconda3
-   conda activate regional_workflow
-   module load contrib/0.1
-   module load rocoto/1.3.2
-
-On WCOSS, append the following to your PYTHONPATH:
-
-.. code-block:: console
-
-   module load python/3.6.3
-   export PYTHONPATH=”${PYTHONPATH}:/gpfs/dell2/emc/modeling/noscrub/Jacob.Carley/python/lib/python3.6/site-packages"
-
-The path to wgrib2_dir should be defined on WCOSS Dell:
-
-.. code-block:: console
-
-   PATH=$PATH:/gpfs/dell1/nco/ops/nwprod/grib_util.v1.0.6/exec/wgrib2
+   source env/wflow_<platform>.env
 
 Run the ``generate_FV3LAM_wflow.sh`` script
 -------------------------------------------
