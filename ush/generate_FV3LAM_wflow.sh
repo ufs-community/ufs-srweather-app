@@ -586,17 +586,6 @@ settings="\
     'do_shum': ${DO_SHUM},
     'do_sppt': ${DO_SPPT},
     'do_skeb': ${DO_SKEB},
-    'do_spp': ${DO_SPP},
-    'n_var_spp': ${N_VAR_SPP},
-  }
-'nam_spperts': {
-    'spp_lscale': [ $( printf %s, "${SPP_LSCALE[@]}" ) ],
-    'spp_prt_list': [ $( printf %s, "${SPP_MAG_LIST[@]}" ) ],
-    'spp_sigtop1': [ $( printf %s, "${SPP_SIGTOP1[@]}" ) ],
-    'spp_sigtop2': [ $( printf %s, "${SPP_SIGTOP2[@]}" ) ],
-    'spp_stddev_cutoff': [ $( printf %s, "${SPP_STDDEV_CUTOFF[@]}" ) ],
-    'spp_tau': [ $( printf %s, "${SPP_TSCALE[@]}" ) ],
-    'spp_var_list': [ $( printf %s, "${SPP_VAR_LIST[@]}" ) ],
   }
 'nam_stochy': {
     'shum': ${SHUM_MAG},
