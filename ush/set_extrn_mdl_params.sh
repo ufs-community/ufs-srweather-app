@@ -143,6 +143,17 @@ else
     esac
     ;;
 
+  "NAM")
+    case $MACHINE in
+    "HERA")
+      EXTRN_MDL_SYSBASEDIR_ICS="dummy_value"
+      ;;
+    "CHEYENNE")
+      EXTRN_MDL_SYSBASEDIR_ICS="dummy_value"
+      ;;
+    esac
+    ;;
+
   esac
 
 fi
@@ -179,6 +190,9 @@ case ${EXTRN_MDL_NAME_LBCS} in
     EXTRN_MDL_LBCS_OFFSET_HRS="3"
     ;;
   "HRRR")
+    EXTRN_MDL_LBCS_OFFSET_HRS="0"
+    ;;
+  "NAM")
     EXTRN_MDL_LBCS_OFFSET_HRS="0"
     ;;
 esac
@@ -290,6 +304,20 @@ else
       ;;
     "JET")
       EXTRN_MDL_SYSBASEDIR_LBCS="/misc/whome/rtrr/hrrr"
+      ;;
+    "CHEYENNE")
+      EXTRN_MDL_SYSBASEDIR_LBCS="dummy_value"
+      ;;
+    esac
+    ;;
+
+  "NAM")
+    case $MACHINE in
+    "HERA")
+      EXTRN_MDL_SYSBASEDIR_LBCS="dummy_value"
+      ;;
+    "CHEYENNE")
+      EXTRN_MDL_SYSBASEDIR_LBCS="dummy_value"
       ;;
     esac
     ;;
