@@ -14,7 +14,10 @@ UFS Short-Range Weather App Users Guide
    Quickstart
    CodeReposAndDirs
    SRWAppOverview
+   ConfigWorkflow
+   LAMDomains
    InputOutputFiles
+   ConfigNewPlatform
    WE2Etests
    FAQ
    RocotoInfo

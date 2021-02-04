@@ -457,7 +457,7 @@ to set up their experiment with ease. :numref:`Figure %s <WorkflowGeneration>` s
 of generating a workflow experiment. First, it sets up the configuration parameters by running
 the ``setup.sh`` script. Second, it copies the time-independent (FIX) files and other necessary
 input files such as ``data_table``, ``field_table``, ``nems.configure``, ``model_configure``,
-and CCPP suite file from the templates directory to the experiment directory (``EXPTDIR``).
+and CCPP suite file from its location in the forecast directory to the experiment directory (``EXPTDIR``).
 Third, it copies the weather model executable (``NEMS.exe``) from the ``bin`` directory to ``EXPTDIR``,
 and creates the input namelist file ``input.nml`` for the weather model based on the ``input.nml.FV3``
 file in the templates directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml``
@@ -483,7 +483,7 @@ The flowchart of the workflow tasks that are specified in the ``FV3LAM_wflow.xml
 illustrated in :numref:`Figure %s <WorkflowTasksFig>`, and each task is described in
 :numref:`Table %s <WorkflowTasksTable>`. The first three pre-processing tasks; ``MAKE_GRID``,
 ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the pre-generated grid, orography, and
-surface climatology fix files exist, these three task can be skipped by setting ``RUN_TASK_MAKE_GRID=”FALSE”``,
+surface climatology fix files exist, these three tasks can be skipped by setting ``RUN_TASK_MAKE_GRID=”FALSE”``,
 ``RUN_TASK_MAKE_OROG=”FALSE”``, and ``RUN_TASK_MAKE_SFC_CLIMO=”FALSE”`` in the ``regional_workflow/ush/config.sh``
 script before running the ``generate_FV3LAM_wflow.sh`` script. As shown in the figure, the ``FV3LAM_wflow.xml``
 file runs the specific J-job scripts in the prescribed order (``regional_workflow/jobs/JREGIONAL_[task name]``)
