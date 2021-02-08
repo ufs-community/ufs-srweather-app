@@ -19,6 +19,7 @@ UFS Short-Range Weather App Users Guide
    InputOutputFiles
    ConfigNewPlatform
    WE2Etests
+   Graphics
    FAQ
    RocotoInfo
    Glossary
