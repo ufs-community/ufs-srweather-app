@@ -15,7 +15,7 @@ UFS Short-Range Weather App Users Guide
    CodeReposAndDirs
    SRWAppOverview
    ConfigWorkflow
-   LAMDomains
+   LAMGrids
    InputOutputFiles
    ConfigNewPlatform
    WE2Etests

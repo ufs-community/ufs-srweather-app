@@ -63,11 +63,11 @@ where ``-c`` specifies the cycle date (first column of rocotostat output) and ``
 advance the workflow, the job will be resubmitted.
 
 ===========================
-How do I change the domain?
+How do I change the grid?
 ===========================
-To change the predefined domain, you need to modify the ``PREDEF_GRID_NAME`` variable in the
+To change the predefined grid, you need to modify the ``PREDEF_GRID_NAME`` variable in the
 ``config.sh`` script which the user has created to generate an experiment configuration and workflow.
-Users can choose from one of three predefined domains for the SRW Application:
+Users can choose from one of three predefined grids for the SRW Application:
 
 .. code-block:: console
 
@@ -75,6 +75,6 @@ Users can choose from one of three predefined domains for the SRW Application:
    RRFS_CONUS_13km
    RRFS_CONUS_25km
 
-An option also exists to create a user-defined domain, with information available in
-:numref:`Chapter %s <LAMDomains>`.
+An option also exists to create a user-defined grid, with information available in
+:numref:`Chapter %s <LAMGrids>`.
 
