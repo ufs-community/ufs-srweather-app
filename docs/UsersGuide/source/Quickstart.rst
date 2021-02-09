@@ -222,3 +222,7 @@ The workflow run is completed when all tasks have “SUCCEEDED”, and the rocot
    ...
    201906150000          run_post_f048       4953381           SUCCEEDED         0         1           7.0
 
+Plot the Output
+===============
+Two python scripts are provided to generate plots from the FV3-LAM post-processed GRIB2 output. Information
+on how to generate the graphics can be found in :numref:`Chapter %s <Graphics>`.
