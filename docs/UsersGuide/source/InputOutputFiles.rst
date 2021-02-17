@@ -239,9 +239,9 @@ location of the static files: ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DI
 where the static files are located. If you are on a pre-configured or configurable platform, there is no
 need to stage the fixed files manually because they are already available on those platforms and the paths
 are set in ``regional_workflow/ush/setup.sh`` for the static files. If the users platform is not defined
-in that file, the static files can be pulled from the `FTP data repository
-<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/>`_ or from `Amazon Web Services cloud storage
-<https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/fix_am.tar>`_
+in that file, the static files can be pulled individually or as a full tar file from the `FTP data repository
+<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/>`_ or from `Amazon Web Services (AWS) cloud storage
+<https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/fix_files.tar.gz>`_
 and staged on your machine. The paths to the staged files must then be set in ``config.sh``
 as follows:
 
@@ -268,7 +268,8 @@ not have access to the NOAA HPSS and you need to pull and stage the data manuall
 set ``USE_USER_STAGED_EXTRN_FILES`` to ``TRUE`` and then set the paths to the where the IC/LBC files are located. 
 
 A small sample of IC/LBCs is available at the `FTP data repository
-<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/>`_.
+<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz>`_ or from `AWS cloud storage
+<https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz>`_.
 
 Initial and Lateral Boundary Condition Organization
 ---------------------------------------------------
