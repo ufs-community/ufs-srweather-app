@@ -8,5 +8,5 @@ For the most up-to-date instructions on how to clone the repository, build the c
 
 https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
 
-UFS Development Team. (2021, January 25). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
+UFS Development Team. (2021, February 25). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
 
