@@ -348,14 +348,14 @@ Raw model files may be available from a number of sources. A few examples are pr
 
 NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model may be:
 
-* gfs (grib2 or nemsio) - available for the last 10 days
+* GFS (grib2 or nemsio) - available for the last 10 days
   https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/ 
-* nam - available for the last 8 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/nam.YYYYMMDD/nam.tCYz.conusnest.hiresfFH.tmCY.grib2
-* rap - available for the last 2 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/rap/prod/rap.YYYYMMDD/rap.tCYz.wrfnatfFH.grib2 
-* hrrr - available for the last 2 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/hrrr/prod/hrrr.YYYYMMDD/conus/hrrr.tCYz.wrfnatfFH.grib2
+* NAM - available for the last 8 days
+  https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/  
+* RAP - available for the last 2 days
+  https://nomads.ncep.noaa.gov/pub/data/nccf/com/rap/prod/ 
+* HRRR - available for the last 2 days
+  https://nomads.ncep.noaa.gov/pub/data/nccf/com/hrrr/prod/
 
 NCDC archive:
 
@@ -374,8 +374,10 @@ Google Cloud:
 
 Others: 
 
-* Univ. of Utah HRRR archive: http://home.chpc.utah.edu/~u0553130/Brian_Blaylock/hrrr_FAQ.html 
-* NAM nest archive: https://www.ready.noaa.gov/archives.php 
+* Univ. of Utah HRRR archive: http://home.chpc.utah.edu/~u0553130/Brian_Blaylock/cgi-bin/hrrr_download.cgi 
+* NAM nest archive: https://www.ready.noaa.gov/archives.php
+* NAM data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=NAM218&subqueryby=STATION&applname=&outdest=FILE
+* RAP isobaric data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=RAP130&subqueryby=STATION&applname=&outdest=FILE
 
 Coexistence of Multiple Files for the Same Date
 -----------------------------------------------
