@@ -95,6 +95,7 @@ if [ "$MACHINE" = "CHEYENNE" ]; then
   module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
   module load rocoto
 elif [ "$MACHINE" = "ORION" ]; then
+  module purge
   module load contrib rocoto
 elif [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
   module purge
