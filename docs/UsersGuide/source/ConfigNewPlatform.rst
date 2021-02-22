@@ -139,8 +139,7 @@ If your machine does not support modulefiles, you can instead run the provided b
 
 .. code-block:: console
 
-   chmod +x ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh
-   ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh
+   chmod +x ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh
 
 This script, just like the modulefiles, will set a number of environment variables that will allow CMake to easily find all the libraries that were just built. There is also a csh version of the script in the same directory if your shell is csh-based. If you are using your machine’s pre-built version of any of the NCEP libraries (not recommended), reference that file to see which variables should be set to point CMake in the right direction.
 
@@ -148,8 +147,6 @@ At this point there are just a few more variables that need to be set prior to b
 
 .. code-block:: console
 
-   export CMAKE_PREFIX_PATH=${INSTALL_PREFIX}
-   export PATH=${INSTALL_PREFIX}/bin/:${PATH}
    export CMAKE_C_COMPILER=mpicc
    export CMAKE_CXX_COMPILER=mpicxx
    export CMAKE_Fortran_COMPILER=mpifort
@@ -180,7 +177,7 @@ If you have conda on your machine:
 
 .. code-block:: console
 
-   conda install jinja2 yaml f90nml
+   conda install jinja2 pyyaml f90nml
 
 Otherwise you may be able to use pip3 (the Python3 package manager; may need to be installed separately depending on your platform):
 
@@ -240,28 +237,30 @@ The ``README.md`` file will contain instructions on the order that each script s
 .. _WallClockTimes:
 
 .. table::  Example wallclock times for each workflow task.
+   :widths: 15,40,15,15,15 
 
-   +--------------------+----------------------------+-----------------+----------------+
-   | **UFS Component**  | **Script Name**            | **Num. Cores**  | **Wall time**  |
-   +====================+============================+=================+================+
-   | UFS_UTILS          | ./run_get_ics.sh           | n/a             | 3 s            |
-   +--------------------+----------------------------+-----------------+----------------+
-   | UFS_UTILS          | ./run_get_lbcs.sh          | n/a             | 3 s            |
-   +--------------------+----------------------------+-----------------+----------------+
-   | UFS_UTILS          | ./run_make_grid.sh         | n/a             | 9 s            |
-   +--------------------+----------------------------+-----------------+----------------+
-   | UFS_UTILS          | ./run_make_orog.sh         | 4               | 1 m            |
-   +--------------------+----------------------------+-----------------+----------------+
-   | UFS_UTILS          | ./run_make_sfc_climo.sh    | 4               | 27 m           |
-   +--------------------+----------------------------+-----------------+----------------+
-   | UFS_UTILS          | ./run_make_ics.sh          | 4               | 5 m            |
-   +--------------------+----------------------------+-----------------+----------------+
-   | UFS_UTILS          | ./run_make_lbcs.sh         | 4               | 5 m            |
-   +--------------------+----------------------------+-----------------+----------------+
-   | ufs-weather-model  | ./run_fcst.sh              | 6               | 1h 40 m        |
-   +--------------------+----------------------------+-----------------+----------------+
-   | EMC_post           | ./run_post.sh              | 1               | 7 m            |
-   +--------------------+----------------------------+-----------------+----------------+
+   +--------------------+----------------------------+------------+-----------+------------------+
+   | **UFS Component**  | **Script Name**            | **Num.**   | **Wall**  | **Wall time**    |
+   |                    |                            | **Cores**  | **time**  | **13 km CONUS**  |
+   +====================+============================+============+===========+==================+
+   | UFS_UTILS          | ./run_get_ics.sh           | n/a        | 3 s       | 4 s              |
+   +--------------------+----------------------------+------------+-----------+------------------+
+   | UFS_UTILS          | ./run_get_lbcs.sh          | n/a        | 3 s       | 3 s              |
+   +--------------------+----------------------------+------------+-----------+------------------+
+   | UFS_UTILS          | ./run_make_grid.sh         | n/a        | 9 s       | 7 s              |
+   +--------------------+----------------------------+------------+-----------+------------------+
+   | UFS_UTILS          | ./run_make_orog.sh         | 4          | 1 m       | 1 m 30 s         |
+   +--------------------+----------------------------+------------+-----------+------------------+
+   | UFS_UTILS          | ./run_make_sfc_climo.sh    | 4          | 27 m      | 35 m             |
+   +--------------------+----------------------------+------------+-----------+------------------+
+   | UFS_UTILS          | ./run_make_ics.sh          | 4          | 5 m       | 3 m              |
+   +--------------------+----------------------------+------------+-----------+------------------+
+   | UFS_UTILS          | ./run_make_lbcs.sh         | 4          | 5 m       | 9 m              |
+   +--------------------+----------------------------+------------+-----------+------------------+
+   | ufs-weather-model  | ./run_fcst.sh              | 6          | 1h 40 m   |                  |
+   +--------------------+----------------------------+------------+-----------+------------------+
+   | EMC_post           | ./run_post.sh              | 1          | 7 m       |                  |
+   +--------------------+----------------------------+------------+-----------+------------------+
 
 Running on a New Platform with Rocoto Workflow Manager
 ======================================================
