@@ -1,8 +1,8 @@
 .. _ConfigNewPlatform:
 
-===========================
-Configfuring a New Platform
-===========================
+==========================
+Configuring a New Platform
+==========================
 
 The UFS SRW Application has been designed to work primarily on a number of Level 1 and 2 support platforms, as specified `here <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. However, it is also designed with flexibility in mind, so that any sufficiently up-to-date machine with a UNIX-based operating system should be capable of running the application. A full list of prerequisites for installing the UFS SRW App and running the Graduate Student Test can be found in :numref:`Section %s <SW-OS-Requirements>`.
 
