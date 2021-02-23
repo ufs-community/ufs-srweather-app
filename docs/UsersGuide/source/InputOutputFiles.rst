@@ -48,7 +48,7 @@ workflow, as described in :numref:`Section %s <WorkflowTemplates>`.
 Unified Post Processor (UPP)
 ----------------------------
 Documentation for the UPP input files can be found in the `UPP User's Guide
-<https://upp.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html>`_.
+<https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html>`_.
 
 .. _WorkflowTemplates:
 
@@ -186,7 +186,7 @@ Additional details may be found in the UFS Weather Model `Users Guide
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP output files can be found `here <https://upp.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html>`_.
+Documentation for the UPP output files can be found `here <https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html>`_.
 
 For the SRW Application, the weather model netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH/postprd``
 directory and have the naming convention (file->linked to):
@@ -205,7 +205,7 @@ located in ``ufs-srweather-app/src/EMC_post/parm``.
 .. note::
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
 
-Use the directions in the `UPP User's Guide <https://upp.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#control-file>`_
+Use the directions in the `UPP User's Guide <https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html#control-file>`_
 for details on how to make modifications to the ``fv3lam.xml`` file and for remaking the flat text file that
 the UPP reads, which is called ``postxconfig-NT-fv3lam.txt`` (default).
 
