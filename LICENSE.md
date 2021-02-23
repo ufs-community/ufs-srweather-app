@@ -24,17 +24,15 @@ This project utilizes the following unmodified works under various licenses, as 
 
 - CCPP Framework: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-- UPP: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+- UPP: [GNU Lesser General Public License 3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html) (LGPL) 
 
-- UFS Utils: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+- UFS Utils: [GNU Lesser General Public License 3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html) (LGPL)
 
-- Regional Workflow: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+- Regional Workflow: [CC0 1.0 Universal public domain dedication (CC0)](https://creativecommons.org/choose/zero/)
 
 ## The rest of this project is in the worldwide public domain
 
-As a work of the United States Government, this project is in the public domain within the United States.
-
-Additionally, NOAA waives copyright and related rights in the work worldwide through the [CC0 1.0 Universal public domain dedication](https://creativecommons.org/publicdomain/zero/1.0/).
+As a work of the United States Government, this project is in the public domain within the United States. Additionally, NOAA waives copyright and related rights in the work worldwide through the [CC0 1.0 Universal public domain dedication](https://creativecommons.org/publicdomain/zero/1.0/).
 
 ## CC0 1.0 Universal Summary
 
