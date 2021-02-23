@@ -30,7 +30,7 @@ files on that grid. There are additional utilities included to handle the correc
 points and topography filtering ``filter_topo``. The pre-processing software ``chgres_cube``
 is used to convert the raw external model data into initial and lateral boundary condition files in netCDF
 format, needed as input to the FV3-LAM. Additional information about the UFS pre-processor utilities can
-be found in the `UFS_UTILS User’s Guide <https://ufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
+be found in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
 
 The SRW Application can be initialized from a range of operational initial condition files. It is
 possible to initialize the model from GFS, NAM, RAP, and HRRR files in Gridded Binary v2 (GRIB2)
@@ -179,7 +179,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | UFS SRW Application v1.0   |  https://ufs-srweather-app.readthedocs.io/en/ufs-v1.0.0                         |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | UFS_UTILS v2.0 User's      | https://ufs-utils.readthedocs.io/en/v2.0.0                                      |
+   | UFS_UTILS v2.0 User's      | https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/                         |
    | Guide                      |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | UFS Weather Model v2.0     | https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0                          |
