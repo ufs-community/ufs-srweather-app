@@ -100,8 +100,8 @@ that the application is producing reasonable results.
 
 The scripts are available in the `regional_workflow repository
 <https://github.com/NOAA-EMC/regional_workflow/tree/release/public-v1/ush/Python>`_
-under ush/Python. Usage information and instructions are described in Chapter 10 
-(:numref:`Chapter %s <Graphics>`) and are also included at the top of the script. 
+under ush/Python. Usage information and instructions are described in  
+:numref:`Chapter %s <Graphics>` and are also included at the top of the script. 
 
 Build System and Workflow
 =========================
