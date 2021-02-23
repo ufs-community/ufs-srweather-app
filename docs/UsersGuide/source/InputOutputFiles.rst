@@ -239,9 +239,9 @@ location of the static files: ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DI
 where the static files are located. If you are on a pre-configured or configurable platform, there is no
 need to stage the fixed files manually because they are already available on those platforms and the paths
 are set in ``regional_workflow/ush/setup.sh`` for the static files. If the users platform is not defined
-in that file, the static files can be pulled from the `FTP data repository
-<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/>`_ or from `Amazon Web Services cloud storage
-<https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/fix_am.tar>`_
+in that file, the static files can be pulled individually or as a full tar file from the `FTP data repository
+<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/>`_ or from `Amazon Web Services (AWS) cloud storage
+<https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/fix_files.tar.gz>`_
 and staged on your machine. The paths to the staged files must then be set in ``config.sh``
 as follows:
 
@@ -268,7 +268,8 @@ not have access to the NOAA HPSS and you need to pull and stage the data manuall
 set ``USE_USER_STAGED_EXTRN_FILES`` to ``TRUE`` and then set the paths to the where the IC/LBC files are located. 
 
 A small sample of IC/LBCs is available at the `FTP data repository
-<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/>`_.
+<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz>`_ or from `AWS cloud storage
+<https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz>`_.
 
 Initial and Lateral Boundary Condition Organization
 ---------------------------------------------------
@@ -347,14 +348,14 @@ Raw model files may be available from a number of sources. A few examples are pr
 
 NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model may be:
 
-* gfs (grib2 or nemsio) - available for the last 10 days
+* GFS (grib2 or nemsio) - available for the last 10 days
   https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/ 
-* nam - available for the last 8 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/nam.YYYYMMDD/nam.tCYz.conusnest.hiresfFH.tmCY.grib2
-* rap - available for the last 2 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/rap/prod/rap.YYYYMMDD/rap.tCYz.wrfnatfFH.grib2 
-* hrrr - available for the last 2 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/hrrr/prod/hrrr.YYYYMMDD/conus/hrrr.tCYz.wrfnatfFH.grib2
+* NAM - available for the last 8 days
+  https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/  
+* RAP - available for the last 2 days
+  https://nomads.ncep.noaa.gov/pub/data/nccf/com/rap/prod/ 
+* HRRR - available for the last 2 days
+  https://nomads.ncep.noaa.gov/pub/data/nccf/com/hrrr/prod/
 
 NCDC archive:
 
@@ -373,8 +374,10 @@ Google Cloud:
 
 Others: 
 
-* Univ. of Utah HRRR archive: http://home.chpc.utah.edu/~u0553130/Brian_Blaylock/hrrr_FAQ.html 
-* NAM nest archive: https://www.ready.noaa.gov/archives.php 
+* Univ. of Utah HRRR archive: http://home.chpc.utah.edu/~u0553130/Brian_Blaylock/cgi-bin/hrrr_download.cgi 
+* NAM nest archive: https://www.ready.noaa.gov/archives.php
+* NAM data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=NAM218&subqueryby=STATION&applname=&outdest=FILE
+* RAP isobaric data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=RAP130&subqueryby=STATION&applname=&outdest=FILE
 
 Coexistence of Multiple Files for the Same Date
 -----------------------------------------------
