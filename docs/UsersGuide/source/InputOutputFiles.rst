@@ -31,7 +31,7 @@ from a location on disk to your experiment directory by the workflow generation 
 pre-processing utilities use many different datasets to create grids, and to generate model
 input datasets from the external model files.  A detailed description of the input files
 for the pre-processing utilities can be found `here 
-<https://ufs-utils.readthedocs.io/en/ufs-v1.0.0/chgres_cube.html#program-inputs-and-outputs>`_.
+<https://ufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
 
 UFS Weather Model
 -----------------
@@ -48,7 +48,7 @@ workflow, as described in :numref:`Section %s <WorkflowTemplates>`.
 Unified Post Processor (UPP)
 ----------------------------
 Documentation for the UPP input files can be found in the `UPP User's Guide
-<https://upp.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html>`_.
+<https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html>`_.
 
 .. _WorkflowTemplates:
 
@@ -92,7 +92,7 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    +-----------------------------+-------------------------------------------------------------+
    | FV3LAM_wflow.xml            | Rocoto XML file to run the workflow. It is filled in using  |
    |                             | the ``fill_template.py`` python script that is called in    |
-   |                             | the ``generate_workflow.sh``.                               |
+   |                             | the ``generate_FV3LAM_wflow.sh``.                           |
    +-----------------------------+-------------------------------------------------------------+
    | input.nml.FV3               | Namelist file of the weather model.                         |
    +-----------------------------+-------------------------------------------------------------+
@@ -122,7 +122,7 @@ The value of ``CCPP_PHYS_SUITE`` is specified in the configuration file ``config
 input files corresponding to ``CCPP_PHYS_SUITE``, such as ``field_table`` and ``nems_configure``, are
 copied to the experiment directory ``EXPTDIR`` and the namelist file of the weather model ``input.nml``
 is created from the ``input.nml.FV3`` and ``FV3.input.yml`` files by running the script ``generate_FV3LAM_wflow.sh``.
-While running the task ‘RUN_FCST’ in the regional workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`,
+While running the task ``RUN_FCST`` in the regional workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`,
 the ``field_table``, ``nems.configure``, and ``input.nml`` files, located in ``EXPTDIR`` are linked to the
 cycle directory ``CYCLE_DIR/``, and ``diag_table`` and ``model_configure`` are copied from the ``templates``
 directory. Finally, these files are updated with the variables specified in ``var_defn.sh``.
@@ -143,7 +143,7 @@ The location of the output files written to disk is defined by the experiment di
 
 Initial and boundary condition files
 ------------------------------------
-The external model data used by *chgres_cube* (as part of the pre-processing utilities) are located
+The external model data used by ``chgres_cube`` (as part of the pre-processing utilities) are located
 in the experiment run directory under ``EXPTDIR/YYYYMMDDHH/{EXTRN_MDL_NAME_ICS/LBCS}``.
 
 Pre-processing (UFS_UTILS)
@@ -186,7 +186,7 @@ Additional details may be found in the UFS Weather Model `Users Guide
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP output files can be found `here <https://upp.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html>`_.
+Documentation for the UPP output files can be found `here <https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html>`_.
 
 For the SRW Application, the weather model netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH/postprd``
 directory and have the naming convention (file->linked to):
@@ -205,7 +205,7 @@ located in ``ufs-srweather-app/src/EMC_post/parm``.
 .. note::
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
 
-Use the directions in the `UPP User's Guide <https://upp.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#control-file>`_
+Use the directions in the `UPP User's Guide <https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html#control-file>`_
 for details on how to make modifications to the ``fv3lam.xml`` file and for remaking the flat text file that
 the UPP reads, which is called ``postxconfig-NT-fv3lam.txt`` (default).
 
@@ -277,7 +277,7 @@ The suggested directory structure and naming convention for the raw input files 
 below. While there is flexibility to modify these settings, this will provide the most reusability
 for multiple dates when using the SRW Application workflow.
 
-For ease of reusing the config.sh for multiple dates and cycles, it is recommended to set up
+For ease of reusing the ``config.sh`` for multiple dates and cycles, it is recommended to set up
 your raw IC/LBC files such that it includes the model name (e.g., FV3GFS, NAM, RAP, HRRR) and
 ``YYYYMMDDHH``, for example:  ``/path-to/model_data/FV3GFS/2019061518``. Since both initial
 and lateral boundary condition files are necessary, you can also include an ICS and LBCS directory.
