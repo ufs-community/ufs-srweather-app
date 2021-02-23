@@ -28,7 +28,7 @@ This project utilizes the following unmodified works under various licenses, as 
 
 - UFS Utils: [GNU Lesser General Public License 3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html) (LGPL)
 
-- Regional Workflow: [CC0 1.0 Universal public domain dedication (CC0)](https://creativecommons.org/choose/zero/)
+- Regional Workflow: [CC0 1.0 Universal public domain dedication (CC0)](https://creativecommons.org/publicdomain/zero/1.0)
 
 ## The rest of this project is in the worldwide public domain
 
