@@ -110,13 +110,13 @@ Make a copy of ``config.community.sh`` to get started:
    cp config.community.sh config.sh
 
 Edit the ``config.sh`` file to set the machine you are running on to ``MACHINE``, use an account you can charge for 
-``ACCOUNT``, and set the name of the experiment using ``EXPT_SUBDIR``. If you have access to the NOAA HPSS from the 
+``ACCOUNT``, and set the name of the experiment with ``EXPT_SUBDIR``. If you have access to the NOAA HPSS from the 
 machine you are running on, those changes should be sufficient; however, if that is not the case (for example, 
 on Cheyenne), or if you have pre-staged the initialization data you would like to use, you will also want to set 
 ``USE_USER_STAGED_EXTRN_FILES="TRUE"`` and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and 
 ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
  
-Given that, at a minimum, the following parameters should be set for the machine you are using:
+At a minimum, the following parameters should be set for the machine you are using:
 
 For Cheyenne:
 
@@ -191,15 +191,16 @@ Run the Workflow Using Rocoto
 The information in this section assumes that Rocoto is available on the desired platform.
 If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts
 described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two ways you can run 
-the workflow with Rocoto using either the ``./launch_FV3LAM_wflow.sh`` or by hand. To run Rocoto 
-using the script:
+the workflow with Rocoto using either the ``./launch_FV3LAM_wflow.sh`` or by hand. 
+
+To run Rocoto using the script:
 
 .. code-block:: console
 
    cd $EXPTDIR
    ./launch_FV3LAM_wflow.sh
 
-Or you can manually call Rocoto: 
+Or to manually call Rocoto: 
 
 .. code-block:: console
 
