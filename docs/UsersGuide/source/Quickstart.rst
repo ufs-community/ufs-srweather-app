@@ -71,7 +71,7 @@ Run ``cmake`` to set up the ``Makefile``, then run ``make``:
 .. code-block:: console
 
    cmake .. -DCMAKE_INSTALL_PREFIX=..
-   make -j 8  >& build.out &
+   make -j 4  >& build.out &
 
 Output from the build will be in the ``ufs-srweather-app/build/build.out`` file.
 When the build completes, you should see the forecast model executable ``NEMS.exe`` and eleven
@@ -84,7 +84,7 @@ Generating the workflow experiment requires three steps:
 
 * Set experiment parameters in config.sh
 * Set Python and other environment parameters
-* Run the generate_FV3LAM_wflow.sh script
+* Run the ``generate_FV3LAM_wflow.sh`` script
 
 The first two steps depend on the platform being used and are described here for each Level 1 platform.
 
@@ -96,7 +96,7 @@ The workflow requires a file called ``config.sh`` to specify the values of your 
 Two example templates are provided: ``config.community.sh`` and ``config.nco.sh`` and can be found in
 the ``ufs-srweather-app/regional_workflow/ush directory``.  The first file is a minimal example for
 creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``),
-while the second is an example of creating and running an experiment in the *NCO*’ (operational) mode
+while the second is an example of creating and running an experiment in the *NCO* (operational) mode
 (with ``RUN_ENVIR`` set to ``nco``).   The *community* mode is recommended in most cases and will be
 fully supported for this release while the operational mode will be more exclusively used by NOAA/NCEP
 Central Operations (NCO) and those in the NOAA/NCEP/Environmental Modeling Center (EMC) working with
@@ -109,8 +109,14 @@ Make a copy of ``config.community.sh`` to get started:
    cd ufs-srweather-app/regional_workflow/ush
    cp config.community.sh config.sh
 
-Edit the ``config.sh`` file to use an account you can charge to ``ACCOUNT``, and the name of the
-experiment ``EXPT_SUBDIR``. The following parameters should be set for the machine you are using:
+Edit the ``config.sh`` file to set the machine you are running on to ``MACHINE``, use an account you can charge for 
+``ACCOUNT``, and set the name of the experiment using ``EXPT_SUBDIR``. If you have access to the NOAA HPSS from the 
+machine you are running on, those changes should be sufficient; however, if that is not the case (for example, 
+on Cheyenne), or if you have pre-staged the initialization data you would like to use, you will also want to set 
+``USE_USER_STAGED_EXTRN_FILES="TRUE"`` and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and 
+``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
+ 
+Given that, at a minimum, the following parameters should be set for the machine you are using:
 
 For Cheyenne:
 
@@ -167,7 +173,7 @@ the following way:
 
 .. code-block:: console
 
-   source env/wflow_<platform>.env
+   source ufs-srweather-app/env/wflow_<platform>.env
 
 Run the ``generate_FV3LAM_wflow.sh`` script
 -------------------------------------------
@@ -184,7 +190,16 @@ Run the Workflow Using Rocoto
 =============================
 The information in this section assumes that Rocoto is available on the desired platform.
 If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts
-described in :numref:`Section %s <RunUsingStandaloneScripts>`. To run the workflow with Rocoto:
+described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two ways you can run 
+the workflow with Rocoto using either the ``./launch_FV3LAM_wflow.sh`` or by hand. To run Rocoto 
+using the script:
+
+.. code-block:: console
+
+   cd $EXPTDIR
+   ./launch_FV3LAM_wflow.sh
+
+Or you can manually call Rocoto: 
 
 .. code-block:: console
 
@@ -192,12 +207,15 @@ described in :numref:`Section %s <RunUsingStandaloneScripts>`. To run the workfl
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-For automatic resubmission of the workflow (every 3 minutes), the following line can be added
-to the user's crontab (use ``crontab -e`` to edit the cron table):
+For automatic resubmission of the workflow (every 3 minutes), one of the following lines can be added
+to the user's crontab (use ``crontab -e`` to edit the cron table) depending on your preference of how 
+you call Rocoto:
 
 .. code-block:: console
 
-   */3 * * * * cd /glade/p/ral/jntp/$USER/expt_dirs/test_CONUS_25km_GFSv15p2 && /glade/p/ral/jntp/tools/rocoto/rocoto-1.3.1/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+   */3 * * * * cd /glade/p/ral/jntp/$USER/expt_dirs/test_CONUS_25km_GFSv15p2 && /glade/p/ral/jntp/tools/rocoto/rocoto-1.3.1/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 
+   -- OR --
+   */3 * * * * cd /glade/p/ral/jntp/$USER/expt_dirs/test_CONUS_25km_GFSv15p2 && ./launch_FV3LAM_wflow.sh 
 
 .. note::
 

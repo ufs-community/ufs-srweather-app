@@ -10,11 +10,11 @@ while enabling research, development, and contribution opportunities for the bro
 For more information about the UFS, visit the UFS Portal at https://ufscommunity.org/.
 
 The UFS can be configured for multiple applications (see a complete list at
-https://ufscommunity.org/#/science/aboutapps). The configuration described here is the UFS Short-Range
+https://ufscommunity.org/science/aboutapps/). The configuration described here is the UFS Short-Range
 Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain
-and on time scales from less than an hour out to several days. The SRW Application v1.0 includes a
+and on time scales from less than an hour out to several days. The SRW Application v1.0 release includes a
 prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system
-end-to-end, which are documented within the user's guide and supported through a community forum.
+end-to-end, which are documented within the User's Guide and supported through a community forum.
 Future work will include expanding the capabilities of the application to include data assimilation
 (DA) and a verification package (e.g. METplus) as part of the workflow. This documentation provides an
 overview of the release components, a description of the supported capabilities, a quick start guide
@@ -30,11 +30,11 @@ files on that grid. There are additional utilities included to handle the correc
 points and topography filtering ``filter_topo``. The pre-processing software ``chgres_cube``
 is used to convert the raw external model data into initial and lateral boundary condition files in netCDF
 format, needed as input to the FV3-LAM. Additional information about the UFS pre-processor utilities can
-be found in the `UFS_UTILS User’s Guide <https://ufs-utils.readthedocs.io/en/ufs-v1.0.0/>`_.
+be found in the `UFS_UTILS User’s Guide <https://ufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
 
 The SRW Application can be initialized from a range of operational initial condition files. It is
 possible to initialize the model from GFS, NAM, RAP, and HRRR files in Gridded Binary v2 (GRIB2)
-format for past dates. Please note, for GFS data, dates prior to 1 January 2018 may work but are
+format and GFS in NEMSIO format for past dates. Please note, for GFS data, dates prior to 1 January 2018 may work but are
 not guaranteed. Public archives of model data can be accessed through the `National Centers for
 Environmental Information <https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-forcast-system-gfs>`_
 (NCEI) or through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`_
@@ -65,15 +65,15 @@ Atmospheric physics are a set of numerical methods describing small-scale proces
 as clouds, turbulence, radiation, and their interactions. There are two physics options
 supported for the release. The first is an experimental physics suite being tested for use
 in the future operational implementation of the Rapid Refresh Forecast System (RRFS) planned
-for 2023, and the second is an updated version of the physics suite used in the operational
+for 2023-2024, and the second is an updated version of the physics suite used in the operational
 Global Forecast System (GFS) v15. A scientific description of the CCPP parameterizations and
-suites can be found in the `CCPP Scientific Documentation <https://dtcenter.ucar.edu/GMTB/v5.0/sci_doc/>`_,
+suites can be found in the `CCPP Scientific Documentation <https://dtcenter.ucar.edu/GMTB/v5.0.0/sci_doc/index.html>`_,
 and CCPP technical aspects are described in the `CCPP Technical Documentation
 <https://ccpp-techdoc.readthedocs.io/en/v5.0.0/>`_. The model namelist has many settings
 beyond the physics options that can optimize various aspects of the model for use with each
 of the supported suites. 
 
-The SRW App supports the use of both GRIB2 and :term:`nemsio` input data. The UFS Weather Model
+The SRW App supports the use of both GRIB2 and :term:`NEMSIO` input data. The UFS Weather Model
 ingests initial and lateral boundary condition files produced by :term:`chgres_cube` and outputs files in
 NetCDF format on a specific projection (e.g., Lambert Conformal) in the horizontal and model
 levels in the vertical.
@@ -84,7 +84,7 @@ Post-processor
 The SRW Application is distributed with the Unified Post Processor (:term:`UPP`) included in the
 workflow as a way to convert the NetCDF output on the native model grid to GRIB2 format on
 standard isobaric vertical coordinates. UPP can also be used to compute a variety of useful
-diagnostic fields, as described in the `UPP user’s guide <https://upp.readthedocs.io/en/ufs-v2.0.0/>`_.
+diagnostic fields, as described in the `UPP user’s guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_.
 
 Output from UPP can be used with visualization, plotting, and verification packages, or for
 further downstream post-processing, e.g. statistical post-processing techniques.
@@ -100,7 +100,8 @@ that the application is producing reasonable results.
 
 The scripts are available in the `regional_workflow repository
 <https://github.com/NOAA-EMC/regional_workflow/tree/release/public-v1/ush/Python>`_
-under ush/Python. Usage information and instructions are included at the top of the script. 
+under ush/Python. Usage information and instructions are described in Chapter 10 
+(:numref:`Chapter %s <Graphics>`) and are also included at the top of the script. 
 
 Build System and Workflow
 =========================
@@ -164,7 +165,9 @@ User Support, Documentation, and Contributing Development
 A forum-based, online `support system <https://forums.ufscommunity.org>`_ with topical sections
 provides a centralized location for UFS users and developers to post questions and exchange
 information. The forum complements the formal, written documentation, summarized here for ease of
-use.  A list of available documentation is shown in :numref:`Table %s <list_of_documentation>`.
+use.  
+
+A list of available documentation is shown in :numref:`Table %s <list_of_documentation>`.
 
 .. _list_of_documentation:
 
@@ -189,15 +192,15 @@ use.  A list of available documentation is shown in :numref:`Table %s <list_of_d
    +----------------------------+---------------------------------------------------------------------------------+
    | FV3 Documentation          | https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html                |
    +----------------------------+---------------------------------------------------------------------------------+
-   | CCPP Scientific            | https://dtcenter.org/GMTB/v5.0.0/sci_doc                                        |
+   | CCPP Scientific            | https://dtcenter.ucar.edu/GMTB/v5.0.0/sci_doc/index.html                        |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/v5.0.0                                   |
+   | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/v5.0.0/                                  |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | ESMF manual                | http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_8_0_0/ESMF_refdoc  |
+   | ESMF manual                | http://earthsystemmodeling.org/docs/release/ESMF_8_0_0/ESMF_usrdoc/             |
    +----------------------------+---------------------------------------------------------------------------------+
-   | Unified Post Processor     | https://upp.readthedocs.io/en/ufs-v2.0.0                                        |
+   | Unified Post Processor     | https://upp.readthedocs.io/en/upp-v9.0.0/                                       |
    +----------------------------+---------------------------------------------------------------------------------+
 
 The UFS community is encouraged to contribute to the development effort of all related
