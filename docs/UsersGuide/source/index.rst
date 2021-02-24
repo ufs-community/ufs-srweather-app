@@ -11,7 +11,15 @@ UFS Short-Range Weather App Users Guide
    :maxdepth: 3
 
    Introduction
-   SystemRequirements
    Quickstart
+   CodeReposAndDirs
+   SRWAppOverview
+   ConfigWorkflow
+   LAMGrids
+   InputOutputFiles
+   ConfigNewPlatform
+   WE2Etests
+   Graphics
    FAQ
+   RocotoInfo
    Glossary

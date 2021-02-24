@@ -18,6 +18,9 @@ Glossary
       The GFDL Finite-Volume Cubed-Sphere Dynamical Core (FV3) is a scalable and flexible dynamical
       core capable of both hydrostatic and non-hydrostatic atmospheric simulations.
 
+   GRIB2 
+      The second version of the World Meterological Organization's (WMO) standard for distributing gridded data.  
+
    NCEP
       National Centers for Environmental Prediction, an arm of the National Weather Service.
 
@@ -44,6 +47,10 @@ Glossary
       and predictive time scales from sub-hourly analyses to seasonal predictions. It is
       designed to support the Weather Enterprise and to be the source system for NOAA's
       operational numerical weather prediction applications
+
+   UFS_UTILS
+      Pre-processing utilities for the NCEP models. UFS_UTILS uses many different data sets
+      to create grids and generate initial and boundary conditions.
 
    UPP
       The Unified Post Processing System, developed at NCEP and used operationally for models
