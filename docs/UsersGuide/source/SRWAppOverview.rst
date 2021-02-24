@@ -92,7 +92,7 @@ Building the Executables for the Application
 ============================================
 Before building the executables, the build environment must be set up for your specific platform.
 Instructions for loading the proper modules and/or setting the correct environment variables 
-can be found in the ``docs/`` directory in files named ``build_<platform>_<compiler>.env.`` For the
+can be found in the ``env/`` directory in files named ``build_<platform>_<compiler>.env.`` For the
 most part, the commands in those files can be directly copied and pasted, but you may need to modify
 certain variables such as the path to NCEP libraries for your specific platform.  Here is a directory
 listing example of these kinds of files: 
