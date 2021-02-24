@@ -45,7 +45,7 @@ The cloned repository contains the configuration files and sub-directories shown
 
 .. _FilesAndSubDirs:
 
-.. table::  Files and sub-directories of SRW App.
+.. table::  Files and sub-directories of the ufs-srweather-app repository.
 
    +--------------------------------+--------------------------------------------------------+
    | **File/directory Name**        | **Description**                                        |
