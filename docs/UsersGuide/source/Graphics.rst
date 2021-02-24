@@ -3,28 +3,30 @@
 ===================
 Graphics Generation
 ===================
-Two Python scripts are provided to generate plots from the FV3-LAM post-processed GRIB2
+Two Python plotting scripts are provided to generate plots from the FV3-LAM post-processed GRIB2
 output over the CONUS for a number of variables, including:
 
-* 2-m Temperature
-* 2-m Dew Point Temperature
-* 10-m Winds
-* 500 hPa Heights, Winds, and Vorticity
-* 250 hPa Winds
-* Accumulated Precipitation
-* Composite Reflectivity
+* 2-m temperature
+* 2-m dew point temperature
+* 10-m winds
+* 500 hPa heights, winds, and vorticity
+* 250 hPa winds
+* Accumulated precipitation
+* Composite reflectivity
 * Surface-based CAPE/CIN
-* Max/Min 2-5 km Updraft Helicity
+* Max/Min 2-5 km updraft helicity
 * Sea level pressure (SLP)
 
-The Python plotting scripts are located under ``ufs-srweather-app/regional_workflow/ush/Python``
-directory. The ``plot_allvars.py`` script plots the output from a single run, while the ``plot_allvars_diff.py``
-script plots the difference between two runs. If you are plotting the difference, the runs must be on the
-same domain and available for the same forecast hours. 
+The Python scripts are located under ``ufs-srweather-app/regional_workflow/ush/Python``.
+The script ``plot_allvars.py`` plots the output from a single cycle within an experiment, while 
+the script ``plot_allvars_diff.py`` plots the difference between the same cycle from two different
+experiments (e.g. the experiments may differ in some aspect such as the physics suite used). If 
+you are plotting the difference, the two experiments must be on the same domain and available for 
+the same cycle starting date/time and forecast hours. 
 
-The Python scripts require a cycle date and time, a starting forecast hour (HHH), an ending forecast
-hour (HHH), a forecast hour increment (HHH), a path to one or two experiment directory(ies) (``EXPT_DIR_#``),
-and a path to the directory where the Natural Earth shape files are located (``CARTOPY_DIR``). 
+The Python scripts require a cycle starting date/time in YYYYMMDDHH format, a starting forecast 
+hour, an ending forecast hour, a forecast hour increment, the paths to one or two experiment directories,
+and a path to the directory where the Natural Earth shape files are located.
 
 The Cartopy shape files can be downloaded at https://www.naturalearthdata.com/downloads/. The medium scale
 (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders
@@ -32,20 +34,9 @@ on the map. Cartopy provides the ‘background_img()’ method to add background
 The default scale (resolution) of background attributes in the Python scripts is 1:50m Natural Earth I
 with Shaded Relief and Water, which should be sufficient for most regional applications. 
 
-Generate the python plots:
-
-.. code-block:: console
-
-   cd ufs-srweather-app/regional_workflow/ush/Python
-
-The appropriate environment will need to be loaded to run the scripts, which require Python 3 with
-the pygrib and cartopy packages. This Python environment has already been set up on Level 1 platforms,
-and can be activated in the following way:
-
-.. note::
-
-   If you are using the batch submission scripts, the environments are set for you and you do not
-   need to set them on the command line prior to running the script - see further instructions below.
+The appropriate environment must be loaded to run the scripts, which require Python 3 with
+the pygrib and cartopy packages. This Python environment has already been set up on Level 1 platforms
+and can be activated as follows:
 
 On Cheyenne:
 
@@ -77,35 +68,53 @@ On Gaea:
    module load miniconda3
    conda activate pygraf
 
-To run the Python plotting script for a single run, six command line arguments are required, including:
+.. note::
 
-#. Cycle date/time in YYYYMMDDHH format
-#. Starting forecast hour in HHH format
-#. Ending forecast hour in HHH format
-#. Forecast hour increment in HHH format
-#. ``EXPT_DIR``: Experiment directory where post-processed data are found ``EXPT_DIR/YYYYMMDDHH/postprd``
-#. ``CARTOPY_DIR``:  Base directory of cartopy shapefiles with a file structure of ``CARTOPY_DIR/shapefiles/natural_earth/cultural/*.shp``
+   If you are using the batch submission scripts (see instructions later on), the environments are 
+   set for you and you do not need to set them on the command line prior to running the script.
 
+Before generating plots, it is convenient to change location to the directory containing the plotting
+scripts:
 
-To run the differencing Python plotting script, seven command line arguments are required, including:
+.. code-block:: console
 
-#. Cycle date/time in YYYYMMDDHH format
-#. Starting forecast hour in HHH format
-#. Ending forecast hour in HHH format
-#. Forecast hour increment in HHH format
-#. ``EXPT_DIR_1``: Experiment directory #1 where post-processed data are found ``EXPT_DIR/YYYYMMDDHH/postprd``
-#. ``EXPT_DIR_2``: Experiment directory #2 where post-processed data are found ``EXPT_DIR/YYYYMMDDHH/postprd``
-#. ``CARTOPY_DIR``:  Base directory of cartopy shapefiles with a file structure of ``CARTOPY_DIR/shapefiles/natural_earth/cultural/*.shp``
+   cd ufs-srweather-app/regional_workflow/ush/Python
 
+To generate plots for a single cycle, the ``plot_allvars.py`` script must be called with the 
+following six command line arguments:
 
-An example for plotting output from the default config.sh settings (using the GFSv15p2 suite definition file)
+#. Cycle date/time (``CDATE``) in YYYYMMDDHH format
+#. Starting forecast hour
+#. Ending forecast hour 
+#. Forecast hour increment
+#. The top level of the experiment directory ``EXPTDIR`` containing the post-processed data.  The script will look for the data files in the directory ``EXPTDIR/CDATE/postprd``.
+#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles.  The script will look for the shape files (``*.shp``) in the directory ``CARTOPY_DIR/shapefiles/natural_earth/cultural``.
+
+An example of plotting output from a cycle generated using the sample experiment/workflow 
+configuration in the ``config.community.sh`` script (which uses the GFSv15p2 suite definition file)
 is as follows: 
 
 .. code-block:: console
 
    python plot_allvars.py 2019061500 6 48 6 /path-to/expt_dirs/test_CONUS_25km_GFSv15p2 /path-to/NaturalEarth
 
-The Cartopy shape files are available for use on on a number of Tier 1 platforms in the following locations:
+The output files (in .png format) will be located in the directory ``EXPTDIR/CDATE/postprd``,
+where in this case ``EXPTDIR`` is ``/path-to/expt_dirs/test_CONUS_25km_GFSv15p2`` and ``CDATE`` 
+is ``2019061500``.
+
+To generate difference plots, the ``plot_allvars_diff.py`` script must be called with the following 
+seven command line arguments:
+
+#. Cycle date/time (``CDATE``) in YYYYMMDDHH format
+#. Starting forecast hour
+#. Ending forecast hour 
+#. Forecast hour increment
+#. The top level of the first experiment directory ``EXPTDIR1`` containing the first set of post-processed data.  The script will look for the data files in the directory ``EXPTDIR1/CDATE/postprd``.
+#. The top level of the first experiment directory ``EXPTDIR2`` containing the second set of post-processed data.  The script will look for the data files in the directory ``EXPTDIR2/CDATE/postprd``.
+#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles.  The script will look for the shape files (``*.shp``) in the directory ``CARTOPY_DIR/shapefiles/natural_earth/cultural``.
+
+
+The Cartopy shape files are available on a number of Tier 1 platforms in the following locations:
 
 On Cheyenne:
 
@@ -139,48 +148,62 @@ On Gaea:
 
 
 If the Python scripts are being used to create plots of multiple forecast lead times and forecast
-variables, then they should be submitted through the batch system using one of the following scripts.
- 
-On Hera, Jet, Orion, Gaea: 
+variables, then they should be submitted through the batch system using either the ``sq_job.sh``
+or ``sq_job_diff.sh`` script (for platforms such as Hera, Jet, Orion, and Gaea that use slurm as 
+the job scheduler) or the ``qsub_job.sh`` or ``qsub_job_diff.sh`` script (for platforms such as 
+Cheyenne that use PBS or PBS Pro as the job scheduler).  These scripts are located under 
+``ufs-srweather-app/regional_workflow/ush/Python`` and must be submitted using the command appropriate 
+for the job scheduler used on the current platform.  For example, on Hera, Jet, Orion, and Gaea, 
+``sq_job.sh`` can be submitted as follows:
 
 .. code-block:: console
 
    sbatch sq_job.sh
 
-On Cheyenne:
+On Cheyenne, ``qsub_job.sh`` can be submitted as follows:
 
 .. code-block:: console
 
    qsub qsub_job.sh
 
-If the batch script is being used, multiple environment variables (``HOMErrfs`` and ``EXPTDIR(#)``)
-need to be set prior to submitting the script:
-
-For a single run:
+When using these batch scripts, several environment variables must be set prior to submission.
+If plotting output from a single cycle, the variables to set are ``HOMErrfs`` and ``EXPTDIR``.
+In this case, if the user's login shell is csh/tcsh, these variables are set as follows:
 
 .. code-block:: console
 
    setenv HOMErrfs /path-to/ufs-srweather-app/regional_workflow
    setenv EXPTDIR /path-to/EXPTDIR
-   -or- 
+
+If the user's login shell is bash, these are set as follows:
+
+.. code-block:: console
+
    export HOMErrfs=/path-to/ufs-srweather-app/regional_workflow
    export EXPTDIR=/path-to/EXPTDIR
 
-For differencing two runs:
+If plotting the difference between the same cycle from two different experiments, the variables 
+to set are ``HOMErrfs``, ``EXPTDIR1``. and ``EXPTDIR2``.  In this case, if the user's login shell 
+is csh/tcsh, these variables are set as follows:
 
 .. code-block:: console
 
    setenv HOMErrfs /path-to/ufs-srweather-app/regional_workflow
    setenv EXPTDIR1 /path-to/EXPTDIR1
    setenv EXPTDIR2 /path-to/EXPTDIR2
-   -or-
+
+If the user's login shell is bash, these are set as follows:
+
+.. code-block:: console
+
    export HOMErrfs=/path-to/ufs-srweather-app/regional_workflow
    export EXPTDIR1=/path-to/EXPTDIR1
    export EXPTDIR2=/path-to/EXPTDIR2
 
-In addition, the following variables can be modified in the batch script depending on your
+In addition, the following variables can be modified in the batch scripts depending on your
 needs (for example, if you want to plot hourly forecast output, ``FCST_INC`` should be set to 1;
-if you just want to plot a subset of your model output you can set the ``FCST_START/END/INC`` accordingly):
+if you just want to plot a subset of your model output, you can set ``FCST_START``, ``FCST_END``, 
+and ``FCST_INC`` accordingly):
 
 .. code-block:: console
 
@@ -188,8 +211,5 @@ if you just want to plot a subset of your model output you can set the ``FCST_ST
    export FCST_START=6
    export FCST_END=${FCST_LEN_HRS}
    export FCST_INC=6
-
-The output files (.png format) will be located in the experiment directory (``EXPT_DIR``) under the
-``YYYYMMDDHH/postprd`` directory.
 
 
