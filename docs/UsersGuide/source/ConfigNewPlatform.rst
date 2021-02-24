@@ -139,7 +139,8 @@ If your machine does not support modulefiles, you can instead run the provided b
 
 .. code-block:: console
 
-   chmod +x ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh
+   chmod +x ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh 
+   ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh
 
 This script, just like the modulefiles, will set a number of environment variables that will allow CMake to easily find all the libraries that were just built. There is also a csh version of the script in the same directory if your shell is csh-based. If you are using your machine’s pre-built version of any of the NCEP libraries (not recommended), reference that file to see which variables should be set to point CMake in the right direction.
 
@@ -196,7 +197,8 @@ Once the data has been staged, setting up your experiment on a platform without 
 ``MACHINE="MACOS" or MACHINE="LINUX"``
   These are the two ``MACHINE`` settings for generic, non-rocoto-based platforms; you should choose the one most appropriate for your machine. ``MACOS`` has its own setting due to some differences in how command-line utilities function on Darwin-based operating systems.
 
-``LAYOUT_X=2, LAYOUT_Y=2``
+``LAYOUT_X=2``
+``LAYOUT_Y=2``
   These are the settings that control the MPI decomposition when running the weather model. There are default values, but for your machine it is recommended that you specify your own layout to achieve the correct number of MPI processes for your application.  In total, your machine should be able to handle ``LAYOUT_X×LAYOUT_Y+WRTCMP_write_tasks_per_group`` tasks. ``WRTCMP_write_tasks_per_group`` is the number of MPI tasks that will be set aside for writing model output, and it is a setting dependent on the domain you have selected. You can find and edit the value of this variable in the file ``regional_workflow/ush/set_predef_grid_params.sh``.
 
 ``RUN_CMD_UTILS="mpirun -np 4"``
@@ -214,7 +216,7 @@ Once the data has been staged, setting up your experiment on a platform without 
 ``TOPO_DIR=${WORKDIR}/data/fix_orog``
   Location of ``fix_orog`` static files
 
-``SFC_CLIMO_INPUT_DIR=${WORKDIR}/data/sfc_climo``
+``SFC_CLIMO_INPUT_DIR=${WORKDIR}/data/fix_sfc_climo``
   Location of ``climo_fields_netcdf`` static files
 
 Once you are happy with your settings in ``config.sh``, it is time to run the workflow and move to the experiment directory (that is printed at the end of the script’s execution):
@@ -237,30 +239,30 @@ The ``README.md`` file will contain instructions on the order that each script s
 .. _WallClockTimes:
 
 .. table::  Example wallclock times for each workflow task.
-   :widths: 15,40,15,15,15 
+   :widths: 15,40,15,15
 
-   +--------------------+----------------------------+------------+-----------+------------------+
-   | **UFS Component**  | **Script Name**            | **Num.**   | **Wall**  | **Wall time**    |
-   |                    |                            | **Cores**  | **time**  | **13 km CONUS**  |
-   +====================+============================+============+===========+==================+
-   | UFS_UTILS          | ./run_get_ics.sh           | n/a        | 3 s       | 4 s              |
-   +--------------------+----------------------------+------------+-----------+------------------+
-   | UFS_UTILS          | ./run_get_lbcs.sh          | n/a        | 3 s       | 3 s              |
-   +--------------------+----------------------------+------------+-----------+------------------+
-   | UFS_UTILS          | ./run_make_grid.sh         | n/a        | 9 s       | 7 s              |
-   +--------------------+----------------------------+------------+-----------+------------------+
-   | UFS_UTILS          | ./run_make_orog.sh         | 4          | 1 m       | 1 m 30 s         |
-   +--------------------+----------------------------+------------+-----------+------------------+
-   | UFS_UTILS          | ./run_make_sfc_climo.sh    | 4          | 27 m      | 35 m             |
-   +--------------------+----------------------------+------------+-----------+------------------+
-   | UFS_UTILS          | ./run_make_ics.sh          | 4          | 5 m       | 3 m              |
-   +--------------------+----------------------------+------------+-----------+------------------+
-   | UFS_UTILS          | ./run_make_lbcs.sh         | 4          | 5 m       | 9 m              |
-   +--------------------+----------------------------+------------+-----------+------------------+
-   | ufs-weather-model  | ./run_fcst.sh              | 6          | 1h 40 m   |                  |
-   +--------------------+----------------------------+------------+-----------+------------------+
-   | EMC_post           | ./run_post.sh              | 1          | 7 m       |                  |
-   +--------------------+----------------------------+------------+-----------+------------------+
+   +--------------------+----------------------------+------------+-----------+
+   | **UFS Component**  | **Script Name**            | **Num.**   | **Wall**  |
+   |                    |                            | **Cores**  | **time**  |
+   +====================+============================+============+===========+
+   | UFS_UTILS          | ./run_get_ics.sh           | n/a        | 3 s       |
+   +--------------------+----------------------------+------------+-----------+
+   | UFS_UTILS          | ./run_get_lbcs.sh          | n/a        | 3 s       |
+   +--------------------+----------------------------+------------+-----------+
+   | UFS_UTILS          | ./run_make_grid.sh         | n/a        | 9 s       |
+   +--------------------+----------------------------+------------+-----------+
+   | UFS_UTILS          | ./run_make_orog.sh         | 4          | 1 m       |
+   +--------------------+----------------------------+------------+-----------+
+   | UFS_UTILS          | ./run_make_sfc_climo.sh    | 4          | 27 m      |
+   +--------------------+----------------------------+------------+-----------+
+   | UFS_UTILS          | ./run_make_ics.sh          | 4          | 5 m       |
+   +--------------------+----------------------------+------------+-----------+
+   | UFS_UTILS          | ./run_make_lbcs.sh         | 4          | 5 m       |
+   +--------------------+----------------------------+------------+-----------+
+   | ufs-weather-model  | ./run_fcst.sh              | 6          | 1h 40 m   |
+   +--------------------+----------------------------+------------+-----------+
+   | EMC_post           | ./run_post.sh              | 1          | 7 m       |
+   +--------------------+----------------------------+------------+-----------+
 
 Running on a New Platform with Rocoto Workflow Manager
 ======================================================
