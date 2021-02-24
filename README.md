@@ -7,5 +7,5 @@ The UFS can be configured for multiple applications (see a complete list at http
 For the most up-to-date instructions on how to clone the repository, build the code, and run the workflow, see:
 https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
 
-UFS Development Team. (2021, February 25). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
+UFS Development Team. (2021, March 4). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
 
