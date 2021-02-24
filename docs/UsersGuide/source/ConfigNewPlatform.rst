@@ -101,7 +101,13 @@ Prior to building the UFS SRW Application on a new machine, you will need to ins
    make -j4 2>&1 | tee log.make
    make deploy 2>&1 | tee log.deploy
 
-As with NCEPLIBS-external, the above commands go through the process of cloning the git repository for NCEPLIBS, creating and entering a build directory, and invoking cmake and make to build the code. The ``make deploy`` step created a number of modulefiles and scripts that will be used for setting up the build environment for the UFS SRW App. The ``ESMFMKFILE`` variable allows NCEPLIBS to find the location where ESMF has been built.
+As with NCEPLIBS-external, the above commands go through the process of cloning the git repository for NCEPLIBS, creating and entering a build directory, and invoking cmake and make to build the code. The ``make deploy`` step created a number of modulefiles and scripts that will be used for setting up the build environment for the UFS SRW App. The ``ESMFMKFILE`` variable allows NCEPLIBS to find the location where ESMF has been built; if you receive a ``ESMF not found, abort`` error, you may need to specify a slightly different location:
+
+.. code-block:: console
+
+   export ESMFMKFILE=${INSTALL_PREFIX}/lib64/esmf.mk
+
+Then delete and re-create the build directory and continue the build process as described above.
 
 If you skipped the building of any of the software provided by NCEPLIBS-external, you may need to add the appropriate locations to your ``CMAKE_PREFIX_PATH`` variable. Multiple directories may be added, separated by semicolons (;) like in the following example:
 
@@ -135,12 +141,11 @@ Once the Manage Externals step has completed, you will need to make sure your en
 
 If your machine does not support Lua but rather TCL modules, see instructions in the ``NCEPLIBS/README.md`` file for converting to TCL modulefiles.
 
-If your machine does not support modulefiles, you can instead run the provided bash script for setting up the environment:
+If your machine does not support modulefiles, you can instead source the provided bash script for setting up the environment:
 
 .. code-block:: console
 
-   chmod +x ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh 
-   ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh
+   source ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh
 
 This script, just like the modulefiles, will set a number of environment variables that will allow CMake to easily find all the libraries that were just built. There is also a csh version of the script in the same directory if your shell is csh-based. If you are using your machine’s pre-built version of any of the NCEP libraries (not recommended), reference that file to see which variables should be set to point CMake in the right direction.
 
