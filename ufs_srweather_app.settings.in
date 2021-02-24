@@ -14,12 +14,6 @@ Install Prefix:         @prefix@
 C Compiler:		@CC_VERSION@
 CFLAGS:			@CFLAGS@
 CPPFLAGS:		@CPPFLAGS@
-LDFLAGS:		@LDFLAGS@
-Shared Library:		@enable_shared@
-Static Library:		@enable_static@
-Extra libraries:	@LIBS@
-
-# Features
-----------
-Parallel Support:	@HAS_PARALLEL@
+C++ Compiler:		@CXX_VERSION@
+Fortran Compiler:	@FC_VERSION@
 
