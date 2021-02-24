@@ -99,7 +99,7 @@ listing example of these kinds of files:
 
 .. code-block:: console
 
-   $ ls -l docs/
+   $ ls -l env/
       -rw-rw-r-- 1 user ral 1228 Oct  9 10:09 build_cheyenne_intel.env
       -rw-rw-r-- 1 user ral 1134 Oct  9 10:09 build_hera_intel.env
       -rw-rw-r-- 1 user ral 1228 Oct  9 10:09 build_jet_intel.env
