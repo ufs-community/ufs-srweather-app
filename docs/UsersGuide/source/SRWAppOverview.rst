@@ -64,6 +64,8 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+--------------------------------------------------------+
    | ufs_srweather_app.settings.in  | SRW App configuration summary                          |
    +--------------------------------+--------------------------------------------------------+
+   | env                            | Contains build and workflow environment files          |
+   +--------------------------------+--------------------------------------------------------+
    | docs                           | Contains Release notes, documentation, and Users' Guide|
    +--------------------------------+--------------------------------------------------------+
    | manage_externals               | Utility for checking out external repositories         |
