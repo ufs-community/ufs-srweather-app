@@ -9,17 +9,28 @@ How do I turn On/Off the Cycle-Independent Workflow Tasks
 =========================================================
 The first three pre-processing tasks ``make_grid``, ``make_orog``, and ``make_sfc_climo``
 are cycle-independent, meaning that they only need to be run once per experiment. If the
-pre-generated grid, orography, and surface climatology fix files exist, these three tasks can
-be skipped by setting:
+grid, orography, and surface climatology files that these tasks generate are already 
+available (e.g. from a previous experiment that used the same grid as the current), then
+these tasks can be skipped by having the workflow use those pre-generated files.  This 
+can be done by adding the following lines to the ``config.sh`` script before running 
+the ``generate_FV3LAM_wflow.sh`` script:
 
 .. code-block:: console
 
    RUN_TASK_MAKE_GRID=”FALSE”
+   GRID_DIR=”/path/to/directory/containing/grid/files”
    RUN_TASK_MAKE_OROG=”FALSE”
+   OROG_DIR=”/path/to/directory/containing/orography/files”
    RUN_TASK_MAKE_SFC_CLIMO=”FALSE”
+   SFC_CLIMO_DIR=”/path/to/directory/containing/surface/climatology/files”
 
-in the ``config.sh`` script before running the ``generate_FV3LAM_wflow.sh`` script.  By default,
-these flags are set to ``TRUE`` in ``config_defaults.sh``.
+The ``RUN_TASK_MAKE_GRID``, ``RUN_TASK_MAKE_OROG``, and ``RUN_TASK_MAKE_SFC_CLIMO`` flags
+disable their respective tasks, and ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR``
+specify the directories in which the workflow can find the pre-generated grid, orography,
+and surface climatology files, respectively (these directories may be the same, i.e. all
+three sets of files may be placed in the same location).  By default, the ``RUN_TASK_MAKE_...`` 
+flags are set to ``TRUE`` in ``config_defaults.sh``, i.e. the workflow will by default 
+run the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks.
 
 ===================================
 How do I define an experiment name?

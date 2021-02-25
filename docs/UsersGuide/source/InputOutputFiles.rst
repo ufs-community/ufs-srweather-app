@@ -31,7 +31,7 @@ from a location on disk to your experiment directory by the workflow generation 
 pre-processing utilities use many different datasets to create grids, and to generate model
 input datasets from the external model files.  A detailed description of the input files
 for the pre-processing utilities can be found `here 
-<https://ufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
+<https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
 
 UFS Weather Model
 -----------------
@@ -112,7 +112,7 @@ Additional information related to the ``diag_table_[CCPP]``, ``field_table_[CCPP
 ``model_conigure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide
 <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#input-files>`_,
 while information on the ``regional_grid.nml`` can be found in the `UFS_UTILS User’s Guide
-<https://ufs-utils.readthedocs.io/en/ufs-v2.0.0/index.html>`_.
+<https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
 
 Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

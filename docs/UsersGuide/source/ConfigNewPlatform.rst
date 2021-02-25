@@ -246,7 +246,7 @@ The ``README.md`` file will contain instructions on the order that each script s
 .. _WallClockTimes:
 
 .. table::  Example wallclock times for each workflow task.
-   :widths: 15,40,15,15
+
 
    +--------------------+----------------------------+------------+-----------+
    | **UFS Component**  | **Script Name**            | **Num.**   | **Wall**  |
