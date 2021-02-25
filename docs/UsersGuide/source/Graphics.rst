@@ -113,6 +113,7 @@ seven command line arguments:
 #. The top level of the first experiment directory ``EXPTDIR2`` containing the second set of post-processed data.  The script will look for the data files in the directory ``EXPTDIR2/CDATE/postprd``.
 #. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles.  The script will look for the shape files (``*.shp``) in the directory ``CARTOPY_DIR/shapefiles/natural_earth/cultural``.
 
+In this case, the output png files will be located in the directory ``EXPTDIR1/CDATE/postprd``,
 
 The Cartopy shape files are available on a number of Tier 1 platforms in the following locations:
 
