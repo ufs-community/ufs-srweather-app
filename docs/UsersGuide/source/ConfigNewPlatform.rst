@@ -53,7 +53,10 @@ However, it is also possible to install these utilities via Macports (https://ww
 
 Installing NCEPLIBS-external
 ============================
-In order to facilitate the installation of NCEPLIBS (and therefore, the SRW and other UFS applications) on new platforms, EMC maintains a one-stop package containing most of the prerequisite libraries and software necessary for installing NCEPLIBS. This package is known as NCEPLIBS-external, and is maintained in a git repository at https://github.com/NOAA-EMC/NCEPLIBS-external. Instructions for installing these will depend on your platform, but generally so long as all the above-mentioned prerequisites have been installed you can follow the proceeding instructions verbatim (in bash; a csh-based shell will require different commands). These instructions will install the NCEPLIBS-external in the current directory tree, so be sure you are in the desired location before starting.
+In order to facilitate the installation of NCEPLIBS (and therefore, the SRW and other UFS applications) on new platforms, EMC maintains a one-stop package containing most of the prerequisite libraries and software necessary for installing NCEPLIBS. This package is known as NCEPLIBS-external, and is maintained in a git repository at https://github.com/NOAA-EMC/NCEPLIBS-external. Instructions for installing these will depend on your platform, but generally so long as all the above-mentioned prerequisites have been installed you can follow the proceeding instructions verbatim (in bash; a csh-based shell will require different commands). Some examples for installing on specific platforms can be found in the `NCEPLIBS-external/doc directory <https://github.com/NOAA-EMC/NCEPLIBS-external/tree/release/public-v2/doc>`.
+
+
+These instructions will install the NCEPLIBS-external in the current directory tree, so be sure you are in the desired location before starting.
 
 .. code-block:: console
 
