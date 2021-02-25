@@ -12,10 +12,10 @@ Hierarchical Repository Structure
 =================================
 The umbrella repository for the UFS SRW Application is named ufs-srweather-app and is
 available on GitHub at https://github.com/ufs-community/ufs-srweather-app. An umbrella
-repository is defined as a repository that includes links, called externals, to additional
-repositories. The UFS SRW Application includes the ``checkout_externals`` tools along with a
-configuration file called ``Externals.cfg``, which describes the external repositories
-associated with this umbrella (see :numref:`Table %s <top_level_repos>`).
+repository is defined as a repository that houses external code, called "externals," from
+additional repositories. The UFS SRW Application includes the ``manage_externals`` tools 
+along with a configuration file called ``Externals.cfg``, which describes the external 
+repositories associated with this umbrella repo (see :numref:`Table %s <top_level_repos>`).
 
 .. _top_level_repos:
 
@@ -27,26 +27,26 @@ associated with this umbrella (see :numref:`Table %s <top_level_repos>`).
    | Umbrella repository for the UFS | https://github.com/ufs-community/ufs-srweather-app      |
    | Short-Range Weather Application |                                                         |
    +---------------------------------+---------------------------------------------------------+
-   | Umbrella repository for         | https://github.com/ufs-community/ufs-weather-model      |
+   | Repository for                  | https://github.com/ufs-community/ufs-weather-model      |
    | the UFS Weather Model           |                                                         |
    +---------------------------------+---------------------------------------------------------+
    | Repository for the regional     | https://github.com/NOAA-EMC/regional_workflow           |
    | workflow                        |                                                         |
    +---------------------------------+---------------------------------------------------------+
-   | Repository for UFS_UTILS        | https://github.com/NOAA-EMC/UFS_UTILS                   |
-   | pre-processing utilities and    |                                                         |
-   | chgres_cube                     |                                                         |
+   | Repository for UFS utilities,   | https://github.com/NOAA-EMC/UFS_UTILS                   |
+   | including pre-processing,       |                                                         |
+   | chgres_cube, and more           |                                                         |
    +---------------------------------+---------------------------------------------------------+
    | Repository for the Unified Post | https://github.com/NOAA-EMC/EMC_post                    |
    | Processor (UPP)                 |                                                         |
    +---------------------------------+---------------------------------------------------------+
 
-The UFS Weather Model is itself an umbrella repository and contains a number of sub-repositories
-used by the model as documented `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/CodeOverview.html>`_.
+The UFS Weather Model contains a number of sub-repositories used by the model as 
+documented `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/CodeOverview.html>`_.
 
 Note that the prerequisite libraries (including NCEP Libraries and external libraries) are not
 included in the UFS SRW Application repository. The source code for these components resides in
-the umbrella repositories `NCEPLIBS <https://github.com/NOAA-EMC/NCEPLIBS>`_ and `NCEPLIBS-external
+the repositories `NCEPLIBS <https://github.com/NOAA-EMC/NCEPLIBS>`_ and `NCEPLIBS-external
 <https://github.com/NOAA-EMC/NCEPLIBS-external>`_. 
 
 These external components are already built on the preconfigured platforms listed `here 
@@ -60,7 +60,7 @@ https://github.com/NOAA-EMC/NCEPLIBS-external/wiki.
 Directory Structure
 ===================
 The directory structure for the SRW Application is determined by the ``local_path`` settings in
-the ``Externals.cfg`` file, which is in the top directory where the umbrella repository has
+the ``Externals.cfg`` file, which is in the directory where the umbrella repository has
 been cloned. After ``manage_externals/checkout_externals`` is run, the specific GitHub repositories
 that are described in :numref:`Table %s <top_level_repos>` are cloned into the target
 subdirectories shown below. The directories that will be created later by running the
@@ -79,7 +79,6 @@ scripts are presented in parentheses.  Some directories have been removed for br
    ├── regional_workflow
    │     ├── docs
    │     │     └── UsersGuide
-   │     ├── env     
    │     ├── (fix)
    │     ├── jobs
    │     ├── modulefiles
@@ -110,22 +109,20 @@ scripts are presented in parentheses.  Some directories have been removed for br
                   ├── atmos_cubed_sphere
                   └── ccpp
 
-Regional Workflow Sub-directories
+Regional Workflow Sub-Directories
 ---------------------------------
 Under the ``regional_workflow`` directory shown in :numref:`TopLevelDirStructure` there are
-a number of subdirectories that are created when the regional workflow is cloned.  The
-contents of these subdirectories are described in :numref:`Table %s <Subdirectories>`.
+a number of sub-directories that are created when the regional workflow is cloned.  The
+contents of these sub-directories are described in :numref:`Table %s <Subdirectories>`.
 
 .. _Subdirectories:
 
-.. table::  Subdirectories of the regional workflow.
+.. table::  Sub-directories of the regional workflow.
 
    +-------------------------+---------------------------------------------------------+
    | **Directory Name**      | **Description**                                         |
    +=========================+=========================================================+
-   | docs                    | User's Guide Documentation                              |
-   +-------------------------+---------------------------------------------------------+
-   | env                     | Machine-specified environment variables                 |
+   | docs                    | Users' Guide Documentation                              |
    +-------------------------+---------------------------------------------------------+
    | jobs                    | J-job scripts launched by Rocoto                        |
    +-------------------------+---------------------------------------------------------+
@@ -215,7 +212,7 @@ after the grid, orography, and/or surface climatology generation tasks are run.
    +-------------------------+----------------------------------------------------------+
 
 Once the workflow is launched with the ``launch_FV3LAM_wflow.sh`` script, a log file named
-``log.launch_FV3LAM_wflow`` will be created (or appended to if it already exists) in ``EXPTDIR``.
+``log.launch_FV3LAM_wflow`` will be created (or appended to it if it already exists) in ``EXPTDIR``.
 Once the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks and the ``get_extrn_ics``
 and ``get_extrn_lbc`` tasks for the YYYYMMDDHH cycle have completed successfully, new files and
 sub-directories are created, as described in :numref:`Table %s <CreatedByWorkflow>`.
