@@ -177,7 +177,7 @@ On many platforms this build step will take less than 30 minutes, but for some m
 
 Setting Up Your Python Environment
 ==================================
-The regional_workflow repository contains scripts for generating and running experiments, and these require some specific python packages to function correctly. First, as mentioned before, your platform will need Python 3.6 or newer installed. Once this is done, you will need to install several python packages that are used by the workflow: jinja2 (https://jinja2docs.readthedocs.io/), pyyaml (https://pyyaml.org/wiki/PyYAML), and f90nml (https://pypi.org/project/f90nml/). These packages can be installed individually, but it is recommended you use a package manager (https://www.datacamp.com/community/tutorials/pip-python-package-manager).
+The regional_workflow repository contains scripts for generating and running experiments, and these require some specific python packages to function correctly. First, as mentioned before, your platform will need Python 3.6 or newer installed. Once this is done, you will need to install several python packages that are used by the workflow: ``jinja2`` (https://jinja2docs.readthedocs.io/), ``pyyaml`` (https://pyyaml.org/wiki/PyYAML), and ``f90nml`` (https://pypi.org/project/f90nml/). These packages can be installed individually, but it is recommended you use a package manager (https://www.datacamp.com/community/tutorials/pip-python-package-manager).
 
 If you have conda on your machine:
 
@@ -190,6 +190,8 @@ Otherwise you may be able to use pip3 (the Python3 package manager; may need to 
 .. code-block:: console
 
    pip3 install jinja2 pyyaml f90nml
+
+Running the graphics scripts in ``${WORKDIR}/ufs-srweather-app/regional_workflow/ush/Python`` will require the additional packages ``pygrib``, ``cartopy``, ``matplotlib``, ``scipy``, and ``pillow``. These can be installed in the same way as described above.
 
 For the final step of creating and running an experiment, the exact methods will depend on if you are running with or without a workflow manager (Rocoto).
 
