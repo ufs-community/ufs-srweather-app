@@ -35,7 +35,7 @@ The default scale (resolution) of background attributes in the Python scripts is
 with Shaded Relief and Water, which should be sufficient for most regional applications. 
 
 The appropriate environment must be loaded to run the scripts, which require Python 3 with
-the scipy, matplotlib, pygrib, and cartopy packages. This Python environment has already 
+the ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` packages. This Python environment has already 
 been set up on Level 1 platforms and can be activated as follows:
 
 On Cheyenne:
