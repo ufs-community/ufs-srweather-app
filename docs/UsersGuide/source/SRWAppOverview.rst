@@ -413,7 +413,7 @@ On Cheyenne:
    module load ncarenv
    ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/regional_workflow
 
-Load the rocoto module:
+Load the ``rocoto`` module:
 
 .. code-block:: console
 
@@ -489,7 +489,7 @@ script before running the ``generate_FV3LAM_wflow.sh`` script. As shown in the f
 file runs the specific J-job scripts in the prescribed order (``regional_workflow/jobs/JREGIONAL_[task name]``)
 when the ``launch_FV3LAM_wflow.sh`` is submitted. Each J-job task has its own source script named
 ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files
-``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the rocoto calls.
+``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls.
 There is usually no need for users to modify these files. To relaunch the workflow from scratch,
 delete these files and then call the launch script (multiple times, as usual).
 

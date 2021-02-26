@@ -20,8 +20,6 @@ and described in :numref:`Section %s <UserSpecificConfig>`.  For each test that 
 to run, the ``run_experiments.sh`` script reads in its base configuration file and generates from 
 it a full ``config.sh`` file (a copy of which is placed in the experiment directory for the test).
 
-Running the Tests
------------------
 Since ``run_experiments.sh`` calls ``generate_FV3LAM_wflow.sh`` for each test to be run, the 
 Python modules required for experiment generation must be loaded before ``run_experiments.sh`` 
 can be called.  See :numref:`Section %s <SetUpPythonEnv>` for information on loading the Python
@@ -29,7 +27,7 @@ environment on supported platforms.  Note also that ``run_experiments.sh`` assum
 the executables have been built. 
 
 The user specifies the set of test configurations that the ``run_experiments.sh`` script will 
-run by creating a text file, say ``my_expts.txt``, that contains a list of tests (one per line) 
+run by creating a text file, say ``expts_list.txt``, that contains a list of tests (one per line) 
 and passing the name of that file to the script.  For each test in the file, ``run_experiments.sh``
 will generate an experiment directory and, by default, will continuously (re)launch its workflow 
 by inserting a new cron job in the user's cron table.  This cron job calls the workflow launch script 
@@ -63,14 +61,14 @@ The script ``run_experiments.sh`` accepts the command line arguments shown in
      - No
    * - use_cron_to_relaunch
      - Flag that specifies whether or not to use a cron job to continuously relaunch the workflow
-     - Yes.  The default value is "TRUE" set in ``run_experiments.sh``.
+     - Yes.  Default value is ``TRUE`` (set in ``run_experiments.sh``).
    * - cron_relaunch_intvl_mnts 
      - Frequency (in minutes) with which cron will relaunch the workflow
-     - Used only if ``use_cron_to_relaunch`` is ``TRUE``.  The default value is "02" set in ``run_experiments.sh``.
+     - Used only if ``use_cron_to_relaunch`` is set to ``TRUE``.  Default value is "02" (set in ``run_experiments.sh``).
 
 For example, to run the tests named ``grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2``
 and ``grid_RRFS_CONUS_25km_ics_HRRR_lbcs_RAP_suite_RRFS_v1alpha`` on Cheyenne, first create the file 
-``my_expts.txt`` containing the following lines:
+``expts_list.txt`` containing the following lines:
 
 .. code-block:: console
 
@@ -82,9 +80,9 @@ Then, from the ``ufs-srweather-app/regional_workflow/tests`` directory, issue th
 
 .. code-block:: console
 
-   ./run_experiments.sh expts_file="my_expts.txt" machine=cheyenne account="your_account"
+   ./run_experiments.sh expts_file="expts_list.txt" machine=cheyenne account="account_name"
 
-where ``your_account`` should be replaced by the account to which to charge the core-hours used
+where ``account_name`` should be replaced by the account to which to charge the core-hours used
 by the tests.  Running this command will automatically insert an entry into the user's crontab 
 that regularly (re)launches the workflow.  The experiment directories will be created under 
 ``ufs-srweather-app/../expt_dirs``, and the name of each experiment directory will be identical 
@@ -107,18 +105,18 @@ experiment directory for that test:
    ========================================================================
 
 
-You can turn off using cron for all the tests to be run by ``run_experiments.sh`` by instead issuing 
+Use of cron for all tests to be run by ``run_experiments.sh`` can be turned off by instead issuing 
 the following command:
 
 .. code-block:: console
 
-   ./run_experiments.sh expts_file="my_expts.txt" machine=cheyenne account="my_account" use_cron_to_relaunch=FALSE 
+   ./run_experiments.sh expts_file="expts_list.txt" machine=cheyenne account="account_name" use_cron_to_relaunch=FALSE 
 
 In this case, the experiment directories for the tests will be created, but their workflows will 
 not be (re)launched. For each test, the user will have to go into the experiment directory and 
-either manually call the ``launch_FV3LAM_wflow.sh`` script or use the rocoto commands described 
-in :numref:`Chapter %s <RocotoInfo>` to (re)launch the workflow.  Note that if using the rocoto
+either manually call the ``launch_FV3LAM_wflow.sh`` script or use the Rocoto commands described 
+in :numref:`Chapter %s <RocotoInfo>` to (re)launch the workflow.  Note that if using the Rocoto
 commands directly, the log file ``log.launch_FV3LAM_wflow`` will not be created; in this case, 
-the status of the workflow can be checked using the ``rocotostat`` command.
+the status of the workflow can be checked using the ``rocotostat`` command (see :numref:`Chapter %s <RocotoInfo>`).
 
 
