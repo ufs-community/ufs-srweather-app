@@ -31,7 +31,7 @@ The full set of Cartopy shape files can be downloaded at https://www.naturaleart
 For convenience, the small subset of files required for these Python scripts can be obtained from the 
 `EMC ftp data repository <https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/natural_earth/natural_earth_ufs-srw-release-v1.0.0.tar.gz>`_ 
 or from `AWS cloud storage <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/natural_earth/natural_earth_ufs-srw-release-v1.0.0.tar.gz>`_.  
-In addition, the Cartopy shape files are available on a number of Tier 1 platforms in the following 
+In addition, the Cartopy shape files are available on a number of Level 1 platforms in the following 
 locations:
 
 On Cheyenne:
@@ -72,7 +72,7 @@ regional applications.
 
 The appropriate environment must be loaded to run the plotting scripts, which require Python 3 with
 the scipy, matplotlib, pygrib, and cartopy packages. This Python environment has already been set 
-up on Tier 1 platforms and can be activated as follows:
+up on Level 1 platforms and can be activated as follows:
 
 On Cheyenne:
 
