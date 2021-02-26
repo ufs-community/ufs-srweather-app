@@ -218,7 +218,8 @@ experiment contains multiple cycles and the user wants to plot output from a cyc
 the very first one, ``CDATE`` in the batch scripts will have to be set to the specific YYYYMMDDHH
 value for that cycle.  Also, to plot hourly forecast output, ``FCST_INC`` should be set to 1; to 
 plot only a subset of the output hours, ``FCST_START``, ``FCST_END``, and ``FCST_INC`` must be 
-set accordingly, e.g. to generate plots only for output hours after forecast hour 6, use
+set accordingly, e.g. to generate plots for every 6th forecast hour starting with forecast hour 6
+and ending with the last forecast hour, use 
 
 .. code-block:: console
 
