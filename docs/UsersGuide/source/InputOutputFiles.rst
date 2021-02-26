@@ -325,8 +325,10 @@ Default Initial and Lateral Boundary Conditions
 -----------------------------------------------
 The default initial and lateral boundary condition files are set to be a severe weather case
 from 20190615 at 00 UTC. FV3GFS grib2 files are the default model and file format. A tar file
-containing the model data for this case is available on the FTP data repository at:
-https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/. 
+(``gst_model_data.tar.gz``) containing the model data for this case is available on EMC's FTP 
+data repository at https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/. It is 
+also available on Amazon Web Services (AWS) at 
+https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz.
 
 Running the App for Different Dates
 -----------------------------------
