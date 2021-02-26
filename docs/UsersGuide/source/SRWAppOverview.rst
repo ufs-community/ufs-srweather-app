@@ -146,7 +146,7 @@ executables listed in :numref:`Table %s <exec_description>` will be located in t
    +------------------------+---------------------------------------------------------------------------------+
    | orog                   | Generates orography, land mask, and gravity wave drag files from fixed files    |
    +------------------------+---------------------------------------------------------------------------------+
-   | regional_esg_grid      | Generates an ESG regional grid based on a user-defined namelist                 |
+   | regional_esg_grid      | Generates an ESG regional grid based on a user-defined namelist                |
    +------------------------+---------------------------------------------------------------------------------+
    | sfc_climo_gen          | Creates surface climatology fields from fixed files for use in ``chgres_cube``  |
    +------------------------+---------------------------------------------------------------------------------+

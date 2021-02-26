@@ -16,14 +16,12 @@ are filled in. The completed file contains the workflow task names, parameters n
 and task interdependencies.  The generated XML file is then copied to the experiment directory:
 ``$EXPTDIR/FV3LAM_wflow.xml``.
 
-Helpful Commands
-================
 There are a number of Rocoto commands available to run and monitor the workflow and can be found in the
 complete `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`_.
-Descriptions and examples of commonly used commands are discussed in this section.
+Descriptions and examples of commonly used commands are discussed below.
 
 rocotorun
----------
+=========
 The ``rocotorun`` command is used to run the workflow by submitting tasks to the batch system. It will
 automatically resubmit failed tasks and can recover from system outages without user intervention.
 An example is:
@@ -60,7 +58,7 @@ the workflow from scratch, both database files can be deleted, and the workflow 
 or the launch script ``launch_FV3LAM_wflow.sh`` (executed multiple times as described above).
 
 rocotostat
-----------
+==========
 ``rocotostat`` is a tool for querying the status of tasks in an active Rocoto workflow.  Once the
 workflow has been started with the ``rocotorun`` command, Rocoto can also check the status of the
 workflow using the ``rocotostat`` command:
@@ -131,7 +129,7 @@ messages.  Optional arguments for the ``rocotostat`` command can be found at htt
 .. _rocotocheck:
 
 rocotocheck
------------
+===========
 Sometimes, issuing a ``rocotorun`` command will not cause the next task to launch.  ``rocotocheck`` is a
 tool that can be used to query detailed information about a task or cycle in the Rocoto workflow.  To
 determine the cause of a particular task not being submitted, the ``rocotocheck`` command can be used
@@ -203,7 +201,7 @@ have been met.  If not, the dependencies section in the output of ``rocotocheck`
 dependency "is NOT satisfied".  
 
 rocotorewind
-------------
+============
 ``rocotorewind`` is a tool that attempts to undo the effects of running a task and is commonly used to rerun part
 of a workflow that has failed.  If a task fails to run (the STATE is DEAD), and needs to be restarted, the ``rocotorewind``
 command will rerun tasks in the workflow. The command line options are the same as those described in the ``rocotocheck``
@@ -224,7 +222,7 @@ command to rerun the forecast task from ``$EXPTDIR`` is:
    rocotorewind -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 -c 201907010000 -t run_fcst
 
 rocotoboot
-----------
+==========
 ``rocotoboot`` will force a specific task of a cycle in a Rocoto workflow to run.  All dependencies and throttle
 limits are ignored, and it is generally recommended to use ``rocotorewind`` instead.  An example of how to
 use this command to rerun the ``make_ics`` task from ``$EXPTDIR`` is:
