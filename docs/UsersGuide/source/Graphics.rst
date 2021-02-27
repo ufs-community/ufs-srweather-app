@@ -54,6 +54,8 @@ On Jet:
 
 On Orion: 
 
+NOTE DOM 20220227  - why is this not in a shared, user-independent directory? We have /work/noaa/nems/emc.nemspara and /work/noaa/nems/glopara, the latter already hosts the fixed files etc. A conditionn for tier-1 platforms was that no data/scripts/... resides in user directories. This disqualified stampede from being a tier-1 platform.
+
 .. code-block:: console
 
    /home/chjeon/tools/NaturalEarth
@@ -82,6 +84,8 @@ On Cheyenne:
 
 On Hera and Jet:
 
+NOTE DOM 20220227  - This /apps directory doesn't exist on jet (haven't checked hera)
+
 .. code-block:: console
 
    module use -a /contrib/miniconda3/modulefiles
@@ -97,6 +101,10 @@ On Orion:
    conda activate pygraf
 
 On Gaea:
+
+NOTE DOM 20220227  - This /apps directory doesn't exist. I added all the plotting libraries to the regional_workflow environment,
+therefore one should do what is in env/wflow_gaea.env. Makes a lot of sense anyway to be able to use the same Python environment to generate
+and run the workflow and to plot the results. Note that I didn't check any of the other platforms, just gaea.
 
 .. code-block:: console
 
@@ -160,6 +168,8 @@ Cheyenne that use PBS or PBS Pro as the job scheduler).  These scripts are locat
 ``ufs-srweather-app/regional_workflow/ush/Python`` and must be submitted using the command appropriate 
 for the job scheduler used on the current platform.  For example, on Hera, Jet, Orion, and Gaea, 
 ``sq_job.sh`` can be submitted as follows:
+
+NOTE DOM 20220227  - this script will *not* work on gaea for sure. First of all because the module load commands are wrong (see above, second because gaea uses #SBATCH --clusters, third because you cannot do module purge and module load hpss). The line ". /apps/lmod/lmod/init/sh" doesn't work on gaea, it doesn't work on jet either.
 
 .. code-block:: console
 
@@ -226,5 +236,3 @@ and ending with the last forecast hour, use
    export FCST_START=6
    export FCST_END=${FCST_LEN_HRS}
    export FCST_INC=6
-
-

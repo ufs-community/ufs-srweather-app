@@ -7,7 +7,7 @@ The UFS Short-Range Weather Application (SRW App) is an umbrella repository that
 ``manage_externals`` to check out all of the components required for the application. Once the
 build process is complete, all the files and executables necessary for a regional experiment are
 located in the ``regional_workflow`` and ``bin`` directories, respectively, under the ``ufs-srweather-app`` directory.
-Users can utilize the pre-defined domains or build their own domain (details provided in `Chapter %s <LAMGrids>`).
+Users can utilize the pre-defined domains or build their own domain (details provided in `Chapter %s <LAMGrids>`). NOTE DOM 20220227 link broken
 In either case, users must create/modify the case-specific (``config.sh``) and/or grid-specific configuration
 files (``set_predef_grid_params.sh``). The overall procedure is shown in :numref:`Figure %s <AppOverallProc>`,
 with the scripts to generate and run the workflow shown in red. The steps are as follows:
@@ -33,11 +33,11 @@ Each step will be described in detail in the following sections.
 
 Download from GitHub
 ====================
-Retrieve the UFS Short Range Weather Application (SRW App) repository from GitHub and checkout the ``release/public-v1`` branch: 
+Retrieve the UFS Short Range Weather Application (SRW App) repository from GitHub and checkout the ``ufs-v1.0.0`` tag:
 
 .. code-block:: console
 
-   git clone -b release/public-v1 https://github.com/ufs-community/ufs-srweather-app.git
+   git clone -b ufs-v1.0.0 https://github.com/ufs-community/ufs-srweather-app.git
    cd ufs-srweather-app
 
 The cloned repository contains the configuration files and sub-directories shown in
@@ -52,7 +52,7 @@ The cloned repository contains the configuration files and sub-directories shown
    +================================+========================================================+
    | CMakeLists.txt                 | Main cmake file for SRW App                            |
    +--------------------------------+--------------------------------------------------------+
-   | Externals.cfg                  | Hashes of the GitHub repositories/branches for the     |
+   | Externals.cfg                  | Tags of the GitHub repositories/branches for the       |
    |                                | external repositories                                  |
    +--------------------------------+--------------------------------------------------------+
    | LICENSE.md                     | CC0 license information                                |
@@ -66,7 +66,7 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+--------------------------------------------------------+
    | env                            | Contains build and workflow environment files          |
    +--------------------------------+--------------------------------------------------------+
-   | docs                           | Contains Release notes, documentation, and Users' Guide|
+   | docs                           | Contains release notes, documentation, and Users' Guide|
    +--------------------------------+--------------------------------------------------------+
    | manage_externals               | Utility for checking out external repositories         |
    +--------------------------------+--------------------------------------------------------+
@@ -85,7 +85,7 @@ Check out the external repositories, including regional_workflow, ufs-weather-mo
    ./manage_externals/checkout_externals
 
 This step will use the configuration ``Externals.cfg`` file in the ``ufs-srweather-app`` directory to
-clone the specific hashes (version of codes) of the external repositories as listed in 
+clone the specific tags (version of codes) of the external repositories as listed in 
 :numref:`Section %s <HierarchicalRepoStr>`. 
 
 .. _BuildExecutables:
@@ -114,14 +114,16 @@ The following steps will build the pre-processing utilities, forecast model, and
    make dir
    cd build
    cmake .. -DCMAKE_INSTALL_PREFIX=..
-   make -j 8 >& build.out &
+   make -j 4 >& build.out &
 
 where ``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``,
 and ``share`` directories containing various components of the SRW App will be created, and its
 recommended value ``..`` denotes one directory up from the build directory. In the next line for
-the ``make`` call, ``-j 8`` indicates the build will run in parallel with 8 threads. If this step is successful, the
-executables listed in :numref:`Table %s <exec_description>` will be located in the
+the ``make`` call, ``-j 4`` indicates the build will run in parallel with 4 threads. If this step is successful, the
+executables listed in :numref:`Table %s <exec_description>` NOTE DOM 20220227 link broken will be located in the
 ``ufs-srweather-app/bin`` directory.
+
+NOTE DOM 20220227 this table doesn't show in https://ufs-srweather-app.readthedocs.io/en/latest/SRWAppOverview.html
 
 .. _exec_description:
 
@@ -146,7 +148,7 @@ executables listed in :numref:`Table %s <exec_description>` will be located in t
    +------------------------+---------------------------------------------------------------------------------+
    | orog                   | Generates orography, land mask, and gravity wave drag files from fixed files    |
    +------------------------+---------------------------------------------------------------------------------+
-   | regional_esg_grid      | Generates an ESG regional grid based on a user-defined namelist                |
+   | regional_esg_grid      | Generates an ESG regional grid based on a user-defined namelist                 |
    +------------------------+---------------------------------------------------------------------------------+
    | sfc_climo_gen          | Creates surface climatology fields from fixed files for use in ``chgres_cube``  |
    +------------------------+---------------------------------------------------------------------------------+
@@ -184,6 +186,8 @@ parameters in the ``set_predef_grid_params`` script.
    | RRFS_CONUS_3km       | ESG grid          | lambert_conformal              |
    +----------------------+-------------------+--------------------------------+
 
+NOTE DOM 20220227 would it be good to mention the number of horizontal grid points NX x NY in this table/section? Or any other information (min/max lat/lon etc)? or a plot of the three domains? Or provide a link to section 6.1?
+
 Case-specific Configuration
 ===========================
 
@@ -194,11 +198,12 @@ Default configuration: ``config_defaults.sh``
 When generating a new experiment (described in detail in :numref:`Section %s <GeneratingWflowExpt>`),
 the ``config_defaults.sh`` file is read first and assigns default values to the experiment
 parameters. Important configuration variables in the ``config_defaults.sh`` file are shown in
-:numref:`Table %s <ConfigVarsDefault>`, with more documentation found in the file itself, and
-in `Chapter %s <ConfigWorkflow>`. Some of these default values are intentionally invalid in order
+:numref:`Table %s <ConfigVarsDefault>` NOTE DOM 20220227 broken link, with more documentation found in the file itself, and
+in `Chapter %s <ConfigWorkflow>` NOTE DOM 20220227 broken link. Some of these default values are intentionally invalid in order
 to ensure that the user assigns valid values in the user-specified configuration ``config.sh`` file.
 Therefore, any settings provided in ``config.sh`` will override the default ``config_defaults.sh`` 
-settings. Note that there is usually no need for a user to modify the default configuration file. 
+settings. Note that there is usually no need for a user to modify the default configuration file.
+
 .. _ConfigVarsDefault:
 
 .. table::  Configuration variables specified in the config_defaults.sh script.
@@ -305,7 +310,9 @@ settings. Note that there is usually no need for a user to modify the default co
    +----------------------+------------------------------------------------------------+
    | Compiler             | COMPILER                                                   |
    +----------------------+------------------------------------------------------------+
- 
+
+NOTE DOM 20220227 the COMPILER variable is mentioned here, but I don't see any place later where it is described how to switch between Intel and GNU on cheyenne, for example. I don't even see a note that both are supported on Cheyenne, but maybe that is ok as long as the user is referred to the "supported platforms" wiki page often enough.
+
 .. _UserSpecificConfig:
 
 User-specific configuration: ``config.sh``
@@ -424,6 +431,7 @@ On Orion:
    module load miniconda3
    conda activate regional_workflow
 
+NOTE DOM 20220227 no load rocoto on orion? gaea missing!
 
 .. _GeneratingWflowExpt:
 
@@ -472,7 +480,9 @@ illustrated in :numref:`Figure %s <WorkflowTasksFig>`, and each task is describe
 surface climatology fix files, these three tasks can be skipped by setting ``RUN_TASK_MAKE_GRID=”FALSE”``,
 ``RUN_TASK_MAKE_OROG=”FALSE”``, and ``RUN_TASK_MAKE_SFC_CLIMO=”FALSE”`` in the ``regional_workflow/ush/config.sh``
 file before running the ``generate_FV3LAM_wflow.sh`` script. As shown in the figure, the ``FV3LAM_wflow.xml``
-file runs the specific j-job scripts in the prescribed order (``regional_workflow/jobs/JREGIONAL_[task name]``)
+file runs the specific j-job scripts 
+NOTE DOM 20220227 j-job not familiar to all users
+in the prescribed order (``regional_workflow/jobs/JREGIONAL_[task name]``)
 when the ``launch_FV3LAM_wflow.sh`` is submitted. Each j-job task has its own source script named
 ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files
 ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls.
@@ -484,6 +494,8 @@ delete these two *.db files and then call the launch script repeatedly for each 
 .. figure:: _static/FV3LAM_wflow_flowchart.png
 
     *Flowchart of the workflow tasks*
+
+NOTE DOM 20220227 all these "can be run, at most, ocne per experiment" - must be run exactly once per experiment ?
 
 .. _WorkflowTasksTable:
 
@@ -521,6 +533,8 @@ Launch of Workflow
 There are two ways to launch the workflow using Rocoto: (1) with the ``launch_FV3LAM_wflow.sh``
 script, and (2) manually calling the ``rocotorun`` command. Moreover, you can run the workflow
 separately using stand-alone scripts.
+
+NOTE DOM 20220227 need to tell the user to define EXPTDIR
 
 Launch with the ``launch_FV3LAM_wflow.sh`` script
 -------------------------------------------------
@@ -640,12 +654,14 @@ a wrapper script to set environment variables and run the job script.
 Example batch-submit scripts for Hera (Slurm) and Cheyenne (PBS) are included: ``sq_job.sh``
 and ``qsub_job.sh``. These examples set the build and run environment for Hera or Cheyenne
 so that run-time libraries match the compiled libraries (i.e. netcdf, mpi). Users may either
-modify the one submit batch script as each task is submitted, or duplicate this batch wrapper
+modify the submit batch script as each task is submitted, or duplicate this batch wrapper
 for their system settings for each task. Alternatively, some batch systems allow users to
 specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command,
 for example). This piece will be unique to your platform. The tasks run by the regional workflow
 are shown in :numref:`Table %s <RegionalWflowTasks>`.  Tasks with the same stage level may
 be run concurrently (no dependency).
+
+NOTE DOM 20220227 need to say for which grid these timings are
 
 .. _RegionalWflowTasks:
 

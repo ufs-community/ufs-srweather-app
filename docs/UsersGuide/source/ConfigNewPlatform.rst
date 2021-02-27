@@ -14,11 +14,11 @@ The first step to installing on a new machine is to install :term:`NCEPLIBS` (ht
 
 * C and C++ compilers compatible with the Fortran compiler
 
-   * gcc v9+, ifort v18+, and clang (MacOS) have been tested
+   * gcc v9+, ifort v18+, and clang v9+ (macOS, native Apple clang or LLVM clang) have been tested
 
 * Python v3.6+
 
-   * Prerequisite packages must be downloaded: jinja2, yaml and f90nml, as well as pygrib if the user would like to use the provided graphics scripts
+   * Prerequisite packages must be downloaded: jinja2, yaml and f90nml, as well as a number of additional Python modules (see :numref:`Section %s <SW-OS-Requirements>` if the user would like to use the provided graphics scripts
 
 * Perl 5
 
@@ -28,16 +28,20 @@ The first step to installing on a new machine is to install :term:`NCEPLIBS` (ht
 
    * CMake v3.15+ is needed for building NCEPLIBS, but versions as old as 3.12 can be used to build NCEPLIBS-external, which contains a newer CMake that can be used for the rest of the build.
 
-For Linux systems, as long as the above software is available, you can move on to the next step: installing the :term:`NCEPLIBS-external` package.
-
-For MacOS systems, you will also need to set the stack size to “unlimited”. 
+For both Linux and macOS, you will need to set the stack size to "unlimited" (if allowed) or the largest possible value
 
 .. code-block:: console
 
+   # Linux, if allowed
+   ulimit -s unlimited
+
+   # macOS, this corresponds to 65MB
    ulimit -S -s unlimited
 
-Additionally, some extra software is needed: ``wget``, ``coreutils``, ``pkg-config``, and ``gnu-sed``.
-It is recommended that you install this software using the Homebrew package manager for MacOS (https://brew.sh/):
+For Linux systems, as long as the above software is available, you can move on to the next step: installing the :term:`NCEPLIBS-external` package.
+
+For macOS systems, some extra software is needed: ``wget``, ``coreutils``, ``pkg-config``, and ``gnu-sed``.
+It is recommended that you install this software using the Homebrew package manager for macOS (https://brew.sh/):
 
 * brew install wget
 
@@ -160,7 +164,7 @@ At this point there are just a few more variables that need to be set prior to b
    export CMAKE_CXX_COMPILER=mpicxx
    export CMAKE_Fortran_COMPILER=mpifort
 
-If you are using your machine’s built-in MPI compilers, it is recommended you set the ``CMAKE_*_COMPILER`` flags to full paths to ensure that the correct MPI aliases are used. Finally, one last environment variable, ``CMAKE_Platform``, must be set. This will depend on your machine; for example, on a MacOS operating system with GNU compilers:
+If you are using your machine’s built-in MPI compilers, it is recommended you set the ``CMAKE_*_COMPILER`` flags to full paths to ensure that the correct MPI aliases are used. Finally, one last environment variable, ``CMAKE_Platform``, must be set. This will depend on your machine; for example, on a macOS operating system with GNU compilers:
 
 .. code-block:: console
 
@@ -198,7 +202,7 @@ Running the graphics scripts in ``${WORKDIR}/ufs-srweather-app/regional_workflow
 
 For the final step of creating and running an experiment, the exact methods will depend on if you are running with or without a workflow manager (Rocoto).
 
-Running Without a Workflow Manager: Generic Linux and MacOS Platforms
+Running Without a Workflow Manager: Generic Linux and macOS Platforms
 =====================================================================
 Now that the code has been built, you can stage your data as described in :numref:`Section %s <DownloadingStagingInput>`.
 
@@ -244,7 +248,7 @@ From here, you can run each individual task of the UFS SRW App using the provide
    cp ${WORKDIR}/ufs-srweather-app/regional_workflow/ush/wrappers/*sh .
    cp ${WORKDIR}/ufs-srweather-app/regional_workflow/ush/wrappers/README.md .
 
-The ``README.md`` file will contain instructions on the order that each script should be run in. An example of wallclock times for each task for an example run (2017 Macbook Pro, MacOS Catalina, 25km CONUS domain, 48hr forecast) is listed in :numref:`Table %s <WallClockTimes>`.
+The ``README.md`` file will contain instructions on the order that each script should be run in. An example of wallclock times for each task for an example run (2017 Macbook Pro, macOS Catalina, 25km CONUS domain, 48hr forecast) is listed in :numref:`Table %s <WallClockTimes>`.
 
 .. _WallClockTimes:
 
@@ -341,7 +345,7 @@ Those requirements highlighted in **bold** are included in the NCEPLIBS-external
 
 * 4GB memory (CONUS 25km domain)
 
-* Fortran compiler with full Fortran 2003 standard support
+* Fortran compiler with full Fortran 2008 standard support
 
 * C and C++ compiler
 
@@ -361,13 +365,13 @@ Those requirements highlighted in **bold** are included in the NCEPLIBS-external
 
    * **netCDF (C and Fortran libraries)**
    * **HDF5** 
-   * **ESMF**
+   * **ESMF** 8.0.0
    * **Jasper**
    * **libJPG**
    * **libPNG**
    * **zlib**
 
-MacOS-specific prerequisites:
+macOS-specific prerequisites:
 
 * brew install wget
 * brew install cmake
@@ -381,4 +385,4 @@ Optional but recommended prerequisites:
 * Bash v4+
 * Rocoto Workflow Management System (1.3.1)
 * **CMake v3.15+**
-* Python package pygrib for graphics
+* Python packages scipy, matplotlib, pygrib, cartopy, and pillow for graphics

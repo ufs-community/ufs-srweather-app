@@ -28,7 +28,7 @@ The necessary source code is publicly available on GitHub.  To clone the release
 
 .. code-block:: console
 
-   git clone -b release/public-v1 https://github.com/ufs-community/ufs-srweather-app.git
+   git clone -b ufs-v1.0.0 https://github.com/ufs-community/ufs-srweather-app.git
    cd ufs-srweather-app
 
 Then, check out the submodules for the SRW application:
@@ -76,7 +76,7 @@ Run ``cmake`` to set up the ``Makefile``, then run ``make``:
 Output from the build will be in the ``ufs-srweather-app/build/build.out`` file.
 When the build completes, you should see the forecast model executable ``NEMS.exe`` and eleven
 pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory which are
-described in :numref:`Table %s <exec_description>`.
+described in :numref:`Table %s <exec_description>`. NOTE DOM 20220227 TABLE BROKEN LINK
 
 Generate the Workflow Experiment
 ================================
@@ -92,6 +92,7 @@ The first two steps depend on the platform being used and are described here for
 
 Set up ``config.sh`` file
 -------------------------
+
 The workflow requires a file called ``config.sh`` to specify the values of your experiment parameters.
 Two example templates are provided: ``config.community.sh`` and ``config.nco.sh`` and can be found in
 the ``ufs-srweather-app/regional_workflow/ush directory``.  The first file is a minimal example for
@@ -101,6 +102,8 @@ while the second is an example of creating and running an experiment in the *NCO
 fully supported for this release while the operational mode will be more exclusively used by NOAA/NCEP
 Central Operations (NCO) and those in the NOAA/NCEP/Environmental Modeling Center (EMC) working with
 NCO on pre-implementation testing. Sample config.sh files are discussed in this section for Level 1 platforms. 
+
+NOTE DOM 20220227 at this point the user is in directory build
 
 Make a copy of ``config.community.sh`` to get started:
 
@@ -162,6 +165,9 @@ project code for the account parameter:
    ACCOUNT="my_account"
    EXPT_SUBDIR="my_expt_name"
 
+
+NOTE DOM 20220227 gaea missing
+
 .. _SetUpPythonEnv:
 
 Set up the Python and other Environment Parameters
@@ -171,6 +177,8 @@ The workflow requires Python 3, with the packages 'PyYAML', 'Jinja2', and 'f90nm
 This Python environment has already been set up on Level 1 platforms, and can be activated in
 the following way:
 
+NOTE DOM 20220227 at this point the user is in directory regional_workflow/ush (as required for the next section to make sense), better mention this explicitly and use source ../../env/wflow_jet.env ?
+
 .. code-block:: console
 
    source ufs-srweather-app/env/wflow_<platform>.env
@@ -178,6 +186,8 @@ the following way:
 Run the ``generate_FV3LAM_wflow.sh`` script
 -------------------------------------------
 For all platforms, the workflow can then be generated with the command:
+
+NOTE DOM 20220227 need to mention the logfile that the generate_fv3lam_workflow command creates (and where)
 
 .. code-block:: console
 
@@ -193,6 +203,10 @@ If Rocoto is not available, it is still possible to run the workflow using stand
 described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two ways you can run 
 the workflow with Rocoto using either the ``./launch_FV3LAM_wflow.sh`` or by hand. 
 
+NOTE DOM 20220227 the user is not told to do "export EXPTDIR ..." / "setenv EXPTDIR ..."
+
+NOTE DOM 20220227 need to mention the logfile that the launch_FV3LAM_wflow command creates (and where)
+
 To run Rocoto using the script:
 
 .. code-block:: console
@@ -201,6 +215,8 @@ To run Rocoto using the script:
    ./launch_FV3LAM_wflow.sh
 
 Or to manually call Rocoto: 
+
+NOTE DOM 20220227 on jet at least, rocotorun is not in the path, not even after running "source env/build_jet_intel.env" and "source ../../env/wflow_jet.env"; someone needs to check that on all platforms and insert a code block here to load the rocoto module.
 
 .. code-block:: console
 
@@ -211,6 +227,8 @@ Or to manually call Rocoto:
 For automatic resubmission of the workflow (every 3 minutes), one of the following lines can be added
 to the user's crontab (use ``crontab -e`` to edit the cron table) depending on your preference of how 
 you call Rocoto:
+
+NOTE DOM 20220227 rocotorun will not be in the path unless the user sets PATH=... in the crontab
 
 .. code-block:: console
 

@@ -117,6 +117,8 @@ contents of these sub-directories are described in :numref:`Table %s <Subdirecto
 
 .. _Subdirectories:
 
+NOTE DOM 20220227 do we expect the users to know what j-job scripts / j-jobs are?
+
 .. table::  Sub-directories of the regional workflow.
 
    +-------------------------+---------------------------------------------------------+
@@ -144,6 +146,8 @@ When the ``generate_FV3LAM_wflow.sh`` script is run, the user-defined experiment
 ``EXPTDIR=/path-to/ufs-srweather-app/../expt_dirs/${EXPT_SUBDIR}`` is created, where ``EXPT_SUBDIR``
 is specified in the ``config.sh`` file. The contents of the ``EXPTDIR`` directory, before the
 workflow is run, is shown in :numref:`Table %s <ExptDirStructure>`.
+
+NOTE DOM 20220227 better to say "Tracers" instead of "Scalar fields in the table below", to be consistent with section 5.7 (also makes more sense)
 
 .. _ExptDirStructure:
 
