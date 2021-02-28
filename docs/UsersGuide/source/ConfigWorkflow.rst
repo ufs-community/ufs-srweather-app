@@ -5,7 +5,7 @@ Configuring the Workflow: ``config.sh`` and ``config_defaults.sh``
 ==================================================================
 To create the experiment directory and workflow when running the SRW App, the user must create an experiment configuration file named ``config.sh``.  This file contains experiment-specific information, such as dates, external model data, directories, and other relevant settings.  To help the user, two sample configuration files have been included in the ``regional_workflow`` repository’s ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``.  The first is for running experiments in community mode (``RUN_ENVIR`` set to “community”; see below), and the second is for running experiments in “nco” mode (``RUN_ENVIR`` set to “nco”).  Note that for this release, only “community” mode is supported.  These files can be used as the starting point from which to generate a variety of experiment configurations in which to run the SRW App.
 
-There is an extensive list of experiment parameters that a user can set when configuring the experiment.  All of these do not need to be explicitly set by the user in ``config.sh``.  In the case that a user does not define an entry in the ```config.sh`` script, either its value in ``config_defaults.sh`` will be used, or it will be reset depending on other parameters, e.g. the platform on which the experiment will be run (specified by ``MACHINE``)  Note that  ``config_defaults.sh`` contains the full list of experiment parameters that a user may set in ``config.sh`` (i.e. the user cannot set parameters in config.sh that are not initialized in ``config_defaults.sh``).
+There is an extensive list of experiment parameters that a user can set when configuring the experiment.  Not all of these need to be explicitly set by the user in ``config.sh``.  In the case that a user does not define an entry in the ``config.sh`` script, either its value in ``config_defaults.sh`` will be used, or it will be reset depending on other parameters, e.g. the platform on which the experiment will be run (specified by ``MACHINE``).  Note that  ``config_defaults.sh`` contains the full list of experiment parameters that a user may set in ``config.sh`` (i.e. the user cannot set parameters in config.sh that are not initialized in ``config_defaults.sh``).
 
 The following is a list of the parameters in the ``config_defaults.sh`` file.  For each parameter, the default value and a brief description is given.  In addition, any relevant information on features and settings supported or unsupported in this release is specified.
 
@@ -68,7 +68,7 @@ These settings control run commands for platforms without a workflow manager.  V
    The run command for pre-processing utilities (shave, orog, sfc_climo_gen, etc.).  This can be left blank for smaller domains, in which case the executables will run without MPI.
 
 ``RUN_CMD_FCST``: (Default: "mpirun -np \${PE_MEMBER01}")
-   The run command for the model forecast step. This will be appended to the end of the variable definitions file (var_defns.sh)..
+   The run command for the model forecast step. This will be appended to the end of the variable definitions file ("var_defns.sh").
 
 ``RUN_CMD_POST``: (Default: "mpirun -np 1")
    The run command for post-processing (UPP). Can be left blank for smaller domains, in which case UPP will run without MPI.
@@ -211,7 +211,7 @@ Initial and Lateral Boundary Condition Generation Parameters
    The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model.
 
 ``LBC_SPEC_INTVL_HRS``: (Default: “6”)
-   The interval (in integer hours) with which LBC files will be generated, referred to as the boundary specification interval.  Note that the model specified in ``EXTRN_MDL_NAME_LBCS`` must have data available at a frequency greater than or equal to that implied by ``LBC_SPEC_INTVL_HRS``.  For example, if ``LBC_SPEC_INTVL_HRS`` is set to 6, then the model must have data available at least every 6 hours.  It is up to the user to ensure that this is the case.
+   The interval (in integer hours) at which LBC files will be generated, referred to as the boundary specification interval.  Note that the model specified in ``EXTRN_MDL_NAME_LBCS`` must have data available at a frequency greater than or equal to that implied by ``LBC_SPEC_INTVL_HRS``.  For example, if ``LBC_SPEC_INTVL_HRS`` is set to 6, then the model must have data available at least every 6 hours.  It is up to the user to ensure that this is the case.
 
 ``FV3GFS_FILE_FMT_ICS``: (Default: “nemsio”)
    If using the FV3GFS model as the source of the ICs (i.e. if ``EXTRN_MDL_NAME_ICS`` is set to "FV3GFS"), this variable specifies the format of the model files to use when generating the ICs.
@@ -225,7 +225,7 @@ User-Staged External Model Directory and File Parameters
    Flag that determines whether or not the workflow will look for the external model files needed for generating ICs and LBCs in user-specified directories (as opposed to fetching them from mass storage like NOAA HPSS).
 
 ``EXTRN_MDL_SOURCE_BASEDIR_ICS``: (Default: “/base/dir/containing/user/staged/extrn/mdl/files/for/ICs")
-   Directory in which to look for external model files for generating ICs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to "TRUE", the workflow looks in this directory (specifically, in a subdirectory under this directory named "YYYYMMDDHH" consisting of the starting date and cycle hour of the forecast, where YYYY is the 4-digit year, MM the 2-digit month, DD the 2-digit day of the month, and HH the 2-digit hour of the day) for the external model files specified by the array ``EXTRN_MDL_FILES_ICS``` (these files will be used to generate the ICs on the native FV3-LAM grid).  This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to "FALSE".
+   Directory in which to look for external model files for generating ICs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to "TRUE", the workflow looks in this directory (specifically, in a subdirectory under this directory named "YYYYMMDDHH" consisting of the starting date and cycle hour of the forecast, where YYYY is the 4-digit year, MM the 2-digit month, DD the 2-digit day of the month, and HH the 2-digit hour of the day) for the external model files specified by the array ``EXTRN_MDL_FILES_ICS`` (these files will be used to generate the ICs on the native FV3-LAM grid).  This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to "FALSE".
  
 ``EXTRN_MDL_FILES_ICS``: (Default: "ICS_file1” “ICS_file2” “...”)
    Array containing the names of the files to search for in the directory specified by ``EXTRN_MDL_SOURCE_BASEDIR_ICS``.  This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to "FALSE".
@@ -239,6 +239,6 @@ User-Staged External Model Directory and File Parameters
 CCPP Parameter
 ==============
 ``CCPP_PHYS_SUITE``: (Default: "FV3_GFS_v15p2")
-   The CCPP (Common Community Physics Package) physics suite to use for the forecast(s).  The choice of physics suite determines the forecast model's namelist file, the diagnostics table file, the field table file, and the XML physics suite definition file that are staged in the experiment directory or the cycle directories under it.  Current supported settings for this parameter are “FV3_GFS_v15p2” and “RRFS_v1alpha.”
+   The CCPP (Common Community Physics Package) physics suite to use for the forecast(s).  The choice of physics suite determines the forecast model's namelist file, the diagnostics table file, the field table file, and the XML physics suite definition file that are staged in the experiment directory or the cycle directories under it.  Current supported settings for this parameter are “FV3_GFS_v15p2” and “FV3_RRFS_v1alpha.”
 
 .. include:: ConfigParameters.inc

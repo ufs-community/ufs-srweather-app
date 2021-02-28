@@ -157,7 +157,7 @@ workflow is run, is shown in :numref:`Table %s <ExptDirStructure>`.
    +---------------------------+-------------------------------------------------------------------------------------------------------+
    | data_table                | Cycle-independent input file (empty)                                                                  |
    +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | field_table               | Scalar fields in the `forecast model                                                                  |
+   | field_table               | Tracers in the `forecast model                                                                        |
    |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#field-table-file>`_        |
    +---------------------------+-------------------------------------------------------------------------------------------------------+
    | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                   |

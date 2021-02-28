@@ -153,12 +153,13 @@ In this case, the output png files will be located in the directory ``EXPTDIR1/C
 
 
 If the Python scripts are being used to create plots of multiple forecast lead times and forecast
-variables, then they should be submitted to the batch system using either the ``sq_job.sh``
-or ``sq_job_diff.sh`` script (for platforms such as Hera, Jet, Orion, and Gaea that use slurm as 
-the job scheduler) or the ``qsub_job.sh`` or ``qsub_job_diff.sh`` script (for platforms such as 
-Cheyenne that use PBS or PBS Pro as the job scheduler).  These scripts are located under 
-``ufs-srweather-app/regional_workflow/ush/Python`` and must be submitted using the command appropriate 
-for the job scheduler used on the current platform.  For example, on Hera, Jet, Orion, and Gaea, 
+variables, then they should be submitted to the batch system using either something like the ``sq_job.sh``
+or ``sq_job_diff.sh`` script (for a platform such as Hera that uses the slurm 
+job scheduler) or the ``qsub_job.sh`` or ``qsub_job_diff.sh`` script (for a platform such as 
+Cheyenne that uses PBS or PBS Pro as the job scheduler).  Examples of these scripts are located under 
+``ufs-srweather-app/regional_workflow/ush/Python`` and can be used as an example to create a batch script 
+for your platform/job scheduler of use. The scripts must be submitted using the command appropriate 
+for the job scheduler used on your platform.  For example, on Hera, 
 ``sq_job.sh`` can be submitted as follows:
 
 .. code-block:: console
@@ -226,5 +227,3 @@ and ending with the last forecast hour, use
    export FCST_START=6
    export FCST_END=${FCST_LEN_HRS}
    export FCST_INC=6
-
-

@@ -145,7 +145,7 @@ have been defined for the SRW Application, including pre-configured (level 1), c
 (level 2), limited test platforms (level 3), and build only platforms (level 4). Each
 level is further described below.
 
-For the select computational platforms that have been pre-configured (level 1), all the
+For the selected computational platforms that have been pre-configured (level 1), all the
 required libraries for building the SRW Application are available in a central place. That
 means bundled libraries (NCEPLIBS) and third-party libraries (NCEPLIBS-external) have both
 been built. The SRW Application is expected to build and run out of the box on these
