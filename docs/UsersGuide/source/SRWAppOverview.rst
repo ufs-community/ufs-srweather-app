@@ -401,11 +401,6 @@ On Cheyenne:
 
    module load ncarenv
    ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/regional_workflow
-
-Load the Rocoto module:
-
-.. code-block:: console
-
    module use -a /glade/p/ral/jntp/UFS_SRW_app/modules
    module load rocoto 
 
@@ -426,6 +421,13 @@ On Orion:
    module load miniconda3
    conda activate regional_workflow
 
+On Gaea:
+
+.. code-block:: console
+
+   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
+   module load miniconda3/4.8.3-regional-workflow
+   module load rocoto/1.3.3
 
 .. _GeneratingWflowExpt:
 
@@ -494,10 +496,10 @@ delete these two *.db files and then call the launch script repeatedly for each 
    +----------------------+------------------------------------------------------------+
    | **Workflow Task**    | **Task Description**                                       |
    +======================+============================================================+
-   | make_grid            | Pre-processing task to generate regional grid files.  Can  |
+   | make_grid            | Pre-processing task to generate regional grid files. Can   |
    |                      | be run, at most, once per experiment.                      |
    +----------------------+------------------------------------------------------------+
-   | make_orog            | Pre-processing task to generate orography files.  Can be   |
+   | make_orog            | Pre-processing task to generate orography files. Can be    |
    |                      | run, at most, once per experiment.                         |
    +----------------------+------------------------------------------------------------+
    | make_sfc_climo       | Pre-processing task to generate surface climatology files. |
