@@ -44,7 +44,7 @@ On Hera:
 
 .. code-block:: console
 
-   /scratch2/NCEPDEV/fv3-cam/Chan-hoo.Jeon/tools/NaturalEarth
+   /scratch2/BMC/det/UFS_SRW_app/v1p0/fix_files/NaturalEarth 
 
 On Jet:
  
@@ -56,7 +56,7 @@ On Orion:
 
 .. code-block:: console
 
-   /home/chjeon/tools/NaturalEarth
+   /work/noaa/global/glopara/fix/NaturalEarth 
 
 On Gaea:
 
@@ -100,9 +100,9 @@ On Gaea:
 
 .. code-block:: console
 
-   module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-   module load miniconda3
-   conda activate pygraf
+   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
+   module load rocoto/1.3.3
+   module load miniconda3/4.8.3-regional-workflow
 
 .. note::
 

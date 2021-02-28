@@ -227,6 +227,63 @@ A log file called ``log.launch_FV3LAM_wflow`` is created in the ``$EXPTDIR``.
 
 Or to manually call Rocoto: 
 
+First load the Rocoto module, depending on the platform used.
+
+For Cheyenne:
+
+.. code-block:: console
+
+   module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
+   module load rocoto
+
+For Hera or Jet:
+
+.. code-block:: console
+
+   module purge
+   module load rocoto
+
+For Orion:
+
+.. code-block:: console
+
+   module purge
+   module load contrib rocoto
+
+For Gaea:
+
+.. code-block:: console
+
+   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
+   module load rocoto/1.3.3
+
+For WCOSS_DELL_P3:
+
+.. code-block:: console
+
+   module purge
+   module load lsf/10.1
+   module use /gpfs/dell3/usrx/local/dev/emc_rocoto/modulefiles/
+   module load ruby/2.5.1 rocoto/1.2.4
+
+For WCOSS_DELL_P3:
+
+.. code-block:: console
+
+   module purge
+   module load xt-lsfhpc/9.1.3
+   module use -a /usrx/local/emc_rocoto/modulefiles
+   module load rocoto/1.2.4
+
+For Gaea:
+
+.. code-block:: console
+
+   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
+   module load rocoto/1.3.3
+
+Then manually call ``rocotorun`` to launch the tasks and ``rocotostat`` to monitor the progress: 
+
 .. code-block:: console
 
    cd $EXPTDIR
@@ -239,9 +296,9 @@ you call Rocoto:
 
 .. code-block:: console
 
-   */3 * * * * cd /glade/p/ral/jntp/$USER/expt_dirs/test_CONUS_25km_GFSv15p2 && /glade/p/ral/jntp/tools/rocoto/rocoto-1.3.1/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 
-   -- OR --
    */3 * * * * cd /glade/p/ral/jntp/$USER/expt_dirs/test_CONUS_25km_GFSv15p2 && ./launch_FV3LAM_wflow.sh 
+   -- OR --
+   */3 * * * * cd /glade/p/ral/jntp/$USER/expt_dirs/test_CONUS_25km_GFSv15p2 && /glade/p/ral/jntp/tools/rocoto/rocoto-1.3.1/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 
 
 .. note::
 

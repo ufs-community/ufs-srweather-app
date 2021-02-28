@@ -84,7 +84,7 @@ Cron-Associated Parameters
 Directory Parameters
 ====================
 ``EXPT_BASEDIR``: (Default: “”)
-   The base directory in which the experiment directory will be created.  If this is not specified or if it is set to an empty string, it will default to ``${HOMErrfs}/../expt_dirs``, where ``${HOMErrfs}`` contains the full path to the ``regional_workflow`` directory.
+   The base directory in which the experiment directory will be created.  If this is not specified or if it is set to an empty string, it will default to ``${HOMErrfs}/../../expt_dirs``, where ``${HOMErrfs}`` contains the full path to the ``regional_workflow`` directory.
 
 ``EXPT_SUBDIR``: (Default: “”)
    The name that the experiment directory (without the full path) will have.  The full path to the experiment directory, which will be contained in the variable ``EXPTDIR``, will be:
