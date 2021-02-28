@@ -157,7 +157,7 @@ variables, then they should be submitted to the batch system using either someth
 or ``sq_job_diff.sh`` script (for a platform such as Hera that uses the slurm 
 job scheduler) or the ``qsub_job.sh`` or ``qsub_job_diff.sh`` script (for a platform such as 
 Cheyenne that uses PBS or PBS Pro as the job scheduler).  Examples of these scripts are located under 
-``ufs-srweather-app/regional_workflow/ush/Python`` and can be used as an example to create a batch script 
+``ufs-srweather-app/regional_workflow/ush/Python`` and can be used as a starting point to create a batch script 
 for your platform/job scheduler of use. The scripts must be submitted using the command appropriate 
 for the job scheduler used on your platform.  For example, on Hera, 
 ``sq_job.sh`` can be submitted as follows:

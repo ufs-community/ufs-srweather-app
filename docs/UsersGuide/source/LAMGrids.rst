@@ -80,7 +80,7 @@ While the three predefined grids available in this release are ideal for users j
 out with the SRW App, more advanced users may wish to create their own grid for testing over
 a different region and/or with a different resolution.  Creating a user-defined grid requires
 knowledge of how the SRW App workflow functions, in particular, understanding the set of
-scripts that handle the workflow and experiment generation.  It iss also important to note that
+scripts that handle the workflow and experiment generation.  It is also important to note that
 user-defined grids are not a supported feature of the current release, however information is
 being provided for the benefit of the FV3-LAM community.
 
