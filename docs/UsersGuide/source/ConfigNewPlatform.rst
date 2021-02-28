@@ -53,7 +53,10 @@ However, it is also possible to install these utilities via Macports (https://ww
 
 Installing NCEPLIBS-external
 ============================
-In order to facilitate the installation of NCEPLIBS (and therefore, the SRW and other UFS applications) on new platforms, EMC maintains a one-stop package containing most of the prerequisite libraries and software necessary for installing NCEPLIBS. This package is known as NCEPLIBS-external, and is maintained in a git repository at https://github.com/NOAA-EMC/NCEPLIBS-external. Instructions for installing these will depend on your platform, but generally so long as all the above-mentioned prerequisites have been installed you can follow the proceeding instructions verbatim (in bash; a csh-based shell will require different commands). These instructions will install the NCEPLIBS-external in the current directory tree, so be sure you are in the desired location before starting.
+In order to facilitate the installation of NCEPLIBS (and therefore, the SRW and other UFS applications) on new platforms, EMC maintains a one-stop package containing most of the prerequisite libraries and software necessary for installing NCEPLIBS. This package is known as NCEPLIBS-external, and is maintained in a git repository at https://github.com/NOAA-EMC/NCEPLIBS-external. Instructions for installing these will depend on your platform, but generally so long as all the above-mentioned prerequisites have been installed you can follow the proceeding instructions verbatim (in bash; a csh-based shell will require different commands). Some examples for installing on specific platforms can be found in the `NCEPLIBS-external/doc directory <https://github.com/NOAA-EMC/NCEPLIBS-external/tree/release/public-v2/doc>`.
+
+
+These instructions will install the NCEPLIBS-external in the current directory tree, so be sure you are in the desired location before starting.
 
 .. code-block:: console
 
@@ -101,7 +104,13 @@ Prior to building the UFS SRW Application on a new machine, you will need to ins
    make -j4 2>&1 | tee log.make
    make deploy 2>&1 | tee log.deploy
 
-As with NCEPLIBS-external, the above commands go through the process of cloning the git repository for NCEPLIBS, creating and entering a build directory, and invoking cmake and make to build the code. The ``make deploy`` step created a number of modulefiles and scripts that will be used for setting up the build environment for the UFS SRW App. The ``ESMFMKFILE`` variable allows NCEPLIBS to find the location where ESMF has been built.
+As with NCEPLIBS-external, the above commands go through the process of cloning the git repository for NCEPLIBS, creating and entering a build directory, and invoking cmake and make to build the code. The ``make deploy`` step created a number of modulefiles and scripts that will be used for setting up the build environment for the UFS SRW App. The ``ESMFMKFILE`` variable allows NCEPLIBS to find the location where ESMF has been built; if you receive a ``ESMF not found, abort`` error, you may need to specify a slightly different location:
+
+.. code-block:: console
+
+   export ESMFMKFILE=${INSTALL_PREFIX}/lib64/esmf.mk
+
+Then delete and re-create the build directory and continue the build process as described above.
 
 If you skipped the building of any of the software provided by NCEPLIBS-external, you may need to add the appropriate locations to your ``CMAKE_PREFIX_PATH`` variable. Multiple directories may be added, separated by semicolons (;) like in the following example:
 
@@ -135,11 +144,11 @@ Once the Manage Externals step has completed, you will need to make sure your en
 
 If your machine does not support Lua but rather TCL modules, see instructions in the ``NCEPLIBS/README.md`` file for converting to TCL modulefiles.
 
-If your machine does not support modulefiles, you can instead run the provided bash script for setting up the environment:
+If your machine does not support modulefiles, you can instead source the provided bash script for setting up the environment:
 
 .. code-block:: console
 
-   chmod +x ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh
+   source ${INSTALL_PREFIX}/bin/setenv_nceplibs.sh
 
 This script, just like the modulefiles, will set a number of environment variables that will allow CMake to easily find all the libraries that were just built. There is also a csh version of the script in the same directory if your shell is csh-based. If you are using your machine’s pre-built version of any of the NCEP libraries (not recommended), reference that file to see which variables should be set to point CMake in the right direction.
 
@@ -171,7 +180,7 @@ On many platforms this build step will take less than 30 minutes, but for some m
 
 Setting Up Your Python Environment
 ==================================
-The regional_workflow repository contains scripts for generating and running experiments, and these require some specific python packages to function correctly. First, as mentioned before, your platform will need Python 3.6 or newer installed. Once this is done, you will need to install several python packages that are used by the workflow: jinja2 (https://jinja2docs.readthedocs.io/), pyyaml (https://pyyaml.org/wiki/PyYAML), and f90nml (https://pypi.org/project/f90nml/). These packages can be installed individually, but it is recommended you use a package manager (https://www.datacamp.com/community/tutorials/pip-python-package-manager).
+The regional_workflow repository contains scripts for generating and running experiments, and these require some specific python packages to function correctly. First, as mentioned before, your platform will need Python 3.6 or newer installed. Once this is done, you will need to install several python packages that are used by the workflow: ``jinja2`` (https://jinja2docs.readthedocs.io/), ``pyyaml`` (https://pyyaml.org/wiki/PyYAML), and ``f90nml`` (https://pypi.org/project/f90nml/). These packages can be installed individually, but it is recommended you use a package manager (https://www.datacamp.com/community/tutorials/pip-python-package-manager).
 
 If you have conda on your machine:
 
@@ -185,6 +194,8 @@ Otherwise you may be able to use pip3 (the Python3 package manager; may need to 
 
    pip3 install jinja2 pyyaml f90nml
 
+Running the graphics scripts in ``${WORKDIR}/ufs-srweather-app/regional_workflow/ush/Python`` will require the additional packages ``pygrib``, ``cartopy``, ``matplotlib``, ``scipy``, and ``pillow``. These can be installed in the same way as described above.
+
 For the final step of creating and running an experiment, the exact methods will depend on if you are running with or without a workflow manager (Rocoto).
 
 Running Without a Workflow Manager: Generic Linux and MacOS Platforms
@@ -196,7 +207,8 @@ Once the data has been staged, setting up your experiment on a platform without 
 ``MACHINE="MACOS" or MACHINE="LINUX"``
   These are the two ``MACHINE`` settings for generic, non-Rocoto-based platforms; you should choose the one most appropriate for your machine. ``MACOS`` has its own setting due to some differences in how command-line utilities function on Darwin-based operating systems.
 
-``LAYOUT_X=2, LAYOUT_Y=2``
+``LAYOUT_X=2``
+``LAYOUT_Y=2``
   These are the settings that control the MPI decomposition when running the weather model. There are default values, but for your machine it is recommended that you specify your own layout to achieve the correct number of MPI processes for your application.  In total, your machine should be able to handle ``LAYOUT_X×LAYOUT_Y+WRTCMP_write_tasks_per_group`` tasks. ``WRTCMP_write_tasks_per_group`` is the number of MPI tasks that will be set aside for writing model output, and it is a setting dependent on the domain you have selected. You can find and edit the value of this variable in the file ``regional_workflow/ush/set_predef_grid_params.sh``.
 
 ``RUN_CMD_UTILS="mpirun -np 4"``
@@ -214,7 +226,7 @@ Once the data has been staged, setting up your experiment on a platform without 
 ``TOPO_DIR=${WORKDIR}/data/fix_orog``
   Location of ``fix_orog`` static files
 
-``SFC_CLIMO_INPUT_DIR=${WORKDIR}/data/sfc_climo``
+``SFC_CLIMO_INPUT_DIR=${WORKDIR}/data/fix_sfc_climo``
   Location of ``climo_fields_netcdf`` static files
 
 Once you are happy with your settings in ``config.sh``, it is time to run the workflow and move to the experiment directory (that is printed at the end of the script’s execution):
@@ -237,6 +249,7 @@ The ``README.md`` file will contain instructions on the order that each script s
 .. _WallClockTimes:
 
 .. table::  Example wallclock times for each workflow task.
+
 
    +--------------------+----------------------------+------------+-----------+
    | **UFS Component**  | **Script Name**            | **Num.**   | **Wall**  |
