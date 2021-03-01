@@ -56,7 +56,7 @@ On Orion:
 
 .. code-block:: console
 
-   /work/noaa/global/glopara/fix/NaturalEarth 
+   /work/noaa/gsd-fv3-dev/UFS_SRW_App/v1p0/fix_files/NaturalEarth
 
 On Gaea:
 
@@ -102,7 +102,6 @@ On Gaea:
 .. code-block:: console
 
    module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
-   module load rocoto/1.3.3
    module load miniconda3/4.8.3-regional-workflow
 
 .. note::

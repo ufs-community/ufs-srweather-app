@@ -391,43 +391,16 @@ values in ``config_default.sh`` and the values defined in ``config.community.sh`
 
 Python Environment for Workflow
 ===============================
-It is necessary to load the appropriate Python environment for the workflow. The workflow
-requires Python 3, with the packages 'PyYAML', 'Jinja2', and 'f90nml' available. This Python
-environment has already been set up on Level 1 platforms, and can be activated in the following way:
-
-On Cheyenne:
-
-.. code-block:: console
-
-   module load ncarenv
-   ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/regional_workflow
-   module use -a /glade/p/ral/jntp/UFS_SRW_app/modules
-   module load rocoto 
-
-On Hera and Jet:
+It is necessary to load the appropriate Python environment for the workflow.
+The workflow requires Python 3, with the packages 'PyYAML', 'Jinja2', and 'f90nml' available.
+This Python environment has already been set up on Level 1 platforms, and can be activated in
+the following way:
 
 .. code-block:: console
 
-   module use -a /contrib/miniconda3/modulefiles
-   module load miniconda3
-   conda activate regional_workflow
-   module load rocoto
+   source ../../env/wflow_<platform>.env
 
-On Orion:
-
-.. code-block:: console
-
-   module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-   module load miniconda3
-   conda activate regional_workflow
-
-On Gaea:
-
-.. code-block:: console
-
-   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
-   module load miniconda3/4.8.3-regional-workflow
-   module load rocoto/1.3.3
+when in the ``ufs-srweather-app/regional_workflow/ush`` directory.
 
 .. _GeneratingWflowExpt:
 
@@ -655,7 +628,7 @@ Rocoto software is not available on a given platform. These scripts are located 
 a wrapper script to set environment variables and run the job script.
  
 Example batch-submit scripts for Hera (Slurm) and Cheyenne (PBS) are included: ``sq_job.sh``
-and ``qsub_job.sh``. These examples set the build and run environment for Hera or Cheyenne
+and ``qsub_job.sh``, respectively. These examples set the build and run environment for Hera or Cheyenne
 so that run-time libraries match the compiled libraries (i.e. netcdf, mpi). Users may either
 modify the submit batch script as each task is submitted, or duplicate this batch wrapper
 for their system settings for each task. Alternatively, some batch systems allow users to
@@ -668,7 +641,8 @@ be run concurrently (no dependency).
 
 .. table::  List of tasks in the regional workflow in the order that they are executed.
             Scripts with the same stage number may be run simultaneously. The number of
-            processors is typical for Cheyenne or Hera.
+            processors and wall clock time is a good starting point for Cheyenne or Hera 
+            when running a 48-h forecast on the 25-km CONUS domain.
 
    +------------+------------------------+----------------+----------------------------+
    | **Stage/** | **Task Run Script**    | **Number of**  | **Wall clock time (H:MM)** |
@@ -690,7 +664,7 @@ be run concurrently (no dependency).
    +------------+------------------------+----------------+----------------------------+
    | 4          | run_make_lbcs.sh       | 48             | 0:30                       |
    +------------+------------------------+----------------+----------------------------+
-   | 5          | run_fcst.sh            | 48             | 2:30                       |
+   | 5          | run_fcst.sh            | 48             | 0:30                       |
    +------------+------------------------+----------------+----------------------------+
    | 6          | run_post.sh            | 48             | 0:25 (2 min per output     |
    |            |                        |                | forecast hour)             |
