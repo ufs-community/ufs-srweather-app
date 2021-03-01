@@ -150,6 +150,13 @@ seven command line arguments:
 #. The top level of the first experiment directory ``EXPTDIR2`` containing the second set of post-processed data.  The script will look for the data files in the directory ``EXPTDIR2/CDATE/postprd``.
 #. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles.  The script will look for the shape files (``*.shp``) in the directory ``CARTOPY_DIR/shapefiles/natural_earth/cultural``.
 
+An example of plotting differences from two experiments for the same date and predefined domain where one uses 
+the "FV3_GFS_v15p2" suite definition file (SDF) and one using the "FV3_RRFS_v1alpha" SDF is as follows:
+
+.. code-block:: console
+
+   python plot_allvars_diff.py 2019061518 6 18 3 /path-to/expt_dirs1/test_CONUS_3km_GFSv15p2 /path-to/expt_dirs2/test_CONUS_3km_RRFSv1alpha /path-to/NaturalEarth
+
 In this case, the output png files will be located in the directory ``EXPTDIR1/CDATE/postprd``.
 
 
