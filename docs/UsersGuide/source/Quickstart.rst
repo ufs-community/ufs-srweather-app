@@ -223,7 +223,8 @@ To run Rocoto using the script:
    cd $EXPTDIR
    ./launch_FV3LAM_wflow.sh
 
-A log file called ``log.launch_FV3LAM_wflow`` is created in the ``$EXPTDIR``.
+Once the workflow is launched with the ``launch_FV3LAM_wflow.sh`` script, a log file named
+``log.launch_FV3LAM_wflow`` will be created (or appended to it if it already exists) in ``EXPTDIR``.
 
 Or to manually call Rocoto: 
 
