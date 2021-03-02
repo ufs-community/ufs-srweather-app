@@ -75,12 +75,12 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    |                             | the start of each forecast. It is an empty file. No need to |
    |                             | change.                                                     |
    +-----------------------------+-------------------------------------------------------------+
-   | data_table_[CCPP]           | File specifying the output fields of the forecast model.    |
+   | diag_table_[CCPP]           | File specifying the output fields of the forecast model.    |
    |                             | A different diag_table may be configured for different      |
    |                             | CCPP suites.                                                |
    +-----------------------------+-------------------------------------------------------------+
    | field_table_[CCPP]          | Cycle-independent file that the forecast model reads in at  |
-   |                             | the start of each forecast. It specifies the scalars that   |
+   |                             | the start of each forecast. It specifies the tracers that   |
    |                             | the forecast model will advect.  A different field_table    |
    |                             | may be needed for different CCPP suites.                    |
    +-----------------------------+-------------------------------------------------------------+
@@ -237,8 +237,8 @@ Static Files
 A set of fix files are necessary to run the SRW Application. Environment variables describe the
 location of the static files: ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` are the directories
 where the static files are located. If you are on a pre-configured or configurable platform, there is no
-need to stage the fixed files manually because they are already available on those platforms and the paths
-are set in ``regional_workflow/ush/setup.sh`` for the static files. If the users platform is not defined
+need to stage the fixed files manually because they have been prestaged and the paths
+are set in ``regional_workflow/ush/setup.sh``. If the user's platform is not defined
 in that file, the static files can be pulled individually or as a full tar file from the `FTP data repository
 <https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/>`_ or from `Amazon Web Services (AWS) cloud storage
 <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/fix_files.tar.gz>`_
@@ -406,7 +406,7 @@ are initializing from NEMSIO format FV3GFS files.
 Best Practices for Conserving Disk Space and Keeping Files Safe
 ---------------------------------------------------------------
 Initial and lateral boundary condition files are large and can occupy a significant amount of
-disk space. If various users will employ a common files system to conduct runs, it is recommended
+disk space. If various users will employ a common file system to conduct runs, it is recommended
 that the users share the same ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``
 directories. That way, if raw model input files are already on disk for a given date they do not
 need to be replicated.

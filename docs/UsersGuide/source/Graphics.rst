@@ -44,7 +44,7 @@ On Hera:
 
 .. code-block:: console
 
-   /scratch2/NCEPDEV/fv3-cam/Chan-hoo.Jeon/tools/NaturalEarth
+   /scratch2/BMC/det/UFS_SRW_app/v1p0/fix_files/NaturalEarth 
 
 On Jet:
  
@@ -56,7 +56,7 @@ On Orion:
 
 .. code-block:: console
 
-   /home/chjeon/tools/NaturalEarth
+   /work/noaa/gsd-fv3-dev/UFS_SRW_App/v1p0/fix_files/NaturalEarth
 
 On Gaea:
 
@@ -78,6 +78,7 @@ On Cheyenne:
 
 .. code-block:: console
 
+   module load ncarenv
    ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/python_graphics
 
 On Hera and Jet:
@@ -100,14 +101,16 @@ On Gaea:
 
 .. code-block:: console
 
-   module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-   module load miniconda3
-   conda activate pygraf
+   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
+   module load miniconda3/4.8.3-regional-workflow
 
 .. note::
 
    If using one of the batch submission scripts described below, the user does not need to 
    manually load an environment because the scripts perform this task.
+
+Plotting output from one experiment
+===================================
 
 Before generating plots, it is convenient to change location to the directory containing the plotting
 scripts:
@@ -138,6 +141,9 @@ The output files (in .png format) will be located in the directory ``EXPTDIR/CDA
 where in this case ``EXPTDIR`` is ``/path-to/expt_dirs/test_CONUS_25km_GFSv15p2`` and ``CDATE`` 
 is ``2019061500``.
 
+Plotting differences from two experiments
+=========================================
+
 To generate difference plots, the ``plot_allvars_diff.py`` script must be called with the following 
 seven command line arguments:
 
@@ -149,27 +155,34 @@ seven command line arguments:
 #. The top level of the first experiment directory ``EXPTDIR2`` containing the second set of post-processed data.  The script will look for the data files in the directory ``EXPTDIR2/CDATE/postprd``.
 #. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles.  The script will look for the shape files (``*.shp``) in the directory ``CARTOPY_DIR/shapefiles/natural_earth/cultural``.
 
+An example of plotting differences from two experiments for the same date and predefined domain where one uses 
+the "FV3_GFS_v15p2" suite definition file (SDF) and one using the "FV3_RRFS_v1alpha" SDF is as follows:
+
+.. code-block:: console
+
+   python plot_allvars_diff.py 2019061518 6 18 3 /path-to/expt_dirs1/test_CONUS_3km_GFSv15p2 /path-to/expt_dirs2/test_CONUS_3km_RRFSv1alpha /path-to/NaturalEarth
+
 In this case, the output png files will be located in the directory ``EXPTDIR1/CDATE/postprd``.
 
+Submitting plotting scripts through a batch system
+==================================================
 
 If the Python scripts are being used to create plots of multiple forecast lead times and forecast
-variables, then they should be submitted to the batch system using either the ``sq_job.sh``
-or ``sq_job_diff.sh`` script (for platforms such as Hera, Jet, Orion, and Gaea that use slurm as 
-the job scheduler) or the ``qsub_job.sh`` or ``qsub_job_diff.sh`` script (for platforms such as 
-Cheyenne that use PBS or PBS Pro as the job scheduler).  These scripts are located under 
-``ufs-srweather-app/regional_workflow/ush/Python`` and must be submitted using the command appropriate 
-for the job scheduler used on the current platform.  For example, on Hera, Jet, Orion, and Gaea, 
-``sq_job.sh`` can be submitted as follows:
+variables, then you may need to submit them to the batch system. Example scripts are provided called 
+``sq_job.sh`` and ``sq_job_diff.sh`` for use on a platform such as Hera that uses the Slurm 
+job scheduler or ``qsub_job.sh`` and ``qsub_job_diff.sh`` for use on a platform such as 
+Cheyenne that uses PBS as the job scheduler.  Examples of these scripts are located under 
+``ufs-srweather-app/regional_workflow/ush/Python`` and can be used as a starting point to create a batch script 
+for your platform/job scheduler of use. 
+
+At a minimum, the account should be set appropriately prior to job submission:
 
 .. code-block:: console
 
-   sbatch sq_job.sh
+   #SBATCH --account=an_account
 
-On Cheyenne, ``qsub_job.sh`` can be submitted as follows:
-
-.. code-block:: console
-
-   qsub qsub_job.sh
+Depending on the platform you are running on, you may also need to adjust the settings to use 
+the correct Python environment and path to the shape files.
 
 When using these batch scripts, several environment variables must be set prior to submission.
 If plotting output from a single cycle, the variables to set are ``HOMErrfs`` and ``EXPTDIR``.
@@ -227,4 +240,16 @@ and ending with the last forecast hour, use
    export FCST_END=${FCST_LEN_HRS}
    export FCST_INC=6
 
+The scripts must be submitted using the command appropriate
+for the job scheduler used on your platform.  For example, on Hera,
+``sq_job.sh`` can be submitted as follows:
 
+.. code-block:: console
+
+   sbatch sq_job.sh
+
+On Cheyenne, ``qsub_job.sh`` can be submitted as follows:
+
+.. code-block:: console
+
+   qsub qsub_job.sh
