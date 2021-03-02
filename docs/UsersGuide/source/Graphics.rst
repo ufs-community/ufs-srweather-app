@@ -109,6 +109,9 @@ On Gaea:
    If using one of the batch submission scripts described below, the user does not need to 
    manually load an environment because the scripts perform this task.
 
+Plotting output from one experiment
+===================================
+
 Before generating plots, it is convenient to change location to the directory containing the plotting
 scripts:
 
@@ -138,6 +141,9 @@ The output files (in .png format) will be located in the directory ``EXPTDIR/CDA
 where in this case ``EXPTDIR`` is ``/path-to/expt_dirs/test_CONUS_25km_GFSv15p2`` and ``CDATE`` 
 is ``2019061500``.
 
+Plotting differences from two experiments
+=========================================
+
 To generate difference plots, the ``plot_allvars_diff.py`` script must be called with the following 
 seven command line arguments:
 
@@ -157,6 +163,9 @@ the "FV3_GFS_v15p2" suite definition file (SDF) and one using the "FV3_RRFS_v1al
    python plot_allvars_diff.py 2019061518 6 18 3 /path-to/expt_dirs1/test_CONUS_3km_GFSv15p2 /path-to/expt_dirs2/test_CONUS_3km_RRFSv1alpha /path-to/NaturalEarth
 
 In this case, the output png files will be located in the directory ``EXPTDIR1/CDATE/postprd``.
+
+Submitting plotting scripts through a batch system
+==================================================
 
 If the Python scripts are being used to create plots of multiple forecast lead times and forecast
 variables, then you may need to submit them to the batch system. Example scripts are provided called 
