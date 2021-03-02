@@ -158,26 +158,22 @@ the "FV3_GFS_v15p2" suite definition file (SDF) and one using the "FV3_RRFS_v1al
 
 In this case, the output png files will be located in the directory ``EXPTDIR1/CDATE/postprd``.
 
-
 If the Python scripts are being used to create plots of multiple forecast lead times and forecast
-variables, then they should be submitted to the batch system using either something like the ``sq_job.sh``
-or ``sq_job_diff.sh`` script (for a platform such as Hera that uses the slurm 
-job scheduler) or the ``qsub_job.sh`` or ``qsub_job_diff.sh`` script (for a platform such as 
-Cheyenne that uses PBS or PBS Pro as the job scheduler).  Examples of these scripts are located under 
+variables, then you may need to submit them to the batch system. Example scripts are provided called 
+``sq_job.sh`` and ``sq_job_diff.sh`` for use on a platform such as Hera that uses the Slurm 
+job scheduler or ``qsub_job.sh`` and ``qsub_job_diff.sh`` for use on a platform such as 
+Cheyenne that uses PBS as the job scheduler.  Examples of these scripts are located under 
 ``ufs-srweather-app/regional_workflow/ush/Python`` and can be used as a starting point to create a batch script 
-for your platform/job scheduler of use. The scripts must be submitted using the command appropriate 
-for the job scheduler used on your platform.  For example, on Hera, 
-``sq_job.sh`` can be submitted as follows:
+for your platform/job scheduler of use. 
+
+At a minimum, the account should be set appropriately prior to job submission:
 
 .. code-block:: console
 
-   sbatch sq_job.sh
+   #SBATCH --account=an_account
 
-On Cheyenne, ``qsub_job.sh`` can be submitted as follows:
-
-.. code-block:: console
-
-   qsub qsub_job.sh
+Depending on the platform you are running on, you may also need to adjust the settings to use 
+the correct Python environment and path to the shape files.
 
 When using these batch scripts, several environment variables must be set prior to submission.
 If plotting output from a single cycle, the variables to set are ``HOMErrfs`` and ``EXPTDIR``.
@@ -234,3 +230,17 @@ and ending with the last forecast hour, use
    export FCST_START=6
    export FCST_END=${FCST_LEN_HRS}
    export FCST_INC=6
+
+The scripts must be submitted using the command appropriate
+for the job scheduler used on your platform.  For example, on Hera,
+``sq_job.sh`` can be submitted as follows:
+
+.. code-block:: console
+
+   sbatch sq_job.sh
+
+On Cheyenne, ``qsub_job.sh`` can be submitted as follows:
+
+.. code-block:: console
+
+   qsub qsub_job.sh
