@@ -359,7 +359,11 @@ if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
   print_info_msg "
 Copying contents of user cron table to backup file:
   crontab_backup_fp = \"${crontab_backup_fp}\""
-  crontab -l > ${crontab_backup_fp}
+  if [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
+    cp_vrfy "/u/$USER/cron/mycrontab" "${crontab_backup_fp}"
+  else
+    crontab -l > ${crontab_backup_fp}
+  fi
 #
 # Below, we use "grep" to determine whether the crontab line that the
 # variable CRONTAB_LINE contains is already present in the cron table.
@@ -382,7 +386,11 @@ Copying contents of user cron table to backup file:
 # string in crontab_line_esc_astr (in which case it does something more
 # than the command portion of the string in crontab_line_esc_astr does).
 #
-  grep_output=$( crontab -l | grep "^${crontab_line_esc_astr}$" )
+  if [ "$MACHINE" = "WCOSS_DELL_P3" ];then
+    grep_output=$( grep "^${crontab_line_esc_astr}$" "/u/$USER/cron/mycrontab" )
+  else
+    grep_output=$( crontab -l | grep "^${crontab_line_esc_astr}$" )
+  fi
   exit_status=$?
 
   if [ "${exit_status}" -eq 0 ]; then
@@ -399,7 +407,11 @@ Adding the following line to the cron table in order to automatically
 resubmit FV3-LAM workflow:
   CRONTAB_LINE = \"${CRONTAB_LINE}\""
 
-    ( crontab -l; echo "${CRONTAB_LINE}" ) | crontab -
+    if [ "$MACHINE" = "WCOSS_DELL_P3" ];then
+      echo "${CRONTAB_LINE}" >> "/u/$USER/cron/mycrontab"      
+    else
+      ( crontab -l; echo "${CRONTAB_LINE}" ) | crontab -
+    fi
 
   fi
 

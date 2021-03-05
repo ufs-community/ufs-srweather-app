@@ -111,6 +111,12 @@ else
 
   "RAP")
     case $MACHINE in
+    "WCOSS_CRAY")
+      EXTRN_MDL_SYSBASEDIR_ICS="/gpfs/hps/nco/ops/com/rap/prod"
+      ;;
+    "WCOSS_DELL_P3")
+      EXTRN_MDL_SYSBASEDIR_ICS="/gpfs/hps/nco/ops/com/rap/prod"
+      ;;
     "HERA")
       EXTRN_MDL_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
       ;;
@@ -128,6 +134,12 @@ else
 
   "HRRR")
     case $MACHINE in
+    "WCOSS_CRAY")
+      EXTRN_MDL_SYSBASEDIR_ICS="/gpfs/hps/nco/ops/com/hrrr/prod"
+      ;;
+    "WCOSS_DELL_P3")
+      EXTRN_MDL_SYSBASEDIR_ICS="/gpfs/hps/nco/ops/com/hrrr/prod"
+      ;;
     "HERA")
       EXTRN_MDL_SYSBASEDIR_ICS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
       ;;
@@ -145,6 +157,12 @@ else
 
   "NAM")
     case $MACHINE in
+    "WCOSS_CRAY")
+      EXTRN_MDL_SYSBASEDIR_ICS="/gpfs/dell1/nco/ops/com/nam/prod"
+      ;;
+    "WCOSS_DELL_P3")
+      EXTRN_MDL_SYSBASEDIR_ICS="/gpfs/dell1/nco/ops/com/nam/prod"
+      ;;
     "HERA")
       EXTRN_MDL_SYSBASEDIR_ICS="dummy_value"
       ;;
@@ -279,6 +297,12 @@ else
 
   "RAP")
     case $MACHINE in
+    "WCOSS_CRAY")
+      EXTRN_MDL_SYSBASEDIR_LBCS="/gpfs/hps/nco/ops/com/rap/prod"
+      ;;
+    "WCOSS_DELL_P3")
+      EXTRN_MDL_SYSBASEDIR_LBCS="/gpfs/hps/nco/ops/com/rap/prod"
+      ;;
     "HERA")
       EXTRN_MDL_SYSBASEDIR_LBCS="/scratch2/BMC/public/data/gsd/rap/full/wrfnat"
       ;;
@@ -296,6 +320,12 @@ else
 
   "HRRR")
     case $MACHINE in
+    "WCOSS_CRAY")
+      EXTRN_MDL_SYSBASEDIR_LBCS="/gpfs/hps/nco/ops/com/hrrr/prod"
+      ;;
+    "WCOSS_DELL_P3")
+      EXTRN_MDL_SYSBASEDIR_LBCS="/gpfs/hps/nco/ops/com/hrrr/prod"
+      ;;
     "HERA")
       EXTRN_MDL_SYSBASEDIR_LBCS="/scratch2/BMC/public/data/gsd/hrrr/conus/wrfnat"
       ;;

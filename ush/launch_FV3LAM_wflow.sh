@@ -402,8 +402,11 @@ launch script for this experiment:
 # ly find lines in the crontab that contain exactly the string in cron-
 # tab_line_esc_astr without any leading or trailing characters.
 #
-    ( crontab -l | grep -v "^${crontab_line_esc_astr}$" ) | crontab -
-
+    if [ "$MACHINE" = "WCOSS_DELL_P3" ];then
+      grep -v "^${crontab_line_esc_astr}$" "/u/$USER/cron/mycrontab" > tmpfile && mv tmpfile "/u/$USER/cron/mycrontab"
+    else
+      ( crontab -l | grep -v "^${crontab_line_esc_astr}$" ) | crontab -
+    fi
   fi
 #
 # Print the workflow completion message to the launch log file.
