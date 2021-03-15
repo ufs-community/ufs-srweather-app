@@ -61,6 +61,8 @@ valid_args=( \
 "postprd_dir" \
 "fhr_dir" \
 "fhr" \
+"fmn" \
+"dt_atmos" \
 )
 process_args valid_args "$@"
 #
@@ -204,20 +206,32 @@ tmmark="tm00"
 #
 #-----------------------------------------------------------------------
 #
-dyn_file="${run_dir}/dynf${fhr}.nc"
-phy_file="${run_dir}/phyf${fhr}.nc"
+mnts_secs_str=""
+if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+  if [ ${fhr}${fmn} = "00000" ]; then
+    mnts_secs_str=":"`date --utc --date "${yyyymmdd} ${hh} UTC + ${dt_atmos} seconds" +%M:%S`
+  else
+    mnts_secs_str=":${fmn}:00"
+  fi
+else
+  fmn="00"
+fi
 
-post_time=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours" "+%Y%m%d%H" )
+dyn_file="${run_dir}/dynf${fhr}${mnts_secs_str}.nc"
+phy_file="${run_dir}/phyf${fhr}${mnts_secs_str}.nc"
+post_time=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours +${fmn} minutes" "+%Y%m%d%H%M" )
+
 post_yyyy=${post_time:0:4}
 post_mm=${post_time:4:2}
 post_dd=${post_time:6:2}
 post_hh=${post_time:8:2}
+post_mn=${post_time:10:2}
 
 cat > itag <<EOF
 ${dyn_file}
 netcdf
 grib2
-${post_yyyy}-${post_mm}-${post_dd}_${post_hh}:00:00
+${post_yyyy}-${post_mm}-${post_dd}_${post_hh}:${post_mn}:00
 FV3R
 ${phy_file}
 
@@ -268,8 +282,13 @@ The \${fhr} variable contains too few or too many characters:
   fhr = \"$fhr\""
 fi
 
-mv_vrfy BGDAWP.GrbF${post_fhr} ${postprd_dir}/${NET}.t${cyc}z.bgdawpf${fhr}.${tmmark}.grib2
-mv_vrfy BGRD3D.GrbF${post_fhr} ${postprd_dir}/${NET}.t${cyc}z.bgrd3df${fhr}.${tmmark}.grib2
+dot_post_mn_or_null=""
+if [ "${post_mn}" != "00" ]; then
+  dot_post_mn_or_null=".${post_mn}"
+fi
+post_fn_suffix="GrbF${post_fhr}${dot_post_mn_or_null}"
+mv_vrfy BGDAWP.${post_fn_suffix} ${postprd_dir}/${NET}.t${cyc}z.bgdawpf${fhr}${post_mn}.${tmmark}.grib2
+mv_vrfy BGRD3D.${post_fn_suffix} ${postprd_dir}/${NET}.t${cyc}z.bgrd3df${fhr}${post_mn}.${tmmark}.grib2
 
 #Link output for transfer to Jet
 # Should the following be done only if on jet??
@@ -280,10 +299,10 @@ mv_vrfy BGRD3D.GrbF${post_fhr} ${postprd_dir}/${NET}.t${cyc}z.bgrd3df${fhr}.${tm
 # instead of calling sed.
 start_date=$( echo "${cdate}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/' )
 basetime=$( date +%y%j%H%M -d "${start_date}" )
-ln_vrfy -fs ${postprd_dir}/${NET}.t${cyc}z.bgdawpf${fhr}.${tmmark}.grib2 \
-            ${postprd_dir}/BGDAWP_${basetime}f${fhr}00
-ln_vrfy -fs ${postprd_dir}/${NET}.t${cyc}z.bgrd3df${fhr}.${tmmark}.grib2 \
-            ${postprd_dir}/BGRD3D_${basetime}f${fhr}00
+ln_vrfy -fs ${postprd_dir}/${NET}.t${cyc}z.bgdawpf${fhr}${post_mn}.${tmmark}.grib2 \
+            ${postprd_dir}/BGDAWP_${basetime}f${fhr}${post_mn}
+ln_vrfy -fs ${postprd_dir}/${NET}.t${cyc}z.bgrd3df${fhr}${post_mn}.${tmmark}.grib2 \
+            ${postprd_dir}/BGRD3D_${basetime}f${fhr}${post_mn}
 
 rm_vrfy -rf ${fhr_dir}
 #

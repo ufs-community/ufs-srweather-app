@@ -282,6 +282,12 @@ settings="\
   'ensmem_indx_name': ${ensmem_indx_name}
   'uscore_ensmem_name': ${uscore_ensmem_name}
   'slash_ensmem_subdir': ${slash_ensmem_subdir}
+#
+# Parameters associated with subhourly post-processed output
+#
+  'sub_hourly_post': ${SUB_HOURLY_POST}
+  'delta_min': ${DT_SUBHOURLY_POST_MNTS}
+  'first_fv3_file_tstr': "000:"`date -d "${DATE_FIRST_CYCL} +${DT_ATMOS} seconds" +%M:%S`
 " # End of "settings" variable.
 
 print_info_msg $VERBOSE "

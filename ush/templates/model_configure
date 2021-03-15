@@ -49,10 +49,10 @@ write_fsyncflag:         .false.
 # Output frequency in time steps (positive values override "nfhout" and 
 # "nfhout_hf").
 #
-nfhout:     1
+nfhout:     {{ nfhout }}
 nfhmax_hf:  60
 nfhout_hf:  1
-nsout:      -1
+nsout:      {{ nsout }}
 #
 # Coordinate system used by the output grid.
 #

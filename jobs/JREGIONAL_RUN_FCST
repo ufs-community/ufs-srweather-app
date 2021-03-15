@@ -73,6 +73,7 @@ mkdir_vrfy -p ${run_dir}/RESTART
 #
 #-----------------------------------------------------------------------
 #
+
 $SCRIPTSDIR/exregional_run_fcst.sh \
   cdate="${CDATE}" \
   cycle_dir="${CYCLE_DIR}" \

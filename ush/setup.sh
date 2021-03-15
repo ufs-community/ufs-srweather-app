@@ -365,6 +365,33 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that SUB_HOURLY_POST is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "SUB_HOURLY_POST" "valid_vals_SUB_HOURLY_POST"
+#
+# Set SUB_HOURLY_POST to either "TRUE" or "FALSE" so we don't have to consider
+# other valid values later on.
+#
+SUB_HOURLY_POST=${SUB_HOURLY_POST^^}
+if [ "$SUB_HOURLY_POST" = "TRUE" ] || \
+   [ "$SUB_HOURLY_POST" = "YES" ]; then
+  SUB_HOURLY_POST="TRUE"
+elif [ "$SUB_HOURLY_POST" = "FALSE" ] || \
+     [ "$SUB_HOURLY_POST" = "NO" ]; then
+  SUB_HOURLY_POST="FALSE"
+fi
+
+if [ "${DT_SUBHOURLY_POST_MNTS}" -eq "0" ]; then
+  SUB_HOURLY_POST="FALSE"
+  print_info_msg "NOTE: since you have set DT_SUBHOURLY_POST_MNTS to '00', then 
+  SUB_HOURLY_POST is being overwritten to FALSE. If you do not want this, you 
+  must set DT_SUBHOURLY_POST_MNTS to something other than '00.'"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that DOT_OR_USCORE is set to a valid value.
 #
 #-----------------------------------------------------------------------
@@ -577,6 +604,20 @@ DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
 month, and DD is the 2-digit day-of-month.
   DATE_LAST_CYCL = \"${DATE_LAST_CYCL}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Check that DT_SUBHOURLY_POST_MNTS is a string consisting of exactly 2 digits between "00" and "59"
+#
+#-----------------------------------------------------------------------
+#
+min_or_null=$( printf "%s" "${DT_SUBHOURLY_POST_MNTS}" | \
+                sed -n -r -e "s/^([0-5][0-9])$/\1/p" )
+if [ -z "${min_or_null}" ]; then
+  print_err_msg_exit "\
+DT_SUBHOURLY_POST_MNTS must be a 2-digit integer between 00 and 59 inclusive, as "MM".
+  DT_SUBHOURLY_POST_MNTS = \"${DT_SUBHOURLY_POST_MNTS}\""
 fi
 #
 #-----------------------------------------------------------------------
@@ -975,6 +1016,22 @@ The forecast model main time step (DT_ATMOS) is set to a null string:
 Please set this to a valid numerical value in the user-specified experiment
 configuration file (EXPT_CONFIG_FP) and rerun:
   EXPT_CONFIG_FP = \"${EXPT_CONFIG_FP}\""
+else
+  if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+    ((rem = (DT_SUBHOURLY_POST_MNTS*60) % DT_ATMOS))
+    if [ ${rem} -ne 0 ]; then
+      print_err_msg_exit "\
+When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"), the time
+interval specified by DT_SUBHOURLY_POST_MNTS (after converting to seconds) must be evenly divisible 
+by the time step DT_ATMOS used in the forecast model, i.e. the remainder (rem) must 
+be zero.  In this case, it is not:
+  SUB_HOURLY_POST = \"${SUB_HOURLY_POST}\"
+  DT_SUBHOURLY_POST_MNTS = \"${DT_SUBHOURLY_POST_MNTS}\"
+  DT_ATMOS = \"${DT_ATMOS}\"
+  rem = \$(( (DT_SUBHOURLY_POST_MNTS*60) %% DT_ATMOS )) = $rem
+Please reset DT_SUBHOURLY_POST_MNTS and/or DT_ATMOS so that the remainder is zero."
+    fi
+  fi
 fi
 
 if [ -z "${LAYOUT_X}" ]; then

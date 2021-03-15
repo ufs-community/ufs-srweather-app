@@ -390,7 +390,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
-  
+
     <dependency>
       <and>
         <taskdep task="&MAKE_ICS_TN;{{ uscore_ensmem_name }}"/>
@@ -403,19 +403,34 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <metatask name="&RUN_POST_TN;{{ uscore_ensmem_name }}">
+  {% if sub_hourly_post %}
+<!--
+Define the post-processing task for first model output time.  The forecast 
+hour corresponding to this output time is zero (formatted to the appropriate
+number of digits), and the corresponding forecast minute is the first model 
+time step dt_atmos, i.e. it is not zero.  This is because FV3 is designed 
+such that its first output file contains fields at the first time step.  
+It is for this reason that this task is not rolled into the metatask(s) 
+further below.
 
-    <var name="fhr"> {% for h in range(0, fcst_len_hrs+1) %}{{ " %03d" % h  }}{% endfor %} </var>
+Note that we wrap this task in a metatask in order to be able to declare
+and use the variables fhr and fmin.  This allows the block of code inside
+the <task> tag (except for the dependencies) to be identical to the ones 
+later below for other output times.
+-->
+  <metatask>
 
-    <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#" maxtries="{{ maxtries_run_post }}">
+    <var name="fhr">000</var>
+    <var name="fmin">00</var>
+    <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
       <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
-      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
-      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#_@Y@m@d@H.log</cyclestr></join>
+      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#</jobname>
+      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#_@Y@m@d@H.log</cyclestr></join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -424,13 +439,20 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
+      <envar><name>fmn</name><value>#fmin#</value></envar>
 
+{#
+Note that because the forecast minutes and seconds corresponding to the
+first model output time are not exactly zero, we use the jinja template
+variable first_fv3_file_tstr instead of fhr and fmin to form the file 
+names in the dependencies.
+#}
       <dependency>
         <or>
           <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
           <and>
-            <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#.nc</cyclestr></datadep>
-            <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#.nc</cyclestr></datadep>
+            <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf{{ first_fv3_file_tstr }}.nc</cyclestr></datadep>
+            <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf{{ first_fv3_file_tstr }}.nc</cyclestr></datadep>
           </and>
         </or>
       </dependency>
@@ -438,6 +460,172 @@ MODULES_RUN_TASK_FP script.
     </task>
 
   </metatask>
+
+<!--
+Define the post-processing tasks for the second through last output minutes
+of the first output hour (which is zero).  We use two metatasks for this.
+The inner one is needed to loop over the minutes, and the outer one is 
+used in order to be able to declare and use the variable fhr.  Use of this
+variable (along with the fmin variable in the inner metatask) allows the 
+block of code inside the <task> tag to be identical to the ones later below 
+for other output times.
+-->
+  <metatask name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f000">
+
+    <var name="fhr">000</var>
+    <metatask>
+
+      <var name="fmin">{% for min in range(delta_min, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}</var>
+      <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#" maxtries="{{ maxtries_run_post }}">
+
+        &RSRV_DEFAULT;
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
+        <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
+        <walltime>{{ wtime_run_post }}</walltime>
+        <nodesize>&NCORES_PER_NODE;</nodesize>
+        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#</jobname>
+        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#_@Y@m@d@H.log</cyclestr></join>
+
+        <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+        <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+        <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>fhr</name><value>#fhr#</value></envar>
+        <envar><name>fmn</name><value>#fmin#</value></envar>
+
+        <dependency>
+          <or>
+            <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+            <and>
+              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmin#:00.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmin#:00.nc</cyclestr></datadep>
+            </and>
+          </or>
+        </dependency>
+
+      </task>
+
+    </metatask>
+
+  </metatask>
+  {% endif %}
+
+  <metatask name="&RUN_POST_TN;{{ uscore_ensmem_name }}">
+  {% if sub_hourly_post %}
+<!--
+Define the post-processing tasks for the second through next-to-last model
+output hours (and all output minutes for each such hour).  
+-->
+    <var name="fhr">{% for h in range(1, fcst_len_hrs) %}{{ " %03d" % h }}{% endfor %}</var>
+    <metatask>
+      <var name="fmin">{% for min in range(0, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}</var>
+  {% else %}
+<!--
+Define the post-processing tasks for each model output hour.  Note that
+only one metatask is needed for this purpose (the inner one that loops 
+over the hours), but we use two metatasks in order to be able to use the 
+variable fmin, which here is always set to zero.  Use of this variable 
+(along with the fhr variable in the inner metatask) allows the block of 
+code inside the <task> tag to be identical to the case in which subhourly 
+post-processing is performed (i.e. the case in which the minutes are not 
+always zero).
+-->
+    <var name="fhr">{% for h in range(0, fcst_len_hrs+1) %}{{ " %03d" % h }}{% endfor %}</var>
+    <metatask>
+      <var name="fmin">00</var>
+  {% endif %}
+      <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#" maxtries="{{ maxtries_run_post }}">
+
+        &RSRV_DEFAULT;
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
+        <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
+        <walltime>{{ wtime_run_post }}</walltime>
+        <nodesize>&NCORES_PER_NODE;</nodesize>
+        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#</jobname>
+        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#_@Y@m@d@H.log</cyclestr></join>
+
+        <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+        <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+        <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>fhr</name><value>#fhr#</value></envar>
+        <envar><name>fmn</name><value>#fmin#</value></envar>
+
+        <dependency>
+          <or>
+            <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+            <and>
+            {% if sub_hourly_post %}
+              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmin#:00.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmin#:00.nc</cyclestr></datadep>
+            {% else %}
+              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#.nc</cyclestr></datadep>
+            {% endif %}
+            </and>
+          </or>
+        </dependency>
+
+      </task>
+
+    </metatask>
+
+  </metatask>
+
+{% if sub_hourly_post %}
+<!--
+Define the post-processing task for the last model output time.  The 
+forecast hour corresponding to this output time is the length of the 
+forecast (assuming it is specified in integer hours), and the corresponding 
+minute is 0.  This task cannot be included in the metatask above because 
+for a given hour, the latter loops over all the valid output minutes, 
+whereas for this last hour, only the first minute must be considered.
+
+Note that we wrap this task in a metatask in order to be able to declare
+and use the variables fhr and fmin.  This allows the block of code inside
+the <task> tag to be identical to the ones above for other output times.
+-->
+  <metatask>
+
+    <var name="fhr">{{ "%03d" % fcst_len_hrs }}</var>
+    <var name="fmin">00</var>
+    <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#" maxtries="{{ maxtries_run_post }}">
+
+      &RSRV_DEFAULT;
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
+      <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
+      <walltime>{{ wtime_run_post }}</walltime>
+      <nodesize>&NCORES_PER_NODE;</nodesize>
+      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#</jobname>
+      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#_@Y@m@d@H.log</cyclestr></join>
+
+      <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+      <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+      <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+      <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+      <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+      <envar><name>fhr</name><value>#fhr#</value></envar>
+      <envar><name>fmn</name><value>#fmin#</value></envar>
+
+      <dependency>
+        <or>
+          <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+          <and>
+            <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmin#:00.nc</cyclestr></datadep>
+            <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmin#:00.nc</cyclestr></datadep>
+          </and>
+        </or>
+      </dependency>
+
+    </task>
+
+  </metatask>
+{% endif %}
 
 {% if do_ensemble %}
   </metatask>
