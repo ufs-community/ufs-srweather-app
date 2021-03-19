@@ -232,6 +232,46 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that RUN_TASK_VX_GRIDSTAT is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "RUN_TASK_VX_GRIDSTAT" "valid_vals_RUN_TASK_VX_GRIDSTAT"
+#
+# Set RUN_TASK_VX_GRIDSTAT to either "TRUE" or "FALSE" so we don't have to
+# consider other valid values later on.
+#
+RUN_TASK_VX_GRIDSTAT=${RUN_TASK_VX_GRIDSTAT^^}
+if [ "${RUN_TASK_VX_GRIDSTAT}" = "TRUE" ] || \
+   [ "${RUN_TASK_VX_GRIDSTAT}" = "YES" ]; then
+  RUN_TASK_VX_GRIDSTAT="TRUE"
+elif [ "${RUN_TASK_VX_GRIDSTAT}" = "FALSE" ] || \
+     [ "${RUN_TASK_VX_GRIDSTAT}" = "NO" ]; then
+  RUN_TASK_VX_GRIDSTAT="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that RUN_TASK_VX_POINTSTAT is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "RUN_TASK_VX_POINTSTAT" "valid_vals_RUN_TASK_VX_POINTSTAT"
+#
+# Set RUN_TASK_VX_POINTSTAT to either "TRUE" or "FALSE" so we don't have to
+# consider other valid values later on.
+#
+RUN_TASK_VX_POINTSTAT=${RUN_TASK_VX_POINTSTAT^^}
+if [ "${RUN_TASK_VX_POINTSTAT}" = "TRUE" ] || \
+   [ "${RUN_TASK_VX_POINTSTAT}" = "YES" ]; then
+  RUN_TASK_VX_POINTSTAT="TRUE"
+elif [ "${RUN_TASK_VX_POINTSTAT}" = "FALSE" ] || \
+     [ "${RUN_TASK_VX_POINTSTAT}" = "NO" ]; then
+  RUN_TASK_VX_POINTSTAT="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that DO_SHUM is set to a valid value.
 #
 #-----------------------------------------------------------------------
@@ -732,7 +772,11 @@ SRC_DIR="${SR_WX_APP_TOP_DIR}/src"
 PARMDIR="$HOMErrfs/parm"
 MODULES_DIR="$HOMErrfs/modulefiles"
 EXECDIR="${SR_WX_APP_TOP_DIR}/bin"
+FIXrrfs="$HOMErrfs/fix"
 TEMPLATE_DIR="$USHDIR/templates"
+VX_CONFIG_DIR="$TEMPLATE_DIR/parm"
+METPLUS_CONF="$TEMPLATE_DIR/parm/metplus"
+MET_CONFIG="$TEMPLATE_DIR/parm/met"
 
 case $MACHINE in
 
@@ -1661,6 +1705,47 @@ one above.  Reset values are:
     print_info_msg "$msg"
 
   fi
+
+  if [ "${RUN_TASK_VX_GRIDSTAT}" = "TRUE" ] || \
+     [ "${RUN_TASK_VX_GRIDSTAT}" = "FALSE" ]; then
+
+    msg="
+When RUN_ENVIR is set to \"nco\", it is assumed that the verification
+will not be run.
+  RUN_TASK_VX_GRIDSTAT = \"${RUN_TASK_VX_GRIDSTAT}\"
+Resetting RUN_TASK_VX_GRIDSTAT to \"FALSE\"
+Reset value is:"
+
+    RUN_TASK_VX_GRIDSTAT="FALSE"
+
+    msg="$msg""
+  RUN_TASK_VX_GRIDSTAT = \"${RUN_TASK_VX_GRIDSTAT}\"
+"
+
+    print_info_msg "$msg"
+
+  fi
+
+  if [ "${RUN_TASK_VX_POINTSTAT}" = "TRUE" ] || \
+     [ "${RUN_TASK_VX_POINTSTAT}" = "FALSE" ]; then
+
+    msg="
+When RUN_ENVIR is set to \"nco\", it is assumed that the verification
+will not be run.
+  RUN_TASK_VX_POINTSTAT = \"${RUN_TASK_VX_POINTSTAT}\"
+Resetting RUN_TASK_VX_POINTSTAT to \"FALSE\"
+Reset value is:"
+
+    RUN_TASK_VX_POINTSTAT="FALSE"
+
+    msg="$msg""
+  RUN_TASK_VX_POINTSTAT = \"${RUN_TASK_VX_POINTSTAT}\"
+"
+
+    print_info_msg "$msg"
+
+  fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -2492,12 +2577,16 @@ SRC_DIR="$SRC_DIR"
 PARMDIR="$PARMDIR"
 MODULES_DIR="${MODULES_DIR}"
 EXECDIR="$EXECDIR"
+FIXrrfs="$FIXrrfs"
 FIXam="$FIXam"
 FIXLAM="$FIXLAM"
 FIXgsm="$FIXgsm"
 COMROOT="$COMROOT"
 COMOUT_BASEDIR="${COMOUT_BASEDIR}"
 TEMPLATE_DIR="${TEMPLATE_DIR}"
+VX_CONFIG_DIR="${VX_CONFIG_DIR}"
+METPLUS_CONF="${METPLUS_CONF}"
+MET_CONFIG="${MET_CONFIG}"
 UFS_WTHR_MDL_DIR="${UFS_WTHR_MDL_DIR}"
 UFS_UTILS_DIR="${UFS_UTILS_DIR}"
 SFC_CLIMO_INPUT_DIR="${SFC_CLIMO_INPUT_DIR}"

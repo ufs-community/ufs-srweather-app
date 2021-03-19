@@ -22,18 +22,33 @@ Parameters needed by the job scheduler.
 <!--
 Workflow task names.
 -->
-<!ENTITY MAKE_GRID_TN      "{{ make_grid_tn }}">
-<!ENTITY MAKE_OROG_TN      "{{ make_orog_tn }}">
-<!ENTITY MAKE_SFC_CLIMO_TN "{{ make_sfc_climo_tn }}">
-<!ENTITY GET_EXTRN_ICS_TN  "{{ get_extrn_ics_tn }}">
-<!ENTITY GET_EXTRN_LBCS_TN "{{ get_extrn_lbcs_tn }}">
-<!ENTITY MAKE_ICS_TN       "{{ make_ics_tn }}">
-<!ENTITY MAKE_LBCS_TN      "{{ make_lbcs_tn }}">
-<!ENTITY RUN_FCST_TN       "{{ run_fcst_tn }}">
-<!ENTITY RUN_POST_TN       "{{ run_post_tn }}">
+<!ENTITY MAKE_GRID_TN       "{{ make_grid_tn }}">
+<!ENTITY MAKE_OROG_TN       "{{ make_orog_tn }}">
+<!ENTITY MAKE_SFC_CLIMO_TN  "{{ make_sfc_climo_tn }}">
+<!ENTITY GET_EXTRN_ICS_TN   "{{ get_extrn_ics_tn }}">
+<!ENTITY GET_EXTRN_LBCS_TN  "{{ get_extrn_lbcs_tn }}">
+<!ENTITY MAKE_ICS_TN        "{{ make_ics_tn }}">
+<!ENTITY MAKE_LBCS_TN       "{{ make_lbcs_tn }}">
+<!ENTITY RUN_FCST_TN        "{{ run_fcst_tn }}">
+<!ENTITY RUN_POST_TN        "{{ run_post_tn }}">
+<!ENTITY GET_OBS_CCPA_TN    "{{ get_obs_ccpa_tn }}">
+<!ENTITY GET_OBS_NDAS_TN    "{{ get_obs_ndas_tn }}">
+<!ENTITY GET_OBS_MRMS_TN    "{{ get_obs_mrms_tn }}">
+<!ENTITY VX_TN              "{{ vx_tn }}">
+<!ENTITY VX_GRIDSTAT_TN     "{{ vx_gridstat_tn }}">
+<!ENTITY VX_GRIDSTAT_REFC_TN "{{ vx_gridstat_refc_tn }}">
+<!ENTITY VX_GRIDSTAT_03h_TN "{{ vx_gridstat_03h_tn }}">
+<!ENTITY VX_GRIDSTAT_06h_TN "{{ vx_gridstat_06h_tn }}">
+<!ENTITY VX_GRIDSTAT_24h_TN "{{ vx_gridstat_24h_tn }}">
+<!ENTITY VX_POINTSTAT_TN    "{{ vx_pointstat_tn }}">
 
 <!--
-Flags that specify whether to run the preprocessing tasks.
+Entity used to load the module file for each GET_OBS_* task.
+-->
+<!ENTITY GET_OBS            "{{ get_obs }}">
+
+<!--
+Flags that specify whether to run the preprocessing and/or verification tasks.
 -->
 <!ENTITY RUN_TASK_MAKE_GRID      "{{ run_task_make_grid | upper }}">
 <!ENTITY RUN_TASK_MAKE_OROG      "{{ run_task_make_orog | upper }}">
@@ -52,9 +67,18 @@ Directories and files.
 -->
 <!ENTITY JOBSDIR                  "{{ jobsdir }}">
 <!ENTITY LOGDIR                   "{{ logdir }}">
+<!ENTITY SCRIPTSDIR               "{{ scriptsdir }}">
 <!ENTITY CYCLE_BASEDIR            "{{ cycle_basedir }}">
 <!ENTITY GLOBAL_VAR_DEFNS_FP      "{{ global_var_defns_fp }}">
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "{{ load_modules_run_task_fp }}">
+
+<!ENTITY MET_INSTALL_DIR "{{ met_install_dir }}">
+<!ENTITY METPLUS_PATH "{{ metplus_path }}">
+<!ENTITY METPLUS_CONF "{{ metplus_conf }}">
+<!ENTITY MET_CONFIG "{{ met_config }}">
+<!ENTITY CCPA_OBS_DIR "{{ ccpa_obs_dir }}">
+<!ENTITY MRMS_OBS_DIR "{{ mrms_obs_dir }}">
+<!ENTITY NDAS_OBS_DIR "{{ ndas_obs_dir }}">
 
 <!--
 Reservation types.  Reservations specify the queue/partition and account
@@ -627,8 +651,307 @@ the <task> tag to be identical to the ones above for other output times.
   </metatask>
 {% endif %}
 
+{% if run_task_get_obs_ccpa %}
+<!--
+************************************************************************
+************************************************************************
+-->
+
+  <task name="&GET_OBS_CCPA_TN;" maxtries="{{ maxtries_get_obs_ccpa }}">
+
+    &RSRV_HPSS;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_CCPA"</command>
+    <nodes>{{ nnodes_get_obs_ccpa }}:ppn={{ ppn_get_obs_ccpa }}</nodes>
+    <walltime>{{ wtime_get_obs_ccpa }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&GET_OBS_CCPA_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&GET_OBS_CCPA_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>ACCUM</name><value>01</value></envar>
+
+    <dependency>
+      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+    </dependency>
+
+  </task>
+{% endif %}
+
+{% if run_task_get_obs_mrms %}
+<!--
+************************************************************************
+************************************************************************
+-->
+
+  <task name="&GET_OBS_MRMS_TN;" maxtries="{{ maxtries_get_obs_mrms }}">
+
+    &RSRV_HPSS;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_MRMS"</command>
+    <nodes>{{ nnodes_get_obs_mrms }}:ppn={{ ppn_get_obs_mrms }}</nodes>
+    <walltime>{{ wtime_get_obs_mrms }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&GET_OBS_MRMS_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&GET_OBS_MRMS_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>SCRIPTSDIR</name><value>&SCRIPTSDIR;</value></envar>
+    <envar><name>VAR</name><value>REFC</value></envar>
+ 
+    <dependency>
+      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+    </dependency>
+
+  </task>
+{% endif %}
+
+{% if run_task_get_obs_ndas %}
+<!--
+************************************************************************
+************************************************************************
+-->
+
+  <task name="&GET_OBS_NDAS_TN;" maxtries="{{ maxtries_get_obs_ndas }}">
+
+    &RSRV_HPSS;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_NDAS"</command>
+    <nodes>{{ nnodes_get_obs_ndas }}:ppn={{ ppn_get_obs_ndas }}</nodes>
+    <walltime>{{ wtime_get_obs_ndas }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&GET_OBS_NDAS_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&GET_OBS_NDAS_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>REFC</value></envar>
+
+    <dependency>
+      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+    </dependency>
+
+  </task>
+{% endif %}
+
+{% if run_task_vx_gridstat %}
+<!--
+************************************************************************
+************************************************************************
+-->
+
+  <task name="&VX_GRIDSTAT_TN;" maxtries="{{ maxtries_vx_gridstat }}">
+
+    &RSRV_HPSS;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+    <walltime>{{ wtime_vx_gridstat }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&VX_GRIDSTAT_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>APCP</value></envar>
+    <envar><name>ACCUM</name><value>01</value></envar>
+
+    <dependency>
+      {% if run_task_get_obs_ccpa %}
+      <taskdep task="&GET_OBS_CCPA_TN;"/>
+      {% else %}
+      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+      {% endif %}
+    </dependency>
+
+  </task>
+{% endif %}
+
+{% if run_task_vx_gridstat %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&VX_GRIDSTAT_REFC_TN;" maxtries="{{ maxtries_vx_gridstat_refc }}">
+
+    &RSRV_HPSS;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+    <walltime>{{ wtime_vx_gridstat }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&VX_GRIDSTAT_REFC_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_REFC_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>REFC</value></envar>
+
+    <dependency>
+      {% if run_task_get_obs_mrms %}
+      <taskdep task="&GET_OBS_MRMS_TN;"/>
+      {% else %}
+      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+      {% endif %}
+    </dependency>
+
+  </task>
+{% endif %}
+
+{% if run_task_vx_gridstat %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&VX_GRIDSTAT_03h_TN;" maxtries="{{ maxtries_vx_gridstat_03h }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+    <walltime>{{ wtime_vx_gridstat }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&VX_GRIDSTAT_03h_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_03h_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(3, fcst_len_hrs+1, 3) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>APCP</value></envar>
+    <envar><name>ACCUM</name><value>03</value></envar>
+
+    <dependency>
+      <taskdep task="&VX_GRIDSTAT_TN;"/>
+    </dependency>
+
+  </task>
+{% endif %}
+
+{% if run_task_vx_gridstat %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&VX_GRIDSTAT_06h_TN;" maxtries="{{ maxtries_vx_gridstat_06h }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+    <walltime>{{ wtime_vx_gridstat }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&VX_GRIDSTAT_06h_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_06h_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(6, fcst_len_hrs+1, 6) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>APCP</value></envar>
+    <envar><name>ACCUM</name><value>06</value></envar>
+
+    <dependency>
+      <taskdep task="&VX_GRIDSTAT_TN;"/>
+    </dependency>
+
+  </task>
+{% endif %}
+
+{% if run_task_vx_gridstat %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&VX_GRIDSTAT_24h_TN;" maxtries="{{ maxtries_vx_gridstat_24h }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+    <walltime>{{ wtime_vx_gridstat }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&VX_GRIDSTAT_24h_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_24h_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(24, fcst_len_hrs+1, 24) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>APCP</value></envar>
+    <envar><name>ACCUM</name><value>24</value></envar>
+
+    <dependency>
+      <taskdep task="&VX_GRIDSTAT_TN;"/>
+    </dependency>
+
+  </task>
+{% endif %}
+
+{% if run_task_vx_pointstat %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&VX_POINTSTAT_TN;" maxtries="{{ maxtries_vx_pointstat }}">
+
+    &RSRV_HPSS;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_POINTSTAT"</command>
+    <nodes>{{ nnodes_vx_pointstat }}:ppn={{ ppn_vx_pointstat }}</nodes>
+    <walltime>{{ wtime_vx_pointstat }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&VX_POINTSTAT_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&VX_POINTSTAT_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+
+    <dependency>
+      {% if run_task_get_obs_ndas %}
+      <taskdep task="&GET_OBS_NDAS_TN;"/>
+      {% else %}
+      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+      {% endif %}
+    </dependency>
+
+  </task>
+
+{% endif %}
 {% if do_ensemble %}
   </metatask>
 {% endif %}
-
 </workflow>

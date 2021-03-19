@@ -1,0 +1,6 @@
+#%Module
+module use -a /contrib/anaconda/modulefiles
+module load anaconda/latest
+module use -a /contrib/met/modulefiles/
+module load met/9.0.2
+

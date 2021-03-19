@@ -26,6 +26,22 @@ FV3GFS_FILE_FMT_LBCS="grib2"
 
 WTIME_RUN_FCST="01:00:00"
 
+MODEL="FV3_GFS_v15p2_CONUS_25km"
+METPLUS_PATH="path/to/METPlus"
+MET_INSTALL_DIR="path/to/MET"
+CCPA_OBS_DIR="/path/to/processed/CCPA/data"
+MRMS_OBS_DIR="/path/to/processed/MRMS/data"
+NDAS_OBS_DIR="/path/to/processed/NDAS/data"
+
+RUN_TASK_MAKE_GRID="TRUE"
+RUN_TASK_MAKE_OROG="TRUE"
+RUN_TASK_MAKE_SFC_CLIMO="TRUE"
+RUN_TASK_GET_OBS_CCPA="FALSE"
+RUN_TASK_GET_OBS_MRMS="FALSE"
+RUN_TASK_GET_OBS_NDAS="FALSE"
+RUN_TASK_VX_GRIDSTAT="FALSE"
+RUN_TASK_VX_POINTSTAT="FALSE"
+
 #
 # Uncomment the following line in order to use user-staged external model 
 # files with locations and names as specified by EXTRN_MDL_SOURCE_BASEDIR_ICS/
@@ -38,6 +54,6 @@ WTIME_RUN_FCST="01:00:00"
 #
 EXTRN_MDL_SOURCE_BASEDIR_ICS="/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS"
 EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
-EXTRN_MDL_SOURCE_BASEDIR_LBCS="/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS"
+EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path/to/model_data/FV3GFS"
 EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" "gfs.pgrb2.0p25.f018" "gfs.pgrb2.0p25.f024" \
                        "gfs.pgrb2.0p25.f030" "gfs.pgrb2.0p25.f036" "gfs.pgrb2.0p25.f042" "gfs.pgrb2.0p25.f048" )

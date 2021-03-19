@@ -394,6 +394,104 @@ SUB_HOURLY_POST="FALSE"
 DT_SUBHOURLY_POST_MNTS="00"
 #-----------------------------------------------------------------------
 #
+# Set METplus parameters.  Definitions:
+#
+# MODEL: 
+# String that specifies a descriptive name for the model being verified.
+#
+# MET_INSTALL_DIR:
+# Location to top-level directory of MET installation.
+#
+# METPLUS_PATH:
+# Location to top-level directory of METplus installation.
+#
+# CCPA_OBS_DIR:
+# User-specified location of top-level directory where CCPA hourly
+# precipitation files used by METplus are located. This parameter needs
+# to be set for both user-provided observations and for observations 
+# that are retrieved from the NOAA HPSS (if the user has access) via
+# the get_obs_ccpa_tn task (activated in workflow by setting 
+# RUN_TASK_GET_OBS_CCPA="TRUE"). In the case of pulling observations 
+# directly from NOAA HPSS, the data retrieved will be placed in this 
+# directory. Please note, this path must be defind as 
+# /full-path-to-obs/ccpa/proc. METplus is configured to verify 01-, 
+# 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files. 
+# METplus configuration files require the use of predetermined directory 
+# structure and file names. Therefore, if the CCPA files are user 
+# provided, they need to follow the anticipated naming structure: 
+# {YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2, where YYYY is the 4-digit 
+# valid year, MM the 2-digit valid month, DD the 2-digit valid day of 
+# the month, and HH the 2-digit valid hour of the day. In addition, a 
+# caveat is noted for using hourly CCPA data. There is a problem with 
+# the valid time in the metadata for files valid from 19 - 00 UTC (or 
+# files  under the '00' directory). The script to pull the CCPA data 
+# from the NOAA HPSS has an example of how to account for this as well
+# as organizing the data into a more intuitive format: 
+# regional_workflow/scripts/exregional_get_ccpa_files.sh. When a fix
+# is provided, it will be accounted for in the
+# exregional_get_ccpa_files.sh script.
+#
+# MRMS_OBS_DIR:
+# User-specified location of top-level directory where MRMS composite
+# reflectivity files used by METplus are located. This parameter needs
+# to be set for both user-provided observations and for observations
+# that are retrieved from the NOAA HPSS (if the user has access) via the
+# get_obs_mrms_tn task (activated in workflow by setting 
+# RUN_TASK_GET_OBS_MRMS="TRUE"). In the case of pulling observations 
+# directly from NOAA HPSS, the data retrieved will be placed in this 
+# directory. Please note, this path must be defind as 
+# /full-path-to-obs/mrms/proc. METplus configuration files require the
+# use of predetermined directory structure and file names. Therefore, if
+# the MRMS files are user provided, they need to follow the anticipated 
+# naming structure:
+# {YYYYMMDD}/MergedReflectivityQComposite_00.00_{YYYYMMDD}-{HH}{mm}{SS}.grib2,
+# where YYYY is the 4-digit valid year, MM the 2-digit valid month, DD 
+# the 2-digit valid day of the month, HH the 2-digit valid hour of the 
+# day, mm the 2-digit valid minutes of the hour, and SS is the two-digit
+# valid seconds of the hour. In addition, METplus is configured to look
+# for a MRMS composite reflectivity file for the valid time of the 
+# forecast being verified; since MRMS composite reflectivity files do 
+# not always exactly match the valid time, a script, within the main 
+# script to retrieve MRMS data from the NOAA HPSS, is used to identify
+# and rename the MRMS composite reflectivity file to match the valid
+# time of the forecast. The script to pull the MRMS data from the NOAA 
+# HPSS has an example of the expected file naming structure: 
+# regional_workflow/scripts/exregional_get_mrms_files.sh. This script 
+# calls the script used to identify the MRMS file closest to the valid 
+# time: regional_workflow/scripts/mrms_pull_topofhour.py.
+#
+# NDAS_OBS_DIR:
+# User-specified location of top-level directory where NDAS prepbufr 
+# files used by METplus are located. This parameter needs to be set for
+# both user-provided observations and for observations that are 
+# retrieved from the NOAA HPSS (if the user has access) via the 
+# get_obs_ndas_tn task (activated in workflow by setting 
+# RUN_TASK_GET_OBS_NDAS="TRUE"). In the case of pulling observations 
+# directly from NOAA HPSS, the data retrieved will be placed in this 
+# directory. Please note, this path must be defind as 
+# /full-path-to-obs/ndas/proc. METplus is configured to verify 
+# near-surface variables hourly and upper-air variables at times valid 
+# at 00 and 12 UTC with NDAS prepbufr files. METplus configuration files
+# require the use of predetermined file names. Therefore, if the NDAS 
+# files are user provided, they need to follow the anticipated naming 
+# structure: prepbufr.ndas.{YYYYMMDDHH}, where YYYY is the 4-digit valid
+# year, MM the 2-digit valid month, DD the 2-digit valid day of the 
+# month, and HH the 2-digit valid hour of the day. The script to pull 
+# the NDAS data from the NOAA HPSS has an example of how to rename the
+# NDAS data into a more intuitive format with the valid time listed in 
+# the file name: regional_workflow/scripts/exregional_get_ndas_files.sh
+#
+#-----------------------------------------------------------------------
+#
+MODEL=""
+MET_INSTALL_DIR="/path/to/MET"
+METPLUS_PATH="/path/to/METPlus"
+CCPA_OBS_DIR="/path/to/observation-directory/ccpa/proc"
+MRMS_OBS_DIR="/path/to/observation-directory/mrms/proc"
+NDAS_OBS_DIR="/path/to/observation-directory/ndas/proc"
+#
+#-----------------------------------------------------------------------
+#
 # Set initial and lateral boundary condition generation parameters.  
 # Definitions:
 #
@@ -501,7 +599,6 @@ EXTRN_MDL_FILES_LBCS=( "LBCS_file1" "LBCS_file2" "..." )
 # directory or the cycle directories under it.
 #
 #-----------------------------------------------------------------------
-#
 CCPP_PHYS_SUITE="FV3_GFS_v15p2"
 #
 #-----------------------------------------------------------------------
@@ -1009,6 +1106,14 @@ VERBOSE="TRUE"
 # SFC_CLIMO_DIR:
 # Same as GRID_DIR but for the surface climatology generation task.
 # 
+# RUN_TASK_VX_GRIDSTAT:
+# Flag that determines whether the grid-stat verification task is to be
+# run.
+#
+# RUN_TASK_VX_POINTSTAT:
+# Flag that determines whether the point-stat verification task is to be
+# run.
+#
 #-----------------------------------------------------------------------
 #
 RUN_TASK_MAKE_GRID="TRUE"
@@ -1019,6 +1124,17 @@ OROG_DIR="/path/to/pregenerated/orog/files"
 
 RUN_TASK_MAKE_SFC_CLIMO="TRUE"
 SFC_CLIMO_DIR="/path/to/pregenerated/surface/climo/files"
+
+RUN_TASK_GET_OBS_CCPA="FALSE"
+
+RUN_TASK_GET_OBS_MRMS="FALSE"
+
+RUN_TASK_GET_OBS_NDAS="FALSE"
+
+RUN_TASK_VX_GRIDSTAT="FALSE"
+
+RUN_TASK_VX_POINTSTAT="FALSE"
+
 #
 #-----------------------------------------------------------------------
 #
@@ -1215,6 +1331,17 @@ MAKE_ICS_TN="make_ics"
 MAKE_LBCS_TN="make_lbcs"
 RUN_FCST_TN="run_fcst"
 RUN_POST_TN="run_post"
+GET_OBS="get_obs"
+GET_OBS_CCPA_TN="get_obs_ccpa"
+GET_OBS_MRMS_TN="get_obs_mrms"
+GET_OBS_NDAS_TN="get_obs_ndas"
+VX_TN="run_vx"
+VX_GRIDSTAT_TN="run_gridstatvx"
+VX_GRIDSTAT_REFC_TN="run_gridstatvx_refc"
+VX_GRIDSTAT_03h_TN="run_gridstatvx_03h"
+VX_GRIDSTAT_06h_TN="run_gridstatvx_06h"
+VX_GRIDSTAT_24h_TN="run_gridstatvx_24h"
+VX_POINTSTAT_TN="run_pointstatvx"
 #
 # Number of nodes.
 #
@@ -1227,6 +1354,11 @@ NNODES_MAKE_ICS="4"
 NNODES_MAKE_LBCS="4"
 NNODES_RUN_FCST=""  # This is calculated in the workflow generation scripts, so no need to set here.
 NNODES_RUN_POST="2"
+NNODES_GET_OBS_CCPA="1"
+NNODES_GET_OBS_MRMS="1"
+NNODES_GET_OBS_NDAS="1"
+NNODES_VX_GRIDSTAT="1"
+NNODES_VX_POINTSTAT="1"
 #
 # Number of MPI processes per node.
 #
@@ -1239,6 +1371,11 @@ PPN_MAKE_ICS="12"
 PPN_MAKE_LBCS="12"
 PPN_RUN_FCST="24"  # This may have to be changed depending on the number of threads used.
 PPN_RUN_POST="24"
+PPN_GET_OBS_CCPA="1"
+PPN_GET_OBS_MRMS="1"
+PPN_GET_OBS_NDAS="1"
+PPN_VX_GRIDSTAT="1"
+PPN_VX_POINTSTAT="1"
 #
 # Walltimes.
 #
@@ -1251,6 +1388,11 @@ WTIME_MAKE_ICS="00:30:00"
 WTIME_MAKE_LBCS="00:30:00"
 WTIME_RUN_FCST="04:30:00"
 WTIME_RUN_POST="00:15:00"
+WTIME_GET_OBS_CCPA="00:45:00"
+WTIME_GET_OBS_MRMS="00:45:00"
+WTIME_GET_OBS_NDAS="02:00:00"
+WTIME_VX_GRIDSTAT="02:00:00"
+WTIME_VX_POINTSTAT="01:00:00"
 #
 # Maximum number of attempts.
 #
@@ -1263,6 +1405,15 @@ MAXTRIES_MAKE_ICS="1"
 MAXTRIES_MAKE_LBCS="1"
 MAXTRIES_RUN_FCST="1"
 MAXTRIES_RUN_POST="1"
+MAXTRIES_GET_OBS_CCPA="1"
+MAXTRIES_GET_OBS_MRMS="1"
+MAXTRIES_GET_OBS_NDAS="1"
+MAXTRIES_VX_GRIDSTAT="1"
+MAXTRIES_VX_GRIDSTAT_REFC="1"
+MAXTRIES_VX_GRIDSTAT_03h="1"
+MAXTRIES_VX_GRIDSTAT_06h="1"
+MAXTRIES_VX_GRIDSTAT_24h="1"
+MAXTRIES_VX_POINTSTAT="1"
 #
 #-----------------------------------------------------------------------
 #

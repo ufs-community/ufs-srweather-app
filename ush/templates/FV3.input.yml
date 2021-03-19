@@ -265,7 +265,6 @@ FV3_GFS_v15p2:
     fhcyc: 0.0
     fhlwr: 3600.0
     fhswr: 3600.0
-    fhzero: 6.0
     hybedmf: True
     iau_delthrs: !!python/none
     iaufhrs: !!python/none
@@ -418,7 +417,6 @@ FV3_CPT_v0:
     fhcyc: 0.0
     fhlwr: 3600.0
     fhswr: 3600.0
-    fhzero: 6.0
     fprcp: 2
     hybedmf: True
     iccn: False
