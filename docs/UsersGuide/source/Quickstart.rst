@@ -204,7 +204,7 @@ described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two way
 the workflow with Rocoto using either the ``./launch_FV3LAM_wflow.sh`` or by hand. 
 
 An environment variable may be set to navigate to the ``$EXPTDIR`` more easily. If the login 
-shell is bash, it can be set as follws:
+shell is bash, it can be set as follows:
 
 .. code-block:: console
 
@@ -267,7 +267,7 @@ For WCOSS_DELL_P3:
    module use /gpfs/dell3/usrx/local/dev/emc_rocoto/modulefiles/
    module load ruby/2.5.1 rocoto/1.2.4
 
-For WCOSS_DELL_P3:
+For WCOSS_CRAY:
 
 .. code-block:: console
 

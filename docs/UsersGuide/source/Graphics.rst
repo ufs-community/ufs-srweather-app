@@ -201,7 +201,7 @@ If the user's login shell is bash, they can be set as follows:
    export EXPTDIR=/path-to/experiment/directory
 
 If plotting the difference between the same cycle from two different experiments, the variables 
-to set are ``HOMErrfs``, ``EXPTDIR1``. and ``EXPTDIR2``.  In this case, if the user's login shell 
+to set are ``HOMErrfs``, ``EXPTDIR1``, and ``EXPTDIR2``.  In this case, if the user's login shell 
 is csh/tcsh, these variables can be set as follows:
 
 .. code-block:: console
