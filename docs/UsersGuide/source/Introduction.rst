@@ -81,14 +81,14 @@ of the supported suites.
 
 The SRW App supports the use of both GRIB2 and :term:`NEMSIO` input data. The UFS Weather Model
 ingests initial and lateral boundary condition files produced by :term:`chgres_cube` and outputs files in
-NetCDF format on a specific projection (e.g., Lambert Conformal) in the horizontal and model
+netCDF format on a specific projection (e.g., Lambert Conformal) in the horizontal and model
 levels in the vertical.
 
 Post-processor
 ==============
 
 The SRW Application is distributed with the Unified Post Processor (:term:`UPP`) included in the
-workflow as a way to convert the NetCDF output on the native model grid to GRIB2 format on
+workflow as a way to convert the netCDF output on the native model grid to GRIB2 format on
 standard isobaric vertical coordinates. UPP can also be used to compute a variety of useful
 diagnostic fields, as described in the `UPP user’s guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_.
 

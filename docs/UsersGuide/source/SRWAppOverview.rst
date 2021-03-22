@@ -500,7 +500,7 @@ script, and (2) manually calling the ``rocotorun`` command. Moreover, you can ru
 separately using stand-alone scripts.
 
 An environment variable may be set to navigate to the ``$EXPTDIR`` more easily. If the login
-shell is bash, it can be set as follws:
+shell is bash, it can be set as follows:
 
 .. code-block:: console
 
@@ -629,7 +629,7 @@ a wrapper script to set environment variables and run the job script.
  
 Example batch-submit scripts for Hera (Slurm) and Cheyenne (PBS) are included: ``sq_job.sh``
 and ``qsub_job.sh``, respectively. These examples set the build and run environment for Hera or Cheyenne
-so that run-time libraries match the compiled libraries (i.e. netcdf, mpi). Users may either
+so that run-time libraries match the compiled libraries (i.e. netCDF, MPI). Users may either
 modify the submit batch script as each task is submitted, or duplicate this batch wrapper
 for their system settings for each task. Alternatively, some batch systems allow users to
 specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command,

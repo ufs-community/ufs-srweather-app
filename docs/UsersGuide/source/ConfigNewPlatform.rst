@@ -128,7 +128,7 @@ Once the NCEPLIBS package has been successfully installed, you can move on to bu
 
 Building the UFS Short-Range Weather Application (UFS SRW App)
 ==============================================================
-Building the UFS SRW App is similar to building NCEPLIBS, in that the code is stored in a git repository and is built using CMake software. The first step is to retrieve the code from Github, using the variables defined earlier:
+Building the UFS SRW App is similar to building NCEPLIBS, in that the code is stored in a git repository and is built using CMake software. The first step is to retrieve the code from GitHub, using the variables defined earlier:
 
 .. code-block:: console
 
@@ -324,7 +324,7 @@ You will also need to add ``MYMACHINE`` to the list of valid machine names in ``
 * ``ush/load_modules_run_task.sh``, line 126
 * ``ush/set_extrn_mdl_params.sh``, many lines, starting around line 61
 
-The line numbers may differ slightly given future bug fixes. Additionally, you may need to make further changes depending on the exact setup of your machine and Rocoto installation. Information about installing and configuring Rocoto on your machine can be found in the Rocoto Github repository: https://github.com/christopherwharrop/rocoto
+The line numbers may differ slightly given future bug fixes. Additionally, you may need to make further changes depending on the exact setup of your machine and Rocoto installation. Information about installing and configuring Rocoto on your machine can be found in the Rocoto GitHub repository: https://github.com/christopherwharrop/rocoto
 
 .. _SW-OS-Requirements:
 

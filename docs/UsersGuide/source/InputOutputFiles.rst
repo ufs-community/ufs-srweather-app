@@ -168,7 +168,7 @@ UFS Weather Model
 -----------------
 As mentioned previously, the workflow can be run in ‘community’ or ‘nco’ mode, which determines
 the location and names of the output files.  In addition to this option, output can also be in
-netCDF or nemsio format.  The output file format is set in the ``model_configure`` files using the
+netCDF or NEMSIO format.  The output file format is set in the ``model_configure`` files using the
 ``output_file`` variable.  At this time, due to limitations in the post-processing component, only netCDF
 format output is recommended for the SRW application.
 
@@ -253,7 +253,7 @@ Initial Condition Formats and Source
 ------------------------------------
 The SRW Application currently supports raw initial and lateral boundary conditions from numerous models
 (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, netCDF,
-or :term:`GRIB2`.  The SRW Application currently only supports the use of NEMSIO and NetCDF input files
+or :term:`GRIB2`.  The SRW Application currently only supports the use of NEMSIO and netCDF input files
 from the GFS.
 
 Environment variables describe what IC/LBC files to use (pre-staged files or files to be automatically
@@ -288,11 +288,11 @@ The sample IC/LBCs available at the FTP data repository are structured as follow
 
 When files are pulled from the NOAA HPSS, the naming convention looks something like:
 
-* FV3GFS (grib2): ``gfs.t{cycle}z.pgrb2.0p25.f{fhr}``
-* FV3GFS (nemsio): ICs: ``gfs.t{cycle}z.atmanl.nemsio`` and ``gfs.t{cycle}z.sfcanl.nemsio``;
+* FV3GFS (GRIB2): ``gfs.t{cycle}z.pgrb2.0p25.f{fhr}``
+* FV3GFS (NEMSIO): ICs: ``gfs.t{cycle}z.atmanl.nemsio`` and ``gfs.t{cycle}z.sfcanl.nemsio``;
   LBCs: ``gfs.t{cycle}z.atmf{fhr}.nemsio``
-* RAP (grib2): ``rap.t{cycle}z.wrfprsf{fhr}.grib2``
-* HRRR (grib2): ``hrrr.t{cycle}z.wrfprsf{fhr}.grib2``
+* RAP (GRIB2): ``rap.t{cycle}z.wrfprsf{fhr}.grib2``
+* HRRR (GRIB2): ``hrrr.t{cycle}z.wrfprsf{fhr}.grib2``
 
 In order to preserve the original file name, the ``f00`` files are placed in the ``ICS`` directory
 and all other forecast files are placed in the ``LBCS`` directory. Then, a symbolic link of the
@@ -324,7 +324,7 @@ rename the original files to remove the cycle or modify the ``config.sh`` to set
 Default Initial and Lateral Boundary Conditions
 -----------------------------------------------
 The default initial and lateral boundary condition files are set to be a severe weather case
-from 20190615 at 00 UTC. FV3GFS grib2 files are the default model and file format. A tar file
+from 20190615 at 00 UTC. FV3GFS GRIB2 files are the default model and file format. A tar file
 (``gst_model_data.tar.gz``) containing the model data for this case is available on EMC's FTP 
 data repository at https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/. It is 
 also available on Amazon Web Services (AWS) at 
@@ -350,7 +350,7 @@ Raw model files may be available from a number of sources. A few examples are pr
 
 NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model may be:
 
-* GFS (grib2 or nemsio) - available for the last 10 days
+* GFS (GRIB2 or NEMSIO) - available for the last 10 days
   https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/ 
 * NAM - available for the last 8 days
   https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/  
