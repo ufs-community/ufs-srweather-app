@@ -1,11 +1,10 @@
 #!/bin/sh
-
-#SBATCH --account=an_account
-#SBATCH --qos=batch
-#SBATCH --ntasks=4
-#SBATCH --time=0:20:00
-#SBATCH --job-name="plot_allvars"
-#SBATCH --out=plot_allvars.out
+#PBS -A an_account 
+#PBS -q regular
+#PBS -l select=1:mpiprocs=24:ncpus=24
+#PBS -l walltime=00:20:00
+#PBS -N plot_allvars
+#PBS -j oe -o plot_allvars.out 
 
 # Prior to submitting the script the following environment variables
 # must be set using export or setenv
@@ -14,51 +13,29 @@
 
 cd ${HOMErrfs}/ush/Python
 set -x
-. /apps/lmod/lmod/init/sh
 
-module purge
-module load hpss
+source /etc/profile.d/modules.sh
 
 ############
-# Python environment for Jet and Hera
-module use -a /contrib/miniconda3/modulefiles
-module load miniconda3
-conda activate pygraf
-
+# Python environment for Cheyenne 
 ############
-# Python environment for Orion
-############
-#module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-#module load miniconda3
-#conda activate pygraf
-
-############
-# Python environment for Gaea
-############
-#module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
-#module load miniconda3/4.8.3-regional-workflow
+ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/python_graphics
 
 ############
 # Path to shape files
 ############
-#Hera:
-SHAPE_FILES=/scratch2/BMC/det/UFS_SRW_app/v1p0/fix_files/NaturalEarth
-#Jet: 
-#SHAPE_FILES=/lfs4/BMC/wrfruc/FV3-LAM/NaturalEarth
-#Orion: 
-#SHAPE_FILES=/work/noaa/gsd-fv3-dev/UFS_SRW_App/v1p0/fix_files/NaturalEarth
-#Gaea: 
-#SHAPE_FILES=/lustre/f2/pdata/esrl/gsd/ufs/NaturalEarth
+#Cheyenne:
+SHAPE_FILES=/glade/p/ral/jntp/UFS_SRW_app/tools/NaturalEarth
 
 export GLOBAL_VAR_DEFNS_FP="${EXPTDIR}/var_defns.sh"
 source ${GLOBAL_VAR_DEFNS_FP}
 export CDATE=${DATE_FIRST_CYCL}${CYCL_HRS}
-export FCST_START=6
+export FCST_START=3
 export FCST_END=${FCST_LEN_HRS}
-export FCST_INC=6
+export FCST_INC=3
 
-# Usage statement:	Make sure all the necessary modules can be imported.
-#                       Six command line arguments are needed:
+# Usage statement:      Make sure all the necessary modules can be imported.
+#                       Five command line arguments are needed:
 #                       1. Cycle date/time in YYYYMMDDHH format
 #                       2. Starting forecast hour in HHH format
 #                       3. Ending forecast hour in HHH format

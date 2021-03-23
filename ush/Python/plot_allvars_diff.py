@@ -1,8 +1,8 @@
 ################################################################################
 ####  Python Script Documentation Block
-#                      
+#
 # Script name:       	plot_allvars_diff.py
-# Script description:  	Generates difference plots from FV3-LAM post processed 
+# Script description:  	Generates difference plots from FV3-LAM post processed
 #                       grib2 output over the CONUS
 #
 # Authors:  Ben Blake		Org: NOAA/NWS/NCEP/EMC		Date: 2020-08-24
@@ -30,11 +30,11 @@
 #                          -More information regarding files needed to setup
 #                            display maps in Cartopy, see SRW App Users' Guide
 #
-#           		To create plots for forecast hours 20-24 from 5/7 00Z 
+#           		To create plots for forecast hours 20-24 from 5/7 00Z
 #                        cycle with hourly output:
-#                          python plot_allvars_diff.py 2020050700  20 24 1 \ 
+#                          python plot_allvars_diff.py 2020050700  20 24 1 \
 #                          /path/to/expt_dir_1 /path/to/expt_dir_2 \
-#                          /path/to/base/cartopy/maps 
+#                          /path/to/base/cartopy/maps
 #
 #                       The variable domains in this script can be set to either
 #                         'conus' for a CONUS map or 'regional' where the map
@@ -232,7 +232,7 @@ parser.add_argument("Path to experiment 1 directory")
 parser.add_argument("Path to experiment 2 directory")
 parser.add_argument("Path to base directory of cartopy shapefiles")
 args = parser.parse_args()
-              
+
 # Read date/time, forecast hour, and directory paths from command line
 ymdh = str(sys.argv[1])
 ymd = ymdh[0:8]
@@ -323,7 +323,7 @@ for fhr in fhours:
   print(Lon0)
 
 # Specify plotting domains
-# User can add domains here, just need to specify lat/lon information below 
+# User can add domains here, just need to specify lat/lon information below
 # (if dom == 'conus' block)
   domains=['conus']    # Other option is 'regional'
 
@@ -413,8 +413,8 @@ for fhr in fhours:
   qpf_diff = qpf_2 - qpf_1
 
 # Composite reflectivity
-  refc_1 = data1.select(name='Maximum/Composite radar reflectivity')[0].values 
-  refc_2 = data2.select(name='Maximum/Composite radar reflectivity')[0].values 
+  refc_1 = data1.select(name='Maximum/Composite radar reflectivity')[0].values
+  refc_2 = data2.select(name='Maximum/Composite radar reflectivity')[0].values
 
   if (fhr > 0):
 # Max/Min Hourly 2-5 km Updraft Helicity
@@ -442,9 +442,14 @@ for fhr in fhours:
 
   def main():
 
-  # Number of processes must coincide with the number of domains to plot
-    pool = multiprocessing.Pool(len(domains))
-    pool.map(plot_all,domains)
+    # Number of processes must coincide with the number of domains to plot
+    #pool = multiprocessing.Pool(len(domains))
+    #pool.map(plot_all,domains)
+
+    # To avoid import multiprocessing recursively on MacOS/Windows etc.
+    # Anyway since we only have one domain for SRW application
+    for dom in domains:
+        plot_all(dom)
 
   def plot_all(dom):
 
@@ -453,7 +458,7 @@ for fhr in fhours:
   # Map corners for each domain
     if dom == 'conus':
       llcrnrlon = -120.5
-      llcrnrlat = 21.0 
+      llcrnrlat = 21.0
       urcrnrlon = -64.5
       urcrnrlat = 49.0
       lat_0 = 35.4
@@ -473,7 +478,7 @@ for fhr in fhours:
     fig = plt.figure(figsize=(10,10))
     gs = GridSpec(9,9,wspace=0.0,hspace=0.0)
 
-  # Define where Cartopy Maps are located    
+  # Define where Cartopy Maps are located
     cartopy.config['data_dir'] = CARTOPY_DIR
 
     back_res='50m'
@@ -511,7 +516,7 @@ for fhr in fhours:
                       linewidth=fline_wd,alpha=falpha)
 
   # All lat lons are earth relative, so setup the associated projection correct for that data
-    transform = ccrs.PlateCarree() 
+    transform = ccrs.PlateCarree()
 
   # high-resolution background images
     if back_img=='on':
@@ -557,7 +562,7 @@ for fhr in fhours:
     norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
     normdiff = matplotlib.colors.BoundaryNorm(clevsdiff, cmdiff.N)
 
-    cs1_a = ax1.pcolormesh(lon_shift,lat_shift,slp_1,transform=transform,cmap=cm,norm=norm) 
+    cs1_a = ax1.pcolormesh(lon_shift,lat_shift,slp_1,transform=transform,cmap=cm,norm=norm)
     cbar1 = plt.colorbar(cs1_a,ax=ax1,orientation='horizontal',pad=0.05,shrink=0.6,extend='both')
     cbar1.set_label(units,fontsize=6)
     cbar1.ax.tick_params(labelsize=5)
@@ -565,7 +570,7 @@ for fhr in fhours:
     plt.clabel(cs1_b,np.arange(940,1060,4),inline=1,fmt='%d',fontsize=6)
     ax1.text(.5,1.03,'FV3-LAM SLP ('+units+') \n initialized: '+itime+' valid: '+vtime + ' (f'+fhour+')',horizontalalignment='center',fontsize=8,transform=ax1.transAxes,bbox=dict(facecolor='white',alpha=0.85,boxstyle='square,pad=0.2'))
 
-    cs2_a = ax2.pcolormesh(lon2_shift,lat2_shift,slp_2,transform=transform,cmap=cm,norm=norm) 
+    cs2_a = ax2.pcolormesh(lon2_shift,lat2_shift,slp_2,transform=transform,cmap=cm,norm=norm)
     cbar2 = plt.colorbar(cs2_a,ax=ax2,orientation='horizontal',pad=0.05,shrink=0.6,extend='both')
     cbar2.set_label(units,fontsize=6)
     cbar2.ax.tick_params(labelsize=5)
@@ -738,7 +743,7 @@ for fhr in fhours:
     cbar3.set_label(units,fontsize=6)
     cbar3.ax.tick_params(labelsize=6)
     ax3.text(.5,1.03,'FV3-LAM-2 - FV3-LAM 10-m Winds ('+units+') \n initialized: '+itime+' valid: '+vtime+' (f'+fhour+')',horizontalalignment='center',fontsize=6,transform=ax3.transAxes,bbox=dict(facecolor='white',alpha=0.85,boxstyle='square,pad=0.2'))
-   
+
     compress_and_save(EXPT_DIR_1+'/'+ymdh+'/postprd/10mwind_diff_'+dom+'_f'+fhour+'.png')
     t2 = time.perf_counter()
     t3 = round(t2-t1, 3)
@@ -763,14 +768,14 @@ for fhr in fhours:
     clevs = [100,250,500,1000,1500,2000,2500,3000,3500,4000,4500,5000]
     clevs2 = [-2000,-500,-250,-100,-25]
     clevsdiff = [-2000,-1500,-1000,-500,-250,-100,0,100,250,500,1000,1500,2000]
-    colorlist = ['blue','dodgerblue','cyan','mediumspringgreen','#FAFAD2','#EEEE00','#EEC900','darkorange','crimson','darkred']
+    colorlist = ['blue','dodgerblue','cyan','mediumspringgreen','#FAFAD2','#EEEE00','#EEC900','darkorange','crimson','darkred','darkviolet']
     cm = matplotlib.colors.ListedColormap(colorlist)
     norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
     normdiff = matplotlib.colors.BoundaryNorm(clevsdiff, cmdiff.N)
 
     cs_1 = ax1.pcolormesh(lon_shift,lat_shift,cape_1,transform=transform,cmap=cm,vmin=100,norm=norm)
     cs_1.cmap.set_under('white',alpha=0.)
-    cs_1.cmap.set_over('darkviolet')
+    cs_1.cmap.set_over('black')
     cbar1 = plt.colorbar(cs_1,ax=ax1,orientation='horizontal',pad=0.05,shrink=0.6,ticks=clevs,extend='max')
     cbar1.set_label(units,fontsize=6)
     cbar1.ax.tick_params(labelsize=4)
@@ -779,7 +784,7 @@ for fhr in fhours:
 
     cs_2 = ax2.pcolormesh(lon2_shift,lat2_shift,cape_2,transform=transform,cmap=cm,vmin=100,norm=norm)
     cs_2.cmap.set_under('white',alpha=0.)
-    cs_2.cmap.set_over('darkviolet')
+    cs_2.cmap.set_over('black')
     cbar2 = plt.colorbar(cs_2,ax=ax2,orientation='horizontal',pad=0.05,shrink=0.6,ticks=clevs,extend='max')
     cbar2.set_label(units,fontsize=6)
     cbar2.ax.tick_params(labelsize=4)
@@ -816,7 +821,7 @@ for fhr in fhours:
 
     units = 'x10${^5}$ s${^{-1}}$'
     skip = round(177.28*(dx/1000.)**-.97)
-    print('skipping every '+str(skip)+' grid points to plot')  
+    print('skipping every '+str(skip)+' grid points to plot')
     barblength = 4
 
     vortlevs = [16,20,24,28,32,36,40]
@@ -878,7 +883,7 @@ for fhr in fhours:
 
     units = 'kts'
     skip = round(177.28*(dx/1000.)**-.97)
-    print('skipping every '+str(skip)+' grid points to plot')  
+    print('skipping every '+str(skip)+' grid points to plot')
     barblength = 4
 
     clevs = [50,60,70,80,90,100,110,120,130,140,150]
@@ -938,7 +943,7 @@ for fhr in fhours:
       units = 'in'
       clevs = [0.01,0.1,0.25,0.5,0.75,1,1.25,1.5,1.75,2,2.5,3,4,5,7,10,15,20]
       clevsdiff = [-3,-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5,3]
-      colorlist = ['chartreuse','limegreen','green','blue','dodgerblue','deepskyblue','cyan','mediumpurple','mediumorchid','darkmagenta','darkred','crimson','orangered','darkorange','goldenrod','gold','yellow']  
+      colorlist = ['chartreuse','limegreen','green','blue','dodgerblue','deepskyblue','cyan','mediumpurple','mediumorchid','darkmagenta','darkred','crimson','orangered','darkorange','goldenrod','gold','yellow']
       cm = matplotlib.colors.ListedColormap(colorlist)
       norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
       normdiff = matplotlib.colors.BoundaryNorm(clevsdiff, cmdiff.N)
@@ -978,7 +983,7 @@ for fhr in fhours:
 #################################
   # Plot Max/Min Hourly 2-5 km UH
 #################################
-# Do not make max/min hourly 2-5 km UH plot for forecast hour 0 	
+# Do not make max/min hourly 2-5 km UH plot for forecast hour 0
       t1 = time.perf_counter()
       print(('Working on Max/Min Hourly 2-5 km UH for '+dom))
 
@@ -1050,7 +1055,7 @@ for fhr in fhours:
     colorlist = ['turquoise','dodgerblue','mediumblue','lime','limegreen','green','#EEEE00','#EEC900','darkorange','red','firebrick','darkred','fuchsia']
     cm = matplotlib.colors.ListedColormap(colorlist)
     norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
-  
+
     cs_1 = ax1.pcolormesh(lon_shift,lat_shift,refc_1,transform=transform,cmap=cm,vmin=5,norm=norm)
     cs_1.cmap.set_under('white',alpha=0.)
     cs_1.cmap.set_over('black')
