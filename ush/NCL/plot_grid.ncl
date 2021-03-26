@@ -99,6 +99,11 @@ CDATE="2019070100"
 ;expt_dir = "/work/noaa/gsd-fv3-dev/gsketefia/UFS/PR_release_branch/expt_dirs/try02/grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
 ;CDATE="2019052000"
 
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_Jeff_Duda_subhourly_post/expt_dirs/big_grid01/grid_GSD_RAP13km_pregen"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_Jeff_Duda_subhourly_post/expt_dirs/big_grid02/grid_GSD_RAP13km_pregen"
+;expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_Jeff_Duda_subhourly_post/expt_dirs/big_grid02/grid_GSD_RAP13km_pregen_old003"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_Jeff_Duda_subhourly_post/expt_dirs/big_grid02/grid_GSD_RAP13km"
+CDATE="2019070100"
 
 run_dir = expt_dir + "/" + CDATE
 print("AAAAAA  run_dir = " + run_dir)
@@ -156,6 +161,8 @@ map_proj = "cyln"
 ;
 map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map projection.
 ;map_proj_ctr = (/ -106.0, 54.0 /) ; RAP domain.
+;map_proj_ctr = (/ -106.0, 84.0 /) ; RAP domain.
+;map_proj_ctr = (/ 30.0, 60.0 /) ; RAP domain.
 ;map_proj_ctr = (/ -97.5, 38.5 /)  ; HRRR domain.
 ;map_proj_ctr = (/ 6.0, 54.0 /) ; RAP domain corner.
 
@@ -167,14 +174,33 @@ map_proj_ctr = (/ 0.0, 0.0 /) ; This should be set to (0,0) for "cyln" map proje
 plot_subreg = True
 ;plot_subreg = False
 
-;subreg_limits := (/ -180, 180, -90, 90 /)
+subreg_limits := (/ -180, 180, -90, 90 /)
 ;subreg_limits := (/ -75, -45, 30, 60 /)
+;subreg_limits := (/ -155, -45, 60, 90 /)
+;subreg_limits := (/ -155, -45, 60, 100 /)
+;subreg_limits := (/ -190, -170, 80, 100 /)
+;subreg_limits := (/ -55, -45, 80, 90 /)
+;subreg_limits := (/ 45, 55, 60, 70 /)
+;subreg_limits := (/ 15, 45, 30, 50 /)
 
 
+;subreg_limits := (/ -75, -45, -30, 0 /) ; 
+;subreg_limits := (/ -40, -35, 25, 30 /) ; 
+
+; The following are to plot regions near the four corners and along two
+; of the edges of GSD_RAP13km domain (soon to be renamed to RRFS_NA_13km)
+; to ensure that the write-component grid is within the native grid.  It's
+; easiest to use map_proj = "cyln" to plot these subregions.
+;subreg_limits := (/ -155, -130, -25, 0 /) ; 
+;subreg_limits := (/ -80, -55, -25, 0 /) ; 
+;subreg_limits := (/ -45, -20, 15, 40 /)
+;subreg_limits := (/ 5, 30, 35, 60 /)
+;subreg_limits := (/ 125, 150, 35, 60 /)
+;subreg_limits := (/ -180, -155, 15, 40 /)
 
 
-subreg_limits := (/ -128, -67, 23, 51 /) ; HRRR domain if using "cyln" map projection.
-subreg_limits := (/ -135, -60, 20, 55 /) ; HRRR domain if using "cyln" map projection.
+;subreg_limits := (/ -128, -67, 23, 51 /) ; HRRR domain if using "cyln" map projection.
+;subreg_limits := (/ -135, -60, 20, 55 /) ; HRRR domain if using "cyln" map projection.
 ;subreg_limits := (/ -125, -70, 20, 55 /) ; HRRR domain if using "ortho" map projection.
 ;subreg_limits := (/ -105, -95, 20, 30 /) ; Center of southern edge of HRRR domain.
 
@@ -659,7 +685,7 @@ wrtcmp@bdy_line_thickness = 6.0
 wrtcmp@bdy_dash_pattern = 1
 
 extrnl = True
-;extrnl = False
+extrnl = False
 ;extrnl@plot_gridlines = True
 extrnl@plot_gridlines = False
 ;extrnl@gridline_color = "red"

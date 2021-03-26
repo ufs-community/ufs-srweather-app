@@ -10,6 +10,15 @@ function set_predef_grid_params() {
 #
 #-----------------------------------------------------------------------
 #
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
 # Get the full path to the file in which this script/function is located
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
@@ -27,6 +36,14 @@ local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing various mathematical, physical, etc constants.
+#
+#-----------------------------------------------------------------------
+#
+. ${USHDIR}/constants.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -317,8 +334,10 @@ case ${PREDEF_GRID_NAME} in
 #      WRTCMP_lat_lwr_left="-13.56176982"
 #      WRTCMP_lon_upr_rght="18.47206579"
 #      WRTCMP_lat_upr_rght="13.56176982"
-#      WRTCMP_dlon="0.11691181"
-#      WRTCMP_dlat="0.11691181"
+##      WRTCMP_dlon="0.11691181"
+##      WRTCMP_dlat="0.11691181"
+#      WRTCMP_dlon=$( printf "%.9f" $( bc -l <<< "(${ESGgrid_DELX}/${radius_Earth})*${degs_per_radian}" ) )
+#      WRTCMP_dlat=$( printf "%.9f" $( bc -l <<< "(${ESGgrid_DELY}/${radius_Earth})*${degs_per_radian}" ) )
 #    fi
   ;;
 #
@@ -1068,7 +1087,7 @@ case ${PREDEF_GRID_NAME} in
 #
 #-----------------------------------------------------------------------
 #
-"GSD_RAP13km")
+"RRFS_NA_13km")
 
 #  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #
@@ -1139,16 +1158,25 @@ case ${PREDEF_GRID_NAME} in
     WRTCMP_output_grid="rotated_latlon"
     WRTCMP_cen_lon="${ESGgrid_LON_CTR}"
     WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"
-    WRTCMP_lon_lwr_left="-57.9926"
-    WRTCMP_lat_lwr_left="-50.74344"
-    WRTCMP_lon_upr_rght="57.99249"
-    WRTCMP_lat_upr_rght="50.74344"
-    WRTCMP_dlon="0.1218331"
-    WRTCMP_dlat="0.121833"
+    WRTCMP_lon_lwr_left="-55.82538869"
+    WRTCMP_lat_lwr_left="-48.57685654"
+    WRTCMP_lon_upr_rght="55.82538869"
+    WRTCMP_lat_upr_rght="48.57685654"
+    WRTCMP_dlon=$( printf "%.9f" $( bc -l <<< "(${ESGgrid_DELX}/${radius_Earth})*${degs_per_radian}" ) )
+    WRTCMP_dlat=$( printf "%.9f" $( bc -l <<< "(${ESGgrid_DELY}/${radius_Earth})*${degs_per_radian}" ) )
   fi
   ;;
 
 esac
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
 
 }
 #

@@ -80,8 +80,7 @@ function set_gridparams_ESGgrid() {
 #
 #-----------------------------------------------------------------------
 #
-# Source the file containing various mathematical, physical, etc cons-
-# tants.
+# Source the file containing various mathematical, physical, etc constants.
 #
 #-----------------------------------------------------------------------
 #

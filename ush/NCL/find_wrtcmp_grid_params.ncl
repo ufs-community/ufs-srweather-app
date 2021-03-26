@@ -30,6 +30,9 @@ expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_maximize_CONUS_
 
 expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_feature_maximize_CONUS_grids/expt_dirs/try01/grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2"
 
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_Jeff_Duda_subhourly_post/expt_dirs/big_grid01/grid_GSD_RAP13km_pregen"
+expt_dir = "/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_Jeff_Duda_subhourly_post/expt_dirs/big_grid01/grid_GSD_RAP13km_pregen_old003"
+
 ;
 ; **********************************************************************
 ;
@@ -202,7 +205,8 @@ print("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
 ;
 print("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
   remove_rgnl_halo = True
-  get_tile_bdies = False
+;  get_tile_bdies = False
+  get_tile_bdies = True
 
   grid_info := read_FV3LAM_grid_native( \
                expt_dir, \
@@ -220,6 +224,18 @@ print("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
   = grid_info@lon_tile_corners_face_midpts_all_tiles
   lat_tile_corners_face_midpts_tiles_to_plot \
   = grid_info@lat_tile_corners_face_midpts_all_tiles
+
+  lon_bdy_tiles_to_plot = grid_info@lon_bdy_all_tiles
+  lat_bdy_tiles_to_plot = grid_info@lat_bdy_all_tiles
+
+  nx_all_tiles := grid_info@nx_all_tiles
+  ny_all_tiles := grid_info@ny_all_tiles
+
+;print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
+;print("dimsizes(lon_tile_corners_face_midpts_tiles_to_plot) = " + dimsizes(lon_tile_corners_face_midpts_tiles_to_plot))
+;print("dimsizes(lon_bdy_tiles_to_plot) = " + dimsizes(lon_bdy_tiles_to_plot))
+;print("dimsizes(nx_all_tiles) = " + dimsizes(nx_all_tiles))
+;pause
 
 ;lon_tile_corners_face_midpts_tiles_to_plot \
 ;= where(lon_tile_corners_face_midpts_tiles_to_plot .gt. 0.0d+0, \
@@ -249,6 +265,19 @@ print("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
   lat_tile_corners_face_midpts_native \
   := lat_tile_corners_face_midpts_tiles_to_plot(nn,:)
 
+  nx_native := nx_all_tiles(nn)
+  ny_native := ny_all_tiles(nn)
+;print("nx_native = " + nx_native)
+;print("ny_native = " + ny_native)
+;pause
+
+  indx_start := 0
+  indx_end := 2*(nx_native + ny_native)
+  lon_bdy_native := lon_bdy_tiles_to_plot(indx_start:indx_end)
+  lat_bdy_native := lat_bdy_tiles_to_plot(indx_start:indx_end)
+;print("dimsizes(lon_bdy_native) = " + dimsizes(lon_bdy_native))
+;pause
+
   angle_units = "deg"
 
   valid_vals_WRTCMP_output_grid \
@@ -264,6 +293,9 @@ print("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
              lon_grid_cntr_native, lat_grid_cntr_native, \
              lon_tile_corners_face_midpts_native, \
              lat_tile_corners_face_midpts_native, \
+             lon_bdy_native, \
+             lat_bdy_native, \
+             nx_native, ny_native, \
              dx_native, dy_native, \
              angle_units)
 

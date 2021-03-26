@@ -10,8 +10,8 @@
 ; cell vertex coordinates of the grid that discretizes the FV3-LAM's 
 ; write-component output domain.  The file to read is specified by 
 ; FV3LAM_wrtcmp_fn.  If get_domain_bdy is set to True, this function
-; also returns the coordinates of the cell vertices lying on the bounda-
-; ry of the domain.
+; also returns the coordinates of the cell vertices lying on the boundary 
+; of the domain.
 ;
 ; **********************************************************************
 ;
@@ -20,6 +20,7 @@ loadscript(lib_location + "constants.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "get_rect_grid_bdy.ncl")
 loadscript(lib_location + "interpol_extrapol_linear.ncl")
+loadscript(lib_location + "convert_from_to_sphr_coords_to_from_rotated_sphr.ncl")
 
 undef("read_FV3LAM_grid_wrtcmp")
 
@@ -88,7 +89,7 @@ begin
 ; 
 ; **********************************************************************
 ;
-; Read in the cell vertex coordinates.
+; Read in the cell center coordinates.
 ; 
 ; **********************************************************************
 ;
@@ -121,6 +122,72 @@ begin
   print("")
   print("  nx = " + nx)
   print("  ny = " + ny)
+
+;
+; **********************************************************************
+;
+; If the grid encompasses the international date line (IDL, e.g. because 
+; it includes one of the poles), then the extrapolations performed below 
+; to obtain the cell vertex coordinates along the boundary of the grid 
+; may be invalid because the coordinates themselves are not continuous on
+; the domain (because there will be a jump in longitude across the IDL).
+; To get around this problem, transform the write-component coordinates 
+; read in above to a rotated latlon coordinate system that has is IDL
+; moved such that it is outside of the write-component domain.  In this
+; coordinate system, the coordinates will be continuous and thus the 
+; extrapolations below will be valid.
+;
+; Once all quantities that this function needs to return are calculated
+; in the rotated latlon coordinate system, they will be transformed back
+; to obtain their values in the non-rotated coordinate system (see further
+; below).
+;
+; IMPORTANT:
+; Probably will have to include code similar to the following in the file
+; read_FV3LAM_grid_native.ncl.
+;
+; **********************************************************************
+;
+  nxm1 := nx - 1
+  nym1 := ny - 1
+  nxp1 := nx + 1
+  nyp1 := ny + 1
+
+  diffx_lon_iph := lon_cntrs(:,1:nxm1) - lon_cntrs(:,0:nxm1-1)
+  diffy_lon_jph := lon_cntrs(1:nym1,:) - lon_cntrs(0:nym1-1,:)
+
+  diffx_lon_abs_max := max(abs(diffx_lon_iph))
+  diffy_lon_abs_max := max(abs(diffy_lon_jph))
+  diff_lon_abs_max := 180.0d+0
+
+  transform_to_rotated_latlon = False
+  if ((diffx_lon_abs_max .gt. diff_lon_abs_max) .or. \
+      (diffy_lon_abs_max .gt. diff_lon_abs_max)) then
+; Set the flag to perform the unrotated-to-rotated latlon transformation
+; (and back again later on).
+    transform_to_rotated_latlon = True
+; Read in from the specified file the coordinates of the center of the 
+; grid (in non-rotated latlon coordinates).
+    file_global_atts = getfileatts(fp)
+    lon0 := fp@cen_lon
+    lat0 := fp@cen_lat
+  end if
+;
+; If necessary, transform the grid cell center coordinates from the 
+; unrotated to a rotated latlon coordinate system.
+;
+  if (transform_to_rotated_latlon) then
+
+    angle_units = "deg"
+    dir = 1
+    rotated_sphr_coords \
+    := convert_from_to_sphr_coords_to_from_rotated_sphr( \
+       lon0, lat0, angle_units, dir, \
+       lon_cntrs, lat_cntrs)
+    lon_cntrs := rotated_sphr_coords@lon_out
+    lat_cntrs := rotated_sphr_coords@lat_out
+
+  end if
 ;
 ; **********************************************************************
 ;
@@ -134,8 +201,8 @@ begin
 ;
 ; **********************************************************************
 ;
-  lon_verts := new((/ ny+1, nx+1 /), coord_data_type)
-  lat_verts := new((/ ny+1, nx+1 /), coord_data_type)
+  lon_verts := new((/ nyp1, nxp1 /), coord_data_type)
+  lat_verts := new((/ nyp1, nxp1 /), coord_data_type)
 ;lon_verts = -98.5d+0
 ;lat_verts = 37.5d+0
 ;
@@ -143,24 +210,24 @@ begin
 ; each vertex that is in the interior of the domain/grid to obtain the 
 ; coordinates of that internal vertex.
 ;
-  lon_verts(1:ny-1,1:nx-1) \
-  = (lon_cntrs(0:ny-2,0:nx-2) \
-  + lon_cntrs(0:ny-2,1:nx-1) \
-  + lon_cntrs(1:ny-1,1:nx-1) \
-  + lon_cntrs(1:ny-1,0:nx-2))/4.0d+0
+  lon_verts(1:nym1,1:nxm1) \
+  = (lon_cntrs(0:nym1-1,0:nxm1-1) \
+  + lon_cntrs(0:nym1-1,1:nxm1) \
+  + lon_cntrs(1:nym1,1:nxm1) \
+  + lon_cntrs(1:nym1,0:nxm1-1))/4.0d+0
 
-  lat_verts(1:ny-1,1:nx-1) \
-  = (lat_cntrs(0:ny-2,0:nx-2) \
-  + lat_cntrs(0:ny-2,1:nx-1) \
-  + lat_cntrs(1:ny-1,1:nx-1) \
-  + lat_cntrs(1:ny-1,0:nx-2))/4.0d+0
+  lat_verts(1:nym1,1:nxm1) \
+  = (lat_cntrs(0:nym1-1,0:nxm1-1) \
+  + lat_cntrs(0:nym1-1,1:nxm1) \
+  + lat_cntrs(1:nym1,1:nxm1) \
+  + lat_cntrs(1:nym1,0:nxm1-1))/4.0d+0
 ;
 ; Create integer (index) arrays needed in the extrapolations below in the
 ; x direction.
 ;
-  ivec1 := new(ny-1, "integer")
-  ivec2 := new(ny-1, "integer")
-  ivec3 := new(ny-1, "integer")
+  ivec1 := new(nym1, "integer")
+  ivec2 := new(nym1, "integer")
+  ivec3 := new(nym1, "integer")
 ;
 ; Extrapolate to obtain coordinates of vertices along the left boundary
 ; (but not including the vertices on the bottom-left and top-left corners
@@ -172,12 +239,12 @@ begin
   ivec1 = i1
   ivec2 = i2
   ivec3 = i3
-  lon_verts(1:ny-1,i3) \
+  lon_verts(1:nym1,i3) \
   = interpol_extrapol_linear( \
-    ivec1, lon_verts(1:ny-1,i1), ivec2, lon_verts(1:ny-1,i2), ivec3)
-  lat_verts(1:ny-1,i3) \
+    ivec1, lon_verts(1:nym1,i1), ivec2, lon_verts(1:nym1,i2), ivec3)
+  lat_verts(1:nym1,i3) \
   = interpol_extrapol_linear( \
-    ivec1, lat_verts(1:ny-1,i1), ivec2, lat_verts(1:ny-1,i2), ivec3)
+    ivec1, lat_verts(1:nym1,i1), ivec2, lat_verts(1:nym1,i2), ivec3)
 ;
 ; Extrapolate to obtain coordinates of vertices along the right boundary
 ; (but not including the vertices on the bottom-right and top-right corners
@@ -189,19 +256,19 @@ begin
   ivec1 = i1
   ivec2 = i2
   ivec3 = i3
-  lon_verts(1:ny-1,i3) \
+  lon_verts(1:nym1,i3) \
   = interpol_extrapol_linear( \
-    ivec1, lon_verts(1:ny-1,i1), ivec2, lon_verts(1:ny-1,i2), ivec3)
-  lat_verts(1:ny-1,i3) \
+    ivec1, lon_verts(1:nym1,i1), ivec2, lon_verts(1:nym1,i2), ivec3)
+  lat_verts(1:nym1,i3) \
   = interpol_extrapol_linear( \
-    ivec1, lat_verts(1:ny-1,i1), ivec2, lat_verts(1:ny-1,i2), ivec3)
+    ivec1, lat_verts(1:nym1,i1), ivec2, lat_verts(1:nym1,i2), ivec3)
 ;
 ; Create integer (index) arrays needed in the extrapolations below in the
 ; y direction.
 ;
-  jvec1 := new(nx-1, "integer")
-  jvec2 := new(nx-1, "integer")
-  jvec3 := new(nx-1, "integer")
+  jvec1 := new(nxm1, "integer")
+  jvec2 := new(nxm1, "integer")
+  jvec3 := new(nxm1, "integer")
 ;
 ; Extrapolate to obtain coordinates of vertices along the bottom boundary
 ; (but not including the vertices on the bottom-left and bottom-right 
@@ -213,12 +280,12 @@ begin
   jvec1 = j1
   jvec2 = j2
   jvec3 = j3
-  lon_verts(j3,1:nx-1) \
+  lon_verts(j3,1:nxm1) \
   = interpol_extrapol_linear( \
-    jvec1, lon_verts(j1,1:nx-1), jvec2, lon_verts(j2,1:nx-1), jvec3)
-  lat_verts(j3,1:nx-1) \
+    jvec1, lon_verts(j1,1:nxm1), jvec2, lon_verts(j2,1:nxm1), jvec3)
+  lat_verts(j3,1:nxm1) \
   = interpol_extrapol_linear( \
-    jvec1, lat_verts(j1,1:nx-1), jvec2, lat_verts(j2,1:nx-1), jvec3)
+    jvec1, lat_verts(j1,1:nxm1), jvec2, lat_verts(j2,1:nxm1), jvec3)
 ;
 ; Extrapolate to obtain coordinates of vertices along the top boundary
 ; (but not including the vertices on the top-left and top-right corners
@@ -230,12 +297,12 @@ begin
   jvec1 = j1
   jvec2 = j2
   jvec3 = j3
-  lon_verts(j3,1:nx-1) \
+  lon_verts(j3,1:nxm1) \
   = interpol_extrapol_linear( \
-    jvec1, lon_verts(j1,1:nx-1), jvec2, lon_verts(j2,1:nx-1), jvec3)
-  lat_verts(j3,1:nx-1) \
+    jvec1, lon_verts(j1,1:nxm1), jvec2, lon_verts(j2,1:nxm1), jvec3)
+  lat_verts(j3,1:nxm1) \
   = interpol_extrapol_linear( \
-    jvec1, lat_verts(j1,1:nx-1), jvec2, lat_verts(j2,1:nx-1), jvec3)
+    jvec1, lat_verts(j1,1:nxm1), jvec2, lat_verts(j2,1:nxm1), jvec3)
 ;
 ; **********************************************************************
 ;
@@ -356,17 +423,17 @@ begin
 ; **********************************************************************
 ;
   lon_verts_unstruc \
-  := (/ ndtooned(lon_verts(0:ny-1,0:nx-1)), \
-        ndtooned(lon_verts(0:ny-1,1:nx)), \
+  := (/ ndtooned(lon_verts(0:nym1,0:nxm1)), \
+        ndtooned(lon_verts(0:nym1,1:nx)), \
         ndtooned(lon_verts(1:ny,1:nx)), \
-        ndtooned(lon_verts(1:ny,0:nx-1)) /)
+        ndtooned(lon_verts(1:ny,0:nxm1)) /)
   lon_verts_unstruc := transpose(lon_verts_unstruc)
 
   lat_verts_unstruc \
-  := (/ ndtooned(lat_verts(0:ny-1,0:nx-1)), \
-        ndtooned(lat_verts(0:ny-1,1:nx)), \
+  := (/ ndtooned(lat_verts(0:nym1,0:nxm1)), \
+        ndtooned(lat_verts(0:nym1,1:nx)), \
         ndtooned(lat_verts(1:ny,1:nx)), \
-        ndtooned(lat_verts(1:ny,0:nx-1)) /)
+        ndtooned(lat_verts(1:ny,0:nxm1)) /)
   lat_verts_unstruc := transpose(lat_verts_unstruc)
 ;
 ; **********************************************************************
@@ -415,6 +482,42 @@ begin
   print("")
   print("Done reading in FV3-LAM's write-component grid coordinates from file.")
   print("" + separator_line)
+;
+; **********************************************************************
+;
+; If the original latlon grid coordinates read in from the file were 
+; transformed above to a rotated coordinate system because they include
+; the international date line, then transform the results obtained above
+; back to the non-rotated latlon coordinate system before returning them.
+;
+; **********************************************************************
+;
+  if (transform_to_rotated_latlon) then
+
+    dir = -1
+
+    sphr_coords \
+    := convert_from_to_sphr_coords_to_from_rotated_sphr( \
+       lon0, lat0, angle_units, dir, \
+       lon_cntrs_unstruc, lat_cntrs_unstruc)
+    lon_cntrs_unstruc := sphr_coords@lon_out
+    lat_cntrs_unstruc := sphr_coords@lat_out
+
+    sphr_coords \
+    := convert_from_to_sphr_coords_to_from_rotated_sphr( \
+       lon0, lat0, angle_units, dir, \
+       lon_verts_unstruc, lat_verts_unstruc)
+    lon_verts_unstruc := sphr_coords@lon_out
+    lat_verts_unstruc := sphr_coords@lat_out
+
+    sphr_coords \
+    := convert_from_to_sphr_coords_to_from_rotated_sphr( \
+       lon0, lat0, angle_units, dir, \
+       lon_bdy, lat_bdy)
+    lon_bdy := sphr_coords@lon_out
+    lat_bdy := sphr_coords@lat_out
+
+  end if
 ;
 ; **********************************************************************
 ;

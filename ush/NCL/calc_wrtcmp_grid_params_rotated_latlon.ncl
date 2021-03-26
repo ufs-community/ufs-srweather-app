@@ -10,6 +10,7 @@ loadscript(lib_location + "constants.ncl")
 loadscript(lib_location + "strcmp_exact.ncl")
 loadscript(lib_location + "strpad.ncl")
 loadscript(lib_location + "repeat_str.ncl")
+loadscript(lib_location + "interpol_extrapol_linear.ncl")
 loadscript(lib_location + "calc_rotated_sphr_coords_from_sphr.ncl")
 loadscript(lib_location + "calc_sphr_coords_from_rotated_sphr.ncl")
 loadscript(lib_location + "convert_from_to_sphr_coords_to_from_rotated_sphr.ncl")
@@ -17,10 +18,13 @@ loadscript(lib_location + "convert_from_to_sphr_coords_to_from_rotated_sphr.ncl"
 undef("calc_wrtcmp_grid_params_rotated_latlon")
 
 function calc_wrtcmp_grid_params_rotated_latlon( \
-         wrtcmp_config_fn:string, \
+         model_config_tmpl_fp:string, \
          lon_ctr_native:snumeric, lat_ctr_native:snumeric, \
          lon_tile_corners_face_midpts_native[8]:snumeric, \
          lat_tile_corners_face_midpts_native[8]:snumeric, \
+         lon_bdy_native[*]:snumeric, \
+         lat_bdy_native[*]:snumeric, \
+         nx_native:snumeric, ny_native:snumeric, \
          dx_native:snumeric, dy_native:snumeric, \
          angle_units:string)
 
@@ -113,8 +117,6 @@ print("(lon_tile_corners_face_midpts_native, lat_tile_corners_face_midpts_native
 pause
 
 end if
-
-
 ;
 ; **********************************************************************
 ;
@@ -123,6 +125,12 @@ end if
 ;
 ; **********************************************************************
 ;
+;print("")
+;print("(lon_tile_corners_face_midpts_native, lat_tile_corners_face_midpts_native) = " + \
+;      lon_tile_corners_face_midpts_native + ", " + \
+;      lat_tile_corners_face_midpts_native)
+;pause
+
   rotated_sphr_coords \
   := convert_from_to_sphr_coords_to_from_rotated_sphr( \               
      lon_ctr, lat_ctr, angle_units, 1, \                              
@@ -130,6 +138,15 @@ end if
      lat_tile_corners_face_midpts_native)
   x_tile_corners_face_midpts_native = rotated_sphr_coords@lon_out
   y_tile_corners_face_midpts_native = rotated_sphr_coords@lat_out
+
+  rotated_sphr_coords \
+  := convert_from_to_sphr_coords_to_from_rotated_sphr( \               
+     lon_ctr, lat_ctr, angle_units, 1, \                              
+     lon_bdy_native, \
+     lat_bdy_native)
+  x_bdy_native = rotated_sphr_coords@lon_out
+  y_bdy_native = rotated_sphr_coords@lat_out
+
 ;print("")
 ;print("(x_tile_corners_face_midpts_native, y_tile_corners_face_midpts_native) = " + \
 ;      x_tile_corners_face_midpts_native + ", " + \
@@ -219,8 +236,103 @@ end if
   y_S_native_max = max((/y_SW_native, y_S_native, y_SE_native/))
   y_N_native_min = min((/y_NW_native, y_N_native, y_NE_native/))
 
+;
+; The following code is for the case in which in the xy-plane [i.e. in the 
+; lonp-latp plane, where lonp and latp are the rotated latlon coordinates
+; (with the "p" indicating "prime")] the left and right boundaries are 
+; concave (bow into the domain) and the bottom and top boundaries are
+; convex (bow out of the domain).  It allows the write-component domain
+; in the y (i.e. latp) direction to be slightly larger by calculating 
+; the lower and upper bounds of the domain in a less conservative way.
+; This needs to be generalized to cases in which the left and right
+; boundaries are convex and the bottom and top boundaries are convex.
+;
+; This code (after generalization) needs to be included in the file
+; calc_wrtcmp_grid_params_lambert_cnfrml.ncl.
+;
+if (True) then
+;if (False) then
+
+  if ((y_S_native .lt. y_SW_native) .and. (y_S_native .lt. y_SE_native)) then
+
+    indx_start = 0
+    indx_end = indx_start + nx_native
+    x_bdy_native_bot := x_bdy_native(indx_start:indx_end)
+    y_bdy_native_bot := y_bdy_native(indx_start:indx_end)
+
+    inds_sort := dim_pqsort(x_bdy_native_bot, 2)
+    y_bdy_native_bot := y_bdy_native_bot(inds_sort)
+
+    indx_nearest = ind_nearest_coord(x_W_native_max, x_bdy_native_bot, 0)
+    if (x_W_native_max .lt. x_bdy_native_bot(indx_nearest)) then
+      indx_1 = indx_nearest - 1
+      indx_2 = indx_nearest
+    else if (x_W_native_max .ge. x_bdy_native_bot(indx_nearest)) then
+      indx_1 = indx_nearest
+      indx_2 = indx_nearest + 1
+    end if
+    end if
+
+;    y_S_native_max_linear := interpol_extrapol_linear( \
+;                     x_SW_native, y_SW_native, \
+;                     x_S_native, y_S_native, \
+;                     x_W_native_max)
+    y_S_native_max = interpol_extrapol_linear( \
+                     x_bdy_native_bot(indx_1), y_bdy_native_bot(indx_1), \
+                     x_bdy_native_bot(indx_2), y_bdy_native_bot(indx_2), \
+                     x_W_native_max)
+;print("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
+;print("y_S_native_max_linear = " + y_S_native_max_linear)
+;print("y_S_native_max = " + y_S_native_max)
+;pause
+
+  end if
+
+
+  if ((y_N_native .gt. y_NW_native) .and. (y_N_native .gt. y_NE_native)) then
+
+    indx_start = nx_native + ny_native
+    indx_end = indx_start + nx_native
+    x_bdy_native_top := x_bdy_native(indx_start:indx_end)
+    y_bdy_native_top := y_bdy_native(indx_start:indx_end)
+
+    inds_sort := dim_pqsort(x_bdy_native_top, 2)
+    y_bdy_native_top := y_bdy_native_top(inds_sort)
+
+    indx_nearest = ind_nearest_coord(x_W_native_max, x_bdy_native_top, 0)
+    if (x_W_native_max .lt. x_bdy_native_top(indx_nearest)) then
+      indx_1 = indx_nearest - 1
+      indx_2 = indx_nearest
+    else if (x_W_native_max .ge. x_bdy_native_top(indx_nearest)) then
+      indx_1 = indx_nearest
+      indx_2 = indx_nearest + 1
+    end if
+    end if
+
+;    y_N_native_min_linear := interpol_extrapol_linear( \
+;                     x_NW_native, y_NW_native, \
+;                     x_N_native, y_N_native, \
+;                     x_W_native_max)
+    y_N_native_min = interpol_extrapol_linear( \
+                     x_bdy_native_top(indx_1), y_bdy_native_top(indx_1), \
+                     x_bdy_native_top(indx_2), y_bdy_native_top(indx_2), \
+                     x_W_native_max)
+;print("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
+;print("y_N_native_min_linear = " + y_N_native_min_linear)
+;print("y_N_native_min = " + y_N_native_min)
+;pause
+
+  end if
+
+end if
+
+
+
   y_S = y_S_native_max + num_margin_cells*dy
   y_N = y_N_native_min - num_margin_cells*dy
+print("")
+print("y_S = " + y_S)
+print("y_N = " + y_N)
 
   y_S = -min(abs((/y_S, y_N/)))
   y_N = -y_S
@@ -236,7 +348,7 @@ end if
 ; **********************************************************************
 ;
 ; Calculate the spherical coordinates of the southwest corner of the 
-; native grid from its Lambert coordinates.
+; native grid from its rotated latlon coordinates.
 ;
 ; **********************************************************************
 ;
@@ -300,16 +412,16 @@ end if
   param_value := char_sq + "rotated_latlon" + char_sq
   param_value_str := tostring(param_value)
 
-  regex_search = "^(\s*" + param_name + ":\s+)(<" + param_name + ">)(\s*)(.*)"
+  regex_search = "^(\s*" + param_name + ":\s+)('\{\{\s*" + param_name + "\s*\}\}')(\s*)(.*)"
 
   regex_print = "\1" + param_value_str
   sed_cmd = "sed -n -r -e " + char_dq + "s|" + regex_search + "|" \
-          + regex_print + "|p" + char_dq + " " + wrtcmp_config_fn
+          + regex_print + "|p" + char_dq + " " + model_config_tmpl_fp
   param_names_and_vals(np) = systemfunc(sed_cmd)
 
   regex_print = "\4"
   sed_cmd = "sed -n -r -e " + char_dq + "s|" + regex_search + "|" \
-          + regex_print + "|p" + char_dq + " " + wrtcmp_config_fn
+          + regex_print + "|p" + char_dq + " " + model_config_tmpl_fp
   trailing_comments(np) = systemfunc(sed_cmd)
 ;
 ; **********************************************************************
@@ -366,7 +478,7 @@ end if
     end if
 ;
 ; Generate a string containing the parameter value and formatted as spe-
-; cified by fmt_str.  Then strip any leading and trailing whitespace 
+; cified by fmt_str.  Then strip any leading and trailing whitespace
 ; from it.
 ;
     param_value_str := sprintf(fmt_str, param_value)
@@ -374,22 +486,24 @@ end if
 ;
 ; Set the regular expression to search for.
 ;
-    regex_search = "^(\s*" + param_name + ":\s+)(<" + param_name + ">)(\s*)(.*)"
+    regex_search = "^(\s*" + param_name + ":\s+)(\{\{\s*" + param_name + "\s*\}\})(\s*)(.*)"
 ;
 ; Get the parameter name and value without the trailing comment (if any).
 ;
     regex_print = "\1" + param_value_str
     sed_cmd = "sed -n -r -e " + char_dq + "s|" + regex_search + "|" \
-            + regex_print + "|p" + char_dq + " " + wrtcmp_config_fn
-    param_names_and_vals(np) = systemfunc(sed_cmd)
+            + regex_print + "|p" + char_dq + " " + model_config_tmpl_fp
+    tmp := systemfunc(sed_cmd)
+    param_names_and_vals(np) = tmp(0)
 ;
 ; Get the trailing name and comment.
 ;
     regex_print = "\4"
     sed_cmd = "sed -n -r -e " + char_dq + "s|" + regex_search + "|" \
-            + regex_print + "|p" + char_dq + " " + wrtcmp_config_fn
-    trailing_comments(np) = systemfunc(sed_cmd)
-    
+            + regex_print + "|p" + char_dq + " " + model_config_tmpl_fp
+    tmp := systemfunc(sed_cmd)
+    trailing_comments(np) = tmp(0)
+
   end do
 ;
 ; **********************************************************************
@@ -429,7 +543,7 @@ end if
     regex_search = "^(\s*" + param_name + ":\s+)(<" + param_name + ">)(\s*)(.*)"
     regex_replace = lines_final(np)
     sed_cmd = "sed -i -r -e " + char_dq + "s|" + regex_search + "|" \
-            + regex_replace + "|" + char_dq + " " + wrtcmp_config_fn
+            + regex_replace + "|" + char_dq + " " + model_config_tmpl_fp
     sed_output = systemfunc(sed_cmd)
   end do
 ;

@@ -244,7 +244,7 @@ begin
   param_value := char_sq + "lambert_conformal" + char_sq
   param_value_str := tostring(param_value)
 
-  regex_search = "^(\s*" + param_name + ":\s+)('\{\{ " + param_name + " \}\}')(\s*)(.*)"
+  regex_search = "^(\s*" + param_name + ":\s+)('\{\{\s*" + param_name + "\s*\}\}')(\s*)(.*)"
 
   regex_print = "\1" + param_value_str
   sed_cmd = "sed -n -r -e " + char_dq + "s|" + regex_search + "|" \
@@ -326,7 +326,7 @@ begin
 ;
 ; Set the regular expression to search for.
 ;
-    regex_search = "^(\s*" + param_name + ":\s+)(\{\{ " + param_name + " \}\})(\s*)(.*)"
+    regex_search = "^(\s*" + param_name + ":\s+)(\{\{\s*" + param_name + "\s*\}\})(\s*)(.*)"
 ;
 ; Get the parameter name and value without the trailing comment (if any).
 ;
