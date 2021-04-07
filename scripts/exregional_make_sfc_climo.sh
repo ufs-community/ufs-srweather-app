@@ -78,6 +78,16 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
+# Set OpenMP variables.
+#
+#-----------------------------------------------------------------------
+#
+KMP_AFFINITY=${KMP_AFFINITY_MAKE_SFC_CLIMO}
+OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_SFC_CLIMO}
+OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_SFC_CLIMO}
+#
+#-----------------------------------------------------------------------
+#
 # Are these machine dependent??
 #
 #-----------------------------------------------------------------------

@@ -76,13 +76,14 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-# The orography code runs with threads.  On Cray, the code is optimized
-# for six threads.  Do not change.
+# Set OpenMP variables.  The orog executable runs with OMP. On
+# WCOSS (Cray), it is optimized for six threads, which is the default.
 #
 #-----------------------------------------------------------------------
 #
-export OMP_NUM_THREADS=6
-export OMP_STACKSIZE=2048m
+KMP_AFFINITY=${KMP_AFFINITY_MAKE_OROG}
+OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_OROG}
+OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_OROG}
 #
 #-----------------------------------------------------------------------
 #
@@ -102,9 +103,8 @@ case $MACHINE in
     module load PrgEnv-intel cfp-intel-sandybridge/1.1.0
     module list
     { restore_shell_opts; } > /dev/null 2>&1
-    export NODES=1
-    export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
-    export KMP_AFFINITY=disabled
+    NODES=1
+    APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
     ulimit -s unlimited
     ulimit -a
     ;;
@@ -130,11 +130,11 @@ case $MACHINE in
   "JET")
     ulimit -s unlimited
     ulimit -a
-    export APRUN="time"
+    APRUN="time"
     ;;
 
   "ODIN")
-    export APRUN="srun -n 1"
+    APRUN="srun -n 1"
     ulimit -s unlimited
     ulimit -a
     ;;
@@ -144,7 +144,7 @@ case $MACHINE in
     ;;
 
   "STAMPEDE")
-    export APRUN="time"
+    APRUN="time"
     ;;
 
   *)

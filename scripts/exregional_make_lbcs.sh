@@ -72,6 +72,16 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
+# Set OpenMP variables.
+#
+#-----------------------------------------------------------------------
+#
+KMP_AFFINITY=${KMP_AFFINITY_MAKE_LBCS}
+OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_LBCS}
+OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
+#
+#-----------------------------------------------------------------------
+#
 # Set machine-dependent parameters.
 #
 #-----------------------------------------------------------------------

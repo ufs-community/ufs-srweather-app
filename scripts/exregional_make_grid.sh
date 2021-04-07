@@ -80,16 +80,6 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-# The orography code runs with threads.  On Cray, the code is optimized
-# for six threads.  Do not change.
-#
-#-----------------------------------------------------------------------
-#
-export OMP_NUM_THREADS=6
-export OMP_STACKSIZE=2048m
-#
-#-----------------------------------------------------------------------
-#
 # Set the machine-dependent run command.  Also, set resource limits as
 # necessary.
 #

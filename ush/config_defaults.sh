@@ -1524,7 +1524,7 @@ SPP_STDDEV_CUTOFF=( "1.5" )
 #
 #-----------------------------------------------------------------------
 #
-HALO_BLEND=10
+HALO_BLEND="10"
 #
 #-----------------------------------------------------------------------
 #
@@ -1579,4 +1579,67 @@ COMPILER="intel"
 #-----------------------------------------------------------------------
 #
 GWD_HRRRsuite_BASEDIR=""
+#
+#-----------------------------------------------------------------------
+#
+# KMP_AFFINITY_*:
+# From Intel: "The Intel® runtime library has the ability to bind OpenMP
+# threads to physical processing units. The interface is controlled using
+# the KMP_AFFINITY environment variable. Depending on the system (machine)
+# topology, application, and operating system, thread affinity can have a
+# dramatic effect on the application speed. 
+#
+# Thread affinity restricts execution of certain threads (virtual execution
+# units) to a subset of the physical processing units in a multiprocessor 
+# computer. Depending upon the topology of the machine, thread affinity can
+# have a dramatic effect on the execution speed of a program."
+#
+# For more information, see the following link:
+# https://software.intel.com/content/www/us/en/develop/documentation/cpp-
+# compiler-developer-guide-and-reference/top/optimization-and-programming-
+# guide/openmp-support/openmp-library-support/thread-affinity-interface-
+# linux-and-windows.html
+# 
+# OMP_NUM_THREADS_*:
+# The number of OpenMP threads to use for parallel regions.
+# 
+# OMP_STACKSIZE_*:
+# Controls the size of the stack for threads created by the OpenMP 
+# implementation.
+#
+# CPUS_PER_TASK_RUN_FCST:
+# Sets the number of MPI tasks per CPU for the RUN_FCST task. 
+#
+# Note that settings for the make_grid and make_orog tasks are not 
+# included below as they do not use parallelized code.
+#
+#-----------------------------------------------------------------------
+#
+KMP_AFFINITY_MAKE_OROG="scatter"
+OMP_NUM_THREADS_MAKE_OROG="6"
+OMP_STACKSIZE_MAKE_OROG="2048m"
 
+KMP_AFFINITY_MAKE_SFC_CLIMO="scatter"
+OMP_NUM_THREADS_MAKE_SFC_CLIMO="1"
+OMP_STACKSIZE_MAKE_SFC_CLIMO="1024m"
+
+KMP_AFFINITY_MAKE_ICS="scatter"
+OMP_NUM_THREADS_MAKE_ICS="1"
+OMP_STACKSIZE_MAKE_ICS="1024m"
+
+KMP_AFFINITY_MAKE_LBCS="scatter"
+OMP_NUM_THREADS_MAKE_LBCS="1"
+OMP_STACKSIZE_MAKE_LBCS="1024m"
+
+KMP_AFFINITY_RUN_FCST="scatter"
+OMP_NUM_THREADS_RUN_FCST="4"
+OMP_STACKSIZE_RUN_FCST="1024m"
+
+CPUS_PER_TASK_RUN_FCST="4"
+
+KMP_AFFINITY_RUN_POST="scatter"
+OMP_NUM_THREADS_RUN_POST="1"
+OMP_STACKSIZE_RUN_POST="1024m"
+#
+#-----------------------------------------------------------------------
+#
