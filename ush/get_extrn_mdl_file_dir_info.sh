@@ -675,13 +675,13 @@ has not been specified for this external model and machine combination:
   "FV3GFS")
     case "$MACHINE" in
     "WCOSS_CRAY")
-      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
+      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}/atmos"
       ;;
     "WCOSS_DELL_P3")
-      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
+      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}/atmos"
       ;;
     "HERA")
-      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}"
+      sysdir="$sysbasedir/gfs.${yyyymmdd}/${hh}/atmos"
       ;;
     "ORION")
       sysdir="$sysbasedir"

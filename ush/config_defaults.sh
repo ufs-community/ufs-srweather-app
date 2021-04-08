@@ -173,7 +173,7 @@ EXPT_SUBDIR=""
 # (consisting of the 2-digit hour-of-day), the directory in which the 
 # workflow will look for the external model files is:
 #
-#   $COMINgfs/gfs.$yyyymmdd/$hh
+#   $COMINgfs/gfs.$yyyymmdd/$hh/atmos
 #
 # FIXLAM_NCO_BASEDIR:
 # The base directory containing pregenerated grid, orography, and surface 
