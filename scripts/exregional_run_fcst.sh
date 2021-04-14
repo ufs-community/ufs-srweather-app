@@ -87,9 +87,9 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-KMP_AFFINITY=${KMP_AFFINITY_RUN_FCST}
-OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_FCST}
-OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
+export KMP_AFFINITY=${KMP_AFFINITY_RUN_FCST}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_FCST}
+export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
 #
 #-----------------------------------------------------------------------
 #

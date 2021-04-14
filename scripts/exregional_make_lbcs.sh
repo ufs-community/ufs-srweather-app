@@ -76,9 +76,9 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-KMP_AFFINITY=${KMP_AFFINITY_MAKE_LBCS}
-OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_LBCS}
-OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
+export KMP_AFFINITY=${KMP_AFFINITY_MAKE_LBCS}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_LBCS}
+export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 #-----------------------------------------------------------------------
 #

@@ -81,9 +81,9 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-KMP_AFFINITY=${KMP_AFFINITY_MAKE_OROG}
-OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_OROG}
-OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_OROG}
+export KMP_AFFINITY=${KMP_AFFINITY_MAKE_OROG}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_OROG}
+export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_OROG}
 #
 #-----------------------------------------------------------------------
 #
