@@ -375,23 +375,13 @@ WFLOW_LAUNCH_LOG_FN="log.launch_FV3LAM_wflow"
 # FCST_LEN_HRS:
 # The length of each forecast, in integer hours.
 #
-# SUB_HOURLY_POST:
-# Logical flag to indicate whether sub-hourly FV3 output should be
-# post-processed. If TRUE, then DT_SUBHOURLY_POST_MNTS should also be specified.
-#
-# DT_SUB_HOURLY_POST_MNTS:
-# Temporal spacing in minutes for post-processed output files. This needs
-# to be a two-digit integer between 00 and 59. Setting to 00 will override
-# the value of SUB_HOURLY_POST to FALSE.
-#
 #-----------------------------------------------------------------------
 #
 DATE_FIRST_CYCL="YYYYMMDD"
 DATE_LAST_CYCL="YYYYMMDD"
 CYCL_HRS=( "HH1" "HH2" )
 FCST_LEN_HRS="24"
-SUB_HOURLY_POST="FALSE"
-DT_SUBHOURLY_POST_MNTS="00"
+#
 #-----------------------------------------------------------------------
 #
 # Set METplus parameters.  Definitions:
@@ -1420,6 +1410,32 @@ MAXTRIES_VX_GRIDSTAT_03h="1"
 MAXTRIES_VX_GRIDSTAT_06h="1"
 MAXTRIES_VX_GRIDSTAT_24h="1"
 MAXTRIES_VX_POINTSTAT="1"
+#
+#-----------------------------------------------------------------------
+#
+# Set parameters associated with subhourly forecast model output and 
+# post-processing.
+#
+# SUB_HOURLY_POST:
+# Flag that indicates whether the forecast model will generate output 
+# files on a sub-hourly time interval (e.g. 10 minutes, 15 minutes, etc).
+# This will also cause the post-processor to process these sub-hourly
+# files.  If ths is set to "TRUE", then DT_SUBHOURLY_POST_MNTS should be 
+# set to a value between "00" and "59".
+#
+# DT_SUB_HOURLY_POST_MNTS:
+# Time interval in minutes between the forecast model output files.  If 
+# SUB_HOURLY_POST is set to "TRUE", this needs to be set to a two-digit 
+# integer between "01" and "59".  This is not used if SUB_HOURLY_POST is
+# not set to "TRUE".  Note that if SUB_HOURLY_POST is set to "TRUE" but
+# DT_SUB_HOURLY_POST_MNTS is set to "00", SUB_HOURLY_POST will get reset
+# to "FALSE" in the experiment generation scripts (there will be an 
+# informational message in the log file to emphasize this).
+#
+#-----------------------------------------------------------------------
+#
+SUB_HOURLY_POST="FALSE"
+DT_SUBHOURLY_POST_MNTS="00"
 #
 #-----------------------------------------------------------------------
 #

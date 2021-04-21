@@ -405,7 +405,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Make sure that SUB_HOURLY_POST is set to a valid value.
+# Make sure that SUB_HOURLY_POST and DT_SUBHOURLY_POST_MNTS are set to 
+# valid values.
 #
 #-----------------------------------------------------------------------
 #
@@ -415,19 +416,12 @@ check_var_valid_value "SUB_HOURLY_POST" "valid_vals_SUB_HOURLY_POST"
 # other valid values later on.
 #
 SUB_HOURLY_POST=${SUB_HOURLY_POST^^}
-if [ "$SUB_HOURLY_POST" = "TRUE" ] || \
-   [ "$SUB_HOURLY_POST" = "YES" ]; then
+if [ "${SUB_HOURLY_POST}" = "TRUE" ] || \
+   [ "${SUB_HOURLY_POST}" = "YES" ]; then
   SUB_HOURLY_POST="TRUE"
-elif [ "$SUB_HOURLY_POST" = "FALSE" ] || \
-     [ "$SUB_HOURLY_POST" = "NO" ]; then
+elif [ "${SUB_HOURLY_POST}" = "FALSE" ] || \
+     [ "${SUB_HOURLY_POST}" = "NO" ]; then
   SUB_HOURLY_POST="FALSE"
-fi
-
-if [ "${DT_SUBHOURLY_POST_MNTS}" -eq "0" ]; then
-  SUB_HOURLY_POST="FALSE"
-  print_info_msg "NOTE: since you have set DT_SUBHOURLY_POST_MNTS to '00', then 
-  SUB_HOURLY_POST is being overwritten to FALSE. If you do not want this, you 
-  must set DT_SUBHOURLY_POST_MNTS to something other than '00.'"
 fi
 #
 #-----------------------------------------------------------------------
@@ -644,20 +638,6 @@ DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
 month, and DD is the 2-digit day-of-month.
   DATE_LAST_CYCL = \"${DATE_LAST_CYCL}\""
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Check that DT_SUBHOURLY_POST_MNTS is a string consisting of exactly 2 digits between "00" and "59"
-#
-#-----------------------------------------------------------------------
-#
-min_or_null=$( printf "%s" "${DT_SUBHOURLY_POST_MNTS}" | \
-                sed -n -r -e "s/^([0-5][0-9])$/\1/p" )
-if [ -z "${min_or_null}" ]; then
-  print_err_msg_exit "\
-DT_SUBHOURLY_POST_MNTS must be a 2-digit integer between 00 and 59 inclusive, as "MM".
-  DT_SUBHOURLY_POST_MNTS = \"${DT_SUBHOURLY_POST_MNTS}\""
 fi
 #
 #-----------------------------------------------------------------------
@@ -1060,22 +1040,6 @@ The forecast model main time step (DT_ATMOS) is set to a null string:
 Please set this to a valid numerical value in the user-specified experiment
 configuration file (EXPT_CONFIG_FP) and rerun:
   EXPT_CONFIG_FP = \"${EXPT_CONFIG_FP}\""
-else
-  if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
-    ((rem = (DT_SUBHOURLY_POST_MNTS*60) % DT_ATMOS))
-    if [ ${rem} -ne 0 ]; then
-      print_err_msg_exit "\
-When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"), the time
-interval specified by DT_SUBHOURLY_POST_MNTS (after converting to seconds) must be evenly divisible 
-by the time step DT_ATMOS used in the forecast model, i.e. the remainder (rem) must 
-be zero.  In this case, it is not:
-  SUB_HOURLY_POST = \"${SUB_HOURLY_POST}\"
-  DT_SUBHOURLY_POST_MNTS = \"${DT_SUBHOURLY_POST_MNTS}\"
-  DT_ATMOS = \"${DT_ATMOS}\"
-  rem = \$(( (DT_SUBHOURLY_POST_MNTS*60) %% DT_ATMOS )) = $rem
-Please reset DT_SUBHOURLY_POST_MNTS and/or DT_ATMOS so that the remainder is zero."
-    fi
-  fi
 fi
 
 if [ -z "${LAYOUT_X}" ]; then
@@ -1106,6 +1070,96 @@ set to a null string:
 Please set this to a valid numerical value in the user-specified experiment
 configuration file (EXPT_CONFIG_FP) and rerun:
   EXPT_CONFIG_FP = \"${EXPT_CONFIG_FP}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If performing sub-hourly model output and post-processing, check that
+# the output interval DT_SUBHOURLY_POST_MNTS (in minutes) is specified
+# correctly.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+#
+# Check that DT_SUBHOURLY_POST_MNTS is a string consisting of one or two
+# digits.
+#
+  mnts_or_null=$( printf "%s" "${DT_SUBHOURLY_POST_MNTS}" | \
+                  sed -n -r -e "s/^([0-9])([0-9])?$/\1\2/p" )
+  if [ -z "${mnts_or_null}" ]; then
+    print_err_msg_exit "\
+When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"), 
+DT_SUBHOURLY_POST_MNTS must be set to a one- or two-digit integer but 
+in this case is not:
+  SUB_HOURLY_POST = \"${SUB_HOURLY_POST}\"
+  DT_SUBHOURLY_POST_MNTS = \"${DT_SUBHOURLY_POST_MNTS}\""
+  fi
+#
+# Check that DT_SUBHOURLY_POST_MNTS is between 0 and 59, inclusive.
+#
+  if [ ${DT_SUBHOURLY_POST_MNTS} -lt "0" ] || \
+     [ ${DT_SUBHOURLY_POST_MNTS} -gt "59" ]; then
+    print_err_msg_exit "\
+When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"), 
+DT_SUBHOURLY_POST_MNTS must be set to an integer between 0 and 59, 
+inclusive but in this case is not:
+  SUB_HOURLY_POST = \"${SUB_HOURLY_POST}\"
+  DT_SUBHOURLY_POST_MNTS = \"${DT_SUBHOURLY_POST_MNTS}\""
+  fi
+#
+# Check that DT_SUBHOURLY_POST_MNTS (after converting to seconds) is 
+# evenly divisible by the forecast model's main time step DT_ATMOS.
+#
+  rem=$(( DT_SUBHOURLY_POST_MNTS*60 % DT_ATMOS ))
+  if [ ${rem} -ne 0 ]; then
+    print_err_msg_exit "\
+When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"), 
+the time interval specified by DT_SUBHOURLY_POST_MNTS (after converting 
+to seconds) must be evenly divisible by the time step DT_ATMOS used in 
+the forecast model, i.e. the remainder (rem) must be zero.  In this case, 
+it is not:
+  SUB_HOURLY_POST = \"${SUB_HOURLY_POST}\"
+  DT_SUBHOURLY_POST_MNTS = \"${DT_SUBHOURLY_POST_MNTS}\"
+  DT_ATMOS = \"${DT_ATMOS}\"
+  rem = \$(( (DT_SUBHOURLY_POST_MNTS*60) %% DT_ATMOS )) = $rem
+Please reset DT_SUBHOURLY_POST_MNTS and/or DT_ATMOS so that this remainder 
+is zero."
+  fi
+#
+# If DT_SUBHOURLY_POST_MNTS is set to 0 (with SUB_HOURLY_POST set to 
+# "TRUE"), then we're not really performing subhourly post-processing.
+# In this case, reset SUB_HOURLY_POST to "FALSE" and print out an 
+# informational message that such a change was made.
+#
+  if [ "${DT_SUBHOURLY_POST_MNTS}" -eq "0" ]; then
+    print_info_msg "\
+When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"), 
+DT_SUBHOURLY_POST_MNTS must be set to a value greater than 0; otherwise,
+sub-hourly output is not really being performed:
+  SUB_HOURLY_POST = \"${SUB_HOURLY_POST}\"
+  DT_SUBHOURLY_POST_MNTS = \"${DT_SUBHOURLY_POST_MNTS}\"
+Resetting SUB_HOURLY_POST to \"FALSE\".  If you do not want this, you 
+must set DT_SUBHOURLY_POST_MNTS to something other than zero."
+    SUB_HOURLY_POST="FALSE"
+  fi
+#
+# For now, the sub-hourly capability is restricted to having values of 
+# DT_SUBHOURLY_POST_MNTS that evenly divide into 60 minutes.  This is 
+# because the jinja rocoto XML template (FV3LAM_wflow.xml) assumes that
+# model output is generated at the top of every hour (i.e. at 00 minutes).
+# This restricts DT_SUBHOURLY_POST_MNTS to the following values (inluding
+# both cases with and without a leading 0):
+#
+#   "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30"
+#   
+# This restriction will be removed in a future version of the workflow, 
+# For now, check that DT_SUBHOURLY_POST_MNTS is one of the above values.
+#
+  if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+    check_var_valid_value "DT_SUBHOURLY_POST_MNTS" "valid_vals_DT_SUBHOURLY_POST_MNTS"
+  fi
+
 fi
 #
 #-----------------------------------------------------------------------

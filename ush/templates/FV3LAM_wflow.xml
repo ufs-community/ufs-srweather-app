@@ -427,7 +427,7 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  {% if sub_hourly_post %}
+  {%- if sub_hourly_post %}
 <!--
 Define the post-processing task for first model output time.  The forecast 
 hour corresponding to this output time is zero (formatted to the appropriate
@@ -438,23 +438,23 @@ It is for this reason that this task is not rolled into the metatask(s)
 further below.
 
 Note that we wrap this task in a metatask in order to be able to declare
-and use the variables fhr and fmin.  This allows the block of code inside
+and use the variables fhr and fmn.  This allows the block of code inside
 the <task> tag (except for the dependencies) to be identical to the ones 
 later below for other output times.
 -->
   <metatask>
 
     <var name="fhr">000</var>
-    <var name="fmin">00</var>
-    <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#" maxtries="{{ maxtries_run_post }}">
+    <var name="fmn">00</var>
+    <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
       <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
-      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#</jobname>
-      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#_@Y@m@d@H.log</cyclestr></join>
+      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H.log</cyclestr></join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -463,14 +463,14 @@ later below for other output times.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
-      <envar><name>fmn</name><value>#fmin#</value></envar>
+      <envar><name>fmn</name><value>#fmn#</value></envar>
 
-{#
+<!--
 Note that because the forecast minutes and seconds corresponding to the
 first model output time are not exactly zero, we use the jinja template
-variable first_fv3_file_tstr instead of fhr and fmin to form the file 
+variable first_fv3_file_tstr instead of fhr and fmn to form the file 
 names in the dependencies.
-#}
+-->
       <dependency>
         <or>
           <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
@@ -490,7 +490,7 @@ Define the post-processing tasks for the second through last output minutes
 of the first output hour (which is zero).  We use two metatasks for this.
 The inner one is needed to loop over the minutes, and the outer one is 
 used in order to be able to declare and use the variable fhr.  Use of this
-variable (along with the fmin variable in the inner metatask) allows the 
+variable (along with the fmn variable in the inner metatask) allows the 
 block of code inside the <task> tag to be identical to the ones later below 
 for other output times.
 -->
@@ -499,16 +499,16 @@ for other output times.
     <var name="fhr">000</var>
     <metatask>
 
-      <var name="fmin">{% for min in range(delta_min, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}</var>
-      <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#" maxtries="{{ maxtries_run_post }}">
+      <var name="fmn">{% for min in range(delta_min, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}</var>
+      <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" maxtries="{{ maxtries_run_post }}">
 
         &RSRV_DEFAULT;
         <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
-        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#</jobname>
-        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#_@Y@m@d@H.log</cyclestr></join>
+        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H.log</cyclestr></join>
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
         <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -517,14 +517,14 @@ for other output times.
         <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
         <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
         <envar><name>fhr</name><value>#fhr#</value></envar>
-        <envar><name>fmn</name><value>#fmin#</value></envar>
+        <envar><name>fmn</name><value>#fmn#</value></envar>
 
         <dependency>
           <or>
             <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
             <and>
-              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmin#:00.nc</cyclestr></datadep>
-              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmin#:00.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmn#:00.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmn#:00.nc</cyclestr></datadep>
             </and>
           </or>
         </dependency>
@@ -534,41 +534,45 @@ for other output times.
     </metatask>
 
   </metatask>
-  {% endif %}
+  {%- endif %}
 
   <metatask name="&RUN_POST_TN;{{ uscore_ensmem_name }}">
-  {% if sub_hourly_post %}
+  {%- if sub_hourly_post %}
 <!--
 Define the post-processing tasks for the second through next-to-last model
 output hours (and all output minutes for each such hour).  
 -->
     <var name="fhr">{% for h in range(1, fcst_len_hrs) %}{{ " %03d" % h }}{% endfor %}</var>
     <metatask>
-      <var name="fmin">{% for min in range(0, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}</var>
-  {% else %}
+      <var name="fmn">{% for min in range(0, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}</var>
+      <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" maxtries="{{ maxtries_run_post }}">
+  {%- else %}
 <!--
 Define the post-processing tasks for each model output hour.  Note that
 only one metatask is needed for this purpose (the inner one that loops 
 over the hours), but we use two metatasks in order to be able to use the 
-variable fmin, which here is always set to zero.  Use of this variable 
+variable fmn, which here is always set to zero.  Use of this variable 
 (along with the fhr variable in the inner metatask) allows the block of 
 code inside the <task> tag to be identical to the case in which subhourly 
 post-processing is performed (i.e. the case in which the minutes are not 
 always zero).
 -->
     <var name="fhr">{% for h in range(0, fcst_len_hrs+1) %}{{ " %03d" % h }}{% endfor %}</var>
-    <metatask>
-      <var name="fmin">00</var>
-  {% endif %}
-      <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#" maxtries="{{ maxtries_run_post }}">
+      <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#" maxtries="{{ maxtries_run_post }}">
+  {%- endif %}
 
         &RSRV_DEFAULT;
         <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
-        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#</jobname>
-        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#_@Y@m@d@H.log</cyclestr></join>
+        {%- if sub_hourly_post %}
+        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H.log</cyclestr></join>
+        {%- else %}
+        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#_@Y@m@d@H.log</cyclestr></join>
+        {%- endif %}
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
         <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -576,31 +580,37 @@ always zero).
         <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
         <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
         <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        {%- if sub_hourly_post %}
         <envar><name>fhr</name><value>#fhr#</value></envar>
-        <envar><name>fmn</name><value>#fmin#</value></envar>
+        <envar><name>fmn</name><value>#fmn#</value></envar>
+        {%- else %}
+        <envar><name>fhr</name><value>#fhr#</value></envar>
+        {%- endif %}
 
         <dependency>
           <or>
             <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
             <and>
-            {% if sub_hourly_post %}
-              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmin#:00.nc</cyclestr></datadep>
-              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmin#:00.nc</cyclestr></datadep>
-            {% else %}
+            {%- if sub_hourly_post %}
+              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmn#:00.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmn#:00.nc</cyclestr></datadep>
+            {%- else %}
               <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#.nc</cyclestr></datadep>
               <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#.nc</cyclestr></datadep>
-            {% endif %}
+            {%- endif %}
             </and>
           </or>
         </dependency>
 
       </task>
 
+    {%- if sub_hourly_post %}
     </metatask>
-
+    {%- else %}
+    {%- endif %}
   </metatask>
 
-{% if sub_hourly_post %}
+{%- if sub_hourly_post %}
 <!--
 Define the post-processing task for the last model output time.  The 
 forecast hour corresponding to this output time is the length of the 
@@ -610,22 +620,22 @@ for a given hour, the latter loops over all the valid output minutes,
 whereas for this last hour, only the first minute must be considered.
 
 Note that we wrap this task in a metatask in order to be able to declare
-and use the variables fhr and fmin.  This allows the block of code inside
+and use the variables fhr and fmn.  This allows the block of code inside
 the <task> tag to be identical to the ones above for other output times.
 -->
   <metatask>
 
     <var name="fhr">{{ "%03d" % fcst_len_hrs }}</var>
-    <var name="fmin">00</var>
-    <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#" maxtries="{{ maxtries_run_post }}">
+    <var name="fmn">00</var>
+    <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
       <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
-      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#</jobname>
-      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmin#_@Y@m@d@H.log</cyclestr></join>
+      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H.log</cyclestr></join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -634,14 +644,14 @@ the <task> tag to be identical to the ones above for other output times.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
-      <envar><name>fmn</name><value>#fmin#</value></envar>
+      <envar><name>fmn</name><value>#fmn#</value></envar>
 
       <dependency>
         <or>
           <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
           <and>
-            <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmin#:00.nc</cyclestr></datadep>
-            <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmin#:00.nc</cyclestr></datadep>
+            <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmn#:00.nc</cyclestr></datadep>
+            <datadep age="05:00"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmn#:00.nc</cyclestr></datadep>
           </and>
         </or>
       </dependency>
@@ -649,9 +659,9 @@ the <task> tag to be identical to the ones above for other output times.
     </task>
 
   </metatask>
-{% endif %}
+{%- endif %}
 
-{% if run_task_get_obs_ccpa %}
+{%- if run_task_get_obs_ccpa %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -681,9 +691,9 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
-{% endif %}
+{%- endif %}
 
-{% if run_task_get_obs_mrms %}
+{%- if run_task_get_obs_mrms %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -714,9 +724,9 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
-{% endif %}
+{%- endif %}
 
-{% if run_task_get_obs_ndas %}
+{%- if run_task_get_obs_ndas %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -746,9 +756,9 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
-{% endif %}
+{%- endif %}
 
-{% if run_task_vx_gridstat %}
+{%- if run_task_vx_gridstat %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -783,9 +793,9 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
-{% endif %}
+{%- endif %}
 
-{% if run_task_vx_gridstat %}
+{%- if run_task_vx_gridstat %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -818,9 +828,9 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
-{% endif %}
+{%- endif %}
 
-{% if run_task_vx_gridstat %}
+{%- if run_task_vx_gridstat %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -850,9 +860,9 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
-{% endif %}
+{%- endif %}
 
-{% if run_task_vx_gridstat %}
+{%- if run_task_vx_gridstat %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -882,9 +892,9 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
-{% endif %}
+{%- endif %}
 
-{% if run_task_vx_gridstat %}
+{%- if run_task_vx_gridstat %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -914,9 +924,9 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
-{% endif %}
+{%- endif %}
 
-{% if run_task_vx_pointstat %}
+{%- if run_task_vx_pointstat %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -938,20 +948,20 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {%- for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
 
     <dependency>
-      {% if run_task_get_obs_ndas %}
+      {%- if run_task_get_obs_ndas %}
       <taskdep task="&GET_OBS_NDAS_TN;"/>
-      {% else %}
+      {%- else %}
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-      {% endif %}
+      {%- endif %}
     </dependency>
 
   </task>
 
-{% endif %}
-{% if do_ensemble %}
+{%- endif %}
+{%- if do_ensemble %}
   </metatask>
-{% endif %}
+{%- endif %}
 </workflow>

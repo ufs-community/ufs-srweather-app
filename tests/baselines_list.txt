@@ -68,6 +68,8 @@ new_GFDLgrid__GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES_eq_TRUE
 pregen_grid_orog_sfc_climo
 regional_001
 regional_002
+subhourly_post
+subhourly_post_ensemble_2mems
 suite_FV3_CPT_v0
 suite_FV3_GFS_v15p2
 suite_FV3_GFS_v16beta

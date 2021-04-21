@@ -63,20 +63,29 @@ on the output files corresponding to a specified forecast hour.
 #
 run_dir="${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}"
 #
+# If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
+# minutes (fmn) are set to "00".  This is necessary in order to pass
+# "fmn" into the post ex-script for the calculation of post_time.
+#
+if [ "${SUB_HOURLY_POST}" != "TRUE" ]; then
+  fmn="00"
+fi
+#
 #-----------------------------------------------------------------------
 #
 # If it doesn't already exist, create the directory (postprd_dir) in which 
-# to store post-processing output.  (Note that postprd_dir may already 
-# have been created by this post-processing script run for a different 
-# forecast hour of the same cycle and/or ensemble member.)  Also, create 
-# a temporary work directory (fhr_dir) for the current forecast hour.  
-# fhr_dir will be deleted later after the processing for the current 
-# forecast hour is complete.  Then change location to fhr_dir.
+# to store post-processing output.  (Note that postprd_dir may have already 
+# been created by this post-processing script for a different output time 
+# from the same forecast start time and/or ensemble member.)  Also, create 
+# a temporary work directory (tmp_dir) for the current output time.  This
+# will be deleted later after the processing for the current output time
+# is complete.  Then change location to tmp_dir.
 #
-# Note that there may be a preexisting version of fhr_dir from previous 
-# runs of this script for the current forecast hour (and current cycle), 
-# e.g. from the workflow task that runs this script failing and then being 
-# called again.  Thus, we first make sure preexisting versions are deleted.
+# Note that there may be a preexisting version of tmp_dir from previous 
+# runs of this script for the current forecast hour (and current forecast
+# start time), e.g. from the workflow task that runs this script failing 
+# and then being called again.  Thus, we first make sure preexisting 
+# versions are deleted.
 #
 #-----------------------------------------------------------------------
 #
@@ -88,11 +97,15 @@ else
 fi
 mkdir_vrfy -p "${postprd_dir}"
 
-fhr_dir="${postprd_dir}/$fhr$fmn"
-check_for_preexist_dir_file "${fhr_dir}" "delete"
-mkdir_vrfy -p "${fhr_dir}"
+if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+tmp_dir="${postprd_dir}/$fhr$fmn"
+else
+tmp_dir="${postprd_dir}/$fhr"
+fi
+check_for_preexist_dir_file "${tmp_dir}" "delete"
+mkdir_vrfy -p "${tmp_dir}"
 
-cd_vrfy "${fhr_dir}"
+cd_vrfy "${tmp_dir}"
 #
 #-----------------------------------------------------------------------
 #
@@ -110,19 +123,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# check if all necessary environmental variables are included
-#
-#-----------------------------------------------------------------------
-#
-if [ -n "${fmn}" ] && [ -z "${DT_ATMOS}" ]; then
-  print_err_msg_exit "\
-ERROR: Environmental variable \$fmn is present, so \$dt_atmos is also required
-to be set (use same value as in FV3 namelist). This is needed so that
-UPP will process the correct file for the first output timestep model fields."
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.
 #
@@ -132,7 +132,7 @@ $SCRIPTSDIR/exregional_run_post.sh \
   cdate="${CDATE}" \
   run_dir="${run_dir}" \
   postprd_dir="${postprd_dir}" \
-  fhr_dir="${fhr_dir}" \
+  tmp_dir="${tmp_dir}" \
   fhr="${fhr}" \
   fmn="${fmn}" \
   dt_atmos="${DT_ATMOS}" || \

@@ -78,7 +78,7 @@ dt_atmos \
         dot_quilting_dot \
         dot_print_esmf_dot \
         settings \
-        model_config_fp 
+        model_config_fp
 #
 #-----------------------------------------------------------------------
 #
@@ -172,17 +172,43 @@ run directory (run_dir):
     fi
 
   fi
-
-  # IF using sub-hourly FV3/UPP output, then the FV3 output interval needs to be specified in
-  # units of multiples of model time steps (nsout). nsout is guaranteed to be an integer because 
-  # consistency between ${DT_SUBHOURLY_POST_MNTS} and ${DT_ATMOS} was enforced at the time of script generation.
-  # ELSE only nfhout is used and set to 1-hour output.
+#
+# If sub_hourly_post is set to "TRUE", then the forecast model must be 
+# directed to generate output files on a sub-hourly interval.  Do this 
+# by specifying the output interval in the model configuration file 
+# (MODEL_CONFIG_FN) in units of number of forecat model time steps (nsout).  
+# nsout is calculated using the user-specified output time interval 
+# dt_subhourly_post_mnts (in units of minutes) and the forecast model's 
+# main time step dt_atmos (in units of seconds).  Note that nsout is 
+# guaranteed to be an integer because the experiment generation scripts 
+# require that dt_subhourly_post_mnts (after conversion to seconds) be 
+# evenly divisible by dt_atmos.  Also, in this case, the variable nfhout 
+# [which specifies the (low-frequency) output interval in hours after 
+# forecast hour nfhmax_hf; see the jinja model_config template file] is 
+# set to 0, although this doesn't matter because any positive of nsout 
+# will override nfhout.
+#
+# If sub_hourly_post is set to "FALSE", then the workflow is hard-coded 
+# (in the jinja model_config template file) to direct the forecast model 
+# to output files every hour.  This is done by setting (1) nfhout_hf to 
+# 1 in that jinja template file, (2) nfhout to 1 here, and (3) nsout to
+# -1 here which turns off output by time step interval.
+#
+# Note that the approach used here of separating how hourly and subhourly
+# output is handled should be changed/generalized/simplified such that 
+# the user should only need to specify the output time interval (there
+# should be no need to specify a flag like sub_hourly_post); the workflow 
+# should then be able to direct the model to output files with that time 
+# interval and to direct the post-processor to process those files 
+# regardless of whether that output time interval is larger than, equal 
+# to, or smaller than one hour.
+#
   if [ "${sub_hourly_post}" = "TRUE" ]; then
-   nsout=$(( dt_subhourly_post_mnts*60 / dt_atmos ))
-   nfhout=0
+    nsout=$(( dt_subhourly_post_mnts*60 / dt_atmos ))
+    nfhout=0
   else
-   nfhout=1
-   nsout=-1
+    nfhout=1
+    nsout=-1
   fi
   settings="${settings}
   'nfhout': ${nfhout}

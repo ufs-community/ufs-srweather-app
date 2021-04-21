@@ -185,13 +185,13 @@ def parse_args():
     # Required
     parser.add_argument('-t', '--xml_template',
                         dest='template',
-                        help='Full path the jinja template',
+                        help='Full path to the jinja template',
                         required=True,
                         type=file_exists,
                         )
     parser.add_argument('-o', '--outxml',
                         dest='outxml',
-                        help='Full path the output Rocoto XML file.',
+                        help='Full path to the output Rocoto XML file.',
                         required=True,
                         type=path_ok,
                         )
