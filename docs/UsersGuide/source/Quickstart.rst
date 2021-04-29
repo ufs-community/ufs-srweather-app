@@ -42,6 +42,8 @@ and will clone the regional workflow, pre-processing utilities, UFS Weather Mode
 into the appropriate directories under your ``regional_workflow`` and ``src`` directories.
 
 
+.. _SetUpBuild:
+
 Set up the Build Environment
 ============================
 Instructions for loading the proper modules and/or setting the correct environment variables can be
@@ -53,9 +55,10 @@ or use ``setenv`` rather than ``export`` depending on your environment:
 .. code-block:: console
 
    $ ls -l env/
-      -rw-rw-r-- 1 user ral 466 Jan  21 10:09 build_cheyenne_intel.env
-      -rw-rw-r-- 1 user ral 461 Jan  21 10:09 build_hera_intel.env
-      -rw-rw-r-- 1 user ral 543 Jan  21 10:09 build_jet_intel.env
+      -rw-rw-r-- 1 user ral 1062 Apr  27 10:09 build_cheyenne_gnu.env
+      -rw-rw-r-- 1 user ral 1061 Apr  27 10:09 build_cheyenne_intel.env
+      -rw-rw-r-- 1 user ral 1023 Apr  27 10:09 build_hera_intel.env
+      -rw-rw-r-- 1 user ral 1017 Apr  27 10:09 build_jet_intel.env
 
 Build the Executables
 =====================
@@ -115,6 +118,11 @@ machine you are running on, those changes should be sufficient; however, if that
 on Cheyenne), or if you have pre-staged the initialization data you would like to use, you will also want to set 
 ``USE_USER_STAGED_EXTRN_FILES="TRUE"`` and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and 
 ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
+
+.. note::
+
+   If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuild>`, you will
+   have to add the line ``COMPILER="gnu"`` to the ``config.sh`` file.
  
 At a minimum, the following parameters should be set for the machine you are using:
 
