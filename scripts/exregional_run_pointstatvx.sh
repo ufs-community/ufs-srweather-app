@@ -121,6 +121,7 @@ fi
 #
 export EXPTDIR
 export MET_INSTALL_DIR
+export MET_BIN_EXEC
 export METPLUS_PATH
 export METPLUS_CONF
 export MET_CONFIG

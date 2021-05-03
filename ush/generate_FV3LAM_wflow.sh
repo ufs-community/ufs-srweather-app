@@ -323,6 +323,7 @@ settings="\
 #
   'model': ${MODEL}
   'met_install_dir': ${MET_INSTALL_DIR}
+  'met_bin_exec': ${MET_BIN_EXEC}
   'metplus_path': ${METPLUS_PATH}
   'vx_config_dir': ${VX_CONFIG_DIR}
   'metplus_conf': ${METPLUS_CONF}

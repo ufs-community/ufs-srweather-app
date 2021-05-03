@@ -1,0 +1,6 @@
+#%Module#####################################################
+## Module file for get_obs_ccpa, get_obs_mrms, get_obs_ndas
+#############################################################
+
+module purge
+module load HPSS/5.0.2.5
