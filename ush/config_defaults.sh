@@ -590,6 +590,7 @@ EXTRN_MDL_FILES_LBCS=( "LBCS_file1" "LBCS_file2" "..." )
 # directory or the cycle directories under it.
 #
 #-----------------------------------------------------------------------
+#
 CCPP_PHYS_SUITE="FV3_GFS_v15p2"
 #
 #-----------------------------------------------------------------------
@@ -1252,6 +1253,8 @@ FIXgsm_FILES_TO_COPY_TO_FIXam=( \
 "global_zorclim.1x1.grb" \
 "global_sfc_emissivity_idx.txt" \
 "global_solarconstant_noaa_an.txt" \
+"geo_em.d01.lat-lon.2.5m.HGT_M.nc" \
+"HGT.Beljaars_filtered.lat-lon.30s_res.nc" \
 "replace_with_FIXgsm_ozone_prodloss_filename" \
 )
 
@@ -1582,26 +1585,6 @@ FVCOM_FILE="fvcom.nc"
 #------------------------------------------------------------------------
 #
 COMPILER="intel"
-#
-#-----------------------------------------------------------------------
-#
-# GWD_HRRRsuite_BASEDIR:
-# Temporary workflow variable specifies the base directory in which to 
-# look for certain fixed orography statistics files needed only by the 
-# gravity wave drag parameterization in the FV3_HRRR physics suite.  This 
-# variable is added in order to avoid including hard-coded paths in the 
-# workflow scripts.  Currently, the workflow simply copies the necessary 
-# files from a subdirectory under this directory (named according to the 
-# specified predefined grid) to the orography directory (OROG_DIR) under 
-# the experiment directory.  
-#
-# Note that this variable is only used when using the FV3_HRRR physics 
-# suite.  It should be removed from the workflow once there is a script 
-# or code available that generates these files for any grid.
-#
-#-----------------------------------------------------------------------
-#
-GWD_HRRRsuite_BASEDIR=""
 #
 #-----------------------------------------------------------------------
 #

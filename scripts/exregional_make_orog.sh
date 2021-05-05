@@ -315,18 +315,62 @@ mv_vrfy "${raw_orog_fp_orig}" "${raw_orog_fp}"
 #
 #-----------------------------------------------------------------------
 #
-# Copy the two orography files needed for the drag suite in the FV3_HRRR
-# physics suite.
-#
-# Note that the following is a temporary fix.  We need a long-term solution
-# that calls a script or program to generates the necessary files (instead
-# of copying them).
+# Call the code to generate the two orography statistics files (large-
+# and small-scale) needed for the drag suite in the FV3_HRRR physics
+# suite.
 #
 #-----------------------------------------------------------------------
 #
 if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
-  cp_vrfy ${GWD_HRRRsuite_DIR}/${CRES}*_ls.*.nc ${OROG_DIR}
-  cp_vrfy ${GWD_HRRRsuite_DIR}/${CRES}*_ss.*.nc ${OROG_DIR}
+  tmp_dir="${OROG_DIR}/temp_orog_data"
+  mkdir_vrfy -p ${tmp_dir}
+  cd_vrfy ${tmp_dir}
+
+  mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
+  mosaic_fp="$FIXLAM/${mosaic_fn}"
+  grid_fn=$( get_charvar_from_netcdf "${mosaic_fp}" "gridfiles" )
+  grid_fp="${FIXLAM}/${grid_fn}"
+  ls_fn="geo_em.d01.lat-lon.2.5m.HGT_M.nc"
+  ss_fn="HGT.Beljaars_filtered.lat-lon.30s_res.nc"
+  if [ "${MACHINE}" = "WCOSS_CRAY" ]; then
+    relative_or_null=""
+  else
+    relative_or_null="--relative"
+  fi
+  ln_vrfy -fs ${relative_or_null} "${grid_fp}" "${tmp_dir}/${grid_fn}"
+  ln_vrfy -fs ${relative_or_null} "${FIXam}/${ls_fn}" "${tmp_dir}/${ls_fn}"
+  ln_vrfy -fs ${relative_or_null} "${FIXam}/${ss_fn}" "${tmp_dir}/${ss_fn}"
+
+  input_redirect_fn="grid_info.dat"
+  cat > "${input_redirect_fn}" <<EOF
+${TILE_RGNL}
+${CRES:1}
+${NH4}
+EOF
+
+  exec_fn="orog_gsl"
+  exec_fp="$EXECDIR/${exec_fn}"
+  if [ ! -f "${exec_fp}" ]; then
+    print_err_msg_exit "\
+The executable (exec_fp) for generating the GSL orography GWD data files
+does not exist:
+  exec_fp = \"${exec_fp}\"
+Please ensure that you've built this executable."
+  fi
+
+  print_info_msg "$VERBOSE" "
+Starting orography file generation..."
+
+  $APRUN "${exec_fp}" < "${input_redirect_fn}" || \
+      print_err_msg_exit "\
+Call to executable (exec_fp) that generates the GSL orography GWD data files
+returned with nonzero exit code:
+  exec_fp = \"${exec_fp}\""
+
+  mv_vrfy "${CRES}${DOT_OR_USCORE}oro_data_ss.tile${TILE_RGNL}.halo${NH0}.nc" \
+          "${CRES}${DOT_OR_USCORE}oro_data_ls.tile${TILE_RGNL}.halo${NH0}.nc" \
+          "${OROG_DIR}"
+ 
 fi
 #
 #-----------------------------------------------------------------------

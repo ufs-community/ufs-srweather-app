@@ -558,45 +558,6 @@ SFC_CLIMO_DIR=\"${SFC_CLIMO_DIR}\""
 #
 #-----------------------------------------------------------------------
 #
-# If using the FV3_HRRR physics suite, set the base directory in which 
-# the pregenerated orography statistics files needed by the gravity wave 
-# drag parameterization in this suite are located.
-#
-#-----------------------------------------------------------------------
-#
-  if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
-
-    if [ "$MACHINE" = "WCOSS_CRAY" ]; then
-      GWD_HRRRsuite_BASEDIR="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/FV3LAM_pregen"
-    elif [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
-      GWD_HRRRsuite_BASEDIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen"
-    elif [ "$MACHINE" = "HERA" ]; then
-      GWD_HRRRsuite_BASEDIR="/scratch2/BMC/det/FV3LAM_pregen"
-    elif [ "$MACHINE" = "JET" ]; then
-      GWD_HRRRsuite_BASEDIR="/mnt/lfs4/BMC/wrfruc/FV3-LAM/pregen"
-    elif [ "$MACHINE" = "CHEYENNE" ]; then
-      GWD_HRRRsuite_BASEDIR="/glade/p/ral/jntp/UFS_CAM/FV3LAM_pregen"
-    else
-      print_err_msg_exit "\
-The base directory (GWD_HRRRsuite_BASEDIR) containing the pregenerated 
-orography statistics files needed by the gravity wave drag parameterization
-in the FV3_HRRR physics suite has not been specified for this machine 
-(MACHINE):
-  MACHINE= \"${MACHINE}\""
-    fi
-
-    str=${str}"
-#
-# Base directory containing the pregenerated orography statistics files 
-# needed by the gravity wave drag parameterization in the FV3_HRRR physics 
-# suite.
-#
-GWD_HRRRsuite_BASEDIR=\"${GWD_HRRRsuite_BASEDIR}\""
-
-  fi
-#
-#-----------------------------------------------------------------------
-#
 #
 #
 #-----------------------------------------------------------------------
