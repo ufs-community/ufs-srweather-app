@@ -70,7 +70,7 @@ fi
 
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
-cmake .. -DCMAKE_INSTALL_PREFIX=..
-make -j ${BUILD_JOBS:-4}
+cmake .. -DCMAKE_INSTALL_PREFIX=.. 2>&1 | tee log.cmake
+make -j ${BUILD_JOBS:-4} 2>&1 | tee log.make
 
 exit 0
