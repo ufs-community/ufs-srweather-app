@@ -21,7 +21,8 @@ ExternalProject_Add(ufs_weather_model
                "-DCMAKE_CXX_COMPILER=${MPI_CXX_COMPILER}"
                "-DCMAKE_Fortran_COMPILER=${MPI_Fortran_COMPILER}"
                "-DNETCDF_DIR=$ENV{NETCDF}"
-               "-32BIT=ON"
+               "-D32BIT=ON"
+               "-DAPP=ATM"
   INSTALL_COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/bin && cp ${CMAKE_CURRENT_BINARY_DIR}/ufs_weather_model/src/ufs_weather_model-build/ufs_model ${CMAKE_INSTALL_PREFIX}/bin/
   )
 
