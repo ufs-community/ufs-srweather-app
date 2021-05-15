@@ -1,0 +1,46 @@
+@ ufs-srweather-app
+== config_cmaq
+++++ CMakeLists_src.txt
+++++ Externals.cfg_aqm
+++++ NEMS.x
+++++ nexus
+
+== regional_workflow
+--- jobs
+++++ JREGIONAL_ADD_AQM_ICS
+++++ JREGIONAL_ADD_AQM_LBCS
+++++ JREGIONAL_RUN_NEXUS
+
+--- modulefiles/tasks/hera
+++++ add_aqm_ics.local
+++++ add_aqm_lbcs.local
+
+--- modulefiles/tasks/wcoss_dell_p3
+++++ add_aqm_ics.local
+++++ add_aqm_lbcs.local
+
+--- modulefiles/tasks/wcoss_cray
+
+
+--- scripts
+++++ exregional_add_aqm_ics.sh
+++++ exregional_add_aqm_lbcs.sh
+++++ exregional_run_fcst.sh
+++++ exregional_run_nexus.sh
+
+--- ush 
+++++ config_defaults.sh
+++++ generate_FV3LAM_wflow.sh
+++++ get_platform_info.sh
+++++ setup.sh
+++++ set_predef_grid_params.sh
+++++ source_util_func.sh
+++++ valid_param_vals.sh
+
+--- ush/templates
+++++ aqm.rc
+++++ diag_table.fv3gfs_aqm
+++++ field_table.fv3gfs_aqm
+++++ FV3LAM_wflow.xml
+++++ input.nml.fv3gfs_aqm
+++++ nems.configue.fv3gfs_aqm

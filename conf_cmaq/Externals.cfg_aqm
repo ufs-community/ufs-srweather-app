@@ -1,0 +1,45 @@
+[regional_workflow]
+protocol = git
+repo_url = https://github.com/chan-hoo/regional_workflow
+# Specify either a branch name or a hash but not both.
+branch = rrfs_cmaq
+#hash = 0b018a3
+local_path = regional_workflow
+required = True
+
+[ufs_utils]
+protocol = git
+repo_url = https://github.com/NOAA-EMC/UFS_UTILS
+# Specify either a branch name or a hash but not both.
+#branch = develop
+hash = ea821358
+local_path = src/UFS_UTILS
+required = True
+
+[fv3gfs_aqm]
+protocol = git
+repo_url = gerrit:EMC_FV3GFS-AQM
+hash = 80b6de6e
+local_path = src/fv3gfs_aqm
+required = True
+
+[arl_nexus]
+protocol = git
+repo_url = https://github.com/noaa-oar-arl/NEXUS
+# Specify either a branch name or a hash but not both.
+#branch = master
+hash = 77ec8ef3
+local_path = src/arl_nexus
+required = True
+
+[EMC_post]
+protocol = git
+repo_url = https://github.com/NOAA-EMC/EMC_post
+# Specify either a branch name or a hash but not both.
+#branch = develop
+hash = 9fa1e088
+local_path = src/EMC_post
+required = True
+
+[externals_description]
+schema_version = 1.0.0
