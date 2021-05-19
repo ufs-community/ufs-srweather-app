@@ -16,6 +16,10 @@ One or more paragraphs describing the problem, solution, and required changes.
 ## TESTS CONDUCTED: 
 Explicitly state what tests were run on these changes, or if any are still pending (for README or other text-only changes, just put "None required". Make note of the compilers used, the platform/machine, and other relevant details as necessary. For more complicated changes, or those resulting in scientific changes, please be explicit!
 
+## DEPENDENCIES:
+Add any links to external PRs. For example:
+- ufs-community/ufs-srweather-app/pull/<pr_number>
+
 ## DOCUMENTATION:
 If this PR is contributing new capabilities that need to be documented, please also include updates to the RST files in the ufs-srweather-app repository (docs/UsersGuide/source) as supporting material.
 
