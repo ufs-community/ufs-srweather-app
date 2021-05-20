@@ -37,10 +37,15 @@
 ++++ source_util_func.sh
 ++++ valid_param_vals.sh
 
+--- ush/bash_utils
+++++ set_file_param.sh
+
 --- ush/templates
 ++++ aqm.rc
 ++++ diag_table.fv3gfs_aqm
 ++++ field_table.fv3gfs_aqm
+++++ fv3gfs_aqm.input.yml
 ++++ FV3LAM_wflow.xml
 ++++ input.nml.fv3gfs_aqm
+++++ model_configure.fv3gfs_aqm
 ++++ nems.configue.fv3gfs_aqm
