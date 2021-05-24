@@ -223,7 +223,7 @@
     sppt = 1.0
     sppt_logit = .true.
     sppt_lscale = 150.E3
-    sppt_sfclimit = .false.
+    sppt_sfclimit = .true.
     sppt_tau = 2.16E4
     spptint = 3600
     use_zmtnblck = .false.

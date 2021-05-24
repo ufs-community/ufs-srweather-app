@@ -3,14 +3,13 @@
 #
 # This file defines a function that, for an ensemble-enabled experiment 
 # (i.e. for an experiment for which the workflow configuration variable 
-# DO_ENSEMBLE has been set to "TRUE"), adds to a base FV3 namelist file
-# a set of stochastic "seed" parameters that is unique to each ensemble
-# member to generate a new namelist file for each member.  The namelist
-# files of any two ensemble members differ only in their stochastic "seed" 
-# parameter values.  Each such member-specific namelist file is placed at 
-# the top level of the experiment directory.  (Then, during the RUN_FCST_TN 
-# step of the workflow, links are created from the run directories to these 
-# member-specific namelist files.)
+# DO_ENSEMBLE has been set to "TRUE"), creates new namelist files with
+# unique stochastic "seed" parameters, using a base namelist file in the 
+# ${EXPTDIR} directory as a template. These new namelist files are stored 
+# within each member directory housed within each cycle directory. Files 
+# of any two ensemble members differ only in their stochastic "seed" 
+# parameter values.  These namelist files are generated when this file is
+# called as part of the RUN_FCST_TN task.  
 #
 #-----------------------------------------------------------------------
 #
@@ -53,7 +52,9 @@ function set_FV3nml_stoch_params() {
 #
 #-----------------------------------------------------------------------
 #
-  local valid_args=()
+  local valid_args=( \
+    "cdate" \
+  )
   process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
@@ -72,9 +73,8 @@ function set_FV3nml_stoch_params() {
 #
 #-----------------------------------------------------------------------
 #
-  local cdate \
-        i \
-        ip1 \
+  local i \
+        ensmem_num \
         fv3_nml_ens_fp \
         iseed_shum \
         iseed_skeb \
@@ -84,72 +84,47 @@ function set_FV3nml_stoch_params() {
 #
 #-----------------------------------------------------------------------
 #
-# At this point, there should exist a namelist file with full path as 
-# specified in the workflow variable FV3_NML_FP.  This is the namelist 
-# file for a non-ensmble-enabled experiment.  This file will be used below 
-# as the base namelist file to which we will add the stochastic "seed" 
-# parameters to obtain the final namelist file for each ensemble member.
-# To clarify that this namelist file is not the final namelist file that
-# FV3 will read in, we now rename it to the name specified in FV3_NML_BASE_ENS_FP.
+# For a given cycle and member, generate a namelist file with unique 
+# seed values.
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy "${FV3_NML_FP}" "${FV3_NML_BASE_ENS_FP}"
-#
-#-----------------------------------------------------------------------
-#
-# Select a cdate (date and hour, in the 10-digit format YYYYMMDDHH) to
-# use in the formula for generating the stochastic seed values below.  
-# Here, we form cdate the starting date and time of the first forecast.
-#
-#-----------------------------------------------------------------------
-#
-cdate="${DATE_FIRST_CYCL}${CYCL_HRS[0]}"
-#
-#-----------------------------------------------------------------------
-#
-# Now loop through the ensemble members and generate a namelist file for
-# each one.
-#
-#-----------------------------------------------------------------------
-#
-for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
+ensmem_name="mem${ENSMEM_INDX}"
 
-  fv3_nml_ensmem_fp="${FV3_NML_ENSMEM_FPS[$i]}"
+fv3_nml_ensmem_fp="${CYCLE_BASEDIR}/${cdate}/${ensmem_name}/${FV3_NML_FN}"
 
-  ip1=$(( i+1 ))
-  iseed_shum=$(( cdate*1000 + ip1*10 + 2 ))
-  iseed_skeb=$(( cdate*1000 + ip1*10 + 3 ))
-  iseed_sppt=$(( cdate*1000 + ip1*10 + 1 ))
-  iseed_spp=$(( cdate*1000 + ip1*10 + 4 ))
+ensmem_num=$((10#${ENSMEM_INDX}))
 
-  settings="\
+iseed_shum=$(( cdate*1000 + ensmem_num*10 + 2 ))
+iseed_skeb=$(( cdate*1000 + ensmem_num*10 + 3 ))
+iseed_sppt=$(( cdate*1000 + ensmem_num*10 + 1 ))
+iseed_spp=$(( cdate*1000 + ensmem_num*10 + 4 ))
+
+settings="\
 'nam_stochy': {
-    'iseed_shum': ${iseed_shum},
-    'iseed_skeb': ${iseed_skeb},
-    'iseed_sppt': ${iseed_sppt},
+  'iseed_shum': ${iseed_shum},
+  'iseed_skeb': ${iseed_skeb},
+  'iseed_sppt': ${iseed_sppt},
   }
 'nam_spperts': {
-    'iseed_spp': ${iseed_spp},
+  'iseed_spp': ${iseed_spp},
   }"
 
-  $USHDIR/set_namelist.py -q \
-                          -n ${FV3_NML_BASE_ENS_FP} \
-                          -u "$settings" \
-                          -o ${fv3_nml_ensmem_fp} || \
-    print_err_msg_exit "\
+$USHDIR/set_namelist.py -q \
+                        -n ${FV3_NML_FP} \
+                        -u "$settings" \
+                        -o ${fv3_nml_ensmem_fp} || \
+  print_err_msg_exit "\
 Call to python script set_namelist.py to set the variables in the FV3
 namelist file that specify the paths to the surface climatology files
 failed.  Parameters passed to this script are:
   Full path to base namelist file:
-    FV3_NML_BASE_ENS_FP = \"${FV3_NML_BASE_ENS_FP}\"
+    FV3_NML_FP = \"${FV3_NML_FP}\"
   Full path to output namelist file:
     fv3_nml_ensmem_fp = \"${fv3_nml_ensmem_fp}\"
   Namelist settings specified on command line (these have highest precedence):
     settings =
 $settings"
-
-done
 #
 #-----------------------------------------------------------------------
 #
@@ -160,4 +135,3 @@ done
   { restore_shell_opts; } > /dev/null 2>&1
 
 }
-
