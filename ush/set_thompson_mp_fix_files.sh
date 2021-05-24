@@ -130,6 +130,8 @@ string."
       "freezeH2O.dat" \
       "qr_acr_qg.dat" \
       "qr_acr_qs.dat" \
+      "qr_acr_qgV2.dat" \
+      "qr_acr_qsV2.dat" \
       )
 
     if [ "${EXTRN_MDL_NAME_ICS}" != "HRRR" -a "${EXTRN_MDL_NAME_ICS}" != "RAP" ] || \
