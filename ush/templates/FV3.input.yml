@@ -303,7 +303,7 @@ FV3_GFS_v15p2:
     ldebug: False
   surf_map_nml:
 
-FV3_GFS_v16beta:
+FV3_GFS_v16:
   atmos_model_nml:
     ccpp_suite: FV3_GFS_v16
     fhmax: 240
