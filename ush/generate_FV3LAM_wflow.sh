@@ -189,6 +189,7 @@ settings="\
   'vx_tn': ${VX_TN}
   'vx_gridstat_tn': ${VX_GRIDSTAT_TN}
   'vx_gridstat_refc_tn': ${VX_GRIDSTAT_REFC_TN}
+  'vx_gridstat_retop_tn': ${VX_GRIDSTAT_RETOP_TN}
   'vx_gridstat_03h_tn': ${VX_GRIDSTAT_03h_TN}
   'vx_gridstat_06h_tn': ${VX_GRIDSTAT_06h_TN}
   'vx_gridstat_24h_tn': ${VX_GRIDSTAT_24h_TN}
@@ -271,6 +272,7 @@ settings="\
   'maxtries_get_obs_ndas': ${MAXTRIES_GET_OBS_NDAS}
   'maxtries_vx_gridstat': ${MAXTRIES_VX_GRIDSTAT}
   'maxtries_vx_gridstat_refc': ${MAXTRIES_VX_GRIDSTAT_REFC}
+  'maxtries_vx_gridstat_retop': ${MAXTRIES_VX_GRIDSTAT_RETOP}
   'maxtries_vx_gridstat_03h': ${MAXTRIES_VX_GRIDSTAT_03h}
   'maxtries_vx_gridstat_06h': ${MAXTRIES_VX_GRIDSTAT_06h}
   'maxtries_vx_gridstat_24h': ${MAXTRIES_VX_GRIDSTAT_24h}

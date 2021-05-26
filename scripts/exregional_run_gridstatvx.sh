@@ -149,6 +149,10 @@ elif [ ${VAR} == "REFC" ]; then
   ${METPLUS_PATH}/ush/master_metplus.py \
     -c ${METPLUS_CONF}/common.conf \
     -c ${METPLUS_CONF}/${VAR}.conf
+elif [ ${VAR} == "RETOP" ]; then
+  ${METPLUS_PATH}/ush/master_metplus.py \
+    -c ${METPLUS_CONF}/common.conf \
+    -c ${METPLUS_CONF}/${VAR}.conf
 else
   echo "No variable defined"
 fi

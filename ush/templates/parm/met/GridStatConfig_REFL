@@ -30,8 +30,8 @@ obtype = "${OBTYPE}";
 regrid = {
    to_grid    = ${REGRID_TO_GRID};
    vld_thresh = 0.5;
-   method     = NEAREST;
-   width      = 1;
+   method     = BUDGET;
+   width      = 2;
    shape      = SQUARE;
 }
 

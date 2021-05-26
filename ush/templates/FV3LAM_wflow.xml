@@ -22,25 +22,26 @@ Parameters needed by the job scheduler.
 <!--
 Workflow task names.
 -->
-<!ENTITY MAKE_GRID_TN       "{{ make_grid_tn }}">
-<!ENTITY MAKE_OROG_TN       "{{ make_orog_tn }}">
-<!ENTITY MAKE_SFC_CLIMO_TN  "{{ make_sfc_climo_tn }}">
-<!ENTITY GET_EXTRN_ICS_TN   "{{ get_extrn_ics_tn }}">
-<!ENTITY GET_EXTRN_LBCS_TN  "{{ get_extrn_lbcs_tn }}">
-<!ENTITY MAKE_ICS_TN        "{{ make_ics_tn }}">
-<!ENTITY MAKE_LBCS_TN       "{{ make_lbcs_tn }}">
-<!ENTITY RUN_FCST_TN        "{{ run_fcst_tn }}">
-<!ENTITY RUN_POST_TN        "{{ run_post_tn }}">
-<!ENTITY GET_OBS_CCPA_TN    "{{ get_obs_ccpa_tn }}">
-<!ENTITY GET_OBS_NDAS_TN    "{{ get_obs_ndas_tn }}">
-<!ENTITY GET_OBS_MRMS_TN    "{{ get_obs_mrms_tn }}">
-<!ENTITY VX_TN              "{{ vx_tn }}">
-<!ENTITY VX_GRIDSTAT_TN     "{{ vx_gridstat_tn }}">
-<!ENTITY VX_GRIDSTAT_REFC_TN "{{ vx_gridstat_refc_tn }}">
-<!ENTITY VX_GRIDSTAT_03h_TN "{{ vx_gridstat_03h_tn }}">
-<!ENTITY VX_GRIDSTAT_06h_TN "{{ vx_gridstat_06h_tn }}">
-<!ENTITY VX_GRIDSTAT_24h_TN "{{ vx_gridstat_24h_tn }}">
-<!ENTITY VX_POINTSTAT_TN    "{{ vx_pointstat_tn }}">
+<!ENTITY MAKE_GRID_TN         "{{ make_grid_tn }}">
+<!ENTITY MAKE_OROG_TN         "{{ make_orog_tn }}">
+<!ENTITY MAKE_SFC_CLIMO_TN    "{{ make_sfc_climo_tn }}">
+<!ENTITY GET_EXTRN_ICS_TN     "{{ get_extrn_ics_tn }}">
+<!ENTITY GET_EXTRN_LBCS_TN    "{{ get_extrn_lbcs_tn }}">
+<!ENTITY MAKE_ICS_TN          "{{ make_ics_tn }}">
+<!ENTITY MAKE_LBCS_TN         "{{ make_lbcs_tn }}">
+<!ENTITY RUN_FCST_TN          "{{ run_fcst_tn }}">
+<!ENTITY RUN_POST_TN          "{{ run_post_tn }}">
+<!ENTITY GET_OBS_CCPA_TN      "{{ get_obs_ccpa_tn }}">
+<!ENTITY GET_OBS_NDAS_TN      "{{ get_obs_ndas_tn }}">
+<!ENTITY GET_OBS_MRMS_TN      "{{ get_obs_mrms_tn }}">
+<!ENTITY VX_TN                "{{ vx_tn }}">
+<!ENTITY VX_GRIDSTAT_TN       "{{ vx_gridstat_tn }}">
+<!ENTITY VX_GRIDSTAT_REFC_TN  "{{ vx_gridstat_refc_tn }}">
+<!ENTITY VX_GRIDSTAT_RETOP_TN "{{ vx_gridstat_retop_tn }}">
+<!ENTITY VX_GRIDSTAT_03h_TN   "{{ vx_gridstat_03h_tn }}">
+<!ENTITY VX_GRIDSTAT_06h_TN   "{{ vx_gridstat_06h_tn }}">
+<!ENTITY VX_GRIDSTAT_24h_TN   "{{ vx_gridstat_24h_tn }}">
+<!ENTITY VX_POINTSTAT_TN      "{{ vx_pointstat_tn }}">
 
 <!--
 Entity used to load the module file for each GET_OBS_* task.
@@ -729,7 +730,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>SCRIPTSDIR</name><value>&SCRIPTSDIR;</value></envar>
-    <envar><name>VAR</name><value>REFC</value></envar>
+    <envar><name>VAR</name><value>REFC RETOP</value></envar>
  
     <dependency>
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
@@ -767,7 +768,6 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
-    <envar><name>VAR</name><value>REFC</value></envar>
 
     <dependency>
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
@@ -848,6 +848,47 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>REFC</value></envar>
+
+    <dependency>
+      {%- if run_task_get_obs_mrms %}
+      <taskdep task="&GET_OBS_MRMS_TN;"/>
+      {%- else %}
+      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+      {%- endif %}
+    </dependency>
+
+  </task>
+{%- endif %}
+
+{%- if run_task_vx_gridstat %}
+<!--
+     ************************************************************************
+************************************************************************
+-->
+  <task name="&VX_GRIDSTAT_RETOP_TN;" maxtries="{{ maxtries_vx_gridstat_retop }}">
+
+    &RSRV_HPSS;
+  {%- if machine in ["WCOSS_CRAY"] %}
+    <shared/>
+  {%- endif %}
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+  {%- if machine in ["WCOSS_DELL_P3"] %}
+    <memory>2048M</memory><native>-R affinity[core]</native>
+  {%- endif %}
+    <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+    <walltime>{{ wtime_vx_gridstat }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&VX_GRIDSTAT_RETOP_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_RETOP_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>RETOP</value></envar>
 
     <dependency>
       {%- if run_task_get_obs_mrms %}
