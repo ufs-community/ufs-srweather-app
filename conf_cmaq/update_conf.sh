@@ -5,7 +5,7 @@ set -eu
 ##### User's choice ##########
 
 FCST_MODEL="fv3gfs_aqm"
-MACHINE="hera"
+MACHINE="wcoss_dell_p3"
 COMPILER="intel"
 
 ##############################
