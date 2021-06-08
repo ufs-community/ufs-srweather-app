@@ -525,18 +525,26 @@ FV3GFS_FILE_FMT_LBCS="nemsio"
 #
 #-----------------------------------------------------------------------
 #
-# Set NOMADS online data associated parameters. Definitions:
+# Base directories in which to search for external model files.
 #
-# NOMADS:
-# Flag controlling whether or not using NOMADS online data.
+# EXTRN_MDL_SYSBASEDIR_ICS:
+# Base directory on the local machine containing external model files for
+# generating ICs on the native grid.  The way the full path containing 
+# these files is constructed depends on the user-specified external model
+# for ICs, i.e. EXTRN_MDL_NAME_ICS.
 #
-# NOMADS_file_type:
-# Flag controlling the format of data.
+# EXTRN_MDL_SYSBASEDIR_LBCS:
+# Same as EXTRN_MDL_SYSBASEDIR_ICS but for LBCs.
+#
+# Note that these must be defined as null strings here so that if they 
+# are specified by the user in the experiment configuration file, they 
+# remain set to those values, and if not, they get set to machine-dependent 
+# values.
 #
 #-----------------------------------------------------------------------
 #
-NOMADS="FALSE"
-NOMADS_file_type="nemsio"
+EXTRN_MDL_SYSBASEDIR_ICS=""
+EXTRN_MDL_SYSBASEDIR_LBCS=""
 #
 #-----------------------------------------------------------------------
 #
@@ -577,6 +585,21 @@ EXTRN_MDL_SOURCE_BASEDIR_ICS="/base/dir/containing/user/staged/extrn/mdl/files/f
 EXTRN_MDL_FILES_ICS=( "ICS_file1" "ICS_file2" "..." )
 EXTRN_MDL_SOURCE_BASEDIR_LBCS="/base/dir/containing/user/staged/extrn/mdl/files/for/LBCs"
 EXTRN_MDL_FILES_LBCS=( "LBCS_file1" "LBCS_file2" "..." )
+#
+#-----------------------------------------------------------------------
+#
+# Set NOMADS online data associated parameters. Definitions:
+#
+# NOMADS:
+# Flag controlling whether or not using NOMADS online data.
+#
+# NOMADS_file_type:
+# Flag controlling the format of data.
+#
+#-----------------------------------------------------------------------
+#
+NOMADS="FALSE"
+NOMADS_file_type="nemsio"
 #
 #-----------------------------------------------------------------------
 #

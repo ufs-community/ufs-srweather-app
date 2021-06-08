@@ -832,6 +832,96 @@ MAXTRIES_RUN_POST=\"${MAXTRIES_RUN_POST}\""
 #
 #-----------------------------------------------------------------------
 #
+# If EXTRN_MDL_SYSBASEDIR_ICS has been specified in the current WE2E
+# test's base configuration file, it must be set to one of the following:
+#
+# 1) The string "set_to_non_default_location_in_testing_script" in order
+#    to allow this script to set it to a valid location depending on the
+#    machine and external model (for ICs).
+#
+# 2) To an existing directory.  If it is set to a directory, then this
+#    script ensures that the directory exists (via the check below).
+#
+#-----------------------------------------------------------------------
+#
+  if [ ! -z "${EXTRN_MDL_SYSBASEDIR_ICS}" ]; then
+
+    if [ "${EXTRN_MDL_SYSBASEDIR_ICS}" = "set_to_non_default_location_in_testing_script" ]; then
+
+      EXTRN_MDL_SYSBASEDIR_ICS=""
+      if [ "$MACHINE" = "HERA" ]; then
+        if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
+          EXTRN_MDL_SYSBASEDIR_ICS="/scratch2/BMC/det/UFS_SRW_app/dummy_FV3GFS_sys_dir"
+        fi
+      fi
+
+      if [ -z "${EXTRN_MDL_SYSBASEDIR_ICS}" ]; then
+        print_err_msg_exit "\
+A non-default location for EXTRN_MDL_SYSBASEDIR_ICS for testing purposes
+has not been specified for this machine (MACHINE) and external model for 
+initial conditions (EXTRN_MDL_NAME_ICS) combination:
+  MACHINE= \"${MACHINE}\"
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
+      fi
+
+    else 
+
+      if [ ! -d "${EXTRN_MDL_SYSBASEDIR_ICS}" ]; then
+        print_err_msg_exit "\
+The non-default location specified by EXTRN_MDL_SYSBASEDIR_ICS does not 
+exist or is not a directory:
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
+      fi
+
+    fi
+
+    set_bash_param "${expt_config_fp}" "EXTRN_MDL_SYSBASEDIR_ICS" "${EXTRN_MDL_SYSBASEDIR_ICS}"
+
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# Same as above but for EXTRN_MDL_SYSBASEDIR_LBCS.
+#
+#-----------------------------------------------------------------------
+#
+  if [ ! -z "${EXTRN_MDL_SYSBASEDIR_LBCS}" ]; then
+
+    if [ "${EXTRN_MDL_SYSBASEDIR_LBCS}" = "set_to_non_default_location_in_testing_script" ]; then
+
+      EXTRN_MDL_SYSBASEDIR_LBCS=""
+      if [ "$MACHINE" = "HERA" ]; then
+        if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
+          EXTRN_MDL_SYSBASEDIR_LBCS="/scratch2/BMC/det/UFS_SRW_app/dummy_FV3GFS_sys_dir"
+        fi
+      fi
+
+      if [ -z "${EXTRN_MDL_SYSBASEDIR_LBCS}" ]; then
+        print_err_msg_exit "\
+A non-default location for EXTRN_MDL_SYSBASEDIR_LBCS for testing purposes
+has not been specified for this machine (MACHINE) and external model for 
+initial conditions (EXTRN_MDL_NAME_LBCS) combination:
+  MACHINE= \"${MACHINE}\"
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
+      fi
+
+    else 
+
+      if [ ! -d "${EXTRN_MDL_SYSBASEDIR_LBCS}" ]; then
+        print_err_msg_exit "\
+The non-default location specified by EXTRN_MDL_SYSBASEDIR_LBCS does not 
+exist or is not a directory:
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
+      fi
+
+    fi
+
+    set_bash_param "${expt_config_fp}" "EXTRN_MDL_SYSBASEDIR_LBCS" "${EXTRN_MDL_SYSBASEDIR_LBCS}"
+
+  fi
+#
+#-----------------------------------------------------------------------
+#
 # Set the values of those parameters in the experiment configuration file
 # that need to be adjusted from their baseline values (as specified in
 # the current line of the experiments list file) to obtain the configuration
