@@ -845,7 +845,7 @@ property_name="local_path"
 #
 # Get the base directory of the FV3 forecast model code.
 #
-external_name="ufs_weather_model"
+external_name="${FCST_MODEL}"
 UFS_WTHR_MDL_DIR=$( \
 get_manage_externals_config_property \
 "${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
