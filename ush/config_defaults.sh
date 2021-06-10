@@ -296,7 +296,7 @@ DOT_OR_USCORE="_"
 # directory (EXECDIR; this is set during experiment generation).
 #
 # FCST_MODEL:
-# Name of forecast model (default=ufs_weather_model)
+# Name of forecast model (default=ufs-weather-model)
 #
 # WFLOW_XML_FN:
 # Name of the rocoto workflow XML file that the experiment generation
@@ -349,7 +349,7 @@ MODEL_CONFIG_FN="model_configure"
 NEMS_CONFIG_FN="nems.configure"
 FV3_EXEC_FN="ufs_model"
 
-FCST_MODEL="ufs_weather_model"
+FCST_MODEL="ufs-weather-model"
 
 WFLOW_XML_FN="FV3LAM_wflow.xml"
 GLOBAL_VAR_DEFNS_FN="var_defns.sh"
