@@ -149,7 +149,7 @@ J-job then uses exec to run the J-job (while also terminating the LOAD_-
 MODULES_RUN_TASK_FP script.
 -->
 
-{% if run_task_make_grid %}
+{%- if run_task_make_grid %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -171,9 +171,8 @@ MODULES_RUN_TASK_FP script.
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
 
   </task>
-{% endif %}
-
-{% if run_task_make_orog %}
+{%- endif %}
+{%- if run_task_make_orog %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -203,9 +202,8 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-{% endif %}
-
-{% if run_task_make_sfc_climo %}
+{%- endif %}
+{%- if run_task_make_sfc_climo %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -238,8 +236,7 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-{% endif %}
-
+{%- endif %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -428,6 +425,7 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_run_post %}
   {%- if sub_hourly_post %}
 <!--
 Define the post-processing task for first model output time.  The forecast 
@@ -611,7 +609,7 @@ always zero).
     {%- endif %}
   </metatask>
 
-{%- if sub_hourly_post %}
+  {%- if sub_hourly_post %}
 <!--
 Define the post-processing task for the last model output time.  The 
 forecast hour corresponding to this output time is the length of the 
@@ -660,6 +658,7 @@ the <task> tag to be identical to the ones above for other output times.
     </task>
 
   </metatask>
+  {%- endif %}
 {%- endif %}
 
 {%- if run_task_get_obs_ccpa %}

@@ -232,6 +232,27 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that RUN_TASK_RUN_POST is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value \
+  "RUN_TASK_RUN_POST" "valid_vals_RUN_TASK_RUN_POST"
+#
+# Set RUN_TASK_RUN_POST to either "TRUE" or "FALSE" so we don't
+# have to consider other valid values later on.
+#
+RUN_TASK_RUN_POST=${RUN_TASK_RUN_POST^^}
+if [ "${RUN_TASK_RUN_POST}" = "TRUE" ] || \
+   [ "${RUN_TASK_RUN_POST}" = "YES" ]; then
+  RUN_TASK_RUN_POST="TRUE"
+elif [ "${RUN_TASK_RUN_POST}" = "FALSE" ] || \
+     [ "${RUN_TASK_RUN_POST}" = "NO" ]; then
+  RUN_TASK_RUN_POST="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that RUN_TASK_VX_GRIDSTAT is set to a valid value.
 #
 #-----------------------------------------------------------------------
@@ -1838,21 +1859,6 @@ fi
 #
 . ./set_extrn_mdl_params.sh
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #
 #-----------------------------------------------------------------------
 #
@@ -1961,7 +1967,6 @@ fi
 #-----------------------------------------------------------------------
 #
 mkdir_vrfy -p "$EXPTDIR"
-
 
 #
 #-----------------------------------------------------------------------
@@ -2077,11 +2082,6 @@ CRES=""
 if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
   CRES="C${RES_IN_FIXLAM_FILENAMES}"
 fi
-
-
-
-
-
 #
 #-----------------------------------------------------------------------
 #
