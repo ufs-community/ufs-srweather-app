@@ -316,7 +316,7 @@ done <<< "${rocotostat_output}"
 num_cycles_total=${#cycle_str[@]}
 num_cycles_completed=0
 for (( i=0; i<=$((num_cycles_total-1)); i++ )); do
-  if [ "${cycle_status}" = "Done" ]; then
+  if [ "${cycle_status[i]}" = "Done" ]; then
     num_cycles_completed=$((num_cycles_completed+1))
   fi
 done
