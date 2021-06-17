@@ -636,6 +636,18 @@ check_var_valid_value \
 #
 #-----------------------------------------------------------------------
 #
+# Make sure RESTART_INTERVAL is set to an integer value if present
+#
+#-----------------------------------------------------------------------
+#
+if ! [[ "${RESTART_INTERVAL}" =~ ^[0-9]+$ ]]; then
+  print_err_msg_exit "\
+RESTART_INTERVAL must be set to an integer number of hours.
+  RESTART_INTERVAL = \"${RESTART_INTERVAL}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Check that DATE_FIRST_CYCL and DATE_LAST_CYCL are strings consisting 
 # of exactly 8 digits.
 #

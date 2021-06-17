@@ -380,12 +380,20 @@ WFLOW_LAUNCH_LOG_FN="log.launch_FV3LAM_wflow"
 # FCST_LEN_HRS:
 # The length of each forecast, in integer hours.
 #
+# RESTART_INTERVAL:
+# Parameter in model_configure; 
+# frequency of the output restart files (unit:hour). 
+# Default=0: restart files are produced at the end of a forecast run
+# For example, RESTART_INTERVAL="1": restart files are produced every hour
+# with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+#
 #-----------------------------------------------------------------------
 #
 DATE_FIRST_CYCL="YYYYMMDD"
 DATE_LAST_CYCL="YYYYMMDD"
 CYCL_HRS=( "HH1" "HH2" )
 FCST_LEN_HRS="24"
+RESTART_INTERVAL="0"
 #
 #-----------------------------------------------------------------------
 #
