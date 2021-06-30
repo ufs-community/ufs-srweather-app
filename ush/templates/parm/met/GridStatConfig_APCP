@@ -109,6 +109,7 @@ boot = {
 interp = {
    field      = BOTH;
    vld_thresh = 1.0;
+   shape      = SQUARE;
 
    type = [
       {
@@ -151,8 +152,8 @@ output_flag = {
    pstd   = NONE;
    pjc    = NONE;
    prc    = NONE;
-   nbrctc = NONE;
-   nbrcts = NONE;
+   nbrctc = STAT;
+   nbrcts = STAT;
    nbrcnt = STAT;
 }
 
@@ -174,6 +175,6 @@ nc_pairs_flag   = {
 rank_corr_flag = FALSE;
 tmp_dir        = "/tmp";
 output_prefix  = "${OUTPUT_PREFIX}";
-version        = "V9.0.2";
+version        = "V10.0.0";
 
 ////////////////////////////////////////////////////////////////////////////////
