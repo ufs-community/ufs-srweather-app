@@ -3,4 +3,4 @@
 module unload netcdf
 
 module use /gpfs/dell2/emc/verification/noscrub/emc.metplus/modulefiles
-module load met/9.1
+module load met/10.0.0

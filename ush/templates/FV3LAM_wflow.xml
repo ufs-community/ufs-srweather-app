@@ -784,13 +784,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_GRIDSTAT_TN;" maxtries="{{ maxtries_vx_gridstat }}">
 
     &RSRV_DEFAULT;
-  {%- if machine in ["WCOSS_CRAY"] %}
-    <shared/>
-  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
-  {%- if machine in ["WCOSS_DELL_P3"] %}
-    <memory>2048M</memory><native>-R affinity[core]</native>
-  {%- endif %}
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -826,13 +820,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_GRIDSTAT_REFC_TN;" maxtries="{{ maxtries_vx_gridstat_refc }}">
 
     &RSRV_DEFAULT;
-  {%- if machine in ["WCOSS_CRAY"] %}
-    <shared/>
-  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
-  {%- if machine in ["WCOSS_DELL_P3"] %}
-    <memory>2048M</memory><native>-R affinity[core]</native>
-  {%- endif %}
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -861,19 +849,13 @@ the <task> tag to be identical to the ones above for other output times.
 
 {%- if run_task_vx_gridstat %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&VX_GRIDSTAT_RETOP_TN;" maxtries="{{ maxtries_vx_gridstat_retop }}">
 
     &RSRV_DEFAULT;
-  {%- if machine in ["WCOSS_CRAY"] %}
-    <shared/>
-  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
-  {%- if machine in ["WCOSS_DELL_P3"] %}
-    <memory>2048M</memory><native>-R affinity[core]</native>
-  {%- endif %}
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1004,13 +986,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_POINTSTAT_TN;" maxtries="{{ maxtries_vx_pointstat }}">
 
     &RSRV_DEFAULT;
-  {%- if machine in ["WCOSS_CRAY"] %}
-    <shared/>
-  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_POINTSTAT"</command>
-  {%- if machine in ["WCOSS_DELL_P3"] %}
-    <memory>2048M</memory><native>-R affinity[core]</native>
-  {%- endif %}
     <nodes>{{ nnodes_vx_pointstat }}:ppn={{ ppn_vx_pointstat }}</nodes>
     <walltime>{{ wtime_vx_pointstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
