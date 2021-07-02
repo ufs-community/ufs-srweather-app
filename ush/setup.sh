@@ -636,6 +636,30 @@ check_var_valid_value \
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that FCST_MODEL is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "FCST_MODEL" "valid_vals_FCST_MODEL"
+#
+#-----------------------------------------------------------------------
+#
+# Set CPL to TRUE/FALSE based on FCST_MODEL.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${FCST_MODEL}" = "ufs-weather-model" ]; then
+  CPL="FALSE"
+elif [ "${FCST_MODEL}" = "fv3gfs_aqm" ]; then
+  CPL="TRUE"
+else
+  print_err_msg_exit "\ 
+The coupling flag CPL has not been specified for this value of FCST_MODEL:
+  FCST_MODEL = \"${FCST_MODEL}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Make sure RESTART_INTERVAL is set to an integer value if present
 #
 #-----------------------------------------------------------------------
@@ -2366,12 +2390,6 @@ str_to_insert=${str_to_insert//$'\n'/\\n}
 #
 regexp="(^#!.*)"
 sed -i -r -e "s|$regexp|\1\n\n${str_to_insert}\n|g" ${GLOBAL_VAR_DEFNS_FP}
-
-
-
-
-
-
 #
 # Loop through the lines in line_list.
 #
@@ -2732,6 +2750,14 @@ fi
 #-----------------------------------------------------------------------
 #
 { cat << EOM >> ${GLOBAL_VAR_DEFNS_FP}
+#
+#-----------------------------------------------------------------------
+#
+# CPL: parameter for coupling in model_configure
+#
+#-----------------------------------------------------------------------
+#
+CPL="${CPL}"
 #
 #-----------------------------------------------------------------------
 #

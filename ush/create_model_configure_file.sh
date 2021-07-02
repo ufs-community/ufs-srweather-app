@@ -102,6 +102,7 @@ run directory (run_dir):
 #
   dot_quilting_dot="."${QUILTING,,}"."
   dot_print_esmf_dot="."${PRINT_ESMF,,}"."
+  dot_cpl_dot="."${CPL,,}"."
 #
 #-----------------------------------------------------------------------
 #
@@ -119,6 +120,7 @@ run directory (run_dir):
   'start_hour': $hh
   'nhours_fcst': ${FCST_LEN_HRS}
   'dt_atmos': ${DT_ATMOS}
+  'cpl': ${dot_cpl_dot}
   'atmos_nthreads': ${nthreads:-1}
   'ncores_per_node': ${NCORES_PER_NODE}
   'restart_interval': ${RESTART_INTERVAL}

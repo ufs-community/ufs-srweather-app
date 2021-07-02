@@ -10,7 +10,7 @@ nhours_fcst:             {{ nhours_fcst }}
 RUN_CONTINUE:            .false.
 ENS_SPS:                 .false.
 dt_atmos:                {{ dt_atmos }}
-cpl:                     .false.
+cpl:                     {{ cpl }}
 calendar:                'julian'
 memuse_verbose:          .false.
 atmos_nthreads:          {{ atmos_nthreads }}
