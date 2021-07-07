@@ -321,6 +321,10 @@ settings="\
 #
   'fcst_len_hrs': ${FCST_LEN_HRS}
 #
+# Inline post
+#
+  'write_dopost': ${WRITE_DOPOST}
+#
 # METPlus-specific information
 #
   'model': ${MODEL}

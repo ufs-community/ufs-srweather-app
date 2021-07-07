@@ -693,7 +693,11 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>ACCUM</name><value>01</value></envar>
 
     <dependency>
+  {%- if write_dopost %}
+      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+  {%- else %}  
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+  {%- endif %}
     </dependency>
 
   </task>
@@ -732,7 +736,11 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>VAR</name><value>REFC RETOP</value></envar>
  
     <dependency>
+  {%- if write_dopost %}
+      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+  {%- else %}
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+  {%- endif %}
     </dependency>
 
   </task>
@@ -769,7 +777,11 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
 
     <dependency>
+  {%- if write_dopost %}
+      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+  {%- else %}
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+  {%- endif %}
     </dependency>
 
   </task>
@@ -805,7 +817,11 @@ the <task> tag to be identical to the ones above for other output times.
       {%- if run_task_get_obs_ccpa %}
       <taskdep task="&GET_OBS_CCPA_TN;"/>
       {%- else %}
+        {%- if write_dopost %}
+      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+        {%- else %}
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+        {%- endif %}
       {%- endif %}
     </dependency>
 
@@ -840,7 +856,11 @@ the <task> tag to be identical to the ones above for other output times.
       {%- if run_task_get_obs_mrms %}
       <taskdep task="&GET_OBS_MRMS_TN;"/>
       {%- else %}
+        {%- if write_dopost %}
+      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+        {%- else %}
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+        {%- endif %}
       {%- endif %}
     </dependency>
 
@@ -875,7 +895,11 @@ the <task> tag to be identical to the ones above for other output times.
       {%- if run_task_get_obs_mrms %}
       <taskdep task="&GET_OBS_MRMS_TN;"/>
       {%- else %}
+        {%- if write_dopost %}
+      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+        {%- else %}
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+        {%- endif %}
       {%- endif %}
     </dependency>
 
@@ -1005,7 +1029,11 @@ the <task> tag to be identical to the ones above for other output times.
       {%- if run_task_get_obs_ndas %}
       <taskdep task="&GET_OBS_NDAS_TN;"/>
       {%- else %}
+        {%- if write_dopost %}
+      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+        {%- else %}
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+        {%- endif %}
       {%- endif %}
     </dependency>
 

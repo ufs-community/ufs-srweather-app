@@ -2121,6 +2121,30 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that WRITE_DOPOST is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "WRITE_DOPOST" "valid_vals_WRITE_DOPOST"
+#
+# Set WRITE_DOPOST to either "TRUE" or "FALSE" so we don't have to consider
+# other valid values later on.
+#
+WRITE_DOPOST=${WRITE_DOPOST^^}
+if [ "$WRITE_DOPOST" = "TRUE" ] || \
+   [ "$WRITE_DOPOST" = "YES" ]; then
+  WRITE_DOPOST="TRUE"
+
+# Turn off run_post
+  RUN_TASK_RUN_POST="FALSE"
+
+elif [ "$WRITE_DOPOST" = "FALSE" ] || \
+     [ "$WRITE_DOPOST" = "NO" ]; then
+  WRITE_DOPOST="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Make sure that QUILTING is set to a valid value.
 #
 #-----------------------------------------------------------------------

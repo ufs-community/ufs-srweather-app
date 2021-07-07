@@ -250,8 +250,6 @@ Cannot create symlink because target does not exist:
   target = \"$target\""
 fi
 
-
-
 relative_or_null=""
 if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ] && [ "${MACHINE}" != "WCOSS_CRAY" ] ; then
   relative_or_null="--relative"
@@ -290,7 +288,6 @@ Cannot create symlink because target does not exist:
   target = \"$target\""
 fi
 
-
 #
 # If using the FV3_HRRR physics suite, there are two files (that contain 
 # statistics of the orography) that are needed by the gravity wave drag 
@@ -316,7 +313,6 @@ Cannot create symlink because target does not exist:
   done
 
 fi
-
 
 #
 #-----------------------------------------------------------------------
@@ -444,6 +440,27 @@ ln_vrfy -sf ${relative_or_null} ${DATA_TABLE_FP} ${run_dir}
 ln_vrfy -sf ${relative_or_null} ${FIELD_TABLE_FP} ${run_dir}
 ln_vrfy -sf ${relative_or_null} ${NEMS_CONFIG_FP} ${run_dir}
 
+
+if [ ${WRITE_DOPOST} = "TRUE" ]; then
+  cp_vrfy ${EMC_POST_DIR}/parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
+  if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+    post_config_fp="${CUSTOM_POST_CONFIG_FP}"
+    print_info_msg "
+====================================================================
+  CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
+===================================================================="
+  else
+    post_config_fp="${EMC_POST_DIR}/parm/postxconfig-NT-fv3lam.txt"
+    print_info_msg "
+====================================================================
+  post_config_fp = \"${post_config_fp}\"
+===================================================================="
+  fi
+  cp_vrfy ${post_config_fp} ./postxconfig-NT_FH00.txt
+  cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
+  cp_vrfy ${EMC_POST_DIR}/parm/params_grib2_tbl_new .
+fi
+
 if [ "${DO_ENSEMBLE}" = TRUE ]; then
   set_FV3nml_stoch_params cdate="$cdate" || print_err_msg_exit "\
 Call to function to create the ensemble-based namelist for the current
@@ -506,6 +523,46 @@ fi
 $APRUN ${FV3_EXEC_FP} || print_err_msg_exit "\
 Call to executable to run FV3-LAM forecast returned with nonzero exit
 code."
+#
+# Only for inline post, create the directory where post-processing output
+# are stored (postprd_dir)
+if [ ${WRITE_DOPOST} = "TRUE" ]; then
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    COMOUT="${COMOUT_BASEDIR}/$RUN.$PDY/$cyc${SLASH_ENSMEM_SUBDIR}"
+    postprd_dir="$COMOUT"
+  else
+    postprd_dir="${run_dir}/postprd"
+  fi
+  mkdir_vrfy -p "${postprd_dir}"
+
+  cd_vrfy ${postprd_dir}
+
+  yyyymmdd=${cdate:0:8}
+  hh=${cdate:8:2}
+  cyc=$hh
+  tmmark="tm00"
+  fmn="00"
+
+  for fhr in $(seq -f "%02g" 0 ${FCST_LEN_HRS}); do
+    echo $fhr
+    post_time=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
+    post_mn=${post_time:10:2}
+    post_mn_or_null=""
+    post_fn_suffix="GrbF${fhr}"
+    post_renamed_fn_suffix="f0${fhr}${post_mn_or_null}.${tmmark}.grib2"
+
+    basetime=$( date --date "$yyyymmdd $hh" +%y%j%H%M )
+    symlink_suffix="_${basetime}f0${fhr}${post_mn}"
+    fids=( "bgdawp" "bgrd3d" )
+    for fid in "${fids[@]}"; do
+      FID="${fid^^}"
+      post_orig_fn="${FID}.${post_fn_suffix}"
+      post_renamed_fn="${NET}.t${cyc}z.${fid}${post_renamed_fn_suffix}"
+      mv_vrfy ../${post_orig_fn} ${post_renamed_fn}
+      ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
+    done
+  done
+fi
 #
 #-----------------------------------------------------------------------
 #

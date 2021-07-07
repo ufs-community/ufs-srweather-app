@@ -103,6 +103,7 @@ run directory (run_dir):
   dot_quilting_dot="."${QUILTING,,}"."
   dot_print_esmf_dot="."${PRINT_ESMF,,}"."
   dot_cpl_dot="."${CPL,,}"."
+  dot_write_dopost="."${WRITE_DOPOST,,}"."
 #
 #-----------------------------------------------------------------------
 #
@@ -124,6 +125,7 @@ run directory (run_dir):
   'atmos_nthreads': ${nthreads:-1}
   'ncores_per_node': ${NCORES_PER_NODE}
   'restart_interval': ${RESTART_INTERVAL}
+  'write_dopost': ${dot_write_dopost}
   'quilting': ${dot_quilting_dot}
   'print_esmf': ${dot_print_esmf_dot}
   'output_grid': ${WRTCMP_output_grid}"
