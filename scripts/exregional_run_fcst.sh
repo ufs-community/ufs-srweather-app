@@ -541,6 +541,13 @@ code."
 # Only for inline post, create the directory where post-processing output
 # are stored (postprd_dir)
 if [ ${WRITE_DOPOST} = "TRUE" ]; then
+
+  yyyymmdd=${cdate:0:8}
+  hh=${cdate:8:2}
+  cyc=$hh
+  tmmark="tm00"
+  fmn="00"
+
   if [ "${RUN_ENVIR}" = "nco" ]; then
     COMOUT="${COMOUT_BASEDIR}/$RUN.$PDY/$cyc${SLASH_ENSMEM_SUBDIR}"
     postprd_dir="$COMOUT"
@@ -551,14 +558,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
 
   cd_vrfy ${postprd_dir}
 
-  yyyymmdd=${cdate:0:8}
-  hh=${cdate:8:2}
-  cyc=$hh
-  tmmark="tm00"
-  fmn="00"
-
   for fhr in $(seq -f "%02g" 0 ${FCST_LEN_HRS}); do
-    echo $fhr
     post_time=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
     post_mn=${post_time:10:2}
     post_mn_or_null=""
@@ -572,7 +572,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       FID="${fid^^}"
       post_orig_fn="${FID}.${post_fn_suffix}"
       post_renamed_fn="${NET}.t${cyc}z.${fid}${post_renamed_fn_suffix}"
-      mv_vrfy ../${post_orig_fn} ${post_renamed_fn}
+      mv_vrfy ${run_dir}/${post_orig_fn} ${post_renamed_fn}
       ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
     done
   done
