@@ -19,7 +19,6 @@
 . $USHDIR/make_grid_mosaic_file.sh
 . $USHDIR/link_fix.sh
 . $USHDIR/set_FV3nml_sfc_climo_filenames.sh
-. $USHDIR/create_diag_table_files.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -647,10 +646,6 @@ failed."
 set_FV3nml_sfc_climo_filenames || print_err_msg_exit "\
 Call to function to set surface climatology file names in the FV3 namelist
 file failed."
-
-create_diag_table_files || print_err_msg_exit "\
-Call to function to create a diagnostics table file under each cycle
-directory failed."
 #
 #-----------------------------------------------------------------------
 #

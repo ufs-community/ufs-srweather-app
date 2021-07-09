@@ -47,7 +47,6 @@ ushdir="${scrfunc_dir}"
 #
 . $ushdir/source_util_funcs.sh
 . $ushdir/set_FV3nml_sfc_climo_filenames.sh
-. $ushdir/create_diag_table_files.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -382,21 +381,6 @@ are:
   Namelist settings specified on command line:
     settings =
 $settings"
-#
-#-----------------------------------------------------------------------
-#
-# Create the cycle directories.
-#
-#-----------------------------------------------------------------------
-#
-print_info_msg "$VERBOSE" "
-Creating the cycle directories..."
-
-for (( i=0; i<${NUM_CYCLES}; i++ )); do
-  cdate="${ALL_CDATES[$i]}"
-  cycle_dir="${CYCLE_BASEDIR}/$cdate"
-  mkdir_vrfy -p "${cycle_dir}"
-done
 #
 #-----------------------------------------------------------------------
 #
@@ -795,10 +779,6 @@ if [ "${RUN_TASK_MAKE_GRID}" = "FALSE" ]; then
   set_FV3nml_sfc_climo_filenames || print_err_msg_exit "\
 Call to function to set surface climatology file names in the FV3 namelist
 file failed."
-
-  create_diag_table_files || print_err_msg_exit "\
-Call to function to create a diagnostics table file under each cycle 
-directory failed."
 
 fi
 #
