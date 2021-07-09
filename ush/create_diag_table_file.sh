@@ -66,8 +66,7 @@ function create_diag_table_file() {
 #
 #-----------------------------------------------------------------------
 #
-  local i \
-        diag_table_fp \
+  local diag_table_fp \
         settings
 #
 #-----------------------------------------------------------------------
@@ -82,8 +81,8 @@ run directory...
 
   run_dir = \"${run_dir}\""
 
-    diag_table_fp="${run_dir}/${DIAG_TABLE_FN}"
-    print_info_msg "$VERBOSE" "
+  diag_table_fp="${run_dir}/${DIAG_TABLE_FN}"
+  print_info_msg "$VERBOSE" "
 
 Using the template diagnostics table file:
 
@@ -93,11 +92,11 @@ to create:
 
     diag_table_fp = \"${diag_table_fp}\""
 
-    settings="
+  settings="
 starttime: !datetime ${CDATE}
 cres: ${CRES}"
 
-    $USHDIR/fill_jinja_template.py -q -u "${settings}" -t "${DIAG_TABLE_TMPL_FP}" -o "${diag_table_fp}" || \
+  $USHDIR/fill_jinja_template.py -q -u "${settings}" -t "${DIAG_TABLE_TMPL_FP}" -o "${diag_table_fp}" || \
     print_err_msg_exit "
 !!!!!!!!!!!!!!!!!
 
@@ -105,7 +104,6 @@ fill_jinja_template.py failed!
 
 !!!!!!!!!!!!!!!!!
 "
-
 #
 #-----------------------------------------------------------------------
 #
