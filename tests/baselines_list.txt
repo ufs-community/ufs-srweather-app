@@ -82,3 +82,4 @@ suite_FV3_GSD_SAR
 suite_FV3_GSD_v0
 suite_FV3_HRRR
 suite_FV3_RRFS_v1beta
+MET_verification
