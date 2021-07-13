@@ -83,7 +83,7 @@ function link_fix() {
         fp_prev \
         fp \
         fn \
-        relative_or_null \
+        relative_link_flag \
         cres \
         tmp \
         fns_sfc_climo_with_halo_in_fn \
@@ -356,24 +356,32 @@ Please ensure that all files have the same resolution."
 #
 #-----------------------------------------------------------------------
 #
-  relative_or_null=""
-  if [ "${run_task}" = "TRUE" ] && [ "${MACHINE}" != "WCOSS_CRAY" ] ; then
-    relative_or_null="--relative"
+# If the task in consideration (which will be one of the pre-processing
+# tasks MAKE_GRID_TN, MAKE_OROG_TN, and MAKE_SFC_CLIMO_TN) was run, then
+# the target files will be located under the experiment directory.  In
+# this case, we use relative symlinks in order the experiment directory
+# more portable and the symlinks more readable.  However, if the task
+# was not run, then pregenerated grid, orography, or surface climatology
+# files will be used, and those will be located in an arbitrary directory 
+# (specified by the user) that is somwehere outside the experiment 
+# directory.  Thus, in this case, there isn't really an advantage to using 
+# relative symlinks, so we use symlinks with absolute paths.
+#
+  if [ "${run_task}" = "TRUE" ]; then
+    relative_link_flag="TRUE"
+  else
+    relative_link_flag="FALSE"
   fi
 
   for fp in "${fps[@]}"; do
-    if [ -f "$fp" ]; then
-      ln_vrfy -sf ${relative_or_null} $fp .
-    else
-      print_err_msg_exit "\
-Cannot create symlink because target file (fp) does not exist:
-  fp = \"${fp}\""
-    fi
+    fn=$( basename $fp )
+    create_symlink_to_file target="$fp" symlink="$fn" \
+                           relative="${relative_link_flag}"
   done
 #
 #-----------------------------------------------------------------------
 #
-# Set the C-resolution based on the resolution appearing in the file 
+# Set the C-resolution based on the resolution appearing in the file
 # names.
 #
 #-----------------------------------------------------------------------
@@ -383,8 +391,8 @@ Cannot create symlink because target file (fp) does not exist:
 #-----------------------------------------------------------------------
 #
 # If considering grid files, create a symlink to the halo4 grid file
-# that does not contain the halo size in its name.  This is needed by 
-# the tasks that generate the initial and lateral boundary condition 
+# that does not contain the halo size in its name.  This is needed by
+# the tasks that generate the initial and lateral boundary condition
 # files.
 #
 #-----------------------------------------------------------------------
@@ -393,52 +401,33 @@ Cannot create symlink because target file (fp) does not exist:
 
     target="${cres}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
     symlink="${cres}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
-    if [ -f "${target}" ]; then
-      ln_vrfy -sf $target $symlink
-    else
-      print_err_msg_exit "\
-Cannot create symlink because the target file (target) in the directory 
-specified by FIXLAM does not exist:
-  FIXLAM = \"${FIXLAM}\"
-  target = \"${target}\""
-    fi
+    create_symlink_to_file target="$target" symlink="$symlink" relative="TRUE"
 #
-# The surface climatology file generation code looks for a grid file 
+# The surface climatology file generation code looks for a grid file
 # having a name of the form "C${GFDLgrid_RES}_grid.tile7.halo4.nc" (i.e.
-# the resolution used in this file is that of the number of grid points
-# per horizontal direction per tile, just like in the global model).  
-# Thus, if we are running this code, if the grid is of GFDLgrid type, and
-# if we are not using GFDLgrid_RES in filenames (i.e. we are using the 
-# equivalent global uniform grid resolution instead), then create a link
-# whose name uses the GFDLgrid_RES that points to the link whose name uses
-# the equivalent global uniform resolution.
+# the C-resolution used in the name of this file is the number of grid 
+# points per horizontal direction per tile, just like in the global model).
+# Thus, if we are running the MAKE_SFC_CLIMO_TN task, if the grid is of 
+# GFDLgrid type, and if we are not using GFDLgrid_RES in filenames (i.e. 
+# we are using the equivalent global uniform grid resolution instead), 
+# then create a link whose name uses the GFDLgrid_RES that points to the 
+# link whose name uses the equivalent global uniform resolution.
 #
     if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
        [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
        [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "FALSE" ]; then
-
       target="${cres}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
       symlink="C${GFDLgrid_RES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
-      if [ -f "${target}" ]; then
-        ln_vrfy -sf $target $symlink
-      else
-        print_err_msg_exit "\
-Cannot create symlink because the target file (target) in the directory 
-specified by FIXLAM does not exist:
-  FIXLAM = \"${FIXLAM}\"
-  target = \"${target}\""
-      fi
-
+      create_symlink_to_file target="$target" symlink="$symlink" relative="TRUE"
     fi
 
   fi
 #
 #-----------------------------------------------------------------------
 #
-# If considering surface climatology files, create symlinks to the sur-
-# face climatology files that do not contain the halo size in their 
-# names.  These are needed by the task that generates the initial condi-
-# tion files.
+# If considering surface climatology files, create symlinks to the surface 
+# climatology files that do not contain the halo size in their names.  
+# These are needed by the task that generates the initial condition files.
 #
 #-----------------------------------------------------------------------
 #
@@ -451,19 +440,13 @@ specified by FIXLAM does not exist:
     for (( i=0; i<${num_fields}; i++ )); do
       target="${fns_sfc_climo_with_halo_in_fn[$i]}"
       symlink="${fns_sfc_climo_no_halo_in_fn[$i]}"
-      if [ -f "$target" ]; then
-        ln_vrfy -sf $target $symlink
-      else
-        print_err_msg_exit "\
-Cannot create symlink because target file (target) does not exist:
-  target = \"${target}\""
-      fi
+      create_symlink_to_file target="$target" symlink="$symlink" relative="TRUE"
     done
 #
-# In order to be able to specify the surface climatology file names in 
+# In order to be able to specify the surface climatology file names in
 # the forecast model's namelist file, in the FIXLAM directory a symlink
 # must be created for each surface climatology field that has "tile1" in
-# its name (and no "halo") and which points to the corresponding "tile7.halo0" 
+# its name (and no "halo") and which points to the corresponding "tile7.halo0"
 # file.
 #
     tmp=( "${SFC_CLIMO_FIELDS[@]/#/${cres}.}" )
@@ -473,13 +456,7 @@ Cannot create symlink because target file (target) does not exist:
     for (( i=0; i<${num_fields}; i++ )); do
       target="${fns_sfc_climo_tile7_halo0_in_fn[$i]}"
       symlink="${fns_sfc_climo_tile1_no_halo_in_fn[$i]}"
-      if [ -f "$target" ]; then
-        ln_vrfy -sf $target $symlink
-      else
-        print_err_msg_exit "\
-Cannot create symlink because target file (target) does not exist:
-  target = \"${target}\""
-      fi
+      create_symlink_to_file target="$target" symlink="$symlink" relative="TRUE"
     done
 
   fi

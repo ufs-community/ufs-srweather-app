@@ -136,7 +136,7 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-case $MACHINE in
+case "$MACHINE" in
 
   "WCOSS_CRAY")
     APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}

@@ -95,7 +95,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_OROG}
 #
 #-----------------------------------------------------------------------
 #
-case $MACHINE in
+case "$MACHINE" in
 
   "WCOSS_CRAY")
     { save_shell_opts; set +x; } > /dev/null 2>&1
@@ -479,12 +479,8 @@ cp_vrfy "${raw_orog_fp}" "${filtered_orog_fp}"
 # filtering executable will run) with the same name as the grid file and
 # point it to the actual grid file specified by grid_fp.
 #
-
-if [ "${MACHINE}" = "WCOSS_CRAY" ]; then
-  ln_vrfy -fs "${grid_fp}" "${filter_dir}/${grid_fn}"
-else
-  ln_vrfy -fs --relative "${grid_fp}" "${filter_dir}/${grid_fn}"
-fi
+create_symlink_to_file target="${grid_fp}" symlink="${filter_dir}/${grid_fn}" \
+                       relative="TRUE"
 
 #
 # Create the namelist file (in the filter_dir directory) that the orography

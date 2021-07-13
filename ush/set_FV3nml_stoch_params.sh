@@ -84,23 +84,23 @@ function set_FV3nml_stoch_params() {
 #
 #-----------------------------------------------------------------------
 #
-# For a given cycle and member, generate a namelist file with unique 
+# For a given cycle and member, generate a namelist file with unique
 # seed values.
 #
 #-----------------------------------------------------------------------
 #
-ensmem_name="mem${ENSMEM_INDX}"
+  ensmem_name="mem${ENSMEM_INDX}"
 
-fv3_nml_ensmem_fp="${CYCLE_BASEDIR}/${cdate}/${ensmem_name}/${FV3_NML_FN}"
+  fv3_nml_ensmem_fp="${CYCLE_BASEDIR}/${cdate}/${ensmem_name}/${FV3_NML_FN}"
 
-ensmem_num=$((10#${ENSMEM_INDX}))
+  ensmem_num=$((10#${ENSMEM_INDX}))
 
-iseed_shum=$(( cdate*1000 + ensmem_num*10 + 2 ))
-iseed_skeb=$(( cdate*1000 + ensmem_num*10 + 3 ))
-iseed_sppt=$(( cdate*1000 + ensmem_num*10 + 1 ))
-iseed_spp=$(( cdate*1000 + ensmem_num*10 + 4 ))
+  iseed_shum=$(( cdate*1000 + ensmem_num*10 + 2 ))
+  iseed_skeb=$(( cdate*1000 + ensmem_num*10 + 3 ))
+  iseed_sppt=$(( cdate*1000 + ensmem_num*10 + 1 ))
+  iseed_spp=$(( cdate*1000 + ensmem_num*10 + 4 ))
 
-settings="\
+  settings="\
 'nam_stochy': {
   'iseed_shum': ${iseed_shum},
   'iseed_skeb': ${iseed_skeb},
@@ -110,11 +110,11 @@ settings="\
   'iseed_spp': ${iseed_spp},
   }"
 
-$USHDIR/set_namelist.py -q \
-                        -n ${FV3_NML_FP} \
-                        -u "$settings" \
-                        -o ${fv3_nml_ensmem_fp} || \
-  print_err_msg_exit "\
+  $USHDIR/set_namelist.py -q \
+                          -n ${FV3_NML_FP} \
+                          -u "$settings" \
+                          -o ${fv3_nml_ensmem_fp} || \
+    print_err_msg_exit "\
 Call to python script set_namelist.py to set the variables in the FV3
 namelist file that specify the paths to the surface climatology files
 failed.  Parameters passed to this script are:

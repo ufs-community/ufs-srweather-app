@@ -92,7 +92,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_POST}
 #
 #-----------------------------------------------------------------------
 #
-case $MACHINE in
+case "$MACHINE" in
 
   "WCOSS_CRAY")
 
@@ -326,9 +326,9 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${tmmark}.grib2"
 # For convenience, change location to postprd_dir (where the final output
 # from UPP will be located).  Then loop through the two files that UPP
 # generates (i.e. "...bgdawp..." and "...bgrd3d..." files) and move, 
-# rename, and create links to them.
+# rename, and create symlinks to them.
 #
-cd_vrfy ${postprd_dir}
+cd_vrfy "${postprd_dir}"
 basetime=$( date --date "$yyyymmdd $hh" +%y%j%H%M )
 symlink_suffix="_${basetime}f${fhr}${post_mn}"
 fids=( "bgdawp" "bgrd3d" )
@@ -337,7 +337,9 @@ for fid in "${fids[@]}"; do
   post_orig_fn="${FID}.${post_fn_suffix}"
   post_renamed_fn="${NET}.t${cyc}z.${fid}${post_renamed_fn_suffix}"
   mv_vrfy ${tmp_dir}/${post_orig_fn} ${post_renamed_fn}
-  ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
+  create_symlink_to_file target="${post_renamed_fn}" \
+                         symlink="${FID}${symlink_suffix}" \
+                         relative="TRUE"
 done
 
 rm_vrfy -rf ${tmp_dir}

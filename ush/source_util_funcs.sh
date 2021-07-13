@@ -22,12 +22,20 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-# Set the directory in which the files defining the various utility 
-# functions are located.
+# Set necessary directory variables.
 #
 #-----------------------------------------------------------------------
 #
-  local bashutils_dir="${scrfunc_dir}/bash_utils"
+  local ushdir="${scrfunc_dir}"
+  local bashutils_dir="${ushdir}/bash_utils"
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing workflow constants. 
+#
+#-----------------------------------------------------------------------
+#
+  . ${ushdir}/constants.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -172,6 +180,15 @@ function source_util_funcs() {
 #-----------------------------------------------------------------------
 #
   . ${bashutils_dir}/get_charvar_from_netcdf.sh
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing the function that creates a symlink to a
+# file (including performing checks).
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/create_symlink_to_file.sh
 
 }
 source_util_funcs

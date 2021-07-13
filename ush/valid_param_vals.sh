@@ -1,3 +1,6 @@
+#
+# Define valid values for various global experiment/workflow variables.
+#
 valid_vals_RUN_ENVIR=("nco" "community")
 valid_vals_VERBOSE=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_MACHINE=("WCOSS_CRAY" "WCOSS_DELL_P3" "HERA" "ORION" "JET" "ODIN" "CHEYENNE" "STAMPEDE")
@@ -67,5 +70,5 @@ valid_vals_DO_SKEB=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_USE_ZMTNBLCK=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_USE_FVCOM=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_COMPILER=("intel" "gnu")
-valid_vals_SUB_HOURLY_POST=("TRUE" "true" "FALSE" "false" "YES" "yes" "NO" "no")
+valid_vals_SUB_HOURLY_POST=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
 valid_vals_DT_SUBHOURLY_POST_MNTS=("1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30")
