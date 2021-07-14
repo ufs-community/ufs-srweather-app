@@ -564,15 +564,22 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
 
   cd_vrfy ${postprd_dir}
 
-  for fhr in $(seq -f "%02g" 0 ${FCST_LEN_HRS}); do
-    post_time=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
+  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
+
+    if [ ${fhr:0:1} = "0" ]; then
+      fhr_d=${fhr:1:2}
+    else
+      fhr_d=${fhr}
+    fi
+
+    post_time=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr_d} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
     post_mn=${post_time:10:2}
     post_mn_or_null=""
-    post_fn_suffix="GrbF${fhr}"
-    post_renamed_fn_suffix="f0${fhr}${post_mn_or_null}.${tmmark}.grib2"
+    post_fn_suffix="GrbF${fhr_d}"
+    post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${tmmark}.grib2"
 
     basetime=$( date --date "$yyyymmdd $hh" +%y%j%H%M )
-    symlink_suffix="_${basetime}f0${fhr}${post_mn}"
+    symlink_suffix="_${basetime}f${fhr}${post_mn}"
     fids=( "bgdawp" "bgrd3d" )
     for fid in "${fids[@]}"; do
       FID="${fid^^}"
