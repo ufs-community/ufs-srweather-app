@@ -493,7 +493,6 @@ cat > "${filter_dir}/input.nml" <<EOF
   mask_field = "land_frac"
   regional = .true.
   stretch_fac = ${STRETCH_FAC}
-  refine_ratio = ${refine_ratio}
   res = $res
 /
 EOF
