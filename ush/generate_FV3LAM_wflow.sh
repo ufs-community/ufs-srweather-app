@@ -558,6 +558,15 @@ Copying the CCPP physics suite definition XML file from its location in
 the forecast model directory sturcture to the experiment directory..."
 cp_vrfy "${CCPP_PHYS_SUITE_IN_CCPP_FP}" "${CCPP_PHYS_SUITE_FP}"
 #
+# Copy the field dictionary file from its location in the
+# clone of the FV3 code repository to the experiment directory (EXPT-
+# DIR).
+#
+print_info_msg "$VERBOSE" "
+Copying the field dictionary file from its location in the forecast
+model directory sturcture to the experiment directory..."
+cp_vrfy "${FIELD_DICT_IN_UWM_FP}" "${FIELD_DICT_FP}"
+#
 #-----------------------------------------------------------------------
 #
 # Set parameters in the FV3-LAM namelist file.

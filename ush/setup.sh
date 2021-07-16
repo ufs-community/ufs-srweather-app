@@ -1445,6 +1445,29 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Set:
+#
+# 1) the variable FIELD_DICT_FN to the name of the field dictionary
+#    file.
+# 2) the variable FIELD_DICT_IN_UWM_FP to the full path of this
+#    file in the forecast model's directory structure.
+# 3) the variable FIELD_DICT_FP to the full path of this file in
+#    the experiment directory.
+#
+#-----------------------------------------------------------------------
+#
+FIELD_DICT_FN="fd_nems.yaml"
+FIELD_DICT_IN_UWM_FP="${UFS_WTHR_MDL_DIR}/tests/parm/${FIELD_DICT_FN}"
+FIELD_DICT_FP="${EXPTDIR}/${FIELD_DICT_FN}"
+if [ ! -f "${FIELD_DICT_IN_UWM_FP}" ]; then
+  print_err_msg_exit "\
+The field dictionary file (FIELD_DICT_IN_UWM_FP) does not exist
+in the local clone of the ufs-weather-model:
+  FIELD_DICT_IN_UWM_FP = \"${FIELD_DICT_IN_UWM_FP}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Call the function that sets the ozone parameterization being used and
 # modifies associated parameters accordingly. 
 #
@@ -2690,6 +2713,10 @@ NEMS_CONFIG_TMPL_FP="${NEMS_CONFIG_TMPL_FP}"
 CCPP_PHYS_SUITE_FN="${CCPP_PHYS_SUITE_FN}"
 CCPP_PHYS_SUITE_IN_CCPP_FP="${CCPP_PHYS_SUITE_IN_CCPP_FP}"
 CCPP_PHYS_SUITE_FP="${CCPP_PHYS_SUITE_FP}"
+
+FIELD_DICT_FN="${FIELD_DICT_FN}"
+FIELD_DICT_IN_UWM_FP="${FIELD_DICT_IN_UWM_FP}"
+FIELD_DICT_FP="${FIELD_DICT_FP}"
 
 DATA_TABLE_FP="${DATA_TABLE_FP}"
 FIELD_TABLE_FP="${FIELD_TABLE_FP}"
