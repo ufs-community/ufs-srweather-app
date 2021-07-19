@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/bin/bash
 #=======================================================================
 # Description:  This script runs a build test for the
 #               UFS Short-Range Weather App. The executables
@@ -32,7 +32,7 @@ machines=( hera jet cheyenne )
 if [ "$1" = "-h" ] ; then usage ; fi
 
 export machine=${1}
-machine=`echo "${machine}" | tr '[A-Z]' '[a-z]'`  # scripts in sorc need lower case machine name
+machine=$(echo "${machine}" | tr '[A-Z]' '[a-z]')  # scripts in sorc need lower case machine name
 
 #-----------------------------------------------------------------------
 # Check that machine is valid
@@ -111,7 +111,7 @@ declare -a executables_created=( chgres_cube \
       if [ -d "${BIN_DIR}" ] ; then rm -rf ${BIN_DIR} ; fi
       mkdir ${BUILD_DIR}
       cd ${BUILD_DIR}
-      cmake .. -DCMAKE_INSTALL_PREFIX=../bin_${compiler}
+      cmake .. -DCMAKE_INSTALL_PREFIX=${BIN_DIR}
       make -j 4 >& ${BUILD_OUTPUT} || fail "Build ${machine} ${compiler} FAILED"
     fi    # End of skip build for testing
 
