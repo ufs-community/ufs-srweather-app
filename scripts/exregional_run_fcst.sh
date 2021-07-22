@@ -515,22 +515,6 @@ Call to function to create a diag table file for the current cycle's
 #
 #-----------------------------------------------------------------------
 #
-# If running ensemble forecasts, create a link to the cycle-specific
-# diagnostic tables file in the cycle directory.  Note that this link
-# should not be made if not running ensemble forecasts because in that
-# case, the cycle directory is the run directory (and we would be creating
-# a symlink with the name of a file that already exists).
-#
-#-----------------------------------------------------------------------
-#
-if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
-  create_symlink_to_file target="${cycle_dir}/${DIAG_TABLE_FN}" \
-                         symlink="${run_dir}/${DIAG_TABLE_FN}" \
-                         relative="${relative_link_flag}"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Run the FV3-LAM model.  Note that we have to launch the forecast from
 # the current cycle's directory because the FV3 executable will look for
 # input files in the current directory.  Since those files have been
