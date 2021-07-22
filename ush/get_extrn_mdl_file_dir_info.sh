@@ -377,42 +377,23 @@ fi
         fns_in_arcv=( "gfs.t${hh}z.pgrb2.0p25.f000" )  # Get only 0.25 degree files for now.
      
       elif [ "${fv3gfs_file_fmt}" = "netcdf" ]; then
-     
-#
-#This whole section needs to be set based on what is in HPSS. They are placeholders for now.
-#
 
-        fns=( "" "" )
-        suffix=""
-        fns=( "" )
-       
+        fns=( "atm" "sfc" )
+        suffix="anl.nc"
+        fns=( "${fns[@]/%/$suffix}" )
+
 # Set names of external files if searching on disk.
         if [ "${MACHINE}" = "JET" ]; then
-          prefix=""
+          prefix="${yy}${ddd}${hh}00.gfs.t${hh}z."
         else
-          prefix=""
+          prefix="gfs.t${hh}z."
         fi
-        fns_on_disk=( "" )
+        fns_on_disk=( "${fns[@]/#/$prefix}" )
 
 # Set names of external files if searching in an archive file, e.g. from
 # HPSS.
-        prefix=""
-        fns_in_arcv=( "" )
-
-        fns_on_disk_str="( "$( printf "\"%s\" " "${fns_on_disk[@]}")")"
-        fns_in_arcv_str="( "$( printf "\"%s\" " "${fns_in_arcv[@]}")")"
-
-        print_info_msg "
-Fetching of external model files from NOAA HPSS is not yet supported for
-this external model (extrn_mdl_name) and file format (fv3gfs_file_fmt)
-combination:
-  extrn_mdl_name = \"${extrn_mdl_name}\"
-  fv3gfs_file_fmt = \"${fv3gfs_file_fmt}\"
-Setting fns_on_disk and fns_in_arcv to arrays containing empty elements:
-  fns_on_disk = ${fns_on_disk_str}
-  fns_in_arcv = ${fns_in_arcv_str}
-If USE_USER_STAGED_EXTRN_FILES is set to \"TRUE\", this will allow the
-workflow to look for the external model files in a user-staged directory."
+        prefix="gfs.t${hh}z."
+        fns_in_arcv=( "${fns[@]/#/$prefix}" )
 
       fi
       ;;
@@ -486,6 +467,7 @@ and analysis or forecast (anl_or_fcst):
       ;;
 
     "FV3GFS")
+
       if [ "${fv3gfs_file_fmt}" = "nemsio" ]; then
 
         fcst_hhh=( $( printf "%03d " "${lbc_spec_fhrs[@]}" ) )
@@ -509,37 +491,21 @@ and analysis or forecast (anl_or_fcst):
         fns_on_disk=( "${fcst_hhh[@]/#/$prefix}" )
         fns_in_arcv=( "${fcst_hhh[@]/#/$prefix}" )
 
-
       elif [ "${fv3gfs_file_fmt}" = "netcdf" ]; then
 
-        fcst_hhh=( "" )
-        suffix=""
-        fns=( "" )
+        fcst_hhh=( $( printf "%03d " "${lbc_spec_fhrs[@]}" ) )
+        suffix=".nc"
+        fns=( "${fcst_hhh[@]/%/$suffix}" )
 
         if [ "${MACHINE}" = "JET" ]; then
-          prefix=""
+          prefix="${yy}${ddd}${hh}00.gfs.t${hh}z.atmf"
         else
-          prefix=""
+          prefix="gfs.t${hh}z.atmf"
         fi
-        fns_on_disk=( "" )
+        fns_on_disk=( "${fns[@]/#/$prefix}" )
 
-        prefix=""
-        fns_in_arcv=( "" )
-
-        fns_on_disk_str="( "$( printf "\"%s\" " "${fns_on_disk[@]}")")"
-        fns_in_arcv_str="( "$( printf "\"%s\" " "${fns_in_arcv[@]}")")"
-
-        print_info_msg "
-Fetching of external model files from NOAA HPSS is not yet supported for
-this external model (extrn_mdl_name) and file format (fv3gfs_file_fmt)
-combination:
-  extrn_mdl_name = \"${extrn_mdl_name}\"
-  fv3gfs_file_fmt = \"${fv3gfs_file_fmt}\"
-Setting fns_on_disk and fns_in_arcv to arrays containing empty elements:
-  fns_on_disk = ${fns_on_disk_str}
-  fns_in_arcv = ${fns_in_arcv_str}
-If USE_USER_STAGED_EXTRN_FILES is set to \"TRUE\", this will allow the
-workflow to look for the external model files in a user-staged directory."
+        prefix="gfs.t${hh}z.atmf"
+        fns_in_arcv=( "${fns[@]/#/$prefix}" )
 
       fi
       ;;
@@ -826,7 +792,7 @@ has not been specified for this external model:
 # 1) The type of the archive file (e.g. tar, zip, etc).
 # 2) The name of the archive file.
 # 3) The full path in HPSS to the archive file.
-# 4) The relative directory in the archive file in which the module output 
+# 4) The relative directory in the archive file in which the model output 
 #    files are located.
 #
 # Note that these will be used by the calling script only if the archive
@@ -848,7 +814,7 @@ has not been specified for this external model:
       arcvrel_dir="/gpfs/hps/nco/ops/com/gfs/prod/gfs.${yyyymmdd}"
     fi
     arcv_fns="${arcv_fns}.${arcv_fmt}"
-    arcv_fps="$arcv_dir/$arcv_fns"
+    arcv_fps="${arcv_dir}/${arcv_fns}"
     ;;
 
   "FV3GFS")
@@ -889,32 +855,19 @@ has not been specified for this external model:
     elif [ "${fv3gfs_file_fmt}" = "netcdf" ]; then
 
       if [ "${anl_or_fcst}" = "ANL" ]; then
-        arcv_fns=""
+        arcv_fns="${arcv_fns}gfs_nca"
       elif [ "${anl_or_fcst}" = "FCST" ]; then
-        last_fhr_in_netcdfa=""
-        first_lbc_fhr=""
-        last_lbc_fhr=""
+        last_fhr_in_netcdfa="39"
+        first_lbc_fhr="${lbc_spec_fhrs[0]}"
+        last_lbc_fhr="${lbc_spec_fhrs[-1]}"
         if [ "${last_lbc_fhr}" -le "${last_fhr_in_netcdfa}" ]; then
-          arcv_fns=""
+          arcv_fns="${arcv_fns}gfs_nca"
         elif [ "${first_lbc_fhr}" -gt "${last_fhr_in_netcdfa}" ]; then
-          arcv_fns=""
+          arcv_fns="${arcv_fns}gfs_ncb"
         else
-          arcv_fns=( "${arcv_fns}" "${arcv_fns}" )
+          arcv_fns=( "${arcv_fns}gfs_nca" "${arcv_fns}gfs_ncb" )
         fi
       fi
-
-        arcv_fns_str="( "$( printf "\"%s\" " "${arcv_fns[@]}")")"
-
-        print_info_msg "
-Fetching of external model files from NOAA HPSS is not yet supported for
-this external model (extrn_mdl_name) and file format (fv3gfs_file_fmt)
-combination:
-  extrn_mdl_name = \"${extrn_mdl_name}\"
-  fv3gfs_file_fmt = \"${fv3gfs_file_fmt}\"
-Setting arcv_fns to an array containing empty elements:
-  arcv_fns = ${arcv_fns_str}
-If USE_USER_STAGED_EXTRN_FILES is set to \"TRUE\", this will allow the
-workflow to look for the external model files in a user-staged directory."
 
     fi
 
@@ -930,11 +883,11 @@ workflow to look for the external model files in a user-staged directory."
     if [ "$?" = "0" ]; then
       suffix=".${arcv_fmt}"
       arcv_fns=( "${arcv_fns[@]/%/$suffix}" )
-      prefix="$arcv_dir/"
+      prefix="${arcv_dir}/"
       arcv_fps=( "${arcv_fns[@]/#/$prefix}" )
     else
       arcv_fns="${arcv_fns}.${arcv_fmt}"
-      arcv_fps="$arcv_dir/$arcv_fns"
+      arcv_fps="${arcv_dir}/${arcv_fns}"
     fi
     ;;
 
@@ -969,7 +922,7 @@ workflow to look for the external model files in a user-staged directory."
     arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/rap/full/wrfnat"
     arcv_fmt="zip"
     arcv_fns="${yyyy}${mm}${dd}${hh}00.${arcv_fmt}"
-    arcv_fps="$arcv_dir/$arcv_fns"
+    arcv_fps="${arcv_dir}/${arcv_fns}"
     arcvrel_dir=""
 #
 # Reset hh to its original value in case it is used again later below.
@@ -985,7 +938,7 @@ workflow to look for the external model files in a user-staged directory."
     arcv_dir="/BMC/fdr/Permanent/${yyyy}/${mm}/${dd}/data/fsl/hrrr/conus/wrfnat"
     arcv_fmt="zip"
     arcv_fns="${yyyy}${mm}${dd}${hh}00.${arcv_fmt}"
-    arcv_fps="$arcv_dir/$arcv_fns"
+    arcv_fps="${arcv_dir}/${arcv_fns}"
     arcvrel_dir=""
     ;;
 
@@ -993,7 +946,7 @@ workflow to look for the external model files in a user-staged directory."
     arcv_dir="/NCEPPROD/hpssprod/runhistory/rh${yyyy}/${yyyy}${mm}/${yyyymmdd}"
     arcv_fmt="tar"
     arcv_fns="com_nam_prod_nam.${yyyy}${mm}${dd}${hh}.bgrid.${arcv_fmt}"
-    arcv_fps="$arcv_dir/$arcv_fns"
+    arcv_fps="${arcv_dir}/${arcv_fns}"
     arcvrel_dir=""
     ;;
 

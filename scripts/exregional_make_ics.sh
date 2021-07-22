@@ -390,7 +390,6 @@ case "${EXTRN_MDL_NAME_ICS}" in
 
 "GSMGFS")
   external_model="GSMGFS"
-
   fn_atm="${EXTRN_MDL_FNS[0]}"
   fn_sfc="${EXTRN_MDL_FNS[1]}"
   input_type="gfs_gaussian_nemsio" # For spectral GFS Gaussian grid in nemsio format.
@@ -408,31 +407,25 @@ case "${EXTRN_MDL_NAME_ICS}" in
 "FV3GFS")
   if [ "${FV3GFS_FILE_FMT_ICS}" = "nemsio" ]; then
     external_model="FV3GFS"
+    input_type="gaussian_nemsio"     # For FV3GFS data on a Gaussian grid in nemsio format.
     tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
     tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
-
     fn_atm="${EXTRN_MDL_FNS[0]}"
     fn_sfc="${EXTRN_MDL_FNS[1]}"
-    input_type="gaussian_nemsio"     # For FV3-GFS Gaussian grid in nemsio format.
     convert_nst=True
   elif [ "${FV3GFS_FILE_FMT_ICS}" = "grib2" ]; then
     external_model="GFS"
     fn_grib2="${EXTRN_MDL_FNS[0]}"
     input_type="grib2"
     convert_nst=False
-  
   elif [ "${FV3GFS_FILE_FMT_ICS}" = "netcdf" ]; then
-
     external_model="FV3GFS"
-
+    input_type="gaussian_netcdf"     # For FV3GFS data on a Gaussian grid in netcdf format.
     tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
     tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
-
     fn_atm="${EXTRN_MDL_FNS[0]}"
     fn_sfc="${EXTRN_MDL_FNS[1]}"
-    input_type="gaussian_netcdf"     # For FV3-GFS Gaussian grid in netcdf format.
     convert_nst=True
-
   fi
   vgtyp_from_climo=True
   sotyp_from_climo=True
