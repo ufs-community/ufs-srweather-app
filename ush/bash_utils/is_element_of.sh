@@ -112,7 +112,7 @@ Use this function in a script as follows:
   str_to_match="$2"
 
   array_name_at="$array_name[@]"
-  array=("${!array_name_at}")
+  array=("${!array_name_at:-}")
 #
 #-----------------------------------------------------------------------
 #

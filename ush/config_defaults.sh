@@ -1110,7 +1110,7 @@ PREEXISTING_DIR_METHOD="delete"
 #-----------------------------------------------------------------------
 #
 # Set VERBOSE.  This is a flag that determines whether or not the experiment
-# generation and workflow task scripts tend to be print out more informational
+# generation and workflow task scripts tend to print out more informational
 # messages.
 #
 #-----------------------------------------------------------------------
@@ -1119,38 +1119,65 @@ VERBOSE="TRUE"
 #
 #-----------------------------------------------------------------------
 #
-# Set flags (and related directories) that determine whether the grid, 
-# orography, and/or surface climatology file generation tasks should be
-# run.  Note that these are all cycle-independent tasks, i.e. if they are
-# to be run, they do so only once at the beginning of the workflow before
-# any cycles are run.  Definitions:
+# Set the names of the various rocoto workflow tasks.
+#
+#-----------------------------------------------------------------------
+#
+MAKE_GRID_TN="make_grid"
+MAKE_OROG_TN="make_orog"
+MAKE_SFC_CLIMO_TN="make_sfc_climo"
+GET_EXTRN_ICS_TN="get_extrn_ics"
+GET_EXTRN_LBCS_TN="get_extrn_lbcs"
+MAKE_ICS_TN="make_ics"
+MAKE_LBCS_TN="make_lbcs"
+RUN_FCST_TN="run_fcst"
+RUN_POST_TN="run_post"
+GET_OBS="get_obs"
+GET_OBS_CCPA_TN="get_obs_ccpa"
+GET_OBS_MRMS_TN="get_obs_mrms"
+GET_OBS_NDAS_TN="get_obs_ndas"
+VX_TN="run_vx"
+VX_GRIDSTAT_TN="run_gridstatvx"
+VX_GRIDSTAT_REFC_TN="run_gridstatvx_refc"
+VX_GRIDSTAT_RETOP_TN="run_gridstatvx_retop"
+VX_GRIDSTAT_03h_TN="run_gridstatvx_03h"
+VX_GRIDSTAT_06h_TN="run_gridstatvx_06h"
+VX_GRIDSTAT_24h_TN="run_gridstatvx_24h"
+VX_POINTSTAT_TN="run_pointstatvx"
+#
+#-----------------------------------------------------------------------
+#
+# Set flags (and related directories) that determine whether various
+# workflow tasks should be run.  Note that the MAKE_GRID_TN, MAKE_OROG_TN, 
+# and MAKE_SFC_CLIMO_TN are all cycle-independent tasks, i.e. if they 
+# are to be run, they do so only once at the beginning of the workflow 
+# before any cycles are run.  Definitions:
 #
 # RUN_TASK_MAKE_GRID:
-# Flag that determines whether the grid file generation task is to be run.
-# If this is set to "TRUE", the grid generation task is run and new grid
-# files are generated.  If it is set to "FALSE", then the scripts look 
-# for pregenerated grid files in the directory specified by GRID_DIR (see
-# below).
+# Flag that determines whether the MAKE_GRID_TN task is to be run.  If 
+# this is set to "TRUE", the grid generation task is run and new grid
+# files are generated.  If it is set to "FALSE", then the scripts look
+# for pregenerated grid files in the directory specified by GRID_DIR 
+# (see below).
 #
 # GRID_DIR:
 # The directory in which to look for pregenerated grid files if 
 # RUN_TASK_MAKE_GRID is set to "FALSE".
 # 
 # RUN_TASK_MAKE_OROG:
-# Same as RUN_TASK_MAKE_GRID but for the orography generation task.
+# Same as RUN_TASK_MAKE_GRID but for the MAKE_OROG_TN task.
 #
 # OROG_DIR:
-# Same as GRID_DIR but for the orogrpahy generation task.
+# Same as GRID_DIR but for the MAKE_OROG_TN task.
 # 
 # RUN_TASK_MAKE_SFC_CLIMO:
-# Same as RUN_TASK_MAKE_GRID but for the surface climatology generation
-# task.
+# Same as RUN_TASK_MAKE_GRID but for the MAKE_SFC_CLIMO_TN task.
 #
 # SFC_CLIMO_DIR:
-# Same as GRID_DIR but for the surface climatology generation task.
+# Same as GRID_DIR but for the MAKE_SFC_CLIMO_TN task.
 #
 # RUN_TASK_RUN_POST:
-# Flag that determines whether the run_post task is to be run
+# Flag that determines whether the RUN_POST_TN task is to be run.
 # 
 # RUN_TASK_VX_GRIDSTAT:
 # Flag that determines whether the grid-stat verification task is to be
@@ -1182,7 +1209,6 @@ RUN_TASK_GET_OBS_NDAS="FALSE"
 RUN_TASK_VX_GRIDSTAT="FALSE"
 
 RUN_TASK_VX_POINTSTAT="FALSE"
-
 #
 #-----------------------------------------------------------------------
 #
@@ -1367,38 +1393,13 @@ CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING=( \
 #
 #-----------------------------------------------------------------------
 #
-# Set the names of the various workflow tasks.  Then, for each task, set
-# the parameters to pass to the job scheduler (e.g. slurm) that will submit
-# a job for each task to be run.  These parameters include the number of
-# nodes to use to run the job, the MPI processes per node, the maximum
-# walltime to allow for the job to complete, and the maximum number of
-# times to attempt to run each task.
+# For each workflow task, set the parameters to pass to the job scheduler 
+# (e.g. slurm) that will submit a job for each task to be run.  These 
+# parameters include the number of nodes to use to run the job, the MPI 
+# processes per node, the maximum walltime to allow for the job to complete, 
+# and the maximum number of times to attempt to run each task.
 #
 #-----------------------------------------------------------------------
-#
-# Task names.
-#
-MAKE_GRID_TN="make_grid"
-MAKE_OROG_TN="make_orog"
-MAKE_SFC_CLIMO_TN="make_sfc_climo"
-GET_EXTRN_ICS_TN="get_extrn_ics"
-GET_EXTRN_LBCS_TN="get_extrn_lbcs"
-MAKE_ICS_TN="make_ics"
-MAKE_LBCS_TN="make_lbcs"
-RUN_FCST_TN="run_fcst"
-RUN_POST_TN="run_post"
-GET_OBS="get_obs"
-GET_OBS_CCPA_TN="get_obs_ccpa"
-GET_OBS_MRMS_TN="get_obs_mrms"
-GET_OBS_NDAS_TN="get_obs_ndas"
-VX_TN="run_vx"
-VX_GRIDSTAT_TN="run_gridstatvx"
-VX_GRIDSTAT_REFC_TN="run_gridstatvx_refc"
-VX_GRIDSTAT_RETOP_TN="run_gridstatvx_retop"
-VX_GRIDSTAT_03h_TN="run_gridstatvx_03h"
-VX_GRIDSTAT_06h_TN="run_gridstatvx_06h"
-VX_GRIDSTAT_24h_TN="run_gridstatvx_24h"
-VX_POINTSTAT_TN="run_pointstatvx"
 #
 # Number of nodes.
 #

@@ -98,9 +98,9 @@ fi
 mkdir_vrfy -p "${postprd_dir}"
 
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
-tmp_dir="${postprd_dir}/$fhr$fmn"
+  tmp_dir="${postprd_dir}/$fhr$fmn"
 else
-tmp_dir="${postprd_dir}/$fhr"
+  tmp_dir="${postprd_dir}/$fhr"
 fi
 check_for_preexist_dir_file "${tmp_dir}" "delete"
 mkdir_vrfy -p "${tmp_dir}"

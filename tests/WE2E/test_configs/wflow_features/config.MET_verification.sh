@@ -1,0 +1,30 @@
+#
+# TEST PURPOSE/DESCRIPTION:
+# ------------------------
+#
+# This test is to ensure that the workflow running in community mode 
+# completes successfully with MET verification.
+#
+
+RUN_ENVIR="community"
+PREEXISTING_DIR_METHOD="rename"
+
+PREDEF_GRID_NAME="RRFS_CONUS_25km"
+CCPP_PHYS_SUITE="FV3_GFS_v15p2"
+
+EXTRN_MDL_NAME_ICS="FV3GFS"
+EXTRN_MDL_NAME_LBCS="FV3GFS"
+USE_USER_STAGED_EXTRN_FILES="TRUE"
+
+DATE_FIRST_CYCL="20190415"
+DATE_LAST_CYCL="20190415"
+CYCL_HRS=( "00" )
+
+FCST_LEN_HRS="36"
+LBC_SPEC_INTVL_HRS="6"
+
+MODEL="FV3_GFS_v15p2_CONUS_25km"
+RUN_TASK_VX_GRIDSTAT="TRUE"
+RUN_TASK_VX_POINTSTAT="TRUE"
+
+WTIME_RUN_FCST="01:00:00"

@@ -127,8 +127,8 @@ are zero or more options and arguments to pass to that command.
 #
 #-----------------------------------------------------------------------
 #
-  output=$( "$cmd" "$@" 2>&1 )
-  exit_code=$?
+  local output=$( "$cmd" "$@" 2>&1 )
+  local exit_code=$?
 #
 #-----------------------------------------------------------------------
 #
@@ -139,7 +139,7 @@ are zero or more options and arguments to pass to that command.
 #-----------------------------------------------------------------------
 #
   if [ -n "$output" ]; then
-    double_space="  "
+    local double_space="  "
     output="${double_space}${output}"
     output=${output/$'\n'/$'\n'${double_space}}
   fi
@@ -153,9 +153,9 @@ are zero or more options and arguments to pass to that command.
 #
   if [ "${caller_name}" = "main" ] || \
      [ "${caller_name}" = "script" ]; then
-    script_or_function="the script"
+    local script_or_function="the script"
   else
-    script_or_function="function \"${caller_name}\""
+    local script_or_function="function \"${caller_name}\""
   fi
 
   if [ ${exit_code} -ne 0 ]; then
