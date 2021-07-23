@@ -183,12 +183,6 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-#  Unload python or miniconda3 if loaded
-#
-#-----------------------------------------------------------------------
-#
-  . ${bashutils_dir}/unload_python.sh
-#
 # Source the file containing the function that creates a symlink to a
 # file (including performing checks).
 #

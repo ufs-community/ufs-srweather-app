@@ -523,13 +523,6 @@ $settings"
 # of chgres_cube is nonzero.
 # A similar thing happens in the forecast task.
 #
-#-----------------------------------------------------------------------
-# Deactivate the conda environment to avoid conflicts between the 
-# environment used by the regional workflow (prepended to your $PATH)
-# and that used in the run environment.
-#-----------------------------------------------------------------------
-  unload_python
-
   ${APRUN} ${exec_fp} || \
     print_err_msg_exit "\
 Call to executable (exec_fp) to generate lateral boundary conditions (LBCs)
