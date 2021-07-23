@@ -79,8 +79,6 @@ FV3_HRRR:
 FV3_GFS_2017_gfdlmp:
   atmos_model_nml:
     avg_max_length: 3600.0
-  fms_nml:
-    domains_stack_size: 1800200
   fv_core_nml: &gfs_2017_gfdlmp_fv_core
     agrid_vel_rst: False
     d4_bg: 0.15
@@ -175,8 +173,6 @@ FV3_GFS_2017_gfdlmp:
 FV3_GFS_2017_gfdlmp_regional:
   atmos_model_nml:
     avg_max_length: 3600.0
-  fms_nml:
-    domains_stack_size: 1800200
   fv_core_nml:
     <<: *gfs_2017_gfdlmp_fv_core
     k_split: 2
@@ -209,8 +205,6 @@ FV3_GFS_2017_gfdlmp_regional:
     <<: *gfs_gfdl_cloud_mp
 
 FV3_GFS_v15p2:
-  fms_nml:
-    domains_stack_size: 1800200
   fv_core_nml: &gfs_v15_fv_core
     agrid_vel_rst: False
     d2_bg_k1: 0.15
@@ -298,8 +292,6 @@ FV3_GFS_v16:
     fhouthf: 1
   cires_ugwp_nml:
     launch_level: 27
-  fms_nml:
-    domains_stack_size: 1800200
   fv_core_nml:
     <<: *gfs_v15_fv_core
     agrid_vel_rst: false
@@ -361,8 +353,6 @@ FV3_GFS_v16:
   surf_map_nml: !!python/none
 
 FV3_CPT_v0:
-  fms_nml:
-    domains_stack_size: 1800200
   fv_core_nml:
     <<: *gfs_v15_fv_core
     dnats: 0
