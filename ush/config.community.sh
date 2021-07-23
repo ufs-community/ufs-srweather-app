@@ -2,6 +2,7 @@ MACHINE="hera"
 ACCOUNT="an_account"
 EXPT_SUBDIR="test_community"
 
+COMPILER="intel"
 VERBOSE="TRUE"
 
 RUN_ENVIR="community"

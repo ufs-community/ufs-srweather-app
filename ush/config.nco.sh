@@ -2,6 +2,7 @@ MACHINE="hera"
 ACCOUNT="an_account"
 EXPT_SUBDIR="test_nco"
 
+COMPILER="intel"
 VERBOSE="TRUE"
 
 RUN_ENVIR="nco"
