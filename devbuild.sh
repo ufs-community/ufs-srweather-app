@@ -3,14 +3,15 @@
 # usage instructions
 usage () {
 cat << EOF_USAGE
-Usage: $0 [OPTIONS]...
+Usage: $0 PLATFORM [OPTIONS]...
+
+PLATFORM
+      name of machine you are building on
+      (e.g. cheyenne | hera | jet | orion | wcoss)
 
 OPTIONS
   -h, --help
       show this help guide
-  --platform=PLATFORM
-      name of machine you are building on; defauts to hostname
-      (e.g. cheyenne | hera | jet | orion | wcoss)
   --compiler=COMPILER
       compiler to use; default depends on platform
       (e.g. intel | gnu | cray | gccgfortran)
@@ -74,23 +75,6 @@ usage_error () {
   exit 1
 }
 
-# find system name
-find_system () {
-  if [ -f $1 ]; then
-    source $1
-    local sysname=$target
-  else
-    local sysname=`hostname`
-    sysname="${sysname//[[:digit:]]/}"
-    if [ "${sysname}" = "fe" ]; then
-      sysname="jet"
-    elif [ "${sysname}" = "hfe" ]; then
-      sysname="hera"
-    fi
-  fi
-  echo "$sysname"
-}
-
 # default settings
 LCL_PID=$$
 SRC_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
@@ -108,12 +92,21 @@ CLEAN=false
 CONTINUE=false
 VERBOSE=false
 
-# process arguments
+# process required arguments
+if [[ ("$1" == "--help") || ("$1" == "-h") ]]; then
+  usage
+  exit 0
+elif [[ ($# -lt 1) || ("$1" == "-"*) ]]; then
+  usage_error "missing platform"
+else
+  PLATFORM=$1
+  shift
+fi
+
+# process optional arguments
 while :; do
   case $1 in
     --help|-h) usage; exit 0 ;;
-    --platform=?*) PLATFORM=${1#*=} ;;
-    --platform|--platform=) usage_error "$1 requires argument." ;;
     --compiler=?*) COMPILER=${1#*=} ;;
     --compiler|--compiler=) usage_error "$1 requires argument." ;;
     --app=?*) APPLICATION=${1#*=} ;;
@@ -136,18 +129,13 @@ while :; do
     --build-jobs|--build-jobs=) usage_error "$1 requires argument." ;;
     --verbose|-v) VERBOSE=true ;;
     --verbose=?*|--verbose=) usage_error "$1 argument ignored." ;;
-    -?*) usage_error "Unknown option $1" ;;
+    -?*|?*) usage_error "Unknown option $1" ;;
     *) break
   esac
   shift
 done
 
 set -eu
-
-# automatically determine system
-if [ -z "${PLATFORM}" ] ; then
-  PLATFORM=$(find_system "$MACHINE_SETUP")
-fi
 
 # automatically determine compiler
 if [ -z "${COMPILER}" ] ; then
