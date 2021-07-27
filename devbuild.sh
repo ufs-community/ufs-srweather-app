@@ -20,10 +20,12 @@ OPTIONS
       (e.g. ATM | ATMW | S2S | S2SW)
   --ccpp="CCPP_SUITE1,CCPP_SUITE2..."
       CCCP suites to include in build; delimited with ','
-  --components="COMPONENT1,COMPONENT2..."
-      additional components to include in build; delimited with ','
-      supported components are found in src/ufs-weather-model/CMakeLists.txt
-      (e.g. UFS_GOCART | MOM6 | CICE6 | WW3 | CDEPS | CMEPS)
+  --enable-options="OPTION1,OPTION2,..."
+      enable ufs-weather-model options; delimited with ','
+      (e.g. 32BIT | INLINE_POST | UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
+  --disable-options="OPTION1,OPTION2,..."
+      disable ufs-weather-model options; delimited with ','
+      (e.g. 32BIT | INLINE_POST | UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
   --continue
       continue with existing build
   --clean
@@ -58,7 +60,8 @@ Settings:
   COMPILER=${COMPILER}
   APP=${APPLICATION}
   CCPP=${CCPP}
-  COMPONENTS=${COMPONENTS}
+  ENABLE_OPTIONS=${ENABLE_OPTIONS}
+  DISABLE_OPTIONS=${DISABLE_OPTIONS}
   CLEAN=${CLEAN}
   CONTINUE=${CONTINUE}
   BUILD_TYPE=${BUILD_TYPE}
@@ -85,7 +88,8 @@ PLATFORM=""
 COMPILER=""
 APPLICATION=""
 CCPP=""
-COMPONENTS=""
+ENABLE_OPTIONS=""
+DISABLE_OPTIONS=""
 BUILD_TYPE="RELEASE"
 BUILD_JOBS=4
 CLEAN=false
@@ -113,8 +117,10 @@ while :; do
     --app|--app=) usage_error "$1 requires argument." ;;
     --ccpp=?*) CCPP=${1#*=} ;;
     --ccpp|--ccpp=) usage_error "$1 requires argument." ;;
-    --components=?*) COMPONENTS=${1#*=} ;;
-    --components|--components=) usage_error "$1 requires argument." ;;
+    --enable-options=?*) ENABLE_OPTIONS=${1#*=} ;;
+    --enable-options|--enable-options=) usage_error "$1 requires argument." ;;
+    --disable-options=?*) DISABLE_OPTIONS=${1#*=} ;;
+    --disable-options|--disable-options=) usage_error "$1 requires argument." ;;
     --clean) CLEAN=true ;;
     --clean=?*|--clean=) usage_error "$1 argument ignored." ;;
     --continue) CONTINUE=true ;;
@@ -208,8 +214,11 @@ fi
 if [ ! -z "${CCPP}" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DCCPP=${CCPP}"
 fi
-if [ ! -z "${COMPONENTS}" ]; then
-  CMAKE_SETTINGS="${CMAKE_SETTINGS} -DINCLUDE_COMPONENTS=${COMPONENTS}"
+if [ ! -z "${ENABLE_OPTIONS}" ]; then
+  CMAKE_SETTINGS="${CMAKE_SETTINGS} -DENABLE_OPTIONS=${ENABLE_OPTIONS}"
+fi
+if [ ! -z "${DISABLE_OPTIONS}" ]; then
+  CMAKE_SETTINGS="${CMAKE_SETTINGS} -DDISABLE_OPTIONS=${DISABLE_OPTIONS}"
 fi
 
 # make settings
