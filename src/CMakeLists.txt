@@ -11,19 +11,51 @@ if(NOT CCPP_SUITES)
   set(CCPP_SUITES "FV3_CPT_v0,FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GSD_SAR,FV3_GSD_v0,FV3_GFS_v15p2,FV3_GFS_v16,FV3_RRFS_v1beta,FV3_HRRR,FV3_RRFS_v1alpha")
 endif()
 
+if(NOT APP)
+  set(APP "ATM")
+endif()
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "RELEASE")
+endif()
+
+list(APPEND UFS_WEATHER_MODEL_ARGS
+  "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+  "-DCCPP_SUITES=${CCPP_SUITES}"
+  "-DCMAKE_C_COMPILER=${MPI_C_COMPILER}"
+  "-DCMAKE_CXX_COMPILER=${MPI_CXX_COMPILER}"
+  "-DCMAKE_Fortran_COMPILER=${MPI_Fortran_COMPILER}"
+  "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+  "-DNETCDF_DIR=$ENV{NETCDF}"
+  "-D32BIT=ON"
+  "-DINLINE_POST=ON"
+  "-DAPP=${APP}"
+)
+
+string(TOUPPER "${CMAKE_BUILD_TYPE}" TOUPPER_CMAKE_BUILD_TYPE)
+if (TOUPPER_CMAKE_BUILD_TYPE MATCHES "DEBUG")
+  list(APPEND UFS_WEATHER_MODEL_ARGS "-DDEBUG=ON")
+endif()
+
+if (ENABLE_OPTIONS)
+  string(REPLACE "," ";" ENABLE_OPTIONS "${ENABLE_OPTIONS}")
+  foreach (option_on IN ITEMS ${ENABLE_OPTIONS})
+    list(APPEND UFS_WEATHER_MODEL_ARGS "-D${option_on}=ON")
+  endforeach()
+endif()
+
+if (DISABLE_OPTIONS)
+  string(REPLACE "," ";" DISABLE_OPTIONS "${DISABLE_OPTIONS}")
+  foreach (option_off IN ITEMS ${DISABLE_OPTIONS})
+    list(APPEND UFS_WEATHER_MODEL_ARGS "-D${option_off}=OFF")
+  endforeach()
+endif()
+
 ExternalProject_Add(ufs-weather-model
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ufs-weather-model
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ufs-weather-model
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-  CMAKE_ARGS   "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-               "-DCCPP_SUITES=${CCPP_SUITES}"
-               "-DCMAKE_C_COMPILER=${MPI_C_COMPILER}"
-               "-DCMAKE_CXX_COMPILER=${MPI_CXX_COMPILER}"
-               "-DCMAKE_Fortran_COMPILER=${MPI_Fortran_COMPILER}"
-               "-DNETCDF_DIR=$ENV{NETCDF}"
-               "-D32BIT=ON"
-               "-DINLINE_POST=ON"
-               "-DAPP=ATM"
+  CMAKE_ARGS ${UFS_WEATHER_MODEL_ARGS}
   INSTALL_COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/bin && cp ${CMAKE_CURRENT_BINARY_DIR}/ufs-weather-model/src/ufs-weather-model-build/ufs_model ${CMAKE_INSTALL_PREFIX}/bin/
   )
 
