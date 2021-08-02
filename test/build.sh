@@ -99,20 +99,11 @@ declare -a executables_created=( chgres_cube \
 #-----------------------------------------------------------------------
   for compiler in "${compilers[@]}"; do
     BUILD_DIR=${TOP_DIR}/build_${compiler}
-    BUILD_OUTPUT=${BUILD_DIR}/build.out
     BIN_DIR=${TOP_DIR}/bin_${compiler}
     EXEC_DIR=${BIN_DIR}/bin
     if [ $build_it -eq 0 ] ; then
-      . ${ENV_DIR}/build_${machine}_${compiler}.env
-#-----------------------------------------------------------------------
-# Remove old and bin directories if they exist
-#-----------------------------------------------------------------------
-      if [ -d "${BUILD_DIR}" ] ; then rm -rf ${BUILD_DIR} ; fi
-      if [ -d "${BIN_DIR}" ] ; then rm -rf ${BIN_DIR} ; fi
-      mkdir ${BUILD_DIR}
-      cd ${BUILD_DIR}
-      cmake .. -DCMAKE_INSTALL_PREFIX=${BIN_DIR}
-      make -j 4 >& ${BUILD_OUTPUT} || fail "Build ${machine} ${compiler} FAILED"
+      ./devbuild.sh ${machine} --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} \
+        --clean || fail "Build ${machine} ${compiler} FAILED"
     fi    # End of skip build for testing
 
   #-----------------------------------------------------------------------
