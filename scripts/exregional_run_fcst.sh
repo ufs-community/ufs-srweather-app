@@ -490,7 +490,6 @@ fi
 #
 create_model_configure_file \
   cdate="$cdate" \
-  nthreads=${OMP_NUM_THREADS} \
   run_dir="${run_dir}" \
   sub_hourly_post="${SUB_HOURLY_POST}" \
   dt_subhourly_post_mnts="${DT_SUBHOURLY_POST_MNTS}" \

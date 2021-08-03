@@ -1427,7 +1427,7 @@ PPN_GET_EXTRN_ICS="1"
 PPN_GET_EXTRN_LBCS="1"
 PPN_MAKE_ICS="12"
 PPN_MAKE_LBCS="12"
-PPN_RUN_FCST="24"  # This may have to be changed depending on the number of threads used.
+PPN_RUN_FCST=""    # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.sh
 PPN_RUN_POST="24"
 PPN_GET_OBS_CCPA="1"
 PPN_GET_OBS_MRMS="1"
@@ -1672,9 +1672,6 @@ COMPILER="intel"
 # Controls the size of the stack for threads created by the OpenMP 
 # implementation.
 #
-# CPUS_PER_TASK_RUN_FCST:
-# Sets the number of MPI tasks per CPU for the RUN_FCST task. 
-#
 # Note that settings for the make_grid and make_orog tasks are not 
 # included below as they do not use parallelized code.
 #
@@ -1697,10 +1694,8 @@ OMP_NUM_THREADS_MAKE_LBCS="1"
 OMP_STACKSIZE_MAKE_LBCS="1024m"
 
 KMP_AFFINITY_RUN_FCST="scatter"
-OMP_NUM_THREADS_RUN_FCST="4"
+OMP_NUM_THREADS_RUN_FCST="2"    # atmos_nthreads in model_configure
 OMP_STACKSIZE_RUN_FCST="1024m"
-
-CPUS_PER_TASK_RUN_FCST="2"
 
 KMP_AFFINITY_RUN_POST="scatter"
 OMP_NUM_THREADS_RUN_POST="1"

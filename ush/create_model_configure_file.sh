@@ -48,7 +48,6 @@ function create_model_configure_file() {
   local valid_args=(
 cdate \
 run_dir \
-nthreads \
 sub_hourly_post \
 dt_subhourly_post_mnts \
 dt_atmos \
@@ -122,8 +121,7 @@ run directory (run_dir):
   'nhours_fcst': ${FCST_LEN_HRS}
   'dt_atmos': ${DT_ATMOS}
   'cpl': ${dot_cpl_dot}
-  'atmos_nthreads': ${nthreads:-1}
-  'ncores_per_node': ${NCORES_PER_NODE}
+  'atmos_nthreads': ${OMP_NUM_THREADS_RUN_FCST}
   'restart_interval': ${RESTART_INTERVAL}
   'write_dopost': ${dot_write_dopost}
   'quilting': ${dot_quilting_dot}
