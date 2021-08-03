@@ -1022,10 +1022,13 @@ EXTRN_MDL_FILES_LBCS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))"
     if [ "$MACHINE" = "HERA" ]; then
       met_install_dir="/contrib/met/10.0.0"
       metplus_path="/contrib/METplus/METplus-4.0.0"
+      ccpa_obs_dir="/scratch2/BMC/det/UFS_SRW_app/v1p0/obs_data/ccpa/proc"
+      mrms_obs_dir="/scratch2/BMC/det/UFS_SRW_app/v1p0/obs_data/mrms/proc"
+      ndas_obs_dir="/scratch2/BMC/det/UFS_SRW_app/v1p0/obs_data/ndas/proc"
     else
       print_err_msg_exit "\
-The MET and MET+ paths (MET_INSTALL_DIR and MET_INSTALL_DIR) have not
-been specified for this machine (MACHINE):
+The MET and MET+ paths (MET_INSTALL_DIR and MET_INSTALL_DIR) or the observation directories
+(CCPA_OBS_DIR, MRMS_OBS_DIR, NDAS_OBS_DIR) have not been specified for this machine (MACHINE):
   MACHINE= \"${MACHINE}\""
     fi
 
@@ -1034,7 +1037,10 @@ been specified for this machine (MACHINE):
 # MET and MET+ paths.
 #
 METPLUS_PATH=\"${metplus_path}\"
-MET_INSTALL_DIR=\"${met_install_dir}\""
+MET_INSTALL_DIR=\"${met_install_dir}\"
+CCPA_OBS_DIR=\"${ccpa_obs_dir}\"
+MRMS_OBS_DIR=\"${mrms_obs_dir}\"
+NDAS_OBS_DIR=\"${ndas_obs_dir}\""
 
   fi
 #
