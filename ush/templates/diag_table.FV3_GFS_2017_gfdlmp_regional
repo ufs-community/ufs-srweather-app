@@ -308,6 +308,9 @@
 # Reflectivity from GFDL microphysics
 "gfs_phys", "refl_10cm", "refl_10cm", "fv3_history2d", "all", .false., "none", 2
 
+#Cloud fraction
+"gfs_phys",    "cldfra",      "cldfra",    "fv3_history",    "all",  .false.,  "none",  2
+
 #Max/Min must be kept in separate files.  Time is controlled by diag_table
 # "dynamics",  "uh25",             "MXUPHL2_5km",     "maxmin2D", "all", max, "none", 2
 # "dynamics",  "uh25",             "MNUPHL2_5km",     "maxmin2D", "all", min, "none", 2

@@ -7,3 +7,7 @@ module purge
 
 module load hpss
 
+module use -a /contrib/miniconda3/modulefiles
+module load miniconda3
+
+setenv SRW_ENV pygraf

@@ -2,6 +2,7 @@
 
 # This script pulls MRMS data from the NOAA HPSS
 # Top-level MRMS directory
+set -x
 mrms_dir=${OBS_DIR}/..
 if [[ ! -d "$mrms_dir" ]]; then
   mkdir -p $mrms_dir
@@ -63,8 +64,10 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
 
   # Set field of interest from the MRMS products, including name and level information. 
   if [ "${field}" = "REFC" ]; then
-    field_base_name="MergedReflectivityQComposite"
-    level="_00.00_"
+    #field_base_name="MergedReflectivityQComposite"
+    #level="_00.00_"
+    field_base_name="MergedReflectivityQCComposite"
+    level="_00.50_"
   elif [ "${field}" = "RETOP" ]; then
     field_base_name="EchoTop"
     level="_18_00.50_"
@@ -110,6 +113,7 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
     if [[ ${Status} != 0 ]]; then
       echo "WARNING: Bad return status (${Status}) for date \"${CurDate}\".  Did you forget to run \"module load hpss\"?"
       echo "WARNING: ${TarCommand}"
+      exit ${Status}
     else
       if [[ ! -d "$mrms_proc/${vyyyymmdd}" ]]; then
         mkdir -p $mrms_proc/${vyyyymmdd}

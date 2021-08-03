@@ -469,7 +469,7 @@ WRITE_DOPOST="FALSE"
 # use of predetermined directory structure and file names. Therefore, if
 # the MRMS files are user provided, they need to follow the anticipated 
 # naming structure:
-# {YYYYMMDD}/MergedReflectivityQComposite_00.00_{YYYYMMDD}-{HH}{mm}{SS}.grib2,
+# {YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2,
 # where YYYY is the 4-digit valid year, MM the 2-digit valid month, DD 
 # the 2-digit valid day of the month, HH the 2-digit valid hour of the 
 # day, mm the 2-digit valid minutes of the hour, and SS is the two-digit
