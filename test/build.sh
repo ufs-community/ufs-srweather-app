@@ -73,7 +73,7 @@ cd ${TOP_DIR}
 
 ENV_DIR=${TOP_DIR}/env
 #-----------------------------------------------------------------------
-# Arrray of all executables built
+# Array of all executables built
 #-----------------------------------------------------------------------
 declare -a executables_created=( chgres_cube \
                                  emcsfc_ice_blend \
@@ -119,9 +119,6 @@ declare -a executables_created=( chgres_cube \
       let "n_fail=n_fail+1"
     fi
   done
-  #-----------------------------------------------------------------------
-  # Rename build and bin dirs for next build
-  #-----------------------------------------------------------------------
 done   # End compiler loop
 #-----------------------------------------------------------------------
 # Set message for output
