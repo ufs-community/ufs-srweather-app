@@ -357,6 +357,7 @@ generation executable (exec_fp):
     'dely': ${DEL_ANGLE_Y_SG},
     'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO},
     'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO},
+    'pazi': ${PAZI},
  }
 "
 #

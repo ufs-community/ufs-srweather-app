@@ -898,6 +898,9 @@ GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES=""
 # the regional grid before shaving the halo down to the width(s) expected
 # by the forecast model.  
 #
+# ESGgrid_PAZI:
+# The rotational parameter for the ESG grid (in degrees).
+#
 # In order to generate grid files containing halos that are 3-cell and
 # 4-cell wide and orography files with halos that are 0-cell and 3-cell
 # wide (all of which are required as inputs to the forecast model), the
@@ -952,6 +955,7 @@ ESGgrid_DELY=""
 ESGgrid_NX=""
 ESGgrid_NY=""
 ESGgrid_WIDE_HALO_WIDTH=""
+ESGgrid_PAZI=""
 #
 #-----------------------------------------------------------------------
 #

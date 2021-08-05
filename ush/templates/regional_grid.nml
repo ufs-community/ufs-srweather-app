@@ -73,6 +73,10 @@
 ! --
 ! Analogous to lx but in the y direction.
 !
+! pazi:
+! ----
+! Rotation angle for the ESG grid in degrees.
+!
 !***********************************************************************
 !
 
@@ -83,4 +87,5 @@
   dely = <dely>
   lx   = <lx>
   ly   = <ly>
+  pazi = <pazi>
 /
