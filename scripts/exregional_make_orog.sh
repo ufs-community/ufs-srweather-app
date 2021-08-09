@@ -325,11 +325,10 @@ if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
   tmp_dir="${OROG_DIR}/temp_orog_data"
   mkdir_vrfy -p ${tmp_dir}
   cd_vrfy ${tmp_dir}
-
-  mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
-  mosaic_fp="$FIXLAM/${mosaic_fn}"
-  grid_fn=$( get_charvar_from_netcdf "${mosaic_fp}" "gridfiles" )
-  grid_fp="${FIXLAM}/${grid_fn}"
+  mosaic_fn_gwd="${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
+  mosaic_fp_gwd="$FIXLAM/${mosaic_fn_gwd}"
+  grid_fn_gwd=$( get_charvar_from_netcdf "${mosaic_fp_gwd}" "gridfiles" )
+  grid_fp_gwd="${FIXLAM}/${grid_fn_gwd}"
   ls_fn="geo_em.d01.lat-lon.2.5m.HGT_M.nc"
   ss_fn="HGT.Beljaars_filtered.lat-lon.30s_res.nc"
   if [ "${MACHINE}" = "WCOSS_CRAY" ]; then
@@ -337,7 +336,7 @@ if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
   else
     relative_or_null="--relative"
   fi
-  ln_vrfy -fs ${relative_or_null} "${grid_fp}" "${tmp_dir}/${grid_fn}"
+  ln_vrfy -fs ${relative_or_null} "${grid_fp_gwd}" "${tmp_dir}/${grid_fn_gwd}"
   ln_vrfy -fs ${relative_or_null} "${FIXam}/${ls_fn}" "${tmp_dir}/${ls_fn}"
   ln_vrfy -fs ${relative_or_null} "${FIXam}/${ss_fn}" "${tmp_dir}/${ss_fn}"
 
