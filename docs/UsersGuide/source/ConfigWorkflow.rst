@@ -188,8 +188,8 @@ File Name Parameters
 ``WFLOW_LAUNCH_LOG_FN``: (Default: “log.launch_FV3LAM_wflow”)
    Name of the log file that contains the output from successive calls to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``).
 
-Foreast Parameters
-==================
+Forecast Parameters
+===================
 ``DATE_FIRST_CYCL``: (Default: “YYYYMMDD”)
    Starting date of the first forecast in the set of forecasts to run.  Format is "YYYYMMDD".  Note that this does not include the hour-of-day.
 
