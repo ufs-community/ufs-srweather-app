@@ -483,7 +483,7 @@ WRITE_DOPOST="FALSE"
 # HPSS has an example of the expected file naming structure: 
 # regional_workflow/scripts/exregional_get_mrms_files.sh. This script 
 # calls the script used to identify the MRMS file closest to the valid 
-# time: regional_workflow/scripts/mrms_pull_topofhour.py.
+# time: regional_workflow/ush/mrms_pull_topofhour.py.
 #
 # NDAS_OBS_DIR:
 # User-specified location of top-level directory where NDAS prepbufr 

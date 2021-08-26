@@ -73,7 +73,7 @@ if difference.total_seconds() <= 900:
         print('cp '+MRMS_PROD_DIR+'/'+valid.strftime('%Y%m%d')+'/dcom/us007003/ldmdata/obs/upperair/mrms/conus/'+MRMS_PRODUCT+'/'+filename1+' '+VALID_DIR+'/'+filename2)
 
         os.system('cp '+MRMS_PROD_DIR+'/'+valid.strftime('%Y%m%d')+'/dcom/us007003/ldmdata/obs/upperair/mrms/conus/'+MRMS_PRODUCT+'/'+filename1+' '+VALID_DIR+'/'+filename2)
-	os.system('gunzip '+VALID_DIR+'/'+filename2)
+        os.system('gunzip '+VALID_DIR+'/'+filename2)
     elif valid.strftime('%Y%m%d') >= '20200304':
         print('cp '+MRMS_PROD_DIR+'/'+valid.strftime('%Y%m%d')+'/upperair/mrms/conus/'+MRMS_PRODUCT+'/'+filename1+' '+VALID_DIR+'/'+filename2)
 
