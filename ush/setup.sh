@@ -2779,7 +2779,6 @@ NX="${NX}"
 NY="${NY}"
 NHW="${NHW}"
 STRETCH_FAC="${STRETCH_FAC}"
-PAZI="${PAZI}"
 
 RES_IN_FIXLAM_FILENAMES="${RES_IN_FIXLAM_FILENAMES}"
 #
@@ -2842,6 +2841,7 @@ DEL_ANGLE_X_SG="${DEL_ANGLE_X_SG}"
 DEL_ANGLE_Y_SG="${DEL_ANGLE_Y_SG}"
 NEG_NX_OF_DOM_WITH_WIDE_HALO="${NEG_NX_OF_DOM_WITH_WIDE_HALO}"
 NEG_NY_OF_DOM_WITH_WIDE_HALO="${NEG_NY_OF_DOM_WITH_WIDE_HALO}"
+PAZI="${PAZI}"
 EOM
 } || print_err_msg_exit "\
 Heredoc (cat) command to append grid parameters to variable definitions
