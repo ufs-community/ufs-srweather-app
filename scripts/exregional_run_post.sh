@@ -276,7 +276,7 @@ EOF
 print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
-${APRUN} ${EXECDIR}/ncep_post < itag || print_err_msg_exit "\
+${APRUN} ${EXECDIR}/upp.x < itag || print_err_msg_exit "\
 Call to executable to run post for forecast hour $fhr returned with non-
 zero exit code."
 #
@@ -325,13 +325,13 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${tmmark}.grib2"
 #
 # For convenience, change location to postprd_dir (where the final output
 # from UPP will be located).  Then loop through the two files that UPP
-# generates (i.e. "...bgdawp..." and "...bgrd3d..." files) and move, 
+# generates (i.e. "...prslev..." and "...natlev..." files) and move, 
 # rename, and create symlinks to them.
 #
 cd_vrfy "${postprd_dir}"
 basetime=$( date --date "$yyyymmdd $hh" +%y%j%H%M )
 symlink_suffix="_${basetime}f${fhr}${post_mn}"
-fids=( "bgdawp" "bgrd3d" )
+fids=( "prslev" "natlev" )
 for fid in "${fids[@]}"; do
   FID="${fid^^}"
   post_orig_fn="${FID}.${post_fn_suffix}"

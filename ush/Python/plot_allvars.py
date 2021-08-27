@@ -261,7 +261,7 @@ for fhr in fhours:
   vtime = ndate(itime,int(fhr))
 
 # Define the location of the input file
-  data1 = pygrib.open(EXPT_DIR+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.bgdawpf'+fhour+'.tm00.grib2')
+  data1 = pygrib.open(EXPT_DIR+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.prslevf'+fhour+'.tm00.grib2')
 
 # Get the lats and lons
   grids = [data1]

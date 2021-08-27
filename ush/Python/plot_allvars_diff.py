@@ -267,8 +267,8 @@ for fhr in fhours:
 
 
 # Define the location of the input files
-  data1 = pygrib.open(EXPT_DIR_1+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.bgdawpf'+fhour+'.tm00.grib2')
-  data2 = pygrib.open(EXPT_DIR_2+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.bgdawpf'+fhour+'.tm00.grib2')
+  data1 = pygrib.open(EXPT_DIR_1+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.prslevf'+fhour+'.tm00.grib2')
+  data2 = pygrib.open(EXPT_DIR_2+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.prslevf'+fhour+'.tm00.grib2')
 
 # Get the lats and lons
   grids = [data1, data2]
