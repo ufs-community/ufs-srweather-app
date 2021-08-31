@@ -85,7 +85,7 @@ declare -a executables_created=( chgres_cube \
                                  global_equiv_resol \
                                  make_hgrid \
                                  make_solo_mosaic \
-                                 ncep_post \
+                                 upp.x \
                                  orog \
                                  orog_gsl \
                                  regional_esg_grid \
