@@ -950,13 +950,11 @@ external model files should be located has not been specified for this
 machine (MACHINE):
   MACHINE= \"${MACHINE}\""
     fi
-   
-    EXTRN_MDL_SOURCE_BASEDIR_ICS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_ICS}"
 
+    EXTRN_MDL_SOURCE_BASEDIR_ICS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_ICS}"
     if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] && [ "$MACHINE" = "HERA" ]; then
       EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/${FV3GFS_FILE_FMT_ICS}"
     fi
- 
     if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ]; then
       if [ "${FV3GFS_FILE_FMT_ICS}" = "nemsio" ]; then
@@ -972,11 +970,9 @@ machine (MACHINE):
     fi
 
     EXTRN_MDL_SOURCE_BASEDIR_LBCS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_LBCS}"
-
     if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] && [ "$MACHINE" = "HERA" ]; then
       EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/${FV3GFS_FILE_FMT_LBCS}"
     fi
-
 #
 # Make sure that the forecast length is evenly divisible by the interval
 # between the times at which the lateral boundary conditions will be
@@ -1027,7 +1023,9 @@ EXTRN_MDL_FILES_LBCS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))"
 #-----------------------------------------------------------------------
 #
   if [ "${RUN_TASK_VX_GRIDSTAT}" = "TRUE" ] || \
-     [ "${RUN_TASK_VX_POINTSTAT}" = "TRUE" ]; then
+     [ "${RUN_TASK_VX_POINTSTAT}" = "TRUE" ] || \
+     [ "${RUN_TASK_VX_ENSGRID}" = "TRUE" ] || \
+     [ "${RUN_TASK_VX_ENSPOINT}" = "TRUE" ]; then
 
     if [ "$MACHINE" = "WCOSS_CRAY" ]; then
       met_install_dir="/gpfs/hps/nco/ops/nwprod/met.v9.1.3"
@@ -1046,9 +1044,16 @@ EXTRN_MDL_FILES_LBCS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))"
     elif [ "$MACHINE" = "HERA" ]; then
       met_install_dir="/contrib/met/10.0.0"
       metplus_path="/contrib/METplus/METplus-4.0.0"
-      ccpa_obs_dir="/scratch2/BMC/det/UFS_SRW_app/v1p0/obs_data/ccpa/proc"
-      mrms_obs_dir="/scratch2/BMC/det/UFS_SRW_app/v1p0/obs_data/mrms/proc"
-      ndas_obs_dir="/scratch2/BMC/det/UFS_SRW_app/v1p0/obs_data/ndas/proc"
+      ccpa_obs_dir="/scratch2/BMC/det/UFS_SRW_app/develop/obs_data/ccpa/proc"
+      mrms_obs_dir="/scratch2/BMC/det/UFS_SRW_app/develop/obs_data/mrms/proc"
+      ndas_obs_dir="/scratch2/BMC/det/UFS_SRW_app/develop/obs_data/ndas/proc"
+      met_bin_exec="bin"
+    elif [ "$MACHINE" = "CHEYENNE" ]; then
+      met_install_dir="/glade/p/ral/jntp/MET/MET_releases/10.0.0"
+      metplus_path="/glade/p/ral/jntp/MET/METplus/METplus-4.0.0"
+      ccpa_obs_dir="/glade/p/ral/jntp/UFS_SRW_app/develop/obs_data/ccpa/proc"
+      mrms_obs_dir="/glade/p/ral/jntp/UFS_SRW_app/develop/obs_data/mrms/proc"
+      ndas_obs_dir="/glade/p/ral/jntp/UFS_SRW_app/develop/obs_data/ndas/proc"
       met_bin_exec="bin"
     else
       print_err_msg_exit "\
