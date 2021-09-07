@@ -1,6 +1,8 @@
-************************************************
-Short-Range Weather App Public Release in Docker
-************************************************
+.. _Docker:
+
+*************
+Run in Docker
+*************
 
 This document explains how to run the SRW public release, version 1,
 in a Docker container. We will run twice: once by building a Docker
@@ -31,7 +33,7 @@ they are used correctly. Before using Docker on a production
 environment, or any other situation where the security of your machine
 is critical, make sure you plan accordingly:
 
-`https://docs.docker.com/engine/security/security/`_
+https://docs.docker.com/engine/security/security/
 
 These containers were built and tested in a virtual machine to fully
 isolate Docker from the host. If your machine has hardware
@@ -51,15 +53,14 @@ likely called "docker" or "docker.io"
 If you want the most recent version of Docker, full instructions for
 all platforms Docker supports are here:
 
-* `https://docs.docker.com/engine/install/`_
+* https://docs.docker.com/engine/install/
 
 Relevant pages for Ubuntu and RedHat/CentOS:
 
-* UBUNTU: `https://docs.docker.com/engine/install/ubuntu/`_
-* REDHAT/CENTOS: `https://docs.docker.com/engine/install/centos/`_
-* Optional post-install steps: `https://docs.docker.com/engine/install/linux-postinstall/`_
+* UBUNTU: https://docs.docker.com/engine/install/ubuntu/
+* REDHAT/CENTOS: https://docs.docker.com/engine/install/centos/
+* Optional post-install steps: https://docs.docker.com/engine/install/linux-postinstall/
 
-#############################
 Section 2: Download The Files
 #############################
 
@@ -70,14 +71,17 @@ Most of the compressed files are available in three forms:
 1. ``.tar.xz`` -- xz files for Linux. These are the smallest files. If
    you have xz on your computer, download this one. (On unix, run
    ``xz --version`` to see if xz is installed.)
+
 2. ``.7z`` -- 7zip files for Windows. They use the same compression
    algorithm as xz, so they're about the same size.
+
 3. ``.tar.gz`` -- For unix users who are stuck without xz, download these.
 
 Most files have md5sums next to them, so you can verify the
 download. They're named like so:
 
 - For this file: ``20210224-ubuntu18-nceplibs.gz``
+
 - The md5sum is: ``20210224-ubuntu18-nceplibs.gz.md5``
 
 7zip has its own verification system, so you don't need to check the
@@ -90,35 +94,50 @@ The files:
   understands the compression algorithm. These each contain a
   compressed tar file. No *not* untar the file; the file *is* the
   container. Download ONE of:
-  - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/20210224-ubuntu18-nceplibs.xz`_
-  - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/20210224-ubuntu18-nceplibs.7z`_
-  - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/20210224-ubuntu18-nceplibs.gz`_
 
-- config.sh `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/config.sh`_
+  - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/20210224-ubuntu18-nceplibs.xz
 
-- run_all.sh `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/run_all.sh`_
+  - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/20210224-ubuntu18-nceplibs.7z
 
-- ufs-srweather-app-Dockerfile `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/ufs-srweather-app-Dockerfile`_
+  - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/20210224-ubuntu18-nceplibs.gz
+
+- config.sh https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/config.sh
+
+- run_all.sh https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/run_all.sh
+
+- ufs-srweather-app-Dockerfile https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/ufs-srweather-app-Dockerfile
 
 - ``fix_files.tar.xz`` Download ONE of:
-  - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/fix_files.tar.xz`_
-  - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/fix_files.7z`_
-  - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/fix_files.tar.gz`_
+
+  - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/fix_files.tar.xz
+
+  - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/fix_files.7z
+
+  - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/fix_files.tar.gz
 
 - Native Earth files. These are only available as ``.tar.gz`` files.
   Download ONE of:
-  - `https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/natural_earth/natural_earth_ufs-srw-release-v1.0.0.tar.gz`_
-  - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/natural_earth/natural_earth_ufs-srw-release-v1.0.0.tar.gz`_
+
+  - https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/natural_earth/natural_earth_ufs-srw-release-v1.0.0.tar.gz
+
+  - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/natural_earth/natural_earth_ufs-srw-release-v1.0.0.tar.gz
 
 - Model input data. You have two options.
+
   1. Download just the test case in this tutorial. ONE of:
-     - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/model_data_fv3gfs_2019061500.tar.xz`_
-     - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/model_data_fv3gfs_2019061500.7z`_
-     - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/model_data_fv3gfs_2019061500.tar.gz`_
+
+     - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/model_data_fv3gfs_2019061500.tar.xz
+
+     - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/model_data_fv3gfs_2019061500.7z
+
+     - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/model_data_fv3gfs_2019061500.tar.gz
+
   2. Download all four test cases. These are only available in
      ``.tar.gz`` files. Download ONE of:
-       - `https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz`_
-       - `https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz`_
+
+       - https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz
+
+       - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz
 
 Section 3: Create the Docker Image
 ##################################
@@ -173,7 +192,7 @@ Section 3: Create the Docker Image
 
      FROM import-nceplibs-20210219
 
-6. Update the ``git clone`` command to match your desired branch:
+6. Update the ``git clone`` command to match your desired branch::
 
      git clone --branch ufs-v1.0.1 https://github.com/ufs-community/ufs-srweather-app.git /usr/local/src/ufs-srweather-app
 
@@ -268,8 +287,8 @@ Section 4: Start the Workflow
         ./run_all.sh > run_all.log 2>&1 &
 
 9. You should see this message, which means the job is running. The
-second number will vary; it is the process id assigned by the
-operating system::
+   second number will vary; it is the process id assigned by the
+   operating system::
 
         [1] 24737
 
@@ -309,8 +328,8 @@ You will see the final job, the post, finish its 48th hour::
     + (( i++  ))
     + (( i<=48 ))
 
-Monitor Main Log File with "tail"
-*********************************
+Monitor Main Log File with ``tail``
+***********************************
 
 The `run_all.log` will log what wrappers are run, and the last 20 lines
 of each wrapper's log file:
@@ -395,8 +414,8 @@ Press ``Control-C`` to exit ``tail -f`` when you're done monitoring the
 file. The ``tail -f`` command will not exit on its own.
 
 
-View a snapshot with `less`
-***************************
+View a snapshot with ``less``
+*****************************
 
 You can view a snapshot of all of the log file using ``less``:
 
@@ -440,9 +459,8 @@ After the last job finishes, the graphics, you will see a message like this::
 The ``$DOCKER_TEMP_DIR`` will be replaced with whatever directory you chose.
 
 
-******************************
 Section 6: Where is my Output?
-******************************
+##############################
 
 1. First, confirm the workflow has finished. See the end of the
 previous section for how to do this.
@@ -484,9 +502,8 @@ you will see a great many files:
 
 
 
-****************************
 Section 7: Changing the Code
-****************************
+############################
 
 To do actual development, you want to compile manually instead of
 using the ``ufs-srweather-app-Dockerfile``. There is extensive
