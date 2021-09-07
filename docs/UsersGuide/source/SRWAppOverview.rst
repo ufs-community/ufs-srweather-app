@@ -191,7 +191,7 @@ Case-specific Configuration
 .. _DefaultConfigSection:
 
 Default configuration: ``config_defaults.sh``
---------------------------------------------
+---------------------------------------------
 When generating a new experiment (described in detail in :numref:`Section %s <GeneratingWflowExpt>`),
 the ``config_defaults.sh`` file is read first and assigns default values to the experiment
 parameters. Important configuration variables in the ``config_defaults.sh`` file are shown in 
@@ -408,7 +408,7 @@ Generating a Regional Workflow Experiment
 =========================================
 
 Steps to a Generate a New Experiment
-----------------------------------
+------------------------------------
 Generating an experiment requires running
 
 .. code-block:: console
