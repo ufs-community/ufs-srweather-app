@@ -28,7 +28,7 @@ The necessary source code is publicly available on GitHub.  To clone the release
 
 .. code-block:: console
 
-   git clone -b ufs-v1.0.0 https://github.com/ufs-community/ufs-srweather-app.git
+   git clone -b ufs-v1.0.1 https://github.com/ufs-community/ufs-srweather-app.git
    cd ufs-srweather-app
 
 Then, check out the submodules for the SRW application:
@@ -126,8 +126,8 @@ For Cheyenne:
    ACCOUNT="my_account"
    EXPT_SUBDIR="my_expt_name"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/model_data/FV3GFS"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/model_data/FV3GFS"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files/FV3GFS"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files/FV3GFS"
 
 For Hera:
 

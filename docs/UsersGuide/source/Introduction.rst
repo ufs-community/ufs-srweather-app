@@ -20,11 +20,11 @@ Future work will include expanding the capabilities of the application to includ
 overview of the release components, a description of the supported capabilities, a quick start guide
 for running the application, and information on where to find more information and obtain support.
 
-The SRW App v1.0.0 citation is as follows and should be used when presenting results based on research 
+The SRW App v1.0.1 citation is as follows and should be used when presenting results based on research 
 conducted with the App.
 
 UFS Development Team. (2021, March 4). Unified Forecast System (UFS) Short-Range Weather (SRW) Application 
-(Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
+(Version v1.0.1). Zenodo. https://doi.org/10.5281/zenodo.4534994
 
 Pre-processor Utilities and Initial Conditions
 ==============================================
@@ -182,7 +182,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
    | **Documentation**          | **Location**                                                                    |
    +============================+=================================================================================+
-   | UFS SRW Application v1.0   |  https://ufs-srweather-app.readthedocs.io/en/ufs-v1.0.0                         |
+   | UFS SRW Application v1.0   |  https://ufs-srweather-app.readthedocs.io/en/ufs-v1.0.1                         |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | UFS_UTILS v2.0 User's      | https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/                         |

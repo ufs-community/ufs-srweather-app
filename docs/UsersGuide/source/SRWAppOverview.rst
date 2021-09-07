@@ -33,11 +33,11 @@ Each step will be described in detail in the following sections.
 
 Download from GitHub
 ====================
-Retrieve the UFS Short Range Weather Application (SRW App) repository from GitHub and checkout the ``ufs-v1.0.0`` tag: 
+Retrieve the UFS Short Range Weather Application (SRW App) repository from GitHub and checkout the ``ufs-v1.0.1`` tag: 
 
 .. code-block:: console
 
-   git clone -b ufs-v1.0.0 https://github.com/ufs-community/ufs-srweather-app.git
+   git clone -b ufs-v1.0.1 https://github.com/ufs-community/ufs-srweather-app.git
    cd ufs-srweather-app
 
 The cloned repository contains the configuration files and sub-directories shown in
