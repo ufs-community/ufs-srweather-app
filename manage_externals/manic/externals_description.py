@@ -253,7 +253,7 @@ def read_gitmodules_file(root_dir, file_name):
                                           ExternalsDescription.REPO_URL, url)
                 externals_description.set(sec_name,
                                           ExternalsDescription.REQUIRED, 'True')
-                git_hash = submods[sec_name]['hash']
+                git_hash = submods[path]['hash']
                 externals_description.set(sec_name,
                                           ExternalsDescription.HASH, git_hash)
 
