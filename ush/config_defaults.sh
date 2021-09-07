@@ -1514,7 +1514,7 @@ DT_SUBHOURLY_POST_MNTS="00"
 # should be used for post-processing the model data. If this is set to
 # "TRUE", then the workflow will use the custom post-processing (UPP) 
 # configuration file specified in CUSTOM_POST_CONFIG_FP. Otherwise, a 
-# default configuration file provided in the EMC_post repository will be 
+# default configuration file provided in the UPP repository will be 
 # used.
 #
 # CUSTOM_POST_CONFIG_FP:

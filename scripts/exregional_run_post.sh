@@ -164,7 +164,7 @@ esac
 #-----------------------------------------------------------------------
 #
 rm_vrfy -f fort.*
-cp_vrfy ${EMC_POST_DIR}/parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp_vrfy ${UPP_DIR}/parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
@@ -175,7 +175,7 @@ to the temporary work directory (tmp_dir):
   tmp_dir = \"${tmp_dir}\"
 ===================================================================="
 else
-  post_config_fp="${EMC_POST_DIR}/parm/postxconfig-NT-fv3lam.txt"
+  post_config_fp="${UPP_DIR}/parm/postxconfig-NT-fv3lam.txt"
   print_info_msg "
 ====================================================================
 Copying the default post flat file specified by post_config_fp to the 
@@ -185,7 +185,7 @@ temporary work directory (tmp_dir):
 ===================================================================="
 fi
 cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-cp_vrfy ${EMC_POST_DIR}/parm/params_grib2_tbl_new .
+cp_vrfy ${UPP_DIR}/parm/params_grib2_tbl_new .
 #
 #-----------------------------------------------------------------------
 #

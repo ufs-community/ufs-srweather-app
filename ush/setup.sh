@@ -977,21 +977,21 @@ Please clone the external repository containing the code in this direct-
 ory, build the executables, and then rerun the workflow."
 fi
 #
-# Get the base directory of the EMC_post code.
+# Get the base directory of the UPP code.
 #
-external_name="EMC_post"
-EMC_POST_DIR=$( \
+external_name="UPP"
+UPP_DIR=$( \
 get_manage_externals_config_property \
 "${mng_extrns_cfg_fn}" "${external_name}" "${property_name}" ) || \
 print_err_msg_exit "\
 Call to function get_manage_externals_config_property failed."
 
-EMC_POST_DIR="${SR_WX_APP_TOP_DIR}/${EMC_POST_DIR}"
-if [ ! -d "${EMC_POST_DIR}" ]; then
+UPP_DIR="${SR_WX_APP_TOP_DIR}/${UPP_DIR}"
+if [ ! -d "${UPP_DIR}" ]; then
   print_err_msg_exit "\
-The base directory in which the EMC_post source code should be located
-(EMC_POST_DIR) does not exist:
-  EMS_POST_DIR = \"${EMC_POST_DIR}\"
+The base directory in which the UPP source code should be located
+(UPP_DIR) does not exist:
+  UPP_DIR = \"${UPP_DIR}\"
 Please clone the external repository containing the code in this directory,
 build the executable, and then rerun the workflow."
 fi
@@ -2682,7 +2682,7 @@ UFS_WTHR_MDL_DIR="${UFS_WTHR_MDL_DIR}"
 UFS_UTILS_DIR="${UFS_UTILS_DIR}"
 SFC_CLIMO_INPUT_DIR="${SFC_CLIMO_INPUT_DIR}"
 TOPO_DIR="${TOPO_DIR}"
-EMC_POST_DIR="${EMC_POST_DIR}"
+UPP_DIR="${UPP_DIR}"
 
 EXPTDIR="$EXPTDIR"
 LOGDIR="$LOGDIR"
