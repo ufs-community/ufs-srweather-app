@@ -17,10 +17,11 @@ application manually within a pre-existing Docker image.
 6. Where is my Output?
 7. Changing the Code - manually compile and run
 
-NOTE: If you find section 3 (making a docker image) too hard, then
-manually compile and run instead. It may be easier for you. To do
-that, you would read the sections in this order instead: 1, 2, 7, 4,
-5, 6
+.. note::
+   If you find section 3 (making a docker image) too hard, then
+   manually compile and run instead. It may be easier for you. To do
+   that, you would read the sections in this order instead: 1, 2, 7, 4,
+   5, 6
 
 Section 1: Get Docker
 #####################
@@ -92,7 +93,7 @@ The files:
 - The container. If you download the 7z, you'll need to extract the
   file inside. Others can be given to Docker directly, if it
   understands the compression algorithm. These each contain a
-  compressed tar file. No *not* untar the file; the file *is* the
+  compressed tar file. No *not* untar the file; the tar file *is* the
   container. Download ONE of:
 
   - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/20210224-ubuntu18-nceplibs.xz
@@ -101,11 +102,11 @@ The files:
 
   - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/20210224-ubuntu18-nceplibs.gz
 
-- config.sh https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/config.sh
+- ``config.sh`` https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/config.sh
 
-- run_all.sh https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/run_all.sh
+- ``run_all.sh`` https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/run_all.sh
 
-- ufs-srweather-app-Dockerfile https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/ufs-srweather-app-Dockerfile
+- ``ufs-srweather-app-Dockerfile`` https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/docker/ufs-srweather-app-Dockerfile
 
 - ``fix_files.tar.xz`` Download ONE of:
 
@@ -145,7 +146,7 @@ Section 3: Create the Docker Image
 1. Put all seven files you downloaded in one directory.
 
 2. If you have a large machine, with 12 logical cpus or more, you
-   should switch to the 12 core setup by editing `config.sh`. The
+   should switch to the 12 core setup by editing ``config.sh``. The
    default is for four (4) logical cpus. Near the bottom of config.sh
    you will see these lines::
 
@@ -161,14 +162,14 @@ Section 3: Create the Docker Image
         RUN_CMD_POST="mpirun -np 4"
 
    To run the 12 core version, comment out the last four lines, which
-   set the LAYOUT_X, LAYOUT_Y, RUN_CMD_UTILS, and RUN_CMD_POST
-   variables.
+   set the ``$LAYOUT_X``, ``$LAYOUT_Y``, ``$RUN_CMD_UTILS``, and
+   ``$RUN_CMD_POST`` variables.
 
-3. LOW MEMORY MACHINES - The workflow uses more than 16 GB of memory,
-   on top of the memory your OS and other applications use. If you don't
-   have significantly more than 16 GB of memory (RAM+swap), then use
-   the 4 core config, but reduce the utilities to one MPI rank. Do that by
-   putting this at the end of config.sh::
+3. LOW MEMORY MACHINES - The workflow uses more than 16 GB of memory
+   (RAM), on top of the memory your OS and other applications use. If
+   you don't have significantly more than 16 GB of RAM, then use the 4
+   core config, but reduce the utilities to one MPI rank. Do that by
+   putting this at the end of ``config.sh``::
 
        RUN_CMD_UTILS="mpirun -np 1"
 
@@ -182,17 +183,20 @@ Section 3: Create the Docker Image
 
        docker import 20210224-ubuntu18-nceplibs.xz import-nceplibs-20210219
 
-   NOTE: If your machine cannot handle the ``.xz`` files, then try
-   decompressing the file first. If you can't decompress it, download
-   the ``.7z`` file with 7zip, or the ``.gz`` file and decompress that. On
-   Windows, the ``.7z`` file is your best bet if you have 7zip
-   installed.
+   .. note::
+      
+      If your machine cannot handle the ``.xz`` files, then try
+      decompressing the file first. If you can't decompress it, download
+      the ``.7z`` file with 7zip, or the ``.gz`` file and decompress that. On
+      Windows, the ``.7z`` file is your best bet if you have 7zip
+      installed.
 
-5. Update the ``FROM`` line at the top of ufs-srweather-app-Dockerfile to match your imported name::
+5. Update the ``FROM`` line at the top of ``ufs-srweather-app-Dockerfile``
+   to match your imported name::
 
      FROM import-nceplibs-20210219
 
-6. Update the ``git clone`` command to match your desired branch::
+6. In the same file, change the ``git clone`` command to match your desired branch and repository::
 
      git clone --branch ufs-v1.0.1 https://github.com/ufs-community/ufs-srweather-app.git /usr/local/src/ufs-srweather-app
 
@@ -223,16 +227,18 @@ Section 3: Create the Docker Image
        unxz -c /path/to/model_data_fv3gfs_2019061500.tar.xz | tar -xf -
        unxz -c /path/to/fix_files.tar.xz | tar -xf -
 
-   NOTE: If your machine cannot handle the ``.xz`` files, then try the
-   ``.7z`` with 7zip, or the ``.gz`` gzipped files instead. The ``.7z`` is
-   your best bet on Windows, if you have 7zip installed.
+   .. note::
+      
+      If your machine cannot handle the ``.xz`` files, then try the
+      ``.7z`` with 7zip, or the ``.gz`` gzipped files instead. The ``.7z`` is
+      your best bet on Windows, if you have 7zip installed.
 
 10. Check ``$HOST_TEMP_DIR`` and make sure you see these four directories:
 
-  - fix_am
-  - fix_orog
-  - fix_sfc_climo
-  - model_data
+  - ``fix_am``
+  - ``fix_orog``
+  - ``fix_sfc_climo``
+  - ``model_data``
 
 11. There should be a ``$HOST_TEMP_DIR/model_data/FV3GFS/2019061500`` directory.
 
@@ -248,7 +254,7 @@ Section 4: Start the Workflow
 
        [root@e9de7d681604 /]#
 
-3. Set the DOCKER_TEMP_DIR variable again. This time, it is in the
+3. Set the ``$DOCKER_TEMP_DIR`` variable again. This time, it is in the
    container::
 
        export DOCKER_TEMP_DIR=/tmp/retest
@@ -331,12 +337,13 @@ You will see the final job, the post, finish its 48th hour::
 Monitor Main Log File with ``tail``
 ***********************************
 
-The `run_all.log` will log what wrappers are run, and the last 20 lines
+The ``run_all.log`` will log what wrappers are run, and the last 20 lines
 of each wrapper's log file:
+::
 
         tail run_all.log
 
-You'll see something like this:
+You'll see something like this::
 
         Running all steps.
         Will log to /tmp/retest/log
@@ -353,8 +360,8 @@ As the workflow progresses, the file will get longer.
 
 
 
-Listing log files by time.
-**************************
+Listing Log Files by Time
+*************************
 
 Each step has its own log file. This will list log files for each step::
 
@@ -378,7 +385,7 @@ Viewing Each Step's Log File
 ****************************
 
 As the workflow progresses, more files will appear. You can examine
-the end of a log file with tail::
+the end of a log file with ``tail``::
 
     tail $DOCKER_TEMP_DIR/log/get_ics.log
 
@@ -396,13 +403,13 @@ That will print something like::
     ========================================================================
 
 
-Monitor a log file ``tail -f``
-******************************
+Monitor a Log File with ``tail -f``
+***********************************
 
 As a job proceeds, the log file will update. You can see the file as
 it updates continuously using the ``-f`` flag to tail. This is only
-meaningful for the newest log files; for jobs that have finished, ``tail
--f`` is equivalent to ``tail``.
+meaningful for the newest log files; for jobs that have finished, ``tail -f``
+is equivalent to ``tail``.
 
 In my case, the make_lbcs is the job currently running. I know that
 because it is the last file listed by the ``ls -ltr --full-time``
@@ -414,17 +421,17 @@ Press ``Control-C`` to exit ``tail -f`` when you're done monitoring the
 file. The ``tail -f`` command will not exit on its own.
 
 
-View a snapshot with ``less``
+View a Snapshot With ``less``
 *****************************
 
-You can view a snapshot of all of the log file using ``less``:
+You can view a snapshot of all of the log file using ``less``::
 
     less $DOCKER_TEMP_DIR/log/make_lbcs.log
 
 Press ``q`` to exit ``less``
 
 
-Monitor the post and graphics
+Monitor the Post and Graphics
 *****************************
 
 The graphics are generated last, after the post. Both the post and the
@@ -436,7 +443,7 @@ The post produces ``*.grib2`` files, and the graphics scripts make
 ``*.png`` files.
 
 
-Is it done?
+Is it Done?
 ***********
 
 To check if the workflow finished, look at the end of the run_all.log file:
@@ -449,10 +456,10 @@ After the last job finishes, the graphics, you will see a message like this::
     Done.
    
     The model ran here:
-    "  " $DOCKER_TEMP_DIR/experiment/test_CONUS_25km_GFSv15p2/2019061500
+       $DOCKER_TEMP_DIR/experiment/test_CONUS_25km_GFSv15p2/2019061500
    
     GRIB2 files and plots are in the postprd subdirectory:
-    "  " $DOCKER_TEMP_DIR/experiment/test_CONUS_25km_GFSv15p2/2019061500/postprd
+       $DOCKER_TEMP_DIR/experiment/test_CONUS_25km_GFSv15p2/2019061500/postprd
    
     Enjoy.
 
@@ -463,7 +470,7 @@ Section 6: Where is my Output?
 ##############################
 
 1. First, confirm the workflow has finished. See the end of the
-previous section for how to do this.
+   previous section for how to do this.
 
 2. Make sure there are no jobs running by running the ``jobs`` command::
 
@@ -514,13 +521,13 @@ model. To do this inside Docker, you need to build the model manually.
 
        export HOST_SRC_DIR="/path/to/directory/for/source/code"
 
-2. Copy the config.sh and run_all.sh into there::
+2. Copy the ``config.sh`` and ``run_all.sh`` into there::
 
        cd "$HOST_SRC_DIR"
        cp /path/to/config.sh .
        cp /path/to/run_all.sh .
 
-3. Change the core count in config.sh if you want to, as described earlier::
+3. Change the core count in ``config.sh`` if you want to, as described earlier::
 
         # Twelve (12) core machines
         RUN_CMD_UTILS="mpirun -np 12"
@@ -546,7 +553,7 @@ model. To do this inside Docker, you need to build the model manually.
 
        docker run --mount "type=bind,source=$HOST_TEMP_DIR,target=$DOCKER_TEMP_DIR" --mount "type=bind,source=$HOST_SRC_DIR,target=/usr/local/src" -it import-nceplibs-20210219 /bin/bash --login
 
-7. Run the commands in the last directive of ufs-srweather-app-Dockerfile::
+7. Run the commands in the last directive of ``ufs-srweather-app-Dockerfile``::
 
        module load cmake
        module load gcc
