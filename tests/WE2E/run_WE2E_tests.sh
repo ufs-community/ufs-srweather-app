@@ -1023,9 +1023,7 @@ EXTRN_MDL_FILES_LBCS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))"
 #-----------------------------------------------------------------------
 #
   if [ "${RUN_TASK_VX_GRIDSTAT}" = "TRUE" ] || \
-     [ "${RUN_TASK_VX_POINTSTAT}" = "TRUE" ] || \
-     [ "${RUN_TASK_VX_ENSGRID}" = "TRUE" ] || \
-     [ "${RUN_TASK_VX_ENSPOINT}" = "TRUE" ]; then
+     [ "${RUN_TASK_VX_POINTSTAT}" = "TRUE" ]; then
 
     if [ "$MACHINE" = "WCOSS_CRAY" ]; then
       met_install_dir="/gpfs/hps/nco/ops/nwprod/met.v9.1.3"
