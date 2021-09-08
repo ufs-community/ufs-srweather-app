@@ -18,11 +18,24 @@ application manually within a pre-existing Docker image.
 7. Changing the Code - manually compile and run
 
 .. note::
-   If you find section 3 (making a docker image) too hard, then
+   If you find :ref:`DockerSection3` too hard, then
    manually compile and run instead. It may be easier for you. To do
-   that, you would read the sections in this order instead: 1, 2, 7, 4,
-   5, 6
+   that, you would read the sections in this order instead:
 
+   * :ref:`DockerSection1`
+
+   * :ref:`DockerSection2`
+
+   * :ref:`DockerSection7`
+
+   * :ref:`DockerSection4`
+
+   * :ref:`DockerSection5`
+
+   * :ref:`DockerSection6`
+
+.. _DockerSection1:
+   
 Section 1: Get Docker
 #####################
 
@@ -61,6 +74,8 @@ Relevant pages for Ubuntu and RedHat/CentOS:
 * UBUNTU: https://docs.docker.com/engine/install/ubuntu/
 * REDHAT/CENTOS: https://docs.docker.com/engine/install/centos/
 * Optional post-install steps: https://docs.docker.com/engine/install/linux-postinstall/
+
+.. _DockerSection2:
 
 Section 2: Download The Files
 #############################
@@ -139,6 +154,8 @@ The files:
        - https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz
 
        - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz
+
+.. _DockerSection3:
 
 Section 3: Create the Docker Image
 ##################################
@@ -243,6 +260,8 @@ Section 3: Create the Docker Image
 11. There should be a ``$HOST_TEMP_DIR/model_data/FV3GFS/2019061500`` directory.
 
 
+.. _DockerSection4:
+
 Section 4: Start the Workflow
 #############################
 
@@ -298,6 +317,8 @@ Section 4: Start the Workflow
 
         [1] 24737
 
+
+.. _DockerSection5:
 
 Section 5: Monitor the Workflow
 ###############################
@@ -465,6 +486,7 @@ After the last job finishes, the graphics, you will see a message like this::
 
 The ``$DOCKER_TEMP_DIR`` will be replaced with whatever directory you chose.
 
+.. _DockerSection6:
 
 Section 6: Where is my Output?
 ##############################
@@ -508,6 +530,7 @@ you will see a great many files:
    - ``for_LBCS`` - boundary conditions from FV3 GFS
 
 
+.. _DockerSection7:
 
 Section 7: Changing the Code
 ############################
@@ -581,4 +604,4 @@ model. To do this inside Docker, you need to build the model manually.
          -DCMAKE_PREFIX_PATH=/usr/local .. 2>&1 | tee log.cmake
        make "-j$nprocs" VERBOSE=1 2>&1 | tee log.make
 
-8. If the code compiled, run the model based on the instructions in section 4.
+8. If the code compiled, run the model based on the instructions in :ref:`DockerSection4`.
