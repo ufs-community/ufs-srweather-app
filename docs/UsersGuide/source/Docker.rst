@@ -53,7 +53,7 @@ they are used correctly. Before using Docker on a production
 environment, or any other situation where the security of your machine
 is critical, make sure you plan accordingly:
 
-https://docs.docker.com/engine/security/security/
+  https://docs.docker.com/engine/security/security/
 
 These containers were built and tested in a virtual machine to fully
 isolate Docker from the host. If your machine has hardware
@@ -73,7 +73,7 @@ likely called "docker" or "docker.io"
 If you want the most recent version of Docker, full instructions for
 all platforms Docker supports are here:
 
-* https://docs.docker.com/engine/install/
+  https://docs.docker.com/engine/install/
 
 Relevant pages for Ubuntu and RedHat/CentOS:
 
