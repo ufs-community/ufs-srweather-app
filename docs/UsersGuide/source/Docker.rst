@@ -9,35 +9,41 @@ in a Docker container. We will run twice: once by building a Docker
 image complete with the application, and a second time building the
 application manually within a pre-existing Docker image.
 
-1. Get Docker
-2. Download the Files - get the premade container and input data
-3. Create the Docker Image - compile inside a docker image based on the premade container
-4. Start the Workflow - run the workflow off of the image you created
-5. Monitor the Workflow - look at log files while the workflow runs
-6. Where is my Output?
-7. Changing the Code - manually compile and run
+* :ref:`Docker_GetDocker`
+
+* :ref:`Docker_DownloadTheFiles`
+
+* :ref:`Docker_CreatingTheDockerImage`
+
+* :ref:`Docker_StartTheWorkflow`
+
+* :ref:`Docker_MonitorTheWorkflow`
+
+* :ref:`Docker_WhereIsMyOutput`
+
+* :ref:`Docker_ChangingTheCode`
 
 .. note::
-   If you find :ref:`DockerSection3` too hard, then
+   If you find that :ref:`Docker_CreatingTheDockerImage` is too hard, then
    manually compile and run instead. It may be easier for you. To do
    that, you would read the sections in this order instead:
 
-   * :ref:`DockerSection1`
+   * :ref:`Docker_GetDocker`
 
-   * :ref:`DockerSection2`
+   * :ref:`Docker_DownloadTheFiles`
 
-   * :ref:`DockerSection7`
+   * :ref:`Docker_ChangingTheCode` (the last section in this document)
 
-   * :ref:`DockerSection4`
+   * :ref:`Docker_StartTheWorkflow`
 
-   * :ref:`DockerSection5`
+   * :ref:`Docker_MonitorTheWorkflow`
 
-   * :ref:`DockerSection6`
+   * :ref:`Docker_WhereIsMyOutput`
 
-.. _DockerSection1:
+.. _Docker_GetDocker:
    
-Section 1: Get Docker
-#####################
+Get Docker
+##########
 
 Security Risks
 **************
@@ -75,10 +81,10 @@ Relevant pages for Ubuntu and RedHat/CentOS:
 * REDHAT/CENTOS: https://docs.docker.com/engine/install/centos/
 * Optional post-install steps: https://docs.docker.com/engine/install/linux-postinstall/
 
-.. _DockerSection2:
+.. _Docker_DownloadTheFiles:
 
-Section 2: Download The Files
-#############################
+Download The Files
+##################
 
 You need to download seven files.
 
@@ -155,10 +161,10 @@ The files:
 
        - https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz
 
-.. _DockerSection3:
+.. _Docker_CreatingTheDockerImage:
 
-Section 3: Create the Docker Image
-##################################
+Create the Docker Image
+#######################
 
 1. Put all seven files you downloaded in one directory.
 
@@ -260,10 +266,10 @@ Section 3: Create the Docker Image
 11. There should be a ``$HOST_TEMP_DIR/model_data/FV3GFS/2019061500`` directory.
 
 
-.. _DockerSection4:
+.. _Docker_StartTheWorkflow:
 
-Section 4: Start the Workflow
-#############################
+Start the Workflow
+##################
 
 1. Start a docker container from the image you just built::
 
@@ -318,10 +324,10 @@ Section 4: Start the Workflow
         [1] 24737
 
 
-.. _DockerSection5:
+.. _Docker_MonitorTheWorkflow:
 
-Section 5: Monitor the Workflow
-###############################
+Monitor the Workflow
+####################
 
 This section explains several ways to monitor the workflow. If you
 don't want to monitor it in detail, just wait for the workflow to end
@@ -486,10 +492,10 @@ After the last job finishes, the graphics, you will see a message like this::
 
 The ``$DOCKER_TEMP_DIR`` will be replaced with whatever directory you chose.
 
-.. _DockerSection6:
+.. _Docker_WhereIsMyOutput:
 
-Section 6: Where is my Output?
-##############################
+Where is my Output?
+###################
 
 1. First, confirm the workflow has finished. See the end of the
    previous section for how to do this.
@@ -530,10 +536,10 @@ you will see a great many files:
    - ``for_LBCS`` - boundary conditions from FV3 GFS
 
 
-.. _DockerSection7:
+.. _Docker_ChangingTheCode:
 
-Section 7: Changing the Code
-############################
+Changing the Code
+#################
 
 To do actual development, you want to compile manually instead of
 using the ``ufs-srweather-app-Dockerfile``. There is extensive
@@ -604,4 +610,4 @@ model. To do this inside Docker, you need to build the model manually.
          -DCMAKE_PREFIX_PATH=/usr/local .. 2>&1 | tee log.cmake
        make "-j$nprocs" VERBOSE=1 2>&1 | tee log.make
 
-8. If the code compiled, run the model based on the instructions in :ref:`DockerSection4`.
+8. If the code compiled, run the model based on the instructions as discussed in the :ref:`Docker_StartTheWorkflow` section.
