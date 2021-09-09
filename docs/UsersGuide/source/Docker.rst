@@ -24,7 +24,7 @@ application manually within a pre-existing Docker image.
 * :ref:`Docker_ChangingTheCode`
 
 .. note::
-   If you find that :ref:`Docker_CreatingTheDockerImage` is too hard, then
+   If you find that :ref:`Creating the Docker Image<Docker_CreatingTheDockerImage>` is too hard, then
    manually compile and run instead. It may be easier for you. To do
    that, you would read the sections in this order instead:
 
