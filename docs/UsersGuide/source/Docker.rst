@@ -170,7 +170,7 @@ Create the Docker Image
 
 2. If you have a large machine, with 12 logical cpus or more, you
    should switch to the 12 core setup by editing ``config.sh``. The
-   default is for four (4) logical cpus. Near the bottom of config.sh
+   default is for four (4) logical cpus. Near the bottom of ``config.sh``
    you will see these lines::
 
         # Twelve (12) core machines
