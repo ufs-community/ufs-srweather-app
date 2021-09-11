@@ -9,5 +9,5 @@ module load udreg
 module load ugni
 module load xpmem
 
-module use /gpfs/hps/nco/ops/nwprod/modulefiles
-module load met/9.1.3
+module use /gpfs/hps3/emc/meso/noscrub/emc.metplus/modulefiles
+module load met/10.0.0
