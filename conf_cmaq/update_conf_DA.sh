@@ -18,12 +18,13 @@ SCRIPT_DIR="${MYDIR}/${FCST_MODEL}"
 ORG_DIR="${MYDIR}/.."
 
 echo "... update config and env ..."
+echo "... ## !!! for DA !!! ## ..."
 # External components
 cp ${SCRIPT_DIR}/${FCST_MODEL}_Externals_DA.cfg ${ORG_DIR}/Externals.cfg
 # CMakeLists in src
 cp ${SCRIPT_DIR}/${FCST_MODEL}_src_CMakeLists_DA.txt ${ORG_DIR}/src/CMakeLists.txt
 # Build environment file for components
-cp ${SCRIPT_DIR}/${FCST_MODEL}_build_${MACHINE}_${COMPILER}_DA.env ${ORG_DIR}/env/build_${MACHINE}_${COMPILER}.env
+cp ${SCRIPT_DIR}/${FCST_MODEL}_build_${MACHINE}_${COMPILER}.env ${ORG_DIR}/env/build_${MACHINE}_${COMPILER}.env
 
 
 exit 0
