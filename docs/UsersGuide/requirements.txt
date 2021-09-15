@@ -1,3 +1,4 @@
+docutils==0.16
 sphinx==2.4.4
 sphinxcontrib-bibtex
 sphinx-rtd-theme==0.4.3
