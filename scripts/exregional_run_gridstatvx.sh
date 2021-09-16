@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash
 set -x
 
 #
@@ -57,7 +57,7 @@ the UPP output files by initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "cycle_dir" "postprd_dir" "vx_dir" "gridstat_dir" )
+valid_args=( "cycle_dir" )
 process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
@@ -69,16 +69,6 @@ process_args valid_args "$@"
 #-----------------------------------------------------------------------
 #
 print_input_args valid_args
-
-#-----------------------------------------------------------------------
-#
-# Remove any files from previous runs and stage necessary files in gridstat_dir.
-#
-#-----------------------------------------------------------------------
-#
-print_info_msg "$VERBOSE" "Starting grid-stat verification"
-
-cd ${gridstat_dir}
 
 #
 #-----------------------------------------------------------------------
@@ -104,6 +94,33 @@ export fhr_list
 #
 #-----------------------------------------------------------------------
 #
+# Create INPUT_BASE and LOG_SUFFIX to read into METplus conf files.
+#
+#-----------------------------------------------------------------------
+#
+if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
+  INPUT_BASE=${EXPTDIR}/${CDATE}/postprd
+  OUTPUT_BASE=${EXPTDIR}/${CDATE}
+  if [ ${VAR} == "APCP" ]; then
+    LOG_SUFFIX=gridstat_${CDATE}_${VAR}_${ACCUM}h
+  else
+    LOG_SUFFIX=gridstat_${CDATE}_${VAR}
+  fi
+elif [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+  INPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}/postprd
+  OUTPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}
+  ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
+  MODEL=${MODEL}_${ENSMEM}
+  if [ ${VAR} == "APCP" ]; then
+    LOG_SUFFIX=gridstat_${CDATE}_${ENSMEM}_${VAR}_${ACCUM}h
+  else
+    LOG_SUFFIX=gridstat_${CDATE}_${ENSMEM}_${VAR}
+  fi
+fi
+
+#
+#-----------------------------------------------------------------------
+#
 # Check for existence of top-level OBS_DIR 
 #
 #-----------------------------------------------------------------------
@@ -123,13 +140,14 @@ fi
 #
 export SCRIPTSDIR
 export EXPTDIR
+export INPUT_BASE
+export OUTPUT_BASE
+export LOG_SUFFIX
 export MET_INSTALL_DIR
 export MET_BIN_EXEC
 export METPLUS_PATH
 export METPLUS_CONF
 export MET_CONFIG
-export OBS_DIR
-export VAR
 export MODEL
 export NET
 
@@ -145,16 +163,10 @@ if [ ${VAR} == "APCP" ]; then
   ${METPLUS_PATH}/ush/master_metplus.py \
     -c ${METPLUS_CONF}/common.conf \
     -c ${METPLUS_CONF}/${VAR}_${acc}.conf
-elif [ ${VAR} == "REFC" ]; then
-  ${METPLUS_PATH}/ush/master_metplus.py \
-    -c ${METPLUS_CONF}/common.conf \
-    -c ${METPLUS_CONF}/${VAR}.conf
-elif [ ${VAR} == "RETOP" ]; then
-  ${METPLUS_PATH}/ush/master_metplus.py \
-    -c ${METPLUS_CONF}/common.conf \
-    -c ${METPLUS_CONF}/${VAR}.conf
 else
-  echo "No variable defined"
+  ${METPLUS_PATH}/ush/master_metplus.py \
+    -c ${METPLUS_CONF}/common.conf \
+    -c ${METPLUS_CONF}/${VAR}.conf
 fi
 
 #

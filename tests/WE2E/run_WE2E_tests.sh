@@ -950,7 +950,6 @@ external model files should be located has not been specified for this
 machine (MACHINE):
   MACHINE= \"${MACHINE}\""
     fi
-
     EXTRN_MDL_SOURCE_BASEDIR_ICS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_ICS}"
     if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] && [ "$MACHINE" = "HERA" ]; then
       EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/${FV3GFS_FILE_FMT_ICS}"
@@ -1023,7 +1022,9 @@ EXTRN_MDL_FILES_LBCS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))"
 #-----------------------------------------------------------------------
 #
   if [ "${RUN_TASK_VX_GRIDSTAT}" = "TRUE" ] || \
-     [ "${RUN_TASK_VX_POINTSTAT}" = "TRUE" ]; then
+     [ "${RUN_TASK_VX_POINTSTAT}" = "TRUE" ] || \
+     [ "${RUN_TASK_VX_ENSGRID}" = "TRUE" ] || \
+     [ "${RUN_TASK_VX_ENSPOINT}" = "TRUE" ]; then
 
     if [ "$MACHINE" = "WCOSS_CRAY" ]; then
       met_install_dir="/gpfs/hps3/emc/meso/noscrub/emc.metplus/met/10.0.0"

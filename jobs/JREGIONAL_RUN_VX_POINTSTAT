@@ -55,51 +55,13 @@ by initialitation time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-# If it doesn't already exist, create the directory (vx_dir) in 
-# which to store point-stat output. 
-#
-# Note that there may be a preexisting version of vx_dir from previous 
-# runs of this script (e.g. from the workflow task that runs this script 
-# failing and then being called again). Thus, we first make sure 
-# preexisting versions are deleted.
-#
-#-----------------------------------------------------------------------
-#
-
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  COMOUT="$COMROOT/$NET/$envir/$RUN.$PDY/$cyc"
-  postprd_dir="$COMOUT"
-else
-  postprd_dir="${CYCLE_DIR}/postprd"
-fi
-mkdir_vrfy -p "${postprd_dir}"
-
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  COMOUT="$COMROOT/$NET/$envir/$RUN.$PDY/$cyc"
-  vx_dir="$COMOUT"
-else
-  vx_dir="${CYCLE_DIR}/metprd"
-fi
-mkdir_vrfy -p "${vx_dir}"
-
-pointstat_dir="${vx_dir}/point_stat"
-#check_for_preexist_dir "${pointstat_dir}" "delete"
-mkdir_vrfy -p "${pointstat_dir}"
-
-cd_vrfy "${pointstat_dir}"
-#
-#-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles. 
 #
 #-----------------------------------------------------------------------
 #
 $SCRIPTSDIR/exregional_run_pointstatvx.sh \
-  cycle_dir="${CYCLE_DIR}" \
-  postprd_dir="${postprd_dir}" \
-  vx_dir="${vx_dir}" \
-  pointstat_dir="${pointstat_dir}" || \
+  cycle_dir="${CYCLE_DIR}" || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

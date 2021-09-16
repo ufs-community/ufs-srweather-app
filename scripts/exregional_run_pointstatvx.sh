@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash
 set -x
 
 #
@@ -57,7 +57,7 @@ the UPP output files by initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( "cycle_dir" "postprd_dir" "vx_dir" "pointstat_dir" )
+valid_args=( "cycle_dir" )
 process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
@@ -69,15 +69,6 @@ process_args valid_args "$@"
 #-----------------------------------------------------------------------
 #
 print_input_args valid_args
-#-----------------------------------------------------------------------
-#
-# Remove any files from previous runs and stage necessary files in pointstat_dir.
-#
-#-----------------------------------------------------------------------
-#
-print_info_msg "$VERBOSE" "Starting point-stat verification"
-
-cd ${pointstat_dir}
 
 #
 #-----------------------------------------------------------------------
@@ -103,6 +94,25 @@ export fhr_list
 #
 #-----------------------------------------------------------------------
 #
+# Create INPUT_BASE to read into METplus conf files.
+#
+#-----------------------------------------------------------------------
+#
+if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
+  INPUT_BASE=${EXPTDIR}/${CDATE}/postprd
+  OUTPUT_BASE=${EXPTDIR}/${CDATE}
+  LOG_SUFFIX=pointstat_${CDATE}
+elif [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+  INPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}/postprd
+  OUTPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}
+  ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
+  MODEL=${MODEL}_${ENSMEM}
+  LOG_SUFFIX=pointstat_${CDATE}_${ENSMEM}
+fi
+
+#
+#-----------------------------------------------------------------------
+#
 # Check for existence of top-level OBS_DIR 
 #
 #-----------------------------------------------------------------------
@@ -120,12 +130,14 @@ fi
 #-----------------------------------------------------------------------
 #
 export EXPTDIR
+export INPUT_BASE
+export OUTPUT_BASE
+export LOG_SUFFIX
 export MET_INSTALL_DIR
 export MET_BIN_EXEC
 export METPLUS_PATH
 export METPLUS_CONF
 export MET_CONFIG
-export OBS_DIR
 export MODEL
 export NET
 

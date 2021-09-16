@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This script reorganizes the NDAS data into a more intuitive structure:
 # A valid YYYYMMDD directory is created, and all files for the valid day are placed within the directory.

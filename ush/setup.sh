@@ -290,6 +290,49 @@ elif [ "${RUN_TASK_VX_POINTSTAT}" = "FALSE" ] || \
      [ "${RUN_TASK_VX_POINTSTAT}" = "NO" ]; then
   RUN_TASK_VX_POINTSTAT="FALSE"
 fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that RUN_TASK_VX_ENSGRID is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "RUN_TASK_VX_ENSGRID" "valid_vals_RUN_TASK_VX_ENSGRID"
+#
+# Set RUN_TASK_VX_ENSGRID to either "TRUE" or "FALSE" so we don't have to
+# consider other valid values later on.
+#
+RUN_TASK_VX_ENSGRID=${RUN_TASK_VX_ENSGRID^^}
+if [ "${RUN_TASK_VX_ENSGRID}" = "TRUE" ] || \
+   [ "${RUN_TASK_VX_ENSGRID}" = "YES" ]; then
+  RUN_TASK_VX_ENSGRID="TRUE"
+elif [ "${RUN_TASK_VX_ENSGRID}" = "FALSE" ] || \
+     [ "${RUN_TASK_VX_ENSGRID}" = "NO" ]; then
+  RUN_TASK_VX_ENSGRID="FALSE"
+fi
+
+#
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that RUN_TASK_VX_ENSPOINT is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "RUN_TASK_VX_ENSPOINT" "valid_vals_RUN_TASK_VX_ENSPOINT"
+#
+# Set RUN_TASK_VX_ENSPOINT to either "TRUE" or "FALSE" so we don't have to
+# consider other valid values later on.
+#
+RUN_TASK_VX_ENSPOINT=${RUN_TASK_VX_ENSPOINT^^}
+if [ "${RUN_TASK_VX_ENSPOINT}" = "TRUE" ] || \
+   [ "${RUN_TASK_VX_ENSPOINT}" = "YES" ]; then
+  RUN_TASK_VX_ENSPOINT="TRUE"
+elif [ "${RUN_TASK_VX_ENSPOINT}" = "FALSE" ] || \
+     [ "${RUN_TASK_VX_ENSPOINT}" = "NO" ]; then
+  RUN_TASK_VX_ENSPOINT="FALSE"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -1723,7 +1766,6 @@ Reset values are:
     msg="
 When RUN_ENVIR is set to \"nco\", the workflow assumes that pregenerated
 orography files already exist in the directory 
-
   \${FIXLAM_NCO_BASEDIR}/\${PREDEF_GRID_NAME}
 
 where
@@ -1828,6 +1870,26 @@ Reset value is:"
 
     msg="$msg""
   RUN_TASK_VX_POINTSTAT = \"${RUN_TASK_VX_POINTSTAT}\"
+"
+
+    print_info_msg "$msg"
+
+  fi
+
+  if [ "${RUN_TASK_VX_ENSGRID}" = "TRUE" ] || \
+     [ "${RUN_TASK_VX_ENSGRID}" = "FALSE" ]; then
+
+    msg="
+When RUN_ENVIR is set to \"nco\", it is assumed that the verification
+will not be run.
+  RUN_TASK_VX_ENSGRID = \"${RUN_TASK_VX_ENSGRID}\"
+Resetting RUN_TASK_VX_ENSGRID to \"FALSE\" 
+Reset value is:"
+
+    RUN_TASK_VX_ENSGRID="FALSE"
+
+    msg="$msg""
+  RUN_TASK_VX_ENSGRID = \"${RUN_TASK_VX_ENSGRID}\"
 "
 
     print_info_msg "$msg"

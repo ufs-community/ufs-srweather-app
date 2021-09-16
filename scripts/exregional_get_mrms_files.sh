@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . ${GLOBAL_VAR_DEFNS_FP}
 
