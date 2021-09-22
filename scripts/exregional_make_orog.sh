@@ -35,7 +35,7 @@
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -147,11 +147,18 @@ case "$MACHINE" in
     APRUN="time"
     ;;
 
+  "MACOS")
+    APRUN=time
+    ;;
+
+  "LINUX")
+    APRUN=time
+    ;;
+
   *)
     print_err_msg_exit "\
 Run command has not been specified for this machine:
-  MACHINE = \"$MACHINE\"
-  APRUN = \"$APRUN\""
+  MACHINE = \"$MACHINE\""
     ;;
 
 esac
@@ -226,7 +233,8 @@ cp_vrfy ${TOPO_DIR}/gmted2010.30sec.int fort.235
 mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NHW}.nc"
 mosaic_fp="$FIXLAM/${mosaic_fn}"
 
-grid_fn=$( get_charvar_from_netcdf "${mosaic_fp}" "gridfiles" )
+grid_fn=$( get_charvar_from_netcdf "${mosaic_fp}" "gridfiles" ) || print_err_msg_exit "\
+  get_charvar_from_netcdf function failed."
 grid_fp="${FIXLAM}/${grid_fn}"
 #
 #-----------------------------------------------------------------------
@@ -284,7 +292,7 @@ cat "${input_redirect_fn}"
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "
+print_info_msg "$VERBOSE" "\
 Starting orography file generation..."
 
 $APRUN "${exec_fp}" < "${input_redirect_fn}" || \
@@ -327,18 +335,17 @@ if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
   cd_vrfy ${tmp_dir}
   mosaic_fn_gwd="${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
   mosaic_fp_gwd="$FIXLAM/${mosaic_fn_gwd}"
-  grid_fn_gwd=$( get_charvar_from_netcdf "${mosaic_fp_gwd}" "gridfiles" )
+  grid_fn_gwd=$( get_charvar_from_netcdf "${mosaic_fp_gwd}" "gridfiles" ) || \
+    print_err_msg_exit "get_charvar_from_netcdf function failed."
   grid_fp_gwd="${FIXLAM}/${grid_fn_gwd}"
   ls_fn="geo_em.d01.lat-lon.2.5m.HGT_M.nc"
   ss_fn="HGT.Beljaars_filtered.lat-lon.30s_res.nc"
-  if [ "${MACHINE}" = "WCOSS_CRAY" ]; then
-    relative_or_null=""
-  else
-    relative_or_null="--relative"
-  fi
-  ln_vrfy -fs ${relative_or_null} "${grid_fp_gwd}" "${tmp_dir}/${grid_fn_gwd}"
-  ln_vrfy -fs ${relative_or_null} "${FIXam}/${ls_fn}" "${tmp_dir}/${ls_fn}"
-  ln_vrfy -fs ${relative_or_null} "${FIXam}/${ss_fn}" "${tmp_dir}/${ss_fn}"
+  create_symlink_to_file target="${grid_fp_gwd}" symlink="${tmp_dir}/${grid_fn_gwd}" \
+                         relative="TRUE"
+  create_symlink_to_file target="${FIXam}/${ls_fn}" symlink="${tmp_dir}/${ls_fn}" \
+                         relative="TRUE"
+  create_symlink_to_file target="${FIXam}/${ss_fn}" symlink="${tmp_dir}/${ss_fn}" \
+                         relative="TRUE"
 
   input_redirect_fn="grid_info.dat"
   cat > "${input_redirect_fn}" <<EOF
@@ -480,7 +487,6 @@ cp_vrfy "${raw_orog_fp}" "${filtered_orog_fp}"
 #
 create_symlink_to_file target="${grid_fp}" symlink="${filter_dir}/${grid_fn}" \
                        relative="TRUE"
-
 #
 # Create the namelist file (in the filter_dir directory) that the orography
 # filtering executable will read in.

@@ -8,7 +8,11 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  if [[ $(uname -s) == Darwin ]]; then
+    local scrfunc_fp=$( greadlink -f "${BASH_SOURCE[0]}" )
+  else
+    local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  fi
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -48,6 +52,15 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
+# Source the file that defines MacOS-specific UNIX command-line
+# utilities, that mimic the functionality of the GNU equivalents
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/define_macos_utilities.sh
+#
+#-----------------------------------------------------------------------
+#
 # Source the file containing the functions that print out messages.
 #
 #-----------------------------------------------------------------------
@@ -79,6 +92,15 @@ function source_util_funcs() {
 #-----------------------------------------------------------------------
 #
   . ${bashutils_dir}/count_files.sh
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing the functions that will echo given strings
+# as uppercase or lowercase
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/change_case.sh
 #
 #-----------------------------------------------------------------------
 #

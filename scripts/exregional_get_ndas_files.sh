@@ -40,9 +40,9 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   mm=`echo ${init} | cut -c5-6`    # month (MM) of initialization time
   dd=`echo ${init} | cut -c7-8`    # day (DD) of initialization time
   hh=`echo ${init} | cut -c9-10`   # hour (HH) of initialization time
-  init_ut=`date -ud ''${yyyy}-${mm}-${dd}' UTC '${hh}':00:00' +%s` # convert initialization time to universal time
+  init_ut=`$DATE_UTIL -ud ''${yyyy}-${mm}-${dd}' UTC '${hh}':00:00' +%s` # convert initialization time to universal time
   vdate_ut=`expr ${init_ut} + ${fcst_sec}` # calculate current forecast time in universal time
-  vdate=`date -ud '1970-01-01 UTC '${vdate_ut}' seconds' +%Y%m%d%H` # convert universal time to standard time
+  vdate=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut}' seconds' +%Y%m%d%H` # convert universal time to standard time
   vyyyymmdd=`echo ${vdate} | cut -c1-8`  # forecast time (YYYYMMDD)
   vyyyy=`echo ${vdate} | cut -c1-4`  # year (YYYY) of valid time
   vmm=`echo ${vdate} | cut -c5-6`    # month (MM) of valid time
@@ -53,7 +53,7 @@ echo "yyyy mm dd hh= $yyyy $mm $dd $hh"
 echo "vyyyy vmm vdd vhh= $vyyyy $vmm $vdd $vhh"
 
   vdate_ut_m1h=`expr ${vdate_ut} - 3600` # calculate current forecast time in universal time
-  vdate_m1h=`date -ud '1970-01-01 UTC '${vdate_ut_m1h}' seconds' +%Y%m%d%H` # convert universal time to standard time
+  vdate_m1h=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut_m1h}' seconds' +%Y%m%d%H` # convert universal time to standard time
   vyyyymmdd_m1h=`echo ${vdate_m1h} | cut -c1-8`  # forecast time (YYYYMMDD)
   vyyyy_m1h=`echo ${vdate_m1h} | cut -c1-4`  # year (YYYY) of valid time
   vmm_m1h=`echo ${vdate_m1h} | cut -c5-6`    # month (MM) of valid time
@@ -61,7 +61,7 @@ echo "vyyyy vmm vdd vhh= $vyyyy $vmm $vdd $vhh"
   vhh_m1h=`echo ${vdate_m1h} | cut -c9-10`       # forecast hour (HH)
 
   vdate_ut_m2h=`expr ${vdate_ut} - 7200` # calculate current forecast time in universal time
-  vdate_m2h=`date -ud '1970-01-01 UTC '${vdate_ut_m2h}' seconds' +%Y%m%d%H` # convert universal time to standard time
+  vdate_m2h=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut_m2h}' seconds' +%Y%m%d%H` # convert universal time to standard time
   vyyyymmdd_m2h=`echo ${vdate_m2h} | cut -c1-8`  # forecast time (YYYYMMDD)
   vyyyy_m2h=`echo ${vdate_m2h} | cut -c1-4`  # year (YYYY) of valid time
   vmm_m2h=`echo ${vdate_m2h} | cut -c5-6`    # month (MM) of valid time
@@ -69,7 +69,7 @@ echo "vyyyy vmm vdd vhh= $vyyyy $vmm $vdd $vhh"
   vhh_m2h=`echo ${vdate_m2h} | cut -c9-10`       # forecast hour (HH)
 
   vdate_ut_m3h=`expr ${vdate_ut} - 10800` # calculate current forecast time in universal time
-  vdate_m3h=`date -ud '1970-01-01 UTC '${vdate_ut_m3h}' seconds' +%Y%m%d%H` # convert universal time to standard time
+  vdate_m3h=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut_m3h}' seconds' +%Y%m%d%H` # convert universal time to standard time
   vyyyymmdd_m3h=`echo ${vdate_m3h} | cut -c1-8`  # forecast time (YYYYMMDD)
   vyyyy_m3h=`echo ${vdate_m3h} | cut -c1-4`  # year (YYYY) of valid time
   vmm_m3h=`echo ${vdate_m3h} | cut -c5-6`    # month (MM) of valid time
@@ -77,7 +77,7 @@ echo "vyyyy vmm vdd vhh= $vyyyy $vmm $vdd $vhh"
   vhh_m3h=`echo ${vdate_m3h} | cut -c9-10`       # forecast hour (HH)
 
   vdate_ut_m4h=`expr ${vdate_ut} - 14400` # calculate current forecast time in universal time
-  vdate_m4h=`date -ud '1970-01-01 UTC '${vdate_ut_m4h}' seconds' +%Y%m%d%H` # convert universal time to standard time
+  vdate_m4h=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut_m4h}' seconds' +%Y%m%d%H` # convert universal time to standard time
   vyyyymmdd_m4h=`echo ${vdate_m4h} | cut -c1-8`  # forecast time (YYYYMMDD)
   vyyyy_m4h=`echo ${vdate_m4h} | cut -c1-4`  # year (YYYY) of valid time
   vmm_m4h=`echo ${vdate_m4h} | cut -c5-6`    # month (MM) of valid time
@@ -85,7 +85,7 @@ echo "vyyyy vmm vdd vhh= $vyyyy $vmm $vdd $vhh"
   vhh_m4h=`echo ${vdate_m4h} | cut -c9-10`       # forecast hour (HH)
 
   vdate_ut_m5h=`expr ${vdate_ut} - 18000` # calculate current forecast time in universal time
-  vdate_m5h=`date -ud '1970-01-01 UTC '${vdate_ut_m5h}' seconds' +%Y%m%d%H` # convert universal time to standard time
+  vdate_m5h=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut_m5h}' seconds' +%Y%m%d%H` # convert universal time to standard time
   vyyyymmdd_m5h=`echo ${vdate_m5h} | cut -c1-8`  # forecast time (YYYYMMDD)
   vyyyy_m5h=`echo ${vdate_m5h} | cut -c1-4`  # year (YYYY) of valid time
   vmm_m5h=`echo ${vdate_m5h} | cut -c5-6`    # month (MM) of valid time

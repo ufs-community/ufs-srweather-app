@@ -24,7 +24,7 @@ function get_elem_inds() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -123,7 +123,7 @@ The arguments to this function are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  inds_to_return="${inds_to_return,,}"
+  inds_to_return=$(echo_lowercase $inds_to_return)
   valid_vals_inds_to_return=( "first" "last" "all" )
   check_var_valid_value "inds_to_return" "valid_vals_inds_to_return"
 #

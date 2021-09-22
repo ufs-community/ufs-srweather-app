@@ -38,7 +38,7 @@ s_yyyy=`echo ${start_valid} | cut -c1-4`  # year (YYYY) of start time
 s_mm=`echo ${start_valid} | cut -c5-6`    # month (MM) of start time
 s_dd=`echo ${start_valid} | cut -c7-8`    # day (DD) of start time
 s_hh=`echo ${start_valid} | cut -c9-10`   # hour (HH) of start time
-start_valid_ut=`date -ud ''${s_yyyy}-${s_mm}-${s_dd}' UTC '${s_hh}':00:00' +%s` # convert start time to universal time
+start_valid_ut=`$DATE_UTIL -ud ''${s_yyyy}-${s_mm}-${s_dd}' UTC '${s_hh}':00:00' +%s` # convert start time to universal time
 
 end_fcst_sec=`expr ${fcst_length} \* 3600` # convert last forecast lead hour to seconds
 end_valid_ut=`expr ${start_valid_ut} + ${end_fcst_sec}` # calculate current forecast time in universal time
@@ -48,7 +48,7 @@ current_fcst=0
 fcst_sec=`expr ${current_fcst} \* 3600` # convert forecast lead hour to seconds
 
 while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
-  cur_time=`date -ud '1970-01-01 UTC '${cur_ut}' seconds' +%Y%m%d%H` # convert universal time to standard time
+  cur_time=`$DATE_UTIL -ud '1970-01-01 UTC '${cur_ut}' seconds' +%Y%m%d%H` # convert universal time to standard time
   echo "cur_time=${cur_time}"
 
   # Calculate valid date info
@@ -57,7 +57,7 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
   vdd=`echo ${cur_time} | cut -c7-8`    # day (DD) of time
   vhh=`echo ${cur_time} | cut -c9-10`   # hour (HH) of time
   vyyyymmdd=`echo ${cur_time} | cut -c1-8`    # YYYYMMDD of time
-  vinit_ut=`date -ud ''${vyyyy}-${vmm}-${vdd}' UTC '${vhh}':00:00' +%s` # convert time to universal time
+  vinit_ut=`$DATE_UTIL -ud ''${vyyyy}-${vmm}-${vdd}' UTC '${vhh}':00:00' +%s` # convert time to universal time
 
   # Create necessary raw and proc directories
   if [[ ! -d "$mrms_raw/${vyyyymmdd}" ]]; then

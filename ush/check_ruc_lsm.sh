@@ -30,7 +30,7 @@ function check_ruc_lsm() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -86,7 +86,7 @@ function check_ruc_lsm() {
 #
   ruc_lsm_name="lsm_ruc"
   regex_search="^[ ]*<scheme>(${ruc_lsm_name})<\/scheme>[ ]*$"
-  ruc_lsm_name_or_null=$( sed -r -n -e "s/${regex_search}/\1/p" "${ccpp_phys_suite_fp}" )
+  ruc_lsm_name_or_null=$( $SED -r -n -e "s/${regex_search}/\1/p" "${ccpp_phys_suite_fp}" )
 
   if [ "${ruc_lsm_name_or_null}" = "${ruc_lsm_name}" ]; then
     sdf_uses_ruc_lsm="TRUE"

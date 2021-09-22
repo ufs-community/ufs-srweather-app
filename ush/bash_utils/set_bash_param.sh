@@ -25,7 +25,7 @@ function set_bash_param() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -129,7 +129,7 @@ lar expression (regex_search):
   regex_search = ${regex_search}"
     }; 
 
-  sed -i -r -e "s%${regex_search}%${regex_replace}%" "${file_full_path}"
+  $SED -i -r -e "s%${regex_search}%${regex_replace}%" "${file_full_path}"
 #
 #-----------------------------------------------------------------------
 #

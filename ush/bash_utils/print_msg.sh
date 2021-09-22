@@ -33,7 +33,7 @@ function print_info_msg() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -64,7 +64,7 @@ function print_info_msg() {
 #
 #-----------------------------------------------------------------------
 #
-  local caller_fp=$( readlink -f "${BASH_SOURCE[1]}" )
+  local caller_fp=$( $READLINK -f "${BASH_SOURCE[1]}" )
   local caller_fn=$( basename "${caller_fp}" )
   local caller_dir=$( dirname "${caller_fp}" )
   local caller_name="${FUNCNAME[1]}"
@@ -182,7 +182,7 @@ function print_err_msg_exit() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -213,7 +213,7 @@ function print_err_msg_exit() {
 #
 #-----------------------------------------------------------------------
 #
-  local caller_fp=$( readlink -f "${BASH_SOURCE[1]}" )
+  local caller_fp=$( $READLINK -f "${BASH_SOURCE[1]}" )
   local caller_fn=$( basename "${caller_fp}" )
   local caller_dir=$( dirname "${caller_fp}" )
   local caller_name="${FUNCNAME[1]}"

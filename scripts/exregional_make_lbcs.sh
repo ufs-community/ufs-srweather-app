@@ -27,7 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -124,6 +124,20 @@ case "$MACHINE" in
 
   "STAMPEDE")
     APRUN="ibrun"
+    ;;
+
+  "MACOS")
+    APRUN=$RUN_CMD_UTILS
+    ;;
+
+  "LINUX")
+    APRUN=$RUN_CMD_UTILS
+    ;;
+
+  *)
+    print_err_msg_exit "\
+Run command has not been specified for this machine:
+  MACHINE = \"$MACHINE\""
     ;;
 
 esac
@@ -438,7 +452,7 @@ list file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   dd="${EXTRN_MDL_CDATE:6:2}"
   hh="${EXTRN_MDL_CDATE:8:2}"
 
-  cdate_crnt_fhr=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours" "+%Y%m%d%H" )
+  cdate_crnt_fhr=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours" "+%Y%m%d%H" )
 #
 # Get the month, day, and hour corresponding to the current forecast time
 # of the the external model.

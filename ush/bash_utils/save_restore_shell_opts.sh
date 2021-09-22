@@ -19,7 +19,7 @@ function save_shell_opts() {
 #
   local shell_opts="$(set +o)"$'\n'"set -$-"
   shell_opts=${shell_opts//$'\n'/ }
-  shell_opts=$( printf "%s\n" "$shell_opts" | sed -r -e "s/set ([+-])/\1/g" )
+  shell_opts=$( printf "%s\n" "$shell_opts" | $SED -r -e "s/set ([+-])/\1/g" )
 #
 # Store the current set of shell options in the global array shell_-
 # opts_array so we can reuse them later.

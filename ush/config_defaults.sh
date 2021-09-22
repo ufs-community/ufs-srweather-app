@@ -46,6 +46,11 @@ RUN_ENVIR="nco"
 # ACCOUNT:
 # The account under which to submit jobs to the queue.
 #
+# WORKFLOW_MANAGER:
+# The workflow manager to use (e.g. rocoto). This is set to "none" by
+# default, but if the machine name is set to a platform that supports
+# rocoto, this will be overwritten and set to "rocoto".
+#
 # SCHED:
 # The job scheduler to use (e.g. slurm).  Set this to an empty string in
 # order for the experiment generation script to set it depending on the
@@ -103,6 +108,7 @@ RUN_ENVIR="nco"
 #
 MACHINE="BIG_COMPUTER"
 ACCOUNT="project_name"
+WORKFLOW_MANAGER="none"
 SCHED=""
 PARTITION_DEFAULT=""
 QUEUE_DEFAULT=""
@@ -110,6 +116,30 @@ PARTITION_HPSS=""
 QUEUE_HPSS=""
 PARTITION_FCST=""
 QUEUE_FCST=""
+#
+#-----------------------------------------------------------------------
+#
+# Set run commands for platforms without a workflow manager. These values
+# will be ignored unless WORKFLOW_MANAGER="none".  Definitions:
+#
+# RUN_CMD_UTILS:
+# The run command for pre-processing utilities (shave, orog, sfc_climo_gen, etc.)
+# Can be left blank for smaller domains, in which case the executables will run
+# without MPI.
+#
+# RUN_CMD_FCST:
+# The run command for the model forecast step. This will be appended to the end
+# of the variable definitions file, so it can reference other variables.
+#
+# RUN_CMD_POST:
+# The run command for post-processing (UPP). Can be left blank for smaller 
+# domains, in which case UPP will run without MPI.
+#
+#-----------------------------------------------------------------------
+#
+RUN_CMD_UTILS="mpirun -np 1"
+RUN_CMD_FCST="mpirun -np \${PE_MEMBER01}"
+RUN_CMD_POST="mpirun -np 1"
 #
 #-----------------------------------------------------------------------
 #

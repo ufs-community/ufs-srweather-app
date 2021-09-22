@@ -26,7 +26,7 @@ function set_gridparams_GFDLgrid() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -425,8 +425,8 @@ AFTER adjustments are:
   nx_of_t6_on_t6sg=$(( 2*nx_of_t6_on_t6g ))
   ny_of_t6_on_t6sg=$(( 2*ny_of_t6_on_t6g ))
 
-  prime_factors_nx_of_t7_on_t7g=$( factor ${nx_of_t7_on_t7g} | sed -r -e 's/^[0-9]+: (.*)/\1/' )
-  prime_factors_ny_of_t7_on_t7g=$( factor ${ny_of_t7_on_t7g} | sed -r -e 's/^[0-9]+: (.*)/\1/' )
+  prime_factors_nx_of_t7_on_t7g=$( factor ${nx_of_t7_on_t7g} | $SED -r -e 's/^[0-9]+: (.*)/\1/' )
+  prime_factors_ny_of_t7_on_t7g=$( factor ${ny_of_t7_on_t7g} | $SED -r -e 's/^[0-9]+: (.*)/\1/' )
 
   print_info_msg "$VERBOSE" "
 The number of cells in the two horizontal directions (x and y) on the 

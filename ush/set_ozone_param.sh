@@ -44,7 +44,7 @@ function set_ozone_param() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -130,7 +130,7 @@ function set_ozone_param() {
 #-----------------------------------------------------------------------
 #
   regex_search="^[ ]*<scheme>(ozphys.*)<\/scheme>[ ]*$"
-  ozone_param=$( sed -r -n -e "s/${regex_search}/\1/p" "${ccpp_phys_suite_fp}" )
+  ozone_param=$( $SED -r -n -e "s/${regex_search}/\1/p" "${ccpp_phys_suite_fp}" )
 
   if [ "${ozone_param}" = "ozphys_2015" ]; then
     fixgsm_ozone_fn="ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
@@ -175,11 +175,11 @@ num_symlinks=${#CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[@]}
 for (( i=0; i<${num_symlinks}; i++ )); do
   mapping="${CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[$i]}"
   symlink=$( printf "%s\n" "$mapping" | \
-             sed -n -r -e "s/${regex_search}/\1/p" )
+             $SED -n -r -e "s/${regex_search}/\1/p" )
   if [ "$symlink" = "${ozone_symlink}" ]; then
     regex_search="^[ ]*([^| ]+[ ]*)[|][ ]*([^| ]*)[ ]*$"
     mapping_ozone=$( printf "%s\n" "$mapping" | \
-                     sed -n -r -e "s/${regex_search}/\1/p" )
+                     $SED -n -r -e "s/${regex_search}/\1/p" )
     mapping_ozone="${mapping_ozone}| ${fixgsm_ozone_fn}"
     CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[$i]="${mapping_ozone}"
     fixgsm_ozone_fn_is_set="TRUE"

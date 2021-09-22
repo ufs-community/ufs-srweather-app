@@ -28,7 +28,7 @@ set -x
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -88,7 +88,7 @@ export hh
 fhr_last=`echo ${FHR}  | awk '{ print $NF }'`
 export fhr_last
 
-fhr_list=`echo ${FHR} | sed "s/ /,/g"`
+fhr_list=`echo ${FHR} | $SED "s/ /,/g"`
 export fhr_list
 
 #

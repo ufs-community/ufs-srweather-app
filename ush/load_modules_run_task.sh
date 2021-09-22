@@ -27,7 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -152,7 +152,7 @@ jjob_fp="$2"
 #
 #-----------------------------------------------------------------------
 #
-machine=${MACHINE,,}
+machine=$(echo_lowercase $MACHINE)
 env_fn="build_${machine}_${COMPILER}.env"
 env_fp="${SR_WX_APP_TOP_DIR}/env/${env_fn}"
 source "${env_fp}" || print_err_msg_exit "\
@@ -191,89 +191,6 @@ modulefile_name="${task_name}"
 default_modules_dir="$HOMErrfs/modulefiles"
 default_modulefile_name="${machine}.default"
 use_default_modulefile=0
-#######
-####### The following lines (199-276) can be removed once we confirm
-####### that the new method of setting environment variables and loading
-####### modules will remain permanent.
-#######
-#
-#-----------------------------------------------------------------------
-#
-# This comment needs to be updated:
-#
-# Use the "readlink" command to resolve the full path to the module file
-# and then verify that the file exists.  This is not necessary for most
-# tasks, but for the run_fcst task, when CCPP is enabled, the module
-# file in the modules directory is not a regular file but a symlink to a
-# file in the ufs_weather_model external repo.  This latter target file
-# will exist only if the forecast model code has already been built.
-# Thus, we now check to make sure that the module file exits.
-#
-#-----------------------------------------------------------------------
-#
-#if [ "${machine}" = "unknown" ]; then
-#
-# This if-statement allows for a graceful exit in the case in which module 
-# files are not needed for the task.
-# This is not currently used but reserved for future development.
-#
-#  print_info_msg "
-#Module files are not needed for this task (task_name) and machine (machine):
-#  task_name = \"${task_name}\"
-#  machine = \"${machine}\""
-
-#else
-
-#  modulefile_path=$( readlink -f "${modules_dir}/${modulefile_name}" )
-
-#  if [ ! -f "${modulefile_path}" ]; then
-
-#    default_modulefile_path=$( readlink -f "${default_modules_dir}/${default_modulefile_name}" )
-#    if [ -f "${default_modulefile_path}" ]; then
-#
-# If the task-specific modulefile does not exist but a default one does, 
-# use it!
-#
-#      print_info_msg "$VERBOSE" "
-#A task-specific modulefile (modulefile_path) does not exist for this task 
-#(task_name) and machine (machine) combination:
-#  task_name = \"${task_name}\"
-#  machine = \"${machine}\"
-#  modulefile_path = \"${modulefile_path}\"
-#Will attempt to use the default modulefile (default_modulefile_path):
-#  default_modulefile_path = \"${default_modulefile_path}\""
-#
-#      modules_dir="${default_modules_dir}"
-#      use_default_modulefile=1
-#
-#    elif [ "${task_name}" = "${MAKE_OROG_TN}" ] || \
-#         [ "${task_name}" = "${MAKE_SFC_CLIMO_TN}" ] || \
-#         [ "${task_name}" = "${MAKE_ICS_TN}" ] || \
-#         [ "${task_name}" = "${MAKE_LBCS_TN}" ] || \
-#         [ "${task_name}" = "${RUN_FCST_TN}" ]; then
-#
-#      print_err_msg_exit "\
-#The target (modulefile_path) of the symlink (modulefile_name) in the task
-#modules directory (modules_dir) that points to module file for this task
-#(task_name) does not exist:
-#  task_name = \"${task_name}\"
-#  modulefile_name = \"${modulefile_name}\"
-#  modules_dir = \"${modules_dir}\"
-#  modulefile_path = \"${modulefile_path}\"
-#This is likely because the forecast model code has not yet been built."
-#
-#   else
-#
-#      print_err_msg_exit "\
-#The module file (modulefile_path) specified for this task (task_name)
-#does not exist:
-#  task_name = \"${task_name}\"
-#  modulefile_path = \"${modulefile_path}\"
-#  machine = \"${machine}\""
-#
-#    fi
-#
-#  fi
 #
 #-----------------------------------------------------------------------
 #

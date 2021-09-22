@@ -27,7 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -524,7 +524,7 @@ not happen."
 # to the current directory.  Then move the files.
 #
         rel_dir=$( printf "%s" "${extrn_mdl_arcvrel_dir}" | \
-                   sed -r 's%^(\/|\.\/)([^/]*)(.*)%\2\3%' ) 
+                   $SED -r 's%^(\/|\.\/)([^/]*)(.*)%\2\3%' ) 
         mv_vrfy ${rel_dir}/* .
 #
 # Get the first subdirectory in rel_dir, i.e. the subdirectory before the 
@@ -533,7 +533,7 @@ not happen."
 # it.
 #
         subdir_to_remove=$( printf "%s" "${rel_dir}" | \
-                            sed -r 's%^([^/]*)(.*)%\1%' ) 
+                            $SED -r 's%^([^/]*)(.*)%\1%' ) 
         rm_vrfy -rf ./${subdir_to_remove}
 #
 # If extrn_mdl_arcvrel_dir does not start with a "/" (and it is not 

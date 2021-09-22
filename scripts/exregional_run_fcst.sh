@@ -37,7 +37,7 @@
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -154,11 +154,18 @@ case "$MACHINE" in
     APRUN="ibrun -np ${PE_MEMBER01}"
     ;;
 
+  "MACOS")
+    APRUN=$RUN_CMD_FCST
+    ;;
+
+  "LINUX")
+    APRUN=$RUN_CMD_FCST
+    ;;
+
   *)
     print_err_msg_exit "\
 Run command has not been specified for this machine:
-  MACHINE = \"$MACHINE\"
-  APRUN = \"$APRUN\""
+  MACHINE = \"$MACHINE\""
     ;;
 
 esac
@@ -383,9 +390,9 @@ for (( i=0; i<${num_symlinks}; i++ )); do
 
   mapping="${CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[$i]}"
   symlink=$( printf "%s\n" "$mapping" | \
-             sed -n -r -e "s/${regex_search}/\1/p" )
+             $SED -n -r -e "s/${regex_search}/\1/p" )
   target=$( printf "%s\n" "$mapping" | \
-            sed -n -r -e "s/${regex_search}/\2/p" )
+            $SED -n -r -e "s/${regex_search}/\2/p" )
 
   symlink="${run_dir}/$symlink"
   target="$FIXam/$target"
@@ -559,17 +566,17 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       fhr_d=${fhr}
     fi
 
-    post_time=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr_d} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
+    post_time=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr_d} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
     post_mn=${post_time:10:2}
     post_mn_or_null=""
     post_fn_suffix="GrbF${fhr_d}"
     post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${tmmark}.grib2"
 
-    basetime=$( date --date "$yyyymmdd $hh" +%y%j%H%M )
+    basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
     symlink_suffix="_${basetime}f${fhr}${post_mn}"
     fids=( "prslev" "natlev" )
     for fid in "${fids[@]}"; do
-      FID="${fid^^}"
+      FID=$(echo_uppercase $fid)
       post_orig_fn="${FID}.${post_fn_suffix}"
       post_renamed_fn="${NET}.t${cyc}z.${fid}${post_renamed_fn_suffix}"
       mv_vrfy ${run_dir}/${post_orig_fn} ${post_renamed_fn}

@@ -25,7 +25,7 @@ function create_model_configure_file() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -99,10 +99,10 @@ run directory (run_dir):
 #
 # Set parameters in the model configure file.
 #
-  dot_quilting_dot="."${QUILTING,,}"."
-  dot_print_esmf_dot="."${PRINT_ESMF,,}"."
-  dot_cpl_dot="."${CPL,,}"."
-  dot_write_dopost="."${WRITE_DOPOST,,}"."
+  dot_quilting_dot="."$(echo_lowercase $QUILTING)"."
+  dot_print_esmf_dot="."$(echo_lowercase $PRINT_ESMF)"."
+  dot_cpl_dot="."$(echo_lowercase $CPL)"."
+  dot_write_dopost="."$(echo_lowercase $WRITE_DOPOST)"."
 #
 #-----------------------------------------------------------------------
 #

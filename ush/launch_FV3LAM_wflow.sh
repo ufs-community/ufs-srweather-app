@@ -17,7 +17,12 @@ set -u
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+if [[ $(uname -s) == Darwin ]]; then
+  command -v greadlink >/dev/null 2>&1 || { echo >&2 "For Darwin-based operating systems (MacOS), the 'greadlink' utility is required to run the UFS SRW Application. Reference the User's Guide for more information about platform requirements. Aborting."; exit 1; }
+  scrfunc_fp=$( greadlink -f "${BASH_SOURCE[0]}" )
+else
+  scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+fi
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -65,7 +70,12 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 exptdir=$( dirname "$0" )
-exptdir=$( readlink -f "$exptdir" )
+if [[ $(uname -s) == Darwin ]]; then
+  command -v greadlink >/dev/null 2>&1 || { echo >&2 "For Darwin-based operating systems (MacOS), the 'greadlink' utility is required to run the UFS SRW Application. Reference the User's Guide for more information about platform requirements. Aborting."; exit 1; }
+  exptdir=$( greadlink -f "$exptdir" )
+else
+  exptdir=$( readlink -f "$exptdir" )
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -395,7 +405,7 @@ launch script for this experiment:
 # CRONTAB_LINE with backslashes.  Do this next.
 #
     crontab_line_esc_astr=$( printf "%s" "${CRONTAB_LINE}" | \
-                             sed -r -e "s%[*]%\\\\*%g" )
+                             $SED -r -e "s%[*]%\\\\*%g" )
 #
 # In the string passed to the grep command below, we use the line start
 # and line end anchors ("^" and "$", respectively) to ensure that we on-

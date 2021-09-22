@@ -98,7 +98,7 @@ export hh
 fhr_last=`echo ${FHR}  | awk '{ print $NF }'`
 export fhr_last
 
-fhr_list=`echo ${FHR} | sed "s/ /,/g"`
+fhr_list=`echo ${FHR} | $SED "s/ /,/g"`
 export fhr_list
 
 NUM_PAD=${NDIGITS_ENSMEM_NAMES}

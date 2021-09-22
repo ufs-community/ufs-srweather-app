@@ -30,7 +30,7 @@ function set_FV3nml_sfc_climo_filenames() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -145,9 +145,9 @@ for (( i=0; i<${num_nml_vars}; i++ )); do
 
   mapping="${FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING[$i]}"
   nml_var_name=$( printf "%s\n" "$mapping" | \
-                  sed -n -r -e "s/${regex_search}/\1/p" )
+                  $SED -n -r -e "s/${regex_search}/\1/p" )
   sfc_climo_field_name=$( printf "%s\n" "$mapping" |
-                          sed -n -r -e "s/${regex_search}/\2/p" )
+                          $SED -n -r -e "s/${regex_search}/\2/p" )
 #
 # Check that the surface climatology field associated with the current
 # namelist variable is valid.

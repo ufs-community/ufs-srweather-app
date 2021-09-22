@@ -30,7 +30,7 @@ function set_cycle_dates() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -106,7 +106,7 @@ End date (date_end) must be at or after start date (date_start):
   date_crnt="${date_start}"
   while [ "${date_crnt}" -le "${date_end}" ]; do
     all_cdates+=( $( printf "%s " ${cycle_hrs[@]/#/${date_crnt}} ) )
-    date_crnt=$( date -d "${date_crnt} + 1 days" +%Y%m%d )
+    date_crnt=$( $DATE_UTIL -d "${date_crnt} + 1 days" +%Y%m%d )
   done
 #
 #-----------------------------------------------------------------------

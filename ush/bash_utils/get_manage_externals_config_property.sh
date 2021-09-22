@@ -24,7 +24,7 @@ function get_manage_externals_config_property() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -184,7 +184,7 @@ does not exist:
 #-----------------------------------------------------------------------
 #
   regex_search="^[ ]*(${property_name})[ ]*=[ ]*([^ ]*).*"
-  line=$( sed -r -n \
+  line=$( $SED -r -n \
               -e "/^[ ]*\[${external_name}\]/!b" \
               -e ":SearchForLine" \
               -e "s/(${regex_search})/\1/;t FoundLine" \
@@ -225,7 +225,7 @@ fied external (external_name):
   else
 
     property_value=$( printf "%s" "${line}" | \
-                      sed -r -n -e "s/${regex_search}/\2/p" )
+                      $SED -r -n -e "s/${regex_search}/\2/p" )
     printf "%s\n" "${property_value}"
 
   fi

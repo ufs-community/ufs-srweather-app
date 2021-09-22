@@ -23,7 +23,7 @@ function setup() {
 #
 #-----------------------------------------------------------------------
 #
-local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
 local scrfunc_fn=$( basename "${scrfunc_fp}" )
 local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -140,7 +140,7 @@ check_var_valid_value "VERBOSE" "valid_vals_VERBOSE"
 # Set VERBOSE to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
 #
-VERBOSE=${VERBOSE^^}
+VERBOSE=$(echo_uppercase $VERBOSE)
 if [ "$VERBOSE" = "TRUE" ] || \
    [ "$VERBOSE" = "YES" ]; then
   VERBOSE="TRUE"
@@ -160,7 +160,7 @@ check_var_valid_value "USE_CRON_TO_RELAUNCH" "valid_vals_USE_CRON_TO_RELAUNCH"
 # Set USE_CRON_TO_RELAUNCH to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
 #
-USE_CRON_TO_RELAUNCH=${USE_CRON_TO_RELAUNCH^^}
+USE_CRON_TO_RELAUNCH=$(echo_uppercase $USE_CRON_TO_RELAUNCH)
 if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ] || \
    [ "${USE_CRON_TO_RELAUNCH}" = "YES" ]; then
   USE_CRON_TO_RELAUNCH="TRUE"
@@ -180,7 +180,7 @@ check_var_valid_value "RUN_TASK_MAKE_GRID" "valid_vals_RUN_TASK_MAKE_GRID"
 # Set RUN_TASK_MAKE_GRID to either "TRUE" or "FALSE" so we don't have to
 # consider other valid values later on.
 #
-RUN_TASK_MAKE_GRID=${RUN_TASK_MAKE_GRID^^}
+RUN_TASK_MAKE_GRID=$(echo_uppercase $RUN_TASK_MAKE_GRID)
 if [ "${RUN_TASK_MAKE_GRID}" = "TRUE" ] || \
    [ "${RUN_TASK_MAKE_GRID}" = "YES" ]; then
   RUN_TASK_MAKE_GRID="TRUE"
@@ -200,7 +200,7 @@ check_var_valid_value "RUN_TASK_MAKE_OROG" "valid_vals_RUN_TASK_MAKE_OROG"
 # Set RUN_TASK_MAKE_OROG to either "TRUE" or "FALSE" so we don't have to
 # consider other valid values later on.
 #
-RUN_TASK_MAKE_OROG=${RUN_TASK_MAKE_OROG^^}
+RUN_TASK_MAKE_OROG=$(echo_uppercase $RUN_TASK_MAKE_OROG)
 if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ] || \
    [ "${RUN_TASK_MAKE_OROG}" = "YES" ]; then
   RUN_TASK_MAKE_OROG="TRUE"
@@ -221,7 +221,7 @@ check_var_valid_value \
 # Set RUN_TASK_MAKE_SFC_CLIMO to either "TRUE" or "FALSE" so we don't
 # have to consider other valid values later on.
 #
-RUN_TASK_MAKE_SFC_CLIMO=${RUN_TASK_MAKE_SFC_CLIMO^^}
+RUN_TASK_MAKE_SFC_CLIMO=$(echo_uppercase $RUN_TASK_MAKE_SFC_CLIMO)
 if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] || \
    [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "YES" ]; then
   RUN_TASK_MAKE_SFC_CLIMO="TRUE"
@@ -242,7 +242,7 @@ check_var_valid_value \
 # Set RUN_TASK_RUN_POST to either "TRUE" or "FALSE" so we don't
 # have to consider other valid values later on.
 #
-RUN_TASK_RUN_POST=${RUN_TASK_RUN_POST^^}
+RUN_TASK_RUN_POST=$(echo_uppercase $RUN_TASK_RUN_POST)
 if [ "${RUN_TASK_RUN_POST}" = "TRUE" ] || \
    [ "${RUN_TASK_RUN_POST}" = "YES" ]; then
   RUN_TASK_RUN_POST="TRUE"
@@ -262,7 +262,7 @@ check_var_valid_value "RUN_TASK_VX_GRIDSTAT" "valid_vals_RUN_TASK_VX_GRIDSTAT"
 # Set RUN_TASK_VX_GRIDSTAT to either "TRUE" or "FALSE" so we don't have to
 # consider other valid values later on.
 #
-RUN_TASK_VX_GRIDSTAT=${RUN_TASK_VX_GRIDSTAT^^}
+RUN_TASK_VX_GRIDSTAT=$(echo_uppercase $RUN_TASK_VX_GRIDSTAT)
 if [ "${RUN_TASK_VX_GRIDSTAT}" = "TRUE" ] || \
    [ "${RUN_TASK_VX_GRIDSTAT}" = "YES" ]; then
   RUN_TASK_VX_GRIDSTAT="TRUE"
@@ -282,7 +282,7 @@ check_var_valid_value "RUN_TASK_VX_POINTSTAT" "valid_vals_RUN_TASK_VX_POINTSTAT"
 # Set RUN_TASK_VX_POINTSTAT to either "TRUE" or "FALSE" so we don't have to
 # consider other valid values later on.
 #
-RUN_TASK_VX_POINTSTAT=${RUN_TASK_VX_POINTSTAT^^}
+RUN_TASK_VX_POINTSTAT=$(echo_uppercase $RUN_TASK_VX_POINTSTAT)
 if [ "${RUN_TASK_VX_POINTSTAT}" = "TRUE" ] || \
    [ "${RUN_TASK_VX_POINTSTAT}" = "YES" ]; then
   RUN_TASK_VX_POINTSTAT="TRUE"
@@ -303,7 +303,7 @@ check_var_valid_value "RUN_TASK_VX_ENSGRID" "valid_vals_RUN_TASK_VX_ENSGRID"
 # Set RUN_TASK_VX_ENSGRID to either "TRUE" or "FALSE" so we don't have to
 # consider other valid values later on.
 #
-RUN_TASK_VX_ENSGRID=${RUN_TASK_VX_ENSGRID^^}
+RUN_TASK_VX_ENSGRID=$(echo_uppercase $RUN_TASK_VX_ENSGRID)
 if [ "${RUN_TASK_VX_ENSGRID}" = "TRUE" ] || \
    [ "${RUN_TASK_VX_ENSGRID}" = "YES" ]; then
   RUN_TASK_VX_ENSGRID="TRUE"
@@ -325,7 +325,7 @@ check_var_valid_value "RUN_TASK_VX_ENSPOINT" "valid_vals_RUN_TASK_VX_ENSPOINT"
 # Set RUN_TASK_VX_ENSPOINT to either "TRUE" or "FALSE" so we don't have to
 # consider other valid values later on.
 #
-RUN_TASK_VX_ENSPOINT=${RUN_TASK_VX_ENSPOINT^^}
+RUN_TASK_VX_ENSPOINT=$(echo_uppercase $RUN_TASK_VX_ENSPOINT)
 if [ "${RUN_TASK_VX_ENSPOINT}" = "TRUE" ] || \
    [ "${RUN_TASK_VX_ENSPOINT}" = "YES" ]; then
   RUN_TASK_VX_ENSPOINT="TRUE"
@@ -345,7 +345,7 @@ check_var_valid_value "DO_SHUM" "valid_vals_DO_SHUM"
 # Set DO_SHUM to either "TRUE" or "FALSE" so we don't
 # have to consider other valid values later on.
 #
-DO_SHUM=${DO_SHUM^^}
+DO_SHUM=$(echo_uppercase $DO_SHUM)
 if [ "${DO_SHUM}" = "TRUE" ] || \
    [ "${DO_SHUM}" = "YES" ]; then
   DO_SHUM="TRUE"
@@ -365,7 +365,7 @@ check_var_valid_value "DO_SPPT" "valid_vals_DO_SPPT"
 # Set DO_SPPT to either "TRUE" or "FALSE" so we don't
 # have to consider other valid values later on.
 #
-DO_SPPT=${DO_SPPT^^}
+DO_SPPT=$(echo_uppercase $DO_SPPT)
 if [ "${DO_SPPT}" = "TRUE" ] || \
    [ "${DO_SPPT}" = "YES" ]; then
   DO_SPPT="TRUE"
@@ -385,7 +385,7 @@ check_var_valid_value "DO_SKEB" "valid_vals_DO_SKEB"
 # Set DO_SKEB to either "TRUE" or "FALSE" so we don't
 # have to consider other valid values later on.
 #
-DO_SKEB=${DO_SKEB^^}
+DO_SKEB=$(echo_uppercase $DO_SKEB)
 if [ "${DO_SKEB}" = "TRUE" ] || \
    [ "${DO_SKEB}" = "YES" ]; then
   DO_SKEB="TRUE"
@@ -405,7 +405,7 @@ check_var_valid_value "DO_SPP" "valid_vals_DO_SPP"
 # Set DO_SPP to either "TRUE" or "FALSE" so we don't
 # have to consider other valid values later on.
 #
-DO_SPP=${DO_SPP^^}
+DO_SPP=$(echo_uppercase $DO_SPP)
 if [ "${DO_SPP}" = "TRUE" ] || \
    [ "${DO_SPP}" = "YES" ]; then
   DO_SPP="TRUE"
@@ -458,7 +458,7 @@ check_var_valid_value "USE_FVCOM" "valid_vals_USE_FVCOM"
 # Set USE_FVCOM to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
 #
-USE_FVCOM=${USE_FVCOM^^}
+USE_FVCOM=$(echo_uppercase $USE_FVCOM)
 if [ "$USE_FVCOM" = "TRUE" ] || \
    [ "$USE_FVCOM" = "YES" ]; then
   USE_FVCOM="TRUE"
@@ -479,7 +479,7 @@ check_var_valid_value "SUB_HOURLY_POST" "valid_vals_SUB_HOURLY_POST"
 # Set SUB_HOURLY_POST to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
 #
-SUB_HOURLY_POST=${SUB_HOURLY_POST^^}
+SUB_HOURLY_POST=$(echo_uppercase $SUB_HOURLY_POST)
 if [ "${SUB_HOURLY_POST}" = "TRUE" ] || \
    [ "${SUB_HOURLY_POST}" = "YES" ]; then
   SUB_HOURLY_POST="TRUE"
@@ -503,7 +503,7 @@ check_var_valid_value "DOT_OR_USCORE" "valid_vals_DOT_OR_USCORE"
 #
 #-----------------------------------------------------------------------
 #
-MACHINE=$( printf "%s" "$MACHINE" | sed -e 's/\(.*\)/\U\1/' )
+MACHINE=$( printf "%s" "$MACHINE" | $SED -e 's/\(.*\)/\U\1/' )
 check_var_valid_value "MACHINE" "valid_vals_MACHINE"
 #
 #-----------------------------------------------------------------------
@@ -520,10 +520,11 @@ check_var_valid_value "MACHINE" "valid_vals_MACHINE"
 #-----------------------------------------------------------------------
 #
 RELATIVE_LINK_FLAG=""
-
-case "$MACHINE" in
+NCORES_PER_NODE="2" # Need some arbitrary default value to avoid division by zero errors
+case $MACHINE in
 
   "WCOSS_CRAY")
+    WORKFLOW_MANAGER="rocoto"
     NCORES_PER_NODE="24"
     SCHED="lsfcray"
     QUEUE_DEFAULT=${QUEUE_DEFAULT:-"dev"}
@@ -534,6 +535,7 @@ case "$MACHINE" in
     ;;
 
   "WCOSS_DELL_P3")
+    WORKFLOW_MANAGER="rocoto"
     NCORES_PER_NODE=24
     SCHED="lsf"
     QUEUE_DEFAULT=${QUEUE_DEFAULT:-"dev"}
@@ -544,6 +546,7 @@ case "$MACHINE" in
     ;;
 
   "HERA")
+    WORKFLOW_MANAGER="rocoto"
     NCORES_PER_NODE=40
     SCHED=${SCHED:-"slurm"}
     PARTITION_DEFAULT=${PARTITION_DEFAULT:-"hera"}
@@ -557,6 +560,7 @@ case "$MACHINE" in
     ;;
 
   "ORION")
+    WORKFLOW_MANAGER="rocoto"
     NCORES_PER_NODE=40
     SCHED=${SCHED:-"slurm"}
     PARTITION_DEFAULT=${PARTITION_DEFAULT:-"orion"}
@@ -570,6 +574,7 @@ case "$MACHINE" in
     ;;
 
   "JET")
+    WORKFLOW_MANAGER="rocoto"
     NCORES_PER_NODE=24
     SCHED=${SCHED:-"slurm"}
     PARTITION_DEFAULT=${PARTITION_DEFAULT:-"sjet,vjet,kjet,xjet"}
@@ -583,6 +588,7 @@ case "$MACHINE" in
     ;;
 
   "ODIN")
+    WORKFLOW_MANAGER="rocoto"
     NCORES_PER_NODE=24
     SCHED=${SCHED:-"slurm"}
     PARTITION_DEFAULT=${PARTITION_DEFAULT:-"workq"}
@@ -596,6 +602,7 @@ case "$MACHINE" in
     ;;
 
   "CHEYENNE")
+    WORKFLOW_MANAGER="rocoto"
     NCORES_PER_NODE=36
     SCHED=${SCHED:-"pbspro"}
     QUEUE_DEFAULT=${QUEUE_DEFAULT:-"regular"}
@@ -606,6 +613,7 @@ case "$MACHINE" in
     ;;
 
   "STAMPEDE")
+    WORKFLOW_MANAGER="rocoto"
     NCORES_PER_NODE=68
     SCHED="slurm"
     PARTITION_DEFAULT=${PARTITION_DEFAULT:-"normal"}
@@ -616,6 +624,16 @@ case "$MACHINE" in
     QUEUE_FCST=${QUEUE_FCST:-"normal"}
 #
     RELATIVE_LINK_FLAG="--relative"
+    ;;
+
+  "MACOS")
+    WORKFLOW_MANAGER="none"
+    SCHED="none"
+    ;;
+
+  "LINUX")
+    WORKFLOW_MANAGER="none"
+    SCHED="none"
     ;;
 
 esac
@@ -635,20 +653,27 @@ PPN_RUN_FCST=${PPN_RUN_FCST:-${PPN_RUN_FCST_OPT}}
 #
 #-----------------------------------------------------------------------
 #
-SCHED="${SCHED,,}"
+SCHED=$(echo_lowercase $SCHED)
 check_var_valid_value "SCHED" "valid_vals_SCHED"
 #
 #-----------------------------------------------------------------------
 #
-# Verify that the ACCOUNT variable is not empty.  If it is, print out an
-# error message and exit.
+# If we are using a workflow manager, run some checks. First, 
+# verify that the ACCOUNT variable is not empty. Second, ensure that the
+# custom RUN_CMD variables are not set.
 #
 #-----------------------------------------------------------------------
 #
-if [ -z "$ACCOUNT" ]; then
-  print_err_msg_exit "\
-The variable ACCOUNT cannot be empty:
-  ACCOUNT = \"$ACCOUNT\""
+if [ "$WORKFLOW_MANAGER" != "none" ]; then
+  if [ -z "$ACCOUNT" ]; then
+    print_err_msg_exit "\
+The variable ACCOUNT cannot be empty if you are using a workflow manager:
+  ACCOUNT = \"$ACCOUNT\"
+  WORKFLOW_MANAGER = \"$WORKFLOW_MANAGER\""
+  fi
+  RUN_CMD_UTILS=""
+  RUN_CMD_FCST=""
+  RUN_CMD_POST=""
 fi
 #
 #-----------------------------------------------------------------------
@@ -753,7 +778,7 @@ fi
 #-----------------------------------------------------------------------
 #
 DATE_OR_NULL=$( printf "%s" "${DATE_FIRST_CYCL}" | \
-                sed -n -r -e "s/^([0-9]{8})$/\1/p" )
+                $SED -n -r -e "s/^([0-9]{8})$/\1/p" )
 if [ -z "${DATE_OR_NULL}" ]; then
   print_err_msg_exit "\
 DATE_FIRST_CYCL must be a string consisting of exactly 8 digits of the 
@@ -763,7 +788,7 @@ month, and DD is the 2-digit day-of-month.
 fi
 
 DATE_OR_NULL=$( printf "%s" "${DATE_LAST_CYCL}" | \
-                sed -n -r -e "s/^([0-9]{8})$/\1/p" )
+                $SED -n -r -e "s/^([0-9]{8})$/\1/p" )
 if [ -z "${DATE_OR_NULL}" ]; then
   print_err_msg_exit "\
 DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the 
@@ -785,7 +810,7 @@ CYCL_HRS_str="( $CYCL_HRS_str)"
 i=0
 for CYCL in "${CYCL_HRS[@]}"; do
 
-  CYCL_OR_NULL=$( printf "%s" "$CYCL" | sed -n -r -e "s/^([0-9]{2})$/\1/p" )
+  CYCL_OR_NULL=$( printf "%s" "$CYCL" | $SED -n -r -e "s/^([0-9]{2})$/\1/p" )
 
   if [ -z "${CYCL_OR_NULL}" ]; then
     print_err_msg_exit "\
@@ -955,7 +980,8 @@ case "$MACHINE" in
     ;;
 
   *)
-    print_err_msg_exit "\
+    if [ -z "$FIXgsm" -o -z "$TOPO_DIR" -o -z "$SFC_CLIMO_INPUT_DIR" ]; then 
+      print_err_msg_exit "\
 One or more fix file directories have not been specified for this machine:
   MACHINE = \"$MACHINE\"
   FIXgsm = \"${FIXgsm:-\"\"}
@@ -963,6 +989,7 @@ One or more fix file directories have not been specified for this machine:
   SFC_CLIMO_INPUT_DIR = \"${SFC_CLIMO_INPUT_DIR:-\"\"}
   FIXLAM_NCO_BASEDIR = \"${FIXLAM_NCO_BASEDIR:-\"\"}
 You can specify the missing location(s) in config.sh"
+    fi
     ;;
 
 esac
@@ -979,7 +1006,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-mng_extrns_cfg_fn=$( readlink -f "${SR_WX_APP_TOP_DIR}/Externals.cfg" )
+mng_extrns_cfg_fn=$( $READLINK -f "${SR_WX_APP_TOP_DIR}/Externals.cfg" )
 property_name="local_path"
 #
 # Get the base directory of the FV3 forecast model code.
@@ -1051,7 +1078,7 @@ check_var_valid_value \
 # Set USE_CUSTOM_POST_CONFIG_FILE to either "TRUE" or "FALSE" so we don't
 # have to consider other valid values later on.
 #
-USE_CUSTOM_POST_CONFIG_FILE=${USE_CUSTOM_POST_CONFIG_FILE^^}
+USE_CUSTOM_POST_CONFIG_FILE=$(echo_uppercase $USE_CUSTOM_POST_CONFIG_FILE)
 if [ "$USE_CUSTOM_POST_CONFIG_FILE" = "TRUE" ] || \
    [ "$USE_CUSTOM_POST_CONFIG_FILE" = "YES" ]; then
   USE_CUSTOM_POST_CONFIG_FILE="TRUE"
@@ -1224,7 +1251,7 @@ if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
 # digits.
 #
   mnts_or_null=$( printf "%s" "${DT_SUBHOURLY_POST_MNTS}" | \
-                  sed -n -r -e "s/^([0-9])([0-9])?$/\1\2/p" )
+                  $SED -n -r -e "s/^([0-9])([0-9])?$/\1\2/p" )
   if [ -z "${mnts_or_null}" ]; then
     print_err_msg_exit "\
 When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"), 
@@ -1318,7 +1345,7 @@ fi
 if [ "${EXPT_BASEDIR:0:1}" != "/" ]; then
   EXPT_BASEDIR="${SR_WX_APP_TOP_DIR}/../expt_dirs/${EXPT_BASEDIR}"
 fi
-EXPT_BASEDIR="$( readlink -m ${EXPT_BASEDIR} )"
+EXPT_BASEDIR="$( $READLINK -m ${EXPT_BASEDIR} )"
 mkdir_vrfy -p "${EXPT_BASEDIR}"
 #
 #-----------------------------------------------------------------------
@@ -1577,7 +1604,7 @@ check_var_valid_value "USE_USER_STAGED_EXTRN_FILES" "valid_vals_USE_USER_STAGED_
 # Set USE_USER_STAGED_EXTRN_FILES to either "TRUE" or "FALSE" so we don't 
 # have to consider other valid values later on.
 #
-USE_USER_STAGED_EXTRN_FILES=${USE_USER_STAGED_EXTRN_FILES^^}
+USE_USER_STAGED_EXTRN_FILES=$(echo_uppercase $USE_USER_STAGED_EXTRN_FILES)
 if [ "${USE_USER_STAGED_EXTRN_FILES}" = "YES" ]; then
   USE_USER_STAGED_EXTRN_FILES="TRUE"
 elif [ "${USE_USER_STAGED_EXTRN_FILES}" = "NO" ]; then
@@ -1624,7 +1651,7 @@ check_var_valid_value "DO_ENSEMBLE" "valid_vals_DO_ENSEMBLE"
 # Set DO_ENSEMBLE to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
 #
-DO_ENSEMBLE=${DO_ENSEMBLE^^}
+DO_ENSEMBLE=$(echo_uppercase $DO_ENSEMBLE)
 if [ "$DO_ENSEMBLE" = "TRUE" ] || \
    [ "$DO_ENSEMBLE" = "YES" ]; then
   DO_ENSEMBLE="TRUE"
@@ -2125,12 +2152,14 @@ fi
 #-----------------------------------------------------------------------
 #
 # Create a new experiment directory.  Note that at this point we are 
-# guaranteed that there is no preexisting experiment directory.
+# guaranteed that there is no preexisting experiment directory. For
+# platforms with no workflow manager, we need to create LOGDIR as well,
+# since it won't be created later at runtime.
 #
 #-----------------------------------------------------------------------
 #
 mkdir_vrfy -p "$EXPTDIR"
-
+mkdir_vrfy -p "$LOGDIR"
 #
 #-----------------------------------------------------------------------
 #
@@ -2257,7 +2286,7 @@ check_var_valid_value "WRITE_DOPOST" "valid_vals_WRITE_DOPOST"
 # Set WRITE_DOPOST to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
 #
-WRITE_DOPOST=${WRITE_DOPOST^^}
+WRITE_DOPOST=$(echo_uppercase $WRITE_DOPOST)
 if [ "$WRITE_DOPOST" = "TRUE" ] || \
    [ "$WRITE_DOPOST" = "YES" ]; then
   WRITE_DOPOST="TRUE"
@@ -2287,7 +2316,7 @@ check_var_valid_value "QUILTING" "valid_vals_QUILTING"
 # Set QUILTING to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
 #
-QUILTING=${QUILTING^^}
+QUILTING=$(echo_uppercase $QUILTING)
 if [ "$QUILTING" = "TRUE" ] || \
    [ "$QUILTING" = "YES" ]; then
   QUILTING="TRUE"
@@ -2307,7 +2336,7 @@ check_var_valid_value "PRINT_ESMF" "valid_vals_PRINT_ESMF"
 # Set PRINT_ESMF to either "TRUE" or "FALSE" so we don't have to consider
 # other valid values later on.
 #
-PRINT_ESMF=${PRINT_ESMF^^}
+PRINT_ESMF=$(echo_uppercase $PRINT_ESMF)
 if [ "${PRINT_ESMF}" = "TRUE" ] || \
    [ "${PRINT_ESMF}" = "YES" ]; then
   PRINT_ESMF="TRUE"
@@ -2458,7 +2487,7 @@ cp_vrfy $USHDIR/${EXPT_DEFAULT_CONFIG_FN} ${GLOBAL_VAR_DEFNS_FP}
 #
 
 # Read all lines of GLOBAL_VAR_DEFNS file into the variable line_list.
-line_list=$( sed -r -e "s/(.*)/\1/g" ${GLOBAL_VAR_DEFNS_FP} )
+line_list=$( $SED -r -e "s/(.*)/\1/g" ${GLOBAL_VAR_DEFNS_FP} )
 #
 # Loop through the lines in line_list and concatenate lines ending with
 # the line bash continuation character "\".
@@ -2499,7 +2528,7 @@ done <<< "${line_list}"
 #-----------------------------------------------------------------------
 #
 # Also should remove trailing whitespace...
-line_list=$( sed -r \
+line_list=$( $SED -r \
              -e "s/^([ ]*)([^ ]+.*)/\2/g" \
              -e "/^#.*/d" \
              -e "/^$/d" \
@@ -2545,7 +2574,7 @@ str_to_insert=${str_to_insert//$'\n'/\\n}
 # the string "#!", e.g. "#!/bin/bash").
 #
 regexp="(^#!.*)"
-sed -i -r -e "s|$regexp|\1\n\n${str_to_insert}\n|g" ${GLOBAL_VAR_DEFNS_FP}
+$SED -i -r -e "s|$regexp|\1\n\n${str_to_insert}\n|g" ${GLOBAL_VAR_DEFNS_FP}
 #
 # Loop through the lines in line_list.
 #
@@ -2559,7 +2588,7 @@ while read crnt_line; do
 # or more characters representing the value that the variable is being
 # set to.
 #
-  var_name=$( printf "%s" "${crnt_line}" | sed -n -r -e "s/^([^ ]*)=.*/\1/p" )
+  var_name=$( printf "%s" "${crnt_line}" | $SED -n -r -e "s/^([^ ]*)=.*/\1/p" )
 #echo
 #echo "============================"
 #printf "%s\n" "var_name = \"${var_name}\""
@@ -2766,7 +2795,7 @@ FV3_NML_ENSMEM_FPS=( $( printf "\"%s\" " "${FV3_NML_ENSMEM_FPS[@]}" ))
 GLOBAL_VAR_DEFNS_FP="${GLOBAL_VAR_DEFNS_FP}"
 # Try this at some point instead of hard-coding it as above; it's a more
 # flexible approach (if it works).
-#GLOBAL_VAR_DEFNS_FP=$( readlink -f "${BASH_SOURCE[0]}" )
+#GLOBAL_VAR_DEFNS_FP=$( $READLINK -f "${BASH_SOURCE[0]}" )
 
 DATA_TABLE_TMPL_FN="${DATA_TABLE_TMPL_FN}"
 DIAG_TABLE_TMPL_FN="${DIAG_TABLE_TMPL_FN}"
@@ -3011,6 +3040,7 @@ FVCOM_FILE="${FVCOM_FILE}"
 #
 NCORES_PER_NODE="${NCORES_PER_NODE}"
 PE_MEMBER01="${PE_MEMBER01}"
+RUN_CMD_FCST="${RUN_CMD_FCST}"
 #
 #-----------------------------------------------------------------------
 #

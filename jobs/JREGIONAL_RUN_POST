@@ -36,7 +36,7 @@
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -113,7 +113,7 @@ cd_vrfy "${tmp_dir}"
 #
 #-----------------------------------------------------------------------
 #
-fhr=$( printf "%s" "${fhr}" | sed -n -r -e "s/^([0-9]+)$/\1/p" )
+fhr=$( printf "%s" "${fhr}" | $SED -n -r -e "s/^([0-9]+)$/\1/p" )
 if [ -z "$fhr" ]; then
   print_err_msg_exit "\
 The forecast hour (fhr) must be a non-empty string consisting of only 

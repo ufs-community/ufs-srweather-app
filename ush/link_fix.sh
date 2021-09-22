@@ -26,7 +26,7 @@ function link_fix() {
 #
 #-----------------------------------------------------------------------
 #
-  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
   local scrfunc_fn=$( basename "${scrfunc_fp}" )
   local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -289,7 +289,7 @@ Creating links in the FIXLAM directory to the grid files..."
 
     fn=$( basename $fp )
   
-    res=$( printf "%s" $fn | sed -n -r -e "s/^C([0-9]*).*/\1/p" )
+    res=$( printf "%s" $fn | $SED -n -r -e "s/^C([0-9]*).*/\1/p" )
     if [ -z $res ]; then
       print_err_msg_exit "\
 The resolution could not be extracted from the current file's name.  The

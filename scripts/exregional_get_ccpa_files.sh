@@ -47,9 +47,9 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   mm=`echo ${init} | cut -c5-6`    # month (MM) of initialization time
   dd=`echo ${init} | cut -c7-8`    # day (DD) of initialization time
   hh=`echo ${init} | cut -c9-10`   # hour (HH) of initialization time
-  init_ut=`date -ud ''${yyyy}-${mm}-${dd}' UTC '${hh}':00:00' +%s` # convert initialization time to universal time
+  init_ut=`$DATE_UTIL -ud ''${yyyy}-${mm}-${dd}' UTC '${hh}':00:00' +%s` # convert initialization time to universal time
   vdate_ut=`expr ${init_ut} + ${fcst_sec}` # calculate current forecast time in universal time
-  vdate=`date -ud '1970-01-01 UTC '${vdate_ut}' seconds' +%Y%m%d%H` # convert universal time to standard time
+  vdate=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut}' seconds' +%Y%m%d%H` # convert universal time to standard time
   vyyyymmdd=`echo ${vdate} | cut -c1-8`  # forecast time (YYYYMMDD)
   vyyyy=`echo ${vdate} | cut -c1-4`  # year (YYYY) of valid time
   vmm=`echo ${vdate} | cut -c5-6`    # month (MM) of valid time
@@ -60,7 +60,7 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
   # Calculate valid date - 1 day
   vdate_ut_m1=`expr ${vdate_ut} - 86400` 
-  vdate_m1=`date -ud '1970-01-01 UTC '${vdate_ut_m1}' seconds' +%Y%m%d%H` 
+  vdate_m1=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut_m1}' seconds' +%Y%m%d%H` 
   vyyyymmdd_m1=`echo ${vdate_m1} | cut -c1-8` 
   vyyyy_m1=`echo ${vdate_m1} | cut -c1-4`
   vmm_m1=`echo ${vdate_m1} | cut -c5-6` 
@@ -69,7 +69,7 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
   # Calculate valid date + 1 day
   vdate_ut_p1=`expr ${vdate_ut} + 86400`
-  vdate_p1=`date -ud '1970-01-01 UTC '${vdate_ut_p1}' seconds' +%Y%m%d%H`
+  vdate_p1=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut_p1}' seconds' +%Y%m%d%H`
   vyyyymmdd_p1=`echo ${vdate_p1} | cut -c1-8`
   vyyyy_p1=`echo ${vdate_p1} | cut -c1-4`
   vmm_p1=`echo ${vdate_p1} | cut -c5-6` 
