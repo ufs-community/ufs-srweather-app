@@ -19,7 +19,7 @@ SCRIPT_DIR="${MYDIR}/${FCST_MODEL}"
 ORG_DIR="${MYDIR}/.."
 
 # Suffix for DA 
-if ["${DA_opt}"="YES"] || ["${DA_opt}"="yes"]; then
+if [ "${DA_opt}" = "YES" ] || [ "${DA_opt}" = "yes" ]; then
   DA_add="_DA"
   echo "... ## !!! for DA !!! ## ..."
 else
