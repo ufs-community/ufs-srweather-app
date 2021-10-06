@@ -70,6 +70,9 @@ FV3_HRRR:
     do_mynnsfclay: True
     do_sfcperts: !!python/none
     gwd_opt: 3
+    do_gsl_drag_ss: True
+    do_gsl_drag_tofd: True
+    do_gsl_drag_ls_bl: True 
     iaer: 5111
     icliq_sw: 2
     imfdeepcnv: -1
