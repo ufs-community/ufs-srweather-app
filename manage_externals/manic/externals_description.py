@@ -193,6 +193,9 @@ def parse_submodules_desc_section(section_items, file_path):
 def read_gitmodules_file(root_dir, file_name):
     # pylint: disable=deprecated-method
     # Disabling this check because the method is only used for python2
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     """Read a .gitmodules file and convert it to be compatible with an
     externals description.
     """
@@ -253,9 +256,21 @@ def read_gitmodules_file(root_dir, file_name):
                                           ExternalsDescription.REPO_URL, url)
                 externals_description.set(sec_name,
                                           ExternalsDescription.REQUIRED, 'True')
-                git_hash = submods[sec_name]['hash']
-                externals_description.set(sec_name,
-                                          ExternalsDescription.HASH, git_hash)
+                if sec_name in submods:
+                    submod_name = sec_name
+                else:
+                    # The section name does not have to match the path
+                    submod_name = path
+
+                if submod_name in submods:
+                    git_hash = submods[submod_name]['hash']
+                    externals_description.set(sec_name,
+                                              ExternalsDescription.HASH,
+                                              git_hash)
+                else:
+                    emsg = "submodule status has no section, '{}'"
+                    emsg += "\nCheck section names in externals config file"
+                    fatal_error(emsg.format(submod_name))
 
         # Required items
         externals_description.add_section(DESCRIPTION_SECTION)
