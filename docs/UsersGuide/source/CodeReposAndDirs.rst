@@ -33,7 +33,7 @@ repositories associated with this umbrella repo (see :numref:`Table %s <top_leve
    | Repository for the regional     | https://github.com/NOAA-EMC/regional_workflow           |
    | workflow                        |                                                         |
    +---------------------------------+---------------------------------------------------------+
-   | Repository for UFS utilities,   | https://github.com/NOAA-EMC/UFS_UTILS                   |
+   | Repository for UFS utilities,   | https://github.com/ufs-community/UFS_UTILS              |
    | including pre-processing,       |                                                         |
    | chgres_cube, and more           |                                                         |
    +---------------------------------+---------------------------------------------------------+
