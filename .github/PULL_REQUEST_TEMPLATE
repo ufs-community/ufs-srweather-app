@@ -19,7 +19,7 @@ Explicitly state what tests were run on these changes, or if any are still pendi
 ## DEPENDENCIES:
 Add any links to external PRs (e.g. regional_workflow and/or UFS PRs). For example:
 - NOAA-EMC/regional_workflow/pull/<pr_number>
-- NOAA-EMC/UFS_UTILS/pull/<pr_number>
+- ufs-community/UFS_UTILS/pull/<pr_number>
 - ufs-community/ufs-weather-model/pull/<pr_number>
 
 ## DOCUMENTATION:
