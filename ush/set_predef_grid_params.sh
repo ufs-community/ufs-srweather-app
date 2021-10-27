@@ -1227,8 +1227,8 @@ case ${PREDEF_GRID_NAME} in
 
   DT_ATMOS="${DT_ATMOS:-36}"
 
-  LAYOUT_X="${LAYOUT_X:-18}"
-  LAYOUT_Y="${LAYOUT_Y:-36}"
+  LAYOUT_X="${LAYOUT_X:-18}"   # 40 - EMC operational configuration
+  LAYOUT_Y="${LAYOUT_Y:-36}"   # 45 - EMC operational configuration
   BLOCKSIZE="${BLOCKSIZE:-28}"
 
   if [ "$QUILTING" = "TRUE" ]; then
