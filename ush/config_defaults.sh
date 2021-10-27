@@ -1723,6 +1723,12 @@ HALO_BLEND="10"
 # FV3-LAM grid. This flag will be used in make_ics to modify sfc_data.nc
 # after chgres_cube is run by running the routine process_FVCOM.exe
 #
+# FVCOM_WCSTART:
+# Define if this is a "warm" start or a "cold" start. Setting this to 
+# "warm" will read in sfc_data.nc generated in a RESTART directory.
+# Setting this to "cold" will read in the sfc_data.nc generated from 
+# chgres_cube in the make_ics portion of the workflow.
+#
 # FVCOM_DIR:
 # User defined directory where FVCOM data already interpolated to FV3-LAM
 # grid is located. File name in this path should be "fvcom.nc" to allow
@@ -1735,6 +1741,7 @@ HALO_BLEND="10"
 #------------------------------------------------------------------------
 #
 USE_FVCOM="FALSE"
+FVCOM_WCSTART="cold"
 FVCOM_DIR="/user/defined/dir/to/fvcom/data"
 FVCOM_FILE="fvcom.nc"
 #
