@@ -414,7 +414,7 @@ MODULES_RUN_TASK_FP script.
 
     &RSRV_FCST;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_FCST_TN;" "&JOBSDIR;/JREGIONAL_RUN_FCST"</command>
-  {%- if machine in ["JET", "HERA"]  %}
+  {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_fcst }}</cores>
     <native>{{ native_run_fcst }}</native>
   {%- else %}

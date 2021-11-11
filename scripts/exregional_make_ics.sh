@@ -131,6 +131,7 @@ case "$MACHINE" in
     ;;
 
   "LINUX")
+    ulimit -s unlimited
     APRUN=$RUN_CMD_UTILS
     ;;
 

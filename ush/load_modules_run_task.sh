@@ -71,30 +71,6 @@ fi
 # ..." and "module load ..." calls later below that are used to load the
 # appropriate module file for the specified task.
 #
-# Note that the build of the FV3 forecast model code generates the shell
-# script at
-#
-#   ${UFS_WTHR_MDL_DIR}/NEMS/src/conf/module-setup.sh
-#
-# that can be used to initialize the Lmod (Lua-based module) system/
-# software for handling modules.  This script:
-#
-# 1) Detects the shell in which it is being invoked (i.e. the shell of
-#    the "parent" script in which it is being sourced).
-# 2) Detects the machine it is running on and and calls the appropriate
-#    (shell- and machine-dependent) initalization script to initialize
-#    Lmod.
-# 3) Purges all modules.
-# 4) Uses the "module use ..." command to prepend or append paths to
-#    Lmod's search path (MODULEPATH).
-#
-# We could use this module-setup.sh script to initialize Lmod, but since
-# it is only found in the forecast model's directory tree, here we pre-
-# fer to perform our own initialization.  Ideally, there should be one
-# module-setup.sh script that is used by all external repos/codes, but
-# such a script does not exist.  If/when it does, we will consider
-# switching to it instead of using the case-statement below.
-#
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
@@ -128,10 +104,14 @@ case "$MACHINE" in
     ;;
 #
   *)
-    print_err_msg_exit "\
-The script to source to initialize lmod (module loads) has not yet been
-specified for the current machine (MACHINE):
-  MACHINE = \"$MACHINE\""
+    if [[ -n ${LMOD_PATH:-""} && -f ${LMOD_PATH:-""} ]] ; then
+      . ${LMOD_PATH}
+    else
+      print_err_msg_exit "\
+      The script to source to initialize lmod (module loads) has not yet been
+      specified for the current machine (MACHINE):
+        MACHINE = \"$MACHINE\""
+    fi
     ;;
 #
 esac
@@ -147,13 +127,15 @@ jjob_fp="$2"
 #
 #-----------------------------------------------------------------------
 #
-# Sourcing ufs-srweather-app README file (in directory specified by mod-
-# ules_dir) for the specified task
+# Sourcing ufs-srweather-app build env file
 #
 #-----------------------------------------------------------------------
 #
+
+module purge
+
 machine=$(echo_lowercase $MACHINE)
-env_fn="build_${machine}_${COMPILER}.env"
+env_fn=${BUILD_ENV_FN:-"build_${machine}_${COMPILER}.env"}
 env_fp="${SR_WX_APP_TOP_DIR}/env/${env_fn}"
 source "${env_fp}" || print_err_msg_exit "\
 Sourcing platform- and compiler-specific environment file (env_fp) for the 
@@ -172,25 +154,23 @@ workflow task specified by task_name failed:
 # sets environment variables (including prepending/appending to paths)
 # and loads modules.
 #
-# The regional_workflow repository contains module files for all the
+# The regional_workflow repository contains module files for the
 # workflow tasks in the template rocoto XML file for the FV3-LAM work-
-# flow.  The full path to a module file for a given task is
+# flow that need modules not loaded in the env_fn above.
 #
-#   $HOMErrfs/modulefiles/$machine/${task_name}
+# The full path to a module file for a given task is
+#
+#   $HOMErrfs/modulefiles/$machine/${task_name}.local
 #
 # where HOMErrfs is the base directory of the workflow, machine is the
 # name of the machine that we're running on (in lowercase), and task_-
-# name is the name of the current task (an input to this script). The
-# collection of modulefiles is staged by the generate_workflow.sh
-# script. Please see that script for information on their creation.
+# name is the name of the current task (an input to this script).
 #
 #-----------------------------------------------------------------------
 #
 modules_dir="$HOMErrfs/modulefiles/tasks/$machine"
 modulefile_name="${task_name}"
 default_modules_dir="$HOMErrfs/modulefiles"
-default_modulefile_name="${machine}.default"
-use_default_modulefile=0
 #
 #-----------------------------------------------------------------------
 #
@@ -198,46 +178,28 @@ use_default_modulefile=0
 #
 #-----------------------------------------------------------------------
 #
-  print_info_msg "$VERBOSE" "
+
+print_info_msg "$VERBOSE" "
 Loading modules for task \"${task_name}\" ..."
 
-  module use "${modules_dir}" || print_err_msg_exit "\
+module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
 
-  #
-  # If NOT using the default modulefile...
-  #
-#  if [ ${use_default_modulefile} -eq 0 ]; then
 #
-#     module use -a "${modules_dir}" || print_err_msg_exit "\
-#Call to \"module use\" command failed."
-#    
-    #
-    # Load the .local module file if available for the given task
-    #
-    modulefile_local="${task_name}.local"
-    if [ -f ${modules_dir}/${modulefile_local} ]; then
-      module load "${modulefile_local}" || print_err_msg_exit "\
-Loading .local module file (in directory specified by mod-
-ules_dir) for the specified task (task_name) failed:
-  task_name = \"${task_name}\"
-  modulefile_local = \"${modulefile_local}\"
-  modules_dir = \"${modules_dir}\""    
-    fi
-
-#  else # using default modulefile
+# Load the .local module file if available for the given task
 #
-#    module load "${default_modulefile_name}" || print_err_msg_exit "\
-#Loading of default module file failed:
-#  task_name = \"${task_name}\"
-#  default_modulefile_name = \"${default_modulefile_name}\"
-#  default_modules_dir = \"${default_modules_dir}\""
-#
-#  fi
+modulefile_local="${task_name}.local"
+if [ -f ${modules_dir}/${modulefile_local} ]; then
+  module load "${modulefile_local}" || print_err_msg_exit "\
+  Loading .local module file (in directory specified by mod-
+  ules_dir) for the specified task (task_name) failed:
+    task_name = \"${task_name}\"
+    modulefile_local = \"${modulefile_local}\"
+    modules_dir = \"${modules_dir}\""    
+fi
 
-  module list
+module list
 
-#fi #End if statement for tasks that load no modules
 
 # Modules that use conda and need an environment activated will set the
 # SRW_ENV variable to the name of the environment to be activated. That
