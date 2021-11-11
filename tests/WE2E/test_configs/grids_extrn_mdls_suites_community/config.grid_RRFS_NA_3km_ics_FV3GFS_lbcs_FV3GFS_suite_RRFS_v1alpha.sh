@@ -48,6 +48,7 @@ WTIME_MAKE_LBCS="01:00:00"
 NNODES_RUN_POST="6"
 PPN_RUN_POST="12"
 
+OMP_STACKSIZE_MAKE_ICS="2048m"
 OMP_STACKSIZE_RUN_FCST="2048m"
 
 ###############################################################################

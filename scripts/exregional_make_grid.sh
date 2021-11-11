@@ -111,6 +111,8 @@ case "$MACHINE" in
     ;;
 
   "ORION")
+    ulimit -s unlimited
+    ulimit -a
     APRUN="time"
     ;;
 
