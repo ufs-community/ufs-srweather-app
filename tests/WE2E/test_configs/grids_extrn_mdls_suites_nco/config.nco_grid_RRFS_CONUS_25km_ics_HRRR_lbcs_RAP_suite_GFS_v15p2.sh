@@ -3,22 +3,22 @@
 # ------------------------
 #
 # This test is to ensure that the workflow running in nco mode completes 
-# successfully on the RRFS_SUBCONUS_3km grid using the GSD_SAR physics 
-# suite with ICs derived from the HRRR and LBCs derived from the RAP.
+# successfully on the RRFS_CONUS_25km grid using the FV3_GFS_v15p2 physics suite 
+# with ICs derived from the HRRR and LBCs derived from the RAP.
 #
 
 RUN_ENVIR="nco"
 PREEXISTING_DIR_METHOD="rename"
 
-PREDEF_GRID_NAME="RRFS_SUBCONUS_3km"
-CCPP_PHYS_SUITE="FV3_GSD_SAR"
+PREDEF_GRID_NAME="RRFS_CONUS_25km"
+CCPP_PHYS_SUITE="FV3_GFS_v15p2"
 
 EXTRN_MDL_NAME_ICS="HRRR"
 EXTRN_MDL_NAME_LBCS="RAP"
 USE_USER_STAGED_EXTRN_FILES="TRUE"
 
-DATE_FIRST_CYCL="20200801"
-DATE_LAST_CYCL="20200801"
+DATE_FIRST_CYCL="20200208"
+DATE_LAST_CYCL="20200208"
 CYCL_HRS=( "00" )
 
 FCST_LEN_HRS="6"
