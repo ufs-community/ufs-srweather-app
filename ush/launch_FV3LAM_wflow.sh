@@ -106,26 +106,14 @@ expt_name="${EXPT_SUBDIR}"
 #
 #-----------------------------------------------------------------------
 #
-if [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
-  module purge
-  module load lsf/10.1
-  module use /gpfs/dell3/usrx/local/dev/emc_rocoto/modulefiles/
-  module load ruby/2.5.1 rocoto/1.3.0rc2
-elif [ "$MACHINE" = "WCOSS_CRAY" ]; then
-  module purge
-  module load xt-lsfhpc/9.1.3
-  module use -a /usrx/local/emc_rocoto/modulefiles
-  module load rocoto/1.3.0rc2
-else
-  machine=$(echo_lowercase $MACHINE)
-  env_fn=${WFLOW_ENV_FN:-"wflow_${machine}.env"}
-  env_fp="${SR_WX_APP_TOP_DIR}/env/${env_fn}"
-  module purge
-  source "${env_fp}" || print_err_msg_exit "\
-    Sourcing platform-specific environment file (env_fp) for
-  the workflow task failed :
-      env_fp = \"${env_fp}\""
-fi
+machine=$(echo_lowercase $MACHINE)
+env_fn=${WFLOW_ENV_FN:-"wflow_${machine}.env"}
+env_fp="${SR_WX_APP_TOP_DIR}/env/${env_fn}"
+module purge
+source "${env_fp}" || print_err_msg_exit "\
+  Sourcing platform-specific environment file (env_fp) for
+the workflow task failed :
+env_fp = \"${env_fp}\""
 #
 #-----------------------------------------------------------------------
 #
