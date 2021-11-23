@@ -234,8 +234,8 @@ tmmark="tm00"
 # minutes and seconds of the corresponding output forecast time.
 #
 # Note that if the forecast model is instructed to output at some hourly
-# interval (via the nfhout and nfhout_hf parameters in the MODEL_CONFIG_FN
-# file, with nsout set to a non-positive value), then the write-component
+# interval (via the output_fh parameter in the MODEL_CONFIG_FN file, 
+# with nsout set to a non-positive value), then the write-component
 # output file names will not contain any suffix for the minutes and seconds.
 # For this reason, when SUB_HOURLY_POST is not set to "TRUE", mnts_sec_str
 # must be set to a null string.

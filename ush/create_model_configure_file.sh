@@ -114,6 +114,7 @@ run directory (run_dir):
 #
   settings="\
   'PE_MEMBER01': ${PE_MEMBER01}
+  'print_esmf': ${dot_print_esmf_dot}
   'start_year': $yyyy
   'start_month': $mm
   'start_day': $dd
@@ -125,7 +126,6 @@ run directory (run_dir):
   'restart_interval': ${RESTART_INTERVAL}
   'write_dopost': ${dot_write_dopost}
   'quilting': ${dot_quilting_dot}
-  'print_esmf': ${dot_print_esmf_dot}
   'output_grid': ${WRTCMP_output_grid}"
 #  'output_grid': \'${WRTCMP_output_grid}\'"
 #
@@ -185,17 +185,15 @@ run directory (run_dir):
 # main time step dt_atmos (in units of seconds).  Note that nsout is 
 # guaranteed to be an integer because the experiment generation scripts 
 # require that dt_subhourly_post_mnts (after conversion to seconds) be 
-# evenly divisible by dt_atmos.  Also, in this case, the variable nfhout 
-# [which specifies the (low-frequency) output interval in hours after 
-# forecast hour nfhmax_hf; see the jinja model_config template file] is 
-# set to 0, although this doesn't matter because any positive of nsout 
-# will override nfhout.
+# evenly divisible by dt_atmos.  Also, in this case, the variable output_fh 
+# [which specifies the output interval in hours; 
+# see the jinja model_config template file] is set to 0, although this 
+# doesn't matter because any positive of nsout will override output_fh.
 #
 # If sub_hourly_post is set to "FALSE", then the workflow is hard-coded 
 # (in the jinja model_config template file) to direct the forecast model 
-# to output files every hour.  This is done by setting (1) nfhout_hf to 
-# 1 in that jinja template file, (2) nfhout to 1 here, and (3) nsout to
-# -1 here which turns off output by time step interval.
+# to output files every hour.  This is done by setting (1) output_fh to 1 
+# here, and (2) nsout to -1 here which turns off output by time step interval.
 #
 # Note that the approach used here of separating how hourly and subhourly
 # output is handled should be changed/generalized/simplified such that 
@@ -208,13 +206,13 @@ run directory (run_dir):
 #
   if [ "${sub_hourly_post}" = "TRUE" ]; then
     nsout=$(( dt_subhourly_post_mnts*60 / dt_atmos ))
-    nfhout=0
+    output_fh=0
   else
-    nfhout=1
+    output_fh=1
     nsout=-1
   fi
   settings="${settings}
-  'nfhout': ${nfhout}
+  'output_fh': ${output_fh}
   'nsout': ${nsout}"
 
   print_info_msg $VERBOSE "

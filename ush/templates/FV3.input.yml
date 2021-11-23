@@ -288,11 +288,6 @@ FV3_GFS_v15p2:
   surf_map_nml:
 
 FV3_GFS_v16:
-  atmos_model_nml:
-    fhmax: 240
-    fhmaxhf: 0
-    fhout: 3
-    fhouthf: 1
   cires_ugwp_nml:
     launch_level: 27
   fv_core_nml:

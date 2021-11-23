@@ -10,7 +10,6 @@
 &atmos_model_nml
     chksum_debug = .false.
     dycore_only = .false.
-    fdiag = 1
 /
 
 &cires_ugwp_nml
@@ -71,6 +70,7 @@
     do_schmidt = .true.
     do_vort_damp = .true.
     dwind_2d = .false.
+    dz_min = 2
     external_eta = .true.
     external_ic = .true.
     fill = .true.
@@ -109,6 +109,7 @@
     p_fac = 0.1
     phys_hydrostatic = .false.
     print_freq = 6
+    psm_bc = 1
     range_warn = .true.
     read_increment = .false.
     regional = .true.
@@ -174,7 +175,6 @@
     ltaerosol = .true.
     lwhtr = .true.
     n_var_lndp = 0
-    ncld = 5
     nsradar_reset = 3600
     nst_anl = .true.
     nstf_name = 2,1,0,0,0
@@ -182,6 +182,7 @@
     oz_phys_2015 = .true.
     pdfcld = .false.
     pre_rad = .false.
+    print_diff_pgr = .false.
     prslrd0 = 0.0
     random_clds = .false.
     redrag = .true.
