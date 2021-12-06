@@ -53,11 +53,11 @@ Incorrect number of arguments specified:
 
 Usage:
 
-  ${func_name}  file_full_path  param  value
+  ${func_name}  file_fp  param  value
 
 where the arguments are defined as follows:
 
-  file_full_path:
+  file_fp:
   Full path to the file in which the specified parameter's value will be
   set.
 
@@ -76,7 +76,7 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  local file_full_path="$1"
+  local file_fp="$1"
   local param="$2"
   local value="$3"
 #
@@ -86,7 +86,7 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  local file="${file_full_path##*/}"
+  local file="${file_fp##*/}"
 #
 #-----------------------------------------------------------------------
 #
@@ -94,7 +94,7 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  print_info_msg "$VERBOSE" "\
+  print_info_msg "$DEBUG" "\
 Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
 #
 #-----------------------------------------------------------------------
@@ -141,7 +141,7 @@ Setting parameter \"$param\" in file \"$file\" to \"$value\" ..."
   "${GLOBAL_VAR_DEFNS_FN}")
     regex_search="(^\s*$param=)(\".*\")?([^ \"]*)?(\(.*\))?(\s*[#].*)?"
     regex_replace="\1$value\5"
-#    set_bash_param "${file_full_path}" "$param" "$value"
+#    set_bash_param "${file_fp}" "$param" "$value"
     ;;
 #
 #-----------------------------------------------------------------------
@@ -168,15 +168,15 @@ specified for this file:
 #
 #-----------------------------------------------------------------------
 #
-  grep -q -E "${regex_search}" "${file_full_path}"
+  grep -q -E "${regex_search}" "${file_fp}"
 
   if [ $? -eq 0 ]; then
-    $SED -i -r -e "s%${regex_search}%${regex_replace}%" "${file_full_path}"
+    $SED -i -r -e "s%${regex_search}%${regex_replace}%" "${file_fp}"
   else
     print_err_msg_exit "\
-Specified file (file_full_path) does not contain the searched-for regu-
-lar expression (regex_search):
-  file_full_path = \"${file_full_path}\"
+The specified file (file_fp) does not contain the searched-for regular 
+expression (regex_search):
+  file_fp = \"${file_fp}\"
   param = \"$param\"
   value = \"$value\"
   regex_search = ${regex_search}"

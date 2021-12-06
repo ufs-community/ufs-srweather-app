@@ -34,7 +34,7 @@ function set_ozone_param() {
 #
 #-----------------------------------------------------------------------
 #
-  { save_shell_opts; set -u -x; } > /dev/null 2>&1
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -209,7 +209,7 @@ files in the FIXam directory is:
 "
   msg="$msg"$( printf "\"%s\" \\\\\n" "${CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[@]}" )
   msg="$msg"$( printf "\n)" )
-  print_info_msg "$msg"
+  print_info_msg "$VERBOSE" "$msg"
 
 else
 

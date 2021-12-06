@@ -10,6 +10,15 @@
 #-----------------------------------------------------------------------
 #
 function generate_FV3LAM_wflow() {
+printf "\
+========================================================================
+========================================================================
+
+Starting experiment generation...
+
+========================================================================
+========================================================================
+"
 #
 #-----------------------------------------------------------------------
 #
@@ -20,10 +29,10 @@ function generate_FV3LAM_wflow() {
 #-----------------------------------------------------------------------
 #
 if [[ $(uname -s) == Darwin ]]; then
-    local scrfunc_fp=$( greadlink -f "${BASH_SOURCE[0]}" )
-  else
-    local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
-  fi
+  local scrfunc_fp=$( greadlink -f "${BASH_SOURCE[0]}" )
+else
+  local scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+fi
 local scrfunc_fn=$( basename "${scrfunc_fp}" )
 local scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -108,7 +117,6 @@ if [ $pyerrors -gt 0 ];then
 
 "
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -152,16 +160,26 @@ WFLOW_XML_FP="$EXPTDIR/${WFLOW_XML_FN}"
 #
 #-----------------------------------------------------------------------
 #
-ensmem_indx_name="\"\""
-uscore_ensmem_name="\"\""
-slash_ensmem_subdir="\"\""
-if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
-  ensmem_indx_name="mem"
-  uscore_ensmem_name="_mem#${ensmem_indx_name}#"
-  slash_ensmem_subdir="/mem#${ensmem_indx_name}#"
-fi
+if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
 
-settings="\
+  template_xml_fp="${TEMPLATE_DIR}/${WFLOW_XML_FN}"
+
+  print_info_msg "
+Creating rocoto workflow XML file (WFLOW_XML_FP) from jinja template XML
+file (template_xml_fp):
+  template_xml_fp = \"${template_xml_fp}\"
+  WFLOW_XML_FP = \"${WFLOW_XML_FP}\""
+
+  ensmem_indx_name="\"\""
+  uscore_ensmem_name="\"\""
+  slash_ensmem_subdir="\"\""
+  if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+    ensmem_indx_name="mem"
+    uscore_ensmem_name="_mem#${ensmem_indx_name}#"
+    slash_ensmem_subdir="/mem#${ensmem_indx_name}#"
+  fi
+
+  settings="\
 #
 # Parameters needed by the job scheduler.
 #
@@ -415,7 +433,7 @@ settings="\
   'first_fv3_file_tstr': "000:"`$DATE_UTIL -d "${DATE_FIRST_CYCL} +${DT_ATMOS} seconds" +%M:%S`
 " # End of "settings" variable.
 
-print_info_msg $VERBOSE "
+  print_info_msg "$VERBOSE" "
 The variable \"settings\" specifying values of the rococo XML variables
 has been set as follows:
 #-----------------------------------------------------------------------
@@ -423,12 +441,9 @@ settings =
 $settings"
 
 #
-# Set the full path to the template rocoto XML file.  Then call a python
-# script to generate the experiment's actual XML file from this template
-# file.
+# Call the python script to generate the experiment's actual XML file 
+# from the jinja template file.
 #
-if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
-  template_xml_fp="${TEMPLATE_DIR}/${WFLOW_XML_FN}"
   $USHDIR/fill_jinja_template.py -q \
                                  -u "${settings}" \
                                  -t ${template_xml_fp} \
@@ -444,6 +459,7 @@ are:
   Namelist settings specified on command line:
     settings =
 $settings"
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -453,7 +469,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "
+print_info_msg "$VERBOSE" "
 Creating symlink in the experiment directory (EXPTDIR) that points to the
 workflow launch script (WFLOW_LAUNCH_SCRIPT_FP):
   EXPTDIR = \"${EXPTDIR}\"
@@ -476,7 +492,7 @@ if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
 #
   time_stamp=$( $DATE_UTIL "+%F_%T" )
   crontab_backup_fp="$EXPTDIR/crontab.bak.${time_stamp}"
-  print_info_msg "
+  print_info_msg "$VERBOSE" "
 Copying contents of user cron table to backup file:
   crontab_backup_fp = \"${crontab_backup_fp}\""
   if [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
@@ -522,9 +538,9 @@ added:
 
   else
 
-    print_info_msg "
-Adding the following line to the cron table in order to automatically
-resubmit FV3-LAM workflow:
+    print_info_msg "$VERBOSE" "
+Adding the following line to the user's cron table in order to automatically
+resubmit SRW workflow:
   CRONTAB_LINE = \"${CRONTAB_LINE}\""
 
     if [ "$MACHINE" = "WCOSS_DELL_P3" ];then
@@ -637,8 +653,8 @@ cp_vrfy "${FIELD_DICT_IN_UWM_FP}" "${FIELD_DICT_FP}"
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "
-Setting parameters in FV3 namelist file (FV3_NML_FP):
+print_info_msg "
+Setting parameters in weather model's namelist file (FV3_NML_FP):
   FV3_NML_FP = \"${FV3_NML_FP}\""
 #
 # Set npx and npy, which are just NX plus 1 and NY plus 1, respectively.
@@ -800,8 +816,8 @@ settings="$settings
   }"
 
 print_info_msg $VERBOSE "
-The variable \"settings\" specifying values of the namelist variables
-has been set as follows:
+The variable \"settings\" specifying values of the weather model's 
+namelist variables has been set as follows:
 
 settings =
 $settings"
@@ -886,15 +902,12 @@ print_info_msg "
 ========================================================================
 ========================================================================
 
-Workflow generation completed.
+Experiment generation completed.  The experiment directory is:
+
+  EXPTDIR=\"$EXPTDIR\"
 
 ========================================================================
 ========================================================================
-
-The experiment directory is:
-
-  > EXPTDIR=\"$EXPTDIR\"
-
 "
 #
 #-----------------------------------------------------------------------
@@ -904,12 +917,16 @@ The experiment directory is:
 #-----------------------------------------------------------------------
 #
 if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+
   print_info_msg "\
 To launch the workflow, first ensure that you have a compatible version
 of rocoto available. For most pre-configured platforms, rocoto can be
 loaded via a module:
+
   > module load rocoto
+
 For more details on rocoto, see the User's Guide.
+
 To launch the workflow, first ensure that you have a compatible version
 of rocoto loaded.  For example, to load version 1.3.1 of rocoto, use
 
@@ -938,17 +955,15 @@ Note that:
 2) In order for the output of the rocotostat command to be up-to-date,
    the rocotorun command must be issued immediately before the rocoto-
    stat command.
-"
-fi
-print_info_msg "
+
 For automatic resubmission of the workflow (say every 3 minutes), the
 following line can be added to the user's crontab (use \"crontab -e\" to
 edit the cron table):
 
 */3 * * * * cd $EXPTDIR && ./launch_FV3LAM_wflow.sh
-
-Done.
 "
+
+fi
 #
 # If necessary, run the NOMADS script to source external model data.
 #

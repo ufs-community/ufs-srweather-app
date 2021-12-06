@@ -51,6 +51,11 @@ cd_vrfy ${scrfunc_dir}
 #-----------------------------------------------------------------------
 #
 . ./source_util_funcs.sh
+
+print_info_msg "
+========================================================================
+Starting function ${func_name}() in \"${scrfunc_fn}\"...
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #
@@ -148,6 +153,40 @@ if [ "$VERBOSE" = "TRUE" ] || \
 elif [ "$VERBOSE" = "FALSE" ] || \
      [ "$VERBOSE" = "NO" ]; then
   VERBOSE="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that DEBUG is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+check_var_valid_value "DEBUG" "valid_vals_DEBUG"
+#
+# Set DEBUG to either "TRUE" or "FALSE" so we don't have to consider
+# other valid values later on.
+#
+DEBUG=$(echo_uppercase $DEBUG)
+if [ "$DEBUG" = "TRUE" ] || \
+   [ "$DEBUG" = "YES" ]; then
+  DEBUG="TRUE"
+elif [ "$DEBUG" = "FALSE" ] || \
+     [ "$DEBUG" = "NO" ]; then
+  DEBUG="FALSE"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If DEBUG is set to "TRUE" but VERBOSE is set to "FALSE", reset VERBOSE 
+# to "TRUE" to print out all of the VERBOSE output (in addition to any
+# DEBUG output).
+#
+#-----------------------------------------------------------------------
+#
+if [ "$DEBUG" = "TRUE" ] && [ "$VERBOSE" = "FALSE" ]; then
+  print_info_msg "
+Resetting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."
+  VERBOSE="TRUE" 
 fi
 #
 #-----------------------------------------------------------------------
@@ -792,9 +831,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DATE_OR_NULL=$( printf "%s" "${DATE_FIRST_CYCL}" | \
+date_or_null=$( printf "%s" "${DATE_FIRST_CYCL}" | \
                 $SED -n -r -e "s/^([0-9]{8})$/\1/p" )
-if [ -z "${DATE_OR_NULL}" ]; then
+if [ -z "${date_or_null}" ]; then
   print_err_msg_exit "\
 DATE_FIRST_CYCL must be a string consisting of exactly 8 digits of the 
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
@@ -802,9 +841,9 @@ month, and DD is the 2-digit day-of-month.
   DATE_FIRST_CYCL = \"${DATE_FIRST_CYCL}\""
 fi
 
-DATE_OR_NULL=$( printf "%s" "${DATE_LAST_CYCL}" | \
+date_or_null=$( printf "%s" "${DATE_LAST_CYCL}" | \
                 $SED -n -r -e "s/^([0-9]{8})$/\1/p" )
-if [ -z "${DATE_OR_NULL}" ]; then
+if [ -z "${date_or_null}" ]; then
   print_err_msg_exit "\
 DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the 
 form \"YYYYMMDD\", where YYYY is the 4-digit year, MM is the 2-digit 
@@ -2549,8 +2588,9 @@ line_list=$( $SED -r \
              -e "/^$/d" \
              ${GLOBAL_VAR_DEFNS_FP} )
 
-print_info_msg "$VERBOSE" "
-The variable \"line_list\" contains:
+print_info_msg "$DEBUG" "
+Before updating default values of experiment variables to user-specified
+values, the variable \"line_list\" contains:
 
 ${line_list}
 "
@@ -2593,6 +2633,17 @@ $SED -i -r -e "s|$regexp|\1\n\n${str_to_insert}\n|g" ${GLOBAL_VAR_DEFNS_FP}
 #
 # Loop through the lines in line_list.
 #
+print_info_msg "
+Generating the global experiment variable definitions file specified by
+GLOBAL_VAR_DEFNS_FN:
+  GLOBAL_VAR_DEFNS_FN = \"${GLOBAL_VAR_DEFNS_FN}\"
+Full path to this file is:
+  GLOBAL_VAR_DEFNS_FP = \"${GLOBAL_VAR_DEFNS_FP}\"
+For more detailed information, set DEBUG to \"TRUE\" in the experiment
+configuration file (\"${EXPT_CONFIG_FN}\")."
+
+template_var_names=()
+template_var_values=()
 while read crnt_line; do
 #
 # Try to obtain the name of the variable being set on the current line.
@@ -2604,16 +2655,13 @@ while read crnt_line; do
 # set to.
 #
   var_name=$( printf "%s" "${crnt_line}" | $SED -n -r -e "s/^([^ ]*)=.*/\1/p" )
-#echo
-#echo "============================"
-#printf "%s\n" "var_name = \"${var_name}\""
 #
 # If var_name is not empty, then a variable name was found in the cur-
 # rent line in line_list.
 #
   if [ ! -z $var_name ]; then
 
-    print_info_msg "$VERBOSE" "
+    print_info_msg "$DEBUG" "
 var_name = \"${var_name}\""
 #
 # If the variable specified in var_name is set in the current environ-
@@ -3087,7 +3135,7 @@ definitions file returned with a nonzero status."
 #
 print_info_msg "
 ========================================================================
-Setup script completed successfully!!!
+Function ${func_name}() in \"${scrfunc_fn}\" completed successfully!!!
 ========================================================================"
 #
 #-----------------------------------------------------------------------

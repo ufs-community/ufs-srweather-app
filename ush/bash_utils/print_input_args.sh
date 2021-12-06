@@ -168,16 +168,15 @@ have been set as follows:
 #
 #-----------------------------------------------------------------------
 #
-# If a global variable named VERBOSE is not defined, print out the mes-
-# sage.  If it is defined, print out the message only if VERBOSE is set
-# to TRUE.
+# If a global variable named DEBUG is not defined, print out the message.  
+# If it is defined, print out the message only if DEBUG is set to TRUE.
 #
 #-----------------------------------------------------------------------
 #
-  if [ -z ${VERBOSE+x} ]; then
+  if [ -z ${DEBUG+x} ]; then
     print_info_msg "$msg"
   else
-    print_info_msg "$VERBOSE" "$msg"
+    print_info_msg "$DEBUG" "$msg"
   fi
 #
 #-----------------------------------------------------------------------

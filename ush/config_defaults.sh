@@ -1171,13 +1171,21 @@ PREEXISTING_DIR_METHOD="delete"
 #
 #-----------------------------------------------------------------------
 #
-# Set VERBOSE.  This is a flag that determines whether or not the experiment
-# generation and workflow task scripts tend to print out more informational
-# messages.
+# Set flags for more detailed messages.  Defintitions:
+#
+# VERBOSE:
+# This is a flag that determines whether or not the experiment generation 
+# and workflow task scripts tend to print out more informational messages.
+#
+# DEBUG:
+# This is a flag that determines whether or not very detailed debugging
+# messages are printed to out.  Note that if DEBUG is set to TRUE, then
+# VERBOSE will also get reset to TRUE if it isn't already.
 #
 #-----------------------------------------------------------------------
 #
 VERBOSE="TRUE"
+DEBUG="FALSE"
 #
 #-----------------------------------------------------------------------
 #
