@@ -361,6 +361,11 @@ file (template_xml_fp):
   'run_task_make_grid': ${RUN_TASK_MAKE_GRID}
   'run_task_make_orog': ${RUN_TASK_MAKE_OROG}
   'run_task_make_sfc_climo': ${RUN_TASK_MAKE_SFC_CLIMO}
+  'run_task_get_extrn_ics': ${RUN_TASK_GET_EXTRN_ICS}
+  'run_task_get_extrn_lbcs': ${RUN_TASK_GET_EXTRN_LBCS}
+  'run_task_make_ics': ${RUN_TASK_MAKE_ICS}
+  'run_task_make_lbcs': ${RUN_TASK_MAKE_LBCS}
+  'run_task_run_fcst': ${RUN_TASK_RUN_FCST}
   'run_task_run_post': ${RUN_TASK_RUN_POST}
   'run_task_get_obs_ccpa': ${RUN_TASK_GET_OBS_CCPA}
   'run_task_get_obs_mrms': ${RUN_TASK_GET_OBS_MRMS}

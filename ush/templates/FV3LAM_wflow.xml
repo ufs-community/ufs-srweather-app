@@ -22,45 +22,45 @@ Parameters needed by the job scheduler.
 <!--
 Workflow task names.
 -->
-<!ENTITY MAKE_GRID_TN        "{{ make_grid_tn }}">
-<!ENTITY MAKE_OROG_TN        "{{ make_orog_tn }}">
-<!ENTITY MAKE_SFC_CLIMO_TN   "{{ make_sfc_climo_tn }}">
-<!ENTITY GET_EXTRN_ICS_TN    "{{ get_extrn_ics_tn }}">
-<!ENTITY GET_EXTRN_LBCS_TN   "{{ get_extrn_lbcs_tn }}">
-<!ENTITY MAKE_ICS_TN         "{{ make_ics_tn }}">
-<!ENTITY MAKE_LBCS_TN        "{{ make_lbcs_tn }}">
-<!ENTITY RUN_FCST_TN         "{{ run_fcst_tn }}">
-<!ENTITY RUN_POST_TN         "{{ run_post_tn }}">
-<!ENTITY GET_OBS_CCPA_TN     "{{ get_obs_ccpa_tn }}">
-<!ENTITY GET_OBS_NDAS_TN     "{{ get_obs_ndas_tn }}">
-<!ENTITY GET_OBS_MRMS_TN     "{{ get_obs_mrms_tn }}">
-<!ENTITY VX_TN               "{{ vx_tn }}">
-<!ENTITY VX_GRIDSTAT_TN      "{{ vx_gridstat_tn }}">
-<!ENTITY VX_GRIDSTAT_REFC_TN "{{ vx_gridstat_refc_tn }}">
-<!ENTITY VX_GRIDSTAT_RETOP_TN "{{ vx_gridstat_retop_tn }}">
-<!ENTITY VX_GRIDSTAT_03h_TN "{{ vx_gridstat_03h_tn }}">
-<!ENTITY VX_GRIDSTAT_06h_TN "{{ vx_gridstat_06h_tn }}">
-<!ENTITY VX_GRIDSTAT_24h_TN "{{ vx_gridstat_24h_tn }}">
-<!ENTITY VX_POINTSTAT_TN    "{{ vx_pointstat_tn }}">
-<!ENTITY VX_ENSGRID_TN "{{ vx_ensgrid_tn}}">
-<!ENTITY VX_ENSGRID_REFC_TN "{{ vx_ensgrid_refc_tn }}">
-<!ENTITY VX_ENSGRID_RETOP_TN "{{ vx_ensgrid_retop_tn }}">
-<!ENTITY VX_ENSGRID_03h_TN "{{ vx_ensgrid_03h_tn}}">
-<!ENTITY VX_ENSGRID_06h_TN "{{ vx_ensgrid_06h_tn}}">
-<!ENTITY VX_ENSGRID_24h_TN "{{ vx_ensgrid_24h_tn}}">
-<!ENTITY VX_ENSGRID_MEAN_TN "{{ vx_ensgrid_mean_tn}}">
-<!ENTITY VX_ENSGRID_PROB_TN "{{ vx_ensgrid_prob_tn}}">
-<!ENTITY VX_ENSGRID_MEAN_03h_TN "{{ vx_ensgrid_mean_03h_tn}}">
-<!ENTITY VX_ENSGRID_PROB_03h_TN "{{ vx_ensgrid_prob_03h_tn}}">
-<!ENTITY VX_ENSGRID_MEAN_06h_TN "{{ vx_ensgrid_mean_06h_tn}}">
-<!ENTITY VX_ENSGRID_PROB_06h_TN "{{ vx_ensgrid_prob_06h_tn}}">
-<!ENTITY VX_ENSGRID_MEAN_24h_TN "{{ vx_ensgrid_mean_24h_tn}}">
-<!ENTITY VX_ENSGRID_PROB_24h_TN "{{ vx_ensgrid_prob_24h_tn}}">
-<!ENTITY VX_ENSGRID_PROB_REFC_TN "{{ vx_ensgrid_prob_refc_tn}}">
-<!ENTITY VX_ENSGRID_PROB_RETOP_TN "{{ vx_ensgrid_prob_retop_tn}}">
-<!ENTITY VX_ENSPOINT_TN      "{{ vx_enspoint_tn }}">
-<!ENTITY VX_ENSPOINT_MEAN_TN "{{ vx_enspoint_mean_tn }}">
-<!ENTITY VX_ENSPOINT_PROB_TN "{{ vx_enspoint_prob_tn }}">
+<!ENTITY MAKE_GRID_TN              "{{ make_grid_tn }}">
+<!ENTITY MAKE_OROG_TN              "{{ make_orog_tn }}">
+<!ENTITY MAKE_SFC_CLIMO_TN         "{{ make_sfc_climo_tn }}">
+<!ENTITY GET_EXTRN_ICS_TN          "{{ get_extrn_ics_tn }}">
+<!ENTITY GET_EXTRN_LBCS_TN         "{{ get_extrn_lbcs_tn }}">
+<!ENTITY MAKE_ICS_TN               "{{ make_ics_tn }}">
+<!ENTITY MAKE_LBCS_TN              "{{ make_lbcs_tn }}">
+<!ENTITY RUN_FCST_TN               "{{ run_fcst_tn }}">
+<!ENTITY RUN_POST_TN               "{{ run_post_tn }}">
+<!ENTITY GET_OBS_CCPA_TN           "{{ get_obs_ccpa_tn }}">
+<!ENTITY GET_OBS_NDAS_TN           "{{ get_obs_ndas_tn }}">
+<!ENTITY GET_OBS_MRMS_TN           "{{ get_obs_mrms_tn }}">
+<!ENTITY VX_TN                     "{{ vx_tn }}">
+<!ENTITY VX_GRIDSTAT_TN            "{{ vx_gridstat_tn }}">
+<!ENTITY VX_GRIDSTAT_REFC_TN       "{{ vx_gridstat_refc_tn }}">
+<!ENTITY VX_GRIDSTAT_RETOP_TN      "{{ vx_gridstat_retop_tn }}">
+<!ENTITY VX_GRIDSTAT_03h_TN        "{{ vx_gridstat_03h_tn }}">
+<!ENTITY VX_GRIDSTAT_06h_TN        "{{ vx_gridstat_06h_tn }}">
+<!ENTITY VX_GRIDSTAT_24h_TN        "{{ vx_gridstat_24h_tn }}">
+<!ENTITY VX_POINTSTAT_TN           "{{ vx_pointstat_tn }}">
+<!ENTITY VX_ENSGRID_TN             "{{ vx_ensgrid_tn }}">
+<!ENTITY VX_ENSGRID_REFC_TN        "{{ vx_ensgrid_refc_tn }}">
+<!ENTITY VX_ENSGRID_RETOP_TN       "{{ vx_ensgrid_retop_tn }}">
+<!ENTITY VX_ENSGRID_03h_TN         "{{ vx_ensgrid_03h_tn }}">
+<!ENTITY VX_ENSGRID_06h_TN         "{{ vx_ensgrid_06h_tn }}">
+<!ENTITY VX_ENSGRID_24h_TN         "{{ vx_ensgrid_24h_tn }}">
+<!ENTITY VX_ENSGRID_MEAN_TN        "{{ vx_ensgrid_mean_tn }}">
+<!ENTITY VX_ENSGRID_PROB_TN        "{{ vx_ensgrid_prob_tn }}">
+<!ENTITY VX_ENSGRID_MEAN_03h_TN    "{{ vx_ensgrid_mean_03h_tn }}">
+<!ENTITY VX_ENSGRID_PROB_03h_TN    "{{ vx_ensgrid_prob_03h_tn }}">
+<!ENTITY VX_ENSGRID_MEAN_06h_TN    "{{ vx_ensgrid_mean_06h_tn }}">
+<!ENTITY VX_ENSGRID_PROB_06h_TN    "{{ vx_ensgrid_prob_06h_tn }}">
+<!ENTITY VX_ENSGRID_MEAN_24h_TN    "{{ vx_ensgrid_mean_24h_tn }}">
+<!ENTITY VX_ENSGRID_PROB_24h_TN    "{{ vx_ensgrid_prob_24h_tn }}">
+<!ENTITY VX_ENSGRID_PROB_REFC_TN   "{{ vx_ensgrid_prob_refc_tn }}">
+<!ENTITY VX_ENSGRID_PROB_RETOP_TN  "{{ vx_ensgrid_prob_retop_tn }}">
+<!ENTITY VX_ENSPOINT_TN            "{{ vx_enspoint_tn }}">
+<!ENTITY VX_ENSPOINT_MEAN_TN       "{{ vx_enspoint_mean_tn }}">
+<!ENTITY VX_ENSPOINT_PROB_TN       "{{ vx_enspoint_prob_tn }}">
 
 <!--
 Entity used to load the module file for each GET_OBS_* task.
@@ -256,6 +256,7 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
+{%- if run_task_get_extrn_ics %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -284,6 +285,8 @@ MODULES_RUN_TASK_FP script.
     <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
 
   </task>
+{%- endif %}
+{%- if run_task_get_extrn_lbcs %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -312,6 +315,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>ICS_OR_LBCS</name><value>LBCS</value></envar>
 
   </task>
+{%- endif %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -326,6 +330,7 @@ MODULES_RUN_TASK_FP script.
 {%- endfor %} </var>
 {%- endif %}
 
+{%- if run_task_make_ics %}
   <task name="&MAKE_ICS_TN;{{ uscore_ensmem_name }}" maxtries="{{ maxtries_make_ics }}">
 
     &RSRV_DEFAULT;
@@ -364,6 +369,8 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
+{%- endif %}
+{%- if run_task_make_lbcs %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -406,6 +413,8 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
+{%- endif %}
+{%- if run_task_run_fcst %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -440,6 +449,7 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
+{%- endif %}
 <!--
 ************************************************************************
 ************************************************************************
