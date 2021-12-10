@@ -399,7 +399,7 @@ file (template_xml_fp):
   'date_last_cycl': ${DATE_LAST_CYCL}
   'cdate_first_cycl': !datetime ${DATE_FIRST_CYCL}${CYCL_HRS[0]}
   'cycl_hrs': [ $( printf "\'%s\', " "${CYCL_HRS[@]}" ) ]
-  'cycl_freq': !!str 24:00:00
+  'cycl_freq': !!str ${INCR_CYCL_FREQ}:00:00
 #
 # Forecast length (same for all cycles).
 #

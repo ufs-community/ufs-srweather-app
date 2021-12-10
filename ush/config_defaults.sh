@@ -436,6 +436,10 @@ WFLOW_LAUNCH_LOG_FN="log.launch_FV3LAM_wflow"
 # two-digit string representing an integer that is less than or equal to
 # 23, e.g. "00", "03", "12", "23".
 #
+# INCR_CYCL_FREQ:
+# Increment in hours for Cycle Frequency (cycl_freq).
+# Default is 24, which means cycle_freq=24:00:00
+#
 # FCST_LEN_HRS:
 # The length of each forecast, in integer hours.
 #
@@ -444,6 +448,7 @@ WFLOW_LAUNCH_LOG_FN="log.launch_FV3LAM_wflow"
 DATE_FIRST_CYCL="YYYYMMDD"
 DATE_LAST_CYCL="YYYYMMDD"
 CYCL_HRS=( "HH1" "HH2" )
+INCR_CYCL_FREQ="24"
 FCST_LEN_HRS="24"
 #
 #-----------------------------------------------------------------------

@@ -54,6 +54,7 @@ function set_cycle_dates() {
 "date_start" \
 "date_end" \
 "cycle_hrs" \
+"incr_cycl_freq" \
 "output_varname_all_cdates" \
   )
   process_args valid_args "$@"
@@ -92,7 +93,7 @@ End date (date_end) must be at or after start date (date_start):
 #-----------------------------------------------------------------------
 #
 # In the following "while" loop, we begin with the starting date and 
-# increment by 1 day each time through the loop until we reach the ending
+# increment by n days (incr_day) each time through the loop until we reach the ending
 # date.  For each date, we obtain an intermediate array of cdates (whose
 # elements have the format YYYYMMDDHH) by prepending to the elements of 
 # cycle_hrs the current date.  (Thus, this array has the same number of
@@ -104,9 +105,23 @@ End date (date_end) must be at or after start date (date_start):
 #
   all_cdates=()
   date_crnt="${date_start}"
+
+  if [ "${incr_cycl_freq}" -le 24 ]; then
+    incr_day=1
+  else
+    incr_day=$(( ${incr_cycl_freq} / 24 ))
+    incr_day_rem=$(( ${incr_cycl_freq} % 24 ))
+
+    if [ "${incr_day_rem}" -gt 0 ];then
+      print_err_msg_exit "\
+INCR_CYCL_FREQ is not divided by 24:
+  INCR_CYCL_FREQ = \"${incr_cycl_freq}\""
+    fi
+  fi
+
   while [ "${date_crnt}" -le "${date_end}" ]; do
     all_cdates+=( $( printf "%s " ${cycle_hrs[@]/#/${date_crnt}} ) )
-    date_crnt=$( $DATE_UTIL -d "${date_crnt} + 1 days" +%Y%m%d )
+    date_crnt=$( $DATE_UTIL -d "${date_crnt} + ${incr_day} days" +%Y%m%d )
   done
 #
 #-----------------------------------------------------------------------
