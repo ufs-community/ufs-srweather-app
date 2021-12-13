@@ -113,6 +113,7 @@
     range_warn = .true.
     read_increment = .false.
     regional = .true.
+    regional_bcs_from_gsi = .false.
     res_latlon_dynamics = 'fv3_increment.nc'
     reset_eta = .false.
     rf_cutoff = 20.e2
@@ -120,6 +121,7 @@
     use_hydro_pressure = .false.
     vtdm4 = 0.075
     warm_start = .false.
+    write_restart_with_bcs = .false.
     z_tracer = .true.
 /
 

@@ -35,6 +35,7 @@ valid_vals_CCPP_PHYS_SUITE=( \
 "FV3_GSD_SAR" \
 "FV3_GSD_v0" \
 "FV3_GFS_v15p2" \
+"FV3_GFS_v15_thompson_mynn_lam3km" \
 "FV3_GFS_v16" \
 "FV3_RRFS_v1beta" \
 "FV3_RRFS_v1alpha" \

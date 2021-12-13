@@ -614,6 +614,25 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Copy MERRA2 aerosol climatology data.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "$VERBOSE" "
+Copying MERRA2 aerosol climatology data files from system directory
+(FIXaer/FIXlut) to a subdirectory (FIXclim) in the experiment directory:
+  FIXaer = \"${FIXaer}\"
+  FIXlut = \"${FIXlut}\"
+  FIXclim = \"${FIXclim}\""
+
+check_for_preexist_dir_file "${FIXclim}" "delete"
+mkdir_vrfy -p "${FIXclim}"
+
+cp_vrfy "${FIXaer}/merra2.aerclim"*".nc" "${FIXclim}/"
+cp_vrfy "${FIXlut}/optics"*".dat" "${FIXclim}/"
+#
+#-----------------------------------------------------------------------
+#
 # Copy templates of various input files to the experiment directory.
 #
 #-----------------------------------------------------------------------
@@ -630,8 +649,7 @@ print_info_msg "$VERBOSE" "
 cp_vrfy "${FIELD_TABLE_TMPL_FP}" "${FIELD_TABLE_FP}"
 
 print_info_msg "$VERBOSE" "
-  Copying the template NEMS configuration file to the experiment direct-
-  ory..."
+  Copying the template NEMS configuration file to the experiment directory..."
 cp_vrfy "${NEMS_CONFIG_TMPL_FP}" "${NEMS_CONFIG_FP}"
 #
 # Copy the CCPP physics suite definition file from its location in the

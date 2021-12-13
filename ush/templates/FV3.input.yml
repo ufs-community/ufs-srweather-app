@@ -62,8 +62,6 @@ FV3_HRRR:
     kord_wz: 9
     nord_tr: 2
     nrows_blend: 10
-    regional_bcs_from_gsi: False
-    write_restart_with_bcs: False
   gfs_physics_nml:
     <<: *gsd_sar_phys
     cdmbgwd: [3.5, 1.0]
@@ -286,6 +284,52 @@ FV3_GFS_v15p2:
     landice: True
     ldebug: False
   surf_map_nml:
+
+FV3_GFS_v15_thompson_mynn_lam3km:
+  atmos_model_nml:
+    avg_max_length: 3600.0
+  fv_core_nml:
+    agrid_vel_rst: true
+    full_zs_filter: !!python/none
+    n_sponge: 9
+    npz_type: ''
+    rf_fast: false
+    sg_cutoff: 10000.0
+    vtdm4: 0.02
+  gfs_physics_nml:
+    avg_max_length: 3600.0
+    cdmbgwd: [0.88, 0.04]
+    do_deep: false
+    do_mynnsfclay: true
+    do_ugwp: false
+    fhswr: 900.0
+    fhlwr: 900.0
+    iaer: 1011
+    iccn: 2
+    icliq_sw: 2
+    imfdeepcnv: 2
+    imfshalcnv: 2
+    iopt_alb: 2
+    iopt_btr: 1
+    iopt_crs: 1
+    iopt_dveg: 2
+    iopt_frz: 1
+    iopt_inf: 1
+    iopt_rad: 1
+    iopt_run: 1
+    iopt_sfc: 1
+    iopt_snf: 4
+    iopt_stc: 1
+    iopt_tbot: 2
+    iovr: 3
+    ldiag_ugwp: false
+    lgfdlmprad: false
+    lsm: 1
+    lsoil_lsm: !!python/none
+    ltaerosol: false    
+    xkzminv: 0.3
+    xkzm_m: 1.0
+    xkzm_h: 1.0
 
 FV3_GFS_v16:
   cires_ugwp_nml:
