@@ -1,4 +1,4 @@
-.. _WE2E_tests:
+.. _WE2Etests:
 
 ================================
 Workflow End-to-End (WE2E) Tests

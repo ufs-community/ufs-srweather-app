@@ -53,7 +53,7 @@ Forecast Model
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
 (:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability :cite:`BlackEtAl2020`.
 The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s
-Guide for the UFS :term:`Weather Model` is `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`_. 
+Guide for the UFS :term:`Weather Model` is `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. 
 
 Supported model resolutions in this release include a 3-, 13-, and 25-km predefined Contiguous
 U.S. (CONUS) domain, all with 64 vertical levels. Preliminary tools for users to define their
@@ -61,12 +61,12 @@ own domain are also available in the release with full, formal support of these 
 provided in future releases. The Extended Schmidt Gnomonic (ESG) grid is used with the FV3-LAM,
 which features relatively uniform grid cells across the entirety of the domain. Additional
 information about the FV3 dynamical core can be found `here 
-<https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html>`_ and on the `NOAA Geophysical
+<https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html>`__ and on the `NOAA Geophysical
 Fluid Dynamics Laboratory website <https://www.gfdl.noaa.gov/fv3/>`_.
 
 Interoperable atmospheric physics, along with the Noah Multi-parameterization (Noah MP)
 Land Surface Model options, are supported through the Common Community Physics Package
-(:term:`CCPP`; described `here <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_).
+(:term:`CCPP`; described `here <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`__).
 Atmospheric physics are a set of numerical methods describing small-scale processes such
 as clouds, turbulence, radiation, and their interactions. There are two physics options
 supported for the release. The first is an experimental physics suite being tested for use

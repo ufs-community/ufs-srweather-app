@@ -4,7 +4,7 @@
 Configuring a New Platform
 ==========================
 
-The UFS SRW Application has been designed to work primarily on a number of Level 1 and 2 support platforms, as specified `here <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. However, it is also designed with flexibility in mind, so that any sufficiently up-to-date machine with a UNIX-based operating system should be capable of running the application. A full list of prerequisites for installing the UFS SRW App and running the Graduate Student Test can be found in :numref:`Section %s <SW-OS-Requirements>`.
+The UFS SRW Application has been designed to work primarily on a number of Level 1 and 2 support platforms, as specified `here <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it is also designed with flexibility in mind, so that any sufficiently up-to-date machine with a UNIX-based operating system should be capable of running the application. A full list of prerequisites for installing the UFS SRW App and running the Graduate Student Test can be found in :numref:`Section %s <SW-OS-Requirements>`.
 
 The first step to installing on a new machine is to install :term:`NCEPLIBS` (https://github.com/NOAA-EMC/NCEPLIBS), the NCEP libraries package, which is a set of libraries created and maintained by NCEP and EMC that are used in many parts of the UFS. NCEPLIBS comes with a large number of prerequisites (see :numref:`Section %s <SW-OS-Requirements>` for more info), but the only required software prior to starting the installation process are as follows:
 
@@ -170,7 +170,7 @@ If you are using your machine’s built-in MPI compilers, it is recommended you 
 
    export CMAKE_Platform=macosx.gnu
 
-This is the variable used by the weather model to set a few additional flags based on your machine. The available options can be found `here <https://github.com/ufs-community/ufs-weather-model/tree/release/public-v2/modulefiles>`_. 
+This is the variable used by the weather model to set a few additional flags based on your machine. The available options can be found `here <https://github.com/ufs-community/ufs-weather-model/tree/release/public-v2/modulefiles>`__. 
 
 Now all the prerequisites have been installed and variables set, so you should be ready to build the model!
 
@@ -211,8 +211,7 @@ Once the data has been staged, setting up your experiment on a platform without 
 ``MACHINE="MACOS" or MACHINE="LINUX"``
   These are the two ``MACHINE`` settings for generic, non-Rocoto-based platforms; you should choose the one most appropriate for your machine. ``MACOS`` has its own setting due to some differences in how command-line utilities function on Darwin-based operating systems.
 
-``LAYOUT_X=2``
-``LAYOUT_Y=2``
+``LAYOUT_X=2, LAYOUT_Y=2``
   These are the settings that control the MPI decomposition when running the weather model. There are default values, but for your machine it is recommended that you specify your own layout to achieve the correct number of MPI processes for your application.  In total, your machine should be able to handle ``LAYOUT_X×LAYOUT_Y+WRTCMP_write_tasks_per_group`` tasks. ``WRTCMP_write_tasks_per_group`` is the number of MPI tasks that will be set aside for writing model output, and it is a setting dependent on the domain you have selected. You can find and edit the value of this variable in the file ``regional_workflow/ush/set_predef_grid_params.sh``.
 
 ``RUN_CMD_UTILS="mpirun -np 4"``
