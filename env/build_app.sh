@@ -33,4 +33,8 @@ mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
 cmake .. -DCMAKE_INSTALL_PREFIX=..
+
+echo "============================================================="
+echo "===== App building begins, check ${BUILD_DIR}/build.out ====="
+
 make -j 8 >& build.out &
