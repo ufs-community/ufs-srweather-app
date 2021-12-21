@@ -64,6 +64,33 @@ ens = {
 ////////////////////////////////////////////////////////////////////////////////
 
 //
+// Neighborhood ensemble probabilities
+//
+nbrhd_prob = {
+   width      = [ 5 ];
+   shape      = CIRCLE;
+   vld_thresh = 0.0;
+}
+
+//
+// NMEP smoothing methods
+//
+nmep_smooth = {
+   vld_thresh      = 0.0;
+   shape           = CIRCLE;
+   gaussian_dx     = 81.27;
+   gaussian_radius = 120;
+   type = [
+      {
+         method = GAUSSIAN;
+         width  = 1;
+      }
+   ];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+//
 // Forecast and observation fields to be verified
 //
 
@@ -215,11 +242,11 @@ interp = {
 // Statistical output types
 //
 output_flag = {
-   ecnt  = NONE;
+   ecnt  = STAT;
    rps   = NONE;
    rhist = STAT;
    phist = STAT;
-   orank = NONE;
+   orank = STAT;
    ssvar = STAT;
    relp  = STAT;
 }
@@ -242,7 +269,7 @@ ensemble_flag = {
    frequency = TRUE;
    nep       = FALSE;
    nmep      = FALSE;   
-   rank      = FALSE;
+   rank      = TRUE;
    weight    = FALSE;
 }
 
