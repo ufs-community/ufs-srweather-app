@@ -108,7 +108,7 @@ case "$MACHINE" in
     if [ ${PE_MEMBER01} -gt 24 ];then
       APRUN="aprun -b -j1 -n${PE_MEMBER01} -N24 -d1 -cc depth"
     else
-      APRUN="aprun -b -j1 -n24 -N24 -d1 -cc depth"
+      APRUN="aprun -b -j1 -n${PE_MEMBER01} -N${PE_MEMBER01} -d1 -cc depth"
     fi
     ;;
 
