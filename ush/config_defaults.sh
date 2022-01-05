@@ -1333,6 +1333,15 @@ RUN_TASK_VX_ENSPOINT="FALSE"
 #
 #-----------------------------------------------------------------------
 #
+# Flag that determines whether MERRA2 aerosol climatology data and
+# lookup tables for optics properties are obtained
+#
+#-----------------------------------------------------------------------
+#
+USE_MERRA_CLIMO="FALSE"
+#
+#-----------------------------------------------------------------------
+#
 # Set the array parameter containing the names of all the fields that the
 # MAKE_SFC_CLIMO_TN task generates on the native FV3-LAM grid.
 #
