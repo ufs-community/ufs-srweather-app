@@ -11,7 +11,7 @@ FCST_MODEL="fv3gfs_aqm"
 #MACHINE="hera"     # If set, the auto-detected MACHINE will be replaced with this value.
 COMPILER="intel"
 
-DA_opt="YES"
+DA_opt="NO"
 ##############################
 
 # Detect MACHINE
