@@ -68,6 +68,6 @@ AQM_LBCS_DIR="/gpfs/dell2/emc/modeling/noscrub/Jianping.Huang/LBCS/RRFS_CONUS_13
 AQM_LBCS_FILES="gfs_bndy_chem_<MM>.tile7.000.nc"
 AQM_GEFS_DIR="/gpfs/dell2/emc/modeling/noscrub/RRFS_CMAQ/GEFS_aerosol"
 NEXUS_INPUT_DIR="/gpfs/dell2/emc/retros/noscrub/Jianping.Huang/emissions"
-NEXUS_FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/Jianping.Huang/emissions/nexus/fix"
+NEXUS_FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/RRFS_CMAQ/nexus/fix"
 NEXUS_GRID_FN="grid_spec_RRFS_CONUS_13km.nc"
 RESTART_CYCLE_DIR="/gpfs/dell2/emc/modeling/noscrub/RRFS_CMAQ/restart/RRFS_CONUS_13km/2019081012"
