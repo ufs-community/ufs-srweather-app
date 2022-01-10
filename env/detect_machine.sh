@@ -106,7 +106,7 @@ case $(hostname -f) in
   login02.expanse.sdsc.edu) MACHINE_ID=expanse ;; ### expanse2
 esac
 
-echo "MACHINE_ID:" ${MACHINE_ID}
+MACHINE="${MACHINE_ID}"
+PLATFORM="${MACHINE}"
 
-# Overwrite auto-detect with MACHINE if set
-MACHINE="${MACHINE:-${MACHINE_ID}}"
+printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
