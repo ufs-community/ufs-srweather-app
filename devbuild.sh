@@ -228,6 +228,7 @@ if [ "${VERBOSE}" = true ]; then
 fi
 
 # source the README file for this platform/compiler combination, then build the code
+module use ${SRC_DIR}/env
 . ${ENV_FILE}
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
