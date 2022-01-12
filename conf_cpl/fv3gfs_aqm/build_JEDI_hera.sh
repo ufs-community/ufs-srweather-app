@@ -1,17 +1,23 @@
 #!/bin/bash
 
-CWD=`pwd`
-echo ${CWD}
+set -eu
 
-cd ${CWD}/../src/JEDI
+MYDIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
+cd ${MYDIR}
+
+SRC_DIR="${MYDIR}/../../src/JEDI"
+BIN_DIR="${SRC_DIR}/../../bin"
+
+cd ${SRC_DIR}
 mkdir -p build
 cd build
+
 module purge
-source ${CWD}/../conf_cpl/fv3gfs_aqm/JEDI_build_hera.env 
+source ${MYDIR}/JEDI_build_hera.env 
 module list
 ecbuild -DMPIEXEC_EXECUTABLE=‘which srun‘ -DMPIEXEC_NUMPROC_FLAG="-n" ../ 
 make -j 8
 
-cd ../../../bin
-ln -sf ${CWD}/../src/JEDI/build/bin/fv3jedi* .
+cd ${BIN_DIR}
+ln -sf ${SRC_DIR}/build/bin/fv3jedi* .
 
