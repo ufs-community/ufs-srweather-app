@@ -1107,8 +1107,8 @@ if [[ $retval == 0 ]]; then
 #
 else
   printf "
-Experiment/workflow generation failed.  Check the log file from the ex-
-periment/workflow generation script in the file specified by log_fp:
+Experiment generation failed.  Check the log file from the experiment 
+generation script in the file specified by log_fp:
   log_fp = \"${log_fp}\"
 Stopping.
 "

@@ -538,8 +538,8 @@ accordingly and rerun."
   if [ "${match_found}" = "FALSE" ]; then
     avail_WE2E_test_names_str=$( printf "  \"%s\"\n" "${avail_WE2E_test_names[@]}" )
     print_err_msg_exit "\
-The name current user-specified test to run (user_spec_test) does not 
-match any of the names (either primary or alternate) of the available
+The name of the current user-specified test to run (user_spec_test) does 
+not match any of the names (either primary or alternate) of the available
 WE2E tests:
   user_spec_test = \"${user_spec_test}\"
 Valid values for user_spec_test consist of the names (primary or alternate)

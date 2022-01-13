@@ -18,7 +18,13 @@ set -u
 #-----------------------------------------------------------------------
 #
 if [[ $(uname -s) == Darwin ]]; then
-  command -v greadlink >/dev/null 2>&1 || { echo >&2 "For Darwin-based operating systems (MacOS), the 'greadlink' utility is required to run the UFS SRW Application. Reference the User's Guide for more information about platform requirements. Aborting."; exit 1; }
+  command -v greadlink >/dev/null 2>&1 || { \
+    echo >&2 "\
+For Darwin-based operating systems (MacOS), the 'greadlink' utility is 
+required to run the UFS SRW Application. Reference the User's Guide for 
+more information about platform requirements. Aborting."; \
+    exit 1; \
+  }
   scrfunc_fp=$( greadlink -f "${BASH_SOURCE[0]}" )
 else
   scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
@@ -28,27 +34,26 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 
 ushdir="${scrfunc_dir}"
 . $ushdir/source_util_funcs.sh
-
 #
 #-----------------------------------------------------------------------
 #
 # Get the experiment directory.  We assume that there is a symlink to 
 # this script in the experiment directory, and this script is called via
-# that symlink.  Thus, finding the directory in which the symlink is lo-
-# cated will give us the experiment directory.  We find this by first 
+# that symlink.  Thus, finding the directory in which the symlink is
+# located will give us the experiment directory.  We find this by first 
 # obtaining the directory portion (i.e. the portion without the name of
 # this script) of the command that was used to called this script (i.e.
-# "$0") and then use the "readlink -f" command to obtain the correspond-
-# ing absolute path.  This will work for all four of the following ways
-# in which the symlink in the experiment directory pointing to this 
-# script may be called:
+# "$0") and then use the "readlink -f" command to obtain the corresponding
+# absolute path.  This will work for all four of the following ways in 
+# which the symlink in the experiment directory pointing to this script 
+# may be called:
 #
 # 1) Call this script from the experiment directory:
 #    > cd /path/to/experiment/directory
 #    > launch_FV3LAM_wflow.sh
 #
-# 2) Call this script from the experiment directory but using "./" be-
-#    fore the script name:
+# 2) Call this script from the experiment directory but using "./" before
+#    the script name:
 #    > cd /path/to/experiment/directory
 #    > ./launch_FV3LAM_wflow.sh
 #
@@ -56,9 +61,8 @@ ushdir="${scrfunc_dir}"
 #    symlink in the experiment directory:
 #    > /path/to/experiment/directory/launch_FV3LAM_wflow.sh
 #
-# 4) Call this script from a directory that is several levels up from
-#    the experiment directory (but not necessarily at the root directo-
-#    ry):
+# 4) Call this script from a directory that is several levels up from the
+#    experiment directory (but not necessarily at the root directory):
 #    > cd /path/to
 #    > experiment/directory/launch_FV3LAM_wflow.sh
 #
@@ -75,7 +79,13 @@ ushdir="${scrfunc_dir}"
 #
 exptdir=$( dirname "$0" )
 if [[ $(uname -s) == Darwin ]]; then
-  command -v greadlink >/dev/null 2>&1 || { echo >&2 "For Darwin-based operating systems (MacOS), the 'greadlink' utility is required to run the UFS SRW Application. Reference the User's Guide for more information about platform requirements. Aborting."; exit 1; }
+  command -v greadlink >/dev/null 2>&1 || { \
+    echo >&2 "\
+For Darwin-based operating systems (MacOS), the 'greadlink' utility is 
+required to run the UFS SRW Application. Reference the User's Guide for 
+more information about platform requirements. Aborting."; 
+    exit 1;
+  }
   exptdir=$( greadlink -f "$exptdir" )
 else
   exptdir=$( readlink -f "$exptdir" )
@@ -106,14 +116,12 @@ expt_name="${EXPT_SUBDIR}"
 #
 #-----------------------------------------------------------------------
 #
-machine=$(echo_lowercase $MACHINE)
-env_fn=${WFLOW_ENV_FN:-"wflow_${machine}.env"}
-env_fp="${SR_WX_APP_TOP_DIR}/env/${env_fn}"
+env_fp="${SR_WX_APP_TOP_DIR}/env/${WFLOW_ENV_FN}"
 module purge
 source "${env_fp}" || print_err_msg_exit "\
-  Sourcing platform-specific environment file (env_fp) for
-the workflow task failed :
-env_fp = \"${env_fp}\""
+Sourcing platform-specific environment file (env_fp) for the workflow 
+task failed:
+  env_fp = \"${env_fp}\""
 #
 #-----------------------------------------------------------------------
 #
@@ -141,20 +149,19 @@ wflow_status="IN PROGRESS"
 #
 #-----------------------------------------------------------------------
 #
-cd "$exptdir"
+cd_vrfy "$exptdir"
 #
 #-----------------------------------------------------------------------
 #
-# Issue the rocotorun command to (re)launch the next task in the 
-# workflow.  Then check for error messages in the output of rocotorun.  
-# If any are found, it means the end-to-end run of the workflow failed.  
-# In this case, we remove the crontab entry that launches the workflow,
-# and we append an appropriate failure message at the end of the launch
-# log file.
+# Issue the rocotorun command to (re)launch the next task in the workflow.  
+# Then check for error messages in the output of rocotorun.  If any are 
+# found, it means the end-to-end run of the workflow failed.  In this 
+# case, we remove the crontab entry that launches the workflow, and we 
+# append an appropriate failure message at the end of the launch log 
+# file.
 #
 #-----------------------------------------------------------------------
 #
-
 tmp_fn="rocotorun_output.txt"
 rocotorun_cmd="rocotorun -w \"${WFLOW_XML_FN}\" -d \"${rocoto_database_fn}\" -v 10"
 eval ${rocotorun_cmd} > ${tmp_fn} 2>&1
@@ -239,15 +246,15 @@ ${rocotostat_output}
 # ...
 #
 # Thus, the first row is a header line containing the column titles, and
-# the remaining rows each correspond to one cycle in the workflow.  Be-
-# low, we are interested in the first and second columns of each row.
-# The first column is a string containing the start time of the cycle 
-# (in the format YYYYMMDDHHmm, where YYYY is the 4-digit year, MM is the
-# 2-digit month, DD is the 2-digit day of the month, HH is the 2-digit
-# hour of the day, and mm is the 2-digit minute of the hour).  The se-
-# cond column is a string containing the state of the cycle.  This can
-# be "Active" or "Done".  Below, we read in and store these two columns
-# in (1-D) arrays.
+# the remaining rows each correspond to one cycle in the workflow.  Below, 
+# we are interested in the first and second columns of each row.  The 
+# first column is a string containing the start time of the cycle (in the 
+# format YYYYMMDDHHmm, where YYYY is the 4-digit year, MM is the 2-digit 
+# month, DD is the 2-digit day of the month, HH is the 2-digit hour of 
+# the day, and mm is the 2-digit minute of the hour).  The second column 
+# is a string containing the state of the cycle.  This can be "Active" 
+# or "Done".  Below, we read in and store these two columns in (1-D) 
+# arrays.
 #
 #-----------------------------------------------------------------------
 #
@@ -259,9 +266,9 @@ cycle_status=()
 i=0
 while read -r line; do
 #
-# Note that the first line in rocotostat_output is a header line con-
-# taining the column titles.  Thus, we ignore it and consider only the
-# remaining lines (of which there is one per cycle).
+# Note that the first line in rocotostat_output is a header line containing 
+# the column titles.  Thus, we ignore it and consider only the remaining 
+# lines (of which there is one per cycle).
 #
   if [ $i -gt 0 ]; then
     im1=$((i-1))
@@ -289,9 +296,9 @@ done
 #
 #-----------------------------------------------------------------------
 #
-# If the number of completed cycles is equal to the total number of cy-
-# cles, it means the end-to-end run of the workflow was successful.  In
-# this case, we reset the wflow_status to "SUCCESS".
+# If the number of completed cycles is equal to the total number of cycles, 
+# it means the end-to-end run of the workflow was successful.  In this 
+# case, we reset the wflow_status to "SUCCESS".
 #
 #-----------------------------------------------------------------------
 #
@@ -301,8 +308,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Print informational messages about the workflow to the launch log 
-# file, including the workflow status.
+# Print informational messages about the workflow to the launch log file, 
+# including the workflow status.
 #
 #-----------------------------------------------------------------------
 #
@@ -333,25 +340,24 @@ if [ "${wflow_status}" = "SUCCESS" ] || \
 
   msg="
 The end-to-end run of the workflow for the forecast experiment specified 
-by expt_name has completed with the following workflow status (wflow_-
-status):
+by expt_name has completed with the following workflow status (wflow_status):
   expt_name = \"${expt_name}\"
   wflow_status = \"${wflow_status}\"
 "
 #
 # If a cron job was being used to periodically relaunch the workflow, we
-# now remove the entry in the crontab corresponding to the workflow be-
-# cause the end-to-end run of the workflow has now either succeeded or
+# now remove the entry in the crontab corresponding to the workflow 
+# because the end-to-end run of the workflow has now either succeeded or 
 # failed and will remain in that state without manual user intervention.
-# Thus, there is no need to try to relaunch it.  We also append a mes-
-# sage to the completion message above to indicate this.
+# Thus, there is no need to try to relaunch it.  We also append a message 
+# to the completion message above to indicate this.
 #
   if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
 
     msg="${msg}\
-Thus, there is no need to relaunch the workflow via a cron job.  Remo-
-ving from the crontab the line (CRONTAB_LINE) that calls the workflow
-launch script for this experiment:
+Thus, there is no need to relaunch the workflow via a cron job.  Removing 
+from the crontab the line (CRONTAB_LINE) that calls the workflow launch 
+script for this experiment:
   CRONTAB_LINE = \"${CRONTAB_LINE}\"
 "
 #
@@ -364,12 +370,13 @@ launch script for this experiment:
                              $SED -r -e "s%[*]%\\\\*%g" )
 #
 # In the string passed to the grep command below, we use the line start
-# and line end anchors ("^" and "$", respectively) to ensure that we on-
-# ly find lines in the crontab that contain exactly the string in cron-
-# tab_line_esc_astr without any leading or trailing characters.
+# and line end anchors ("^" and "$", respectively) to ensure that we
+# only find lines in the crontab that contain exactly the string in 
+# crontab_line_esc_astr without any leading or trailing characters.
 #
     if [ "$MACHINE" = "WCOSS_DELL_P3" ];then
-      grep -v "^${crontab_line_esc_astr}$" "/u/$USER/cron/mycrontab" > tmpfile && mv tmpfile "/u/$USER/cron/mycrontab"
+      grep -v "^${crontab_line_esc_astr}$" "/u/$USER/cron/mycrontab" \
+        > tmpfile && mv_vrfy tmpfile "/u/$USER/cron/mycrontab"
     else
       ( crontab -l | grep -v "^${crontab_line_esc_astr}$" ) | crontab -
     fi
@@ -388,7 +395,3 @@ launch script for this experiment:
   fi
 
 fi
-
-
-
-

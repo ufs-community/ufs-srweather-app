@@ -152,13 +152,14 @@ QUEUE_FCST=""
 # will be ignored unless WORKFLOW_MANAGER="none".  Definitions:
 #
 # RUN_CMD_UTILS:
-# The run command for pre-processing utilities (shave, orog, sfc_climo_gen, etc.)
-# Can be left blank for smaller domains, in which case the executables will run
-# without MPI.
+# The run command for pre-processing utilities (shave, orog, sfc_climo_gen, 
+# etc.) Can be left blank for smaller domains, in which case the executables 
+# will run without MPI.
 #
 # RUN_CMD_FCST:
-# The run command for the model forecast step. This will be appended to the end
-# of the variable definitions file, so it can reference other variables.
+# The run command for the model forecast step. This will be appended to 
+# the end of the variable definitions file, so it can reference other 
+# variables.
 #
 # RUN_CMD_POST:
 # The run command for post-processing (UPP). Can be left blank for smaller 
@@ -167,7 +168,7 @@ QUEUE_FCST=""
 #-----------------------------------------------------------------------
 #
 RUN_CMD_UTILS="mpirun -np 1"
-RUN_CMD_FCST="mpirun -np \${PE_MEMBER01}"
+RUN_CMD_FCST='mpirun -np \${PE_MEMBER01}'
 RUN_CMD_POST="mpirun -np 1"
 #
 #-----------------------------------------------------------------------
@@ -295,7 +296,7 @@ PTMP="/base/path/of/directory/containing/postprocessed/output/files"
 #
 #-----------------------------------------------------------------------
 #
-# Set the sparator character(s) to use in the names of the grid, mosaic,
+# Set the separator character(s) to use in the names of the grid, mosaic,
 # and orography fixed files.
 #
 # Ideally, the same separator should be used in the names of these fixed
@@ -732,6 +733,7 @@ NOMADS_file_type="nemsio"
 # directory or the cycle directories under it.
 #
 #-----------------------------------------------------------------------
+#
 CCPP_PHYS_SUITE="FV3_GFS_v15p2"
 #
 #-----------------------------------------------------------------------
@@ -1754,9 +1756,9 @@ NUM_ENS_MEMBERS="1"
 #
 #-----------------------------------------------------------------------
 #
-DO_SHUM="false"
-DO_SPPT="false"
-DO_SKEB="false"
+DO_SHUM="FALSE"
+DO_SPPT="FALSE"
+DO_SKEB="FALSE"
 SHUM_MAG="0.006" #Variable "shum" in input.nml
 SHUM_LSCALE="150000"
 SHUM_TSCALE="21600" #Variable "shum_tau" in input.nml
@@ -1770,7 +1772,7 @@ SKEB_LSCALE="150000"
 SKEB_TSCALE="21600" #Variable "skeb_tau" in input.nml
 SKEB_INT="3600" #Variable "skebint" in input.nml
 SKEB_VDOF="10"
-USE_ZMTNBLCK="false"
+USE_ZMTNBLCK="FALSE"
 #
 #-----------------------------------------------------------------------
 #
@@ -1787,7 +1789,7 @@ USE_ZMTNBLCK="false"
 #
 #-----------------------------------------------------------------------
 #
-DO_SPP="false"
+DO_SPP="FALSE"
 SPP_VAR_LIST=( "pbl" )
 SPP_MAG_LIST=( "0.2" ) #Variable "spp_prt_list" in input.nml
 SPP_LSCALE=( "150000.0" )
@@ -1902,6 +1904,3 @@ OMP_STACKSIZE_RUN_FCST="1024m"
 KMP_AFFINITY_RUN_POST="scatter"
 OMP_NUM_THREADS_RUN_POST="1"
 OMP_STACKSIZE_RUN_POST="1024m"
-#
-#-----------------------------------------------------------------------
-#

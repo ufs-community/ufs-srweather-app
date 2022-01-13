@@ -759,7 +759,7 @@ This is probably because it is a directory.  Please correct and rerun."
   test_names=("${prim_test_names[@]}")
   test_subdirs=("${prim_test_subdirs[@]}")
   if [ "${num_alt_tests}" -gt "0" ]; then
-    test_names+=("${alt_test_subdirs[@]:-}")
+    test_names+=("${alt_test_names[@]:-}")
     test_subdirs+=("${alt_test_subdirs[@]:-}")
   fi
 #
@@ -1025,7 +1025,7 @@ Please correct and rerun."
 # listed first.  
 #
 # Finally, we extract from test_ids_and_inds_sorted the second number 
-# in each element (the one afte the first number, which is the test ID,
+# in each element (the one after the first number, which is the test ID,
 # and the test type, which we no longer need), which is the original 
 # array index before sorting, and save the results in the array sort_inds.  
 # This array will contain the original indices in sorted order that we 

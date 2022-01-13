@@ -211,6 +211,15 @@ function source_util_funcs() {
 #-----------------------------------------------------------------------
 #
   . ${bashutils_dir}/create_symlink_to_file.sh
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing the function that gets the stripped contents
+# of a bash script or function.
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/get_bash_file_contents.sh
 
 }
 source_util_funcs

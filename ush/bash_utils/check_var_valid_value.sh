@@ -108,24 +108,34 @@ The value specified in ${var_name} is not supported:
 #
 #-----------------------------------------------------------------------
 #
-# Check whether var_value is equal to one of the elements of the array
-# valid_var_values.  If not, print out an error message and exit the 
-# calling script.
+# If var_value contains a dollar sign, we assume the corresponding variable 
+# (var_name) is a template variable, i.e. one whose value contains a 
+# reference to another variable, e.g.
+#
+#   MY_VAR='\${ANOTHER_VAR}'
+#
+# In this case, we do nothing since it does not make sense to check 
+# whether var_value is a valid value (since its contents have not yet 
+# been expanded).  If var_value doesn't contain a dollar sign, it must 
+# contain a literal string.  In this case, we check whether it is equal 
+# to one of the elements of the array valid_var_values.  If not, we 
+# print out an error message and exit the calling script.
 #
 #-----------------------------------------------------------------------
 #
-  is_element_of "valid_var_values" "${var_value}" || { \
-    valid_var_values_str=$(printf "\"%s\" " "${valid_var_values[@]}");
-    print_err_msg_exit "\
+  if [[ "${var_value}" != *'$'* ]]; then
+    is_element_of "valid_var_values" "${var_value}" || { \
+      valid_var_values_str=$(printf "\"%s\" " "${valid_var_values[@]}");
+      print_err_msg_exit "\
 ${err_msg}
 ${var_name} must be set to one of the following:
   ${valid_var_values_str}"; \
-  }
+    }
+  fi
 #
 #-----------------------------------------------------------------------
 #
-# Restore the shell options saved at the beginning of this script/func-
-# tion.
+# Restore the shell options saved at the beginning of this script/function.
 #
 #-----------------------------------------------------------------------
 #
