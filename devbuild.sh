@@ -10,7 +10,7 @@ OPTIONS
       show this help guide
   --platform=PLATFORM
       name of machine you are building on
-      (e.g. cheyenne | hera | jet | orion | wcoss)
+      (e.g. cheyenne | hera | jet | orion | wcoss_cray | wcoss_dell_p3)
   --compiler=COMPILER
       compiler to use; default depends on platform
       (e.g. intel | gnu | cray | gccgfortran)
@@ -230,15 +230,15 @@ if [ "${VERBOSE}" = true ]; then
 fi
 
 # source the environment file for this platform/compiler combination, then build the code
-printf "... Source ENV_FILE and create BUILD directory ...\n" >&2
+printf "... Source ENV_FILE and create BUILD directory ...\n"
 module use ${SRC_DIR}/env
 . ${ENV_FILE}
 module list
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
-printf "... Generate CMAKE configuration ...\n" >&2
+printf "... Generate CMAKE configuration ...\n"
 cmake ${SRC_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
-printf "... Compile executables ...\n" >&2
+printf "... Compile executables ...\n"
 make ${MAKE_SETTINGS} 2>&1 | tee log.make
 
 exit 0
