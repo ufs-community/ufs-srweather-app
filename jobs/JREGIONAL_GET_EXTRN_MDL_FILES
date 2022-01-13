@@ -167,28 +167,29 @@ check_var_valid_value "ICS_OR_LBCS" "valid_vals_ICS_OR_LBCS"
 #
 #-----------------------------------------------------------------------
 #
-# Set the parameter anl_or_fcst that determines whether we want to get 
-# analysis or forecast files.  This depends on whether we want these files 
-# to generate initial condition and surface field files or lateral boundary 
-# condition files.  Also, set time_offset_hrs, which is the offset in 
-# hours between the current cycle's starting time and the starting time 
-# of the external model providing the LBCs.
+# Set parameters for grabbing either the initial conditions from analysis or
+# forecast files of external models, or the lateral boundary conditions
+# from external models. The script has been called to do the work for
+# one or the other.
 #
 #-----------------------------------------------------------------------
 #
 if [ "${ICS_OR_LBCS}" = "ICS" ]; then
-  anl_or_fcst="ANL"
-  time_offset_hrs="0"
+  if [ ${EXTRN_MDL_ICS_OFFSET_HRS} -eq 0 ] ; then
+    anl_or_fcst="ANL"
+    time_offset_hrs=0
+  else
+    anl_or_fcst="FCST"
+    time_offset_hrs=${EXTRN_MDL_ICS_OFFSET_HRS:-0}
+  fi
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   anl_or_fcst="FCST"
-  time_offset_hrs="${EXTRN_MDL_LBCS_OFFSET_HRS}"
+  time_offset_hrs=${EXTRN_MDL_LBCS_OFFSET_HRS:-0}
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of and then create the directory in which to stage the 
-# external model files for the current cycle (if it doesn't already exist).  
-# Then change location to that directory.
+# Create the directory where the exetrnal model files should be stored
 #
 #-----------------------------------------------------------------------
 #
