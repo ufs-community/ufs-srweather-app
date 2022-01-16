@@ -45,7 +45,7 @@ USE_CHEM_ANAL="TRUE"
 RUN_TASK_DACYC="TRUE"
 
 FV3_EXEC_FN="NEMS.x"
-FV3_NML_BASE_SUITE_FN="input.nml.fv3gfs_aqm_FV3_GFS_2017_gfdlmp"
+FV3_NML_BASE_SUITE_FN="input.nml.fv3gfs_aqm"
 FV3_NML_YAML_CONFIG_FN="fv3gfs_aqm.input.yml"
 WFLOW_XML_FN="fv3gfs_aqm_wflow.xml"
 
