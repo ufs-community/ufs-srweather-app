@@ -60,7 +60,7 @@
     d2_bg = 0.0
     d2_bg_k1 = 0.20
     d2_bg_k2 = 0.04
-    d4_bg = 0.15
+    d4_bg = 0.12
     d_con = 1.0
     d_ext = 0.0
     dddmp = 0.1
@@ -100,7 +100,7 @@
     ncep_ic = .false.
     nggps_ic = .true.
     no_dycore = .false.
-    nord = 2
+    nord = 3
     npz = 64
     nrows_blend = 10
     ntiles = 1
