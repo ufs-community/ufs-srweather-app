@@ -15,7 +15,7 @@ DA_opt="NO"
 ##############################
 
 # Detect MACHINE
-source detect_machine.sh
+source ../env/detect_machine.sh
 echo "MACHINE:" $MACHINE
 
 SCRIPT_DIR="${MYDIR}/${FCST_MODEL}"

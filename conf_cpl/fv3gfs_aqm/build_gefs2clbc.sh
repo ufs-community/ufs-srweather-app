@@ -6,7 +6,7 @@ MYDIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
 cd ${MYDIR}
 
 # Detect MACHINE
-source ${MYDIR}/../detect_machine.sh
+source ${MYDIR}/../../env/detect_machine.sh
 echo "MACHINE:" $MACHINE
 
 if [ "${MACHINE}" = "wcoss_dell_p3" ]; then
