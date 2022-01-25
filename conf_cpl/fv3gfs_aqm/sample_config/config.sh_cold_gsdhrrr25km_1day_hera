@@ -42,7 +42,7 @@ FV3_NML_BASE_SUITE_FN="input.nml.fv3gfs_aqm"
 FV3_NML_YAML_CONFIG_FN="fv3gfs_aqm.input.yml"
 WFLOW_XML_FN="fv3gfs_aqm_wflow.xml"
 
-AQM_RC_FN="aqm.rc"
+AQM_RC_FN="aqm.rc_static"
 
 AQM_CONFIG_DIR="/scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data"
 AQM_BIO_DIR="/scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio"
