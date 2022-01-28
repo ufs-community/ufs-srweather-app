@@ -1,0 +1,193 @@
+# This file tracks known data store locations for data used as input to
+# the SRW App configuations.
+#
+# The contents should be organized as follows:
+#
+# Top level: A key corresponding to an external model file or
+# observation dataset accepted by the SRW App.
+#
+# 2nd level: A key corressponding to a named datastore for a given data
+# set. This could be nomads, aws, hpss, etc.
+#
+# 3rd level required:
+#
+# protocol:
+#   indication of how a set of files will be retrieved. Options:
+#   download or htar. The requirements for each protocol are described
+#   below
+#
+# file_names:
+#   Each data store will require an entry that describes the names of
+#   files to be extracted from the data store. These entries are
+#   expected as lists to indicate when multiple files should be
+#   retrieved.  anl and fcst subsections indicate the naming convention
+#   for that type of file. Both are required for external models ICS and
+#   LBCS. Each file name may (and likely should) include templates.
+#
+#   If the SRW App accepts different file formats,
+#   as it does for FV3GFS, an intermediary level indicating the value
+#   associate with a FV3GFS_FILE_FMT_* variable.
+#
+# 3rd level optional:
+#
+#  for download protocol:
+#     url: required. the URL to the location of the data file. May include
+#          templates.
+#
+#  for htar protocol:
+#     archive_path: a list of paths to the potential location of the
+#                   archive file on HPSS. since there may be multiple
+#                   options for a given external model file, the list
+#                   will be searched in order listed below.
+#     archive_file_names: the name of the archive file. this could
+#                   differ for each archive_path option, so one entry is
+#                   needed (even if it's identical) for each entry of
+#                   archive_path provided
+#     archive_internal_dir: (optional) a path to data files stored
+#                   inside a given archive file
+#
+#
+#
+FV3GFS:
+  nomads:
+    protocol: download
+    url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.{yyyymmdd}/{hh}/atmos
+    file_names: &gfs_file_names
+      grib2:
+        anl:
+          - gfs.t{hh}z.pgrb2.0p25.f000
+        fcst:
+          - gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d}
+      nemsio:
+        anl:
+          - gfs.t{hh}z.atmanl.nemsio
+          - gfs.t{hh}z.sfcanl.nemsio
+        fcst:
+          - gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio
+          - gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio
+  hpss:
+    protocol: htar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+    archive_internal_dir:
+      - ./gfs.{yyyymmdd}/{hh}
+      - ./gfs.{yyyymmdd}/{hh}/atmos
+    archive_file_names:
+      grib2:
+        anl:
+          - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
+          - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
+        fcst:
+          - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
+          - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
+      nemsio:
+        anl:
+          - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nemsioa.tar
+          - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nemsioa.tar
+        fcst:
+          - ['gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nemsioa.tar', 'gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nemsiob.tar']
+          - ['com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nemsioa.tar', 'com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nemsiob.tar']
+      netcdf:
+        anl:
+          - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar
+          - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar
+        fcst:
+          - ['gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
+          - ['com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
+    file_names:
+      <<: *gfs_file_names
+  aws:
+    protocol: download
+    url: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.{yyyymmdd}/{hh}/atmos
+    file_names:
+      <<: *gfs_file_names
+
+RAP:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+    archive_internal_dir:
+      - ./
+    archive_file_names:
+      # RAP forecasts are binned into 6 hour tar files.
+      - com_rap_prod_rap.{yyyymmdd}{bin6}.wrf.tar
+    file_names: &rap_file_names
+      anl:
+        - rap.t{hh}z.wrfnatf{fcst_hr:02d}.grib2
+      fcst:
+        - rap.t{hh}z.wrfnatf{fcst_hr:02d}.grib2
+  aws:
+    protocol: download
+    url: https://noaa-rap-pds.s3.amazonaws.com/rap.{yyyymmdd}
+    file_names:
+      <<: *rap_file_names
+
+RAPx:
+  hpss:
+    protocol: htar
+    archive_format: zip
+    archive_path:
+      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/fsl/rap/full/wrfnat
+    archive_file_names:
+      # RAPx bins two cycles togehter, and named by the lower even value
+      # of the cycle hour.
+      - '{yyyymmdd}{hh_even}00.zip'
+    file_names:
+      anl:
+        - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+      fcst:
+        - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+
+HRRR:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+    archive_internal_dir:
+      - ./
+    archive_file_names:
+      # HRRR forecasts are binned into 6 hour tar files.
+      - com_hrrr_prod_hrrr.{yyyymmdd}_conus{bin6}.wrfnatdng.tar
+    file_names: &hrrr_file_names
+      anl:
+        - hrrr.t{hh}z.wrfnatf{fcst_hr:02d}.grib2
+      fcst:
+        - hrrr.t{hh}z.wrfnatf{fcst_hr:02d}.grib2
+  aws:
+    protocol: download
+    url: https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{yyyymmdd}/conus/
+    file_names:
+      <<: *hrrr_file_names
+
+HRRRx:
+  hpss:
+    protocol: htar
+    archive_format: zip
+    archive_path:
+      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/fsl/hrrr/conus/wrfnat
+    archive_file_names:
+      - '{yyyymmddhh}00.zip'
+    file_names:
+      anl:
+        - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+      fcst:
+        - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+
+NAM:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+    archive_file_names:
+      - com_nam_prod_nam.{yyyymmddhh}.bgrid.tar
+    file_names:
+      anl:
+        - nam.t{hh}z.bgrdsf{fcst_hr:03d}.tm00
+      fcst:
+        - nam.t{hh}z.bgrdsf{fcst_hr:03d}
+
