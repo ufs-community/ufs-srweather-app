@@ -18,7 +18,7 @@ Explicitly state what tests were run on these changes, or if any are still pendi
 
 ## DEPENDENCIES:
 Add any links to external PRs (e.g. regional_workflow and/or UFS PRs). For example:
-- NOAA-EMC/regional_workflow/pull/<pr_number>
+- ufs-community/regional_workflow/pull/<pr_number>
 - ufs-community/UFS_UTILS/pull/<pr_number>
 - ufs-community/ufs-weather-model/pull/<pr_number>
 
@@ -26,7 +26,7 @@ Add any links to external PRs (e.g. regional_workflow and/or UFS PRs). For examp
 If this PR is contributing new capabilities that need to be documented, please also include updates to the RST files (docs/UsersGuide/source) as supporting material.
 
 ## ISSUE (optional): 
-If this PR is resolving or referencing one or more issues, in this repository or elewhere, list them here. For example, "Fixes issue mentioned in #123" or "Related to bug in https://github.com/NOAA-EMC/other_repository/pull/63"
+If this PR is resolving or referencing one or more issues, in this repository or elewhere, list them here. For example, "Fixes issue mentioned in #123" or "Related to bug in https://github.com/ufs-community/other_repository/pull/63"
 
 ## CONTRIBUTORS (optional): 
 If others have contributed to this work aside from the PR author, list them here

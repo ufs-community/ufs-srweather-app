@@ -275,7 +275,7 @@ The ``README.md`` file will contain instructions on the order that each script s
    +--------------------+----------------------------+------------+-----------+
    | ufs-weather-model  | ./run_fcst.sh              | 6          | 1h 40 m   |
    +--------------------+----------------------------+------------+-----------+
-   | EMC_post           | ./run_post.sh              | 1          | 7 m       |
+   | UPP                | ./run_post.sh              | 1          | 7 m       |
    +--------------------+----------------------------+------------+-----------+
 
 Running on a New Platform with Rocoto Workflow Manager
