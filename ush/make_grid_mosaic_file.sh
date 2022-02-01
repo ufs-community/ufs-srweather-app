@@ -51,6 +51,7 @@ function make_grid_mosaic_file() {
 "grid_dir" \
 "grid_fn" \
 "mosaic_fn" \
+"run_cmd" \
   )
   process_args valid_args "$@"
 #
@@ -166,7 +167,7 @@ Please ensure that you've built this executable."
 #    directory /abc/def and named ghi.nc.nc -- note the double ".nc" 
 #    extensions).
 #
-    $APRUN "${exec_fp}" \
+    ${run_cmd} "${exec_fp}" \
       --num_tiles 1 \
       --dir "${grid_dir}" \
       --tile_file "${grid_fn}" \

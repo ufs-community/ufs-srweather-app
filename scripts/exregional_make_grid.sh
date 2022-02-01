@@ -92,7 +92,7 @@ case "$MACHINE" in
     module list
     { restore_shell_opts; } > /dev/null 2>&1
     export NODES=1
-    export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
+    export RUN_CMD_SERIAL="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
     export KMP_AFFINITY=disabled
     ulimit -s unlimited
     ulimit -a
@@ -102,56 +102,25 @@ case "$MACHINE" in
     { save_shell_opts; set +x; } > /dev/null 2>&1
     module list
     { restore_shell_opts; } > /dev/null 2>&1
-    export APRUN="mpirun"
+    export RUN_CMD_SERIAL="mpirun"
     ulimit -s unlimited
-    ;;
-
-  "HERA")
-    APRUN="time"
-    ;;
-
-  "ORION")
-    ulimit -s unlimited
-    ulimit -a
-    APRUN="time"
-    ;;
-
-  "JET")
-    APRUN="time"
-    ulimit -a
-    ;;
-
-  "ODIN")
-    export APRUN="srun -n 1"
-    ulimit -s unlimited
-    ulimit -a
-    ;;
-
-  "CHEYENNE")
-    APRUN="time"
-    ;;
-
-  "STAMPEDE")
-    export APRUN="time"
-    ulimit -s unlimited
-    ulimit -a
-    ;;
-
-  "MACOS")
-    APRUN=time
-    ;;
-
-  "LINUX")
-    APRUN=time
     ;;
 
   *)
-    print_err_msg_exit "\
-Run command has not been specified for this machine:
-  MACHINE = \"$MACHINE\""
+    source ${MACHINE_FILE}
     ;;
 
 esac
+
+if [ -z ${RUN_CMD_SERIAL:-} ] ; then
+  print_err_msg_exit " \
+  Run command was not set in machine file. \
+  Please set RUN_CMD_SERIAL for your platform"
+else
+  RUN_CMD_SERIAL=$(eval echo ${RUN_CMD_SERIAL})
+  print_info_msg "$VERBOSE" "
+  All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -311,7 +280,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # for the 6 global tiles.  However, after this call we will only need the
 # regional grid file.
 #
-  $APRUN ${exec_fp} \
+  $RUN_CMD_SERIAL ${exec_fp} \
     --grid_type gnomonic_ed \
     --nlon ${nx_t6sg} \
     --grid_name ${grid_name} \
@@ -385,7 +354,7 @@ $settings"
 #
 # Call the executable that generates the grid file.
 #
-  $APRUN ${exec_fp} ${rgnl_grid_nml_fp} || \
+  $RUN_CMD_SERIAL ${exec_fp} ${rgnl_grid_nml_fp} || \
     print_err_msg_exit "\
 Call to executable (exec_fp) that generates a ESGgrid-type regional grid
 returned with nonzero exit code:
@@ -424,7 +393,7 @@ cubed-sphere grid equivalent resolution does not exist:
 Please ensure that you've built this executable."
 fi
 
-$APRUN ${exec_fp} "${grid_fp}" || \
+$RUN_CMD_SERIAL ${exec_fp} "${grid_fp}" || \
 print_err_msg_exit "\
 Call to executable (exec_fp) that calculates the regional grid's global
 uniform cubed-sphere grid equivalent resolution returned with nonzero exit
@@ -519,7 +488,7 @@ fi
 exec_fn="shave"
 exec_fp="$EXECDIR/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
+  print_err_msg_exit " \
 The executable (exec_fp) for \"shaving\" down the halo in the grid file
 does not exist:
   exec_fp = \"${exec_fp}\"
@@ -553,7 +522,7 @@ printf "%s %s %s %s %s\n" \
   $NX $NY ${NH3} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
-$APRUN ${exec_fp} < ${nml_fn} || \
+$RUN_CMD_SERIAL ${exec_fp} < ${nml_fn} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate a grid file with a ${NH3}-cell-wide
 halo from the grid file with a ${NHW}-cell-wide halo returned with nonzero
@@ -579,7 +548,7 @@ printf "%s %s %s %s %s\n" \
   $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
-$APRUN ${exec_fp} < ${nml_fn} || \
+$RUN_CMD_SERIAL ${exec_fp} < ${nml_fn} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate a grid file with a ${NH4}-cell-wide
 halo from the grid file with a ${NHW}-cell-wide halo returned with nonzero
@@ -603,7 +572,8 @@ cd_vrfy -
 make_grid_mosaic_file \
   grid_dir="${GRID_DIR}" \
   grid_fn="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NHW}.nc" \
-  mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NHW}.nc" || \
+  mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NHW}.nc" \
+  run_cmd="${RUN_CMD_SERIAL}" || \
   print_err_msg_exit "\
 Call to function to generate the mosaic file for a grid with a ${NHW}-cell-wide
 halo failed."
@@ -617,7 +587,8 @@ halo failed."
 make_grid_mosaic_file \
   grid_dir="${GRID_DIR}" \
   grid_fn="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc" \
-  mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc" || \
+  mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc" \
+  run_cmd="${RUN_CMD_SERIAL}" || \
   print_err_msg_exit "\
 Call to function to generate the mosaic file for a grid with a ${NH3}-cell-wide
 halo failed."
@@ -631,7 +602,8 @@ halo failed."
 make_grid_mosaic_file \
   grid_dir="${GRID_DIR}" \
   grid_fn="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc" \
-  mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc" || \
+  mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc" \
+  run_cmd="${RUN_CMD_SERIAL}" || \
   print_err_msg_exit "\
 Call to function to generate the mosaic file for a grid with a ${NH4}-cell-wide
 halo failed."

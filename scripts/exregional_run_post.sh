@@ -104,7 +104,7 @@ case "$MACHINE" in
     export MP_LABELIO=yes
     export OMP_NUM_THREADS=$threads
 
-    APRUN="aprun -j 1 -n${ntasks} -N${ptile} -d${threads} -cc depth"
+    RUN_CMD_POST="aprun -j 1 -n${ntasks} -N${ptile} -d${threads} -cc depth"
     ;;
 
   "WCOSS_DELL_P3")
@@ -117,53 +117,25 @@ case "$MACHINE" in
     export MP_LABELIO=yes
     export OMP_NUM_THREADS=$threads
 
-    APRUN="mpirun"
-    ;;
-
-  "HERA")
-    APRUN="srun"
-    ;;
-
-  "ORION")
-    ulimit -s unlimited
-    ulimit -a
-    APRUN="srun"
-    ;;
-
-  "JET")
-    APRUN="srun"
-    ;;
-
-  "ODIN")
-    APRUN="srun -n 1"
-    ;;
-
-  "CHEYENNE")
-    module list
-    nprocs=$(( NNODES_RUN_POST*PPN_RUN_POST ))
-    APRUN="mpirun -np $nprocs"
-    ;;
-
-  "STAMPEDE")
-    nprocs=$(( NNODES_RUN_POST*PPN_RUN_POST ))
-    APRUN="ibrun -n $nprocs"
-    ;;
-
-  "MACOS")
-    APRUN=$RUN_CMD_POST
-    ;;
-
-  "LINUX")
-    APRUN=$RUN_CMD_POST
+    RUN_CMD_POST="mpirun"
     ;;
 
   *)
-    print_err_msg_exit "\
-Run command has not been specified for this machine:
-  MACHINE = \"$MACHINE\""
+    source ${MACHINE_FILE}
     ;;
 
 esac
+
+nprocs=$(( NNODES_RUN_POST*PPN_RUN_POST ))
+if [ -z ${RUN_CMD_POST:-} ] ; then
+  print_err_msg_exit "\
+  Run command was not set in machine file. \
+  Please set RUN_CMD_POST for your platform"
+else
+  RUN_CMD_POST=$(eval echo ${RUN_CMD_POST})
+  print_info_msg "$VERBOSE" "
+  All executables will be submitted with command \'${RUN_CMD_POST}\'."
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -294,7 +266,7 @@ EOF
 print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
-${APRUN} ${EXECDIR}/upp.x < itag || print_err_msg_exit "\
+${RUN_CMD_POST} ${EXECDIR}/upp.x < itag || print_err_msg_exit "\
 Call to executable to run post for forecast hour $fhr returned with non-
 zero exit code."
 #

@@ -139,7 +139,7 @@ EOF
 case "$MACHINE" in
 
   "WCOSS_CRAY")
-    APRUN=${APRUN:-"aprun -j 1 -n 6 -N 6"}
+    RUN_CMD_UTILS=${APRUN:-"aprun -j 1 -n 6 -N 6"}
     ;;
 
   "WCOSS_DELL_P3")
@@ -150,51 +150,26 @@ case "$MACHINE" in
     export threads=1
     export MP_LABELIO=yes
     export OMP_NUM_THREADS=$threads
-    APRUN="mpirun"
-    ;;
-
-  "HERA")
-    APRUN="srun"
-    ;;
-
-  "ORION")
-    APRUN="srun"
-    ;;
-
-  "JET")
-    APRUN="srun"
-    ;;
-
-  "CHEYENNE")
-    nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
-    APRUN="mpirun -np $nprocs"
-    ;;
-
-  "ODIN")
-    nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
-    APRUN="srun -n $nprocs"
-    ;;
-
-  "STAMPEDE")
-    nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
-    APRUN="ibrun -np ${nprocs}"
-    ;;
-
-  "MACOS")
-    APRUN=$RUN_CMD_UTILS
-    ;;
-
-  "LINUX")
-    APRUN=$RUN_CMD_UTILS
+    RUN_CMD_UTILS="mpirun"
     ;;
 
   *)
-    print_err_msg_exit "\
-Run command has not been specified for this machine:
-  MACHINE = \"$MACHINE\""
+    source ${MACHINE_FILE}
     ;;
 
 esac
+
+nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
+
+if [ -z ${RUN_CMD_UTILS:-} ] ; then
+  print_err_msg_exit "\
+  Run command was not set in machine file. \
+  Please set RUN_CMD_UTILS for your platform"
+else
+  RUN_CMD_UTILS=$(eval echo ${RUN_CMD_UTILS})
+  print_info_msg "$VERBOSE" "
+  All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -214,7 +189,7 @@ does not exist:
 Please ensure that you've built this executable."
 fi
 
-$APRUN ${exec_fp} || \
+${RUN_CMD_UTILS} ${exec_fp} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate surface climatology files returned
 with nonzero exit code:

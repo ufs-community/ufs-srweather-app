@@ -89,6 +89,7 @@ Usage:
     [use_cron_to_relaunch=\"...\"] \\
     [cron_relaunch_intvl_mnts=\"...\"] \\
     [verbose=\"...\"] \\
+    [machine_file=\"...\"] \\
     [stmp=\"...\"] \\
     [ptmp=\"...\"]
 
@@ -170,6 +171,10 @@ Note that it is not possible to specify a different value for VERBOSE
 for each test via this argument; either all tests will have VERBOSE set 
 to \"TRUE\" or all will have it set to \"FALSE\".
 
+machine_file:
+Optional argument to set the full path to a machine configuration file.
+If not set, a supported platform machine file may be used.
+
 stmp:
 Argument used to explicitly set the experiment variable STMP in the 
 experiment configuration files of all the WE2E tests the user wants to 
@@ -225,6 +230,7 @@ valid_args=( \
   "use_cron_to_relaunch" \
   "cron_relaunch_intvl_mnts" \
   "verbose" \
+  "machine_file" \
   "stmp" \
   "ptmp" \
   )
@@ -664,6 +670,13 @@ Please correct and rerun."
   CRON_RELAUNCH_INTVL_MNTS=${cron_relaunch_intvl_mnts:-"02"}
   VERBOSE=${verbose:-"TRUE"}
 
+  MACHINE_FILE=${machine_file:-"${ushdir}/machine/${machine,,}.sh"}
+
+  # Set the machine-specific configuration settings by sourcing the
+  # machine file in the ush directory
+
+  source $MACHINE_FILE
+
   expt_config_str=${expt_config_str}"\
 #
 # The machine on which to run, the account to which to charge computational
@@ -688,6 +701,10 @@ EXPT_SUBDIR=\"${EXPT_SUBDIR}\"
 #
 USE_CRON_TO_RELAUNCH=\"${USE_CRON_TO_RELAUNCH}\"
 CRON_RELAUNCH_INTVL_MNTS=\"${CRON_RELAUNCH_INTVL_MNTS}\"
+#
+# Path to machine configuration file.
+#
+MACHINE_FILE=\"${MACHINE_FILE}\"
 #
 # Flag specifying whether to run in verbose mode.
 #
@@ -729,17 +746,9 @@ VERBOSE=\"${VERBOSE}\""
      [ "${RUN_TASK_MAKE_OROG}" = "FALSE" ] || \
      [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "FALSE" ]; then
 
-    if [ "$MACHINE" = "WCOSS_CRAY" ]; then
-      pregen_basedir="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/FV3LAM_pregen"
-    elif [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
-      pregen_basedir="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen"
-    elif [ "$MACHINE" = "HERA" ]; then
-      pregen_basedir="/scratch2/BMC/det/FV3LAM_pregen"
-    elif [ "$MACHINE" = "JET" ]; then
-      pregen_basedir="/mnt/lfs4/BMC/wrfruc/FV3-LAM/pregen"
-    elif [ "$MACHINE" = "CHEYENNE" ]; then
-      pregen_basedir="/glade/p/ral/jntp/UFS_CAM/FV3LAM_pregen"
-    else
+    pregen_basedir=${TEST_PREGEN_BASEDIR:-}
+
+    if [ ! -d "${pregen_basedir:-}" ] ; then
       print_err_msg_exit "\
 The base directory (pregen_basedir) in which the pregenerated grid,
 orography, and/or surface climatology files are located has not been
@@ -837,37 +846,7 @@ SFC_CLIMO_DIR=\"${SFC_CLIMO_DIR}\""
 #
 RUN=\"\${EXPT_SUBDIR}\"
 envir=\"\${EXPT_SUBDIR}\""
-#
-# Set FIXLAM_NCO_BASEDIR.
-#
-    if [ "$MACHINE" = "WCOSS_CRAY" ]; then
-      FIXLAM_NCO_BASEDIR="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/FV3LAM_pregen"
-    elif [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
-      FIXLAM_NCO_BASEDIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen"
-    elif [ "$MACHINE" = "HERA" ]; then
-      FIXLAM_NCO_BASEDIR="/scratch2/BMC/det/FV3LAM_pregen"
-    elif [ "$MACHINE" = "JET" ]; then
-      FIXLAM_NCO_BASEDIR="/mnt/lfs4/BMC/wrfruc/FV3-LAM/pregen"
-    elif [ "$MACHINE" = "CHEYENNE" ]; then
-      FIXLAM_NCO_BASEDIR="/needs/to/be/specified"
-    else
-      print_err_msg_exit "\
-The base directory (FIXLAM_NCO_BASEDIR) in which the pregenerated grid, 
-orography, and surface climatology \"fixed\" files used in NCO mode are 
-located has not been specified for this machine (MACHINE):
-  MACHINE= \"${MACHINE}\""
-    fi
 
-    expt_config_str=${expt_config_str}"
-#
-# The base directory in which the pregenerated grid, orography, and surface 
-# climatology \"fixed\" files used in NCO mode are located.  In NCO mode,
-# the workflow scripts will create symlinks (in the directory specified 
-# by FIXLAM) to files in a subdirectory under FIXLAM_NCO_BASDEDIR, where
-# the name of the subdirectory is the name of the predefined grid specified 
-# by PREDEF_GRID_NAME.
-#
-FIXLAM_NCO_BASEDIR=\"${FIXLAM_NCO_BASEDIR}\""
 #
 # Set COMINgfs if using the FV3GFS or the GSMGFS as the external model 
 # for ICs or LBCs.
@@ -877,17 +856,9 @@ FIXLAM_NCO_BASEDIR=\"${FIXLAM_NCO_BASEDIR}\""
        [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
        [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
 
-      if [ "$MACHINE" = "WCOSS_CRAY" ]; then
-        COMINgfs="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/COMGFS"
-      elif [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
-        COMINgfs="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/COMGFS"
-      elif [ "$MACHINE" = "HERA" ]; then
-        COMINgfs="/scratch2/NCEPDEV/fv3-cam/noscrub/UFS_SRW_App/COMGFS"
-      elif [ "$MACHINE" = "JET" ]; then
-        COMINgfs="/lfs1/HFIP/hwrf-data/hafs-input/COMGFS"
-      elif [ "$MACHINE" = "CHEYENNE" ]; then
-        COMINgfs="/glade/scratch/ketefian/NCO_dirs/COMGFS"
-      else
+      COMINgfs=${TEST_COMINgfs:-}
+
+      if [ ! -d "${COMINgfs:-}" ] ; then
         print_err_msg_exit "\
 The directory (COMINgfs) that needs to be specified when running the
 workflow in NCO mode (RUN_ENVIR set to \"nco\") AND using the FV3GFS or
@@ -931,19 +902,8 @@ PTMP=\"${PTMP}\""
 #
   if [ "${USE_USER_STAGED_EXTRN_FILES}" = "TRUE" ]; then
 
-    if [ "$MACHINE" = "WCOSS_CRAY" ]; then
-      extrn_mdl_source_basedir="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/extrn_mdl_files"
-    elif [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
-      extrn_mdl_source_basedir="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/extrn_mdl_files"
-    elif [ "$MACHINE" = "HERA" ]; then
-      extrn_mdl_source_basedir="/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/staged_extrn_mdl_files"
-    elif [ "$MACHINE" = "JET" ]; then
-      extrn_mdl_source_basedir="/mnt/lfs1/BMC/gsd-fv3/Gerard.Ketefian/UFS_CAM/staged_extrn_mdl_files"
-    elif [ "$MACHINE" = "CHEYENNE" ]; then
-      extrn_mdl_source_basedir="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
-    elif [ "$MACHINE" = "ORION" ]; then
-      extrn_mdl_source_basedir="/work/noaa/gsd-fv3-dev/gsketefia/UFS/staged_extrn_mdl_files"
-    else
+    extrn_mdl_source_basedir=${TEST_EXTRN_MDL_SOURCE_BASEDIR:-}
+    if [ ! -d "${extrn_mdl_source_basedir:-}" ] ; then
       print_err_msg_exit "\
 The base directory (extrn_mdl_source_basedir) in which the user-staged
 external model files should be located has not been specified for this
@@ -1017,7 +977,7 @@ EXTRN_MDL_FILES_LBCS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))"
 #
 #-----------------------------------------------------------------------
 #
-# Set MET and MET+ paths, if necessary.
+# Check that MET directories have been set appropriately, if needed.
 #
 #-----------------------------------------------------------------------
 #
@@ -1026,51 +986,54 @@ EXTRN_MDL_FILES_LBCS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))"
      [ "${RUN_TASK_VX_ENSGRID}" = "TRUE" ] || \
      [ "${RUN_TASK_VX_ENSPOINT}" = "TRUE" ]; then
 
-    if [ "$MACHINE" = "WCOSS_CRAY" ]; then
-      met_install_dir="/gpfs/hps3/emc/meso/noscrub/emc.metplus/met/10.0.0"
-      metplus_path="/gpfs/hps3/emc/meso/noscrub/emc.metplus/METplus/METplus-4.0.0"
-      ccpa_obs_dir="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/obs_data/ccpa/proc"
-      mrms_obs_dir="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/obs_data/mrms/proc"
-      ndas_obs_dir="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/obs_data/ndas/proc"
-      met_bin_exec="exec"
-    elif [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
-      met_install_dir="/gpfs/dell2/emc/verification/noscrub/emc.metplus/met/10.0.0"
-      metplus_path="/gpfs/dell2/emc/verification/noscrub/emc.metplus/METplus/METplus-4.0.0"
-      ccpa_obs_dir="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/ccpa/proc"
-      mrms_obs_dir="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/mrms/proc"
-      ndas_obs_dir="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/ndas/proc"
-      met_bin_exec="exec"
-    elif [ "$MACHINE" = "HERA" ]; then
-      met_install_dir="/contrib/met/10.0.0"
-      metplus_path="/contrib/METplus/METplus-4.0.0"
-      ccpa_obs_dir="/scratch2/BMC/det/UFS_SRW_app/develop/obs_data/ccpa/proc"
-      mrms_obs_dir="/scratch2/BMC/det/UFS_SRW_app/develop/obs_data/mrms/proc"
-      ndas_obs_dir="/scratch2/BMC/det/UFS_SRW_app/develop/obs_data/ndas/proc"
-      met_bin_exec="bin"
-    elif [ "$MACHINE" = "CHEYENNE" ]; then
-      met_install_dir="/glade/p/ral/jntp/MET/MET_releases/10.0.0"
-      metplus_path="/glade/p/ral/jntp/MET/METplus/METplus-4.0.0"
-      ccpa_obs_dir="/glade/p/ral/jntp/UFS_SRW_app/develop/obs_data/ccpa/proc"
-      mrms_obs_dir="/glade/p/ral/jntp/UFS_SRW_app/develop/obs_data/mrms/proc"
-      ndas_obs_dir="/glade/p/ral/jntp/UFS_SRW_app/develop/obs_data/ndas/proc"
-      met_bin_exec="bin"
-    else
-      print_err_msg_exit "\
-The MET and MET+ paths (MET_INSTALL_DIR and MET_INSTALL_DIR) or the observation directories
-(CCPA_OBS_DIR, MRMS_OBS_DIR, NDAS_OBS_DIR) have not been specified for this machine (MACHINE):
-  MACHINE= \"${MACHINE}\""
+    check=0
+    if [ ! -d ${MET_INSTALL_DIR} ] ; then
+      print_info_msg "\
+        The MET installation location must be set for this machine!
+          MET_INSTALL_DIR = \"${MET_INSTALL_DIR}\""
+      check=1
     fi
 
-    expt_config_str=${expt_config_str}"
-#
-# MET and MET+ paths.
-#
-METPLUS_PATH=\"${metplus_path}\"
-MET_INSTALL_DIR=\"${met_install_dir}\"
-CCPA_OBS_DIR=\"${ccpa_obs_dir}\"
-MRMS_OBS_DIR=\"${mrms_obs_dir}\"
-NDAS_OBS_DIR=\"${ndas_obs_dir}\"
-MET_BIN_EXEC=\"${met_bin_exec}\""
+    if [ ! -d ${METPLUS_PATH} ] ; then
+      print_info_msg "\
+        The MET+ installation location must be set for this machine!
+          METPLUS_PATH = \"${METPLUS_PATH}\""
+      check=1
+    fi
+
+    if [ -z ${MET_BIN_EXEC} ] ; then
+      print_info_msg "\
+        The MET execution command must be set for this machine!
+          MET_BIN_EXEC = \"${MET_BIN_EXEC}\""
+      check=1
+    fi
+
+    if [ ! -d ${CCPA_OBS_DIR} ] ; then
+      print_info_msg "\
+        The CCPA observation location must be set for this machine!
+          CCPA_OBS_DIR = \"${CCPA_OBS_DIR}\""
+      check=1
+    fi
+
+    if [ ! -d ${MRMS_OBS_DIR} ] ; then
+      print_info_msg "\
+        The MRMS observation location must be set for this machine!
+          MRMS_OBS_DIR = \"${MRMS_OBS_DIR}\""
+      check=1
+    fi
+
+    if [ ! -d ${NDAS_OBS_DIR} ] ; then
+      print_info_msg "\
+        The NDAS observation location must be set for this machine!
+          NDAS_OBS_DIR = \"${NDAS_OBS_DIR}\""
+      check=1
+    fi
+
+    if [ ${check} = 1 ] ; then
+      print_err_msg_exit "\
+        Please set MET variables in the machine file for \
+          MACHINE = \"${MACHINE}\""
+    fi
 
   fi
 #
@@ -1147,16 +1110,11 @@ MAXTRIES_RUN_POST=\"${MAXTRIES_RUN_POST}\""
 #
 #-----------------------------------------------------------------------
 #
-  if [ ! -z "${EXTRN_MDL_SYSBASEDIR_ICS}" ]; then
+  if [ -n "${EXTRN_MDL_SYSBASEDIR_ICS}" ]; then
 
     if [ "${EXTRN_MDL_SYSBASEDIR_ICS}" = "set_to_non_default_location_in_testing_script" ]; then
 
-      EXTRN_MDL_SYSBASEDIR_ICS=""
-      if [ "$MACHINE" = "HERA" ]; then
-        if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
-          EXTRN_MDL_SYSBASEDIR_ICS="/scratch2/BMC/det/UFS_SRW_app/dummy_FV3GFS_sys_dir"
-        fi
-      fi
+      EXTRN_MDL_SYSBASEDIR_ICS="${TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS:-}"
 
       if [ -z "${EXTRN_MDL_SYSBASEDIR_ICS}" ]; then
         print_err_msg_exit "\
@@ -1167,19 +1125,21 @@ initial conditions (EXTRN_MDL_NAME_ICS) combination:
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
       fi
 
-    else 
-
-      if [ ! -d "${EXTRN_MDL_SYSBASEDIR_ICS}" ]; then
-        print_err_msg_exit "\
-The non-default location specified by EXTRN_MDL_SYSBASEDIR_ICS does not 
-exist or is not a directory:
-  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
-      fi
+      # Maintain any templates in EXTRN_MDL_SYSBASEDIR_ICS -- don't use
+      # quotes.
+      set_bash_param "${expt_config_fp}" \
+                     "EXTRN_MDL_SYSBASEDIR_ICS" ${EXTRN_MDL_SYSBASEDIR_ICS}
 
     fi
 
-    set_bash_param "${expt_config_fp}" \
-                   "EXTRN_MDL_SYSBASEDIR_ICS" "${EXTRN_MDL_SYSBASEDIR_ICS}"
+    # Check the base directory for the specified location.
+    if [ ! -d "$(dirname ${EXTRN_MDL_SYSBASEDIR_ICS%%\$*})" ]; then
+      print_err_msg_exit "\
+The non-default location specified by EXTRN_MDL_SYSBASEDIR_ICS does not 
+exist or is not a directory:
+  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
+    fi
+
 
   fi
 #
@@ -1189,16 +1149,11 @@ exist or is not a directory:
 #
 #-----------------------------------------------------------------------
 #
-  if [ ! -z "${EXTRN_MDL_SYSBASEDIR_LBCS}" ]; then
+  if [ -n "${EXTRN_MDL_SYSBASEDIR_LBCS}" ]; then
 
     if [ "${EXTRN_MDL_SYSBASEDIR_LBCS}" = "set_to_non_default_location_in_testing_script" ]; then
 
-      EXTRN_MDL_SYSBASEDIR_LBCS=""
-      if [ "$MACHINE" = "HERA" ]; then
-        if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
-          EXTRN_MDL_SYSBASEDIR_LBCS="/scratch2/BMC/det/UFS_SRW_app/dummy_FV3GFS_sys_dir"
-        fi
-      fi
+      EXTRN_MDL_SYSBASEDIR_LBCS="${TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS:-}"
 
       if [ -z "${EXTRN_MDL_SYSBASEDIR_LBCS}" ]; then
         print_err_msg_exit "\
@@ -1209,19 +1164,21 @@ initial conditions (EXTRN_MDL_NAME_LBCS) combination:
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
       fi
 
-    else 
-
-      if [ ! -d "${EXTRN_MDL_SYSBASEDIR_LBCS}" ]; then
-        print_err_msg_exit "\
-The non-default location specified by EXTRN_MDL_SYSBASEDIR_LBCS does not 
-exist or is not a directory:
-  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
-      fi
+      # Maintain any templates in EXTRN_MDL_SYSBASEDIR_ICS -- don't use
+      # quotes.
+      set_bash_param "${expt_config_fp}" \
+                     "EXTRN_MDL_SYSBASEDIR_LBCS" ${EXTRN_MDL_SYSBASEDIR_LBCS}
 
     fi
 
-    set_bash_param "${expt_config_fp}" \
-                   "EXTRN_MDL_SYSBASEDIR_LBCS" "${EXTRN_MDL_SYSBASEDIR_LBCS}"
+    # Check the base directory for the specified location.
+    if [ ! -d "$(dirname ${EXTRN_MDL_SYSBASEDIR_LBCS%%\$*})" ]; then
+      print_err_msg_exit "\
+The non-default location specified by EXTRN_MDL_SYSBASEDIR_LBCS does not 
+exist or is not a directory:
+  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
+    fi
+
 
   fi
 #
