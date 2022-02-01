@@ -5,7 +5,7 @@ Configuring the FV3SAR Workflow
 ***************************************
 
 The following steps describe how to create a user-specific configuration
-file in order to un your experiment in a given environment.
+file in order to run your experiment in a given environment.
 
 1. Create a user-specific configuration file named ``config.sh`` in the subdirectory
    ``ush`` under the ``$BASEDIR/regional_workflow`` directory containing appropriate
@@ -46,7 +46,7 @@ file in order to un your experiment in a given environment.
    #
    BASEDIR="/path/to/directory/of/regional_workflow/and/NEMSfv3gfs/clones"
    TMPDIR="/path/to/temporary/work/directories"
-   UPPDIR="/scratch3/BMC/det/beck/FV3-CAM/EMC_post/sorc/ncep_post.fd"
+   UPPDIR="/path/to/UPP/executable/directory"
    CCPP="false"
    #
    CDATE="2018060400"

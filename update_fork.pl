@@ -17,7 +17,7 @@
 # 4. If all went well, you should see one of two different messages at the end:
 #    - If your fork is already up-to-date, you should see "Already up-to-date."
 #    - If your fork is not up-to-date, this script initiates a fast-forward merge to bring your fork 
-#      up to date with the develop of the main repository (https://github.com/NOAA-EMC/regional_workflow). 
+#      up to date with the develop of the main repository (https://github.com/ufs-community/regional_workflow). 
 #      Near the end git will print a line of statistics describing what changed, which will look 
 #      something like this:
 #
@@ -55,7 +55,7 @@ print "Please enter your Github username:\n";
    }
 
 print "Username = $username\n";
-my $main_repo = "https://$username\@github.com/NOAA-EMC/regional_workflow.git";
+my $main_repo = "https://$username\@github.com/ufs-community/regional_workflow.git";
 my $fork = "https://$username\@github.com/$username/regional_workflow.git";
 
 # Set main repository as a remote repository named "upstream", per standard git conventions
