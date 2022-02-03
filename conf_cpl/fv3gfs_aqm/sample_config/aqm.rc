@@ -16,7 +16,7 @@ csqy_data:   {{ aqm_config_dir }}/CSQY_DATA_cb6r3_ae6_aq
 optics_data: {{ aqm_config_dir }}/PHOT_OPTICS.dat
 omi_data:    {{ aqm_config_dir }}/omi_cmaq_2015_361X179.dat
 
-init_concentrations: {{ init_concentrations }}
+init_concentrations: {{ init_concentrations | lower }}
 
 run_aerosol: true
 
