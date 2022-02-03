@@ -1,7 +1,7 @@
 MACHINE="hera"
 ACCOUNT="naqfc"
 EXPT_BASEDIR="/scratch2/NCEPDEV/stmp3/$LOGNAME/expt_dirs"
-EXPT_SUBDIR="test_cmaq"
+EXPT_SUBDIR="test_cmaq_hrrr25"
 
 PRINT_ESMF="FALSE"
 
@@ -43,13 +43,15 @@ FV3_NML_YAML_CONFIG_FN="fv3gfs_aqm.input.yml"
 WFLOW_XML_FN="fv3gfs_aqm_wflow.xml"
 
 USER_AQM_RC_DIR="/scratch2/NCEPDEV/fv3-cam/Chan-hoo.Jeon/rrfs_cmaq_pr/ufs-srweather-app/conf_cpl/fv3gfs_aqm/sample_config"
-AQM_RC_FN="aqm.rc_static"
+AQM_RC_FN="aqm.rc"
 
 AQM_CONFIG_DIR="/scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data"
 AQM_BIO_DIR="/scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio"
 AQM_BIO_FILE="BEIS_SARC401.ncf"
 AQM_FIRE_DIR="/scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/GSCE/GBBEPx.in.C401/Reprocessed"
 AQM_FIRE_FILE="GBBEPx_C401GRID.emissions_v003"
+AQM_FIRE_FILE_SUFFIX=".nc"
+AQM_RC_FIRE_FREQUENCY="static"
 AQM_LBCS_DIR="/scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/boundary_conditions_v4"
 AQM_LBCS_FILES="gfs_bndy_chem_<MM>.tile7.000.nc"
 AQM_GEFS_DIR="/scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_aerosol"

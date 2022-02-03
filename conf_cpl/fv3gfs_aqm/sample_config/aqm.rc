@@ -7,16 +7,16 @@
 #
 #  General settings
 #
-ae_matrix_nml: <aqm_config_dir>/AE_cb6r3_ae6_aq.nml
-gc_matrix_nml: <aqm_config_dir>/GC_cb6r3_ae6_aq.nml
-nr_matrix_nml: <aqm_config_dir>/NR_cb6r3_ae6_aq.nml
-tr_matrix_nml: <aqm_config_dir>/Species_Table_TR_0.nml
+ae_matrix_nml: {{ aqm_config_dir }}/AE_cb6r3_ae6_aq.nml
+gc_matrix_nml: {{ aqm_config_dir }}/GC_cb6r3_ae6_aq.nml
+nr_matrix_nml: {{ aqm_config_dir }}/NR_cb6r3_ae6_aq.nml
+tr_matrix_nml: {{ aqm_config_dir }}/Species_Table_TR_0.nml
 
-csqy_data:   <aqm_config_dir>/CSQY_DATA_cb6r3_ae6_aq
-optics_data: <aqm_config_dir>/PHOT_OPTICS.dat
-omi_data:    <aqm_config_dir>/omi_cmaq_2015_361X179.dat
+csqy_data:   {{ aqm_config_dir }}/CSQY_DATA_cb6r3_ae6_aq
+optics_data: {{ aqm_config_dir }}/PHOT_OPTICS.dat
+omi_data:    {{ aqm_config_dir }}/omi_cmaq_2015_361X179.dat
 
-init_concentrations: <init_concentrations>
+init_concentrations: {{ init_concentrations }}
 
 run_aerosol: true
 
@@ -146,13 +146,13 @@ bio_type: biogenic
 
 bio_format: netcdf
 
-bio_file: <aqm_bio_dir>/<aqm_bio_file>
+bio_file: {{ aqm_rc_bio_file_fp }}
 
 bio_frequency: static
 
 bio_period: summer
 
-bio_speciation_file: <aqm_bio_dir>/gspro_biogenics_1mar2017.txt
+bio_speciation_file: {{ aqm_bio_dir }}/gspro_biogenics_1mar2017.txt
 
 bio_speciation_profile: B10C6
 
@@ -242,12 +242,12 @@ bio_species::
 fire_type: gbbepx
 
 #
-#  Note: the regional workflow will replace the <YYYYMMDD>, <MMDD>, <DD>
-#  keywords with the current cycle's date, month/day, and day, respectively.
+#  Note: regional_workflow sets aqm_rc_fire_file_fp from input
+#        parameters 'aqm_fire_dir','aqm_fire_file', and 'cdate'.
 #
-fire_file: <aqm_fire_dir>/<YYYYMMDD>/<aqm_fire_file>_20<YYMMDD>.nc
+fire_file: {{ aqm_rc_fire_file_fp }}
 
-fire_frequency: static
+fire_frequency: {{ aqm_rc_fire_frequency }}
 
 fire_plume_rise: sofiev
 
