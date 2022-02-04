@@ -132,8 +132,6 @@ jjob_fp="$2"
 #-----------------------------------------------------------------------
 #
 
-module purge
-
 machine=$(echo_lowercase $MACHINE)
 env_fp="${SR_WX_APP_TOP_DIR}/env/${BUILD_ENV_FN}"
 module use "${SR_WX_APP_TOP_DIR}/env"
