@@ -30,14 +30,14 @@ repositories associated with this umbrella repo (see :numref:`Table %s <top_leve
    | Repository for                  | https://github.com/ufs-community/ufs-weather-model      |
    | the UFS Weather Model           |                                                         |
    +---------------------------------+---------------------------------------------------------+
-   | Repository for the regional     | https://github.com/ufs-community/regional_workflow      |
+   | Repository for the regional     | https://github.com/NOAA-EMC/regional_workflow           |
    | workflow                        |                                                         |
    +---------------------------------+---------------------------------------------------------+
    | Repository for UFS utilities,   | https://github.com/ufs-community/UFS_UTILS              |
    | including pre-processing,       |                                                         |
    | chgres_cube, and more           |                                                         |
    +---------------------------------+---------------------------------------------------------+
-   | Repository for the Unified Post | https://github.com/NOAA-EMC/UPP                         |
+   | Repository for the Unified Post | https://github.com/NOAA-EMC/EMC_post                    |
    | Processor (UPP)                 |                                                         |
    +---------------------------------+---------------------------------------------------------+
 
@@ -92,7 +92,7 @@ scripts are presented in parentheses.  Some directories have been removed for br
    │          └── wrappers
    ├── (share)
    └── src
-        ├── UPP
+        ├── EMC_post
         │     ├── parm
         │     └── sorc
         │          └── ncep_post.fd
