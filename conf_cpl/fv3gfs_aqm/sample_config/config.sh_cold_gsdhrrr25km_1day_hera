@@ -40,7 +40,6 @@ OPT_DA_RRFS_CMAQ="FALSE"
 FV3_EXEC_FN="NEMS.x"
 FV3_NML_BASE_SUITE_FN="input.nml.fv3gfs_aqm"
 FV3_NML_YAML_CONFIG_FN="fv3gfs_aqm.input.yml"
-WFLOW_XML_FN="fv3gfs_aqm_wflow.xml"
 
 USER_AQM_RC_DIR="/scratch2/NCEPDEV/fv3-cam/Chan-hoo.Jeon/rrfs_cmaq_pr/ufs-srweather-app/conf_cpl/fv3gfs_aqm/sample_config"
 AQM_RC_FN="aqm.rc"

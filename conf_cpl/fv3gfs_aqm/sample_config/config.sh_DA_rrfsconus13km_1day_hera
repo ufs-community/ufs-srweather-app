@@ -47,7 +47,6 @@ RUN_TASK_DACYC="TRUE"
 FV3_EXEC_FN="NEMS.x"
 FV3_NML_BASE_SUITE_FN="input.nml.fv3gfs_aqm"
 FV3_NML_YAML_CONFIG_FN="fv3gfs_aqm.input.yml"
-WFLOW_XML_FN="fv3gfs_aqm_wflow.xml"
 
 DT_ATMOS="180"
 LAYOUT_X="33"
