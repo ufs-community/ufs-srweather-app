@@ -3,17 +3,12 @@
 ====================
 Workflow Quick Start
 ====================
-..
-   COMMENT: What is the "out-of-the-box" case for the SRW?! Also, this paragraph is tmi. Lots of unnecessary background info. Move to the Download SRW section. Include background info on out-of-the-box case instead. 
 
-The Unified Forecast System (UFS) Short-Range Weather (SRW) Application relies on a variety of components, including the UFS Weather Model, the regional workflow, the UFS_UTILS pre-processor utilities, and the Unified Post Processor (UPP). To build and run the out-of-the-box case of the SRW, the user must get the source code for these components. After cloning the UFS SRW Application umbrella repository, users can implement the ``manage_externals`` command to obtain the necessary external repositories. The out-of-the-box case uses a predefined 25-km Continental United States (CONUS) grid (RRFS_CONUS_25km), the Global Forecast System (GFS) version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and FV3-based GFS raw external model data for initialization.
+This Workflow Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (UFS) Short-Range Weather (SRW) Application. The "out-of-the-box" case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (CONUS) grid (RRFS_CONUS_25km), the Global Forecast System (GFS) version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and FV3-based GFS raw external model data for initialization.
 
 .. note::
 
-   The steps described in this chapter are most applicable to preconfigured (Level 1) 
-   machines where all of the required libraries for building community releases of UFS models and 
-   applications are available in a central place. The various platform levels are listed `here
-   <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. 
+   The steps described in this chapter are most applicable to preconfigured (Level 1) systems. On Level 1 systems, all of the required libraries for building community releases of UFS models and applications are available in a central location. This guide can serve as a starting point for running the SRW App on other systems as well but may require additional troubleshooting by the user. The various platform levels are listed `here <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_.
 
 
 .. _HPCstackInfo:
@@ -21,27 +16,29 @@ The Unified Forecast System (UFS) Short-Range Weather (SRW) Application relies o
 Install the HPC-Stack
 ========================
 
-The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g. NCEPLIBS, FMS, etc.)to libraries developed by our partners (e.g. PIO, ESMF etc) to truly third party libraries (e.g. NETCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`_ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW. 
+Background
+------------------------
+The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g. NCEPLIBS, FMS, etc.) to libraries developed by our partners (e.g. PIO, ESMF etc) to truly third party libraries (e.g. NETCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`_ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW. 
 
-`Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ platforms (e.g. Cheyenne, Hera) already have the HPC-Stack installed. Users on those platforms should skip this step. Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to run the SRW.
+Instructions
+-------------------------
+`Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ platforms (e.g. Cheyenne, Hera) already have the HPC-Stack installed. Users on those platforms should skip this step. Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to run the SRW Application.
 
-.. 
-   COMMENT: Are the support levels correct?
-
-Users can either build the HPC-stack on their local system or use the centrally maintained stacks on each HPC platform. For a detailed description of installation options, see :doc:`Installing the HPC-Stack <InstallHPCstack>`.
+Users can either build the HPC-stack on their local system or use the centrally maintained stacks on each HPC platform. For a detailed description of installation options, see :doc:`Installing the HPC-Stack <InstallHPCstack>`. After completing installation, continue to the :ref:`next section <_DownloadCode>`. 
 
 .. note::
-   `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack.git>`_ is part of the NCEPLIBS project and was written for the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`_ framework.
+   `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack.git>`_ is part of the NCEPLIBS project and was originally written for the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`_ framework.
 
+.. _DownloadCode
 
 Download the UFS SRW Application Code
 =====================================
-The necessary source code is publicly available on GitHub and can be run in a container or locally. 
+The SRW Application source code is publicly available on GitHub and can be run in a container or locally, depending on user preference. The SRW Application relies on a variety of components detailed in the :ref:`Components Chapter <Components>` of this User's Guide. Users must (1) clone the UFS SRW Application umbrella repository and then (2) run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App and will clone the correct version of the regional workflow, pre-processing utilities, UFS Weather Model, and UPP source code into the appropriate directories under your ``regional_workflow`` and ``src`` directories. 
 
 Run the UFS SRW in a Singularity Container
 -------------------------------------------
 
-Pull the singularity container:
+Pull the Singularity container:
 
 .. code-block:: console
 
@@ -66,12 +63,12 @@ Clone the develop branch of the UFS-SRW weather application repository:
 .. code-block:: console
 
    git clone https://github.com/jkbk2004/ufs-srweather-app
-   cd ufs-srweather-app
 
-Check out submodules:
+Check out submodules for the SRW Application:
 
 .. code-block:: console
 
+   cd ufs-srweather-app
    ./manage_externals/checkout_externals
 
 
@@ -83,25 +80,23 @@ Clone the release branch of the repository:
 .. code-block:: console
 
    git clone -b ufs-v1.0.0 https://github.com/ufs-community/ufs-srweather-app.git
-   cd ufs-srweather-app
 
-Then, check out the submodules for the SRW application:
+Then, check out the submodules for the SRW Application:
 
 .. code-block:: console
 
+   cd ufs-srweather-app
    ./manage_externals/checkout_externals
 
-The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory and will clone the regional workflow, pre-processing utilities, UFS Weather Model, and UPP source code into the appropriate directories under your ``regional_workflow`` and ``src`` directories.
-
-.. 
-   COMMENT: Explain UPP or remove reference? 
 
 .. _SetUpBuild:
 
 Set up the Build Environment
 ============================
 
-If the SRW application has been built in an EPIC-provided Singularity container, set build environments and modules within the `ufs-srweather-app` directory:
+Container Approach
+--------------------
+If the SRW Application has been built in an EPIC-provided Singularity container, set build environments and modules within the `ufs-srweather-app` directory as follows:
 
 .. code-block:: console
 
@@ -111,24 +106,18 @@ If the SRW application has been built in an EPIC-provided Singularity container,
    module load hpc hpc-gnu hpc-openmpi hpc-python
    module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake gfsio wgrib2 upp
 
-..
-   COMMENT: Would this work for ANY container? Or just the ones we provide?
 
-Otherwise, for Level 1 and 2 systems, instructions for loading the proper modules and/or setting the 
+On Other Systems (Non-Container Approach)
+------------------------------------------
+
+Otherwise, for Level 1 and 2 systems, scripts for loading the proper modules and/or setting the 
 correct environment variables can be found in the ``env/`` directory of the SRW App in files named 
 ``build_<platform>_<compiler>.env``. The commands in these files can be directly copy-pasted 
-to the command line, or the file can be sourced from the ufs-srweather-app ``env`` directory. 
-For example, on an AWS system, run ``source env/build_aws_gcc.env`` from the main ufs-srweather-app 
+to the command line, or the file can be sourced from the ufs-srweather-app ``env/`` directory. 
+For example, on Hera, run ``source env/build_hera_intel.env`` from the main ufs-srweather-app 
 directory to source the appropriate file.
 
-.. 
-   COMMENT: Need to include the cloud platform files! build_aws_gcc.env, build_gcp_gcc.env, build_<azure>_gcc.env
-
-On Level 3-4 systems, you will need to modify certain variables, such as the path to NCEP libraries for your individual platform. One of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. You may need to use ``setenv`` rather than ``export`` depending on your environment. 
-
-..
-   COMMENT: Can we clarify where the NCEP libraries are found, which ones need to have the path set, 
-   and an example of how to set it?
+On Level 3-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. On systems without Lmod, this process will typically involve commands in the form `export <VARIABLE_NAME>=<PATH_TO_MODULE>`. You may need to use ``setenv`` rather than ``export`` depending on your environment. 
 
 
 Build the Executables
@@ -158,53 +147,43 @@ Download and Stage the Data
 
 The SRW requires input files to run. These include static datasets, initial and boundary conditions 
 files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are 
-already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to do 
-this can be found in the :doc:`Input and Output Files <InputOutputFiles>`, Section 3. Section 1 contains
-useful background information on the input files required by the SRW. 
-
-..
-   COMMENT: Should we reorganize the Input/Output Files so that the output files sections is at the end? 
-   That makes more sense to me chronologically... input --> run --> output 
+already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :doc:`Input and Output Files <InputOutputFiles>`, Section 3. Section 1 contains useful background information on the input files required by the SRW. 
 
 
-Generate the Workflow Experiment
-================================
-The workflow experiment 
-Generating the workflow experiment requires three steps:
+Generate the Forecast Experiment 
+=================================
+Generating the forecast experiment requires three steps:
 
-* Set experiment parameters in config.sh
+* Set experiment parameters
 * Set Python and other environment parameters
-* Run the ``generate_FV3LAM_wflow.sh`` script
+* Run the ``generate_FV3LAM_wflow.sh`` script to generate the experiment workflow
 
 The first two steps depend on the platform being used and are described here for each Level 1 platform.
 Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. 
 
 .. _SetUpConfigFile:
 
-Set up ``config.sh`` file
+Set Experiment Parameters
 -------------------------
-The workflow requires a file called ``config.sh`` to specify values for the experiment parameters, including the desired grid and physics suite. More information about the three predefined Limited Area Model (LAM) Grids can be found in the section on :doc:`Limited Area Model (LAM) Grids <LAMGrids>`. Two example config.sh templates are provided: ``config.community.sh`` and ``config.nco.sh`` and can be found in the ``ufs-srweather-app/regional_workflow/ush directory``.  The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``), while the second is an example of creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release, while the operational mode will be more exclusively used by NOAA/NCEP Central Operations (NCO) and those in the NOAA/NCEP/Environmental Modeling Center (EMC) working with NCO on pre-implementation testing. Sample config.sh files are discussed in this section for Level 1 platforms. However, more detailed guidance for Level 2-4 systems can be found in :doc:`Configuring the Workflow <ConfigWorkflow>`.
+Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in the ``config.sh`` file. Two example ``config.sh`` templates are provided: ``config.community.sh`` and ``config.nco.sh``. They can be found in the ``ufs-srweather-app/regional_workflow/ush`` directory. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). It will be used throughout the next sections. The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release. 
 
-..
-   COMMENT: What is the actual difference between community and NCO modes? What does community mode do that NCO mode doesn;t or vice versa?
-
-On a Level 1 platform, make a copy of ``config.community.sh`` to get started (under <path-to-ufs-srweather-app>/regional_workflow/ush):
+Make a copy of ``config.community.sh`` to get started (under <path-to-ufs-srweather-app>/regional_workflow/ush):
 
 .. code-block:: console
 
    cd ../regional_workflow/ush
    cp config.community.sh config.sh
 
-Edit the ``config.sh`` file to set the ``MACHINE``, ``ACCOUNT``, and ``EXPT_SUBDIR`` variables. 
-Detailed guidance on other variables is provided in :doc:`Configuring the Workflow <ConfigWorkflow>`. 
-Set the machine you are running on with ``MACHINE``, use an account you can charge for ``ACCOUNT``, 
-and choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have access to the NOAA HPSS from the machine you are running on, those changes should be sufficient; however, if that is not the case (for example, on Cheyenne), or if you have pre-staged the initialization data you would like to use, you will also want to set ``USE_USER_STAGED_EXTRN_FILES="TRUE"`` and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
+Next, edit the new ``config.sh`` file. Sample settings are indicated below for Level 1 platforms. Detailed guidance for all systems can be found in :doc:`Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in the section on :doc:`Limited Area Model (LAM) Grids <LAMGrids>`.
+
+At a minimum, set the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If the user has pre-staged the initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
+
 
 .. note::
 
    If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuild>`, you will have to add the line ``COMPILER="gnu"`` to the ``config.sh`` file.
  
-At a minimum, the following parameters should be set for the Level 1 machine you are using:
+Minimum parameter settings for Level 1 machines:
 
 For Cheyenne:
 
@@ -256,10 +235,6 @@ For WCOSS, edit ``config.sh`` with these WCOSS-specific parameters, and use a va
    MACHINE=”wcoss_cray” or MACHINE=”wcoss_dell_p3”
    ACCOUNT="my_account"
    EXPT_SUBDIR="my_expt_name"
-
-..
-   COMMENT: Can someone confirm that the settings above are still correct?
-
 
 .. _SetUpPythonEnv:
 

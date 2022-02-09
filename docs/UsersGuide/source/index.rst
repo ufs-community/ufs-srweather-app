@@ -8,7 +8,7 @@ UFS Short-Range Weather App Users Guide
 
 .. toctree::
    :numbered:
-   :maxdepth: 4
+   :maxdepth: 3
 
    Introduction
    Quickstart

@@ -200,7 +200,7 @@ the user in the ``config.sh`` settings.
 If you wish to modify the fields or levels that are output from the UPP, you will need to make
 modifications to file ``fv3lam.xml``, which resides in the UPP repository distributed with the UFS SRW
 Application. Specifically, if the code was cloned in the directory ``ufs-srweather-app``, the file will be
-located in ``ufs-srweather-app/src/EMC_post/parm``.
+located in ``ufs-srweather-app/src/UPP/parm``.
 
 .. note::
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
