@@ -17,6 +17,7 @@ import sys
 sys.path.insert(0, os.path.abspath('.'))
 
 
+
 # -- Project information -----------------------------------------------------
 
 project = 'UFS Short-Range Weather App Users Guide'
@@ -50,7 +51,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-    'sphinxcontrib.bibtex'
+    'sphinxcontrib.bibtex',
+    'myst_parser'
 ]
 
 bibtex_bibfiles = ['references.bib']

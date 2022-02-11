@@ -1,25 +1,19 @@
-.. _Introduction:
+.. _Components:
 
-============
-Introduction
-============
+===============
+SRW Components
+===============
 
-The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. The UFS is the source system for NOAA’s operational numerical weather prediction applications. It enables research, development, and contribution opportunities within the broader :term:`weather enterprise` (e.g. government, industry, and academia). For more information about the UFS, visit the UFS Portal at https://ufscommunity.org/.
+The SRW Application v2.0 release assembles a variety of components, including:
+* Pre-processor Utilities & Initial Conditions
+* Forecast Model
+* Post-Processor
+* Visualization Example
+* Build System and Workflow
+* User Support, Documentation, and Contributing Development
 
-The UFS can be configured for multiple applications (see a complete list at https://ufscommunity.org/science/aboutapps/). The configuration described here is the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes out to several days. The SRW Application v1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. Future work will expand the capabilities of the application to include data assimilation (DA) and a verification package (e.g. METplus). This documentation provides a quick start guide for running the application, in addition to an overview of the release components, a description of the supported capabilities, and information on where to find more information and obtain support.
+These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. 
 
-The SRW App v1.0.0 citation is as follows and should be used when presenting results based on research 
-conducted with the App:
-
-UFS Development Team. (2021, March 4). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
-
-..
-   COMMENT: What will be the numbering for this release? It will need to be changed above and throughout the docs. 
-   COMMENT: Can this app be used beyond the CONUS? Change "limited spatial domain" above to CONUS or something more specific. 
-   COMMENT: Where are we on the DA and verification package? Can we update that line?
-   COMMENT: Update citation date & version number. What is Zenodo? 
-   COMMENT: Disagree: "This documentation provides... information on where to find more information and obtain support." We need to add this (i.e. link in the docs) or remove the line. 
-   COMMENT: "Components" doc created but not added to TOC. Contains more detailed info on components discussed here below. 
 
 Pre-processor Utilities and Initial Conditions
 ==============================================
@@ -27,46 +21,80 @@ Pre-processor Utilities and Initial Conditions
 The SRW Application includes a number of pre-processing utilities that initialize and prepare the
 model. Tasks include generating a regional grid, along with :term:`orography` and surface climatology files for that grid. The pre-processing software converts the raw external model data into initial and lateral boundary condition files in netCDF format. Later, this is used as input to the atmospheric model (FV3-LAM). Additional information about the UFS pre-processor utilities can be found in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
 
+The SRW Application includes a number of pre-processing utilities to initialize and prepare the
+model. For the limited area model (LAM), it is necessary to first generate a
+regional grid ``regional_esg_grid/make_hgrid`` along with orography ``orog`` and surface climatology ``sfc_climo_gen`` files on that grid. There are additional utilities included to handle the correct number of halo ``shave`` points and topography filtering ``filter_topo``. The pre-processing software ``chgres_cube`` is used to convert the raw external model data into initial and lateral boundary condition files in netCDF format, needed as input to the FV3-LAM. Additional information about the UFS pre-processor utilities can be found in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
 
 ..
    COMMENT: "Integration" with what?!?! (1st sentence) --> Try "prepare the model data" instead of "prepare the model for integration." 
-   COMMENT: Deleted code/commands bc it's an introduction. 
-   COMMENT: What is a "halo shave point" or wide-halo grid?!
+   COMMENT: Why are we using code/commands in an overview doc?! A newbie is going to glaze over and give up. 
+
+The SRW Application can be initialized from a range of operational initial condition files. It is
+possible to initialize the model from the Global Forecast System (:term:`GFS`), North American Mesoscale (:term:`NAM`) Forecast System, Rapid Refresh (:term:`RAP`), and High-Resolution Rapid Refresh (:term:`HRRR`) files in Gridded Binary v2 (GRIB2) format and GFS in NEMSIO format for past dates. 
+
+.. WARNING::
+   Please note, for GFS data, dates prior to 1 January 2018 may work but are not guaranteed. Public archives of model data can be accessed through the `National Centers for Environmental Information <https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-forcast-system-gfs>`_ (NCEI) or through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`_ (NOMADS). Raw external model data may be pre-staged on disk by the user.
 
 
 Forecast Model
 ==============
 
-Atmospheric Model
---------------------
-
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
 (:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability :cite:`BlackEtAl2020`.
-The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`_. 
+The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` is `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`_. 
 
-Common Community Physics Package
----------------------------------
+Supported model resolutions in this release include a 3-, 13-, and 25-km predefined Contiguous
+U.S. (CONUS) domain, all with 64 vertical levels. Preliminary tools for users to define their
+own domain are also available in the release with full, formal support of these tools to be
+provided in future releases. The Extended Schmidt Gnomonic (ESG) grid is used with the FV3-LAM,
+which features relatively uniform grid cells across the entirety of the domain. Additional
+information about the FV3 dynamical core can be found `here 
+<https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html>`_ and on the `NOAA Geophysical
+Fluid Dynamics Laboratory website <https://www.gfdl.noaa.gov/fv3/>`_.
 
-The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ (:term:`CCPP`) supports interoperable atmospheric physics and Noah Multi-parameterization (Noah MP) Land Surface Model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions.The SRW release includes an experimental physics version and an updated operational version. 
+Interoperable atmospheric physics, along with the Noah Multi-parameterization (Noah MP)
+Land Surface Model options, are supported through the Common Community Physics Package
+(:term:`CCPP`; described `here <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_).
+Atmospheric physics are a set of numerical methods describing small-scale processes such
+as clouds, turbulence, radiation, and their interactions. There are two physics options
+supported for the release. The first is an experimental physics suite being tested for use
+in the future operational implementation of the Rapid Refresh Forecast System (RRFS) planned
+for 2023-2024, and the second is an updated version of the physics suite used in the operational
+Global Forecast System (GFS) v15. A scientific description of the CCPP parameterizations and
+suites can be found in the `CCPP Scientific Documentation <https://dtcenter.ucar.edu/GMTB/v5.0.0/sci_doc/index.html>`_,
+and CCPP technical aspects are described in the `CCPP Technical Documentation
+<https://ccpp-techdoc.readthedocs.io/en/v5.0.0/>`_. The model namelist has many settings
+beyond the physics options that can optimize various aspects of the model for use with each
+of the supported suites. 
 
-Data Format
---------------
-
-The SRW App supports the use of both :term:`GRIB2` and :term:`NEMSIO` input data. The UFS Weather Model
-ingests initial and lateral boundary condition files produced by :term:`chgres_cube`. 
-
+The SRW App supports the use of both GRIB2 and :term:`NEMSIO` input data. The UFS Weather Model
+ingests initial and lateral boundary condition files produced by :term:`chgres_cube` and outputs files in
+netCDF format on a specific projection (e.g., Lambert Conformal) in the horizontal and model
+levels in the vertical.
 
 Post-processor
 ==============
 
-The Unified Post Processor (:term:`UPP`) is included in the SRW Application workflow. The UPP is designed to generate useful products from raw model output. In the SRW, it converts data output formats from netCDF output on the native model grid to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP user’s guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_. Output from UPP can be used with visualization, plotting, and verification packages, or for further downstream post-processing, e.g. statistical post-processing techniques.
+The SRW Application is distributed with the Unified Post Processor (:term:`UPP`) included in the
+workflow as a way to convert the netCDF output on the native model grid to GRIB2 format on
+standard isobaric vertical coordinates. UPP can also be used to compute a variety of useful
+diagnostic fields, as described in the `UPP user’s guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_.
 
+Output from UPP can be used with visualization, plotting, and verification packages, or for
+further downstream post-processing, e.g. statistical post-processing techniques.
 
 Visualization Example
 =====================
-This SRW Application distribution provides Python scripts to create basic visualization of the model output. The scripts are available in the ```regional_workflow`` repository
+A Python script is provided to create basic visualization of the model output. The script
+is designed to output graphics in PNG format for 14 standard meteorological variables
+when using the pre-defined CONUS domain. In addition, a difference plotting script is included
+to visually compare two runs for the same domain and resolution. These scripts are provided only
+as an example for users familiar with Python, and may be used to do a visual check to verify
+that the application is producing reasonable results. 
+
+The scripts are available in the `regional_workflow repository
 <https://github.com/NOAA-EMC/regional_workflow/tree/release/public-v1/ush/Python>`_
-under ``ush/Python``. Usage information and instructions are described in  
+under ush/Python. Usage information and instructions are described in  
 :numref:`Chapter %s <Graphics>` and are also included at the top of the script. 
 
 Build System and Workflow
@@ -74,9 +102,6 @@ Build System and Workflow
 
 The SRW Application has a portable build system and a user-friendly, modular, and
 expandable workflow framework.
-
-..
-   COMMENT: Define build system and workflow...
 
 An umbrella CMake-based build system is used for building the components necessary
 for running the end-to-end SRW Application: the UFS Weather Model and the pre- and
@@ -101,7 +126,12 @@ This SRW Application release has been tested on a variety of platforms widely us
 researchers, such as the NOAA Research and Development High-Performance Computing Systems
 (RDHPCS), including  Hera, Orion, and Jet; NOAA’s Weather and Climate Operational
 Supercomputing System (WCOSS); the National Center for Atmospheric Research (NCAR) Cheyenne
-system; the National Severe Storms Laboratory (NSSL) HPC machine, called Odin; the National Science Foundation (NSF) Stampede2 system; and generic Linux and macOS systems using Intel and GNU compilers. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_have been defined for the SRW Application, including pre-configured (level 1), configurable (level 2), limited test platforms (level 3), and build only platforms (level 4). Each level is further described below.
+system; NSSL’s HPC machine, Odin; the National Science Foundation Stampede2 system; and
+generic Linux and macOS systems using Intel and GNU compilers. Four `levels of support
+<https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_
+have been defined for the SRW Application, including pre-configured (level 1), configurable
+(level 2), limited test platforms (level 3), and build only platforms (level 4). Each
+level is further described below.
 
 For the selected computational platforms that have been pre-configured (level 1), all the
 required libraries for building the SRW Application are available in a central place. That
@@ -184,29 +214,4 @@ forecast implementations. Planned advancements include:
 
 In addition to the above list, other improvements will be addressed in future releases.
 
-..
-   COMMENT: How is a domain different from a grid? Can we say "user-defined grid," for example? Might be clearer. 
-
-How to Use This Document
-========================
-
-This guide instructs both novice and experienced users on downloading,
-building and running the SRW Application.  Please post questions in the
-UFS forum at https://forums.ufscommunity.org/.
-
-.. code-block:: console
-
-   Throughout the guide, this presentation style indicates shell
-   commands and options, code examples, etc.
-
-
-.. note::
-
-   Variables presented as ``AaBbCc123`` in this document typically refer to variables
-   in scripts, names of files and directories.
-
 .. bibliography:: references.bib
-
-
-
-

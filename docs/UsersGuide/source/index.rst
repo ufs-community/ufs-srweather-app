@@ -6,17 +6,22 @@
 UFS Short-Range Weather App Users Guide
 =======================================
 
+.. index::
+   
 .. toctree::
    :numbered:
    :maxdepth: 3
+   
 
    Introduction
    Quickstart
    CodeReposAndDirs
    SRWAppOverview
+   Components
+   Include-HPCInstall
+   InputOutputFiles
    ConfigWorkflow
    LAMGrids
-   InputOutputFiles
    ConfigNewPlatform
    WE2Etests
    Graphics
