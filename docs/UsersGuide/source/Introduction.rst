@@ -99,7 +99,7 @@ forecast model, and post-processing steps.
 
 This SRW Application release has been tested on a variety of platforms widely used by
 researchers, such as the NOAA Research and Development High-Performance Computing Systems
-(RDHPCS), including  Hera, Orion, and Jet; NOAA’s Weather and Climate Operational
+(RDHPCS), including  Hera, Orion, and Jet; NOAA's Weather and Climate Operational
 Supercomputing System (WCOSS); the National Center for Atmospheric Research (NCAR) Cheyenne
 system; the National Severe Storms Laboratory (NSSL) HPC machine, called Odin; the National Science Foundation (NSF) Stampede2 system; and generic Linux and macOS systems using Intel and GNU compilers. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_have been defined for the SRW Application, including pre-configured (level 1), configurable (level 2), limited test platforms (level 3), and build only platforms (level 4). Each level is further described below.
 

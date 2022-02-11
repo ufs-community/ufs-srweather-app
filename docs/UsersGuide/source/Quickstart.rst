@@ -22,7 +22,7 @@ Install the HPC-Stack
    Skip the HPC-stack installation if working on a `Level 1 system <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ (e.g., Cheyenne, Hera, Orion).
 
 
-.. include:: ../../../hpc-stack-mod/docs/source/hpc-intro.rst
+.. include:: ../../../hpc-stack-mod/docs/source/hpc-intro-text.rst
 
 
 After completing installation, continue to the :ref:`next section <DownloadCode>`.
