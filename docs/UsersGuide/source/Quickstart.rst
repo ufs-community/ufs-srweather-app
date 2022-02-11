@@ -25,7 +25,7 @@ Install the HPC-Stack
 .. include:: ../../../hpc-stack/docs/source/hpc-intro.rst
 
 
-After completing installation, continue to the :ref:`next section <_DownloadCode>`.
+After completing installation, continue to the :ref:`next section <DownloadCode>`.
 
 
 .. _DownloadCode:

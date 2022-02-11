@@ -186,12 +186,12 @@ can be found in :numref:`Chapter %s <LAMGrids>`.
    +----------------------+-------------------+--------------------------------+
 
 Case-specific Configuration
-===========================
+=============================
 
 .. _DefaultConfigSection:
 
 Default configuration: ``config_defaults.sh``
---------------------------------------------
+------------------------------------------------
 When generating a new experiment (described in detail in :numref:`Section %s <GeneratingWflowExpt>`),
 the ``config_defaults.sh`` file is read first and assigns default values to the experiment
 parameters. Important configuration variables in the ``config_defaults.sh`` file are shown in 
@@ -408,7 +408,7 @@ Generating a Regional Workflow Experiment
 =========================================
 
 Steps to a Generate a New Experiment
-----------------------------------
+----------------------------------------
 Generating an experiment requires running
 
 .. code-block:: console
@@ -454,7 +454,7 @@ when the ``launch_FV3LAM_wflow.sh`` is submitted. Each j-job task has its own so
 ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files
 ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls.
 There is usually no need for users to modify these files. To relaunch the workflow from scratch,
-delete these two *.db files and then call the launch script repeatedly for each task. 
+delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
 
 .. _WorkflowTasksFig:
 
