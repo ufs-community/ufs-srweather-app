@@ -212,8 +212,9 @@ Once the data has been staged, setting up your experiment on a platform without 
   These are the two ``MACHINE`` settings for generic, non-Rocoto-based platforms; you should choose the one most appropriate for your machine. ``MACOS`` has its own setting due to some differences in how command-line utilities function on Darwin-based operating systems.
 
 ``LAYOUT_X=2``
+
 ``LAYOUT_Y=2``
-  These are the settings that control the MPI decomposition when running the weather model. There are default values, but for your machine it is recommended that you specify your own layout to achieve the correct number of MPI processes for your application. In total, your machine should be able to handle ``LAYOUT_X×LAYOUT_Y+WRTCMP_write_tasks_per_group`` tasks. ``WRTCMP_write_tasks_per_group`` is the number of MPI tasks that will be set aside for writing model output, and it is a setting dependent on the domain you have selected. You can find and edit the value of this variable in the file ``regional_workflow/ush/set_predef_grid_params.sh``.
+   These are the settings that control the MPI decomposition when running the weather model. There are default values, but for your machine it is recommended that you specify your own layout to achieve the correct number of MPI processes for your application. In total, your machine should be able to handle ``LAYOUT_X×LAYOUT_Y+WRTCMP_write_tasks_per_group`` tasks. ``WRTCMP_write_tasks_per_group`` is the number of MPI tasks that will be set aside for writing model output, and it is a setting dependent on the domain you have selected. You can find and edit the value of this variable in the file ``regional_workflow/ush/set_predef_grid_params.sh``.
 
 ``RUN_CMD_UTILS="mpirun -np 4"``
   This is the run command for MPI-enabled pre-processing utilities. Depending on your machine and your MPI installation, you may need to use a different command for launching an MPI-enabled executable.
