@@ -32,7 +32,7 @@ export COMPILER="intel"
 ##
 ###########################################################
 
-# Build the external components for RRFS
+# Build the external components for RRFS-CMAQ-DA
 echo "... Building UFS_UTILS ..."
 cd ${MYDIR}/comp_conf/COMMON/build_scripts/
 ./build_UFS_UTILS.sh
