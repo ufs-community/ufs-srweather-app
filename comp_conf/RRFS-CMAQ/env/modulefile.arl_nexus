@@ -1,0 +1,38 @@
+#%Module######################################################################
+##
+##    NEXUS Prerequisites: Hera/Intel
+
+proc ModulesHelp {} {
+  puts stderr "\tcit - loads modules required for building and running NEXUS on Hera/Intel"
+}
+
+module-whatis "loads NEXUS prerequisites for Hera/Intel"
+
+##
+## clean up environment
+##
+module purge
+
+##
+## load programming environment
+## this typically includes compiler, MPI and job scheduler
+##
+module load intel/18.0.5.274
+module load impi/2018.0.4
+
+##
+## load ESMF library for above compiler / MPI combination
+## use pre-compiled EMSF library for above compiler / MPI combination
+##
+module use -a /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
+module load netcdf_parallel/4.7.4
+module load esmf/8.0.0_ParallelNetCDF
+
+##
+## load cmake
+##
+module load cmake/3.16.1
+setenv CMAKE_C_COMPILER mpiicc
+setenv CMAKE_CXX_COMPILER mpiicpc
+setenv CMAKE_Fortran_COMPILER mpiifort
+setenv CMAKE_Platform hera.intel
