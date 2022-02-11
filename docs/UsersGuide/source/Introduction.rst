@@ -13,25 +13,30 @@ conducted with the App:
 
 UFS Development Team. (2021, March 4). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
 
-..
-   COMMENT: What will be the numbering for this release? It will need to be changed above and throughout the docs. 
-   COMMENT: Can this app be used beyond the CONUS? Change "limited spatial domain" above to CONUS or something more specific. 
-   COMMENT: Where are we on the DA and verification package? Can we update that line?
-   COMMENT: Update citation date & version number. What is Zenodo? 
-   COMMENT: Disagree: "This documentation provides... information on where to find more information and obtain support." We need to add this (i.e. link in the docs) or remove the line. 
-   COMMENT: "Components" doc created but not added to TOC. Contains more detailed info on components discussed here below. 
+How to Use This Document
+========================
+
+This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the UFS forum at https://forums.ufscommunity.org/.
+
+.. code-block:: console
+
+   Throughout the guide, this presentation style indicates shell commands and options, code examples, etc.
+
+.. note::
+
+   Variables presented as ``AaBbCc123`` in this document typically refer to variables
+   in scripts, names of files, and directories.
+
+.. note:: 
+
+   File paths or code that include angle brackets (e.g., ``env/build_<platform>_<compiler>.env``) indicate that users should insert options appropriate to their SRW configuration (e.g., ``env/build_aws_gcc.env``). 
+
 
 Pre-processor Utilities and Initial Conditions
 ==============================================
 
 The SRW Application includes a number of pre-processing utilities that initialize and prepare the
 model. Tasks include generating a regional grid, along with :term:`orography` and surface climatology files for that grid. The pre-processing software converts the raw external model data into initial and lateral boundary condition files in netCDF format. Later, this is used as input to the atmospheric model (FV3-LAM). Additional information about the UFS pre-processor utilities can be found in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
-
-
-..
-   COMMENT: "Integration" with what?!?! (1st sentence) --> Try "prepare the model data" instead of "prepare the model for integration." 
-   COMMENT: Deleted code/commands bc it's an introduction. 
-   COMMENT: What is a "halo shave point" or wide-halo grid?!
 
 
 Forecast Model
@@ -64,71 +69,21 @@ The Unified Post Processor (:term:`UPP`) is included in the SRW Application work
 
 Visualization Example
 =====================
-This SRW Application distribution provides Python scripts to create basic visualization of the model output. The scripts are available in the ```regional_workflow`` repository
-<https://github.com/NOAA-EMC/regional_workflow/tree/release/public-v1/ush/Python>`_
-under ``ush/Python``. Usage information and instructions are described in  
-:numref:`Chapter %s <Graphics>` and are also included at the top of the script. 
+
+This SRW Application distribution provides Python scripts to create basic visualizations of the model output. Usage information and instructions are described in :numref:`Chapter %s <Graphics>` and are also included at the top of the script. 
 
 Build System and Workflow
 =========================
 
-The SRW Application has a portable build system and a user-friendly, modular, and
-expandable workflow framework.
+The SRW Application has a portable CMake-based build system that packages together all the components required to build the SRW Application. Once built, users can generate a Rocoto-based workflow that will run each task in the proper sequence (see `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`_). Individual components can also be run in a stand-alone, command line fashion. The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite for the forecast. 
 
-..
-   COMMENT: Define build system and workflow...
-
-An umbrella CMake-based build system is used for building the components necessary
-for running the end-to-end SRW Application: the UFS Weather Model and the pre- and
-post-processing software. Additional libraries (:term:`NCEPLIBS-external` and :term:`NCEPLIBS`) necessary
-for the application are not included in the SRW Application build system, but are available
-pre-built on pre-configured platforms. There is a small set of system libraries and utilities
-that are assumed to be present on the target computer: the CMake build software, a Fortran,
-C, and C++ compiler, and MPI library.
-
-Once built, the provided experiment generator script can be used to create a Rocoto-based
-workflow file that will run each task in the system (see `Rocoto documentation
-<https://github.com/christopherwharrop/rocoto/wiki/Documentation>`_) in the proper sequence.
-If Rocoto and/or a batch system is not present on the available platform, the individual
-components can be run in a stand-alone, command line fashion with provided run scripts. The
-generated namelist for the atmospheric model can be modified in order to vary settings such
-as forecast starting and ending dates, forecast length hours, the CCPP physics suite,
-integration time step, history file output frequency, and more. It also allows for configuration
-of other elements of the workflow; for example, whether to run some or all of the pre-processing,
-forecast model, and post-processing steps.
-
-This SRW Application release has been tested on a variety of platforms widely used by
-researchers, such as the NOAA Research and Development High-Performance Computing Systems
-(RDHPCS), including  Hera, Orion, and Jet; NOAA's Weather and Climate Operational
-Supercomputing System (WCOSS); the National Center for Atmospheric Research (NCAR) Cheyenne
-system; the National Severe Storms Laboratory (NSSL) HPC machine, called Odin; the National Science Foundation (NSF) Stampede2 system; and generic Linux and macOS systems using Intel and GNU compilers. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_have been defined for the SRW Application, including pre-configured (level 1), configurable (level 2), limited test platforms (level 3), and build only platforms (level 4). Each level is further described below.
-
-For the selected computational platforms that have been pre-configured (level 1), all the
-required libraries for building the SRW Application are available in a central place. That
-means bundled libraries (NCEPLIBS) and third-party libraries (NCEPLIBS-external) have both
-been built. The SRW Application is expected to build and run out of the box on these
-pre-configured platforms and users can proceed directly to the using the workflow, as
-described in the Quick Start (:numref:`Chapter %s <Quickstart>`).
-
-A few additional computational platforms are considered configurable for the SRW
-Application release. Configurable platforms (level 2) are platforms where all of
-the required libraries for building the SRW Application are expected to install successfully,
-but are not available in a central place. Applications and models are expected to build
-and run once the required bundled libraries (NCEPLIBS) and third-party libraries (NCEPLIBS-external)
-are built.
-
-Limited-Test (level 3) and Build-Only (level 4) computational platforms are those in which
-the developers have built the code but little or no pre-release testing has been conducted,
-respectively. A complete description of the levels of support, along with a list of preconfigured
-and configurable platforms can be found in the `SRW Application wiki page 
-<https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_.
+This SRW Application release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Comuting (HPC) systems (e.g. Hera, Orion), cloud environments, and generic Linux and macOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application, including pre-configured (Level 1), configurable (Level 2), limited test platforms (Level 3), and build-only platforms (Level 4). Preconfigured (Level 1) systems already have the required external libraries (e.g., NCEPLIBS) available in a central location. The SRW Application is expected to build and run out-of-the-box on these systems, and users can proceed directly to using the workflow, as
+described in the Quick Start Guide (:numref:`Section %s <_GenerateForecast>`). On other platforms, the required libraries will need to be installed via the HPC-Stack. Once these libraries are built, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
 
 User Support, Documentation, and Contributing Development
 =========================================================
 
-A forum-based, online `support system <https://forums.ufscommunity.org>`_ organized by topic
-provides a centralized location for UFS users and developers to post questions and exchange
-information. 
+A forum-based, online `support system <https://forums.ufscommunity.org>`_ organized by topic provides a centralized location for UFS users and developers to post questions and exchange information. 
 
 A list of available documentation is shown in :numref:`Table %s <list_of_documentation>`.
 
@@ -167,7 +122,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
 
 The UFS community is encouraged to contribute to the development effort of all related
-utilities, model code, and infrastructure. Issues can be posted in SRW-related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each component (described in the User’s Guides listed in :numref:`Table %s <list_of_documentation>`.
+utilities, model code, and infrastructure. Issues can be posted in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each component (described in the User’s Guides listed in :numref:`Table %s <list_of_documentation>`.
 
 Future Direction
 ================
@@ -184,26 +139,6 @@ forecast implementations. Planned advancements include:
 
 In addition to the above list, other improvements will be addressed in future releases.
 
-..
-   COMMENT: How is a domain different from a grid? Can we say "user-defined grid," for example? Might be clearer. 
-
-How to Use This Document
-========================
-
-This guide instructs both novice and experienced users on downloading,
-building and running the SRW Application.  Please post questions in the
-UFS forum at https://forums.ufscommunity.org/.
-
-.. code-block:: console
-
-   Throughout the guide, this presentation style indicates shell
-   commands and options, code examples, etc.
-
-
-.. note::
-
-   Variables presented as ``AaBbCc123`` in this document typically refer to variables
-   in scripts, names of files and directories.
 
 .. bibliography:: references.bib
 

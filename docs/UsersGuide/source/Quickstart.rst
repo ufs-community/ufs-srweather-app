@@ -152,6 +152,7 @@ The SRW requires input files to run. These include static datasets, initial and 
 files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are 
 already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :doc:`Input and Output Files <InputOutputFiles>`, Section 3. Section 1 contains useful background information on the input files required by the SRW. 
 
+.. _GenerateForecast:
 
 Generate the Forecast Experiment 
 =================================

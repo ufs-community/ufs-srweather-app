@@ -10,7 +10,6 @@ The SRW Application v2.0 release assembles a variety of components, including:
 * Post-Processor
 * Visualization Example
 * Build System and Workflow
-* User Support, Documentation, and Contributing Development
 
 These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. 
 
@@ -97,6 +96,9 @@ The scripts are available in the `regional_workflow repository
 under ush/Python. Usage information and instructions are described in  
 :numref:`Chapter %s <Graphics>` and are also included at the top of the script. 
 
+..
+   COMMENT: only after running manage_externals/checkout_externals
+
 Build System and Workflow
 =========================
 
@@ -152,66 +154,3 @@ the developers have built the code but little or no pre-release testing has been
 respectively. A complete description of the levels of support, along with a list of preconfigured
 and configurable platforms can be found in the `SRW Application wiki page 
 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_.
-
-User Support, Documentation, and Contributing Development
-=========================================================
-
-A forum-based, online `support system <https://forums.ufscommunity.org>`_ organized by topic
-provides a centralized location for UFS users and developers to post questions and exchange
-information. 
-
-A list of available documentation is shown in :numref:`Table %s <list_of_documentation>`.
-
-.. _list_of_documentation:
-
-.. table::  Centralized list of documentation
-
-   +----------------------------+---------------------------------------------------------------------------------+
-   | **Documentation**          | **Location**                                                                    |
-   +============================+=================================================================================+
-   | UFS SRW Application v1.0   |  https://ufs-srweather-app.readthedocs.io/en/ufs-v1.0.0                         |
-   | User's Guide               |                                                                                 |
-   +----------------------------+---------------------------------------------------------------------------------+
-   | UFS_UTILS v2.0 User's      | https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/                         |
-   | Guide                      |                                                                                 |
-   +----------------------------+---------------------------------------------------------------------------------+
-   | UFS Weather Model v2.0     | https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0                          |
-   | User's Guide               |                                                                                 |
-   +----------------------------+---------------------------------------------------------------------------------+
-   | NCEPLIBS Documentation     | https://github.com/NOAA-EMC/NCEPLIBS/wiki                                       |
-   +----------------------------+---------------------------------------------------------------------------------+
-   | NCEPLIBS-external          | https://github.com/NOAA-EMC/NCEPLIBS-external/wiki                              |
-   | Documentation              |                                                                                 |
-   +----------------------------+---------------------------------------------------------------------------------+
-   | FV3 Documentation          | https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html                |
-   +----------------------------+---------------------------------------------------------------------------------+
-   | CCPP Scientific            | https://dtcenter.ucar.edu/GMTB/v5.0.0/sci_doc/index.html                        |
-   | Documentation              |                                                                                 |
-   +----------------------------+---------------------------------------------------------------------------------+
-   | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/v5.0.0/                                  |
-   | Documentation              |                                                                                 |
-   +----------------------------+---------------------------------------------------------------------------------+
-   | ESMF manual                | http://earthsystemmodeling.org/docs/release/ESMF_8_0_0/ESMF_usrdoc/             |
-   +----------------------------+---------------------------------------------------------------------------------+
-   | Unified Post Processor     | https://upp.readthedocs.io/en/upp-v9.0.0/                                       |
-   +----------------------------+---------------------------------------------------------------------------------+
-
-The UFS community is encouraged to contribute to the development effort of all related
-utilities, model code, and infrastructure. Issues can be posted in SRW-related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each component (described in the User’s Guides listed in :numref:`Table %s <list_of_documentation>`.
-
-Future Direction
-================
-
-Users can expect to see incremental improvements and additional capabilities in upcoming
-releases of the SRW Application to enhance research opportunities and support operational
-forecast implementations. Planned advancements include:
-
-* A more extensive set of supported developmental physics suites.
-* A larger number of pre-defined domains/resolutions and a fully supported capability to create a user-defined domain.
-* Inclusion of data assimilation, cycling, and ensemble capabilities.
-* A verification package (i.e., METplus) integrated into the workflow. 
-* Inclusion of stochastic perturbation techniques.
-
-In addition to the above list, other improvements will be addressed in future releases.
-
-.. bibliography:: references.bib
