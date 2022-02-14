@@ -44,7 +44,7 @@ module load ${MODULE_FN}
 module list
 
 # Copy module file to env
-cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/RRFS-CMAQ/env/modulefile.fv3gfs_aqm"
+cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/env/modulefile.fv3gfs_aqm"
 
 cp -r "${SRC_DIR}" "${BUILD_DIR}"
 

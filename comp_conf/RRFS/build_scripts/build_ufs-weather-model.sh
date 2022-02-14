@@ -49,8 +49,8 @@ module load ${MODULE_FN}
 module list
 
 # Copy module file to env
-cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/RRFS/env/modulefile.ufs-weather-model"
-cp "${SRC_DIR}/modulefiles/ufs_common" "${COMP_DIR}/RRFS/env/ufs_common"
+cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/env/modulefile.ufs-weather-model"
+cp "${SRC_DIR}/modulefiles/ufs_common" "${COMP_DIR}/env/ufs_common"
 
 # Set cmake environment
 source ../../cmake_env_machine.sh
