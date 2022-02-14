@@ -28,7 +28,7 @@ module purge
 module list
 
 # Copy module file to env
-cp "${SRC_DIR}/${MODULE_FN}" "${COMP_DIR}/RRFS-CMAQ/env/modulefile.gefs2clbc"
+cp "${SRC_DIR}/${MODULE_FN}" "${COMP_DIR}/env/modulefile.gefs2clbc"
 
 cp -r "${SRC_DIR}" "${BUILD_DIR}"
 

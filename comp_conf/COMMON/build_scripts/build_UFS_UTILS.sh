@@ -47,7 +47,7 @@ module load ${MODULE_FN}
 module list
 
 # Copy module file to env
-cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/COMMON/env/modulefile.UFS_UTILS${FN_SFX}"
+cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/env/modulefile.UFS_UTILS${FN_SFX}"
 
 # Set cmake environment
 source ../../cmake_env_machine.sh

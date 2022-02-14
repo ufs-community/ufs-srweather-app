@@ -31,7 +31,7 @@ mkdir -p build
 cd build
 
 module purge
-source ${COMP_DIR}/RRFS-CMAQ-DA/env/modulefile.build.hera.JEDI
+source ${COMP_DIR}/env/modulefile.build.hera.JEDI
 module list
 
 ecbuild -DMPIEXEC_EXECUTABLE=‘which srun‘ -DMPIEXEC_NUMPROC_FLAG="-n" ../ 

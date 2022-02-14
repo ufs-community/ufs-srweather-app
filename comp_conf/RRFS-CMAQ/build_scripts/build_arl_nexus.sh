@@ -44,7 +44,7 @@ module load ${MODULE_FN}
 module list
 
 # Copy module file to env
-cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/RRFS-CMAQ/env/modulefile.arl_nexus"
+cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/env/modulefile.arl_nexus"
 
 # Set cmake environment
 source ../../cmake_env_machine.sh
