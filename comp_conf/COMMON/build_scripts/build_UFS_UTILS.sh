@@ -30,7 +30,7 @@ echo "COMPILER:" ${COMPILER}
 
 # file name suffix
 if [[ "${MACHINE}" == "hera" || "${MACHINE}" == "jet" || 
-    "${MACHINE}" == "orion" || " ${MACHINE}" == "wcoss_dell_p3" ]]; then
+    "${MACHINE}" == "orion" || "${MACHINE}" == "wcoss_dell_p3" ]]; then
   FN_SFX=".lua"
 else
   FN_SFX=""
