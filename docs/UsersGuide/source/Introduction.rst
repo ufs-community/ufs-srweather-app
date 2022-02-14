@@ -6,7 +6,7 @@ Introduction
 
 The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. The UFS is the source system for NOAA’s operational numerical weather prediction applications. It enables research, development, and contribution opportunities within the broader :term:`weather enterprise` (e.g. government, industry, and academia). For more information about the UFS, visit the UFS Portal at https://ufscommunity.org/.
 
-The UFS can be configured for multiple applications (see a complete list at https://ufscommunity.org/science/aboutapps/). The configuration described here is the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes out to several days. The SRW Application v1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. Future work will expand the capabilities of the application to include data assimilation (DA) and a verification package (e.g. METplus). This documentation provides a quick start guide for running the application, in addition to an overview of the release components, a description of the supported capabilities, and information on where to find more information and obtain support.
+The UFS can be configured for multiple applications (see a complete list at https://ufscommunity.org/science/aboutapps/). The configuration described here is the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes out to several days. The SRW Application v2.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. Future work will expand the capabilities of the application to include data assimilation (DA) and a verification package (e.g. METplus). This documentation provides a quick start guide for running the application, in addition to an overview of the release components, a description of the supported capabilities, and information on where to find more information and obtain support.
 
 The SRW App v1.0.0 citation is as follows and should be used when presenting results based on research 
 conducted with the App:
@@ -64,7 +64,7 @@ ingests initial and lateral boundary condition files produced by :term:`chgres_c
 Post-processor
 ==============
 
-The Unified Post Processor (:term:`UPP`) is included in the SRW Application workflow. The UPP is designed to generate useful products from raw model output. In the SRW, it converts data output formats from netCDF output on the native model grid to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP user’s guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_. Output from UPP can be used with visualization, plotting, and verification packages, or for further downstream post-processing, e.g. statistical post-processing techniques.
+The Unified Post Processor (:term:`UPP`) is included in the SRW Application workflow. The UPP is designed to generate useful products from raw model output. In the SRW, it converts data output formats from netCDF output on the native model grid to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_. Output from UPP can be used with visualization, plotting, and verification packages, or for further downstream post-processing, e.g. statistical post-processing techniques.
 
 
 Visualization Example
@@ -122,7 +122,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
 
 The UFS community is encouraged to contribute to the development effort of all related
-utilities, model code, and infrastructure. Issues can be posted in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each component (described in the User’s Guides listed in :numref:`Table %s <list_of_documentation>`.
+utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each component (described in the User’s Guides listed in :numref:`Table %s <list_of_documentation>`.
 
 Future Direction
 ================
@@ -138,7 +138,6 @@ forecast implementations. Planned advancements include:
 * Inclusion of stochastic perturbation techniques.
 
 In addition to the above list, other improvements will be addressed in future releases.
-
 
 .. bibliography:: references.bib
 

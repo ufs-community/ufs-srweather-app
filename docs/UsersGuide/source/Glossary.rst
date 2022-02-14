@@ -7,9 +7,7 @@ Glossary
 .. glossary::
 
    CCPP
-      A forecast-model agnostic, vetted collection of codes containing atmospheric physical 
-      parameterizations and suites of parameterizations for use in Numerical Weather Prediction 
-      (NWP) along with a framework that connects the physics to the host forecast model.
+      `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_. A forecast-model agnostic, vetted collection of codes containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
 
    CONUS
       Continental United States
@@ -17,12 +15,6 @@ Glossary
    chgres_cube
        The preprocessing software used to create initial and boundary condition files to 
        “coldstart” the forecast model.
-
-   HRRR
-      `High Resolution Rapid Refresh <https://rapidrefresh.noaa.gov/hrrr/>`. The HRRR is a NOAA real-time 3-km resolution, hourly updated, cloud-resolving, convection-allowing atmospheric model, initialized by 3km grids with 3km radar assimilation. Radar data is assimilated in the HRRR every 15 min over a 1-h period adding further detail to that provided by the hourly data assimilation from the 13km radar-enhanced Rapid Refresh.
-
-   ..
-      COMMENT: Clarify HRRR definition!
 
    FV3
       The Finite-Volume Cubed-Sphere dynamical core (dycore). Developed at NOAA's Geophysical 
@@ -36,24 +28,27 @@ Glossary
    GRIB2 
       The second version of the World Meterological Organization's (WMO) standard for distributing gridded data.  
 
+   HRRR
+      `High Resolution Rapid Refresh <https://rapidrefresh.noaa.gov/hrrr/>`. The HRRR is a NOAA real-time 3-km resolution, hourly updated, cloud-resolving, convection-allowing atmospheric model, initialized by 3km grids with 3km radar assimilation. Radar data is assimilated in the HRRR every 15 min over a 1-h period adding further detail to that provided by the hourly data assimilation from the 13km radar-enhanced Rapid Refresh.
+
    NAM
       `North American Mesoscale Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/north-american-mesoscale>`_. NAM generates multiple grids (or domains) of weather forecasts over the North American continent at various horizontal resolutions. Each grid contains data for dozens of weather parameters, including temperature, precipitation, lightning, and turbulent kinetic energy. NAM uses additional numerical weather models to generate high-resolution forecasts over fixed regions, and occasionally to follow significant weather events like hurricanes.
 
    NCEP
       National Centers for Environmental Prediction, an arm of the National Weather Service,
-      consisting of nine centers.  More information can be found at https://www.ncep.noaa.gov.
+      consisting of nine centers. More information can be found at https://www.ncep.noaa.gov.
 
    NCEPLIBS
       The software libraries created and maintained by :term:`NCEP` that are required for running 
-      :term:`chgres_cube`, the UFS Weather Model, and :term:`UPP`.
+      :term:`chgres_cube`, the UFS Weather Model, and :term:`UPP`. They are part of the HPC-Stack. 
 
    NCEPLIBS-external
       A collection of third-party libraries required to build :term:`NCEPLIBS`, :term:`chgres_cube`, 
-      the UFS Weather Model, and :term:`UPP`.
+      the UFS Weather Model, and :term:`UPP`. They are part of the HPC-Stack. 
 
    NCL
       An interpreted programming language designed specifically for scientific data analysis and 
-      visualization.  More information can be found at https://www.ncl.ucar.edu.
+      visualization. Stands for NCAR Command Language. More information can be found at https://www.ncl.ucar.edu.
 
    NEMS
       The NOAA Environmental Modeling System is a common modeling framework whose purpose is 
