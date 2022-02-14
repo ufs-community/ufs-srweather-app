@@ -2,6 +2,12 @@
 
 ############################################################
 ## Script to build RRFS-CMAQ                              ##
+##                                                        ##
+## Usage:                                                 ##
+## - non-DA: ./build_RRFS-CMAQ.sh                         ##
+##           or ./build_RRFS-CMAQ.sh "NO"                 ## 
+## - DA: ./build_RRFS-CMAQ.sh "YES"                       ##
+##                                                        ##
 ## Components:                                            ##
 ## - regional workflow, UFS_UTILS, UPP                    ##
 ## - arl_nexus, fv3gfs_aqm, gefs2clbcs, upp_post_stat     ##
@@ -24,13 +30,14 @@ fi
 ##    NO: hera, wcoss_dell_p3
 ##    YES: hera
 ##
-DA_opt="NO"
+DA_opt="${1:-NO}"
 ##
 ## Compiler
 ##
 export COMPILER="intel"
 ##
 ###########################################################
+echo "DA option:" ${DA_opt}
 
 # Check out the external components for RRFS
 echo "... Checking out the common external components: regional workflow, UFS_UTILS, UPP ..."
