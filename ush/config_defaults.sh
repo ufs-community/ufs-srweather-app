@@ -218,10 +218,14 @@ CRON_RELAUNCH_INTVL_MNTS="03"
 #
 # dir_doc_end
 #
+# EXEC_SUBDIR:
+# The name of the subdirectory of ufs-srweather-app where executables are
+# installed.
 #-----------------------------------------------------------------------
 #
 EXPT_BASEDIR=""
 EXPT_SUBDIR=""
+EXEC_SUBDIR="bin"
 #
 #-----------------------------------------------------------------------
 #

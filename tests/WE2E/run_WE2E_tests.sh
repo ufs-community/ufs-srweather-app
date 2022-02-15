@@ -86,6 +86,7 @@ Usage:
     machine=\"...\" \\
     account=\"...\" \\
     [expt_basedir=\"...\"] \\
+    [exec_subdir=\"...\"] \\
     [use_cron_to_relaunch=\"...\"] \\
     [cron_relaunch_intvl_mnts=\"...\"] \\
     [verbose=\"...\"] \\
@@ -128,6 +129,11 @@ absolute path followed by \${expt_basedir}.  This feature can be used to
 group the WE2E tests into subdirectories for convenience, e.g. a set of 
 tests under subdirectory testset1, another set of tests under testset2, 
 etc.
+
+exec_subdir:
+Optional. Argument is used to set the EXEC_SUBDIR configuration
+variable. Please see the ush/default_configs.sh file for a full
+description.
 
 use_cron_to_relaunch:
 Argument used to explicitly set the experiment variable USE_CRON_TO_RELAUNCH
@@ -227,6 +233,7 @@ valid_args=( \
   "machine" \
   "account" \
   "expt_basedir" \
+  "exec_subdir" \
   "use_cron_to_relaunch" \
   "cron_relaunch_intvl_mnts" \
   "verbose" \
@@ -687,7 +694,12 @@ Please correct and rerun."
 MACHINE=\"${MACHINE}\"
 ACCOUNT=\"${ACCOUNT}\""
 
-  if [ ! -z "${EXPT_BASEDIR}" ]; then
+  if [ -n "${exec_subdir}" ]; then
+    expt_config_str=${expt_config_str}"
+EXEC_SUBDIR=\"${exec_subdir}\""
+  fi
+
+  if [ -n "${EXPT_BASEDIR}" ]; then
     expt_config_str=${expt_config_str}"
 EXPT_BASEDIR=\"${EXPT_BASEDIR}\""
   fi
