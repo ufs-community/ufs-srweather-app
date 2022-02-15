@@ -31,16 +31,16 @@ export CCPP_SUITES="FV3_CPT_v0,FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,
 
 # Check out the external components for RRFS
 echo "... Checking out the common external components: regional workflow, UFS_UTILS, UPP ..."
-./manage_externals/checkout_externals -e comp_conf/COMMON/Externals.cfg
+./manage_externals/checkout_externals -e ${MYDIR}/components/COMMON/Externals.cfg
 echo "... Checking out the RRFS forecast model: ufs-weather-model ..."
-./manage_externals/checkout_externals -e comp_conf/RRFS/Externals.cfg
+./manage_externals/checkout_externals -e ${MYDIR}/components/RRFS/Externals.cfg
 
 # Build the external components for RRFS
 echo "... Building UFS_UTILS ..."
-cd ${MYDIR}/comp_conf/COMMON/build_scripts/
+cd ${MYDIR}/components/COMMON/build_scripts/
 ./build_UFS_UTILS.sh
 echo "... Building UPP ..."
 ./build_UPP.sh
 echo "... Building ufs-weather-model ..."
-cd ${MYDIR}/comp_conf/RRFS/build_scripts/
+cd ${MYDIR}/components/RRFS/build_scripts/
 ./build_ufs-weather-model.sh

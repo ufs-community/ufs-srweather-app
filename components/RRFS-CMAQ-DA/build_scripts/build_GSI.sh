@@ -9,7 +9,7 @@ else
 fi
 
 SRW_APP_DIR="${MYDIR}/../../.."
-COMP_DIR="${SRW_APP_DIR}/comp_conf"
+COMP_DIR="${SRW_APP_DIR}/components"
 SRC_DIR="${SRW_APP_DIR}/src/gsi"
 BUILD_DIR="${SRW_APP_DIR}/build/gsi"
 BIN_DIR="${SRW_APP_DIR}/bin/"

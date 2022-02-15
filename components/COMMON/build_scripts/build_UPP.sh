@@ -9,9 +9,9 @@ else
 fi
 
 SRW_APP_DIR="${MYDIR}/../../.."
-COMP_DIR="${SRW_APP_DIR}/comp_conf"
-SRC_DIR="${SRW_APP_DIR}/src/arl_nexus"
-BUILD_DIR="${SRW_APP_DIR}/build/arl_nexus"
+COMP_DIR="${SRW_APP_DIR}/components"
+SRC_DIR="${SRW_APP_DIR}/src/UPP"
+BUILD_DIR="${SRW_APP_DIR}/build/UPP"
 BIN_DIR="${SRW_APP_DIR}/bin/"
 
 # Detect MACHINE
@@ -28,12 +28,14 @@ COMPILER="${COMPILER:-intel}"
 echo "MACHINE:" ${MACHINE}
 echo "COMPILER:" ${COMPILER}
 
-# Module file name
-if [[ "${MACHINE}" == "wcoss_cray" || "${MACHINE}" == "wcoss_dell_p3" ]]; then
-  MODULE_FN="${MACHINE}"
+# File name suffix
+if [[ "${MACHINE}" == "wcoss2" ]]; then
+  FN_SFX=".lua"
 else
-  MODULE_FN="${MACHINE}.${COMPILER}"
+  FN_SFX=""
 fi
+
+MODULE_FN="${MACHINE}${FN_SFX}"
 
 echo "Moduel file name:" ${MODULE_FN}
 
@@ -44,7 +46,7 @@ module load ${MODULE_FN}
 module list
 
 # Copy module file to env
-cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/env/modulefile.arl_nexus"
+cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/env/modulefile.UPP${FN_SFX}"
 
 # Set cmake environment
 source ../../cmake_env_machine.sh

@@ -9,9 +9,9 @@ else
 fi
 
 SRW_APP_DIR="${MYDIR}/../../.."
-COMP_DIR="${SRW_APP_DIR}/comp_conf"
-SRC_DIR="${SRW_APP_DIR}/src/fv3gfs_aqm"
-BUILD_DIR="${SRW_APP_DIR}/build/fv3gfs_aqm"
+COMP_DIR="${SRW_APP_DIR}/components"
+SRC_DIR="${SRW_APP_DIR}/src/UFS_UTILS"
+BUILD_DIR="${SRW_APP_DIR}/build/UFS_UTILS"
 BIN_DIR="${SRW_APP_DIR}/bin/"
 
 # Detect MACHINE
@@ -28,12 +28,15 @@ COMPILER="${COMPILER:-intel}"
 echo "MACHINE:" ${MACHINE}
 echo "COMPILER:" ${COMPILER}
 
-# Module file name
-if [[ "${MACHINE}" == "wcoss_cray" || "${MACHINE}" == "wcoss_dell_p3" ]]; then
-  MODULE_FN="${MACHINE}/fv3"
+# file name suffix
+if [[ "${MACHINE}" == "hera" || "${MACHINE}" == "jet" || 
+    "${MACHINE}" == "orion" || "${MACHINE}" == "wcoss_dell_p3" ]]; then
+  FN_SFX=".lua"
 else
-  MODULE_FN="${MACHINE}.${COMPILER}/fv3"
+  FN_SFX=""
 fi
+
+MODULE_FN="build.${MACHINE}.${COMPILER}${FN_SFX}"
 
 echo "Moduel file name:" ${MODULE_FN}
 
@@ -44,17 +47,20 @@ module load ${MODULE_FN}
 module list
 
 # Copy module file to env
-cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/env/modulefile.fv3gfs_aqm"
+cp "${SRC_DIR}/modulefiles/${MODULE_FN}" "${COMP_DIR}/env/modulefile.UFS_UTILS${FN_SFX}"
 
-cp -r "${SRC_DIR}" "${BUILD_DIR}"
+# Set cmake environment
+source ../../cmake_env_machine.sh
 
-cd "${BUILD_DIR}/NEMS"
+echo "CMAKE_C_COMPILER:" ${CMAKE_C_COMPILER}
+echo "CMAKE_CXX_COMPILER:" ${CMAKE_CXX_COMPILER}
+echo "CMAKE_Fortran_COMPILER:" ${CMAKE_Fortran_COMPILER}
+echo "CMAKE_Platform:" ${CMAKE_Platform}
 
+mkdir -p ${BUILD_DIR}
 mkdir -p ${BIN_DIR}
 
-gmake -j app=coupledFV3_AQM build 2>&1 | tee log.build.fv3gfs_aqm
-
-cp "${BUILD_DIR}/NEMS/exe/NEMS.x" "${BIN_DIR}/NEMS.x"
-
-echo "fv3gfs_aqm executable NEMS.x has been copied to bin"
-
+cd ${BUILD_DIR}
+cmake -DCMAKE_INSTALL_PREFIX=${SRW_APP_DIR} ${SRC_DIR}
+make -j4
+make install
