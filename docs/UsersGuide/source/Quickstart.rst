@@ -348,7 +348,7 @@ For other systems, a variant on the following commands will be necessary:
 
 .. code-block:: console
 
-   module use <path_to_rocoto_module>
+   module use <path_to_rocoto_package>
    module load rocoto
 
 
@@ -365,13 +365,13 @@ After loading Rocoto, call ``rocotorun`` from the experiment directory to launch
 
 Additional Options
 ----------------------
-For automatic resubmission of the workflow at regular intervals (e.g., every 3 minutes), the user can add a chrontab entry by entering the ``crontab -e`` command. The last line of output from the ``./generate_FV3LAM_wflow.sh``, which starts with ``*/1 * * * * ``, can be pasted into the crontab at this point. Alternatively, if users preferred to use the ``./launch_FV3LAM_wflow.sh`` to run the workflow, they can past the following command into the crontab: 
+For automatic resubmission of the workflow at regular intervals (e.g., every 3 minutes), the user can add a chrontab entry by entering the ``crontab -e`` command. This opens a crontab file. The last line of output from the ``./generate_FV3LAM_wflow.sh``, which starts with ``*/1 * * * * ``, can be pasted into the crontab file at this point. Alternatively, if users preferred to use the ``./launch_FV3LAM_wflow.sh`` to run the workflow, they can paste the following command into the crontab: 
 
 .. code-block:: console
 
    */3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh 
 
-The number 3 can be changed to resubmit the workflow more or less frequently. 
+The number ``3`` can be changed to resubmit the workflow more or less frequently. 
 
 .. note::
 
