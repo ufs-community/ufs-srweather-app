@@ -12,7 +12,7 @@ SRW_APP_DIR="${MYDIR}/../../.."
 COMP_DIR="${SRW_APP_DIR}/components"
 SRC_DIR="${SRW_APP_DIR}/src/gefs2clbcs_para"
 BUILD_DIR="${SRW_APP_DIR}/build/gefs2clbcs_para"
-BIN_DIR="${SRW_APP_DIR}/bin/"
+BIN_DIR="${SRW_APP_DIR}/bin"
 
 # Detect MACHINE
 source ${COMP_DIR}/detect_machine.sh

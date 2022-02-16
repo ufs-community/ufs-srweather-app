@@ -12,7 +12,7 @@ SRW_APP_DIR="${MYDIR}/../../.."
 COMP_DIR="${SRW_APP_DIR}/components"
 SRC_DIR="${SRW_APP_DIR}/src/UFS_UTILS"
 BUILD_DIR="${SRW_APP_DIR}/build/UFS_UTILS"
-BIN_DIR="${SRW_APP_DIR}/bin/"
+BIN_DIR="${SRW_APP_DIR}/bin"
 
 # Detect MACHINE
 source ${COMP_DIR}/detect_machine.sh
