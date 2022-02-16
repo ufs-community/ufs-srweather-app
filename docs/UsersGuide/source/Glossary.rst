@@ -7,7 +7,7 @@ Glossary
 .. glossary::
 
    CCPP
-      `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_. A forecast-model agnostic, vetted collection of codes containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
+      The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of codes containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
 
    CONUS
       Continental United States

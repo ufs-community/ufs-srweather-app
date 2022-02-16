@@ -4,13 +4,11 @@
 Workflow Quick Start
 ====================
 
-
-
-This Workflow Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (UFS) Short-Range Weather (SRW) Application. The "out-of-the-box" case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (CONUS) grid (RRFS_CONUS_25km), the Global Forecast System (GFS) version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and FV3-based GFS raw external model data for initialization.
+This Workflow Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application. The "out-of-the-box" case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. note::
 
-   The steps described in this chapter are most applicable to preconfigured (Level 1) systems. On Level 1 systems, all of the required libraries for building community releases of UFS models and applications are available in a central location. This guide can serve as a starting point for running the SRW App on other systems as well but may require additional troubleshooting by the user. The various platform levels are listed `here <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_.
+   The UFS defines `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter are most applicable to preconfigured (Level 1) systems. On Level 1 systems, all of the required libraries for building community releases of UFS models and applications are available in a central location. This guide can serve as a starting point for running the SRW App on other systems as well but may require additional troubleshooting by the user. 
 
 
 .. _HPCstackInfo:
@@ -32,7 +30,7 @@ After completing installation, continue to the :ref:`next section <DownloadCode>
 
 Download the UFS SRW Application Code
 =====================================
-The SRW Application source code is publicly available on GitHub and can be run in a container or locally, depending on user preference. The SRW Application relies on a variety of components detailed in the :ref:`Components Chapter <Components>` of this User's Guide. Users must (1) clone the UFS SRW Application umbrella repository and then (2) run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App and will clone the correct version of the regional workflow, pre-processing utilities, UFS Weather Model, and UPP source code into the appropriate directories under your ``regional_workflow`` and ``src`` directories. 
+The SRW Application source code is publicly available on GitHub and can be run in a container or locally, depending on user preference. The SRW Application relies on a variety of components detailed in the :ref:`Components Chapter <Components>` of this User's Guide. Users must (1) clone the UFS SRW Application umbrella repository and then (2) run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App and will clone the correct version of the regional workflow, pre-processing utilities, UFS Weather Model, and UPP source code into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
 
 Run the UFS SRW in a Singularity Container
 -------------------------------------------
@@ -63,6 +61,9 @@ Clone the develop branch of the UFS-SRW weather application repository:
 
    git clone https://github.com/jkbk2004/ufs-srweather-app
 
+..
+   COMMENT: This will need to be changed to release branch of the SRW repo once it exists. 
+
 Check out submodules for the SRW Application:
 
 .. code-block:: console
@@ -80,7 +81,10 @@ Clone the release branch of the repository:
 
    git clone -b ufs-v1.0.0 https://github.com/ufs-community/ufs-srweather-app.git
 
-Then, check out the submodules for the SRW Application:
+..
+   COMMENT: This will need to be changed to the updated release branch of the SRW repo once it exists. 
+
+Then, run the executable that pulls in the submodules for the SRW Application:
 
 .. code-block:: console
 
@@ -180,7 +184,14 @@ Make a copy of ``config.community.sh`` to get started (under <path-to-ufs-srweat
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
 
-Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged the initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
+Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged the initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. For example:
+
+.. code-block:: console
+
+   MACHINE="AWS"
+   ACCOUNT="none"
+   EXPT_SUBDIR="GST"
+   EXPT_BASEDIR="home/$USER/expt_dirs"
 
 Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :doc:`Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in the section on :doc:`Limited Area Model (LAM) Grids <LAMGrids>`.
 
@@ -190,50 +201,30 @@ Sample settings are indicated below for Level 1 platforms. Detailed guidance app
 
 Minimum parameter settings for Level 1 machines:
 
-For Cheyenne:
+**Cheyenne:**
 
 .. code-block:: console
 
    MACHINE="cheyenne"
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
+   ACCOUNT="<my_account>"
+   EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
    EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/model_data/FV3GFS"
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/model_data/FV3GFS"
 
-For Hera:
+**Hera:**
 
 .. code-block:: console
 
    MACHINE="hera"
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
+   ACCOUNT="<my_account>"
+   EXPT_SUBDIR="<my_expt_name>"
 
-For Jet:
+**Jet, Orion, Gaea:**
 
-.. code-block:: console
+The settings are the same as for Hera, except that ``"hera"`` should be switched to ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. 
 
-   MACHINE="jet"
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
-
-For Orion:
-
-.. code-block:: console
-
-   MACHINE="orion"
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
-
-For Gaea:
-
-.. code-block:: console
-
-   MACHINE="gaea"
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
-
-For WCOSS, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
+For **WCOSS**, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
 
 .. code-block:: console
 
@@ -241,33 +232,37 @@ For WCOSS, edit ``config.sh`` with these WCOSS-specific parameters, and use a va
    ACCOUNT="my_account"
    EXPT_SUBDIR="my_expt_name"
 
+
 .. _SetUpPythonEnv:
 
 Set up the Python and other Environment Parameters
 --------------------------------------------------
-Next, it is necessary to load the appropriate Python environment for the workflow. The workflow requires Python 3, with the packages 'PyYAML', 'Jinja2', and 'f90nml' available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
+Next, load the appropriate Python environment for the workflow. The workflow requires Python 3, with the packages 'PyYAML', 'Jinja2', and 'f90nml' available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
 
 .. code-block:: console
 
    source ../../env/wflow_<platform>.env
 
 
-Run the ``generate_FV3LAM_wflow.sh`` script
+.. _GenerateWorkflow:: 
+
+Generate the Regional Workflow
 -------------------------------------------
-For all platforms, the workflow can then be generated from the ``ush`` directory with the command:
+First, activate the regional workflow from the ``ush`` directory:
+
+.. code-block:: console
+
+   conda activate regional_workflow 
+
+Then, run the following command to generate the workflow:
 
 .. code-block:: console
 
    ./generate_FV3LAM_wflow.sh
 
-This script creates an experiment directory and populates it will all the data needed to run through the workflow. The generated workflow will be in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. A log file called ``log.generate_FV3LAM_wflow`` is generated by this step and can also be found in ``$EXPTDIR``. The settings for these paths can be found in the output from the ``./generate_FV3LAM_wflow.sh`` script. 
+The last line of output from this script, starting with ``*/1 * * * * ``, can be saved and `used later <AdditionalOptions>` to automatically run portions of the workflow. 
 
-The last line of output, which starts with ``*/1 * * * * ``, can be saved and used later to automatically run portions of the workflow. The ``1`` could be any number and simply refers to the frequency of the reruns. 
-
-
-Run the Workflow Using Rocoto
-=============================
-The information in this section assumes that Rocoto is available on the desired platform. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two ways you can run the workflow with Rocoto using either the ``./launch_FV3LAM_wflow.sh`` or by hand. 
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The generated workflow will be in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in `Step %s <SetUpConfigFile>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in $EXPTDIR. 
 
 An environment variable can be set to navigate to the ``$EXPTDIR`` more easily. If the login shell is bash, it can be set as follows:
 
@@ -275,11 +270,12 @@ An environment variable can be set to navigate to the ``$EXPTDIR`` more easily. 
 
    export EXPTDIR=/<path-to-experiment>/<directory_name>
 
-Or if the login shell is csh/tcsh, it can be set using:
+If the login shell is csh/tcsh, replace ``export`` with ``setenv`` in the command above.
 
-.. code-block:: console
 
-   setenv EXPTDIR /<path-to-experiment>/<directory_name>
+Run the Workflow Using Rocoto
+=============================
+The information in this section assumes that Rocoto is available on the desired platform. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: using the ``./launch_FV3LAM_wflow.sh`` or by hand.  
 
 Launch the Rocoto Workflow Using a Script
 -----------------------------------------------
@@ -291,42 +287,60 @@ To run Rocoto using the script provided:
    cd $EXPTDIR
    ./launch_FV3LAM_wflow.sh
 
-Once the workflow is launched with the ``launch_FV3LAM_wflow.sh`` script, a log file named ``log.launch_FV3LAM_wflow`` will be created (or appended to it if it already exists) in ``EXPTDIR``.
+Once the workflow is launched with the ``launch_FV3LAM_wflow.sh`` script, a log file named ``log.launch_FV3LAM_wflow`` will be created (or appended) in the ``EXPTDIR``. Check the end of the log file periodically to see how the experiment is progressing:
+
+.. code-block:: console
+
+   cd $EXPTDIR
+   vi ``log.launch_FV3LAM_wflow``
+
 
 Launch the Rocoto Workflow Manually
 ---------------------------------------
 
-Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can manually load Rocoto and any other required modules. The commands for specific Level 1 platforms are described here: 
+Load Rocoto
+^^^^^^^^^^^^^^^^
 
-For Cheyenne:
+Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can manually load Rocoto and any other required modules. This gives the user more control over the process and allows them to view experiment progress more easily. 
+
+For most systems, a variant on the following commands will be necessary to load the Rocoto module:
+
+.. code-block:: console
+
+   module use <path_to_rocoto_package>
+   module load rocoto
+
+The commands for specific Level 1 platforms are described here: 
+
+Cheyenne:
 
 .. code-block:: console
 
    module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
    module load rocoto
 
-For Hera or Jet:
+Hera and Jet:
 
 .. code-block:: console
 
    module purge
    module load rocoto
 
-For Orion:
+Orion:
 
 .. code-block:: console
 
    module purge
    module load contrib rocoto
 
-For Gaea:
+Gaea:
 
 .. code-block:: console
 
    module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
    module load rocoto/1.3.3
 
-For WCOSS_DELL_P3:
+WCOSS_DELL_P3:
 
 .. code-block:: console
 
@@ -335,7 +349,7 @@ For WCOSS_DELL_P3:
    module use /gpfs/dell3/usrx/local/dev/emc_rocoto/modulefiles/
    module load ruby/2.5.1 rocoto/1.2.4
 
-For WCOSS_CRAY:
+WCOSS_CRAY:
 
 .. code-block:: console
 
@@ -344,18 +358,11 @@ For WCOSS_CRAY:
    module use -a /usrx/local/emc_rocoto/modulefiles
    module load rocoto/1.2.4
 
-For other systems, a variant on the following commands will be necessary:
-
-.. code-block:: console
-
-   module use <path_to_rocoto_package>
-   module load rocoto
-
 
 Run the Rocoto Workflow
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After loading Rocoto, call ``rocotorun`` from the experiment directory to launch the workflow tasks. As the workflow progresses through its stages, ``rocotostat`` will show the state of the process and allow users to monitor progress: 
+After loading Rocoto, call ``rocotorun`` from the experiment directory to launch the workflow tasks. This will start any tasks that do not have a dependency. As the workflow progresses through its stages, ``rocotostat`` will show the state of each task and allow users to monitor progress: 
 
 .. code-block:: console
 
@@ -363,19 +370,32 @@ After loading Rocoto, call ``rocotorun`` from the experiment directory to launch
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-Additional Options
-----------------------
-For automatic resubmission of the workflow at regular intervals (e.g., every 3 minutes), the user can add a chrontab entry by entering the ``crontab -e`` command. This opens a crontab file. The last line of output from the ``./generate_FV3LAM_wflow.sh``, which starts with ``*/1 * * * * ``, can be pasted into the crontab file at this point. Alternatively, if users preferred to use the ``./launch_FV3LAM_wflow.sh`` to run the workflow, they can paste the following command into the crontab: 
+The ``rocotorun`` and ``rocotostat`` commands will need to be resubmitted regularly and repeatedlyuntil the experiment is finished. In part, this is to avoid having the system time out. This also ensures that when one task ends, tasks dependent on it will run as soon as possible, and ``rocotostat`` will capture the new progress. 
+
+If the experiment fails, the ``rocotostat`` command will indicate which task failed. Users can look at the log file in the ``log`` subdirectory for the failed task to determine what caused the failure. For example, if the ``make_grid`` task failed: 
 
 .. code-block:: console
 
-   */3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh 
+   cd $EXPTDIR/log
+   vi make_grid.log
 
-The number ``3`` can be changed to resubmit the workflow more or less frequently. 
+If users have the `Slurm workload manager <https://slurm.schedmd.com/documentation.html>`_ on their system, they can run the ``squeue`` command in lieu of ``rocotostat`` to check what jobs are currently running. 
+
+.. _AdditionalOptions::
+
+Additional Options
+----------------------
+For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add a crontab entry by entering the ``crontab -e`` command, which opens a crontab file. As mentioned in `Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * * ``), can be pasted into the crontab file. It can also be found in the``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+
+.. code-block:: console
+
+   */1 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
+where <path/to/experiment/subdirectory> is changed to correspond to the user's machine, and "/apps/rocoto/1.3.3/bin/rocotorun" corresponds to the location of the ``rocotorun`` command on the user's system. The number ``1`` can also be changed and simply means that the workflow will be resubmitted every minute. 
 
 .. note::
 
-   Currently cron is only available on the orion-login-1 node, so please use that node.
+   On Orion, cron is only available on the orion-login-1 node, so please use that node when running cron jobs on Orion.
    
 The workflow run is completed when all tasks have “SUCCEEDED”, and the rocotostat command will output the following:
 
