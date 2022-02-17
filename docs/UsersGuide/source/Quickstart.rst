@@ -295,6 +295,14 @@ Once the workflow is launched with the ``launch_FV3LAM_wflow.sh`` script, a log 
    cd $EXPTDIR
    vi ``log.launch_FV3LAM_wflow``
 
+Alternatively, to (re)launch the workflow and check its progress on a single line: 
+
+.. code-block:: console
+
+   ./launch_FV3LAM_wflow.sh; tail -n 40 log.launch_FV3LAM_wflow
+
+This will output the last 40 lines of the log file. The number 40 can be changed according to the user's preferences. 
+
 
 Launch the Rocoto Workflow Manually
 ---------------------------------------
@@ -380,7 +388,9 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
    cd $EXPTDIR/log
    vi make_grid.log
 
-If users have the `Slurm workload manager <https://slurm.schedmd.com/documentation.html>`_ on their system, they can run the ``squeue`` command in lieu of ``rocotostat`` to check what jobs are currently running. 
+.. note::
+   
+   If users have the `Slurm workload manager <https://slurm.schedmd.com/documentation.html>`_ on their system, they can run the ``squeue`` command in lieu of ``rocotostat`` to check what jobs are currently running. 
 
 .. _AdditionalOptions::
 
@@ -390,9 +400,17 @@ For automatic resubmission of the workflow at regular intervals (e.g., every min
 
 .. code-block:: console
 
-   */1 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+   */1 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 
 
 where <path/to/experiment/subdirectory> is changed to correspond to the user's machine, and "/apps/rocoto/1.3.3/bin/rocotorun" corresponds to the location of the ``rocotorun`` command on the user's system. The number ``1`` can also be changed and simply means that the workflow will be resubmitted every minute. 
+
+Then, check the experiment progress with:
+
+.. code-block:: console
+   
+   cd $EXPTDIR
+   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
 
 .. note::
 
