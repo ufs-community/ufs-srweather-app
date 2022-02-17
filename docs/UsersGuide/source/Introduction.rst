@@ -47,7 +47,7 @@ Atmospheric Model
 
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
 (:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability :cite:`BlackEtAl2020`.
-The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`_. 
+The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. 
 
 Common Community Physics Package
 ---------------------------------
@@ -78,7 +78,7 @@ Build System and Workflow
 The SRW Application has a portable CMake-based build system that packages together all the components required to build the SRW Application. Once built, users can generate a Rocoto-based workflow that will run each task in the proper sequence (see `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`_). Individual components can also be run in a stand-alone, command line fashion. The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite for the forecast. 
 
 This SRW Application release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Comuting (HPC) systems (e.g. Hera, Orion), cloud environments, and generic Linux and macOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application, including pre-configured (Level 1), configurable (Level 2), limited test platforms (Level 3), and build-only platforms (Level 4). Preconfigured (Level 1) systems already have the required external libraries (e.g., NCEPLIBS) available in a central location. The SRW Application is expected to build and run out-of-the-box on these systems, and users can proceed directly to using the workflow, as
-described in the Quick Start Guide (:numref:`Section %s <_GenerateForecast>`). On other platforms, the required libraries will need to be installed via the HPC-Stack. Once these libraries are built, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
+described in the Quick Start Guide (:numref:`Section %s <GenerateForecast>`). On other platforms, the required libraries will need to be installed via the HPC-Stack. Once these libraries are built, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
 
 User Support, Documentation, and Contributing Development
 =========================================================

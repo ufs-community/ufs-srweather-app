@@ -5,8 +5,6 @@
 
 UFS Short-Range Weather App Users Guide
 =======================================
-
-.. index::
    
 .. toctree::
    :numbered:

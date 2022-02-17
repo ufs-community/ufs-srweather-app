@@ -16,6 +16,9 @@ Glossary
        The preprocessing software used to create initial and boundary condition files to 
        “coldstart” the forecast model.
 
+   dynamical core
+      Global atmospheric model based on fluid dynamics principles, including Euler's equations of motion.
+
    FV3
       The Finite-Volume Cubed-Sphere dynamical core (dycore). Developed at NOAA's Geophysical 
       Fluid Dynamics Laboratory (GFDL), it is a scalable and flexible dycore capable of both 
@@ -28,8 +31,14 @@ Glossary
    GRIB2 
       The second version of the World Meterological Organization's (WMO) standard for distributing gridded data.  
 
+   HPC-Stack
+      The `HPC-stack <https://github.com/NOAA-EMC/hpc-stack>`__ is a repository that provides a unified, shell script-based build system for building the software stack required for numerical weather prediction (NWP) tools such as the `Unified Forecast System (UFS) <https://ufscommunity.org/>`__ and the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`__ framework.
+
    HRRR
       `High Resolution Rapid Refresh <https://rapidrefresh.noaa.gov/hrrr/>`. The HRRR is a NOAA real-time 3-km resolution, hourly updated, cloud-resolving, convection-allowing atmospheric model, initialized by 3km grids with 3km radar assimilation. Radar data is assimilated in the HRRR every 15 min over a 1-h period adding further detail to that provided by the hourly data assimilation from the 13km radar-enhanced Rapid Refresh.
+
+   LAM
+      Limited Area Model. LAM grids use a regional (rather than global) configuration of the FV3 dynamical core. 
 
    NAM
       `North American Mesoscale Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/north-american-mesoscale>`_. NAM generates multiple grids (or domains) of weather forecasts over the North American continent at various horizontal resolutions. Each grid contains data for dozens of weather parameters, including temperature, precipitation, lightning, and turbulent kinetic energy. NAM uses additional numerical weather models to generate high-resolution forecasts over fixed regions, and occasionally to follow significant weather events like hurricanes.

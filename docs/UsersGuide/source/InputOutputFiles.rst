@@ -31,7 +31,7 @@ from a location on disk to your experiment directory by the workflow generation 
 pre-processing utilities use many different datasets to create grids, and to generate model
 input datasets from the external model files.  A detailed description of the input files
 for the pre-processing utilities can be found `here 
-<https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
+<https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`__.
 
 UFS Weather Model
 -----------------
@@ -41,14 +41,14 @@ must be staged by the user unless you are running on a pre-configured platform, 
 you can link to the existing copy on that machine. See :numref:`Section %s <StaticFixFiles>`
 for more information. The static, grid, and date specific files are linked in the experiment
 directory by the workflow scripts. An extensive description of the input files for the weather
-model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`_.
+model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__.
 The namelists and configuration files for the SRW Application are created from templates by the
 workflow, as described in :numref:`Section %s <WorkflowTemplates>`.
 
 Unified Post Processor (UPP)
 ----------------------------
 Documentation for the UPP input files can be found in the `UPP User's Guide
-<https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html>`_.
+<https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html>`__.
 
 .. _WorkflowTemplates:
 
@@ -110,7 +110,7 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
 
 Additional information related to the ``diag_table_[CCPP]``, ``field_table_[CCPP]``, ``input.nml.FV3``,
 ``model_conigure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide
-<https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#input-files>`_,
+<https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#input-files>`__,
 while information on the ``regional_grid.nml`` can be found in the `UFS_UTILS User’s Guide
 <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
 
@@ -162,7 +162,7 @@ experiment run directory ``EXPTDIR/YYYYMMDDHH/INPUT`` and consist of the followi
 * ``sfc_data.nc -> sfc_data.tile7.halo0.nc``
 
 These output files are used as inputs for the UFS weather model, and are described in the `Users Guide 
-<https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#grid-description-and-initial-condition-files>`_.
+<https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#grid-description-and-initial-condition-files>`__.
 
 UFS Weather Model
 -----------------
@@ -182,11 +182,11 @@ the file names are specified in the input file ``model_configure`` and are set t
 * ``phyfHHH.nc``
 
 Additional details may be found in the UFS Weather Model `Users Guide
-<https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#output-files>`_.
+<https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#output-files>`__.
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP output files can be found `here <https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html>`_.
+Documentation for the UPP output files can be found `here <https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html>`__.
 
 For the SRW Application, the weather model netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH/postprd``
 directory and have the naming convention (file->linked to):
@@ -205,7 +205,7 @@ located in ``ufs-srweather-app/src/UPP/parm``.
 .. note::
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
 
-Use the directions in the `UPP User's Guide <https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html#control-file>`_
+Use the directions in the `UPP User's Guide <https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html#control-file>`__
 for details on how to make modifications to the ``fv3lam.xml`` file and for remaking the flat text file that
 the UPP reads, which is called ``postxconfig-NT-fv3lam.txt`` (default).
 
@@ -240,8 +240,8 @@ where the static files are located. If you are on a pre-configured or configurab
 need to stage the fixed files manually because they have been prestaged and the paths
 are set in ``regional_workflow/ush/setup.sh``. If the user's platform is not defined
 in that file, the static files can be pulled individually or as a full tar file from the `FTP data repository
-<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/>`_ or from `Amazon Web Services (AWS) cloud storage
-<https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/fix_files.tar.gz>`_
+<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/>`__ or from `Amazon Web Services (AWS) cloud storage
+<https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/fix_files.tar.gz>`__
 and staged on your machine. The paths to the staged files must then be set in ``config.sh``
 as follows:
 
@@ -268,7 +268,7 @@ not have access to the NOAA HPSS and you need to pull and stage the data manuall
 set ``USE_USER_STAGED_EXTRN_FILES`` to ``TRUE`` and then set the paths to the where the IC/LBC files are located. 
 
 A small sample of IC/LBCs is available at the `FTP data repository
-<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz>`_ or from `AWS cloud storage
+<https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz>`__ or from `AWS cloud storage
 <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz>`_.
 
 Initial and Lateral Boundary Condition Organization

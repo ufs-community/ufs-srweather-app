@@ -42,7 +42,7 @@ repositories associated with this umbrella repo (see :numref:`Table %s <top_leve
    +---------------------------------+---------------------------------------------------------+
 
 The UFS Weather Model contains a number of sub-repositories used by the model as 
-documented `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/CodeOverview.html>`_.
+documented `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/CodeOverview.html>`__.
 
 Note that the prerequisite libraries (including NCEP Libraries and external libraries) are not
 included in the UFS SRW Application repository. The source code for these components resides in
@@ -50,7 +50,7 @@ the repositories `NCEPLIBS <https://github.com/NOAA-EMC/NCEPLIBS>`_ and `NCEPLIB
 <https://github.com/NOAA-EMC/NCEPLIBS-external>`_. 
 
 These external components are already built on the preconfigured platforms listed `here 
-<https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_.
+<https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__.
 However, they must be cloned and built on other platforms according to the instructions provided
 in the wiki pages of those repositories: https://github.com/NOAA-EMC/NCEPLIBS/wiki and
 https://github.com/NOAA-EMC/NCEPLIBS-external/wiki.

@@ -6,7 +6,7 @@ Workflow Quick Start
 
 This Workflow Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application. The "out-of-the-box" case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
 
-.. note::
+.. attention::
 
    The UFS defines `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter are most applicable to preconfigured (Level 1) systems. On Level 1 systems, all of the required libraries for building community releases of UFS models and applications are available in a central location. This guide can serve as a starting point for running the SRW App on other systems as well but may require additional troubleshooting by the user. 
 
@@ -16,10 +16,10 @@ This Workflow Quick Start Guide will help users to build and run the "out-of-the
 Install the HPC-Stack
 ========================
 
-.. note::
+.. Hint::
    Skip the HPC-stack installation if working on a `Level 1 system <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ (e.g., Cheyenne, Hera, Orion).
 
-The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g. NCEPLIBS, FMS, etc.) to libraries developed by NOAA's partners (e.g. PIO, ESMF etc) to truly third party libraries (e.g. NETCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`_ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW.
+The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g. NCEPLIBS, FMS, etc.) to libraries developed by NOAA's partners (e.g. PIO, ESMF etc) to truly third party libraries (e.g. NETCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW.
 
 .. include:: ../../../hpc-stack-mod/docs/source/hpc-intro-text.rst
 
@@ -245,7 +245,7 @@ Next, load the appropriate Python environment for the workflow. The workflow req
    source ../../env/wflow_<platform>.env
 
 
-.. _GenerateWorkflow:: 
+.. _GenerateWorkflow: 
 
 Generate the Regional Workflow
 -------------------------------------------
@@ -261,9 +261,9 @@ Then, run the following command to generate the workflow:
 
    ./generate_FV3LAM_wflow.sh
 
-The last line of output from this script, starting with ``*/1 * * * * ``, can be saved and `used later <AdditionalOptions>` to automatically run portions of the workflow. 
+The last line of output from this script, starting with ``*/1 * * * *``, can be saved and :ref:`used later <AdditionalOptions>` to automatically run portions of the workflow. 
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The generated workflow will be in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in `Step %s <SetUpConfigFile>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in $EXPTDIR. 
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The generated workflow will be in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in :numref:`Step %s <SetUpConfigFile>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in $EXPTDIR. 
 
 An environment variable can be set to navigate to the ``$EXPTDIR`` more easily. If the login shell is bash, it can be set as follows:
 
@@ -392,17 +392,17 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
    
    If users have the `Slurm workload manager <https://slurm.schedmd.com/documentation.html>`_ on their system, they can run the ``squeue`` command in lieu of ``rocotostat`` to check what jobs are currently running. 
 
-.. _AdditionalOptions::
+.. _AdditionalOptions:
 
 Additional Options
 ----------------------
-For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add a crontab entry by entering the ``crontab -e`` command, which opens a crontab file. As mentioned in `Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * * ``), can be pasted into the crontab file. It can also be found in the``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add a crontab entry by entering the ``crontab -e`` command, which opens a crontab file. As mentioned in `Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *``), can be pasted into the crontab file. It can also be found in the``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
 
 .. code-block:: console
 
-   */1 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 
+   */1 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-where <path/to/experiment/subdirectory> is changed to correspond to the user's machine, and "/apps/rocoto/1.3.3/bin/rocotorun" corresponds to the location of the ``rocotorun`` command on the user's system. The number ``1`` can also be changed and simply means that the workflow will be resubmitted every minute. 
+where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's machine, and ``"/apps/rocoto/1.3.3/bin/rocotorun"`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``1`` can also be changed and simply means that the workflow will be resubmitted every minute. 
 
 Then, check the experiment progress with:
 
@@ -411,6 +411,7 @@ Then, check the experiment progress with:
    cd $EXPTDIR
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
+After finishing the experiment, open the crontab using `` crontab -e`` and delete the crontab entry. 
 
 .. note::
 
