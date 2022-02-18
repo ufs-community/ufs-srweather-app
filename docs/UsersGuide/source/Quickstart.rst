@@ -16,10 +16,10 @@ This Workflow Quick Start Guide will help users to build and run the "out-of-the
 Install the HPC-Stack
 ========================
 
-.. Hint::
+.. Attention::
    Skip the HPC-stack installation if working on a `Level 1 system <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ (e.g., Cheyenne, Hera, Orion).
 
-**Definition:** HPC-stack is a repository that provides a unified, shell script-based build system that builds the software stack required for the `Unified Forecast System (UFS) <https://ufscommunity.org/>`_ and applications. 
+**Definition:** :term:`HPC-stack` is a repository that provides a unified, shell script-based build system that builds the software stack required for the `Unified Forecast System (UFS) <https://ufscommunity.org/>`_ and applications. 
 
 Background
 ----------------
@@ -32,8 +32,7 @@ Instructions
 
 Users can either build the HPC-stack on their local system or use the centrally maintained stacks on each HPC platform. For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`.  
 
-After completing installation, continue to the :ref:`next section <DownloadCode>`.
-
+After completing installation, continue to the next section.
 
 .. _DownloadCode:
 
@@ -129,11 +128,12 @@ to the command line, or the file can be sourced from the ufs-srweather-app ``env
 For example, on Hera, run ``source env/build_hera_intel.env`` from the main ufs-srweather-app 
 directory to source the appropriate file.
 
-On Level 3-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. On systems without Lmod, this process will typically involve commands in the form `export <VARIABLE_NAME>=<PATH_TO_MODULE>`. You may need to use ``setenv`` rather than ``export`` depending on your environment. 
+On Level 3-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. On systems without Lmod, this process will typically involve commands in the form ``export <VARIABLE_NAME>=<PATH_TO_MODULE>``. You may need to use ``setenv`` rather than ``export`` depending on your environment. 
 
-Troubleshooting
-------------------
-* If the system cannot find a module (i.e., a "module unknown" message appears), check whether the module version numbers match in ``ufs-srweather-app/env/build_<platform>_<compiler>.env`` and the ``hpc-stack/stack/stack_custom.yaml``.
+
+.. hint:: 
+   
+   If the system cannot find a module (i.e., a "module unknown" message appears), check whether the module version numbers match in ``ufs-srweather-app/env/build_<platform>_<compiler>.env`` and the ``hpc-stack/stack/stack_custom.yaml``.
 
 
 Build the Executables
@@ -184,7 +184,7 @@ Set Experiment Parameters
 -------------------------
 Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in the ``config.sh`` file. Two example ``config.sh`` templates are provided: ``config.community.sh`` and ``config.nco.sh``. They can be found in the ``ufs-srweather-app/regional_workflow/ush`` directory. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release. 
 
-Make a copy of ``config.community.sh`` to get started (under <path-to-ufs-srweather-app>/regional_workflow/ush):
+Make a copy of ``config.community.sh`` to get started (under ``<path-to-ufs-srweather-app>/regional_workflow/ush``):
 
 .. code-block:: console
 
@@ -204,7 +204,7 @@ Next, edit the new ``config.sh`` file to customize it for your machine. At a min
 
 Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :doc:`Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in the section on :doc:`Limited Area Model (LAM) Grids <LAMGrids>`.
 
-.. note::
+.. Important::
 
    If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuild>`, you will have to add the line ``COMPILER="gnu"`` to the ``config.sh`` file.
 
@@ -410,7 +410,7 @@ For automatic resubmission of the workflow at regular intervals (e.g., every min
 
    */1 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's machine, and ``"/apps/rocoto/1.3.3/bin/rocotorun"`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``1`` can also be changed and simply means that the workflow will be resubmitted every minute. 
+where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's machine, and ``/apps/rocoto/1.3.3/bin/rocotorun`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``1`` can also be changed and simply means that the workflow will be resubmitted every minute. 
 
 Then, check the experiment progress with:
 
@@ -423,7 +423,7 @@ After finishing the experiment, open the crontab using `` crontab -e`` and delet
 
 .. note::
 
-   On Orion, cron is only available on the orion-login-1 node, so please use that node when running cron jobs on Orion.
+   On Orion, *cron* is only available on the orion-login-1 node, so please use that node when running cron jobs on Orion.
    
 The workflow run is completed when all tasks have “SUCCEEDED”, and the rocotostat command will output the following:
 
