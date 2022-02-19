@@ -196,7 +196,7 @@ tmmark="tm00"
 #
 #-----------------------------------------------------------------------
 #
-# Create a text file (itag) containing arguments to pass to the post-
+# Create the namelist file (itag) containing arguments to pass to the post-
 # processor's executable.
 #
 #-----------------------------------------------------------------------
@@ -236,7 +236,7 @@ post_dd=${post_time:6:2}
 post_hh=${post_time:8:2}
 post_mn=${post_time:10:2}
 #
-# Create the input text file to the post-processor executable.
+# Create the input namelist file to the post-processor executable.
 #
 if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
   post_itag_add="aqfcmaq_on=.true.,"
@@ -244,12 +244,13 @@ else
   post_itag_add=""
 fi
 cat > itag <<EOF
-${dyn_file}
-netcdf
-grib2
-${post_yyyy}-${post_mm}-${post_dd}_${post_hh}:${post_mn}:00
-FV3R
-${phy_file}
+&model_inputs
+fileName='${dyn_file}'
+IOFORM='netcdf'
+grib='grib2'
+DateStr='${post_yyyy}-${post_mm}-${post_dd}_${post_hh}:${post_mn}:00'
+MODELNAME='FV3R'
+fileNameFlux='${phy_file}'
 
  &NAMPGB
  KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,${post_itag_add}
