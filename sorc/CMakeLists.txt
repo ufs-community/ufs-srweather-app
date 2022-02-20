@@ -1,12 +1,31 @@
 include(ExternalProject)
 
+##### Executable directory name (exec_bin): exec or bin ##############
+
+set(exec_bin exec)
+
+if(${exec_bin} STREQUAL exec)
+  list(APPEND COMP_ARGS
+    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+    "-DEMC_EXEC_DIR=ON"
+  )
+else()
+  List(APPEND COMP_ARGS
+    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+  )
+endif()
+
+##### UFS_UTILS #####################################################
+
 ExternalProject_Add(UFS_UTILS
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/UFS_UTILS
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/UFS_UTILS
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-  CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+  CMAKE_ARGS ${COMP_ARGS}
   BUILD_ALWAYS TRUE
   )
+
+##### ufs-weather-model #############################################
 
 if(NOT CCPP_SUITES)
   set(CCPP_SUITES "FV3_CPT_v0,FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GSD_SAR,FV3_GSD_v0,FV3_GFS_v15p2,FV3_GFS_v16,FV3_RRFS_v1beta,FV3_HRRR,FV3_RRFS_v1alpha,FV3_GFS_v15_thompson_mynn_lam3km")
@@ -58,14 +77,17 @@ ExternalProject_Add(ufs-weather-model
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ufs-weather-model
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
   CMAKE_ARGS ${UFS_WEATHER_MODEL_ARGS}
-  INSTALL_COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/bin && cp ${CMAKE_CURRENT_BINARY_DIR}/ufs-weather-model/src/ufs-weather-model-build/ufs_model ${CMAKE_INSTALL_PREFIX}/bin/
+  INSTALL_COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/${exec_bin} && cp ${CMAKE_CURRENT_BINARY_DIR}/ufs-weather-model/src/ufs-weather-model-build/ufs_model ${CMAKE_INSTALL_PREFIX}/${exec_bin}/
   BUILD_ALWAYS TRUE
   )
+
+##### UPP ########################################################### 
 
 ExternalProject_Add(UPP
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/UPP
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/UPP
   INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-  CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+  CMAKE_ARGS ${COMP_ARGS}
   BUILD_ALWAYS TRUE
   )
+

@@ -80,7 +80,7 @@ usage_error () {
 # default settings
 LCL_PID=$$
 SRC_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
-MACHINE_SETUP=${SRC_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
+MACHINE_SETUP=${SRC_DIR}/sorc/UFS_UTILS/sorc/machine-setup.sh
 BUILD_DIR=${SRC_DIR}/build
 INSTALL_DIR=${SRC_DIR}
 COMPILER=""
@@ -89,12 +89,12 @@ CCPP=""
 ENABLE_OPTIONS=""
 DISABLE_OPTIONS=""
 BUILD_TYPE="RELEASE"
-BUILD_JOBS=4
+BUILD_JOBS=8
 CLEAN=false
 CONTINUE=false
 VERBOSE=false
 # detect PLATFORM (MACHINE)
-source ${SRC_DIR}/env/detect_machine.sh
+source ${SRC_DIR}/modulefiles/detect_machine.sh
 
 # process required arguments
 if [[ ("$1" == "--help") || ("$1" == "-h") ]]; then
@@ -161,7 +161,7 @@ if [ "${VERBOSE}" = true ] ; then
 fi
 
 # set ENV_FILE for this platform/compiler combination
-ENV_FILE="${SRC_DIR}/env/build_${PLATFORM}_${COMPILER}.env"
+ENV_FILE="${SRC_DIR}/modulefiles/build_${PLATFORM}_${COMPILER}.env"
 if [ ! -f "${ENV_FILE}" ]; then
   printf "ERROR: environment file does not exist for platform/compiler\n" >&2
   printf "  ENV_FILE=${ENV_FILE}\n" >&2
@@ -231,7 +231,7 @@ fi
 
 # source the environment file for this platform/compiler combination, then build the code
 printf "... Source ENV_FILE and create BUILD directory ...\n"
-module use ${SRC_DIR}/env
+module use ${SRC_DIR}/modulefiles
 . ${ENV_FILE}
 module list
 mkdir -p ${BUILD_DIR}

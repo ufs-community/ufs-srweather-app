@@ -71,7 +71,7 @@ scripts are presented in parentheses.  Some directories have been removed for br
    ufs-srweather-app
    ├── (bin)
    ├── (build)
-   ├── docs  
+   ├── doc
    │     └── UsersGuide
    ├── (include)
    ├── (lib)
@@ -91,7 +91,7 @@ scripts are presented in parentheses.  Some directories have been removed for br
    │          ├── templates
    │          └── wrappers
    ├── (share)
-   └── src
+   └── sorc
         ├── UPP
         │     ├── parm
         │     └── sorc
@@ -122,7 +122,7 @@ contents of these sub-directories are described in :numref:`Table %s <Subdirecto
    +-------------------------+---------------------------------------------------------+
    | **Directory Name**      | **Description**                                         |
    +=========================+=========================================================+
-   | docs                    | Users' Guide Documentation                              |
+   | doc                     | Users' Guide Documentation                              |
    +-------------------------+---------------------------------------------------------+
    | jobs                    | J-job scripts launched by Rocoto                        |
    +-------------------------+---------------------------------------------------------+

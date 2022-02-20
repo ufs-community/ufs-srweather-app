@@ -5,8 +5,8 @@ Steps to build and use the Sphinx documentation tool:
     https://sphinxcontrib-bibtex.readthedocs.io/en/latest/quickstart.html#installation
 
 2) Create a Sphinx documentation root directory:
-   % mkdir docs
-   % cd docs
+   % mkdir doc
+   % cd doc
 
 3) Initialize your Sphinx project (set up an initial directory structure) using
    % sphinx-quickstart
