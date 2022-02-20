@@ -1,8 +1,6 @@
 include(ExternalProject)
 
-##### Executable directory name (exec_bin): exec or bin ##############
-
-set(exec_bin exec)
+##### CMAKE Arguments depending on exec_bin #########################
 
 if(${exec_bin} STREQUAL exec)
   list(APPEND COMP_ARGS

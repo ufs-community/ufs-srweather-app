@@ -88,8 +88,12 @@ SET(host_os "${osrel}")
 SET(abs_top_builddir "${CMAKE_CURRENT_BINARY_DIR}")
 SET(abs_top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 
+##### Executable directory name (exec_bin): exec or bin #############
+SET(exec_bin exec)
+#####################################################################
+
 SET(CC_VERSION "${CMAKE_C_COMPILER}")
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/exec")
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${exec_bin}")
 
 # Set values for .settings file.
 SET(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
@@ -117,7 +121,7 @@ MESSAGE(${UFS-SRWEATHER-APP_SETTINGS})
 # Install ufs_srweather_app.settings file into same location
 # as the app.
 INSTALL(FILES "${CMAKE_BINARY_DIR}/ufs_srweather_app.settings"
-  DESTINATION exec)
+  DESTINATION ${exec_bin})
 
 #####
 # Create 'ufs_srweather_app_meta.h' include file.
