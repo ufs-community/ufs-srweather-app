@@ -93,7 +93,6 @@ SET(exec_bin exec)
 #####################################################################
 
 SET(CC_VERSION "${CMAKE_C_COMPILER}")
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${exec_bin}")
 
 # Set values for .settings file.
 SET(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
