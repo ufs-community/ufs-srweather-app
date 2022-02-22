@@ -27,3 +27,9 @@ sphinx:
 python:
    install:
    - requirements: docs/UsersGuide/requirements.txt
+
+submodules:
+   include:
+   - hpc-stack-mod
+   #recursive: true
+
