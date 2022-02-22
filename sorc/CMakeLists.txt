@@ -2,15 +2,9 @@ include(ExternalProject)
 
 ##### CMAKE Arguments depending on exec_bin #########################
 
+list(APPEND COMP_ARGS "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}")
 if(${exec_bin} STREQUAL exec)
-  list(APPEND COMP_ARGS
-    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-    "-DEMC_EXEC_DIR=ON"
-  )
-else()
-  List(APPEND COMP_ARGS
-    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-  )
+  list(APPEND COMP_ARGS "-DEMC_EXEC_DIR=ON")
 endif()
 
 ##### UFS_UTILS #####################################################
