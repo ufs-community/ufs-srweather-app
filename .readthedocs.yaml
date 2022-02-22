@@ -31,5 +31,5 @@ python:
 submodules:
    include:
    - hpc-stack-mod
-   #recursive: true
+   recursive: true
 
