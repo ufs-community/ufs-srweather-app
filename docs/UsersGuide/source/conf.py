@@ -52,7 +52,6 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
     'sphinxcontrib.bibtex',
-    'myst_parser'
 ]
 
 bibtex_bibfiles = ['references.bib']
