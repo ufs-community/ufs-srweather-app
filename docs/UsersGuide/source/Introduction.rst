@@ -6,7 +6,7 @@ Introduction
 
 The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. The UFS is the source system for NOAA’s operational numerical weather prediction applications. It enables research, development, and contribution opportunities within the broader :term:`weather enterprise` (e.g. government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufscommunity.org/>`__.
 
-The UFS can be configured for multiple applications (see the `complete list here <https://ufscommunity.org/science/aboutapps/>`__). The configuration described in this documentation is the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes out to several days. The SRW Application v2.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. Future work will expand the capabilities of the application to include data assimilation (DA) and a verification package (e.g., METplus). This documentation provides a `Quick Start Guide <Quickstart>` for running the application, in addition to an overview of the `release components <Components>`, a description of the supported capabilities, and details on where to find more information and obtain support.
+The UFS can be configured for multiple applications (see the `complete list here <https://ufscommunity.org/science/aboutapps/>`__). The configuration described in this documentation is the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes out to several days. The SRW Application v2.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. Future work will expand the capabilities of the application to include data assimilation (DA) and a verification package (e.g., METplus). This documentation provides a :ref:`Quick Start Guide <Quickstart>` for running the application, in addition to an overview of the :ref:`release components <Components>`, a description of the supported capabilities, and details on where to find more information and obtain support.
 
 The SRW App v1.0.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
@@ -41,7 +41,7 @@ Atmospheric Model
 --------------------
 
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
-(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability :cite:t:`BlackEtAl2020`.
+(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2020`).
 The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. 
 
 Common Community Physics Package
