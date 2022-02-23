@@ -1,8 +1,8 @@
 .. _Introduction:
 
-============
+=============
 Introduction
-============
+=============
 
 The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. The UFS is the source system for NOAA’s operational numerical weather prediction applications. It enables research, development, and contribution opportunities within the broader :term:`weather enterprise` (e.g. government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufscommunity.org/>`__.
 
@@ -47,19 +47,18 @@ The dynamical core is the computational part of a model that solves the equation
 Common Community Physics Package
 ---------------------------------
 
-The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ (:term:`CCPP`) supports interoperable atmospheric physics and Noah Multi-parameterization (Noah MP) Land Surface Model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions.The SRW release includes an experimental physics version and an updated operational version. 
+The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ (:term:`CCPP`) supports interoperable atmospheric physics and Noah Multi-parameterization (Noah MP) Land Surface Model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The SRW release includes an experimental physics version and an updated operational version. 
 
 Data Format
 --------------
 
-The SRW App supports the use of both :term:`GRIB2` and :term:`NEMSIO` input data. The UFS Weather Model
-ingests initial and lateral boundary condition files produced by :term:`chgres_cube`. 
+The SRW App supports the use of both :term:`GRIB2` and :term:`NEMSIO` input data. The UFS Weather Model ingests initial and lateral boundary condition files produced by :term:`chgres_cube`. 
 
 
 Post-processor
 ==============
 
-The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ (:term:`UPP`) is included in the SRW Application workflow. The UPP is designed to generate useful products from raw model output. In the SRW, it converts data output formats from netCDF format on the native model grid to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_. Output from UPP can be used with visualization, plotting, and verification packages, or for further downstream post-processing (e.g., statistical post-processing techniques).
+The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ (:term:`UPP`) is included in the SRW Application workflow. The UPP is designed to generate useful products from raw model output. In the SRW, it converts data output formats from netCDF format on the native model grid to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_. Output from the UPP can be used with visualization, plotting, and verification packages, or for further downstream post-processing (e.g., statistical post-processing techniques).
 
 
 Visualization Example
@@ -74,10 +73,10 @@ The SRW Application has a portable CMake-based build system that packages togeth
 
 The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite for the forecast. 
 
-This SRW Application release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Comuting (HPC) systems (e.g. Hera, Orion), cloud environments, and generic Linux and macOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application, including pre-configured (Level 1), configurable (Level 2), limited test platforms (Level 3), and build-only platforms (Level 4). Preconfigured (Level 1) systems already have the required external libraries (e.g., NCEPLIBS) available in a central location. The SRW Application is expected to build and run out-of-the-box on these systems, and users can proceed directly to using the workflow to generate an experiment, as described in the Quick Start Guide (:numref:`Section %s Generate the Forecast Experiment <GenerateForecast>`). On other platforms, the required libraries will need to be installed via the HPC_Stack (see :numref:`Section %s Installing the HPC-Stack <HPCstackInfo>`). Once these libraries are built, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
+This SRW Application release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g. Hera, Orion), cloud environments, and generic Linux and macOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application, including pre-configured (Level 1), configurable (Level 2), limited test platforms (Level 3), and build-only platforms (Level 4). Preconfigured (Level 1) systems already have the required external libraries (e.g., NCEPLIBS) available in a central location. The SRW Application is expected to build and run out-of-the-box on these systems, and users can proceed directly to using the workflow to generate an experiment, as described in the Quick Start Guide :numref:`Section %s Generate the Forecast Experiment <GenerateForecast>`. On other platforms, the required libraries will need to be installed via the HPC-Stack (see :numref:`Section %s Installing the HPC-Stack <HPCstackInfo>`). Once these libraries are built, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
 
-User Support, Documentation, and Contributing Development
-=========================================================
+User Support, Documentation, and Contributions to Development
+===============================================================
 
 A forum-based, online `support system <https://forums.ufscommunity.org>`_ organized by topic provides a centralized location for UFS users and developers to post questions and exchange information. 
 
@@ -118,10 +117,10 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
 
 The UFS community is encouraged to contribute to the development effort of all related
-utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each component (described in the User’s Guides listed in :numref:`Table %s <list_of_documentation>`).
+utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each component, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`.
 
 Future Direction
-================
+=================
 
 Users can expect to see incremental improvements and additional capabilities in upcoming
 releases of the SRW Application to enhance research opportunities and support operational
@@ -132,8 +131,6 @@ forecast implementations. Planned enhancements include:
 * Inclusion of data assimilation, cycling, and ensemble capabilities.
 * A verification package (e.g., METplus) integrated into the workflow. 
 * Inclusion of stochastic perturbation techniques.
-
-In addition to the above list, other improvements will be addressed in future releases.
 
 .. bibliography:: references.bib
 

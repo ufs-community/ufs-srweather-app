@@ -66,6 +66,9 @@ Glossary
    NEMSIO
       A binary format for atmospheric model output from :term:`NCEP`'s Global Forecast System (GFS).
 
+   NWP
+      Numerical Weather Prediction
+
    Orography
       The branch of physical geography dealing with mountains
 
@@ -86,7 +89,7 @@ Glossary
       part of this collection.
 
    UPP
-      The Unified Post Processor is software developed at :term:`NCEP` and used operationally to 
+      The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ is software developed at :term:`NCEP` and used operationally to 
       post-process raw output from a variety of :term:`NCEP`'s NWP models, including the FV3.
 
    Weather Enterprise
