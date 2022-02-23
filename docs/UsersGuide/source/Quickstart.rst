@@ -61,7 +61,7 @@ Start the container and run an interactive shell within it. This command also bi
 
 .. code-block:: console
 
-   singularity shell -e --writable --bind /home:/home ubuntu20.04-hpc-stack
+   singularity shell -e --writable --bind /home:/home ubuntu20.04-hpc-stack-0.1
 
 Clone the develop branch of the UFS-SRW weather application repository:
 
@@ -121,7 +121,7 @@ If the SRW Application has been built in a container provided by the Earth Predi
 On Other Systems (Non-Container Approach)
 ------------------------------------------
 
-Otherwise, for Level 1 and 2 systems, scripts for loading the proper modules and/or setting the 
+For Level 1 and 2 systems, scripts for loading the proper modules and/or setting the 
 correct environment variables can be found in the ``env/`` directory of the SRW App in files named 
 ``build_<platform>_<compiler>.env``. The commands in these files can be directly copy-pasted 
 to the command line, or the file can be sourced from the ufs-srweather-app ``env/`` directory. 
