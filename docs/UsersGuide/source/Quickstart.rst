@@ -155,17 +155,17 @@ From the build directory, run the ``cmake`` command below to set up the ``Makefi
    cmake .. -DCMAKE_INSTALL_PREFIX=..
    make -j 4  >& build.out &
 
-Output from the build will be in the ``ufs-srweather-app/build/build.out`` file.
-When the build completes, you should see the forecast model executable ``NEMS.exe`` and eleven
-pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are
-described in :numref:`Table %s <ExecDescription>`.
+The build will take a few minutes to complete. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, you should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
+
+.. hint::
+
+   If you do not see a ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
 
 Download and Stage the Data
 ============================
 
 The SRW requires input files to run. These include static datasets, initial and boundary conditions 
-files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are 
-already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :doc:`Input and Output Files <InputOutputFiles>`, Section 3. Section 1 contains useful background information on the input files required by the SRW. 
+files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :doc:`Input and Output Files <InputOutputFiles>`, Section 3. Section 1 contains useful background information on the input files required by the SRW. 
 
 .. _GenerateForecast:
 
@@ -185,11 +185,11 @@ Set Experiment Parameters
 -------------------------
 Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in the ``config.sh`` file. Two example ``config.sh`` templates are provided: ``config.community.sh`` and ``config.nco.sh``. They can be found in the ``ufs-srweather-app/regional_workflow/ush`` directory. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release. 
 
-Make a copy of ``config.community.sh`` to get started (under ``<path-to-ufs-srweather-app>/regional_workflow/ush``):
+Make a copy of ``config.community.sh`` to get started (under ``<path-to-ufs-srweather-app>/regional_workflow/ush``). From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
 
-   cd ../regional_workflow/ush
+   cd regional_workflow/ush
    cp config.community.sh config.sh
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
@@ -203,7 +203,7 @@ Next, edit the new ``config.sh`` file to customize it for your machine. At a min
    EXPT_SUBDIR="GST"
    EXPT_BASEDIR="home/$USER/expt_dirs"
 
-Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :doc:`Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in the section on :doc:`Limited Area Model (LAM) Grids <LAMGrids>`.
+Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :ref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :ref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 .. Important::
 
