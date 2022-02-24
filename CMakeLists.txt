@@ -88,9 +88,11 @@ SET(host_os "${osrel}")
 SET(abs_top_builddir "${CMAKE_CURRENT_BINARY_DIR}")
 SET(abs_top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 
-##### Executable directory name (exec_bin): exec or bin #############
-SET(exec_bin exec)
-#####################################################################
+# Executable directory name (exec_bin): exec or bin
+SET(exec_bin "bin")
+IF(EMC_EXEC_DIR)
+  SET(exec_bin "exec")
+ENDIF()
 
 SET(CC_VERSION "${CMAKE_C_COMPILER}")
 

@@ -94,7 +94,7 @@ CLEAN=false
 CONTINUE=false
 VERBOSE=false
 # detect PLATFORM (MACHINE)
-source ${SRC_DIR}/modulefiles/detect_machine.sh
+source ${SRC_DIR}/test/detect_machine.sh
 
 # process required arguments
 if [[ ("$1" == "--help") || ("$1" == "-h") ]]; then
@@ -210,6 +210,7 @@ fi
 # cmake settings
 CMAKE_SETTINGS="-DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}"
 CMAKE_SETTINGS="${CMAKE_SETTINGS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
+#CMAKE_SETTINGS="${CMAKE_SETTINGS} -DEMC_EXEC_DIR=ON"
 if [ ! -z "${APPLICATION}" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DAPP=${APPLICATION}"
 fi
