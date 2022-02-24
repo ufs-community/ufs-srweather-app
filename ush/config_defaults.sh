@@ -1732,6 +1732,28 @@ CUSTOM_POST_CONFIG_FP=""
 #
 #-----------------------------------------------------------------------
 #
+# Set parameters associated with outputting satellite fields in the UPP
+# grib2 files using the Community Radiative Transfer Model (CRTM).
+#
+# USE_CRTM:
+# Flag that defines whether external CRTM coefficient files have been
+# staged by the user in order to output synthetic statellite products
+# available within the UPP. If this is set to "TRUE", then the workflow
+# will check for these files in the directory CRTM_DIR. Otherwise, it is
+# assumed that no satellite fields are being requested in the UPP
+# configuration.
+#
+# CRTM_DIR:
+# This is the path to the top CRTM fix file directory. This is only used
+# if USE_CRTM is set to "TRUE".
+#
+#-----------------------------------------------------------------------
+#
+USE_CRTM="FALSE"
+CRTM_DIR=""
+#
+#-----------------------------------------------------------------------
+#
 # Set parameters associated with running ensembles.  Definitions:
 #
 # DO_ENSEMBLE:

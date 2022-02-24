@@ -754,6 +754,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# If using external CRTM fix files to allow post-processing of synthetic
+# satellite products from the UPP, then make sure the fix file directory
+# exists.
+#
+#-----------------------------------------------------------------------
+#
+if [ ${USE_CRTM} = "TRUE" ]; then
+  if [ ! -d "${CRTM_DIR}" ]; then
+    print_err_msg_exit "
+The external CRTM fix file directory specified by CRTM_DIR does not exist:
+  CRTM_DIR = \"${CRTM_DIR}\""
+  fi
+fi
+#
+#-----------------------------------------------------------------------
+#
 # The forecast length (in integer hours) cannot contain more than 3 cha-
 # racters.  Thus, its maximum value is 999.  Check whether the specified
 # forecast length exceeds this maximum value.  If so, print out a warn-
