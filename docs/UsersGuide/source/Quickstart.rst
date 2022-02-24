@@ -47,21 +47,22 @@ Pull the Singularity container:
 
 .. code-block:: console
 
-   singularity pull ubuntu20.04-hpc-stack-0.1.sif docker://noaaepic/ubuntu20.04-hpc-stack:0.1
+   singularity pull ubuntu20.04-epic-srwapp-1.0.sif docker://noaaepic/ubuntu20.04-epic-srwapp:1.0
 
-Build the container and make a ``home`` directory inside it:
+Build the container and make a ``contrib`` directory inside it if one does not already exist:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu20.04-hpc-stack-0.1 ubuntu20.04-hpc-stack-0.1.sif
-   cd ubuntu20.04-hpc-stack-0.1
-   mkdir home
+   singularity build --sandbox ubuntu20.04-epic-srwapp-1.0 ubuntu20.04-epic-srwapp-1.0.sif
+   cd ubuntu20.04-epic-srwapp-1.0
+   mkdir contrib
+   cd ..
 
 Start the container and run an interactive shell within it. This command also binds the local home directory to the container so that data can be shared between them. 
 
 .. code-block:: console
 
-   singularity shell -e --writable --bind /home:/home ubuntu20.04-hpc-stack-0.1
+   singularity shell -e --writable --bind /<local_dir>:/contrib ubuntu20.04-epic-srwapp-1.0
 
 Clone the develop branch of the UFS-SRW weather application repository:
 
@@ -79,6 +80,7 @@ Check out submodules for the SRW Application:
    cd ufs-srweather-app
    ./manage_externals/checkout_externals
 
+If the ``manage_externals`` command brings up an error, it may be necessary to run ``ln -s /usr/bin/python3 /usr/bin/python`` first. 
 
 Run the UFS SRW Without a Container
 ------------------------------------
@@ -173,10 +175,9 @@ Generating the forecast experiment requires three steps:
 
 * Set experiment parameters
 * Set Python and other environment parameters
-* Run the ``generate_FV3LAM_wflow.sh`` script to generate the experiment workflow
+* Run a script to generate the experiment workflow
 
-The first two steps depend on the platform being used and are described here for each Level 1 platform.
-Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. 
+The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. 
 
 .. _SetUpConfigFile:
 
@@ -252,18 +253,20 @@ Next, load the appropriate Python environment for the workflow. The workflow req
 
    source ../../env/wflow_<platform>.env
 
-
-.. _GenerateWorkflow: 
-
-Generate the Regional Workflow
--------------------------------------------
-First, activate the regional workflow from the ``ush`` directory:
+This command will activate the ``regional_workflow``. The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
 
 .. code-block:: console
 
    conda activate regional_workflow 
 
-Then, run the following command to generate the workflow:
+
+
+.. _GenerateWorkflow: 
+
+Generate the Regional Workflow
+-------------------------------------------
+
+Run the following command to generate the workflow:
 
 .. code-block:: console
 
