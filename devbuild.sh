@@ -3,15 +3,14 @@
 # usage instructions
 usage () {
 cat << EOF_USAGE
-Usage: $0 PLATFORM [OPTIONS]...
-
-PLATFORM
-      name of machine you are building on
-      (e.g. cheyenne | hera | jet | orion | wcoss)
+Usage: $0 [OPTIONS]...
 
 OPTIONS
   -h, --help
       show this help guide
+  --platform=PLATFORM
+      name of machine you are building on
+      (e.g. cheyenne | hera | jet | orion | wcoss_cray | wcoss_dell_p3)
   --compiler=COMPILER
       compiler to use; default depends on platform
       (e.g. intel | gnu | cray | gccgfortran)
@@ -84,7 +83,6 @@ SRC_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
 MACHINE_SETUP=${SRC_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
 BUILD_DIR=${SRC_DIR}/build
 INSTALL_DIR=${SRC_DIR}
-PLATFORM=""
 COMPILER=""
 APPLICATION=""
 CCPP=""
@@ -95,22 +93,21 @@ BUILD_JOBS=4
 CLEAN=false
 CONTINUE=false
 VERBOSE=false
+# detect PLATFORM (MACHINE)
+source ${SRC_DIR}/env/detect_machine.sh
 
 # process required arguments
 if [[ ("$1" == "--help") || ("$1" == "-h") ]]; then
   usage
   exit 0
-elif [[ ($# -lt 1) || ("$1" == "-"*) ]]; then
-  usage_error "missing platform"
-else
-  PLATFORM=$1
-  shift
 fi
 
 # process optional arguments
 while :; do
   case $1 in
     --help|-h) usage; exit 0 ;;
+    --platform=?*) PLATFORM=${1#*=} ;;
+    --platform|--platform=) usage_error "$1 requires argument." ;;
     --compiler=?*) COMPILER=${1#*=} ;;
     --compiler|--compiler=) usage_error "$1 requires argument." ;;
     --app=?*) APPLICATION=${1#*=} ;;
@@ -148,12 +145,15 @@ if [ -z "${COMPILER}" ] ; then
   case ${PLATFORM} in
     jet|hera) COMPILER=intel ;;
     orion) COMPILER=intel ;;
-    wcoss) COMPILER=cray_intel ;;
+    wcoss_cray) COMPILER=intel ;;
+    wcoss_dell_p3) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;
     macos) COMPILER=gccgfortran ;;
     *) printf "ERROR: Unknown platform ${PLATFORM}\n" >&2; usage >&2; exit 1 ;;
   esac
 fi
+
+printf "COMPILER=${COMPILER}\n" >&2
 
 # print settings
 if [ "${VERBOSE}" = true ] ; then
@@ -170,6 +170,8 @@ if [ ! -f "${ENV_FILE}" ]; then
   usage >&2
   exit 64
 fi
+
+printf "ENV_FILE=${ENV_FILE}\n" >&2
 
 # if build directory already exists then exit
 if [ "${CLEAN}" = true ]; then
@@ -227,11 +229,16 @@ if [ "${VERBOSE}" = true ]; then
   MAKE_SETTINGS="${MAKE_SETTINGS} VERBOSE=1"
 fi
 
-# source the README file for this platform/compiler combination, then build the code
+# source the environment file for this platform/compiler combination, then build the code
+printf "... Source ENV_FILE and create BUILD directory ...\n"
+module use ${SRC_DIR}/env
 . ${ENV_FILE}
+module list
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
+printf "... Generate CMAKE configuration ...\n"
 cmake ${SRC_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
+printf "... Compile executables ...\n"
 make ${MAKE_SETTINGS} 2>&1 | tee log.make
 
 exit 0

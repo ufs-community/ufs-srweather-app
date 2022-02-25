@@ -5,11 +5,9 @@
 #               built are listed below in $executables_created.
 #               A pass/fail message is printed at the end of the output.
 #
-# Necessary input parameters: machine name (jet hera or cheyenne)
-#
 # Usage:  see function usage below
 #
-# Examples: ./build.sh $machine >& test.out &
+# Examples: ./build.sh >& test.out &
 #
 set -eux    # Uncomment for debugging
 #=======================================================================
@@ -18,21 +16,28 @@ fail() { echo -e "\n$1\n" >> ${TEST_OUTPUT} && exit 1; }
 
 function usage() {
   echo
-  echo "Usage: $0 machine | -h"
-  echo
-  echo "       machine       [required] is one of: ${machines[@]}"
-  echo "       -h            display this help"
+  echo "Usage: $0 "
   echo
   exit 1
 }
 
-machines=( hera jet cheyenne )
+machines=( hera jet cheyenne orion wcoss_cray wcoss_dell_p3 )
 
-[[ $# -eq 0 ]] && usage
-if [ "$1" = "-h" ] ; then usage ; fi
+[[ $# -eq 1 ]] && usage
 
-export machine=${1}
-machine=$(echo "${machine}" | tr '[A-Z]' '[a-z]')  # scripts in sorc need lower case machine name
+
+#-----------------------------------------------------------------------
+# Set some directories
+#-----------------------------------------------------------------------
+PID=$$
+TEST_DIR=$( pwd )                   # Directory with this script
+TOP_DIR=${TEST_DIR}/..              # Top level (umbrella repo) directory
+TEST_OUTPUT=${TEST_DIR}/build_test${PID}.out
+
+# Detect MACHINE
+source ${TOP_DIR}/env/detect_machine.sh
+
+machine=$(echo "${MACHINE}" | tr '[A-Z]' '[a-z]')  # scripts in sorc need lower case machine name
 
 #-----------------------------------------------------------------------
 # Check that machine is valid
@@ -53,13 +58,6 @@ else
   compilers=( intel )
 fi
 
-#-----------------------------------------------------------------------
-# Set some directories
-#-----------------------------------------------------------------------
-PID=$$
-TEST_DIR=$( pwd )                   # Directory with this script
-TOP_DIR=${TEST_DIR}/..              # Top level (umbrella repo) directory
-TEST_OUTPUT=${TEST_DIR}/build_test${PID}.out
 
 build_it=0        # Set to 1 to skip build (for testing pass/fail criteria)
 #-----------------------------------------------------------------------
@@ -102,7 +100,7 @@ declare -a executables_created=( chgres_cube \
     BIN_DIR=${TOP_DIR}/bin_${compiler}
     EXEC_DIR=${BIN_DIR}/bin
     if [ $build_it -eq 0 ] ; then
-      ./devbuild.sh ${machine} --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} \
+      ./devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} \
         --clean || fail "Build ${machine} ${compiler} FAILED"
     fi    # End of skip build for testing
 
