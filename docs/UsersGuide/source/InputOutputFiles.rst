@@ -272,8 +272,8 @@ When files are pulled from the NOAA HPSS, the naming convention looks something 
 
 * FV3GFS (GRIB2): ``gfs.t{cycle}z.pgrb2.0p25.f{fhr}``
 * FV3GFS (NEMSIO): 
-   *ICs: ``gfs.t{cycle}z.atmanl.nemsio`` and ``gfs.t{cycle}z.sfcanl.nemsio``;
-   *LBCs: ``gfs.t{cycle}z.atmf{fhr}.nemsio``
+   * ICs: ``gfs.t{cycle}z.atmanl.nemsio`` and ``gfs.t{cycle}z.sfcanl.nemsio``;
+   * LBCs: ``gfs.t{cycle}z.atmf{fhr}.nemsio``
 * RAP (GRIB2): ``rap.t{cycle}z.wrfprsf{fhr}.grib2``
 * HRRR (GRIB2): ``hrrr.t{cycle}z.wrfprsf{fhr}.grib2``
 
