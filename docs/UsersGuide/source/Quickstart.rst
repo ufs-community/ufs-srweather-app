@@ -203,7 +203,7 @@ Next, edit the new ``config.sh`` file to customize it for your machine. At a min
    EXPT_SUBDIR="GST"
    EXPT_BASEDIR="home/$USER/expt_dirs"
 
-Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :ref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :ref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
+Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 .. Important::
 
