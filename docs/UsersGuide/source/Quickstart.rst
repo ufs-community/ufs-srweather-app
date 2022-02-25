@@ -68,7 +68,7 @@ Clone the develop branch of the UFS-SRW weather application repository:
 
 .. code-block:: console
 
-   git clone https://github.com/jkbk2004/ufs-srweather-app
+   git clone -b feature/singularity --single-branch https://github.com/NOAA-EPIC/ufs-srweather-app.git
 
 ..
    COMMENT: This will need to be changed to release branch of the SRW repo once it exists. 
@@ -202,6 +202,7 @@ Next, edit the new ``config.sh`` file to customize it for your machine. At a min
    ACCOUNT="none"
    EXPT_SUBDIR="GST"
    EXPT_BASEDIR="home/$USER/expt_dirs"
+   COMPILER="gnu"
 
 Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
@@ -243,6 +244,22 @@ For **WCOSS**, edit ``config.sh`` with these WCOSS-specific parameters, and use 
    EXPT_SUBDIR="my_expt_name"
 
 
+**NOAA Cloud Systems:**
+
+.. code-block:: console
+
+   MACHINE="<AWS_or_AZURE_or_GCP>"
+   ACCOUNT="none"
+   EXPT_SUBDIR="<expt_name>"
+   EXPT_BASEDIR="lustre/$USER/expt_dirs"
+   COMPILER="gnu"
+   USE_USER_STAGED_EXTRN_FILES="TRUE"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/GST/model_data/FV3GFS"
+   EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/GST/model_data/FV3GFS"
+   EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" )
+
+
 .. _SetUpPythonEnv:
 
 Set up the Python and other Environment Parameters
@@ -257,8 +274,9 @@ This command will activate the ``regional_workflow``. The user should see ``(reg
 
 .. code-block:: console
 
-   conda activate regional_workflow 
-
+   conda init
+   source ~/.bashrc
+   conda activate regional_workflow
 
 
 .. _GenerateWorkflow: 

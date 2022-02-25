@@ -37,6 +37,9 @@ Glossary
    HRRR
       `High Resolution Rapid Refresh <https://rapidrefresh.noaa.gov/hrrr/>`. The HRRR is a NOAA real-time 3-km resolution, hourly updated, cloud-resolving, convection-allowing atmospheric model, initialized by 3km grids with 3km radar assimilation. Radar data is assimilated in the HRRR every 15 min over a 1-h period adding further detail to that provided by the hourly data assimilation from the 13km radar-enhanced Rapid Refresh.
 
+   IC/LBC
+      Initial conditions/lateral boundary conditions
+
    LAM
       Limited Area Model. LAM grids use a regional (rather than global) configuration of the FV3 dynamical core. 
 
@@ -66,8 +69,8 @@ Glossary
    NEMSIO
       A binary format for atmospheric model output from :term:`NCEP`'s Global Forecast System (GFS).
 
-   NWP
-      Numerical Weather Prediction
+   NWP (Numerical Weather Prediction)
+      Numerical Weather Prediction (NWP) takes current observations of weather and processes them with computer models to forecast the future state of the weather. 
 
    Orography
       The branch of physical geography dealing with mountains
