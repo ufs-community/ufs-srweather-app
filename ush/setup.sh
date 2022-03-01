@@ -427,7 +427,7 @@ check_var_valid_value "MACHINE" "valid_vals_MACHINE"
 #
 RELATIVE_LINK_FLAG="--relative"
 MACHINE_FILE=${MACHINE_FILE:-${USHDIR}/machine/$(echo_lowercase $MACHINE).sh}
-source ${MACHINE_FILE}
+source $USHDIR/source_machine_file.sh
 
 if [ -z "${NCORES_PER_NODE:-}" ]; then
   print_err_msg_exit "\
@@ -1342,7 +1342,7 @@ WFLOW_LAUNCH_SCRIPT_FP="$USHDIR/${WFLOW_LAUNCH_SCRIPT_FN}"
 WFLOW_LAUNCH_LOG_FP="$EXPTDIR/${WFLOW_LAUNCH_LOG_FN}"
 if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
   CRONTAB_LINE="*/${CRON_RELAUNCH_INTVL_MNTS} * * * * cd $EXPTDIR && \
-./${WFLOW_LAUNCH_SCRIPT_FN} >> ./${WFLOW_LAUNCH_LOG_FN} 2>&1"
+./${WFLOW_LAUNCH_SCRIPT_FN} called_from_cron=\"TRUE\" >> ./${WFLOW_LAUNCH_LOG_FN} 2>&1"
 else
   CRONTAB_LINE=""
 fi

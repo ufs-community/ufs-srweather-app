@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 function file_location() {
 
   # Return the default location of external model files on disk
@@ -36,6 +34,15 @@ EXTRN_MDL_SYSBASEDIR_LBCS=${EXTRN_MDL_SYSBASEDIR_LBCS:-$(file_location \
   ${EXTRN_MDL_NAME_LBCS} \
   ${FV3GFS_FILE_FMT_ICS})}
 
+# System scripts to source to initialize various commands within workflow
+# scripts (e.g. "module").
+if [ -z ${ENV_INIT_SCRIPTS_FPS:-""} ]; then
+  ENV_INIT_SCRIPTS_FPS=()
+fi
+
+# Commands to run at the start of each workflow task.
+PRE_TASK_CMDS='{ ulimit -s unlimited; ulimit -a; }'
+
 # Architecture information
 WORKFLOW_MANAGER="rocoto"
 NCORES_PER_NODE="${NCORES_PER_NODE:-68}"
@@ -59,6 +66,3 @@ RUN_CMD_SERIAL="time"
 RUN_CMD_UTILS='ibrun -np $nprocs'
 RUN_CMD_FCST='ibrun -np $nprocs'
 RUN_CMD_POST='ibrun -np $nprocs'
-
-ulimit -s unlimited
-ulimit -a

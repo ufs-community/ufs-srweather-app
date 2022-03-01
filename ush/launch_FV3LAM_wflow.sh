@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/bin/bash
 
 #
 #-----------------------------------------------------------------------
@@ -31,9 +31,6 @@ else
 fi
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
-
-ushdir="${scrfunc_dir}"
-. $ushdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -93,12 +90,48 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions file for the experiment.
+# Source necessary files.
 #
 #-----------------------------------------------------------------------
 #
 . $exptdir/var_defns.sh
-. ${USHDIR}/source_util_funcs.sh
+. $USHDIR/source_machine_file.sh
+. $USHDIR/constants.sh
+. $USHDIR/source_util_funcs.sh
+. $USHDIR/init_env.sh
+. $USHDIR/get_crontab_contents.sh
+#
+#-----------------------------------------------------------------------
+#
+# Declare arguments.
+#
+#-----------------------------------------------------------------------
+#
+valid_args=( \
+  "called_from_cron" \
+  )
+process_args valid_args "$@"
+print_input_args "valid_args"
+#
+#-----------------------------------------------------------------------
+#
+# Make sure called_from_cron is set to a valid value.
+#
+#-----------------------------------------------------------------------
+#
+called_from_cron=${called_from_cron:-"FALSE"}
+check_var_valid_value "called_from_cron" "valid_vals_BOOLEAN"
+called_from_cron=$(boolify ${called_from_cron})
+#
+#-----------------------------------------------------------------------
+#
+# Initialize the environment, e.g. by making the "module" command as well
+# as others available.
+#
+#-----------------------------------------------------------------------
+#
+env_init_scripts_fps_str="( "$(printf "\"%s\" " "${ENV_INIT_SCRIPTS_FPS[@]}")")"
+init_env env_init_scripts_fps="${env_init_scripts_fps_str}"
 #
 #-----------------------------------------------------------------------
 #
@@ -117,7 +150,6 @@ expt_name="${EXPT_SUBDIR}"
 #-----------------------------------------------------------------------
 #
 env_fp="${SR_WX_APP_TOP_DIR}/env/${WFLOW_ENV_FN}"
-module purge
 source "${env_fp}" || print_err_msg_exit "\
 Sourcing platform-specific environment file (env_fp) for the workflow 
 task failed:
@@ -155,23 +187,22 @@ cd_vrfy "$exptdir"
 #
 # Issue the rocotorun command to (re)launch the next task in the workflow.  
 # Then check for error messages in the output of rocotorun.  If any are 
-# found, it means the end-to-end run of the workflow failed.  In this 
-# case, we remove the crontab entry that launches the workflow, and we 
-# append an appropriate failure message at the end of the launch log 
-# file.
+# found, it means the end-to-end run of the workflow failed, so set the
+# status of the workflow to "FAILURE".
 #
 #-----------------------------------------------------------------------
 #
 tmp_fn="rocotorun_output.txt"
 rocotorun_cmd="rocotorun -w \"${WFLOW_XML_FN}\" -d \"${rocoto_database_fn}\" -v 10"
-eval ${rocotorun_cmd} > ${tmp_fn} 2>&1
+eval ${rocotorun_cmd} > ${tmp_fn} 2>&1 || \
+  print_err_msg_exit "\
+Call to \"rocotorun\" failed with return code $?."
 rocotorun_output=$( cat "${tmp_fn}" )
 rm "${tmp_fn}"
 
 error_msg="sbatch: error: Batch job submission failed:"
-# Job violates accounting/QOS policy (job submit limit, user's size and/or time limits)"
 while read -r line; do
-  grep_output=$( printf "$line" | grep "${error_msg}" )
+  grep_output=$( printf "%s" "$line" | grep "${error_msg}" )
   if [ $? -eq 0 ]; then
     wflow_status="FAILURE"
     break
@@ -182,19 +213,20 @@ done <<< "${rocotorun_output}"
 #
 # Issue the rocotostat command to obtain a table specifying the status 
 # of each task.  Then check for dead tasks in the output of rocotostat.  
-# If any are found, it means the end-to-end run of the workflow failed.  
-# In this case, we remove the crontab entry that launches the workflow,
-# and we append an appropriate failure message at the end of the launch
-# log file.
+# If any are found, it means the end-to-end run of the workflow failed,
+# so set the status of the workflow (wflow_status) to "FAILURE".
 #
 #-----------------------------------------------------------------------
 #
 rocotostat_cmd="rocotostat -w \"${WFLOW_XML_FN}\" -d \"${rocoto_database_fn}\" -v 10"
+rocotostat_output=$( eval ${rocotostat_cmd} 2>&1 || \
+                     print_err_msg_exit "\
+Call to \"rocotostat\" failed with return code $?."
+                   )
 
-rocotostat_output=$( eval ${rocotostat_cmd} 2>&1 )
 error_msg="DEAD"
 while read -r line; do
-  grep_output=$( printf "$line" | grep "${error_msg}" )
+  grep_output=$( printf "%s" "$line" | grep "${error_msg}" )
   if [ $? -eq 0 ]; then
     wflow_status="FAILURE"
     break
@@ -208,7 +240,7 @@ done <<< "${rocotostat_output}"
 #
 #-----------------------------------------------------------------------
 #
-printf "
+printf "%s" "
 
 ========================================================================
 Start of output from script \"${scrfunc_fn}\".
@@ -241,8 +273,8 @@ ${rocotostat_output}
 # the status of each cycle in the workflow.  The output of this command
 # has the following format:
 #
-#   CYCLE         STATE           ACTIVATED              DEACTIVATED     
-# 201905200000      Active    Nov 07 2019 00:23:30             -          
+#   CYCLE         STATE           ACTIVATED              DEACTIVATED
+# 201905200000      Active    Nov 07 2019 00:23:30             -
 # ...
 #
 # Thus, the first row is a header line containing the column titles, and
@@ -313,7 +345,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-printf "
+printf "%s" "
 
 Summary of workflow status:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -329,9 +361,9 @@ End of output from script \"${scrfunc_fn}\".
 #
 #-----------------------------------------------------------------------
 #
-# If the workflow status is now either "SUCCESS" or "FAILURE", indicate
-# this by appending an appropriate workflow completion message to the 
-# end of the launch log file.
+# If the workflow status (wflow_status) has been set to either "SUCCESS" 
+# or "FAILURE", indicate this by appending an appropriate workflow 
+# completion message to the end of the launch log file.
 #
 #-----------------------------------------------------------------------
 #
@@ -369,29 +401,41 @@ script for this experiment:
     crontab_line_esc_astr=$( printf "%s" "${CRONTAB_LINE}" | \
                              $SED -r -e "s%[*]%\\\\*%g" )
 #
+# Get the full contents of the user's cron table.  
+#
+    get_crontab_contents called_from_cron=${called_from_cron} \
+                         outvarname_crontab_cmd="crontab_cmd" \
+                         outvarname_crontab_contents="crontab_contents"
+#
+# Remove the line in the contents of the cron table corresponding to the 
+# current forecast experiment (if that line is part of the contents).
+# Then record the results back into the user's cron table.
+#
 # In the string passed to the grep command below, we use the line start
 # and line end anchors ("^" and "$", respectively) to ensure that we
 # only find lines in the crontab that contain exactly the string in 
 # crontab_line_esc_astr without any leading or trailing characters.
 #
-    if [ "$MACHINE" = "WCOSS_DELL_P3" ];then
-      grep -v "^${crontab_line_esc_astr}$" "/u/$USER/cron/mycrontab" \
-        > tmpfile && mv_vrfy tmpfile "/u/$USER/cron/mycrontab"
+    crontab_contents=$( echo "${crontab_contents}" | grep -v "^${crontab_line_esc_astr}$" )
+
+    if [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
+      echo "${crontab_contents}" > "/u/$USER/cron/mycrontab"
     else
-      ( crontab -l | grep -v "^${crontab_line_esc_astr}$" ) | crontab -
+      echo "${crontab_contents}" | ${crontab_cmd} 
     fi
+
   fi
 #
 # Print the workflow completion message to the launch log file.
 #
-  printf "$msg" >> ${WFLOW_LAUNCH_LOG_FN} 2>&1
+  printf "%s" "$msg" >> ${WFLOW_LAUNCH_LOG_FN} 2>&1
 #
 # If the stdout from this script is being sent to the screen (e.g. it is
 # not being redirected to a file), then also print out the workflow 
 # completion message to the screen.
 #
   if [ -t 1 ]; then
-    printf "$msg"
+    printf "%s" "$msg"
   fi
 
 fi

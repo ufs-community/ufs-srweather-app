@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 function file_location() {
 
   # Return the default location of external model files on disk
@@ -33,8 +31,8 @@ function file_location() {
 
   esac
   echo ${location:-}
-}
 
+}
 
 EXTRN_MDL_SYSBASEDIR_ICS=${EXTRN_MDL_SYSBASEDIR_ICS:-$(file_location \
   ${EXTRN_MDL_NAME_ICS} \
@@ -43,8 +41,14 @@ EXTRN_MDL_SYSBASEDIR_LBCS=${EXTRN_MDL_SYSBASEDIR_LBCS:-$(file_location \
   ${EXTRN_MDL_NAME_LBCS} \
   ${FV3GFS_FILE_FMT_ICS})}
 
-# System Installations
-MODULE_INIT_PATH=${MODULE_INIT_PATH:-/opt/modules/default/init/sh}
+# System scripts to source to initialize various commands within workflow
+# scripts (e.g. "module").
+if [ -z ${ENV_INIT_SCRIPTS_FPS:-""} ]; then
+  ENV_INIT_SCRIPTS_FPS=( "/etc/profile" "/usrx/local/prod/lmod/lmod/init/sh" )
+fi
+
+# Commands to run at the start of each workflow task.
+PRE_TASK_CMDS='{ ulimit -s unlimited; ulimit -a; }'
 
 # Architecture information
 WORKFLOW_MANAGER="rocoto"
@@ -62,6 +66,12 @@ TOPO_DIR=${TOPO_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fi
 SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_sfc_climo"}
 FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen"}
 
+# Commands to run
+RUN_CMD_SERIAL="mpirun"
+RUN_CMD_UTILS="mpirun"
+RUN_CMD_FCST='mpirun -l -np ${PE_MEMBER01}'
+RUN_CMD_POST="mpirun"
+
 # MET Installation Locations
 MET_INSTALL_DIR="/gpfs/dell2/emc/verification/noscrub/emc.metplus/met/10.0.0"
 METPLUS_PATH="/gpfs/dell2/emc/verification/noscrub/emc.metplus/METplus/METplus-4.0.0"
@@ -75,4 +85,3 @@ MET_BIN_EXEC="exec"
 TEST_PREGEN_BASEDIR=/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen
 TEST_COMINgfs=/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/COMGFS
 TEST_EXTRN_MDL_SOURCE_BASEDIR=/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/extrn_mdl_files
-

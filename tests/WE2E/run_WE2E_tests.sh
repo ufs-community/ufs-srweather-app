@@ -682,7 +682,7 @@ Please correct and rerun."
   # Set the machine-specific configuration settings by sourcing the
   # machine file in the ush directory
 
-  source $MACHINE_FILE
+  source $ushdir/source_machine_file.sh
 
   expt_config_str=${expt_config_str}"\
 #

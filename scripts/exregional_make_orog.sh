@@ -95,33 +95,10 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_OROG}
 #
 #-----------------------------------------------------------------------
 #
-case "$MACHINE" in
+source $USHDIR/source_machine_file.sh
+eval ${PRE_TASK_CMDS}
 
-  "WCOSS_CRAY")
-    { save_shell_opts; set +x; } > /dev/null 2>&1
-    . $MODULESHOME/init/sh
-    module load PrgEnv-intel cfp-intel-sandybridge/1.1.0
-    module list
-    { restore_shell_opts; } > /dev/null 2>&1
-    NODES=1
-    RUN_CMD_SERIAL="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
-    ulimit -s unlimited
-    ulimit -a
-    ;;
-
-  "WCOSS_DELL_P3")
-    ulimit -s unlimited
-    ulimit -a
-    RUN_CMD_SERIAL="mpirun"
-    ;;
-
-  *)
-    source ${MACHINE_FILE}
-    ;;
-
-esac
-
-if [ -z ${RUN_CMD_SERIAL:-} ] ; then
+if [ -z "${RUN_CMD_SERIAL:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \
   Please set RUN_CMD_SERIAL for your platform"

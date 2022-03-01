@@ -177,7 +177,7 @@ MODULES_RUN_TASK_FP script.
 
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;" "&JOBSDIR;/JREGIONAL_MAKE_GRID"</command>
-  {%- if machine in ["WCOSS_DELL_P3", "WCOSS_CRAY"]  %}
+  {%- if machine in ["WCOSS_DELL_P3"]  %}
     <nodes>{{ nnodes_make_grid }}:ppn=1</nodes>
   {%- else %}
     <nodes>{{ nnodes_make_grid }}:ppn={{ ppn_make_grid }}</nodes>
@@ -200,7 +200,7 @@ MODULES_RUN_TASK_FP script.
 
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_OROG_TN;" "&JOBSDIR;/JREGIONAL_MAKE_OROG"</command>
-  {%- if machine in ["WCOSS_DELL_P3", "WCOSS_CRAY"]  %}
+  {%- if machine in ["WCOSS_DELL_P3"]  %}
     <nodes>{{ nnodes_make_orog }}:ppn=1</nodes>
   {%- else %}
     <nodes>{{ nnodes_make_orog }}:ppn={{ ppn_make_orog }}</nodes>
@@ -264,9 +264,6 @@ MODULES_RUN_TASK_FP script.
   <task name="&GET_EXTRN_ICS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_ics }}">
 
     &RSRV_HPSS;
-  {%- if machine in ["WCOSS_CRAY"] %}
-    <shared/>
-  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
   {%- if machine in ["WCOSS_DELL_P3"] %}
     <memory>2048M</memory><native>-R affinity[core]</native>
@@ -294,9 +291,6 @@ MODULES_RUN_TASK_FP script.
   <task name="&GET_EXTRN_LBCS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_lbcs }}">
 
     &RSRV_HPSS;
-  {%- if machine in ["WCOSS_CRAY"] %}
-    <shared/>
-  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
   {%- if machine in ["WCOSS_DELL_P3"] %}
     <memory>2048M</memory><native>-R affinity[core]</native>
@@ -698,9 +692,6 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&GET_OBS_CCPA_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_ccpa }}">
 
     &RSRV_HPSS;
-  {%- if machine in ["WCOSS_CRAY"] %}
-    <shared/>
-  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_CCPA"</command>
   {%- if machine in ["WCOSS_DELL_P3"] %}
     <memory>2048M</memory><native>-R affinity[core]</native>
@@ -731,9 +722,6 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&GET_OBS_MRMS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_mrms }}">
 
     &RSRV_HPSS;
-  {%- if machine in ["WCOSS_CRAY"] %}
-    <shared/>
-  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_MRMS"</command>
   {%- if machine in ["WCOSS_DELL_P3"] %}
     <memory>2048M</memory><native>-R affinity[core]</native>
@@ -765,9 +753,6 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&GET_OBS_NDAS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_ndas }}">
 
     &RSRV_HPSS;
-  {%- if machine in ["WCOSS_CRAY"] %}
-    <shared/>
-  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_NDAS"</command>
   {%- if machine in ["WCOSS_DELL_P3"] %}
     <memory>2048M</memory><native>-R affinity[core]</native>

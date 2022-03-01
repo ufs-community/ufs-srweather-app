@@ -99,34 +99,12 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
 #
 #-----------------------------------------------------------------------
 #
-case "$MACHINE" in
-
-  "WCOSS_CRAY")
-    ulimit -s unlimited
-    ulimit -a
-
-    if [ ${PE_MEMBER01} -gt 24 ];then
-      RUN_CMD_FCST="aprun -b -j1 -n${PE_MEMBER01} -N24 -d1 -cc depth"
-    else
-      RUN_CMD_FCST="aprun -b -j1 -n${PE_MEMBER01} -N${PE_MEMBER01} -d1 -cc depth"
-    fi
-    ;;
-
-  "WCOSS_DELL_P3")
-    ulimit -s unlimited
-    ulimit -a
-    RUN_CMD_FCST="mpirun -l -np ${PE_MEMBER01}"
-    ;;
-
-  *)
-    source ${MACHINE_FILE}
-    ;;
-
-esac
+source $USHDIR/source_machine_file.sh
+eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_RUN_FCST*PPN_RUN_FCST ))
 
-if [ -z ${RUN_CMD_FCST:-} ] ; then
+if [ -z "${RUN_CMD_FCST:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \
   Please set RUN_CMD_FCST for your platform"

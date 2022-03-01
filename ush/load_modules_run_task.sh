@@ -3,12 +3,14 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the variable definitions file and the bash utility functions.
+# Source necessary files.
 #
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_machine_file.sh
 . $USHDIR/source_util_funcs.sh
+. $USHDIR/init_env.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -65,56 +67,13 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Source the script that initializes the Lmod (Lua-based module) system/
-# software for handling modules.  This script defines the module() and
-# other functions.  These are needed so we can perform the "module use
-# ..." and "module load ..." calls later below that are used to load the
-# appropriate module file for the specified task.
+# Initialize the environment, e.g. by making available the "module" 
+# command as well as others.
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "
-Initializing the shell function \"module()\" (and others) in order to be
-able to use \"module load ...\" to load necessary modules ..."
-
-case "$MACHINE" in
-#
-  "WCOSS_CRAY")
-    . /opt/modules/default/init/sh
-    ;;
-#
-  "WCOSS_DELL_P3")
-    . /usrx/local/prod/lmod/lmod/init/sh
-    ;;
-#
-  "HERA")
-    . /apps/lmod/lmod/init/sh
-    ;;
-#
-  "ORION")
-    . /apps/lmod/lmod/init/sh
-    ;;
-#
-  "JET")
-    . /apps/lmod/lmod/init/sh
-    ;;
-#
-  "CHEYENNE")
-    . /glade/u/apps/ch/opt/lmod/8.1.7/lmod/8.1.7/init/sh
-    ;;
-#
-  *)
-    if [[ -n ${LMOD_PATH:-""} && -f ${LMOD_PATH:-""} ]] ; then
-      . ${LMOD_PATH}
-    else
-      print_err_msg_exit "\
-      The script to source to initialize lmod (module loads) has not yet been
-      specified for the current machine (MACHINE):
-        MACHINE = \"$MACHINE\""
-    fi
-    ;;
-#
-esac
+env_init_scripts_fps_str="( "$(printf "\"%s\" " "${ENV_INIT_SCRIPTS_FPS[@]}")")"
+init_env env_init_scripts_fps="${env_init_scripts_fps_str}"
 #
 #-----------------------------------------------------------------------
 #
@@ -131,7 +90,6 @@ jjob_fp="$2"
 #
 #-----------------------------------------------------------------------
 #
-
 machine=$(echo_lowercase $MACHINE)
 env_fp="${SR_WX_APP_TOP_DIR}/env/${BUILD_ENV_FN}"
 module use "${SR_WX_APP_TOP_DIR}/env"

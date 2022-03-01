@@ -15,3 +15,11 @@ degs_per_radian=$( bc -l <<< "360.0/(2.0*$pi_geom)" )
 # Radius of the Earth in meters.
 radius_Earth="6371200.0"
 
+#
+#-----------------------------------------------------------------------
+#
+# Other.
+#
+#-----------------------------------------------------------------------
+#
+valid_vals_BOOLEAN=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
