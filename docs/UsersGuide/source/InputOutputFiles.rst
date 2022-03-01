@@ -4,7 +4,7 @@
 Input and Output Files
 ======================
 This chapter provides an overview of the input and output files needed by the components
-of the UFS SRW Application (i.e., :term:`UFS_UTILS`, the UFS :term:`Weather Model`, and the :term:`UPP`). Links to more detailed documentation for each of the components are provided.
+of the UFS SRW Application (i.e., :term:`UFS_UTILS`, the UFS :term:`Weather Model`, and the :term:`UPP`). Links to more detailed documentation for each of the components are provided. For SRW users who want to jump straight to downloading and staging the files, see :numref:`Section %s <DownloadingStagingInput>`. 
 
 Input Files
 ===========
@@ -23,13 +23,12 @@ the external model data can be found in :numref:`Section %s <DownloadingStagingI
 
 Pre-processing (UFS_UTILS)
 --------------------------
-When a user runs the SRW Application as described in the Quick Start Guide :numref:`Chapter %s <Quickstart>`, the workflow generation step (:numref:`Step %s <GenerateWorkflow>`) links the input data for the pre-processing utilities from a location on disk to the experiment directory. The
+When a user runs the SRW Application as described in the Quick Start Guide :numref:`Chapter %s <Quickstart>`, :numref:`Step %s Generate the Forecast Experiment <GenerateWorkflow>` links the input data for the pre-processing utilities from a location on disk to the experiment directory. The
 pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found `here <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`__.
 
 UFS Weather Model
 -----------------
-The input files for the weather model include both static (fixed) files and grid and date
-specific files (terrain, initial conditions, boundary conditions, etc). The static fix files
+The input files for the weather model include both static (fixed) files and grid- and date-specific files (terrain, initial conditions, boundary conditions, etc). The static fix files
 must be staged by the user unless you are running on a Level 1/pre-configured platform, in which case you can link to the existing copy of the data on that machine. See :numref:`Section %s <StaticFixFiles>` for more information. The static, grid, and date-specific files are linked in the experiment directory by the workflow scripts. An extensive description of the input files for the weather model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. The namelists and configuration files for the SRW Application are created from templates by the workflow, as described in :numref:`Section %s <WorkflowTemplates>`.
 
 Unified Post Processor (UPP)
@@ -53,7 +52,7 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
 
 .. _TemplateFiles:
 
-.. table::  Template files for a regional workflow.
+.. table:: Template Files for a Regional Workflow
 
    +-----------------------------+-------------------------------------------------------------+
    | **File Name**               | **Description**                                             |
@@ -68,7 +67,7 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    +-----------------------------+-------------------------------------------------------------+
    | field_table_[CCPP]          | Cycle-independent file that the forecast model reads in at  |
    |                             | the start of each forecast. It specifies the tracers that   |
-   |                             | the forecast model will advect. A different field_table    |
+   |                             | the forecast model will advect. A different field_table     |
    |                             | may be needed for different CCPP suites.                    |
    +-----------------------------+-------------------------------------------------------------+
    | FV3.input.yml               | YAML configuration file containing the forecast model’s     |
