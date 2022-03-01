@@ -5,3 +5,4 @@
 .. include:: ../../../hpc-stack-mod/docs/source/hpc-prereqs.rst
 .. include:: ../../../hpc-stack-mod/docs/source/hpc-parameters.rst
 .. include:: ../../../hpc-stack-mod/docs/source/hpc-components.rst
+.. include:: ../../../hpc-stack-mod/docs/source/hpc-notes.rst
