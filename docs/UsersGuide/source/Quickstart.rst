@@ -47,7 +47,9 @@ Run the UFS SRW in a Singularity Container
    On NOAA Cloud systems, certain environment variables must be set *before* building the container:
    
    ``sudo su``
+   
    ``export SINGULARITY_CACHEDIR=/lustre/cache``
+   
    ``export SINGULARITY_TEMPDIR=/lustre/tmp``
 
    If the ``cache`` and ``tmp`` directories do not exist already, they must be created. 
