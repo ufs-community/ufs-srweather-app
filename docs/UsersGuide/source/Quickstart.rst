@@ -46,14 +46,13 @@ Run the UFS SRW in a Singularity Container
 .. note::
    On NOAA Cloud systems, certain environment variables must be set *before* building the container:
    
-   .. code-block:: console
-      sudo su
-      export SINGULARITY_CACHEDIR=/lustre/cache
-      export SINGULARITY_TEMPDIR=/lustre/tmp
+   ``sudo su``
+   ``export SINGULARITY_CACHEDIR=/lustre/cache``
+   ``export SINGULARITY_TEMPDIR=/lustre/tmp``
 
    If the ``cache`` and ``tmp`` directories do not exist already, they must be created. 
 
-.. important::  
+.. note::  
    ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, tar the file and move it to your ``/contrib`` directory, which is much slower but persistent.
 
 Build the container:
@@ -76,7 +75,7 @@ Clone the develop branch of the UFS-SRW weather application repository:
 
 .. code-block:: console
 
-   git clone -b feature/singularity --single-branch https://github.com/NOAA-EPIC/ufs-srweather-app.git
+   git clone -b feature/singularity-addition https://github.com/EdwardSnyder-NOAA/ufs-srweather-app
 
 .. 
    COMMENT: change repo for release
