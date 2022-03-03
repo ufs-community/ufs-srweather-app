@@ -46,16 +46,15 @@ Run the UFS SRW in a Singularity Container
 .. note::
    On NOAA Cloud systems, certain environment variables must be set *before* building the container:
    
-   ``sudo su``
-   
-   ``export SINGULARITY_CACHEDIR=/lustre/cache``
-   
-   ``export SINGULARITY_TEMPDIR=/lustre/tmp``
+   .. code-block:: 
+
+      sudo su
+      export SINGULARITY_CACHEDIR=/lustre/cache
+      export SINGULARITY_TEMPDIR=/lustre/tmp
 
    If the ``cache`` and ``tmp`` directories do not exist already, they must be created. 
 
-.. note::  
-   ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, tar the file and move it to your ``/contrib`` directory, which is much slower but persistent.
+   ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, tar the file and move it to the ``/contrib`` directory, which is much slower but persistent.
 
 Build the container:
 
@@ -67,11 +66,16 @@ Build the container:
    If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
 
 
-Start the container and run an interactive shell within it. This command also binds the local home directory to the container so that data can be shared between them. 
+Start the container and run an interactive shell within it. This command also binds the local directory to the container so that data can be shared between them. On NOAA systems, the local directory is usually the topmost/base/root directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
 .. code-block:: console
 
-   singularity shell -e --writable --bind /<abs_path_to_local_dir>:/lustre ubuntu20.04-epic-srwapp-1.0
+   singularity shell -e --writable --bind /<local_root_dir>:/<path_to_container_dir_w_same_name> ubuntu20.04-epic-srwapp-1.0
+
+.. important::
+   When binding the two directories, they must have the same name! It may be necessary to create an appropriately named directory in the container using the ``mkdir`` command if one is not already there. 
+
+   Be sure to bind the directory that contains the data the experiment will access. 
 
 Clone the develop branch of the UFS-SRW weather application repository:
 
@@ -202,7 +206,7 @@ Next, edit the new ``config.sh`` file to customize it for your machine. At a min
 
 .. code-block:: console
 
-   MACHINE="AWS"
+   MACHINE="SINGULARITY"
    ACCOUNT="none"
    EXPT_SUBDIR="GST"
    EXPT_BASEDIR="home/$USER/expt_dirs"
@@ -252,7 +256,7 @@ For **WCOSS**, edit ``config.sh`` with these WCOSS-specific parameters, and use 
 
 .. code-block:: console
 
-   MACHINE="<AWS_or_AZURE_or_GCP>"
+   MACHINE="SINGULARITY"
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
    EXPT_BASEDIR="lustre/$USER/expt_dirs"
