@@ -6,6 +6,8 @@ Input and Output Files
 This chapter provides an overview of the input and output files needed by the components
 of the UFS SRW Application (i.e., :term:`UFS_UTILS`, the UFS :term:`Weather Model`, and the :term:`UPP`). Links to more detailed documentation for each of the components are provided. For SRW users who want to jump straight to downloading and staging the files, see :numref:`Section %s <DownloadingStagingInput>`. 
 
+.. _Input:
+
 Input Files
 ===========
 The SRW Application requires numerous input files to run: static datasets (fix files

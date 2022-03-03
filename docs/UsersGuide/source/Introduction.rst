@@ -26,6 +26,9 @@ Variables presented as ``AaBbCc123`` in this document typically refer to variabl
 
 File paths or code that include angle brackets (e.g., ``env/build_<platform>_<compiler>.env``) indicate that users should insert options appropriate to their SRW configuration (e.g., ``env/build_aws_gcc.env``). 
 
+.. hint:: 
+   To get started running the SRW, see the :ref:`Quick Start Guide <Quickstart>` sections on running the SRW in a container. 
+
 
 Pre-processor Utilities and Initial Conditions
 ==============================================

@@ -43,26 +43,34 @@ The SRW Application source code is publicly available on GitHub and can be run i
 Run the UFS SRW in a Singularity Container
 -------------------------------------------
 
-Pull the Singularity container:
+.. note::
+   On NOAA Cloud systems, certain environment variables must be set *before* building the container:
+   
+   .. code-block:: console
+      sudo su
+      export SINGULARITY_CACHEDIR=/lustre/cache
+      export SINGULARITY_TEMPDIR=/lustre/tmp
+
+   If the ``cache`` and ``tmp`` directories do not exist already, they must be created. 
+
+.. important::  
+   ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, tar the file and move it to your ``/contrib`` directory, which is much slower but persistent.
+
+Build the container:
 
 .. code-block:: console
 
-   singularity pull ubuntu20.04-epic-srwapp-1.0.sif docker://noaaepic/ubuntu20.04-epic-srwapp:1.0
+   singularity build --sandbox ubuntu20.04-epic-srwapp-1.0 docker://noaaepic/ubuntu20.04-epic-srwapp:1.0
 
-Build the container and make a ``contrib`` directory inside it if one does not already exist:
+.. note::
+   If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
 
-.. code-block:: console
-
-   singularity build --sandbox ubuntu20.04-epic-srwapp-1.0 ubuntu20.04-epic-srwapp-1.0.sif
-   cd ubuntu20.04-epic-srwapp-1.0
-   mkdir contrib
-   cd ..
 
 Start the container and run an interactive shell within it. This command also binds the local home directory to the container so that data can be shared between them. 
 
 .. code-block:: console
 
-   singularity shell -e --writable --bind /<local_dir>:/contrib ubuntu20.04-epic-srwapp-1.0
+   singularity shell -e --writable --bind /<abs_path_to_local_dir>:/lustre ubuntu20.04-epic-srwapp-1.0
 
 Clone the develop branch of the UFS-SRW weather application repository:
 
@@ -70,8 +78,8 @@ Clone the develop branch of the UFS-SRW weather application repository:
 
    git clone -b feature/singularity --single-branch https://github.com/NOAA-EPIC/ufs-srweather-app.git
 
-..
-   COMMENT: This will need to be changed to release branch of the SRW repo once it exists. 
+.. 
+   COMMENT: change repo for release
 
 Check out submodules for the SRW Application:
 
@@ -109,7 +117,7 @@ Set up the Build Environment
 
 Container Approach
 --------------------
-If the SRW Application has been built in a container provided by the Earth Prediction Innovation Center (EPIC), set build environments and modules within the `ufs-srweather-app` directory as follows:
+If the SRW Application has been built in a container provided by the Earth Prediction Innovation Center (EPIC), set build environments and modules within the ``ufs-srweather-app`` directory as follows:
 
 .. code-block:: console
 
@@ -133,11 +141,6 @@ directory to source the appropriate file.
 On Level 3-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. On systems without Lmod, this process will typically involve commands in the form ``export <VARIABLE_NAME>=<PATH_TO_MODULE>``. You may need to use ``setenv`` rather than ``export`` depending on your environment. 
 
 
-.. hint:: 
-   
-   If the system cannot find a module (i.e., a "module unknown" message appears), check whether the module version numbers match in ``ufs-srweather-app/env/build_<platform>_<compiler>.env`` and the ``hpc-stack/stack/stack_custom.yaml``.
-
-
 Build the Executables
 =====================
 
@@ -155,17 +158,17 @@ From the build directory, run the ``cmake`` command below to set up the ``Makefi
    cmake .. -DCMAKE_INSTALL_PREFIX=..
    make -j 4  >& build.out &
 
-The build will take a few minutes to complete. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, you should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
+The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console when you list the files in ``ufs-srweather-app/bin`` (``[1]+  Exit`` may indicate an error). Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, you should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
 
 .. hint::
 
-   If you do not see a ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
+   If you see the build.out file, but there is no ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
 
 Download and Stage the Data
 ============================
 
 The SRW requires input files to run. These include static datasets, initial and boundary conditions 
-files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :doc:`Input and Output Files <InputOutputFiles>`, Section 3. Section 1 contains useful background information on the input files required by the SRW. 
+files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW. 
 
 .. _GenerateForecast:
 
@@ -302,10 +305,9 @@ An environment variable can be set to navigate to the ``$EXPTDIR`` more easily. 
 
 If the login shell is csh/tcsh, replace ``export`` with ``setenv`` in the command above.
 
-
 Run the Workflow Using Rocoto
 =============================
-The information in this section assumes that Rocoto is available on the desired platform. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: using the ``./launch_FV3LAM_wflow.sh`` or by hand.  
+The information in this section assumes that Rocoto is available on the desired platform. Rocoto cannot be used when running the workflow within a container. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: using the ``./launch_FV3LAM_wflow.sh`` or by hand. 
 
 Launch the Rocoto Workflow Using a Script
 -----------------------------------------------
