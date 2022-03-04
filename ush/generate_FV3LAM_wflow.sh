@@ -506,33 +506,40 @@ Copying contents of user cron table to backup file:
   get_crontab_contents called_from_cron=${called_from_cron} \
                        outvarname_crontab_cmd="crontab_cmd" \
                        outvarname_crontab_contents="crontab_contents"
-  echo "${crontab_contents}" > "${crontab_backup_fp}"
-#
-# Below, we use "grep" to determine whether the crontab line that the
-# variable CRONTAB_LINE contains is already present in the cron table.
-# For that purpose, we need to escape the asterisks in the string in
-# CRONTAB_LINE with backslashes.  Do this next.
-#
+  # To create the backup crontab file and add a new job to the user's 
+  # existing cron table, use the "printf" command, not "echo", to print 
+  # out variables.  This is because "echo" will add a newline at the end 
+  # of its output even if its input argument is a null string, resulting
+  # in extranous blank lines in the backup crontab file and/or the cron 
+  # table itself.  Using "printf" prevents the appearance of these blank
+  # lines.
+  printf "%s" "${crontab_contents}" > "${crontab_backup_fp}"
+  #
+  # Below, we use "grep" to determine whether the crontab line that the
+  # variable CRONTAB_LINE contains is already present in the cron table.
+  # For that purpose, we need to escape the asterisks in the string in
+  # CRONTAB_LINE with backslashes.  Do this next.
+  #
   crontab_line_esc_astr=$( printf "%s" "${CRONTAB_LINE}" | \
                            $SED -r -e "s%[*]%\\\\*%g" )
-#
-# In the grep command below, the "^" at the beginning of the string 
-# passed to grep is a start-of-line anchor, and the "$" at the end is
-# an end-of-line anchor.  Thus, in order for grep to find a match on 
-# any given line of the cron table's contents, that line must contain 
-# exactly the string in the variable crontab_line_esc_astr without any 
-# leading or trailing characters.  This is to eliminate situations in 
-# which a line in the cron table contains the string in crontab_line_esc_astr 
-# but is precedeeded, for example, by the comment character "#" (in which
-# case cron ignores that line) and/or is followed by further commands 
-# that are not part of the string in crontab_line_esc_astr (in which 
-# case it does something more than the command portion of the string in 
-# crontab_line_esc_astr does).
-#
+  #
+  # In the grep command below, the "^" at the beginning of the string 
+  # passed to grep is a start-of-line anchor, and the "$" at the end is
+  # an end-of-line anchor.  Thus, in order for grep to find a match on 
+  # any given line of the cron table's contents, that line must contain 
+  # exactly the string in the variable crontab_line_esc_astr without any 
+  # leading or trailing characters.  This is to eliminate situations in 
+  # which a line in the cron table contains the string in crontab_line_esc_astr 
+  # but is precedeeded, for example, by the comment character "#" (in which
+  # case cron ignores that line) and/or is followed by further commands 
+  # that are not part of the string in crontab_line_esc_astr (in which 
+  # case it does something more than the command portion of the string in 
+  # crontab_line_esc_astr does).
+  #
   if [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
     grep_output=$( grep "^${crontab_line_esc_astr}$" "/u/$USER/cron/mycrontab" )
   else
-    grep_output=$( echo "${crontab_contents}" | grep "^${crontab_line_esc_astr}$" )
+    grep_output=$( printf "%s" "${crontab_contents}" | grep "^${crontab_line_esc_astr}$" )
   fi
   exit_status=$?
 
@@ -551,9 +558,16 @@ resubmit SRW workflow:
   CRONTAB_LINE = \"${CRONTAB_LINE}\""
 
     if [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
-      echo "${CRONTAB_LINE}" >> "/u/$USER/cron/mycrontab"      
+      printf "%s" "${CRONTAB_LINE}" >> "/u/$USER/cron/mycrontab"      
     else
-      ( echo "${crontab_contents}"; echo "${CRONTAB_LINE}" ) | ${crontab_cmd}
+      # Add a newline to the end of crontab_contents only if it is not empty.
+      # This is needed so that when CRONTAB_LINE is printed out, it appears on
+      # a separate line.
+      crontab_contents=${crontab_contents:+"${crontab_contents}"$'\n'}
+      # When printing CRONTAB_LINE, add a newline at the end.  This is necessary
+      # on certain machines (e.g. Cheyenne) while on others, it doesn't make
+      # a difference.
+      ( printf "%s" "${crontab_contents}"; printf "%s\n" "${CRONTAB_LINE}" ) | ${crontab_cmd}
     fi
 
   fi

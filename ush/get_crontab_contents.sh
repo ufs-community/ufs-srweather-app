@@ -70,13 +70,13 @@ function get_crontab_contents() {
   # copy of this header to the user's cron table.
   #
   if [ "$MACHINE" = "CHEYENNE" ]; then
-    __crontab_contents__=$( echo "${__crontab_contents__}" | tail -n +4 )
+    __crontab_contents__=$( printf "%s" "${__crontab_contents__}" | tail -n +4 )
   fi
   #
   # Set output variables.
   #
-  printf -v ${outvarname_crontab_cmd} "${__crontab_cmd__}"
-  printf -v ${outvarname_crontab_contents} "${__crontab_contents__}"
+  printf -v ${outvarname_crontab_cmd} "%s" "${__crontab_cmd__}"
+  printf -v ${outvarname_crontab_contents} "%s" "${__crontab_contents__}"
 
   { restore_shell_opts; } > /dev/null 2>&1
 
