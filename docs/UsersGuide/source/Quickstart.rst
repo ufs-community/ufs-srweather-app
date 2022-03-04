@@ -52,9 +52,9 @@ Run the UFS SRW in a Singularity Container
       export SINGULARITY_CACHEDIR=/lustre/cache
       export SINGULARITY_TEMPDIR=/lustre/tmp
 
-   If the ``cache`` and ``tmp`` directories do not exist already, they must be created. 
+   * If the ``cache`` and ``tmp`` directories do not exist already, they must be created. 
 
-   ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, tar the file and move it to the ``/contrib`` directory, which is much slower but persistent.
+   * ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, tar the file and move it to the ``/contrib`` directory, which is much slower but persistent.
 
 Build the container:
 
@@ -73,9 +73,8 @@ Start the container and run an interactive shell within it. This command also bi
    singularity shell -e --writable --bind /<local_root_dir>:/<path_to_container_dir_w_same_name> ubuntu20.04-epic-srwapp-1.0
 
 .. important::
-   When binding the two directories, they must have the same name! It may be necessary to create an appropriately named directory in the container using the ``mkdir`` command if one is not already there. 
-
-   Be sure to bind the directory that contains the data the experiment will access. 
+   * When binding two directories, they must have the same name. It may be necessary to create an appropriately named directory in the container using the ``mkdir`` command if one is not already there. 
+   * Be sure to bind the directory that contains the data the experiment will access. 
 
 Clone the develop branch of the UFS-SRW weather application repository:
 
