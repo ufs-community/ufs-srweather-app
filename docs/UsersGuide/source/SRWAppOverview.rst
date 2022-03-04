@@ -713,8 +713,28 @@ The steps to run the standalone scripts are as follows:
 
       cp ufs-srweather-app/regional_workflow/ush/wrappers/* .
 
+#. f00
+
+.. code-block::
+
+   export OMP_NUM_THREADS=1
+   sed -i 's/bin\/sh/bin\/bash/g' *sh
+
 #. RUN each of the listed scripts in order.  Scripts with the same stage number
    may be run simultaneously.
+
+   .. code-block:: console
+
+      ./run_make_grid.sh
+      ./run_get_ics.sh
+      ./run_get_lbcs.sh
+      ./run_make_orog.sh
+      ./run_make_sfc_climo.sh
+      ./run_make_ics.sh
+      ./run_make_lbcs.sh
+      ./run_fcst.sh
+      ./run_post.sh
+
 
     #. On most HPC systems, you will need to submit a batch job to run multi-processor jobs.
 

@@ -196,7 +196,7 @@ Make a copy of ``config.community.sh`` to get started (under ``<path-to-ufs-srwe
 
 .. code-block:: console
 
-   cd regional_workflow/ush
+   cd ../regional_workflow/ush
    cp config.community.sh config.sh
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
