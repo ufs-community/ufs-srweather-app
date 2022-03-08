@@ -36,7 +36,7 @@ run the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks.
 How do I define an experiment name?
 ===================================
 The name of the experiment is set in the ``config.sh`` file using the variable ``EXPT_SUBDIR``.
-See :numref:`Section %s <SetUpConfigFile>` for more details.
+See :numref:`Section %s <SetUpConfigFileC>` for more details.
 
 ================================================
 How do I change the Suite Definition File (SDF)?

@@ -155,23 +155,23 @@ executables listed in :numref:`Table %s <ExecDescription>` will be located in th
    +------------------------+---------------------------------------------------------------------------------+
    | vcoord_gen             | Generates hybrid coordinate interface profiles                                  |
    +------------------------+---------------------------------------------------------------------------------+
-   | fvcom_to_FV3           |                                   |
+   | fvcom_to_FV3           |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
-   | make_hgrid             |                                   |
+   | make_hgrid             |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
-   | emcsfc_ice_blend       |                                   |
+   | emcsfc_ice_blend       |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
-   | emcsfc_snow2mdl        |                                   |
+   | emcsfc_snow2mdl        |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
-   | global_cycle           |                                   |
+   | global_cycle           |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
-   | inland                 |                                   |
+   | inland                 |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
-   | orog_gsl               |                                   |
+   | orog_gsl               |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
-   | fregrid                |                                   |
+   | fregrid                |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
-   | lakefrac               |                                   |
+   | lakefrac               |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
 
 .. _GridSpecificConfig:
@@ -640,20 +640,11 @@ Wait a few seconds and issue a second set of ``rocotorun`` and ``rocotostat`` co
 
 Run the Workflow Using the Stand-alone Scripts
 ----------------------------------------------
-The regional workflow has the capability to be run using standalone shell scripts if the
-Rocoto software is not available on a given platform. These scripts are located in the
-``ufs-srweather-app/regional_workflow/ush/wrappers`` directory. Each workflow task has
-a wrapper script to set environment variables and run the job script.
+The regional workflow has the capability to be run using standalone shell scripts if the Rocoto software is not available on a given platform. These scripts are located in the ``ufs-srweather-app/regional_workflow/ush/wrappers`` directory. Each workflow task has a wrapper script to set environment variables and run the job script.
  
 Example batch-submit scripts for Hera (Slurm) and Cheyenne (PBS) are included: ``sq_job.sh``
-and ``qsub_job.sh``, respectively. These examples set the build and run environment for Hera or Cheyenne
-so that run-time libraries match the compiled libraries (i.e. netCDF, MPI). Users may either
-modify the submit batch script as each task is submitted, or duplicate this batch wrapper
-for their system settings for each task. Alternatively, some batch systems allow users to
-specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command,
-for example). This piece will be unique to your platform. The tasks run by the regional workflow
-are shown in :numref:`Table %s <RegionalWflowTasks>`.  Tasks with the same stage level may
-be run concurrently (no dependency).
+and ``qsub_job.sh``, respectively. These examples set the build and run environment for Hera or Cheyenne so that run-time libraries match the compiled libraries (i.e. netCDF, MPI). Users may either modify the submit batch script as each task is submitted, or duplicate this batch wrapper
+for their system settings for each task. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). This piece will be unique to your platform. The tasks run by the regional workflow are shown in :numref:`Table %s <RegionalWflowTasks>`. Tasks with the same stage level may be run concurrently (no dependency).
 
 .. _RegionalWflowTasks:
 
@@ -713,15 +704,14 @@ The steps to run the standalone scripts are as follows:
 
       cp ufs-srweather-app/regional_workflow/ush/wrappers/* .
 
-#. f00
+#. Set the OMP_NUM_THREADS variable and fix dash/bash shell issue (this ensures the system does not use an alias of ``sh`` to dash). 
 
-.. code-block::
+   .. code-block:: console
 
-   export OMP_NUM_THREADS=1
-   sed -i 's/bin\/sh/bin\/bash/g' *sh
+      export OMP_NUM_THREADS=1
+      sed -i 's/bin\/sh/bin\/bash/g' *sh
 
-#. RUN each of the listed scripts in order.  Scripts with the same stage number
-   may be run simultaneously.
+#. RUN each of the listed scripts in order.  Scripts with the same stage number (listed in :numref:`Table %s <RegionalWflowTasks>`) may be run simultaneously.
 
    .. code-block:: console
 
@@ -735,14 +725,25 @@ The steps to run the standalone scripts are as follows:
       ./run_fcst.sh
       ./run_post.sh
 
+   .. note:: 
+      If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. To allocate a second node: 
 
-    #. On most HPC systems, you will need to submit a batch job to run multi-processor jobs.
+      .. code-block:: console
 
-    #. On some HPC systems, you may be able to run the first two jobs (serial) on a login node/command-line
+         salloc -N 1 
+         module load gnu openmpi
+         mpirun -n 1 hostname
+      
+      This last command will output a hostname. Then, run ``ssh <hostname>``, replacing ``<hostname>`` with the actual hostname output in the prior command. 
 
-    #. Example scripts for Slurm (Hera) and PBS (Cheyenne) are provided.  These will need to be adapted to your system.
 
-    #. This submit batch script is hard-coded per task, so will need to be modified or copied to run each task.
+   #. On most HPC systems, you will need to submit a batch job to run multi-processor jobs.
+
+   #. On some HPC systems, you may be able to run the first two jobs (serial) on a login node/command-line
+
+   #. Example scripts for Slurm (Hera) and PBS (Cheyenne) are provided.  These will need to be adapted to your system.
+
+   #. This submit batch script is hard-coded per task, so will need to be modified or copied to run each task.
  
 Check the batch script output file in your experiment directory for a “SUCCESS” message near the end of the file.
 

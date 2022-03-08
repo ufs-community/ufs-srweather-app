@@ -87,8 +87,7 @@ For the selected computational platforms that have been pre-configured (Level 1)
 required libraries for building the SRW Application are available in a central place. That
 means bundled libraries (NCEPLIBS) and third-party libraries (NCEPLIBS-external) have both
 been built. The SRW Application is expected to build and run out-of-the-box on these
-pre-configured platforms, and users can proceed directly to the using the workflow, as
-described in the Quick Start (:numref:`Section %s <GenerateForecast>`).
+pre-configured platforms. Users can download the SRW code and choose whether to run it :ref:`in a container <DownloadCodeC>` or :ref:`locally <DownloadCodeNC>`.
 
 A few additional computational platforms are considered configurable for the SRW Application release. Configurable platforms (Level 2) are platforms where all of the required libraries for building the SRW Application are expected to install successfully but are not available in a central location. Applications and models are expected to build and run once the required bundled libraries (e.g., NCEPLIBS) and third-party libraries (e.g., NCEPLIBS-external) are built.
 

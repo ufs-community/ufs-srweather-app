@@ -25,7 +25,7 @@ the external model data can be found in :numref:`Section %s <DownloadingStagingI
 
 Pre-processing (UFS_UTILS)
 --------------------------
-When a user runs the SRW Application as described in the Quick Start Guide :numref:`Chapter %s <Quickstart>`, :numref:`Step %s Generate the Forecast Experiment <GenerateWorkflow>` links the input data for the pre-processing utilities from a location on disk to the experiment directory. The
+When a user runs the SRW Application as described in the Quick Start Guide :numref:`Chapter %s <QuickstartC>`, :numref:`Step %s Generate the Forecast Experiment <GenerateWorkflowC>` links the input data for the pre-processing utilities from a location on disk to the experiment directory. The
 pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found `here <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`__.
 
 UFS Weather Model
@@ -227,7 +227,7 @@ Initial Condition Formats and Source
 ------------------------------------
 The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, netCDF, or :term:`GRIB2`. The SRW Application currently only supports the use of NEMSIO and netCDF input files from the GFS.
 
-The data required to run the "out-of'the-box" SRW case described in :numref:`Chapter %s <Quickstart>` is already preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users on other systems can find the required IC/LBC data in the `FTP data repository <https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz>`__ or on `AWS cloud storage <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz>`_. 
+The data required to run the "out-of'the-box" SRW case described in :numref:`Chapter %s <QuickstartC>` is already preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users on other systems can find the required IC/LBC data in the `FTP data repository <https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz>`__ or on `AWS cloud storage <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz>`_. 
 
 To add this data to your system, run the following commands from the ``ufs-srweather-app`` directory:
 

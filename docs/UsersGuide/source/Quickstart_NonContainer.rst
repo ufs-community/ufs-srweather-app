@@ -1,14 +1,17 @@
-.. _Quickstart:
+.. _QuickstartNC:
 
-====================
-Workflow Quick Start
-====================
+======================================
+Workflow Quick Start (Non-Container)
+======================================
 
 This Workflow Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application. The "out-of-the-box" case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. attention::
 
    The UFS defines `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter are most applicable to preconfigured (Level 1) systems. On Level 1 systems, all of the required libraries for building community releases of UFS models and applications are available in a central location. This guide can serve as a starting point for running the SRW App on other systems as well but may require additional troubleshooting by the user. 
+
+.. note::
+   The :ref:`container approach <QuickstartC>` is recommended when possible for a smoother build and run experience. Building without a container allows for use of the Rocoto workflow manager and may allow for more cutomization; however, this comes at the expense of more in-depth troubleshooting, especially on Level 3 and 4 systems. 
 
 
 .. _HPCstackInfo:
@@ -34,68 +37,11 @@ Users can either build the HPC-stack on their local system or use the centrally 
 
 After completing installation, continue to the next section.
 
-.. _DownloadCode:
+.. _DownloadCodeNC:
 
 Download the UFS SRW Application Code
 =====================================
 The SRW Application source code is publicly available on GitHub and can be run in a container or locally, depending on user preference. The SRW Application relies on a variety of components detailed in the :ref:`Components Chapter <Components>` of this User's Guide. Users must (1) clone the UFS SRW Application umbrella repository and then (2) run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App and will clone the correct version of the regional workflow, pre-processing utilities, UFS Weather Model, and UPP source code into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
-
-Run the UFS SRW in a Singularity Container
--------------------------------------------
-
-.. note::
-   On NOAA Cloud systems, certain environment variables must be set *before* building the container:
-   
-   .. code-block:: 
-
-      sudo su
-      export SINGULARITY_CACHEDIR=/lustre/cache
-      export SINGULARITY_TEMPDIR=/lustre/tmp
-
-   * If the ``cache`` and ``tmp`` directories do not exist already, they must be created. 
-
-   * ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, tar the file and move it to the ``/contrib`` directory, which is much slower but persistent.
-
-Build the container:
-
-.. code-block:: console
-
-   singularity build --sandbox ubuntu20.04-epic-srwapp-1.0 docker://noaaepic/ubuntu20.04-epic-srwapp:1.0
-
-.. note::
-   If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
-
-
-Start the container and run an interactive shell within it. This command also binds the local directory to the container so that data can be shared between them. On NOAA systems, the local directory is usually the topmost/base/root directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
-
-.. code-block:: console
-
-   singularity shell -e --writable --bind /<local_root_dir>:/<path_to_container_dir_w_same_name> ubuntu20.04-epic-srwapp-1.0
-
-.. important::
-   * When binding two directories, they must have the same name. It may be necessary to create an appropriately named directory in the container using the ``mkdir`` command if one is not already there. 
-   * Be sure to bind the directory that contains the data the experiment will access. 
-
-Clone the develop branch of the UFS-SRW weather application repository:
-
-.. code-block:: console
-
-   git clone -b feature/singularity-addition https://github.com/EdwardSnyder-NOAA/ufs-srweather-app
-
-.. 
-   COMMENT: change repo for release
-
-Check out submodules for the SRW Application:
-
-.. code-block:: console
-
-   cd ufs-srweather-app
-   ./manage_externals/checkout_externals
-
-If the ``manage_externals`` command brings up an error, it may be necessary to run ``ln -s /usr/bin/python3 /usr/bin/python`` first. 
-
-Run the UFS SRW Without a Container
-------------------------------------
 
 Clone the release branch of the repository:
 
@@ -114,26 +60,10 @@ Then, run the executable that pulls in the submodules for the SRW Application:
    ./manage_externals/checkout_externals
 
 
-.. _SetUpBuild:
+.. _SetUpBuildNC:
 
 Set up the Build Environment
 ============================
-
-Container Approach
---------------------
-If the SRW Application has been built in a container provided by the Earth Prediction Innovation Center (EPIC), set build environments and modules within the ``ufs-srweather-app`` directory as follows:
-
-.. code-block:: console
-
-   ln -s /usr/bin/python3 /usr/bin/python
-   source /usr/share/lmod/6.6/init/profile
-   module use /opt/hpc-modules/modulefiles/stack
-   module load hpc hpc-gnu hpc-openmpi hpc-python
-   module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake gfsio wgrib2 upp
-
-
-On Other Systems (Non-Container Approach)
-------------------------------------------
 
 For Level 1 and 2 systems, scripts for loading the proper modules and/or setting the 
 correct environment variables can be found in the ``env/`` directory of the SRW App in files named 
@@ -174,7 +104,7 @@ Download and Stage the Data
 The SRW requires input files to run. These include static datasets, initial and boundary conditions 
 files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW. 
 
-.. _GenerateForecast:
+.. _GenerateForecastNC:
 
 Generate the Forecast Experiment 
 =================================
@@ -186,7 +116,7 @@ Generating the forecast experiment requires three steps:
 
 The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. 
 
-.. _SetUpConfigFile:
+.. _SetUpConfigFileNC:
 
 Set Experiment Parameters
 -------------------------
@@ -215,7 +145,7 @@ Sample settings are indicated below for Level 1 platforms. Detailed guidance app
 
 .. Important::
 
-   If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuild>`, you will have to add the line ``COMPILER="gnu"`` to the ``config.sh`` file.
+   If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuildNC>`, you will have to add the line ``COMPILER="gnu"`` to the ``config.sh`` file.
 
 Minimum parameter settings for Level 1 machines:
 
@@ -286,7 +216,7 @@ This command will activate the ``regional_workflow``. The user should see ``(reg
    conda activate regional_workflow
 
 
-.. _GenerateWorkflow: 
+.. _GenerateWorkflowNC: 
 
 Generate the Regional Workflow
 -------------------------------------------
@@ -299,7 +229,7 @@ Run the following command to generate the workflow:
 
 The last line of output from this script, starting with ``*/1 * * * *``, can be saved and :ref:`used later <AdditionalOptions>` to automatically run portions of the workflow. 
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The generated workflow will be in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in :numref:`Step %s <SetUpConfigFile>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in $EXPTDIR. 
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The generated workflow will be in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in :numref:`Step %s <SetUpConfigFileNC>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in $EXPTDIR. 
 
 An environment variable can be set to navigate to the ``$EXPTDIR`` more easily. If the login shell is bash, it can be set as follows:
 
