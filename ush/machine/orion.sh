@@ -10,25 +10,17 @@ function file_location() {
   external_model=${1}
   external_file_fmt=${2}
 
-  case ${external_model} in
-
-    "*")
-      print_info_msg"\
-        External model \'${external_model}\' does not have a default
-      location on Orion. Please set a user-defined file location."
-      ;;
-
-  esac
+  location=""
   echo ${location:-}
 
 }
 
 EXTRN_MDL_SYSBASEDIR_ICS=${EXTRN_MDL_SYSBASEDIR_ICS:-$(file_location \
   ${EXTRN_MDL_NAME_ICS} \
-    ${FV3GFS_FILE_FMT_ICS})}
+  ${FV3GFS_FILE_FMT_ICS})}
 EXTRN_MDL_SYSBASEDIR_LBCS=${EXTRN_MDL_SYSBASEDIR_LBCS:-$(file_location \
   ${EXTRN_MDL_NAME_LBCS} \
-  ${FV3GFS_FILE_FMT_ICS})}
+  ${FV3GFS_FILE_FMT_LBCS})}
 
 # System scripts to source to initialize various commands within workflow
 # scripts (e.g. "module").
@@ -58,6 +50,7 @@ TOPO_DIR=${TOPO_DIR:-"/work/noaa/global/glopara/fix/fix_orog"}
 SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/work/noaa/global/glopara/fix/fix_sfc_climo"}
 FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
 
+# Run commands for executables
 RUN_CMD_SERIAL="time"
 RUN_CMD_UTILS="srun"
 RUN_CMD_FCST='srun -n ${PE_MEMBER01}'

@@ -9,6 +9,7 @@ function file_location() {
   external_model=${1}
   external_file_fmt=${2}
 
+  location=""
   case ${external_model} in
 
     "FV3GFS")
@@ -23,11 +24,6 @@ function file_location() {
     "NAM")
       location='/gpfs/dell1/nco/ops/com/nam/prod'
       ;;
-    "*")
-      print_err_msg_exit"\
-        External model \'${external_model}\' does not have a default
-      location on Jet Please set a user-defined file location."
-      ;;
 
   esac
   echo ${location:-}
@@ -39,7 +35,7 @@ EXTRN_MDL_SYSBASEDIR_ICS=${EXTRN_MDL_SYSBASEDIR_ICS:-$(file_location \
   ${FV3GFS_FILE_FMT_ICS})}
 EXTRN_MDL_SYSBASEDIR_LBCS=${EXTRN_MDL_SYSBASEDIR_LBCS:-$(file_location \
   ${EXTRN_MDL_NAME_LBCS} \
-  ${FV3GFS_FILE_FMT_ICS})}
+  ${FV3GFS_FILE_FMT_LBCS})}
 
 # System scripts to source to initialize various commands within workflow
 # scripts (e.g. "module").
@@ -66,7 +62,7 @@ TOPO_DIR=${TOPO_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fi
 SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_sfc_climo"}
 FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen"}
 
-# Commands to run
+# Run commands for executables
 RUN_CMD_SERIAL="mpirun"
 RUN_CMD_UTILS="mpirun"
 RUN_CMD_FCST='mpirun -l -np ${PE_MEMBER01}'
@@ -80,8 +76,7 @@ MRMS_OBS_DIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/mrms/proc"
 NDAS_OBS_DIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/ndas/proc"
 MET_BIN_EXEC="exec"
 
-
 # Test Data Locations
-TEST_PREGEN_BASEDIR=/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen
-TEST_COMINgfs=/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/COMGFS
-TEST_EXTRN_MDL_SOURCE_BASEDIR=/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/extrn_mdl_files
+TEST_PREGEN_BASEDIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen"
+TEST_COMINgfs="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/COMGFS"
+TEST_EXTRN_MDL_SOURCE_BASEDIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/extrn_mdl_files"
