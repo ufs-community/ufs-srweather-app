@@ -204,6 +204,9 @@ DO_SKEB=$(boolify $DO_SKEB)
 
 check_var_valid_value "DO_SPP" "valid_vals_DO_SPP"
 DO_SPP=$(boolify $DO_SPP)
+
+check_var_valid_value "DO_LSM_SPP" "valid_vals_DO_LSM_SPP"
+DO_LSM_SPP=$(boolify $DO_LSM_SPP)
 #
 #-----------------------------------------------------------------------
 #
@@ -227,14 +230,82 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If running with SPP, count the number of entries in SPP_VAR_LIST to
-# correctly set N_VAR_SPP, otherwise set it to zero. 
+# If running with SPP in MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or 
+# RRTMG, count the number of entries in SPP_VAR_LIST to correctly set 
+# N_VAR_SPP, otherwise set it to zero. 
 #
 #-----------------------------------------------------------------------
 #
 N_VAR_SPP=0
 if [ "${DO_SPP}" = "TRUE" ]; then
   N_VAR_SPP=${#SPP_VAR_LIST[@]}
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If running with Noah or RUC-LSM SPP, count the number of entries in 
+# LSM_SPP_VAR_LIST to correctly set N_VAR_LNDP, otherwise set it to zero.
+# Also set LNDP_TYPE to 2 for LSM SPP, otherwise set it to zero.  Finally,
+# initialize an "FHCYC_LSM_SPP" variable to 0 and set it to 999 if LSM SPP
+# is turned on.  This requirement is necessary since LSM SPP cannot run with 
+# FHCYC=0 at the moment, but FHCYC cannot be set to anything less than the
+# length of the forecast either.  A bug fix will be submitted to 
+# ufs-weather-model soon, at which point, this requirement can be removed
+# from regional_workflow. 
+#
+#-----------------------------------------------------------------------
+#
+N_VAR_LNDP=0
+LNDP_TYPE=0
+FHCYC_LSM_SPP_OR_NOT=0
+if [ "${DO_LSM_SPP}" = "TRUE" ]; then
+  N_VAR_LNDP=${#LSM_SPP_VAR_LIST[@]}
+  LNDP_TYPE=2
+  FHCYC_LSM_SPP_OR_NOT=999
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If running with SPP, confirm that each SPP-related namelist value 
+# contains the same number of entries as N_VAR_SPP (set above to be equal
+# to the number of entries in SPP_VAR_LIST).
+#
+#-----------------------------------------------------------------------
+#
+if [ "${DO_SPP}" = "TRUE" ]; then
+  if [ "${#SPP_MAG_LIST[@]}" != "${N_VAR_SPP}" ] || \
+     [ "${#SPP_LSCALE[@]}" != "${N_VAR_SPP}" ] || \
+     [ "${#SPP_TSCALE[@]}" != "${N_VAR_SPP}" ] || \
+     [ "${#SPP_SIGTOP1[@]}" != "${N_VAR_SPP}" ] || \
+     [ "${#SPP_SIGTOP2[@]}" != "${N_VAR_SPP}" ] || \
+     [ "${#SPP_STDDEV_CUTOFF[@]}" != "${N_VAR_SPP}" ] || \
+     [ "${#ISEED_SPP[@]}" != "${N_VAR_SPP}" ]; then
+  print_err_msg_exit "\
+All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist 
+variables set in ${CONFIG_FN} must be equal in number of entries to what is 
+found in SPP_VAR_LIST:
+  Number of entries in SPP_VAR_LIST = \"${#SPP_VAR_LIST[@]}\""
+  fi
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If running with LSM SPP, confirm that each LSM SPP-related namelist
+# value contains the same number of entries as N_VAR_LNDP (set above to
+# be equal to the number of entries in LSM_SPP_VAR_LIST).
+#
+#-----------------------------------------------------------------------
+#
+if [ "${DO_LSM_SPP}" = "TRUE" ]; then
+  if [ "${#LSM_SPP_MAG_LIST[@]}" != "${N_VAR_LNDP}" ] || \
+     [ "${#LSM_SPP_LSCALE[@]}" != "${N_VAR_LNDP}" ] || \
+     [ "${#LSM_SPP_TSCALE[@]}" != "${N_VAR_LNDP}" ]; then
+  print_err_msg_exit "\
+All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP) 
+set in ${CONFIG_FN} must be equal in number of entries to what is found in 
+SPP_VAR_LIST:
+  Number of entries in SPP_VAR_LIST = \"${#LSM_SPP_VAR_LIST[@]}\""
+  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -2606,13 +2677,19 @@ PE_MEMBER01='${PE_MEMBER01}'
 #
 #-----------------------------------------------------------------------
 #
-# IF DO_SPP is set to \"TRUE\", N_VAR_SPP specifies the number of physics 
-# parameterizations that are perturbed with SPP.  Otherwise, N_VAR_SPP 
-# is set 0.
+# IF DO_SPP is set to "TRUE", N_VAR_SPP specifies the number of physics 
+# parameterizations that are perturbed with SPP.  If DO_LSM_SPP is set to
+# "TRUE", N_VAR_LNDP specifies the number of LSM parameters that are 
+# perturbed.  LNDP_TYPE determines the way LSM perturbations are employed
+# and FHCYC_LSM_SPP_OR_NOT sets FHCYC based on whether LSM perturbations
+# are turned on or not.
 #
 #-----------------------------------------------------------------------
 #
 N_VAR_SPP='${N_VAR_SPP}'
+N_VAR_LNDP='${N_VAR_LNDP}'
+LNDP_TYPE='${LNDP_TYPE}'
+FHCYC_LSM_SPP_OR_NOT='${FHCYC_LSM_SPP_OR_NOT}'
 "
 #
 # Done with constructing the contents of the variable definitions file,

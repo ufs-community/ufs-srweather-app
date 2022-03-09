@@ -68,13 +68,13 @@ RUN_CMD_UTILS="mpirun"
 RUN_CMD_FCST='mpirun -l -np ${PE_MEMBER01}'
 RUN_CMD_POST="mpirun"
 
-# MET Installation Locations
-MET_INSTALL_DIR="/gpfs/dell2/emc/verification/noscrub/emc.metplus/met/10.0.0"
-METPLUS_PATH="/gpfs/dell2/emc/verification/noscrub/emc.metplus/METplus/METplus-4.0.0"
-CCPA_OBS_DIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/ccpa/proc"
-MRMS_OBS_DIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/mrms/proc"
-NDAS_OBS_DIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/ndas/proc"
-MET_BIN_EXEC="exec"
+# MET/METplus-Related Paths
+MET_INSTALL_DIR=${MET_INSTALL_DIR:-"/gpfs/dell2/emc/verification/noscrub/emc.metplus/met/10.0.0"}
+METPLUS_PATH=${METPLUS_PATH:-"/gpfs/dell2/emc/verification/noscrub/emc.metplus/METplus/METplus-4.0.0"}
+CCPA_OBS_DIR=${CCPA_OBS_DIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/ccpa/proc"}
+MRMS_OBS_DIR=${MRMS_OBS_DIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/mrms/proc"}
+NDAS_OBS_DIR=${NDAS_OBS_DIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/ndas/proc"}
+MET_BIN_EXEC=${MET_BIN_EXEC:-"exec"}
 
 # Test Data Locations
 TEST_PREGEN_BASEDIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen"

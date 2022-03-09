@@ -305,6 +305,14 @@
 # Prognostic/diagnostic variables from RUC LSM
 "gfs_sfc",     "snowfall_acc",     "snowfall_acc",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "swe_snowfall_acc", "swe_snowfall_acc", "fv3_history2d",  "all",  .false.,  "none",  2
+# Stochastic physics
+"gfs_phys",    "sppt_wts",      "sppt_wts",      "fv3_history",  "all", .false., "none", 2
+"gfs_phys",    "skebu_wts",     "skebu_wts",     "fv3_history",  "all", .false., "none", 2
+"gfs_phys",    "skebv_wts",     "skebv_wts",     "fv3_history",  "all", .false., "none", 2
+"gfs_phys",    "shum_wts",      "shum_wts",      "fv3_history",  "all", .false., "none", 2
+"gfs_phys",    "spp_wts_pbl",   "spp_wts_pbl",   "fv3_history",  "all", .false., "none", 2
+"gfs_phys",    "spp_wts_mp",    "spp_wts_mp",    "fv3_history",  "all", .false., "none", 2
+"gfs_phys",    "spp_wts_rad",   "spp_wts_rad",   "fv3_history",  "all", .false., "none", 2
 
 #=============================================================================================
 #

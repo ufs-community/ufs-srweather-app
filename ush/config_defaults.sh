@@ -507,54 +507,54 @@ WRITE_DOPOST="FALSE"
 #
 # CCPA_OBS_DIR:
 # User-specified location of top-level directory where CCPA hourly
-# precipitation files used by METplus are located. This parameter needs
-# to be set for both user-provided observations and for observations 
-# that are retrieved from the NOAA HPSS (if the user has access) via
-# the get_obs_ccpa_tn task (activated in workflow by setting 
+# precipitation files used by METplus are located. This parameter needs
+# to be set for both user-provided observations and for observations 
+# that are retrieved from the NOAA HPSS (if the user has access) via
+# the get_obs_ccpa_tn task (activated in workflow by setting
 # RUN_TASK_GET_OBS_CCPA="TRUE"). In the case of pulling observations 
 # directly from NOAA HPSS, the data retrieved will be placed in this 
 # directory. Please note, this path must be defind as 
 # /full-path-to-obs/ccpa/proc. METplus is configured to verify 01-, 
-# 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files. 
+# 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.
 # METplus configuration files require the use of predetermined directory 
 # structure and file names. Therefore, if the CCPA files are user 
 # provided, they need to follow the anticipated naming structure: 
-# {YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2, where YYYY is the 4-digit 
-# valid year, MM the 2-digit valid month, DD the 2-digit valid day of 
-# the month, and HH the 2-digit valid hour of the day. In addition, a 
+# {YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2, where YYYY is the 4-digit 
+# valid year, MM the 2-digit valid month, DD the 2-digit valid day of 
+# the month, and HH the 2-digit valid hour of the day. In addition, a 
 # caveat is noted for using hourly CCPA data. There is a problem with 
 # the valid time in the metadata for files valid from 19 - 00 UTC (or 
-# files  under the '00' directory). The script to pull the CCPA data 
+# files under the '00' directory). The script to pull the CCPA data 
 # from the NOAA HPSS has an example of how to account for this as well
-# as organizing the data into a more intuitive format: 
+# as organizing the data into a more intuitive format: 
 # regional_workflow/scripts/exregional_get_ccpa_files.sh. When a fix
 # is provided, it will be accounted for in the
 # exregional_get_ccpa_files.sh script.
 #
 # MRMS_OBS_DIR:
-# User-specified location of top-level directory where MRMS composite
-# reflectivity files used by METplus are located. This parameter needs
-# to be set for both user-provided observations and for observations
-# that are retrieved from the NOAA HPSS (if the user has access) via the
-# get_obs_mrms_tn task (activated in workflow by setting 
-# RUN_TASK_GET_OBS_MRMS="TRUE"). In the case of pulling observations 
+# User-specified location of top-level directory where MRMS composite
+# reflectivity files used by METplus are located.  This parameter needs
+# to be set for both user-provided observations and for observations
+# that are retrieved from the NOAA HPSS (if the user has access) via the
+# get_obs_mrms_tn task (activated in workflow by setting
+# RUN_TASK_GET_OBS_MRMS="TRUE").  In the case of pulling observations 
 # directly from NOAA HPSS, the data retrieved will be placed in this 
 # directory. Please note, this path must be defind as 
 # /full-path-to-obs/mrms/proc. METplus configuration files require the
-# use of predetermined directory structure and file names. Therefore, if
-# the MRMS files are user provided, they need to follow the anticipated 
+# use of predetermined directory structure and file names. Therefore, if
+# the MRMS files are user provided, they need to follow the anticipated 
 # naming structure:
-# {YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2,
-# where YYYY is the 4-digit valid year, MM the 2-digit valid month, DD 
-# the 2-digit valid day of the month, HH the 2-digit valid hour of the 
+# {YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2,
+# where YYYY is the 4-digit valid year, MM the 2-digit valid month, DD 
+# the 2-digit valid day of the month, HH the 2-digit valid hour of the 
 # day, mm the 2-digit valid minutes of the hour, and SS is the two-digit
 # valid seconds of the hour. In addition, METplus is configured to look
 # for a MRMS composite reflectivity file for the valid time of the 
 # forecast being verified; since MRMS composite reflectivity files do 
 # not always exactly match the valid time, a script, within the main 
 # script to retrieve MRMS data from the NOAA HPSS, is used to identify
-# and rename the MRMS composite reflectivity file to match the valid
-# time of the forecast. The script to pull the MRMS data from the NOAA 
+# and rename the MRMS composite reflectivity file to match the valid
+# time of the forecast.  The script to pull the MRMS data from the NOAA 
 # HPSS has an example of the expected file naming structure: 
 # regional_workflow/scripts/exregional_get_mrms_files.sh. This script 
 # calls the script used to identify the MRMS file closest to the valid 
@@ -562,23 +562,23 @@ WRITE_DOPOST="FALSE"
 #
 # NDAS_OBS_DIR:
 # User-specified location of top-level directory where NDAS prepbufr 
-# files used by METplus are located. This parameter needs to be set for
-# both user-provided observations and for observations that are 
-# retrieved from the NOAA HPSS (if the user has access) via the 
+# files used by METplus are located. This parameter needs to be set for
+# both user-provided observations and for observations that are 
+# retrieved from the NOAA HPSS (if the user has access) via the 
 # get_obs_ndas_tn task (activated in workflow by setting 
 # RUN_TASK_GET_OBS_NDAS="TRUE"). In the case of pulling observations 
 # directly from NOAA HPSS, the data retrieved will be placed in this 
 # directory. Please note, this path must be defind as 
 # /full-path-to-obs/ndas/proc. METplus is configured to verify 
 # near-surface variables hourly and upper-air variables at times valid 
-# at 00 and 12 UTC with NDAS prepbufr files. METplus configuration files
-# require the use of predetermined file names. Therefore, if the NDAS 
-# files are user provided, they need to follow the anticipated naming 
-# structure: prepbufr.ndas.{YYYYMMDDHH}, where YYYY is the 4-digit valid
-# year, MM the 2-digit valid month, DD the 2-digit valid day of the 
-# month, and HH the 2-digit valid hour of the day. The script to pull 
+# at 00 and 12 UTC with NDAS prepbufr files.  METplus configuration files
+# require the use of predetermined file names. Therefore, if the NDAS 
+# files are user provided, they need to follow the anticipated naming 
+# structure: prepbufr.ndas.{YYYYMMDDHH}, where YYYY is the 4-digit valid
+# year, MM the 2-digit valid month, DD the 2-digit valid day of the 
+# month, and HH the 2-digit valid hour of the day. The script to pull 
 # the NDAS data from the NOAA HPSS has an example of how to rename the
-# NDAS data into a more intuitive format with the valid time listed in 
+# NDAS data into a more intuitive format with the valid time listed in 
 # the file name: regional_workflow/scripts/exregional_get_ndas_files.sh
 #
 #-----------------------------------------------------------------------
@@ -1505,6 +1505,7 @@ FIXgsm_FILES_TO_COPY_TO_FIXam=( \
 "global_zorclim.1x1.grb" \
 "global_sfc_emissivity_idx.txt" \
 "global_solarconstant_noaa_an.txt" \
+"global_albedo4.1x1.grb" \
 "geo_em.d01.lat-lon.2.5m.HGT_M.nc" \
 "HGT.Beljaars_filtered.lat-lon.30s_res.nc" \
 "replace_with_FIXgsm_ozone_prodloss_filename" \
@@ -1555,6 +1556,7 @@ CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING=( \
 "co2historicaldata_glob.txt | global_co2historicaldata_glob.txt" \
 "co2monthlycyc.txt          | co2monthlycyc.txt" \
 "global_h2oprdlos.f77       | global_h2o_pltc.f77" \
+"global_albedo4.1x1.grb     | global_albedo4.1x1.grb" \
 "global_zorclim.1x1.grb     | global_zorclim.1x1.grb" \
 "sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt" \
 "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt" \
@@ -1808,27 +1810,62 @@ USE_ZMTNBLCK="FALSE"
 #
 #-----------------------------------------------------------------------
 #
-# Set default SPP stochastic physics options.
-# Each SPP option is an array, applicable (in order) to the scheme/parameter
-# listed in SPP_VAR_LIST. Enter each value of the array in config.sh as 
-# shown below without commas or single quotes (e.g., SPP_VAR_LIST=
-# ( "pbl" "lsm" "mp" ). Both commas and single quotes will be added by
-# Jinja when creating the namelist.
+# Set default SPP stochastic physics options. Each SPP option is an array, 
+# applicable (in order) to the scheme/parameter listed in SPP_VAR_LIST. 
+# Enter each value of the array in config.sh as shown below without commas
+# or single quotes (e.g., SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd" ). 
+# Both commas and single quotes will be added by Jinja when creating the
+# namelist.
 #
 # Note that SPP is currently only available for specific physics schemes 
 # used in the RAP/HRRR physics suite.  Users need to be aware of which SDF
 # is chosen when turning this option on. 
 #
+# Patterns evolve and are applied at each time step.
+#
 #-----------------------------------------------------------------------
 #
-DO_SPP="FALSE"
-SPP_VAR_LIST=( "pbl" )
-SPP_MAG_LIST=( "0.2" ) #Variable "spp_prt_list" in input.nml
-SPP_LSCALE=( "150000.0" )
-SPP_TSCALE=( "21600.0" ) #Variable "spp_tau" in input.nml
-SPP_SIGTOP1=( "0.1" )
-SPP_SIGTOP2=( "0.025" )
-SPP_STDDEV_CUTOFF=( "1.5" )
+DO_SPP="false"
+SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd" )
+SPP_MAG_LIST=( "0.2" "0.2" "0.75" "0.2" "0.2" ) #Variable "spp_prt_list" in input.nml
+SPP_LSCALE=( "150000.0" "150000.0" "150000.0" "150000.0" "150000.0" )
+SPP_TSCALE=( "21600.0" "21600.0" "21600.0" "21600.0" "21600.0" ) #Variable "spp_tau" in input.nml
+SPP_SIGTOP1=( "0.1" "0.1" "0.1" "0.1" "0.1")
+SPP_SIGTOP2=( "0.025" "0.025" "0.025" "0.025" "0.025" )
+SPP_STDDEV_CUTOFF=( "1.5" "1.5" "2.5" "1.5" "1.5" )
+ISEED_SPP=( "4" "4" "4" "4" "4" )
+#
+#-----------------------------------------------------------------------
+#
+# Turn on SPP in Noah or RUC LSM (support for Noah MP is in progress).
+# Please be aware of the SDF that you choose if you wish to turn on LSM
+# SPP.
+#
+# SPP in LSM schemes is handled in the &nam_sfcperts namelist block 
+# instead of in &nam_sppperts, where all other SPP is implemented.
+#
+# The default perturbation frequency is determined by the fhcyc namelist 
+# entry.  Since that parameter is set to zero in the SRW App, use 
+# LSM_SPP_EACH_STEP to perturb every time step. 
+#
+# Perturbations to soil moisture content (SMC) are only applied at the 
+# first time step.
+#
+# LSM perturbations include SMC - soil moisture content (volume fraction),
+# VGF - vegetation fraction, ALB - albedo, SAL - salinity, 
+# EMI - emissivity, ZOL - surface roughness (cm), and STC - soil temperature.
+#
+# Only five perturbations at a time can be applied currently, but all seven
+# are shown below.  In addition, only one unique iseed value is allowed 
+# at the moment, and is used for each pattern.
+#
+DO_LSM_SPP="false" #If true, sets lndp_type=2
+LSM_SPP_TSCALE=( "21600" "21600" "21600" "21600" "21600" "21600" "21600" )
+LSM_SPP_LSCALE=( "150000" "150000" "150000" "150000" "150000" "150000" "150000" )
+ISEED_LSM_SPP=( "9" )
+LSM_SPP_VAR_LIST=( "smc" "vgf" "alb" "sal" "emi" "zol" "stc" )
+LSM_SPP_MAG_LIST=( "0.2" "0.001" "0.001" "0.001" "0.001" "0.001" "0.2" )
+LSM_SPP_EACH_STEP="true" #Sets lndp_each_step=.true.
 #
 #-----------------------------------------------------------------------
 # 
@@ -1936,3 +1973,6 @@ OMP_STACKSIZE_RUN_FCST="1024m"
 KMP_AFFINITY_RUN_POST="scatter"
 OMP_NUM_THREADS_RUN_POST="1"
 OMP_STACKSIZE_RUN_POST="1024m"
+#
+#-----------------------------------------------------------------------
+#

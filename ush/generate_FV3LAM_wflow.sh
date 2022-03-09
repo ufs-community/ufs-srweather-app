@@ -784,6 +784,12 @@ settings="\
     'do_shum': ${DO_SHUM},
     'do_sppt': ${DO_SPPT},
     'do_skeb': ${DO_SKEB},
+    'do_spp': ${DO_SPP},
+    'n_var_spp': ${N_VAR_SPP},
+    'n_var_lndp': ${N_VAR_LNDP},
+    'lndp_type': ${LNDP_TYPE},
+    'lndp_each_step': ${LSM_SPP_EACH_STEP},
+    'fhcyc': ${FHCYC_LSM_SPP_OR_NOT}, 
   }
 'nam_stochy': {
     'shum': ${SHUM_MAG},
@@ -855,7 +861,42 @@ done
 #
 settings="$settings
   }"
-
+#
+# Add the relevant SPP namelist variables to "settings" when running with 
+# SPP turned on.  Otherwise only include an empty "nam_sppperts" stanza.
+#
+settings="$settings
+'nam_sppperts': {"
+if [ "${DO_SPP}" = "TRUE" ]; then 
+    settings="$settings
+    'iseed_spp': [ $( printf "%s, " "${ISEED_SPP[@]}" ) ],
+    'spp_lscale': [ $( printf "%s, " "${SPP_LSCALE[@]}" ) ],
+    'spp_prt_list': [ $( printf "%s, " "${SPP_MAG_LIST[@]}" ) ],
+    'spp_sigtop1': [ $( printf "%s, " "${SPP_SIGTOP1[@]}" ) ],
+    'spp_sigtop2': [ $( printf "%s, " "${SPP_SIGTOP2[@]}" ) ],
+    'spp_stddev_cutoff': [ $( printf "%s, " "${SPP_STDDEV_CUTOFF[@]}" ) ],
+    'spp_tau': [ $( printf "%s, " "${SPP_TSCALE[@]}" ) ],
+    'spp_var_list': [ $( printf "%s, " "${SPP_VAR_LIST[@]}" ) ],"
+fi
+settings="$settings
+  }"
+#
+# Add the relevant LSM SPP namelist variables to "settings" when running with 
+# LSM SPP turned on.
+#
+settings="$settings
+'nam_sfcperts': {"
+if [ "${DO_LSM_SPP}" = "TRUE" ]; then 
+    settings="$settings
+    'lndp_type': ${LNDP_TYPE},
+    'lndp_tau': [ $( printf "%s, " "${LSM_SPP_TSCALE[@]}" ) ],
+    'lndp_lscale': [ $( printf "%s, " "${LSM_SPP_LSCALE[@]}" ) ],
+    'iseed_lndp': [ $( printf "%s, " "${ISEED_LSM_SPP[@]}" ) ],
+    'lndp_var_list': [ $( printf "%s, " "${LSM_SPP_VAR_LIST[@]}" ) ],
+    'lndp_prt_list': [ $( printf "%s, " "${LSM_SPP_MAG_LIST[@]}" ) ],"
+fi
+settings="$settings
+  }"
 print_info_msg $VERBOSE "
 The variable \"settings\" specifying values of the weather model's 
 namelist variables has been set as follows:
