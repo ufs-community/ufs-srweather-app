@@ -14,6 +14,15 @@ Download the UFS SRW Application Code
 ===========================================
 The SRW Application source code is publicly available on GitHub and can be run in a container or locally, depending on user preference. The SRW Application relies on a variety of components detailed in the :ref:`Components Chapter <Components>` of this User's Guide. Users must (1) clone the UFS SRW Application umbrella repository and then (2) run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App and will clone the correct version of the regional workflow, pre-processing utilities, UFS Weather Model, and UPP source code into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
 
+Prerequisites: Install Singularity
+------------------------------------
+
+To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://sylabs.io/guides/3.2/user-guide/installation.html#>`_. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
+
+.. warning:: 
+   Docker containers can only be run with root privileges, and users cannot have root privileges on HPC's. Therefore, it is not possible to build the HPC-Stack inside a Docker container on an HPC system. A Docker image may be pulled, but it must be run inside a container such as Singularity. 
+
+
 Working in the Cloud
 -----------------------
 
@@ -63,7 +72,7 @@ Start the container and run an interactive shell within it:
 
 The command above also binds the local directory to the container so that data can be shared between them. On NOAA systems, the local directory is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
-.. important::
+.. attention::
    * When binding two directories, they must have the same name. It may be necessary to ``cd`` into the container and create an appropriately named directory in the container using the ``mkdir`` command if one is not already there. 
    * Be sure to bind the directory that contains the data the experiment will access. 
 
@@ -74,7 +83,7 @@ Clone the develop branch of the UFS-SRW weather application repository:
 
 .. code-block:: console
 
-   git clone -b feature/singularity-addition https://github.com/EdwardSnyder-NOAA/ufs-srweather-app
+   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
 
 .. 
    COMMENT: change repo for release
@@ -141,9 +150,9 @@ Generate the Forecast Experiment
 =================================
 Generating the forecast experiment requires three steps:
 
-* Set experiment parameters
-* Set Python and other environment parameters
-* Run a script to generate the experiment workflow
+* :ref:`Set experiment parameters <SetUpConfigFileC>`
+* :ref:`Set Python and other environment parameters <SetUpPythonEnvC>`
+* :ref:`Run a script to generate the experiment workflow <GenerateWorkflowC>`
 
 The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. 
 
@@ -162,71 +171,57 @@ Make a copy of ``config.community.sh`` to get started (under ``<path-to-ufs-srwe
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
 
-Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged the initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. For example:
-
-.. code-block:: console
-
-   MACHINE="SINGULARITY"
-   ACCOUNT="none"
-   EXPT_SUBDIR="GST"
-   EXPT_BASEDIR="home/$USER/expt_dirs"
-   COMPILER="gnu"
-
-Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
-
-.. Important::
-
-   If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuildC>`, you will have to add the line ``COMPILER="gnu"`` to the ``config.sh`` file.
-
-Minimum parameter settings for Level 1 machines:
-
-**Cheyenne:**
-
-.. code-block:: console
-
-   MACHINE="cheyenne"
-   ACCOUNT="<my_account>"
-   EXPT_SUBDIR="<my_expt_name>"
-   USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/model_data/FV3GFS"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/model_data/FV3GFS"
-
-**Hera:**
-
-.. code-block:: console
-
-   MACHINE="hera"
-   ACCOUNT="<my_account>"
-   EXPT_SUBDIR="<my_expt_name>"
-
-**Jet, Orion, Gaea:**
-
-The settings are the same as for Hera, except that ``"hera"`` should be switched to ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. 
-
-For **WCOSS**, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
-
-.. code-block:: console
-
-   MACHINE=”wcoss_cray” or MACHINE=”wcoss_dell_p3”
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
-
-
-**NOAA Cloud Systems:**
+Next, edit the new ``config.sh`` file to customize it for your experiment. At a minimum, update the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``: 
 
 .. code-block:: console
 
    MACHINE="SINGULARITY"
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
-   EXPT_BASEDIR="lustre/$USER/expt_dirs"
+   EXPT_BASEDIR="/home/$USER/expt_dirs"
    COMPILER="gnu"
-   USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/GST/model_data/FV3GFS"
-   EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/GST/model_data/FV3GFS"
-   EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" )
 
+Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct paths to the data. The following is a sample for a 48-hour forecast:
+
+.. code-block::
+
+   USE_USER_STAGED_EXTRN_FILES="TRUE"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/path/to/model_data/FV3GFS"
+   EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path/to/model_data/FV3GFS"
+   EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" "gfs.pgrb2.0p25.f018" "gfs.pgrb2.0p25.f024" \ "gfs.pgrb2.0p25.f030" "gfs.pgrb2.0p25.f036" "gfs.pgrb2.0p25.f042" "gfs.pgrb2.0p25.f048" )
+
+On Level 1 systems, ``/path/to/model_data/FV3GFS`` should correspond to the location of the machine's global data. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Step %s <InitialConditions>`. 
+
+On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonEnvC>`. On other Level 1 systems, additional file paths must be set: 
+
+   #. From the ``regional_workflow/ush`` directory, run: ``cd machine``. 
+   #. Open the file corresponding to the Level 1 platform in use (e.g., ``vi orion.sh``).
+   #. Copy the section of code starting after ``#UFS SRW App specific paths``. For example, on Orion, the following text must be copied:
+
+      .. code-block:: console
+
+         FIXgsm=${FIXgsm:-"/work/noaa/global/glopara/fix/fix_am"}
+         FIXaer=${FIXaer:-"/work/noaa/global/glopara/fix/fix_aer"}
+         FIXlut=${FIXlut:-"/work/noaa/global/glopara/fix/fix_lut"}
+         TOPO_DIR=${TOPO_DIR:-"/work/noaa/global/glopara/fix/fix_orog"}
+         SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/work/noaa/global/glopara/fix/fix_sfc_climo"}
+         FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
+
+   #. Exit the system-specific file and open the ``singularity.sh`` file. 
+   #. Comment out or delete the corresponding chunk of text in the ``singularity.sh`` file, and paste the correct paths from the system-specific file in its place. For example, on Orion, delete the text below, and replace it with the Orion-specific text copied in the previous step. 
+
+      .. code-block:: console
+
+         # UFS SRW App specific paths
+         FIXgsm=${FIXgsm:-"/contrib/global/glopara/fix/fix_am"}
+         FIXaer=${FIXaer:-"/contrib/global/glopara/fix/fix_aer"}
+         FIXlut=${FIXlut:-"/contrib/global/glopara/fix/fix_lut"}
+         TOPO_DIR=${TOPO_DIR:-"/contrib/global/glopara/fix/fix_orog"}
+         SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/contrib/global/glopara/fix/fix_sfc_climo"}
+         FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
+
+From here, it should be possible to continue to the :ref:`next step <SetUpPythonEnvC>` on Level 1 systems. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 .. _SetUpPythonEnvC:
 

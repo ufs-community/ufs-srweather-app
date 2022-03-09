@@ -223,6 +223,8 @@ The paths to the staged files must then be set in ``config.sh``. Add the followi
 * ``TOPO_DIR=/path-to/fix/fix_am/fix_orog``
 * ``SFC_CLIMO_INPUT_DIR=/path-to/fix_am/fix/sfc_climo/``
 
+.. _InitialConditions:
+
 Initial Condition Formats and Source
 ------------------------------------
 The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, netCDF, or :term:`GRIB2`. The SRW Application currently only supports the use of NEMSIO and netCDF input files from the GFS.

@@ -47,7 +47,7 @@ Clone the release branch of the repository:
 
 .. code-block:: console
 
-   git clone -b ufs-v1.0.0 https://github.com/ufs-community/ufs-srweather-app.git
+   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
 
 ..
    COMMENT: This will need to be changed to the updated release branch of the SRW repo once it exists. 
