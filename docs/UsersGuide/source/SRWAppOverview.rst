@@ -3,14 +3,10 @@
 ========================================
 Short-Range Weather Application Overview
 ========================================
-The UFS Short-Range Weather Application (SRW App) is an umbrella repository that contains the tool
-``manage_externals`` to check out all of the components required for the application. Once the
+
+The UFS Short-Range Weather Application (SRW App) is an umbrella repository consisting of a number of different :ref:`components <Components>` housed in external repositories. The SRW APP assembles the required components using the ``manage_externals/checkout_externals`` script. Once the
 build process is complete, all the files and executables necessary for a regional experiment are
-located in the ``regional_workflow`` and ``bin`` directories, respectively, under the ``ufs-srweather-app`` directory.
-Users can utilize the pre-defined domains or build their own domain (details provided in :numref:`Chapter %s <LAMGrids>`).
-In either case, users must create/modify the case-specific (``config.sh``) and/or grid-specific configuration
-files (``set_predef_grid_params.sh``). The overall procedure is shown in :numref:`Figure %s <AppOverallProc>`,
-with the scripts to generate and run the workflow shown in red. The steps are as follows:
+located in the ``regional_workflow`` and ``bin`` directories, respectively, under the ``ufs-srweather-app`` directory. Users can utilize the pre-defined domains (grids) or build their own domain (details provided in :numref:`Chapter %s <LAMGrids>`). In either case, users must create/modify the case-specific (``config.sh``) and/or grid-specific configuration files (``set_predef_grid_params.sh``). The overall procedure is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. The steps are as follows:
 
 #. Clone the UFS Short Range Weather Application from GitHub.
 #. Check out the external repositories.
@@ -27,7 +23,7 @@ Each step will be described in detail in the following sections.
 
 .. figure:: _static/FV3LAM_wflow_overall.png
 
-    *Overall layout of the SRW App.*
+    *Overall layout of the SRW App*
 
 .. _DownloadSRWApp:
 
@@ -40,12 +36,15 @@ Retrieve the UFS Short Range Weather Application (SRW App) repository from GitHu
    git clone -b ufs-v1.0.0 https://github.com/ufs-community/ufs-srweather-app.git
    cd ufs-srweather-app
 
+..
+   COMMENT: Change version number in 2 places above!
+
 The cloned repository contains the configuration files and sub-directories shown in
 :numref:`Table %s <FilesAndSubDirs>`.
 
 .. _FilesAndSubDirs:
 
-.. table::  Files and sub-directories of the ufs-srweather-app repository.
+.. table::  Files and sub-directories of the ufs-srweather-app repository
 
    +--------------------------------+--------------------------------------------------------+
    | **File/directory Name**        | **Description**                                        |
@@ -57,7 +56,7 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+--------------------------------------------------------+
    | LICENSE.md                     | CC0 license information                                |
    +--------------------------------+--------------------------------------------------------+
-   | README.md                      | Quick start guide                                      |
+   | README.md                      | Quick Start Guide                                      |
    +--------------------------------+--------------------------------------------------------+
    | ufs_srweather_app_meta.h.in    | Meta information for SRW App which can be used by      |
    |                                | other packages                                         |
@@ -78,14 +77,13 @@ The cloned repository contains the configuration files and sub-directories shown
 
 External Components
 ===================
-Check out the external repositories, including regional_workflow, ufs-weather-model, ufs_utils, and emc_post for the SRW App.
+Check out the external repositories, including regional_workflow, ufs-weather-model, ufs_utils, and upp.x for the SRW App.
 
 .. code-block:: console
 
    ./manage_externals/checkout_externals
 
-This step will use the configuration ``Externals.cfg`` file in the ``ufs-srweather-app`` directory to
-clone the specific tags (version of codes) of the external repositories as listed in 
+This step will use the configuration file ``Externals.cfg`` in the ``ufs-srweather-app`` directory to clone the correct tags (code versions) of the external repositories as listed in 
 :numref:`Section %s <HierarchicalRepoStr>`. 
 
 .. _BuildExecutables:
@@ -96,8 +94,7 @@ Before building the executables, the build environment must be set up for your s
 Instructions for loading the proper modules and/or setting the correct environment variables 
 can be found in the ``env/`` directory in files named ``build_<platform>_<compiler>.env.`` For the
 most part, the commands in those files can be directly copied and pasted, but you may need to modify
-certain variables such as the path to NCEP libraries for your specific platform.  Here is a directory
-listing example of these kinds of files: 
+certain variables such as the path to NCEP libraries for your specific platform.  Here is a directory listing example of these kinds of files: 
 
 .. code-block:: console
 
@@ -111,17 +108,14 @@ The following steps will build the pre-processing utilities, forecast model, and
 
 .. code-block:: console
 
-   make dir
+   mkdir build
    cd build
    cmake .. -DCMAKE_INSTALL_PREFIX=..
    make -j 4 >& build.out &
 
 where ``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``,
 and ``share`` directories containing various components of the SRW App will be created, and its
-recommended value ``..`` denotes one directory up from the build directory. In the next line for
-the ``make`` call, ``-j 4`` indicates the build will run in parallel with 4 threads. If this step is successful, the
-executables listed in :numref:`Table %s <ExecDescription>` will be located in the
-``ufs-srweather-app/bin`` directory.
+recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. If this step is successful, the executables listed in :numref:`Table %s <ExecDescription>` will be located in the ``ufs-srweather-app/bin`` directory.
 
 .. _ExecDescription:
 
@@ -157,7 +151,8 @@ executables listed in :numref:`Table %s <ExecDescription>` will be located in th
    +------------------------+---------------------------------------------------------------------------------+
    | fvcom_to_FV3           |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
-   | make_hgrid             |                                                                                 |
+   | make_hgrid             | Computes geo-referencing parameters (e.g., latitude, longitude, grid cell area) |
+   |                        | for global uniform grids                                                        |                        |
    +------------------------+---------------------------------------------------------------------------------+
    | emcsfc_ice_blend       |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
@@ -206,18 +201,17 @@ can be found in :numref:`Chapter %s <LAMGrids>`.
 Case-specific Configuration
 =============================
 
+When generating a new experiment (described in detail in :numref:`Section %s <GeneratingWflowExpt>`), the SRW App first reads and assigns default values from the ``config_defaults.sh`` file. Then, it reads and (re)assigns variables from the user's custom ``config.sh`` file, located in the
+``ufs-srweather-app/regional_workflow/ush`` directory. 
+
 .. _DefaultConfigSection:
 
 Default configuration: ``config_defaults.sh``
 ------------------------------------------------
-When generating a new experiment (described in detail in :numref:`Section %s <GeneratingWflowExpt>`),
-the ``config_defaults.sh`` file is read first and assigns default values to the experiment
-parameters. Important configuration variables in the ``config_defaults.sh`` file are shown in 
-:numref:`Table %s <ConfigVarsDefault>`, with more documentation found in the file itself, and
-in :numref:`Chapter %s <ConfigWorkflow>`. Some of these default values are intentionally invalid in order
-to ensure that the user assigns valid values in the user-specified configuration ``config.sh`` file.
-Therefore, any settings provided in ``config.sh`` will override the default ``config_defaults.sh`` 
-settings. Note that there is usually no need for a user to modify the default configuration file. 
+Important configuration variables in the ``config_defaults.sh`` file appear in 
+:numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified configuration ``config.sh`` file. Any settings provided in ``config.sh`` will override the default ``config_defaults.sh`` 
+settings. Note that there is usually no need for a user to modify the default configuration file. Additional information on the default settings can be found in the file itself and
+in :numref:`Chapter %s <ConfigWorkflow>`. 
 
 .. _ConfigVarsDefault:
 
@@ -330,15 +324,7 @@ settings. Note that there is usually no need for a user to modify the default co
 
 User-specific configuration: ``config.sh``
 ------------------------------------------
-Before generating an experiment, the user must create a ``config.sh`` file in the
-``ufs-srweather-app/regional_workflow/ush`` directory by copying either of the example
-configuration files, ``config.community.sh`` for the community mode or ``config.nco.sh`` for
-the NCO mode, or creating their own ``config.sh`` file. Note that the *community mode* is 
-recommended in most cases and will be fully supported for this release while the operational/NCO 
-mode will be more exclusively used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) 
-and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing. 
-:numref:`Table %s <ConfigCommunity>` shows the configuration variables, along with their default 
-values in ``config_default.sh`` and the values defined in ``config.community.sh``.
+The user must create a ``config.sh`` file in the ``ufs-srweather-app/regional_workflow/ush`` directory by copying either of the example configuration files (``config.community.sh`` for the community mode or ``config.nco.sh`` for the operational mode). Alternatively, the user can create a custom ``config.sh`` file from scratch. Note that the *community mode* is recommended in most cases and will be fully supported for this release while the operational/NCO mode will typically be used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing. :numref:`Table %s <ConfigCommunity>` shows the configuration variables, along with their default values in ``config_default.sh`` and the values defined in ``config.community.sh``.
 
 .. note::
 
@@ -348,7 +334,7 @@ values in ``config_default.sh`` and the values defined in ``config.community.sh`
 
 .. _ConfigCommunity:
 
-.. table::   Configuration variables specified in the config.community.sh script.
+.. table::   Configuration variables specified in the config.community.sh script
 
    +--------------------------------+-------------------+--------------------------------------------------------+
    | **Parameter**                  | **Default Value** | **``config.community.sh`` Value**                      |
@@ -397,11 +383,11 @@ values in ``config_default.sh`` and the values defined in ``config.community.sh`
    +--------------------------------+-------------------+--------------------------------------------------------+
    | EXTRN_MDL_SOURCE_BASE_DIR_ICS  |  ""               | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_FILES_ICS            | ""                | "gfs.pgrb2.0p25.f000"                                  |
+   | EXTRN_MDL_FILES_ICS            |  ""               | "gfs.pgrb2.0p25.f000"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  |  ""               | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006"                                  |
+   | EXTRN_MDL_FILES_LBCS           |  ""               | "gfs.pgrb2.0p25.f006"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
 
 

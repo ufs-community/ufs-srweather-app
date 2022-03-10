@@ -20,13 +20,13 @@ Prerequisites: Install Singularity
 To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://sylabs.io/guides/3.2/user-guide/installation.html#>`_. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
 
 .. warning:: 
-   Docker containers can only be run with root privileges, and users cannot have root privileges on HPC's. Therefore, it is not possible to build the HPC-Stack inside a Docker container on an HPC system. A Docker image may be pulled, but it must be run inside a container such as Singularity. 
+   Docker containers can only be run with root privileges, and users cannot have root privileges on HPC's. Therefore, it is not possible to build the SRW, which uses the HPC-Stack, inside a Docker container on an HPC system. A Docker image may be pulled, but it must be run inside a container such as Singularity. 
 
 
 Working in the Cloud
 -----------------------
 
-Users building the SRW using NOAA's Cloud resources must complete a few additional steps to ensure the SRW builds and runs correctly. For those working on non-cloud-based systems, skip to :numref:`Step %s <BuildC>`.
+For those working on non-cloud-based systems, skip to :numref:`Step %s <WorkOnHPC>`. Users building the SRW using NOAA's Cloud resources must complete a few additional steps to ensure the SRW builds and runs correctly. 
 
 On NOAA Cloud systems, certain environment variables must be set *before* building the container:
    
@@ -40,15 +40,22 @@ On NOAA Cloud systems, certain environment variables must be set *before* buildi
 
 * ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, `tar the file <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move it to the ``/contrib`` directory, which is much slower but persistent.
 
-On NOAA Cloud systems, allocate a compute node on which to run the SRW. Then, build and run the SRW from that node:
+.. _WorkOnHPC:
+
+Working on HPC Systems
+--------------------------
+
+Those *not* working on HPC systems may skip to the `next step <BuildC>`. 
+On HPC systems (including NOAA's Cloud platforms), allocate a compute node on which to run the SRW. On some systems, it may be necessary to run the command ``module load singularity`` first.
 
 .. code-block:: console
 
    salloc -N 1 
-   module load gnu openmpi
+   module load <compiler> openmpi
    mpirun -n 1 hostname
-      
-This last command will output a hostname. Next, run ``ssh <hostname>``, replacing ``<hostname>`` with the actual hostname output in the prior command. 
+   ssh <hostname>
+
+The compiler options are ``gnu`` or ``intel``. The third command will output a hostname. This hostname should replace ``<hostname>`` in the last command. After "ssh-ing" to the compute node in the last command, build and run the SRW from that node. 
 
 .. _BuildC:
 
