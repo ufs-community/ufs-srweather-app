@@ -1,7 +1,7 @@
 .. _QuickstartC:
 
 =================================================
-Containerized Workflow Quick Start (Recommended)
+Containerized Quick Start Guide (Recommended)
 =================================================
 
 This Workflow Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a container. The container approach provides a uniform enviroment in which to build and run the SRW. Normally, the details of building and running the SRW vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`’s, and package versions. Installation via an EPIC-provided container reduces this variability and allows for a smoother SRW build and run experience. 

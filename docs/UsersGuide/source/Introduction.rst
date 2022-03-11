@@ -45,7 +45,7 @@ Code Repositories and Directory Structure
 
 Hierarchical Repository Structure
 -----------------------------------
-The umbrella repository for the UFS SRW Application is named *ufs-srweather-app* and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. An umbrella repository is a repository that houses external code, called "externals," from additional repositories. The UFS SRW Application includes the ``manage_externals`` tools along with a configuration file called ``Externals.cfg``, which describes the external repositories associated with this umbrella repo (see :numref:`Table %s <top_level_repos>`).
+The umbrella repository for the UFS SRW Application is named *ufs-srweather-app* and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. An umbrella repository is a repository that houses external code, called "externals," from additional repositories. The UFS SRW Application includes the ``manage_externals`` tools along with a configuration file called ``Externals.cfg``, which describes the external repositories associated with this umbrella repository (see :numref:`Table %s <top_level_repos>`).
 
 .. _top_level_repos:
 
@@ -74,17 +74,14 @@ The umbrella repository for the UFS SRW Application is named *ufs-srweather-app*
 The UFS Weather Model contains a number of sub-repositories used by the model as 
 documented `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/CodeOverview.html>`__.
 
-Note that the prerequisite libraries (including NCEP Libraries and external libraries) are not
-included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on the preconfigured (Level 1) platforms listed `here 
-<https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__.
-However, it must be built on other systems. :numref:`Chapter %s <InstallBuildHPCstack>` contains details on installing the HPC-Stack. 
+Note that the prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on the preconfigured (Level 1) platforms listed `here <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. :numref:`Chapter %s <InstallBuildHPCstack>` contains details on installing the HPC-Stack. 
 
 
 .. _TopLevelDirStructure:
 
 Directory Structure
 ----------------------
-The ``ufs-srweather-app`` umbrella repository structure is determined by the ``local_path`` settings contained within the ``Externals.cfg`` file. After ``manage_externals/checkout_externals`` is run (:numref:`Step %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some directories have been removed for brevity.
+The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by the ``local_path`` settings contained within the ``Externals.cfg`` file. After ``manage_externals/checkout_externals`` is run (:numref:`Step %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some directories have been removed for brevity.
 
 .. code-block:: console
 
@@ -372,9 +369,7 @@ utilities, model code, and infrastructure. Users can post issues in the related 
 Future Direction
 =================
 
-Users can expect to see incremental improvements and additional capabilities in upcoming
-releases of the SRW Application to enhance research opportunities and support operational
-forecast implementations. Planned enhancements include:
+Users can expect to see incremental improvements and additional capabilities in upcoming releases of the SRW Application to enhance research opportunities and support operational forecast implementations. Planned enhancements include:
 
 * A more extensive set of supported developmental physics suites.
 * A larger number of pre-defined domains/resolutions and a fully supported capability to create a user-defined domain.

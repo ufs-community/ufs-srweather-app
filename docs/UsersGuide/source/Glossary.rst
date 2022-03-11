@@ -9,6 +9,12 @@ Glossary
    CCPP
       The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of codes containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
 
+   Component
+      A software element that has a clear function and interface. In Earth system models, components are often single portions of the Earth system (e.g. atmosphere, ocean, or land surface) that are assembled to form a whole.
+
+   Component Repository
+      A :term:`repository` that contains, at a minimum, source code for a single component.
+
    CONUS
       Continental United States
 
@@ -81,6 +87,9 @@ Glossary
    RAP
       `Rapid Refresh <https://rapidrefresh.noaa.gov/>`. The continental-scale NOAA hourly-updated assimilation/modeling system operational at NCEP. RAP covers North America and is comprised primarily of a numerical forecast model and an analysis/assimilation system to initialize that model. RAP is complemented by the higher-resolution 3km High-Resolution Rapid Refresh (HRRR) model.
 
+   Repository
+      A central location in which files (e.g., data, code, documentation) are stored and managed. 
+
    UFS
       The Unified Forecast System is a community-based, coupled comprehensive Earth modeling 
       system consisting of several applications (apps). These apps span regional to global 
@@ -93,6 +102,9 @@ Glossary
       the UFS Medium-Range Weather App). The grid, orography, surface climatology, and initial 
       and boundary condition generation codes used by the UFS Short-Range Weather App are all 
       part of this collection.
+
+   Umbrella repository
+      A repository that houses external code, or “externals,” from additional repositories.
 
    UPP
       The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ is software developed at :term:`NCEP` and used operationally to 

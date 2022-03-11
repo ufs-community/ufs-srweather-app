@@ -1,21 +1,21 @@
 .. _SRWAppOverview:
 
-========================================
-Short-Range Weather Application Overview
-========================================
+===========================================================
+Building and Running the Short-Range Weather Application
+===========================================================
 
-The UFS Short-Range Weather Application (SRW App) is an umbrella repository consisting of a number of different :ref:`components <Components>` housed in external repositories. The SRW APP assembles the required components using the ``manage_externals/checkout_externals`` script. Once the
+The UFS Short-Range Weather Application (SRW App) is an :term:`umbrella repository` consisting of a number of different :ref:`components <Components>` housed in external repositories. The SRW App assembles the required components using the ``manage_externals/checkout_externals`` script. Once the
 build process is complete, all the files and executables necessary for a regional experiment are
-located in the ``regional_workflow`` and ``bin`` directories, respectively, under the ``ufs-srweather-app`` directory. Users can utilize the pre-defined domains (grids) or build their own domain (details provided in :numref:`Chapter %s <LAMGrids>`). In either case, users must create/modify the case-specific (``config.sh``) and/or grid-specific configuration files (``set_predef_grid_params.sh``). The overall procedure is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. The steps are as follows:
+located in the ``regional_workflow`` and ``bin`` directories, respectively, under the ``ufs-srweather-app`` directory. Users can utilize the pre-defined domains (grids) or build their own domain (see :numref:`Chapter %s <LAMGrids>` for details). In either case, users must create/modify the case-specific (``config.sh``) and/or grid-specific configuration files (``set_predef_grid_params.sh``). The overall procedure is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. The steps are as follows:
 
-#. Clone the UFS Short Range Weather Application from GitHub.
-#. Check out the external repositories.
-#. Set up the build environment and build the regional workflow system using ``cmake/make``.
-#. Optional: Add new grid information to the ``set_predef_grid_param.sh`` configuration file and update ``valid_param_vals.sh``.
-#. Modify the case-specific ``config.sh`` configuration file.
-#. Load the python environment for the regional workflow
-#. Generate a regional workflow experiment.
-#. Run the regional workflow as needed.
+   * :ref:`Clone the SRW App from GitHub. <DownloadSRWApp>`
+   * :ref:`Check out the external repositories. <CheckoutExternals>`
+   * :ref:`Set up the build environment and build the regional workflow system. <BuildExecutables>`
+   * :ref:`Optional: Configure a new grid. <GridSpecificConfig>`
+   * :ref:`Configure the experiment. <UserSpecificConfig>`
+   * :ref:`Load the python environment for the regional workflow. <LoadPythonEnv>`
+   * :ref:`Generate a regional workflow experiment. <GeneratingWflowExpt>`
+   * :ref:`Run the regional workflow. <WorkflowGeneration>`
 
 Each step will be described in detail in the following sections.
 
@@ -27,8 +27,8 @@ Each step will be described in detail in the following sections.
 
 .. _DownloadSRWApp:
 
-Download from GitHub
-====================
+Download the SRW App
+========================
 Retrieve the UFS Short Range Weather Application (SRW App) repository from GitHub and checkout the ``ufs-v1.0.0`` tag: 
 
 .. code-block:: console
@@ -83,18 +83,13 @@ Retrieve required components from external repositories, including regional_work
 
    ./manage_externals/checkout_externals
 
-This step will use the configuration file ``Externals.cfg`` in the ``ufs-srweather-app`` directory to clone the correct tags (code versions) of the external repositories as listed in 
-:numref:`Section %s <HierarchicalRepoStr>`. 
+This step will use the configuration file ``Externals.cfg`` in the ``ufs-srweather-app`` directory to clone the correct tags (code versions) of the external repositories as listed in :numref:`Section %s <HierarchicalRepoStr>`. 
 
 .. _BuildExecutables:
 
 Building the Executables for the Application
 ============================================
-Before building the executables, the build environment must be set up for your specific platform.
-Instructions for loading the proper modules and/or setting the correct environment variables 
-can be found in the ``env/`` directory in files named ``build_<platform>_<compiler>.env.`` For the
-most part, the commands in those files can be directly copied and pasted, but you may need to modify
-certain variables such as the path to NCEP libraries for your specific platform.  Here is a directory listing example of these kinds of files: 
+Before building the executables, the build environment must be set up for your specific platform. Instructions for loading the proper modules and/or setting the correct environment variables can be found in the ``env/`` directory in files named ``build_<platform>_<compiler>.env.`` For the most part, the commands in those files can be directly copied and pasted, but you may need to modify certain variables such as the path to NCEP libraries for your specific platform. Here is a directory listing example of these kinds of files: 
 
 .. code-block:: console
 
@@ -113,9 +108,7 @@ The following steps will build the pre-processing utilities, forecast model, and
    cmake .. -DCMAKE_INSTALL_PREFIX=..
    make -j 4 >& build.out &
 
-where ``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``,
-and ``share`` directories containing various components of the SRW App will be created, and its
-recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. If this step is successful, the executables listed in :numref:`Table %s <ExecDescription>` will be located in the ``ufs-srweather-app/bin`` directory.
+where ``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``, and ``share`` directories containing various components of the SRW App will be created, and its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. If this step is successful, the executables listed in :numref:`Table %s <ExecDescription>` will be located in the ``ufs-srweather-app/bin`` directory.
 
 .. _ExecDescription:
 
@@ -177,15 +170,8 @@ recommended value ``..`` denotes one directory up from the build directory. In t
 Grid-specific Configuration
 ===========================
 
-Some SRW App parameters depend on the characteristics of the grid such as resolution and domain size.
-These include ``ESG grid`` and ``Input configuration`` as well as the variables
-related to the write component (quilting). The SRW App officially supports three different predefined
-grids as shown in :numref:`Table %s <PredefinedGrids>`. Their names can be found under
-``valid_vals_PREDEF_GRID_NAME`` in the ``valid_param_vals`` script, and their grid-specific configuration
-variables are specified in the ``set_predef_grid_params`` script. If users want to create a new domain,
-they should put its name in the ``valid_param_vals`` script and the corresponding grid-specific
-parameters in the ``set_predef_grid_params`` script. More information on the predefined and user-generated options 
-can be found in :numref:`Chapter %s <LAMGrids>`.
+Some SRW App parameters depend on the characteristics of the grid such as resolution and domain size. These include ``ESG grid`` and ``Input configuration`` as well as the variables related to the write component (quilting). The SRW App officially supports three different predefined grids as shown in :numref:`Table %s <PredefinedGrids>`. Their names can be found under ``valid_vals_PREDEF_GRID_NAME`` in the ``valid_param_vals`` script, and their grid-specific configuration variables are specified in the ``set_predef_grid_params`` script. If users want to create a new domain, they should put its name in the ``valid_param_vals`` script and the corresponding grid-specific parameters in the ``set_predef_grid_params`` script. More information on the predefined and user-generated options 
+can be found in :numref:`Chapter %s <LAMGrids>`. 
 
 .. _PredefinedGrids:
 
@@ -439,11 +425,7 @@ that is executed when running the experiment with the Rocoto workflow manager.
 
     *Experiment generation description*
 
-The ``setup.sh`` script reads three other configuration scripts: (1) ``config_default.sh``
-(:numref:`Section %s <DefaultConfigSection>`), (2) ``config.sh`` (:numref:`Section %s <UserSpecificConfig>`),
-and (3) ``set_predef_grid_params.sh`` (:numref:`Section %s <GridSpecificConfig>`). Note that these three
-scripts are read in order: ``config_default.sh``, ``config.sh``, then ``set_predef_grid_params.sh``.
-If a parameter is specified differently in these scripts, the file containing the last defined value will be used.  
+The ``setup.sh`` script reads three other configuration scripts: (1) ``config_default.sh`` (:numref:`Section %s <DefaultConfigSection>`), (2) ``config.sh`` (:numref:`Section %s <UserSpecificConfig>`), and (3) ``set_predef_grid_params.sh`` (:numref:`Section %s <GridSpecificConfig>`). Note that these three scripts are read in order: ``config_default.sh``, ``config.sh``, then ``set_predef_grid_params.sh``. If a parameter is specified differently in these scripts, the file containing the last defined value will be used.  
 
 .. _WorkflowTaskDescription:
 
@@ -452,16 +434,7 @@ Description of Workflow Tasks
 The flowchart of the workflow tasks that are specified in the ``FV3LAM_wflow.xml`` file are
 illustrated in :numref:`Figure %s <WorkflowTasksFig>`, and each task is described in
 :numref:`Table %s <WorkflowTasksTable>`. The first three pre-processing tasks; ``MAKE_GRID``,
-``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and
-surface climatology fix files, these three tasks can be skipped by setting ``RUN_TASK_MAKE_GRID=”FALSE”``,
-``RUN_TASK_MAKE_OROG=”FALSE”``, and ``RUN_TASK_MAKE_SFC_CLIMO=”FALSE”`` in the ``regional_workflow/ush/config.sh``
-file before running the ``generate_FV3LAM_wflow.sh`` script. As shown in the figure, the ``FV3LAM_wflow.xml``
-file runs the specific j-job scripts in the prescribed order (``regional_workflow/jobs/JREGIONAL_[task name]``)
-when the ``launch_FV3LAM_wflow.sh`` is submitted. Each j-job task has its own source script named
-``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files
-``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls.
-There is usually no need for users to modify these files. To relaunch the workflow from scratch,
-delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
+``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by setting ``RUN_TASK_MAKE_GRID=”FALSE”``, ``RUN_TASK_MAKE_OROG=”FALSE”``, and ``RUN_TASK_MAKE_SFC_CLIMO=”FALSE”`` in the ``regional_workflow/ush/config.sh`` file before running the ``generate_FV3LAM_wflow.sh`` script. As shown in the figure, the ``FV3LAM_wflow.xml`` file runs the specific j-job scripts in the prescribed order (``regional_workflow/jobs/JREGIONAL_[task name]``) when the ``launch_FV3LAM_wflow.sh`` is submitted. Each j-job task has its own source script named ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
 
 .. _WorkflowTasksFig:
 
