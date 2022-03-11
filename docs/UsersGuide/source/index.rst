@@ -14,7 +14,6 @@ UFS Short-Range Weather App Users Guide
    Introduction
    Quickstart_Container
    Quickstart_NonContainer
-   CodeReposAndDirs
    SRWAppOverview
    Components
    Include-HPCInstall

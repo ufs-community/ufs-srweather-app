@@ -10,7 +10,7 @@ The "out-of-the-box" SRW case described in this guide builds a weather forecast 
 
 .. _DownloadCodeC:
 
-Download the UFS SRW Application Code
+Building the UFS SRW Application
 ===========================================
 The SRW Application source code is publicly available on GitHub and can be run in a container or locally, depending on user preference. The SRW Application relies on a variety of components detailed in the :ref:`Components Chapter <Components>` of this User's Guide. Users must (1) clone the UFS SRW Application umbrella repository and then (2) run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App and will clone the correct version of the regional workflow, pre-processing utilities, UFS Weather Model, and UPP source code into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
 
@@ -38,7 +38,7 @@ On NOAA Cloud systems, certain environment variables must be set *before* buildi
 
 * If the ``cache`` and ``tmp`` directories do not exist already, they must be created. 
 
-* ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, `tar the file <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move it to the ``/contrib`` directory, which is much slower but persistent.
+* ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move it to the ``/contrib`` directory, which is much slower but persistent.
 
 .. _WorkOnHPC:
 
@@ -46,16 +46,18 @@ Working on HPC Systems
 --------------------------
 
 Those *not* working on HPC systems may skip to the `next step <BuildC>`. 
-On HPC systems (including NOAA's Cloud platforms), allocate a compute node on which to run the SRW. On some systems, it may be necessary to run the command ``module load singularity`` first.
+On HPC systems (including NOAA's Cloud platforms), allocate a compute node on which to run the SRW. On NOAA's Cloud platforms, the following commands should work:
 
 .. code-block:: console
 
    salloc -N 1 
-   module load <compiler> openmpi
+   module load gnu openmpi
    mpirun -n 1 hostname
    ssh <hostname>
 
-The compiler options are ``gnu`` or ``intel``. The third command will output a hostname. This hostname should replace ``<hostname>`` in the last command. After "ssh-ing" to the compute node in the last command, build and run the SRW from that node. 
+The third command will output a hostname. This hostname should replace ``<hostname>`` in the last command. After "ssh-ing" to the compute node in the last command, build and run the SRW from that node. 
+
+The appropriate commands on other Level 1 platforms will vary, and users should consult the documentation for those platforms. 
 
 .. _BuildC:
 
@@ -83,27 +85,6 @@ The command above also binds the local directory to the container so that data c
    * When binding two directories, they must have the same name. It may be necessary to ``cd`` into the container and create an appropriately named directory in the container using the ``mkdir`` command if one is not already there. 
    * Be sure to bind the directory that contains the data the experiment will access. 
 
-Download the SRW Code
-------------------------
-
-Clone the develop branch of the UFS-SRW weather application repository:
-
-.. code-block:: console
-
-   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
-
-.. 
-   COMMENT: change repo for release
-
-Check out submodules for the SRW Application:
-
-.. code-block:: console
-
-   cd ufs-srweather-app
-   ./manage_externals/checkout_externals
-
-If the ``manage_externals`` command brings up an error, it may be necessary to run ``ln -s /usr/bin/python3 /usr/bin/python`` first. 
-
 
 .. _SetUpBuildC:
 
@@ -123,27 +104,14 @@ If the SRW Application has been built in a container provided by the Earth Predi
 
 
 Build the Executables
-=====================
+======================
 
 Create a directory to hold the build's executables: 
 
 .. code-block:: console
 
-   mkdir build
-   cd build
-
-From the build directory, run the ``cmake`` command below to set up the ``Makefile``, then run the ``make`` command to build the executables:
-
-.. code-block:: console
-
-   cmake .. -DCMAKE_INSTALL_PREFIX=..
-   make -j 4  >& build.out &
-
-The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console when you list the files in ``ufs-srweather-app/bin`` (``[1]+  Exit`` may indicate an error). Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, you should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
-
-.. hint::
-
-   If you see the build.out file, but there is no ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
+   cd ubuntu20.04-epic-srwapp-1.0/opt/ufs-srweather-app/build
+   source build-srw.sh
 
 Download and Stage the Data
 ============================

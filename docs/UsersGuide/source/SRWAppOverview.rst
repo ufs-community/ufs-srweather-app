@@ -56,7 +56,7 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+--------------------------------------------------------+
    | LICENSE.md                     | CC0 license information                                |
    +--------------------------------+--------------------------------------------------------+
-   | README.md                      | Quick Start Guide                                      |
+   | README.md                      | Getting Started Guide                                  |
    +--------------------------------+--------------------------------------------------------+
    | ufs_srweather_app_meta.h.in    | Meta information for SRW App which can be used by      |
    |                                | other packages                                         |
@@ -77,7 +77,7 @@ The cloned repository contains the configuration files and sub-directories shown
 
 External Components
 ===================
-Check out the external repositories, including regional_workflow, ufs-weather-model, ufs_utils, and upp.x for the SRW App.
+Retrieve required components from external repositories, including regional_workflow, ufs-weather-model, ufs_utils, and upp.x:
 
 .. code-block:: console
 
@@ -152,21 +152,24 @@ recommended value ``..`` denotes one directory up from the build directory. In t
    | fvcom_to_FV3           |                                                                                 |
    +------------------------+---------------------------------------------------------------------------------+
    | make_hgrid             | Computes geo-referencing parameters (e.g., latitude, longitude, grid cell area) |
-   |                        | for global uniform grids                                                        |                        |
+   |                        | for global uniform grids                                                        |
    +------------------------+---------------------------------------------------------------------------------+
-   | emcsfc_ice_blend       |                                                                                 |
+   | emcsfc_ice_blend       | Blends National Ice Center sea ice cover and EMC sea ice concentration data to  |
+   |                        | create a global sea ice analysis used to update the GFS once per day            |
    +------------------------+---------------------------------------------------------------------------------+
-   | emcsfc_snow2mdl        |                                                                                 |
+   | emcsfc_snow2mdl        | Blends National Ice Center snow cover and Air Force snow depth data to create a |
+   |                        | global depth analysis used to update the GFS snow field once per day            | 
    +------------------------+---------------------------------------------------------------------------------+
-   | global_cycle           |                                                                                 |
+   | global_cycle           | Updates the GFS surface conditions using external snow and sea ice analyses     |
    +------------------------+---------------------------------------------------------------------------------+
-   | inland                 |                                                                                 |
+   | inland                 | Create an inland land mask                                                      |
    +------------------------+---------------------------------------------------------------------------------+
-   | orog_gsl               |                                                                                 |
+   | orog_gsl               | Ceates orographic statistics fields required for the orographic drag suite      |
+   |                        | developed by NOAA's Global Systems Laboratory (GSL)                             |
    +------------------------+---------------------------------------------------------------------------------+
-   | fregrid                |                                                                                 |
+   | fregrid                | Remaps data from the input mosaic grid to the output mosaic grid                |
    +------------------------+---------------------------------------------------------------------------------+
-   | lakefrac               |                                                                                 |
+   | lakefrac               | Set lake fraction and depth                                                     |
    +------------------------+---------------------------------------------------------------------------------+
 
 .. _GridSpecificConfig:
