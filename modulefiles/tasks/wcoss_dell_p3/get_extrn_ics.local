@@ -4,6 +4,3 @@
 
 module purge
 module load HPSS/5.0.2.5
-
-module use /usrx/local/nceplibs/dev/modulefiles
-module load srw-app-python/1.0.0

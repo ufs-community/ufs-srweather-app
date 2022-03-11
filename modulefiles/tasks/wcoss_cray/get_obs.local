@@ -1,9 +1,0 @@
-#%Module#####################################################
-## Module file for get_obs_ccpa, get_obs_mrms, get_obs_ndas
-#############################################################
-
-module purge
-
-module use /usrx/local/prod/modulefiles
-module load hpss/4.1.0.3
-

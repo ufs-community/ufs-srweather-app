@@ -558,7 +558,7 @@ resubmit SRW workflow:
   CRONTAB_LINE = \"${CRONTAB_LINE}\""
 
     if [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
-      printf "%s" "${CRONTAB_LINE}" >> "/u/$USER/cron/mycrontab"      
+      printf "%s\n" "${CRONTAB_LINE}" >> "/u/$USER/cron/mycrontab"      
     else
       # Add a newline to the end of crontab_contents only if it is not empty.
       # This is needed so that when CRONTAB_LINE is printed out, it appears on
