@@ -2,14 +2,6 @@
 
 case $(hostname -f) in
 
-  llogin1)                 MACHINE_ID=wcoss_cray ;; ### luna
-  llogin2)                 MACHINE_ID=wcoss_cray ;; ### luna
-  llogin3)                 MACHINE_ID=wcoss_cray ;; ### luna
-
-  slogin1)                 MACHINE_ID=wcoss_cray ;; ### surge
-  slogin2)                 MACHINE_ID=wcoss_cray ;; ### surge
-  slogin3)                 MACHINE_ID=wcoss_cray ;; ### surge
-
   v71a1.ncep.noaa.gov)     MACHINE_ID=wcoss_dell_p3 ;; ### venus
   v71a2.ncep.noaa.gov)     MACHINE_ID=wcoss_dell_p3 ;; ### venus
   v71a3.ncep.noaa.gov)     MACHINE_ID=wcoss_dell_p3 ;; ### venus
