@@ -205,10 +205,10 @@ Forecast Parameters
 Initial and Lateral Boundary Condition Generation Parameters
 ============================================================
 ``EXTRN_MDL_NAME_ICS``: (Default: “FV3GFS”)
-   The name of the external model that will provide fields from which initial condition (IC) files, surface files, and 0-th hour boundary condition files will be generated for input into the forecast model.
+   The name of the external model that will provide fields from which initial condition (IC) files, surface files, and 0-th hour boundary condition files will be generated for input into the forecast model.  Options include ``FV3GFS``, ``GSMGFS``, ``HRRR``, ``RAP``, and ``NAM``.
 
 ``EXTRN_MDL_NAME_LBCS``: (Default: “FV3GFS”)
-   The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model.
+   The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model.  Options include ``FV3GFS``, ``GSMGFS``, ``HRRR``, ``RAP``, and ``NAM``.
 
 ``LBC_SPEC_INTVL_HRS``: (Default: “6”)
    The interval (in integer hours) at which LBC files will be generated, referred to as the boundary specification interval.  Note that the model specified in ``EXTRN_MDL_NAME_LBCS`` must have data available at a frequency greater than or equal to that implied by ``LBC_SPEC_INTVL_HRS``.  For example, if ``LBC_SPEC_INTVL_HRS`` is set to 6, then the model must have data available at least every 6 hours.  It is up to the user to ensure that this is the case.
