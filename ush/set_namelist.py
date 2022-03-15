@@ -40,7 +40,7 @@ Examples
 
   To produce a namelist (fv3_expt.nml) by specifying a physics package:
 
-    set_namelist.py -n templates/input.nml.FV3 -c templates/FV3.input.yml FV3_GSD_SAR
+    set_namelist.py -n templates/input.nml.FV3 -c templates/FV3.input.yml FV3_HRRR
         -o fv3_expt.nml
 
   To produce a YAML file (fv3_namelist.yml) from a user namelist:
@@ -171,7 +171,7 @@ def parse_args():
                         )
     parser.add_argument('-n', '--basenml',
                         dest='nml',
-                        help='Full path the input Fortran namelist. Optional.',
+                        help='Full path to the input Fortran namelist. Optional.',
                         type=file_exists,
                         )
     parser.add_argument('-t', '--type',

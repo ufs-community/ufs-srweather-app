@@ -138,12 +138,10 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_2017_gfdlmp" | \
   "FV3_GFS_2017_gfdlmp_regional" | \
   "FV3_GFS_v16" | \
-  "FV3_GFS_v15p2" | "FV3_CPT_v0" )
+  "FV3_GFS_v15p2" )
     varmap_file="GFSphys_var_map.txt"
     ;;
 #
-  "FV3_GSD_v0" | \
-  "FV3_GSD_SAR" | \
   "FV3_RRFS_v1alpha" | \
   "FV3_RRFS_v1beta" | \
   "FV3_GFS_v15_thompson_mynn_lam3km" | \

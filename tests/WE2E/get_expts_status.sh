@@ -309,39 +309,49 @@ check_for_preexist_dir_file "${expts_status_fp}" "rename"
 #-----------------------------------------------------------------------
 #
 launch_wflow_fn="launch_FV3LAM_wflow.sh"
+launch_wflow_log_fn="log.launch_FV3LAM_wflow"
 num_tail_lines="40"
 
 for (( i=0; i<=$((num_expts-1)); i++ )); do
 
   expt_subdir="${expt_subdirs[$i]}"
-  print_info_msg "\
+  msg="\
 $separator
-Checking workflow status of experiment: \"${expt_subdir}\""
+Checking workflow status of experiment \"${expt_subdir}\" ..."
+  print_info_msg "$msg"
 #
 # Change location to the experiment subdirectory, call the workflow launch
-# script to update the launch log file, and capture the output from that
-# call.
+# script to update the workflow launch log file, and capture the output 
+# from that call.
 #
   cd_vrfy "${expt_subdir}"
   launch_msg=$( "${launch_wflow_fn}" 2>&1 )
-  log_tail=$( tail -n ${num_tail_lines} log.launch_FV3LAM_wflow )
-#
-# Record the tail from the log file into the status report file.
-#
-  print_info_msg "$msg" >> "${expts_status_fp}"
-  print_info_msg "${log_tail}" >> "${expts_status_fp}"
+  log_tail=$( tail -n ${num_tail_lines} "${launch_wflow_log_fn}" )
 #
 # Print the workflow status to the screen.
 #
   wflow_status=$( printf "${log_tail}" | grep "Workflow status:" )
 #  wflow_status="${wflow_status## }"  # Not sure why this doesn't work to strip leading spaces.
-  wflow_status=$( printf "${wflow_status}" "%s" | sed -r 's|^[ ]*||g' )
-  msg="${wflow_status}"
-  print_info_msg "$msg"
-
+  wflow_status=$( printf "${wflow_status}" "%s" | sed -r 's|^[ ]*||g' )  # Remove leading spaces.
+  print_info_msg "${wflow_status}"
   print_info_msg "\
 $separator
 "
+#
+# Combine message above with the last num_tail_lines lines from the workflow 
+# launch log file and place the result in the status report file.
+#
+  msg=$msg"
+${wflow_status}
+
+The last ${num_tail_lines} lines of this experiment's workflow launch log file 
+(\"${launch_wflow_log_fn}\") are:
+
+${log_tail}
+
+
+"
+  print_info_msg "$msg" >> "${expts_status_fp}"
 #
 # Change location back to the experiments base directory.
 #

@@ -1,22 +1,23 @@
-# This configuration file maintains all the community-supported sets of 
-# namelist options. To build a namelist for one of these configurations, 
-# use the Python helper script ush/set_namelist.py and provide this file
-# and the desired section via the -c option.
-
-# The FV3_GSD_v0 section is empty as it provides the "base namelist" to 
-# which all the modifications here are provided. Please see 
+# This configuration file maintains the modifications that need to be 
+# made to the base FV3 namelist specified in 
+#
 #   ush/templates/input.nml.FV3
-# for the full set of namelist options that are used for FV3 in that 
-# configuration.
+#
+# to obtain the namelist for each physics suite that the SRW App can 
+# run with.  To build a namelist for one of these configurations, use 
+# the Python helper script 
+#
+#   ush/set_namelist.py
+#
+# and provide this file and the desired section via the -c option.
 
 
-FV3_GSD_v0:
-
-FV3_GSD_SAR: 
-  gfs_physics_nml: &gsd_sar_phys
+FV3_RRFS_v1alpha:
+  gfs_physics_nml: &RRFS_v1alpha_phys
     do_deep: False
-    imfdeepcnv: 0
-    imfshalcnv: 0
+    do_mynnsfclay: False
+    imfdeepcnv: -1
+    imfshalcnv: -1
     iopt_alb: 2
     iopt_btr: 1
     iopt_crs: 1
@@ -29,26 +30,13 @@ FV3_GSD_SAR:
     iopt_snf: 4
     iopt_stc: 1
     iopt_tbot: 2
-
-FV3_RRFS_v1alpha:
-  gfs_physics_nml:
-    <<: *gsd_sar_phys
-    do_deep: False
-    do_mynnsfclay: False
-    imfdeepcnv: -1
-    imfshalcnv: -1
     lsm: 2
     lsoil_lsm: 4
 
 FV3_RRFS_v1beta:
   gfs_physics_nml:
-    <<: *gsd_sar_phys
-    do_deep: False
+    <<: *RRFS_v1alpha_phys
     do_mynnsfclay: True
-    imfdeepcnv: -1
-    imfshalcnv: -1
-    lsm: 2
-    lsoil_lsm: 4
 
 FV3_HRRR:
   fv_core_nml:
@@ -63,7 +51,7 @@ FV3_HRRR:
     nord_tr: 2
     nrows_blend: 10
   gfs_physics_nml:
-    <<: *gsd_sar_phys
+    <<: *RRFS_v1alpha_phys
     cdmbgwd: [3.5, 1.0]
     do_mynnsfclay: True
     do_sfcperts: !!python/none
@@ -73,9 +61,9 @@ FV3_HRRR:
     do_gsl_drag_ls_bl: True 
     iaer: 5111
     icliq_sw: 2
-    imfdeepcnv: -1
-    imfshalcnv: -1
     iovr: 3
+    lsm: 3
+    lsoil_lsm: 9
 
 FV3_GFS_2017_gfdlmp:
   atmos_model_nml:
@@ -392,91 +380,5 @@ FV3_GFS_v16:
   namsfc:
     landice: True
     ldebug: False
-  surf_map_nml: !!python/none
-
-FV3_CPT_v0:
-  fv_core_nml:
-    <<: *gfs_v15_fv_core
-    dnats: 0
-    fv_sg_adj: 450
-    k_split: 6
-    n_split: 6
-    n_sponge: 24
-    nudge_qv: False
-    rf_fast: !!python/none
-  gfdl_cloud_microphysics_nml:
-    <<: *gfs_gfdl_cloud_mp
-    mp_time: 150.0
-    sedi_transport: True
-    tau_i2s: 1500.0
-    tau_l2v: 225.0
-    tau_v2l: 150.0
-  gfs_physics_nml:
-    aero_in: False
-    bl_mynn_edmf: !!python/none
-    bl_mynn_edmf_mom: !!python/none
-    bl_mynn_tkeadvect: !!python/none
-    ccwf: [1.0, 1.0]
-    crtrh: [0.93, 0.9, 0.95]
-    cs_parm: [8.0, 4.0, 1000.0, 3500.0, 20.0, 1.0, 0.0, 1.0, 0.6, 0.0]
-    cscnv: True
-    ctei_rm: [0.6, 0.23]
-    dlqf: [0.25, 0.05]
-    do_aw: True
-    do_sb_physics: True
-    do_mynnedmf: !!python/none
-    do_mynnsfclay: !!python/none
-    do_shoc: False
-    fhcyc: 0.0
-    fhlwr: 3600.0
-    fhswr: 3600.0
-    fprcp: 2
-    hybedmf: True
-    iccn: False
-    icloud_bl: !!python/none
-    imp_physics: 10
-    imfshalcnv: 2
-    imfdeepcnv: -1
-    iopt_alb: 2
-    iopt_btr: 1
-    iopt_crs: 1
-    iopt_dveg: 2
-    iopt_frz: 1
-    iopt_inf: 1
-    iopt_rad: 1
-    iopt_run: 1
-    iopt_sfc: 1
-    iopt_snf: 4
-    iopt_stc: 1
-    iopt_tbot: 2
-    lndp_type: !!python/none
-    lradar: False
-    lsm: 1
-    lsoil: !!python/none
-    lsoil_lsm: !!python/none
-    ltaerosol: False
-    max_lat: 4000
-    max_lon: 8000
-    mg_dcs: 200.0
-    mg_do_graupel: True
-    mg_do_hail: False
-    mg_do_ice_gmao: False
-    mg_do_liq_liu: True
-    mg_qcvar: 1.0
-    mg_ts_auto_ice: [180.0, 900.0]
-    n_var_lndp: !!python/none
-    ncld: 2
-    pdfflag: 4
-    random_clds: True
-    ras: False
-    rhcmax: 0.9999999
-    shal_cnv: True
-    shcnvcw: False
-    shoc_cld: False
-    shoc_parm: [7000.0, 1.0, 2.0, 0.7, -999.0]
-    ttendlim: !!python/none
-    xkzm_h: 0.5
-    xkzm_m: 0.5
-    xkzm_s: 1.0
   surf_map_nml: !!python/none
 

@@ -29,11 +29,8 @@ valid_vals_PREDEF_GRID_NAME=( \
 "RRFS_NA_3km" \
 )
 valid_vals_CCPP_PHYS_SUITE=( \
-"FV3_CPT_v0" \
 "FV3_GFS_2017_gfdlmp" \
 "FV3_GFS_2017_gfdlmp_regional" \
-"FV3_GSD_SAR" \
-"FV3_GSD_v0" \
 "FV3_GFS_v15p2" \
 "FV3_GFS_v15_thompson_mynn_lam3km" \
 "FV3_GFS_v16" \
