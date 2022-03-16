@@ -1,27 +1,142 @@
-name: Makefile CI
+#############################################################
+# Rename the file extension to ".yaml" (remove "_") to enable
+#############################################################
+
+name: ------- Building Pull Requests (ufs-srweather-app) -------
 
 on:
+  # run it on push to the default repository branch
   push:
-    branches: [ develop ]
+    branches:
+      - develop
+  # run it during pull request
   pull_request:
-    branches: [ develop ]
+    branches:
+      - develop    
+    types: 
+      - ready_for_review
+      - review_requested
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
+    runs-on: ubuntu-latest  # windows-latest | macos-latest
+    defaults:
+      run:
+        shell: bash
     
-    - name: configure
-      run: ./configure
-      
-    - name: Install dependencies
-      run: make
-      
-    - name: Run check
-      run: make check
-      
-    - name: Run distcheck
-      run: make distcheck
+    container:
+      image: docker://clouden90/ubuntu20.04-gnu9.3-hpc-stack:alpha
+    
+    name: Build ufs-srweather-app and test workflow in the container
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jitterbit/get-changed-files@v1
+        id: abc
+        with:
+          format: space-delimited
+          token: ${{ secrets.GITHUB_TOKEN }}        
+  
+      - name: Running cmake/make ufs-srweather-app
+        run: |
+          echo ${{ steps.abc.outputs.all }}
+          echo "brach name is: ${{ github.head_ref }}"
+          ls /opt
+          cd /opt
+          ln -s /usr/bin/python3 /usr/bin/python
+          # fix esmf version issue in hpc-stack
+          git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
+          #cd /opt/hpc-stack
+          #cp /opt/ufs-srweather-app/test/stack_esmf.yaml ./stack/
+          #rm -rf /opt/hpc-modules/modulefiles/mpi/gnu/9.3.0/openmpi/4.0.1/esmf/* 
+          #./build_stack.sh -p /opt/hpc-modules -c config/config_custom.sh -y stack/stack_esmf.yaml -m
+          #rm -rf /opt/hpc-stack/pkg/*
+          # build miniconda
+          #mkdir -p /opt/ufs
+          #cd /opt/ufs
+          #wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+          #bash ./Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda
+          #export PATH=$PATH:/opt/miniconda/bin
+          #git clone --recursive https://github.com/NOAA-GSD/contrib_miniconda3.git miniconda3
+          #cd /opt/ufs/miniconda3/environments
+          #sed -i '3 a - conda-forge' regional_workflow.yml
+          #sed -i 's/^-/  -/g' regional_workflow.yml
+          #sed -i 's/^  - https/#  - https/g' regional_workflow.yml
+          #cd /opt/ufs
+          #conda env create -f /opt/ufs/miniconda3/environments/regional_workflow.yml
+          #source /opt/miniconda/etc/profile.d/conda.sh
+          #conda activate regional_workflow 
+          # build srw application
+          cd /opt/ufs-srweather-app 
+          ./manage_externals/checkout_externals
+          #
+          source /usr/share/lmod/6.6/init/profile
+          export MACHINE="singularity"
+          export TOP_DIR=/opt/ufs-srweather-app
+          export SRC_DIR=/opt/ufs-srweather-app
+          export compiler="gnu"
+          export ENV_DIR=${TOP_DIR}/env
+          export BUILD_DIR=${TOP_DIR}/build_${compiler}
+          export BIN_DIR=${TOP_DIR}/bin_${compiler}
+          export EXEC_DIR=${BIN_DIR}/bin
+          cd /opt/ufs-srweather-app
+          sed -i 's/MACHINE="${MACHINE_ID}"/MACHINE="singularity"/g' ${ENV_DIR}/detect_machine.sh
+          ./devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} --ccpp="FV3_GFS_v15p2"
+          #
+          #mkdir /opt/ufs-srweather-app/build
+          #cd /opt/ufs-srweather-app/build
+          #source /usr/share/lmod/6.6/init/profile
+          #module use /opt/hpc-modules/modulefiles/stack
+          #module load hpc hpc-gnu hpc-openmpi
+          #module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake/3.21.1 gfsio wgrib2 upp
+          #cmake -DCMAKE_INSTALL_PREFIX=/opt/ufs-srweather-app -DCMAKE_PREFIX_PATH=$PNG_ROOT/lib/cmake ..
+          #make -j2
+
+          #- name: Download data for fcst test
+          #run: |
+          #echo "Now we are going to download data!"
+          #cd /opt
+          #wget https://dl.dropboxusercontent.com/s/76ec5q3dtlt0twl/exp.tar.gz 
+          #tar -xzvf exp.tar.gz
+          #ls /opt
+
+          #- name: prepare fcst test 
+          #run: |          
+          #echo "Preparing fcst test!" 
+          #cd /opt/ufs-srweather-app/regional_workflow/ush 
+          #cp /opt/ufs-srweather-app/test/config.sh ./
+          #cp /opt/ufs-srweather-app/test/config_defaults.sh ./
+          #cp /opt/ufs-srweather-app/test/valid_param_vals.sh ./
+          #cp /opt/ufs-srweather-app/test/docker.sh ./machine/
+          #export PATH=$PATH:/opt/miniconda/bin
+          #source /opt/miniconda/etc/profile.d/conda.sh
+          #conda activate regional_workflow
+          #conda env list          
+          #./generate_FV3LAM_wflow.sh
+          #mkdir -p /opt/expt_dirs/test_fcst/2019061500/INPUT/
+          #cd /opt/expt_dirs/test_fcst/2019061500/INPUT/
+          #ln -fs /opt/model_data/ics_lbcs/* ./ 
+
+      - name: run_fcst 
+        run: |
+          echo "run_fcst test!"
+          source /opt/ufs-srweather-app/env/build_singularity_gnu.env 
+          #source /usr/share/lmod/6.6/init/profile
+          #module use /opt/hpc-modules/modulefiles/stack
+          #module load hpc hpc-gnu hpc-openmpi
+          #module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake/3.21.1 gfsio wgrib2 upp
+          cd /opt/test_fcst/2019061500
+          ls -l -h /opt/ufs-srweather-app/bin_gnu/bin/ufs_model
+          export OMP_NUM_THREADS=1
+          ulimit -s unlimited
+          mpirun --allow-run-as-root -np 2 /opt/ufs-srweather-app/bin_gnu/bin/ufs_model > "run_fcst.log" 2>&1
+          tail -20 "run_fcst.log"
+          ls -l -h /opt/test_fcst/2019061500/RESTART
+          ncdump -h /opt/test_fcst/2019061500/RESTAR/fv_core.res.nc
+          #export PATH=$PATH:/opt/miniconda/bin
+          #source /opt/miniconda/etc/profile.d/conda.sh
+          #conda activate regional_workflow
+          #conda env list
+          #cd /opt/ufs-srweather-app/regional_workflow/ush/wrappers
+          #export EXPTDIR=/opt/expt_dirs/test_fcst 
+          #sed -i 's/\#\!\/bin\/sh/\#\!\/bin\/bash/g' run_fcst.sh
+          #./run_fcst.sh
