@@ -131,7 +131,7 @@ jobs:
           mpirun --allow-run-as-root -np 2 /opt/ufs-srweather-app/bin_gnu/bin/ufs_model > "run_fcst.log" 2>&1
           tail -20 "run_fcst.log"
           ls -l -h /opt/test_fcst/2019061500/RESTART
-          ncdump -h /opt/test_fcst/2019061500/RESTAR/fv_core.res.nc
+          #ncdump -h /opt/test_fcst/2019061500/RESTART/fv_core.res.nc
           #export PATH=$PATH:/opt/miniconda/bin
           #source /opt/miniconda/etc/profile.d/conda.sh
           #conda activate regional_workflow
