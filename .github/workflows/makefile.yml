@@ -42,7 +42,7 @@ jobs:
           echo "brach name is: ${{ github.head_ref }}"
           ls /opt
           cd /opt
-          ln -s /usr/bin/python3 /usr/bin/python
+          #ln -s /usr/bin/python3 /usr/bin/python
           git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
           cd /opt/ufs-srweather-app 
           ./manage_externals/checkout_externals
