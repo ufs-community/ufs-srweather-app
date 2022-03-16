@@ -12,9 +12,8 @@ UFS Short-Range Weather App Users Guide
    
 
    Introduction
-   SRWAppOverview
-   Quickstart_Container
-   Quickstart_NonContainer
+   Quickstart
+   BuildRunSRW
    Components
    Include-HPCInstall
    InputOutputFiles

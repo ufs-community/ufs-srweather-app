@@ -6,7 +6,7 @@ Introduction
 
 The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. The UFS is the source system for NOAA’s operational numerical weather prediction applications. It enables research, development, and contribution opportunities within the broader :term:`weather enterprise` (e.g. government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufscommunity.org/>`__.
 
-The UFS can be configured for multiple applications (see the `complete list here <https://ufscommunity.org/science/aboutapps/>`__). The configuration described in this documentation is the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes out to several days. The SRW Application v2.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. Future work will expand the capabilities of the application to include data assimilation (DA) and a verification package (e.g., METplus). This documentation provides a Quick Start Guide for running the application :ref:`in a container <QuickstartC>` and a detailed guide for running the SRW :ref:`locally <BuildRunSRW>`, in addition to an overview of the :ref:`release components <Components>`, a description of the supported capabilities, and details on where to find more information and obtain support.
+The UFS can be configured for `multiple applications <https://ufscommunity.org/science/aboutapps/>`__. The configuration described in this documentation is the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes out to several days. The SRW Application v2.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. Future work will expand the capabilities of the application to include data assimilation (DA) and a verification package (e.g., METplus). This documentation provides a :ref:`Quick Start Guide <QuickstartC>` for running the application in a container and a :ref:`detailed guide <BuildRunSRW>` for running the SRW on supported platforms. It also provides an overview of the :ref:`release components <Components>` and details on how to customize or modify different portions of the workflow.
 
 The SRW App v1.0.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
@@ -19,21 +19,21 @@ UFS Development Team. (2021, March 4). Unified Forecast System (UFS) Short-Range
 How to Use This Document
 ========================
 
-This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `UFS forum <https://forums.ufscommunity.org/>`__.
+This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `UFS Forum <https://forums.ufscommunity.org/>`__.
 
 .. code-block:: console
 
    Throughout the guide, this presentation style indicates shell commands and options, 
    code examples, etc.
 
-Variables presented as ``AaBbCc123`` in this document typically refer to variables in scripts, names of files, and directories.
+Variables presented as ``AaBbCc123`` in this User's Guide typically refer to variables in scripts, names of files, and directories.
 
-File paths or code that include angle brackets (e.g., ``env/build_<platform>_<compiler>.env``) indicate that users should insert options appropriate to their SRW configuration (e.g., ``env/build_aws_gcc.env``). 
+File paths or code that include angle brackets (e.g., ``build_<platform>_<compiler>.env``) indicate that users should insert options appropriate to their SRW configuration (e.g., ``build_orion_intel.env``). 
 
 .. hint:: 
-   * To get started running the SRW, see the :ref:`Containerized Quick Start Guide <QuickstartC>` or refer to the in-depth chapter on :ref:`Running the Short-Range Weather Application <SRWAppOverview>`. 
+   * To get started running the SRW, see the :ref:`Quick Start Guide <QuickstartC>` for beginners or refer to the in-depth chapter on :ref:`Running the Short-Range Weather Application <BuildRunSRW>`. 
    * For background information on the SRW code repositories and directory structure, see :numref:`Section %s <SRWStructure>` below. 
-   * For an outline of SRW components, see section :numref:`Section %s <Utilities>` below or refer to :numref:`Chapter %s: Components <Components>` for a more in-depth treatment.
+   * For an outline of SRW components, see section :numref:`Section %s <Utilities>` below or refer to :numref:`Chapter %s <Components>` for a more in-depth treatment.
 
 
 .. _SRWStructure:
@@ -45,7 +45,7 @@ Code Repositories and Directory Structure
 
 Hierarchical Repository Structure
 -----------------------------------
-The umbrella repository for the UFS SRW Application is named *ufs-srweather-app* and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. An umbrella repository is a repository that houses external code, called "externals," from additional repositories. The UFS SRW Application includes the ``manage_externals`` tools along with a configuration file called ``Externals.cfg``, which describes the external repositories associated with this umbrella repository (see :numref:`Table %s <top_level_repos>`).
+The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather-app`` and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. An umbrella repository is a repository that houses external code, called "externals," from additional repositories. The SRW Application includes the ``manage_externals`` tool and a configuration file called ``Externals.cfg``, which describes the external repositories associated with the SRW umbrella repository (see :numref:`Table %s <top_level_repos>`).
 
 .. _top_level_repos:
 
@@ -71,10 +71,9 @@ The umbrella repository for the UFS SRW Application is named *ufs-srweather-app*
    | Processor (UPP)                 |                                                         |
    +---------------------------------+---------------------------------------------------------+
 
-The UFS Weather Model contains a number of sub-repositories used by the model as 
-documented `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/CodeOverview.html>`__.
+The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/CodeOverview.html>`__.
 
-Note that the prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on the preconfigured (Level 1) platforms listed `here <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. :numref:`Chapter %s <InstallBuildHPCstack>` contains details on installing the HPC-Stack. 
+Note that the prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. :numref:`Chapter %s <InstallBuildHPCstack>` contains details on installing the HPC-Stack. 
 
 
 .. _TopLevelDirStructure:
@@ -128,7 +127,7 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
 
 Regional Workflow Sub-Directories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Under the ``regional_workflow`` directory shown in :numref:`TopLevelDirStructure`, a number of sub-directories are created when the regional workflow is cloned. The contents of these sub-directories are described in :numref:`Table %s <Subdirectories>`. 
+A number of sub-directories are created under the ``regional_workflow`` directory when the regional workflow is cloned (see directory diagram :ref:`above <TopLevelDirStructure>`). The contents of these sub-directories are described in :numref:`Table %s <Subdirectories>`. 
 
 .. _Subdirectories:
 
@@ -137,7 +136,7 @@ Under the ``regional_workflow`` directory shown in :numref:`TopLevelDirStructure
    +-------------------------+---------------------------------------------------------+
    | **Directory Name**      | **Description**                                         |
    +=========================+=========================================================+
-   | docs                    | Users' Guide Documentation                              |
+   | docs                    | User's Guide Documentation                              |
    +-------------------------+---------------------------------------------------------+
    | jobs                    | J-job scripts launched by Rocoto                        |
    +-------------------------+---------------------------------------------------------+
@@ -155,7 +154,7 @@ Under the ``regional_workflow`` directory shown in :numref:`TopLevelDirStructure
 
 Experiment Directory Structure
 --------------------------------
-When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` script (:numref:`Step %s <GenerateForecast>`), a user-defined experimental directory is created based on information specified in the ``config.sh`` file. :numref:`Table %s <ExptDirStructure>` shouws the contents of the experiment directory before the experiment workflow is run.
+When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` script (:numref:`Step %s <GenerateWorkflow>`), a user-defined experimental directory is created based on information specified in the ``config.sh`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before the experiment workflow is run.
 
 .. _ExptDirStructure:
 

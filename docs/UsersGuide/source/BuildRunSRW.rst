@@ -1,8 +1,8 @@
 .. _BuildRunSRW:
 
-==============================================
-Building and Running the SRW (Non-Container)
-============================================== 
+=====================================
+Building and Running the SRW
+===================================== 
 
 The UFS Short-Range Weather Application (SRW App) is an :term:`umbrella repository` consisting of a number of different :ref:`components <Components>` housed in external repositories. Once the SRW App is configured and built, users can generate predictions of atmospheric behavior over a limited spatial area and on time scales ranging from minutes out to several days. 
 
@@ -24,10 +24,11 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
    * :ref:`Build the executables <BuildExecutables>`
    * :ref:`Download and stage data <Data>`
    * :ref:`Optional: Configure a new grid <GridSpecificConfig>`
-   * :ref:`Configure the experiment <UserSpecificConfig>`
-   * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
    * :ref:`Generate a regional workflow experiment <GenerateForecast>`
+      * :ref:`Configure the experiment parameters <UserSpecificConfig>`
+      * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
    * :ref:`Run the regional workflow <WorkflowGeneration>` 
+   * :ref:`Optional: Plot the output <PlotOutput>`
 
 .. _AppOverallProc:
 
@@ -266,9 +267,9 @@ Generate the Forecast Experiment
 =================================
 Generating the forecast experiment requires three steps:
 
-* Set experiment parameters
-* Set Python and other environment parameters
-* Run a script to generate the experiment workflow
+* :ref:`Set experiment parameters <ExptConfig>`
+* :ref:`Set Python and other environment parameters <SetUpPythonEnv>`
+* :ref:`Run a script to generate the experiment workflow <GenerateWorkflow>`
 
 The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. 
 
@@ -562,7 +563,7 @@ This command will activate the ``regional_workflow``. The user should see ``(reg
    conda activate regional_workflow
 
 
-.. _GenerateWorkflowNC: 
+.. _GenerateWorkflow: 
 
 Generate the Regional Workflow
 -------------------------------------------
@@ -573,7 +574,7 @@ Run the following command from the ``ufs-srweather-app/regional_workflow/ush`` d
 
    ./generate_FV3LAM_wflow.sh
 
-The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and :ref:`used later <AdditionalOptions>` to automatically run portions of the workflow. 
+The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and :ref:`used later <Automate>` to automatically run portions of the workflow. 
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.sh`` runs the ``setup.sh`` script to set the configuration parameters. Second, it copies the time-independent (fix) files and other necessary data input files from their location in the ufs-weather-model directory to the experiment directory (``$EXPTDIR``). Third, it copies the weather model executable (``ufs_model``) from the ``bin`` directory to ``$EXPTDIR`` and creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the regional_workflow/ush/templates directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
 
@@ -587,45 +588,149 @@ The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASED
 
     *Experiment generation description*
 
+.. _WorkflowTaskDescription: 
 
-An environment variable can be set to navigate to the ``$EXPTDIR`` more easily. If the login shell is bash, it can be set as follows:
+Description of Workflow Tasks
+--------------------------------
 
-.. code-block:: console
+.. note::
+   This section gives an overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <RocotoRun>`
 
-   export EXPTDIR=/<path-to-experiment>/<directory_name>
+Workflow tasks are specified in the ``FV3LAM_wflow.xml`` file and illustrated in :numref:`Figure %s <WorkflowTasksFig>`. Each task is described in :numref:`Table %s <WorkflowTasksTable>`. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by setting ``RUN_TASK_MAKE_GRID=”FALSE”``, ``RUN_TASK_MAKE_OROG=”FALSE”``, and ``RUN_TASK_MAKE_SFC_CLIMO=”FALSE”`` in the ``regional_workflow/ush/config.sh`` file before running the ``generate_FV3LAM_wflow.sh`` script. As shown in the figure, the ``FV3LAM_wflow.xml`` file runs the specific j-job scripts in the prescribed order (``regional_workflow/jobs/JREGIONAL_[task name]``) when the ``launch_FV3LAM_wflow.sh`` is submitted. Each j-job task has its own source script named ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
 
-If the login shell is csh/tcsh, replace ``export`` with ``setenv`` in the command above.
+.. _WorkflowTasksFig:
+
+.. figure:: _static/FV3LAM_wflow_flowchart.png
+
+    *Flowchart of the workflow tasks*
+
+.. _WorkflowTasksTable:
+
+.. table::  Workflow tasks in SRW App
+
+   +----------------------+------------------------------------------------------------+
+   | **Workflow Task**    | **Task Description**                                       |
+   +======================+============================================================+
+   | make_grid            | Pre-processing task to generate regional grid files. Can   |
+   |                      | be run, at most, once per experiment.                      |
+   +----------------------+------------------------------------------------------------+
+   | make_orog            | Pre-processing task to generate orography files. Can be    |
+   |                      | run, at most, once per experiment.                         |
+   +----------------------+------------------------------------------------------------+
+   | make_sfc_climo       | Pre-processing task to generate surface climatology files. |
+   |                      | Can be run, at most, once per experiment.                  |
+   +----------------------+------------------------------------------------------------+
+   | get_extrn_ics        | Cycle-specific task to obtain external data for the        |
+   |                      | initial conditions                                         |
+   +----------------------+------------------------------------------------------------+
+   | get_extrn_lbcs       | Cycle-specific task to obtain external data for the        |
+   |                      | lateral boundary (LB) conditions                           |
+   +----------------------+------------------------------------------------------------+
+   | make_ics             | Generate initial conditions from the external data         |
+   +----------------------+------------------------------------------------------------+
+   | make_lbcs            | Generate lateral boundary conditions from the external data|
+   +----------------------+------------------------------------------------------------+
+   | run_fcst             | Run the forecast model (UFS weather model)                 |
+   +----------------------+------------------------------------------------------------+
+   | run_post             | Run the post-processing tool (UPP)                         |
+   +----------------------+------------------------------------------------------------+
+
+
 
 .. _RocotoRun:
 
 Run the Workflow Using Rocoto
 =============================
-The information in this section assumes that Rocoto is available on the desired platform. (Note that Rocoto cannot be used when running the workflow within a container.) If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: using the ``./launch_FV3LAM_wflow.sh`` or by hand. 
+The information in this section assumes that Rocoto is available on the desired platform. (Note that Rocoto cannot be used when running the workflow within a container.) If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
+
+Optionally, an environment variable can be set to navigate to the ``$EXPTDIR`` more easily. If the login shell is bash, it can be set as follows:
+
+.. code-block:: console
+
+   export EXPTDIR=/<path-to-experiment>/<directory_name>
+
+If the login shell is csh/tcsh, it can be set using:
+
+.. code-block:: console
+
+   setenv EXPTDIR /path-to-experiment/directory
+
 
 Launch the Rocoto Workflow Using a Script
 -----------------------------------------------
 
-To run Rocoto using the script provided: 
+To run Rocoto using the ``launch_FV3LAM_wflow.sh`` script provided, simply call it without any arguments: 
 
 .. code-block:: console
 
    cd $EXPTDIR
    ./launch_FV3LAM_wflow.sh
 
-Once the workflow is launched with the ``launch_FV3LAM_wflow.sh`` script, a log file named ``log.launch_FV3LAM_wflow`` will be created (or appended) in the ``EXPTDIR``. Check the end of the log file periodically to see how the experiment is progressing:
+This script creates a log file named ``log.launch_FV3LAM_wflow`` in the EXPTDIR directory or appends information to it if the file already exists. Check the end of the log file periodically to see how the experiment is progressing:
 
 .. code-block:: console
 
-   cd $EXPTDIR
-   vi ``log.launch_FV3LAM_wflow``
+   tail -n 30 log.launch_FV3LAM_wflow
 
-Alternatively, to (re)launch the workflow and check its progress on a single line: 
+In order to launch additional tasks in the workflow, call the launch script again; this action will need to be repeated until all tasks in the workflow have been launched. To (re)launch the workflow and check its progress on a single line, run: 
 
 .. code-block:: console
 
-   ./launch_FV3LAM_wflow.sh; tail -n 40 log.launch_FV3LAM_wflow
+   ./launch_FV3LAM_wflow.sh; tail -n 80 log.launch_FV3LAM_wflow
 
-This will output the last 40 lines of the log file. The number 40 can be changed according to the user's preferences. 
+This will output the last 80 lines of the log file, which includes the status of the workflow tasks (e.g., SUCCEEDED, DEAD, RUNNING, SUBMITTING, QUEUED). The number 80 can be changed according to the user's preferences. The output will look like this: 
+
+.. code-block:: console
+
+   CYCLE                    TASK                       JOBID        STATE   EXIT STATUS   TRIES  DURATION
+   ======================================================================================================
+   202006170000        make_grid         druby://hfe01:33728   SUBMITTING             -       0       0.0
+   202006170000        make_orog                           -            -             -       -         -
+   202006170000   make_sfc_climo                           -            -             -       -         -
+   202006170000    get_extrn_ics         druby://hfe01:33728   SUBMITTING             -       0       0.0
+   202006170000   get_extrn_lbcs         druby://hfe01:33728   SUBMITTING             -       0       0.0
+   202006170000         make_ics                           -            -             -       -         -
+   202006170000        make_lbcs                           -            -             -       -         -
+   202006170000         run_fcst                           -            -             -       -         -
+   202006170000      run_post_00                           -            -             -       -         -
+   202006170000      run_post_01                           -            -             -       -         -
+   202006170000      run_post_02                           -            -             -       -         -
+   202006170000      run_post_03                           -            -             -       -         -
+   202006170000      run_post_04                           -            -             -       -         -
+   202006170000      run_post_05                           -            -             -       -         -
+   202006170000      run_post_06                           -            -             -       -         -
+
+   Summary of workflow status:
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+     0 out of 1 cycles completed.
+     Workflow status:  IN PROGRESS
+
+Error messages for each specific task can be found in the task log files located in the ``$EXPTDIR/log`` directory. 
+
+If everything goes smoothly, you will eventually get the following workflow status table as follows:
+
+.. code-block:: console
+
+   CYCLE                    TASK                       JOBID        STATE   EXIT STATUS   TRIES  DURATION
+   ======================================================================================================
+   202006170000        make_grid                     8854765    SUCCEEDED             0       1       6.0
+   202006170000        make_orog                     8854809    SUCCEEDED             0       1      27.0
+   202006170000   make_sfc_climo                     8854849    SUCCEEDED             0       1      36.0
+   202006170000    get_extrn_ics                     8854763    SUCCEEDED             0       1      54.0
+   202006170000   get_extrn_lbcs                     8854764    SUCCEEDED             0       1      61.0
+   202006170000         make_ics                     8854914    SUCCEEDED             0       1     119.0
+   202006170000        make_lbcs                     8854913    SUCCEEDED             0       1      98.0
+   202006170000         run_fcst                     8854992    SUCCEEDED             0       1     655.0
+   202006170000      run_post_00                     8855459    SUCCEEDED             0       1       6.0
+   202006170000      run_post_01                     8855460    SUCCEEDED             0       1       6.0
+   202006170000      run_post_02                     8855461    SUCCEEDED             0       1       6.0
+   202006170000      run_post_03                     8855462    SUCCEEDED             0       1       6.0
+   202006170000      run_post_04                     8855463    SUCCEEDED             0       1       6.0
+   202006170000      run_post_05                     8855464    SUCCEEDED             0       1       6.0
+   202006170000      run_post_06                     8855465    SUCCEEDED             0       1       6.0
+
+If all the tasks complete successfully, the workflow status in the log file will include the word “SUCCESS." Otherwise, the workflow status will include the word “FAILURE."
 
 
 Launch the Rocoto Workflow Manually
@@ -634,7 +739,7 @@ Launch the Rocoto Workflow Manually
 Load Rocoto
 ^^^^^^^^^^^^^^^^
 
-Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can manually load Rocoto and any other required modules. This gives the user more control over the process and allows them to view experiment progress more easily. 
+Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can load Rocoto and any other required modules. This gives the user more control over the process and allows them to view experiment progress more easily. 
 
 For most systems, a variant on the following commands will be necessary to load the Rocoto module:
 
@@ -705,7 +810,7 @@ After loading Rocoto, call ``rocotorun`` from the experiment directory to launch
 
 The ``rocotorun`` and ``rocotostat`` commands will need to be resubmitted regularly and repeatedly until the experiment is finished. In part, this is to avoid having the system time out. This also ensures that when one task ends, tasks dependent on it will run as soon as possible, and ``rocotostat`` will capture the new progress. 
 
-If the experiment fails, the ``rocotostat`` command will indicate which task failed. Users can look at the log file in the ``log`` subdirectory for the failed task to determine what caused the failure. For example, if the ``make_grid`` task failed: 
+If the experiment fails, the ``rocotostat`` command will indicate which task failed. Users can look at the log file in the ``log`` subdirectory for the failed task to determine what caused the failure. For example, if the ``make_grid`` task failed, users can open the ``make_grid.log`` file to see what caused the problem: 
 
 .. code-block:: console
 
@@ -716,11 +821,11 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
    
    If users have the `Slurm workload manager <https://slurm.schedmd.com/documentation.html>`_ on their system, they can run the ``squeue`` command in lieu of ``rocotostat`` to check what jobs are currently running. 
 
-.. _AdditionalOptions:
+.. _Automate:
 
-Additional Options
+Automated Option
 ----------------------
-For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add a crontab entry by entering the ``crontab -e`` command, which opens a crontab file. As mentioned in :ref:`Section %s <GenerateWorkflowNC>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *``), can be pasted into the crontab file. It can also be found in the``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add a crontab entry by entering the ``crontab -e`` command, which opens a crontab file. As mentioned in :ref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *``), can be pasted into the crontab file. It can also be found in the``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
 
 .. code-block:: console
 
@@ -728,7 +833,7 @@ For automatic resubmission of the workflow at regular intervals (e.g., every min
 
 where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's machine, and ``/apps/rocoto/1.3.3/bin/rocotorun`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``1`` can also be changed and simply means that the workflow will be resubmitted every minute. 
 
-Then, check the experiment progress with:
+To check the experiment progress:
 
 .. code-block:: console
    
@@ -759,6 +864,8 @@ The workflow run is completed when all tasks have “SUCCEEDED”, and the rocot
    201906150000          run_post_f001       4953245           SUCCEEDED         0         1           4.0
    ...
    201906150000          run_post_f048       4953381           SUCCEEDED         0         1           7.0
+
+.. _PlotOutput:
 
 Plot the Output
 ===============
