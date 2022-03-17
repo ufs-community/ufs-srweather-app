@@ -4,13 +4,13 @@
 Building and Running the SRW
 ===================================== 
 
-The UFS Short-Range Weather Application (SRW App) is an :term:`umbrella repository` consisting of a number of different :ref:`components <Components>` housed in external repositories. Once the SRW App is configured and built, users can generate predictions of atmospheric behavior over a limited spatial area and on time scales ranging from minutes out to several days. 
+The Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application is an :term:`umbrella repository` consisting of a number of different :ref:`components <Components>` housed in external repositories. Once the SRW App is configured and built, users can generate predictions of atmospheric behavior over a limited spatial area and on time scales ranging from minutes out to several days. 
 
-This chapter walks users through how to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application. However, the steps are relevant to any SRW experiment and can be modified to suit user goals. The "out-of-the-box" SRW case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
+This chapter walks users through how to build and run the "out-of-the-box" case for the SRW App. However, the steps are relevant to any SRW experiment and can be modified to suit user goals. The "out-of-the-box" SRW case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. attention::
 
-   The UFS defines `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. On Level 1 systems, all of the required libraries for building community releases of UFS models and applications are available in a central location. This guide can serve as a starting point for running the SRW App on other systems, too, but the user need to perform additional troubleshooting. 
+   The UFS defines `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. On Level 1 systems, all of the required libraries for building community releases of UFS models and applications are available in a central location. This guide can serve as a starting point for running the SRW App on other systems, too, but the user may need to perform additional troubleshooting. 
 
 .. note::
    The :ref:`container approach <QuickstartC>` is recommended for a smoother build and run experience. Building without a container allows for the use of the Rocoto workflow manager and may allow for more cutomization. However, the non-container approach requires more in-depth troubleshooting skills, especially on Level 3 and 4 systems, and is less appropriate for beginners. 
@@ -27,14 +27,14 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
    * :ref:`Generate a regional workflow experiment <GenerateForecast>`
       * :ref:`Configure the experiment parameters <UserSpecificConfig>`
       * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
-   * :ref:`Run the regional workflow <WorkflowGeneration>` 
+   * :ref:`Run the regional workflow <RocotoRun>` 
    * :ref:`Optional: Plot the output <PlotOutput>`
 
 .. _AppOverallProc:
 
 .. figure:: _static/FV3LAM_wflow_overall.png
 
-    *Overall layout of the SRW App*
+    *Overall layout of the SRW App Workflow*
 
 
 .. _HPCstackInfo:
@@ -45,7 +45,7 @@ Install the HPC-Stack
 .. Attention::
    Skip the HPC-Stack installation if working on a `Level 1 system <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ (e.g., Cheyenne, Hera, Orion, NOAA Cloud).
 
-**Definition:** :term:`HPC-Stack` is a repository that provides a unified, shell script-based build system and builds the software stack required for the `Unified Forecast System (UFS) <https://ufscommunity.org/>`_ and applications. 
+**Definition:** :term:`HPC-Stack` is a repository that provides a unified, shell script-based build system and builds the software stack required for `UFS <https://ufscommunity.org/>`_ applications such as the SRW App. 
 
 Background
 ----------------
@@ -54,7 +54,7 @@ The UFS Weather Model draws on over 50 code libraries to run its applications. T
 
 Instructions
 -------------------------
-Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to run applications (such as the SRW) or models that depend on it. Users can either build the HPC-stack on their local system or use the centrally maintained stacks on each HPC platform. For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`.  
+Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to run applications (such as the SRW) or models that depend on it. Users can either build the HPC-stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`.  
 
 After completing installation, continue to the next section.
 
@@ -62,9 +62,7 @@ After completing installation, continue to the next section.
 
 Download the UFS SRW Application Code
 =====================================
-The SRW Application source code is publicly available on GitHub. It relies on a variety of components detailed in the :ref:`Components Chapter <Components>` of this User's Guide. Users must (1) clone the UFS SRW Application umbrella repository and then (2) run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App and will clone the correct version of the regional workflow, pre-processing utilities, UFS Weather Model, and UPP source code into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
-
-Clone the release branch of the repository:
+The SRW Application source code is publicly available on GitHub. To download the SRW App, clone the release branch of the repository:
 
 .. code-block:: console
 
@@ -81,12 +79,12 @@ The cloned repository contains the configuration files and sub-directories shown
 .. table::  Files and sub-directories of the ufs-srweather-app repository
 
    +--------------------------------+--------------------------------------------------------+
-   | **File/directory Name**        | **Description**                                        |
+   | **File/Directory Name**        | **Description**                                        |
    +================================+========================================================+
    | CMakeLists.txt                 | Main cmake file for SRW App                            |
    +--------------------------------+--------------------------------------------------------+
-   | Externals.cfg                  | Tags of the GitHub repositories/branches for the       |
-   |                                | external repositories                                  |
+   | Externals.cfg                  | Includes tags pointing to the correct version of the   |
+   |                                | external GitHub repositories/branches used in the SRW. |
    +--------------------------------+--------------------------------------------------------+
    | LICENSE.md                     | CC0 license information                                |
    +--------------------------------+--------------------------------------------------------+
@@ -113,14 +111,16 @@ The cloned repository contains the configuration files and sub-directories shown
 Check Out External Components
 ================================
 
-Next, run the executable that pulls in SRW components from external repositories, including the regional_workflow, ufs-weather-model, ufs_utils, and upp repositories:
+The SRW App relies on a variety of components (e.g., regional_workflow, UFS_UTILS, ufs-weather-model, and UPP) detailed in :numref:`Chapter %s <Components>` of this User's Guide. Users must run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>` into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
+
+Run the executable that pulls in SRW components from external repositories:
 
 .. code-block:: console
 
    cd ufs-srweather-app
    ./manage_externals/checkout_externals
 
-This step will use the configuration file ``Externals.cfg`` in the ``ufs-srweather-app`` directory to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>`. 
+
 
 .. _SetUpBuild:
 
@@ -137,15 +137,15 @@ Before building the SRW App, the build environment must be set up for the user's
       -rw-rw-r-- 1 user ral 1228 Oct  9 10:09 build_jet_intel.env
       ...
 
-On Level 1 systems, the commands in the ``build_<platform>_<compiler>.env`` files can be directly copy-pasted into the command line, or the file can be sourced from the ufs-srweather-app ``env`` directory. For example, on Hera, run:
+On Level 1 systems, the commands in the ``build_<platform>_<compiler>.env`` files can be directly copy-pasted into the command line, or the file can be sourced from the ``ufs-srweather-app/env`` directory. For example, on Hera, run:
 
 .. code-block::
 
    source env/build_hera_intel.env
 
-from the main ufs-srweather-app directory to source the appropriate file.
+from the main ``ufs-srweather-app`` directory to source the appropriate file.
 
-On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. To check if Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, this process will typically involve commands in the form ``export <VARIABLE_NAME>=<PATH_TO_MODULE>``. You may need to use ``setenv`` rather than ``export`` depending on your shell environment. 
+On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. To check if Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables using commands in the form ``export <VARIABLE_NAME>=<PATH_TO_MODULE>``. Users may need to use ``setenv`` rather than ``export`` depending on their shell environment. 
 
 .. _BuildExecutables:
 
@@ -201,12 +201,12 @@ The build will take a few minutes to complete. When it starts, a random number i
    +------------------------+---------------------------------------------------------------------------------+
    | sfc_climo_gen          | Creates surface climatology fields from fixed files for use in ``chgres_cube``  |
    +------------------------+---------------------------------------------------------------------------------+
-   | shave                  | Shaves the excess halo rows down to what is required for the LBCs in the        |
-   |                        | orography and grid files                                                        |
+   | shave                  | Shaves the excess halo rows down to what is required for the lateral boundary   |
+   |                        | conditions (LBC's) in the orography and grid files                              |
    +------------------------+---------------------------------------------------------------------------------+
    | vcoord_gen             | Generates hybrid coordinate interface profiles                                  |
    +------------------------+---------------------------------------------------------------------------------+
-   | fvcom_to_FV3           | Determine lake surface conditions for the Great Lakes                           |
+   | fvcom_to_FV3           | Determines lake surface conditions for the Great Lakes                          |
    +------------------------+---------------------------------------------------------------------------------+
    | make_hgrid             | Computes geo-referencing parameters (e.g., latitude, longitude, grid cell area) |
    |                        | for global uniform grids                                                        |
@@ -237,14 +237,14 @@ Download and Stage the Data
 ============================
 
 The SRW requires input files to run. These include static datasets, initial and boundary conditions 
-files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW. 
+files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GridSpecificConfig:
 
 Grid Configuration
 =======================
 
-The SRW App officially supports three different predefined grids as shown in :numref:`Table %s <PredefinedGrids>`. The "out-of-the-box" SRW case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>` for those who are curious. Users who plan to utilize one of the three pre-defined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new domain should refer to :numref:`Chapter %s <LAMGrids>` for details on how to do so. At a minimum, they will need to add the new grid name to the ``valid_param_vals`` script and add the corresponding grid-specific parameters in the ``set_predef_grid_params`` script. 
+The SRW App officially supports three different predefined grids as shown in :numref:`Table %s <PredefinedGrids>`. The "out-of-the-box" SRW case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>` for those who are curious. Users who plan to utilize one of the three pre-defined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new domain should refer to :numref:`Chapter %s <LAMGrids>` for details on how to do so. At a minimum, these users will need to add the new grid name to the ``valid_param_vals`` script and add the corresponding grid-specific parameters in the ``set_predef_grid_params`` script. 
 
 .. _PredefinedGrids:
 
@@ -271,14 +271,14 @@ Generating the forecast experiment requires three steps:
 * :ref:`Set Python and other environment parameters <SetUpPythonEnv>`
 * :ref:`Run a script to generate the experiment workflow <GenerateWorkflow>`
 
-The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. 
+The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. Information in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>` can help with this. 
 
 .. _ExptConfig:
 
 Set Experiment Parameters
 ---------------------------- 
 
-Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in ``config_defaults.sh`` and in the user-specific ``config.sh`` file. When generating a new experiment, the SRW App first reads and assigns default values from the ``config_defaults.sh`` file. Then, it reads and (re)assigns variables from the user's custom ``config.sh`` file. For background info on ``config_defaults.sh``, read :numref:`Section %s <DefaultConfigSection>` or jump to :numref:`Section %s <UserSpecificConfig>` to continue configuring the experiment. 
+Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in ``config_defaults.sh`` and in the user-specific ``config.sh`` file. When generating a new experiment, the SRW App first reads and assigns default values from the ``config_defaults.sh`` file. Then, it reads and (re)assigns variables from the user's custom ``config.sh`` file. For background info on ``config_defaults.sh``, read :numref:`Section %s <DefaultConfigSection>`, or jump to :numref:`Section %s <UserSpecificConfig>` to continue configuring the experiment. 
 
 .. _DefaultConfigSection:
 
@@ -286,10 +286,10 @@ Default configuration: ``config_defaults.sh``
 ------------------------------------------------
 
 .. note::
-   Users may skip to :numref:`Step %s <UserSpecificConfig>`. This section provides background information on how the SRW App uses the ``config_defaults.sh`` file, but this information is not necessary for running the SRW. 
+   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file, but this information is not necessary for running the SRW. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
 
 Important configuration variables in the ``config_defaults.sh`` file appear in 
-:numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified configuration ``config.sh`` file. Any settings provided in ``config.sh`` will override the default ``config_defaults.sh`` 
+:numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.sh`` file. Any settings provided in ``config.sh`` will override the default ``config_defaults.sh`` 
 settings. There is usually no need for a user to modify the default configuration file. Additional information on the default settings can be found in the file itself and in :numref:`Chapter %s <ConfigWorkflow>`. 
 
 .. _ConfigVarsDefault:
