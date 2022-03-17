@@ -71,23 +71,25 @@ jobs:
           #sed -i 's/MACHINE="${MACHINE_ID}"/MACHINE="singularity"/g' ${ENV_DIR}/detect_machine.sh
           #./devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} --ccpp="FV3_GFS_v15p2"
 
-      - name: Download data for fcst test
-        run: |
-          echo "Now we are going to download data!"
-          cd /opt
-          wget https://dl.dropboxusercontent.com/s/76ec5q3dtlt0twl/exp.tar.gz 
-          tar -xzvf exp.tar.gz
-          ls /opt
+          #      - name: Download data for fcst test
+          #        run: |
+          #          echo "Now we are going to download data!"
+          #          cd /opt
+          #          wget https://dl.dropboxusercontent.com/s/76ec5q3dtlt0twl/exp.tar.gz 
+          #          tar -xzvf exp.tar.gz
+          #          ls /opt
 
-      - name: run_fcst 
+      - name: run ctests 
         run: |
-          echo "run_fcst test!"
-          source /opt/ufs-srweather-app/env/build_singularity_gnu.env 
-          cd /opt/test_fcst/2019061500
-          ls -l -h /opt/ufs-srweather-app/bin/ufs_model
-          export OMP_NUM_THREADS=1
-          ulimit -s unlimited
-          mpirun --allow-run-as-root -np 2 /opt/ufs-srweather-app/bin/ufs_model > "run_fcst.log" 2>&1
-          tail -20 "run_fcst.log"
-          ls -l -h /opt/test_fcst/2019061500/RESTART
-          #ncdump -h /opt/test_fcst/2019061500/RESTART/fv_core.res.nc
+          echo "run ctests!"
+          cd /opt/ufs-srweather-app/build
+          source /opt/ufs-srweather-app/env/build_singularity_gnu.env
+          ctest -R test_fcst 
+          #source /opt/ufs-srweather-app/env/build_singularity_gnu.env 
+          #cd /opt/test_fcst/2019061500
+          #ls -l -h /opt/ufs-srweather-app/bin/ufs_model
+          #export OMP_NUM_THREADS=1
+          #ulimit -s unlimited
+          #mpirun --allow-run-as-root -np 2 /opt/ufs-srweather-app/bin/ufs_model > "run_fcst.log" 2>&1
+          #tail -20 "run_fcst.log"
+          #ls -l -h /opt/test_fcst/2019061500/RESTART

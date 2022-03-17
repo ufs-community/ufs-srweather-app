@@ -131,3 +131,4 @@ configure_file(
 FILE(COPY "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app_meta.h" DESTINATION include)
 
 add_subdirectory(src)
+add_subdirectory(test)
