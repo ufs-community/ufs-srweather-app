@@ -86,7 +86,7 @@ command:
 
 .. code-block:: console
 
-   rocotorewind -w FV3SAR_wflow.xml -d FV3SAR_wflow.db -v 10 -c 201905200000 -t get_extrn_ics
+   rocotorewind -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 -c 201905200000 -t get_extrn_ics
 
 where ``-c`` specifies the cycle date (first column of rocotostat output) and ``-t`` represents the task name
 (second column of rocotostat output). After using ``rocotorewind``, the next time ``rocotorun`` is used to

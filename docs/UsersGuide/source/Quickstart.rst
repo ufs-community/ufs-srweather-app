@@ -4,15 +4,18 @@
 Quick Start Guide
 ====================================
 
-This Workflow Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a container. The container approach provides a uniform enviroment in which to build and run the SRW. Normally, the details of building and running the SRW vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`’s, and package versions available. Installation via an EPIC-provided container reduces this variability and allows for a smoother SRW build and run experience. However, the :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability, particularly if they already have experience running the SRW App. 
+This Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`’s, and package versions available. Installation via an :term:`EPIC`-provided container reduces this variability and allows for a smoother SRW build and run experience. However, the :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability, particularly if they already have experience running the SRW. 
 
-The "out-of-the-box" SRW case described in this guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
+The "out-of-the-box" SRW case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and :term:`FV3`-based GFS raw external model data for initialization.
+
+.. attention::
+
+   The UFS defines `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
 
 .. _DownloadCodeC:
 
 Building the UFS SRW Application
-===========================================
-The SRW Application source code is publicly available on GitHub and can be run in a container or locally, depending on user preference. The SRW Application relies on a variety of components detailed in the :ref:`Components Chapter <Components>` of this User's Guide. Users must (1) clone the UFS SRW Application umbrella repository and then (2) run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App and will clone the correct version of the regional workflow, pre-processing utilities, UFS Weather Model, and UPP source code into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
+=========================================== 
 
 Prerequisites: Install Singularity
 ------------------------------------
@@ -26,7 +29,7 @@ To build and run the SRW App using a Singularity container, first install the Si
 Working in the Cloud
 -----------------------
 
-For those working on non-cloud-based systems, skip to :numref:`Step %s <WorkOnHPC>`. Users building the SRW using NOAA's Cloud resources must complete a few additional steps to ensure the SRW builds and runs correctly. 
+For those working on non-cloud-based systems, skip to :numref:`Step %s <WorkOnHPC>`. Users building the SRW using NOAA's Cloud resources must complete a few additional steps to ensure that the SRW builds and runs correctly. 
 
 On NOAA Cloud systems, certain environment variables must be set *before* building the container:
    
@@ -36,9 +39,10 @@ On NOAA Cloud systems, certain environment variables must be set *before* buildi
    export SINGULARITY_CACHEDIR=/lustre/cache
    export SINGULARITY_TEMPDIR=/lustre/tmp
 
-* If the ``cache`` and ``tmp`` directories do not exist already, they must be created. 
+If the ``cache`` and ``tmp`` directories do not exist already, they must be created with a ``mkdir`` command. 
 
-* ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move it to the ``/contrib`` directory, which is much slower but persistent.
+.. note:: 
+   ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
 
 .. _WorkOnHPC:
 
@@ -46,7 +50,7 @@ Working on HPC Systems
 --------------------------
 
 Those *not* working on HPC systems may skip to the :ref:`next step <BuildC>`. 
-On HPC systems (including NOAA's Cloud platforms), allocate a compute node on which to run the SRW. On NOAA's Cloud platforms, the following commands should work:
+On HPC systems (including NOAA's Cloud platforms), allocate a compute node on which to run the SRW. On NOAA's Cloud platforms, the following commands will allocate a compute node:
 
 .. code-block:: console
 
@@ -55,7 +59,7 @@ On HPC systems (including NOAA's Cloud platforms), allocate a compute node on wh
    mpirun -n 1 hostname
    ssh <hostname>
 
-The third command will output a hostname. This hostname should replace ``<hostname>`` in the last command. After "ssh-ing" to the compute node in the last command, build and run the SRW from that node. 
+The third command will output a hostname. Replace ``<hostname>`` in the last command with the output from the third command. After "ssh-ing" to the compute node in the last command, build and run the SRW from that node. 
 
 The appropriate commands on other Level 1 platforms will vary, and users should consult the documentation for those platforms. 
 
@@ -79,7 +83,7 @@ Start the container and run an interactive shell within it:
 
    singularity shell -e --writable --bind /<local_base_dir>:/<path_to_container_dir_w_same_name> ubuntu20.04-epic-srwapp-1.0
 
-The command above also binds the local directory to the container so that data can be shared between them. On NOAA systems, the local directory is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
+The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
 .. attention::
    * When binding two directories, they must have the same name. It may be necessary to ``cd`` into the container and create an appropriately named directory in the container using the ``mkdir`` command if one is not already there. 
@@ -91,7 +95,7 @@ The command above also binds the local directory to the container so that data c
 Set up the Build Environment
 ============================
 
-If the SRW Application has been built in a container provided by the Earth Prediction Innovation Center (EPIC), set build environments and modules within the ``ufs-srweather-app`` directory as follows:
+Set the build environments and modules within the ``ufs-srweather-app`` directory as follows:
 
 .. code-block:: console
 
@@ -118,17 +122,17 @@ Download and Stage the Data
 ============================
 
 The SRW requires input files to run. These include static datasets, initial and boundary condition 
-files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW. 
+files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW. 
 
 .. _GenerateForecastC:
 
 Generate the Forecast Experiment 
 =================================
-Generating the forecast experiment requires three steps:
+To generate the forecast experiment, users must:
 
-* :ref:`Set experiment parameters <SetUpConfigFileC>`
-* :ref:`Set Python and other environment parameters <SetUpPythonEnvC>`
-* :ref:`Run a script to generate the experiment workflow <GenerateWorkflowC>`
+#. :ref:`Set experiment parameters <SetUpConfigFileC>`
+#. :ref:`Set Python and other environment parameters <SetUpPythonEnvC>`
+#. :ref:`Run a script to generate the experiment workflow <GenerateWorkflowC>`
 
 The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. 
 
@@ -138,7 +142,7 @@ Set the Experiment Parameters
 -------------------------------
 Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in the ``config.sh`` file. Two example ``config.sh`` templates are provided: ``config.community.sh`` and ``config.nco.sh``. They can be found in the ``ufs-srweather-app/regional_workflow/ush`` directory. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release. 
 
-Make a copy of ``config.community.sh`` to get started (under ``<path-to-ufs-srweather-app>/regional_workflow/ush``). From the ``ufs-srweather-app`` directory, run:
+Make a copy of ``config.community.sh`` to get started. From the ``ufs-srweather-app`` directory, run the following commands:
 
 .. code-block:: console
 
@@ -157,7 +161,7 @@ Next, edit the new ``config.sh`` file to customize it for your experiment. At a 
    EXPT_BASEDIR="/home/$USER/expt_dirs"
    COMPILER="gnu"
 
-Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct paths to the data. The following is a sample for a 48-hour forecast:
+Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct paths to the data. The following is a sample for a 24-hour forecast:
 
 .. code-block::
 
@@ -165,7 +169,7 @@ Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct pa
    EXTRN_MDL_SOURCE_BASEDIR_ICS="/path/to/model_data/FV3GFS"
    EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path/to/model_data/FV3GFS"
-   EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" "gfs.pgrb2.0p25.f018" "gfs.pgrb2.0p25.f024" \ "gfs.pgrb2.0p25.f030" "gfs.pgrb2.0p25.f036" "gfs.pgrb2.0p25.f042" "gfs.pgrb2.0p25.f048" )
+   EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" "gfs.pgrb2.0p25.f018" "gfs.pgrb2.0p25.f024" )
 
 On Level 1 systems, ``/path/to/model_data/FV3GFS`` should correspond to the location of the machine's global data. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Step %s <InitialConditions>`. 
 
@@ -185,7 +189,7 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
          FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
 
    #. Exit the system-specific file and open ``singularity.sh``. 
-   #. Comment out or delete the corresponding chunk of text in ``singularity.sh``, and paste the correct paths from the system-specific file in its place. For example, on Orion, delete the text below, and replace it with the Orion-specific text copied in the previous step. 
+   #. Comment out or delete the corresponding chunk of text in ``singularity.sh``, and paste the correct paths from the system-specific file in its place. For example, on Orion, delete the text below from ``singularity.sh``, and replace it with the Orion-specific text copied in the previous step. 
 
       .. code-block:: console
 
@@ -197,13 +201,13 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
          SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/contrib/global/glopara/fix/fix_sfc_climo"}
          FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
 
-From here, it should be possible to continue to the :ref:`next step <SetUpPythonEnvC>` on Level 1 systems. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
+On Level 1 systems, it should be possible to continue to the :ref:`next step <SetUpPythonEnvC>` after changing the settings above. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. For users interested in experimenting with a different grid, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 .. _SetUpPythonEnvC:
 
 Activate the Regional Workflow
 ----------------------------------------------
-Next, activate the regional workflow. 
+Next, activate the regional workflow: 
 
 .. code-block:: console
 
@@ -227,7 +231,7 @@ Run the following command to generate the workflow:
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/1 * * * *`` or ``*/3 * * * *``. 
 
-The generated workflow will be in the experiment directory specified in the ``config.sh`` file in :numref:`Step %s <SetUpConfigFileC>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in the experiment directory. 
+The generated workflow will be in the experiment directory specified in the ``config.sh`` file in :numref:`Step %s <SetUpConfigFileC>`.  
 
 .. _RunUsingStandaloneScripts:
 
@@ -237,7 +241,7 @@ Run the Workflow Using Stand-Alone Scripts
 .. note:: 
    The Rocoto workflow manager cannot be used inside a container. 
 
-The regional workflow can be run using standalone shell scripts if the Rocoto software is not available on a given platform. If Rocoto *is* available, see `Section %s <RocotoRun>` to run the workflow using Rocoto. 
+The regional workflow can be run using standalone shell scripts in cases where the Rocoto software is not available on a given platform. If Rocoto *is* available, see :numref:`Section %s <RocotoRun>` to run the workflow using Rocoto. 
 
 #. ``cd`` into the experiment directory
 
@@ -248,13 +252,13 @@ The regional workflow can be run using standalone shell scripts if the Rocoto so
       export EXPTDIR=`pwd`
       setenv EXPTDIR `pwd`
 
-#. Copy the wrapper scripts from the regional_workflow directory into your experiment directory. Each workflow task has a wrapper script that sets environment variables and run the job script.
+#. Copy the wrapper scripts from the regional_workflow directory into the experiment directory. Each workflow task has a wrapper script that sets environment variables and runs the job script.
 
    .. code-block:: console
 
       cp ufs-srweather-app/regional_workflow/ush/wrappers/* .
 
-#. Set the OMP_NUM_THREADS variable and fix dash/bash shell issue (this ensures the system does not use an alias of ``sh`` to dash). 
+#. Set the ``OMP_NUM_THREADS`` variable and fix dash/bash shell issue (this ensures the system does not use an alias of ``sh`` to dash). 
 
    .. code-block:: console
 
@@ -276,13 +280,6 @@ The regional workflow can be run using standalone shell scripts if the Rocoto so
       ./run_post.sh
 
 Check the batch script output file in your experiment directory for a “SUCCESS” message near the end of the file.
-
-.. hint:: 
-   If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA Cloud systems can be viewed in the :numref:`Step %s <WorkOnHPC>` as an example. 
-
-.. note::
-   #. On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first two jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided. These will need to be adapted to each user's system. This submit batch script is hard-coded per task, so it will need to be modified or copied to run each task.
-
 
 .. _RegionalWflowTasks:
 
@@ -317,9 +314,12 @@ Check the batch script output file in your experiment directory for a “SUCCESS
    |            |                        |                | forecast hour)             |
    +------------+------------------------+----------------+----------------------------+
 
-Example batch-submit scripts for Hera (Slurm) and Cheyenne (PBS) are included (``sq_job.sh``
-and ``qsub_job.sh``, respectively). These examples set the build and run environment for Hera or Cheyenne so that run-time libraries match the compiled libraries (i.e. netCDF, MPI). Users may either modify the submit batch script as each task is submitted, or duplicate this batch wrapper
-for their system settings for each task. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). This piece will be unique to your platform. The tasks run by the regional workflow are shown in :numref:`Table %s <RegionalWflowTasks>`. Tasks with the same stage level may be run concurrently (no dependency).
+
+.. hint:: 
+   If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA Cloud systems can be viewed in the :numref:`Step %s <WorkOnHPC>` as an example. 
+
+.. note::
+   On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first two jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided (``sq_job.sh`` and ``qsub_job.sh``, respectively). These examples will need to be adapted to each user's system. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). 
 
 Plot the Output
 ===============

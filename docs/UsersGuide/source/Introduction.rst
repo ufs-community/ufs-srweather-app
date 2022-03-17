@@ -33,7 +33,61 @@ File paths or code that include angle brackets (e.g., ``build_<platform>_<compil
 .. hint:: 
    * To get started running the SRW, see the :ref:`Quick Start Guide <QuickstartC>` for beginners or refer to the in-depth chapter on :ref:`Running the Short-Range Weather Application <BuildRunSRW>`. 
    * For background information on the SRW code repositories and directory structure, see :numref:`Section %s <SRWStructure>` below. 
-   * For an outline of SRW components, see section :numref:`Section %s <Utilities>` below or refer to :numref:`Chapter %s <Components>` for a more in-depth treatment.
+   * For an outline of SRW components, see section :numref:`Section %s <ComponentsOverview>` below or refer to :numref:`Chapter %s <Components>` for a more in-depth treatment.
+
+
+.. _ComponentsOverview: 
+
+SRW Components Overview 
+============================
+
+Pre-processor Utilities and Initial Conditions
+------------------------------------------------
+
+The SRW Application includes a number of pre-processing utilities that initialize and prepare the model. Tasks include generating a regional grid along with :term:`orography` and surface climatology files for that grid. The pre-processing software converts the raw external model data into initial and lateral boundary condition files in netCDF format. Later, these files are used as input to the atmospheric model (FV3-LAM). Additional information about the pre-processor utilities can be found in :numref:`Chapter %s <Utils>` and in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
+
+
+Forecast Model
+-----------------
+
+Atmospheric Model
+^^^^^^^^^^^^^^^^^^^^^^
+
+The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
+(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2020`).
+The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. 
+
+Common Community Physics Package
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ (:term:`CCPP`) supports interoperable atmospheric physics and Noah Multi-parameterization (Noah MP) Land Surface Model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The SRW release includes an experimental physics version and an updated operational version. 
+
+Data Format
+^^^^^^^^^^^^^^^^^^^^^^
+
+The SRW App supports the use of both :term:`GRIB2` and :term:`NEMSIO` input data. The UFS Weather Model ingests initial and lateral boundary condition files produced by :term:`chgres_cube`. 
+
+
+Unified Post-Processor (UPP)
+--------------------------------
+
+The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ (:term:`UPP`) processes raw output from a variety of numerical weather prediction (:term:`NWP`) models. In the SRW, it converts data output formats from netCDF format on the native model grid to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_. Output from the UPP can be used with visualization, plotting, and verification packages, or for further downstream post-processing (e.g., statistical post-processing techniques).
+
+
+Visualization Example
+-------------------------
+
+This SRW Application release provides Python scripts to create basic visualizations of the model output. :numref:`Chapter %s <Graphics>` contains usage information and instructions; instructions also appear at the top of the scripts. 
+
+Build System and Workflow
+----------------------------
+
+The SRW Application has a portable CMake-based build system that packages together all the components required to build the SRW Application. Once built, users can generate a Rocoto-based workflow that will run each task in the proper sequence (see `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__ for more on workflow management). Individual components can also be run in a stand-alone, command line fashion. 
+
+The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite for the forecast. 
+
+This SRW Application release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g. Hera, Orion), cloud environments, and generic Linux and macOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries (e.g., NCEPLIBS) available in a central location. The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW code <DownloadSRWApp>` without first installing prerequisites. On other platforms, the SRW can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW build <BuildRunSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
+
 
 
 .. _SRWStructure:
@@ -127,7 +181,7 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
 
 Regional Workflow Sub-Directories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A number of sub-directories are created under the ``regional_workflow`` directory when the regional workflow is cloned (see directory diagram :ref:`above <TopLevelDirStructure>`). The contents of these sub-directories are described in :numref:`Table %s <Subdirectories>`. 
+A number of sub-directories are created under the ``regional_workflow`` directory when the regional workflow is cloned (see directory diagram :ref:`above <TopLevelDirStructure>`). :numref:`Table %s <Subdirectories>` describes the contents of these sub-directories. 
 
 .. _Subdirectories:
 
@@ -154,7 +208,7 @@ A number of sub-directories are created under the ``regional_workflow`` director
 
 Experiment Directory Structure
 --------------------------------
-When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` script (:numref:`Step %s <GenerateWorkflow>`), a user-defined experimental directory is created based on information specified in the ``config.sh`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before the experiment workflow is run.
+When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` script (:numref:`Step %s <GenerateWorkflow>`), a user-defined experimental directory (``EXPTDIR``) is created based on information specified in the ``config.sh`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before running the experiment workflow.
 
 .. _ExptDirStructure:
 
@@ -201,9 +255,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    |  YYYYMMDDHH               | Cycle directory (empty)                                                                               |
    +---------------------------+-------------------------------------------------------------------------------------------------------+
 
-In addition, the *community* mode creates the ``fix_am`` and ``fix_lam`` directories in ``EXPTDIR``.
-The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files
-after the grid, orography, and/or surface climatology generation tasks are run. 
+In addition, running the SRW in *community* mode creates the ``fix_am`` and ``fix_lam`` directories in ``EXPTDIR``. The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files after the grid, orography, and/or surface climatology generation tasks are run. 
 
 .. _FixDirectories:
 
@@ -212,7 +264,7 @@ after the grid, orography, and/or surface climatology generation tasks are run.
    +-------------------------+----------------------------------------------------------+
    | **Directory Name**      | **Description**                                          |
    +=========================+==========================================================+
-   | fix_am                  | Directory containing the global `fix` (time-independent) |
+   | fix_am                  | Directory containing the global fix (time-independent)   |
    |                         | data files. The experiment generation script copies      |
    |                         | these files from a machine-dependent system directory.   |
    +-------------------------+----------------------------------------------------------+
@@ -223,33 +275,31 @@ after the grid, orography, and/or surface climatology generation tasks are run.
    +-------------------------+----------------------------------------------------------+
 
 Once the workflow is launched with the ``launch_FV3LAM_wflow.sh`` script, a log file named
-``log.launch_FV3LAM_wflow`` will be created (or appended to it if it already exists) in ``EXPTDIR``.
-Once the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks and the ``get_extrn_ics``
-and ``get_extrn_lbc`` tasks for the YYYYMMDDHH cycle have completed successfully, new files and
-sub-directories are created, as described in :numref:`Table %s <CreatedByWorkflow>`.
+``log.launch_FV3LAM_wflow`` will be created (unless it already exists) in ``EXPTDIR``. The first several workflow tasks (i.e., ``make_grid``, ``make_orog``, ``make_sfc_climo``, ``get_extrn_ics``, and ``get_extrn_lbc``) are preprocessing tasks, which result in the creation of new files and
+sub-directories, described in :numref:`Table %s <CreatedByWorkflow>`.
 
 .. _CreatedByWorkflow:
 
-.. table::  New directories and files created when the workflow is launched.
+.. table::  New directories and files created when the workflow is launched
    :widths: 30 70
 
    +---------------------------+--------------------------------------------------------------------+
-   | **Directory/file Name**   | **Description**                                                    |
+   | **Directory/File Name**   | **Description**                                                    |
    +===========================+====================================================================+
-   | YYYYMMDDHH                | This is updated when the first cycle-specific workflow tasks are   |
-   |                           | run, which are ``get_extrn_ics`` and ``get_extrn_lbcs`` (they are  |
-   |                           | launched simultaneously for each cycle in the experiment). We      |
-   |                           | refer to this as a “cycle directory”. Cycle directories are        |
-   |                           | created to contain cycle-specific files for each cycle that the    |
-   |                           | experiment runs. If ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL``     |
-   |                           | were different, and/or ``CYCL_HRS`` contained more than one        |
-   |                           | element in the ``config.sh`` file, then more than one cycle        |
-   |                           | directory would be created under the experiment directory.         |
+   | YYYYMMDDHH                | This is a “cycle directory” that is updated when the first         |
+   |                           | cycle-specific workflow tasks (``get_extrn_ics`` and               |
+   |                           | ``get_extrn_lbcs``) are run. These tasks are launched              |
+   |                           | simultaneously for each cycle in the experiment. Cycle directories |
+   |                           | are created to contain cycle-specific files for each cycle that    |
+   |                           | the experiment runs. If ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` |
+   |                           | are different, and/or if ``CYCL_HRS`` contains more than one       |
+   |                           | element in the ``config.sh`` file, more than one cycle directory   |
+   |                           | will be created under the experiment directory.                    |
    +---------------------------+--------------------------------------------------------------------+
-   | grid                      | Directory generated by the ``make_grid`` task containing grid      |
-   |                           | files for the experiment                                           |
+   | grid                      | Directory generated by the ``make_grid`` task to store grid files  |
+   |                           | for the experiment                                                 |
    +---------------------------+--------------------------------------------------------------------+
-   | log                       | Contains log files generated by the overall workflow and its       |
+   | log                       | Contains log files generated by the overall workflow and by its    |
    |                           | various tasks. Look in these files to trace why a task may have    |
    |                           | failed.                                                            |
    +---------------------------+--------------------------------------------------------------------+
@@ -262,64 +312,14 @@ sub-directories are created, as described in :numref:`Table %s <CreatedByWorkflo
    | FV3LAM_wflow.db           | Database files that are generated when Rocoto is called (by the    |
    | FV3LAM_wflow_lock.db      | launch script) to launch the workflow.                             |
    +---------------------------+--------------------------------------------------------------------+
-   | log.launch_FV3LAM_wflow   | This is the log file to which the launch script                    |
-   |                           | ``launch_FV3LAM_wflow.sh`` appends its output each time it is      |
-   |                           | called. Take a look at the last 30–50 lines of this file to check  |
-   |                           | the status of the workflow.                                        |
+   | log.launch_FV3LAM_wflow   | The ``launch_FV3LAM_wflow.sh`` script appends its output to this   |
+   |                           | log file each time it is called. Take a look at the last 30–50     |
+   |                           | lines of this file to check the status of the workflow.            |
    +---------------------------+--------------------------------------------------------------------+
 
 The output files for an experiment are described in :numref:`Section %s <OutputFiles>`.
 The workflow tasks are described in :numref:`Section %s <WorkflowTaskDescription>`).
 
-
-.. _Utilities: 
-
-SRW Component Summary: Pre-processor Utilities and Initial Conditions
-=========================================================================
-
-The SRW Application includes a number of pre-processing utilities that initialize and prepare the model. Tasks include generating a regional grid along with :term:`orography` and surface climatology files for that grid. The pre-processing software converts the raw external model data into initial and lateral boundary condition files in netCDF format. Later, this is used as input to the atmospheric model (FV3-LAM). Additional information about the UFS pre-processor utilities can be found in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
-
-
-Forecast Model
------------------
-
-Atmospheric Model
-^^^^^^^^^^^^^^^^^^^^^^
-
-The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
-(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2020`).
-The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. 
-
-Common Community Physics Package
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ (:term:`CCPP`) supports interoperable atmospheric physics and Noah Multi-parameterization (Noah MP) Land Surface Model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The SRW release includes an experimental physics version and an updated operational version. 
-
-Data Format
-^^^^^^^^^^^^^^^^^^^^^^
-
-The SRW App supports the use of both :term:`GRIB2` and :term:`NEMSIO` input data. The UFS Weather Model ingests initial and lateral boundary condition files produced by :term:`chgres_cube`. 
-
-
-Unified Post-Processor (UPP)
---------------------------------
-
-The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ (:term:`UPP`) is included in the SRW Application workflow. The UPP is designed to generate useful products from raw model output. In the SRW, it converts data output formats from netCDF format on the native model grid to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_. Output from the UPP can be used with visualization, plotting, and verification packages, or for further downstream post-processing (e.g., statistical post-processing techniques).
-
-
-Visualization Example
--------------------------
-
-This SRW Application provides Python scripts to create basic visualizations of the model output. Usage information and instructions are described in :numref:`Chapter %s <Graphics>` and are also included at the top of the script. 
-
-Build System and Workflow
-----------------------------
-
-The SRW Application has a portable CMake-based build system that packages together all the components required to build the SRW Application. Once built, users can generate a Rocoto-based workflow that will run each task in the proper sequence (see `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__ for more on workflow management). Individual components can also be run in a stand-alone, command line fashion. 
-
-The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite for the forecast. 
-
-This SRW Application release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g. Hera, Orion), cloud environments, and generic Linux and macOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application, including pre-configured (Level 1), configurable (Level 2), limited test platforms (Level 3), and build-only platforms (Level 4). Preconfigured (Level 1) systems already have the required external libraries (e.g., NCEPLIBS) available in a central location. The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW code <DownloadSRWApp>` without first installing prerequisites. On other platforms, the SRW must be :ref:`run within a container <QuickstartC>` that contains the HPC-Stack, or the required libraries (i.e., HPC-Stack) will need to be installed as part of the :ref:`non-container <BuildRunSRW>`) SRW installation process. Once these prerequisite libraries are built, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
 
 User Support, Documentation, and Contributions to Development
 ===============================================================
@@ -330,7 +330,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
 
 .. _list_of_documentation:
 
-.. table::  Centralized List of Documentation
+.. table::  Centralized list of documentation
 
    +----------------------------+---------------------------------------------------------------------------------+
    | **Documentation**          | **Location**                                                                    |

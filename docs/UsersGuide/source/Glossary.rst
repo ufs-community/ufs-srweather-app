@@ -15,6 +15,9 @@ Glossary
    Component Repository
       A :term:`repository` that contains, at a minimum, source code for a single component.
 
+   Container
+      `Docker <https://www.docker.com/resources/what-container>`__ describes a container as "a standard unit of software that packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another."
+
    CONUS
       Continental United States
 
@@ -24,6 +27,9 @@ Glossary
 
    dynamical core
       Global atmospheric model based on fluid dynamics principles, including Euler's equations of motion.
+
+   EPIC
+      EPIC stands for the `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__. EPIC seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement to produce the most accurate and reliable operational modeling system in the world. 
 
    FV3
       The Finite-Volume Cubed-Sphere dynamical core (dycore). Developed at NOAA's Geophysical 
@@ -78,7 +84,7 @@ Glossary
    NEMSIO
       A binary format for atmospheric model output from :term:`NCEP`'s Global Forecast System (GFS).
 
-   NWP (Numerical Weather Prediction)
+   NWP
       Numerical Weather Prediction (NWP) takes current observations of weather and processes them with computer models to forecast the future state of the weather. 
 
    Orography
