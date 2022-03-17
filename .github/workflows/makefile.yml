@@ -47,18 +47,26 @@ jobs:
           cd /opt/ufs-srweather-app 
           ./manage_externals/checkout_externals
           # build process
+          mkdir /opt/ufs-srweather-app/build
+          cd /opt/ufs-srweather-app/build
           source /usr/share/lmod/6.6/init/profile
-          export MACHINE="singularity"
-          export TOP_DIR=/opt/ufs-srweather-app
-          export SRC_DIR=/opt/ufs-srweather-app
-          export compiler="gnu"
-          export ENV_DIR=${TOP_DIR}/env
-          export BUILD_DIR=${TOP_DIR}/build_${compiler}
-          export BIN_DIR=${TOP_DIR}/bin_${compiler}
-          export EXEC_DIR=${BIN_DIR}/bin
-          cd /opt/ufs-srweather-app
-          sed -i 's/MACHINE="${MACHINE_ID}"/MACHINE="singularity"/g' ${ENV_DIR}/detect_machine.sh
-          ./devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} --ccpp="FV3_GFS_v15p2"
+          module use /opt/hpc-modules/modulefiles/stack
+          module load hpc hpc-gnu hpc-openmpi
+          module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake/3.21.1 gfsio wgrib2 upp
+          cmake -DBUILD_UFS_UTILS=OFF -DBUILD_UPP=OFF -DCCPP_SUITES="FV3_GFS_v15p2" -DCMAKE_INSTALL_PREFIX=.. ..
+          make -j2
+          #source /usr/share/lmod/6.6/init/profile 
+          #export MACHINE="singularity"
+          #export TOP_DIR=/opt/ufs-srweather-app
+          #export SRC_DIR=/opt/ufs-srweather-app
+          #export compiler="gnu"
+          #export ENV_DIR=${TOP_DIR}/env
+          #export BUILD_DIR=${TOP_DIR}/build_${compiler}
+          #export BIN_DIR=${TOP_DIR}/bin_${compiler}
+          #export EXEC_DIR=${BIN_DIR}/bin
+          #cd /opt/ufs-srweather-app
+          #sed -i 's/MACHINE="${MACHINE_ID}"/MACHINE="singularity"/g' ${ENV_DIR}/detect_machine.sh
+          #./devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} --ccpp="FV3_GFS_v15p2"
 
       - name: Download data for fcst test
         run: |
@@ -73,10 +81,10 @@ jobs:
           echo "run_fcst test!"
           source /opt/ufs-srweather-app/env/build_singularity_gnu.env 
           cd /opt/test_fcst/2019061500
-          ls -l -h /opt/ufs-srweather-app/bin_gnu/bin/ufs_model
+          ls -l -h /opt/ufs-srweather-app/bin/ufs_model
           export OMP_NUM_THREADS=1
           ulimit -s unlimited
-          mpirun --allow-run-as-root -np 2 /opt/ufs-srweather-app/bin_gnu/bin/ufs_model > "run_fcst.log" 2>&1
+          mpirun --allow-run-as-root -np 2 /opt/ufs-srweather-app/bin/ufs_model > "run_fcst.log" 2>&1
           tail -20 "run_fcst.log"
           ls -l -h /opt/test_fcst/2019061500/RESTART
           #ncdump -h /opt/test_fcst/2019061500/RESTART/fv_core.res.nc
