@@ -44,7 +44,10 @@ jobs:
           cd /opt
           #ln -s /usr/bin/python3 /usr/bin/python
           git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
-          cd /opt/ufs-srweather-app 
+          cd /opt/ufs-srweather-app
+          sed -i '8s/required = True/required = False/' Externals.cfg
+          sed -i '17s/required = True/required = False/' Externals.cfg
+          sed -i '35s/required = True/required = False/' Externals.cfg 
           ./manage_externals/checkout_externals
           # build process
           mkdir /opt/ufs-srweather-app/build
