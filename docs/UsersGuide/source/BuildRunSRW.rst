@@ -286,7 +286,7 @@ Default configuration: ``config_defaults.sh``
 ------------------------------------------------
 
 .. note::
-   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file, but this information is not necessary for running the SRW. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
+   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. This information is not helpful but not essential to running the SRW App. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
 
 Important configuration variables in the ``config_defaults.sh`` file appear in 
 :numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.sh`` file. Any settings provided in ``config.sh`` will override the default ``config_defaults.sh`` 
@@ -405,7 +405,7 @@ settings. There is usually no need for a user to modify the default configuratio
 User-specific configuration: ``config.sh``
 --------------------------------------------
 
-The user must specify certain basic information about the experiment in a ``config.sh`` file located in the ``ufs-srweather-app/regional_workflow/ush`` directory. Two example templates are provided in the ``ufs-srweather-app/regional_workflow/ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release. The operational/NCO mode will typically be used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing. :numref:`Table %s <ConfigCommunity>` shows the configuration variables, along with their default values in ``config_default.sh`` and the values defined in ``config.community.sh``.
+The user must specify certain basic information about the experiment in a ``config.sh`` file located in the ``ufs-srweather-app/regional_workflow/ush`` directory. Two example templates are provided in that directory: ``config.community.sh`` and ``config.nco.sh``. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release. The operational/NCO mode will typically be used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing. :numref:`Table %s <ConfigCommunity>` shows the configuration variables, along with their default values in ``config_default.sh`` and the values defined in ``config.community.sh``.
 
 .. _ConfigCommunity:
 
@@ -466,7 +466,7 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+--------------------------------------------------------+
 
  
-To get started, make a copy of ``config.community.sh`` (under ``<path-to-ufs-srweather-app>/regional_workflow/ush``). From the ``ufs-srweather-app`` directory, run:
+To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
 
@@ -481,7 +481,7 @@ Sample settings are indicated below for Level 1 platforms. Detailed guidance app
 
 .. important::
 
-   If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuild>`, you will have to add the line ``COMPILER="gnu"`` to the ``config.sh`` file.
+   If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuild>`, you will have to check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
 
 .. hint::
 
@@ -548,7 +548,7 @@ For **WCOSS**, edit ``config.sh`` with these WCOSS-specific parameters, and use 
 
 Set up the Python and other Environment Parameters
 --------------------------------------------------
-Next, load the appropriate Python environment for the workflow. The workflow requires Python 3, with the packages 'PyYAML', 'Jinja2', and 'f90nml' available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
+The workflow requires Python 3 with the packages 'PyYAML', 'Jinja2', and 'f90nml' available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
 
 .. code-block:: console
 
@@ -576,11 +576,11 @@ Run the following command from the ``ufs-srweather-app/regional_workflow/ush`` d
 
 The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and :ref:`used later <Automate>` to automatically run portions of the workflow. 
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.sh`` runs the ``setup.sh`` script to set the configuration parameters. Second, it copies the time-independent (fix) files and other necessary data input files from their location in the ufs-weather-model directory to the experiment directory (``$EXPTDIR``). Third, it copies the weather model executable (``ufs_model``) from the ``bin`` directory to ``$EXPTDIR`` and creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the regional_workflow/ush/templates directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.sh`` runs the ``setup.sh`` script to set the configuration parameters. Second, it copies the time-independent (fix) files and other necessary data input files from their location in the ufs-weather-model directory to the experiment directory (``EXPTDIR``). Third, it copies the weather model executable (``ufs_model``) from the ``bin`` directory to ``EXPTDIR`` and creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the regional_workflow/ush/templates directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
 
 The ``setup.sh`` script reads three other configuration scripts in order: (1) ``config_default.sh`` (:numref:`Section %s <DefaultConfigSection>`), (2) ``config.sh`` (:numref:`Section %s <UserSpecificConfig>`), and (3) ``set_predef_grid_params.sh`` (:numref:`Section %s <GridSpecificConfig>`). If a parameter is specified differently in these scripts, the file containing the last defined value will be used.
 
-The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in :numref:`Step %s <UserSpecificConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``. 
+The generated workflow will appear in ``EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in :numref:`Step %s <UserSpecificConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``. 
 
 .. _WorkflowGeneration:
 
@@ -594,15 +594,26 @@ Description of Workflow Tasks
 --------------------------------
 
 .. note::
-   This section gives an overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <RocotoRun>`
+   This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <RocotoRun>`
 
-Workflow tasks are specified in the ``FV3LAM_wflow.xml`` file and illustrated in :numref:`Figure %s <WorkflowTasksFig>`. Each task is described in :numref:`Table %s <WorkflowTasksTable>`. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by setting ``RUN_TASK_MAKE_GRID=”FALSE”``, ``RUN_TASK_MAKE_OROG=”FALSE”``, and ``RUN_TASK_MAKE_SFC_CLIMO=”FALSE”`` in the ``regional_workflow/ush/config.sh`` file before running the ``generate_FV3LAM_wflow.sh`` script. As shown in the figure, the ``FV3LAM_wflow.xml`` file runs the specific j-job scripts in the prescribed order (``regional_workflow/jobs/JREGIONAL_[task name]``) when the ``launch_FV3LAM_wflow.sh`` is submitted. Each j-job task has its own source script named ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
+:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by adding the following lines to the ``config.sh`` file before running the ``generate_FV3LAM_wflow.sh`` script: 
+
+.. code-block:: console
+
+   RUN_TASK_MAKE_GRID=”FALSE”
+   RUN_TASK_MAKE_OROG=”FALSE”
+   RUN_TASK_MAKE_SFC_CLIMO=”FALSE”
+
 
 .. _WorkflowTasksFig:
 
 .. figure:: _static/FV3LAM_wflow_flowchart.png
 
     *Flowchart of the workflow tasks*
+
+
+The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workflow/jobs/JREGIONAL_[task name]``) in the prescribed order when the experiment is launched via the ``launch_FV3LAM_wflow.sh`` script or the ``rocotorun`` command. Each j-job task has its own source script named ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files named ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
+
 
 .. _WorkflowTasksTable:
 
@@ -624,11 +635,11 @@ Workflow tasks are specified in the ``FV3LAM_wflow.xml`` file and illustrated in
    |                      | initial conditions                                         |
    +----------------------+------------------------------------------------------------+
    | get_extrn_lbcs       | Cycle-specific task to obtain external data for the        |
-   |                      | lateral boundary (LB) conditions                           |
+   |                      | lateral boundary conditions (LBC's)                        |
    +----------------------+------------------------------------------------------------+
    | make_ics             | Generate initial conditions from the external data         |
    +----------------------+------------------------------------------------------------+
-   | make_lbcs            | Generate lateral boundary conditions from the external data|
+   | make_lbcs            | Generate LBC's from the external data                      |
    +----------------------+------------------------------------------------------------+
    | run_fcst             | Run the forecast model (UFS weather model)                 |
    +----------------------+------------------------------------------------------------+
@@ -641,7 +652,7 @@ Workflow tasks are specified in the ``FV3LAM_wflow.xml`` file and illustrated in
 
 Run the Workflow Using Rocoto
 =============================
-The information in this section assumes that Rocoto is available on the desired platform. (Note that Rocoto cannot be used when running the workflow within a container.) If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
+The information in this section assumes that Rocoto is available on the desired platform. (Note that Rocoto cannot be used when running the workflow within a container.) If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
 
 Optionally, an environment variable can be set to navigate to the ``$EXPTDIR`` more easily. If the login shell is bash, it can be set as follows:
 
@@ -666,19 +677,19 @@ To run Rocoto using the ``launch_FV3LAM_wflow.sh`` script provided, simply call 
    cd $EXPTDIR
    ./launch_FV3LAM_wflow.sh
 
-This script creates a log file named ``log.launch_FV3LAM_wflow`` in the EXPTDIR directory or appends information to it if the file already exists. Check the end of the log file periodically to see how the experiment is progressing:
+This script creates a log file named ``log.launch_FV3LAM_wflow`` in ``$EXPTDIR`` or appends information to it if the file already exists. Check the end of the log file periodically to see how the experiment is progressing:
 
 .. code-block:: console
 
-   tail -n 30 log.launch_FV3LAM_wflow
+   tail -n 40 log.launch_FV3LAM_wflow
 
 In order to launch additional tasks in the workflow, call the launch script again; this action will need to be repeated until all tasks in the workflow have been launched. To (re)launch the workflow and check its progress on a single line, run: 
 
 .. code-block:: console
 
-   ./launch_FV3LAM_wflow.sh; tail -n 80 log.launch_FV3LAM_wflow
+   ./launch_FV3LAM_wflow.sh; tail -n 40 log.launch_FV3LAM_wflow
 
-This will output the last 80 lines of the log file, which includes the status of the workflow tasks (e.g., SUCCEEDED, DEAD, RUNNING, SUBMITTING, QUEUED). The number 80 can be changed according to the user's preferences. The output will look like this: 
+This will output the last 40 lines of the log file, which list the status of the workflow tasks (e.g., SUCCEEDED, DEAD, RUNNING, SUBMITTING, QUEUED). The number 40 can be changed according to the user's preferences. The output will look like this: 
 
 .. code-block:: console
 
@@ -706,7 +717,7 @@ This will output the last 80 lines of the log file, which includes the status of
      0 out of 1 cycles completed.
      Workflow status:  IN PROGRESS
 
-Error messages for each specific task can be found in the task log files located in the ``$EXPTDIR/log`` directory. 
+Error messages for each specific task can be found in the task log files located in ``$EXPTDIR/log``. 
 
 If everything goes smoothly, you will eventually get the following workflow status table as follows:
 
@@ -730,7 +741,7 @@ If everything goes smoothly, you will eventually get the following workflow stat
    202006170000      run_post_05                     8855464    SUCCEEDED             0       1       6.0
    202006170000      run_post_06                     8855465    SUCCEEDED             0       1       6.0
 
-If all the tasks complete successfully, the workflow status in the log file will include the word “SUCCESS." Otherwise, the workflow status will include the word “FAILURE."
+If all the tasks complete successfully, the workflow status in the log file will indicate “SUCCESS." Otherwise, the workflow status will indicate “FAILURE."
 
 
 Launch the Rocoto Workflow Manually
@@ -808,7 +819,7 @@ After loading Rocoto, call ``rocotorun`` from the experiment directory to launch
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-The ``rocotorun`` and ``rocotostat`` commands will need to be resubmitted regularly and repeatedly until the experiment is finished. In part, this is to avoid having the system time out. This also ensures that when one task ends, tasks dependent on it will run as soon as possible, and ``rocotostat`` will capture the new progress. 
+The ``rocotorun`` and ``rocotostat`` commands above will need to be resubmitted regularly and repeatedly until the experiment is finished. In part, this is to avoid having the system time out. This also ensures that when one task ends, tasks dependent on it will run as soon as possible, and ``rocotostat`` will capture the new progress. 
 
 If the experiment fails, the ``rocotostat`` command will indicate which task failed. Users can look at the log file in the ``log`` subdirectory for the failed task to determine what caused the failure. For example, if the ``make_grid`` task failed, users can open the ``make_grid.log`` file to see what caused the problem: 
 
@@ -825,13 +836,13 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
 
 Automated Option
 ----------------------
-For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add a crontab entry by entering the ``crontab -e`` command, which opens a crontab file. As mentioned in :ref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *``), can be pasted into the crontab file. It can also be found in the``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add a crontab entry using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
 
 .. code-block:: console
 
    */1 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's machine, and ``/apps/rocoto/1.3.3/bin/rocotorun`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``1`` can also be changed and simply means that the workflow will be resubmitted every minute. 
+where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``, and ``/apps/rocoto/1.3.3/bin/rocotorun`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``1`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every minute. 
 
 To check the experiment progress:
 
@@ -844,9 +855,9 @@ After finishing the experiment, open the crontab using `` crontab -e`` and delet
 
 .. note::
 
-   On Orion, *cron* is only available on the orion-login-1 node, so please use that node when running cron jobs on Orion.
+   On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
    
-The workflow run is completed when all tasks have “SUCCEEDED”, and the rocotostat command will output the following:
+The workflow run is complete when all tasks have “SUCCEEDED”, and the rocotostat command outputs the following:
 
 .. code-block:: console
 
@@ -869,4 +880,4 @@ The workflow run is completed when all tasks have “SUCCEEDED”, and the rocot
 
 Plot the Output
 ===============
-Two python scripts are provided to generate plots from the FV3-LAM post-processed GRIB2 output. Information on how to generate the graphics can be found in :numref:`Chapter %s <Graphics>`.
+Two python scripts are provided to generate plots from the :term:`FV3`-LAM post-processed :term:`GRIB2` output. Information on how to generate the graphics can be found in :numref:`Chapter %s <Graphics>`.
