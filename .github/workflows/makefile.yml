@@ -43,10 +43,11 @@ jobs:
           #ls /opt
           #cd /opt
           cd /home/jedi
-          su jedi
+          sudo -u jedi whoami
+          sudo su jedi
+          whoami
           cd /home/jedi
           ls /home/jedi
-          whoami
           pwd
           #ln -s /usr/bin/python3 /usr/bin/python
           git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
