@@ -113,7 +113,7 @@ Check Out External Components
 
 The SRW App relies on a variety of components (e.g., regional_workflow, UFS_UTILS, ufs-weather-model, and UPP) detailed in :numref:`Chapter %s <Components>` of this User's Guide. Users must run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>` into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
 
-Run the executable that pulls in SRW components from external repositories:
+Run the executable that pulls in SRW App components from external repositories:
 
 .. code-block:: console
 
@@ -236,8 +236,7 @@ The build will take a few minutes to complete. When it starts, a random number i
 Download and Stage the Data
 ============================
 
-The SRW requires input files to run. These include static datasets, initial and boundary conditions 
-files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GridSpecificConfig:
 
@@ -554,7 +553,7 @@ The workflow requires Python 3 with the packages 'PyYAML', 'Jinja2', and 'f90nml
 
    source ../../env/wflow_<platform>.env
 
-This command will activate the ``regional_workflow``. The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
+This command will activate the ``regional_workflow`` conda environment. The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
 
 .. code-block:: console
 
@@ -612,12 +611,12 @@ Description of Workflow Tasks
     *Flowchart of the workflow tasks*
 
 
-The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workflow/jobs/JREGIONAL_[task name]``) in the prescribed order when the experiment is launched via the ``launch_FV3LAM_wflow.sh`` script or the ``rocotorun`` command. Each j-job task has its own source script named ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files named ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
+The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workflow/jobs/JREGIONAL_[task name]``) in the prescribed order when the experiment is launched via the ``launch_FV3LAM_wflow.sh`` script or the ``rocotorun`` command. Each j-job task has its own source script (or "ex-script") named ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files named ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
 
 
 .. _WorkflowTasksTable:
 
-.. table::  Workflow tasks in SRW App
+.. table::  Workflow tasks in the SRW App
 
    +----------------------+------------------------------------------------------------+
    | **Workflow Task**    | **Task Description**                                       |
@@ -677,7 +676,7 @@ To run Rocoto using the ``launch_FV3LAM_wflow.sh`` script provided, simply call 
    cd $EXPTDIR
    ./launch_FV3LAM_wflow.sh
 
-This script creates a log file named ``log.launch_FV3LAM_wflow`` in ``$EXPTDIR`` or appends information to it if the file already exists. Check the end of the log file periodically to see how the experiment is progressing:
+This script creates a log file named ``log.launch_FV3LAM_wflow`` in ``$EXPTDIR`` or appends information to it if the file already exists. The launch script also creates the ``log/FV3LAM_wflow.log`` file, which shows Rocoto task information. Check the end of the log files periodically to see how the experiment is progressing:
 
 .. code-block:: console
 
@@ -750,63 +749,14 @@ Launch the Rocoto Workflow Manually
 Load Rocoto
 ^^^^^^^^^^^^^^^^
 
-Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can load Rocoto and any other required modules. This gives the user more control over the process and allows them to view experiment progress more easily. 
-
-For most systems, a variant on the following commands will be necessary to load the Rocoto module:
+Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can load Rocoto and any other required modules. This gives the user more control over the process and allows them to view experiment progress more easily. On Level 1 systems, the Rocoto modules are loaded automatically in :numref:`Step %s <SetUpPythonEnv>`. For most other systems, a variant on the following commands will be necessary to load the Rocoto module:
 
 .. code-block:: console
 
    module use <path_to_rocoto_package>
    module load rocoto
 
-The commands for specific Level 1 platforms are described here: 
-
-Cheyenne:
-
-.. code-block:: console
-
-   module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
-   module load rocoto
-
-Hera and Jet:
-
-.. code-block:: console
-
-   module purge
-   module load rocoto
-
-Orion:
-
-.. code-block:: console
-
-   module purge
-   module load contrib rocoto
-
-Gaea:
-
-.. code-block:: console
-
-   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
-   module load rocoto/1.3.3
-
-WCOSS_DELL_P3:
-
-.. code-block:: console
-
-   module purge
-   module load lsf/10.1
-   module use /gpfs/dell3/usrx/local/dev/emc_rocoto/modulefiles/
-   module load ruby/2.5.1 rocoto/1.2.4
-
-WCOSS_CRAY:
-
-.. code-block:: console
-
-   module purge
-   module load xt-lsfhpc/9.1.3
-   module use -a /usrx/local/emc_rocoto/modulefiles
-   module load rocoto/1.2.4
-
+Some systems may require a version number (e.g., ``module load rocoto/1.3.3``)
 
 Run the Rocoto Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -836,13 +786,13 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
 
 Automated Option
 ----------------------
-For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add a crontab entry using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add a crontab entry using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *`` or ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
 
 .. code-block:: console
 
-   */1 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+   */3 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``, and ``/apps/rocoto/1.3.3/bin/rocotorun`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``1`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every minute. 
+where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``, and ``/apps/rocoto/1.3.3/bin/rocotorun`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``3`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every three minutes. 
 
 To check the experiment progress:
 
@@ -851,7 +801,7 @@ To check the experiment progress:
    cd $EXPTDIR
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-After finishing the experiment, open the crontab using `` crontab -e`` and delete the crontab entry. 
+After finishing the experiment, open the crontab using ``crontab -e`` and delete the crontab entry. 
 
 .. note::
 

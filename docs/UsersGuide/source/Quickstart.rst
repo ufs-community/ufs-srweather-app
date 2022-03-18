@@ -4,7 +4,7 @@
 Quick Start Guide
 ====================================
 
-This Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`’s, and package versions available. Installation via an :term:`EPIC`-provided container reduces this variability and allows for a smoother SRW build and run experience. However, the :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability, particularly if they already have experience running the SRW. 
+This Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`’s, and package versions available. Installation via an :term:`EPIC`-provided container reduces this variability and allows for a smoother SRW App build and run experience. However, the :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability, particularly if they already have experience running the SRW. 
 
 The "out-of-the-box" SRW case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v15p2 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
@@ -29,7 +29,7 @@ To build and run the SRW App using a Singularity container, first install the Si
 Working in the Cloud
 -----------------------
 
-For those working on non-cloud-based systems, skip to :numref:`Step %s <WorkOnHPC>`. Users building the SRW using NOAA's Cloud resources must complete a few additional steps to ensure that the SRW builds and runs correctly. 
+For those working on non-cloud-based systems, skip to :numref:`Step %s <WorkOnHPC>`. Users building the SRW App using NOAA's Cloud resources must complete a few additional steps to ensure that the SRW App builds and runs correctly. 
 
 On NOAA Cloud systems, certain environment variables must be set *before* building the container:
    
@@ -59,7 +59,7 @@ On HPC systems (including NOAA's Cloud platforms), allocate a compute node on wh
    mpirun -n 1 hostname
    ssh <hostname>
 
-The third command will output a hostname. Replace ``<hostname>`` in the last command with the output from the third command. After "ssh-ing" to the compute node in the last command, build and run the SRW from that node. 
+The third command will output a hostname. Replace ``<hostname>`` in the last command with the output from the third command. After "ssh-ing" to the compute node in the last command, build and run the SRW App from that node. 
 
 The appropriate commands on other Level 1 platforms will vary, and users should consult the documentation for those platforms. 
 
@@ -121,8 +121,7 @@ From the ``ufs-srweather-app`` directory, ``cd`` into the build directory and ru
 Download and Stage the Data
 ============================
 
-The SRW requires input files to run. These include static datasets, initial and boundary condition 
-files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW. 
+The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW. 
 
 .. _GenerateForecastC:
 
