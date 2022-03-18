@@ -25,7 +25,7 @@ jobs:
         shell: bash
     
     container:
-      image: docker://clouden90/ubuntu20.04-gnu9.3-hpc-stack:alpha
+      image: docker://clouden90/ubuntu20.04-gnu9.3-hpc-stack:ruby
     
     name: Build ufs-srweather-app and test workflow in the container
     steps:
@@ -40,15 +40,24 @@ jobs:
         run: |
           echo ${{ steps.abc.outputs.all }}
           echo "brach name is: ${{ github.head_ref }}"
-          ls /opt
-          cd /opt
+          #ls /opt
+          #cd /opt
+          cd
+          pwd
           #ln -s /usr/bin/python3 /usr/bin/python
           git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
-          cd /opt/ufs-srweather-app
-          sed -i '8s/required = True/required = False/' Externals.cfg
-          sed -i '17s/required = True/required = False/' Externals.cfg
-          sed -i '35s/required = True/required = False/' Externals.cfg 
-          ./manage_externals/checkout_externals
+          cd ufs-srweather-app
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          bashcov script.sh
+          ./codecov -f coverage/codecov-result.json -Z
+
+          #cd /opt/ufs-srweather-app
+          #sed -i '8s/required = True/required = False/' Externals.cfg
+          #sed -i '17s/required = True/required = False/' Externals.cfg
+          #sed -i '35s/required = True/required = False/' Externals.cfg 
+          #./manage_externals/checkout_externals
+
           # build process
           mkdir /opt/ufs-srweather-app/build
           cd /opt/ufs-srweather-app/build
@@ -56,8 +65,9 @@ jobs:
           module use /opt/hpc-modules/modulefiles/stack
           module load hpc hpc-gnu hpc-openmpi
           module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake/3.21.1 gfsio wgrib2 upp
-          cmake -DBUILD_UFS_UTILS=OFF -DBUILD_UPP=OFF -DCCPP_SUITES="FV3_GFS_v15p2" -DCMAKE_INSTALL_PREFIX=.. ..
-          make -j2
+          #cmake -DBUILD_UFS_UTILS=OFF -DBUILD_UPP=OFF -DCCPP_SUITES="FV3_GFS_v15p2" -DCMAKE_INSTALL_PREFIX=.. ..
+          #make -j2
+
           #source /usr/share/lmod/6.6/init/profile 
           #export MACHINE="singularity"
           #export TOP_DIR=/opt/ufs-srweather-app
@@ -79,17 +89,9 @@ jobs:
           #          tar -xzvf exp.tar.gz
           #          ls /opt
 
-      - name: run ctests 
-        run: |
-          echo "run ctests!"
-          cd /opt/ufs-srweather-app/build
-          source /opt/ufs-srweather-app/env/build_singularity_gnu.env
-          ctest -R test_fcst 
-          #source /opt/ufs-srweather-app/env/build_singularity_gnu.env 
-          #cd /opt/test_fcst/2019061500
-          #ls -l -h /opt/ufs-srweather-app/bin/ufs_model
-          #export OMP_NUM_THREADS=1
-          #ulimit -s unlimited
-          #mpirun --allow-run-as-root -np 2 /opt/ufs-srweather-app/bin/ufs_model > "run_fcst.log" 2>&1
-          #tail -20 "run_fcst.log"
-          #ls -l -h /opt/test_fcst/2019061500/RESTART
+          #      - name: run ctests 
+          #        run: |
+          #          echo "run ctests!"
+          #          cd /opt/ufs-srweather-app/build
+          #          source /opt/ufs-srweather-app/env/build_singularity_gnu.env
+          #          ctest -R test_fcst 
