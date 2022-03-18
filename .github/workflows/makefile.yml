@@ -1,0 +1,82 @@
+#############################################################
+# Rename the file extension to ".yaml" (remove "_") to enable
+#############################################################
+
+name: ------- Building Pull Requests (ufs-srweather-app) -------
+
+on:
+  # run it on push to the default repository branch
+  push:
+    branches:
+      - develop
+  # run it during pull request
+  pull_request:
+    branches:
+      - develop    
+    types: 
+      - ready_for_review
+      - review_requested
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    
+    container:
+      image: docker://clouden90/ubuntu20.04-gnu9.3-hpc-stack:ruby
+      options: --user 1001
+      
+    name: Build ufs-srweather-app and test workflow in the container
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jitterbit/get-changed-files@v1
+        id: abc
+        with:
+          format: space-delimited
+          token: ${{ secrets.GITHUB_TOKEN }}        
+  
+      - name: Running cmake/make ufs-srweather-app
+        run: |
+          echo ${{ steps.abc.outputs.all }}
+          echo "brach name is: ${{ github.head_ref }}"
+          cd
+          echo ${HOME}
+          #ln -s /usr/bin/python3 /usr/bin/python
+          git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
+          cd ufs-srweather-app
+
+          #cd /opt/ufs-srweather-app
+          sed -i '8s/required = True/required = False/' Externals.cfg
+          sed -i '17s/required = True/required = False/' Externals.cfg
+          sed -i '35s/required = True/required = False/' Externals.cfg 
+          ./manage_externals/checkout_externals
+
+          # build process
+          source /usr/share/lmod/6.6/init/profile
+          module use /opt/hpc-modules/modulefiles/stack
+          module load hpc hpc-gnu hpc-openmpi
+          module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake/3.21.1 gfsio wgrib2 upp
+
+          export MACHINE="singularity"
+          export TOP_DIR=${HOME}/ufs-srweather-app
+          export SRC_DIR=${HOME}/ufs-srweather-app
+          export compiler="gnu"
+          export ENV_DIR=${TOP_DIR}/env
+          export BUILD_DIR=${TOP_DIR}/build
+          export BIN_DIR=${TOP_DIR}/bin
+          export EXEC_DIR=${BIN_DIR}/bin
+          cd ${HOME}/ufs-srweather-app
+          sed -i 's/MACHINE="${MACHINE_ID}"/MACHINE="singularity"/g' ${ENV_DIR}/detect_machine.sh
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov 
+          bashcov -- devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} --ccpp="FV3_GFS_v15p2"
+          ./codecov -f coverage/codecov-result.json -Z
+
+      - name: run ctests 
+        run: |
+          echo "run ctests!"
+          cd ${HOME}/ufs-srweather-app/build
+          source ../env/build_singularity_gnu.env
+          ctest -R test_fcst 

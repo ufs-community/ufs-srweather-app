@@ -1,5 +1,9 @@
 # UFS Short-Range Weather Application
 
+![example workflow](https://github.com/clouden90/ufs-srweather-app/actions/workflows/makefile.yml/badge.svg?branch=feature-1)
+
+[![codecov](https://codecov.io/gh/clouden90/ufs-srweather-app/branch/develop/graph/badge.svg?token=JU22MWLERG)](https://codecov.io/gh/clouden90/ufs-srweather-app)
+
 The Unified Forecast System (UFS) is a community-based, coupled, comprehensive Earth modeling system. It is designed to be the source system for NOAA’s operational numerical weather prediction applications while enabling research, development, and contribution opportunities for the broader weather enterprise. For more information about the UFS, visit the UFS Portal at https://ufscommunity.org/.
 
 The UFS can be configured for multiple applications (see a complete list at https://ufscommunity.org/#/science/aboutapps). The configuration described here is the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from less than an hour out to several days. The development branch of the application is continually evolving as the system undergoes open development. The SRW App v1.0.0 represents a snapshot of this continuously evolving system. The SRW App includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. 
