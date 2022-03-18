@@ -44,7 +44,11 @@ jobs:
           cd
           echo ${HOME}
           #ln -s /usr/bin/python3 /usr/bin/python
-          git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
+          if [ -z "${{ github.head_ref }} ]; then
+            git clone https://github.com/clouden90/ufs-srweather-app
+          else
+            git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
+          fi
           cd ufs-srweather-app
 
           #cd /opt/ufs-srweather-app
