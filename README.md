@@ -1,7 +1,5 @@
 # UFS Short-Range Weather Application
 
-![example workflow](https://github.com/clouden90/ufs-srweather-app/actions/workflows/makefile.yml/badge.svg?branch=feature-1)
-
 [![codecov](https://codecov.io/gh/clouden90/ufs-srweather-app/branch/develop/graph/badge.svg?token=JU22MWLERG)](https://codecov.io/gh/clouden90/ufs-srweather-app)
 
 The Unified Forecast System (UFS) is a community-based, coupled, comprehensive Earth modeling system. It is designed to be the source system for NOAA’s operational numerical weather prediction applications while enabling research, development, and contribution opportunities for the broader weather enterprise. For more information about the UFS, visit the UFS Portal at https://ufscommunity.org/.
