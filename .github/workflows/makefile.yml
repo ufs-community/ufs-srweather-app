@@ -43,8 +43,7 @@ jobs:
           #ls /opt
           #cd /opt
           cd /home/jedi
-          sudo -u jedi whoami
-          sudo su jedi
+          su - jedi
           whoami
           cd /home/jedi
           ls /home/jedi
