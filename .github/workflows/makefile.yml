@@ -26,7 +26,7 @@ jobs:
     
     container:
       image: docker://clouden90/ubuntu20.04-gnu9.3-hpc-stack:ruby
-      options: --user jedi
+      options: --user root
       
     name: Build ufs-srweather-app and test workflow in the container
     steps:
@@ -44,7 +44,7 @@ jobs:
           #ls /opt
           #cd /opt
           #cd /home/jedi
-          #su - jedi
+          su - jedi
           whoami
           cd /home/jedi
           ls /home/jedi
