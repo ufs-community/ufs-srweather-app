@@ -26,7 +26,8 @@ jobs:
     
     container:
       image: docker://clouden90/ubuntu20.04-gnu9.3-hpc-stack:ruby
-    
+      options: --user jedi
+      
     name: Build ufs-srweather-app and test workflow in the container
     steps:
       - uses: actions/checkout@v2
@@ -42,8 +43,7 @@ jobs:
           echo "brach name is: ${{ github.head_ref }}"
           #ls /opt
           #cd /opt
-          su jedi
-          cd
+          cd /home/jedi
           pwd
           #ln -s /usr/bin/python3 /usr/bin/python
           git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
@@ -60,8 +60,8 @@ jobs:
           #./manage_externals/checkout_externals
 
           # build process
-          mkdir /opt/ufs-srweather-app/build
-          cd /opt/ufs-srweather-app/build
+          mkdir /home/jedi/ufs-srweather-app/build
+          cd /home/jedi/ufs-srweather-app/build
           source /usr/share/lmod/6.6/init/profile
           module use /opt/hpc-modules/modulefiles/stack
           module load hpc hpc-gnu hpc-openmpi
