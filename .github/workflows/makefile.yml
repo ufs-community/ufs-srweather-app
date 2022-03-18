@@ -44,7 +44,8 @@ jobs:
           cd
           echo ${HOME}
           #ln -s /usr/bin/python3 /usr/bin/python
-          if [ -z "${{ github.head_ref }} ]; then
+          if [ -z ${{ github.head_ref }} ]; then
+          echo "We are in develop branch!"
             git clone https://github.com/clouden90/ufs-srweather-app
           else
             git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
