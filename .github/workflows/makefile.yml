@@ -26,7 +26,7 @@ jobs:
     
     container:
       image: docker://clouden90/ubuntu20.04-gnu9.3-hpc-stack:ruby
-      options: --user root
+      options: --user 1001
       
     name: Build ufs-srweather-app and test workflow in the container
     steps:
@@ -44,11 +44,13 @@ jobs:
           #ls /opt
           #cd /opt
           #cd /home/jedi
-          su - jedi
+          #su - jedi
           whoami
-          cd /home/jedi
-          ls /home/jedi
+          #cd /home/jedi
+          #ls /home/jedi
+          cd
           pwd
+          ls
           #ln -s /usr/bin/python3 /usr/bin/python
           git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
           cd ufs-srweather-app
