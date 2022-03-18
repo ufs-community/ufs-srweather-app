@@ -42,6 +42,7 @@ jobs:
           echo "brach name is: ${{ github.head_ref }}"
           #ls /opt
           #cd /opt
+          su jedi
           cd
           pwd
           #ln -s /usr/bin/python3 /usr/bin/python
