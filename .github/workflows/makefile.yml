@@ -76,7 +76,7 @@ jobs:
           export BUILD_DIR=${TOP_DIR}/build #_${compiler}
           export BIN_DIR=${TOP_DIR}/bin #_${compiler}
           export EXEC_DIR=${BIN_DIR}/bin
-          #cd /opt/ufs-srweather-app
+          cd ${HOME}/ufs-srweather-app
           sed -i 's/MACHINE="${MACHINE_ID}"/MACHINE="singularity"/g' ${ENV_DIR}/detect_machine.sh
           curl -Os https://uploader.codecov.io/latest/linux/codecov
           chmod +x codecov 
