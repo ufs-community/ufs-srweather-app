@@ -45,7 +45,7 @@ jobs:
           #cd /opt
           #cd /home/jedi
           #su - jedi
-          whoami
+          #whoami
           #cd /home/jedi
           #ls /home/jedi
           cd
