@@ -74,7 +74,7 @@ jobs:
           sed -i 's/MACHINE="${MACHINE_ID}"/MACHINE="singularity"/g' ${ENV_DIR}/detect_machine.sh
           curl -Os https://uploader.codecov.io/latest/linux/codecov
           chmod +x codecov 
-          bashcov -- ./devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} --ccpp="FV3_GFS_v15p2"
+          bashcov -- devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} --ccpp="FV3_GFS_v15p2"
           ./codecov -f coverage/codecov-result.json -Z
 
       - name: run ctests 
