@@ -54,14 +54,11 @@ jobs:
           ./manage_externals/checkout_externals
 
           # build process
-          mkdir build
-          #cd build
           source /usr/share/lmod/6.6/init/profile
           module use /opt/hpc-modules/modulefiles/stack
           module load hpc hpc-gnu hpc-openmpi
           module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake/3.21.1 gfsio wgrib2 upp
 
-          #source /usr/share/lmod/6.6/init/profile 
           export MACHINE="singularity"
           export TOP_DIR=${HOME}/ufs-srweather-app
           export SRC_DIR=${HOME}/ufs-srweather-app
