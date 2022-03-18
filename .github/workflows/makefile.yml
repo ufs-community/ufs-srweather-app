@@ -19,7 +19,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # windows-latest | macos-latest
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -46,10 +46,6 @@ jobs:
           #ln -s /usr/bin/python3 /usr/bin/python
           git clone -b ${{ github.head_ref }} https://github.com/clouden90/ufs-srweather-app
           cd ufs-srweather-app
-          #curl -Os https://uploader.codecov.io/latest/linux/codecov
-          #chmod +x codecov
-          #bashcov script.sh
-          #./codecov -f coverage/codecov-result.json -Z
 
           #cd /opt/ufs-srweather-app
           sed -i '8s/required = True/required = False/' Externals.cfg
@@ -58,14 +54,12 @@ jobs:
           ./manage_externals/checkout_externals
 
           # build process
-          #mkdir build
+          mkdir build
           #cd build
           source /usr/share/lmod/6.6/init/profile
           module use /opt/hpc-modules/modulefiles/stack
           module load hpc hpc-gnu hpc-openmpi
           module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake/3.21.1 gfsio wgrib2 upp
-          #cmake -DBUILD_UFS_UTILS=OFF -DBUILD_UPP=OFF -DCCPP_SUITES="FV3_GFS_v15p2" -DCMAKE_INSTALL_PREFIX=.. ..
-          #make -j2
 
           #source /usr/share/lmod/6.6/init/profile 
           export MACHINE="singularity"
@@ -73,23 +67,15 @@ jobs:
           export SRC_DIR=${HOME}/ufs-srweather-app
           export compiler="gnu"
           export ENV_DIR=${TOP_DIR}/env
-          export BUILD_DIR=${TOP_DIR}/build #_${compiler}
-          export BIN_DIR=${TOP_DIR}/bin #_${compiler}
+          export BUILD_DIR=${TOP_DIR}/build
+          export BIN_DIR=${TOP_DIR}/bin
           export EXEC_DIR=${BIN_DIR}/bin
           cd ${HOME}/ufs-srweather-app
           sed -i 's/MACHINE="${MACHINE_ID}"/MACHINE="singularity"/g' ${ENV_DIR}/detect_machine.sh
           curl -Os https://uploader.codecov.io/latest/linux/codecov
           chmod +x codecov 
-          bashcov -- devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} --ccpp="FV3_GFS_v15p2"
+          bashcov -- ./devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} --ccpp="FV3_GFS_v15p2"
           ./codecov -f coverage/codecov-result.json -Z
-
-          #      - name: Download data for fcst test
-          #        run: |
-          #          echo "Now we are going to download data!"
-          #          cd /opt
-          #          wget https://dl.dropboxusercontent.com/s/76ec5q3dtlt0twl/exp.tar.gz 
-          #          tar -xzvf exp.tar.gz
-          #          ls /opt
 
       - name: run ctests 
         run: |
