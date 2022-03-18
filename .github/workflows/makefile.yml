@@ -26,6 +26,7 @@ jobs:
     
     container:
       image: docker://clouden90/ubuntu20.04-gnu9.3-hpc-stack:ruby
+      options: --user jedi
       
     name: Build ufs-srweather-app and test workflow in the container
     steps:
@@ -42,8 +43,8 @@ jobs:
           echo "brach name is: ${{ github.head_ref }}"
           #ls /opt
           #cd /opt
-          cd /home/jedi
-          su - jedi
+          #cd /home/jedi
+          #su - jedi
           whoami
           cd /home/jedi
           ls /home/jedi
