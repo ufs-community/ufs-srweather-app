@@ -15,7 +15,7 @@ The SRW App v1.0.0 citation is as follows and should be used when presenting res
 UFS Development Team. (2021, March 4). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
 
 ..
-   COMMENT: Update version numbers/citation for release!
+   COMMENT: Update version numbers/citation for release! Also update release date for citation!
 
 
 How to Use This Document
