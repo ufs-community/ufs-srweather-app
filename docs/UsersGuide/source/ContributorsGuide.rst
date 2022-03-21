@@ -1,19 +1,18 @@
 
 .. _ContributorsGuide:
 
-***********************************
+=========================
 Contributor's Guide
-***********************************
+=========================
 
 
 .. _Summary:
 
-==========
 Summary
 ==========
 
 Authoritative branch
-========================
+-----------------------
 
 The main development branch for the ``ufs-srweather-app`` repository is ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual sub-components, including ``regional_workflow``. Pull requests (PR's) will be merged to ``develop``. 
 
@@ -23,43 +22,69 @@ The ``develop`` branch is protected by the code management team:
 
 
 Code Review Committee
-=========================
+--------------------------
 
 Scientists from across multiple labs and organizations have volunteered to review pull requests for the ``develop`` branch:
 
-.. code-block:: console
+.. table::
 
-    NSSL: Yunheng Wang (@ywangwof)
-    EMC: Chan-Hoo Jeon(@chan-hoo), Ben Blake (@BenjaminBlake-NOAA), Ratko Vasic (@RatkoVasic-NOAA)
-    GSL: Jeff Beck (@JeffBeck-NOAA), Gerard Ketefian (@gsketefian), Linlin Pan (@panll), Christina Holt (@christinaholtNOAA), Christopher Harrop (@christopherwharrop-noaa), Daniel Abdi (@danielabdi-noaa)
-    EPIC: Mark Potts (@mark-a-potts), Jong Kim (@jkbk2004)
-    NCAR: Mike Kavulich (@mkavulich), Will Mayfield (@willmayfield), and Jamie Wolff (@jwolff-ncar) 
-    GLERL/UM: David Wright (@dmwright526)
-
-..
-    COMMENT: Edit list of PR Reviewers!!!
+    +------------------+------------------------------------------------+
+    | **Organization** | **Reviewers**                                  |
+    +==================+================================================+
+    | NSSL             | Yunheng Wang (@ywangwof)                       |
+    +------------------+------------------------------------------------+
+    | EMC              | Chan-Hoo Jeon(@chan-hoo)                       |
+    |                  |                                                |
+    |                  | Ben Blake (@BenjaminBlake-NOAA)                |
+    |                  |                                                |
+    |                  | Ratko Vasic (@RatkoVasic-NOAA)                 |
+    +------------------+------------------------------------------------+
+    | GSL              | Jeff Beck (@JeffBeck-NOAA)                     |
+    |                  |                                                |
+    |                  | Gerard Ketefian (@gsketefian)                  |
+    |                  |                                                |
+    |                  | Linlin Pan (@panll)                            |
+    |                  |                                                |
+    |                  | Christina Holt (@christinaholtNOAA)            |
+    |                  |                                                |
+    |                  | Christopher Harrop (@christopherwharrop-noaa)  |
+    |                  |                                                |
+    |                  | Daniel Abdi (@danielabdi-noaa)                 |
+    +------------------+------------------------------------------------+
+    | EPIC             | Mark Potts (@mark-a-potts)                     |
+    |                  |                                                |
+    |                  | Jong Kim (@jkbk2004)                           |
+    +------------------+------------------------------------------------+
+    | NCAR             | Mike Kavulich (@mkavulich)                     |
+    |                  |                                                |
+    |                  | Will Mayfield (@willmayfield)                  |
+    |                  |                                                |
+    |                  | Jamie Wolff (@jwolff-ncar)                     |
+    +------------------+------------------------------------------------+
+    | GLERL/UM         | David Wright (@dmwright526)                    |
+    +------------------+------------------------------------------------+
 
 
 .. _ContribProcess:
 
-========================
+
 Contribution Process
 ========================
 
 The following steps should be followed in order to make changes to the ``develop`` branch of ``ufs-srweather-app``. Communication with code managers and the code review committee throughout the process is encouraged.
-    #. Issue - Open an issue to document changes. Click `here <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ to open a new ``ufs-srweather-app`` issue. 
-    #. GitFlow - Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`__ procedures for development (branch names, forking vs branching, etc.). Read more here about GitFlow within the UFS repositories here
-    #. Fork the repository - Read more `here <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`__ about forking in GitHub.
-    #. Feature Branch - Create a feature branch in your fork of the authoritative repository. Follow Gitflow conventions when creating the branch.
-    #. Development - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - ...commit message..."). Attempt to test code modifications on as many platforms as possible, and request help with further testing from code review committee when unable to test on all platforms.
-    #. Pull request - When ready to merge changes back to the develop branch, the code developer should initiate a pull request (PR) of the feature branch into the develop branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. See the guidelines in :numref:`Section %s <GoodPR>` on making a good pull request. Provide some information about the PR in the proper field, and tag all relevant reviewers from the code management team to the PR.
-    #. Complete - When review and testing is complete a code manager will complete the pull request and subsequent merge.
-    #. Cleanup - When complete, the code developer should delete the branch and close the issue.
+    #. **Issue** - Open an issue to document changes. Click `here <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ to open a new ``ufs-srweather-app`` issue. 
+    #. **GitFlow** - Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`__ procedures for development (branch names, forking vs branching, etc.). Read more here about GitFlow within the UFS repositories here
+    #. **Fork the repository** - Read more `here <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`__ about forking in GitHub.
+    #. **Feature Branch** - Create a feature branch in your fork of the authoritative repository. Follow Gitflow conventions when creating the branch.
+    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - ...commit message..."). Attempt to test code modifications on as many platforms as possible, and request help with further testing from code review committee when unable to test on all platforms.
+    #. **Pull request** - When ready to merge changes back to the develop branch, the code developer should initiate a pull request (PR) of the feature branch into the develop branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. See the guidelines in :numref:`Section %s <GoodPR>` on making a good pull request. Provide some information about the PR in the proper field, and tag all relevant reviewers from the code management team to the PR.
+    #. **Complete** - When review and testing is complete a code manager will complete the pull request and subsequent merge.
+    #. **Cleanup** - When complete, the code developer should delete the branch and close the issue.
 
 
 .. _ContribStandards:
 
-===================================
+
 Code and Configuration Standards
 ===================================
 
@@ -69,14 +94,14 @@ Code and Configuration Standards
 .. _GoodPR:
 
 Making a Good Pull Request
-===============================
+------------------------------
 
-This is a brief guide to pull request messages for the SRW repository:
+This is a brief guide to pull request messages for the SRW App repository:
 
 To start, here is the template that is provided when you click "Create pull request:"
 
 .. code-block:: console
-
+    
     - Update develop to head at ufs-community
     - Use this template to give a detailed message describing the change you want to make to the code.
     - You may delete any sections labeled "optional".
@@ -93,7 +118,7 @@ To start, here is the template that is provided when you click "Create pull requ
     Explicitly state what tests were run on these changes, or if any are still pending (for README or other text-only changes, just put "None required". Make note of the compilers used, the platform/machine, and other relevant details as necessary. For more complicated changes, or those resulting in scientific changes, please be explicit!
 
     ## DEPENDENCIES:
-    Add any links to external PRs (e.g. regional_workflow and/or UFS PRs). For example:
+    Add any links to external PR's (e.g. regional_workflow and/or UFS PR's). For example:
     - ufs-community/regional_workflow/pull/<pr_number>
     - ufs-community/UFS_UTILS/pull/<pr_number>
     - ufs-community/ufs-weather-model/pull/<pr_number>
@@ -112,47 +137,40 @@ To start, here is the template that is provided when you click "Create pull requ
 
 
 
+Additional Suggestions
+^^^^^^^^^^^^^^^^^^^^^^^^
 
+**Title:** Every pull request needs a title. Titles should give people a good idea of what your code change will do in approximately 5-10 words. The title should be as precise as possible so that people can already have some idea of whether they are interested in the changes from the title alone. Some good examples from the past:
 
+    * NMM: Remove HWRF/NMM variable (avgPchg) from the history file
+    * Introduce physics suites mechanism for ARW
+    * Fix uninitialized variable in Noah-MP surface exchange option
+    * Tweaks to allow CRTM_2.2.3 to compile on Fujitsu
+    * Major bug fix for tendencies from NSAS cumulus scheme
+    * Reduce computational patch size for intermediate domain for vertical nesting
 
-The first line should be a single-line "purpose" for this change
+..
+    COMMENT: Change these examples to be SRW-specific!!!
 
-TYPE: choose one of [bug fix, enhancement, new feature, feature removed, no impact, text only]
-
-KEYWORDS: approximately 3 to 6 words (more is always better) related to commit, separated by commas
-
-SOURCE: Either "developer's name ( and affiliation)" .XOR. "internal" for a WRF Dev committee member
-
-DESCRIPTION OF CHANGES: One or more paragraphs describing problem, solution, and required changes.
-
-ISSUE: If this modification addresses an "issue" then it should be referenced here. This will let GitHub know that it can mark the issue as complete. (e.g., "This issue fixes #123," where 123 is the issue number).
-
-LIST OF MODIFIED FILES: list of changed files (use `git diff --name-status master` to get formatted list)
-
-TESTS CONDUCTED: Explicitly state if a WTF and or other tests were run, or are pending. For more complicated changes please be explicit! It may help to include plots.
-
-RELEASE NOTE: If relevant, you may type here the important information that should go out to users in the code release notes. This should be brief, but descriptive, and should read exactly as this will appear to users from the official release notes.
-It's a bit descriptive, but it might not tell you everything you need to know. Below we will go over what should be listed in each section, and give an example from previous "good" pull requests.
-
-Title
-Every pull request needs a title. Titles should give people a good idea of what your code change will do in approximately 5-15 words. They should be as precise as possible, so people can already have some idea on whether they are interested in the changes from the title alone.
-
-Some good examples from the past:
-
-NMM: Remove HWRF/NMM variable (avgPchg) from the history file
-Introduce physics suites mechanism for ARW
-Fix uninitialized variable in Noah-MP surface exchange option
-Tweaks to allow CRTM_2.2.3 to compile on Fujitsu
-Bug Fix for Single-layer UCM Green Roof Option
-Major bug fix for tendencies from NSAS cumulus scheme
-Reduce computational patch size for intermediate domain for vertical nesting
-All of the above do a good job of concisely describing the changes contained in the pull request: they are not too wordy so that the title gets cut off in various emails and web pages, and not too vague so that it's unclear what part of the code is being changed.
+All of the above do a good job of concisely describing the changes contained in the pull request. They are not so wordy so that the title gets cut off in emails and web pages and not so vague that it's unclear what part of the code is being changed.
 
 In contrast, here are some made-up (but plausible) examples of BAD pull request titles:
 
-Bug fixes (Bug fixes on what part of the code?)
-Changes to surface scheme (What kind of changes? What surface scheme?)
-Add new scheme
+    * Bug fixes (Bug fixes on what part of the code?)
+    * Changes to surface scheme (What kind of changes? What surface scheme?)
+    * Add new scheme
+
+
+**DESCRIPTION OF CHANGES:** The first line should be a single-line "purpose" for this change. Note whether the changes are a bug fix or a new feature. 
+
+
+
+DESCRIPTION OF CHANGES: One or more paragraphs describing problem, solution, and required changes.
+
+
+TESTS CONDUCTED: Explicitly state if a WTF and or other tests were run, or are pending. For more complicated changes please be explicit! It may help to include plots.
+
+
 TYPE:
 The "type" of pull request you are opening is a descriptor of the general impact your change will have on the code. You should choose one of the following options:
 
@@ -174,39 +192,19 @@ For display changes such as changing the "version_decl", changing variable names
 text only
 For README and comments, changing quoted Registry elements, white space alignment, or other changes which have no impact on program output or log files. Ultimately, any change which does not impact the compiled code in any way should fall under this category.
 
-KEYWORDS:
-See description in the template at the top of this page.
-
-SOURCE:
-See description in the template at the top of this page.
-
 DESCRIPTION OF CHANGES:
 One or more paragraphs that clearly state the problem and effects it invoked, the solution, and the required changes, or if this is an enhancement or new code, describe the purpose and why it's necessary. It may be useful to include plots.
 
-ISSUE:
-See description in the template at the top of this page.
-
-LIST OF MODIFIED FILES:
-See description in the template at the top of this page.
 
 TESTS CONDUCTED:
 See description in the template at the top of this page.
-
-RELEASE NOTE:
-See description in the template at the top of this page.
-
-© 2022 GitHub, Inc.
-Terms
-Privacy
-Security
-
 
 
 
 
 
 .. _Testing: 
-===============
+
 Testing
 ===============
 
@@ -237,7 +235,7 @@ Release branches will be branched from develop according to the UFS development 
 Keeping testing suite up-to-date
 When new capabilities are added, or new bugs/issues are discovered, tests should be created and/or modified to test for these conditions. Code developers introducing new capabilities should work with code managers to provide the proper configuration files, data, and other information necessary to create new tests for these capabilities.
 
-===================================
+
 Code and Configuration Standards
 ===================================
 
@@ -268,12 +266,13 @@ Module files (env files)
 regional_workflow
 ----------------------
 Regional workflow must not contain source code for compiled programs. Only scripts, configuration files, and documentation should reside in this repository
+
 Coding Standards: General
-    * All bash scripts must explicitly be #!/bin/bash scripts. They should not be login-enabled.
+    * All bash scripts must explicitly be ``#!/bin/bash`` scripts. They should not be login-enabled.
     * MacOS requires special consideration as it does not have all Linux utilities by default. Developers should ensure they do not break these capabilities.
     * All code must be indented appropriately, and keeping with the style of existing scripts.
 Workflow Design. Follow the NCO Guidelines for what is incorporated in each layer.
-    * This is particularly important in the scripts/ directory
+    * This is particularly important in the ``scripts`` directory
 Module files (env files)
     * All official platforms should have an environment file that can be sourced to provide the appropriate python packages and other settings
 Configuration file management.
@@ -290,7 +289,7 @@ Coding Standards: Python.
     * Keep the use of external Python packages to a minimum for necessary workflow tasks.
         * Currently these include f90nml, pyyaml, and jinja
 
-===========================
+
 Contributor Requirements
 ===========================
 
