@@ -68,6 +68,6 @@ NDAS_OBS_DIR=${NDAS_OBS_DIR:-"/glade/p/ral/jntp/UFS_SRW_app/develop/obs_data/nda
 MET_BIN_EXEC=${MET_BIN_EXEC:-"bin"}
 
 # Test Data Locations
-TEST_PREGEN_BASEDIR="/glade/p/ral/jntp/UFS_CAM/FV3LAM_pregen"
-TEST_COMINgfs="/glade/scratch/ketefian/NCO_dirs/COMGFS"
+TEST_PREGEN_BASEDIR="/glade/p/ral/jntp/UFS_SRW_app/FV3LAM_pregen"
+TEST_COMINgfs="/glade/p/ral/jntp/UFS_SRW_app/COMGFS"
 TEST_EXTRN_MDL_SOURCE_BASEDIR="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
