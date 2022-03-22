@@ -31,13 +31,17 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +------------------+------------------------------------------------+
     | **Organization** | **Reviewers**                                  |
     +==================+================================================+
-    | NSSL             | Yunheng Wang (@ywangwof)                       |
-    +------------------+------------------------------------------------+
     | EMC              | Chan-Hoo Jeon(@chan-hoo)                       |
     |                  |                                                |
     |                  | Ben Blake (@BenjaminBlake-NOAA)                |
     |                  |                                                |
     |                  | Ratko Vasic (@RatkoVasic-NOAA)                 |
+    +------------------+------------------------------------------------+
+    | EPIC             | Mark Potts (@mark-a-potts)                     |
+    |                  |                                                |
+    |                  | Jong Kim (@jkbk2004)                           |
+    +------------------+------------------------------------------------+
+    | GLERL/UM         | David Wright (@dmwright526)                    |
     +------------------+------------------------------------------------+
     | GSL              | Jeff Beck (@JeffBeck-NOAA)                     |
     |                  |                                                |
@@ -51,17 +55,13 @@ Scientists from across multiple labs and organizations have volunteered to revie
     |                  |                                                |
     |                  | Daniel Abdi (@danielabdi-noaa)                 |
     +------------------+------------------------------------------------+
-    | EPIC             | Mark Potts (@mark-a-potts)                     |
-    |                  |                                                |
-    |                  | Jong Kim (@jkbk2004)                           |
-    +------------------+------------------------------------------------+
     | NCAR             | Mike Kavulich (@mkavulich)                     |
     |                  |                                                |
     |                  | Will Mayfield (@willmayfield)                  |
     |                  |                                                |
     |                  | Jamie Wolff (@jwolff-ncar)                     |
     +------------------+------------------------------------------------+
-    | GLERL/UM         | David Wright (@dmwright526)                    |
+    | NSSL             | Yunheng Wang (@ywangwof)                       |
     +------------------+------------------------------------------------+
 
 
@@ -72,13 +72,19 @@ Contribution Process
 ========================
 
 The following steps should be followed in order to make changes to the ``develop`` branch of ``ufs-srweather-app``. Communication with code managers and the code review committee throughout the process is encouraged.
+
     #. **Issue** - Open an issue to document changes. Click `here <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ to open a new ``ufs-srweather-app`` issue. 
-    #. **GitFlow** - Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`__ procedures for development (branch names, forking vs branching, etc.). Read more here about GitFlow within the UFS repositories here
+    #. **GitFlow** - Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`__ procedures for development (branch names, forking vs branching, etc.). 
     #. **Fork the repository** - Read more `here <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`__ about forking in GitHub.
-    #. **Feature Branch** - Create a feature branch in your fork of the authoritative repository. Follow Gitflow conventions when creating the branch.
-    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - ...commit message..."). Attempt to test code modifications on as many platforms as possible, and request help with further testing from code review committee when unable to test on all platforms.
+    #. **Create Branch** - Create a branch in your fork of the authoritative repository. Follow Gitflow conventions when creating the branch. Branches should be named as follows, where [name] is a one- or two-word description of the branch:
+
+        * feature/[name]: Adds a new feature to the code
+        * bugfix/[name]: Fixes a demonstrably incorrect portion of code
+        * enhancement/[name]: Improves an existing portion of the code
+        * textonly/[name]: Changes elements of the repository that do not impact program output or log files (e.g., changes to README, documentation, comments, changing quoted Registry elements, white space alignment). Any change which does not impact the compiled code in any way should fall under this category.
+    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - ...commit message..."). Test code modifications on as many platforms as possible, and request help with further testing from code review committee when unable to test on all platforms.
     #. **Pull request** - When ready to merge changes back to the develop branch, the code developer should initiate a pull request (PR) of the feature branch into the develop branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. See the guidelines in :numref:`Section %s <GoodPR>` on making a good pull request. Provide some information about the PR in the proper field, and tag all relevant reviewers from the code management team to the PR.
-    #. **Complete** - When review and testing is complete a code manager will complete the pull request and subsequent merge.
+    #. **Merge** - When review and testing is complete, a code manager will complete the pull request and subsequent merge.
     #. **Cleanup** - When complete, the code developer should delete the branch and close the issue.
 
 
@@ -96,9 +102,12 @@ Code and Configuration Standards
 Making a Good Pull Request
 ------------------------------
 
-This is a brief guide to pull request messages for the SRW App repository:
+This is a brief guide to pull request messages for the ``ufs-srweather-app`` repository.
 
-To start, here is the template that is provided when you click "Create pull request:"
+PR Template
+^^^^^^^^^^^^^^^
+
+To start, here is the template that is provided when users click "Create pull request:"
 
 .. code-block:: console
     
@@ -133,14 +142,24 @@ To start, here is the template that is provided when you click "Create pull requ
     If others have contributed to this work aside from the PR author, list them here
 
 
+Tips, Best Practices, and Protocols to Follow When Issuing a PR
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+* Feature branches are intended to be short-lived, concentrated on code with a sole purpose, and applicable to a single PR. These branches should be deleted, and a new feature branch created when subsequent code development continues.
+* Code contributors should draw attention to the speed required for PR acceptance. If a PR is particularly urgent, this information should be provided in the PR summary, and multiple code review committee members should be tagged to draw attention to this issue.
+* Please follow separation of concerns and the overarching style guidelines that are outlined in the regional_workflow repository. For example, module loads are only handled in the appropriate modulefiles, Rocoto always sets the work directory, j-jobs make the work directory, and ex-scripts require the work directory to exist.
+* Please be clear in the PR message regarding where the code has been tested. If you are unable to access certain platforms, suggest code review committee members who may have access to those machines. At a minimum, the code should be tested on the platform where code modification has taken place, and/or on machines where code modifications will likely impact the results.
+* If the PR is not completely ready to be merged, or changes are requested by code reviewers, please add a “draft” or “do not merge” label to the PR. Once the PR is ready, this can be removed.
+* Keep the scope of the PR in mind. If it is extremely minor (change to the README file), note this in the PR message. If it is an extensive PR, please attempt to test it on as many platforms as possible, and stress the necessity that it be tested on systems for which you do not have access.
+* Attempt to target subject matter experts among the code review committee. Tag committee members who are familiar with the modifications made in the PR so that the committee can provide effective and streamlined PR reviews and approvals.
+* If the PR is exceptionally complex, schedule a live code review to brief members of the code review committee either in-person or through a telecon.
 
 
 
 Additional Suggestions
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-**Title:** Every pull request needs a title. Titles should give people a good idea of what your code change will do in approximately 5-10 words. The title should be as precise as possible so that people can already have some idea of whether they are interested in the changes from the title alone. Some good examples from the past:
+**Title:** Every pull request needs a title. Titles should give people a good idea of what your code change will do in approximately 5-10 words. The title should be as precise as possible so that reviewers will have some idea of whether they are interested in the changes from the title alone. Some good examples from the past:
 
     * NMM: Remove HWRF/NMM variable (avgPchg) from the history file
     * Introduce physics suites mechanism for ARW
@@ -174,23 +193,15 @@ TESTS CONDUCTED: Explicitly state if a WTF and or other tests were run, or are p
 TYPE:
 The "type" of pull request you are opening is a descriptor of the general impact your change will have on the code. You should choose one of the following options:
 
-bug fix
-Fixing a demonstrably incorrect portion of code (this is the only type that should be committed to the bug fix release branches, e.g., release-v4.1.1)
+bugfix: Fixing a demonstrably incorrect portion of code (this is the only type that should be committed to the bug fix release branches, e.g., release-v4.1.1)
 
-enhancement
-Changing an existing portion of the code; though the old code was not unambiguously wrong, this change presumably improves the code
+enhancement: Changing an existing portion of the code; though the old code was not unambiguously wrong, this change presumably improves the code
 
-new feature
-Adding a new feature to the code
+feature: Adding a new feature to the code
 
-feature removed
-Removing an existing feature of the code. This one has yet to ever be invoked I'm pretty sure.
+no impact: For display changes such as changing the "version_decl", changing variable names, improving error messages, changing quoted Registry elements, or otherwise changing what appears in the log/out/error files but not impacting history/restart output results, timing performance, or memory footprint.
 
-no impact
-For display changes such as changing the "version_decl", changing variable names, improving error messages, changing quoted Registry elements, or otherwise changing what appears in the log/out/error files but not impacting history/restart output results, timing performance, or memory footprint.
-
-text only
-For README and comments, changing quoted Registry elements, white space alignment, or other changes which have no impact on program output or log files. Ultimately, any change which does not impact the compiled code in any way should fall under this category.
+text: For README, documentation, and comments, changing quoted Registry elements, white space alignment, or other changes that have no impact on program output or log files. Ultimately, any change which does not impact the compiled code in any way should fall under this category.
 
 DESCRIPTION OF CHANGES:
 One or more paragraphs that clearly state the problem and effects it invoked, the solution, and the required changes, or if this is an enhancement or new code, describe the purpose and why it's necessary. It may be useful to include plots.
