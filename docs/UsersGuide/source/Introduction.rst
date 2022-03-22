@@ -373,6 +373,7 @@ Users can expect to see incremental improvements and additional capabilities in 
 
 * A more extensive set of supported developmental physics suites.
 * A larger number of pre-defined domains/resolutions and a fully supported capability to create a user-defined domain.
+* Add user-defined vertical levels (number and distribution).
 * Inclusion of data assimilation and forecast restart/cycling capabilities.
 
 
