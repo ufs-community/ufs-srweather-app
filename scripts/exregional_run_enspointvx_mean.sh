@@ -138,11 +138,11 @@ export MET_CONFIG
 export MODEL
 export NET
 
-${METPLUS_PATH}/ush/master_metplus.py \
+${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${METPLUS_CONF}/PointStat_conus_sfc_mean.conf
 
-${METPLUS_PATH}/ush/master_metplus.py \
+${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${METPLUS_CONF}/PointStat_upper_air_mean.conf
 #
