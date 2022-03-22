@@ -119,7 +119,7 @@
     rf_cutoff = 20.e2
     tau = 5.0
     use_hydro_pressure = .false.
-    vtdm4 = 0.075
+    vtdm4 = 0.02
     warm_start = .false.
     write_restart_with_bcs = .false.
     z_tracer = .true.
