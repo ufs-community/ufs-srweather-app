@@ -131,6 +131,7 @@ Set up the Build Environment
 Before building the SRW App, the build environment must be set up for the user's specific platform. There is a set of common modules required to build the SRW App. These are located in the ``env/srw_common`` file. To load the set of common modules, run:
 
 .. code-block:: console
+
    module use <path/to/env/directory>
 
 where ``<path/to/env/directory>`` is the full path to the ``env`` directory. 
