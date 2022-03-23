@@ -92,7 +92,9 @@ Usage:
     [verbose=\"...\"] \\
     [machine_file=\"...\"] \\
     [stmp=\"...\"] \\
-    [ptmp=\"...\"]
+    [ptmp=\"...\"] \\
+    [compiler=\"...\"] \\
+    [build_env_fn=\"...\"]
 
 The arguments in brackets are optional.  The arguments are defined as 
 follows:
@@ -204,6 +206,16 @@ argument is not used for any tests that are not in NCO mode.
 ptmp:
 Same as the argument \"stmp\" described above but for setting the 
 experiment variable PTMP for all tests that will run in NCO mode.
+
+compiler:
+Type of compiler to use for the workflow. Options are \"intel\" 
+and \"gnu\". Default is \"intel\",
+
+build_env_fn:
+Specify the build environment (see ufs-srweather-app/envs) to 
+use for the workflow. (e.g. build_cheyenne_gnu.env). If a 
+\"gnu\" compiler is specified, it must also be specified with 
+the \"compiler\" option.
 "
 #
 #-----------------------------------------------------------------------
@@ -240,6 +252,8 @@ valid_args=( \
   "machine_file" \
   "stmp" \
   "ptmp" \
+  "compiler" \
+  "build_env_fn" \
   )
 process_args valid_args "$@"
 #
@@ -670,7 +684,8 @@ Please correct and rerun."
 #
   MACHINE="${machine^^}"
   ACCOUNT="${account}"
-
+  COMPILER=${compiler:-"intel"}
+  BUILD_ENV_FN=${build_env_fn:-"build_${machine}_${COMPILER}.env"}
   EXPT_BASEDIR="${expt_basedir}"
   EXPT_SUBDIR="${test_name}"
   USE_CRON_TO_RELAUNCH=${use_cron_to_relaunch:-"TRUE"}
@@ -692,7 +707,10 @@ Please correct and rerun."
 # subdirectory.
 #
 MACHINE=\"${MACHINE}\"
-ACCOUNT=\"${ACCOUNT}\""
+ACCOUNT=\"${ACCOUNT}\"
+
+COMPILER=\"${COMPILER}\"
+BUILD_ENV_FN=\"${BUILD_ENV_FN}\""
 
   if [ -n "${exec_subdir}" ]; then
     expt_config_str=${expt_config_str}"
