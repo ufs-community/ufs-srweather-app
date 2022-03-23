@@ -801,7 +801,12 @@ For automatic resubmission of the workflow at regular intervals (e.g., every min
 
    */3 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``, and ``/apps/rocoto/1.3.3/bin/rocotorun`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``3`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every three minutes. 
+where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``, and ``/apps/rocoto/1.3.3/bin/rocotorun`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``3`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every three minutes.
+
+.. hint::
+
+   * On NOAA Cloud instances, ``*/1 * * * *`` is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
+   * On other NOAA HPC systems, admins discourage the ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` is the preferred option for cron jobs on non-Cloud systems. 
 
 To check the experiment progress:
 
