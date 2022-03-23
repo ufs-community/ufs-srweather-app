@@ -846,6 +846,15 @@ done
 settings="$settings
   }"
 #
+# Use netCDF4 when running the North American 3-km domain due to file size.
+#
+if [ "${PREDEF_GRID_NAME}" = "RRFS_NA_3km" ]; then
+settings="$settings
+'fms2_io_nml': {
+    'netcdf_default_format': netcdf4,
+  }"
+fi
+#
 # Add the relevant tendency-based stochastic physics namelist variables to
 # "settings" when running with SPPT, SHUM, or SKEB turned on. Otherwise 
 # only include an empty "nam_stochy" stanza.
