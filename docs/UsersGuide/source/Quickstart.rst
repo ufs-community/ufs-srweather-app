@@ -174,7 +174,7 @@ project code for the account parameter:
 
 .. code-block:: console
 
-   MACHINE=”wcoss_cray” or MACHINE=”wcoss_dell_p3”
+   MACHINE=”wcoss_dell_p3”
    ACCOUNT="my_account"
    EXPT_SUBDIR="my_expt_name"
 
@@ -274,15 +274,6 @@ For WCOSS_DELL_P3:
    module load lsf/10.1
    module use /gpfs/dell3/usrx/local/dev/emc_rocoto/modulefiles/
    module load ruby/2.5.1 rocoto/1.2.4
-
-For WCOSS_CRAY:
-
-.. code-block:: console
-
-   module purge
-   module load xt-lsfhpc/9.1.3
-   module use -a /usrx/local/emc_rocoto/modulefiles
-   module load rocoto/1.2.4
 
 Then manually call ``rocotorun`` to launch the tasks that have all dependencies satisfied 
 and ``rocotostat`` to monitor the progress: 

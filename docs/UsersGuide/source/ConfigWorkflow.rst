@@ -22,7 +22,7 @@ Platform Environment
    Setting ``RUN_ENVIR`` to “community” will use the standard directory structure and variable naming convention and is recommended in most cases for users who are not planning to implement their code into operations at NCO.
 
 ``MACHINE``: (Default: “BIG_COMPUTER”)
-   The machine (a.k.a. platform) on which the workflow will run.  Currently supported platforms include "WCOSS_CRAY," "WCOSS_DELL_P3," "HERA," "ORION," "JET," "ODIN," "CHEYENNE," "STAMPEDE,” “GAEA,” “MACOS,” and “LINUX."
+   The machine (a.k.a. platform) on which the workflow will run.  Currently supported platforms include "WCOSS_DELL_P3," "HERA," "ORION," "JET," "ODIN," "CHEYENNE," "STAMPEDE,” “GAEA,” “MACOS,” and “LINUX."
 
 ``ACCOUNT``: (Default: “project_name”)
    The account under which to submit jobs to the queue on the specified ``MACHINE``.
