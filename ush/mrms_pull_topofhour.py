@@ -48,9 +48,9 @@ os.chdir(DATA_HEAD)
 
 # Sort list of files for each MRMS product
 print(valid.strftime('%Y%m%d'))
-if valid.strftime('%Y%m%d') < '20200304':
+if valid.strftime('%Y%m%d') < '20200303':
     search_path = MRMS_PROD_DIR+'/'+valid.strftime('%Y%m%d')+'/dcom/us007003/ldmdata/obs/upperair/mrms/conus/'+MRMS_PRODUCT+'/'+MRMS_PRODUCT+'*.gz'
-elif valid.strftime('%Y%m%d') >= '20200304':
+elif valid.strftime('%Y%m%d') >= '20200303':
     search_path = MRMS_PROD_DIR+'/'+valid.strftime('%Y%m%d')+'/upperair/mrms/conus/'+MRMS_PRODUCT+'/'+MRMS_PRODUCT+'*.gz'
 file_list = [f for f in glob.glob(search_path)]
 time_list = [file_list[x][-24:-9] for x in range(len(file_list))]
@@ -69,12 +69,12 @@ if difference.total_seconds() <= 900:
     filename1 = MRMS_PRODUCT+level+closest_timestamp.strftime('%Y%m%d-%H%M%S')+'.grib2.gz'
     filename2 = MRMS_PRODUCT+level+valid.strftime('%Y%m%d-%H')+'0000.grib2.gz'
 
-    if valid.strftime('%Y%m%d') < '20200304':
+    if valid.strftime('%Y%m%d') < '20200303':
         print('cp '+MRMS_PROD_DIR+'/'+valid.strftime('%Y%m%d')+'/dcom/us007003/ldmdata/obs/upperair/mrms/conus/'+MRMS_PRODUCT+'/'+filename1+' '+VALID_DIR+'/'+filename2)
 
         os.system('cp '+MRMS_PROD_DIR+'/'+valid.strftime('%Y%m%d')+'/dcom/us007003/ldmdata/obs/upperair/mrms/conus/'+MRMS_PRODUCT+'/'+filename1+' '+VALID_DIR+'/'+filename2)
         os.system('gunzip '+VALID_DIR+'/'+filename2)
-    elif valid.strftime('%Y%m%d') >= '20200304':
+    elif valid.strftime('%Y%m%d') >= '20200303':
         print('cp '+MRMS_PROD_DIR+'/'+valid.strftime('%Y%m%d')+'/upperair/mrms/conus/'+MRMS_PRODUCT+'/'+filename1+' '+VALID_DIR+'/'+filename2)
 
         os.system('cp '+MRMS_PROD_DIR+'/'+valid.strftime('%Y%m%d')+'/upperair/mrms/conus/'+MRMS_PRODUCT+'/'+filename1+' '+VALID_DIR+'/'+filename2)
