@@ -98,7 +98,6 @@ Opening an Issue
 To open an issue, click on `New Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ within the ``ufs-srweather-app`` GitHub repository. 
 
 Choose from three options: 
-
     #. `Bug Report <https://github.com/ufs-community/ufs-srweather-app/issues/new?assignees=&labels=bug&template=bug_report.md&title=>`__: Report specific problems ("bugs") in the code using the following template:
 
         .. code-block:: console
@@ -229,7 +228,6 @@ All of the above examples concisely describe the changes contained in the pull r
 
     * Bug fixes (Bug fixes on what part of the code?)
     * Changes to surface scheme (What kind of changes? What surface scheme?)
-    * Add new scheme
 
 **DESCRIPTION OF CHANGES:** The first line of the description should be a single-line "purpose" for this change. Note the type of change (i.e., bug fix, feature, enhancement, textonly). Summarize the problem, proposed solution, and required changes. If this is an enhancement or new code, describe why the change is important.
 
@@ -264,8 +262,8 @@ SRW Application
 
 Externals.cfg
     * All externals live in a single Externals.cfg file.
-    * Externals should point to authoritative repositories for the given code base.
-    * Only a single hash will be maintained for any given external code base. All externals should point to this static hash (not the top of a branch). 
+    * Externals should point only to authoritative repositories for the given code base.
+    * Only a single hash will be maintained for any given external code base. All externals should point to this static hash (not to the top of a branch). 
     
 Build system
     * Each component should build with CMake
@@ -288,8 +286,10 @@ The ``regional_workflow`` repository must not contain source code for compiled p
     * MacOS does not have all Linux utilities by default. Developers should ensure that they do not break any MacOS capabilities with their contribution.
     * All code must be indented appropriately and conform to the style of existing scripts.
 
-**Python Coding Standards:** 
+..
+    COMMENT: And what is this style? Do we have a style guide?
 
+**Python Coding Standards:** 
     * All newly added Python code must be linted with a score of 10/10 following the .pylintrc configuration file set by the code managers. 
     * All Python code contributions should come with an appropriate ``environment.yml`` file for the feature. 
     * Keep the use of external Python packages to a minimum for necessary workflow tasks. Currently these include ``f90nml``, ``pyyaml``, and ``jinja``. 
@@ -318,24 +318,22 @@ Preparing Code for Contribution to the UFS SRW Application
 All changes should be associated with a GitHub Issue. If a developer is working on a change, they should search the existing issues in the appropriate repository (``ufs-srweather-app`` and/or ``regional_workflow``). If an issue does not exist for the work they are doing, they should create one prior to opening a new pull request.
 
 **Guidelines for All Modifications:**
-
-* All changes should adhere to the Code and Configuration Standards detailed in :numref:`Section %s <ContribStandards>`. 
-* For changes to the ``scripts``, ``ush``, or ``jobs`` directories (within ``ufs-srweather-app/regional_workflow``), developers should follow the `NCO Guidelines <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ for what is incorporated into each layer as closely as possible. 
-* Developers should ensure their contributions work with the most recent version of the ``ufs-srweather-app``, including all the specific up-to-date hashes of each subcomponent.
-* Modifications should not break any existing supported capabilities on any supported platforms.
-* Developers will not be required to run tests on *all* supported platforms, but if a failure is pointed out by another reviewer (or by automated testing), then the developer should work with reviewers and code managers to ensure that the problem is resolved prior to merging.
-* If possible, developers should run a fundamental test suite on at least one supported platform and report on the outcome in the PR template.
-* If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweather-app`` should be opened to update the regional_workflow hash. 
+    * All changes should adhere to the Code and Configuration Standards detailed in :numref:`Section %s <ContribStandards>`. 
+    * For changes to the ``scripts``, ``ush``, or ``jobs`` directories (within ``ufs-srweather-app/regional_workflow``), developers should follow the `NCO Guidelines <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ for what is incorporated into each layer as closely as possible. 
+    * Developers should ensure their contributions work with the most recent version of the ``ufs-srweather-app``, including all the specific up-to-date hashes of each subcomponent.
+    * Modifications should not break any existing supported capabilities on any supported platforms.
+    * Developers will not be required to run tests on *all* supported platforms, but if a failure is pointed out by another reviewer (or by automated testing), then the developer should work with reviewers and code managers to ensure that the problem is resolved prior to merging.
+    * If possible, developers should run a fundamental test suite (see :numref:`Section %s <Testing>`) on at least one supported platform and report on the outcome in the PR template.
+    * If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweather-app`` should be opened to update the regional_workflow hash. 
 
 ..
     COMMENT: Is this something contributors need to do, or code managers only?
 
 
 **Guidelines for New Components:**
-
-* Components should have a mechanism for portability and platform-independence; code that is included in the UFS SRW App should not be tied to specific platforms. 
-* New components should be able to build using the standard supported NCEPLIBS environment (currently `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__).
-* New entries in Externals.cfg should only be repositories from “official” sources; either the `UFS Community GitHub organization <https://github.com/ufs-community>`__ or another NOAA project organization.
+    * Components should have a mechanism for portability and platform-independence; code that is included in the SRW App should not be tied to specific platforms. 
+    * New components should be able to build using the standard supported NCEPLIBS environment (currently `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__).
+    * New entries in Externals.cfg should only be repositories from “official” sources; either the `UFS Community GitHub organization <https://github.com/ufs-community>`__ or another NOAA project organization.
 
 
 .. _Testing: 
@@ -343,10 +341,9 @@ All changes should be associated with a GitHub Issue. If a developer is working 
 Testing
 ===============
 
-The ``ufs-srweather-app`` repository uses the established workflow end-to-end (WE2E) testing framework to implement two tiers of testing: fundamental and comprehensive (see :numref:`Chapter %s <WE2E_tests>`). *Fundamental testing* consists of a lightweight set of tests that can be automated and run regularly on each `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform. These are mostly low-resolution tests and cover a wide scope of capabilities to ensure that there are no major, obvious faults in the underlying code. *Comprehensive testing* includes the entire set of WE2E tests. 
+The ``ufs-srweather-app`` repository uses the established workflow end-to-end (WE2E) testing framework (see :numref:`Chapter %s <WE2E_tests>`) to implement two tiers of testing: fundamental and comprehensive. *Fundamental testing* consists of a lightweight set of tests that can be automated and run regularly on each `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform. These are mostly low-resolution tests and cover a wide scope of capabilities to ensure that there are no major, obvious faults in the underlying code. *Comprehensive testing* includes the entire set of WE2E tests. 
 
 Before opening a PR, a minimum set of tests should be run: 
-
     * At least one end-to-end test (preferably a fundamental test suite) should be run on at least one supported platform
     * Any new functionality should be tested explicitly, and tests should be described in detail in the PR message. Depending on the impact of this functionality, this test should be added to the WE2E suite of fundamental or comprehensive tests. 
 
