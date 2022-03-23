@@ -82,7 +82,7 @@ The following steps should be followed in order to make changes to the ``develop
         * **textonly/[name]:** Changes elements of the repository that do not impact program output or log files (e.g., changes to README, documentation, comments, changing quoted Registry elements, white space alignment). Any change which does not impact the compiled code in any way should fall under this category.
         ..
             COMMENT: Ask for input on *textonly* description. 
-    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - ...commit message..."). Test code modifications on as many platforms as possible, and request help with further testing from code review committee when unable to test on all platforms.
+    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - ...commit message..."). Test code modifications on as many platforms as possible, and request help with further testing from code review committee when unable to test on all platforms. Document changes to the workflow and capabilities (either in the ``.rst`` files or separately) so that SRW App documentation stays up-to-date. 
     #. **Pull request** - When ready to merge changes back to the ``develop`` branch, the code developer should initiate a pull request (PR) of the feature branch into the ``develop`` branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. See the guidelines in :numref:`Section %s <GoodPR>` on making a good pull request. Provide some information about the PR in the proper fields, and tag all relevant reviewers from the code management team to the PR.
     #. **Merge** - When review and testing is complete, a code manager will complete the pull request and subsequent merge.
     #. **Cleanup** - After the PR is merged, the code developer should delete the branch and close the issue.
@@ -231,6 +231,8 @@ All of the above examples concisely describe the changes contained in the pull r
 
 **DESCRIPTION OF CHANGES:** The first line of the description should be a single-line "purpose" for this change. Note the type of change (i.e., bug fix, feature, enhancement, textonly). Summarize the problem, proposed solution, and required changes. If this is an enhancement or new code, describe why the change is important.
 
+**DOCUMENTATION:** Developers adding a new capability should include documentation on how to use this capability. This documentation can be included in the appropriate section of the PR message or submitted as a file attachment. Developers should consider updating the existing ``.rst`` documentation files in the ``ufs-srweather-app`` repository. If this is not possible, they can submit an issue to indicate that documentation updates are required based on the documentation in their PR submission. 
+
 Tips, Best Practices, and Protocols to Follow When Issuing a PR
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -325,6 +327,7 @@ All changes should be associated with a GitHub Issue. If a developer is working 
     * Developers will not be required to run tests on *all* supported platforms, but if a failure is pointed out by another reviewer (or by automated testing), then the developer should work with reviewers and code managers to ensure that the problem is resolved prior to merging.
     * If possible, developers should run a fundamental test suite (see :numref:`Section %s <Testing>`) on at least one supported platform and report on the outcome in the PR template.
     * If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweather-app`` should be opened to update the regional_workflow hash. 
+    * Update the ``.rst`` documentation files where appropriate. 
 
 ..
     COMMENT: Is this something contributors need to do, or code managers only?
@@ -334,6 +337,7 @@ All changes should be associated with a GitHub Issue. If a developer is working 
     * Components should have a mechanism for portability and platform-independence; code that is included in the SRW App should not be tied to specific platforms. 
     * New components should be able to build using the standard supported NCEPLIBS environment (currently `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__).
     * New entries in Externals.cfg should only be repositories from “official” sources; either the `UFS Community GitHub organization <https://github.com/ufs-community>`__ or another NOAA project organization.
+    * Document how to use the new component, and include this information in the PR. 
 
 
 .. _Testing: 
