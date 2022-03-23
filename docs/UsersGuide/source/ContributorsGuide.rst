@@ -272,7 +272,7 @@ Build system
     * Each component should build with the latest release of the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__. 
 
 Module files (env files)
-    * Each component should build using the common
+    * Each component should build using the common modules located in the ``env/srw_common`` file.
 
 ..
     COMMENT: Common what?! Add update once this is clarified. 
