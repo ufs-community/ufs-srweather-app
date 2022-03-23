@@ -96,6 +96,9 @@ case $(hostname -f) in
 
   login01.expanse.sdsc.edu) MACHINE_ID=expanse ;; ### expanse1
   login02.expanse.sdsc.edu) MACHINE_ID=expanse ;; ### expanse2
+
+  nid00193) MACHINE_ID=odin ;; ### Odin1 at NSSL
+  nid00385) MACHINE_ID=odin ;; ### Odin2 at NSSL
 esac
 
 MACHINE="${MACHINE_ID}"
