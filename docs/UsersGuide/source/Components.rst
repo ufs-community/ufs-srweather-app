@@ -1,8 +1,8 @@
 .. _Components:
 
-===============
-SRW Components
-===============
+============================
+SRW Application Components
+============================
 
 The SRW Application assembles a variety of components, including:
 
@@ -19,11 +19,9 @@ These components are documented within this User's Guide and supported through a
 Pre-processor Utilities and Initial Conditions
 ==============================================
 
-The SRW Application includes a number of pre-processing utilities that initialize and prepare the
-model. Since the SRW App provides forecast predictions over a limited area (rather than globally), it is necessary to first generate a regional grid (``regional_esg_grid/make_hgrid``) along with :term:`orography` (``orog``) and surface climatology (``sfc_climo_gen``) files on that grid. Grids include a strip, or "halo," of six cells that surround the regional grid and feed in lateral boundary condition data. Since different grid and orography files require different numbers of halo cells, additional utilities handle the correct number of halo shave points and topography filtering. The pre-processing software ``chgres_cube`` is used to convert the raw external model data into initial and lateral boundary condition files in netCDF format. These are needed as input to the FV3-LAM. Additional information about the UFS pre-processor utilities can be found in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
+The SRW Application includes a number of pre-processing utilities that initialize and prepare the model. Since the SRW App provides forecast predictions over a limited area (rather than globally), it is necessary to first generate a regional grid (``regional_esg_grid/make_hgrid``) along with :term:`orography` (``orog``) and surface climatology (``sfc_climo_gen``) files on that grid. Grids include a strip, or "halo," of six cells that surround the regional grid and feed in lateral boundary condition data. Since different grid and orography files require different numbers of halo cells, additional utilities handle the correct number of halo shave points and topography filtering. The pre-processing software ``chgres_cube`` is used to convert the raw external model data into initial and lateral boundary condition files in netCDF format. These are needed as input to the FV3-LAM. Additional information about the UFS pre-processor utilities can be found in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
 
-The SRW Application can be initialized from a range of operational initial condition files. It is
-possible to initialize the model from the Global Forecast System (:term:`GFS`), North American Mesoscale (:term:`NAM`) Forecast System, Rapid Refresh (:term:`RAP`), and High-Resolution Rapid Refresh (:term:`HRRR`) files in Gridded Binary v2 (:term:`GRIB2`) format. GFS files also come in :term:`NEMSIO` format for past dates. 
+The SRW Application can be initialized from a range of operational initial condition files. It is possible to initialize the model from the Global Forecast System (:term:`GFS`), North American Mesoscale (:term:`NAM`) Forecast System, Rapid Refresh (:term:`RAP`), and High-Resolution Rapid Refresh (:term:`HRRR`) files in Gridded Binary v2 (:term:`GRIB2`) format. GFS files also come in :term:`NEMSIO` format for past dates. 
 
 .. WARNING::
    For GFS data, dates prior to 1 January 2018 may work but are not guaranteed. Public archives of model data can be accessed through the `National Centers for Environmental Information <https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-forcast-system-gfs>`_ (NCEI) or through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`_ (NOMADS). Raw external model data may be pre-staged on disk by the user.
@@ -45,10 +43,7 @@ The SRW App supports the use of both :term:`GRIB2` and :term:`NEMSIO` input data
 Post-processor
 ==============
 
-The SRW Application is distributed with the Unified Post Processor (:term:`UPP`) included in the
-workflow as a way to convert the netCDF output on the native model grid to :term:`GRIB2` format on
-standard isobaric vertical coordinates. The UPP can also be used to compute a variety of useful
-diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`__.
+The SRW Application is distributed with the Unified Post Processor (:term:`UPP`) included in the workflow as a way to convert the netCDF output on the native model grid to :term:`GRIB2` format on standard isobaric vertical coordinates. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`__.
 
 Output from UPP can be used with visualization, plotting, and verification packages or in
 further downstream post-processing (e.g., statistical post-processing techniques).
@@ -57,10 +52,7 @@ Visualization Example
 =====================
 A Python script is provided to create basic visualization of the model output. The script
 is designed to output graphics in PNG format for 14 standard meteorological variables
-when using the pre-defined :term:`CONUS` domain. A difference plotting script is also included
-to visually compare two runs for the same domain and resolution. These scripts are provided only
-as an example for users familiar with Python. They may be used to perform a visual check to verify
-that the application is producing reasonable results. 
+when using the pre-defined :term:`CONUS` domain. A difference plotting script is also included to visually compare two runs for the same domain and resolution. These scripts are provided only as an example for users familiar with Python. They may be used to perform a visual check to verify that the application is producing reasonable results. 
 
 After running ``manage_externals/checkout_externals``, the visualization scripts will be available in the ``ufs-srweather-app/regional_workflow/ush/Python`` directory. Usage information and instructions are described in :numref:`Chapter %s <Graphics>` and are also included at the top of the script. 
 

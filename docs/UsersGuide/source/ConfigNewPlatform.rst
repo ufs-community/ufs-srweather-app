@@ -57,7 +57,7 @@ However, it is also possible to install these utilities via Macports (https://ww
 
 Installing NCEPLIBS-external
 ============================
-In order to facilitate the installation of NCEPLIBS (and therefore, the SRW and other UFS applications) on new platforms, EMC maintains a one-stop package containing most of the prerequisite libraries and software necessary for installing NCEPLIBS. This package is known as NCEPLIBS-external, and is maintained in a git repository at https://github.com/NOAA-EMC/NCEPLIBS-external. Instructions for installing these will depend on your platform, but generally so long as all the above-mentioned prerequisites have been installed you can follow the proceeding instructions verbatim (in bash; a csh-based shell will require different commands). Some examples for installing on specific platforms can be found in the `NCEPLIBS-external/doc directory <https://github.com/NOAA-EMC/NCEPLIBS-external/tree/release/public-v2/doc>`.
+In order to facilitate the installation of NCEPLIBS (and therefore, the SRW App and other UFS applications) on new platforms, EMC maintains a one-stop package containing most of the prerequisite libraries and software necessary for installing NCEPLIBS. This package is known as NCEPLIBS-external, and is maintained in a git repository at https://github.com/NOAA-EMC/NCEPLIBS-external. Instructions for installing these will depend on your platform, but generally so long as all the above-mentioned prerequisites have been installed you can follow the proceeding instructions verbatim (in bash; a csh-based shell will require different commands). Some examples for installing on specific platforms can be found in the `NCEPLIBS-external/doc directory <https://github.com/NOAA-EMC/NCEPLIBS-external/tree/release/public-v2/doc>`.
 
 
 These instructions will install the NCEPLIBS-external in the current directory tree, so be sure you are in the desired location before starting.
@@ -126,8 +126,8 @@ Further information on including prerequisite libraries, as well as other helpfu
 
 Once the NCEPLIBS package has been successfully installed, you can move on to building the UFS SRW Application.
 
-Building the UFS Short-Range Weather Application (UFS SRW App)
-==============================================================
+Building the UFS SRW Application 
+=======================================
 Building the UFS SRW App is similar to building NCEPLIBS, in that the code is stored in a git repository and is built using CMake software. The first step is to retrieve the code from GitHub, using the variables defined earlier:
 
 .. code-block:: console
