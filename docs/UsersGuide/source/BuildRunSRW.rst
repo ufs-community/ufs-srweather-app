@@ -128,7 +128,14 @@ Run the executable that pulls in SRW App components from external repositories:
 Set up the Build Environment
 ============================
 
-Before building the SRW App, the build environment must be set up for the user's specific platform. For Level 1 systems, scripts for loading the proper modules and/or setting the correct environment variables can be found in the ``env`` directory of the SRW App in files named ``build_<platform>_<compiler>.env``. Here is a sample directory listing of these build files: 
+Before building the SRW App, the build environment must be set up for the user's specific platform. There is a set of common modules required to build the SRW App. These are located in the ``env/srw_common`` file. To load the set of common modules, run:
+
+.. code-block:: console
+   module use <path/to/env/directory>
+
+where ``<path/to/env/directory>`` is the full path to the ``env`` directory. 
+
+Then, users must set up the platform-specific elements of the build environment. For Level 1 systems, scripts for loading the proper modules and/or setting the correct environment variables can be found in the ``env`` directory of the SRW App in files named ``build_<platform>_<compiler>.env``. Here is a sample directory listing of these build files: 
 
 .. code-block:: console
 
