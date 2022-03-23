@@ -1504,6 +1504,7 @@ FIXgsm_FILES_TO_COPY_TO_FIXam=( \
 "global_hyblev.l65.txt" \
 "global_zorclim.1x1.grb" \
 "global_sfc_emissivity_idx.txt" \
+"global_tg3clim.2.6x1.5.grb" \
 "global_solarconstant_noaa_an.txt" \
 "global_albedo4.1x1.grb" \
 "geo_em.d01.lat-lon.2.5m.HGT_M.nc" \
@@ -1558,6 +1559,7 @@ CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING=( \
 "global_h2oprdlos.f77       | global_h2o_pltc.f77" \
 "global_albedo4.1x1.grb     | global_albedo4.1x1.grb" \
 "global_zorclim.1x1.grb     | global_zorclim.1x1.grb" \
+"global_tg3clim.2.6x1.5.grb | global_tg3clim.2.6x1.5.grb" \
 "sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt" \
 "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt" \
 "global_o3prdlos.f77        | " \
@@ -1793,18 +1795,25 @@ NUM_ENS_MEMBERS="1"
 DO_SHUM="FALSE"
 DO_SPPT="FALSE"
 DO_SKEB="FALSE"
+ISEED_SPPT="1"
+ISEED_SHUM="2"
+ISEED_SKEB="3"
+NEW_LSCALE="TRUE"
 SHUM_MAG="0.006" #Variable "shum" in input.nml
 SHUM_LSCALE="150000"
 SHUM_TSCALE="21600" #Variable "shum_tau" in input.nml
 SHUM_INT="3600" #Variable "shumint" in input.nml
 SPPT_MAG="0.7" #Variable "sppt" in input.nml
+SPPT_LOGIT="TRUE"
 SPPT_LSCALE="150000"
 SPPT_TSCALE="21600" #Variable "sppt_tau" in input.nml
 SPPT_INT="3600" #Variable "spptint" in input.nml
+SPPT_SFCLIMIT="TRUE"
 SKEB_MAG="0.5" #Variable "skeb" in input.nml
 SKEB_LSCALE="150000"
 SKEB_TSCALE="21600" #Variable "skeb_tau" in input.nml
 SKEB_INT="3600" #Variable "skebint" in input.nml
+SKEBNORM="1"
 SKEB_VDOF="10"
 USE_ZMTNBLCK="FALSE"
 #

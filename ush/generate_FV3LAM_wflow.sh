@@ -790,22 +790,6 @@ settings="\
     'lndp_type': ${LNDP_TYPE},
     'lndp_each_step': ${LSM_SPP_EACH_STEP},
     'fhcyc': ${FHCYC_LSM_SPP_OR_NOT}, 
-  }
-'nam_stochy': {
-    'shum': ${SHUM_MAG},
-    'shum_lscale': ${SHUM_LSCALE},
-    'shum_tau': ${SHUM_TSCALE},
-    'shumint': ${SHUM_INT},
-    'sppt': ${SPPT_MAG},
-    'sppt_lscale': ${SPPT_LSCALE},
-    'sppt_tau': ${SPPT_TSCALE},
-    'spptint': ${SPPT_INT},
-    'skeb': ${SKEB_MAG},
-    'skeb_lscale': ${SKEB_LSCALE},
-    'skeb_tau': ${SKEB_TSCALE},
-    'skebint': ${SKEB_INT},
-    'skeb_vdof': ${SKEB_VDOF},
-    'use_zmtnblck': ${USE_ZMTNBLCK},
   }"
 #
 # Add to "settings" the values of those namelist variables that specify
@@ -859,6 +843,51 @@ done
 #
 # Add the closing curly bracket to "settings".
 #
+settings="$settings
+  }"
+#
+# Add the relevant tendency-based stochastic physics namelist variables to
+# "settings" when running with SPPT, SHUM, or SKEB turned on. Otherwise 
+# only include an empty "nam_stochy" stanza.
+#
+settings="$settings
+'nam_stochy': {"
+if [ "${DO_SPPT}" = "TRUE" ]; then
+    settings="$settings
+    'iseed_sppt': ${ISEED_SPPT},
+    'new_lscale': ${NEW_LSCALE},
+    'sppt': ${SPPT_MAG},
+    'sppt_logit': ${SPPT_LOGIT},
+    'sppt_lscale': ${SPPT_LSCALE},
+    'sppt_sfclimit': ${SPPT_SFCLIMIT},
+    'sppt_tau': ${SPPT_TSCALE},
+    'spptint': ${SPPT_INT},
+    'use_zmtnblck': ${USE_ZMTNBLCK},"
+fi
+
+if [ "${DO_SHUM}" = "TRUE" ]; then
+    settings="$settings
+    'iseed_shum': ${ISEED_SHUM},
+    'new_lscale': ${NEW_LSCALE},
+    'shum': ${SHUM_MAG},
+    'shum_lscale': ${SHUM_LSCALE},
+    'shum_tau': ${SHUM_TSCALE},
+    'shumint': ${SHUM_INT},
+    'use_zmtnblck': ${USE_ZMTNBLCK},"
+fi
+
+if [ "${DO_SKEB}" = "TRUE" ]; then
+    settings="$settings
+    'iseed_skeb': ${ISEED_SKEB},
+    'new_lscale': ${NEW_LSCALE},
+    'skeb': ${SKEB_MAG},
+    'skeb_lscale': ${SKEB_LSCALE},
+    'skebnorm': ${SKEBNORM},
+    'skeb_tau': ${SKEB_TSCALE},
+    'skebint': ${SKEB_INT},
+    'skeb_vdof': ${SKEB_VDOF},
+    'use_zmtnblck': ${USE_ZMTNBLCK},"
+fi
 settings="$settings
   }"
 #
@@ -1066,9 +1095,6 @@ fi
 { restore_shell_opts; } > /dev/null 2>&1
 
 }
-
-
-
 
 #
 #-----------------------------------------------------------------------
