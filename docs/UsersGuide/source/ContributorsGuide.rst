@@ -8,12 +8,12 @@ SRW App Contributor's Guide
 .. _Background:
 
 Background
-==========
+===========
 
 Authoritative branch
 -----------------------
 
-The main development branch for the ``ufs-srweather-app`` repository is ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual sub-components, including ``regional_workflow``. Pull requests (PR's) will be merged to ``develop``. 
+The main development branch for the ``ufs-srweather-app`` repository is ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual sub-components, including ``regional_workflow``. Pull requests (PRs) will be merged to ``develop``. 
 
 The ``develop`` branch is protected by the code management team:
     #. Pull requests for this branch require approval by at least two code reviewers.
@@ -80,12 +80,11 @@ The following steps should be followed in order to make changes to the ``develop
         * **feature/[name]:** Adds a new feature to the code
         * **enhancement/[name]:** Improves an existing portion of the code
         * **textonly/[name]:** Changes elements of the repository that do not impact program output or log files (e.g., changes to README, documentation, comments, changing quoted Registry elements, white space alignment). Any change which does not impact the compiled code in any way should fall under this category.
-        ..
-            COMMENT: Ask for input on *textonly* description. 
-    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - ...commit message..."). Test code modifications on as many platforms as possible, and request help with further testing from code review committee when unable to test on all platforms. Document changes to the workflow and capabilities (either in the ``.rst`` files or separately) so that SRW App documentation stays up-to-date. 
-    #. **Pull request** - When ready to merge changes back to the ``develop`` branch, the code developer should initiate a pull request (PR) of the feature branch into the ``develop`` branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. See the guidelines in :numref:`Section %s <GoodPR>` on making a good pull request. Provide some information about the PR in the proper fields, and tag all relevant reviewers from the code management team to the PR.
+         
+    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - ...commit message..."). Test code modifications on as many platforms as possible, and request help with further testing from code management team when unable to test on all platforms. Document changes to the workflow and capabilities (either in the ``.rst`` files or separately) so that SRW App documentation stays up-to-date. 
+    #. **Pull request** - When ready to merge changes back to the ``develop`` branch, the code developer should initiate a pull request (PR) of the feature branch into the ``develop`` branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. When a PR is initiated, the :ref:`PR Template <Template>` autofills. Developers should use the template to provide information about the PR in the proper fields. See the guidelines in :numref:`Section %s <GoodPR>` for more details on making a good pull request. Developers should also tag all relevant reviewers from the code management team to the PR.
     #. **Merge** - When review and testing is complete, a code manager will complete the pull request and subsequent merge.
-    #. **Cleanup** - After the PR is merged, the code developer should delete the branch and close the issue.
+    #. **Cleanup** - After the PR is merged, the code developer should delete the branch on their fork and close the issue.
 
 .. note::
     Feature branches are intended to be short-lived, concentrated on code with one sole purpose, and applicable to a single PR. These branches should be deleted once merged, and a new feature branch should be created when subsequent code development continues.
@@ -153,15 +152,13 @@ For all issue reports, indicate whether this is an issue that you plan to work o
 Making a Pull Request
 ---------------------------
 
-All changes to ``develop`` branches should be handled via GitHub’s “Pull Request” (PR) functionality from a feature or bug-fix branch in the developer’s fork. Developers must follow the template PR instructions displayed in :numref:`Step %s <Template>` below and provide links to relevant GitHub issue(s). They must also indicate which tests were run on which machines. 
+All changes to ``develop`` branches should be handled via GitHub’s “Pull Request” (PR) functionality from a branch in the developer’s fork. Developers must follow the template PR instructions displayed in :numref:`Step %s <Template>` below and provide links to relevant GitHub issue(s). They must also indicate which tests were run on which machines. 
 
 .. note::
 
-    * If the developer wants to make use of automated testing, any SRW + regional_workflow dependencies must be opened in PR's from the same user fork and branch.
-    * The Externals.cfg file should point to any dependent branches in regional_workflow (and other components, if necessary) while under review. Before being merged, these references must be updated to the appropriate hashes in the authoritative repositories.
-
-..
-    COMMENT: Is this update of hashes done by the developer or code manager? How does the developer indicate that that will be necessary?
+    * If the developer wants to make use of automated testing, any SRW App + regional_workflow dependencies must be opened in PRs from the same user fork and branch.
+    * The ``Externals.cfg`` file should point to any dependent branches in ``regional_workflow`` (and other components, if necessary) while those branches are under review. Once the corresponding ``regional_workflow`` or component PR has been merged, the developer should update the references in their ``Externals.cfg`` file to reflect the appropriate hashes in the authoritative repositories. 
+    * Developers should mention in their ``ufs-srweather-app`` PR description that they are temporarily pointing to a branch/hash in their fork of ``regional_worklfow`` and that it will be updated once the corresponding ``regional_workflow`` PR is merged.
 
 Pull requests will be reviewed and approved by at least two code managers. When a PR has met the requirements and been approved by code reviewers, a code manager will merge the PR. 
 
@@ -197,7 +194,7 @@ Here is the template that is provided when developers click "Create pull request
     more complicated changes, or those resulting in scientific changes, please be explicit!
 
     ## DEPENDENCIES:
-    Add any links to external PR's (e.g. regional_workflow and/or UFS PR's). For example:
+    Add any links to external PRs (e.g. regional_workflow and/or UFS PRs). For example:
     - ufs-community/regional_workflow/pull/<pr_number>
     - ufs-community/UFS_UTILS/pull/<pr_number>
     - ufs-community/ufs-weather-model/pull/<pr_number>
@@ -236,17 +233,13 @@ All of the above examples concisely describe the changes contained in the pull r
 Tips, Best Practices, and Protocols to Follow When Issuing a PR
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* **Indicate urgency.** If a PR is particularly urgent, this information should be provided in the PR Description section, and multiple code management team members should be tagged to draw attention to this issue.
+* **Indicate urgency.** If a PR is particularly urgent, this information should be provided in the PR Description section, and multiple code management team members should be tagged to draw attention to this issue. After submitting the PR, a "high priority" label should be added to it. 
 * **Indicate the scope of the PR.** If the PR is extremely minor (e.g., change to the README file), indicate this in the PR message. If it is an extensive PR, test it on as many platforms as possible, and stress the necessity that it be tested on systems for which you do not have access.
 * **Clarify in the PR message where the code has been tested.** At a minimum, code should be tested on the platform where code modification has taken place. It should also be tested on machines where code modifications will impact results. If the developer does not have access to these platforms, this should be noted in the PR. 
 * **Follow separation of concerns.** For example, module loads are only handled in the appropriate modulefiles, Rocoto always sets the work directory, j-jobs make the work directory, and ex-scripts require the work directory to exist.
-..
-    COMMENT: Originally, it mentioned style guidelines for the regional_workflow, but where are those located?
-* **Label PR status appropriately.** If the PR is not completely ready to be merged please add a “draft” or “do not merge” label to the PR. 
-* **Target subject matter experts among the code management team.** When possible, tag team members who are familiar with the modifications made in the PR so that the committee can provide effective and streamlined PR reviews and approvals.
+* **Label PR status appropriately.** If the PR is not completely ready to be merged please add a “draft” or “do not merge” label. Urgent PRs should be marked "high priority." All PRs should have a type label (e.g., "bug," "enhancement"). Labels can be added on the right-hand side of a submitted PR request by clicking on the gear icon beside "Labels" (below the list of Reviewers).
+* **Target subject matter experts (SMEs) among the code management team.** When possible, tag team members who are familiar with the modifications made in the PR so that the code management team can provide effective and streamlined PR reviews and approvals. Developers can tag SME's by selecting the gear icon next to "Assignees" (under the Reviewers list) and adding the appropriate names. 
 * **Schedule a live code review** if the PR is exceptionally complex in order to brief members of the code management team on the PR either in-person or through a teleconference.
-..
-    COMMENT: Are these last two points possible for contributors outside of NOAA?? Is there a process for this??
 
 
 .. _ContribStandards:
@@ -263,8 +256,10 @@ SRW Application
 ------------------
 
 Externals.cfg
-    * All externals live in a single Externals.cfg file.
+    * All externals live in a single ``Externals.cfg`` file.
     * Externals should point only to authoritative repositories for the given code base.
+
+        * Temporary exceptions are made for a PR into the ``develop`` branch of ``ufs-srweather-app`` that is dependent on another PR (e.g., a ``regional_workflow`` PR from the same contributor). When the component PR is merged, the contributor must update his ``ufs-srweather-app`` PR with the hash of the component's authoritative repository.
     * Only a single hash will be maintained for any given external code base. All externals should point to this static hash (not to the top of a branch). 
     
 Build system
@@ -286,10 +281,10 @@ The ``regional_workflow`` repository must not contain source code for compiled p
 **General Coding Standards:** 
     * All bash scripts must explicitly be ``#!/bin/bash`` scripts. They should not be login-enabled.
     * MacOS does not have all Linux utilities by default. Developers should ensure that they do not break any MacOS capabilities with their contribution.
-    * All code must be indented appropriately and conform to the style of existing scripts.
+    * All code must be indented appropriately and conform to the style of existing scripts (e.g., local variables should be lowercase, global variables should be uppercase).
 
 ..
-    COMMENT: And what is this style? Do we have a style guide?
+    COMMENT: And what is this style? Do we have a style guide? Ask about linking to this `style guide <https://google.github.io/styleguide/shellguide.html>`__
 
 **Python Coding Standards:** 
     * All newly added Python code must be linted with a score of 10/10 following the .pylintrc configuration file set by the code managers. 
@@ -327,13 +322,9 @@ All changes should be associated with a GitHub Issue. If a developer is working 
     * Developers will not be required to run tests on *all* supported platforms, but if a failure is pointed out by another reviewer (or by automated testing), then the developer should work with reviewers and code managers to ensure that the problem is resolved prior to merging.
     * If possible, developers should run a fundamental test suite (see :numref:`Section %s <Testing>`) on at least one supported platform and report on the outcome in the PR template.
     * If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweather-app`` should be opened to update the regional_workflow hash. 
-    * Update the ``.rst`` documentation files where appropriate. 
+    * Update the ``.rst`` documentation files where appropriate as part of the PR. If necessary, contributors may update the documentation in a subsequent PR. In these cases, the contributor should open an issue reflecting the need for documentation (see :numref:`Step %s <Issue>`) and include the issue number and explanation in the Documentation section of the initial PR template. 
 
-..
-    COMMENT: Is this something contributors need to do, or code managers only?
-
-
-**Guidelines for New Components:**
+**Guidelines for New Features:**
     * Components should have a mechanism for portability and platform-independence; code that is included in the SRW App should not be tied to specific platforms. 
     * New components should be able to build using the standard supported NCEPLIBS environment (currently `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__).
     * New entries in Externals.cfg should only be repositories from “official” sources; either the `UFS Community GitHub organization <https://github.com/ufs-community>`__ or another NOAA project organization.
@@ -351,10 +342,7 @@ Before opening a PR, a minimum set of tests should be run:
     * At least one end-to-end test (preferably a fundamental test suite) should be run on at least one supported platform
     * Any new functionality should be tested explicitly, and tests should be described in detail in the PR message. Depending on the impact of this functionality, this test should be added to the WE2E suite of fundamental or comprehensive tests. 
 
-..
-    COMMENT: By "supported platforms," are we talking about Level 1 only?
-
-**Updating the Testing Suite:** When new capabilities are added or new bugs/issues are discovered, tests should be created and/or modified to test for these conditions. For example, if a new physics suite is introduced, it may be possible to alter an existing test rather than creating an entirely new test. Code developers introducing new capabilities should work with code managers to provide the proper configuration files, data, and other information necessary to create new tests for these capabilities.
+**Updating the Testing Suite:** When new capabilities are added or new bugs/issues are discovered, WE2E tests should be created and/or modified to verify that new features are not broken in subsequent PRs. For example, if a new physics suite is introduced, it may be possible to alter an existing test rather than creating an entirely new test. Code developers introducing new capabilities should work with code managers to provide the proper configuration files, data, and other information necessary to create new tests for these capabilities.
 
 
 
