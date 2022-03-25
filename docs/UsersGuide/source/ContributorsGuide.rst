@@ -13,7 +13,7 @@ Background
 Authoritative branch
 -----------------------
 
-The main development branch for the ``ufs-srweather-app`` repository is ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual sub-components, including ``regional_workflow``. Pull requests (PRs) will be merged to ``develop``. 
+The main development branch for the ``ufs-srweather-app`` repository is ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual sub-components, including the ``regional_workflow``. Pull requests (PRs) will be merged to ``develop``. 
 
 The ``develop`` branch is protected by the code management team:
     #. Pull requests for this branch require approval by at least two code reviewers.
@@ -30,7 +30,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +------------------+------------------------------------------------+
     | **Organization** | **Reviewers**                                  |
     +==================+================================================+
-    | EMC              | Chan-Hoo Jeon(@chan-hoo)                       |
+    | EMC              | Chan-Hoo Jeon (@chan-hoo)                      |
     |                  |                                                |
     |                  | Ben Blake (@BenjaminBlake-NOAA)                |
     |                  |                                                |
@@ -81,7 +81,7 @@ The following steps should be followed in order to make changes to the ``develop
         * **enhancement/[name]:** Improves an existing portion of the code
         * **textonly/[name]:** Changes elements of the repository that do not impact program output or log files (e.g., changes to README, documentation, comments, changing quoted Registry elements, white space alignment). Any change which does not impact the compiled code in any way should fall under this category.
          
-    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - ...commit message..."). Test code modifications on as many platforms as possible, and request help with further testing from code management team when unable to test on all platforms. Document changes to the workflow and capabilities (either in the ``.rst`` files or separately) so that SRW App documentation stays up-to-date. 
+    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - <commit message>"). Test code modifications on as many platforms as possible, and request help with further testing from the code management team when unable to test on all platforms. Document changes to the workflow and capabilities (either in the ``.rst`` files or separately) so that the SRW App documentation stays up-to-date. 
     #. **Pull request** - When ready to merge changes back to the ``develop`` branch, the code developer should initiate a pull request (PR) of the feature branch into the ``develop`` branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. When a PR is initiated, the :ref:`PR Template <Template>` autofills. Developers should use the template to provide information about the PR in the proper fields. See the guidelines in :numref:`Section %s <GoodPR>` for more details on making a good pull request. Developers should also tag all relevant reviewers from the code management team to the PR.
     #. **Merge** - When review and testing is complete, a code manager will complete the pull request and subsequent merge.
     #. **Cleanup** - After the PR is merged, the code developer should delete the branch on their fork and close the issue.
@@ -143,7 +143,7 @@ Choose from three options:
             Directly reference any issues or PRs in this or other repositories 
             that this is related to, and describe how they are related.
 
-    #. `Other <https://github.com/ufs-community/ufs-srweather-app/issues/new>`__ (e.g., text only changes): Open a blank issue, and use the "Feature Request" template above as a starting point to describe the issue. 
+    #. `Other <https://github.com/ufs-community/ufs-srweather-app/issues/new>`__ (e.g., text-only changes): Open a blank issue, and use the "Feature Request" template above as a starting point to describe the issue. 
 
 For all issue reports, indicate whether this is an issue that you plan to work on and eventually submit a PR for or whether you are merely making a suggestion. After filling out the issue report, click on "Submit new issue." 
 
@@ -152,15 +152,17 @@ For all issue reports, indicate whether this is an issue that you plan to work o
 Making a Pull Request
 ---------------------------
 
-All changes to ``develop`` branches should be handled via GitHub’s “Pull Request” (PR) functionality from a branch in the developer’s fork. Developers must follow the template PR instructions displayed in :numref:`Step %s <Template>` below and provide links to relevant GitHub issue(s). They must also indicate which tests were run on which machines. 
+All changes to the SRW App ``develop`` branch should be handled via GitHub’s “Pull Request” (PR) functionality from a branch in the developer’s fork. Developers must follow the template PR instructions (see :numref:`Step %s <Template>` below) and provide links to the relevant GitHub issue(s). They must also indicate which tests were run on which machines. 
+
+Pull requests will be reviewed and approved by at least two code managers. When a PR has met the requirements and been approved by code reviewers, a code manager will merge the PR. 
+
 
 .. note::
 
     * If the developer wants to make use of automated testing, any SRW App + regional_workflow dependencies must be opened in PRs from the same user fork and branch.
-    * The ``Externals.cfg`` file should point to any dependent branches in ``regional_workflow`` (and other components, if necessary) while those branches are under review. Once the corresponding ``regional_workflow`` or component PR has been merged, the developer should update the references in their ``Externals.cfg`` file to reflect the appropriate hashes in the authoritative repositories. 
+    * The ``Externals.cfg`` file should point to any dependent branches in ``regional_workflow`` (and other components, if necessary) while those branches are under review. Once the corresponding ``regional_workflow`` PR has been merged, the developer should update the references in their ``Externals.cfg`` file to reflect the appropriate hashes in the authoritative repositories. 
     * Developers should mention in their ``ufs-srweather-app`` PR description that they are temporarily pointing to a branch/hash in their fork of ``regional_worklfow`` and that it will be updated once the corresponding ``regional_workflow`` PR is merged.
 
-Pull requests will be reviewed and approved by at least two code managers. When a PR has met the requirements and been approved by code reviewers, a code manager will merge the PR. 
 
 .. _Template:
 
@@ -226,7 +228,7 @@ All of the above examples concisely describe the changes contained in the pull r
     * Bug fixes (Bug fixes on what part of the code?)
     * Changes to surface scheme (What kind of changes? What surface scheme?)
 
-**DESCRIPTION OF CHANGES:** The first line of the description should be a single-line "purpose" for this change. Note the type of change (i.e., bug fix, feature, enhancement, textonly). Summarize the problem, proposed solution, and required changes. If this is an enhancement or new code, describe why the change is important.
+**DESCRIPTION OF CHANGES:** The first line of the description should be a single-line "purpose" for this change. Note the type of change (i.e., bug fix, feature, enhancement, textonly). Summarize the problem, proposed solution, and required changes. If this is an enhancement or new feature, describe why the change is important.
 
 **DOCUMENTATION:** Developers adding a new capability should include documentation on how to use this capability. This documentation can be included in the appropriate section of the PR message or submitted as a file attachment. Developers should consider updating the existing ``.rst`` documentation files in the ``ufs-srweather-app`` repository. If this is not possible, they can submit an issue to indicate that documentation updates are required based on the documentation in their PR submission. 
 
