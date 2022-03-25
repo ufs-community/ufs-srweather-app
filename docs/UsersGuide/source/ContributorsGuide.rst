@@ -159,7 +159,7 @@ Pull requests will be reviewed and approved by at least two code managers. When 
 
 .. note::
 
-    * If the developer wants to make use of automated testing, any SRW App + regional_workflow dependencies must be opened in PRs from the same user fork and branch.
+    * If a developer wants to make use of automated testing, any SRW App + regional_workflow dependencies must be opened in PRs from forks belonging to the same user.
     * The ``Externals.cfg`` file should point to any dependent branches in ``regional_workflow`` (and other components, if necessary) while those branches are under review. Once the corresponding ``regional_workflow`` PR has been merged, the developer should update the references in their ``Externals.cfg`` file to reflect the appropriate hashes in the authoritative repositories. 
     * Developers should mention in their ``ufs-srweather-app`` PR description that they are temporarily pointing to a branch/hash in their fork of ``regional_worklfow`` and that it will be updated once the corresponding ``regional_workflow`` PR is merged.
 
@@ -230,18 +230,19 @@ All of the above examples concisely describe the changes contained in the pull r
 
 **DESCRIPTION OF CHANGES:** The first line of the description should be a single-line "purpose" for this change. Note the type of change (i.e., bug fix, feature, enhancement, textonly). Summarize the problem, proposed solution, and required changes. If this is an enhancement or new feature, describe why the change is important.
 
-**DOCUMENTATION:** Developers adding a new capability should include documentation on how to use this capability. This documentation can be included in the appropriate section of the PR message or submitted as a file attachment. Developers should consider updating the existing ``.rst`` documentation files in the ``ufs-srweather-app`` repository. If this is not possible, they can submit an issue to indicate that documentation updates are required based on the documentation in their PR submission. 
+**DOCUMENTATION:** Developers should include documentation on new capabilities and enhancements by updating the appropriate ``.rst`` documentation files in their ``ufs-srweather-app`` fork prior to the PR. These documentation updates should be noted in the "Documentation" section of the PR message. If necessary, contributors may submit the ``.rst`` documentation in a subsequent PR. In these cases, the developers should include any existing documentation in the "Documentation" section of the initial PR message or as a file attachment to the PR. Then, the contributor should open an issue (see :numref:`Step %s <Issue>`) reflecting the need for official ``.rst`` documentation updates and include the issue number and explanation in the "Documentation" section of the initial PR template.
+ 
 
 Tips, Best Practices, and Protocols to Follow When Issuing a PR
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* **Indicate urgency.** If a PR is particularly urgent, this information should be provided in the PR Description section, and multiple code management team members should be tagged to draw attention to this issue. After submitting the PR, a "high priority" label should be added to it. 
-* **Indicate the scope of the PR.** If the PR is extremely minor (e.g., change to the README file), indicate this in the PR message. If it is an extensive PR, test it on as many platforms as possible, and stress the necessity that it be tested on systems for which you do not have access.
+* **Indicate urgency.** If a PR is particularly urgent, this information should be provided in the PR "Description" section, and multiple code management team members should be tagged to draw attention to this PR. After submitting the PR, a "high priority" label should be added to it. 
+* **Indicate the scope of the PR.** If the PR is extremely minor (e.g., change to the README file), indicate this in the PR message. If it is an extensive PR, the developer should test it on as many platforms as possible and stress the necessity that it be tested on systems for which they do not have access.
 * **Clarify in the PR message where the code has been tested.** At a minimum, code should be tested on the platform where code modification has taken place. It should also be tested on machines where code modifications will impact results. If the developer does not have access to these platforms, this should be noted in the PR. 
 * **Follow separation of concerns.** For example, module loads are only handled in the appropriate modulefiles, Rocoto always sets the work directory, j-jobs make the work directory, and ex-scripts require the work directory to exist.
 * **Label PR status appropriately.** If the PR is not completely ready to be merged please add a “draft” or “do not merge” label. Urgent PRs should be marked "high priority." All PRs should have a type label (e.g., "bug," "enhancement"). Labels can be added on the right-hand side of a submitted PR request by clicking on the gear icon beside "Labels" (below the list of Reviewers).
-* **Target subject matter experts (SMEs) among the code management team.** When possible, tag team members who are familiar with the modifications made in the PR so that the code management team can provide effective and streamlined PR reviews and approvals. Developers can tag SME's by selecting the gear icon next to "Assignees" (under the Reviewers list) and adding the appropriate names. 
-* **Schedule a live code review** if the PR is exceptionally complex in order to brief members of the code management team on the PR either in-person or through a teleconference.
+* **Target subject matter experts (SMEs) among the code management team.** When possible, tag team members who are familiar with the modifications made in the PR so that the code management team can provide effective and streamlined PR reviews and approvals. Developers can tag SMEs by selecting the gear icon next to "Assignees" (under the Reviewers list) and adding the appropriate names. 
+* **Schedule a live code review** if the PR is exceptionally complex in order to brief members of the code management team on the PR either in-person or through a teleconference. Developers should indicate in the PR message that they are interested in a live code review if they believe that it would be beneficial. 
 
 
 .. _ContribStandards:
@@ -261,7 +262,7 @@ Externals.cfg
     * All externals live in a single ``Externals.cfg`` file.
     * Externals should point only to authoritative repositories for the given code base.
 
-        * Temporary exceptions are made for a PR into the ``develop`` branch of ``ufs-srweather-app`` that is dependent on another PR (e.g., a ``regional_workflow`` PR from the same contributor). When the component PR is merged, the contributor must update his ``ufs-srweather-app`` PR with the hash of the component's authoritative repository.
+        * Temporary exceptions are made for a PR into the ``develop`` branch of ``ufs-srweather-app`` that is dependent on another PR (e.g., a ``regional_workflow`` PR from the same contributor). When the component PR is merged, the contributor must update the corresponding ``ufs-srweather-app`` PR with the hash of the component's authoritative repository.
     * Only a single hash will be maintained for any given external code base. All externals should point to this static hash (not to the top of a branch). 
     
 Build system
@@ -281,7 +282,7 @@ Regional Workflow
 The ``regional_workflow`` repository must not contain source code for compiled programs. Only scripts, configuration files, and documentation should reside in this repository. 
 
 **General Coding Standards:** 
-    * All bash scripts must explicitly be ``#!/bin/bash`` scripts. They should not be login-enabled.
+    * All bash scripts must explicitly be ``#!/bin/bash`` scripts. They should *not* be login-enabled.
     * MacOS does not have all Linux utilities by default. Developers should ensure that they do not break any MacOS capabilities with their contribution.
     * All code must be indented appropriately and conform to the style of existing scripts (e.g., local variables should be lowercase, global variables should be uppercase).
 
@@ -314,12 +315,12 @@ Contributor Requirements
 Preparing Code for Contribution to the UFS SRW Application
 ------------------------------------------------------------
 
-All changes should be associated with a GitHub Issue. If a developer is working on a change, they should search the existing issues in the appropriate repository (``ufs-srweather-app`` and/or ``regional_workflow``). If an issue does not exist for the work they are doing, they should create one prior to opening a new pull request.
+All changes should be associated with a GitHub Issue. If a developer is working on a change, they should search the existing issues in the appropriate repository (``ufs-srweather-app`` and/or ``regional_workflow``). If an issue does not exist for the work they are doing, they should create one prior to opening a new pull request (see :numref:`Step %s <Issue>`).
 
 **Guidelines for All Modifications:**
     * All changes should adhere to the Code and Configuration Standards detailed in :numref:`Section %s <ContribStandards>`. 
-    * For changes to the ``scripts``, ``ush``, or ``jobs`` directories (within ``ufs-srweather-app/regional_workflow``), developers should follow the `NCO Guidelines <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ for what is incorporated into each layer as closely as possible. 
-    * Developers should ensure their contributions work with the most recent version of the ``ufs-srweather-app``, including all the specific up-to-date hashes of each subcomponent.
+    * For changes to the ``scripts``, ``ush``, or ``jobs`` directories (within ``ufs-srweather-app/regional_workflow``), developers should follow the `NCO Guidelines <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ for what is incorporated into each layer. 
+    * Developers should ensure that their contributions work with the most recent version of the ``ufs-srweather-app``, including all the specific up-to-date hashes of each subcomponent.
     * Modifications should not break any existing supported capabilities on any supported platforms.
     * Developers will not be required to run tests on *all* supported platforms, but if a failure is pointed out by another reviewer (or by automated testing), then the developer should work with reviewers and code managers to ensure that the problem is resolved prior to merging.
     * If possible, developers should run a fundamental test suite (see :numref:`Section %s <Testing>`) on at least one supported platform and report on the outcome in the PR template.
@@ -329,7 +330,7 @@ All changes should be associated with a GitHub Issue. If a developer is working 
 **Guidelines for New Features:**
     * Components should have a mechanism for portability and platform-independence; code that is included in the SRW App should not be tied to specific platforms. 
     * New components should be able to build using the standard supported NCEPLIBS environment (currently `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__).
-    * New entries in Externals.cfg should only be repositories from “official” sources; either the `UFS Community GitHub organization <https://github.com/ufs-community>`__ or another NOAA project organization.
+    * New entries in ``Externals.cfg`` should only be repositories from “official” sources; either the `UFS Community GitHub organization <https://github.com/ufs-community>`__ or another NOAA project organization.
     * Document how to use the new component, and include this information in the PR. 
 
 
