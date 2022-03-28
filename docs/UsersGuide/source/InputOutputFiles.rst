@@ -25,17 +25,17 @@ the external model data can be found in :numref:`Section %s <DownloadingStagingI
 
 Pre-processing (UFS_UTILS)
 --------------------------
-When a user runs the SRW Application as described in the Quick Start Guide :numref:`Chapter %s <QuickstartC>`, :numref:`Step %s Generate the Forecast Experiment <GenerateWorkflowC>` links the input data for the pre-processing utilities from a location on disk to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found `here <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`__.
+When a user runs the SRW Application as described in the Quick Start Guide :numref:`Chapter %s <QuickstartC>`, :numref:`Step %s Generate the Forecast Experiment <GenerateWorkflowC>` links the input data for the pre-processing utilities from a location on disk to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found `here <https://noaa-emcufs-utils.readthedocs.io/en/latest/>`__.
 
 UFS Weather Model
 -----------------
 The input files for the weather model include both static (fixed) files and grid- and date-specific files (terrain, initial conditions, boundary conditions, etc). The static fix files
-must be staged by the user unless you are running on a Level 1/pre-configured platform, in which case you can link to the existing copy of the data on that machine. See :numref:`Section %s <StaticFixFiles>` for more information. The static, grid, and date-specific files are linked in the experiment directory by the workflow scripts. An extensive description of the input files for the weather model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. The namelists and configuration files for the SRW Application are created from templates by the workflow, as described in :numref:`Section %s <WorkflowTemplates>`.
+must be staged by the user unless you are running on a Level 1/pre-configured platform, in which case you can link to the existing copy of the data on that machine. See :numref:`Section %s <StaticFixFiles>` for more information. The static, grid, and date-specific files are linked in the experiment directory by the workflow scripts. An extensive description of the input files for the weather model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/latest/>`__. The namelists and configuration files for the SRW Application are created from templates by the workflow, as described in :numref:`Section %s <WorkflowTemplates>`.
 
 Unified Post Processor (UPP)
 ----------------------------
 Documentation for the UPP input files can be found in the `UPP User's Guide
-<https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html>`__.
+<https://upp.readthedocs.io/en/latest/InputsOutputs.html>`__.
 
 .. _WorkflowTemplates:
 
@@ -96,7 +96,7 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
 
 Additional information related to the ``diag_table_[CCPP]``, ``field_table_[CCPP]``, ``input.nml.FV3``, ``model_conigure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#input-files>`__,
 while information on the ``regional_grid.nml`` can be found in the `UFS_UTILS User’s Guide
-<https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
+<https://noaa-emcufs-utils.readthedocs.io/en/latest/>`_.
 
 Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -140,6 +140,9 @@ experiment run directory ``EXPTDIR/YYYYMMDDHH/INPUT`` and consist of the followi
 These output files are used as inputs for the UFS weather model, and are described in the `Users Guide 
 <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#grid-description-and-initial-condition-files>`__.
 
+..
+   COMMENT: Change link above (structure of "latest" is significantly different)
+
 UFS Weather Model
 -----------------
 As mentioned previously, the workflow can be run in ‘community’ or ‘nco’ mode, which determines
@@ -156,11 +159,12 @@ In this case, the netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH`` 
 * ``phyfHHH.nc``
 
 Additional details may be found in the UFS Weather Model `Users Guide
-<https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#output-files>`__.
+<https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#output-files>`__.
+
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP output files can be found `here <https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html>`__.
+Documentation for the UPP output files can be found `here <https://upp.readthedocs.io/en/latest/InputsOutputs.html>`__.
 
 For the SRW Application, the weather model netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH/postprd`` directory and have the naming convention (file->linked to):
 
@@ -174,7 +178,7 @@ If you wish to modify the fields or levels that are output from the UPP, you wil
 .. note::
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
 
-Use the directions in the `UPP User's Guide <https://upp.readthedocs.io/en/upp-v9.0.0/InputsOutputs.html#control-file>`__ for details on how to make modifications to the ``fv3lam.xml`` file and for remaking the flat text file that the UPP reads, which is called ``postxconfig-NT-fv3lam.txt`` (default).
+Use the directions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ for details on how to make modifications to the ``fv3lam.xml`` file and for remaking the flat text file that the UPP reads, which is called ``postxconfig-NT-fv3lam.txt`` (default).
 
 Once you have created the new flat text file reflecting your changes, you will need to modify your
 ``config.sh`` to point the workflow to the new text file. In your ``config.sh``, set the following:

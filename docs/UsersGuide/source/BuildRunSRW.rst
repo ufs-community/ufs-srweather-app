@@ -154,7 +154,13 @@ On Level 1 systems, the commands in the ``build_<platform>_<compiler>.env`` file
 
 from the main ``ufs-srweather-app`` directory to source the appropriate file.
 
-On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. To check if Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables using commands in the form ``export <VARIABLE_NAME>=<PATH_TO_MODULE>``. Users may need to use ``setenv`` rather than ``export`` depending on their shell environment. For example, ``setenv <VARIABLE_NAME> <PATH_TO_MODULE>``.
+On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
+
+.. code-block::
+
+   export <VARIABLE_NAME>=<PATH_TO_MODULE>
+   setenv <VARIABLE_NAME> <PATH_TO_MODULE>
+
 
 .. _BuildExecutables:
 
@@ -495,7 +501,7 @@ Sample settings are indicated below for Level 1 platforms. Detailed guidance app
 
    To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
 
-Minimum parameter settings for Level 1 machines:
+Minimum parameter settings for running the out-of-the-box SRW App case on Level 1 machines:
 
 **Cheyenne:**
 
@@ -505,28 +511,61 @@ Minimum parameter settings for Level 1 machines:
    ACCOUNT="<my_account>"
    EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/develop/staged_extrn_mdl_files"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/develop/staged_extrn_mdl_files"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
 
-**Hera:**
+**Hera, Jet, Orion, Gaea:**
+
+The ``MACHINE``, ``ACCOUNT``, and ``EXPT_SUBDIR`` settings are the same as for Cheyenne, except that ``"cheyenne"`` should be switched to ``"hera"``, ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. Set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, but replace the file paths to Cheyenne's data with the file paths for the correct machine. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` use the same file path. 
+
+On Hera: 
 
 .. code-block:: console
 
-   MACHINE="hera"
-   ACCOUNT="<my_account>"
-   EXPT_SUBDIR="<my_expt_name>"
+   "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data"
 
-**Jet, Orion, Gaea:**
+On Jet: 
 
-The settings are the same as for Hera, except that ``"hera"`` should be switched to ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. 
+.. code-block:: console
 
-For **WCOSS**, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
+   "/lfs4/BMC/wrfruc/FV3-LAM/model_data"
+
+On Orion: 
+
+.. code-block:: console
+
+   "/work/noaa/fv3-cam/UFS_SRW_app/v1p0/model_data"
+
+
+On Gaea: 
+
+.. code-block:: console
+
+   "/lustre/f2/pdata/esrl/gsd/ufs/ufs-srw-release-v1.0.0/staged_extrn_mdl_files"
+
+
+For **WCOSS** systems, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
 
 .. code-block:: console
 
    MACHINE=”wcoss_cray” or MACHINE=”wcoss_dell_p3”
    ACCOUNT="my_account"
    EXPT_SUBDIR="my_expt_name"
+   USE_USER_STAGED_EXTRN_FILES="TRUE"
+
+For WCOSS_DELL_P3:
+   
+.. code-block:: console
+
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/model_data"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/model_data"
+
+For WCOSS_CRAY:
+
+.. code-block:: console
+   
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/model_data"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/model_data"
 
 
 **NOAA Cloud Systems:**
@@ -630,14 +669,14 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workfl
    +----------------------+------------------------------------------------------------+
    | **Workflow Task**    | **Task Description**                                       |
    +======================+============================================================+
-   | make_grid            | Pre-processing task to generate regional grid files. Can   |
-   |                      | be run, at most, once per experiment.                      |
+   | make_grid            | Pre-processing task to generate regional grid files. Only  |
+   |                      | needs to be run once per experiment.                       |
    +----------------------+------------------------------------------------------------+
-   | make_orog            | Pre-processing task to generate orography files. Can be    |
-   |                      | run, at most, once per experiment.                         |
+   | make_orog            | Pre-processing task to generate orography files. Only      |
+   |                      | needs to be run once per experiment.                       |
    +----------------------+------------------------------------------------------------+
    | make_sfc_climo       | Pre-processing task to generate surface climatology files. |
-   |                      | Can be run, at most, once per experiment.                  |
+   |                      | Only needs to be run, at most, once per experiment.        |
    +----------------------+------------------------------------------------------------+
    | get_extrn_ics        | Cycle-specific task to obtain external data for the        |
    |                      | initial conditions                                         |
