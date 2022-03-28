@@ -315,7 +315,7 @@ Contributor Requirements
 Preparing Code for Contribution to the UFS SRW Application
 ------------------------------------------------------------
 
-All changes should be associated with a GitHub Issue. If a developer is working on a change, they should search the existing issues in the appropriate repository (``ufs-srweather-app`` and/or ``regional_workflow``). If an issue does not exist for the work they are doing, they should create one prior to opening a new pull request (see :numref:`Step %s <Issue>`).
+All changes should be associated with a GitHub Issue. If developers are working on a change, they should search the existing issues in the appropriate repository (``ufs-srweather-app`` and/or ``regional_workflow``). If an issue does not exist for the work they are doing, they should create one prior to opening a new pull request (see :numref:`Step %s <Issue>`).
 
 **Guidelines for All Modifications:**
     * All changes should adhere to the Code and Configuration Standards detailed in :numref:`Section %s <ContribStandards>`. 
