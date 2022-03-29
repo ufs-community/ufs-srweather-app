@@ -345,7 +345,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | UFS Weather Model          | https://ufs-weather-model.readthedocs.io/en/latest/                             |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | HPC-Stack Documentation    | See :numref:`Chapter %s <InstallBuildHPCstack>`                                 |
+   | HPC-Stack Documentation    | https://hpc-stack.readthedocs.io/en/latest/                                     |
    +----------------------------+---------------------------------------------------------------------------------+
    | NCEPLIBS Documentation     | https://github.com/NOAA-EMC/NCEPLIBS/wiki                                       |
    +----------------------------+---------------------------------------------------------------------------------+
