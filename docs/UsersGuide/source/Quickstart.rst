@@ -61,7 +61,28 @@ On HPC systems (including NOAA's Cloud platforms), allocate a compute node on wh
 
 The third command will output a hostname. Replace ``<hostname>`` in the last command with the output from the third command. After "ssh-ing" to the compute node in the last command, build and run the SRW App from that node. 
 
-The appropriate commands on other Level 1 platforms will vary, and users should consult the documentation for those platforms. 
+The appropriate commands on other Level 1 platforms will vary, and users should consult the `documentation <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ for those platforms. In general, the allocation command will follow one of these two patterns depending on whether the system uses the Slurm or PBS resource manager respectively:
+
+.. code-block:: console
+
+   salloc -N 1 -n <cores-per-node> -A <account> -t <time> -q <queue/qos> --partition=<system> [-M <cluster>]
+   qsub -I -lwalltime=<time> -A <account> -q <destination> -lselect=1:ncpus=36:mpiprocs=36
+
+For example, on Orion, which uses the Slurm resource manager, run:
+
+.. code-block:: console
+
+   salloc -N 1 -n 40 -A epic-ps -t 2:30:00 -q batch --partition=orion
+
+For more information on the ``salloc`` command options, see Slurm's `documentation <https://slurm.schedmd.com/salloc.html>`__. 
+
+On Cheyenne, which uses the PBS resource manager, run:
+
+.. code-block:: console
+
+   qsub -I -lwalltime=1:00:00 -A scsg0002 -q regular -lselect=1:ncpus=36:mpiprocs=36
+
+For more information on the ``qsub`` command options, see the `PBS Manual §2.59.3 <https://2021.help.altair.com/2021.1/PBSProfessional/PBS2021.1.pdf>`__, (p. 1416).
 
 .. _BuildC:
 
