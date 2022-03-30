@@ -29,11 +29,26 @@ Platform Environment
 ..
    COMMENT: Are we deleting WCOSS_CRAY and/or GAEA? Any others to add besides SINGULARITY/NOAACLOUD? 
 
+``MACHINE_FILE``: (Default: "")
+   Path to a configuration file with machine-specific settings. If none is provided, ``setup.sh`` will attempt to set the path to for a supported platform.
+
 ``ACCOUNT``: (Default: "project_name")
    The account under which to submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ACCOUNT field for Level 1 systems, users may run ``groups``, which will return a list of projects the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. The ``account_params`` command will display additional account details. 
 
 ``WORKFLOW_MANAGER``: (Default: "none")
    The workflow manager to use (e.g. "ROCOTO"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "ROCOTO." Valid values: "rocoto" "none"
+
+``NCORES_PER_NODE``: (Default: "")
+   The number of cores available per node on the compute platform. Set for supported platforms in ``setup.sh``, but is now also configurable for all platforms.
+
+``LMOD_PATH``: (Default: "")
+   Path to the LMOD sh file on the user's Linux system. Is set automatically for supported machines.
+
+``BUILD_ENV_FN``: (Default: "")
+   Name of alternative build environment file to use if using an unsupported platform. Is set automatically for supported machines.
+
+``WFLOW_ENV_FN``: (Default: "")
+   Name of alternative workflow environment file to use if using an unsupported platform. Is set automatically for supported machines.
 
 ``SCHED``: (Default: "")
    The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Set this to an empty string in order for the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: "slurm" "pbspro" "lsf" "lsfcray" "none"
@@ -83,12 +98,12 @@ These settings control run commands for platforms without a workflow manager. Va
    The run command for the model forecast step. This will be appended to the end of the variable definitions file ("var_defns.sh").
 
 ``RUN_CMD_POST``: (Default: "mpirun -np 1")
-   The run command for post-processing (UPP). Can be left blank for smaller domains, in which case UPP will run without MPI.
+   The run command for post-processing (:term:`UPP`). Can be left blank for smaller domains, in which case UPP will run without MPI.
 
 Cron-Associated Parameters
 ==========================
 ``USE_CRON_TO_RELAUNCH``: (Default: "FALSE")
-   Flag that determines whether or not a line is added to the user's cron table that calls the experiment launch script every ``CRON_RELAUNCH_INTVL_MNTS`` minutes.
+   Flag that determines whether or not a line is added to the user's cron table, which calls the experiment launch script every ``CRON_RELAUNCH_INTVL_MNTS`` minutes.
 
 ``CRON_RELAUNCH_INTVL_MNTS``: (Default: "03")
    The interval (in minutes) between successive calls of the experiment launch script by a cron job to (re)launch the experiment (so that the workflow for the experiment kicks off where it left off). This is used only if ``USE_CRON_TO_RELAUNCH`` is set to "TRUE".
@@ -107,6 +122,8 @@ Directory Parameters
 
    This parameter cannot be left as a null string.
 
+``EXEC_SUBDIR``: (Default: "bin")
+   The name of the subdirectory of ``ufs-srweather-app`` where executables are installed.
 
 NCO Mode Parameters
 ===================
