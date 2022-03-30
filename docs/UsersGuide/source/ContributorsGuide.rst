@@ -290,7 +290,6 @@ The ``regional_workflow`` repository must not contain source code for compiled p
     COMMENT: And what is this style? Do we have a style guide? Ask about linking to this `style guide <https://google.github.io/styleguide/shellguide.html>`__
 
 **Python Coding Standards:** 
-    * All newly added Python code must be linted with a score of 10/10 following the .pylintrc configuration file set by the code managers. 
     * All Python code contributions should come with an appropriate ``environment.yml`` file for the feature. 
     * Keep the use of external Python packages to a minimum for necessary workflow tasks. Currently these include ``f90nml``, ``pyyaml``, and ``jinja``. 
 
