@@ -15,7 +15,7 @@ in the file ``testlist.release_public_v1.txt``.
 The base experiment configuration file for each test is located in the ``baseline_configs`` 
 subdirectory.  Each file is named ``config.${expt_name}.sh``, where ``${expt_name}`` is the 
 name of the corresponding test configuration. These base configuration files are subsets of
-the full ``config.sh`` experiment configuration file used in :numref:`Section %s <SetUpConfigFile>` 
+the full ``config.sh`` experiment configuration file used in :numref:`Section %s <SetUpConfigFileC>` 
 and described in :numref:`Section %s <UserSpecificConfig>`.  For each test that the user wants 
 to run, the ``run_experiments.sh`` script reads in its base configuration file and generates from 
 it a full ``config.sh`` file (a copy of which is placed in the experiment directory for the test).
