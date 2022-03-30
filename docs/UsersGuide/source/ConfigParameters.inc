@@ -4,8 +4,8 @@
 
 Grid Generation Parameters
 ==========================
-``GRID_GEN_METHOD``: (Default: “”)
-   This variable specifies the method to use to generate a regional grid in the horizontal.  The only supported value of this parameter is “ESGgrid”, in which case the Extended Schmidt Gnomonic grid generation method developed by Jim Purser(1) of EMC will be used. 
+``GRID_GEN_METHOD``: (Default: "")
+   This variable specifies the method to use to generate a regional grid in the horizontal.  The only supported value of this parameter is "ESGgrid", in which case the Extended Schmidt Gnomonic grid generation method developed by Jim Purser(1) of EMC will be used. 
 
 (1)Purser, R. J., D. Jovic, G. Ketefian, T. Black, J. Beck, J. Dong, and J. Carley, 2020: The Extended Schmidt Gnomonic Grid for Regional Applications. Unified Forecast System (UFS) Users’ Workshop. July 27-29, 2020.
 
@@ -17,38 +17,38 @@ Grid Generation Parameters
 
 The following parameters must be set if using the "ESGgrid" method of generating a regional grid (i.e. for ``GRID_GEN_METHOD`` set to "ESGgrid").  
 
-``ESGgrid_LON_CTR``: (Default: “”)
+``ESGgrid_LON_CTR``: (Default: "")
    The longitude of the center of the grid (in degrees).
 
-``ESGgrid_LAT_CTR``: (Default: “”)
+``ESGgrid_LAT_CTR``: (Default: "")
    The latitude of the center of the grid (in degrees).
 
-``ESGgrid_DELX``: (Default: “”)
+``ESGgrid_DELX``: (Default: "")
    The cell size in the zonal direction of the regional grid (in meters).
 
-``ESGgrid_DELY``: (Default: “”)
+``ESGgrid_DELY``: (Default: "")
    The cell size in the meridional direction of the regional grid (in meters).
 
-``ESGgrid_NX``: (Default: “”)
+``ESGgrid_NX``: (Default: "")
    The number of cells in the zonal direction on the regional grid.
 
-``ESGgrid_NY``: (Default: “”)
+``ESGgrid_NY``: (Default: "")
    The number of cells in the meridional direction on the regional grid.
 
-``ESGgrid_WIDE_HALO_WIDTH``: (Default: “”)
+``ESGgrid_WIDE_HALO_WIDTH``: (Default: "")
    The width (in units of number of grid cells) of the halo to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model.  
 
 In order to generate grid files containing halos that are 3-cell and 4-cell wide and orography files with halos that are 0-cell and 3-cell wide (all of which are required as inputs to the forecast model), the grid and orography tasks first create files with halos around the regional domain of width ``ESGgrid_WIDE_HALO_WIDTH`` cells.  These are first stored in files.  The files are then read in and "shaved" down to obtain grid files with 3-cell-wide and 4-cell-wide halos and orography files with 0-cell-wide (i.e. no halo) and 3-cell-wide halos.  For this reason, we refer to the original halo that then gets shaved down as the "wide" halo, i.e. because it is wider than the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos that we will eventually end up with.  Note that the grid and orography files with the wide halo are only needed as intermediates in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos; they are not needed by the forecast model.
 
 Computational Forecast Parameters
 =================================
-``DT_ATMOS``: (Default: “”)
+``DT_ATMOS``: (Default: "")
    The main forecast model integration time step.  As described in the forecast model documentation, "It corresponds to the frequency with which the top level routine in the dynamics is called as well as the frequency with which the physics is called."
 
-``LAYOUT_X, LAYOUT_Y``: (Default: “”)
+``LAYOUT_X, LAYOUT_Y``: (Default: "")
    The number of MPI tasks (processes) to use in the two horizontal directions (x and y) of the regional grid when running the forecast model.
 
-``BLOCKSIZE``: (Default: “”)
+``BLOCKSIZE``: (Default: "")
    The amount of data that is passed into the cache at a time.
 
 Here, we set these parameters to null strings. This is so that, for any one of these parameters:
@@ -59,21 +59,21 @@ Here, we set these parameters to null strings. This is so that, for any one of t
 
 Write-Component (Quilting) Parameters
 =====================================
-``QUILTING``: (Default: “TRUE”)
-   Flag that determines whether or not to use the write-component for writing forecast output files to disk.  If set to “TRUE”, the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-hour output forecast hour) containing dynamics and physics fields, respectively, on the write-component grid (the regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model).  If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc`` and contain fields on the native grid.  Note that if ``QUILTING`` is set to “FALSE”, then the ``RUN_POST_TN`` (meta)task cannot be run because the Unified Post Processor (UPP) code that this task calls cannot process fields on the native grid.  In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML.
+``QUILTING``: (Default: "TRUE")
+   Flag that determines whether or not to use the write-component for writing forecast output files to disk.  If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-hour output forecast hour) containing dynamics and physics fields, respectively, on the write-component grid (the regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model).  If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc`` and contain fields on the native grid.  Note that if ``QUILTING`` is set to "FALSE", then the ``RUN_POST_TN`` (meta)task cannot be run because the Unified Post Processor (UPP) code that this task calls cannot process fields on the native grid.  In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML.
 
-``PRINT_ESMF``: (Default: “FALSE”)
+``PRINT_ESMF``: (Default: "FALSE")
    Flag for whether or not to output extra (debugging) information from ESMF routines.  Must be "TRUE" or "FALSE".  Note that the write-component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file (model_configure) in the forecast run directory).
 
-``WRTCMP_write_groups``: (Default: “1”)
+``WRTCMP_write_groups``: (Default: "1")
    The number of write groups (i.e. groups of MPI tasks) to use in the write-component.
 
-``WRTCMP_write_tasks_per_group``: (Default: “20”)
+``WRTCMP_write_tasks_per_group``: (Default: "20")
    The number of MPI tasks to allocate for each write group.
 
 Predefined Grid Parameters
 ==========================
-``PREDEF_GRID_NAME``: (Default: “”)
+``PREDEF_GRID_NAME``: (Default: "")
    This parameter specifies the name of a predefined regional grid.
 
 .. note::
@@ -92,7 +92,7 @@ Currently supported ``PREDEF_GRID_NAME`` options are "RRFS_CONUS_25km," "RRFS_CO
 
 Pre-existing Directory Parameter
 ================================
-``PREEXISTING_DIR_METHOD``: (Default: “delete”)
+``PREEXISTING_DIR_METHOD``: (Default: "delete")
    This variable determines the method to deal with pre-existing directories [e.g ones generated by previous calls to the experiment generation script using the same experiment name (``EXPT_SUBDIR``) as the current experiment].  This variable must be set to one of "delete", "rename", and "quit".  The resulting behavior for each of these values is as follows:
 
    * "delete": The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
@@ -103,26 +103,31 @@ Pre-existing Directory Parameter
 
 Verbose Parameter
 =================
-``VERBOSE``: (Default: “TRUE”)
-   This is a flag that determines whether or not the experiment generation and workflow task scripts print out extra informational messages.
+``VERBOSE``: (Default: "TRUE")
+   This is a flag that determines whether or not the experiment generation and workflow task scripts print out extra informational messages. Valid values: "TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no"
+
+Debug Parameter
+=================
+``DEBUG``: (Default: "FALSE")
+   This is a flag that determines whether or not very detailed debugging messages are printed to out.  Note that if DEBUG is set to TRUE, then VERBOSE will also get reset to TRUE if it isn't already. Valid values: "TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no"
 
 Pre-Processing Parameters
 =========================
 These parameters set flags (and related directories) that determine whether the grid, orography, and/or surface climatology file generation tasks should be run.  Note that these are all cycle-independent tasks, i.e. if they are to be run, they do so only once at the beginning of the workflow before any cycles are run.
 
-``RUN_TASK_MAKE_GRID``: (Default: “TRUE”)
+``RUN_TASK_MAKE_GRID``: (Default: "TRUE")
    Flag that determines whether the grid file generation task (``MAKE_GRID_TN``) is to be run. If this is set to "TRUE", the grid generation task is run and new grid  files are generated.  If it is set to "FALSE", then the scripts look for pre-generated grid files in the directory specified by ``GRID_DIR`` (see below).
 
 ``GRID_DIR``: (Default: "/path/to/pregenerated/grid/files")
    The directory in which to look for pre-generated grid files if ``RUN_TASK_MAKE_GRID`` is set to "FALSE".
  
-``RUN_TASK_MAKE_OROG``: (Default: “TRUE”)
+``RUN_TASK_MAKE_OROG``: (Default: "TRUE")
    Same as ``RUN_TASK_MAKE_GRID`` but for the orography generation task (``MAKE_OROG_TN``).
 
 ``OROG_DIR``: (Default: "/path/to/pregenerated/orog/files")
    Same as ``GRID_DIR`` but for the orography generation task.
 
-``RUN_TASK_MAKE_SFC_CLIMO``: (Default: “TRUE”)
+``RUN_TASK_MAKE_SFC_CLIMO``: (Default: "TRUE")
    Same as ``RUN_TASK_MAKE_GRID`` but for the surface climatology generation task (``MAKE_SFC_CLIMO_TN``).
 
 ``SFC_CLIMO_DIR``: (Default: "/path/to/pregenerated/surface/climo/files")
@@ -130,20 +135,20 @@ These parameters set flags (and related directories) that determine whether the 
 
 Surface Climatology Parameter
 =============================
-``SFC_CLIMO_FIELDS``: (Default: “("facsf" "maximum_snow_albedo" "slope_type" "snowfree_albedo" "soil_type" "substrate_temperature" "vegetation_greenness" "vegetation_type")”)
+``SFC_CLIMO_FIELDS``: (Default: "("facsf" "maximum_snow_albedo" "slope_type" "snowfree_albedo" "soil_type" "substrate_temperature" "vegetation_greenness" "vegetation_type")")
    Array containing the names of all the fields for which the ``MAKE_SFC_CLIMO_TN`` task generates files on the native FV3-LAM grid.
 
 Fixed File Parameters
 =====================
 Set parameters associated with the fixed (i.e. static) files.  For the main NOAA HPC platforms, as well as Cheyenne, Odin, and Stampede, fixed files are prestaged with paths defined in the ``setup.sh`` script.
 
-``FIXgsm``: (Default: “”)
+``FIXgsm``: (Default: "")
    System directory in which the majority of fixed (i.e. time-independent) files that are needed to run the FV3-LAM model are located.
 
-``TOPO_DIR``: (Default: “”)
+``TOPO_DIR``: (Default: "")
    The location on disk of the static input files used by the ``make_orog task`` (``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
 
-``SFC_CLIMO_INPUT_DIR``: (Default: “”)
+``SFC_CLIMO_INPUT_DIR``: (Default: "")
    The location on disk of the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if ``RUN_TASK_MAKE_SFC_CLIMO=TRUE``.
 
 ``FNGLAC, ..., FNMSKH``: (Default: see below)
@@ -250,8 +255,8 @@ These parameters set the names of the various workflow tasks and usually do not 
 Task names:
 
 | ``MAKE_GRID_TN``: (Default: "make_grid")
-| ``MAKE_OROG_TN``: (Default: “make_orog")
-| ``MAKE_SFC_CLIMO_TN``: (Default: “make_sfc_climo")
+| ``MAKE_OROG_TN``: (Default: "make_orog")
+| ``MAKE_SFC_CLIMO_TN``: (Default: "make_sfc_climo")
 | ``GET_EXTRN_ICS_TN``: (Default: "get_extrn_ics")
 | ``GET_EXTRN_LBCS_TN``: (Default: "get_extrn_lbcs")
 | ``MAKE_ICS_TN``: (Default: "make_ics")
@@ -267,7 +272,7 @@ Number of nodes:
 | ``NODES_GET_EXTRN_ICS``: (Default: "1")
 | ``NODES_GET_EXTRN_LBCS``: (Default: "1")
 | ``NODES_MAKE_ICS``: (Default: "4")
-| ``NODES_MAKE_LBCS``: (Default: "4”)
+| ``NODES_MAKE_LBCS``: (Default: "4")
 | ``NODES_RUN_FCST``: (Default: "")  # Calculated in the workflow generation scripts.
 | ``NODES_RUN_POST``: (Default: "2")
 
@@ -286,7 +291,7 @@ Number of MPI processes per node:
 Wall times:
 
 | ``TIME_MAKE_GRID``: (Default: "00:20:00")
-| ``TIME_MAKE_OROG``: (Default: "00:20:00”)
+| ``TIME_MAKE_OROG``: (Default: "00:20:00")
 | ``TIME_MAKE_SFC_CLIMO``: (Default: "00:20:00")
 | ``TIME_GET_EXTRN_ICS``: (Default: "00:45:00")
 | ``TIME_GET_EXTRN_LBCS``: (Default: "00:45:00")
@@ -309,30 +314,30 @@ Maximum number of attempts.
 
 Customized Post Configuration Parameters
 ========================================
-``USE_CUSTOM_POST_CONFIG_FILE``: (Default: “FALSE”)
+``USE_CUSTOM_POST_CONFIG_FILE``: (Default: "FALSE")
    Flag that determines whether a user-provided custom configuration file should be used for post-processing the model data. If this is set to "TRUE", then the workflow will use the custom post-processing (UPP) configuration file specified in ``CUSTOM_POST_CONFIG_FP``. Otherwise, a default configuration file provided in the UPP repository will be used.
 
-``CUSTOM_POST_CONFIG_FP``: (Default: “”)
+``CUSTOM_POST_CONFIG_FP``: (Default: "")
    The full path to the custom post flat file, including filename, to be used for post-processing. This is only used if ``CUSTOM_POST_CONFIG_FILE`` is set to "TRUE".
 
 Halo Blend Parameter
 ====================
-``HALO_BLEND``: (Default: “10”)
+``HALO_BLEND``: (Default: "10")
    Number of rows into the computational domain that should be blended with the LBCs.  To shut halo blending off, set this to zero.
 
 FVCOM Parameter
 ===============
-``USE_FVCOM``: (Default: “FALSE”)
-   Flag that specifies whether or not to update surface conditions in FV3-LAM with fields generated from the Finite Volume Community Ocean Model (FVCOM). If set to “TRUE”, lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten by data provided by FVCOM. This is done by running the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to modify the file ``sfc_data.nc`` generated by ``chgres_cube``.  Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. 
+``USE_FVCOM``: (Default: "FALSE")
+   Flag that specifies whether or not to update surface conditions in FV3-LAM with fields generated from the Finite Volume Community Ocean Model (FVCOM). If set to "TRUE", lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten by data provided by FVCOM. This is done by running the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to modify the file ``sfc_data.nc`` generated by ``chgres_cube``.  Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. 
 
-``FVCOM_DIR``: (Default: “/user/defined/dir/to/fvcom/data")
+``FVCOM_DIR``: (Default: "/user/defined/dir/to/fvcom/data")
    User defined directory in which the file ``fvcom.nc`` containing FVCOM data on the FV3-LAM native grid is located. The file name in this directory must be ``fvcom.nc``.
 
-``FVCOM_FILE``: (Default: “fvcom.nc”)
+``FVCOM_FILE``: (Default: "fvcom.nc")
    Name of file located in ``FVCOM_DIR`` that has FVCOM data interpolated to FV3-LAM grid. This file will be copied later to a new location and the name changed to ``fvcom.nc``.
 
 Compiler Parameter
 ==================
-``COMPILER``: (Default: “intel”)
+``COMPILER``: (Default: "intel")
    Type of compiler invoked during the build step.  Currently, this must be set manually (i.e. it is not inherited from the build system in the ``ufs-srweather-app`` directory).
 
