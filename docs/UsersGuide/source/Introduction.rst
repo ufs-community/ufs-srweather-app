@@ -6,7 +6,7 @@ Introduction
 
 The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. NOAA’s operational model suite for numerical weather prediction (:term:`NWP`) is quickly transitioning to the UFS from a number of different modeling systems. The UFS enables research, development, and contribution opportunities within the broader :term:`weather enterprise` (e.g. government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufscommunity.org/>`__.
 
-The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. New and improved capabilities for this release include the addition of a verification package (MetPLUS) for both deterministic and ensemble simulations and support for four Stochastically Perturbed Perturbation (SPP) schemes. Future work will expand the capabilities of the application to include data assimilation (DA) and a forecast restart/cycling capability. 
+The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. New and improved capabilities for this release include the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four Stochastically Perturbed Perturbation (SPP) schemes. Future work will expand the capabilities of the application to include data assimilation (DA) and a forecast restart/cycling capability. 
 
 This documentation provides a :ref:`Quick Start Guide <QuickstartC>` for running the SRW Application in a container and a :ref:`detailed guide <BuildRunSRW>` for running the SRW App on supported platforms. It also provides an overview of the :ref:`release components <Components>` and details on how to customize or modify different portions of the workflow.
 
@@ -56,12 +56,12 @@ Atmospheric Model
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
-(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2020`). The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. 
+(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2021`). The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. 
 
 Common Community Physics Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ (:term:`CCPP`) supports interoperable atmospheric physics and land surface model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The SRW App release includes an experimental physics version and an updated operational version. 
+The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ (:term:`CCPP`) supports interoperable atmospheric physics and land surface model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The upcoming SRW App release includes four physics suites. 
 
 Data Format
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -87,7 +87,7 @@ The SRW Application has a portable CMake-based build system that packages togeth
 
 The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite used for the simulation. 
 
-This SRW Application release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g. Hera, Orion), cloud environments, and generic Linux and macOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries (e.g., HPC-Stack) available in a central location. The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms, the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildRunSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
+This SRW Application release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g. Hera, Orion), cloud environments, and generic Linux and macOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries (HPC-Stack) available in a central location. The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms, the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildRunSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
 
 
 
@@ -336,16 +336,16 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
    | **Documentation**          | **Location**                                                                    |
    +============================+=================================================================================+
-   | UFS SRW Application v1.0   |  https://ufs-srweather-app.readthedocs.io/en/ufs-v1.0.0                         |
+   | UFS SRW Application        | https://ufs-srweather-app.readthedocs.io/en/latest/                             |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | UFS_UTILS v2.0 User's      | https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/                         |
+   | UFS_UTILS User's           | https://noaa-emcufs-utils.readthedocs.io/en/latest/                             |
    | Guide                      |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | UFS Weather Model v2.0     | https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0                          |
+   | UFS Weather Model          | https://ufs-weather-model.readthedocs.io/en/latest/                             |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | HPC-Stack Documentation    | See :numref:`Chapter %s <InstallBuildHPCstack>`                                 |
+   | HPC-Stack Documentation    | https://hpc-stack.readthedocs.io/en/latest/                                     |
    +----------------------------+---------------------------------------------------------------------------------+
    | NCEPLIBS Documentation     | https://github.com/NOAA-EMC/NCEPLIBS/wiki                                       |
    +----------------------------+---------------------------------------------------------------------------------+
@@ -360,9 +360,9 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/v5.0.0/                                  |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | ESMF manual                | http://earthsystemmodeling.org/docs/release/ESMF_8_0_0/ESMF_usrdoc/             |
+   | ESMF manual                | https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/                |
    +----------------------------+---------------------------------------------------------------------------------+
-   | Unified Post Processor     | https://upp.readthedocs.io/en/upp-v9.0.0/                                       |
+   | Unified Post Processor     | https://upp.readthedocs.io/en/latest/                                           |
    +----------------------------+---------------------------------------------------------------------------------+
 
 The UFS community is encouraged to contribute to the development effort of all related
@@ -374,7 +374,7 @@ Future Direction
 Users can expect to see incremental improvements and additional capabilities in upcoming releases of the SRW Application to enhance research opportunities and support operational forecast implementations. Planned enhancements include:
 
 * A more extensive set of supported developmental physics suites.
-* A larger number of pre-defined domains/resolutions and a fully supported capability to create a user-defined domain.
+* A larger number of pre-defined domains/resolutions and a *fully supported* capability to create a user-defined domain.
 * Add user-defined vertical levels (number and distribution).
 * Inclusion of data assimilation and forecast restart/cycling capabilities.
 

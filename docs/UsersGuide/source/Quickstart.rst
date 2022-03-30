@@ -1,12 +1,12 @@
 .. _QuickstartC:
 
 ====================================
-Quick Start Guide
+Container-Based Quick Start Guide
 ====================================
 
-This Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`’s, and package versions available. Installation via an :term:`EPIC`-provided container reduces this variability and allows for a smoother SRW App build and run experience. However, the :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability, particularly if they already have experience running the SRW App. 
+This Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`’s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. However, the container is not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. Additionally, the Singularity container can only run on a single compute node, which makes the container-based approach inadequate for large experiments. It is an excellent starting point for running the "out-of-the-box" SRW App case and other small experiments. However, the :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability or more compute power, particularly if they already have experience running the SRW App.
 
-The "out-of-the-box" SRW App case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v15p2 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
+The "out-of-the-box" SRW App case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. attention::
 
@@ -61,7 +61,28 @@ On HPC systems (including NOAA's Cloud platforms), allocate a compute node on wh
 
 The third command will output a hostname. Replace ``<hostname>`` in the last command with the output from the third command. After "ssh-ing" to the compute node in the last command, build and run the SRW App from that node. 
 
-The appropriate commands on other Level 1 platforms will vary, and users should consult the documentation for those platforms. 
+The appropriate commands on other Level 1 platforms will vary, and users should consult the `documentation <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ for those platforms. In general, the allocation command will follow one of these two patterns depending on whether the system uses the Slurm or PBS resource manager respectively:
+
+.. code-block:: console
+
+   salloc -N 1 -n <cores-per-node> -A <account> -t <time> -q <queue/qos> --partition=<system> [-M <cluster>]
+   qsub -I -lwalltime=<time> -A <account> -q <destination> -lselect=1:ncpus=36:mpiprocs=36
+
+For example, on Orion, which uses the Slurm resource manager, run:
+
+.. code-block:: console
+
+   salloc -N 1 -n 40 -A epic-ps -t 2:30:00 -q batch --partition=orion
+
+For more information on the ``salloc`` command options, see Slurm's `documentation <https://slurm.schedmd.com/salloc.html>`__. 
+
+On Cheyenne, which uses the PBS resource manager, run:
+
+.. code-block:: console
+
+   qsub -I -lwalltime=1:00:00 -A scsg0002 -q regular -lselect=1:ncpus=36:mpiprocs=36
+
+For more information on the ``qsub`` command options, see the `PBS Manual §2.59.3 <https://2021.help.altair.com/2021.1/PBSProfessional/PBS2021.1.pdf>`__, (p. 1416).
 
 .. _BuildC:
 
@@ -121,7 +142,7 @@ From the ``ufs-srweather-app`` directory, ``cd`` into the build directory and ru
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW App tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW App tests are already available, as long as the ``--bind`` command in :numref:`Step %s <BuildC>` included the directory with the data. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GenerateForecastC:
 
@@ -130,7 +151,7 @@ Generate the Forecast Experiment
 To generate the forecast experiment, users must:
 
 #. :ref:`Set experiment parameters <SetUpConfigFileC>`
-#. :ref:`Set Python and other environment parameters <SetUpPythonEnvC>`
+#. :ref:`Set Python and other environment parameters to activate the regional workflow <SetUpPythonEnvC>`
 #. :ref:`Run a script to generate the experiment workflow <GenerateWorkflowC>`
 
 The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. 
@@ -148,7 +169,7 @@ Make a copy of ``config.community.sh`` to get started. From the ``ufs-srweather-
    cd regional_workflow/ush
    cp config.community.sh config.sh
 
-The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v15.2 physics suite (FV3_GFS_v15p2 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
+The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 Next, edit the new ``config.sh`` file to customize it for your experiment. At a minimum, update the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``: 
 
@@ -285,7 +306,7 @@ Check the batch script output file in your experiment directory for a “SUCCESS
 .. table::  List of tasks in the regional workflow in the order that they are executed.
             Scripts with the same stage number may be run simultaneously. The number of
             processors and wall clock time is a good starting point for Cheyenne or Hera 
-            when running a 48-h forecast on the 25-km CONUS domain.
+            when running a 48-h forecast on the 25-km CONUS domain. For a brief description of tasks, see :numref:`Table %s <WorkflowTasksTable>`. 
 
    +------------+------------------------+----------------+----------------------------+
    | **Stage/** | **Task Run Script**    | **Number of**  | **Wall clock time (H:MM)** |
@@ -312,7 +333,6 @@ Check the batch script output file in your experiment directory for a “SUCCESS
    | 6          | run_post.sh            | 48             | 0:25 (2 min per output     |
    |            |                        |                | forecast hour)             |
    +------------+------------------------+----------------+----------------------------+
-
 
 .. hint:: 
    If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA Cloud systems can be viewed in the :numref:`Step %s <WorkOnHPC>` as an example. 

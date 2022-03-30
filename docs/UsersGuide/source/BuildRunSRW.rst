@@ -6,14 +6,14 @@ Building and Running the SRW App
 
 The Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application is an :term:`umbrella repository` consisting of a number of different :ref:`components <Components>` housed in external repositories. Once the SRW App is configured and built, users can generate predictions of atmospheric behavior over a limited spatial area and on time scales ranging from minutes out to several days. 
 
-This chapter walks users through how to build and run the "out-of-the-box" case for the SRW App. However, the steps are relevant to any SRW Application experiment and can be modified to suit user goals. The "out-of-the-box" SRW App case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v15p2 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
+This chapter walks users through how to build and run the "out-of-the-box" case for the SRW App. However, the steps are relevant to any SRW Application experiment and can be modified to suit user goals. The "out-of-the-box" SRW App case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) domain (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. attention::
 
    All UFS applications support `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. On Level 1 systems, all of the required libraries for building community releases of UFS models and applications are available in a central location. This guide can serve as a starting point for running the SRW App on other systems, too, but the user may need to perform additional troubleshooting. 
 
 .. note::
-   The :ref:`container approach <QuickstartC>` is recommended for a smoother build and run experience. Building without a container allows for the use of the Rocoto workflow manager and may allow for more customization. However, the non-container approach requires more in-depth troubleshooting skills, especially on Level 3 and 4 systems, and is less appropriate for beginners. 
+   The :ref:`container approach <QuickstartC>` is recommended for a smoother build and run experience. Building without a container allows for the use of the Rocoto workflow manager and may allow for more customization. However, the non-container approach requires more in-depth system-based knowledge, especially on Level 3 and 4 systems; it is less appropriate for beginners. 
 
 The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. The steps are as follows:
 
@@ -54,7 +54,7 @@ The UFS Weather Model draws on over 50 code libraries to run its applications. T
 
 Instructions
 -------------------------
-Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to run applications (such as the SRW App) or models that depend on it. Users can either build the HPC-stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`.  
+Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) or models that depend on it. Users can either build the HPC-stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`.  
 
 After completing installation, continue to the next section.
 
@@ -62,7 +62,7 @@ After completing installation, continue to the next section.
 
 Download the UFS SRW Application Code
 ======================================
-The SRW Application source code is publicly available on GitHub. To download the SRW App, clone the release branch of the repository:
+The SRW Application source code is publicly available on GitHub. To download the SRW App, clone the ``develop`` branch of the repository:
 
 .. code-block:: console
 
@@ -98,7 +98,7 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+--------------------------------------------------------+
    | env                            | Contains build and workflow environment files          |
    +--------------------------------+--------------------------------------------------------+
-   | docs                           | Contains release notes, documentation, and Users' Guide|
+   | docs                           | Contains release notes, documentation, and User's Guide|
    +--------------------------------+--------------------------------------------------------+
    | manage_externals               | Utility for checking out external repositories         |
    +--------------------------------+--------------------------------------------------------+
@@ -154,7 +154,13 @@ On Level 1 systems, the commands in the ``build_<platform>_<compiler>.env`` file
 
 from the main ``ufs-srweather-app`` directory to source the appropriate file.
 
-On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. To check if Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables using commands in the form ``export <VARIABLE_NAME>=<PATH_TO_MODULE>``. Users may need to use ``setenv`` rather than ``export`` depending on their shell environment. 
+On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
+
+.. code-block::
+
+   export <VARIABLE_NAME>=<PATH_TO_MODULE>
+   setenv <VARIABLE_NAME> <PATH_TO_MODULE>
+
 
 .. _BuildExecutables:
 
@@ -294,7 +300,7 @@ Default configuration: ``config_defaults.sh``
 ------------------------------------------------
 
 .. note::
-   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. This information is helpful but not essential to running the SRW App. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
+   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. This information is informative, but users do not need to modify ``config_defaults.sh`` to run the out-of-the-box case for the SRW App. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
 
 Important configuration variables in the ``config_defaults.sh`` file appear in 
 :numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.sh`` file. Any settings provided in ``config.sh`` will override the default ``config_defaults.sh`` 
@@ -413,7 +419,7 @@ settings. There is usually no need for a user to modify the default configuratio
 User-specific configuration: ``config.sh``
 --------------------------------------------
 
-The user must specify certain basic information about the experiment in a ``config.sh`` file located in the ``ufs-srweather-app/regional_workflow/ush`` directory. Two example templates are provided in that directory: ``config.community.sh`` and ``config.nco.sh``. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release. The operational/NCO mode will typically be used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing for the Rapid-Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` shows the configuration variables, along with their default values in ``config_default.sh`` and the values defined in ``config.community.sh``.
+The user must specify certain basic information about the experiment in a ``config.sh`` file located in the ``ufs-srweather-app/regional_workflow/ush`` directory. Two example templates are provided in that directory: ``config.community.sh`` and ``config.nco.sh``. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release. The operational/NCO mode will typically be used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` shows the configuration variables, along with their default values in ``config_default.sh`` and the values defined in ``config.community.sh``.
 
 .. _ConfigCommunity:
 
@@ -426,7 +432,7 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+--------------------------------------------------------+
    | ACCOUNT                        | "project_name"    | "an_account"                                           |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXPT_SUBDIR                    | ""                | "test_CONUS_25km_GFSv15p2"                             |
+   | EXPT_SUBDIR                    | ""                | "test_CONUS_25km_GFSv16"                               |
    +--------------------------------+-------------------+--------------------------------------------------------+
    | VERBOSE                        | "TRUE"            | "TRUE"                                                 |
    +--------------------------------+-------------------+--------------------------------------------------------+
@@ -440,7 +446,7 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+--------------------------------------------------------+
    | QUILTING                       | "TRUE"            | "TRUE"                                                 |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | CCPP_PHYS_SUITE                | "FV3_GSD_V0"      | "FV3_GFS_v15p2"                                        |
+   | CCPP_PHYS_SUITE                | "FV3_GSD_V0"      | "FV3_GFS_v16"                                          |
    +--------------------------------+-------------------+--------------------------------------------------------+
    | FCST_LEN_HRS                   | "24"              | "48"                                                   |
    +--------------------------------+-------------------+--------------------------------------------------------+
@@ -481,7 +487,7 @@ To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather
    cd regional_workflow/ush
    cp config.community.sh config.sh
 
-The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v15.2 physics suite (FV3_GFS_v15p2 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
+The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged the initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
 
@@ -495,7 +501,7 @@ Sample settings are indicated below for Level 1 platforms. Detailed guidance app
 
    To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
 
-Minimum parameter settings for Level 1 machines:
+Minimum parameter settings for running the out-of-the-box SRW App case on Level 1 machines:
 
 **Cheyenne:**
 
@@ -505,28 +511,61 @@ Minimum parameter settings for Level 1 machines:
    ACCOUNT="<my_account>"
    EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/model_data/FV3GFS"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/model_data/FV3GFS"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
 
-**Hera:**
+**Hera, Jet, Orion, Gaea:**
+
+The ``MACHINE``, ``ACCOUNT``, and ``EXPT_SUBDIR`` settings are the same as for Cheyenne, except that ``"cheyenne"`` should be switched to ``"hera"``, ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. Set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, but replace the file paths to Cheyenne's data with the file paths for the correct machine. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` use the same file path. 
+
+On Hera: 
 
 .. code-block:: console
 
-   MACHINE="hera"
-   ACCOUNT="<my_account>"
-   EXPT_SUBDIR="<my_expt_name>"
+   "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data"
 
-**Jet, Orion, Gaea:**
+On Jet: 
 
-The settings are the same as for Hera, except that ``"hera"`` should be switched to ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. 
+.. code-block:: console
 
-For **WCOSS**, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
+   "/lfs4/BMC/wrfruc/FV3-LAM/model_data"
+
+On Orion: 
+
+.. code-block:: console
+
+   "/work/noaa/fv3-cam/UFS_SRW_app/v1p0/model_data"
+
+
+On Gaea: 
+
+.. code-block:: console
+
+   "/lustre/f2/pdata/esrl/gsd/ufs/ufs-srw-release-v1.0.0/staged_extrn_mdl_files"
+
+
+For **WCOSS** systems, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
 
 .. code-block:: console
 
    MACHINE=”wcoss_cray” or MACHINE=”wcoss_dell_p3”
    ACCOUNT="my_account"
    EXPT_SUBDIR="my_expt_name"
+   USE_USER_STAGED_EXTRN_FILES="TRUE"
+
+For WCOSS_DELL_P3:
+   
+.. code-block:: console
+
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/model_data"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/model_data"
+
+For WCOSS_CRAY:
+
+.. code-block:: console
+   
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/model_data"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/model_data"
 
 
 **NOAA Cloud Systems:**
@@ -630,14 +669,14 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workfl
    +----------------------+------------------------------------------------------------+
    | **Workflow Task**    | **Task Description**                                       |
    +======================+============================================================+
-   | make_grid            | Pre-processing task to generate regional grid files. Can   |
-   |                      | be run, at most, once per experiment.                      |
+   | make_grid            | Pre-processing task to generate regional grid files. Only  |
+   |                      | needs to be run once per experiment.                       |
    +----------------------+------------------------------------------------------------+
-   | make_orog            | Pre-processing task to generate orography files. Can be    |
-   |                      | run, at most, once per experiment.                         |
+   | make_orog            | Pre-processing task to generate orography files. Only      |
+   |                      | needs to be run once per experiment.                       |
    +----------------------+------------------------------------------------------------+
    | make_sfc_climo       | Pre-processing task to generate surface climatology files. |
-   |                      | Can be run, at most, once per experiment.                  |
+   |                      | Only needs to be run, at most, once per experiment.        |
    +----------------------+------------------------------------------------------------+
    | get_extrn_ics        | Cycle-specific task to obtain external data for the        |
    |                      | initial conditions                                         |
