@@ -9,6 +9,10 @@ Glossary
    CCPP
       The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of codes containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
 
+   chgres_cube
+       The preprocessing software used to create initial and boundary condition files to 
+       “coldstart” the forecast model.
+
    Component
       A software element that has a clear function and interface. In Earth system models, components are often single portions of the Earth system (e.g. atmosphere, ocean, or land surface) that are assembled to form a whole.
 
@@ -21,10 +25,15 @@ Glossary
    CONUS
       Continental United States
 
-   chgres_cube
-       The preprocessing software used to create initial and boundary condition files to 
-       “coldstart” the forecast model.
+   cycle
+      An hour of the day on which a forecast is started. 
 
+   cycle-dependent 
+      Describes a workflow task that needs to be run at the start of each :term:`cycle` in an experiment.
+   
+   cycle-independent
+      Describes a workflow task that only needs to be run once per experiment, regardless of the number of :term:`cycle`s in the experiment.
+   
    dynamical core
       Global atmospheric model based on fluid dynamics principles, including Euler's equations of motion.
 
