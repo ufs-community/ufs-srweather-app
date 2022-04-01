@@ -5,17 +5,36 @@
 Grid Generation Parameters
 ==========================
 ``GRID_GEN_METHOD``: (Default: "")
-   This variable specifies the method to use to generate a regional grid in the horizontal.  The only supported value of this parameter is "ESGgrid", in which case the Extended Schmidt Gnomonic grid generation method developed by Jim Purser(1) of EMC will be used. 
+   This variable specifies the method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
 
-(1)Purser, R. J., D. Jovic, G. Ketefian, T. Black, J. Beck, J. Dong, and J. Carley, 2020: The Extended Schmidt Gnomonic Grid for Regional Applications. Unified Forecast System (UFS) Users’ Workshop. July 27-29, 2020.
+   * **"ESGgrid":** This will generate a regional version of the Extended Schmidt Gnomonic grid using the map projection developed by Jim Purser(1) of EMC. ESGgrid is the preferred grid option. 
+
+   * **"GFDLgrid":** This setting will generate a regional grid by first generating a "parent" global cubed-sphere grid and then taking a portion of tile 6 of that global grid and using it as the regional grid (referred to in the grid generation scripts as "tile 7" even though it doesn't correspond to a complete tile).  Note that the forecast is run on only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). This is the legacy grid generation method and is not supported in *all* predefined domains. 
+
+(1) Purser, R. J., D. Jovic, G. Ketefian, T. Black, J. Beck, J. Dong, and J. Carley, 2020: The Extended Schmidt Gnomonic Grid for Regional Applications. Unified Forecast System (UFS) Users’ Workshop. July 27-29, 2020.
+
+..
+   COMMENT: Should I delete or add a different citation or add a BibTeX entry?:
+   @misc{PurserEtAl,
+      title        = "The Extended Schmidt Gnomonic Grid for Regional Applications",
+      author       = "{Purser, R. J. and D. Jovic and G. Ketefian and T. Black and J. Beck and J. Dong, and J. Carley}",
+      howpublished = "\url{https://dtcenter.org/sites/default/files/events/2020/2-purser-james.pdf}",
+      year         = 2020,
+      note         = "Unified Forecast System (UFS) Users’ Workshop"
+   }
 
 .. note::
 
-   #. If the experiment is using one of the predefined grids (i.e. if ``PREDEF_GRID_NAME`` is set to the name of one of the valid predefined grids), then ``GRID_GEN_METHOD`` will be reset to the value of ``GRID_GEN_METHOD`` for that grid.  This will happen regardless of whether or not ``GRID_GEN_METHOD`` is assigned a value in the user-specified experiment configuration file, i.e. any value it may be assigned in the experiment configuration file will be overwritten.
+   If the experiment uses a **predefined grid** (i.e., if ``PREDEF_GRID_NAME`` is set to the name of a valid predefined grid), then ``GRID_GEN_METHOD`` will be reset to the value of ``GRID_GEN_METHOD`` for that grid. This will happen regardless of whether ``GRID_GEN_METHOD`` is assigned a value in the experiment configuration file; any value assigned will be overwritten.
 
-   #. If the experiment is not using one of the predefined grids (i.e. if ``PREDEF_GRID_NAME`` is set to a null string), then ``GRID_GEN_METHOD`` must be set in the experiment configuration file.  Otherwise, it will remain set to a null string, and the experiment generation will fail because the generation scripts check to ensure that it is set to a non-empty string before creating the experiment directory.
+.. note::
 
-The following parameters must be set if using the "ESGgrid" method of generating a regional grid (i.e. for ``GRID_GEN_METHOD`` set to "ESGgrid").  
+   If the experiment uses a **user-defined grid** (i.e. if ``PREDEF_GRID_NAME`` is set to a null string), then ``GRID_GEN_METHOD`` must be set in the experiment configuration file. Otherwise, the experiment generation will fail because the generation scripts check to ensure that the grid name is set to a non-empty string before creating the experiment directory.
+
+ESGgrid Settings
+-------------------
+
+The following parameters must be set if using the "ESGgrid" method of generating a regional grid (i.e., when ``GRID_GEN_METHOD="ESGgrid"``). 
 
 ``ESGgrid_LON_CTR``: (Default: "")
    The longitude of the center of the grid (in degrees).
@@ -39,6 +58,106 @@ The following parameters must be set if using the "ESGgrid" method of generating
    The width (in units of number of grid cells) of the halo to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model.  
 
 In order to generate grid files containing halos that are 3-cell and 4-cell wide and orography files with halos that are 0-cell and 3-cell wide (all of which are required as inputs to the forecast model), the grid and orography tasks first create files with halos around the regional domain of width ``ESGgrid_WIDE_HALO_WIDTH`` cells.  These are first stored in files.  The files are then read in and "shaved" down to obtain grid files with 3-cell-wide and 4-cell-wide halos and orography files with 0-cell-wide (i.e. no halo) and 3-cell-wide halos.  For this reason, we refer to the original halo that then gets shaved down as the "wide" halo, i.e. because it is wider than the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos that we will eventually end up with.  Note that the grid and orography files with the wide halo are only needed as intermediates in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos; they are not needed by the forecast model.
+
+
+GFDLgrid Settings
+---------------------
+
+The following parameters must be set if using the "GFDLgrid" method of generating a regional grid (i.e., when ``GRID_GEN_METHOD="GFDLgrid"``). For more information on the GFDLgrid, see :numref:`Section %s <GFDLgridOption>`. Note that the regional grid is defined with respect to a "parent" global cubed-sphere grid. Thus, all the parameters for a global cubed-sphere grid must be specified even though the model equations are integrated only on the regional grid. Tile 6 has arbitrarily been chosen as the tile to use to orient the global parent grid on the sphere (Earth).
+
+``GFDLgrid_LON_T6_CTR``: (Default: "")
+   Longitude of the center of tile 6 (in degrees).
+
+``GFDLgrid_LAT_T6_CTR``: (Default: "")
+   Latitude of the center of tile 6 (in degrees).
+
+# ``GFDLgrid_RES``: (Default: "")
+# Number of points in each of the two horizontal directions (x and y) on
+# each tile of the parent global grid.  Note that the name of this parameter
+# is really a misnomer because although it has the stirng "RES" (for 
+# "resolution") in its name, it specifies number of grid cells, not grid
+# size (in say meters or kilometers).  However, we keep this name in order
+# to remain consistent with the usage of the word "resolution" in the 
+# global forecast model and other auxiliary codes.
+#
+# ``GFDLgrid_STRETCH_FAC``: (Default: "")
+# Stretching factor used in the Schmidt transformation applied to the
+# parent cubed-sphere grid.
+#
+# ``GFDLgrid_REFINE_RATIO``: (Default: "")
+# Cell refinement ratio for the regional grid, i.e. the number of cells
+# in either the x or y direction on the regional grid (tile 7) that abut
+# one cell on its parent tile (tile 6).
+#
+# ``GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G``: (Default: "")
+# i-index on tile 6 at which the regional grid (tile 7) starts.
+#
+# ``GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G``: (Default: "")
+# i-index on tile 6 at which the regional grid (tile 7) ends.
+#
+# ``GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G``: (Default: "")
+# j-index on tile 6 at which the regional grid (tile 7) starts.
+
+# ``GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G``: (Default: "")
+# j-index on tile 6 at which the regional grid (tile 7) ends.
+#
+# ``GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES``: (Default: "")
+# Flag that determines the file naming convention to use for grid, orography,
+# and surface climatology files (or, if using pregenerated files, the
+# naming convention that was used to name these files).  These files 
+# usually start with the string "C${RES}_", where RES is an integer.
+# In the global forecast model, RES is the number of points in each of
+# the two horizontal directions (x and y) on each tile of the global grid
+# (defined here as GFDLgrid_RES).  If this flag is set to "TRUE", RES will
+# be set to GFDLgrid_RES just as in the global forecast model.  If it is
+# set to "FALSE", we calculate (in the grid generation task) an "equivalent
+# global uniform cubed-sphere resolution" -- call it RES_EQUIV -- and 
+# then set RES equal to it.  RES_EQUIV is the number of grid points in 
+# each of the x and y directions on each tile that a global UNIFORM (i.e. 
+# stretch factor of 1) cubed-sphere grid would have to have in order to
+# have the same average grid size as the regional grid.  This is a more
+# useful indicator of the grid size because it takes into account the 
+# effects of GFDLgrid_RES, GFDLgrid_STRETCH_FAC, and GFDLgrid_REFINE_RATIO
+# in determining the regional grid's typical grid size, whereas simply
+# setting RES to GFDLgrid_RES doesn't take into account the effects of
+# GFDLgrid_STRETCH_FAC and GFDLgrid_REFINE_RATIO on the regional grid's
+# resolution.  Nevertheless, some users still prefer to use GFDLgrid_RES
+# in the file names, so we allow for that here by setting this flag to
+# "TRUE".
+#
+# Note that:
+#
+# 1) If the experiment is using one of the predefined grids (i.e. if 
+#    PREDEF_GRID_NAME is set to the name of one of the valid predefined
+#    grids), then:
+#
+#    a) If the value of GRID_GEN_METHOD for that grid is "GFDLgrid", then
+#       these parameters will get reset to the values for that grid.  
+#       This will happen regardless of whether or not they are assigned 
+#       values in the user-specified experiment configuration file, i.e. 
+#       any values they may be assigned in the experiment configuration 
+#       file will be overwritten.
+#
+#    b) If the value of GRID_GEN_METHOD for that grid is "ESGgrid", then
+#       these parameters will not be used and thus do not need to be reset
+#       to non-empty strings.
+#
+# 2) If the experiment is not using one of the predefined grids (i.e. if 
+#    PREDEF_GRID_NAME is set to a null string), then:
+#
+#    a) If GRID_GEN_METHOD is set to "GFDLgrid" in the user-specified 
+#       experiment configuration file, then these parameters must be set
+#       in that configuration file.
+#
+#    b) If GRID_GEN_METHOD is set to "ESGgrid" in the user-specified 
+#       experiment configuration file, then these parameters will not be 
+#       used and thus do not need to be reset to non-empty strings.
+
+
+
+
+
+
 
 Computational Forecast Parameters
 =================================
@@ -74,7 +193,26 @@ Write-Component (Quilting) Parameters
 Predefined Grid Parameters
 ==========================
 ``PREDEF_GRID_NAME``: (Default: "")
-   This parameter specifies the name of a predefined regional grid.
+   This parameter specifies the name of a predefined regional grid. Three predefined grids are currently supported: "RRFS_CONUS_25km" "RRFS_CONUS_13km" "RRFS_CONUS_3km" 
+   Other valid values include: 
+   "RRFS_SUBCONUS_3km" 
+   "RRFS_AK_13km" 
+   "RRFS_AK_3km" 
+   "CONUS_25km_GFDLgrid" 
+   "CONUS_3km_GFDLgrid" 
+   "EMC_AK" 
+   "EMC_HI" 
+   "EMC_PR" 
+   "EMC_GU" 
+   "GSL_HAFSV0.A_25km" 
+   "GSL_HAFSV0.A_13km" 
+   "GSL_HAFSV0.A_3km" 
+   "GSD_HRRR_AK_50km" 
+   "RRFS_NA_13km" 
+   "RRFS_NA_3km"
+
+..
+   COMMENT: Are all of these now being supported or still just the three main ones?
 
 .. note::
 

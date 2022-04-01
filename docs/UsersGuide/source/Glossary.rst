@@ -29,10 +29,10 @@ Glossary
       An hour of the day on which a forecast is started. 
 
    cycle-dependent 
-      Describes a workflow task that needs to be run at the start of each :term:`cycle` in an experiment.
+      Describes a workflow task that needs to be run at the start of each :term:`cycle` of an experiment.
    
    cycle-independent
-      Describes a workflow task that only needs to be run once per experiment, regardless of the number of :term:`cycle`s in the experiment.
+      Describes a workflow task that only needs to be run once per experiment, regardless of the number of cycles in the experiment.
    
    dynamical core
       Global atmospheric model based on fluid dynamics principles, including Euler's equations of motion.
