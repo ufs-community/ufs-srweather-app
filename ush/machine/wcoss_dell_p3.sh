@@ -60,7 +60,7 @@ FIXaer=${FIXaer:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fi
 FIXlut=${FIXlut:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_lut"}
 TOPO_DIR=${TOPO_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_orog"}
 SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_sfc_climo"}
-FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen"}
+FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FIXLAM_NCO_BASE"}
 
 # Run commands for executables
 RUN_CMD_SERIAL="mpirun"
@@ -71,12 +71,12 @@ RUN_CMD_POST="mpirun"
 # MET/METplus-Related Paths
 MET_INSTALL_DIR=${MET_INSTALL_DIR:-"/gpfs/dell2/emc/verification/noscrub/emc.metplus/met/10.0.0"}
 METPLUS_PATH=${METPLUS_PATH:-"/gpfs/dell2/emc/verification/noscrub/emc.metplus/METplus/METplus-4.0.0"}
-CCPA_OBS_DIR=${CCPA_OBS_DIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/ccpa/proc"}
-MRMS_OBS_DIR=${MRMS_OBS_DIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/mrms/proc"}
-NDAS_OBS_DIR=${NDAS_OBS_DIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/obs_data/ndas/proc"}
+CCPA_OBS_DIR=${CCPA_OBS_DIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/obs_data/ccpa/proc"}
+MRMS_OBS_DIR=${MRMS_OBS_DIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/obs_data/mrms/proc"}
+NDAS_OBS_DIR=${NDAS_OBS_DIR:-"/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/obs_data/ndas/proc"}
 MET_BIN_EXEC=${MET_BIN_EXEC:-"exec"}
 
 # Test Data Locations
 TEST_PREGEN_BASEDIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen"
 TEST_COMINgfs="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/COMGFS"
-TEST_EXTRN_MDL_SOURCE_BASEDIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/extrn_mdl_files"
+TEST_EXTRN_MDL_SOURCE_BASEDIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/model_data"
