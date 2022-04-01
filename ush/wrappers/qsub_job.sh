@@ -1,11 +1,12 @@
 #!/bin/sh
-#PBS -A P48503002
+#PBS -A XXXXXXXXX
 #PBS -q regular
 #PBS -l select=1:mpiprocs=24:ncpus=24
+##PBS -l select=1:mpiprocs=1:ncpus=1 # USE FOR MET VERIFICATION
 #PBS -l walltime=02:30:00
 #PBS -N run_make_grid
-#PBS -j oe -o /glade/scratch/carson/ufs/expt_dirs/test_1/log/run_make_grid.log
-cd /glade/scratch/carson/ufs/expt_dirs/test_1
+#PBS -j oe -o /path/to/exptdir/log/run_make_grid.log # NEED TO SET
+cd /path/to/exptdir # NEED TO SET
 set -x
 #
 source /etc/profile.d/modules.sh
@@ -31,3 +32,15 @@ module load esmf/8.0.0
 ##module load esmf/8.0.0_bs50
 #
 ./run_make_grid.sh
+#
+#
+# Additional modules are needed for MET verification jobs
+#
+#module use /glade/p/ral/jntp/MET/MET_releases/modulefiles
+#module load met/10.0.0
+#ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/python_graphics
+
+#./run_pointvx.sh # Run grod-to-point deterministic vx
+#./run_gridvx.sh # Run grid-stat deterministic vx
+#./run_pointensvx.sh # Run grid-to-point ensemble/probabilsitic vx
+#./rungridensvx.sh # Run grid-to-grid ensemble/probabilsitic vx
