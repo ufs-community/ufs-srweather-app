@@ -959,8 +959,7 @@ machine (MACHINE):
     fi
 
     EXTRN_MDL_SOURCE_BASEDIR_LBCS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_LBCS}"
-    if [[ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" &&
-      ( "$MACHINE" = "HERA" || "$MACHINE" = "WCOSS_DELL_P3" || "$MACHINE" = "ORION" ) ]]; then
+    if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
       EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/${FV3GFS_FILE_FMT_LBCS}"
     fi
 #
