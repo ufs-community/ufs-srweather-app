@@ -52,6 +52,9 @@ Glossary
    GRIB2 
       The second version of the World Meterological Organization's (WMO) standard for distributing gridded data.  
 
+   halo
+      A strip of cells surrounding the regional grid. It is used to feed in the lateral boundary conditions to the grid.  
+
    HPC-Stack
       The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ is a repository that provides a unified, shell script-based build system for building the software stack required for numerical weather prediction (NWP) tools such as the `Unified Forecast System (UFS) <https://ufscommunity.org/>`__ and the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`__ framework.
 
