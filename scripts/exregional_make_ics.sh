@@ -437,7 +437,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
 #
   geogrid_file_input_grid="${FIXgsm}/geo_em.d01.nc_RAPX"
   vgtyp_from_climo=True
-  sotyp_from_climo=False
+  sotyp_from_climo=True
   vgfrc_from_climo=True
   minmax_vgfrc_from_climo=True
   lai_from_climo=True

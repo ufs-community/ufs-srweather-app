@@ -1121,60 +1121,16 @@ case ${PREDEF_GRID_NAME} in
 #
 "RRFS_NA_13km")
 
-#  if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-#
-#    GFDLgrid_LON_T6_CTR="-106.0"
-#    GFDLgrid_LAT_T6_CTR="54.0"
-#    GFDLgrid_STRETCH_FAC="0.63"
-#    GFDLgrid_RES="384"
-#    GFDLgrid_REFINE_RATIO="3"
-#
-#    num_margin_cells_T6_left="10"
-#    GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_left + 1 ))
-#
-#    num_margin_cells_T6_right="10"
-#    GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_right ))
-#
-#    num_margin_cells_T6_bottom="10"
-#    GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=$(( num_margin_cells_T6_bottom + 1 ))
-#
-#    num_margin_cells_T6_top="10"
-#    GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=$(( GFDLgrid_RES - num_margin_cells_T6_top ))
-#
-#    GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES="FALSE"
-#
-#    DT_ATMOS="50"
-#
-#    LAYOUT_X="14"
-#    LAYOUT_Y="14"
-#    BLOCKSIZE="26"
-#
-#    if [ "$QUILTING" = "TRUE" ]; then
-#      WRTCMP_write_groups="1"
-#      WRTCMP_write_tasks_per_group="14"
-#      WRTCMP_output_grid="rotated_latlon"
-#      WRTCMP_cen_lon="${GFDLgrid_LON_T6_CTR}"
-#      WRTCMP_cen_lat="${GFDLgrid_LAT_T6_CTR}"
-#      WRTCMP_lon_lwr_left="-57.9926"
-#      WRTCMP_lat_lwr_left="-50.74344"
-#      WRTCMP_lon_upr_rght="57.99249"
-#      WRTCMP_lat_upr_rght="50.74344"
-#      WRTCMP_dlon="0.1218331"
-#      WRTCMP_dlat="0.121833"
-#    fi
-#
-#  elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
-
   GRID_GEN_METHOD="ESGgrid"
 
-  ESGgrid_LON_CTR="-106.0"
-  ESGgrid_LAT_CTR="54.0"
+  ESGgrid_LON_CTR="-112.5"
+  ESGgrid_LAT_CTR="55.0"
 
   ESGgrid_DELX="13000.0"
   ESGgrid_DELY="13000.0"
 
-  ESGgrid_NX="960"
-  ESGgrid_NY="960"
+  ESGgrid_NX="912"
+  ESGgrid_NY="623"
 
   ESGgrid_PAZI="0.0"
 
@@ -1190,12 +1146,12 @@ case ${PREDEF_GRID_NAME} in
     WRTCMP_write_groups="1"
     WRTCMP_write_tasks_per_group="16"
     WRTCMP_output_grid="rotated_latlon"
-    WRTCMP_cen_lon="${ESGgrid_LON_CTR}"
-    WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"
-    WRTCMP_lon_lwr_left="-55.82538869"
-    WRTCMP_lat_lwr_left="-48.57685654"
-    WRTCMP_lon_upr_rght="55.82538869"
-    WRTCMP_lat_upr_rght="48.57685654"
+    WRTCMP_cen_lon="-113.0" #"${ESGgrid_LON_CTR}"
+    WRTCMP_cen_lat="55.0" #"${ESGgrid_LAT_CTR}"
+    WRTCMP_lon_lwr_left="-61.0"
+    WRTCMP_lat_lwr_left="-37.0"
+    WRTCMP_lon_upr_rght="61.0"
+    WRTCMP_lat_upr_rght="37.0"
     WRTCMP_dlon=$( printf "%.9f" $( bc -l <<< "(${ESGgrid_DELX}/${radius_Earth})*${degs_per_radian}" ) )
     WRTCMP_dlat=$( printf "%.9f" $( bc -l <<< "(${ESGgrid_DELY}/${radius_Earth})*${degs_per_radian}" ) )
   fi
@@ -1212,35 +1168,35 @@ case ${PREDEF_GRID_NAME} in
 
   GRID_GEN_METHOD="ESGgrid"
 
-  ESGgrid_LON_CTR=-107.5
-  ESGgrid_LAT_CTR=51.5
+  ESGgrid_LON_CTR=-112.5
+  ESGgrid_LAT_CTR=55.0
 
   ESGgrid_DELX="3000.0"
   ESGgrid_DELY="3000.0"
 
-  ESGgrid_NX=3640
-  ESGgrid_NY=2520
+  ESGgrid_NX=3950
+  ESGgrid_NY=2700
 
-  ESGgrid_PAZI="-13.0"
+  ESGgrid_PAZI="0.0"
 
   ESGgrid_WIDE_HALO_WIDTH=6
 
   DT_ATMOS="${DT_ATMOS:-36}"
 
-  LAYOUT_X="${LAYOUT_X:-18}"   # 40 - EMC operational configuration
-  LAYOUT_Y="${LAYOUT_Y:-36}"   # 45 - EMC operational configuration
+  LAYOUT_X="${LAYOUT_X:-20}"   # 40 - EMC operational configuration
+  LAYOUT_Y="${LAYOUT_Y:-35}"   # 45 - EMC operational configuration
   BLOCKSIZE="${BLOCKSIZE:-28}"
 
   if [ "$QUILTING" = "TRUE" ]; then
     WRTCMP_write_groups="1"
     WRTCMP_write_tasks_per_group="144"
     WRTCMP_output_grid="rotated_latlon"
-    WRTCMP_cen_lon="-112.0" #${ESGgrid_LON_CTR}"
-    WRTCMP_cen_lat="48.0" #${ESGgrid_LAT_CTR}"
-    WRTCMP_lon_lwr_left="-51.0"
-    WRTCMP_lat_lwr_left="-33.0"
-    WRTCMP_lon_upr_rght="51.0"
-    WRTCMP_lat_upr_rght="33.0"
+    WRTCMP_cen_lon="-113.0" #"${ESGgrid_LON_CTR}"
+    WRTCMP_cen_lat="55.0" #"${ESGgrid_LAT_CTR}"
+    WRTCMP_lon_lwr_left="-61.0"
+    WRTCMP_lat_lwr_left="-37.0"
+    WRTCMP_lon_upr_rght="61.0"
+    WRTCMP_lat_upr_rght="37.0"
     WRTCMP_dlon="0.025" #$( printf "%.9f" $( bc -l <<< "(${ESGgrid_DELX}/${radius_Earth})*${degs_per_radian}" ) )
     WRTCMP_dlat="0.025" #$( printf "%.9f" $( bc -l <<< "(${ESGgrid_DELY}/${radius_Earth})*${degs_per_radian}" ) )
   fi

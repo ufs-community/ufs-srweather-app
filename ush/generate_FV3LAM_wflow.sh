@@ -856,8 +856,9 @@ settings="$settings
 fi
 #
 # Add the relevant tendency-based stochastic physics namelist variables to
-# "settings" when running with SPPT, SHUM, or SKEB turned on. Otherwise 
-# only include an empty "nam_stochy" stanza.
+# "settings" when running with SPPT, SHUM, or SKEB turned on. If running 
+# with SPP or LSM SPP, set the "new_lscale" variable.  Otherwise only 
+# include an empty "nam_stochy" stanza.
 #
 settings="$settings
 'nam_stochy': {"
@@ -881,8 +882,7 @@ if [ "${DO_SHUM}" = "TRUE" ]; then
     'shum': ${SHUM_MAG},
     'shum_lscale': ${SHUM_LSCALE},
     'shum_tau': ${SHUM_TSCALE},
-    'shumint': ${SHUM_INT},
-    'use_zmtnblck': ${USE_ZMTNBLCK},"
+    'shumint': ${SHUM_INT},"
 fi
 
 if [ "${DO_SKEB}" = "TRUE" ]; then
@@ -894,8 +894,12 @@ if [ "${DO_SKEB}" = "TRUE" ]; then
     'skebnorm': ${SKEBNORM},
     'skeb_tau': ${SKEB_TSCALE},
     'skebint': ${SKEB_INT},
-    'skeb_vdof': ${SKEB_VDOF},
-    'use_zmtnblck': ${USE_ZMTNBLCK},"
+    'skeb_vdof': ${SKEB_VDOF},"
+fi
+
+if [ "${DO_SPP}" = "TRUE" ] || [ "${DO_LSM_SPP}" = "TRUE" ]; then
+    settings="$settings
+    'new_lscale': ${NEW_LSCALE},"
 fi
 settings="$settings
   }"
