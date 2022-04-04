@@ -1216,11 +1216,22 @@ fi
 #
 dot_ccpp_phys_suite_or_null=".${CCPP_PHYS_SUITE}"
 
-DATA_TABLE_TMPL_FN="${DATA_TABLE_FN}"
-DIAG_TABLE_TMPL_FN="${DIAG_TABLE_FN}${dot_ccpp_phys_suite_or_null}"
-FIELD_TABLE_TMPL_FN="${FIELD_TABLE_FN}${dot_ccpp_phys_suite_or_null}"
-MODEL_CONFIG_TMPL_FN="${MODEL_CONFIG_FN}"
-NEMS_CONFIG_TMPL_FN="${NEMS_CONFIG_FN}"
+# Names of input files that the forecast model (ufs-weather-model) expects 
+# to read in.  These should only be changed if the input file names in the 
+# forecast model code are changed.
+#----------------------------------
+DATA_TABLE_FN="data_table"
+DIAG_TABLE_FN="diag_table"
+FIELD_TABLE_FN="field_table"
+MODEL_CONFIG_FN="model_configure"
+NEMS_CONFIG_FN="nems.configure"
+#----------------------------------
+
+DATA_TABLE_TMPL_FN="${DATA_TABLE_TMPL_FN:-${DATA_TABLE_FN}}"
+DIAG_TABLE_TMPL_FN="${DIAG_TABLE_TMPL_FN:-${DIAG_TABLE_FN}}${dot_ccpp_phys_suite_or_null}"
+FIELD_TABLE_TMPL_FN="${FIELD_TABLE_TMPL_FN:-${FIELD_TABLE_FN}}${dot_ccpp_phys_suite_or_null}"
+MODEL_CONFIG_TMPL_FN="${MODEL_CONFIG_TMPL_FN:-${MODEL_CONFIG_FN}}"
+NEMS_CONFIG_TMPL_FN="${NEMS_CONFIG_TMPL_FN:-${NEMS_CONFIG_FN}}"
 
 DATA_TABLE_TMPL_FP="${TEMPLATE_DIR}/${DATA_TABLE_TMPL_FN}"
 DIAG_TABLE_TMPL_FP="${TEMPLATE_DIR}/${DIAG_TABLE_TMPL_FN}"
@@ -2428,6 +2439,12 @@ FV3_NML_ENSMEM_FPS=${fv3_nml_ensmem_fps_str}
 #-----------------------------------------------------------------------
 #
 GLOBAL_VAR_DEFNS_FP='${GLOBAL_VAR_DEFNS_FP}'
+
+DATA_TABLE_FN='${DATA_TABLE_FN}'
+DIAG_TABLE_FN='${DIAG_TABLE_FN}'
+FIELD_TABLE_FN='${FIELD_TABLE_FN}'
+MODEL_CONFIG_FN='${MODEL_CONFIG_FN}'
+NEMS_CONFIG_FN='${NEMS_CONFIG_FN}'
 
 DATA_TABLE_TMPL_FN='${DATA_TABLE_TMPL_FN}'
 DIAG_TABLE_TMPL_FN='${DIAG_TABLE_TMPL_FN}'
