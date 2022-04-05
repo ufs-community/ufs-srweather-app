@@ -69,7 +69,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
 Contribution Process
 ========================
 
-The following steps should be followed in order to make changes to the ``develop`` branch of the ``ufs-srweather-app`` repository. Communication with code managers and the code management team throughout the process is encouraged.
+The steps below should be followed in order to make changes to the ``develop`` branch of the ``ufs-srweather-app`` repository. Communication with code managers and the code management team throughout the process is encouraged.
 
     #. **Issue** - Open an issue to document changes. Click `here <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ to open a new ``ufs-srweather-app`` issue or see :numref:`Step %s <Issue>` for detailed instructions. 
     #. **GitFlow** - Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`__ procedures for development. 
@@ -81,7 +81,7 @@ The following steps should be followed in order to make changes to the ``develop
         * **enhancement/[name]:** Improves an existing portion of the code
         * **textonly/[name]:** Changes elements of the repository that do not impact program output or log files (e.g., changes to README, documentation, comments, changing quoted Registry elements, white space alignment). Any change which does not impact the compiled code in any way should fall under this category.
          
-    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g. commit -m "Issue #23 - <commit message>"). Test code modifications on as many platforms as possible, and request help with further testing from the code management team when unable to test on all platforms. Document changes to the workflow and capabilities (either in the ``.rst`` files or separately) so that the SRW App documentation stays up-to-date. 
+    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g., ``commit -m "Issue #23 - <commit message>"``). Test code modifications on as many platforms as possible, and request help with further testing from the code management team when unable to test on all platforms. Document changes to the workflow and capabilities (either in the ``.rst`` files or separately) so that the SRW App documentation stays up-to-date. 
     #. **Pull request** - When ready to merge changes back to the ``develop`` branch, the code developer should initiate a pull request (PR) of the feature branch into the ``develop`` branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. When a PR is initiated, the :ref:`PR Template <Template>` autofills. Developers should use the template to provide information about the PR in the proper fields. See the guidelines in :numref:`Section %s <GoodPR>` for more details on making a good pull request. Developers should also tag all relevant reviewers from the code management team to the PR.
     #. **Merge** - When review and testing is complete, a code manager will complete the pull request and subsequent merge.
     #. **Cleanup** - After the PR is merged, the code developer should delete the branch on their fork and close the issue.
@@ -143,7 +143,9 @@ Choose from three options:
             Directly reference any issues or PRs in this or other repositories 
             that this is related to, and describe how they are related.
 
-    #. `Other <https://github.com/ufs-community/ufs-srweather-app/issues/new>`__ (e.g., text-only changes): Open a blank issue, and use the "Feature Request" template above as a starting point to describe the issue. 
+    #. **Text-Only Changes:** Propose text-only changes using the "Text-only request" template. This template's content is the same as for the "Feature Request" template above. 
+
+    #. `Other <https://github.com/ufs-community/ufs-srweather-app/issues/new>`__: Open a blank issue, and use the "Feature Request" template above as a starting point to describe the issue. 
 
 For all issue reports, indicate whether this is an issue that you plan to work on and eventually submit a PR for or whether you are merely making a suggestion. After filling out the issue report, click on "Submit new issue." 
 
@@ -159,7 +161,7 @@ Pull requests will be reviewed and approved by at least two code managers. When 
 
 .. note::
 
-    * If a developer wants to make use of automated testing, any SRW App + regional_workflow dependencies must be opened in PRs from forks belonging to the same user.
+    * If a developer wants to make use of automated testing, any SRW App + regional_workflow dependencies must be opened in PRs from dependent branches of forks belonging to the same user.
     * The ``Externals.cfg`` file should point to any dependent branches in ``regional_workflow`` (and other components, if necessary) while those branches are under review. Once the corresponding ``regional_workflow`` PR has been merged, the developer should update the references in their ``Externals.cfg`` file to reflect the appropriate hashes in the authoritative repositories. 
     * Developers should mention in their ``ufs-srweather-app`` PR description that they are temporarily pointing to a branch/hash in their fork of ``regional_worklfow`` and that it will be updated once the corresponding ``regional_workflow`` PR is merged.
 
@@ -228,7 +230,7 @@ All of the above examples concisely describe the changes contained in the pull r
     * Bug fixes (Bug fixes on what part of the code?)
     * Changes to surface scheme (What kind of changes? What surface scheme?)
 
-**DESCRIPTION OF CHANGES:** The first line of the description should be a single-line "purpose" for this change. Note the type of change (i.e., bug fix, feature, enhancement, textonly). Summarize the problem, proposed solution, and required changes. If this is an enhancement or new feature, describe why the change is important.
+**DESCRIPTION OF CHANGES:** The first line of the description should be a single-line "purpose" for this change. Note the type of change (i.e., bug fix, feature, enhancement, text-only). Summarize the problem, proposed solution, and required changes. If this is an enhancement or new feature, describe why the change is important.
 
 **DOCUMENTATION:** Developers should include documentation on new capabilities and enhancements by updating the appropriate ``.rst`` documentation files in their ``ufs-srweather-app`` fork prior to the PR. These documentation updates should be noted in the "Documentation" section of the PR message. If necessary, contributors may submit the ``.rst`` documentation in a subsequent PR. In these cases, the developers should include any existing documentation in the "Documentation" section of the initial PR message or as a file attachment to the PR. Then, the contributor should open an issue (see :numref:`Step %s <Issue>`) reflecting the need for official ``.rst`` documentation updates and include the issue number and explanation in the "Documentation" section of the initial PR template.
  
@@ -274,23 +276,18 @@ Build system
 Module files (env files)
     * Each component should build using the common modules located in the ``env/srw_common`` file.
 
-..
-    COMMENT: Common what?! Add update once this is clarified. 
 
 Regional Workflow
 ----------------------
 The ``regional_workflow`` repository must not contain source code for compiled programs. Only scripts, configuration files, and documentation should reside in this repository. 
 
 **General Coding Standards:** 
-    * All bash scripts must explicitly be ``#!/bin/bash`` scripts. They should *not* be login-enabled.
+    * All bash scripts must explicitly be ``#!/bin/bash`` scripts. They should *not* be login-enabled (i.e., scripts should *not* use the ``-l`` flag).
     * MacOS does not have all Linux utilities by default. Developers should ensure that they do not break any MacOS capabilities with their contribution.
     * All code must be indented appropriately and conform to the style of existing scripts (e.g., local variables should be lowercase, global variables should be uppercase).
 
-..
-    COMMENT: And what is this style? Do we have a style guide? Ask about linking to this `style guide <https://google.github.io/styleguide/shellguide.html>`__
-
 **Python Coding Standards:** 
-    * All Python code contributions should come with an appropriate ``environment.yml`` file for the feature. 
+    * All Python code contributions should come with an appropriate ``environment.yaml`` file for the feature. 
     * Keep the use of external Python packages to a minimum for necessary workflow tasks. Currently these include ``f90nml``, ``pyyaml``, and ``jinja``. 
 
 **Workflow Design:** Follow the `NCO Guidelines <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ for what is incorporated in each layer of the workflow. This is particularly important in the ``scripts`` directory. 
@@ -300,9 +297,6 @@ The ``regional_workflow`` repository must not contain source code for compiled p
 **Management of the Configuration File:** New configurable options must be consistent with existing configurable options. Add necessary checks on acceptable options where applicable. Add appropriate default values.
 
 **Management of Template Files:** If a new configurable option is required in an existing template, it must be handled similarly to its counterparts in the scripts that fill in the template.
-
-..
-    COMMENT: Add Jinja template info when available.
 
 **Namelist Management:** Namelists in ``ufs-srweather-app`` and ``regional_workflow`` are generated using a Python tool and managed by setting YAML configuration parameters. This allows for the management of multiple configuration settings with maximum flexibility and minimum duplication of information. 
 
