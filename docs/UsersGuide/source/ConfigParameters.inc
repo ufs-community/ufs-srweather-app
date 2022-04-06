@@ -31,6 +31,7 @@ Grid Generation Parameters
 
    If the experiment uses a **user-defined grid** (i.e. if ``PREDEF_GRID_NAME`` is set to a null string), then ``GRID_GEN_METHOD`` must be set in the experiment configuration file. Otherwise, the experiment generation will fail because the generation scripts check to ensure that the grid name is set to a non-empty string before creating the experiment directory.
 
+
 ESGgrid Settings
 -------------------
 
@@ -69,7 +70,7 @@ A :term:`halo` is the strip of cells surrounding the regional grid; the halo is 
 GFDLgrid Settings
 ---------------------
 
-The following parameters must be set if using the "GFDLgrid" method of generating a regional grid (i.e., when ``GRID_GEN_METHOD="GFDLgrid"``). Note that the regional grid is defined with respect to a "parent" global cubed-sphere grid. Thus, all the parameters for a global cubed-sphere grid must be specified even though the model equations are integrated only on the regional grid. Tile 6 has arbitrarily been chosen as the tile to use to orient the global parent grid on the sphere (Earth). For convenience, the regional grid is denoted as "tile 7" even though it is embedded within tile 6 (i.e. it doesn't extend beyond the boundary of tile 6). Its exact location within tile 6 is determined by specifying the starting and ending i and j indices of the regional grid on tile 6, where i is the grid index in the x direction and j is the grid index in the y direction. 
+The following parameters must be set if using the "GFDLgrid" method of generating a regional grid (i.e., when ``GRID_GEN_METHOD="GFDLgrid"``). Note that the regional grid is defined with respect to a "parent" global cubed-sphere grid. Thus, all the parameters for a global cubed-sphere grid must be specified even though the model equations are integrated only on the regional grid. Tile 6 has arbitrarily been chosen as the tile to use to orient the global parent grid on the sphere (Earth). For convenience, the regional grid is denoted as "tile 7" even though it is embedded within tile 6 (i.e. it doesn't extend beyond the boundary of tile 6). Its exact location within tile 6 is determined by specifying the starting and ending i and j indices of the regional grid on tile 6, where i is the grid index in the x direction and j is the grid index in the y direction. All of this information is set in the variables below. 
 
 ``GFDLgrid_LON_T6_CTR``: (Default: "")
    Longitude of the center of tile 6 (in degrees).
@@ -100,7 +101,7 @@ The following parameters must be set if using the "GFDLgrid" method of generatin
 
 
 ``GFDLgrid_STRETCH_FAC``: (Default: "")
-   Stretching factor used in the Schmidt transformation applied to the parent cubed-sphere grid. Setting the Schmidt stretching factor ``GFDLgrid_STRETCH_FAC`` to a value greater than 1 shrinks tile 6, while setting it to a value less than 1 (but still greater than 0) expands it.  The remaining 5 tiles change shape as necessary to maintain global coverage of the grid.
+   Stretching factor used in the Schmidt transformation applied to the parent cubed-sphere grid. Setting the Schmidt stretching factor ``GFDLgrid_STRETCH_FAC`` to a value greater than 1 shrinks tile 6, while setting it to a value less than 1 (but still greater than 0) expands it. The remaining 5 tiles change shape as necessary to maintain global coverage of the grid.
 
 ``GFDLgrid_REFINE_RATIO``: (Default: "")
    Cell refinement ratio for the regional grid, i.e., the number of cells in either the x or y direction on the regional grid (tile 7) that abut one cell on its parent tile (tile 6).
@@ -118,46 +119,10 @@ The following parameters must be set if using the "GFDLgrid" method of generatin
    j-index on tile 6 at which the regional grid (tile 7) ends.
 
 ``GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES``: (Default: "")
-   Flag that determines the file naming convention to use for grid, orography, and surface climatology files (or, if using pregenerated files, the naming convention that was used to name these files).  These files usually start with the string "C${RES}_", where RES is an integer. In the global forecast model, RES is the number of points in each of the two horizontal directions (x and y) on each tile of the global grid (defined here as GFDLgrid_RES). If this flag is set to "TRUE", RES will be set to GFDLgrid_RES just as in the global forecast model. If it is set to "FALSE", we calculate (in the grid generation task) an "equivalent global uniform cubed-sphere resolution" -- call it RES_EQUIV -- and then set RES equal to it.  RES_EQUIV is the number of grid points in each of the x and y directions on each tile that a global UNIFORM (i.e., stretch factor of 1) cubed-sphere grid would have to have in order to have the same average grid size as the regional grid. This is a more useful indicator of the grid size because it takes into account the effects of GFDLgrid_RES, GFDLgrid_STRETCH_FAC, and GFDLgrid_REFINE_RATIO in determining the regional grid's typical grid size, whereas simply setting RES to GFDLgrid_RES doesn't take into account the effects of GFDLgrid_STRETCH_FAC and GFDLgrid_REFINE_RATIO on the regional grid's resolution.  Nevertheless, some users still prefer to use GFDLgrid_RES in the file names, so we allow for that here by setting this flag to "TRUE".
-
-# Note that:
-
-# 1) If the experiment is using one of the predefined grids (i.e. if 
-#    PREDEF_GRID_NAME is set to the name of one of the valid predefined
-#    grids), then:
-#
-#    a) If the value of GRID_GEN_METHOD for that grid is "GFDLgrid", then
-#       these parameters will get reset to the values for that grid.  
-#       This will happen regardless of whether or not they are assigned 
-#       values in the user-specified experiment configuration file, i.e. 
-#       any values they may be assigned in the experiment configuration 
-#       file will be overwritten.
-#
-#    b) If the value of GRID_GEN_METHOD for that grid is "ESGgrid", then
-#       these parameters will not be used and thus do not need to be reset
-#       to non-empty strings.
-#
-# 2) If the experiment is not using one of the predefined grids (i.e. if 
-#    PREDEF_GRID_NAME is set to a null string), then:
-#
-#    a) If GRID_GEN_METHOD is set to "GFDLgrid" in the user-specified 
-#       experiment configuration file, then these parameters must be set
-#       in that configuration file.
-#
-#    b) If GRID_GEN_METHOD is set to "ESGgrid" in the user-specified 
-#       experiment configuration file, then these parameters will not be 
-#       used and thus do not need to be reset to non-empty strings.
-
-
-
-
-
-
+   Flag that determines the file naming convention to use for grid, orography, and surface climatology files (or, if using pregenerated files, the naming convention that was used to name these files).  These files usually start with the string "C${RES}_", where RES is an integer. In the global forecast model, ``RES`` is the number of points in each of the two horizontal directions (x and y) on each tile of the global grid (defined here as GFDLgrid_RES). If this flag is set to "TRUE", RES will be set to GFDLgrid_RES just as in the global forecast model. If it is set to "FALSE", we calculate (in the grid generation task) an "equivalent global uniform cubed-sphere resolution" -- call it RES_EQUIV -- and then set RES equal to it. RES_EQUIV is the number of grid points in each of the x and y directions on each tile that a global UNIFORM (i.e., stretch factor of 1) cubed-sphere grid would need to have in order to have the same average grid size as the regional grid. This is a more useful indicator of the grid size because it takes into account the effects of GFDLgrid_RES, GFDLgrid_STRETCH_FAC, and GFDLgrid_REFINE_RATIO in determining the regional grid's typical grid size, whereas simply setting RES to GFDLgrid_RES doesn't take into account the effects of GFDLgrid_STRETCH_FAC and GFDLgrid_REFINE_RATIO on the regional grid's resolution. Nevertheless, some users still prefer to use GFDLgrid_RES in the file names, so we allow for that here by setting this flag to "TRUE".
 
 Computational Forecast Parameters
 =================================
-``DT_ATMOS``: (Default: "")
-   The main forecast model integration time step.  As described in the forecast model documentation, "It corresponds to the frequency with which the top level routine in the dynamics is called as well as the frequency with which the physics is called."
 
 ``LAYOUT_X, LAYOUT_Y``: (Default: "")
    The number of MPI tasks (processes) to use in the two horizontal directions (x and y) of the regional grid when running the forecast model.
@@ -165,11 +130,35 @@ Computational Forecast Parameters
 ``BLOCKSIZE``: (Default: "")
    The amount of data that is passed into the cache at a time.
 
-Here, we set these parameters to null strings. This is so that, for any one of these parameters:
+.. note::
 
-#. If the experiment is using a predefined grid and the user sets the parameter in the user-specified experiment configuration file (``EXPT_CONFIG_FN``), that value will be used in the forecast(s). Otherwise, the default value of the parameter for that predefined grid will be used.
+   In ``config_defaults.sh`` these parameters are set to null strings so that:
 
-#. If the experiment is not using a predefined grid (i.e. it is using a custom grid whose parameters are specified in the experiment configuration file), then the user must specify a value for the parameter in that configuration file.  Otherwise, the parameter will remain set to a null string, and the experiment generation will fail, because the generation scripts check to ensure that all the parameters defined in this section are set to non-empty strings before creating the experiment directory.
+   #. If the experiment is using a predefined grid and the user sets the parameter in the user-specified experiment configuration file (``EXPT_CONFIG_FN``), that value will be used in the forecast(s). Otherwise, the default value of the parameter for that predefined grid will be used.
+
+   #. If the experiment is not using a predefined grid (i.e. it is using a custom grid whose parameters are specified in the experiment configuration file), then the user must specify a value for the parameter in that configuration file. Otherwise, the parameter will remain set to a null string, and the experiment generation will fail, because the generation scripts check to ensure that all the parameters defined in this section are set to non-empty strings before creating the experiment directory.
+
+
+
+# Here, we set these parameters to null strings.  This is so that, for 
+# any one of these parameters:
+#
+# 1) If the experiment is using a predefined grid, then if the user 
+#    sets the parameter in the user-specified experiment configuration 
+#    file (EXPT_CONFIG_FN), that value will be used in the forecast(s).
+#    Otherwise, the default value of the parameter for that predefined 
+#    grid will be used.
+#
+# 2) If the experiment is not using a predefined grid (i.e. it is using
+#    a custom grid whose parameters are specified in the experiment 
+#    configuration file), then the user must specify a value for the 
+#    parameter in that configuration file.  Otherwise, the parameter 
+#    will remain set to a null string, and the experiment generation 
+#    will fail because the generation scripts check to ensure that all 
+#    the parameters defined in this section are set to non-empty strings
+#    before creating the experiment directory.
+
+
 
 Write-Component (Quilting) Parameters
 =====================================
