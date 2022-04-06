@@ -10,12 +10,13 @@ Steps to build and use the Sphinx documentation tool:
     pip install sphinxcontrib-bibtex
     pip install sphinx-rtd-theme
 
-    One approach that has worked to resolve "Module Not Found" errors for some users: 
+    One approach that has worked to resolve "Module Not Found" errors for users with MacPorts package manager: 
     $ sudo port install py-six  # may not be necessary
     $ sudo port install py310-sphinxcontrib-bibtex
     $ sudo port select --set sphinx py310-sphinx
     $ sudo port install py310-sphinx_rtd_theme
 
+    py310 can be replaced with the user's version of Python (e.g., py39) 
 
 To build html:
 
