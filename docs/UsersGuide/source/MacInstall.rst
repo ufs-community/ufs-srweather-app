@@ -35,7 +35,7 @@ Run the executable that pulls in SRW App components from external repositories (
 Set Up the Build Environment
 ===============================
 
-The ``build_<platform>_<compiler>.env`` scripts located in ``$SRW/env/`` allow users to customize the SRW App build environment for their system. On MacOS, ``<platform>`` is ``macosx`` and ``<compiler>`` is ``gnu``. The ``build_macosx_gnu.env`` script initializes the module environment, lists the location of hpc-stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW. The ``$HPC-stack-install`` variable is set to the installation directory for the HPC-Stack. The ``srw_common`` file contains a list of specific libraries and modules to be loaded, and it is sourced from the build_macosx_gnu.env . 
+The ``build_<platform>_<compiler>.env`` scripts located in ``$SRW/env/`` allow users to customize the SRW App build environment for their system. On MacOS, ``<platform>`` is ``macosx`` and ``<compiler>`` is ``gnu``. The ``build_macosx_gnu.env`` script initializes the module environment, lists the location of hpc-stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW App. The ``$HPC-stack-install`` variable is set to the installation directory for the HPC-Stack. The ``srw_common`` file contains a list of specific libraries and modules to be loaded, and it is sourced from the build_macosx_gnu.env . 
 
 Sample ``build_macosx_gnu.env`` contents appear below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macosx_gnu.env`` file.
 

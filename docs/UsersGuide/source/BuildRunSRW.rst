@@ -122,7 +122,7 @@ Run the executable that pulls in SRW App components from external repositories:
 
 .. code-block:: console
 
-   cd ufs-srweather-app
+   cd $SRW
    ./manage_externals/checkout_externals
 
 
@@ -151,7 +151,7 @@ On Level 1 systems, the commands in the ``build_<platform>_<compiler>.env`` file
 
 .. code-block::
 
-   source env/build_hera_intel.env
+   source $SRW/env/build_hera_intel.env
 
 from the main ``ufs-srweather-app`` directory to source the appropriate file.
 
@@ -162,7 +162,7 @@ On Level 2-4 systems, users will need to modify certain environment variables in
    export <VARIABLE_NAME>=<PATH_TO_MODULE>
    setenv <VARIABLE_NAME> <PATH_TO_MODULE>
 
-Additional Details for Running on MacOS
+Additional Details for Building on MacOS
 ------------------------------------------
 
 .. note::
@@ -174,7 +174,7 @@ The SRW App can be built on MacOS systems, presuming HPC-Stack has already been 
 
 * **Option 2:** MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
 
-The ``build_macosx_gnu.env`` script initializes the module environment, lists the location of HPC-Stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW. The ``$HPC_INSTALL_DIR`` variable is set to the installation directory for the HPC-Stack. The ``srw_common`` file contains a list of specific libraries and modules to be loaded, and it is sourced from ``build_macosx_gnu.env``. 
+The ``build_macosx_gnu.env`` script initializes the module environment, lists the location of HPC-Stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW App. The ``$HPC_INSTALL_DIR`` variable is set to the installation directory for the HPC-Stack. The ``srw_common`` file contains a list of specific libraries and modules to be loaded, and it is sourced from ``build_macosx_gnu.env``. 
 
 Sample ``build_macosx_gnu.env`` contents appear below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macosx_gnu.env`` file. Additionally, users need to verify that all file paths reflect their system's configuration. 
 
@@ -239,7 +239,7 @@ This change is optional if using Option 2 to build the SRW App.
 Build the Executables
 =======================
 
-Create a directory to hold the build's executables: 
+Create a directory within ``$SRW`` to hold the build's executables: 
 
 .. code-block:: console
 
@@ -556,7 +556,7 @@ To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather
 
 .. code-block:: console
 
-   cd regional_workflow/ush
+   cd $SRW/regional_workflow/ush
    cp config.community.sh config.sh
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
@@ -783,7 +783,7 @@ If the login shell is csh/tcsh, it can be set using:
 
 .. code-block:: console
 
-   setenv EXPTDIR /path-to-experiment/directory
+   setenv EXPTDIR /<path-to-experiment>/<directory_name>
 
 
 Launch the Rocoto Workflow Using a Script
