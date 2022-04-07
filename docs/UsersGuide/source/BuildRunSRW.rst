@@ -72,7 +72,11 @@ The SRW Application source code is publicly available on GitHub. To download the
    COMMENT: This will need to be changed to the updated release branch of the SRW repo once it exists. 
 
 The cloned repository contains the configuration files and sub-directories shown in
-:numref:`Table %s <FilesAndSubDirs>`.
+:numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environmental variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the $HOME directory:
+
+.. code-block:: console
+
+    export SRW=$HOME/ufs-srweather-app
 
 .. _FilesAndSubDirs:
 
@@ -122,19 +126,16 @@ Run the executable that pulls in SRW App components from external repositories:
    ./manage_externals/checkout_externals
 
 
-
 .. _SetUpBuild:
 
 Set up the Build Environment
 ============================
 
-Before building the SRW App, the build environment must be set up for the user's specific platform. There is a set of common modules required to build the SRW App. These are located in the ``env/srw_common`` file. To load the set of common modules, run:
+Before building the SRW App, the build environment must be set up for the user's specific platform. There is a set of common modules required to build the SRW App. These are located in the ``$SRW/env/srw_common`` file. To load the set of common modules, run:
 
 .. code-block:: console
 
-   module use <path/to/env/directory>
-
-where ``<path/to/env/directory>`` is the full path to the ``env`` directory. 
+   module use $SRW/env
 
 Then, users must set up the platform-specific elements of the build environment. For Level 1 systems, scripts for loading the proper modules and/or setting the correct environment variables can be found in the ``env`` directory of the SRW App in files named ``build_<platform>_<compiler>.env``. Here is a sample directory listing of these build files: 
 
@@ -154,12 +155,83 @@ On Level 1 systems, the commands in the ``build_<platform>_<compiler>.env`` file
 
 from the main ``ufs-srweather-app`` directory to source the appropriate file.
 
-On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
+On Level 2-4 systems, users will need to modify certain environment variables in the ``build_<platform>_<compiler>.env`` file, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
 
 .. code-block::
 
    export <VARIABLE_NAME>=<PATH_TO_MODULE>
    setenv <VARIABLE_NAME> <PATH_TO_MODULE>
+
+Additional Details for Running on MacOS
+------------------------------------------
+
+.. note::
+    Users not building the SRW App to run on MacOS may skip to the :ref:`next section <BuildExecutables>`. 
+
+The SRW App can be built on MacOS systems, presuming HPC-Stack has already been successfully installed. The following two options have been tested:
+
+* **Option 1:** MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
+
+* **Option 2:** MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
+
+The ``build_macosx_gnu.env`` script initializes the module environment, lists the location of HPC-Stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW. The ``$HPC_INSTALL_DIR`` variable is set to the installation directory for the HPC-Stack. The ``srw_common`` file contains a list of specific libraries and modules to be loaded, and it is sourced from ``build_macosx_gnu.env``. 
+
+Sample ``build_macosx_gnu.env`` contents appear below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macosx_gnu.env`` file. Additionally, users need to verify that all file paths reflect their system's configuration. 
+
+.. code-block:: console
+
+    # Setup instructions for macOS (build_macosx_gnu.env)
+
+    module purge
+    source /opt/homebrew/opt/lmod/init/profile   (Option 1)
+    # source /usr/local/opt/lmod/init/profile    (Option 2)
+    module use $HPC_INSTALL_DIR/modulefiles/stack 
+    module load hpc
+    module load hpc-python
+    module load hpc-gnu
+    module load openmpi
+    module load hpc-openmpi
+
+    export SRW=${HOME}/SRW/ufs-srweather-app
+    source ${SRW}/env/srw_common
+    module list
+
+    % Option 1 compiler paths:
+    export CC=/opt/homebrew/bin/gcc  
+    export CXX=/opt/homebrew/bin/g++
+    export FC=/opt/homebrew/bin/gfortran
+
+    % Option 2 compiler paths:
+    %export CC=/usr/local/bin/gcc
+    %export CXX=/usr/local/bin/g++
+    %export FC=/usr/local/bin/gfortran
+
+    export MPI_CC=mpicc
+    export MPI_CXX=mpicxx
+    export MPI_FC=mpif90
+
+    export CMAKE_C_COMPILER=$MPI_CC
+    export CMAKE_CXX_COMPILER=$MPI_CXX
+    export CMAKE_Fortran_COMPILER=$MPI_FC
+    export CMAKE_Platform=macosx.gnu
+    export CMAKE_Fortran_COMPILER_ID="GNU"
+    export LDFLAGS="-L$MPI_ROOT/lib"
+    export FFLAGS="-DNO_QUAD_PRECISION -fallow-argument-mismatch"  
+
+Then, the user must source the configuration file:
+
+.. code-block:: console
+
+    source $SRW/env/build_macosx_gnu.env
+
+Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` to ``OFF`` in line 35 of the ``$SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt`` file: 
+
+.. code-block:: console
+
+    option(ENABLE_QUAD_PRECISION "Enable compiler definition -DENABLE_QUAD_PRECISION" OFF)
+
+This change is optional if using Option 2 to build the SRW App. 
+
 
 
 .. _BuildExecutables:
