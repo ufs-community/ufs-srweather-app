@@ -1,4 +1,4 @@
-.. _SRWMacOS
+.. _SRWMacOS:
 
 ===========================================
 Building the SRW Application on MacOS 
@@ -14,7 +14,7 @@ The SRW Application source code is publicly available on GitHub. To download the
 
 .. code-block:: console
 
-    $ git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
+    git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
 
 The cloned repository contains the configuration files and sub-directories shown in :numref:`Table %s <FilesAndSubDirs>`
 
@@ -31,8 +31,8 @@ Run the executable that pulls in SRW App components from external repositories (
 
 .. code-block:: console
 
-    $ cd ufs-srweather-app
-    $ ./manage_externals/checkout_externals
+    cd ufs-srweather-app
+    ./manage_externals/checkout_externals
 
 Set Up the Build Environment
 ===============================
@@ -86,7 +86,7 @@ Then, the user must source the configuration file:
 
 .. code-block:: console
 
-    $ source $SRW/env/build_macosx_gnu.env
+    source $SRW/env/build_macosx_gnu.env
 
 Additional Changes
 --------------------
@@ -106,15 +106,15 @@ Create a directory to hold the build’s executables:
 
 .. code-block:: console
 
-    $ mkdir build
-    $ cd build
+    mkdir build
+    cd build
 
 From the build directory, run the following commands to build the pre-processing utilities, forecast model, and post-processor:
 
 .. code-block:: console
  
-    $ cmake .. -DCMAKE_INSTALL_PREFIX=..
-    $ make -j 4  &>  build.out &
+    cmake .. -DCMAKE_INSTALL_PREFIX=..
+    make -j 4  &>  build.out &
 
 Verify that the binaries in :numref:`Table %s <ExecDescription>` are built in the directory ``$SRW/bin``. The build process make take a while. For more details, see :numref:`Chapter %s <BuildExecutables>`
 

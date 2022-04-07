@@ -14,6 +14,7 @@ UFS Short-Range Weather App Users Guide
    Introduction
    Quickstart
    BuildRunSRW
+   MacInstall
    Components
    Include-HPCInstall
    InputOutputFiles
