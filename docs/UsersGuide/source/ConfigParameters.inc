@@ -401,15 +401,15 @@ Surface Climatology Parameter
 
 Fixed File Parameters
 =====================
-Set parameters associated with the fixed (i.e., static) files. On the main `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, fixed files are prestaged with paths defined in the ``setup.sh`` script.
+Set parameters associated with the fixed (i.e., static) files. On the main `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, fixed files are prestaged with paths defined in the ``setup.sh`` script. Because the default values are dependent on the platform, we set these to a null string which will then be overwritten in ``setup.sh`` unless the user has specified a different value in ``config.sh``.
 
 ``FIXgsm``: (Default: "")
    System directory in which the majority of fixed (i.e. time-independent) files that are needed to run the FV3-LAM model are located.
 
-``FIXaer``: ______________________
+``FIXaer``: (Default: "")
    System directory where MERRA2 aerosol climatology files are located
 
-``FIXlut``: ______________________
+``FIXlut``: (Default: "")
    System directory where the lookup tables for optics properties are located
 
 ``TOPO_DIR``: (Default: "")
@@ -452,13 +452,20 @@ Set parameters associated with the fixed (i.e., static) files. On the main `Leve
       "fix_co2_proj/global_co2historicaldata_2016.txt" \
       "fix_co2_proj/global_co2historicaldata_2017.txt" \
       "fix_co2_proj/global_co2historicaldata_2018.txt" \
+      "fix_co2_proj/global_co2historicaldata_2019.txt" \
+      "fix_co2_proj/global_co2historicaldata_2020.txt" \
+      "fix_co2_proj/global_co2historicaldata_2021.txt" \
       "global_co2historicaldata_glob.txt" \
       "co2monthlycyc.txt" \
       "global_h2o_pltc.f77" \
       "global_hyblev.l65.txt" \
       "global_zorclim.1x1.grb" \
       "global_sfc_emissivity_idx.txt" \
+      "global_tg3clim.2.6x1.5.grb" \
       "global_solarconstant_noaa_an.txt" \
+      "global_albedo4.1x1.grb" \
+      "geo_em.d01.lat-lon.2.5m.HGT_M.nc" \
+      "HGT.Beljaars_filtered.lat-lon.30s_res.nc" \
       "replace_with_FIXgsm_ozone_prodloss_filename")
 
    If not running in NCO mode, this array contains the names of the files to copy from the ``FIXgsm`` system directory to the ``FIXam`` directory under the experiment directory. Note that the last element has a dummy value. This last element will get reset by the workflow generation scripts to the name of the ozone production/loss file to copy from ``FIXgsm``. The name of this file depends on the ozone parameterization being used, and that in turn depends on the CCPP physics suite specified for the experiment. Thus, the CCPP physics suite XML must first be read in to determine the ozone parameterization and then the name of the ozone production/loss file. These steps are carried out elsewhere (in one of the workflow generation scripts/functions).
@@ -474,7 +481,11 @@ Set parameters associated with the fixed (i.e., static) files. On the main `Leve
        "FNSMCC | $FNSMCC" \
        "FNMSKH | $FNMSKH" )
 
-   This array is used to set some of the namelist variables in the forecast model's namelist file that represent the relative or absolute paths of various fixed files (the first column of the array, where columns are delineated by the pipe symbol "|") to the full paths to these files in the FIXam directory derived from the corresponding workflow variables containing file names (the second column of the array).
+   This array is used to set some of the namelist variables in the forecast model's namelist file that represent the relative or absolute paths of various fixed files (the first column of the array, where columns are delineated by the pipe symbol "|") to the full paths to these files in the FIXam directory derived from the corresponding workflow variables containing file names (the second column of the array). It is possible to remove this as a workflow variable and make it only a local one since it is used in only one script.
+
+..
+   COMMENT: Why is #"FNZORC | $FNZORC" \ commented out in config_defaults.sh?
+
 
 ``FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING``: (Default: see below)
    .. code-block:: console
@@ -492,10 +503,11 @@ Set parameters associated with the fixed (i.e., static) files. On the main `Leve
 
    This array is used to set some of the namelist variables in the forecast model's namelist file that represent the relative or absolute paths of various fixed files (the first column of the array, where columns are delineated by the pipe symbol "|") to the full paths to surface climatology files (on the native FV3-LAM grid) in the ``FIXLAM`` directory derived from the corresponding surface climatology fields (the second column of the array).
 
+
 ``CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING``: (Default: see below)
    .. code-block:: console
 
-      ("aerosol.dat            	   | global_climaeropac_global.txt" \
+      ("aerosol.dat            	  | global_climaeropac_global.txt" \
        "co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt" \
        "co2historicaldata_2011.txt | fix_co2_proj/global_co2historicaldata_2011.txt" \
        "co2historicaldata_2012.txt | fix_co2_proj/global_co2historicaldata_2012.txt" \
@@ -505,159 +517,20 @@ Set parameters associated with the fixed (i.e., static) files. On the main `Leve
        "co2historicaldata_2016.txt | fix_co2_proj/global_co2historicaldata_2016.txt" \
        "co2historicaldata_2017.txt | fix_co2_proj/global_co2historicaldata_2017.txt" \
        "co2historicaldata_2018.txt | fix_co2_proj/global_co2historicaldata_2018.txt" \
+       "co2historicaldata_2019.txt | fix_co2_proj/global_co2historicaldata_2019.txt" \
+       "co2historicaldata_2020.txt | fix_co2_proj/global_co2historicaldata_2020.txt" \
+       "co2historicaldata_2021.txt | fix_co2_proj/global_co2historicaldata_2021.txt" \
        "co2historicaldata_glob.txt | global_co2historicaldata_glob.txt" \
-       "co2monthlycyc.txt      	   | co2monthlycyc.txt" \
-       "global_h2oprdlos.f77   	   | global_h2o_pltc.f77" \
-       "global_zorclim.1x1.grb 	   | global_zorclim.1x1.grb" \
-       "sfc_emissivity_idx.txt 	   | global_sfc_emissivity_idx.txt" \
+       "co2monthlycyc.txt      	  | co2monthlycyc.txt" \
+       "global_h2oprdlos.f77   	  | global_h2o_pltc.f77" \
+       "global_albedo4.1x1.grb     | global_albedo4.1x1.grb" \
+       "global_zorclim.1x1.grb 	  | global_zorclim.1x1.grb" \
+       "global_tg3clim.2.6x1.5.grb | global_tg3clim.2.6x1.5.grb" \
+       "sfc_emissivity_idx.txt 	  | global_sfc_emissivity_idx.txt" \
        "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt" \
-       "global_o3prdlos.f77    	   | " )
+       "global_o3prdlos.f77    	  | " )
 
-   This array specifies the mapping to use between the symlinks that need to be created in each cycle directory (these are the "files" that FV3 looks for) and their targets in the ``FIXam`` directory.  The first column of the array specifies the symlink to be created, and the second column specifies its target file in ``FIXam`` (where columns are delineated by the pipe symbol "|").
-
-
-
-
-
-
-
-# FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING:
-# This array is used to set some of the namelist variables in the forecast 
-# model's namelist file that represent the relative or absolute paths of 
-# various fixed files (the first column of the array, where columns are 
-# delineated by the pipe symbol "|") to the full paths to these files in 
-# the FIXam directory derived from the corresponding workflow variables 
-# containing file names (the second column of the array).
-#
-# FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:
-# This array is used to set some of the namelist variables in the forecast 
-# model's namelist file that represent the relative or absolute paths of 
-# various fixed files (the first column of the array, where columns are 
-# delineated by the pipe symbol "|") to the full paths to surface climatology 
-# files (on the native FV3-LAM grid) in the FIXLAM directory derived from 
-# the corresponding surface climatology fields (the second column of the 
-# array).
-#
-# CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING:
-# This array specifies the mapping to use between the symlinks that need
-# to be created in each cycle directory (these are the "files" that FV3
-# looks for) and their targets in the FIXam directory.  The first column
-# of the array specifies the symlink to be created, and the second column
-# specifies its target file in FIXam (where columns are delineated by the
-# pipe symbol "|").
-#
-#-----------------------------------------------------------------------
-#
-# Because the default values are dependent on the platform, we set these
-# to a null string which will then be overwritten in setup.sh unless the
-# user has specified a different value in config.sh
-FIXgsm=""
-FIXaer=""
-FIXlut=""
-TOPO_DIR=""
-SFC_CLIMO_INPUT_DIR=""
-
-FNGLAC="global_glacier.2x2.grb"
-FNMXIC="global_maxice.2x2.grb"
-FNTSFC="RTGSST.1982.2012.monthly.clim.grb"
-FNSNOC="global_snoclim.1.875.grb"
-FNZORC="igbp"
-FNAISC="CFSR.SEAICE.1982.2012.monthly.clim.grb"
-FNSMCC="global_soilmgldas.t126.384.190.grb"
-FNMSKH="seaice_newland.grb"
-
-FIXgsm_FILES_TO_COPY_TO_FIXam=( \
-"$FNGLAC" \
-"$FNMXIC" \
-"$FNTSFC" \
-"$FNSNOC" \
-"$FNAISC" \
-"$FNSMCC" \
-"$FNMSKH" \
-"global_climaeropac_global.txt" \
-"fix_co2_proj/global_co2historicaldata_2010.txt" \
-"fix_co2_proj/global_co2historicaldata_2011.txt" \
-"fix_co2_proj/global_co2historicaldata_2012.txt" \
-"fix_co2_proj/global_co2historicaldata_2013.txt" \
-"fix_co2_proj/global_co2historicaldata_2014.txt" \
-"fix_co2_proj/global_co2historicaldata_2015.txt" \
-"fix_co2_proj/global_co2historicaldata_2016.txt" \
-"fix_co2_proj/global_co2historicaldata_2017.txt" \
-"fix_co2_proj/global_co2historicaldata_2018.txt" \
-"fix_co2_proj/global_co2historicaldata_2019.txt" \
-"fix_co2_proj/global_co2historicaldata_2020.txt" \
-"fix_co2_proj/global_co2historicaldata_2021.txt" \
-"global_co2historicaldata_glob.txt" \
-"co2monthlycyc.txt" \
-"global_h2o_pltc.f77" \
-"global_hyblev.l65.txt" \
-"global_zorclim.1x1.grb" \
-"global_sfc_emissivity_idx.txt" \
-"global_tg3clim.2.6x1.5.grb" \
-"global_solarconstant_noaa_an.txt" \
-"global_albedo4.1x1.grb" \
-"geo_em.d01.lat-lon.2.5m.HGT_M.nc" \
-"HGT.Beljaars_filtered.lat-lon.30s_res.nc" \
-"replace_with_FIXgsm_ozone_prodloss_filename" \
-)
-
-#
-# It is possible to remove this as a workflow variable and make it only
-# a local one since it is used in only one script.
-#
-FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING=( \
-"FNGLAC | $FNGLAC" \
-"FNMXIC | $FNMXIC" \
-"FNTSFC | $FNTSFC" \
-"FNSNOC | $FNSNOC" \
-"FNAISC | $FNAISC" \
-"FNSMCC | $FNSMCC" \
-"FNMSKH | $FNMSKH" \
-)
-#"FNZORC | $FNZORC" \
-
-FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING=( \
-"FNALBC  | snowfree_albedo" \
-"FNALBC2 | facsf" \
-"FNTG3C  | substrate_temperature" \
-"FNVEGC  | vegetation_greenness" \
-"FNVETC  | vegetation_type" \
-"FNSOTC  | soil_type" \
-"FNVMNC  | vegetation_greenness" \
-"FNVMXC  | vegetation_greenness" \
-"FNSLPC  | slope_type" \
-"FNABSC  | maximum_snow_albedo" \
-)
-
-CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING=( \
-"aerosol.dat                | global_climaeropac_global.txt" \
-"co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt" \
-"co2historicaldata_2011.txt | fix_co2_proj/global_co2historicaldata_2011.txt" \
-"co2historicaldata_2012.txt | fix_co2_proj/global_co2historicaldata_2012.txt" \
-"co2historicaldata_2013.txt | fix_co2_proj/global_co2historicaldata_2013.txt" \
-"co2historicaldata_2014.txt | fix_co2_proj/global_co2historicaldata_2014.txt" \
-"co2historicaldata_2015.txt | fix_co2_proj/global_co2historicaldata_2015.txt" \
-"co2historicaldata_2016.txt | fix_co2_proj/global_co2historicaldata_2016.txt" \
-"co2historicaldata_2017.txt | fix_co2_proj/global_co2historicaldata_2017.txt" \
-"co2historicaldata_2018.txt | fix_co2_proj/global_co2historicaldata_2018.txt" \
-"co2historicaldata_2019.txt | fix_co2_proj/global_co2historicaldata_2019.txt" \
-"co2historicaldata_2020.txt | fix_co2_proj/global_co2historicaldata_2020.txt" \
-"co2historicaldata_2021.txt | fix_co2_proj/global_co2historicaldata_2021.txt" \
-"co2historicaldata_glob.txt | global_co2historicaldata_glob.txt" \
-"co2monthlycyc.txt          | co2monthlycyc.txt" \
-"global_h2oprdlos.f77       | global_h2o_pltc.f77" \
-"global_albedo4.1x1.grb     | global_albedo4.1x1.grb" \
-"global_zorclim.1x1.grb     | global_zorclim.1x1.grb" \
-"global_tg3clim.2.6x1.5.grb | global_tg3clim.2.6x1.5.grb" \
-"sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt" \
-"solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt" \
-"global_o3prdlos.f77        | " \
-)
-#
-
-
-
-
+   This array specifies the mapping to use between the symlinks that need to be created in each cycle directory (these are the "files" that FV3 looks for) and their targets in the ``FIXam`` directory. The first column of the array specifies the symlink to be created, and the second column specifies its target file in ``FIXam`` (where columns are delineated by the pipe symbol "|").
 
 
 Workflow Task Parameters
@@ -678,15 +551,26 @@ Task names:
 
 Number of nodes:
 
-| ``NODES_MAKE_GRID``: (Default: "1")
-| ``NODES_MAKE_OROG``: (Default: "1")
-| ``NODES_MAKE_SFC_CLIMO``: (Default: "2")
-| ``NODES_GET_EXTRN_ICS``: (Default: "1")
-| ``NODES_GET_EXTRN_LBCS``: (Default: "1")
-| ``NODES_MAKE_ICS``: (Default: "4")
-| ``NODES_MAKE_LBCS``: (Default: "4")
-| ``NODES_RUN_FCST``: (Default: "")  # Calculated in the workflow generation scripts.
-| ``NODES_RUN_POST``: (Default: "2")
+| ``NNODES_MAKE_GRID``: (Default: "1")
+| ``NNODES_MAKE_OROG``: (Default: "1")
+| ``NNODES_MAKE_SFC_CLIMO``: (Default: "2")
+| ``NNODES_GET_EXTRN_ICS``: (Default: "1")
+| ``NNODES_GET_EXTRN_LBCS``: (Default: "1")
+| ``NNODES_MAKE_ICS``: (Default: "4")
+| ``NNODES_MAKE_LBCS``: (Default: "4")
+| ``NNODES_RUN_FCST``: (Default: "")  # Calculated in the workflow generation scripts.
+| ``NNODES_RUN_POST``: (Default: "2")
+| ``NNODES_GET_OBS_CCPA``: (Default: "1")
+| ``NNODES_GET_OBS_MRMS``: (Default: "1")
+| ``NNODES_GET_OBS_NDAS``: (Default: "1")
+| ``NNODES_VX_GRIDSTAT``: (Default: "1")
+| ``NNODES_VX_POINTSTAT``: (Default: "1")
+| ``NNODES_VX_ENSGRID``: (Default: "1")
+| ``NNODES_VX_ENSGRID_MEAN``: (Default: "1")
+| ``NNODES_VX_ENSGRID_PROB``: (Default: "1")
+| ``NNODES_VX_ENSPOINT``: (Default: "1")
+| ``NNODES_VX_ENSPOINT_MEAN``: (Default: "1")
+| ``NNODES_VX_ENSPOINT_PROB``: (Default: "1")
 
 Number of MPI processes per node:
 
@@ -697,32 +581,87 @@ Number of MPI processes per node:
 | ``PPN_GET_EXTRN_LBCS``: (Default: "1")
 | ``PPN_MAKE_ICS``: (Default: "12")
 | ``PPN_MAKE_LBCS``: (Default: "12")
-| ``PPN_RUN_FCST``: (Default: "24")  # Can be changed depending on the number of threads used.
+| ``PPN_RUN_FCST``: (Default: "")    # will be calculated from ``NCORES_PER_NODE`` and ``OMP_NUM_THREADS`` in ``setup.sh``
 | ``PPN_RUN_POST``: (Default: "24")
+| ``PPN_GET_OBS_CCPA``: (Default: "1")
+| ``PPN_GET_OBS_MRMS``: (Default: "1")
+| ``PPN_GET_OBS_NDAS``: (Default: "1")
+| ``PPN_VX_GRIDSTAT``: (Default: "1")
+| ``PPN_VX_POINTSTAT``: (Default: "1")
+| ``PPN_VX_ENSGRID``: (Default: "1")
+| ``PPN_VX_ENSGRID_MEAN``: (Default: "1")
+| ``PPN_VX_ENSGRID_PROB``: (Default: "1")
+| ``PPN_VX_ENSPOINT``: (Default: "1")
+| ``PPN_VX_ENSPOINT_MEAN``: (Default: "1")
+| ``PPN_VX_ENSPOINT_PROB``: (Default: "1")
+
 
 Wall times:
 
-| ``TIME_MAKE_GRID``: (Default: "00:20:00")
-| ``TIME_MAKE_OROG``: (Default: "00:20:00")
-| ``TIME_MAKE_SFC_CLIMO``: (Default: "00:20:00")
-| ``TIME_GET_EXTRN_ICS``: (Default: "00:45:00")
-| ``TIME_GET_EXTRN_LBCS``: (Default: "00:45:00")
-| ``TIME_MAKE_ICS``: (Default: "00:30:00")
-| ``TIME_MAKE_LBCS``: (Default: "00:30:00")
-| ``TIME_RUN_FCST``: (Default: "04:30:00")
-| ``TIME_RUN_POST``: (Default: "00:15:00")
+| ``WTIME_MAKE_GRID``: (Default: "00:20:00")
+| ``WTIME_MAKE_OROG``: (Default: "01:00:00")
+| ``WTIME_MAKE_SFC_CLIMO``: (Default: "00:20:00")
+| ``WTIME_GET_EXTRN_ICS``: (Default: "00:45:00")
+| ``WTIME_GET_EXTRN_LBCS``: (Default: "00:45:00")
+| ``WTIME_MAKE_ICS``: (Default: "00:30:00")
+| ``WTIME_MAKE_LBCS``: (Default: "00:30:00")
+| ``WTIME_RUN_FCST``: (Default: "04:30:00")
+| ``WTIME_RUN_POST``: (Default: "00:15:00")
+| ``WTIME_GET_OBS_CCPA``: (Default: "00:45:00")
+| ``WTIME_GET_OBS_MRMS``: (Default: "00:45:00")
+| ``WTIME_GET_OBS_NDAS``: (Default: "02:00:00")
+| ``WTIME_VX_GRIDSTAT``: (Default: "02:00:00")
+| ``WTIME_VX_POINTSTAT``: (Default: "01:00:00")
+| ``WTIME_VX_ENSGRID``: (Default: "01:00:00")
+| ``WTIME_VX_ENSGRID_MEAN``: (Default: "01:00:00")
+| ``WTIME_VX_ENSGRID_PROB``: (Default: "01:00:00")
+| ``WTIME_VX_ENSPOINT``: (Default: "01:00:00")
+| ``WTIME_VX_ENSPOINT_MEAN``: (Default: "01:00:00")
+| ``WTIME_VX_ENSPOINT_PROB``: (Default: "01:00:00")
 
 Maximum number of attempts.
 
-| ``MAXTRIES_MAKE_GRID``: (Default: "1")
-| ``MAXTRIES_MAKE_OROG``: (Default: "1")
-| ``MAXTRIES_MAKE_SFC_CLIMO``: (Default: "1")
+| ``MAXTRIES_MAKE_GRID``: (Default: "2")
+| ``MAXTRIES_MAKE_OROG``: (Default: "2")
+| ``MAXTRIES_MAKE_SFC_CLIMO``: (Default: "2")
 | ``MAXTRIES_GET_EXTRN_ICS``: (Default: "1")
 | ``MAXTRIES_GET_EXTRN_LBCS``: (Default: "1")
 | ``MAXTRIES_MAKE_ICS``: (Default: "1")
 | ``MAXTRIES_MAKE_LBCS``: (Default: "1")
 | ``MAXTRIES_RUN_FCST``: (Default: "1")
-| ``MAXTRIES_RUN_POST``: (Default: "1")
+| ``MAXTRIES_RUN_POST``: (Default: "2")
+| ``MAXTRIES_GET_OBS_CCPA``: (Default: "1")
+| ``MAXTRIES_GET_OBS_MRMS``: (Default: "1")
+| ``MAXTRIES_GET_OBS_NDAS``: (Default: "1")
+| ``MAXTRIES_VX_GRIDSTAT``: (Default: "1")
+| ``MAXTRIES_VX_GRIDSTAT_REFC``: (Default: "1")
+| ``MAXTRIES_VX_GRIDSTAT_RETOP``: (Default: "1")
+| ``MAXTRIES_VX_GRIDSTAT_03h``: (Default: "1")
+| ``MAXTRIES_VX_GRIDSTAT_06h``: (Default: "1")
+| ``MAXTRIES_VX_GRIDSTAT_24h``: (Default: "1")
+| ``MAXTRIES_VX_POINTSTAT``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_REFC``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_RETOP``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_03h``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_06h``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_24h``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_MEAN``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_PROB``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_MEAN_03h``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_PROB_03h``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_MEAN_06h``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_PROB_06h``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_MEAN_24h``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_PROB_24h``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_PROB_REFC``: (Default: "1")
+| ``MAXTRIES_VX_ENSGRID_PROB_RETOP``: (Default: "1")
+| ``MAXTRIES_VX_ENSPOINT``: (Default: "1")
+| ``MAXTRIES_VX_ENSPOINT_MEAN``: (Default: "1")
+| ``MAXTRIES_VX_ENSPOINT_PROB``: (Default: "1")
+
+..
+   COMMENT: GSP Start here!
 
 Customized Post Configuration Parameters
 ========================================
