@@ -136,48 +136,90 @@ Computational Forecast Parameters
 
    #. If the experiment is using a predefined grid and the user sets the parameter in the user-specified experiment configuration file (``EXPT_CONFIG_FN``), that value will be used in the forecast(s). Otherwise, the default value of the parameter for that predefined grid will be used.
 
-   #. If the experiment is not using a predefined grid (i.e. it is using a custom grid whose parameters are specified in the experiment configuration file), then the user must specify a value for the parameter in that configuration file. Otherwise, the parameter will remain set to a null string, and the experiment generation will fail, because the generation scripts check to ensure that all the parameters defined in this section are set to non-empty strings before creating the experiment directory.
-
-
-
-# Here, we set these parameters to null strings.  This is so that, for 
-# any one of these parameters:
-#
-# 1) If the experiment is using a predefined grid, then if the user 
-#    sets the parameter in the user-specified experiment configuration 
-#    file (EXPT_CONFIG_FN), that value will be used in the forecast(s).
-#    Otherwise, the default value of the parameter for that predefined 
-#    grid will be used.
-#
-# 2) If the experiment is not using a predefined grid (i.e. it is using
-#    a custom grid whose parameters are specified in the experiment 
-#    configuration file), then the user must specify a value for the 
-#    parameter in that configuration file.  Otherwise, the parameter 
-#    will remain set to a null string, and the experiment generation 
-#    will fail because the generation scripts check to ensure that all 
-#    the parameters defined in this section are set to non-empty strings
-#    before creating the experiment directory.
-
+   #. If the experiment is not using a predefined grid (i.e., it is using a custom grid whose parameters are specified in the experiment configuration file), then the user must specify a value for the parameter in that configuration file. Otherwise, the parameter will remain set to a null string, and the experiment generation will fail, because the generation scripts check to ensure that all the parameters defined in this section are set to non-empty strings before creating the experiment directory.
 
 
 Write-Component (Quilting) Parameters
-=====================================
+======================================
+
+.. note::
+   The :term:`UPP` (called by the ``run_post`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a write-component grid before writing them to an output file. The output history files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the write component. This model component is configured with settings in the model_configure file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html?highlight=write-component#model-configurefile>`__ of the UFS Weather Model documentation.  
+
 ``QUILTING``: (Default: "TRUE")
-   Flag that determines whether or not to use the write-component for writing forecast output files to disk.  If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-hour output forecast hour) containing dynamics and physics fields, respectively, on the write-component grid (the regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model).  If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc`` and contain fields on the native grid.  Note that if ``QUILTING`` is set to "FALSE", then the ``RUN_POST_TN`` (meta)task cannot be run because the Unified Post Processor (UPP) code that this task calls cannot process fields on the native grid.  In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML.
+   Flag that determines whether or not to use the write-component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-hour output forecast hour) containing dynamics and physics fields, respectively, on the write-component grid (the regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model). If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc`` and contain fields on the native grid. Note that if ``QUILTING`` is set to "FALSE", then the ``RUN_POST_TN`` (meta)task cannot be run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. 
+
+..
+   COMMENT: Still don't undertand what HHH refers to... can we give an example?
 
 ``PRINT_ESMF``: (Default: "FALSE")
-   Flag for whether or not to output extra (debugging) information from ESMF routines.  Must be "TRUE" or "FALSE".  Note that the write-component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file (model_configure) in the forecast run directory).
+   Flag for whether or not to output extra (debugging) information from ESMF routines. Must be "TRUE" or "FALSE". Note that the write-component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory).
 
 ``WRTCMP_write_groups``: (Default: "1")
-   The number of write groups (i.e. groups of MPI tasks) to use in the write-component.
+   The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write-component.
 
 ``WRTCMP_write_tasks_per_group``: (Default: "20")
    The number of MPI tasks to allocate for each write group.
 
+``WRTCMP_output_grid``: (Default: "''")
+   Sets the type (coordinate system) of the write-component grid. The default empty string forces the user to set a valid valid ``WRTCMP_output_grid`` in ``config.sh`` if specifying a custom grid. Otherwise, the ordinary "regional_latlon" grid will be used. Valid values: "rotated_latlon" "lambert_conformal" "regional_latlon" 
+
+..
+   COMMENT: If no value is specified in config.sh, would setup.sh (or some other script?) use the ordinary "regional_latlon"? Or would the experiment just fail?
+
+``WRTCMP_cen_lon``: (Default: "")
+   Longitude (in degrees) of the center of the write-component grid. Can usually set to corresponding value from the native grid.
+
+``WRTCMP_cen_lat``: (Default: "")
+   Latitude (in degrees) of the center of the write-component grid. Can usually set to corresponding value from the native grid.
+
+``WRTCMP_lon_lwr_left``: (Default: "")
+   Longitude (in degrees) of the center of the lower-left (southwest) cell on the write-component grid. If using "rotated_latlon" coordinate system, this is expressed in terms of the rotated longitude. Must be set manually.
+   
+..
+   COMMENT: Has this changed? Or still manual?
+
+``WRTCMP_lat_lwr_left``: (Default: "")
+   Latitude (in degrees) of the center of the lower-left (southwest) cell on the write-component grid. If using "rotated_latlon" coordinate system, this is expressed in terms of the rotated latitude. Must be set manually.
+
+The following parameters must be set when ``WRTCMP_output_grid`` is set to "rotated_latlon":
+
+``WRTCMP_lon_upr_rght``: (Default: "")
+   Longitude (in degrees) of the center of the upper-left (northeast) cell on the write-component grid (expressed in terms of the rotated longitude).
+
+``WRTCMP_lat_upr_rght``: (Default: "")
+   Latitude (in degrees) of the center of the upper-left (northeast) cell on the write-component grid (expressed in terms of the rotated latitude).
+
+``WRTCMP_dlon``: (Default: "")
+   Size of grid cell (in degrees) of a grid cell on the write-component grid (expressed in terms of the rotated longitude).
+
+``WRTCMP_dlat``: (Default: "")
+   Size of grid cell (in degrees) of a grid cell on the write-component grid (expressed in terms of the rotated latitude).
+
+The following parameters must be set when ``WRTCMP_output_grid`` is set to "lambert_conformal":
+
+``WRTCMP_stdlat1``: (Default: "")
+   First standard latitude (in degrees) in definition of Lambert conformal projection.
+
+``WRTCMP_stdlat2``: (Default: "")
+   Second standard latitude (in degrees) in definition of Lambert conformal projection.
+
+``WRTCMP_nx``: (Default: "")
+   Number of grid points in the x coordinate of the Lambert conformal projection.
+
+``WRTCMP_ny``: (Default: "")
+   Number of grid points in the y coordinate of the Lambert conformal projection.
+
+``WRTCMP_dx``: (Default: "")
+   Grid cell size (in meters) along the x axis of the Lambert conformal projection.
+
+``WRTCMP_dy``: (Default: "")
+   Grid cell size (in meters) along the y axis of the Lambert conformal projection. 
+
+
 Predefined Grid Parameters
 ==========================
 ``PREDEF_GRID_NAME``: (Default: "")
-   This parameter specifies the name of a predefined regional grid. Three predefined grids are currently supported: "RRFS_CONUS_25km" "RRFS_CONUS_13km" "RRFS_CONUS_3km" 
+   This parameter specifies the name of a predefined regional grid. Setting PREDEF_GRID_NAME provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid parameters are specified in the script ``ush/set_predef_grid_params.sh``. Currently supported ``PREDEF_GRID_NAME`` options are "RRFS_CONUS_25km," "RRFS_CONUS_13km," and "RRFS_CONUS_3km." 
    Other valid values include: 
    "RRFS_SUBCONUS_3km" 
    "RRFS_AK_13km" 
@@ -202,26 +244,20 @@ Predefined Grid Parameters
 
    * If ``PREDEF_GRID_NAME`` is set to a valid predefined grid name, the grid generation method ``GRID_GEN_METHOD``, the (native) grid parameters, and the write-component grid parameters are set to predefined values for the specified grid, overwriting any settings of these parameters in the user-specified experiment configuration file (``config.sh``).  In addition, if the time step ``DT_ATMOS`` and the computational parameters ``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE`` are not specified in that configuration file, they are also set to predefined values for the specified grid.
 
-   * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies the user is providing the native grid parameters in the user-specified experiment configuration file (``EXPT_CONFIG_FN``).  In this case, the grid generation method ``GRID_GEN_METHOD``, the native grid parameters, and the write-component grid parameters as well as the main time step (``DT_ATMOS``) and the computational parameters ``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE`` must be set in that configuration file.
+   * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies the user is providing the native grid parameters in the user-specified experiment configuration file (``EXPT_CONFIG_FN``).  In this case, the grid generation method ``GRID_GEN_METHOD``, the native grid parameters, and the write-component grid parameters as well as the main time step (``DT_ATMOS``) and the computational parameters ``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE`` must be set in that configuration file. Otherwise, the values of all of these parameters in this default experiment configuration file will be used.
 
-Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters.  The predefined grid parameters are specified in the script
-
-.. code-block:: console
-
-  ush/set_predef_grid_params.sh
-
-Currently supported ``PREDEF_GRID_NAME`` options are "RRFS_CONUS_25km," "RRFS_CONUS_13km," and "RRFS_CONUS_3km."
 
 Pre-existing Directory Parameter
 ================================
 ``PREEXISTING_DIR_METHOD``: (Default: "delete")
-   This variable determines the method to deal with pre-existing directories [e.g ones generated by previous calls to the experiment generation script using the same experiment name (``EXPT_SUBDIR``) as the current experiment].  This variable must be set to one of "delete", "rename", and "quit".  The resulting behavior for each of these values is as follows:
+   This variable determines the method to use to deal with pre-existing directories (generated by previous calls to the experiment generation script using the same experiment name (``EXPT_SUBDIR``) as the current experiment). This variable must be set to one of three valid values: "delete", "rename", and "quit".  The resulting behavior for each of these values is as follows:
 
    * "delete": The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
 
-   * "rename": The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created.  The new name of the preexisting directory consists of its original name and the suffix "_oldNNN", where NNN is a 3-digit integer chosen to make the new name unique.
+   * "rename": The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created. The new name of the preexisting directory consists of its original name and the suffix "_oldNNN", where NNN is a 3-digit integer chosen to make the new name unique.
 
-   * "quit": The preexisting directory is left unchanged, but execution of the currently running script is terminated.  In this case, the preexisting directory must be dealt with manually before rerunning the script.
+   * "quit": The preexisting directory is left unchanged, but execution of the currently running script is terminated. In this case, the preexisting directory must be dealt with manually before rerunning the script.
+
 
 Verbose Parameter
 =================
@@ -231,29 +267,132 @@ Verbose Parameter
 Debug Parameter
 =================
 ``DEBUG``: (Default: "FALSE")
-   This is a flag that determines whether or not very detailed debugging messages are printed to out.  Note that if DEBUG is set to TRUE, then VERBOSE will also get reset to TRUE if it isn't already. Valid values: "TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no"
+   This is a flag that determines whether or not very detailed debugging messages are printed out.  Note that if DEBUG is set to TRUE, then VERBOSE will also get reset to TRUE if it isn't already. Valid values: "TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no"
+
+Rocoto Workflow Tasks
+========================
+
+Set the names of the various Rocoto workflow tasks. The baseline tasks are:
+
+``MAKE_GRID_TN``: (Default: "make_grid")
+``MAKE_OROG_TN``: (Default: make_orog")
+``MAKE_SFC_CLIMO_TN``: (Default: "make_sfc_climo")
+``GET_EXTRN_ICS_TN``: (Default: "get_extrn_ics")
+``GET_EXTRN_LBCS_TN``: (Default: "get_extrn_lbcs")
+``MAKE_ICS_TN``: (Default: "make_ics")
+``MAKE_LBCS_TN``: (Default: "make_lbcs")
+``RUN_FCST_TN``: (Default: "run_fcst")
+``RUN_POST_TN``: (Default: "run_post")
+
+When running METplus verification tasks, the following task names are also added to the Rocoto workflow:
+
+``GET_OBS``: (Default: "get_obs")
+``GET_OBS_CCPA_TN``: (Default: "get_obs_ccpa")
+``GET_OBS_MRMS_TN``: (Default: "get_obs_mrms")
+``GET_OBS_NDAS_TN``: (Default: "get_obs_ndas")
+``VX_TN``: (Default: "run_vx")
+``VX_GRIDSTAT_TN``: (Default: "run_gridstatvx")
+``VX_GRIDSTAT_REFC_TN``: (Default: "run_gridstatvx_refc")
+``VX_GRIDSTAT_RETOP_TN``: (Default: "run_gridstatvx_retop")
+``VX_GRIDSTAT_03h_TN``: (Default: "run_gridstatvx_03h")
+``VX_GRIDSTAT_06h_TN``: (Default: "run_gridstatvx_06h")
+``VX_GRIDSTAT_24h_TN``: (Default: "run_gridstatvx_24h")
+``VX_POINTSTAT_TN``: (Default: "run_pointstatvx")
+``VX_ENSGRID_TN``: (Default: "run_ensgridvx")
+``VX_ENSGRID_03h_TN``: (Default: "run_ensgridvx_03h")
+``VX_ENSGRID_06h_TN``: (Default: "run_ensgridvx_06h")
+``VX_ENSGRID_24h_TN``: (Default: "run_ensgridvx_24h")
+``VX_ENSGRID_REFC_TN``: (Default: "run_ensgridvx_refc")
+``VX_ENSGRID_RETOP_TN``: (Default: "run_ensgridvx_retop")
+``VX_ENSGRID_MEAN_TN``: (Default: "run_ensgridvx_mean")
+``VX_ENSGRID_PROB_TN``: (Default: "run_ensgridvx_prob")
+``VX_ENSGRID_MEAN_03h_TN``: (Default: "run_ensgridvx_mean_03h")
+``VX_ENSGRID_PROB_03h_TN``: (Default: "run_ensgridvx_prob_03h")
+``VX_ENSGRID_MEAN_06h_TN``: (Default: "run_ensgridvx_mean_06h")
+``VX_ENSGRID_PROB_06h_TN``: (Default: "run_ensgridvx_prob_06h")
+``VX_ENSGRID_MEAN_24h_TN``: (Default: "run_ensgridvx_mean_24h")
+``VX_ENSGRID_PROB_24h_TN``: (Default: "run_ensgridvx_prob_24h")
+``VX_ENSGRID_PROB_REFC_TN``: (Default: "run_ensgridvx_prob_refc")
+``VX_ENSGRID_PROB_RETOP_TN``: (Default: "run_ensgridvx_prob_retop")
+``VX_ENSPOINT_TN``: (Default: "run_enspointvx")
+``VX_ENSPOINT_MEAN_TN``: (Default: "run_enspointvx_mean")
+``VX_ENSPOINT_PROB_TN``: (Default: "run_enspointvx_prob")
+
 
 Pre-Processing Parameters
 =========================
-These parameters set flags (and related directories) that determine whether the grid, orography, and/or surface climatology file generation tasks should be run.  Note that these are all cycle-independent tasks, i.e. if they are to be run, they do so only once at the beginning of the workflow before any cycles are run.
+These parameters set flags (and related directories) that determine whether various workflow tasks should be run. Note that the ``MAKE_GRID_TN``, ``MAKE_OROG_TN``, and ``MAKE_SFC_CLIMO_TN`` are all :term:`cycle-independent` tasks, i.e., if they are to be run, they do so only once at the beginning of the workflow before any cycles are run. Definitions:
 
 ``RUN_TASK_MAKE_GRID``: (Default: "TRUE")
-   Flag that determines whether the grid file generation task (``MAKE_GRID_TN``) is to be run. If this is set to "TRUE", the grid generation task is run and new grid  files are generated.  If it is set to "FALSE", then the scripts look for pre-generated grid files in the directory specified by ``GRID_DIR`` (see below).
+   Flag that determines whether the grid file generation task (``MAKE_GRID_TN``) is to be run. If this is set to "TRUE", the grid generation task is run and new grid files are generated. If it is set to "FALSE", then the scripts look for pre-generated grid files in the directory specified by ``GRID_DIR`` (see below).
 
 ``GRID_DIR``: (Default: "/path/to/pregenerated/grid/files")
    The directory in which to look for pre-generated grid files if ``RUN_TASK_MAKE_GRID`` is set to "FALSE".
- 
+
 ``RUN_TASK_MAKE_OROG``: (Default: "TRUE")
    Same as ``RUN_TASK_MAKE_GRID`` but for the orography generation task (``MAKE_OROG_TN``).
 
 ``OROG_DIR``: (Default: "/path/to/pregenerated/orog/files")
-   Same as ``GRID_DIR`` but for the orography generation task.
+   Same as ``GRID_DIR`` but for the orography generation task (``MAKE_OROG_TN``).
 
 ``RUN_TASK_MAKE_SFC_CLIMO``: (Default: "TRUE")
    Same as ``RUN_TASK_MAKE_GRID`` but for the surface climatology generation task (``MAKE_SFC_CLIMO_TN``).
 
 ``SFC_CLIMO_DIR``: (Default: "/path/to/pregenerated/surface/climo/files")
    Same as ``GRID_DIR`` but for the surface climatology generation task.
+
+``RUN_TASK_GET_EXTRN_ICS``: (Default: "TRUE")
+   Flag that determines whether the GET_EXTRN_ICS_TN task is to be run.
+
+``RUN_TASK_GET_EXTRN_LBCS``: (Default: "TRUE")
+   Flag that determines whether the GET_EXTRN_LBCS_TN task is to be run.
+
+``RUN_TASK_MAKE_ICS``: (Default: "TRUE")
+   Flag that determines whether the MAKE_ICS_TN task is to be run.
+
+``RUN_TASK_MAKE_LBCS``: (Default: "TRUE")
+   Flag that determines whether the MAKE_LBCS_TN task is to be run.
+
+``RUN_TASK_RUN_FCST``: (Default: "TRUE")
+   Flag that determines whether the RUN_FCST_TN task is to be run.
+
+``RUN_TASK_RUN_POST``: (Default: "TRUE")
+   Flag that determines whether the RUN_POST_TN task is to be run.
+
+Verification Tasks
+--------------------
+
+``RUN_TASK_GET_OBS_CCPA``: (Default: "FALSE")
+   Flag that determines whether to run the ``GET_OBS_CCPA`` task, which retrieves the CCPA hourly precipitation files used by METplus. 
+
+``RUN_TASK_GET_OBS_MRMS``: (Default: "FALSE")
+   Flag that determines whether to run the ``GET_OBS_MRMS`` task, which retrieves the MRMS composite reflectivity files used by METplus. 
+
+``RUN_TASK_GET_OBS_NDAS``: (Default: "FALSE")
+   Flag that determines whether to run the ``GET_OBS_NDAS`` task, which retrieves the NDAS PREPBUFR files used by METplus are located. 
+
+..
+   COMMENT: Need confirmation that the above 3 task explanations are correct. 
+
+
+``RUN_TASK_VX_GRIDSTAT``: (Default: "FALSE")
+   Flag that determines whether the grid-stat verification task is to be run.
+
+``RUN_TASK_VX_POINTSTAT``: (Default: "FALSE")
+   Flag that determines whether the point-stat verification task is to be run.
+
+``RUN_TASK_VX_ENSGRID``: (Default: "FALSE")
+   Flag that determines whether the ensemble-stat verification for gridded data task is to be run. 
+
+``RUN_TASK_VX_ENSPOINT``: (Default: "FALSE")
+   Flag that determines whether the ensemble point verification task is to be run. If this flag is set, both ensemble-stat point verification and point verification of ensemble-stat output is computed.
+
+Aerosol Climatology Parameter
+================================
+
+``USE_MERRA_CLIMO``: (Default: "FALSE")
+   Flag that determines whether MERRA2 aerosol climatology data and lookup tables for optics properties are obtained. 
+
 
 Surface Climatology Parameter
 =============================
@@ -262,10 +401,16 @@ Surface Climatology Parameter
 
 Fixed File Parameters
 =====================
-Set parameters associated with the fixed (i.e. static) files.  For the main NOAA HPC platforms, as well as Cheyenne, Odin, and Stampede, fixed files are prestaged with paths defined in the ``setup.sh`` script.
+Set parameters associated with the fixed (i.e., static) files. On the main `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, fixed files are prestaged with paths defined in the ``setup.sh`` script.
 
 ``FIXgsm``: (Default: "")
    System directory in which the majority of fixed (i.e. time-independent) files that are needed to run the FV3-LAM model are located.
+
+``FIXaer``: ______________________
+   System directory where MERRA2 aerosol climatology files are located
+
+``FIXlut``: ______________________
+   System directory where the lookup tables for optics properties are located
 
 ``TOPO_DIR``: (Default: "")
    The location on disk of the static input files used by the ``make_orog task`` (``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
@@ -285,7 +430,7 @@ Set parameters associated with the fixed (i.e. static) files.  For the main NOAA
       FNSMCC="global_soilmgldas.t126.384.190.grb"
       FNMSKH="seaice_newland.grb")
 
-   Names of (some of the) global data files that are assumed to exist in a system directory specified (this directory is machine-dependent; the experiment generation scripts will set it and store it in the variable ``FIXgsm``).  These file names also appear directly in the forecast model's input namelist file.
+   Names of (some of the) global data files that are assumed to exist in a system directory specified (this directory is machine-dependent; the experiment generation scripts will set it and store it in the variable ``FIXgsm``). These file names also appear directly in the forecast model's input namelist file.
 
 ``FIXgsm_FILES_TO_COPY_TO_FIXam``: (Default: see below)
    .. code-block:: console
@@ -316,7 +461,7 @@ Set parameters associated with the fixed (i.e. static) files.  For the main NOAA
       "global_solarconstant_noaa_an.txt" \
       "replace_with_FIXgsm_ozone_prodloss_filename")
 
-   If not running in NCO mode, this array contains the names of the files to copy from the ``FIXgsm`` system directory to the ``FIXam`` directory under the experiment directory.  Note that the last element has a dummy value. This last element will get reset by the workflow generation scripts to the name of the ozone production/loss file to copy from ``FIXgsm``.  The name of this file depends on the ozone parameterization being used, and that in turn depends on the CCPP physics suite specified for the experiment.  Thus, the CCPP physics suite XML must first be read in to determine the ozone parameterization and then the name of the ozone production/loss file.  These steps are carried out elsewhere (in one of the workflow generation scripts/functions).
+   If not running in NCO mode, this array contains the names of the files to copy from the ``FIXgsm`` system directory to the ``FIXam`` directory under the experiment directory. Note that the last element has a dummy value. This last element will get reset by the workflow generation scripts to the name of the ozone production/loss file to copy from ``FIXgsm``. The name of this file depends on the ozone parameterization being used, and that in turn depends on the CCPP physics suite specified for the experiment. Thus, the CCPP physics suite XML must first be read in to determine the ozone parameterization and then the name of the ozone production/loss file. These steps are carried out elsewhere (in one of the workflow generation scripts/functions).
 
 ``FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING``: (Default: see below)
    .. code-block:: console
@@ -369,6 +514,151 @@ Set parameters associated with the fixed (i.e. static) files.  For the main NOAA
        "global_o3prdlos.f77    	   | " )
 
    This array specifies the mapping to use between the symlinks that need to be created in each cycle directory (these are the "files" that FV3 looks for) and their targets in the ``FIXam`` directory.  The first column of the array specifies the symlink to be created, and the second column specifies its target file in ``FIXam`` (where columns are delineated by the pipe symbol "|").
+
+
+
+
+
+
+
+# FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING:
+# This array is used to set some of the namelist variables in the forecast 
+# model's namelist file that represent the relative or absolute paths of 
+# various fixed files (the first column of the array, where columns are 
+# delineated by the pipe symbol "|") to the full paths to these files in 
+# the FIXam directory derived from the corresponding workflow variables 
+# containing file names (the second column of the array).
+#
+# FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:
+# This array is used to set some of the namelist variables in the forecast 
+# model's namelist file that represent the relative or absolute paths of 
+# various fixed files (the first column of the array, where columns are 
+# delineated by the pipe symbol "|") to the full paths to surface climatology 
+# files (on the native FV3-LAM grid) in the FIXLAM directory derived from 
+# the corresponding surface climatology fields (the second column of the 
+# array).
+#
+# CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING:
+# This array specifies the mapping to use between the symlinks that need
+# to be created in each cycle directory (these are the "files" that FV3
+# looks for) and their targets in the FIXam directory.  The first column
+# of the array specifies the symlink to be created, and the second column
+# specifies its target file in FIXam (where columns are delineated by the
+# pipe symbol "|").
+#
+#-----------------------------------------------------------------------
+#
+# Because the default values are dependent on the platform, we set these
+# to a null string which will then be overwritten in setup.sh unless the
+# user has specified a different value in config.sh
+FIXgsm=""
+FIXaer=""
+FIXlut=""
+TOPO_DIR=""
+SFC_CLIMO_INPUT_DIR=""
+
+FNGLAC="global_glacier.2x2.grb"
+FNMXIC="global_maxice.2x2.grb"
+FNTSFC="RTGSST.1982.2012.monthly.clim.grb"
+FNSNOC="global_snoclim.1.875.grb"
+FNZORC="igbp"
+FNAISC="CFSR.SEAICE.1982.2012.monthly.clim.grb"
+FNSMCC="global_soilmgldas.t126.384.190.grb"
+FNMSKH="seaice_newland.grb"
+
+FIXgsm_FILES_TO_COPY_TO_FIXam=( \
+"$FNGLAC" \
+"$FNMXIC" \
+"$FNTSFC" \
+"$FNSNOC" \
+"$FNAISC" \
+"$FNSMCC" \
+"$FNMSKH" \
+"global_climaeropac_global.txt" \
+"fix_co2_proj/global_co2historicaldata_2010.txt" \
+"fix_co2_proj/global_co2historicaldata_2011.txt" \
+"fix_co2_proj/global_co2historicaldata_2012.txt" \
+"fix_co2_proj/global_co2historicaldata_2013.txt" \
+"fix_co2_proj/global_co2historicaldata_2014.txt" \
+"fix_co2_proj/global_co2historicaldata_2015.txt" \
+"fix_co2_proj/global_co2historicaldata_2016.txt" \
+"fix_co2_proj/global_co2historicaldata_2017.txt" \
+"fix_co2_proj/global_co2historicaldata_2018.txt" \
+"fix_co2_proj/global_co2historicaldata_2019.txt" \
+"fix_co2_proj/global_co2historicaldata_2020.txt" \
+"fix_co2_proj/global_co2historicaldata_2021.txt" \
+"global_co2historicaldata_glob.txt" \
+"co2monthlycyc.txt" \
+"global_h2o_pltc.f77" \
+"global_hyblev.l65.txt" \
+"global_zorclim.1x1.grb" \
+"global_sfc_emissivity_idx.txt" \
+"global_tg3clim.2.6x1.5.grb" \
+"global_solarconstant_noaa_an.txt" \
+"global_albedo4.1x1.grb" \
+"geo_em.d01.lat-lon.2.5m.HGT_M.nc" \
+"HGT.Beljaars_filtered.lat-lon.30s_res.nc" \
+"replace_with_FIXgsm_ozone_prodloss_filename" \
+)
+
+#
+# It is possible to remove this as a workflow variable and make it only
+# a local one since it is used in only one script.
+#
+FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING=( \
+"FNGLAC | $FNGLAC" \
+"FNMXIC | $FNMXIC" \
+"FNTSFC | $FNTSFC" \
+"FNSNOC | $FNSNOC" \
+"FNAISC | $FNAISC" \
+"FNSMCC | $FNSMCC" \
+"FNMSKH | $FNMSKH" \
+)
+#"FNZORC | $FNZORC" \
+
+FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING=( \
+"FNALBC  | snowfree_albedo" \
+"FNALBC2 | facsf" \
+"FNTG3C  | substrate_temperature" \
+"FNVEGC  | vegetation_greenness" \
+"FNVETC  | vegetation_type" \
+"FNSOTC  | soil_type" \
+"FNVMNC  | vegetation_greenness" \
+"FNVMXC  | vegetation_greenness" \
+"FNSLPC  | slope_type" \
+"FNABSC  | maximum_snow_albedo" \
+)
+
+CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING=( \
+"aerosol.dat                | global_climaeropac_global.txt" \
+"co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt" \
+"co2historicaldata_2011.txt | fix_co2_proj/global_co2historicaldata_2011.txt" \
+"co2historicaldata_2012.txt | fix_co2_proj/global_co2historicaldata_2012.txt" \
+"co2historicaldata_2013.txt | fix_co2_proj/global_co2historicaldata_2013.txt" \
+"co2historicaldata_2014.txt | fix_co2_proj/global_co2historicaldata_2014.txt" \
+"co2historicaldata_2015.txt | fix_co2_proj/global_co2historicaldata_2015.txt" \
+"co2historicaldata_2016.txt | fix_co2_proj/global_co2historicaldata_2016.txt" \
+"co2historicaldata_2017.txt | fix_co2_proj/global_co2historicaldata_2017.txt" \
+"co2historicaldata_2018.txt | fix_co2_proj/global_co2historicaldata_2018.txt" \
+"co2historicaldata_2019.txt | fix_co2_proj/global_co2historicaldata_2019.txt" \
+"co2historicaldata_2020.txt | fix_co2_proj/global_co2historicaldata_2020.txt" \
+"co2historicaldata_2021.txt | fix_co2_proj/global_co2historicaldata_2021.txt" \
+"co2historicaldata_glob.txt | global_co2historicaldata_glob.txt" \
+"co2monthlycyc.txt          | co2monthlycyc.txt" \
+"global_h2oprdlos.f77       | global_h2o_pltc.f77" \
+"global_albedo4.1x1.grb     | global_albedo4.1x1.grb" \
+"global_zorclim.1x1.grb     | global_zorclim.1x1.grb" \
+"global_tg3clim.2.6x1.5.grb | global_tg3clim.2.6x1.5.grb" \
+"sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt" \
+"solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt" \
+"global_o3prdlos.f77        | " \
+)
+#
+
+
+
+
+
 
 Workflow Task Parameters
 ========================
