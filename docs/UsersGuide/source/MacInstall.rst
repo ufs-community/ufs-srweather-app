@@ -98,10 +98,10 @@ For Option 1, set the variable ``ENABLE_QUAD_PRECISION`` to ``OFF`` in line 35 o
 This change is optional if using Option 2 to build the SRW App. 
 
 
-Build the SRW
-=================
+Build the SRW App
+===================
 
-Create a directory to hold the build’s executables:
+Create a directory to hold the build's executables:
 
 .. code-block:: console
 
