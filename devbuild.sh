@@ -3,7 +3,7 @@
 # usage instructions
 usage () {
 cat << EOF_USAGE
-Usage: $0 [OPTIONS]...
+Usage: $0 --platform=PLATFORM [OPTIONS]...
 
 OPTIONS
   -h, --help
@@ -93,8 +93,6 @@ BUILD_JOBS=4
 CLEAN=false
 CONTINUE=false
 VERBOSE=false
-# detect PLATFORM (MACHINE)
-source ${SRC_DIR}/env/detect_machine.sh
 
 # process required arguments
 if [[ ("$1" == "--help") || ("$1" == "-h") ]]; then
@@ -137,6 +135,16 @@ while :; do
   esac
   shift
 done
+
+# check if PLATFORM is set
+if [ -z $PLATFORM ] ; then
+  printf "\nERROR: Please set PLATFORM.\n\n"
+  usage
+  exit 0
+fi
+
+# set PLATFORM (MACHINE)
+source ${SRC_DIR}/env/set_machine.sh $PLATFORM
 
 set -eu
 
