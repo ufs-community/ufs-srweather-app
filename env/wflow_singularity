@@ -1,0 +1,16 @@
+#%Module
+
+proc ModulesHelp { } {
+   put stderr "This module loads python environement for running SRW in"
+   put stderr "a singularity container"
+}
+
+module-whatis "Loads libraries needed for running SRW in a singularity container"
+
+if { [module-info mode load] } {
+  puts "conda activate regional_workflow;"
+}
+
+if {[module-info mode remove]} {
+  puts "conda deactivate;"
+}

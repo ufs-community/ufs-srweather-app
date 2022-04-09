@@ -168,7 +168,7 @@ if [ "${VERBOSE}" = true ] ; then
 fi
 
 # set ENV_FILE for this platform/compiler combination
-ENV_FILE="${SRC_DIR}/env/build_${PLATFORM}_${COMPILER}.env"
+ENV_FILE="${SRC_DIR}/env/build_${PLATFORM}_${COMPILER}"
 if [ ! -f "${ENV_FILE}" ]; then
   printf "ERROR: environment file does not exist for platform/compiler\n" >&2
   printf "  ENV_FILE=${ENV_FILE}\n" >&2
@@ -239,7 +239,7 @@ fi
 # source the environment file for this platform/compiler combination, then build the code
 printf "... Source ENV_FILE and create BUILD directory ...\n"
 module use ${SRC_DIR}/env
-. ${ENV_FILE}
+module load ${ENV_FILE}
 module list
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}

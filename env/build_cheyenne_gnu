@@ -1,4 +1,11 @@
-#Setup instructions for CISL Cheyenne using GNU-10.1.0 (bash shell)
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module loads libraries for building SRW on"
+   puts stderr "the CISL Cheyenne machine using GNU"
+}
+
+module-whatis "Loads libraries needed for building SRW on Cheyenne"
 
 module purge
 
@@ -18,8 +25,8 @@ module load hpc-mpt/2.22
 module load srw_common
 module load g2/3.4.3
 
-export CMAKE_C_COMPILER=mpicc
-export CMAKE_CXX_COMPILER=mpicxx
-export CMAKE_Fortran_COMPILER=mpif90
-export CMAKE_Platform=cheyenne.gnu
+setenv CMAKE_C_COMPILER mpicc
+setenv CMAKE_CXX_COMPILER mpicxx
+setenv CMAKE_Fortran_COMPILER mpif90
+setenv CMAKE_Platform cheyenne.gnu
 
