@@ -2,7 +2,7 @@
 # TEST PURPOSE/DESCRIPTION:
 # ------------------------
 #
-# This test checks the capability of the workflow to have the user 
+# This test checks the capability of the workflow to have the user
 # specify a new grid (as opposed to one of the predefined ones in the
 # workflow) of ESGgrid type.
 
@@ -47,7 +47,7 @@ BLOCKSIZE="13"
 QUILTING="TRUE"
 if [ "$QUILTING" = "TRUE" ]; then
   WRTCMP_write_groups="1"
-  WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))                     
+  WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))
   WRTCMP_output_grid="lambert_conformal"
   WRTCMP_cen_lon="${ESGgrid_LON_CTR}"
   WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"

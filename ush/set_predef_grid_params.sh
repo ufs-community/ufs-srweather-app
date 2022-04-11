@@ -279,6 +279,54 @@ case ${PREDEF_GRID_NAME} in
 #
 #-----------------------------------------------------------------------
 #
+# A subconus domain over Indianapolis, Indiana with ~3km cells.  This is
+# mostly for testing on a 3km grid with a much small number of cells than
+# on the full CONUS.
+#
+#-----------------------------------------------------------------------
+#
+"SUBCONUS_Ind_3km")
+
+  GRID_GEN_METHOD="ESGgrid"
+
+  ESGgrid_LON_CTR="-86.16"
+  ESGgrid_LAT_CTR="39.77"
+
+  ESGgrid_DELX="3000.0"
+  ESGgrid_DELY="3000.0"
+
+  ESGgrid_NX="200"
+  ESGgrid_NY="200"
+
+  ESGgrid_PAZI="0.0"
+  
+  ESGgrid_WIDE_HALO_WIDTH="6"
+
+  DT_ATMOS="${DT_ATMOS:-40}"
+
+  LAYOUT_X="${LAYOUT_X:-5}"
+  LAYOUT_Y="${LAYOUT_Y:-5}"
+  BLOCKSIZE="${BLOCKSIZE:-40}"
+
+  if [ "$QUILTING" = "TRUE" ]; then
+    WRTCMP_write_groups="1"
+    WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))
+    WRTCMP_output_grid="lambert_conformal"
+    WRTCMP_cen_lon="${ESGgrid_LON_CTR}"
+    WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"
+    WRTCMP_stdlat1="${ESGgrid_LAT_CTR}"
+    WRTCMP_stdlat2="${ESGgrid_LAT_CTR}"
+    WRTCMP_nx="197"
+    WRTCMP_ny="195"
+    WRTCMP_lon_lwr_left="-89.47120417"
+    WRTCMP_lat_lwr_left="37.07809642"
+    WRTCMP_dx="${ESGgrid_DELX}"
+    WRTCMP_dy="${ESGgrid_DELY}"
+  fi
+  ;;
+#
+#-----------------------------------------------------------------------
+#
 # The RRFS Alaska domain with ~13km cells.
 #
 # Note:
