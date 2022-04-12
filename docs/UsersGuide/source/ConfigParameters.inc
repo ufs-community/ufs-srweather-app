@@ -725,7 +725,7 @@ Specific Humidity (SHUM) Perturbation Parameters
 ---------------------------------------------------
 
 ``DO_SHUM``: (Default: "FALSE")
-   Specific Humidity (SHUM) perturbations multiply the low-level specific humidity by a small random number at each time-step. The SHUM scheme attempts to address missing physics phenomena (e.g., cold pools, gust fronts) most active in convective regions. 
+   Flag to turn Specific Humidity (SHUM) perturbations on or off. SHUM perturbations multiply the low-level specific humidity by a small random number at each time-step. The SHUM scheme attempts to address missing physics phenomena (e.g., cold pools, gust fronts) most active in convective regions. 
 
 ``ISEED_SHUM``: (Default: "2")
    Seed for setting the SHUM random number sequence.
@@ -746,7 +746,7 @@ Stochastically Perturbed Physics Tendencies (SPPT) Parameters
 -----------------------------------------------------------------
 
 ``DO_SPPT``: (Default: "FALSE")
-   Stochastically Perturbed Physics Tendencies (SPPT) multiplies the physics tendencies by a random number O [0,2] before updating the model state. Addresses error in the physics parameterizations (either missing physics or unresolved subgrid processes). It is most active in the boundary layer and convective regions. 
+   Flag to turn Stochastically Perturbed Physics Tendencies (SPPT) on or off. SPPT multiplies the physics tendencies by a random number O [0,2] before updating the model state. Addresses error in the physics parameterizations (either missing physics or unresolved subgrid processes). It is most active in the boundary layer and convective regions. 
 
 ..
    COMMENT: Does it need to be O? can it be X? or some other variable/letter that doesn't look like the number zero? 
@@ -779,7 +779,7 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 ----------------------------------------------------------
 
 ``DO_SKEB``: (Default: "FALSE")
-   Stochastic Kinetic Energy Backscatter (SKEB) adds wind perturbations to the model state. Perturbations are random in space/time, but amplitude is determined by a smoothed dissipation estimate provided by the :term:`dynamical core`. SKEB addresses errors in the dynamics more active in the mid-latitudes.
+   Flag to turn Stochastic Kinetic Energy Backscatter (SKEB) on or off. SKEB adds wind perturbations to the model state. Perturbations are random in space/time, but amplitude is determined by a smoothed dissipation estimate provided by the :term:`dynamical core`. SKEB addresses errors in the dynamics more active in the mid-latitudes.
 
 ``ISEED_SKEB``: (Default: "3")
    Seed for setting the SHUM random number sequence.
@@ -816,7 +816,7 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 SPP Stochastic Physics Parameters
 ------------------------------------
 
-Set default SPP stochastic physics options. Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
+Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics options. Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
 .. note::
    SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. 
@@ -825,55 +825,48 @@ Set default SPP stochastic physics options. Each SPP option is an array, applica
    COMMENT: Is this still the case? 
    COMMENT: What is the difference between SPPT (above) and SPP?
 
-# Patterns evolve and are applied at each time step.
-
-..
-   COMMENT: What does that mean?
-
-
 ``DO_SPP``: (Default: "false")
-   Turn on the SPP Stochastic Physics Parameters. 
+   Flag to turn SPP on or off. 
 
 ..
    COMMENT: What does SPP do? Need a description similar to the SKEB/SHUM/SPPT descriptions. 
    COMMENT: How are SPPT and SPP different? 
 
-``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
-
-..
-   COMMENT: Need an explanation of these default variables. 
+``ISEED_SPP``: (Default: ( "4" "4" "4" "4" "4" ) )
+   The initial seed value for the perturbation pattern. 
 
 ``SPP_MAG_LIST``: (Default: ( "0.2" "0.2" "0.75" "0.2" "0.2" ) ) 
    Corresponds to the variable ``spp_prt_list`` in ``input.nml``
 
 ``SPP_LSCALE``: (Default: ( "150000.0" "150000.0" "150000.0" "150000.0" "150000.0" ) )
-   Decorrelation spatial scale in meters.
+   Length scale in meters.
    
 ``SPP_TSCALE``: (Default: ( "21600.0" "21600.0" "21600.0" "21600.0" "21600.0" ) ) 
-   Corresponds to the variable ``spp_tau`` in ``input.nml``.
+   Time decorrelation length in seconds. Corresponds to the variable ``spp_tau`` in ``input.nml``.
 
 ``SPP_SIGTOP1``: (Default: ( "0.1" "0.1" "0.1" "0.1" "0.1") )
-   Lower sigma level to taper perturbations to zero. 
+   Controls vertical tapering of perturbations at the tropopause and corresponds to the lower sigma level at which to taper perturbations to zero. 
 
 ..
    COMMENT: This is a guess. Needs review. 
 
 ``SPP_SIGTOP2``: (Default: ( "0.025" "0.025" "0.025" "0.025" "0.025" ) )
-   Upper sigma level to taper perturbations to zero.
+   Controls vertical tapering of perturbations at the tropopause and corresponds to the upper sigma level at which to taper perturbations to zero.
 
 ..
    COMMENT: This is a guess. Needs review. 
 
 ``SPP_STDDEV_CUTOFF``: (Default: ( "1.5" "1.5" "2.5" "1.5" "1.5" ) )
-
+   Perturbation magnitude cutoff in number of standard deviations from the mean. 
 ..
    COMMENT: Need an explanation of this variable. 
 
-``ISEED_SPP``: (Default: ( "4" "4" "4" "4" "4" ) )
-   Seed for setting the SPP random number sequence.
+``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
+   The list of parameterizations to perturb: planetary boundary layer (PBL), surface climatology (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values include "pbl", "sfc", "rad", "gwd", and "mp".
 
 ..
-   COMMENT: This is a guess. Needs review. 
+   COMMENT: Need an explanation of these default variables. Is "rad" radiation? Need confiromation. 
+
 
 Land Surface Model (LSM) SPP
 -------------------------------
