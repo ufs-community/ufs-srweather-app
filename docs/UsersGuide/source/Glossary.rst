@@ -111,6 +111,9 @@ Glossary
    Repository
       A central location in which files (e.g., data, code, documentation) are stored and managed. 
 
+   SDF
+      Suite Definition File. An external file containing information about the construction of a physics suite. It describes the schemes that are called, in which order they are called, whether they are subcycled, and whether they are assembled into groups to be called together.
+
    UFS
       The Unified Forecast System is a community-based, coupled comprehensive Earth modeling 
       system consisting of several applications (apps). These apps span regional to global 

@@ -660,35 +660,325 @@ Maximum number of attempts.
 | ``MAXTRIES_VX_ENSPOINT_MEAN``: (Default: "1")
 | ``MAXTRIES_VX_ENSPOINT_PROB``: (Default: "1")
 
-..
-   COMMENT: GSP Start here!
+
+Subhourly Forecast Parameters
+=================================
+
+``SUB_HOURLY_POST``: (Default: "FALSE")
+   Flag that indicates whether the forecast model will generate output files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes, etc). This will also cause the post-processor to process these sub-hourly files. If ths is set to "TRUE", then ``DT_SUBHOURLY_POST_MNTS`` should be set to a value between "01" and "59".
+
+``DT_SUB_HOURLY_POST_MNTS``: (Default: "00")
+   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "00" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). 
+
 
 Customized Post Configuration Parameters
 ========================================
+
 ``USE_CUSTOM_POST_CONFIG_FILE``: (Default: "FALSE")
    Flag that determines whether a user-provided custom configuration file should be used for post-processing the model data. If this is set to "TRUE", then the workflow will use the custom post-processing (UPP) configuration file specified in ``CUSTOM_POST_CONFIG_FP``. Otherwise, a default configuration file provided in the UPP repository will be used.
 
 ``CUSTOM_POST_CONFIG_FP``: (Default: "")
    The full path to the custom post flat file, including filename, to be used for post-processing. This is only used if ``CUSTOM_POST_CONFIG_FILE`` is set to "TRUE".
 
+
+Community Radiative Transfer Model (CRTM) Parameters
+=======================================================
+
+These variables set parameters associated with outputting satellite fields in the :term:`UPP` :term:`grib2` files using the Community Radiative Transfer Model (CRTM).
+
+``USE_CRTM``: (Default: "FALSE")
+   Flag that defines whether external CRTM coefficient files have been staged by the user in order to output synthetic satellite products available within the UPP. If this is set to "TRUE", then the workflow will check for these files in the directory CRTM_DIR. Otherwise, it is assumed that no satellite fields are being requested in the UPP configuration.
+
+``CRTM_DIR``: (Default: "")
+   This is the path to the top CRTM fix file directory. This is only used if USE_CRTM is set to "TRUE".
+
+Ensemble Model Parameters
+============================
+
+``DO_ENSEMBLE``: (Default: "FALSE")
+   Flag that determines whether to run a set of ensemble forecasts (for each set of specified cycles).  If this is set to "TRUE", ``NUM_ENS_MEMBERS`` forecasts are run for each cycle, each with a different set of stochastic seed values. Otherwise, a single forecast is run for each cycle.
+
+``NUM_ENS_MEMBERS``: (Default: "1")
+   The number of ensemble members to run if ``DO_ENSEMBLE`` is set to "TRUE". This variable also controls the naming of the ensemble member directories. For example, if ``NUM_ENS_MEMBERS`` is set to "8", the member directories will be named mem1, mem2, ..., mem8.  If it is set to "08" (with a leading zero), the member directories will be named mem01, mem02, ..., mem08. However, after reading in the number of characters in this string (in order to determine how many leading zeros, if any, should be placed in the names of the member directories), the workflow generation scripts strip away those leading zeros. Thus, in the variable definitions file (``GLOBAL_VAR_DEFNS_FN``), this variable appears with its leading zeros stripped. This variable is not used if ``DO_ENSEMBLE`` is not set to "TRUE".
+
+
+Stochastic Physics Parameters
+================================
+
+For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/namelist_options.html>`__.
+
+General Stochastic Physics Options
+--------------------------------------
+
+
+``NEW_LSCALE``: (Default: "TRUE") 
+   #
+
+..
+   COMMENT: Cannot find information on NEW_LSCALE variable in the stochastic physics docs. 
+
+Specific Humidity (SHUM) Perturbation Parameters
+---------------------------------------------------
+
+``DO_SHUM``: (Default: "FALSE")
+   Specific Humidity (SHUM) perturbations multiply the low-level specific humidity by a small random number at each time-step. The SHUM scheme attempts to address missing physics phenomena (e.g., cold pools, gust fronts) most active in convective regions. 
+
+``ISEED_SHUM``: (Default: "2")
+   Seed for setting the SHUM random number sequence.
+
+``SHUM_MAG``: (Default: "0.006") 
+   Amplitudes of random patterns. Corresponds to the variable ``shum`` in ``input.nml``.
+
+``SHUM_LSCALE``: (Default: "150000")
+   Decorrelation spatial scale in meters.
+
+``SHUM_TSCALE``: (Default: "21600")
+   Decorrelation timescale in seconds. Corresponds to the variable ``shum_tau`` in ``input.nml``.
+
+``SHUM_INT``: (Default: "3600")
+   Interval in seconds to update random pattern (optional). Perturbations still get applied at every time-step. Corresponds to the variable ``shumint`` in ``input.nml``.
+
+Stochastically Perturbed Physics Tendencies (SPPT) Parameters
+-----------------------------------------------------------------
+
+``DO_SPPT``: (Default: "FALSE")
+   Stochastically Perturbed Physics Tendencies (SPPT) multiplies the physics tendencies by a random number O [0,2] before updating the model state. Addresses error in the physics parameterizations (either missing physics or unresolved subgrid processes). It is most active in the boundary layer and convective regions. 
+
+..
+   COMMENT: Does it need to be O? can it be X? or some other variable/letter that doesn't look like the number zero? 
+
+``ISEED_SPPT``: (Default: "1") 
+   Seed for setting the SPPT random number sequence.
+
+``SPPT_MAG``: (Default: "0.7")
+   Amplitude of random patterns. Corresponds to the variable ``sppt`` in ``input.nml``.
+
+``SPPT_LOGIT``: (Default: "TRUE")
+   Limits the SPPT perturbations to between 0 and 2. Should be "TRUE"; otherwise the model will crash.
+
+``SPPT_LSCALE``: (Default: "150000")
+   Decorrelation spatial scales in meters. 
+
+``SPPT_TSCALE``: (Default: "21600") 
+   Decorrelation timescale in seconds. Corresponds to the variable ``sppt_tau`` in ``input.nml``.
+   
+``SPPT_INT``: (Default: "3600") 
+   Interval in seconds to update random pattern (optional parameter). Perturbations still get applied at every time-step. Corresponds to the variable ``spptint`` in ``input.nml``.
+
+``SPPT_SFCLIMIT``: (Default: "TRUE")
+   When "TRUE", tapers the SPPT perturbations to zero at the model’s lowest level, which helps reduce model crashes. 
+
+``USE_ZMTNBLCK``: (Default: "FALSE")
+   When "TRUE", do not apply perturbations below the dividing streamline that is diagnosed by the gravity wave drag, mountain blocking scheme
+
+Stochastic Kinetic Energy Backscatter (SKEB) Parameters
+----------------------------------------------------------
+
+``DO_SKEB``: (Default: "FALSE")
+   Stochastic Kinetic Energy Backscatter (SKEB) adds wind perturbations to the model state. Perturbations are random in space/time, but amplitude is determined by a smoothed dissipation estimate provided by the :term:`dynamical core`. SKEB addresses errors in the dynamics more active in the mid-latitudes.
+
+``ISEED_SKEB``: (Default: "3")
+   Seed for setting the SHUM random number sequence.
+
+``SKEB_MAG``: (Default: "0.5") 
+   Amplitude of random patterns. Corresponds to the variable ``skeb`` in ``input.nml``.
+
+``SKEB_LSCALE``: (Default: "150000")
+   Decorrelation spatial scale in meters. 
+
+``SKEB_TSCALE``: (Default: "21600")
+   Decorrelation timescale in seconds. Corresponds to the variable ``skeb_tau`` in ``input.nml``.
+
+``SKEB_INT``: (Default: "3600")
+   Interval in seconds to update random pattern (optional). Perturbations still get applied every time-step. Corresponds to the variable ``skebint`` in ``input.nml``.
+
+``SKEBNORM``: (Default: "1")
+   Patterns:
+      * 0-random pattern is stream function
+      * 1-pattern is K.E. norm
+      * 2-pattern is vorticity
+
+..
+   COMMENT: Stochastic physics docs say the default is zero... Have the numbers changed? Or did the default change?
+
+
+``SKEB_VDOF``: (Default: "10")
+   The number of degrees of freedom in the vertical for the SKEB random pattern. 
+
+..
+   COMMENT: The vertical what?
+
+
+SPP Stochastic Physics Parameters
+------------------------------------
+
+Set default SPP stochastic physics options. Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST``=( "pbl" "sfc" "mp" "rad" "gwd" ). Both commas and single quotes will be added by Jinja when creating the namelist.
+
+.. note::
+   SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. 
+
+..
+   COMMENT: Is this still the case? 
+   COMMENT: What is the difference between SPPT (above) and SPP?
+
+# Patterns evolve and are applied at each time step.
+
+..
+   COMMENT: What does that mean?
+
+
+``DO_SPP``: (Default: "false")
+   Turn on the SPP Stochastic Physics Parameters. 
+
+..
+   COMMENT: What does SPP do? Need a description similar to the SKEB/SHUM/SPPT descriptions. 
+   COMMENT: How are SPPT and SPP different? 
+
+``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
+
+..
+   COMMENT: Need an explanation of these default variables. 
+
+``SPP_MAG_LIST``: (Default: ( "0.2" "0.2" "0.75" "0.2" "0.2" ) ) 
+   Corresponds to the variable ``spp_prt_list`` in ``input.nml``
+
+``SPP_LSCALE``: (Default: ( "150000.0" "150000.0" "150000.0" "150000.0" "150000.0" ) )
+   Decorrelation spatial scale in meters.
+   
+``SPP_TSCALE``: (Default: ( "21600.0" "21600.0" "21600.0" "21600.0" "21600.0" ) ) 
+   Corresponds to the variable ``spp_tau`` in ``input.nml``.
+
+``SPP_SIGTOP1``: (Default: ( "0.1" "0.1" "0.1" "0.1" "0.1") )
+   Lower sigma level to taper perturbations to zero. 
+
+..
+   COMMENT: This is a guess. Needs review. 
+
+``SPP_SIGTOP2``: (Default: ( "0.025" "0.025" "0.025" "0.025" "0.025" ) )
+   Upper sigma level to taper perturbations to zero.
+
+..
+   COMMENT: This is a guess. Needs review. 
+
+``SPP_STDDEV_CUTOFF``: (Default: ( "1.5" "1.5" "2.5" "1.5" "1.5" ) )
+
+..
+   COMMENT: Need an explanation of this variable. 
+
+``ISEED_SPP``: (Default: ( "4" "4" "4" "4" "4" ) )
+   Seed for setting the SPP random number sequence.
+
+..
+   COMMENT: This is a guess. Needs review. 
+
+Land Surface Model (LSM) SPP
+-------------------------------
+
+Turn on SPP in Noah or RUC LSM (support for Noah MP is in progress). Please be aware of the :term:`SDF` that you choose if you wish to turn on Land Surface Model (LSM) SPP. SPP in LSM schemes is handled in the ``&nam_sfcperts`` namelist block instead of in ``&nam_sppperts``, where all other SPP is implemented. The default perturbation frequency is determined by the ``fhcyc`` namelist entry. Since that parameter is set to zero in the SRW App, use ``LSM_SPP_EACH_STEP`` to perturb every time step. 
+
+LSM perturbations include soil moisture content [SMC] (volume fraction), vegetation fraction (VGF), albedo (ALB), salinity (SAL), emissivity (EMI), surface roughness (ZOL) (in cm), and soil temperature (STC). Perturbations to soil moisture content (SMC) are only applied at the first time step. Only five perturbations at a time can be applied currently, but all seven are shown below. In addition, only one unique *iseed* value is allowed at the moment, and it is used for each pattern.
+
+``DO_LSM_SPP``: (Default: "false") 
+   Turns on LSM SPP. When "TRUE", sets ``lndp_type=2``.
+
+..
+   COMMENT: What does LSM SPP do? Need a description similar to the SKEB/SHUM/SPPT descriptions. Also, where is lndp_type set? The weather model?
+
+``LSM_SPP_TSCALE``: (Default: ( ( "21600" "21600" "21600" "21600" "21600" "21600" "21600" ) )
+   Decorrelation timescale in seconds. 
+
+``LSM_SPP_LSCALE``: (Default: ( ( "150000" "150000" "150000" "150000" "150000" "150000" "150000" ) )
+   Decorrelation spatial scale in meters.
+
+``ISEED_LSM_SPP``: (Default: ("9") )
+   Seed for setting the LSM SPP random number sequence.
+
+``LSM_SPP_VAR_LIST``: (Default: ( ( "smc" "vgf" "alb" "sal" "emi" "zol" "stc" ) )
+   Indicates which LSM variables to perturb. 
+
+``LSM_SPP_MAG_LIST``: (Default: ( ( "0.2" "0.001" "0.001" "0.001" "0.001" "0.001" "0.2" ) )
+   Sets the amplitude of random patterns for each of the LSM perturbations. 
+
+``LSM_SPP_EACH_STEP``: (Default: "true") 
+   When set to "TRUE", it sets ``lndp_each_step=.true.`` and perturbs each time step. 
+
+..
+   COMMENT: Where is lndp_each_step found?
+   COMMENT: All definitions in this section are my best guess and need revision. 
+
+
 Halo Blend Parameter
 ====================
 ``HALO_BLEND``: (Default: "10")
-   Number of rows into the computational domain that should be blended with the LBCs.  To shut :term`halo` blending off, set this to zero.
+   Number of rows into the computational domain that should be blended with the LBCs.  To shut :term:`halo` blending off, set this to zero.
 
 FVCOM Parameter
 ===============
 ``USE_FVCOM``: (Default: "FALSE")
-   Flag that specifies whether or not to update surface conditions in FV3-LAM with fields generated from the Finite Volume Community Ocean Model (FVCOM). If set to "TRUE", lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten by data provided by FVCOM. This is done by running the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to modify the file ``sfc_data.nc`` generated by ``chgres_cube``.  Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. 
+   Flag that specifies whether or not to update surface conditions in FV3-LAM with fields generated from the Finite Volume Community Ocean Model (FVCOM). If set to "TRUE", lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten using data provided by FVCOM. This is done by running the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to modify the file ``sfc_data.nc`` generated by ``chgres_cube``.  Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. 
+
+``FVCOM_WCSTART``: (Default: "cold")
+   Define if this is a "warm" start or a "cold" start. Setting this to "warm" will read in ``sfc_data``.nc generated in a RESTART directory. Setting this to "cold" will read in the ``sfc_data``.nc generated from ``chgres_cube`` in the ``make_ics`` portion of the workflow. Valid values: "cold" "warm"
 
 ``FVCOM_DIR``: (Default: "/user/defined/dir/to/fvcom/data")
-   User defined directory in which the file ``fvcom.nc`` containing FVCOM data on the FV3-LAM native grid is located. The file name in this directory must be ``fvcom.nc``.
+   User-defined directory where the ``fvcom.nc`` file containing FVCOM data on the FV3-LAM native grid is located. The file name in this directory must be ``fvcom.nc``.
 
 ``FVCOM_FILE``: (Default: "fvcom.nc")
-   Name of file located in ``FVCOM_DIR`` that has FVCOM data interpolated to FV3-LAM grid. This file will be copied later to a new location and the name changed to ``fvcom.nc``.
+   Name of file located in ``FVCOM_DIR`` that has FVCOM data interpolated to the FV3-LAM grid. This file will be copied later to a new location and the name changed to ``fvcom.nc`` if a name other than ``fvcom.nc`` is selected.
 
 Compiler Parameter
 ==================
 ``COMPILER``: (Default: "intel")
-   Type of compiler invoked during the build step.  Currently, this must be set manually (i.e. it is not inherited from the build system in the ``ufs-srweather-app`` directory).
+   Type of compiler invoked during the build step. Currently, this must be set manually (i.e., it is not inherited from the build system in the ``ufs-srweather-app`` directory).
+
+
+Thread Affinity interface
+===========================
+
+.. note::
+   Note that settings for the make_grid and make_orog tasks are not included below as they do not use parallelized code.
+
+..
+   COMMENT: The note above is in config_defaults.sh comments, but make_orog does seem to be included below... should I remove it? 
+
+``KMP_AFFINITY_*``: (Default: see below)
+
+   .. code-block:: console
+
+      KMP_AFFINITY_MAKE_OROG="disabled"
+      KMP_AFFINITY_MAKE_SFC_CLIMO="scatter"
+      KMP_AFFINITY_MAKE_ICS="scatter"
+      KMP_AFFINITY_MAKE_LBCS="scatter"
+      KMP_AFFINITY_RUN_FCST="scatter"
+      KMP_AFFINITY_RUN_POST="scatter"
+
+   Intel's runtime library can bind OpenMP threads to physical processing units. The interface is controlled using the KMP_AFFINITY environment variable. Thread affinity restricts execution of certain threads to a subset of the physical processing units in a multiprocessor computer. Depending on the system (machine) topology, application, and operating system, thread affinity can have a dramatic effect on the application speed and on the execution speed of a program." Valid values: "scatter" "disabled" "balanced" "compact" "explicit" "none"
+
+   For more information, see the `Intel Development Reference Guide <https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/optimization-and-programming-guide/openmp-support/openmp-library-support/thread-affinity-interface-linux-and-windows.html>`__. 
+
+``OMP_NUM_THREADS_*``: (Default: see below)
+
+   .. code-block:: console
+
+      OMP_NUM_THREADS_MAKE_OROG="6"
+      OMP_NUM_THREADS_MAKE_SFC_CLIMO="1"
+      OMP_NUM_THREADS_MAKE_ICS="1"
+      OMP_NUM_THREADS_MAKE_LBCS="1"
+      OMP_NUM_THREADS_RUN_FCST="2"    # atmos_nthreads in model_configure
+      OMP_NUM_THREADS_RUN_POST="1"
+
+   The number of OpenMP threads to use for parallel regions.
+
+``OMP_STACKSIZE_*``: (Default: see below)
+
+   .. code-block:: console
+
+      OMP_STACKSIZE_MAKE_OROG="2048m"
+      OMP_STACKSIZE_MAKE_SFC_CLIMO="1024m"
+      OMP_STACKSIZE_MAKE_ICS="1024m"
+      OMP_STACKSIZE_MAKE_LBCS="1024m"
+      OMP_STACKSIZE_RUN_FCST="1024m"
+      OMP_STACKSIZE_RUN_POST="1024m"
+
+   Controls the size of the stack for threads created by the OpenMP implementation.
 
