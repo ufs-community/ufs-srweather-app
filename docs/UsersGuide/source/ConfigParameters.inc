@@ -330,6 +330,7 @@ These parameters set flags (and related directories) that determine whether vari
    The directory in which to look for pre-generated grid files if ``RUN_TASK_MAKE_GRID`` is set to "FALSE".
 
 ``RUN_TASK_MAKE_OROG``: (Default: "TRUE")
+   Flag that determines whether the 
    Same as ``RUN_TASK_MAKE_GRID`` but for the orography generation task (``MAKE_OROG_TN``).
 
 ``OROG_DIR``: (Default: "/path/to/pregenerated/orog/files")
@@ -705,6 +706,9 @@ Ensemble Model Parameters
 Stochastic Physics Parameters
 ================================
 
+..
+   COMMENT: Move all physic params up with CCPP section.
+
 For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/namelist_options.html>`__.
 
 General Stochastic Physics Options
@@ -812,7 +816,7 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 SPP Stochastic Physics Parameters
 ------------------------------------
 
-Set default SPP stochastic physics options. Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST``=( "pbl" "sfc" "mp" "rad" "gwd" ). Both commas and single quotes will be added by Jinja when creating the namelist.
+Set default SPP stochastic physics options. Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
 .. note::
    SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. 

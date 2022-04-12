@@ -60,16 +60,16 @@ Machine-Dependent Parameters:
 These parameters vary depending on machine. On `Level 1 and 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, the appropriate values for each machine can be viewed in the ``regional_workflow/ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.sh`` file so that they override the ``config_defaults.sh`` and machine default values. 
 
 ``PARTITION_DEFAULT``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). This is the default partition to which Slurm submits workflow tasks. When a variable that specifies the partition (e.g., ``PARTITION_HPSS``, ``PARTITION_FCST``; see below) is **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "hera" "normal" "orion" "sjet,vjet,kjet,xjet" "workq" "" 
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). This is the default partition to which Slurm submits workflow tasks. When a variable that specifies the partition (e.g., ``PARTITION_HPSS``, ``PARTITION_FCST``; see below) is **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "hera" "normal" "orion" "sjet,vjet,kjet,xjet" "workq"
 
 ``CLUSTERS_DEFAULT``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). These are the default clusters to which Slurm submits workflow tasks. If the ``CLUSTERS_HPSS`` or ``CLUSTERS_FCST`` (see below) are not specified, the task will be submitted to the default clusters indicated in this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
 
 ``QUEUE_DEFAULT``: (Default: "")
-   The default queue or QOS to which workflow tasks are submitted (QOS is Slurm's term for queue; it stands for "Quality of Service"). If the task's ``QUEUE_HPSS`` or ``QUEUE_FCST`` variables (see below) are not specified, the task will be submitted to the queue indicated by this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "batch" "dev" "normal" "regular" "workq" ""
+   The default queue or QOS to which workflow tasks are submitted (QOS is Slurm's term for queue; it stands for "Quality of Service"). If the task's ``QUEUE_HPSS`` or ``QUEUE_FCST`` variables (see below) are not specified, the task will be submitted to the queue indicated by this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "batch" "dev" "normal" "regular" "workq"
 
 ``PARTITION_HPSS``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the partition specified in this variable. These links are needed to generate initial conditions (ICs) and lateral boundary conditions (LBCs) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "normal" "service" "workq" ""
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the partition specified in this variable. These links are needed to generate initial conditions (ICs) and lateral boundary conditions (LBCs) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "normal" "service" "workq"
 
 ..
    COMMENT: Wouldn't it be reset to the PARTITION_DEFAULT value? 
@@ -78,16 +78,16 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the clusters specified in this variable. These links are needed to generate initial conditions (ICs) and lateral boundary conditions (LBCs) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
 
 ``QUEUE_HPSS``: (Default: "")
-   Tasks that get or create links to external model files are submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "batch" "dev_transfer" "normal" "regular" "workq" ""
+   Tasks that get or create links to external model files are submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "batch" "dev_transfer" "normal" "regular" "workq"
 
 ``PARTITION_FCST``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). The task that runs forecasts is submitted to this partition. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "hera" "normal" "orion" "sjet,vjet,kjet,xjet" "workq" ""
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). The task that runs forecasts is submitted to this partition. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "hera" "normal" "orion" "sjet,vjet,kjet,xjet" "workq"
 
 ``CLUSTERS_FCST``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). The task that runs forecasts is submitted to this cluster. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
 
 ``QUEUE_FCST``: (Default: "")
-   The task that runs a forecast is submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this is not set or set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "batch" "dev" "normal" "regular" "workq"
+   The task that runs a forecast is submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this is not set or set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "batch" "dev" "normal" "regular" "workq"
 
 Parameters for Running Without a Workflow Manager
 =================================================
