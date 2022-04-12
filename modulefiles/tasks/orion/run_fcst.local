@@ -1,5 +1,2 @@
 #%Module
-module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-module load miniconda3/3.8
-
-setenv SRW_ENV regional_workflow
+module load miniconda_regional_workflow

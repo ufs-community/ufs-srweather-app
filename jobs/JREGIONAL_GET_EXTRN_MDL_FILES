@@ -33,15 +33,6 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source the file defining the function that will be used to set various
-# external-model-associated variables.
-#
-#-----------------------------------------------------------------------
-#
-. $USHDIR/get_extrn_mdl_file_dir_info.sh
-#
-#-----------------------------------------------------------------------
-#
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
 #
@@ -72,86 +63,12 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies/fetches to a local 
-directory (either from disk or HPSS) the external model files from which
-initial or boundary condition files for the FV3 will be generated.
+This is the J-job script for the task that copies or fetches external
+model files from disk, HPSS, or URL, and stages them for downstream use
+to generate initial or lateral boundary conditions for the FV3 model.
 ========================================================================"
-#
-#-----------------------------------------------------------------------
-#
-# Check whether output files from the specified external model (EXTRN_MDL_NAME) 
-# are available on the specified cycle date and time (CDATE).
-#
-#-----------------------------------------------------------------------
-#
-case ${EXTRN_MDL_NAME} in
 
-"GSMGFS")
-# The transition date from the GSMGFS to the FV3GFS was 2019061212, i.e.
-# this was the first official forecast with the FV3GFS.  So we set the
-# last CDATE for the GSMGFS to the one 6 hours before this.
-  cdate_max="2019061206"
-  if [ "$CDATE" -gt "$cdate_max" ]; then
-    print_err_msg_exit "\
-Output from the specified external model (EXTRN_MDL_NAME) is not availa-
-ble for the specified cycle date and time (CDATE) because the latter is
-later than the last forecast date and time (cdate_max) with this model:
-  EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
-  cdate_max = \"${cdate_max}\"
-  CDATE = \"${CDATE}\""
-  fi
-  ;;
 
-"FV3GFS")
-# The transition date from the GSMGFS to the FV3GFS was 2019061212, i.e.
-# this was the first official forecast with the FV3GFS.  However, paral-
-# lel runs with the FV3GFS go back to 2018121500.  So we set the first 
-# CDATE for the FV3GFS to this date and time.
-#  CDATE_min="2019061212"
-  CDATE_min="2018121500"
-  if [ "$CDATE" -lt "$CDATE_min" ]; then
-    print_err_msg_exit "\
-Output from the specified external model (EXTRN_MDL_NAME) is not availa-
-ble for the specified cycle date and time (CDATE) because the latter is
-earlier than the implementation date of this model:
-  EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
-  CDATE_min = \"${CDATE_min}\"
-  CDATE = \"${CDATE}\""
-  fi
-  ;;
-
-"RAP")
-# Examination of the HPSS archives shows that the RAPX data goes back to
-# July 01, 2015.
-  CDATE_min="2015070100"
-  if [ "$CDATE" -lt "$CDATE_min" ]; then
-    print_err_msg_exit "\
-Output from the specified external model (EXTRN_MDL_NAME) is not availa-
-ble for the specified cycle date and time (CDATE) because the latter is
-earlier than the implementation date of this model:
-  EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
-  CDATE_min = \"${CDATE_min}\"
-  CDATE = \"${CDATE}\""
-  fi
-  ;;
-
-"HRRR")
-# From the HRRR home page (https://rapidrefresh.noaa.gov/hrrr), the 
-# implementation of the first version of the operational HRRR was 
-# September 30, 2014.
-  CDATE_min="2014103000"
-  if [ "$CDATE" -lt "$CDATE_min" ]; then
-    print_err_msg_exit "\
-Output from the specified external model (EXTRN_MDL_NAME) is not availa-
-ble for the specified cycle date and time (CDATE) because the latter is
-earlier than the implementation date of this model:
-  EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
-  CDATE_min = \"${CDATE_min}\"
-  CDATE = \"${CDATE}\""
-  fi
-  ;;
-
-esac
 #
 #-----------------------------------------------------------------------
 #
@@ -169,23 +86,122 @@ check_var_valid_value "ICS_OR_LBCS" "valid_vals_ICS_OR_LBCS"
 #
 # Set parameters for grabbing either the initial conditions from analysis or
 # forecast files of external models, or the lateral boundary conditions
-# from external models. The script has been called to do the work for
+# from external models. This script has been called to do the work for
 # one or the other.
 #
 #-----------------------------------------------------------------------
 #
 if [ "${ICS_OR_LBCS}" = "ICS" ]; then
-  if [ ${EXTRN_MDL_ICS_OFFSET_HRS} -eq 0 ] ; then
-    anl_or_fcst="ANL"
-    time_offset_hrs=0
-  else
-    anl_or_fcst="FCST"
-    time_offset_hrs=${EXTRN_MDL_ICS_OFFSET_HRS:-0}
-  fi
+  time_offset_hrs=${EXTRN_MDL_ICS_OFFSET_HRS:-0}
+  extrn_mdl_name=${EXTRN_MDL_NAME_ICS}
+
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
-  anl_or_fcst="FCST"
   time_offset_hrs=${EXTRN_MDL_LBCS_OFFSET_HRS:-0}
+  extrn_mdl_name=${EXTRN_MDL_NAME_LBCS}
 fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Set the external model start time
+#
+#-----------------------------------------------------------------------
+#
+
+hh=${CDATE:8:2}
+yyyymmdd=${CDATE:0:8}
+extrn_mdl_cdate=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${time_offset_hrs} hours" "+%Y%m%d%H" )
+
+#
+#-----------------------------------------------------------------------
+#
+# Check whether output files from the specified external model
+# (extrn_mdl_name) are available on the specified cycle date and time
+# (extrn_mdl_cdate).
+#
+#-----------------------------------------------------------------------
+#
+
+function data_unavailable() {
+
+  local name cdate end_date min_max
+
+  name=$1
+  cdate=$2
+  end_date=$3
+  min_max=$4
+
+  if [ ${min_max} = max ]; then
+    msg="\
+Output from the specified external model (extrn_mdl_name) is not availa-
+ble for the specified cycle date and time (extrn_mdl_cdate) because the latter is
+later than the last forecast date and time (cdate_max) with this model:
+  extrn_mdl_name = \"${name}\"
+  CDATE_max = \"${end_date}\"
+  extrn_mdl_cdate = \"${cdate}\""
+
+  elif [ ${min_max} = min ]; then
+    msg="\
+Output from the specified external model (extrn_mdl_name) is not availa-
+ble for the specified cycle date and time (extrn_mdl_cdate) because the latter is
+earlier than the implementation date of this model:
+  extrn_mdl_name = \"${name}\"
+  CDATE_min = \"${end_date}\"
+  extrn_mdl_cdate = \"${cdate}\""
+  fi
+
+  echo ${msg}
+}
+
+
+case ${extrn_mdl_name} in
+
+"GSMGFS")
+# The transition date from the GSMGFS to the FV3GFS was 2019061212, i.e.
+# this was the first official forecast with the FV3GFS.  So we set the
+# last CDATE for the GSMGFS to the one 6 hours before this.
+  cdate_max="2019061206"
+  if [ "$extrn_mdl_cdate" -gt "$cdate_max" ]; then
+    print_err_msg_exit "\
+      $(data_unavailable $extrn_mdl_name $extrn_mdl_cdate $cdate_max max)"
+  fi
+  ;;
+
+"FV3GFS")
+# The transition date from the GSMGFS to the FV3GFS was 2019061212, i.e.
+# this was the first official forecast with the FV3GFS.  However, paral-
+# lel runs with the FV3GFS go back to 2018121500.  So we set the first 
+# extrn_mdl_cdate for the FV3GFS to this date and time.
+#  CDATE_min="2019061212"
+  CDATE_min="2018121500"
+  if [ "$extrn_mdl_cdate" -lt "$CDATE_min" ]; then
+    print_err_msg_exit "\
+      $(data_unavailable $extrn_mdl_name $extrn_mdl_cdate $cdate_min min)"
+  fi
+  ;;
+
+"RAP")
+# Examination of the HPSS archives shows that the RAPX data goes back to
+# July 01, 2015.
+  CDATE_min="2015070100"
+  if [ "$extrn_mdl_cdate" -lt "$CDATE_min" ]; then
+    print_err_msg_exit "\
+      $(data_unavailable $extrn_mdl_name $extrn_mdl_cdate $cdate_min min)"
+  fi
+  ;;
+
+"HRRR")
+# From the HRRR home page (https://rapidrefresh.noaa.gov/hrrr), the 
+# implementation of the first version of the operational HRRR was 
+# September 30, 2014.
+  CDATE_min="2014103000"
+  if [ "$extrn_mdl_cdate" -lt "$CDATE_min" ]; then
+    print_err_msg_exit "\
+      $(data_unavailable $extrn_mdl_name $extrn_mdl_cdate $cdate_min min)"
+  fi
+  ;;
+
+esac
 #
 #-----------------------------------------------------------------------
 #
@@ -193,77 +209,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-extrn_mdl_staging_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
+extrn_mdl_staging_dir="${CYCLE_DIR}/${extrn_mdl_name}/for_${ICS_OR_LBCS}"
 mkdir_vrfy -p "${extrn_mdl_staging_dir}"
 cd_vrfy "${extrn_mdl_staging_dir}"
-#
-#-----------------------------------------------------------------------
-#
-# Call the function that sets various external-model-associated variables.
-# See the function defintion file for the definitions of these variables.
-#
-#-----------------------------------------------------------------------
-#
-get_extrn_mdl_file_dir_info \
-  extrn_mdl_name="${EXTRN_MDL_NAME}" \
-  anl_or_fcst="${anl_or_fcst}" \
-  cdate_FV3LAM="${CDATE}" \
-  time_offset_hrs="${time_offset_hrs}" \
-  varname_extrn_mdl_cdate="extrn_mdl_cdate" \
-  varname_extrn_mdl_lbc_spec_fhrs="extrn_mdl_lbc_spec_fhrs" \
-  varname_extrn_mdl_fns_on_disk="extrn_mdl_fns_on_disk" \
-  varname_extrn_mdl_fns_in_arcv="extrn_mdl_fns_in_arcv" \
-  varname_extrn_mdl_sysdir="extrn_mdl_sysdir" \
-  varname_extrn_mdl_arcv_fmt="extrn_mdl_arcv_fmt" \
-  varname_extrn_mdl_arcv_fns="extrn_mdl_arcv_fns" \
-  varname_extrn_mdl_arcv_fps="extrn_mdl_arcv_fps" \
-  varname_extrn_mdl_arcvrel_dir="extrn_mdl_arcvrel_dir" || \
-print_err_msg_exit "\
-Call to function get_extrn_mdl_file_dir_info failed."
-#
-#-----------------------------------------------------------------------
-#
-# Set the directory in which to check for the external model files (which
-# we refer to here as the "source" directory) to the default one set above 
-# for the current machine and external model.
-#
-#-----------------------------------------------------------------------
-#
-extrn_mdl_source_dir="${extrn_mdl_sysdir}"
-#
-#-----------------------------------------------------------------------
-#
-# If the user has specified that the external model files to be used for
-# generating ICs or LBCs are staged, then reset extrn_mdl_source_dir to 
-# the user-specified directory in which these files are staged, and reset 
-# extrn_mdl_fns_on_disk to the user-specified array containing the names 
-# of the files.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${USE_USER_STAGED_EXTRN_FILES}" = "TRUE" ]; then
-
-  if [ "${ICS_OR_LBCS}" = "ICS" ]; then
-    extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/$CDATE"
-    extrn_mdl_fns_on_disk=( $( printf "%s " "${EXTRN_MDL_FILES_ICS[@]}" ))
-  elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
-    extrn_mdl_source_dir="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/$CDATE"
-    extrn_mdl_fns_on_disk=( $( printf "%s " "${EXTRN_MDL_FILES_LBCS[@]}" ))
-  fi
-
-  if [ ! -d "${extrn_mdl_source_dir}" ]; then
-    print_err_msg_exit "\
-The directory extrn_mdl_source_dir containing the user-staged external
-model files does not exist:
-  extrn_mdl_source_dir = \"${extrn_mdl_source_dir}\"
-Please ensure that the directory specified by extrn_mdl_source_dir exists
-and that all the files specified in the array extrn_mdl_fns_on_disk exist
-within it:
-  extrn_mdl_source_dir = \"${extrn_mdl_source_dir}\"
-  extrn_mdl_fns_on_disk = ( $( printf "\"%s\" " "${extrn_mdl_fns_on_disk[@]}" ))"
-  fi
-
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -271,25 +219,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-extrn_mdl_lbc_spec_fhrs_str="( "$( printf "\"%s\" " "${extrn_mdl_lbc_spec_fhrs[@]}" )")"
-extrn_mdl_fns_on_disk_str="( "$( printf "\"%s\" " "${extrn_mdl_fns_on_disk[@]}" )")"
-extrn_mdl_fns_in_arcv_str="( "$( printf "\"%s\" " "${extrn_mdl_fns_in_arcv[@]}" )")"
-extrn_mdl_arcv_fns_str="( "$( printf "\"%s\" " "${extrn_mdl_arcv_fns[@]}" )")"
-extrn_mdl_arcv_fps_str="( "$( printf "\"%s\" " "${extrn_mdl_arcv_fps[@]}" )")"
-
 $SCRIPTSDIR/exregional_get_extrn_mdl_files.sh \
-  ics_or_lbcs="${ICS_OR_LBCS}" \
-  use_user_staged_extrn_files="${USE_USER_STAGED_EXTRN_FILES}" \
   extrn_mdl_cdate="${extrn_mdl_cdate}" \
-  extrn_mdl_lbc_spec_fhrs="${extrn_mdl_lbc_spec_fhrs_str}" \
-  extrn_mdl_fns_on_disk="${extrn_mdl_fns_on_disk_str}" \
-  extrn_mdl_fns_in_arcv="${extrn_mdl_fns_in_arcv_str}" \
-  extrn_mdl_source_dir="${extrn_mdl_source_dir}" \
+  extrn_mdl_name="${extrn_mdl_name}" \
   extrn_mdl_staging_dir="${extrn_mdl_staging_dir}" \
-  extrn_mdl_arcv_fmt="${extrn_mdl_arcv_fmt}" \
-  extrn_mdl_arcv_fns="${extrn_mdl_arcv_fns_str}" \
-  extrn_mdl_arcv_fps="${extrn_mdl_arcv_fps_str}" \
-  extrn_mdl_arcvrel_dir="${extrn_mdl_arcvrel_dir}" || \
+  time_offset_hrs=${time_offset_hrs} ||
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

@@ -65,6 +65,13 @@ FV3GFS:
         fcst:
           - gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio
           - gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio
+      netcdf:
+        anl:
+          - gfs.t{hh}z.atmanl.nc
+          - gfs.t{hh}z.sfcanl.nc
+        fcst:
+          - gfs.t{hh}z.atmf{fcst_hr:03d}.nc
+          - gfs.t{hh}z.sfcf{fcst_hr:03d}.nc
   hpss:
     protocol: htar
     archive_path:
@@ -103,16 +110,41 @@ FV3GFS:
     file_names:
       <<: *gfs_file_names
 
+GSMGFS:
+  hpss:
+    protocol: htar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+    archive_internal_dir:
+      anl:
+        - ./
+      fcst:
+        - /gpfs/hps/nco/ops/com/gfs/prod/gfs.{yyyymmdd}
+    archive_file_names:
+      anl:
+        - gpfs_hps_nco_ops_com_gfs_prod_gfs.{yyyymmddhh}.anl.tar
+      fcst:
+        - gpfs_hps_nco_ops_com_gfs_prod_gfs.{yyyymmddhh}.sigma.tar
+    file_names:
+      anl:
+        - gfs.t{hh}z.atmanl.nemsio
+        - gfs.t{hh}z.sfcanl.nemsio
+      fcst:
+        - gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio
+
 RAP:
   hpss:
     protocol: htar
     archive_format: tar
     archive_path:
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
     archive_internal_dir:
+      - ./
       - ./
     archive_file_names:
       # RAP forecasts are binned into 6 hour tar files.
+      - gpfs_hps_nco_ops_com_rap_prod_rap.{yyyymmdd}{bin6}.wrf.tar
       - com_rap_prod_rap.{yyyymmdd}{bin6}.wrf.tar
     file_names: &rap_file_names
       anl:
@@ -125,57 +157,30 @@ RAP:
     file_names:
       <<: *rap_file_names
 
-RAPx:
-  hpss:
-    protocol: htar
-    archive_format: zip
-    archive_path:
-      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/fsl/rap/full/wrfnat
-    archive_file_names:
-      # RAPx bins two cycles togehter, and named by the lower even value
-      # of the cycle hour.
-      - '{yyyymmdd}{hh_even}00.zip'
-    file_names:
-      anl:
-        - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
-      fcst:
-        - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
-
 HRRR:
   hpss:
     protocol: htar
     archive_format: tar
     archive_path:
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
     archive_internal_dir:
+      - ./
       - ./
     archive_file_names:
       # HRRR forecasts are binned into 6 hour tar files.
-      - com_hrrr_prod_hrrr.{yyyymmdd}_conus{bin6}.wrfnatdng.tar
+      - gpfs_hps_nco_ops_com_hrrr_prod_hrrr.{yyyymmdd}_conus{bin6}.wrf.tar
+      - com_hrrr_prod_hrrr.{yyyymmdd}_conus{bin6}.wrf.tar
     file_names: &hrrr_file_names
       anl:
-        - hrrr.t{hh}z.wrfnatf{fcst_hr:02d}.grib2
+        - hrrr.t{hh}z.wrfprsf{fcst_hr:02d}.grib2
       fcst:
-        - hrrr.t{hh}z.wrfnatf{fcst_hr:02d}.grib2
+        - hrrr.t{hh}z.wrfprsf{fcst_hr:02d}.grib2
   aws:
     protocol: download
     url: https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{yyyymmdd}/conus/
     file_names:
       <<: *hrrr_file_names
-
-HRRRx:
-  hpss:
-    protocol: htar
-    archive_format: zip
-    archive_path:
-      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/fsl/hrrr/conus/wrfnat
-    archive_file_names:
-      - '{yyyymmddhh}00.zip'
-    file_names:
-      anl:
-        - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
-      fcst:
-        - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
 
 NAM:
   hpss:

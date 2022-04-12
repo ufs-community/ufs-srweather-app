@@ -1,5 +1,4 @@
-#%Module#####################################################
-## Module file intentionally blank for Cheyenne
-#############################################################
+#%Module
 
+module load pylib_regional_workflow
 

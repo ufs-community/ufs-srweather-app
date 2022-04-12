@@ -109,7 +109,7 @@ fi
 #-----------------------------------------------------------------------
 #
 extrn_mdl_staging_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME_LBCS}/for_LBCS"
-extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_LBCS_VAR_DEFNS_FN}"
+extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}"
 . ${extrn_mdl_var_defns_fp}
 #
 #-----------------------------------------------------------------------
@@ -358,12 +358,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-num_fhrs="${#EXTRN_MDL_LBC_SPEC_FHRS[@]}"
+num_fhrs="${#EXTRN_MDL_FHRS[@]}"
 for (( i=0; i<${num_fhrs}; i++ )); do
 #
 # Get the forecast hour of the external model.
 #
-  fhr="${EXTRN_MDL_LBC_SPEC_FHRS[$i]}"
+  fhr="${EXTRN_MDL_FHRS[$i]}"
 #
 # Set external model output file name and file type/format.  Note that
 # these are now inputs into chgres_cube.

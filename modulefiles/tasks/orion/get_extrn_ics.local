@@ -3,4 +3,5 @@
 #############################################################
 
 module purge
+module load miniconda_regional_workflow
 

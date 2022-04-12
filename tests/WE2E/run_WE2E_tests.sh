@@ -941,26 +941,21 @@ machine (MACHINE):
   MACHINE= \"${MACHINE}\""
     fi
     EXTRN_MDL_SOURCE_BASEDIR_ICS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_ICS}"
-    if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ]; then
-      EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/${FV3GFS_FILE_FMT_ICS}"
-    fi
-    if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
-       [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ]; then
-      if [ "${FV3GFS_FILE_FMT_ICS}" = "nemsio" ]; then
-        EXTRN_MDL_FILES_ICS=( "gfs.atmanl.nemsio" "gfs.sfcanl.nemsio" )
-      elif [ "${FV3GFS_FILE_FMT_ICS}" = "grib2" ]; then
-        EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
-      fi
-    elif [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ] || \
-         [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ]; then
-      EXTRN_MDL_FILES_ICS=( "${EXTRN_MDL_NAME_ICS,,}.out.for_f000" )
-    elif [ "${EXTRN_MDL_NAME_ICS}" = "NAM" ]; then
-      EXTRN_MDL_FILES_ICS=( "${EXTRN_MDL_NAME_ICS,,}.out.for_f000" )
+    if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] ; then
+      EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/${FV3GFS_FILE_FMT_ICS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}"
+    elif [ "${EXTRN_MDL_NAME_ICS}" = "NAM" ] ; then
+      EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}/for_ICS"
+    else
+      EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}"
     fi
 
     EXTRN_MDL_SOURCE_BASEDIR_LBCS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_LBCS}"
-    if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ]; then
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/${FV3GFS_FILE_FMT_LBCS}"
+    if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] ; then
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/${FV3GFS_FILE_FMT_LBCS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}"
+    elif [  "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ] ; then
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}"
+    else
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}/for_LBCS"
     fi
 #
 # Make sure that the forecast length is evenly divisible by the interval
@@ -976,32 +971,15 @@ boundary conditions specification interval (LBC_SPEC_INTVL_HRS):
   LBC_SPEC_INTVL_HRS = ${LBC_SPEC_INTVL_HRS}
   rem = FCST_LEN_HRS%%LBC_SPEC_INTVL_HRS = $rem"
     fi
-    lbc_spec_times_hrs=( $( seq "${LBC_SPEC_INTVL_HRS}" "${LBC_SPEC_INTVL_HRS}" "${FCST_LEN_HRS}" ) )
-    EXTRN_MDL_FILES_LBCS=( $( printf "%03d " "${lbc_spec_times_hrs[@]}" ) ) 
-    if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
-       [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
-      if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
-        EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/#/gfs.atmf}" )
-        EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/%/.nemsio}" )
-      elif [ "${FV3GFS_FILE_FMT_LBCS}" = "grib2" ]; then
-        EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/#/gfs.pgrb2.0p25.f}" )
-      fi
-    elif [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ] || \
-         [ "${EXTRN_MDL_NAME_LBCS}" = "RAP" ]; then
-      EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/#/${EXTRN_MDL_NAME_LBCS,,}.out.for_f}" )
-    elif [ "${EXTRN_MDL_NAME_LBCS}" = "NAM" ]; then
-      EXTRN_MDL_FILES_LBCS=( "${EXTRN_MDL_FILES_LBCS[@]/#/${EXTRN_MDL_NAME_LBCS,,}.out.for_f}" )
-    fi
-
-    expt_config_str=${expt_config_str}"
+    expt_config_str="${expt_config_str}
 #
 # Locations and names of user-staged external model files for generating
 # ICs and LBCs.
 #
-EXTRN_MDL_SOURCE_BASEDIR_ICS=\"${EXTRN_MDL_SOURCE_BASEDIR_ICS}\"
-EXTRN_MDL_FILES_ICS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_ICS[@]}" ))
-EXTRN_MDL_SOURCE_BASEDIR_LBCS=\"${EXTRN_MDL_SOURCE_BASEDIR_LBCS}\"
-EXTRN_MDL_FILES_LBCS=( $( printf "\"%s\" " "${EXTRN_MDL_FILES_LBCS[@]}" ))"
+EXTRN_MDL_SOURCE_BASEDIR_ICS=${EXTRN_MDL_SOURCE_BASEDIR_ICS}
+EXTRN_MDL_FILES_ICS=( ${EXTRN_MDL_FILES_ICS[@]} )
+EXTRN_MDL_SOURCE_BASEDIR_LBCS=${EXTRN_MDL_SOURCE_BASEDIR_LBCS}
+EXTRN_MDL_FILES_LBCS=( ${EXTRN_MDL_FILES_LBCS[@]} )"
 
   fi
 #

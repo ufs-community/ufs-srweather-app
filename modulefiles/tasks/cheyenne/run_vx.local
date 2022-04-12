@@ -1,11 +1,4 @@
 #%Module
-
-if [module-info mode load] {
-  system "ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib_20200427"
-}
-
-if [module-info mode remove] {
-  system "deactivate"
-}
+module load pylib_regional_workflow
 module use /glade/p/ral/jntp/MET/MET_releases/modulefiles
 module load met/10.0.0
