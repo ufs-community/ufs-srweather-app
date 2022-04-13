@@ -1,1 +1,1 @@
-../grids_extrn_mdls_suites_nco/config.nco_grid_RRFS_CONUS_25km_ics_HRRR_lbcs_RAP_suite_HRRR.sh
+../grids_extrn_mdls_suites_nco/config.nco_grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR.sh

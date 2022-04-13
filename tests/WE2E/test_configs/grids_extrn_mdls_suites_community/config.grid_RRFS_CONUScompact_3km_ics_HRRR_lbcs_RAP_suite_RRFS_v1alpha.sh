@@ -3,16 +3,16 @@
 # ------------------------
 #
 # This test is to ensure that the workflow running in community mode 
-# completes successfully on the RRFS_CONUS_3km grid using the RRFS_v1beta
-# physics suite with ICs derived from the HRRR and LBCs derived from the
-# RAP.
+# completes successfully on the RRFS_CONUScompact_3km grid using the 
+# RRFS_v1alpha physics suite with ICs derived from the HRRR and LBCs 
+# derived from the RAP.
 #
 
 RUN_ENVIR="community"
 PREEXISTING_DIR_METHOD="rename"
 
-PREDEF_GRID_NAME="RRFS_CONUS_3km"
-CCPP_PHYS_SUITE="FV3_RRFS_v1beta"
+PREDEF_GRID_NAME="RRFS_CONUScompact_3km"
+CCPP_PHYS_SUITE="FV3_RRFS_v1alpha"
 
 EXTRN_MDL_NAME_ICS="HRRR"
 EXTRN_MDL_NAME_LBCS="RAP"

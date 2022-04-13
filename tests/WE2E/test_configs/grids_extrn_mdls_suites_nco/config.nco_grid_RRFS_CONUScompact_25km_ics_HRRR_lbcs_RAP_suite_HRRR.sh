@@ -3,14 +3,14 @@
 # ------------------------
 #
 # This test is to ensure that the workflow running in nco mode completes 
-# successfully on the RRFS_CONUS_25km grid using the HRRR physics suite 
-# with ICs derived from the HRRR and LBCs derived from the RAP.
+# successfully on the RRFS_CONUScompact_25km grid using the HRRR physics 
+# suite with ICs derived from the HRRR and LBCs derived from the RAP.
 #
 
 RUN_ENVIR="nco"
 PREEXISTING_DIR_METHOD="rename"
 
-PREDEF_GRID_NAME="RRFS_CONUS_25km"
+PREDEF_GRID_NAME="RRFS_CONUScompact_25km"
 CCPP_PHYS_SUITE="FV3_HRRR"
 
 EXTRN_MDL_NAME_ICS="HRRR"
