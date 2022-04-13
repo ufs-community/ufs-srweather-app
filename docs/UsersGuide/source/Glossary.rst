@@ -13,6 +13,9 @@ Glossary
        The preprocessing software used to create initial and boundary condition files to 
        “coldstart” the forecast model.
 
+   CRTM
+      `Community Radiative Transfer Model <https://www.jcsda.org/jcsda-project-community-radiative-transfer-model>`__. CRTM is a fast and accurate radiative transfer model developed at the `Joint Center for Satellite Data Assimilation <https://www.jcsda.org/>`__ (JCSDA) in the United States. It is a sensor-based radiative transfer model and supports more than 100 sensors, including sensors on most meteorological satellites and some from other remote sensing satellites. 
+
    Component
       A software element that has a clear function and interface. In Earth system models, components are often single portions of the Earth system (e.g. atmosphere, ocean, or land surface) that are assembled to form a whole.
 
@@ -56,7 +59,7 @@ Glossary
       The second version of the World Meterological Organization's (WMO) standard for distributing gridded data.  
 
    halo
-      A strip of cells surrounding the regional grid. It is used to feed in the lateral boundary conditions to the grid.  
+      A strip of cells on the edge of the regional grid. The `wide halo <WideHalo>` surrounds the regional grid and is used to feed the lateral boundary conditions into the grid. The `HALO_BLEND <HaloBlend>` parameter refers to a strip of cells on the *inside* the boundary of the native grid. This halo smooths out mismatches between the external and internal solutions. 
 
    HPC-Stack
       The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ is a repository that provides a unified, shell script-based build system for building the software stack required for numerical weather prediction (NWP) tools such as the `Unified Forecast System (UFS) <https://ufscommunity.org/>`__ and the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`__ framework.
@@ -70,7 +73,7 @@ Glossary
    LAM
       Limited Area Model, formerly known as the "Stand-Alone Regional Model," or SAR. LAM grids use a regional (rather than global) configuration of the FV3 dynamical core. 
 
-   LBC
+   LBCs
       Lateral boundary conditions.
 
    MPI

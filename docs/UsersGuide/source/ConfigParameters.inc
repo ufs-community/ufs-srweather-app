@@ -31,6 +31,7 @@ Grid Generation Parameters
 
    If the experiment uses a **user-defined grid** (i.e. if ``PREDEF_GRID_NAME`` is set to a null string), then ``GRID_GEN_METHOD`` must be set in the experiment configuration file. Otherwise, the experiment generation will fail because the generation scripts check to ensure that the grid name is set to a non-empty string before creating the experiment directory.
 
+.. _ESGgrid:
 
 ESGgrid Settings
 -------------------
@@ -60,6 +61,8 @@ The following parameters must be set if using the "ESGgrid" method of generating
 
 ``ESGgrid_PAZI``: (Default: "")
    The rotational parameter for the ESG grid (in degrees).
+
+.. _WideHalo:
 
 A :term:`halo` is the strip of cells surrounding the regional grid; the halo is used to feed in the lateral boundary conditions to the grid. The forecast model requires **grid** files containing 3-cell- and 4-cell-wide halos and **orography** files with 0-cell- and 3-cell- wide halos. In order to generate grid and orography files with appropriately-sized halos, the grid and orography tasks create preliminary files with halos around the regional domain of width ``ESGgrid_WIDE_HALO_WIDTH`` cells. The files are then read in and "shaved" down to obtain grid files with 3-cell-wide and 4-cell-wide halos and orography files with 0-cell-wide and 3-cell-wide halos. The original halo that gets shaved down is referred to as the "wide" halo because it is wider than the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos that we eventually end up with. Note that the grid and orography files with the wide halo are only needed as intermediates in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos; they are not needed by the forecast model.
 
@@ -666,17 +669,17 @@ Subhourly Forecast Parameters
 =================================
 
 ``SUB_HOURLY_POST``: (Default: "FALSE")
-   Flag that indicates whether the forecast model will generate output files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes, etc). This will also cause the post-processor to process these sub-hourly files. If ths is set to "TRUE", then ``DT_SUBHOURLY_POST_MNTS`` should be set to a value between "01" and "59".
+   Flag that indicates whether the forecast model will generate output files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes). This will also cause the post-processor to process these sub-hourly files. If this variable is set to "TRUE", then ``DT_SUBHOURLY_POST_MNTS`` should be set to a value between "01" and "59".
 
 ``DT_SUB_HOURLY_POST_MNTS``: (Default: "00")
-   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "00" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). 
+   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). 
 
 
 Customized Post Configuration Parameters
 ========================================
 
 ``USE_CUSTOM_POST_CONFIG_FILE``: (Default: "FALSE")
-   Flag that determines whether a user-provided custom configuration file should be used for post-processing the model data. If this is set to "TRUE", then the workflow will use the custom post-processing (UPP) configuration file specified in ``CUSTOM_POST_CONFIG_FP``. Otherwise, a default configuration file provided in the UPP repository will be used.
+   Flag that determines whether a user-provided custom configuration file should be used for post-processing the model data. If this is set to "TRUE", then the workflow will use the custom post-processing (:term:`UPP`) configuration file specified in ``CUSTOM_POST_CONFIG_FP``. Otherwise, a default configuration file provided in the UPP repository will be used.
 
 ``CUSTOM_POST_CONFIG_FP``: (Default: "")
    The full path to the custom post flat file, including filename, to be used for post-processing. This is only used if ``CUSTOM_POST_CONFIG_FILE`` is set to "TRUE".
@@ -685,22 +688,25 @@ Customized Post Configuration Parameters
 Community Radiative Transfer Model (CRTM) Parameters
 =======================================================
 
-These variables set parameters associated with outputting satellite fields in the :term:`UPP` :term:`grib2` files using the Community Radiative Transfer Model (CRTM).
+These variables set parameters associated with outputting satellite fields in the :term:`UPP` :term:`grib2` files using the Community Radiative Transfer Model (:term:`CRTM`).
+
+..
+   COMMENT: What actually happens here? Where are the satellite fields outputted to? When/why would this be used? What kind of satellites?
 
 ``USE_CRTM``: (Default: "FALSE")
-   Flag that defines whether external CRTM coefficient files have been staged by the user in order to output synthetic satellite products available within the UPP. If this is set to "TRUE", then the workflow will check for these files in the directory CRTM_DIR. Otherwise, it is assumed that no satellite fields are being requested in the UPP configuration.
+   Flag that defines whether external :term:`CRTM` coefficient files have been staged by the user in order to output synthetic satellite products available within the :term:`UPP`. If this is set to "TRUE", then the workflow will check for these files in the directory ``CRTM_DIR``. Otherwise, it is assumed that no satellite fields are being requested in the UPP configuration.
 
 ``CRTM_DIR``: (Default: "")
-   This is the path to the top CRTM fix file directory. This is only used if USE_CRTM is set to "TRUE".
+   This is the path to the top CRTM fix file directory. This is only used if ``USE_CRTM`` is set to "TRUE".
 
 Ensemble Model Parameters
 ============================
 
 ``DO_ENSEMBLE``: (Default: "FALSE")
-   Flag that determines whether to run a set of ensemble forecasts (for each set of specified cycles).  If this is set to "TRUE", ``NUM_ENS_MEMBERS`` forecasts are run for each cycle, each with a different set of stochastic seed values. Otherwise, a single forecast is run for each cycle.
+   Flag that determines whether to run a set of ensemble forecasts (for each set of specified cycles).  If this is set to "TRUE", ``NUM_ENS_MEMBERS`` forecasts are run for each cycle, each with a different set of stochastic seed values. When "FALSE", a single forecast is run for each cycle.
 
 ``NUM_ENS_MEMBERS``: (Default: "1")
-   The number of ensemble members to run if ``DO_ENSEMBLE`` is set to "TRUE". This variable also controls the naming of the ensemble member directories. For example, if ``NUM_ENS_MEMBERS`` is set to "8", the member directories will be named mem1, mem2, ..., mem8.  If it is set to "08" (with a leading zero), the member directories will be named mem01, mem02, ..., mem08. However, after reading in the number of characters in this string (in order to determine how many leading zeros, if any, should be placed in the names of the member directories), the workflow generation scripts strip away those leading zeros. Thus, in the variable definitions file (``GLOBAL_VAR_DEFNS_FN``), this variable appears with its leading zeros stripped. This variable is not used if ``DO_ENSEMBLE`` is not set to "TRUE".
+   The number of ensemble members to run if ``DO_ENSEMBLE`` is set to "TRUE". This variable also controls the naming of the ensemble member directories. For example, if ``NUM_ENS_MEMBERS`` is set to "8", the member directories will be named *mem1, mem2, ..., mem8*.  If it is set to "08" (with a leading zero), the member directories will be named *mem01, mem02, ..., mem08*. However, after reading in the number of characters in this string (in order to determine how many leading zeros, if any, should be placed in the names of the member directories), the workflow generation scripts strip away those leading zeros. Thus, in the variable definitions file (``GLOBAL_VAR_DEFNS_FN``), this variable appears with its leading zeros stripped. This variable is not used unless ``DO_ENSEMBLE`` is set to "TRUE".
 
 
 Stochastic Physics Parameters
@@ -905,16 +911,18 @@ LSM perturbations include soil moisture content [SMC] (volume fraction), vegetat
    COMMENT: Where is lndp_each_step found?
    COMMENT: All definitions in this section are my best guess and need revision. 
 
+.. _HaloBlend:
 
 Halo Blend Parameter
 ====================
 ``HALO_BLEND``: (Default: "10")
-   Number of rows into the computational domain that should be blended with the LBCs.  To shut :term:`halo` blending off, set this to zero.
+   Number of cells to use for “blending” the external solution (obtained from the :term:`LBCs`) with the internal solution from the FV3LAM dycore. Specifically, it refers to the number of rows into the computational domain that should be blended with the LBCs. Cells at which blending occurs are all within the boundary of the native grid; they don’t involve the 4 cells outside the boundary where the LBCs are specified (which is a different :term:`halo`). Blending is necessary to smooth out waves generated due to mismatch between the external and internal solutions. To shut :term:`halo` blending off, set this to zero. 
+
 
 FVCOM Parameter
 ===============
 ``USE_FVCOM``: (Default: "FALSE")
-   Flag that specifies whether or not to update surface conditions in FV3-LAM with fields generated from the Finite Volume Community Ocean Model (:term:`FVCOM`). If set to "TRUE", lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten using data provided by FVCOM. Setting ``USE_FVCOM="TRUE"`` causes the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to run. This, in turn, modifies the file ``sfc_data.nc`` generated by ``chgres_cube``.  Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. 
+   Flag that specifies whether or not to update surface conditions in FV3-LAM with fields generated from the Finite Volume Community Ocean Model (:term:`FVCOM`). If set to "TRUE", lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten using data provided by FVCOM. Setting ``USE_FVCOM`` to "TRUE" causes the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to run. This, in turn, modifies the file ``sfc_data.nc`` generated by ``chgres_cube``.  Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. 
 
 ``FVCOM_WCSTART``: (Default: "cold")
    Define if this is a "warm" start or a "cold" start. Setting this to "warm" will read in ``sfc_data.nc`` generated in a RESTART directory. Setting this to "cold" will read in the ``sfc_data.nc`` generated from ``chgres_cube`` in the ``make_ics`` portion of the workflow. Valid values: "cold" "warm"
