@@ -269,6 +269,8 @@ Model Configuration Parameters
 ``RESTART_INTERVAL``: (Default: "0")
    Frequency of the output restart files in hours. Using the default interval ("0"), restart files are produced at the end of a forecast run. When ``RESTART_INTERVAL="1"``, restart files are produced every hour with the prefix "YYYYMMDD.HHmmSS." in the ``RESTART`` directory. 
 
+.. _InlinePost:
+
 ``WRITE_DOPOST``: (Default: "FALSE")
    Flag that determines whether to use the INLINE POST option. If TRUE, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to "TRUE", and the post-processing tasks get called from within the weather model so that the post files (grib2) are output by the weather model at the same time that it outputs the dynf###.nc and phyf###.nc files. Setting ``WRITE_DOPOST="TRUE"``
    turns off the separate ``run_post`` task (``RUN_TASK_RUN_POST=FALSE``) in ``setup.sh``.

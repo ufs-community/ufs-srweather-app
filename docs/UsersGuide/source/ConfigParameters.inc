@@ -146,7 +146,7 @@ Write-Component (Quilting) Parameters
    The :term:`UPP` (called by the ``run_post`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a write-component grid before writing them to an output file. The output history files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the write component. This model component is configured with settings in the model_configure file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html?highlight=write-component#model-configurefile>`__ of the UFS Weather Model documentation.  
 
 ``QUILTING``: (Default: "TRUE")
-   Flag that determines whether or not to use the write-component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-hour output forecast hour) containing dynamics and physics fields, respectively, on the write-component grid (the regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model). If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc`` and contain fields on the native grid. Note that if ``QUILTING`` is set to "FALSE", then the ``RUN_POST_TN`` (meta)task cannot be run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. 
+   Flag that determines whether or not to use the write-component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-hour output forecast hour) containing dynamics and physics fields, respectively, on the write-component grid (the regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model). If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc`` and contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to "TRUE" when running the SRW App. If ``QUILTING`` is set to "FALSE", the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to "TRUE". 
 
 ..
    COMMENT: Still don't undertand what HHH refers to... can we give an example?
@@ -707,12 +707,9 @@ Stochastic Physics Parameters
 ================================
 
 ..
-   COMMENT: Move all physic params up with CCPP section.
+   COMMENT: Move all physic params up with CCPP section?
 
 For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/namelist_options.html>`__.
-
-General Stochastic Physics Options
---------------------------------------
 
 
 ``NEW_LSCALE``: (Default: "TRUE") 
@@ -742,8 +739,12 @@ Specific Humidity (SHUM) Perturbation Parameters
 ``SHUM_INT``: (Default: "3600")
    Interval in seconds to update random pattern (optional). Perturbations still get applied at every time-step. Corresponds to the variable ``shumint`` in ``input.nml``.
 
+.. _SPPT:
+
 Stochastically Perturbed Physics Tendencies (SPPT) Parameters
 -----------------------------------------------------------------
+
+SPPT perturbs full physics tendencies *after* the call to the physics suite, unlike `SPP <SPP>` (below), which acts on the physics itself. 
 
 ``DO_SPPT``: (Default: "FALSE")
    Flag to turn Stochastically Perturbed Physics Tendencies (SPPT) on or off. SPPT multiplies the physics tendencies by a random number O [0,2] before updating the model state. Addresses error in the physics parameterizations (either missing physics or unresolved subgrid processes). It is most active in the boundary layer and convective regions. 
@@ -812,11 +813,12 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 ..
    COMMENT: The vertical what?
 
+.. _SPP:
 
 SPP Stochastic Physics Parameters
 ------------------------------------
 
-Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics options. Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
+Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics options. Unlike `SPPT physics <SPPT>`, SPP is applied as part of the physics run, not post. Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
 .. note::
    SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. 
@@ -848,24 +850,24 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
    Controls vertical tapering of perturbations at the tropopause and corresponds to the lower sigma level at which to taper perturbations to zero. 
 
 ..
-   COMMENT: This is a guess. Needs review. 
+   COMMENT: Needs review. 
 
 ``SPP_SIGTOP2``: (Default: ( "0.025" "0.025" "0.025" "0.025" "0.025" ) )
    Controls vertical tapering of perturbations at the tropopause and corresponds to the upper sigma level at which to taper perturbations to zero.
 
 ..
-   COMMENT: This is a guess. Needs review. 
+   COMMENT: Needs review. 
 
 ``SPP_STDDEV_CUTOFF``: (Default: ( "1.5" "1.5" "2.5" "1.5" "1.5" ) )
    Perturbation magnitude cutoff in number of standard deviations from the mean. 
 ..
-   COMMENT: Need an explanation of this variable. 
+   COMMENT: Needs review. 
 
 ``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
    The list of parameterizations to perturb: planetary boundary layer (PBL), surface climatology (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values include "pbl", "sfc", "rad", "gwd", and "mp".
 
 ..
-   COMMENT: Need an explanation of these default variables. Is "rad" radiation? Need confiromation. 
+   COMMENT: Needs review. Is "rad" radiation? Need confiromation. 
 
 
 Land Surface Model (LSM) SPP
@@ -912,28 +914,28 @@ Halo Blend Parameter
 FVCOM Parameter
 ===============
 ``USE_FVCOM``: (Default: "FALSE")
-   Flag that specifies whether or not to update surface conditions in FV3-LAM with fields generated from the Finite Volume Community Ocean Model (FVCOM). If set to "TRUE", lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten using data provided by FVCOM. This is done by running the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to modify the file ``sfc_data.nc`` generated by ``chgres_cube``.  Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. 
+   Flag that specifies whether or not to update surface conditions in FV3-LAM with fields generated from the Finite Volume Community Ocean Model (:term:`FVCOM`). If set to "TRUE", lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten using data provided by FVCOM. Setting ``USE_FVCOM="TRUE"`` causes the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to run. This, in turn, modifies the file ``sfc_data.nc`` generated by ``chgres_cube``.  Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. 
 
 ``FVCOM_WCSTART``: (Default: "cold")
-   Define if this is a "warm" start or a "cold" start. Setting this to "warm" will read in ``sfc_data``.nc generated in a RESTART directory. Setting this to "cold" will read in the ``sfc_data``.nc generated from ``chgres_cube`` in the ``make_ics`` portion of the workflow. Valid values: "cold" "warm"
+   Define if this is a "warm" start or a "cold" start. Setting this to "warm" will read in ``sfc_data.nc`` generated in a RESTART directory. Setting this to "cold" will read in the ``sfc_data.nc`` generated from ``chgres_cube`` in the ``make_ics`` portion of the workflow. Valid values: "cold" "warm"
 
 ``FVCOM_DIR``: (Default: "/user/defined/dir/to/fvcom/data")
-   User-defined directory where the ``fvcom.nc`` file containing FVCOM data on the FV3-LAM native grid is located. The file name in this directory must be ``fvcom.nc``.
+   User-defined directory where the ``fvcom.nc`` file containing :term:`FVCOM` data on the FV3-LAM native grid is located. The file name in this directory must be ``fvcom.nc``.
 
 ``FVCOM_FILE``: (Default: "fvcom.nc")
-   Name of file located in ``FVCOM_DIR`` that has FVCOM data interpolated to the FV3-LAM grid. This file will be copied later to a new location and the name changed to ``fvcom.nc`` if a name other than ``fvcom.nc`` is selected.
+   Name of file located in ``FVCOM_DIR`` that has :term:`FVCOM` data interpolated to the FV3-LAM grid. This file will be copied later to a new location and the name changed to ``fvcom.nc`` if a name other than ``fvcom.nc`` is selected.
 
 Compiler Parameter
 ==================
 ``COMPILER``: (Default: "intel")
-   Type of compiler invoked during the build step. Currently, this must be set manually (i.e., it is not inherited from the build system in the ``ufs-srweather-app`` directory).
+   Type of compiler invoked during the build step. Currently, this must be set manually (i.e., it is not inherited from the build system in the ``ufs-srweather-app`` directory). Valid values: "intel" "gnu"
 
 
-Thread Affinity interface
+Thread Affinity Interface
 ===========================
 
 .. note::
-   Note that settings for the make_grid and make_orog tasks are not included below as they do not use parallelized code.
+   Note that settings for the ``make_grid`` and ``make_orog`` tasks are not included below because they do not use parallelized code.
 
 ..
    COMMENT: The note above is in config_defaults.sh comments, but make_orog does seem to be included below... should I remove it? 
@@ -965,6 +967,10 @@ Thread Affinity interface
       OMP_NUM_THREADS_RUN_POST="1"
 
    The number of OpenMP threads to use for parallel regions.
+
+..
+   COMMENT: What does the #atmos_nthreads comment mean? Can it be removed?
+
 
 ``OMP_STACKSIZE_*``: (Default: see below)
 
