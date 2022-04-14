@@ -341,10 +341,10 @@ Initial and Lateral Boundary Condition Generation Parameters
    Users may wish to use lateral boundary conditions from a forecast that was started earlier than the initial time for the FV3 forecast configured here. This variable sets the number of hours earlier the external model started than when the FV3 forecast configured here should start. For example, if the forecast should use lateral boundary conditions from the GFS started 6 hours earlier, then ``EXTRN_MDL_LBCS_OFFSET_HRS="6"``. Note: the default value is model-dependent and set in ``set_extrn_mdl_params.sh``.
 
 ``FV3GFS_FILE_FMT_ICS``: (Default: "nemsio")
-   If using the FV3GFS model as the source of the ICs (i.e., if ``EXTRN_MDL_NAME_ICS="FV3GFS"``), this variable specifies the format of the model files to use when generating the ICs. Valid values: "nemsio" "grib2" "netcdf"
+   If using the FV3GFS model as the source of the :term:`ICs` (i.e., if ``EXTRN_MDL_NAME_ICS="FV3GFS"``), this variable specifies the format of the model files to use when generating the ICs. Valid values: "nemsio" "grib2" "netcdf"
 
 ``FV3GFS_FILE_FMT_LBCS``: (Default: "nemsio")
-   If using the FV3GFS model as the source of the LBCs (i.e. if ``EXTRN_MDL_NAME_ICS="FV3GFS"``), this variable specifies the format of the model files to use when generating the LBCs. Valid values: "nemsio" "grib2" "netcdf"
+   If using the FV3GFS model as the source of the :term:`LBCs` (i.e., if ``EXTRN_MDL_NAME_ICS="FV3GFS"``), this variable specifies the format of the model files to use when generating the LBCs. Valid values: "nemsio" "grib2" "netcdf"
 
 
 
@@ -352,55 +352,64 @@ Base Directories for External Model Files
 ===========================================
 
 .. note::
-   Note that these must be defined as null strings here so that if they are specified by the user in the experiment configuration file, they remain set to those values, and if not, they get set to machine-dependent values.
+   Note that these must be defined as null strings in ``config_defaults.sh`` so that if they are specified by the user in the experiment configuration file (i.e., ``config.sh``), they remain set to those values, and if not, they get set to machine-dependent values.
 
 ``EXTRN_MDL_SYSBASEDIR_ICS``: (Default: "")
-   Base directory on the local machine containing external model files for generating ICs on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined in ``EXTRN_MDL_NAME_ICS`` above).
+   Base directory on the local machine containing external model files for generating :term:`ICs` on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined in ``EXTRN_MDL_NAME_ICS`` above).
 
 ``EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: "")
-   Base directory on the local machine containing external model files for generating LBCs on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for LBCs (defined in ``EXTRN_MDL_NAME_LBCS`` above).
+   Base directory on the local machine containing external model files for generating :term:`LBCs` on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for LBCs (defined in ``EXTRN_MDL_NAME_LBCS`` above).
 
 
 User-Staged External Model Directory and File Parameters
 ========================================================
 ``USE_USER_STAGED_EXTRN_FILES``: (Default: "FALSE")
-   Flag that determines whether or not the workflow will look for the external model files needed for generating ICs and LBCs in user-specified directories (as opposed to fetching them from mass storage like NOAA HPSS).
+   Flag that determines whether or not the workflow will look for the external model files needed for generating :term:`ICs` and :term:`LBCs` in user-specified directories (as opposed to fetching them from mass storage like NOAA HPSS).
 
 ``EXTRN_MDL_SOURCE_BASEDIR_ICS``: (Default: "/base/dir/containing/user/staged/extrn/mdl/files/for/ICs")
-   Directory containing external model files for generating ICs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to "TRUE", the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_ICS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the ICs on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to "FALSE".
+   Directory containing external model files for generating ICs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to "TRUE", the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_ICS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the :term:`ICs` on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to "FALSE".
  
 ``EXTRN_MDL_FILES_ICS``: (Default: "ICS_file1" "ICS_file2" "...")
    Array containing the file names to search for in the ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` directory. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to "FALSE".
 
 ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``: (Default: "/base/dir/containing/user/staged/extrn/mdl/files/for/ICs")
-   Analogous to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` but for LBCs instead of ICs.
+   Analogous to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` but for :term:`LBCs` instead of :term:`ICs`.
 
 ``EXTRN_MDL_FILES_LBCS``: (Default: " "LBCS_file1" "LBCS_file2" "...")
-   Analogous to ``EXTRN_MDL_FILES_ICS`` but for LBCs instead of ICs.
+   Analogous to ``EXTRN_MDL_FILES_ICS`` but for :term:`LBCs` instead of :term:`ICs`.
 
 
 NOMADS Parameters
 ======================
 
-Set NOMADS online data associated parameters. 
+Set parameters associated with NOMADS online data. 
 
 ``NOMADS``: (Default: "FALSE")
-   Flag controlling whether or not using NOMADS online data.
+   Flag controlling whether to use NOMADS online data.
 
 ``NOMADS_file_type``: (Default: "nemsio")
-   Flag controlling the format of data.
+   Flag controlling the format of the data. Valid values: "GRIB2" "grib2" "NEMSIO" "nemsio"
 
 
 CCPP Parameter
 ==============
 ``CCPP_PHYS_SUITE``: (Default: "FV3_GFS_v16")
-   The :term:`CCPP` (Common Community Physics Package) physics suite to use for the forecast(s). The choice of physics suite determines the forecast model's namelist file, the diagnostics table file, the field table file, and the XML physics suite definition file that are staged in the experiment directory or the cycle directories under it. Current supported settings for this parameter are "FV3_GFS_v16" "FV3_RRFS_v1beta" "FV3_HRRR" and "FV3_WoFS".
-   Other valid values include: 
-   * "FV3_GFS_2017_gfdlmp"
-   * "FV3_GFS_2017_gfdlmp_regional"
-   * "FV3_GFS_v15p2"
-   * "FV3_GFS_v15_thompson_mynn_lam3km"
-   * "FV3_RRFS_v1alpha"
+   This parameter indicates which :term:`CCPP` (Common Community Physics Package) physics suite to use for the forecast(s). The choice of physics suite determines the forecast model's namelist file, the diagnostics table file, the field table file, and the XML physics suite definition file, which are staged in the experiment directory or the :term:`cycle` directories under it. 
+   
+   **Current supported settings for this parameter are:** 
+
+   | "FV3_GFS_v16" 
+   | "FV3_RRFS_v1beta" 
+   | "FV3_HRRR"
+   | "FV3_WoFS"
+
+   **Other valid values include:**
+
+   | "FV3_GFS_2017_gfdlmp"
+   | "FV3_GFS_2017_gfdlmp_regional"
+   | "FV3_GFS_v15p2"
+   | "FV3_GFS_v15_thompson_mynn_lam3km"
+   | "FV3_RRFS_v1alpha"
 
 ..
    COMMENT: "FV3_WoFS" technically has not been merged yet... and is called NSSL? What should I put for now? Current Default is "FV3_GFS_v15p2" - need to make sure we change that. 

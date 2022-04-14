@@ -5,23 +5,11 @@
 Grid Generation Parameters
 ==========================
 ``GRID_GEN_METHOD``: (Default: "")
-   This variable specifies the method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
+   This variable specifies which method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
 
-   * **"ESGgrid":** This will generate a regional version of the Extended Schmidt Gnomonic grid using the map projection developed by Jim Purser(1) of EMC. ESGgrid is the preferred grid option. 
+   * **"ESGgrid":** The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. 
 
-   * **"GFDLgrid":** This setting will generate a regional grid by first generating a "parent" global cubed-sphere grid and then taking a portion of tile 6 of that global grid and using it as the regional grid (referred to in the grid generation scripts as "tile 7" even though it doesn't correspond to a complete tile).  Note that the forecast is run on only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). This is the legacy grid generation method and is not supported in *all* predefined domains. 
-
-(1) Purser, R. J., D. Jovic, G. Ketefian, T. Black, J. Beck, J. Dong, and J. Carley, 2020: The Extended Schmidt Gnomonic Grid for Regional Applications. Unified Forecast System (UFS) Users’ Workshop. July 27-29, 2020.
-
-..
-   COMMENT: Should I delete or add a BibTeX entry?:
-   @misc{PurserEtAl,
-      title        = "The Extended Schmidt Gnomonic Grid for Regional Applications",
-      author       = "{Purser, R. J. and D. Jovic and G. Ketefian and T. Black and J. Beck and J. Dong, and J. Carley}",
-      howpublished = "\url{https://dtcenter.org/sites/default/files/events/2020/2-purser-james.pdf}",
-      year         = 2020,
-      note         = "Unified Forecast System (UFS) Users’ Workshop"
-   }
+   * **"GFDLgrid":** The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" grid generation method is the legacy grid generation method. It is not supported in *all* predefined domains. 
 
 .. attention::
 
@@ -57,14 +45,15 @@ The following parameters must be set if using the "ESGgrid" method of generating
    The number of cells in the meridional direction on the regional grid.
 
 ``ESGgrid_WIDE_HALO_WIDTH``: (Default: "")
-   The width (in units of number of grid cells) of the :term:`halo` to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model. 
+   The width (in number of grid cells) of the :term:`halo` to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model. 
 
 ``ESGgrid_PAZI``: (Default: "")
-   The rotational parameter for the ESG grid (in degrees).
+   The rotational parameter for the "ESGgrid" (in degrees).
 
 .. _WideHalo:
 
-A :term:`halo` is the strip of cells surrounding the regional grid; the halo is used to feed in the lateral boundary conditions to the grid. The forecast model requires **grid** files containing 3-cell- and 4-cell-wide halos and **orography** files with 0-cell- and 3-cell- wide halos. In order to generate grid and orography files with appropriately-sized halos, the grid and orography tasks create preliminary files with halos around the regional domain of width ``ESGgrid_WIDE_HALO_WIDTH`` cells. The files are then read in and "shaved" down to obtain grid files with 3-cell-wide and 4-cell-wide halos and orography files with 0-cell-wide and 3-cell-wide halos. The original halo that gets shaved down is referred to as the "wide" halo because it is wider than the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos that we eventually end up with. Note that the grid and orography files with the wide halo are only needed as intermediates in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos; they are not needed by the forecast model.
+.. note::
+   A :term:`halo` is the strip of cells surrounding the regional grid; the halo is used to feed in the lateral boundary conditions to the grid. The forecast model requires **grid** files containing 3-cell- and 4-cell-wide halos and **orography** files with 0-cell- and 3-cell- wide halos. In order to generate grid and orography files with appropriately-sized halos, the grid and orography tasks create preliminary files with halos around the regional domain of width ``ESGgrid_WIDE_HALO_WIDTH`` cells. The files are then read in and "shaved" down to obtain grid files with 3-cell-wide and 4-cell-wide halos and orography files with 0-cell-wide and 3-cell-wide halos. The original halo that gets shaved down is referred to as the "wide" halo because it is wider than the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos that we eventually end up with. Note that the grid and orography files with the wide halo are only needed as intermediates in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos; they are not needed by the forecast model.
 
 ..
    COMMENT: There's a note that we "probably don't need to make ESGgrid_WIDE_HALO_WIDTH a user-specified variable.  Just set it in the function set_gridparams_ESGgrid.sh". Has this been done? I thought there was a default value of 6. Does this come from set_gridparams_ESGgrid.sh? Will it overwirte what's added here?
@@ -73,7 +62,7 @@ A :term:`halo` is the strip of cells surrounding the regional grid; the halo is 
 GFDLgrid Settings
 ---------------------
 
-The following parameters must be set if using the "GFDLgrid" method of generating a regional grid (i.e., when ``GRID_GEN_METHOD="GFDLgrid"``). Note that the regional grid is defined with respect to a "parent" global cubed-sphere grid. Thus, all the parameters for a global cubed-sphere grid must be specified even though the model equations are integrated only on the regional grid. Tile 6 has arbitrarily been chosen as the tile to use to orient the global parent grid on the sphere (Earth). For convenience, the regional grid is denoted as "tile 7" even though it is embedded within tile 6 (i.e. it doesn't extend beyond the boundary of tile 6). Its exact location within tile 6 is determined by specifying the starting and ending i and j indices of the regional grid on tile 6, where i is the grid index in the x direction and j is the grid index in the y direction. All of this information is set in the variables below. 
+The following parameters must be set if using the "GFDLgrid" method of generating a regional grid (i.e., when ``GRID_GEN_METHOD="GFDLgrid"``). Note that the regional grid is defined with respect to a "parent" global cubed-sphere grid. Thus, all the parameters for a global cubed-sphere grid must be specified even though the model equations are integrated only on the regional grid. Tile 6 has arbitrarily been chosen as the tile to use to orient the global parent grid on the sphere (Earth). For convenience, the regional grid is denoted as "tile 7" even though it is embedded within tile 6 (i.e., it doesn't extend beyond the boundary of tile 6). Its exact location within tile 6 is determined by specifying the starting and ending i- and j-indices of the regional grid on tile 6, where i is the grid index in the x direction and j is the grid index in the y direction. All of this information is set in the variables below. 
 
 ``GFDLgrid_LON_T6_CTR``: (Default: "")
    Longitude of the center of tile 6 (in degrees).
@@ -86,6 +75,7 @@ The following parameters must be set if using the "GFDLgrid" method of generatin
    
    .. note::
       ``GFDLgrid_RES`` is a misnomer because it specifies *number* of grid cells, not grid size (in meters or kilometers). However, we keep this name in order to remain consistent with the usage of the word "resolution" in the global forecast model and auxiliary codes. The mapping from ``GFDLgrid_RES`` to a nominal resolution (grid cell size) for several values of ``GFDLgrid_RES`` is as follows (assuming a uniform global grid, i.e., with Schmidt stretch factor ``GFDLgrid_STRETCH_FAC="1"``):
+      
          +----------------+--------------------+
          | GFDLgrid_RES   | typical cell size  |
          +================+====================+
@@ -104,10 +94,10 @@ The following parameters must be set if using the "GFDLgrid" method of generatin
 
 
 ``GFDLgrid_STRETCH_FAC``: (Default: "")
-   Stretching factor used in the Schmidt transformation applied to the parent cubed-sphere grid. Setting the Schmidt stretching factor ``GFDLgrid_STRETCH_FAC`` to a value greater than 1 shrinks tile 6, while setting it to a value less than 1 (but still greater than 0) expands it. The remaining 5 tiles change shape as necessary to maintain global coverage of the grid.
+   Stretching factor used in the Schmidt transformation applied to the parent cubed-sphere grid. Setting the Schmidt stretching factor (``GFDLgrid_STRETCH_FAC``) to a value greater than 1 shrinks tile 6, while setting it to a value less than 1 (but still greater than 0) expands it. The remaining 5 tiles change shape as necessary to maintain global coverage of the grid.
 
 ``GFDLgrid_REFINE_RATIO``: (Default: "")
-   Cell refinement ratio for the regional grid, i.e., the number of cells in either the x or y direction on the regional grid (tile 7) that abut one cell on its parent tile (tile 6).
+   Cell refinement ratio for the regional grid. It refers to the number of cells in either the x or y direction on the regional grid (tile 7) that abut one cell on its parent tile (tile 6).
 
 ``GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G``: (Default: "")
    i-index on tile 6 at which the regional grid (tile 7) starts.
@@ -122,13 +112,13 @@ The following parameters must be set if using the "GFDLgrid" method of generatin
    j-index on tile 6 at which the regional grid (tile 7) ends.
 
 ``GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES``: (Default: "")
-   Flag that determines the file naming convention to use for grid, orography, and surface climatology files (or, if using pregenerated files, the naming convention that was used to name these files).  These files usually start with the string "C${RES}_", where RES is an integer. In the global forecast model, ``RES`` is the number of points in each of the two horizontal directions (x and y) on each tile of the global grid (defined here as GFDLgrid_RES). If this flag is set to "TRUE", RES will be set to GFDLgrid_RES just as in the global forecast model. If it is set to "FALSE", we calculate (in the grid generation task) an "equivalent global uniform cubed-sphere resolution" -- call it RES_EQUIV -- and then set RES equal to it. RES_EQUIV is the number of grid points in each of the x and y directions on each tile that a global UNIFORM (i.e., stretch factor of 1) cubed-sphere grid would need to have in order to have the same average grid size as the regional grid. This is a more useful indicator of the grid size because it takes into account the effects of GFDLgrid_RES, GFDLgrid_STRETCH_FAC, and GFDLgrid_REFINE_RATIO in determining the regional grid's typical grid size, whereas simply setting RES to GFDLgrid_RES doesn't take into account the effects of GFDLgrid_STRETCH_FAC and GFDLgrid_REFINE_RATIO on the regional grid's resolution. Nevertheless, some users still prefer to use GFDLgrid_RES in the file names, so we allow for that here by setting this flag to "TRUE".
+   Flag that determines the file naming convention to use for grid, orography, and surface climatology files (or, if using pregenerated files, the naming convention that was used to name these files).  These files usually start with the string ``"C${RES}_"``, where ``RES`` is an integer. In the global forecast model, ``RES`` is the number of points in each of the two horizontal directions (x and y) on each tile of the global grid (defined here as ``GFDLgrid_RES``). If this flag is set to "TRUE", ``RES`` will be set to ``GFDLgrid_RES`` just as in the global forecast model. If it is set to "FALSE", we calculate (in the grid generation task) an "equivalent global uniform cubed-sphere resolution" -- call it ``RES_EQUIV`` -- and then set ``RES`` equal to it. ``RES_EQUIV`` is the number of grid points in each of the x and y directions on each tile that a global UNIFORM (i.e., stretch factor of 1) cubed-sphere grid would need to have in order to have the same average grid size as the regional grid. This is a more useful indicator of the grid size because it takes into account the effects of ``GFDLgrid_RES``, ``GFDLgrid_STRETCH_FAC``, and ``GFDLgrid_REFINE_RATIO`` in determining the regional grid's typical grid size, whereas simply setting RES to ``GFDLgrid_RES`` doesn't take into account the effects of ``GFDLgrid_STRETCH_FAC`` and ``GFDLgrid_REFINE_RATIO`` on the regional grid's resolution. Nevertheless, some users still prefer to use ``GFDLgrid_RES`` in the file names, so we allow for that here by setting this flag to "TRUE".
 
 Computational Forecast Parameters
 =================================
 
 ``LAYOUT_X, LAYOUT_Y``: (Default: "")
-   The number of MPI tasks (processes) to use in the two horizontal directions (x and y) of the regional grid when running the forecast model.
+   The number of :term:`MPI` tasks (processes) to use in the two horizontal directions (x and y) of the regional grid when running the forecast model.
 
 ``BLOCKSIZE``: (Default: "")
    The amount of data that is passed into the cache at a time.
@@ -137,9 +127,8 @@ Computational Forecast Parameters
 
    In ``config_defaults.sh`` these parameters are set to null strings so that:
 
-   #. If the experiment is using a predefined grid and the user sets the parameter in the user-specified experiment configuration file (``EXPT_CONFIG_FN``), that value will be used in the forecast(s). Otherwise, the default value of the parameter for that predefined grid will be used.
-
-   #. If the experiment is not using a predefined grid (i.e., it is using a custom grid whose parameters are specified in the experiment configuration file), then the user must specify a value for the parameter in that configuration file. Otherwise, the parameter will remain set to a null string, and the experiment generation will fail, because the generation scripts check to ensure that all the parameters defined in this section are set to non-empty strings before creating the experiment directory.
+   #. If the experiment is using a predefined grid and the user sets the ``BLOCKSIZE`` parameter in the user-specified experiment configuration file (i.e., ``config.sh``), that value will be used in the forecast(s). Otherwise, the default ``BLOCKSIZE`` for that predefined grid will be used.
+   #. If the experiment is *not* using a predefined grid (i.e., it is using a custom grid whose parameters are specified in the experiment configuration file), then the user must specify a value for the ``BLOCKSIZE`` parameter in that configuration file. Otherwise, it will remain set to a null string, and the experiment generation will fail, because the generation scripts check to ensure that all the parameters defined in this section are set to non-empty strings before creating the experiment directory.
 
 
 Write-Component (Quilting) Parameters
@@ -696,6 +685,8 @@ Subhourly Forecast Parameters
 ``DT_SUB_HOURLY_POST_MNTS``: (Default: "00")
    Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). 
 
+..
+   COMMENT: In valid_param_vals.sh only these values are listed: "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30"
 
 Customized Post Configuration Parameters
 ========================================
