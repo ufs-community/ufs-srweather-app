@@ -146,59 +146,63 @@ Write-Component (Quilting) Parameters
 ======================================
 
 .. note::
-   The :term:`UPP` (called by the ``run_post`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a write-component grid before writing them to an output file. The output history files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the write component. This model component is configured with settings in the model_configure file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html?highlight=write-component#model-configurefile>`__ of the UFS Weather Model documentation.  
+   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a write-component grid before writing them to an output file. The output files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the write component. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html?highlight=write-component#model-configurefile>`__ of the UFS Weather Model documentation.  
 
 ``QUILTING``: (Default: "TRUE")
-   Flag that determines whether or not to use the write-component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-hour output forecast hour) containing dynamics and physics fields, respectively, on the write-component grid (the regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model). If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc`` and contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to "TRUE" when running the SRW App. If ``QUILTING`` is set to "FALSE", the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to "TRUE". 
+
+   .. attention::
+      The regional grid requires the use of the write component, so users generally should not need to change the default value for ``QUILTING``. 
+
+   Flag that determines whether to use the write component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-hour output forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to "TRUE" when running the SRW App. If ``QUILTING`` is set to "FALSE", the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to "TRUE" in the SRW App. 
 
 ..
    COMMENT: Still don't undertand what HHH refers to... can we give an example?
 
 ``PRINT_ESMF``: (Default: "FALSE")
-   Flag for whether or not to output extra (debugging) information from ESMF routines. Must be "TRUE" or "FALSE". Note that the write-component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory).
+   Flag that determines whether to output extra (debugging) information from ESMF routines. Must be "TRUE" or "FALSE". Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory).
 
 ``WRTCMP_write_groups``: (Default: "1")
-   The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write-component.
+   The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write component.
 
 ``WRTCMP_write_tasks_per_group``: (Default: "20")
    The number of MPI tasks to allocate for each write group.
 
 ``WRTCMP_output_grid``: (Default: "''")
-   Sets the type (coordinate system) of the write-component grid. The default empty string forces the user to set a valid valid ``WRTCMP_output_grid`` in ``config.sh`` if specifying a custom grid. Otherwise, the ordinary "regional_latlon" grid will be used. Valid values: "rotated_latlon" "lambert_conformal" "regional_latlon" 
+   Sets the type (coordinate system) of the write component grid. The default empty string forces the user to set a valid value for ``WRTCMP_output_grid`` in ``config.sh`` if specifying a *custom* grid. Otherwise, the ordinary "regional_latlon" grid will be used. Valid values: "lambert_conformal" "regional_latlon" "rotated_latlon"
 
 ..
    COMMENT: If no value is specified in config.sh, would setup.sh (or some other script?) use the ordinary "regional_latlon"? Or would the experiment just fail?
 
 ``WRTCMP_cen_lon``: (Default: "")
-   Longitude (in degrees) of the center of the write-component grid. Can usually set to corresponding value from the native grid.
+   Longitude (in degrees) of the center of the write component grid. Can usually be set to the corresponding value from the native grid.
 
 ``WRTCMP_cen_lat``: (Default: "")
-   Latitude (in degrees) of the center of the write-component grid. Can usually set to corresponding value from the native grid.
+   Latitude (in degrees) of the center of the write component grid. Can usually be set to the corresponding value from the native grid.
 
 ``WRTCMP_lon_lwr_left``: (Default: "")
-   Longitude (in degrees) of the center of the lower-left (southwest) cell on the write-component grid. If using "rotated_latlon" coordinate system, this is expressed in terms of the rotated longitude. Must be set manually.
+   Longitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated longitude. Must be set manually.
    
 ..
    COMMENT: Has this changed? Or still manual?
 
 ``WRTCMP_lat_lwr_left``: (Default: "")
-   Latitude (in degrees) of the center of the lower-left (southwest) cell on the write-component grid. If using "rotated_latlon" coordinate system, this is expressed in terms of the rotated latitude. Must be set manually.
+   Latitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated latitude. Must be set manually.
 
-**The following parameters must be set when ``WRTCMP_output_grid`` is set to "rotated_latlon":**
+**The following parameters must be set when** ``WRTCMP_output_grid`` **is set to "rotated_latlon":**
 
 ``WRTCMP_lon_upr_rght``: (Default: "")
-   Longitude (in degrees) of the center of the upper-left (northeast) cell on the write-component grid (expressed in terms of the rotated longitude).
+   Longitude (in degrees) of the center of the upper-right (northeast) cell on the write component grid (expressed in terms of the rotated longitude).
 
 ``WRTCMP_lat_upr_rght``: (Default: "")
-   Latitude (in degrees) of the center of the upper-left (northeast) cell on the write-component grid (expressed in terms of the rotated latitude).
+   Latitude (in degrees) of the center of the upper-right (northeast) cell on the write component grid (expressed in terms of the rotated latitude).
 
 ``WRTCMP_dlon``: (Default: "")
-   Size of grid cell (in degrees) of a grid cell on the write-component grid (expressed in terms of the rotated longitude).
+   Size (in degrees) of a grid cell on the write component grid (expressed in terms of the rotated longitude).
 
 ``WRTCMP_dlat``: (Default: "")
-   Size of grid cell (in degrees) of a grid cell on the write-component grid (expressed in terms of the rotated latitude).
+   Size (in degrees) of a grid cell on the write component grid (expressed in terms of the rotated latitude).
 
-**The following parameters must be set when ``WRTCMP_output_grid`` is set to "lambert_conformal":**
+**The following parameters must be set when** ``WRTCMP_output_grid`` **is set to "lambert_conformal":**
 
 ``WRTCMP_stdlat1``: (Default: "")
    First standard latitude (in degrees) in definition of Lambert conformal projection.
@@ -207,16 +211,16 @@ Write-Component (Quilting) Parameters
    Second standard latitude (in degrees) in definition of Lambert conformal projection.
 
 ``WRTCMP_nx``: (Default: "")
-   Number of grid points in the x coordinate of the Lambert conformal projection.
+   Number of grid points in the x-coordinate of the Lambert conformal projection.
 
 ``WRTCMP_ny``: (Default: "")
-   Number of grid points in the y coordinate of the Lambert conformal projection.
+   Number of grid points in the y-coordinate of the Lambert conformal projection.
 
 ``WRTCMP_dx``: (Default: "")
-   Grid cell size (in meters) along the x axis of the Lambert conformal projection.
+   Grid cell size (in meters) along the x-axis of the Lambert conformal projection.
 
 ``WRTCMP_dy``: (Default: "")
-   Grid cell size (in meters) along the y axis of the Lambert conformal projection. 
+   Grid cell size (in meters) along the y-axis of the Lambert conformal projection. 
 
 
 Predefined Grid Parameters
@@ -725,210 +729,6 @@ Ensemble Model Parameters
 
 ``NUM_ENS_MEMBERS``: (Default: "1")
    The number of ensemble members to run if ``DO_ENSEMBLE`` is set to "TRUE". This variable also controls the naming of the ensemble member directories. For example, if ``NUM_ENS_MEMBERS`` is set to "8", the member directories will be named *mem1, mem2, ..., mem8*.  If it is set to "08" (with a leading zero), the member directories will be named *mem01, mem02, ..., mem08*. However, after reading in the number of characters in this string (in order to determine how many leading zeros, if any, should be placed in the names of the member directories), the workflow generation scripts strip away those leading zeros. Thus, in the variable definitions file (``GLOBAL_VAR_DEFNS_FN``), this variable appears with its leading zeros stripped. This variable is not used unless ``DO_ENSEMBLE`` is set to "TRUE".
-
-
-Stochastic Physics Parameters
-================================
-
-..
-   COMMENT: Move all physic params up with CCPP section?
-
-For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/namelist_options.html>`__.
-
-
-``NEW_LSCALE``: (Default: "TRUE") 
-   #
-
-..
-   COMMENT: Cannot find information on NEW_LSCALE variable in the stochastic physics docs. 
-
-Specific Humidity (SHUM) Perturbation Parameters
----------------------------------------------------
-
-``DO_SHUM``: (Default: "FALSE")
-   Flag to turn Specific Humidity (SHUM) perturbations on or off. SHUM perturbations multiply the low-level specific humidity by a small random number at each time-step. The SHUM scheme attempts to address missing physics phenomena (e.g., cold pools, gust fronts) most active in convective regions. 
-
-``ISEED_SHUM``: (Default: "2")
-   Seed for setting the SHUM random number sequence.
-
-``SHUM_MAG``: (Default: "0.006") 
-   Amplitudes of random patterns. Corresponds to the variable ``shum`` in ``input.nml``.
-
-``SHUM_LSCALE``: (Default: "150000")
-   Decorrelation spatial scale in meters.
-
-``SHUM_TSCALE``: (Default: "21600")
-   Decorrelation timescale in seconds. Corresponds to the variable ``shum_tau`` in ``input.nml``.
-
-``SHUM_INT``: (Default: "3600")
-   Interval in seconds to update random pattern (optional). Perturbations still get applied at every time-step. Corresponds to the variable ``shumint`` in ``input.nml``.
-
-.. _SPPT:
-
-Stochastically Perturbed Physics Tendencies (SPPT) Parameters
------------------------------------------------------------------
-
-SPPT perturbs full physics tendencies *after* the call to the physics suite, unlike `SPP <SPP>` (below), which acts on the physics itself. 
-
-``DO_SPPT``: (Default: "FALSE")
-   Flag to turn Stochastically Perturbed Physics Tendencies (SPPT) on or off. SPPT multiplies the physics tendencies by a random number O [0,2] before updating the model state. Addresses error in the physics parameterizations (either missing physics or unresolved subgrid processes). It is most active in the boundary layer and convective regions. 
-
-..
-   COMMENT: Does it need to be O? can it be X? or some other variable/letter that doesn't look like the number zero? 
-
-``ISEED_SPPT``: (Default: "1") 
-   Seed for setting the SPPT random number sequence.
-
-``SPPT_MAG``: (Default: "0.7")
-   Amplitude of random patterns. Corresponds to the variable ``sppt`` in ``input.nml``.
-
-``SPPT_LOGIT``: (Default: "TRUE")
-   Limits the SPPT perturbations to between 0 and 2. Should be "TRUE"; otherwise the model will crash.
-
-``SPPT_LSCALE``: (Default: "150000")
-   Decorrelation spatial scales in meters. 
-
-``SPPT_TSCALE``: (Default: "21600") 
-   Decorrelation timescale in seconds. Corresponds to the variable ``sppt_tau`` in ``input.nml``.
-   
-``SPPT_INT``: (Default: "3600") 
-   Interval in seconds to update random pattern (optional parameter). Perturbations still get applied at every time-step. Corresponds to the variable ``spptint`` in ``input.nml``.
-
-``SPPT_SFCLIMIT``: (Default: "TRUE")
-   When "TRUE", tapers the SPPT perturbations to zero at the model’s lowest level, which helps reduce model crashes. 
-
-``USE_ZMTNBLCK``: (Default: "FALSE")
-   When "TRUE", do not apply perturbations below the dividing streamline that is diagnosed by the gravity wave drag, mountain blocking scheme
-
-Stochastic Kinetic Energy Backscatter (SKEB) Parameters
-----------------------------------------------------------
-
-``DO_SKEB``: (Default: "FALSE")
-   Flag to turn Stochastic Kinetic Energy Backscatter (SKEB) on or off. SKEB adds wind perturbations to the model state. Perturbations are random in space/time, but amplitude is determined by a smoothed dissipation estimate provided by the :term:`dynamical core`. SKEB addresses errors in the dynamics more active in the mid-latitudes.
-
-``ISEED_SKEB``: (Default: "3")
-   Seed for setting the SHUM random number sequence.
-
-``SKEB_MAG``: (Default: "0.5") 
-   Amplitude of random patterns. Corresponds to the variable ``skeb`` in ``input.nml``.
-
-``SKEB_LSCALE``: (Default: "150000")
-   Decorrelation spatial scale in meters. 
-
-``SKEB_TSCALE``: (Default: "21600")
-   Decorrelation timescale in seconds. Corresponds to the variable ``skeb_tau`` in ``input.nml``.
-
-``SKEB_INT``: (Default: "3600")
-   Interval in seconds to update random pattern (optional). Perturbations still get applied every time-step. Corresponds to the variable ``skebint`` in ``input.nml``.
-
-``SKEBNORM``: (Default: "1")
-   Patterns:
-      * 0-random pattern is stream function
-      * 1-pattern is K.E. norm
-      * 2-pattern is vorticity
-
-..
-   COMMENT: Stochastic physics docs say the default is zero... Have the numbers changed? Or did the default change?
-
-
-``SKEB_VDOF``: (Default: "10")
-   The number of degrees of freedom in the vertical for the SKEB random pattern. 
-
-..
-   COMMENT: The vertical what?
-
-.. _SPP:
-
-SPP Stochastic Physics Parameters
-------------------------------------
-
-Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics options. Unlike `SPPT physics <SPPT>`, SPP is applied as part of the physics run, not post. Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
-
-.. note::
-   SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. 
-
-..
-   COMMENT: Is this still the case? 
-   COMMENT: What is the difference between SPPT (above) and SPP?
-
-``DO_SPP``: (Default: "false")
-   Flag to turn SPP on or off. 
-
-..
-   COMMENT: What does SPP do? Need a description similar to the SKEB/SHUM/SPPT descriptions. 
-   COMMENT: How are SPPT and SPP different? 
-
-``ISEED_SPP``: (Default: ( "4" "4" "4" "4" "4" ) )
-   The initial seed value for the perturbation pattern. 
-
-``SPP_MAG_LIST``: (Default: ( "0.2" "0.2" "0.75" "0.2" "0.2" ) ) 
-   Corresponds to the variable ``spp_prt_list`` in ``input.nml``
-
-``SPP_LSCALE``: (Default: ( "150000.0" "150000.0" "150000.0" "150000.0" "150000.0" ) )
-   Length scale in meters.
-   
-``SPP_TSCALE``: (Default: ( "21600.0" "21600.0" "21600.0" "21600.0" "21600.0" ) ) 
-   Time decorrelation length in seconds. Corresponds to the variable ``spp_tau`` in ``input.nml``.
-
-``SPP_SIGTOP1``: (Default: ( "0.1" "0.1" "0.1" "0.1" "0.1") )
-   Controls vertical tapering of perturbations at the tropopause and corresponds to the lower sigma level at which to taper perturbations to zero. 
-
-..
-   COMMENT: Needs review. 
-
-``SPP_SIGTOP2``: (Default: ( "0.025" "0.025" "0.025" "0.025" "0.025" ) )
-   Controls vertical tapering of perturbations at the tropopause and corresponds to the upper sigma level at which to taper perturbations to zero.
-
-..
-   COMMENT: Needs review. 
-
-``SPP_STDDEV_CUTOFF``: (Default: ( "1.5" "1.5" "2.5" "1.5" "1.5" ) )
-   Perturbation magnitude cutoff in number of standard deviations from the mean. 
-
-..
-   COMMENT: Needs review. 
-
-``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
-   The list of parameterizations to perturb: planetary boundary layer (PBL), surface climatology (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values include "pbl", "sfc", "rad", "gwd", and "mp".
-
-..
-   COMMENT: Needs review. Is "rad" radiation? Need confiromation. 
-
-
-Land Surface Model (LSM) SPP
--------------------------------
-
-Turn on SPP in Noah or RUC LSM (support for Noah MP is in progress). Please be aware of the :term:`SDF` that you choose if you wish to turn on Land Surface Model (LSM) SPP. SPP in LSM schemes is handled in the ``&nam_sfcperts`` namelist block instead of in ``&nam_sppperts``, where all other SPP is implemented. The default perturbation frequency is determined by the ``fhcyc`` namelist entry. Since that parameter is set to zero in the SRW App, use ``LSM_SPP_EACH_STEP`` to perturb every time step. 
-
-LSM perturbations include soil moisture content [SMC] (volume fraction), vegetation fraction (VGF), albedo (ALB), salinity (SAL), emissivity (EMI), surface roughness (ZOL) (in cm), and soil temperature (STC). Perturbations to soil moisture content (SMC) are only applied at the first time step. Only five perturbations at a time can be applied currently, but all seven are shown below. In addition, only one unique *iseed* value is allowed at the moment, and it is used for each pattern.
-
-``DO_LSM_SPP``: (Default: "false") 
-   Turns on LSM SPP. When "TRUE", sets ``lndp_type=2``.
-
-..
-   COMMENT: What does LSM SPP do? Need a description similar to the SKEB/SHUM/SPPT descriptions. Also, where is lndp_type set? The weather model?
-
-``LSM_SPP_TSCALE``: (Default: ( ( "21600" "21600" "21600" "21600" "21600" "21600" "21600" ) )
-   Decorrelation timescale in seconds. 
-
-``LSM_SPP_LSCALE``: (Default: ( ( "150000" "150000" "150000" "150000" "150000" "150000" "150000" ) )
-   Decorrelation spatial scale in meters.
-
-``ISEED_LSM_SPP``: (Default: ("9") )
-   Seed for setting the LSM SPP random number sequence.
-
-``LSM_SPP_VAR_LIST``: (Default: ( ( "smc" "vgf" "alb" "sal" "emi" "zol" "stc" ) )
-   Indicates which LSM variables to perturb. 
-
-``LSM_SPP_MAG_LIST``: (Default: ( ( "0.2" "0.001" "0.001" "0.001" "0.001" "0.001" "0.2" ) )
-   Sets the amplitude of random patterns for each of the LSM perturbations. 
-
-``LSM_SPP_EACH_STEP``: (Default: "true") 
-   When set to "TRUE", it sets ``lndp_each_step=.true.`` and perturbs each time step. 
-
-..
-   COMMENT: Where is lndp_each_step found?
-   COMMENT: All definitions in this section are my best guess and need revision. 
 
 .. _HaloBlend:
 

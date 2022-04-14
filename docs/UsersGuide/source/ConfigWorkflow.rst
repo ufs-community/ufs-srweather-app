@@ -405,5 +405,193 @@ CCPP Parameter
 ..
    COMMENT: "FV3_WoFS" technically has not been merged yet... and is called NSSL? What should I put for now? Current Default is "FV3_GFS_v15p2" - need to make sure we change that. 
 
+Stochastic Physics Parameters
+================================
+
+For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/namelist_options.html>`__.
+
+
+``NEW_LSCALE``: (Default: "TRUE") 
+   Use correct formula for converting a spatial legnthscale into spectral space. 
+
+Specific Humidity (SHUM) Perturbation Parameters
+---------------------------------------------------
+
+``DO_SHUM``: (Default: "FALSE")
+   Flag to turn Specific Humidity (SHUM) perturbations on or off. SHUM perturbations multiply the low-level specific humidity by a small random number at each time-step. The SHUM scheme attempts to address missing physics phenomena (e.g., cold pools, gust fronts) most active in convective regions. 
+
+``ISEED_SHUM``: (Default: "2")
+   Seed for setting the SHUM random number sequence.
+
+``SHUM_MAG``: (Default: "0.006") 
+   Amplitudes of random patterns. Corresponds to the variable ``shum`` in ``input.nml``.
+
+``SHUM_LSCALE``: (Default: "150000")
+   Decorrelation spatial scale in meters.
+
+``SHUM_TSCALE``: (Default: "21600")
+   Decorrelation timescale in seconds. Corresponds to the variable ``shum_tau`` in ``input.nml``.
+
+``SHUM_INT``: (Default: "3600")
+   Interval in seconds to update random pattern (optional). Perturbations still get applied at every time-step. Corresponds to the variable ``shumint`` in ``input.nml``.
+
+.. _SPPT:
+
+Stochastically Perturbed Physics Tendencies (SPPT) Parameters
+-----------------------------------------------------------------
+
+SPPT perturbs full physics tendencies *after* the call to the physics suite, unlike :ref:`SPP <SPP>` (below), which perturbs specific tuning parameters within a physics scheme. 
+
+``DO_SPPT``: (Default: "FALSE")
+   Flag to turn Stochastically Perturbed Physics Tendencies (SPPT) on or off. SPPT multiplies the physics tendencies by a random number between 0 and 2 before updating the model state. This addresses error in the physics parameterizations (either missing physics or unresolved subgrid processes). It is most active in the boundary layer and convective regions. 
+
+..
+   COMMENT: Does it need to be O? can it be X? or some other variable/letter that doesn't look like the number zero? 
+
+``ISEED_SPPT``: (Default: "1") 
+   Seed for setting the SPPT random number sequence.
+
+``SPPT_MAG``: (Default: "0.7")
+   Amplitude of random patterns. Corresponds to the variable ``sppt`` in ``input.nml``.
+
+``SPPT_LOGIT``: (Default: "TRUE")
+   Limits the SPPT perturbations to between 0 and 2. Should be "TRUE"; otherwise the model will crash.
+
+``SPPT_LSCALE``: (Default: "150000")
+   Decorrelation spatial scales in meters. 
+
+``SPPT_TSCALE``: (Default: "21600") 
+   Decorrelation timescale in seconds. Corresponds to the variable ``sppt_tau`` in ``input.nml``.
+   
+``SPPT_INT``: (Default: "3600") 
+   Interval in seconds to update random pattern (optional parameter). Perturbations still get applied at every time-step. Corresponds to the variable ``spptint`` in ``input.nml``.
+
+``SPPT_SFCLIMIT``: (Default: "TRUE")
+   When "TRUE", tapers the SPPT perturbations to zero at the model’s lowest level, which reduces model crashes. 
+
+``USE_ZMTNBLCK``: (Default: "FALSE")
+   When "TRUE", do not apply perturbations below the dividing streamline that is diagnosed by the gravity wave drag, mountain blocking scheme
+
+Stochastic Kinetic Energy Backscatter (SKEB) Parameters
+----------------------------------------------------------
+
+``DO_SKEB``: (Default: "FALSE")
+   Flag to turn Stochastic Kinetic Energy Backscatter (SKEB) on or off. SKEB adds wind perturbations to the model state. Perturbations are random in space/time, but amplitude is determined by a smoothed dissipation estimate provided by the :term:`dynamical core`. SKEB addresses errors in the dynamics more active in the mid-latitudes.
+
+``ISEED_SKEB``: (Default: "3")
+   Seed for setting the SHUM random number sequence.
+
+``SKEB_MAG``: (Default: "0.5") 
+   Amplitude of random patterns. Corresponds to the variable ``skeb`` in ``input.nml``.
+
+``SKEB_LSCALE``: (Default: "150000")
+   Decorrelation spatial scale in meters. 
+
+``SKEB_TSCALE``: (Default: "21600")
+   Decorrelation timescale in seconds. Corresponds to the variable ``skeb_tau`` in ``input.nml``.
+
+``SKEB_INT``: (Default: "3600")
+   Interval in seconds to update random pattern (optional). Perturbations still get applied every time-step. Corresponds to the variable ``skebint`` in ``input.nml``.
+
+``SKEBNORM``: (Default: "1")
+   Patterns:
+      * 0-random pattern is stream function
+      * 1-pattern is K.E. norm
+      * 2-pattern is vorticity
+
+``SKEB_VDOF``: (Default: "10")
+   The number of degrees of freedom in the vertical for the SKEB random pattern. 
+
+..
+   COMMENT: The vertical what?
+
+.. _SPP:
+
+SPP Stochastic Physics Parameters
+------------------------------------
+
+Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics options. Unlike :ref:`SPPT physics <SPPT>`, SPP is applied as part of the physics run, not post. SPP perturbs specific tuning parameters within a physics scheme (unlike `SPPT <SPPT>`, which multiplies overall physics tendencies by a random numer *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
+
+.. note::
+   SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. 
+
+``DO_SPP``: (Default: "false")
+   Flag to turn SPP on or off. 
+
+..
+   COMMENT: What does SPP do? Need a description similar to the SKEB/SHUM/SPPT descriptions. 
+
+``ISEED_SPP``: (Default: ( "4" "4" "4" "4" "4" ) )
+   The initial seed value for the perturbation pattern. 
+
+``SPP_MAG_LIST``: (Default: ( "0.2" "0.2" "0.75" "0.2" "0.2" ) ) 
+   Corresponds to the variable ``spp_prt_list`` in ``input.nml``
+
+``SPP_LSCALE``: (Default: ( "150000.0" "150000.0" "150000.0" "150000.0" "150000.0" ) )
+   Length scale in meters.
+   
+``SPP_TSCALE``: (Default: ( "21600.0" "21600.0" "21600.0" "21600.0" "21600.0" ) ) 
+   Time decorrelation length in seconds. Corresponds to the variable ``spp_tau`` in ``input.nml``.
+
+``SPP_SIGTOP1``: (Default: ( "0.1" "0.1" "0.1" "0.1" "0.1") )
+   Controls vertical tapering of perturbations at the tropopause and corresponds to the lower sigma level at which to taper perturbations to zero. 
+
+..
+   COMMENT: Needs review. 
+
+``SPP_SIGTOP2``: (Default: ( "0.025" "0.025" "0.025" "0.025" "0.025" ) )
+   Controls vertical tapering of perturbations at the tropopause and corresponds to the upper sigma level at which to taper perturbations to zero.
+
+..
+   COMMENT: Needs review. 
+
+``SPP_STDDEV_CUTOFF``: (Default: ( "1.5" "1.5" "2.5" "1.5" "1.5" ) )
+   Perturbation magnitude cutoff in number of standard deviations from the mean. 
+
+..
+   COMMENT: Needs review. 
+
+``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
+   The list of parameterizations to perturb: planetary boundary layer (PBL), surface climatology (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values include "pbl", "sfc", "rad", "gwd", and "mp".
+
+..
+   COMMENT: Needs review. Is "rad" radiation? Need confiromation. 
+
+
+Land Surface Model (LSM) SPP
+-------------------------------
+
+Turn on SPP in Noah or RUC LSM (support for Noah MP is in progress). Please be aware of the :term:`SDF` that you choose if you wish to turn on Land Surface Model (LSM) SPP. SPP in LSM schemes is handled in the ``&nam_sfcperts`` namelist block instead of in ``&nam_sppperts``, where all other SPP is implemented. The default perturbation frequency is determined by the ``fhcyc`` namelist entry. Since that parameter is set to zero in the SRW App, use ``LSM_SPP_EACH_STEP`` to perturb every time step. 
+
+LSM perturbations include soil moisture content [SMC] (volume fraction), vegetation fraction (VGF), albedo (ALB), salinity (SAL), emissivity (EMI), surface roughness (ZOL) (in cm), and soil temperature (STC). Perturbations to soil moisture content (SMC) are only applied at the first time step. Only five perturbations at a time can be applied currently, but all seven are shown below. In addition, only one unique *iseed* value is allowed at the moment, and it is used for each pattern.
+
+``DO_LSM_SPP``: (Default: "false") 
+   Turns on LSM SPP. When "TRUE", sets ``lndp_type=2``.
+
+..
+   COMMENT: What does LSM SPP do? Need a description similar to the SKEB/SHUM/SPPT descriptions. Also, where is lndp_type set? The weather model?
+
+``LSM_SPP_TSCALE``: (Default: ( ( "21600" "21600" "21600" "21600" "21600" "21600" "21600" ) )
+   Decorrelation timescale in seconds. 
+
+``LSM_SPP_LSCALE``: (Default: ( ( "150000" "150000" "150000" "150000" "150000" "150000" "150000" ) )
+   Decorrelation spatial scale in meters.
+
+``ISEED_LSM_SPP``: (Default: ("9") )
+   Seed for setting the LSM SPP random number sequence.
+
+``LSM_SPP_VAR_LIST``: (Default: ( ( "smc" "vgf" "alb" "sal" "emi" "zol" "stc" ) )
+   Indicates which LSM variables to perturb. 
+
+``LSM_SPP_MAG_LIST``: (Default: ( ( "0.2" "0.001" "0.001" "0.001" "0.001" "0.001" "0.2" ) )
+   Sets the amplitude of random patterns for each of the LSM perturbations. 
+
+``LSM_SPP_EACH_STEP``: (Default: "true") 
+   When set to "TRUE", it sets ``lndp_each_step=.true.`` and perturbs each time step. 
+
+..
+   COMMENT: Where is lndp_each_step found?
+   COMMENT: All definitions in this section are my best guess and need revision. 
+
 
 .. include:: ConfigParameters.inc
