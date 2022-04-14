@@ -1,8 +1,8 @@
 .. _ConfigWorkflow:
 
-==================================================================
-Configuring the Workflow: ``config.sh`` and ``config_defaults.sh``		
-==================================================================
+============================================================================================
+Workflow Parameters: Configuring the Workflow in ``config.sh`` and ``config_defaults.sh``		
+============================================================================================
 To create the experiment directory and workflow when running the SRW App, the user must create an experiment configuration file named ``config.sh``. This file contains experiment-specific information, such as dates, external model data, directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``regional_workflow`` repository’s ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first is for running experiments in community mode (``RUN_ENVIR`` set to "community"; see below), and the second is for running experiments in "nco" mode (``RUN_ENVIR`` set to "nco"). Note that for this release, only "community" mode is supported. These files can be used as the starting point from which to generate a variety of experiment configurations in which to run the SRW App.
 
 ..
