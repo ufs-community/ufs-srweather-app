@@ -521,8 +521,8 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 
 .. _SPP:
 
-SPP Stochastic Physics Parameters
-------------------------------------
+SPP Stochastic Physics Parameterizations
+--------------------------------------------
 
 Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics options. Unlike :ref:`SPPT physics <SPPT>`, SPP is applied as part of the physics run, not post. SPP perturbs specific tuning parameters within a physics scheme (unlike `SPPT <SPPT>`, which multiplies overall physics tendencies by a random numer *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
@@ -530,7 +530,7 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
    SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. 
 
 ``DO_SPP``: (Default: "false")
-   Flag to turn SPP on or off. 
+   Flag to turn SPP on or off. SPP perturbs parameters or variables with unknown or uncertain magnitudes within the physics code based on ranges provided by physics experts.
 
 ..
    COMMENT: What does SPP do? Need a description similar to the SKEB/SHUM/SPPT descriptions. 
@@ -580,10 +580,7 @@ Turn on SPP in Noah or RUC LSM (support for Noah MP is in progress). Please be a
 LSM perturbations include soil moisture content [SMC] (volume fraction), vegetation fraction (VGF), albedo (ALB), salinity (SAL), emissivity (EMI), surface roughness (ZOL) (in cm), and soil temperature (STC). Perturbations to soil moisture content (SMC) are only applied at the first time step. Only five perturbations at a time can be applied currently, but all seven are shown below. In addition, only one unique *iseed* value is allowed at the moment, and it is used for each pattern.
 
 ``DO_LSM_SPP``: (Default: "false") 
-   Turns on LSM SPP. When "TRUE", sets ``lndp_type=2``.
-
-..
-   COMMENT: What does LSM SPP do? Need a description similar to the SKEB/SHUM/SPPT descriptions. Also, where is lndp_type set? The weather model?
+   Turns on Land Surface Model (LSM) Stochastic Physics Parameterizations (SPP). When "TRUE", sets ``lndp_type=2``, which applies land perturbations to the selected paramaters using a newer scheme designed for data assimilation (DA) ensemble spread. LSM SPP perturbs uncertain land surface fields ("smc" "vgf" "alb" "sal" "emi" "zol" "stc") based on recommendations from physics experts. 
 
 ``LSM_SPP_TSCALE``: (Default: ( ( "21600" "21600" "21600" "21600" "21600" "21600" "21600" ) )
    Decorrelation timescale in seconds. 
@@ -604,8 +601,7 @@ LSM perturbations include soil moisture content [SMC] (volume fraction), vegetat
    When set to "TRUE", it sets ``lndp_each_step=.true.`` and perturbs each time step. 
 
 ..
-   COMMENT: Where is lndp_each_step found?
-   COMMENT: All definitions in this section are my best guess and need revision. 
+   COMMENT: All definitions in this section are my best guess and need review. 
 
 
 .. include:: ConfigParameters.inc
