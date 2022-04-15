@@ -25,32 +25,31 @@ Platform Environment
    Setting ``RUN_ENVIR`` to "community" will use the standard directory structure and variable naming convention and is recommended in most cases for users who are not planning to implement their code into operations at NCO.
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform) on which the workflow will run. Currently supported platforms include "WCOSS_DELL_P3," "HERA," "ORION," "JET," "ODIN," "CHEYENNE," "STAMPEDE," "GAEA," "SINGULARITY," "NOAACLOUD," "MACOS," and "LINUX." When running the SRW App in a container, set ``MACHINE`` to "SINGULARITY" regardless of the underlying platform. 
-
+   The machine (a.k.a. platform) on which the workflow will run. Currently supported platforms include "WCOSS_DELL_P3", "HERA", "ORION", "JET", "ODIN", "CHEYENNE", "STAMPEDE", "GAEA", "SINGULARITY", "NOAACLOUD", "MACOS", and "LINUX". When running the SRW App in a container, set ``MACHINE`` to "SINGULARITY" regardless of the underlying platform. 
 
 ..
-   COMMENT: Are we deleting WCOSS_CRAY and/or GAEA? Any others to add besides SINGULARITY/NOAACLOUD? 
+   COMMENT: Are we deleting WCOSS_CRAY and/or GAEA? They're not listed in valid_param_vals.sh. What is the difference between SINGULARITY & NOAACLOUD? Can we use just one? Any other machines to add? 
 
 ``MACHINE_FILE``: (Default: "")
-   Path to a configuration file with machine-specific settings. If none is provided, ``setup.sh`` will attempt to set the path to for a supported platform.
+   Path to a configuration file with machine-specific settings. If none is provided, ``setup.sh`` will attempt to set the path to a configuration file for a supported platform.
 
 ``ACCOUNT``: (Default: "project_name")
-   The account under which to submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ACCOUNT field for Level 1 systems, users may run ``groups``, which will return a list of projects the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. The ``account_params`` command will display additional account details. 
+   The account under which to submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
 
 ``WORKFLOW_MANAGER``: (Default: "none")
    The workflow manager to use (e.g. "ROCOTO"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "ROCOTO." Valid values: "rocoto" "none"
 
 ``NCORES_PER_NODE``: (Default: "")
-   The number of cores available per node on the compute platform. Set for supported platforms in ``setup.sh``, but is now also configurable for all platforms.
+   The number of cores available per node on the compute platform. Set for supported platforms in ``setup.sh``, but it is now also configurable for all platforms.
 
 ``LMOD_PATH``: (Default: "")
-   Path to the LMOD sh file on the user's Linux system. Is set automatically for supported machines.
+   Path to the LMOD shell file on the user's Linux system. It is set automatically for supported machines.
 
 ``BUILD_ENV_FN``: (Default: "")
-   Name of alternative build environment file to use if using an unsupported platform. Is set automatically for supported machines.
+   Name of alternative build environment file to use if running on an unsupported platform. Is set automatically for supported machines.
 
 ``WFLOW_ENV_FN``: (Default: "")
-   Name of alternative workflow environment file to use if using an unsupported platform. Is set automatically for supported machines.
+   Name of alternative workflow environment file to use if running on an unsupported platform. Is set automatically for supported machines.
 
 ``SCHED``: (Default: "")
    The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Set this to an empty string in order for the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: "slurm" "pbspro" "lsf" "lsfcray" "none"
@@ -60,16 +59,16 @@ Machine-Dependent Parameters:
 These parameters vary depending on machine. On `Level 1 and 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, the appropriate values for each machine can be viewed in the ``regional_workflow/ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.sh`` file so that they override the ``config_defaults.sh`` and machine default values. 
 
 ``PARTITION_DEFAULT``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). This is the default partition to which Slurm submits workflow tasks. When a variable that specifies the partition (e.g., ``PARTITION_HPSS``, ``PARTITION_FCST``; see below) is **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "hera" "normal" "orion" "sjet,vjet,kjet,xjet" "workq"
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). This is the default partition to which Slurm submits workflow tasks. When a variable that designates the partition (e.g., ``PARTITION_HPSS``, ``PARTITION_FCST``; see below) is **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "hera" "normal" "orion" "sjet,vjet,kjet,xjet" "workq"
 
 ``CLUSTERS_DEFAULT``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). These are the default clusters to which Slurm submits workflow tasks. If the ``CLUSTERS_HPSS`` or ``CLUSTERS_FCST`` (see below) are not specified, the task will be submitted to the default clusters indicated in this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). These are the default clusters to which Slurm submits workflow tasks. If ``CLUSTERS_HPSS`` or ``CLUSTERS_FCST`` (see below) are not specified, the task will be submitted to the default clusters indicated in this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
 
 ``QUEUE_DEFAULT``: (Default: "")
-   The default queue or QOS to which workflow tasks are submitted (QOS is Slurm's term for queue; it stands for "Quality of Service"). If the task's ``QUEUE_HPSS`` or ``QUEUE_FCST`` variables (see below) are not specified, the task will be submitted to the queue indicated by this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "batch" "dev" "normal" "regular" "workq"
+   The default queue or QOS to which workflow tasks are submitted (QOS is Slurm's term for queue; it stands for "Quality of Service"). If the task's ``QUEUE_HPSS`` or ``QUEUE_FCST`` parameters (see below) are not specified, the task will be submitted to the queue indicated by this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "batch" "dev" "normal" "regular" "workq"
 
 ``PARTITION_HPSS``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the partition specified in this variable. These links are needed to generate initial conditions (ICs) and lateral boundary conditions (LBCs) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "normal" "service" "workq"
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the partition specified in this variable. These links are needed to generate initial conditions (ICs) and lateral boundary conditions (LBCs) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "normal" "service" "workq"
 
 ..
    COMMENT: Wouldn't it be reset to the PARTITION_DEFAULT value? 
@@ -78,29 +77,29 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the clusters specified in this variable. These links are needed to generate initial conditions (ICs) and lateral boundary conditions (LBCs) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
 
 ``QUEUE_HPSS``: (Default: "")
-   Tasks that get or create links to external model files are submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "batch" "dev_transfer" "normal" "regular" "workq"
+   Tasks that get or create links to external model files are submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "batch" "dev_transfer" "normal" "regular" "workq"
 
 ``PARTITION_FCST``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). The task that runs forecasts is submitted to this partition. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "hera" "normal" "orion" "sjet,vjet,kjet,xjet" "workq"
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). The task that runs forecasts is submitted to this partition. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "hera" "normal" "orion" "sjet,vjet,kjet,xjet" "workq"
 
 ``CLUSTERS_FCST``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). The task that runs forecasts is submitted to this cluster. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
 
 ``QUEUE_FCST``: (Default: "")
-   The task that runs a forecast is submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this is not set or set to an empty string, it will be (re)set to a machine-dependent value. Valid values include: "" "batch" "dev" "normal" "regular" "workq"
+   The task that runs a forecast is submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this variable is not set or set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "batch" "dev" "normal" "regular" "workq"
 
 Parameters for Running Without a Workflow Manager
 =================================================
 These settings control run commands for platforms without a workflow manager. Values will be ignored unless ``WORKFLOW_MANAGER="none"``.
 
 ``RUN_CMD_UTILS``: (Default: "mpirun -np 1")
-   The run command for pre-processing utilities (shave, orog, sfc_climo_gen, etc.). This can be left blank for smaller domains, in which case the executables will run without MPI.
+   The run command for pre-processing utilities (shave, orog, sfc_climo_gen, etc.). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`.
 
 ``RUN_CMD_FCST``: (Default: "mpirun -np \${PE_MEMBER01}")
-   The run command for the model forecast step. This will be appended to the end of the variable definitions file ("var_defns.sh").
+   The run command for the model forecast step. This will be appended to the end of the variable definitions file (``var_defns.sh``).
 
 ``RUN_CMD_POST``: (Default: "mpirun -np 1")
-   The run command for post-processing (:term:`UPP`). Can be left blank for smaller domains, in which case UPP will run without MPI.
+   The run command for post-processing (:term:`UPP`). Can be left blank for smaller domains, in which case UPP will run without :term:`MPI`.
 
 Cron-Associated Parameters
 ==========================
@@ -109,6 +108,9 @@ Cron-Associated Parameters
 
 ``CRON_RELAUNCH_INTVL_MNTS``: (Default: "03")
    The interval (in minutes) between successive calls of the experiment launch script by a cron job to (re)launch the experiment (so that the workflow for the experiment kicks off where it left off). This is used only if ``USE_CRON_TO_RELAUNCH`` is set to "TRUE".
+
+..
+   COMMENT: Are these variables set in a machine script somewhere for Level 1 systems? I've used cron but never had to set these. It seems like the default for NOAA Cloud is "01". 
 
 Directory Parameters
 ====================
@@ -132,7 +134,7 @@ NCO Mode Parameters
 These variables apply only when using NCO mode (i.e. when ``RUN_ENVIR`` is set to "nco").
 
 ``COMINgfs``: (Default: "/base/path/of/directory/containing/gfs/input/files")
-   The beginning portion of the path to the directory that contains files generated by the external model (FV3GFS). The initial and lateral boundary condition generation tasks need this path in order to create initial and boundary condition files for a given cycle on the native FV3-LAM grid. For a cycle that starts on the date specified by the variable YYYYMMDD (consisting of the 4-digit year, 2-digit month, and 2-digit day of the month) and the hour specified by the variable HH (consisting of the 2-digit hour-of-the-day), the directory in which the workflow will look for the external model files is:
+   The beginning portion of the path to the directory that contains files generated by the external model (FV3GFS). The initial and lateral boundary condition generation tasks need this path in order to create initial and boundary condition files for a given cycle on the native FV3-LAM grid. For a cycle that starts on the date specified by the variable YYYYMMDD (consisting of the 4-digit year, 2-digit month, and 2-digit day of the month) and the hour specified by the variable HH (consisting of the 2-digit hour of the day), the directory in which the workflow will look for the external model files is:
 
    .. code-block:: console
 
@@ -142,16 +144,13 @@ These variables apply only when using NCO mode (i.e. when ``RUN_ENVIR`` is set t
    COMMENT: Should "atmos" be at the end of this file path? If so, is it standing in for something (like FV3GFS), or is "atmos" actually part of the file path? Are the files created directly in the "atmos" folder? Or is there an "ICS" and "LBCS" directory generated? 
 
 ``FIXLAM_NCO_BASEDIR``: (Default: "")
-   The base directory containing pregenerated grid, orography, and surface climatology files. For the pregenerated grid specified by PREDEF_GRID_NAME, these "fixed" files are located in:
+   The base directory containing pregenerated grid, orography, and surface climatology files. For the pregenerated grid specified by ``PREDEF_GRID_NAME``, these "fixed" files are located in:
 
    .. code-block:: console
 
       ${FIXLAM_NCO_BASEDIR}/${PREDEF_GRID_NAME}
 
-   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the name of the grid being used) under this directory. This variable should be set to a null string in this file, but it can be specified in the user-specified workflow configuration file (EXPT_CONFIG_FN).
-
-..
-   COMMENT: Why should this variable be set to a null string?
+   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the name of the grid being used) under this directory. This variable should be set to a null string in this file, but it can be specified in the user-specified workflow configuration file (e.g., ``config.sh``).
 
 ``STMP``: (Default: "/base/path/of/directory/containing/model/input/and/raw/output/files")
    The beginning portion of the path to the directory that will contain :term:`cycle-dependent` model input files, symlinks to :term:`cycle-independent` input files, and raw (i.e., before post-processing) forecast output files for a given :term:`cycle`. The format for cycle dates (cdate) is ``cdate="${YYYYMMDD}${HH}"``, where the date is specified using YYYYMMDD format, and the hour is specified using HH format. The files for a cycle date will be located in the following directory:
@@ -161,19 +160,19 @@ These variables apply only when using NCO mode (i.e. when ``RUN_ENVIR`` is set t
       $STMP/tmpnwprd/$RUN/$cdate
 
 ``NET, envir, RUN``:
-   Variables used in forming the path to the directory that will contain the post-processor (UPP) output files for a given cycle (see ``PTMP`` below). These are defined in the `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__ document (pp. 4-5, 19-20) as follows:
+   Variables used in forming the path to the directory that will contain the post-processor (:term:`UPP`) output files for a given cycle (see ``PTMP`` below). These are defined in the `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__ document (pp. 4-5, 19-20) as follows:
 
    ``NET``: (Default: "rrfs")
-      Model name (first level of *com* directory structure)
+      Model name (first level of ``com`` directory structure)
 
    ``envir``: (Default: "para")
-      Set to "test" during the initial testing phase, "para" when running in parallel (on a schedule), and "prod" in production.
+      Set to "test" during the initial testing phase, "para" when running in parallel (on a schedule), and "prod" in production. (Second level of ``com`` directory structure.)
 
    ``RUN``: (Default: "experiment_name")
-      Name of model run (third level of *com* directory structure).
+      Name of model run (third level of ``com`` directory structure).
 
 ``PTMP``: (Default: "/base/path/of/directory/containing/postprocessed/output/files")
-   The beginning portion of the path to the directory that will contain the output files from the post-processor (UPP) for a given cycle. For a cycle that starts on the date specified by YYYYMMDD and hour specified by HH (where YYYYMMDD and HH are as described above), the UPP output files will be placed in the following directory:
+   The beginning portion of the path to the directory that will contain the output files from the post-processor (:term:`UPP`) for a given cycle. For a cycle that starts on the date specified by YYYYMMDD and hour specified by HH (where YYYYMMDD and HH are as described above), the UPP output files will be placed in the following directory:
  
    .. code-block:: console
 
@@ -205,16 +204,16 @@ File Name Parameters
    Name of the file that specifies the fields that the forecast model will output.
 
 ``FIELD_TABLE_FN``: (Default: "field_table")
-   Name of the file that specifies the tracers that the forecast model will read in from the IC/LBC files.
+   Name of the file that specifies the tracers that the forecast model will read in from the :term:`IC/LBC` files.
 
 ``DATA_TABLE_FN``: (Default: "data_table")
-   The name of the file containing the data table read in by the forecast model.
+   Name of the file containing the data table read in by the forecast model.
 
 ``MODEL_CONFIG_FN``: (Default: "model_configure")
-   The name of the file containing settings and configurations for the NUOPC/ESMF component.
+   Name of the file containing settings and configurations for the :term:`NUOPC`/:term:`ESMF` component.
 
 ``NEMS_CONFIG_FN``: (Default: "nems.configure")
-   The name of the file containing information about the various NEMS components and their run sequence.
+   Name of the file containing information about the various :term:`NEMS` components and their run sequence.
 
 ``FV3_EXEC_FN``: (Default: "ufs_model")
    Name of the forecast model executable stored in the executables directory (``EXECDIR``; set during experiment generation).
@@ -229,10 +228,10 @@ File Name Parameters
    Name of the file (a shell script) containing definitions of the primary and secondary experiment variables (parameters). This file is sourced by many scripts (e.g., the J-job scripts corresponding to each workflow task) in order to make all the experiment variables available in those scripts. The primary variables are defined in the default configuration script (``config_defaults.sh``) and in ``config.sh``. The secondary experiment variables are generated by the experiment generation script. 
 
 ``EXTRN_MDL_ICS_VAR_DEFNS_FN``: (Default: "extrn_mdl_ics_var_defns.sh")
-   Name of the file (a shell script) containing the definitions of variables associated with the external model from which ICs are generated. This file is created by the ``GET_EXTRN_ICS_TN`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS_TN`` task.
+   Name of the file (a shell script) containing the definitions of variables associated with the external model from which :term:`ICs` are generated. This file is created by the ``GET_EXTRN_ICS_TN`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS_TN`` task.
 
 ``EXTRN_MDL_LBCS_VAR_DEFNS_FN``: (Default: "extrn_mdl_lbcs_var_defns.sh")
-   Name of the file (a shell script) containing the definitions of variables associated with the external model from which LBCs are generated. This file is created by the ``GET_EXTRN_LBCS_TN`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS_TN`` task.
+   Name of the file (a shell script) containing the definitions of variables associated with the external model from which :term:`LBCs` are generated. This file is created by the ``GET_EXTRN_LBCS_TN`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS_TN`` task.
 
 ``WFLOW_LAUNCH_SCRIPT_FN``: (Default: "launch_FV3LAM_wflow.sh")
    Name of the script that can be used to (re)launch the experiment's Rocoto workflow.
@@ -567,7 +566,7 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
    COMMENT: Needs review. 
 
 ``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
-   The list of parameterizations to perturb: planetary boundary layer (PBL), surface climatology (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values include "pbl", "sfc", "rad", "gwd", and "mp".
+   The list of parameterizations to perturb: planetary boundary layer (PBL), surface climatology (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: "pbl", "sfc", "rad", "gwd", and "mp".
 
 ..
    COMMENT: Needs review. Is "rad" radiation? Need confiromation. 

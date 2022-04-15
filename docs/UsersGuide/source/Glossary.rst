@@ -37,11 +37,17 @@ Glossary
    cycle-independent
       Describes a workflow task that only needs to be run once per experiment, regardless of the number of cycles in the experiment.
    
+   dycore
+      See :term:`dynamical core`.
+
    dynamical core
       Global atmospheric model based on fluid dynamics principles, including Euler's equations of motion.
 
    EPIC
       EPIC stands for the `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__. EPIC seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement to produce the most accurate and reliable operational modeling system in the world. 
+
+   ESMF
+      `Earth System Modeling Framework <https://earthsystemmodeling.org/docs/release/ESMF_8_1_1/ESMF_usrdoc.pdf>`__. The ESMF defines itself as “a suite of software tools for developing high-performance, multi-component Earth science modeling applications.” 
 
    FV3
       The Finite-Volume Cubed-Sphere dynamical core (dycore). Developed at NOAA's Geophysical 
@@ -110,6 +116,9 @@ Glossary
 
    NEMSIO
       A binary format for atmospheric model output from :term:`NCEP`'s Global Forecast System (GFS).
+
+   NUOPC
+      The `National Unified Operational Prediction Capability <https://earthsystemmodeling.org/nuopc/>`__ Layer "defines conventions and a set of generic components for building coupled models using the Earth System Modeling Framework (:term:`ESMF`)." 
 
    NWP
       Numerical Weather Prediction (NWP) takes current observations of weather and processes them with computer models to forecast the future state of the weather. 
