@@ -174,6 +174,9 @@ The SRW App can be built on MacOS systems, presuming HPC-Stack has already been 
 
 * **Option 2:** MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
 
+.. note::
+    Examples in this subsection presume that the user is running Terminal.app with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
+
 The ``build_macosx_gnu.env`` script initializes the module environment, lists the location of HPC-Stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW App. The ``$HPC_INSTALL_DIR`` variable is set to the installation directory for the HPC-Stack. The ``srw_common`` file contains a list of specific libraries and modules to be loaded, and it is sourced from ``build_macosx_gnu.env``. 
 
 Sample ``build_macosx_gnu.env`` contents appear below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macosx_gnu.env`` file. Additionally, users need to verify that all file paths reflect their system's configuration. 
