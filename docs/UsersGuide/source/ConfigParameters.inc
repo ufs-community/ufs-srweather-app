@@ -71,7 +71,10 @@ The following parameters must be set if using the "GFDLgrid" method of generatin
    Latitude of the center of tile 6 (in degrees).
 
 ``GFDLgrid_RES``: (Default: "")
-   Number of points in either of the two horizontal directions (x and y) on each tile of the parent global cubed-sphere grid. 
+   Number of points in either of the two horizontal directions (x and y) on each tile of the parent global cubed-sphere grid. Valid values: "48" "96" "192" "384" "768" "1152" "3072"
+
+   ..
+      COMMENT: Are these still the valid values? Are there others?
    
    .. note::
       ``GFDLgrid_RES`` is a misnomer because it specifies *number* of grid cells, not grid size (in meters or kilometers). However, we keep this name in order to remain consistent with the usage of the word "resolution" in the global forecast model and auxiliary codes. The mapping from ``GFDLgrid_RES`` to a nominal resolution (grid cell size) for several values of ``GFDLgrid_RES`` is as follows (assuming a uniform global grid, i.e., with Schmidt stretch factor ``GFDLgrid_STRETCH_FAC="1"``):
@@ -686,7 +689,7 @@ Subhourly Forecast Parameters
    Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). 
 
 ..
-   COMMENT: In valid_param_vals.sh only these values are listed: "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30"
+   COMMENT: In valid_param_vals.sh only these values are listed: "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30". 
 
 Customized Post Configuration Parameters
 ========================================

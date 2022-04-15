@@ -15,7 +15,7 @@ The following is a list of the parameters in the ``config_defaults.sh`` file. Fo
 Platform Environment
 ====================
 ``RUN_ENVIR``: (Default: "nco")
-   This variable determines the mode that the workflow will run in. The user can choose between two modes: "nco" and "community." The "nco" mode uses a directory structure that mimics what is used in operations at NOAA/NCEP Central Operations (NCO) and at the NOAA/NCEP/Environmental Modeling Center (EMC), which is working with NCO on pre-implementation testing. Specifics of the conventions used in "nco" mode can be found in the following `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ document:
+   This variable determines the mode that the workflow will run in. The user can choose between two modes: "nco" and "community". The "nco" mode uses a directory structure that mimics what is used in operations at NOAA/NCEP Central Operations (NCO) and at the NOAA/NCEP/Environmental Modeling Center (EMC), which is working with NCO on pre-implementation testing. Specifics of the conventions used in "nco" mode can be found in the following `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ document:
 
    | NCEP Central Operations
    | WCOSS Implementation Standards
@@ -182,7 +182,7 @@ These variables apply only when using NCO mode (i.e. when ``RUN_ENVIR`` is set t
 Pre-Processing File Separator Parameters
 ========================================
 ``DOT_OR_USCORE``: (Default: "_")
-   This variable sets the separator character(s) to use in the names of the grid, mosaic, and orography fixed files. Ideally, the same separator should be used in the names of these fixed files as in the surface climatology fixed files.
+   This variable sets the separator character(s) to use in the names of the grid, mosaic, and orography fixed files. Ideally, the same separator should be used in the names of these fixed files as in the surface climatology fixed files. Valid values: "_" "."
 
 File Name Parameters
 ====================
@@ -220,7 +220,7 @@ File Name Parameters
    Name of the forecast model executable stored in the executables directory (``EXECDIR``; set during experiment generation).
 
 ``FCST_MODEL``: (Default: "ufs-weather-model")
-   Name of forecast model.
+   Name of forecast model. Valid values: "ufs-weather-model" "fv3gfs_aqm"
 
 ``WFLOW_XML_FN``: (Default: "FV3LAM_wflow.xml")
    Name of the Rocoto workflow XML file that the experiment generation script creates. This file defines the workflow for the experiment.
@@ -249,10 +249,13 @@ Forecast Parameters
    Starting date of the last forecast in the set of forecasts to run. Format is "YYYYMMDD". Note that this does not include the hour of the day.
 
 ``CYCL_HRS``: (Default: ( "HH1" "HH2" ))
-   An array containing the hours of the day at which to launch forecasts. Forecasts are launched at these hours on each day from ``DATE_FIRST_CYCL`` to ``DATE_LAST_CYCL``, inclusive. Each element of this array must be a two-digit string representing an integer that is less than or equal to 23, e.g., "00", "03", "12", "23".
+   An array containing the hours of the day at which to launch forecasts. Forecasts are launched at these hours on each day from ``DATE_FIRST_CYCL`` to ``DATE_LAST_CYCL``, inclusive. Each element of this array must be a two-digit string representing an integer that is less than or equal to 23 (e.g., "00", "03", "12", "23").
 
 ``INCR_CYCL_FREQ``: (Default: "24")
    Increment in hours for cycle frequency (cycl_freq). The default is "24", which means cycl_freq=24:00:00.
+
+..
+   COMMENT: What is cycl_freq from? It's not mentioned anywhere else here... In general, this definition could be better... need more info. 
 
 ``FCST_LEN_HRS``: (Default: "24")
    The length of each forecast, in integer hours.
@@ -272,8 +275,8 @@ Model Configuration Parameters
 .. _InlinePost:
 
 ``WRITE_DOPOST``: (Default: "FALSE")
-   Flag that determines whether to use the INLINE POST option. If TRUE, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to "TRUE", and the post-processing tasks get called from within the weather model so that the post files (grib2) are output by the weather model at the same time that it outputs the dynf###.nc and phyf###.nc files. Setting ``WRITE_DOPOST="TRUE"``
-   turns off the separate ``run_post`` task (``RUN_TASK_RUN_POST=FALSE``) in ``setup.sh``.
+   Flag that determines whether to use the INLINE POST option. If TRUE, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to "TRUE", and the post-processing tasks get called from within the weather model so that the post files (:term:`grib2`) are output by the weather model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST="TRUE"``
+   turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to "FALSE") in ``setup.sh``.
 
    ..
       Should there be an underscore in inline post? 
@@ -284,7 +287,7 @@ METplus Parameters
 :ref:`METplus <MetplusComponent>` is a scientific verification framework that spans a wide range of temporal and spatial scales. Many of the METplus parameters are described below, but additional documentation for the METplus components is available on the `METplus website <https://dtcenter.org/community-code/metplus>`__. 
 
 ``MODEL``: (Default: "")
-   String that specifies a descriptive name for the model being verified.
+   A descriptive name of the user's choice for the model being verified.
    
 ``MET_INSTALL_DIR``: (Default: "")
    Path to top-level directory of MET installation.
@@ -293,10 +296,10 @@ METplus Parameters
    Path to top-level directory of METplus installation.
 
 ``MET_BIN_EXEC``: (Default: "bin")
-   The name of the subdirectory of ``ufs-srweather-app`` where the METplus executable is installed.
+   The name of the directory of ``ufs-srweather-app`` where the METplus executable is installed.
 
 ..
-   COMMENT: Check the definition above. Should it be a subdirectory of METplus instead of SRW? 
+   COMMENT: Check the definition above-I think it might be wrong. Should it be a subdirectory of METplus instead of SRW? 
 
 .. _METParamNote:
 
@@ -305,23 +308,26 @@ METplus Parameters
       * YYYY refers to the 4-digit valid year
       * MM refers to the 2-digit valid month
       * DD refers to the 2-digit valid day of the month
-      * HH refers to the 2-digit valid hour of the day.
+      * HH refers to the 2-digit valid hour of the day
       * mm refers to the 2-digit valid minutes of the hour
       * SS refers to the two-digit valid seconds of the hour
 
 ``CCPA_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_ccpa_tn`` task. (This task is activated in the workflow by setting ``RUN_TASK_GET_OBS_CCPA="TRUE"``). 
-   METplus configuration files require the use of predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. 
-   When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. This path must be defind as ``/<full-path-to-obs>/ccpa/proc``. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.    
+   METplus configuration files require the use of predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. This path must be defind as ``/<full-path-to-obs>/ccpa/proc``. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.    
 
 .. note::
-   There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS has an example of how to account for this as well as organizing the data into a more intuitive format: ``regional_workflow/scripts/exregional_get_ccpa_files.sh``. When a fix is provided, it will be accounted for in the ``exregional_get_ccpa_files.sh`` script.
+   There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ccpa_files.sh``) has an example of how to account for this and organize the data into a more intuitive format. When a fix is provided, it will be accounted for in the ``exregional_get_ccpa_files.sh`` script.
 
 ``MRMS_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_mrms_tn`` task (activated in workflow by setting ``RUN_TASK_GET_OBS_MRMS="TRUE"``). In the case of pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc. METplus configuration files require the use of predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
+   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_mrms_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_MRMS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
+
+   .. note::
+      METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script, within the main script to retrieve MRMS data from the NOAA HPSS, is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file naming structure: ``regional_workflow/scripts/exregional_get_mrms_files.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``regional_workflow/ush/mrms_pull_topofhour.py``.
+
 
 ``NDAS_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the get_obs_ndas_tn task (activated in workflow by setting ``RUN_TASK_GET_OBS_NDAS="TRUE"``). In the case of pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at times valid at 00 and 12 UTC with NDAS prepbufr files.  METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user provided, they need to follow the anticipated naming structure: prepbufr.ndas.{YYYYMMDDHH}, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name: ``regional_workflow/scripts/exregional_get_ndas_files.sh``.
+   User-specified location of top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_ndas_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_NDAS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defined as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ndas_files.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
 
 Initial and Lateral Boundary Condition Generation Parameters
 ============================================================
