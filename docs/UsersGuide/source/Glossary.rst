@@ -126,6 +126,9 @@ Glossary
    Orography
       The branch of physical geography dealing with mountains.
 
+   Parameterization
+      Simplified functions that approximate the effects of small-scale processes (e.g., microphysics, gravity wave drag) that cannot be explicitly resolved by a model grid’s representation of the earth.
+
    RAP
       `Rapid Refresh <https://rapidrefresh.noaa.gov/>`__. The continental-scale NOAA hourly-updated assimilation/modeling system operational at NCEP. RAP covers North America and is comprised primarily of a numerical forecast model and an analysis/assimilation system to initialize that model. RAP is complemented by the higher-resolution 3km High-Resolution Rapid Refresh (HRRR) model.
 

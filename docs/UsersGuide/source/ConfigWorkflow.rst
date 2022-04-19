@@ -426,7 +426,7 @@ For the most updated and detailed documentation of these parameters, see the `UF
 
 
 ``NEW_LSCALE``: (Default: "TRUE") 
-   Use correct formula for converting a spatial legnthscale into spectral space. 
+   Use correct formula for converting a spatial legnth scale into spectral space. 
 
 Specific Humidity (SHUM) Perturbation Parameters
 ---------------------------------------------------
@@ -459,9 +459,6 @@ SPPT perturbs full physics tendencies *after* the call to the physics suite, unl
 ``DO_SPPT``: (Default: "FALSE")
    Flag to turn Stochastically Perturbed Physics Tendencies (SPPT) on or off. SPPT multiplies the physics tendencies by a random number between 0 and 2 before updating the model state. This addresses error in the physics parameterizations (either missing physics or unresolved subgrid processes). It is most active in the boundary layer and convective regions. 
 
-..
-   COMMENT: Does it need to be O? can it be X? or some other variable/letter that doesn't look like the number zero? 
-
 ``ISEED_SPPT``: (Default: "1") 
    Seed for setting the SPPT random number sequence.
 
@@ -472,7 +469,7 @@ SPPT perturbs full physics tendencies *after* the call to the physics suite, unl
    Limits the SPPT perturbations to between 0 and 2. Should be "TRUE"; otherwise the model will crash.
 
 ``SPPT_LSCALE``: (Default: "150000")
-   Decorrelation spatial scales in meters. 
+   Decorrelation spatial scale in meters. 
 
 ``SPPT_TSCALE``: (Default: "21600") 
    Decorrelation timescale in seconds. Corresponds to the variable ``sppt_tau`` in ``input.nml``.
@@ -521,10 +518,10 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 
 .. _SPP:
 
-SPP Stochastic Physics Parameterizations
---------------------------------------------
+Parameters for Stochastically Perturbed Parameterizations (SPP)
+------------------------------------------------------------------
 
-Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics options. Unlike :ref:`SPPT physics <SPPT>`, SPP is applied as part of the physics run, not post. SPP perturbs specific tuning parameters within a physics scheme (unlike `SPPT <SPPT>`, which multiplies overall physics tendencies by a random numer *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the scheme/parameter listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
+Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics options. Unlike :ref:`SPPT physics <SPPT>`, SPP is applied within the physics, not afterward. SPP perturbs specific tuning parameters within a physics :term:`parameterization` (unlike `SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
 .. note::
    SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. 
@@ -566,7 +563,7 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
    COMMENT: Needs review. 
 
 ``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
-   The list of parameterizations to perturb: planetary boundary layer (PBL), surface climatology (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: "pbl", "sfc", "rad", "gwd", and "mp".
+   The list of parameterizations to perturb: planetary boundary layer (PBL), surface physics (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: "pbl", "sfc", "rad", "gwd", and "mp".
 
 ..
    COMMENT: Needs review. Is "rad" radiation? Need confiromation. 
@@ -589,19 +586,16 @@ LSM perturbations include soil moisture content [SMC] (volume fraction), vegetat
    Decorrelation spatial scale in meters.
 
 ``ISEED_LSM_SPP``: (Default: ("9") )
-   Seed for setting the LSM SPP random number sequence.
+   Seed to initialize the random perturbation pattern.
 
 ``LSM_SPP_VAR_LIST``: (Default: ( ( "smc" "vgf" "alb" "sal" "emi" "zol" "stc" ) )
    Indicates which LSM variables to perturb. 
 
 ``LSM_SPP_MAG_LIST``: (Default: ( ( "0.2" "0.001" "0.001" "0.001" "0.001" "0.001" "0.2" ) )
-   Sets the amplitude of random patterns for each of the LSM perturbations. 
+   Sets the maximum random pattern amplitude for each of the LSM perturbations. 
 
 ``LSM_SPP_EACH_STEP``: (Default: "true") 
    When set to "TRUE", it sets ``lndp_each_step=.true.`` and perturbs each time step. 
-
-..
-   COMMENT: All definitions in this section are my best guess and need review. 
 
 
 .. include:: ConfigParameters.inc
