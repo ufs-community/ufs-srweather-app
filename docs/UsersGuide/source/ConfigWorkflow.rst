@@ -266,7 +266,7 @@ Model Configuration Parameters
    Time step for the outermost atmospheric model loop in seconds. This corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, tracer transport, and vertical dynamics routines; see the `FV3 dycore documentation <https://www.gfdl.noaa.gov/wp-content/uploads/2020/02/FV3-Technical-Description.pdf>`__ for details.) Must be set. Takes an integer value.
 
 ..
-   COMMENT: FV3 documentation says DT_ATMOS must be set, but in our code, the default value is "". What is the actual default value? And is the default set by the FV3 dycore rather than in the SRW App itself?
+   COMMENT: FV3 documentation says DT_ATMOS must be set, but in our code, the default value is "". What is the actual default value? And is the default set by the FV3 dycore (or somewhere else) rather than in the SRW App itself?
 
 ``RESTART_INTERVAL``: (Default: "0")
    Frequency of the output restart files in hours. Using the default interval ("0"), restart files are produced at the end of a forecast run. When ``RESTART_INTERVAL="1"``, restart files are produced every hour with the prefix "YYYYMMDD.HHmmSS." in the ``RESTART`` directory. 
@@ -295,10 +295,7 @@ METplus Parameters
    Path to top-level directory of METplus installation.
 
 ``MET_BIN_EXEC``: (Default: "bin")
-   The name of the directory of ``ufs-srweather-app`` where the METplus executable is installed.
-
-..
-   COMMENT: Check the definition above-I think it might be wrong. Should it be a subdirectory of METplus instead of SRW? 
+   Name of the directory where the METplus executable is installed.
 
 .. _METParamNote:
 
@@ -528,9 +525,6 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
 
 ``DO_SPP``: (Default: "false")
    Flag to turn SPP on or off. SPP perturbs parameters or variables with unknown or uncertain magnitudes within the physics code based on ranges provided by physics experts.
-
-..
-   COMMENT: What does SPP do? Need a description similar to the SKEB/SHUM/SPPT descriptions. 
 
 ``ISEED_SPP``: (Default: ( "4" "4" "4" "4" "4" ) )
    The initial seed value for the perturbation pattern. 
