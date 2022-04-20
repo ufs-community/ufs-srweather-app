@@ -13,9 +13,7 @@ module use -a /contrib/miniconda3/modulefiles
 module load miniconda3
 
 if { [module-info mode load] } {
-  puts "conda activate regional_workflow;"
+  puts stderr "Please do the following to activate conda:
+       > conda activate regional_workflow"
 }
 
-if {[module-info mode remove]} {
-  puts "conda deactivate;"
-}

@@ -8,9 +8,7 @@ proc ModulesHelp { } {
 module-whatis "Loads libraries needed for running SRW in a singularity container"
 
 if { [module-info mode load] } {
-  puts "conda activate regional_workflow;"
+  puts stderr "Please do the following to activate conda:
+       > conda activate regional_workflow"
 }
 
-if {[module-info mode remove]} {
-  puts "conda deactivate;"
-}

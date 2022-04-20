@@ -12,5 +12,7 @@ module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
 module load rocoto
 
 if { [module-info mode load] } {
-   puts "ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/regional_workflow;"
+  puts stderr "Please do the following to activate ncar_pylib:
+       > ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/regional_workflow"
 }
+

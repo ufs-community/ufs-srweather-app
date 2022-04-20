@@ -2,10 +2,10 @@
 
 proc ModulesHelp { } {
    put stderr "This module loads python environement for running SRW on"
-   put stderr "the NOAA RDHPC machine Hera"
+   put stderr "Odin"
 }
 
-module-whatis "Loads libraries needed for running SRW on Hera"
+module-whatis "Loads libraries needed for running SRW on Odin"
 
 if { [module-info mode load] } {
   # >>> conda initialize >>>
@@ -38,10 +38,8 @@ unset __conda_setup
 #  }
 #  puts $cmd
   
-  puts "conda config --set changeps1 False;"
-  puts "conda activate regional_workflow;"
+  puts stderr "Please do the following to activate conda:
+       > conda config --set changeps1 False
+       > conda activate regional_workflow"
 }
 
-if {[module-info mode remove]} {
-  puts "conda deactivate;"
-}
