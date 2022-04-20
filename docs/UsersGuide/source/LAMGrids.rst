@@ -42,7 +42,7 @@ constraints when running with the 13-km and 25-km domains.
 The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red).
 Note that while it is possible to initialize the FV3-LAM with coarser external model data when using the
 ``RRFS_CONUS_3km`` domain, it is generally advised to use external model data that has a resolution
-similar to that of the native FV3-LAM (predefined) grid.  In addition, this grid is ideal for running the
+similar to that of the native FV3-LAM (predefined) grid. In addition, this grid is ideal for running the
 ``FV3_RRFS_v1beta`` suite definition file (SDF), since this SDF was specifically created for convection-allowing scales and is the
 precursor to the operational physics suite that will be used in the RRFS.
 
@@ -52,13 +52,7 @@ utility (UPP) is currently unable to process data on the native FV3 gnomonic gri
 model data are interpolated to a Lambert conformal grid (the write component grid) in order for UPP to
 read in and correctly process the data.
 
-.. 
-  COMMENT: Is this still the case? 
-
-The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) also covers the full CONUS,
-but due to its coarser resolution, and the need to remain within the HRRR domain, areas of the
-contiguous United States, such as Northern Washington, Southern Texas, and the Florida Keys, are
-closer to the boundaries of the grid than in the ``RRFS_CONUS_3km`` grid.  This grid is meant to
+The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) also covers the full CONUS. This grid is meant to
 be run with the ``FV3_GFS_v16`` SDF.
 
 .. _RRFS_CONUS_13km:
@@ -93,9 +87,6 @@ in the UFS_UTILS repository, where ESG stands for "Extended Schmidt Gnomonic"). 
 that the grid to be generated covers a domain that (1) does not contain either of the poles and
 (2) does not cross the -180 deg --> +180 deg discontinuity in longitude near the international
 date line.  Instructions for domains that do not have these restrictions will be provided in a future release.
-
-..
-  COMMENT: Do we have these instructions now? Also, would the same process apply to GFDLgrids? 
 
 The steps to add such a grid to the workflow are as follows:
 
