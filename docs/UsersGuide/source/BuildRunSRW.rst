@@ -177,13 +177,13 @@ The SRW App can be built on MacOS systems, presuming HPC-Stack has already been 
 .. note::
     Examples in this subsection presume that the user is running Terminal.app with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
 
-The ``build_macosx_gnu.env`` script initializes the module environment, lists the location of HPC-Stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW App. The ``$HPC_INSTALL_DIR`` variable is set to the installation directory for the HPC-Stack. The ``srw_common`` file contains a list of specific libraries and modules to be loaded, and it is sourced from ``build_macosx_gnu.env``. 
+The ``build_macos_gnu.env`` script initializes the module environment, lists the location of HPC-Stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW App. The ``$HPC_INSTALL_DIR`` variable is set to the installation directory for the HPC-Stack. The ``srw_common`` file contains a list of specific libraries and modules to be loaded, and it is sourced from ``build_macos_gnu.env``. 
 
-Sample ``build_macosx_gnu.env`` contents appear below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macosx_gnu.env`` file. Additionally, users need to verify that all file paths reflect their system's configuration. 
+Sample ``build_macos_gnu.env`` contents appear below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macos_gnu.env`` file. Additionally, users need to verify that all file paths reflect their system's configuration. 
 
 .. code-block:: console
 
-    # Setup instructions for macOS (build_macosx_gnu.env)
+    # Setup instructions for macOS (build_macos_gnu.env)
 
     module purge
     source /opt/homebrew/opt/lmod/init/profile   (Option 1)
@@ -196,7 +196,7 @@ Sample ``build_macosx_gnu.env`` contents appear below for Option 1. To use Optio
     module load hpc-openmpi
 
     export SRW=${HOME}/SRW/ufs-srweather-app
-    source ${SRW}/env/srw_common
+    module load srw_common
     module list
 
     % Option 1 compiler paths:
@@ -216,25 +216,29 @@ Sample ``build_macosx_gnu.env`` contents appear below for Option 1. To use Optio
     export CMAKE_C_COMPILER=$MPI_CC
     export CMAKE_CXX_COMPILER=$MPI_CXX
     export CMAKE_Fortran_COMPILER=$MPI_FC
-    export CMAKE_Platform=macosx.gnu
+    export CMAKE_Platform=macos.gnu
     export CMAKE_Fortran_COMPILER_ID="GNU"
     export LDFLAGS="-L$MPI_ROOT/lib"
     export FFLAGS="-DNO_QUAD_PRECISION -fallow-argument-mismatch"  
 
-Then, the user must source the configuration file:
+Then, users must source the configuration file, just as they would on other systems:
 
 .. code-block:: console
 
-    source $SRW/env/build_macosx_gnu.env
+   module use $SRW/env
+   source $SRW/env/build_macos_gnu.env
 
-Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` to ``OFF`` in line 35 of the ``$SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt`` file: 
+Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` to ``OFF`` in line 35 of the ``$SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt`` file. This change is optional if using Option 2 to build the SRW App. Using a text editor (e.g., vi, vim, emacs): 
 
 .. code-block:: console
 
-    option(ENABLE_QUAD_PRECISION "Enable compiler definition -DENABLE_QUAD_PRECISION" OFF)
+   option(ENABLE_QUAD_PRECISION "Enable compiler definition -DENABLE_QUAD_PRECISION" OFF)
 
-This change is optional if using Option 2 to build the SRW App. 
+An alternative way to make this change is using a `sed` (streamline editor). From the command line, users can run:
 
+.. code-block:: console
+
+   sed -i 's/QUAD_PRECISION\"  ON)/QUAD_PRECISION\" OFF)/g' CMakeLists.txt
 
 
 .. _BuildExecutables:
@@ -554,6 +558,7 @@ The user must specify certain basic information about the experiment in a ``conf
    | EXTRN_MDL_FILES_LBCS           |  ""               | "gfs.pgrb2.0p25.f006"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
 
+.. _CopyConfig:
  
 To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather-app`` directory, run:
 
@@ -565,6 +570,10 @@ To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged the initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
+
+.. note::
+
+   MacOS users should refer to :numref:`Section %s <MacConfig>` for details on configuring an experiment on MacOS. 
 
 Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
@@ -623,7 +632,7 @@ For **WCOSS** systems, edit ``config.sh`` with these WCOSS-specific parameters, 
 
 .. code-block:: console
 
-   MACHINE=”wcoss_cray” or MACHINE=”wcoss_dell_p3”
+   MACHINE="wcoss_cray" or MACHINE="wcoss_dell_p3"
    ACCOUNT="my_account"
    EXPT_SUBDIR="my_expt_name"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
@@ -661,15 +670,14 @@ For WCOSS_CRAY:
 .. note::
 
    The values of the configuration variables should be consistent with those in the
-   ``valid_param_vals script``. In addition, various example configuration files can be
-   found in the ``regional_workflow/tests/baseline_configs`` directory.
+   ``valid_param_vals script``. In addition, various example configuration files can be found in the ``regional_workflow/tests/baseline_configs`` directory.
 
 
 
 .. _SetUpPythonEnv:
 
-Set up the Python and other Environment Parameters
---------------------------------------------------
+Set Up the Python and Other Environment Parameters
+----------------------------------------------------
 The workflow requires Python 3 with the packages 'PyYAML', 'Jinja2', and 'f90nml' available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
 
 .. code-block:: console
@@ -683,6 +691,119 @@ This command will activate the ``regional_workflow`` conda environment. The user
    conda init
    source ~/.bashrc
    conda activate regional_workflow
+
+.. _MacConfig:
+
+Configuring an Experiment on MacOS
+------------------------------------------------------------
+
+In principle, the configuration process for MacOS systems is the same as for other systems. However, the details of the configuration process on MacOS require a few extra steps. 
+
+Install Additional Packages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Check the version of bash, and upgrade it if it is lower than 4. Additionally, install the ``coreutils`` and ``gsed`` packages:
+
+.. code-block:: console
+
+   bash --version
+   brew upgrade bash
+	brew install coreutils
+	brew install gsed
+   
+The ``gsed``, or GNU streamline editor, can be set as a default for ``sed``. Add a ``gnubin`` directory to your $PATH variable in ``.bashrc`` : 
+
+.. code-block:: console
+
+	PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"    (Option1)
+	PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"       (Option 2)
+
+.. _MacVEnv:
+
+Create a Python Virtual Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Users must create a python virtual environment for running the SRW on MacOS. This involves setting python3 as default, adding required python modules, and sourcing the ``regional_workflow``. 
+	
+.. code-block:: console
+
+   python3 -m pip -version 
+   python3 -m pip install --upgrade pip 
+   python3 -m ensurepip --default-pip
+   python3 -m venv $HOME/venv/regional_workflow 
+   source $HOME/venv/regional_workflow/bin/activate
+   python3 -m pip install jinja2
+   python3 -m pip install pyyaml
+   python3 -m pip install f90nml
+   python3 -m pip install ruby         OR:   brew install ruby
+
+The virtual environment can be deactivated by running the ``deactivate`` command. The virtual environment built here will be reactivated in :numref:`Step %s <MacActivateWFenv>` and needs to be used to generate the workflow and run the experiment. 
+
+Install Rocoto
+^^^^^^^^^^^^^^^^^^
+
+.. note::
+   Users may install Rocoto if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet and is therefore not supported. 
+
+
+Configure the SRW
+^^^^^^^^^^^^^^^^^^^^
+
+Users will need to configure their experiment just like on any other system. From the ``$SRW/regional_workflow/ush`` directory, users can copy the settings from ``config.community.sh`` into a ``config.sh`` file (see :ref:`Step %s above <CopyConfig>`). In the ``config.sh`` file, users should set ``MACHINE="macos"``. 
+	
+Due to the limited number of processors on Mac OS systems, users must configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
+
+For Option 1, add the following information to ``config.sh``:
+
+.. code-block:: console
+
+   LAYOUT_X="${LAYOUT_X:-3}"
+   LAYOUT_Y="${LAYOUT_Y:-2}"
+   WRTCMP_write_groups="1"
+   WRTCMP_write_tasks_per_group="2"
+
+For Option 2, add the following information to ``config.sh``:
+
+.. code-block:: console
+
+   LAYOUT_X="${LAYOUT_X:-3}"
+   LAYOUT_Y="${LAYOUT_Y:-1}"
+   WRTCMP_write_groups="1"
+   WRTCMP_write_tasks_per_group="1"
+
+Configure the Machine File
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Configure the machine file based on the number of CPUs in the system (8 or 4). Specify the following variables in ``$SRW/regional_workflow/ush/machine/macos.sh``: 
+
+For Option 1 (8 CPUs):
+
+.. code-block:: console
+
+	# Architecture information
+   WORKFLOW_MANAGER="none"
+   NCORES_PER_NODE=${NCORES_PER_NODE:-8}	 (Option 2: when 4 CPUs, set to 4)
+   SCHED=${SCHED:-"none"}
+   # Run commands for executables
+   RUN_CMD_SERIAL="time"
+   RUN_CMD_UTILS="mpirun -np 4"
+   RUN_CMD_FCST='mpirun -np ${PE_MEMBER01}'
+   RUN_CMD_POST="mpirun -np 4"
+
+The same settings can be used for Option 2, except that ``NCORES_PER_NODE=${NCORES_PER_NODE:-8}`` should be set to 4 instead of 8. 
+
+.. _MacActivateWFenv:
+
+Activate the Workflow Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``regional_workflow`` environment can be activated on MacOS as it is for any other system (see :numref:`Step %s <SetUpPythonEnv>`):
+
+.. code-block:: console
+
+	cd $SRW/regional_workflow/ush
+ 	source ../../env/wflow_macos.env
+
+This should activate the ``regional_workflow`` environment created in :numref:`Step %s <MacVEnv>`. From here, the user may continue to the `next step <GenerateWorkflow>` and generate the regional workflow. 
 
 
 .. _GenerateWorkflow: 
@@ -722,9 +843,9 @@ Description of Workflow Tasks
 
 .. code-block:: console
 
-   RUN_TASK_MAKE_GRID=”FALSE”
-   RUN_TASK_MAKE_OROG=”FALSE”
-   RUN_TASK_MAKE_SFC_CLIMO=”FALSE”
+   RUN_TASK_MAKE_GRID="FALSE"
+   RUN_TASK_MAKE_OROG="FALSE"
+   RUN_TASK_MAKE_SFC_CLIMO="FALSE"
 
 
 .. _WorkflowTasksFig:
@@ -935,7 +1056,7 @@ After finishing the experiment, open the crontab using ``crontab -e`` and delete
 
    On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
    
-The workflow run is complete when all tasks have “SUCCEEDED”, and the rocotostat command outputs the following:
+The workflow run is complete when all tasks have “SUCCEEDED", and the rocotostat command outputs the following:
 
 .. code-block:: console
 
