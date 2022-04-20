@@ -144,7 +144,8 @@ if [ -z $PLATFORM ] ; then
 fi
 
 # set PLATFORM (MACHINE)
-source ${SRC_DIR}/env/set_machine.sh $PLATFORM
+MACHINE="${PLATFORM}"
+printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
 
 set -eu
 
@@ -168,8 +169,8 @@ if [ "${VERBOSE}" = true ] ; then
 fi
 
 # set ENV_FILE for this platform/compiler combination
-ENV_FILE="${SRC_DIR}/env/build_${PLATFORM}_${COMPILER}"
-if [ ! -f "${ENV_FILE}" ]; then
+ENV_FILE="build_${PLATFORM}_${COMPILER}"
+if [ ! -f "${SRC_DIR}/env/${ENV_FILE}" ]; then
   printf "ERROR: environment file does not exist for platform/compiler\n" >&2
   printf "  ENV_FILE=${ENV_FILE}\n" >&2
   printf "  PLATFORM=${PLATFORM}\n" >&2

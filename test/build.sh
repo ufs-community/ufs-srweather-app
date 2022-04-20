@@ -34,8 +34,10 @@ TEST_DIR=$( pwd )                   # Directory with this script
 TOP_DIR=${TEST_DIR}/..              # Top level (umbrella repo) directory
 TEST_OUTPUT=${TEST_DIR}/build_test${PID}.out
 
-# Detect MACHINE
-source ${TOP_DIR}/env/set_machine.sh $1
+# set PLATFORM (MACHINE)
+MACHINE="$1"
+PLATFORM="${MACHINE}"
+printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
 
 machine=$(echo "${MACHINE}" | tr '[A-Z]' '[a-z]')  # scripts in sorc need lower case machine name
 
