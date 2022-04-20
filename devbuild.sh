@@ -170,8 +170,8 @@ fi
 
 # set ENV_FILE for this platform/compiler combination
 ENV_FILE="build_${PLATFORM}_${COMPILER}"
-if [ ! -f "${SRC_DIR}/env/${ENV_FILE}" ]; then
-  printf "ERROR: environment file does not exist for platform/compiler\n" >&2
+if [ ! -f "${SRC_DIR}/modulefiles/${ENV_FILE}" ]; then
+  printf "ERROR: module file does not exist for platform/compiler\n" >&2
   printf "  ENV_FILE=${ENV_FILE}\n" >&2
   printf "  PLATFORM=${PLATFORM}\n" >&2
   printf "  COMPILER=${COMPILER}\n\n" >&2
@@ -237,9 +237,9 @@ if [ "${VERBOSE}" = true ]; then
   MAKE_SETTINGS="${MAKE_SETTINGS} VERBOSE=1"
 fi
 
-# source the environment file for this platform/compiler combination, then build the code
-printf "... Source ENV_FILE and create BUILD directory ...\n"
-module use ${SRC_DIR}/env
+# source the module file for this platform/compiler combination, then build the code
+printf "... Load MODULE_FILE and create BUILD directory ...\n"
+module use ${SRC_DIR}/modulefiles
 module load ${ENV_FILE}
 module list
 mkdir -p ${BUILD_DIR}
