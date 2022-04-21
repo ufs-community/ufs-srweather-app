@@ -162,6 +162,8 @@ On Level 2-4 systems, users will need to modify certain environment variables in
    export <VARIABLE_NAME>=<PATH_TO_MODULE>
    setenv <VARIABLE_NAME> <PATH_TO_MODULE>
 
+.. _MacDetails:
+
 Additional Details for Building on MacOS
 ------------------------------------------
 
@@ -234,7 +236,7 @@ Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` t
 
    option(ENABLE_QUAD_PRECISION "Enable compiler definition -DENABLE_QUAD_PRECISION" OFF)
 
-An alternative way to make this change is using a `sed` (streamline editor). From the command line, users can run:
+An alternative way to make this change is using a `sed` (streamline editor). (See :numref:`Step %s <MacMorePackages>` to install one) From the command line, users can run:
 
 .. code-block:: console
 
@@ -699,6 +701,8 @@ Configuring an Experiment on MacOS
 
 In principle, the configuration process for MacOS systems is the same as for other systems. However, the details of the configuration process on MacOS require a few extra steps. 
 
+.. _MacMorePackages:
+
 Install Additional Packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -708,8 +712,8 @@ Check the version of bash, and upgrade it if it is lower than 4. Additionally, i
 
    bash --version
    brew upgrade bash
-	brew install coreutils
-	brew install gsed
+   brew install coreutils
+   brew install gsed
    
 The ``gsed``, or GNU streamline editor, can be set as a default for ``sed``. Add a ``gnubin`` directory to your $PATH variable in ``.bashrc`` : 
 
@@ -735,7 +739,7 @@ Users must create a python virtual environment for running the SRW on MacOS. Thi
    python3 -m pip install jinja2
    python3 -m pip install pyyaml
    python3 -m pip install f90nml
-   python3 -m pip install ruby         OR:   brew install ruby
+   python3 -m pip install ruby         OR: brew install ruby
 
 The virtual environment can be deactivated by running the ``deactivate`` command. The virtual environment built here will be reactivated in :numref:`Step %s <MacActivateWFenv>` and needs to be used to generate the workflow and run the experiment. 
 
@@ -743,17 +747,30 @@ Install Rocoto
 ^^^^^^^^^^^^^^^^^^
 
 .. note::
-   Users may install Rocoto if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet and is therefore not supported. 
+   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and is not supported for this release. 
 
 
 Configure the SRW
 ^^^^^^^^^^^^^^^^^^^^
 
-Users will need to configure their experiment just like on any other system. From the ``$SRW/regional_workflow/ush`` directory, users can copy the settings from ``config.community.sh`` into a ``config.sh`` file (see :ref:`Step %s above <CopyConfig>`). In the ``config.sh`` file, users should set ``MACHINE="macos"``. 
-	
+Users will need to configure their experiment just like on any other system. From the ``$SRW/regional_workflow/ush`` directory, users can copy the settings from ``config.community.sh`` into a ``config.sh`` file (see :numref:`Section %s <UserSpecificConfig>`) above. In the ``config.sh`` file, users should set ``MACHINE="macos"`` and modify additional variables as needed. For example: 
+
+.. code-block:: console
+
+   MACHINE="macos"
+   ACCOUNT="user" 
+   EXPT_SUBDIR="<test_community>"
+   COMPILER="gnu"
+   VERBOSE="TRUE"
+   RUN_ENVIR="community"
+   PREEXISTING_DIR_METHOD="rename"
+
+   PREDEF_GRID_NAME="RRFS_CONUS_25km"	
+   QUILTING="TRUE"
+
 Due to the limited number of processors on Mac OS systems, users must configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
 
-For Option 1, add the following information to ``config.sh``:
+For :ref:`Option 1 <MacDetails>`, add the following information to ``config.sh``:
 
 .. code-block:: console
 
@@ -762,7 +779,7 @@ For Option 1, add the following information to ``config.sh``:
    WRTCMP_write_groups="1"
    WRTCMP_write_tasks_per_group="2"
 
-For Option 2, add the following information to ``config.sh``:
+For :ref:`Option 2 <MacDetails>`, add the following information to ``config.sh``:
 
 .. code-block:: console
 
@@ -779,7 +796,7 @@ For Option 1 (8 CPUs):
 
 .. code-block:: console
 
-	# Architecture information
+   # Architecture information
    WORKFLOW_MANAGER="none"
    NCORES_PER_NODE=${NCORES_PER_NODE:-8}	 (Option 2: when 4 CPUs, set to 4)
    SCHED=${SCHED:-"none"}
@@ -796,14 +813,14 @@ The same settings can be used for Option 2, except that ``NCORES_PER_NODE=${NCOR
 Activate the Workflow Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``regional_workflow`` environment can be activated on MacOS as it is for any other system (see :numref:`Step %s <SetUpPythonEnv>`):
+The ``regional_workflow`` environment can be activated on MacOS as it is for any other system:
 
 .. code-block:: console
 
 	cd $SRW/regional_workflow/ush
  	source ../../env/wflow_macos.env
 
-This should activate the ``regional_workflow`` environment created in :numref:`Step %s <MacVEnv>`. From here, the user may continue to the `next step <GenerateWorkflow>` and generate the regional workflow. 
+This should activate the ``regional_workflow`` environment created in :numref:`Step %s <MacVEnv>`. From here, the user may continue to the :ref:`next step <GenerateWorkflow>` and generate the regional workflow. 
 
 
 .. _GenerateWorkflow: 
@@ -894,7 +911,11 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workfl
 .. _RocotoRun:
 
 Run the Workflow Using Rocoto
-=============================
+==============================
+
+.. attention::
+   If users are running the SRW App in a container or on a system that does not have Rocoto installed, they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section. 
+
 The information in this section assumes that Rocoto is available on the desired platform. (Note that Rocoto cannot be used when running the workflow within a container.) If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
 
 Optionally, an environment variable can be set to navigate to the ``$EXPTDIR`` more easily. If the login shell is bash, it can be set as follows:
