@@ -1691,6 +1691,14 @@ MAXTRIES_VX_ENSGRID_PROB_RETOP="1"
 MAXTRIES_VX_ENSPOINT="1"
 MAXTRIES_VX_ENSPOINT_MEAN="1"
 MAXTRIES_VX_ENSPOINT_PROB="1"
+
+#
+#-----------------------------------------------------------------------
+#
+# Allows an extra parameter to be passed to slurm via XML Native
+# command
+#
+SLURM_NATIVE_CMD=""
 #
 #-----------------------------------------------------------------------
 #
