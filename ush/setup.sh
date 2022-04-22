@@ -507,7 +507,7 @@ if [ -z "${NCORES_PER_NODE:-}" ]; then
 fi
 
 if [ -z "$FIXgsm" -o -z "$FIXaer" -o -z "$FIXlut" -o -z "$TOPO_DIR" -o -z "$SFC_CLIMO_INPUT_DIR" ]; then
-      print_err_msg_exit "\
+  print_err_msg_exit "\
 One or more fix file directories have not been specified for this machine:
   MACHINE = \"$MACHINE\"
   FIXgsm = \"${FIXgsm:-\"\"}
@@ -2163,7 +2163,6 @@ GLOBAL_VAR_DEFNS_FP="$EXPTDIR/${GLOBAL_VAR_DEFNS_FN}"
 # variable definitions file.
 #
 #-----------------------------------------------------------------------
-
 #
 print_info_msg "
 Creating list of default experiment variable definitions..." 

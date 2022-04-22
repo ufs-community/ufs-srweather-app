@@ -410,7 +410,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
   CRES="C${res_equiv}"
 fi
-set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "\"$CRES\""
+set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "'$CRES'"
 #
 #-----------------------------------------------------------------------
 #

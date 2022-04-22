@@ -63,7 +63,7 @@ function check_expt_config_vars() {
     # Note that a variable name will be found only if the equal sign immediately
     # follows the variable name.
     #
-    var_name=$( printf "%s" "${crnt_line}" | $SED -n -r -e "s/^([^ =\"]*)=.*/\1/p")
+    var_name=$( printf "%s" "${crnt_line}" | $SED -n -r -e "s/^([^ =\"]*)=.*/\1/p" )
 
     if [ -z "${var_name}" ]; then
 
