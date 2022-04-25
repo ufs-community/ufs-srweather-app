@@ -80,5 +80,5 @@ RUN_CMD_POST="srun"
 
 # Test Data Locations
 TEST_PREGEN_BASEDIR="/mnt/lfs4/BMC/wrfruc/UFS_SRW_app/FV3LAM_pregen"
-TEST_COMINgfs="/mnt/lfs4/BMC/wrfruc/UFS_SRW_app/COMGFS"
+TEST_COMIN="/mnt/lfs4/BMC/wrfruc/UFS_SRW_app/COMGFS"
 TEST_EXTRN_MDL_SOURCE_BASEDIR="/mnt/lfs4/BMC/wrfruc/UFS_SRW_app/staged_extrn_mdl_files"

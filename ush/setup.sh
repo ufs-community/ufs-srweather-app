@@ -1141,7 +1141,7 @@ check_for_preexist_dir_file "$EXPTDIR" "${PREEXISTING_DIR_METHOD}"
 # is not placed directly under COMROOT but several directories further
 # down.  More specifically, for a cycle starting at yyyymmddhh, it is at
 #
-#   $COMROOT/$NET/$envir/$RUN.$yyyymmdd/$hh
+#   $COMROOT/$NET/$model_ver/$RUN.$yyyymmdd/$hh
 #
 # Below, we set COMROOT in terms of PTMP as COMROOT="$PTMP/com".  COMOROOT 
 # is not used by the workflow in community mode.
@@ -1151,7 +1151,7 @@ check_for_preexist_dir_file "$EXPTDIR" "${PREEXISTING_DIR_METHOD}"
 # from the RUN_POST_TN task will be placed, i.e. it is the cycle-independent 
 # portion of the RUN_POST_TN task's output directory.  It is given by
 #
-#   $COMROOT/$NET/$envir
+#   $COMROOT/$NET/$model_ver
 #
 # COMOUT_BASEDIR is not used by the workflow in community mode.
 #
@@ -1164,19 +1164,15 @@ FIXclim="${EXPTDIR}/fix_clim"
 FIXLAM="${EXPTDIR}/fix_lam"
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
-
-  CYCLE_BASEDIR="$STMP/tmpnwprd/$RUN"
+  CYCLE_BASEDIR="${STMP}/tmpnwprd/${RUN}"
   check_for_preexist_dir_file "${CYCLE_BASEDIR}" "${PREEXISTING_DIR_METHOD}"
-  COMROOT="$PTMP/com"
-  COMOUT_BASEDIR="$COMROOT/$NET/$envir"
+  COMROOT="${PTMP}/com"
+  COMOUT_BASEDIR="${COMROOT}/${NET}/${model_ver}"
   check_for_preexist_dir_file "${COMOUT_BASEDIR}" "${PREEXISTING_DIR_METHOD}"
-
 else
-
   CYCLE_BASEDIR="$EXPTDIR"
   COMROOT=""
   COMOUT_BASEDIR=""
-
 fi
 #
 #-----------------------------------------------------------------------

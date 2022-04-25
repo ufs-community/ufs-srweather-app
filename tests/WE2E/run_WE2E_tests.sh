@@ -854,7 +854,7 @@ SFC_CLIMO_DIR=\"${SFC_CLIMO_DIR}\""
 # 2) The directory in which the output files from the post-processor (UPP)
 #    for a given cycle are stored.  The path to this directory is
 #
-#      \$PTMP/com/\$NET/\$envir/\$RUN.\$yyyymmdd/\$hh
+#      \$PTMP/com/\$NET/\$model_ver/\$RUN.\$yyyymmdd/\$hh
 #
 # Here, we make the first directory listed above unique to a WE2E test
 # by setting RUN to the name of the current test.  This will also make
@@ -872,40 +872,32 @@ SFC_CLIMO_DIR=\"${SFC_CLIMO_DIR}\""
 # envir to the same value as RUN (which is just EXPT_SUBDIR).  Then, for
 # this test, the UPP output will be located in the directory
 #
-#   \$PTMP/com/\$NET/\$RUN/\$RUN.\$yyyymmdd/\$hh
+#   \$PTMP/com/\$NET/\we2e/\$RUN.\$yyyymmdd/\$hh
 #
 RUN=\"\${EXPT_SUBDIR}\"
-envir=\"\${EXPT_SUBDIR}\""
+model_ver="we2e""
 
 #
-# Set COMINgfs if using the FV3GFS or the GSMGFS as the external model 
-# for ICs or LBCs.
-#
-    if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
-       [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ] || \
-       [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
-       [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
+# Set COMIN.
 
-      COMINgfs=${TEST_COMINgfs:-}
+    COMIN=${TEST_COMIN:-}
 
-      if [ ! -d "${COMINgfs:-}" ] ; then
-        print_err_msg_exit "\
-The directory (COMINgfs) that needs to be specified when running the
+    if [ ! -d "${COMIN:-}" ] ; then
+      print_err_msg_exit "\
+The directory (COMIN) that needs to be specified when running the
 workflow in NCO mode (RUN_ENVIR set to \"nco\") AND using the FV3GFS or
 the GSMGFS as the external model for ICs and/or LBCs has not been specified
 for this machine (MACHINE):
   MACHINE= \"${MACHINE}\""
-      fi
+    fi
 
-      expt_config_str=${expt_config_str}"
+    expt_config_str=${expt_config_str}"
 #
 # Directory that needs to be specified when running the workflow in NCO
-# mode (RUN_ENVIR set to \"nco\") AND using the FV3GFS or the GSMGFS as
-# the external model for ICs and/or LBCs.
+# mode (RUN_ENVIR set to \"nco\").
 #
-COMINgfs=\"${COMINgfs}\""
+COMIN=\"${COMIN}\""
 
-    fi
 #
 # Set STMP and PTMP.
 #

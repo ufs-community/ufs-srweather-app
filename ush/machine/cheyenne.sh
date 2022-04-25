@@ -69,5 +69,5 @@ MET_BIN_EXEC=${MET_BIN_EXEC:-"bin"}
 
 # Test Data Locations
 TEST_PREGEN_BASEDIR="/glade/p/ral/jntp/UFS_SRW_app/FV3LAM_pregen"
-TEST_COMINgfs="/glade/p/ral/jntp/UFS_SRW_app/COMGFS"
+TEST_COMIN="/glade/p/ral/jntp/UFS_SRW_app/COMGFS"
 TEST_EXTRN_MDL_SOURCE_BASEDIR="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"

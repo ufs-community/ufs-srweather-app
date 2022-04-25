@@ -66,6 +66,6 @@ MET_BIN_EXEC=${MET_BIN_EXEC:-"bin"}
 
 # Test Data Locations
 TEST_PREGEN_BASEDIR="/work/noaa/fv3-cam/UFS_SRW_App/FV3LAM_pregen"
-TEST_COMINgfs="/work/noaa/fv3-cam/UFS_SRW_App/COMGFS"
+TEST_COMIN="/work/noaa/fv3-cam/UFS_SRW_App/COMGFS"
 TEST_EXTRN_MDL_SOURCE_BASEDIR="/work/noaa/fv3-cam/UFS_SRW_App/develop/model_data"
 

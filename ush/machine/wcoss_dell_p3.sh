@@ -78,5 +78,5 @@ MET_BIN_EXEC=${MET_BIN_EXEC:-"exec"}
 
 # Test Data Locations
 TEST_PREGEN_BASEDIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/FV3LAM_pregen"
-TEST_COMINgfs="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/COMGFS"
+TEST_COMIN="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/COMGFS"
 TEST_EXTRN_MDL_SOURCE_BASEDIR="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/model_data"
