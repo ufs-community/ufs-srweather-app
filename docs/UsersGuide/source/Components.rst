@@ -47,6 +47,17 @@ The SRW Application is distributed with the Unified Post Processor (:term:`UPP`)
 Output from UPP can be used with visualization, plotting, and verification packages or in
 further downstream post-processing (e.g., statistical post-processing techniques).
 
+.. _MetplusComponent:
+
+METplus Verification Suite
+=============================
+
+The Model Evaluation Tools (MET) are a set of verification tools developed by the Developmental Testbed Center (DTC) for use by the numerical weather prediction community to help them assess and evaluate the performance of numerical weather predictions. MET is the core component of the unified METplus verification framework. METplus spans a wide range of temporal (warn-on-forecast to climate) and spatial (storm to global) scales. The core components of the framework include MET, the associated database and display systems called METviewer and METexpress, and a suite of Python wrappers to provide low-level automation and examples, also called use-cases. METplus is intended to be extensible through additional capabilities developed by the community. 
+
+METplus is being actively developed by NCAR/Research Applications Laboratory (RAL), NOAA/Earth Systems Research Laboratories (ESRL), NOAA/Environmental Modeling Center (EMC), and is open to community contributions.
+
+More details about METplus can be found on the `METplus website <https://dtcenter.org/community-code/metplus>`__.
+
 Visualization Example
 =====================
 A Python script is provided to create basic visualization of the model output. The script
