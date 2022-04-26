@@ -589,7 +589,7 @@ The parameters below turn on SPP in Noah or RUC LSM (support for Noah MP is in p
    Sets the maximum random pattern amplitude for each of the LSM perturbations. 
 
 ``LSM_SPP_EACH_STEP``: (Default: "true") 
-   When set to "TRUE", it sets ``lndp_model_type=2`` and perturbs each time step. 
+   When set to "TRUE", it sets ``lndp_each_step=.true.`` and perturbs each time step. 
 
 
 .. include:: ConfigParameters.inc
