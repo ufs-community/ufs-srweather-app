@@ -96,6 +96,8 @@ Directory Parameters
    This parameter cannot be left as a null string.
 
 
+.. _NCOModeParms:
+
 NCO Mode Parameters
 ===================
 These variables apply only when using NCO mode (i.e. when ``RUN_ENVIR`` is set to "nco").
