@@ -126,7 +126,7 @@ def str_to_list(v):
     v = v.strip()
     if not v:
         return None
-    if v[0] == '(':
+    if v[0] == '(' and v[-1] == ')':
         v = v[1:-1]
         tokens = shlex.split(v)
         lst = []

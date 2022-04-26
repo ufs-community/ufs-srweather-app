@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .change_case import lowercase
+from .misc import lowercase
 from .check_var_valid_value import check_var_valid_value
 
 def get_elem_inds(arr, match, ret_type):

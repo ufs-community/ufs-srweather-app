@@ -18,9 +18,23 @@ import os
 from python_utils import *
 
 class Testing(unittest.TestCase):
-    def test_change_case(self):
+    def test_misc(self):
         self.assertEqual( uppercase('upper'), 'UPPER' )
         self.assertEqual( lowercase('LOWER'), 'lower' )
+        # regex in file
+        pattern = f'^[ ]*<scheme>(lsm_ruc)<\/scheme>[ ]*$'
+        FILE=f"{self.PATH}/../test_data/suite_FV3_GSD_SAR.xml" 
+        match = find_pattern_in_file(pattern, FILE)
+        self.assertEqual( ("lsm_ruc",), match)
+        # regex in string
+        with open(FILE) as f:
+            content = f.read()
+            find_pattern_in_str(pattern, content)
+            self.assertEqual( ("lsm_ruc",), match)
+    def test_xml_parser(self):
+        FILE=f"{self.PATH}/../test_data/suite_FV3_GSD_SAR.xml" 
+        tree = load_xml_file(FILE)
+        self.assertTrue(has_tag_with_value(tree,"scheme","lsm_ruc"))
     def test_check_for_preexist_dir_file(self):
         cmd_vrfy('mkdir -p test_data/dir')
         self.assertTrue( os.path.exists('test_data/dir') )
@@ -38,8 +52,8 @@ class Testing(unittest.TestCase):
         dPATH=f'{self.PATH}/test_data/dir'
         mkdir_vrfy(dPATH)
         self.assertTrue( os.path.exists(dPATH) )
-        cp_vrfy(f'{self.PATH}/change_case.py', f'{dPATH}/change_cases.py')
-        self.assertTrue( os.path.exists(f'{dPATH}/change_cases.py') )
+        cp_vrfy(f'{self.PATH}/misc.py', f'{dPATH}/miscs.py')
+        self.assertTrue( os.path.exists(f'{dPATH}/miscs.py') )
         cmd_vrfy(f'rm -rf {dPATH}')
         self.assertFalse( os.path.exists('tt.py') )
     def test_get_charvar_from_netcdf(self):
@@ -53,13 +67,6 @@ class Testing(unittest.TestCase):
         self.assertEqual( get_elem_inds(arr, 'egg', 'first' ) , 0 )
         self.assertEqual( get_elem_inds(arr, 'egg', 'last' ) , 4 )
         self.assertEqual( get_elem_inds(arr, 'egg', 'all' ) , [0, 2, 4] )
-    def test_get_manage_externals_config_property(self):
-        self.assertIn( \
-            'regional_workflow',
-            get_manage_externals_config_property( \
-                f'{self.PATH}/test_data/Externals.cfg',
-                'regional_workflow',
-                'repo_url'))
     def test_interpol_to_arbit_CRES(self):
         RES = 800
         RES_array = [ 5, 25, 40, 60, 80, 100, 400, 700, 1000, 1500, 2800, 3000 ]
@@ -95,7 +102,7 @@ class Testing(unittest.TestCase):
         set_env_var("MYVAR","MYVAL")
         env_vars = ["PWD", "MYVAR"]
         import_vars(env_vars=env_vars)
-        self.assertEqual( PWD, os.getcwd() )
+        self.assertEqual( os.path.realpath(PWD), os.path.realpath(os.getcwd()) )
         self.assertEqual(MYVAR,"MYVAL")
         #test export
         MYVAR="MYNEWVAL"
@@ -106,10 +113,26 @@ class Testing(unittest.TestCase):
         dictionary = { "Hello": "World!" }
         import_vars(dictionary=dictionary)
         self.assertEqual( Hello, "World!" )
+        #test array
+        shell_str='("1" "2") \n'
+        v = str_to_list(shell_str)
+        self.assertTrue( isinstance(v,list) )
+        self.assertEqual(v, [1, 2])
+        shell_str = '( "1" "2" \n'
+        v = str_to_list(shell_str)
+        self.assertFalse( isinstance(v,list) )
     def test_config_parser(self):
         cfg = { "HRS": [ "1", "2" ] }
         shell_str = cfg_to_shell_str(cfg)
         self.assertEqual( shell_str, 'HRS=( "1" "2" )\n')
+        # ini file
+        cfg = load_ini_config(f'{self.PATH}/test_data/Externals.cfg')
+        self.assertIn( \
+            'regional_workflow',
+            get_ini_value( \
+                cfg,
+                'regional_workflow',
+                'repo_url'))
     def test_print_msg(self):
         self.assertEqual( print_info_msg("Hello World!", verbose=False), False)
     def setUp(self):

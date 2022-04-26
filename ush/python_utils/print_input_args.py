@@ -4,7 +4,7 @@ import os
 import inspect
 from textwrap import dedent
 
-from .change_case import lowercase
+from .misc import lowercase
 from .print_msg import print_info_msg
 from .environment import import_vars
 

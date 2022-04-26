@@ -24,7 +24,7 @@ def check_for_preexist_dir_file(path, method):
             rm_vrfy(' -rf ', path)
         elif method == 'rename':
             now = datetime.now()
-            d = now.strftime("_%Y%m%d_%H%M%S")
+            d = now.strftime("_old_%Y%m%d_%H%M%S")
             new_path = path + d
             print_info_msg(f'''
                 Specified directory or file already exists:

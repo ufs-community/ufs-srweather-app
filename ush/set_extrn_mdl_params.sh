@@ -36,7 +36,7 @@ function set_extrn_mdl_params() {
     "RAP")
       EXTRN_MDL_LBCS_OFFSET_HRS=${EXTRN_MDL_LBCS_OFFSET_HRS:-"3"}
       ;;
-    "*")
+    *)
       EXTRN_MDL_LBCS_OFFSET_HRS=${EXTRN_MDL_LBCS_OFFSET_HRS:-"0"}
       ;;
   esac

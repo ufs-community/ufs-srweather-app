@@ -43,6 +43,7 @@ Expected behavior:
 
 import datetime as dt
 import os
+import sys
 
 import argparse
 import jinja2 as j2
@@ -155,7 +156,7 @@ def path_ok(arg):
     raise argparse.ArgumentTypeError(msg)
 
 
-def parse_args():
+def parse_args(argv):
 
     '''
     Function maintains the arguments accepted by this script. Please see
@@ -195,7 +196,7 @@ def parse_args():
                         required=True,
                         type=path_ok,
                         )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 def update_dict(dest, newdict, quiet=False):
 
@@ -231,12 +232,17 @@ def update_dict(dest, newdict, quiet=False):
         print('*' * 50)
 
 
-def main(cla):
+def fill_jinja_template(argv):
 
     '''
     Loads a Jinja template, determines its necessary undefined variables,
     retrives them from user supplied settings, and renders the final result.
     '''
+
+    # parse args
+    cla = parse_args(argv)
+    if cla.config:
+        cla.config = config_exists(cla.config)
 
     # Create a Jinja Environment to load the template.
     env = j2.Environment(loader=j2.FileSystemLoader(cla.template))
@@ -274,7 +280,5 @@ def main(cla):
 
 
 if __name__ == '__main__':
-    cla = parse_args()
-    if cla.config:
-        cla.config = config_exists(cla.config)
-    main(cla)
+
+    fill_jinja_template(sys.argv[1:])
