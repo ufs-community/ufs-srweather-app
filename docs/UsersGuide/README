@@ -1,26 +1,29 @@
 Steps to build and use the Sphinx documentation tool:
 
-1) Get Sphinx and sphinxcontrib-bibtex installed on your desktop from
+1) Get Sphinx, sphinxcontrib-bibtex, and the RTD theme installed on your desktop from
     http://www.sphinx-doc.org/en/master/usage/installation.html
     https://sphinxcontrib-bibtex.readthedocs.io/en/latest/quickstart.html#installation
+    https://pypi.org/project/sphinx-rtd-theme/
+    
+    For example: 
+    pip install sphinx
+    pip install sphinxcontrib-bibtex
+    pip install sphinx-rtd-theme
 
-2) Create a Sphinx documentation root directory:
-   % mkdir docs
-   % cd docs
+    One approach that has worked to resolve "Module Not Found" errors for users with MacPorts package manager: 
+    $ sudo port install py-six  # may not be necessary
+    $ sudo port install py310-sphinxcontrib-bibtex
+    $ sudo port select --set sphinx py310-sphinx
+    $ sudo port install py310-sphinx_rtd_theme
 
-3) Initialize your Sphinx project (set up an initial directory structure) using
-   % sphinx-quickstart
+    py310 can be replaced with the user's version of Python (e.g., py39) 
 
-   See http://www.sphinx-doc.org/en/master/usage/quickstart.html or
-       https://sphinx-rtd-tutorial.readthedocs.io/en/latest/sphinx-quickstart.html
-
-    for help.  You can answer (ENTER) to most of the questions.
-        
 To build html:
 
-From the directory above source and build, the sphinx project directory:
+$ cd ufs-srweather-app/docs/UsersGuide
+$ make clean && sphinx-build -b html source build
 
-make html
+The "make html" command can often be used in place of the previous command.
 
 Sphinx uses Latex to export the documentation as a PDF file.  To build pdf:
 
