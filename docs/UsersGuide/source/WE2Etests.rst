@@ -3,43 +3,68 @@
 ================================
 Workflow End-to-End (WE2E) Tests
 ================================
-The SRW App's experiment generation system contains a set of end-to-end tests that 
-exercise various configurations of that system as well as those of the pre-processing, 
-UFS Weather Model, UPP post-processing, and MET/METPlus verification scripts and codes. 
-These are referred to as workflow end-to-end (WE2E) tests.  The script to run these tests is named 
-``run_WE2E_tests.sh`` and is located in the directory ``ufs-srweather-app/regional_workflow/tests/WE2E``.
+The SRW App contains a set of end-to-end tests that exercise the App in various configurations.
+These are referred to as workflow end-to-end (WE2E) tests because they all use the Rocoto 
+workflow manager to run their individual workflows.  
+The purpose of these tests is to 
+ensure that new changes to the App do not break existing functionality and capabilities.  
 
+
+Note that the WE2E tests are not regression tests, i.e. they do not check whether 
+current results are identical to previously established baselines.  They are also
+not tests of the scientific integrity of the results, e.g. they do not check that values 
+of output fields are reasonable.  
+These tests only check that the tasks within each test's workflow complete
+successfully.  
+They are in essence tests of the workflow generation, task execution (j-jobs, 
+ex-scripts), and other auxiliary scripts (which are mostly in the ``regional_workflow``
+repo) to ensure that these scripts are correctly performing their functions.  These functions
+include creating and correctly arranging and naming directories and files, ensuring 
+that all input files are available and readable, calling
+executables with correct namelists and/or options, etc.
+For the time being, it is up to the external repositories that the App clones (:numref:`Section %s <SRWStructure>`)
+to check that changes to those repos do not change results, or, if they do, to ensure that the new
+results are acceptable.  
+(At least two of these external repositories --- ``UFS_UTILS`` and ``ufs-weather-model`` ---
+do have such regression tests.)  
+
+The script to run all or a subset of the WE2E tests is named ``run_WE2E_tests.sh`` and is located in the directory 
+``ufs-srweather-app/regional_workflow/tests/WE2E``.
 Each WE2E test has associated with it a configuration file named ``config.${test_name}.sh``, 
 where ``${test_name}`` is the name of the corresponding test. 
 These configuration files are subsets of
 the full ``config.sh`` experiment configuration file used in :numref:`Section %s <SetUpConfigFileC>` 
-and described in :numref:`Section %s <UserSpecificConfig>`.  For each test that the user wants 
+and described in :numref:`Section %s <UserSpecificConfig>`.
+For each test that the user wants 
 to run, the ``run_WE2E_tests.sh`` script reads in its configuration file and generates from 
 it a complete ``config.sh`` file.  It then calls ``generate_FV3LAM_wflow.sh``, which in turn
 reads in ``config.sh`` and generates a new experiment for the test.  
 The name of each experiment directory is set to that of the corresponding test, 
 and a copy of ``config.sh`` for each test is placed in its experiment directory.
 
-The WE2E tests are currently grouped into the following categories:
+For convenience, the WE2E tests are currently grouped into the following categories:
 
 * ``grids_extrn_mdls_suites_community``
 
   This category of tests ensures that the SRW App workflow running in **community mode**
-  completes successfully for various combinations of predefined grids, physics
-  suites, and external models for ICs and LBCs.
+  (i.e. with ``RUN_ENVIR`` set to ``"community"``) completes successfully for various 
+  combinations of predefined grids, physics suites, and external models for ICs and LBCs.
+  Note that in community mode, all output from the App is placed under a single experiment 
+  directory.
 
 * ``grids_extrn_mdls_suites_nco``
 
   This category of tests ensures that the workflow running in **NCO mode** (i.e. using
-  an operational environment and directory structure) 
-  completes successfully for various combinations of predefined grids, physics
-  suites, and external models for ICs and LBCs.
+  (i.e. with ``RUN_ENVIR`` set to ``"nco"``) completes successfully for various combinations 
+  of predefined grids, physics suites, and external models for ICs and LBCs.  Note that
+  in NCO mode, an operational run environment (i.e. variable names) is used along with
+  a directory structure in which output is placed in multiple directories (see 
+  Sections :numref:`%s <UserSpecificConfig>` and :numref:`%s <NCOModeParms>`).
 
 * ``wflow_features``
 
   This category of tests ensures that the workflow with various features/capabilities activated
-  completes successfully.  Thus, their focus is the various scripts in the ``ufs-srweather-app``
-  and ``regional_workflow`` repositories.  To reduce computational cost, these tests generally 
+  completes successfully.  To reduce computational cost, most tests in this category 
   use coarser grids.
 
 The test configuration files for these categories are located in the following directories,
@@ -55,11 +80,12 @@ Since ``run_WE2E_tests.sh`` calls ``generate_FV3LAM_wflow.sh`` for each test, th
 Python modules required for experiment generation must be loaded before ``run_WE2E_tests.sh`` 
 can be called.  See :numref:`Section %s <SetUpPythonEnv>` for information on loading the Python
 environment on supported platforms.  Note also that ``run_WE2E_tests.sh`` assumes that all of 
-the executables have been built.  If they are not, then ``run_WE2E_tests.sh`` will still
+the executables have been built.  If they have not, then ``run_WE2E_tests.sh`` will still
 generate the experiment directories, but the workflows will fail.
 
+
 Running the WE2E Tests
-----------------------
+================================
 
 The user specifies the set of tests that ``run_WE2E_tests.sh`` will run by creating a text 
 file, say ``my_tests.txt``, that contains a list of the WE2E tests to run (one per line) 
@@ -76,12 +102,12 @@ wants to run the tests ``new_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3
 
 For each test in ``my_tests.txt``, ``run_WE2E_tests.sh``
 will generate a new experiment directory and, by default, create a new cron job in the user's cron
-table that will (re)launch the workflow every two minutes.  This cron job calls the workflow launch script 
+table that will (re)launch the workflow every 2 minutes.  This cron job calls the workflow launch script 
 ``launch_FV3LAM_wflow.sh`` located in the experiment directory until the workflow either 
 completes successfully (i.e. all tasks are successful) or fails (i.e. at least one task fails). 
 The cron job is then removed from the user's cron table.
 
-Next, we show several common ways that ``run_WE2E_tests.sh`` may be called with
+Next, we show several common ways that ``run_WE2E_tests.sh`` can be called with
 the ``my_tests.txt`` file above.
 
 1) To run the tests listed in ``my_tests.txt`` on Hera and charge the computational
@@ -185,14 +211,72 @@ obtained by issuing
 in the directory ``ufs-srweather-app/regional_workflow/tests/WE2E``.
 
 
+.. _WE2ETestInfoFile:
+
+The WE2E Test Information File
+================================
+In addition to creating the WE2E tests' experiment directories and optionally creating
+cron jobs to launch their workflows, the ``run_WE2E_tests.sh`` script generates (if necessary)
+a CSV (Comma-Separated Value) file named ``WE2E_test_info.csv`` that contains information 
+on the full set of WE2E tests.  This file serves as a single location where relevant 
+information about the WE2E tests can be found.  It can be imported into Google Sheets 
+using the "|" (pipe symbol) character as the custom field separator.  The rows of the 
+file/sheet represent the full set of available tests (not just the ones to be run), 
+while the columns contain the following information (column titles are included in the
+CSV file):
+
+| Column 1:
+| The primary test name and (in parentheses) the category subdirectory it is
+  located in.
+
+| Column 2:
+| Any alternate names for the test (if any) followed by their category subdirectories
+  (in parentheses).
+
+| Column 3:
+| The test description.
+
+| Column 4:
+| The number of times the forecast model will be run by the test.  This gives an idea
+  of how expensive the test is.  It is calculated using quantities such as the number
+  of cycle dates (i.e. forecast model start dates) and the number of of ensemble members
+  (if running ensemble forecasts).  The are in turn obtained directly or indirectly
+  from the quantities in Columns 5, 6, ....
+
+| Columns 5,6,...:
+| The values of various experiment variables (if defined) in each test's configuration
+  file.  Currently, the following experiment variables are included:
+
+  |  ``PREDEF_GRID_NAME``
+  |  ``CCPP_PHYS_SUITE``
+  |  ``EXTRN_MDL_NAME_ICS``
+  |  ``EXTRN_MDL_NAME_LBCS``
+  |  ``DATE_FIRST_CYCL``
+  |  ``DATE_LAST_CYCL``
+  |  ``CYCL_HRS``
+  |  ``INCR_CYCL_FREQ``
+  |  ``FCST_LEN_HRS``
+  |  ``LBC_SPEC_INTVL_HRS``
+  |  ``NUM_ENS_MEMBERS``
+
+Additional fields (columns) will likely be added to the CSV file in the near future.
+
+Note that the CSV file is not part of the ``regional_workflow`` repo (i.e. it is 
+not tracked by the repo).  The ``run_WE2E_tests.sh`` script will generate a CSV 
+file if (1) the CSV file doesn't already exist, or (2) the CSV file does exist 
+but changes have been made to one or more of the category subdirectories (e.g. 
+test configuration files modified, added, or deleted) since the creation of the 
+CSV file.  Thus, ``run_WE2E_tests.sh`` will always create a CSV file the first
+time it is run in a fresh git clone of the SRW App.
+
 
 
 Checking Test Status
---------------------
+====================
 If cron jobs are being used to periodically relaunch the tests, the status of
 each test can be checked by viewing the end of the log file ``log.launch_FV3LAM_wflow``
-(since the cron jobs use ``launch_FV3LAM_wflow.sh`` for this purpose, which 
-generates that log file).  Otherwise (or alternatively), the ``rocotorun``/``rocotostat``
+(since the cron jobs use ``launch_FV3LAM_wflow.sh`` to relaunch the workflow, and
+that in turn generates the log files).  Otherwise (or alternatively), the ``rocotorun``/``rocotostat``
 combination of commands can be used.  See :numref:`Section %s <RocotoRun>` for
 details.  
 
@@ -204,7 +288,8 @@ and then prints out to screen the status of the various tests.  It also creates
 a status report file named ``expts_status_${create_date}.txt`` (where ``create_date``
 is a time stamp of the form ``YYYYMMDDHHmm`` corresponding to the creation date/time
 of the report) and places it in the experiment base directory.  This status file 
-contains the last 40 lines (by default; this can be adjusted) from the end of each 
+contains the last 40 lines (by default; this can be adjusted via the ``num_log_lines``
+argument) from the end of each 
 ``log.launch_FV3LAM_wflow`` log file.  These lines include the experiment status 
 as well as the task status table generated by ``rocotostat`` (so that, in 
 case of failure, it is convenient to pinpoint the task that failed).
@@ -214,7 +299,7 @@ For details on the usage of ``get_expts_stats.sh``, issue
 
    > get_expts_status.sh --help
 
-For example:
+Here is an example of how to call ``get_expts_status.sh`` along with sample output:
 
 .. code-block::  console
 
@@ -250,7 +335,24 @@ The "Workflow status" field of each test indicates the status of its workflow.
 The values that this can take on are "SUCCESS", "FAILURE", and "IN PROGRESS".
 
 
-Adding New WE2E Tests
+Modifying the WE2E System
+=========================
+This section describes various ways in which the WE2E testing system can be modified 
+to suit specific tessting needs.
+
+
+.. _ModExistingTest:
+
+Modifying an Existing Test
+---------------------
+To modify an existing test, 
+
+
+
+
+.. _AddNewTest:
+
+Adding a New Test
 ---------------------
 To add a new test named, for example ``new_test01``, to one of the existing categories listed
 above, say ``wflow_features``:
@@ -265,9 +367,14 @@ above, say ``wflow_features``:
 3) Further edit ``config.new_test01.sh`` by modifying existing experiment variable values
    and/or adding new variables such that the test runs with the intended configuration.
 
+
+.. _AddNewCategory:
+
+Adding a New WE2E Test Category
+-----------------------------
 To create a new test category called, e.g. ``new_category``:
 
-1) In the directory ``ufs-srweather-app/regional_workflow/tests/WE2E/test_configs``.
+1) In the directory ``ufs-srweather-app/regional_workflow/tests/WE2E/test_configs``,
    create a new directory named ``new_category``. 
 
 2) In the file ``get_WE2Etest_names_subdirs_descs.sh``, add the element ``"new_category"`` 
@@ -284,7 +391,61 @@ To create a new test category called, e.g. ``new_category``:
        "new_category" \
        )
 
-New tests can now be added to ``new_category`` using the procedure described above.
+New tests can now be added to ``new_category`` using the procedure described in 
+:numref:`Section %s <AddNewTest>`.
+
+
+.. _CreateAltTestNames:
+
+Creating Alternate Names for a Test
+-----------------------------------
+In order to prevent proliferation of WE2E tests, users might want to use the same
+test for multiple purposes.
+For example, consider the test ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` 
+in the ``grids_extrn_mdls_suites_community`` category.  This checks for the successful
+completion of the Rocoto workflow running the combination 
+of the ``RRFS_CONUScompact_25km`` grid, the ``FV3GFS`` model for
+ICs and LBCs, and the ``FV3_GFS_v16`` physics suite.  If this test also
+happens to use the inline post capability of the weather model (it currently 
+doesn't; this is only a hypothetical example), then this test can also be used
+to ensure that the inline post feature of the App/weather model (which is
+activated in the App by setting ``WRITE_DOPOST`` to ``"TRUE"``) is working properly.
+Since this test will servce two purposes, it should have two names --- one per purpose.  
+Assume we want to set the second (alternate) name to ``activate_inline_post``.  This
+can be accomplished by creating a
+a symlink named ``config.activate_inline_post.sh``, most appropriately in the ``wflow_features``
+category directory, that points to the configuration file 
+
+``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh``
+
+in the ``grids_extrn_mdls_suites_community`` category directory.  
+
+
+In this situation, the primary name for the test is ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` 
+(because ``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh``
+is an actual file, not a symlink), and ``activate_inline_post`` is an alternate name.  
+Recall from :numref:`Section %s <WE2ETestInfoFile>` that column 1 of the CSV file ``WE2E_test_info.csv`` generated by 
+``run_WE2E_tests.sh`` contains the test's primary name while
+column 2 contains any alternate names.
+
+Note that (1) a primary test can have more than one alternate test name (by having
+more than one symlink point to the test's configuration file), and (2) the symlinks
+representing the alternate test names can be in the same or a different category
+directory.
+
+With this primary/alternate test naming convention, a user can list either the primary 
+test name or one of the alternate test names in the experiments list file (e.g. 
+``my_tests.txt``) that ``run_WE2E_tests.sh`` reads in.  If both primary and one
+or more alternate test names are listed, then ``run_WE2E_tests.sh`` will exit with a 
+warning message without running any tests.
+
+To accommodate this, the WE2E testing system allows tests to have alternate names 
+by allowing for symlinks with names of the form ``config.${alt_test_name}.sh``
+with targets that are actual test confguation files (as opposed to symlinks).  
+For example, if there is already a test named 
+
+and a user creates a symlink named ``aaa`` whose target is ``aa```, then the xxxx will
+treat xxx as an alternate name for ``asdf`` and will not rerun.
 
 
 
