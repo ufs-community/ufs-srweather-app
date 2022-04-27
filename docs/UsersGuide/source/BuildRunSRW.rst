@@ -611,12 +611,21 @@ For WCOSS_CRAY:
 
 .. _VXConfig:
 
-Configure METplus Verification (Optional)
---------------------------------------------
+Configure METplus Verification Suite (Optional)
+--------------------------------------------------
 
-Users who want to use the METplus verification suite to test their forecasts need to add additional information to their ``config.sh`` file. 
+Users who want to use the METplus verification suite to test their forecasts need to load the appropriate modules and add additional information to their ``config.sh`` file. Other users may skip to the `next section <SetUpPythonEnv>`. 
 
-First, the path to the MET and METplus directories must be set:
+METplus is preinstalled on Level 1 systems; existing builds can be viewed `here <https://dtcenter.org/community-code/metplus/metplus-4-1-existing-builds>`__. Users on other systems can follow the `MET Installation <https://met.readthedocs.io/en/main_v10.1/Users_Guide/installation.html>`__ and `METplus Installation <https://metplus.readthedocs.io/en/v4.1.0/Users_Guide/installation.html>`__ Guides. However, METplus *installation* is currently not supported for this release of the SRW App. METplus *use* is supported. 
+
+Once installed, users must load the appropriate modules (changing the module location and MET version to correspond with their system's installation):
+
+.. code-block:: console
+   
+   module use -a </contrib/met/modulefiles/>
+   module load met/10.0.0
+
+Then, the path to the MET and METplus directories must be set:
 
 .. code-block:: console
 
@@ -640,7 +649,7 @@ Users who do not have access to NOAA HPSS and do not have the data on their syst
 
 Next, the verification tasks must be turned on according to the user's needs:
 
-   .. code-block:: console
+.. code-block:: console
 
    RUN_TASK_VX_GRIDSTAT="TRUE"
    RUN_TASK_VX_POINTSTAT="TRUE"
@@ -761,14 +770,14 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | **Workflow Task**     | **Task Description**                                       |
    +=======================+============================================================+
    | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
-   |                       | HPSS. Can only be run if RUN_TASK_GET_OBS_CCPA="FALSE".    |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="FALSE"``.|
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
-   |                       | HPSS. Can only be run if RUN_TASK_GET_OBS_NDAS="FALSE".    |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS="FALSE"``.|
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
    |                       | reflectivity and echo top data from NOAA HPSS. Can only be |
-   |                       | run if RUN_TASK_GET_OBS_MRMS="FALSE".                      |
+   |                       | run if ``RUN_TASK_GET_OBS_MRMS="FALSE"``.                  |
    +-----------------------+------------------------------------------------------------+
    | VX_GRIDSTAT           | Run METplus grid-to-grid verification for 1-h accumulated  |
    |                       | precipitation                                              |
@@ -796,7 +805,8 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_REFC       | Run METplus grid-to-grid ensemble verification for         |
    |                       | composite reflectivity. Can only be run if                 |
-   |                       | ``DO_ENSEMBLE="TRUE"`` and RUN_TASK_VX_ENSGRID = "TRUE".   |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and                                 |
+   |                       | ``RUN_TASK_VX_ENSGRID = "TRUE"``.                          |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_RETOP      | Run METplus grid-to-grid ensemble verification for echo    |
    |                       | top. Can only be run if ``DO_ENSEMBLE="TRUE"`` and         |
