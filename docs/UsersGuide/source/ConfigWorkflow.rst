@@ -3,7 +3,7 @@
 ============================================================================================
 Workflow Parameters: Configuring the Workflow in ``config.sh`` and ``config_defaults.sh``		
 ============================================================================================
-To create the experiment directory and workflow when running the SRW App, the user must create an experiment configuration file named ``config.sh``. This file contains experiment-specific information, such as dates, external model data, directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``regional_workflow`` repository’s ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first is for running experiments in community mode (``RUN_ENVIR`` set to "community"; see below), and the second is for running experiments in "nco" mode (``RUN_ENVIR`` set to "nco"). Note that for this release, only "community" mode is supported. These files can be used as the starting point from which to generate a variety of experiment configurations in which to run the SRW App.
+To create the experiment directory and workflow when running the SRW App, the user must create an experiment configuration file named ``config.sh``. This file contains experiment-specific information, such as dates, external model data, observation data, directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``regional_workflow`` repository’s ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first is for running experiments in community mode (``RUN_ENVIR`` set to "community"; see below), and the second is for running experiments in "nco" mode (``RUN_ENVIR`` set to "nco"). Note that for this release, only "community" mode is supported. These files can be used as the starting point from which to generate a variety of experiment configurations in which to run the SRW App.
 
 ..
    COMMENT: Is community mode still the only one supported? 
@@ -312,8 +312,8 @@ METplus Parameters
    User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_ccpa_tn`` task. (This task is activated in the workflow by setting ``RUN_TASK_GET_OBS_CCPA="TRUE"``). 
    METplus configuration files require the use of predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. This path must be defind as ``/<full-path-to-obs>/ccpa/proc``. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.    
 
-.. note::
-   There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ccpa_files.sh``) has an example of how to account for this and organize the data into a more intuitive format. When a fix is provided, it will be accounted for in the ``exregional_get_ccpa_files.sh`` script.
+   .. note::
+      There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ccpa_files.sh``) has an example of how to account for this and organize the data into a more intuitive format. When a fix is provided, it will be accounted for in the ``exregional_get_ccpa_files.sh`` script.
 
 ``MRMS_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_mrms_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_MRMS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
@@ -1088,17 +1088,19 @@ Baseline Workflow Tasks
 ``RUN_TASK_RUN_POST``: (Default: "TRUE")
    Flag that determines whether to run the ``RUN_POST_TN`` task.
 
+.. _VXTasks:
+
 Verification Tasks
 --------------------
 
 ``RUN_TASK_GET_OBS_CCPA``: (Default: "FALSE")
-   Flag that determines whether to run the ``GET_OBS_CCPA`` task, which retrieves the CCPA hourly precipitation files used by METplus. 
+   Flag that determines whether to run the ``GET_OBS_CCPA_TN`` task, which retrieves the :term:`CCPA` hourly precipitation files used by METplus from NOAA HPSS. 
 
 ``RUN_TASK_GET_OBS_MRMS``: (Default: "FALSE")
-   Flag that determines whether to run the ``GET_OBS_MRMS`` task, which retrieves the MRMS composite reflectivity files used by METplus. 
+   Flag that determines whether to run the ``GET_OBS_MRMS_TN`` task, which retrieves the :term:`MRMS` composite reflectivity files used by METplus from NOAA HPSS. 
 
 ``RUN_TASK_GET_OBS_NDAS``: (Default: "FALSE")
-   Flag that determines whether to run the ``GET_OBS_NDAS`` task, which retrieves the NDAS PREPBUFR files used by METplus. 
+   Flag that determines whether to run the ``GET_OBS_NDAS_TN`` task, which retrieves the :term:`NDAS` PrepBufr files used by METplus from NOAA HPSS. 
 
 ..
    COMMENT: Need confirmation that the above 3 task explanations are correct. 

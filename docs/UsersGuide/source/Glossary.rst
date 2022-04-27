@@ -6,6 +6,9 @@ Glossary
 
 .. glossary::
 
+   CCPA
+      Climatology-Calibrated Precipitation Analysis (CCPA) data. This data is required for use of the METplus verification suite within the SRW App. The most recent 8 days worth of data are publicly available and can be accessed `here <https://ftp.ncep.noaa.gov/data/nccf/com/ccpa/prod/>`__. 
+
    CCPP
       The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of codes containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
 
@@ -88,6 +91,9 @@ Glossary
    MPI
       MPI stands for Message Passing Interface. An MPI is a standardized communication system used in parallel programming. It establishes portable and efficient syntax for the exchange of messages and data between multiple processors that are used by a single computer program. An MPI is required for high-performance computing (HPC).
 
+   MRMS
+      Multi-Radar/Multi-Sensor (MRMS) System Analysis data. This data is required for use of the METplus verification suite within the SRW App. A two-day archive of precipitation, radar, and aviation and severe weather fields is publicly available and can be accessed `here <https://mrms.ncep.noaa.gov/data/>`__.
+
    NAM
       `North American Mesoscale Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/north-american-mesoscale>`_. NAM generates multiple grids (or domains) of weather forecasts over the North American continent at various horizontal resolutions. Each grid contains data for dozens of weather parameters, including temperature, precipitation, lightning, and turbulent kinetic energy. NAM uses additional numerical weather models to generate high-resolution forecasts over fixed regions, and occasionally to follow significant weather events like hurricanes.
 
@@ -112,6 +118,9 @@ Glossary
    NCL
       An interpreted programming language designed specifically for scientific data analysis and 
       visualization. Stands for NCAR Command Language. More information can be found at https://www.ncl.ucar.edu.
+
+   NDAS
+      :term:`NAM` Data Assimilation System (NDAS) data. This data is required for use of the METplus verification suite within the SRW App. The most recent 1-2 days worth of data are publicly available in PrepBufr format and can be accessed `here <ftp://ftpprd.ncep.noaa.gov/pub/data/nccf/com/rap/prod>`__. 
 
    NEMS
       The NOAA Environmental Modeling System is a common modeling framework whose purpose is 
