@@ -7,8 +7,6 @@ proc ModulesHelp { } {
 
 module-whatis "Loads libraries needed for building SRW on WCOSS Dell"
 
-module purge
-
 module load ips/18.0.5.274
 module load impi/18.0.1
 module load lsf/10.1

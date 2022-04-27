@@ -9,8 +9,6 @@ proc ModulesHelp { } {
 
 module-whatis "Loads libraries needed for building SRW in a singularity container"
 
-module purge
-
 module use /opt/hpc-modules/modulefiles/stack
 
 module load hpc

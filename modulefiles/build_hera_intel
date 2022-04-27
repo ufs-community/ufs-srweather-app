@@ -7,8 +7,6 @@ proc ModulesHelp { } {
 
 module-whatis "Loads libraries needed for building SRW on Hera"
 
-module purge
-
 module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
 module load miniconda3/3.7.3
 

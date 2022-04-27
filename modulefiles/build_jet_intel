@@ -7,8 +7,6 @@ proc ModulesHelp { } {
 
 module-whatis "Loads libraries needed for building SRW on JET"
 
-module purge
-
 module use /contrib/sutils/modulefiles
 module load sutils
 

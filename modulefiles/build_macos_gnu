@@ -27,7 +27,6 @@ setenv HPCstack "/Users/username/hpc-stack/install"
 # This path should point to your SRW Application directory
 setenv SRW "/Users/username/ufs-srweather-app"
 
-module purge
 # Load HPC stack 
 module use ${HPCstack}/modulefiles/stack
 module load hpc

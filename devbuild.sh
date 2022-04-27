@@ -168,18 +168,18 @@ if [ "${VERBOSE}" = true ] ; then
   settings
 fi
 
-# set ENV_FILE for this platform/compiler combination
-ENV_FILE="build_${PLATFORM}_${COMPILER}"
-if [ ! -f "${SRC_DIR}/modulefiles/${ENV_FILE}" ]; then
+# set MODULE_FILE for this platform/compiler combination
+MODULE_FILE="build_${PLATFORM}_${COMPILER}"
+if [ ! -f "${SRC_DIR}/modulefiles/${MODULE_FILE}" ]; then
   printf "ERROR: module file does not exist for platform/compiler\n" >&2
-  printf "  ENV_FILE=${ENV_FILE}\n" >&2
+  printf "  MODULE_FILE=${MODULE_FILE}\n" >&2
   printf "  PLATFORM=${PLATFORM}\n" >&2
   printf "  COMPILER=${COMPILER}\n\n" >&2
   usage >&2
   exit 64
 fi
 
-printf "ENV_FILE=${ENV_FILE}\n" >&2
+printf "MODULE_FILE=${MODULE_FILE}\n" >&2
 
 # if build directory already exists then exit
 if [ "${CLEAN}" = true ]; then
@@ -240,7 +240,8 @@ fi
 # source the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
 module use ${SRC_DIR}/modulefiles
-module load ${ENV_FILE}
+module purge
+module load ${MODULE_FILE}
 module list
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}

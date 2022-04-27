@@ -7,8 +7,6 @@ proc ModulesHelp { } {
 
 module-whatis "Loads libraries needed for building SRW on Orion"
 
-module purge
-
 module load contrib noaatools
 
 module load cmake/3.22.1
