@@ -94,6 +94,9 @@ Glossary
    namelist
       A namelist defines a group of variables or arrays. Namelists are an I/O feature for format-free input and output of variables by key-value assignments in FORTRAN compilers. Fortran variables can be read from and written to plain-text files in a standardised format, usually with a ``.nml`` file ending.
 
+   NCAR
+      The `National Center for Atmospheric Research <https://ncar.ucar.edu/>`__. 
+
    NCEP
       National Centers for Environmental Prediction, an arm of the National Weather Service,
       consisting of nine centers. More information can be found at https://www.ncep.noaa.gov.

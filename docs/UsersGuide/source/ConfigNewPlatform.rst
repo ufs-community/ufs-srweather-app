@@ -358,8 +358,6 @@ Those requirements highlighted in **bold** are included in the NCEPLIBS-external
 
 * MPI (**MPICH**, OpenMPI, or other implementation)
 
-* wgrib2
-
 * CMake v3.12+
 
 * Software libraries
@@ -371,6 +369,9 @@ Those requirements highlighted in **bold** are included in the NCEPLIBS-external
    * **libJPG**
    * **libPNG**
    * **zlib**
+
+..
+   COMMENT: Update version of ESMF? Need other version updates?
 
 macOS-specific prerequisites:
 

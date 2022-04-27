@@ -74,6 +74,10 @@ Unified Post-Processor (UPP)
 
 The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ (:term:`UPP`) processes raw output from a variety of numerical weather prediction (:term:`NWP`) models. In the SRW App, it converts data output from netCDF format to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_. Output from the UPP can be used with visualization, plotting, and verification packages, or for further downstream post-processing (e.g., statistical post-processing techniques).
 
+METplus Verification Suite
+------------------------------
+
+The Model Evaluation Tools (MET) are a set of statistical verification tools developed by the Developmental Testbed Center (DTC) for use by the (:term:`NWP`) community to help them assess and evaluate the performance of numerical weather predictions. MET is the core component of the unified METplus verification framework. The suite also includes the associated database and display systems called METviewer and METexpress. METplus spans a wide range of temporal and spatial scales. It is intended to be extensible through additional capabilities developed by the community. More details about METplus can be found in the :numref:`Chapter %s <Components>` and on the `METplus website <https://dtcenter.org/community-code/metplus>`__.
 
 Visualization Example
 -------------------------

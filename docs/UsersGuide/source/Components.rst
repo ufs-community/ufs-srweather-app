@@ -52,11 +52,14 @@ further downstream post-processing (e.g., statistical post-processing techniques
 METplus Verification Suite
 =============================
 
-The Model Evaluation Tools (MET) are a set of verification tools developed by the Developmental Testbed Center (DTC) for use by the numerical weather prediction community to help them assess and evaluate the performance of numerical weather predictions. MET is the core component of the unified METplus verification framework. METplus spans a wide range of temporal (warn-on-forecast to climate) and spatial (storm to global) scales. The core components of the framework include MET, the associated database and display systems called METviewer and METexpress, and a suite of Python wrappers to provide low-level automation and examples, also called use-cases. METplus is intended to be extensible through additional capabilities developed by the community. 
+The enhanced Model Evaluation Tools (`METplus <https://dtcenter.org/community-code/metplus>`__) verification system has been integrated into the SRW App to facilitate forecast evaluation. METplus is a verification framework that spans a wide range of temporal (warn-on-forecast to climate) and spatial (storm to global) scales. It is supported via the `Developmental Testbed Center (DTC) <https://dtcenter.org/>`__. 
 
-METplus is being actively developed by NCAR/Research Applications Laboratory (RAL), NOAA/Earth Systems Research Laboratories (ESRL), NOAA/Environmental Modeling Center (EMC), and is open to community contributions.
+The core components of the framework include the statistical driver, MET, the associated database and display systems known as METviewer and METexpress, and a suite of Python wrappers to provide low-level automation and examples, also called use-cases. MET is a set of verification tools developed for use by the :term:`NWP` community. It matches up grids with either gridded analyses or point observations and applies configurable methods to compute statistics and diagnostics. Extensive documentation is available in the `METplus User’s Guide <https://metplus.readthedocs.io/en/v4.1.0/Users_Guide/overview.html>`__ and `MET User’s Guide <https://met.readthedocs.io/en/main_v10.1/index.html>`__, along with documentation for all other components of the framework found at the Documentation link for each component on the METplus `downloads <https://dtcenter.org/community-code/metplus/download>`__ page.
 
-More details about METplus can be found on the `METplus website <https://dtcenter.org/community-code/metplus>`__.
+Among other techniques, MET provides the capability to compute standard verification scores for comparing deterministic gridded model data to point-based and gridded observations, along with ensemble and probabilistic verification methods for comparing gridded model data to point-based or gridded observations. Verification tasks to accomplish these comparisons are defined in the SRW App. Currently, the SRW App supports the use of NDAS observation files in prepBUFR format (which include conventional point-based surface and upper-air data) for point-based verification, gridded Climatology-Calibrated Precipitation Analysis (CCPA) data for accumulated precipitation evaluation, and Multi-Radar/Multi-Sensor (MRMS) gridded analysis data for composite reflectivity and echo top verification. 
+
+METplus is being actively developed by :term:`NCAR`/Research Applications Laboratory (RAL), NOAA/Earth Systems Research Laboratories (ESRL), NOAA/Environmental Modeling Center (EMC), and is open to community contributions.
+
 
 Visualization Example
 =====================
@@ -81,7 +84,7 @@ workflow file that will run each task in the system in the proper sequence (see 
 This SRW Application release has been tested on a variety of platforms widely used by
 researchers, such as the NOAA Research and Development High-Performance Computing Systems
 (RDHPCS), including  Hera, Orion, and Jet; NOAA’s Weather and Climate Operational
-Supercomputing System (WCOSS); the National Center for Atmospheric Research (NCAR) Cheyenne
+Supercomputing System (WCOSS); the National Center for Atmospheric Research (:term:`NCAR`) Cheyenne
 system; the National Severe Storms Laboratory (NSSL) HPC machine, Odin; the National Science Foundation Stampede2 system; and generic Linux and macOS systems using Intel and GNU compilers. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application, including pre-configured (Level 1), configurable (Level 2), limited test platforms (Level 3), and build only platforms (Level 4). Each level is further described below.
 
 On pre-configured (Level 1) computational platforms, all the required libraries for building the SRW Application are available in a central place. That means bundled libraries (NCEPLIBS) and third-party libraries (NCEPLIBS-external) have both been built. The SRW Application is expected to build and run out-of-the-box on these pre-configured platforms. 
