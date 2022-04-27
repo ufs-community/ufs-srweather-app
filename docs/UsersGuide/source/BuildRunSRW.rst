@@ -181,7 +181,7 @@ The SRW App can be built on MacOS systems, presuming HPC-Stack has already been 
 
 The ``build_macos_gnu.env`` script initializes the module environment, lists the location of HPC-Stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW App. The ``$HPC_INSTALL_DIR`` variable is set to the installation directory for the HPC-Stack. The ``srw_common`` file contains a list of specific libraries and modules to be loaded, and it is sourced from ``build_macos_gnu.env``. 
 
-Sample ``build_macos_gnu.env`` contents appear below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macos_gnu.env`` file. Additionally, users need to verify that all file paths reflect their system's configuration. 
+Sample ``build_macos_gnu.env`` contents appear below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macos_gnu.env`` file. Additionally, users need to verify that all file paths reflect their system's configuration and that the correct version numbers for software libraries appear in the file. 
 
 .. code-block:: console
 
