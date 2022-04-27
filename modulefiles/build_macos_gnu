@@ -28,7 +28,7 @@ setenv HPCstack "/Users/username/hpc-stack/install"
 setenv SRW "/Users/username/ufs-srweather-app"
 
 # Load HPC stack 
-module use ${HPCstack}/modulefiles/stack
+module use $env(HPCstack)/modulefiles/stack
 module load hpc
 module load hpc-python
 #
@@ -36,7 +36,7 @@ module load hpc-gnu
 module load openmpi
 module load hpc-openmpi
 
-module use ${SRW}/env
+module use $env(SRW)/env
 #module load srw_common
 module load jasper/2.0.25
 module load zlib/1.2.11
