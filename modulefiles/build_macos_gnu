@@ -17,8 +17,8 @@ setenv BASH_ENV "/opt/homebrew/opt/lmod/init/bash"
 #setenv BASH_ENV "/usr/local/opt/lmod/init/bash"
 
 if { [module-info mode load] } {
-   system "source $env(BASH_ENV)"
-   system "ulimit -S -s unlimited"
+   system "source $env(BASH_ENV);"
+   system "ulimit -S -s unlimited;"
 }
 
 # This path should point to your HPCstack installation directory
