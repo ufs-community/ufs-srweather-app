@@ -4,9 +4,9 @@
 Additional Rocoto Information
 =============================
 The tasks in the SRW Application (:numref:`Table %s <WorkflowTasksTable>`) are typically run using
-the Rocoto Workflow Manager.  Rocoto is a Ruby program that interfaces with the batch system on an
+the Rocoto Workflow Manager. Rocoto is a Ruby program that communicates with the batch system on an
 HPC system to run and manage dependencies between the tasks. Rocoto submits jobs to the HPC batch
-system as the task dependencies allow, and runs one instance of the workflow for a set of user-defined
+system as the task dependencies allow and runs one instance of the workflow for a set of user-defined
 cycles. More information on Rocoto can be found at https://github.com/christopherwharrop/rocoto/wiki/documentation.
 
 The SRW App workflow is defined in a Jinja-enabled Rocoto XML template called ``FV3LAM_wflow.xml``,
@@ -17,11 +17,11 @@ and task interdependencies.  The generated XML file is then copied to the experi
 ``$EXPTDIR/FV3LAM_wflow.xml``.
 
 There are a number of Rocoto commands available to run and monitor the workflow and can be found in the
-complete `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`_.
+complete `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 Descriptions and examples of commonly used commands are discussed below.
 
 rocotorun
-=========
+==========
 The ``rocotorun`` command is used to run the workflow by submitting tasks to the batch system. It will
 automatically resubmit failed tasks and can recover from system outages without user intervention.
 An example is:
@@ -58,7 +58,7 @@ the workflow from scratch, both database files can be deleted, and the workflow 
 or the launch script ``launch_FV3LAM_wflow.sh`` (executed multiple times as described above).
 
 rocotostat
-==========
+===========
 ``rocotostat`` is a tool for querying the status of tasks in an active Rocoto workflow.  Once the
 workflow has been started with the ``rocotorun`` command, Rocoto can also check the status of the
 workflow using the ``rocotostat`` command:
@@ -129,7 +129,7 @@ messages.  Optional arguments for the ``rocotostat`` command can be found at htt
 .. _rocotocheck:
 
 rocotocheck
-===========
+============
 Sometimes, issuing a ``rocotorun`` command will not cause the next task to launch.  ``rocotocheck`` is a
 tool that can be used to query detailed information about a task or cycle in the Rocoto workflow.  To
 determine the cause of a particular task not being submitted, the ``rocotocheck`` command can be used
@@ -201,7 +201,7 @@ have been met.  If not, the dependencies section in the output of ``rocotocheck`
 dependency "is NOT satisfied".  
 
 rocotorewind
-============
+=============
 ``rocotorewind`` is a tool that attempts to undo the effects of running a task and is commonly used to rerun part
 of a workflow that has failed.  If a task fails to run (the STATE is DEAD), and needs to be restarted, the ``rocotorewind``
 command will rerun tasks in the workflow. The command line options are the same as those described in the ``rocotocheck``
@@ -222,7 +222,7 @@ command to rerun the forecast task from ``$EXPTDIR`` is:
    rocotorewind -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 -c 201907010000 -t run_fcst
 
 rocotoboot
-==========
+===========
 ``rocotoboot`` will force a specific task of a cycle in a Rocoto workflow to run.  All dependencies and throttle
 limits are ignored, and it is generally recommended to use ``rocotorewind`` instead.  An example of how to
 use this command to rerun the ``make_ics`` task from ``$EXPTDIR`` is:
