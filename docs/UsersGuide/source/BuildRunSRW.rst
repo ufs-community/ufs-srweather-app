@@ -483,7 +483,7 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+--------------------------------------------------------+
    | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | MODEL                          | ""                | FV3_GFS_v15p2_CONUS_25km"                              |
+   | MODEL                          | ""                | FV3_GFS_v16_CONUS_25km"                                |
    +--------------------------------+-------------------+--------------------------------------------------------+
    | METPLUS_PATH                   | ""                | "/path/to/METPlus"                                     |
    +--------------------------------+-------------------+--------------------------------------------------------+
@@ -499,7 +499,19 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+--------------------------------------------------------+
    | RUN_TASK_GET_OBS_MRMS          | "FALSE"           | "FALSE"                                                |
    +--------------------------------+-------------------+--------------------------------------------------------+
- 
+   | RUN_TASK_GET_OBS_NDAS          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_GRIDSTAT           | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_POINTSTAT          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_ENSGRID            | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_ENSPOINT           | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+
+
+
 To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
@@ -614,25 +626,26 @@ For WCOSS_CRAY:
 Configure METplus Verification Suite (Optional)
 --------------------------------------------------
 
-Users who want to use the METplus verification suite to test their forecasts need to load the appropriate modules and add additional information to their ``config.sh`` file. Other users may skip to the `next section <SetUpPythonEnv>`. 
+Users who want to use the METplus verification suite to test their forecasts need to load the appropriate modules and add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
 
-METplus is preinstalled on Level 1 systems; existing builds can be viewed `here <https://dtcenter.org/community-code/metplus/metplus-4-1-existing-builds>`__. Users on other systems can follow the `MET Installation <https://met.readthedocs.io/en/main_v10.1/Users_Guide/installation.html>`__ and `METplus Installation <https://metplus.readthedocs.io/en/v4.1.0/Users_Guide/installation.html>`__ Guides. However, METplus *installation* is currently not supported for this release of the SRW App. METplus *use* is supported. 
+.. note::
+   METplus is preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. METplus *installation* is currently not supported for this release of the SRW App, but METplus *use* is supported on systems with a functioning METplus installation. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
 
-Once installed, users must load the appropriate modules (changing the module location and MET version to correspond with their system's installation):
+Once installed, METplus users must load the appropriate modules (changing the module location and MET version to correspond to their system's installation):
 
 .. code-block:: console
    
-   module use -a </contrib/met/modulefiles/>
-   module load met/10.0.0
+   module use -a </path/to/met/modulefiles/>
+   module load met/<10.0.0>
 
-Then, the path to the MET and METplus directories must be set:
+Then, the path to the MET and METplus directories must be added to ``config.sh``:
 
 .. code-block:: console
 
-   METPLUS_PATH="/contrib/METplus/METplus-4.1.0"
-   MET_INSTALL_DIR="/contrib/met/10.1.0"
+   METPLUS_PATH="</path/to/METplus/METplus-4.1.0>"
+   MET_INSTALL_DIR="</path/to/met/10.1.0>"
 
-Users who have already staged the METplus verification data (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and set the corresponding ``RUN_TASK_GET_OBS_*`` parameters to "FALSE". 
+Users who have already staged the METplus verification data (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and set the corresponding ``RUN_TASK_GET_OBS_*`` parameters to "FALSE" in ``config.sh``. 
 
 .. code-block:: console
 
@@ -647,7 +660,7 @@ If users have access to NOAA HPSS but have not pre-staged the data, they can sim
 
 Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
 
-Next, the verification tasks must be turned on according to the user's needs:
+Next, the verification tasks must be turned on according to the user's needs. Users should add the some or all of the following tasks to ``config.sh``, depending on the verification procedure(s) they have in mind:
 
 .. code-block:: console
 
@@ -656,7 +669,7 @@ Next, the verification tasks must be turned on according to the user's needs:
    RUN_TASK_VX_ENSGRID="TRUE"
    RUN_TASK_VX_ENSPOINT="TRUE"
 
-These tasks are independent, so users may set some values to "TRUE" and others to "FALSE" depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. More details on all of the parameters in this section are available in :numref:`Chapter %s <VXTasks>`. 
+These tasks are independent, so users may set some values to "TRUE" and others to "FALSE" depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>` More details on all of the parameters in this section are available in :numref:`Chapter %s <VXTasks>`. 
 
 .. _SetUpPythonEnv:
 
@@ -770,114 +783,114 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | **Workflow Task**     | **Task Description**                                       |
    +=======================+============================================================+
    | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
-   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="FALSE"``.|
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
-   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS="FALSE"``.|
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
-   |                       | reflectivity and echo top data from NOAA HPSS. Can only be |
-   |                       | run if ``RUN_TASK_GET_OBS_MRMS="FALSE"``.                  |
+   |                       | reflectivity and :term:`echo top` data from NOAA HPSS. Can |
+   |                       | only be run if ``RUN_TASK_GET_OBS_MRMS="TRUE"``.           |
    +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT           | Run METplus grid-to-grid verification for 1-h accumulated  |
+   | VX_GRIDSTAT           | Runs METplus grid-to-grid verification for 1-h accumulated |
    |                       | precipitation                                              |
    +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_REFC      | Run METplus grid-to-grid verification for composite        |
+   | VX_GRIDSTAT_REFC      | Runs METplus grid-to-grid verification for composite       |
    |                       | reflectivity                                               |
    +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_RETOP     | Run METplus grid-to-grid verification for echo top         |
+   | VX_GRIDSTAT_RETOP     | Runs METplus grid-to-grid verification for :term:`echo top`|
    +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_03h       | Run METplus grid-to-grid verification for 3-h accumulated  |
+   | VX_GRIDSTAT_03h       | Runs METplus grid-to-grid verification for 3-h accumulated |
    |                       | precipitation                                              |
    +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_06h       | Run METplus grid-to-grid verification for 6-h accumulated  |
+   | VX_GRIDSTAT_06h       | Runs METplus grid-to-grid verification for 6-h accumulated |
    |                       | precipitation                                              |
    +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_24h       | Run METplus grid-to-grid verification for daily            |
+   | VX_GRIDSTAT_24h       | Runs METplus grid-to-grid verification for daily           |
    |                       | accumulated precipitation                                  |
    +-----------------------+------------------------------------------------------------+
-   | VX_POINTSTAT          | Run METplus grid-to-point verification for surface and     |
+   | VX_POINTSTAT          | Runs METplus grid-to-point verification for surface and    |
    |                       | upper-air variables                                        |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID            | Run METplus grid-to-grid ensemble verification for 1-h     |
+   | VX_ENSGRID            | Runs METplus grid-to-grid ensemble verification for 1-h    |
    |                       | accumulated precipitation. Can only be run if              |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_REFC       | Run METplus grid-to-grid ensemble verification for         |
+   | VX_ENSGRID_REFC       | Runs METplus grid-to-grid ensemble verification for        |
    |                       | composite reflectivity. Can only be run if                 |
    |                       | ``DO_ENSEMBLE="TRUE"`` and                                 |
    |                       | ``RUN_TASK_VX_ENSGRID = "TRUE"``.                          |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_RETOP      | Run METplus grid-to-grid ensemble verification for echo    |
-   |                       | top. Can only be run if ``DO_ENSEMBLE="TRUE"`` and         |
-   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   | VX_ENSGRID_RETOP      | Runs METplus grid-to-grid ensemble verification for        |
+   |                       | :term:`echo top`. Can only be run if ``DO_ENSEMBLE="TRUE"``|
+   |                       | and ``RUN_TASK_VX_ENSGRID="TRUE"``.                        |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_03h        | Run METplus grid-to-grid ensemble verification for 3-h     |
+   | VX_ENSGRID_03h        | Runs METplus grid-to-grid ensemble verification for 3-h    |
    |                       | accumulated precipitation. Can only be run if              |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_06h        | Run METplus grid-to-grid ensemble verification for 6-h     |
+   | VX_ENSGRID_06h        | Runs METplus grid-to-grid ensemble verification for 6-h    |
    |                       | accumulated precipitation. Can only be run if              |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE".`` |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_24h        | Run METplus grid-to-grid ensemble verification for daily   |
+   | VX_ENSGRID_24h        | Runs METplus grid-to-grid ensemble verification for daily  |
    |                       | accumulated precipitation. Can only be run if              |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_MEAN       | Run METplus grid-to-grid verification for ensemble mean    |
+   | VX_ENSGRID_MEAN       | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | 1-h accumulated precipitation. Can only be run if          |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB       | Run METplus grid-to-grid verification for ensemble         |
+   | VX_ENSGRID_PROB       | Runs METplus grid-to-grid verification for ensemble        |
    |                       | probabilities for 1-h accumulated precipitation. Can only  |
    |                       | be run if ``DO_ENSEMBLE="TRUE"`` and                       |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_MEAN_03h   | Run METplus grid-to-grid verification for ensemble mean    |
+   | VX_ENSGRID_MEAN_03h   | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | 3-h accumulated precipitation. Can only be run if          |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_03h   | Run METplus grid-to-grid verification for ensemble         |
+   | VX_ENSGRID_PROB_03h   | Runs METplus grid-to-grid verification for ensemble        |
    |                       | probabilities for 3-h accumulated precipitation. Can only  |
    |                       | be run if ``DO_ENSEMBLE="TRUE"`` and                       |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_MEAN_06h   | Run METplus grid-to-grid verification for ensemble mean    |
+   | VX_ENSGRID_MEAN_06h   | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | 6-h accumulated precipitation. Can only be run if          |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_06h   | Run METplus grid-to-grid verification for ensemble         |
+   | VX_ENSGRID_PROB_06h   | Runs METplus grid-to-grid verification for ensemble        |
    |                       | probabilities for 6-h accumulated precipitation. Can only  |
    |                       | be run if ``DO_ENSEMBLE="TRUE"`` and                       |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_MEAN_24h   | Run METplus grid-to-grid verification for ensemble mean    |
+   | VX_ENSGRID_MEAN_24h   | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | daily accumulated precipitation. Can only be run if        |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_24h   | Run METplus grid-to-grid verification for ensemble         |
+   | VX_ENSGRID_PROB_24h   | Runs METplus grid-to-grid verification for ensemble        |
    |                       | probabilities for daily accumulated precipitation. Can     |
    |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_REFC  | Run METplus grid-to-grid verification for ensemble         |
+   | VX_ENSGRID_PROB_REFC  | Runs METplus grid-to-grid verification for ensemble        |
    |                       | probabilities for composite reflectivity. Can only be run  |
    |                       | if ``DO_ENSEMBLE="TRUE"`` and                              |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_RETOP | Run METplus grid-to-grid verification for ensemble         |
-   |                       | probabilities for echo top. Can only be run if             |
+   | VX_ENSGRID_PROB_RETOP | Runs METplus grid-to-grid verification for ensemble        |
+   |                       | probabilities for :term:`echo top`. Can only be run if     |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. | 
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSPOINT           | Run METplus grid-to-point ensemble verification for        |
+   | VX_ENSPOINT           | Runs METplus grid-to-point ensemble verification for       |
    |                       | surface and upper-air variables. Can only be run if        |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSPOINT="TRUE"``.|
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSPOINT_MEAN      | Run METplus grid-to-point verification for ensemble mean   |
+   | VX_ENSPOINT_MEAN      | Runs METplus grid-to-point verification for ensemble mean  |
    |                       | surface and upper-air variables. Can only be run if        |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSPOINT="TRUE"``.|
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSPOINT_PROB      | Run METplus grid-to-point verification for ensemble        |
+   | VX_ENSPOINT_PROB      | Runs METplus grid-to-point verification for ensemble       |
    |                       | probabilities for surface and upper-air variables. Can     |
    |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
    |                       | ``RUN_TASK_VX_ENSPOINT="TRUE"``.                           |
@@ -955,7 +968,7 @@ This will output the last 40 lines of the log file, which list the status of the
      0 out of 1 cycles completed.
      Workflow status:  IN PROGRESS
 
-If all the tasks complete successfully, the "Workflow status" at the bottom of the log file will change from "IN PROGRESS" to "SUCCESS" or "FAILURE". Error messages for each specific task can be found in the task log files located in ``$EXPTDIR/log``. 
+If all the tasks complete successfully, the "Workflow status" at the bottom of the log file will change from "IN PROGRESS" to "SUCCESS". If certain tasks could not complete, the "Workflow status" will instead change to "FAILURE". Error messages for each specific task can be found in the task log files located in ``$EXPTDIR/log``. 
 
 .. _Success:
 
@@ -984,9 +997,9 @@ If users choose to run METplus verification tasks as part of their experiment, t
 
    CYCLE              TASK                   JOBID          STATE       EXIT STATUS   TRIES   DURATION
    ==========================================================================================================
-   201906150000       make_grid              4953154        SUCCEEDED        0          1          5.0
+   201906150000       make_grid              30466134       SUCCEEDED        0          1          5.0
    ...
-   201906150000       run_post_f048          4953381        SUCCEEDED        0          1          7.0
+   201906150000       run_post_f048          30468271       SUCCEEDED        0          1          7.0
    201906150000       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
    201906150000       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
    201906150000       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0

@@ -295,7 +295,7 @@ METplus Parameters
    Path to top-level directory of METplus installation.
 
 ``MET_BIN_EXEC``: (Default: "bin")
-   Name of the directory where the METplus executable is installed.
+   Location where METplus executables are installed.
 
 .. _METParamNote:
 

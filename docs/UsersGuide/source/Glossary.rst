@@ -46,6 +46,9 @@ Glossary
    dynamical core
       Global atmospheric model based on fluid dynamics principles, including Euler's equations of motion.
 
+   echo top
+      The radar-indicated top of an area of precipitation. Specifically, it contains the height of the 18 dBZ reflectivity value.
+
    EPIC
       EPIC stands for the `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__. EPIC seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement to produce the most accurate and reliable operational modeling system in the world. 
 
@@ -55,7 +58,7 @@ Glossary
    FV3
       The Finite-Volume Cubed-Sphere dynamical core (dycore). Developed at NOAA's Geophysical 
       Fluid Dynamics Laboratory (GFDL), it is a scalable and flexible dycore capable of both 
-      hydrostatic and non-hydrostatic atmospheric simulations.  It is the dycore used in the 
+      hydrostatic and non-hydrostatic atmospheric simulations. It is the dycore used in the 
       UFS Weather Model.
 
    FVCOM
@@ -120,7 +123,7 @@ Glossary
       visualization. Stands for NCAR Command Language. More information can be found at https://www.ncl.ucar.edu.
 
    NDAS
-      :term:`NAM` Data Assimilation System (NDAS) data. This data is required for use of the METplus verification suite within the SRW App. The most recent 1-2 days worth of data are publicly available in PrepBufr format and can be accessed `here <ftp://ftpprd.ncep.noaa.gov/pub/data/nccf/com/rap/prod>`__. 
+      :term:`NAM` Data Assimilation System (NDAS) data. This data is required for use of the METplus verification suite within the SRW App. The most recent 1-2 days worth of data are publicly available in PrepBufr format and can be accessed `here <ftp://ftpprd.ncep.noaa.gov/pub/data/nccf/com/rap/prod>`__. The most recent 8 days of data can be accessed `here <https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/>`__.
 
    NEMS
       The NOAA Environmental Modeling System is a common modeling framework whose purpose is 
