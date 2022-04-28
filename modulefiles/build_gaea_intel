@@ -1,0 +1,28 @@
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module loads libraries for building SRW on"
+   puts stderr "the NOAA RDHPC machine Gaea using Intel-18.0.6.288"
+}
+
+module-whatis "Loads libraries needed for building SRW on Gaea"
+
+if { [module-info mode load] } {
+   system "source /lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/init/init_lmod.sh;"
+}
+module use /lustre/f2/pdata/ncep_shared/hpc-stack/modulefiles/stack
+module load hpc hpc-intel hpc-cray-mpich
+module load srw_common
+
+module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
+module load rocoto
+module load cmake/3.20.1
+
+setenv CC cc
+setenv FC ftn
+setenv CXX CC
+setenv CMAKE_C_COMPILER cc
+setenv CMAKE_CXX_COMPILER CC
+setenv CMAKE_Fortran_COMPILER ftn
+setenv CMAKE_Platform gaea.intel
+
