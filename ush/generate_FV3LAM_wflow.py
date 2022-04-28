@@ -512,7 +512,7 @@ def generate_FV3LAM_wflow():
               CRONTAB_LINE = \"{CRONTAB_LINE}\"''',verbose=VERBOSE)
     
         if MACHINE == "WCOSS_DELL_P3":
-          run_command(f'''printf "%s" '{CRONTAB_LINE}' >> f"/u/{USER}/cron/mycrontab"''')
+          run_command(f'''printf "%s\n" '{CRONTAB_LINE}' >> "/u/{USER}/cron/mycrontab"''')
         else:
           # Add a newline to the end of crontab_contents only if it is not empty.
           # This is needed so that when CRONTAB_LINE is printed out, it appears on

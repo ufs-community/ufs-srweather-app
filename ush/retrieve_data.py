@@ -716,7 +716,6 @@ if __name__ == '__main__':
             output = subprocess.run('which hsi',
                                     check=True,
                                     shell=True,
-                                    capture_output=True,
                                     )
         except subprocess.CalledProcessError:
             logging.error('You requested the hpss data store, but ' \

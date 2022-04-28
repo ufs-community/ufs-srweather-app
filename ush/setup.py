@@ -428,7 +428,7 @@ def setup():
     #
     #-----------------------------------------------------------------------
     global USE_MERRA_CLIMO
-    if USE_MERRA_CLIMO == "FV3_GFS_v15_thompson_mynn_lam3km":
+    if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
       USE_MERRA_CLIMO=True
     #
     #-----------------------------------------------------------------------
