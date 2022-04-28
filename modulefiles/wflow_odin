@@ -38,7 +38,7 @@ unset __conda_setup
 #  - /home/yunheng.wang/.conda/envs
 #EOF
 #  }
-#  puts $cmd
+#  system "$cmd"
   
   puts stderr "Please do the following to activate conda:
        > conda config --set changeps1 False

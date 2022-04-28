@@ -19,7 +19,7 @@ if { [module-info mode load] } {
 
 # Uncomment if Rocoto workflow manager is used
 # This path should point to your Rocoto module location
-# ROCOTOmod=/Users/username/modules
+# set ROCOTOmod "/Users/username/modules"
 # module use ${ROCOTOmod}
 # module load rocoto
 # module list

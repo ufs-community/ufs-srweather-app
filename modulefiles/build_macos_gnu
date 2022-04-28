@@ -36,7 +36,7 @@ module load hpc-gnu
 module load openmpi
 module load hpc-openmpi
 
-module use $env(SRW)/env
+module use $env(SRW)/modulefiles
 #module load srw_common
 module load jasper/2.0.25
 module load zlib/1.2.11
