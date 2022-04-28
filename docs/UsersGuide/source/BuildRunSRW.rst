@@ -734,7 +734,7 @@ Description of Workflow Tasks
 
 .. _WorkflowTasksFig:
 
-.. figure:: _static/FV3LAM_wflow_flowchart.png
+.. figure:: _static/FV3LAM_wflow_flowchart_v2.svg
 
     *Flowchart of the workflow tasks*
 
