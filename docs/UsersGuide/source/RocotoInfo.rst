@@ -7,10 +7,10 @@ The tasks in the SRW Application (:numref:`Table %s <WorkflowTasksTable>`) are t
 the Rocoto Workflow Manager. Rocoto is a Ruby program that communicates with the batch system on an
 HPC system to run and manage dependencies between the tasks. Rocoto submits jobs to the HPC batch
 system as the task dependencies allow and runs one instance of the workflow for a set of user-defined
-cycles. More information on Rocoto can be found at https://github.com/christopherwharrop/rocoto/wiki/documentation.
+cycles. More information about Rocoto can be found on the `Rocoto Wiki <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 
 The SRW App workflow is defined in a Jinja-enabled Rocoto XML template called ``FV3LAM_wflow.xml``,
-which resides in the ``regional_workflow/ufs/templates`` directory. When the ``generate_FV3LAM_wflow.sh``
+which resides in the ``regional_workflow/ush/templates`` directory. When the ``generate_FV3LAM_wflow.sh``
 script is run, the ``fill_jinja_template.py`` script is called, and the parameters in the template file
 are filled in. The completed file contains the workflow task names, parameters needed by the job scheduler,
 and task interdependencies. The generated XML file is then copied to the experiment directory:
@@ -23,7 +23,7 @@ Descriptions and examples of commonly used commands are discussed below.
 rocotorun
 ==========
 The ``rocotorun`` command is used to run the workflow by submitting tasks to the batch system. It will
-automatically resubmit failed tasks and can recover from system outages without user intervention. An example is:
+automatically resubmit failed tasks and can recover from system outages without user intervention. The command takes the following format:
 
 .. code-block:: console
 
@@ -32,10 +32,8 @@ automatically resubmit failed tasks and can recover from system outages without 
 where 				
 
 * ``-w`` specifies the name of the workflow definition file. This must be an XML file.
-* ``-d`` specifies the name of the database file that is to be used to store the state of the workflow.
-  The database file is a binary file created and used only by Rocoto and need not exist prior to the first
-  time the command is run. 
-* ``-v`` (optional) specified level of verbosity.  If no level is specified, a level of 1 is used.
+* ``-d`` specifies the name of the database file that stores the state of the workflow. The database file is a binary file created and used only by Rocoto. It need not exist prior to the first time the command is run. 
+* ``-v`` (optional) specified level of verbosity. If no level is specified, a level of 1 is used.
 
 From the ``$EXPTDIR`` directory, the ``rocotorun`` command for the workflow would be:
 
@@ -46,15 +44,15 @@ From the ``$EXPTDIR`` directory, the ``rocotorun`` command for the workflow woul
 It is important to note that the ``rocotorun`` process is iterative; the command must be executed
 many times before the entire workflow is completed, usually every 1-10 minutes. This command can be
 placed in the user’s crontab, and cron will call it with a specified frequency. More information on
-this command can be found at https://github.com/christopherwharrop/rocoto/wiki/documentation.
+this command can be found in the `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 
 The first time the ``rocotorun`` command is executed for a workflow, the files ``FV3LAM_wflow.db`` and
 ``FV3LAM_wflow_lock.db`` are created.  There is usually no need for the user to modify these files.
 Each time this command is executed, the last known state of the workflow is read from the ``FV3LAM_wflow.db``
 file, the batch system is queried, jobs are submitted for tasks whose dependencies have been satisfied,
 and the current state of the workflow is saved in ``FV3LAM_wflow.db``. If there is a need to relaunch
-the workflow from scratch, both database files can be deleted, and the workflow can be run using ``rocotorun``
-or the launch script ``launch_FV3LAM_wflow.sh`` (executed multiple times).
+the workflow from scratch, both database files can be deleted, and the workflow can be run by executing the ``rocotorun`` command
+or the launch script (``launch_FV3LAM_wflow.sh``) multiple times.
 
 rocotostat
 ===========
@@ -71,7 +69,7 @@ Executing this command will generate a workflow status table similar to the foll
 .. code-block:: console
 
           CYCLE                TASK                   JOBID          STATE    EXIT STATUS   TRIES    DURATION
-   =============================================================================================================================
+   =============================================================================================================
    201907010000           make_grid                  175805         QUEUED              -       0         0.0
    201907010000           make_orog                       -              -              -       -           -
    201907010000      make_sfc_climo                       -              -              -       -           -
@@ -104,7 +102,7 @@ on your grid size and computational resources), the output of the ``rocotostat``
 .. code-block:: console
 
           CYCLE                 TASK        JOBID           STATE   EXIT STATUS   TRIES   DURATION
-   ============================================================================================================================
+   ====================================================================================================
    201907010000            make_grid       175805       SUCCEEDED            0       1       10.0
    201907010000            make_orog       175810       SUCCEEDED            0       1       27.0
    201907010000       make_sfc_climo       175822       SUCCEEDED            0       1       38.0
@@ -123,7 +121,7 @@ on your grid size and computational resources), the output of the ``rocotostat``
 
 When the workflow runs to completion, all tasks will be marked as SUCCEEDED. The log files from the tasks
 are located in ``$EXPTDIR/log``. If any tasks fail, the corresponding log file can be checked for error
-messages. Optional arguments for the ``rocotostat`` command can be found at https://github.com/christopherwharrop/rocoto/wiki/documentation.
+messages. Optional arguments for the ``rocotostat`` command can be found in the `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 
 .. _rocotocheck:
 
@@ -131,7 +129,7 @@ rocotocheck
 ============
 Sometimes, issuing a ``rocotorun`` command will not cause the next task to launch. ``rocotocheck`` is a
 tool that can be used to query detailed information about a task or cycle in the Rocoto workflow. To
-determine the cause of a particular task not being submitted, the ``rocotocheck`` command can be used
+determine why a particular task has not been submitted, the ``rocotocheck`` command can be used
 from the ``$EXPTDIR`` directory as follows:
 
 .. code-block:: console
@@ -193,9 +191,9 @@ Running ``rocotocheck`` will result in output similar to the following:
       Unknown count: 0
       Duration: 58.0
 
-This shows that although all dependencies for this task are satisfied (see the dependencies section, highlighted above),
+This output shows that although all dependencies for this task are satisfied (see the dependencies section, highlighted above),
 it cannot run because its ``maxtries`` value (highlighted) is 3. Rocoto will attempt to launch it at most 3 times,
-and it has already been tried 3 times (the ``Tries`` value, also highlighted).
+and it has already been tried 3 times (note the ``Tries`` value, also highlighted).
 
 The output of the ``rocotocheck`` command is often useful in determining whether the dependencies for a given task
 have been met. If not, the dependencies section in the output of ``rocotocheck`` will indicate this by stating that a
@@ -203,19 +201,19 @@ dependency "is NOT satisfied".
 
 rocotorewind
 =============
-``rocotorewind`` is a tool that attempts to undo the effects of running a task and is commonly used to rerun part
+``rocotorewind`` is a tool that attempts to undo the effects of running a task. It is commonly used to rerun part
 of a workflow that has failed. If a task fails to run (the STATE is DEAD) and needs to be restarted, the ``rocotorewind``
-command will rerun tasks in the workflow. The command line options are the same as those described in the ``rocotocheck``
-:numref:`section %s <rocotocheck>`, and the general usage statement looks like:
+command will rerun tasks in the workflow. The command line options are the same as those described for ``rocotocheck``
+(in :numref:`section %s <rocotocheck>`), and the general usage statement looks like the following:
 						
 .. code-block:: console
 
-   rocotorewind -w /path/to/workflow/xml/file -d /path/to/workflow/database/ file -c YYYYMMDDHHmm -t taskname 
+   rocotorewind -w </path/to/workflow/xml/file> -d </path/to/workflow/database/> file -c <YYYYMMDDHHmm> -t <taskname> 
 
 Running this command will edit the Rocoto database file ``FV3LAM_wflow.db`` to remove evidence that the job has been run.
 ``rocotorewind`` is recommended over ``rocotoboot`` for restarting a task, since ``rocotoboot`` will force a specific
 task to run, ignoring all dependencies and throttle limits. The throttle limit, denoted by the variable cyclethrottle
-in the ``FV3LAM_wflow.xml`` file, limits how many cycles can be active at one time. An example of how to use this
+in the ``FV3LAM_wflow.xml`` file, limits how many cycles can be active at one time. An example of how to use the ``rocotorewind``
 command to rerun the forecast task from ``$EXPTDIR`` is:
 
 .. code-block:: console
