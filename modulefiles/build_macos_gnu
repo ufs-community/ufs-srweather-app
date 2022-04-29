@@ -7,17 +7,7 @@ proc ModulesHelp { } {
 
 module-whatis "Loads libraries needed for building SRW on Hera"
 
-# Option 1 (default) : M1 chip, arm64, running natively (not using Rosetta)  
-# Option 2 (uncomment if needed) Intel chip, x86_64
-# 
-# Option 1 (default):
-setenv BASH_ENV "/opt/homebrew/opt/lmod/init/bash"
-
-# Option 2 (uncomment if needed):
-#setenv BASH_ENV "/usr/local/opt/lmod/init/bash"
-
 if { [module-info mode load] } {
-   system "source $env(BASH_ENV);"
    system "ulimit -S -s unlimited;"
 }
 

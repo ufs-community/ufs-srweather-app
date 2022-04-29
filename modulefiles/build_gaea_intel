@@ -7,9 +7,6 @@ proc ModulesHelp { } {
 
 module-whatis "Loads libraries needed for building SRW on Gaea"
 
-if { [module-info mode load] } {
-   system "source /lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/init/init_lmod.sh;"
-}
 module use /lustre/f2/pdata/ncep_shared/hpc-stack/modulefiles/stack
 module load hpc hpc-intel hpc-cray-mpich
 module load srw_common

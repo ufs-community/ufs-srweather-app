@@ -152,11 +152,11 @@ set -eu
 # automatically determine compiler
 if [ -z "${COMPILER}" ] ; then
   case ${PLATFORM} in
-    jet|hera) COMPILER=intel ;;
+    jet|hera|gaea) COMPILER=intel ;;
     orion) COMPILER=intel ;;
     wcoss_dell_p3) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;
-    macos) COMPILER=gccgfortran ;;
+    macos) COMPILER=gnu ;;
     *) printf "ERROR: Unknown platform ${PLATFORM}\n" >&2; usage >&2; exit 1 ;;
   esac
 fi
@@ -235,6 +235,20 @@ fi
 MAKE_SETTINGS="-j ${BUILD_JOBS}"
 if [ "${VERBOSE}" = true ]; then
   MAKE_SETTINGS="${MAKE_SETTINGS} VERBOSE=1"
+fi
+
+# Before we go on load modules, we first need to activate Lmod for some systems
+if [ "$MACHINE" = macos ]; then
+   # Choose lmod install location
+   export BASH_ENV="/opt/homebrew/opt/lmod/init/bash"
+   # export BASH_ENV="/usr/local/opt/lmod/init/bash"
+
+   source $BASH_ENV
+elif [ "$MACHINE" = gaea ]; then
+
+   source /lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/init/init_lmod.sh
+elif [ "$MACHINE" = odin ]; then
+   :
 fi
 
 # source the module file for this platform/compiler combination, then build the code
