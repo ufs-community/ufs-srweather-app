@@ -1,6 +1,7 @@
 
-Jinja2<3.0
-docutils==0.16
-sphinx==2.4.4
+jinja2<3.1
+#docutils==0.16
+#sphinx==2.4.4
 sphinxcontrib-bibtex
-sphinx-rtd-theme==0.4.3
+#sphinx-rtd-theme==0.4.3
+sphinx_rtd_theme
