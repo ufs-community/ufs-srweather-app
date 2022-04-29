@@ -242,19 +242,18 @@ if [ "$MACHINE" = macos ]; then
    # Choose lmod install location
    export BASH_ENV="/opt/homebrew/opt/lmod/init/bash"
    # export BASH_ENV="/usr/local/opt/lmod/init/bash"
-
    source $BASH_ENV
 elif [ "$MACHINE" = gaea ]; then
-
-   source /lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/init/init_lmod.sh
+   source "/lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/init/init_lmod.sh"
 elif [ "$MACHINE" = odin ]; then
    :
+else:
+   module purge
 fi
 
 # source the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
 module use ${SRC_DIR}/modulefiles
-module purge
 module load ${MODULE_FILE}
 module list
 mkdir -p ${BUILD_DIR}
