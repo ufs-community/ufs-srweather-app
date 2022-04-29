@@ -31,6 +31,7 @@ valid_vals_PREDEF_GRID_NAME=( \
 "RRFS_NA_13km" \
 "RRFS_NA_3km" \
 "SUBCONUS_Ind_3km" \
+"WoFS_3km" \
 )
 valid_vals_CCPP_PHYS_SUITE=( \
 "FV3_GFS_2017_gfdlmp" \
@@ -41,7 +42,7 @@ valid_vals_CCPP_PHYS_SUITE=( \
 "FV3_RRFS_v1beta" \
 "FV3_RRFS_v1alpha" \
 "FV3_HRRR" \
-) 
+)
 valid_vals_GFDLgrid_RES=("48" "96" "192" "384" "768" "1152" "3072")
 valid_vals_EXTRN_MDL_NAME_ICS=("GSMGFS" "FV3GFS" "RAP" "HRRR" "NAM")
 valid_vals_EXTRN_MDL_NAME_LBCS=("GSMGFS" "FV3GFS" "RAP" "HRRR" "NAM")

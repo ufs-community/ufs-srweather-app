@@ -251,7 +251,7 @@ case ${PREDEF_GRID_NAME} in
   ESGgrid_NY="232"
 
   ESGgrid_PAZI="0.0"
-  
+
   ESGgrid_WIDE_HALO_WIDTH="6"
 
   DT_ATMOS="${DT_ATMOS:-45}"
@@ -389,7 +389,7 @@ case ${PREDEF_GRID_NAME} in
   ESGgrid_NY="600"
 
   ESGgrid_PAZI="0.0"
-  
+
   ESGgrid_WIDE_HALO_WIDTH="6"
 
   DT_ATMOS="${DT_ATMOS:-40}"
@@ -486,7 +486,7 @@ case ${PREDEF_GRID_NAME} in
   ESGgrid_NY="240"
 
   ESGgrid_PAZI="0.0"
-  
+
   ESGgrid_WIDE_HALO_WIDTH="6"
 
 #  DT_ATMOS="${DT_ATMOS:-50}"
@@ -606,7 +606,7 @@ case ${PREDEF_GRID_NAME} in
   ESGgrid_NY="1020"
 
   ESGgrid_PAZI="0.0"
-  
+
   ESGgrid_WIDE_HALO_WIDTH="6"
 
 #  DT_ATMOS="${DT_ATMOS:-50}"
@@ -628,6 +628,60 @@ case ${PREDEF_GRID_NAME} in
     WRTCMP_ny="1003"
     WRTCMP_lon_lwr_left="-187.89737923"
     WRTCMP_lat_lwr_left="45.84576053"
+    WRTCMP_dx="${ESGgrid_DELX}"
+    WRTCMP_dy="${ESGgrid_DELY}"
+  fi
+  ;;
+#
+#-----------------------------------------------------------------------
+#
+# The WoFS domain with ~3km cells.
+#
+# Note:
+# The WoFS domain will generate a 301 x 301 output grid (WRITE COMPONENT) and
+# will eventually be movable (ESGgrid_LON_CTR/ESGgrid_LAT_CTR). A python script
+# python_utils/fv3write_parms_lambert will be useful to determine
+# WRTCMP_lon_lwr_left and WRTCMP_lat_lwr_left locations (only for Lambert map 
+# projection currently) of the quilting output when the domain location is 
+# moved. Later, it should be integrated into the workflow.
+#
+#-----------------------------------------------------------------------
+#
+"WoFS_3km")
+
+  GRID_GEN_METHOD="ESGgrid"
+
+  ESGgrid_LON_CTR="-97.5"
+  ESGgrid_LAT_CTR="38.5"
+
+  ESGgrid_DELX="3000.0"
+  ESGgrid_DELY="3000.0"
+
+  ESGgrid_NX="361"
+  ESGgrid_NY="361"
+
+  ESGgrid_PAZI="0.0"
+
+  ESGgrid_WIDE_HALO_WIDTH="6"
+
+  DT_ATMOS="${DT_ATMOS:-20}"
+
+  LAYOUT_X="${LAYOUT_X:-18}"
+  LAYOUT_Y="${LAYOUT_Y:-12}"
+  BLOCKSIZE="${BLOCKSIZE:-30}"
+
+  if [ "$QUILTING" = "TRUE" ]; then
+    WRTCMP_write_groups="1"
+    WRTCMP_write_tasks_per_group=$(( 1*LAYOUT_Y ))
+    WRTCMP_output_grid="lambert_conformal"
+    WRTCMP_cen_lon="${ESGgrid_LON_CTR}"
+    WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"
+    WRTCMP_stdlat1="${ESGgrid_LAT_CTR}"
+    WRTCMP_stdlat2="${ESGgrid_LAT_CTR}"
+    WRTCMP_nx="301"
+    WRTCMP_ny="301"
+    WRTCMP_lon_lwr_left="-102.3802487"
+    WRTCMP_lat_lwr_left="34.3407918"
     WRTCMP_dx="${ESGgrid_DELX}"
     WRTCMP_dy="${ESGgrid_DELY}"
   fi
