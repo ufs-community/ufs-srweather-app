@@ -800,14 +800,9 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_GRIDSTAT_RETOP     | Runs METplus grid-to-grid verification for :term:`echo top`|
    +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_03h       | Runs METplus grid-to-grid verification for 3-h accumulated |
-   |                       | precipitation                                              |
-   +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_06h       | Runs METplus grid-to-grid verification for 6-h accumulated |
-   |                       | precipitation                                              |
-   +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_24h       | Runs METplus grid-to-grid verification for daily           |
-   |                       | accumulated precipitation                                  |
+   | VX_GRIDSTAT_##h       | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
+   |                       | 24-h (i.e., daily) accumulated precipitation. Valid values |
+   |                       | of ``##`` are ``03``, ``06``, and ``24``.                  |
    +-----------------------+------------------------------------------------------------+
    | VX_POINTSTAT          | Runs METplus grid-to-point verification for surface and    |
    |                       | upper-air variables                                        |
@@ -825,52 +820,30 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    |                       | :term:`echo top`. Can only be run if ``DO_ENSEMBLE="TRUE"``|
    |                       | and ``RUN_TASK_VX_ENSGRID="TRUE"``.                        |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_03h        | Runs METplus grid-to-grid ensemble verification for 3-h    |
-   |                       | accumulated precipitation. Can only be run if              |
-   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_06h        | Runs METplus grid-to-grid ensemble verification for 6-h    |
-   |                       | accumulated precipitation. Can only be run if              |
-   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE".`` |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_24h        | Runs METplus grid-to-grid ensemble verification for daily  |
-   |                       | accumulated precipitation. Can only be run if              |
-   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
+   | VX_ENSGRID_##h        | Runs METplus grid-to-grid ensemble verification for 3-h,   |
+   |                       | 6-h, and 24-h (i.e., daily) accumulated precipitation.     |
+   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
+   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_MEAN       | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | 1-h accumulated precipitation. Can only be run if          |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB       | Runs METplus grid-to-grid verification for ensemble        |
-   |                       | probabilities for 1-h accumulated precipitation. Can only  |
-   |                       | be run if ``DO_ENSEMBLE="TRUE"`` and                       |
-   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_MEAN_03h   | Runs METplus grid-to-grid verification for ensemble mean   |
-   |                       | 3-h accumulated precipitation. Can only be run if          |
+   | VX_ENSGRID_PROB       | Runs METplus grid-to-grid verification for 1-h accumulated |
+   |                       | precipitation probabilistic output. Can only be run if     |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_03h   | Runs METplus grid-to-grid verification for ensemble        |
-   |                       | probabilities for 3-h accumulated precipitation. Can only  |
-   |                       | be run if ``DO_ENSEMBLE="TRUE"`` and                       |
-   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_MEAN_06h   | Runs METplus grid-to-grid verification for ensemble mean   |
-   |                       | 6-h accumulated precipitation. Can only be run if          |
-   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_06h   | Runs METplus grid-to-grid verification for ensemble        |
-   |                       | probabilities for 6-h accumulated precipitation. Can only  |
-   |                       | be run if ``DO_ENSEMBLE="TRUE"`` and                       |
-   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_MEAN_24h   | Runs METplus grid-to-grid verification for ensemble mean   |
-   |                       | daily accumulated precipitation. Can only be run if        |
-   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_24h   | Runs METplus grid-to-grid verification for ensemble        |
-   |                       | probabilities for daily accumulated precipitation. Can     |
+   | VX_ENSGRID_MEAN_##h   | Runs METplus grid-to-grid verification for ensemble mean   |
+   |                       | 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation. |
+   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
    |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_PROB_##h   | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
+   |                       | 24h (i.e., daily) accumulated precipitation probabilistic  |
+   |                       | output. Valid values of ``##`` are ``03``, ``06``, and     |
+   |                       | ``24``. Can only be run if ``DO_ENSEMBLE="TRUE"`` and      |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB_REFC  | Runs METplus grid-to-grid verification for ensemble        |
