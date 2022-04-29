@@ -1,13 +1,15 @@
 #!/bin/bash
 
-if [ "$MACHINE" = macos ]; then
+L_MACHINE=${MACHINE:-$1}
+
+if [ "$L_MACHINE" = macos ]; then
    # Choose lmod install location
    export BASH_ENV="/opt/homebrew/opt/lmod/init/bash"
    # export BASH_ENV="/usr/local/opt/lmod/init/bash"
    source $BASH_ENV
-elif [ "$MACHINE" = gaea ]; then
+elif [ "$L_MACHINE" = gaea ]; then
    source "/lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/init/init_lmod.sh"
-elif [ "$MACHINE" = odin ]; then
+elif [ "$L_MACHINE" = odin ]; then
    module unload modules
    unset -f module
    
@@ -21,7 +23,7 @@ elif [ "$MACHINE" = odin ]; then
    #module purge
    export CMAKE=/home/yunheng.wang/tools/cmake-3.23.0-rc2/bin/cmake
    export PATH=/home/yunheng.wang/tools/cmake-3.23.0-rc2/bin:${PATH}
-else:
+else
    module purge
 fi
 
