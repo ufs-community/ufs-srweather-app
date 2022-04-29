@@ -32,8 +32,8 @@ module load g2tmpl
 module load ip
 module load sp
 module load w3nco
-module load cmake/3.21.1
-module load module load gfsio
+module load cmake
+module load gfsio
 module load wgrib2
 module load upp
 
