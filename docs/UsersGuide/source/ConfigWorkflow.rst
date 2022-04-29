@@ -869,6 +869,8 @@ Debug Parameter
 ``DEBUG``: (Default: "FALSE")
    Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to TRUE, then VERBOSE will also get reset to TRUE if it isn't already. Valid values: "TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no"
 
+.. _WFTasks:
+
 Rocoto Workflow Tasks
 ========================
 

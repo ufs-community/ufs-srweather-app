@@ -20,9 +20,9 @@ UFS Short-Range Weather App Users Guide
    ConfigWorkflow
    LAMGrids
    ConfigNewPlatform
+   RocotoInfo
    WE2Etests
    Graphics
    ContributorsGuide
    FAQ
-   RocotoInfo
    Glossary
