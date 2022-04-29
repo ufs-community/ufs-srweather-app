@@ -238,18 +238,7 @@ if [ "${VERBOSE}" = true ]; then
 fi
 
 # Before we go on load modules, we first need to activate Lmod for some systems
-if [ "$MACHINE" = macos ]; then
-   # Choose lmod install location
-   export BASH_ENV="/opt/homebrew/opt/lmod/init/bash"
-   # export BASH_ENV="/usr/local/opt/lmod/init/bash"
-   source $BASH_ENV
-elif [ "$MACHINE" = gaea ]; then
-   source "/lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/init/init_lmod.sh"
-elif [ "$MACHINE" = odin ]; then
-   :
-else:
-   module purge
-fi
+source ${SRC_DIR}/lmod-setup.sh
 
 # source the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
