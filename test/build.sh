@@ -21,7 +21,7 @@ function usage() {
   exit 1
 }
 
-machines=( hera jet cheyenne orion wcoss_cray wcoss_dell_p3 )
+machines=( hera jet cheyenne orion wcoss_cray wcoss_dell_p3 gaea odin singularity )
 
 [[ $# -eq 2 ]] && usage
 
@@ -56,6 +56,8 @@ fi
 #-----------------------------------------------------------------------
 if [ "${machine}" == "cheyenne" ] ; then
   compilers=( intel gnu )
+elif [ "${machine}" == "macos" ] || [ "${machine}" == "singularity" ] ; then
+  compilers=( gnu )
 else
   compilers=( intel )
 fi

@@ -156,8 +156,12 @@ if [ -z "${COMPILER}" ] ; then
     orion) COMPILER=intel ;;
     wcoss_dell_p3) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;
-    macos) COMPILER=gnu ;;
-    *) printf "ERROR: Unknown platform ${PLATFORM}\n" >&2; usage >&2; exit 1 ;;
+    macos,singularity) COMPILER=gnu ;;
+    odin) COMPILER=intel ;;
+    *)
+      COMPILER=intel
+      printf "WARNING: Setting default COMPILER=intel for new platform ${PLATFORM}\n" >&2;
+      ;;
   esac
 fi
 
@@ -175,6 +179,7 @@ if [ ! -f "${SRC_DIR}/modulefiles/${MODULE_FILE}" ]; then
   printf "  MODULE_FILE=${MODULE_FILE}\n" >&2
   printf "  PLATFORM=${PLATFORM}\n" >&2
   printf "  COMPILER=${COMPILER}\n\n" >&2
+  printf "Please make sure PLATFORM and COMPILER are set correctly\n" >&2
   usage >&2
   exit 64
 fi
