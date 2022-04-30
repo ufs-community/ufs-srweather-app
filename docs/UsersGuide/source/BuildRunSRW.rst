@@ -96,7 +96,7 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+--------------------------------------------------------+
    | ufs_srweather_app.settings.in  | SRW App configuration summary                          |
    +--------------------------------+--------------------------------------------------------+
-   | env                            | Contains build and workflow environment files          |
+   | modulefiles                    | Contains build and workflow environment files          |
    +--------------------------------+--------------------------------------------------------+
    | docs                           | Contains release notes, documentation, and User's Guide|
    +--------------------------------+--------------------------------------------------------+
@@ -123,38 +123,48 @@ Run the executable that pulls in SRW App components from external repositories:
 
 
 
+Build with ``devbuild.sh``
+==========================
+
+On Level-1 systems, for which a modulefile is provided under ``modulefiles`` directory, we can build SRW App binaries with:
+
+.. code-block:: console
+
+   ./devbuild.sh --platform=hera
+
+If compiler auto-detection fails for some reason, specify it using
+
+.. code-block:: console
+
+   ./devbuild.sh --platform=hera --compiler=intel
+
+If this method doesn't work, we will have to manually setup the environment, and build SRW app binaries with CMake.
+
 .. _SetUpBuild:
 
-Set up the Build Environment
-============================
+Set up the Build/Run Environment
+================================
 
-Before building the SRW App, the build environment must be set up for the user's specific platform. There is a set of common modules required to build the SRW App. These are located in the ``env/srw_common`` file. To load the set of common modules, run:
+We need to setup our environment to run a workflow or to build the SRW app with CMake. Note that ``devbuild.sh`` does not prepare environment for workflow runs so this step is necessary even though binaries are built properly using ``devbuild.sh``.
 
-.. code-block:: console
-
-   module use <path/to/env/directory>
-
-where ``<path/to/env/directory>`` is the full path to the ``env`` directory. 
-
-Then, users must set up the platform-specific elements of the build environment. For Level 1 systems, scripts for loading the proper modules and/or setting the correct environment variables can be found in the ``env`` directory of the SRW App in files named ``build_<platform>_<compiler>.env``. Here is a sample directory listing of these build files: 
+The build environment must be set up for the user's specific platform. First, we need to make sure ``Lmod`` is the app used for loading modulefiles. That is often the case on most systems, however, on some systems such as Gaea/Odin, the default modulefile loader is from Cray and we need to swap it for ``Lmod``. For example on Gaea, assuming a ``bash`` login shell, run:
 
 .. code-block:: console
 
-   $ ls -l env/
-      -rw-rw-r-- 1 user ral 1228 Oct  9 10:09 build_cheyenne_intel.env
-      -rw-rw-r-- 1 user ral 1134 Oct  9 10:09 build_hera_intel.env
-      -rw-rw-r-- 1 user ral 1228 Oct  9 10:09 build_jet_intel.env
-      ...
+   source ./lmod-setup.sh gaea
 
-On Level 1 systems, the commands in the ``build_<platform>_<compiler>.env`` files can be directly copy-pasted into the command line, or the file can be sourced from the ``ufs-srweather-app/env`` directory. For example, on Hera, run:
+If you execute the above command on systems that don't need it, it will simply do a ``module purge``. From here on, we can assume, ``Lmod`` is ready to load modulefiles needed by the SRW app.
 
-.. code-block::
+The modulefiles needed for building and running SRW App are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>`` , run:
 
-   source env/build_hera_intel.env
+.. code-block:: console
 
-from the main ``ufs-srweather-app`` directory to source the appropriate file.
+   module use <path/to/modulefiles/directory>
+   module load build_<platform>_<compiler>
 
-On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>.env`` files can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
+where ``<path/to/modulefiles/directory>`` is the full path to the ``modulefiles`` directory. This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory.
+
+On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
 
 .. code-block::
 
@@ -599,7 +609,7 @@ The workflow requires Python 3 with the packages 'PyYAML', 'Jinja2', and 'f90nml
 
 .. code-block:: console
 
-   source ../../env/wflow_<platform>.env
+   module load wflow_<platform>
 
 This command will activate the ``regional_workflow`` conda environment. The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
 
