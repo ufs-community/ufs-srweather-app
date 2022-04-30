@@ -2,7 +2,7 @@
 
 proc ModulesHelp { } {
    puts stderr "This module loads libraries for building SRW on"
-   puts stderr "the NOAA RDHPC machine odin using Intel"
+   puts stderr "the NSSL machine odin using Intel"
 }
 
 module-whatis "Loads libraries needed for building SRW on odin"
