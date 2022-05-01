@@ -151,9 +151,9 @@ The build environment must be set up for the user's specific platform. First, we
 
 .. code-block:: console
 
-   source ./lmod-setup.sh gaea
+   source etc/lmod-setup.sh gaea
 
-If you execute the above command on systems that don't need it, it will simply do a ``module purge``. From here on, we can assume, ``Lmod`` is ready to load modulefiles needed by the SRW app.
+or if your login shell is ``csh`` or ``tcsh``, source ``etc/lmod-setup.csh`` instead. If you execute the above command on systems that don't need it, it will simply do a ``module purge``. From here on, we can assume, ``Lmod`` is ready to load modulefiles needed by the SRW app.
 
 The modulefiles needed for building and running SRW App are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>`` , run:
 

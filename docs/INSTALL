@@ -30,11 +30,14 @@ cd ufs-srweather-app/
 
 # The above instructions will work atleast on Tier-1 systems, if not on all supported machines.
 # However, if it fails for some reason, we can build directly with cmake.
-# First we need to make sure that there is a modulefile "build_[PLATFORM]_[COMPILER]" in the
-# "modulefiles" directory. Also, on some systems (e.g. Gaea/Odin) that come with cray module system,
-# we need to swap it for Lmod instead. Assuming the login shell is bash
 
-source ./lmod-setup.sh PLATFORM
+# First, we need to make sure that there is a modulefile "build_[PLATFORM]_[COMPILER]" in the
+# "modulefiles" directory. Also, on some systems (e.g. Gaea/Odin) that come with cray module app,
+# we may need to swap that for Lmod instead. Assuming your login shell is bash, run
+
+source etc/lmod-setup.sh PLATFORM
+
+# and if your login schell is csh/tcsh, source etc/lmod-setup.csh instead.
 
 # From here on, we can assume Lmod is loaded and ready to go. Then we load the specific
 # module for a given PLATFORM and COMPILER as follows

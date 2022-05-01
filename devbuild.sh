@@ -243,7 +243,7 @@ if [ "${VERBOSE}" = true ]; then
 fi
 
 # Before we go on load modules, we first need to activate Lmod for some systems
-source ${SRC_DIR}/lmod-setup.sh
+source ${SRC_DIR}/etc/lmod-setup.sh
 
 # source the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
