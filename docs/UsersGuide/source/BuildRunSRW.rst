@@ -96,7 +96,9 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+--------------------------------------------------------+
    | ufs_srweather_app.settings.in  | SRW App configuration summary                          |
    +--------------------------------+--------------------------------------------------------+
-   | modulefiles                    | Contains build and workflow environment files          |
+   | modulefiles                    | Contains build and workflow module files               |
+   +--------------------------------+--------------------------------------------------------+
+   | etc                            | Contains Lmod startup scripts                          |
    +--------------------------------+--------------------------------------------------------+
    | docs                           | Contains release notes, documentation, and User's Guide|
    +--------------------------------+--------------------------------------------------------+

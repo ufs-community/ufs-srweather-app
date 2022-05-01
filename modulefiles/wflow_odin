@@ -10,13 +10,18 @@ module-whatis "Loads libraries needed for running SRW on Odin"
 if { [module-info mode load] } {
   # >>> conda initialize >>>
   # !! Contents within this block are managed by 'conda init' !!
-  if {[ system "/scratch/software/Odin/python/anaconda2/bin/conda shell.bash hook 2> /dev/null" ]} {
+  set shell [module-info shelltype]
+  set conda_path "/scratch/software/Odin/python/anaconda2"
+  if {$shell == "csh"} {
+    set conda_file "$conda_path/conda.csh"
   } else {
-      if {[ file exists "/scratch/software/Odin/python/anaconda2/etc/profile.d/conda.sh" ]} {
-        system "source /scratch/software/Odin/python/anaconda2/etc/profile.d/conda.sh;"
-      } else {
-        prepend-path PATH "/scratch/software/Odin/python/anaconda2/bin"
-      }
+    set conda_file "$conda_path/conda.sh"
+  }
+
+  if {[ file exists "$conda_file" ]} {
+    system "source $conda_file;"
+  } else {
+    prepend-path PATH "$conda_path/bin"
   }
   # <<< conda initialize <<<
 
