@@ -11,6 +11,14 @@ if ( "$L_MACHINE" == macos ) then
    # setenv ENV "/usr/local/opt/lmod/init/csh"
    source $ENV
 
+   module purge
+
+else if ( "$L_MACHINE" == singularity ) then
+   set ENV="/usr/share/lmod/lmod/init/csh"
+   source $ENV
+
+   module purge
+
 else if ( "$L_MACHINE" == gaea ) then
    set ENV="/lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/init/init_lmod.csh"
    source $ENV
