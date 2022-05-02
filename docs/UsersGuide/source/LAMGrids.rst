@@ -3,17 +3,17 @@
 ========================================================================
 Limited Area Model (LAM) Grids:  Predefined and User-Generated Options
 ========================================================================
-In order to set up the workflow and experiment generation of the UFS SRW App, the user
+In order to set up the workflow and generate an experiment with the UFS SRW App, the user
 must choose between three predefined FV3-LAM grids or generate a user-defined grid.
 At this time, full support will only be provided to those using one of the three predefined
 grids supported in this release. However, preliminary information is provided at the end of
 this chapter that describes how users can leverage the SRW App workflow scripts to generate
-their own user-defined grid. This feature is not fully supported at this time and is
+their own user-defined grid. Currently, this feature is not fully supported and is
 "use at your own risk".
 
 Predefined Grids
 ================
-The UFS SRW App release includes three predefined LAM grids that users can choose from
+The UFS SRW App release includes three predefined LAM grids to choose between
 prior to generating a workflow/experiment configuration.  To select a predefined grid,
 the ``PREDEF_GRID_NAME`` variable within the ``config.sh`` script needs to be set to one
 of the following three options:
@@ -28,32 +28,23 @@ of the following three options:
 
    *The boundary of the RRFS_CONUS_3km computational grid (red) and corresponding write-component grid (blue).*
 
-The predefined grids are named after the prototype 3-km continental United States (CONUS) grid being
-tested for the Rapid Refresh Forecast System (RRFS), which will be a convection-allowing,
-hourly-cycled, FV3-LAM-based ensemble planned for operational implementation in 2024. To allow
-for use of High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_) data to 
-initialize the SRW App, all three supported grids were created to fit completely within the HRRR domain. 
-Three resolution options were provided for flexibility related to compute resources
-and physics options.  For example, a user may wish to use the 13-km or 25-km domain when running
-with the ``FV3_GFS_v16`` suite definition file (SDF), since that SDF uses cumulus physics that are
-not configured to run at the 3-km resolution.  In addition, users will have fewer computational
-constraints when running with the 13-km and 25-km domains.
+The predefined grids follow the naming conventions (RRFS_CONUS_*km) of the prototype 3-km continental United States (CONUS) grid being tested for the Rapid Refresh Forecast System (:term:`RRFS`). The RRFS will be a convection-allowing, hourly-cycled, FV3-LAM-based ensemble planned for operational implementation in 2024. All three supported grids were created to fit completely within the High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_) domain to allow for use of HRRR data to initialize the SRW App. 
 
-The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red).
-Note that while it is possible to initialize the FV3-LAM with coarser external model data when using the
-``RRFS_CONUS_3km`` domain, it is generally advised to use external model data that has a resolution
-similar to that of the native FV3-LAM (predefined) grid. In addition, this grid is ideal for running the
-``FV3_RRFS_v1beta`` suite definition file (SDF), since this SDF was specifically created for convection-allowing scales and is the
-precursor to the operational physics suite that will be used in the RRFS.
+Three resolution options were provided for flexibility related to compute resources and physics options. 
 
-As can be seen in :numref:`Figure %s <RRFS_CONUS_3km>`, the boundary of the write-component grid (in blue) sits
-just inside the computational domain (in red).  This extra grid is required because the post-processing
-utility (UPP) is currently unable to process data on the native FV3 gnomonic grid (in red).  Therefore,
-model data are interpolated to a Lambert conformal grid (the write component grid) in order for UPP to
-read in and correctly process the data.
+| Grid               | Physics Suite   |
+| RRFS_CONUS_3km     | FV3_RRFS_v1beta |
+|                    | FV3_HRRR        |
+|                    | 
+| RRFS_CONUS_13km    |
+| RRFS_CONUS_25km    | 
 
-The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) also covers the full CONUS. This grid is meant to
-be run with the ``FV3_GFS_v16`` SDF.
+
+For example, a user may wish to use the ``FV3_GFS_v16`` physics suite definition file (:term:`SDF`), which uses cumulus physics that are not configured to run at the 3-km resolution. In this case, the 13-km or 25-km domain options are better suited to the experiment. In addition, users will have fewer computational constraints when running with the 13-km and 25-km domains. However, the 3km domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite, since this :term:`SDF` was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in the RRFS. The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red). Note that while it is possible to initialize the FV3-LAM with coarser external model data when using the ``RRFS_CONUS_3km`` domain, it is generally advised to use external model data that has a resolution similar to that of the native FV3-LAM (predefined) grid. 
+
+As can be seen in :numref:`Figure %s <RRFS_CONUS_3km>`, the boundary of the :ref:`write-component grid <WriteComp>` (in blue) sits just inside the computational domain (in red). This extra grid is required because the post-processing utility (:term:`UPP`) is currently unable to process data on the native FV3 gnomonic grid (in red). Therefore, model data are interpolated to a Lambert conformal grid (the write component grid) in order for UPP to read in and correctly process the data.
+
+The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) also covers the full CONUS. This grid is meant to be run with the ``FV3_GFS_v16`` :term:`SDF`.
 
 .. _RRFS_CONUS_13km:
 

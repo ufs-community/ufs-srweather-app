@@ -726,6 +726,7 @@ Computational Forecast Parameters
    #. If the experiment is using a predefined grid and the user sets the ``BLOCKSIZE`` parameter in the user-specified experiment configuration file (i.e., ``config.sh``), that value will be used in the forecast(s). Otherwise, the default ``BLOCKSIZE`` for that predefined grid will be used.
    #. If the experiment is *not* using a predefined grid (i.e., it is using a custom grid whose parameters are specified in the experiment configuration file), then the user must specify a value for the ``BLOCKSIZE`` parameter in that configuration file. Otherwise, it will remain set to a null string, and the experiment generation will fail, because the generation scripts check to ensure that all the parameters defined in this section are set to non-empty strings before creating the experiment directory.
 
+.. _WriteComp:
 
 Write-Component (Quilting) Parameters
 ======================================

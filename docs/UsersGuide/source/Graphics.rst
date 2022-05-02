@@ -3,8 +3,8 @@
 ===================
 Graphics Generation
 ===================
-Two Python plotting scripts are provided to generate plots from the FV3-LAM post-processed GRIB2
-output over the CONUS for a number of variables, including:
+Two Python plotting scripts are provided to generate plots from the FV3-LAM post-processed :term:`GRIB2`
+output over the :term:`CONUS` for a number of variables, including:
 
 * 2-m temperature
 * 2-m dew point temperature
