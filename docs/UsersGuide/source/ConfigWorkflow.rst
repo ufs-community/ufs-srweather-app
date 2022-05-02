@@ -45,11 +45,11 @@ Platform Environment
 ``LMOD_PATH``: (Default: "")
    Path to the LMOD shell file on the user's Linux system. It is set automatically for supported machines.
 
-``BUILD_ENV_FN``: (Default: "")
-   Name of alternative build environment file to use if running on an unsupported platform. Is set automatically for supported machines.
+``BUILD_MOD_FN``: (Default: "")
+   Name of alternative build module file to use if running on an unsupported platform. Is set automatically for supported machines.
 
-``WFLOW_ENV_FN``: (Default: "")
-   Name of alternative workflow environment file to use if running on an unsupported platform. Is set automatically for supported machines.
+``WFLOW_MOD_FN``: (Default: "")
+   Name of alternative workflow module file to use if running on an unsupported platform. Is set automatically for supported machines.
 
 ``SCHED``: (Default: "")
    The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Set this to an empty string in order for the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: "slurm" "pbspro" "lsf" "lsfcray" "none"
