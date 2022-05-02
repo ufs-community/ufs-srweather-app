@@ -73,12 +73,12 @@ RUN_ENVIR: "nco"
 # Path to the LMOD sh file on your Linux system. Is set automatically
 # for supported machines.
 #
-# BUILD_ENV_FN:
-# Name of alternative build environment file to use if using an
+# BUILD_MOD_FN:
+# Name of alternative build module file to use if using an
 # unsupported platform. Is set automatically for supported machines.
 #
-# WFLOW_ENV_FN:
-# Name of alternative workflow environment file to use if using an
+# WFLOW_MOD_FN:
+# Name of alternative workflow module file to use if using an
 # unsupported platform. Is set automatically for supported machines.
 #
 # SCHED:
@@ -142,8 +142,8 @@ ACCOUNT: "project_name"
 WORKFLOW_MANAGER: "none"
 NCORES_PER_NODE: ""
 LMOD_PATH: ""
-BUILD_ENV_FN: ""
-WFLOW_ENV_FN: ""
+BUILD_MOD_FN: ""
+WFLOW_MOD_FN: ""
 SCHED: ""
 PARTITION_DEFAULT: ""
 QUEUE_DEFAULT: ""

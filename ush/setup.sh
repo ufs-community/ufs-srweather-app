@@ -523,7 +523,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the names of the build and workflow environment files (if not 
+# Set the names of the build and workflow module files (if not 
 # already specified by the user).  These are the files that need to be 
 # sourced before building the component SRW App codes and running various 
 # workflow scripts, respectively.
@@ -531,8 +531,8 @@ fi
 #-----------------------------------------------------------------------
 #
 machine=$(echo_lowercase ${MACHINE})
-WFLOW_ENV_FN=${WFLOW_ENV_FN:-"wflow_${machine}.env"}
-BUILD_ENV_FN=${BUILD_ENV_FN:-"build_${machine}_${COMPILER}.env"}
+WFLOW_MOD_FN=${WFLOW_MOD_FN:-"wflow_${machine}"}
+BUILD_MOD_FN=${BUILD_MOD_FN:-"build_${machine}_${COMPILER}"}
 #
 #-----------------------------------------------------------------------
 #

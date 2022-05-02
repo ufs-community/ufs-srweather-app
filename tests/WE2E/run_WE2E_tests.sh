@@ -94,7 +94,7 @@ Usage:
     [stmp=\"...\"] \\
     [ptmp=\"...\"] \\
     [compiler=\"...\"] \\
-    [build_env_fn=\"...\"]
+    [build_mod_fn=\"...\"]
 
 The arguments in brackets are optional.  The arguments are defined as 
 follows:
@@ -211,9 +211,9 @@ compiler:
 Type of compiler to use for the workflow. Options are \"intel\" 
 and \"gnu\". Default is \"intel\",
 
-build_env_fn:
-Specify the build environment (see ufs-srweather-app/envs) to 
-use for the workflow. (e.g. build_cheyenne_gnu.env). If a 
+build_mod_fn:
+Specify the build module files (see ufs-srweather-app/modulefiles) to 
+use for the workflow. (e.g. build_cheyenne_gnu). If a 
 \"gnu\" compiler is specified, it must also be specified with 
 the \"compiler\" option.
 "
@@ -253,7 +253,7 @@ valid_args=( \
   "stmp" \
   "ptmp" \
   "compiler" \
-  "build_env_fn" \
+  "build_mod_fn" \
   )
 process_args valid_args "$@"
 #
@@ -685,7 +685,7 @@ Please correct and rerun."
   MACHINE="${machine^^}"
   ACCOUNT="${account}"
   COMPILER=${compiler:-"intel"}
-  BUILD_ENV_FN=${build_env_fn:-"build_${machine}_${COMPILER}.env"}
+  BUILD_MOD_FN=${build_mod_fn:-"build_${machine}_${COMPILER}"}
   EXPT_BASEDIR="${expt_basedir}"
   EXPT_SUBDIR="${test_name}"
   USE_CRON_TO_RELAUNCH=${use_cron_to_relaunch:-"TRUE"}
@@ -710,7 +710,7 @@ MACHINE=\"${MACHINE}\"
 ACCOUNT=\"${ACCOUNT}\"
 
 COMPILER=\"${COMPILER}\"
-BUILD_ENV_FN=\"${BUILD_ENV_FN}\""
+BUILD_MOD_FN=\"${BUILD_MOD_FN}\""
 
   if [ -n "${exec_subdir}" ]; then
     expt_config_str=${expt_config_str}"
