@@ -1,6 +1,11 @@
-#Setup instructions for NOAA RDHPC Hera using Intel-18.0.5.274 (bash shell)
+#%Module
 
-module purge
+proc ModulesHelp { } {
+   puts stderr "This module loads libraries for building SRW on"
+   puts stderr "the NOAA RDHPC machine Hera using Intel-18.0.5.274"
+}
+
+module-whatis "Loads libraries needed for building SRW on Hera"
 
 module use /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
 module load miniconda3/3.7.3
@@ -21,10 +26,10 @@ module load srw_common
 module unload fms
 module load fms/2021.03-avx
 
-export CMAKE_C_COMPILER=mpiicc
-export CMAKE_CXX_COMPILER=mpiicpc
-export CMAKE_Fortran_COMPILER=mpiifort
-export CMAKE_Platform=hera.intel
+setenv CMAKE_C_COMPILER mpiicc
+setenv CMAKE_CXX_COMPILER mpiicpc
+setenv CMAKE_Fortran_COMPILER mpiifort
+setenv CMAKE_Platform hera.intel
 
 # use shared memory and OpenFabrics Alliance (OFA) fabric with Intel MPI to circumvent RDMA-related bug in DAPL.
-export I_MPI_Platform=shm:ofa
+setenv I_MPI_Platform shm:ofa

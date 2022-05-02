@@ -1,0 +1,43 @@
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module loads libraries for building SRW in a singularity container"
+   puts stderr "using Gnu 9.3.0 built from this docker image:"
+   puts stderr "   docker://noaaepic/ubuntu20.04-epic-srwapp:1.0"
+   puts stderr "https://hub.docker.com/r/noaaepic/ubuntu20.04-epic-srwapp"
+}
+
+module-whatis "Loads libraries needed for building SRW in a singularity container"
+
+module use /opt/hpc-modules/modulefiles/stack
+
+module load hpc
+module load hpc-gnu 
+module load hpc-openmpi
+
+module load netcdf
+module load hdf5
+module load bacio
+module load sfcio
+module load sigio
+module load nemsio
+module load w3emc
+module load esmf
+module load fms
+module load crtm
+module load g2
+module load png
+module load zlib
+module load g2tmpl
+module load ip
+module load sp
+module load w3nco
+module load cmake
+module load gfsio
+module load wgrib2
+module load upp
+
+setenv CMAKE_C_COMPILER mpicc
+setenv CMAKE_CXX_COMPILER mpicxx
+setenv CMAKE_Fortran_COMPILER mpif90
+setenv CMAKE_Platform singularity.gnu
