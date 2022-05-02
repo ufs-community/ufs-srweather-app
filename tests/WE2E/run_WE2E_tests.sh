@@ -133,9 +133,9 @@ tests under subdirectory testset1, another set of tests under testset2,
 etc.
 
 exec_subdir:
-Optional. Argument is used to set the EXEC_SUBDIR configuration
-variable. Please see the ush/default_configs.sh file for a full
-description.
+Optional.  Argument used to set the EXEC_SUBDIR experiment variable. 
+Please see the default experiment configuration file \"config_defaults.sh\" 
+for a full description of EXEC_SUBDIR.
 
 use_cron_to_relaunch:
 Argument used to explicitly set the experiment variable USE_CRON_TO_RELAUNCH
@@ -208,14 +208,85 @@ Same as the argument \"stmp\" described above but for setting the
 experiment variable PTMP for all tests that will run in NCO mode.
 
 compiler:
-Type of compiler to use for the workflow. Options are \"intel\" 
-and \"gnu\". Default is \"intel\",
+Type of compiler to use for the workflow. Options are \"intel\" and \"gnu\". 
+Default is \"intel\".
 
 build_mod_fn:
 Specify the build module files (see ufs-srweather-app/modulefiles) to 
 use for the workflow. (e.g. build_cheyenne_gnu). If a 
 \"gnu\" compiler is specified, it must also be specified with 
 the \"compiler\" option.
+
+
+Usage Examples:
+--------------
+Here, we give several common usage examples.  In the following, assume 
+my_tests.txt is a text file in the same directory as this script containing 
+a list of test names that we want to run, e.g.
+
+> more my_tests.txt
+new_ESGgrid
+specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
+
+Then:
+
+1) To run the tests listed in my_tests.txt on Hera and charge the core-
+   hours used to the \"rtrr\" account, use:
+
+     > run_WE2E_tests.sh tests_file=\"my_tests.txt\" machine=\"hera\" account=\"rtrr\"
+
+   This will create the experiment subdirectories for the two tests in
+   the directory
+
+     \${SR_WX_APP_TOP_DIR}/../expt_dirs
+
+   where SR_WX_APP_TOP_DIR is the directory in which the ufs-srweather-app 
+   repository is cloned.  Thus, the following two experiment directories
+   will be created:
+
+     \${SR_WX_APP_TOP_DIR}/../expt_dirs/new_ESGgrid
+     \${SR_WX_APP_TOP_DIR}/../expt_dirs/specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
+
+   In addition, by default, cron jobs will be created in the user's cron
+   table to relaunch the workflows of these experiments every 2 minutes.
+
+2) To change the frequency with which the cron relaunch jobs are submitted
+   from the default of 2 minutes to 1 minute, use:
+
+     > run_WE2E_tests.sh tests_file=\"my_tests.txt\" machine=\"hera\" account=\"rtrr\" cron_relaunch_intvl_mnts=\"01\"
+
+3) To disable use of cron (which means the worfkow for each test will 
+   have to be relaunched manually from within each experiment directory),
+   use:
+
+     > run_WE2E_tests.sh tests_file=\"my_tests.txt\" machine=\"hera\" account=\"rtrr\" use_cron_to_relaunch=\"FALSE\"
+
+4) To place the experiment subdirectories in a subdirectory named \"test_set_01\"
+   under 
+
+     \${SR_WX_APP_TOP_DIR}/../expt_dirs
+
+   (instead of immediately under the latter), use:
+
+     > run_WE2E_tests.sh tests_file=\"my_tests.txt\" machine=\"hera\" account=\"rtrr\" expt_basedir=\"test_set_01\"
+
+   In this case, the full paths to the experiment directories will be:
+
+     \${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/new_ESGgrid
+     \${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
+
+5) To use a list of tests that is located in
+
+     /path/to/custom/my_tests.txt
+
+   instead of in the same directory as this script, and to have the 
+   experiment directories be placed in an arbitrary location, say 
+
+     /path/to/custom/expt_dirs
+
+   use:
+
+     > run_WE2E_tests.sh tests_file=\"/path/to/custom/my_tests.txt\" machine=\"hera\" account=\"rtrr\" expt_basedir=\"/path/to/custom/expt_dirs\"
 "
 #
 #-----------------------------------------------------------------------
