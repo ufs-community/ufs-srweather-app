@@ -1,4 +1,11 @@
-# Python environment for workflow on WCOSS_dell_p3
+#%Module
+
+proc ModulesHelp { } {
+   put stderr "This module loads python environement for running SRW on"
+   put stderr "the WCOSS machine Dell_p3"
+}
+
+module-whatis "Loads libraries needed for running SRW on Dell_p3"
 
 module load lsf/10.1
 module use /gpfs/dell3/usrx/local/dev/emc_rocoto/modulefiles/
