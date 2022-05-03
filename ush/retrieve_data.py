@@ -578,7 +578,7 @@ def main(cla):
                 write_summary_file(cla, data_store, file_templates)
             break
 
-        logging.warning(f'Requested files are unavialable from {data_store}')
+        logging.warning(f'Requested files are unavailable from {data_store}')
 
     if unavailable:
         logging.error('Could not find any of the requested files.')

@@ -108,7 +108,7 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_LBCS:-$EXTRN_MDL_SYSBASEDIR_LBCS}
 fi
 
-data_stores="hpss aws"
+data_stores="${EXTRN_MDL_DATA_STORES}"
 
 yyyymmddhh=${extrn_mdl_cdate:0:10}
 yyyy=${yyyymmddhh:0:4}
@@ -141,7 +141,7 @@ if [ -n "${file_names:-}" ] ; then
 fi
 
 if [ -n "${input_file_path:-}" ] ; then
-  data_stores="disk hpss aws"
+  data_stores="disk $data_stores"
   additional_flags="$additional_flags \
   --input_file_path ${input_file_path}"
 fi

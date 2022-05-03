@@ -21,6 +21,8 @@ EXTRN_MDL_SYSBASEDIR_LBCS=${EXTRN_MDL_SYSBASEDIR_LBCS:-$(file_location \
   ${EXTRN_MDL_NAME_LBCS} \
   ${FV3GFS_FILE_FMT_LBCS})}
 
+EXTRN_MDL_DATA_STORES=${EXTRN_MDL_DATA_STORES:-"aws nomads"}
+
 # System scripts to source to initialize various commands within workflow
 # scripts (e.g. "module").
 if [ -z ${ENV_INIT_SCRIPTS_FPS:-""} ]; then
@@ -47,7 +49,7 @@ FIXaer=${FIXaer:-"/contrib/global/glopara/fix/fix_aer"}
 FIXlut=${FIXlut:-"/contrib/global/glopara/fix/fix_lut"}
 TOPO_DIR=${TOPO_DIR:-"/contrib/global/glopara/fix/fix_orog"}
 SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/contrib/global/glopara/fix/fix_sfc_climo"}
-FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
+DOMAIN_PREGEN_BASEDIR=${DOMAIN_PREGEN_BASEDIR:-"/needs/to/be/specified"}
 
 # Run commands for executables
 RUN_CMD_SERIAL="time"

@@ -48,11 +48,13 @@ QUEUE_FCST=${QUEUE_DEFAULT:-"normal"}
 WTIME_MAKE_LBCS="00:60:00"
 
 # UFS SRW App specific paths
-FIXgsm=${FIXgsm:-"//lustre/f2/dev/Mark.Potts/EPIC/fix/fix_am"}
-FIXaer=${FIXaer:-"/lustre/f2/dev/Mark.Potts/EPIC/fix/fix_aer"}
-FIXlut=${FIXlut:-"/lustre/f2/dev/Mark.Potts/EPIC/fix/fix_lut"}
-TOPO_DIR=${TOPO_DIR:-"/lustre/f2/dev/Mark.Potts/EPIC/fix/fix_orog"}
-SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/lustre/f2/dev/Mark.Potts/EPIC/fix/fix_sfc_climo"}
+staged_data_dir="/lustre/f2/dev/Mark.Potts/EPIC/UFS_SRW_App/develop"
+FIXgsm=${FIXgsm:-"${staged_data_dir}/fix/fix_am"}
+FIXaer=${FIXaer:-"${staged_data_dir}/fix/fix_aer"}
+FIXlut=${FIXlut:-"${staged_data_dir}/fix/fix_lut"}
+TOPO_DIR=${TOPO_DIR:-"${staged_data_dir}/fix/fix_orog"}
+SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"${staged_data_dir}/fix/fix_sfc_climo"}
+TEST_EXTRN_MDL_SOURCE_BASEDIR="${staged_data_dir}/input_model_data"
 
 RUN_CMD_SERIAL="time"
 #Run Commands currently differ for GNU/openmpi
@@ -66,5 +68,3 @@ RUN_CMD_POST='srun --mpi=pmi2 -n $nprocs'
 # MET Installation Locations
 # MET Plus is not yet supported on gaea
 # Test Data Locations
-TEST_EXTRN_MDL_SOURCE_BASEDIR="/lustre/f2/dev/Mark.Potts/EPIC/SRW/model_data"
-

@@ -44,6 +44,8 @@ EXTRN_MDL_SYSBASEDIR_LBCS=${EXTRN_MDL_SYSBASEDIR_LBCS:-$(file_location \
   ${EXTRN_MDL_NAME_LBCS} \
   ${FV3GFS_FILE_FMT_LBCS})}
 
+EXTRN_MDL_DATA_STORES=${EXTRN_MDL_DATA_STORES:-"hpss aws nomads"}
+
 # System scripts to source to initialize various commands within workflow
 # scripts (e.g. "module").
 if [ -z ${ENV_INIT_SCRIPTS_FPS:-""} ]; then
@@ -65,12 +67,13 @@ PARTITION_FCST=${PARTITION_FCST:-"sjet,vjet,kjet,xjet"}
 QUEUE_FCST=${QUEUE_FCST:-"batch"}
 
 # UFS SRW App specific paths
-FIXgsm=${FIXgsm:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_am"}
-FIXaer=${FIXaer:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_aer"}
-FIXlut=${FIXlut:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_lut"}
-TOPO_DIR=${TOPO_DIR:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_orog"}
-SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix/fix_sfc_climo"}
-FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/mnt/lfs4/BMC/wrfruc/FV3-LAM/pregen"}
+staged_data_dir="/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop"
+FIXgsm=${FIXgsm:-"${staged_data_dir}/fix/fix_am"}
+FIXaer=${FIXaer:-"${staged_data_dir}/fix/fix_aer"}
+FIXlut=${FIXlut:-"${staged_data_dir}/fix/fix_lut"}
+TOPO_DIR=${TOPO_DIR:-"${staged_data_dir}/fix/fix_orog"}
+SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"${staged_data_dir}/fix/fix_sfc_climo"}
+DOMAIN_PREGEN_BASEDIR=${DOMAIN_PREGEN_BASEDIR:-"${staged_data_dir}/FV3LAM_pregen"}
 
 # Run commands for executables
 RUN_CMD_SERIAL="time"
@@ -79,6 +82,6 @@ RUN_CMD_FCST="srun"
 RUN_CMD_POST="srun"
 
 # Test Data Locations
-TEST_PREGEN_BASEDIR="/mnt/lfs4/BMC/wrfruc/UFS_SRW_app/FV3LAM_pregen"
-TEST_COMIN="/mnt/lfs4/BMC/wrfruc/UFS_SRW_app/COMGFS"
-TEST_EXTRN_MDL_SOURCE_BASEDIR="/mnt/lfs4/BMC/wrfruc/UFS_SRW_app/staged_extrn_mdl_files"
+TEST_COMIN="${staged_data_dir}/COMGFS"
+TEST_PREGEN_BASEDIR="${staged_data_dir}/FV3LAM_pregen"
+TEST_EXTRN_MDL_SOURCE_BASEDIR="${staged_data_dir}/input_model_data"

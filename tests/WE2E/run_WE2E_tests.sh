@@ -995,6 +995,9 @@ PTMP=\"${PTMP}\""
 #
   if [ "${USE_USER_STAGED_EXTRN_FILES}" = "TRUE" ]; then
 
+    # Ensure we only check on disk for these files
+    data_stores="disk"
+
     extrn_mdl_source_basedir=${TEST_EXTRN_MDL_SOURCE_BASEDIR:-}
     if [ ! -d "${extrn_mdl_source_basedir:-}" ] ; then
       print_err_msg_exit "\
@@ -1005,20 +1008,16 @@ machine (MACHINE):
     fi
     EXTRN_MDL_SOURCE_BASEDIR_ICS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_ICS}"
     if [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] ; then
-      EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/${FV3GFS_FILE_FMT_ICS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}"
-    elif [ "${EXTRN_MDL_NAME_ICS}" = "NAM" ] ; then
-      EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}/for_ICS"
+      EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/${FV3GFS_FILE_FMT_ICS}/\${yyyymmddhh}"
     else
-      EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}"
+      EXTRN_MDL_SOURCE_BASEDIR_ICS="${EXTRN_MDL_SOURCE_BASEDIR_ICS}/\${yyyymmddhh}"
     fi
 
     EXTRN_MDL_SOURCE_BASEDIR_LBCS="${extrn_mdl_source_basedir}/${EXTRN_MDL_NAME_LBCS}"
     if [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] ; then
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/${FV3GFS_FILE_FMT_LBCS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}"
-    elif [  "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ] ; then
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}"
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/${FV3GFS_FILE_FMT_LBCS}/\${yyyymmddhh}"
     else
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/\${DATE_FIRST_CYCL}\${CYCL_HRS[0]}/for_LBCS"
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS="${EXTRN_MDL_SOURCE_BASEDIR_LBCS}/\${yyyymmddhh}"
     fi
 #
 # Make sure that the forecast length is evenly divisible by the interval
@@ -1039,10 +1038,11 @@ boundary conditions specification interval (LBC_SPEC_INTVL_HRS):
 # Locations and names of user-staged external model files for generating
 # ICs and LBCs.
 #
-EXTRN_MDL_SOURCE_BASEDIR_ICS=${EXTRN_MDL_SOURCE_BASEDIR_ICS}
+EXTRN_MDL_SOURCE_BASEDIR_ICS='${EXTRN_MDL_SOURCE_BASEDIR_ICS}'
 EXTRN_MDL_FILES_ICS=( ${EXTRN_MDL_FILES_ICS[@]} )
-EXTRN_MDL_SOURCE_BASEDIR_LBCS=${EXTRN_MDL_SOURCE_BASEDIR_LBCS}
-EXTRN_MDL_FILES_LBCS=( ${EXTRN_MDL_FILES_LBCS[@]} )"
+EXTRN_MDL_SOURCE_BASEDIR_LBCS='${EXTRN_MDL_SOURCE_BASEDIR_LBCS}'
+EXTRN_MDL_FILES_LBCS=( ${EXTRN_MDL_FILES_LBCS[@]} )
+EXTRN_MDL_DATA_STORES=\"$data_stores\""
 
   fi
 #

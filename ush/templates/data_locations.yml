@@ -64,14 +64,12 @@ FV3GFS:
           - gfs.t{hh}z.sfcanl.nemsio
         fcst:
           - gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio
-          - gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio
       netcdf:
         anl:
           - gfs.t{hh}z.atmanl.nc
           - gfs.t{hh}z.sfcanl.nc
         fcst:
           - gfs.t{hh}z.atmf{fcst_hr:03d}.nc
-          - gfs.t{hh}z.sfcf{fcst_hr:03d}.nc
   hpss:
     protocol: htar
     archive_path:
