@@ -312,14 +312,14 @@ METplus Parameters
    User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_ccpa_tn`` task. (This task is activated in the workflow by setting ``RUN_TASK_GET_OBS_CCPA="TRUE"``). 
    METplus configuration files require the use of predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. This path must be defind as ``/<full-path-to-obs>/ccpa/proc``. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.    
 
-   .. note::
-      There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ccpa_files.sh``) has an example of how to account for this and organize the data into a more intuitive format. When a fix is provided, it will be accounted for in the ``exregional_get_ccpa_files.sh`` script.
+.. note::
+   There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ccpa_files.sh``) has an example of how to account for this and organize the data into a more intuitive format. When a fix is provided, it will be accounted for in the ``exregional_get_ccpa_files.sh`` script.
 
 ``MRMS_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_mrms_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_MRMS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
 
-   .. note::
-      METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script, within the main script to retrieve MRMS data from the NOAA HPSS, is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file naming structure: ``regional_workflow/scripts/exregional_get_mrms_files.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``regional_workflow/ush/mrms_pull_topofhour.py``.
+.. note::
+   METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script, within the main script to retrieve MRMS data from the NOAA HPSS, is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file naming structure: ``regional_workflow/scripts/exregional_get_mrms_files.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``regional_workflow/ush/mrms_pull_topofhour.py``.
 
 
 ``NDAS_OBS_DIR``: (Default: "")
@@ -732,12 +732,12 @@ Write-Component (Quilting) Parameters
 ======================================
 
 .. note::
-   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a write-component grid before writing them to an output file. The output files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the write component. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html?highlight=write-component#model-configurefile>`__ of the UFS Weather Model documentation.  
+   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write-component grid** before writing them to an output file. The output files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html?highlight=write-component#model-configurefile>`__ of the UFS Weather Model documentation.  
 
 ``QUILTING``: (Default: "TRUE")
 
-   .. attention::
-      The regional grid requires the use of the write component, so users generally should not need to change the default value for ``QUILTING``. 
+.. attention::
+   The regional grid requires the use of the write component, so users generally should not need to change the default value for ``QUILTING``. 
 
    Flag that determines whether to use the write component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-hour output forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to "TRUE" when running the SRW App. If ``QUILTING`` is set to "FALSE", the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to "TRUE" in the SRW App. 
 
@@ -818,11 +818,11 @@ Predefined Grid Parameters
    
    | "RRFS_CONUS_25km"
    | "RRFS_CONUS_13km"
-   | "RRFS_CONUS_3km" 
+   | "RRFS_CONUS_3km"
+   | "RRFS_SUBCONUS_3km" 
    
    **Other valid values include:**
 
-   | "RRFS_SUBCONUS_3km" 
    | "RRFS_AK_13km" 
    | "RRFS_AK_3km" 
    | "CONUS_25km_GFDLgrid" 

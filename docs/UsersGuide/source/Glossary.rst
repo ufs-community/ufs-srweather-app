@@ -31,6 +31,10 @@ Glossary
    CONUS
       Continental United States
 
+   convection-allowing models
+   CAM
+      Convection-allowing models (CAMs) are models that run on high-resolution grids (usually with grid spacing at 4km or less) that are able to resolve the effects of small-scale convective processes. They typically run several times a day to provide frequent forecasts (e.g., hourly or even subhourly). 
+
    cycle
       An hour of the day on which a forecast is started. 
 
@@ -142,6 +146,7 @@ Glossary
       The branch of physical geography dealing with mountains.
 
    Parameterization
+   Parameterizations
       Simplified functions that approximate the effects of small-scale processes (e.g., microphysics, gravity wave drag) that cannot be explicitly resolved by a model grid’s representation of the earth.
 
    RAP
