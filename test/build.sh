@@ -7,7 +7,7 @@
 #
 # Usage:  see function usage below
 #
-# Examples: ./build.sh >& test.out &
+# Examples: ./build.sh hera >& test.out &
 #
 set -eux    # Uncomment for debugging
 #=======================================================================
@@ -16,14 +16,14 @@ fail() { echo -e "\n$1\n" >> ${TEST_OUTPUT} && exit 1; }
 
 function usage() {
   echo
-  echo "Usage: $0 "
+  echo "Usage: $0 machine"
   echo
   exit 1
 }
 
-machines=( hera jet cheyenne orion wcoss_cray wcoss_dell_p3 )
+machines=( hera jet cheyenne orion wcoss_cray wcoss_dell_p3 gaea odin singularity )
 
-[[ $# -eq 1 ]] && usage
+[[ $# -eq 2 ]] && usage
 
 
 #-----------------------------------------------------------------------
@@ -34,8 +34,10 @@ TEST_DIR=$( pwd )                   # Directory with this script
 TOP_DIR=${TEST_DIR}/..              # Top level (umbrella repo) directory
 TEST_OUTPUT=${TEST_DIR}/build_test${PID}.out
 
-# Detect MACHINE
-source ${TOP_DIR}/env/detect_machine.sh
+# set PLATFORM (MACHINE)
+MACHINE="$1"
+PLATFORM="${MACHINE}"
+printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
 
 machine=$(echo "${MACHINE}" | tr '[A-Z]' '[a-z]')  # scripts in sorc need lower case machine name
 
@@ -54,6 +56,8 @@ fi
 #-----------------------------------------------------------------------
 if [ "${machine}" == "cheyenne" ] ; then
   compilers=( intel gnu )
+elif [ "${machine}" == "macos" ] || [ "${machine}" == "singularity" ] ; then
+  compilers=( gnu )
 else
   compilers=( intel )
 fi
@@ -100,7 +104,7 @@ declare -a executables_created=( chgres_cube \
     BIN_DIR=${TOP_DIR}/bin_${compiler}
     EXEC_DIR=${BIN_DIR}/bin
     if [ $build_it -eq 0 ] ; then
-      ./devbuild.sh --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} \
+      ./devbuild.sh --platform=${machine} --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} \
         --clean || fail "Build ${machine} ${compiler} FAILED"
     fi    # End of skip build for testing
 

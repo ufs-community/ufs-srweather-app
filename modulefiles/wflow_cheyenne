@@ -1,0 +1,18 @@
+#%Module
+
+proc ModulesHelp { } {
+   put stderr "This module loads python environement for running SRW on"
+   put stderr "the CISL machine Cheyenne"
+}
+
+module-whatis "Loads libraries needed for running SRW on Cheyenne"
+
+module load ncarenv
+module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
+module load rocoto
+
+if { [module-info mode load] } {
+  puts stderr "Please do the following to activate ncar_pylib:
+       > ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/regional_workflow"
+}
+
