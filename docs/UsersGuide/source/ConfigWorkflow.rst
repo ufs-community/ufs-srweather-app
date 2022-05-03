@@ -129,6 +129,8 @@ Directory Parameters
 ``EXEC_SUBDIR``: (Default: "bin")
    The name of the subdirectory of ``ufs-srweather-app`` where executables are installed.
 
+.. _NCOModeParms:
+
 NCO Mode Parameters
 ===================
 These variables apply only when using NCO mode (i.e. when ``RUN_ENVIR`` is set to "nco").
