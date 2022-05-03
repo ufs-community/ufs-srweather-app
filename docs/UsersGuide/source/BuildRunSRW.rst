@@ -124,7 +124,6 @@ Run the executable that pulls in SRW App components from external repositories:
    ./manage_externals/checkout_externals
 
 
-
 Build with ``devbuild.sh``
 ==========================
 
