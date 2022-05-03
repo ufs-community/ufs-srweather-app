@@ -171,12 +171,16 @@ For the SRW Application, the weather model netCDF output files are written to th
 * ``BGRD3D_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.bgrd3df{fhr}.tmXX.grib2``
 * ``BGDAWP_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.bgdawpf{fhr}.tmXX.grib2``
 
-The default setting for the output file names uses ``rrfs`` for ``{domain}``.  This may be overridden by the user in the ``config.sh`` settings.
+The default setting for the output file names uses ``rrfs`` for ``{domain}``. This may be overridden by the user in the ``config.sh`` settings.
 
 If you wish to modify the fields or levels that are output from the UPP, you will need to make modifications to file ``fv3lam.xml``, which resides in the UPP repository distributed with the UFS SRW Application. Specifically, if the code was cloned in the directory ``ufs-srweather-app``, the file will be located in ``ufs-srweather-app/src/UPP/parm``.
 
 .. note::
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
+
+UPP Product Output Tables for the UFS SRW LAM Grid:
+   * :doc:`3D Native Hybrid Level Fields <SRW_NATLEV_table>`
+   * :doc:`3D Pressure Level Fields <SRW_PRSLEV_table>`
 
 Use the directions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ for details on how to make modifications to the ``fv3lam.xml`` file and for remaking the flat text file that the UPP reads, which is called ``postxconfig-NT-fv3lam.txt`` (default).
 

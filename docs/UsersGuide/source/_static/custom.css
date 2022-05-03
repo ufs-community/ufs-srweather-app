@@ -4,3 +4,26 @@
   font-weight: bold;
   font-style: italic;
 }
+
+.underline {
+   text-decoration: underline;
+}
+
+.bolditalic {
+   font-weight: bold;
+   font-style: italic;
+}
+
+td {
+   word-break: break-all;
+}
+
+table.align-default {
+   margin-left: 0px;
+   margin-right: auto;
+}
+
+table.align-center {
+   margin-left: 0px;
+   margin-right: auto;
+}
