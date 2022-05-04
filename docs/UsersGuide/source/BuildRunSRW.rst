@@ -638,10 +638,10 @@ For WCOSS_CRAY:
 Configure METplus Verification Suite (Optional)
 --------------------------------------------------
 
-Users who want to use the METplus verification suite to test their forecasts need to load the appropriate modules and add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
+Users who want to use the METplus verification suite to evaluate their forecasts need to load the appropriate modules and add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
 
 .. note::
-   METplus is preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. METplus *installation* is currently not supported for this release of the SRW App, but METplus *use* is supported on systems with a functioning METplus installation. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
+   METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. For the v2 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
 
 Once installed, METplus users must load the appropriate modules (changing the module location and MET version to correspond to their system's installation):
 
@@ -657,7 +657,7 @@ Then, the path to the MET and METplus directories must be added to ``config.sh``
    METPLUS_PATH="</path/to/METplus/METplus-4.1.0>"
    MET_INSTALL_DIR="</path/to/met/10.1.0>"
 
-Users who have already staged the METplus verification data (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and set the corresponding ``RUN_TASK_GET_OBS_*`` parameters to "FALSE" in ``config.sh``. 
+Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and set the corresponding ``RUN_TASK_GET_OBS_*`` parameters to "FALSE" in ``config.sh``. 
 
 .. code-block:: console
 
@@ -672,7 +672,7 @@ If users have access to NOAA HPSS but have not pre-staged the data, they can sim
 
 Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
 
-Next, the verification tasks must be turned on according to the user's needs. Users should add the some or all of the following tasks to ``config.sh``, depending on the verification procedure(s) they have in mind:
+Next, the verification tasks must be turned on according to the user's needs. Users should add some or all of the following tasks to ``config.sh``, depending on the verification procedure(s) they have in mind:
 
 .. code-block:: console
 
@@ -795,14 +795,17 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | **Workflow Task**     | **Task Description**                                       |
    +=======================+============================================================+
    | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
-   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="TRUE"``. |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="TRUE"``  |
+   |                       | *and* user has access to NOAA HPSS data.                   |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
-   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS="TRUE"``. |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS="TRUE"``  |
+   |                       | *and* user has access to NOAA HPSS data.                   |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
    |                       | reflectivity and :term:`echo top` data from NOAA HPSS. Can |
-   |                       | only be run if ``RUN_TASK_GET_OBS_MRMS="TRUE"``.           |
+   |                       | only be run if ``RUN_TASK_GET_OBS_MRMS="TRUE"`` *and* user |
+   |                       | has access to NOAA HPSS data.                              |
    +-----------------------+------------------------------------------------------------+
    | VX_GRIDSTAT           | Runs METplus grid-to-grid verification for 1-h accumulated |
    |                       | precipitation                                              |

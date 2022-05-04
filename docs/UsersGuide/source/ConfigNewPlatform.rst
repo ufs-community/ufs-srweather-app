@@ -364,7 +364,7 @@ Those requirements highlighted in **bold** are included in the NCEPLIBS-external
 
    * **netCDF (C and Fortran libraries)**
    * **HDF5** 
-   * **ESMF** 8.0.0
+   * **ESMF** 8.2.0
    * **Jasper**
    * **libJPG**
    * **libPNG**
