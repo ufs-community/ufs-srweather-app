@@ -14,10 +14,6 @@
    font-style: italic;
 }
 
-td {
-   word-break: break-all;
-}
-
 table.align-default {
    margin-left: 0px;
    margin-right: auto;

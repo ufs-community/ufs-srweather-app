@@ -4,7 +4,7 @@
 Input and Output Files
 =======================
 This chapter provides an overview of the input and output files needed by the components
-of the UFS SRW Application (i.e., :term:`UFS_UTILS`, the UFS :term:`Weather Model`, and the :term:`UPP`). Links to more detailed documentation for each of the components are provided. For SRW App users who want to jump straight to downloading and staging the files, see :numref:`Section %s <DownloadingStagingInput>`. 
+of the UFS SRW Application. Links to more detailed documentation for each of the components (i.e., :term:`UFS_UTILS`, the UFS :term:`Weather Model`, and the :term:`UPP`) are provided in the sections below. For SRW App users who want to jump straight to downloading and staging the files, see :numref:`Section %s <DownloadingStagingInput>`. 
 
 .. _Input:
 
@@ -16,21 +16,21 @@ conditions files, and model configuration files (such as namelists).
 
 Initial and Boundary Condition Files
 ------------------------------------
-The external model files needed for initializing the runs can be obtained in a number of
-ways, including: pulled directly from `NOMADS <https://nomads.ncep.noaa.gov/pub/data/nccf/com/>`_;
-limited data availability), pulled from the NOAA HPSS during the workflow execution (requires
+The external model files needed for initializing an experiment can be obtained in a number of
+ways, including: pulled directly from `NOMADS <https://nomads.ncep.noaa.gov/pub/data/nccf/com/>`_,
+(limited data availability), pulled from the NOAA HPSS system during the workflow execution (requires
 user access), or obtained and staged by the user from a different source. The data format for
 these files can be :term:`GRIB2` or :term:`NEMSIO`. More information on downloading and setting up
 the external model data can be found in :numref:`Section %s <DownloadingStagingInput>`. Once the data is set up, the end-to-end application will run the system and write output files to disk.
 
 Pre-processing (UFS_UTILS)
 --------------------------
-When a user runs the SRW Application as described in the Quick Start Guide :numref:`Chapter %s <QuickstartC>`, :numref:`Step %s Generate the Forecast Experiment <GenerateWorkflowC>` links the input data for the pre-processing utilities from a location on disk to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found `here <https://noaa-emcufs-utils.readthedocs.io/en/latest/>`__.
+When a user runs the SRW Application as described in the Quick Start Guide, :numref:`Step %s <GenerateWorkflowC>`, the workflow generation script links the input data for the pre-processing utilities from a location on disk to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the `UFS_UTILS Documentation <https://noaa-emcufs-utils.readthedocs.io/en/latest/>`__.
 
 UFS Weather Model
 -----------------
-The input files for the weather model include both static (fixed) files and grid- and date-specific files (terrain, initial conditions, boundary conditions, etc). The static fix files
-must be staged by the user unless you are running on a Level 1/pre-configured platform, in which case you can link to the existing copy of the data on that machine. See :numref:`Section %s <StaticFixFiles>` for more information. The static, grid, and date-specific files are linked in the experiment directory by the workflow scripts. An extensive description of the input files for the weather model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/latest/>`__. The namelists and configuration files for the SRW Application are created from templates by the workflow, as described in :numref:`Section %s <WorkflowTemplates>`.
+The input files for the Weather Model include both static (fixed) files and grid- and date-specific files (terrain, initial conditions, boundary conditions, etc). The static fix files
+must be staged by the user unless the user is running on a `Level 1/pre-configured <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform, in which case users can link to the existing copy of the data on that machine. See :numref:`Section %s <StaticFixFiles>` for more information. The workflow scripts link the static, grid, and date-specific files in the experiment directory. An extensive description of the input files for the weather model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html>`__. The namelists and configuration files for the SRW Application are created from templates by the workflow generation script, as described in :numref:`Section %s <WorkflowTemplates>`.
 
 Unified Post Processor (UPP)
 ----------------------------
@@ -42,8 +42,7 @@ Documentation for the UPP input files can be found in the `UPP User's Guide
 Workflow
 --------
 The SRW Application uses a series of template files, combined with user-selected settings,
-to create the required namelists and parameter files needed by the Application. These
-templates can be reviewed to see what defaults are being used and where configuration parameters from the ``config.sh`` file are assigned.
+to create the required namelists and parameter files needed by the Application (see :numref:`Table %s <WorkflowGeneration>`). These templates can be reviewed to see which defaults are used and where configuration parameters from the ``config.sh`` file are assigned.
 
 List of Template Files
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -52,47 +51,48 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
 
 .. _TemplateFiles:
 
-.. table:: Template Files for a Regional Workflow
+.. table:: Template Files for the Regional Workflow
 
-   +-----------------------------+-------------------------------------------------------------+
-   | **File Name**               | **Description**                                             |
-   +=============================+=============================================================+
-   | data_table                  | Cycle-independent file that the forecast model reads in at  |
-   |                             | the start of each forecast. It is an empty file. No need to |
-   |                             | change.                                                     |
-   +-----------------------------+-------------------------------------------------------------+
-   | diag_table_[CCPP]           | File specifying the output fields of the forecast model.    |
-   |                             | A different diag_table may be configured for different      |
-   |                             | CCPP suites.                                                |
-   +-----------------------------+-------------------------------------------------------------+
-   | field_table_[CCPP]          | Cycle-independent file that the forecast model reads in at  |
-   |                             | the start of each forecast. It specifies the tracers that   |
-   |                             | the forecast model will advect. A different field_table     |
-   |                             | may be needed for different CCPP suites.                    |
-   +-----------------------------+-------------------------------------------------------------+
-   | FV3.input.yml               | YAML configuration file containing the forecast model’s     |
-   |                             | namelist settings for various physics suites. The values    |
-   |                             | specified in this file update the corresponding values in   |
-   |                             | the ``input.nml`` file. This file may be modified for the   |
-   |                             | specific namelist options of your experiment.               |
-   +-----------------------------+-------------------------------------------------------------+
-   | FV3LAM_wflow.xml            | Rocoto XML file to run the workflow. It is filled in using  |
-   |                             | the ``fill_template.py`` python script that is called in    |
-   |                             | the ``generate_FV3LAM_wflow.sh``.                           |
-   +-----------------------------+-------------------------------------------------------------+
-   | input.nml.FV3               | Namelist file of the weather model.                         |
-   +-----------------------------+-------------------------------------------------------------+
-   | model_configure             | Settings and configurations for the NUOPC/ESMF main         |
-   |                             | component.                                                  |
-   +-----------------------------+-------------------------------------------------------------+
-   | nems.configure              | NEMS (NOAA Environmental Modeling System) configuration     |
-   |                             | file, no need to change because it is an atmosphere-only    |
-   |                             | model in the SRW Application.                               |
-   +-----------------------------+-------------------------------------------------------------+
-   | regional_grid.nml           | Namelist settings for the code that generates an ESG grid.  |
-   +-----------------------------+-------------------------------------------------------------+
-   | README.xml_templating.md    | Instruction of Rocoto XML templating with Jinja.            |
-   +-----------------------------+-------------------------------------------------------------+
+   +-----------------------------+--------------------------------------------------------------+
+   | **File Name**               | **Description**                                              |
+   +=============================+==============================================================+
+   | data_table                  | :term:`Cycle-independent` file that the forecast model       |
+   |                             | reads in at the start of each forecast. It is an empty file. |
+   |                             | No need to change.                                           |
+   +-----------------------------+--------------------------------------------------------------+
+   | diag_table_[CCPP]           | File specifying the output fields of the forecast model.     |
+   |                             | A different ``diag_table`` may be configured for different   |
+   |                             | CCPP suites.                                                 |
+   +-----------------------------+--------------------------------------------------------------+
+   | field_table_[CCPP]          | :term:`Cycle-independent` file that the forecast model       |
+   |                             | reads in at the start of each forecast. It specifies the     |
+   |                             | :term:`tracers` that the forecast model will :term:`advect`. |
+   |                             | A different ``field_table`` may be needed for different      |
+   |                             | CCPP suites.                                                 |
+   +-----------------------------+--------------------------------------------------------------+
+   | FV3.input.yml               | YAML configuration file containing the forecast model’s      |
+   |                             | namelist settings for various physics suites. The values     |
+   |                             | specified in this file update the corresponding values in    |
+   |                             | the ``input.nml`` file. This file may be modified for the    |
+   |                             | specific namelist options of your experiment.                |
+   +-----------------------------+--------------------------------------------------------------+
+   | FV3LAM_wflow.xml            | Rocoto XML file to run the workflow. It is filled in using   |
+   |                             | the ``fill_template.py`` python script that is called in     |
+   |                             | the ``generate_FV3LAM_wflow.sh``.                            |
+   +-----------------------------+--------------------------------------------------------------+
+   | input.nml.FV3               | Namelist file for the Weather Model.                         |
+   +-----------------------------+--------------------------------------------------------------+
+   | model_configure             | Settings and configurations for the NUOPC/ESMF main          |
+   |                             | component.                                                   |
+   +-----------------------------+--------------------------------------------------------------+
+   | nems.configure              | NEMS (NOAA Environmental Modeling System) configuration      |
+   |                             | file, no need to change because it is an atmosphere-only     |
+   |                             | model in the SRW Application.                                |
+   +-----------------------------+--------------------------------------------------------------+
+   | regional_grid.nml           | Namelist settings for the code that generates an ESG grid.   |
+   +-----------------------------+--------------------------------------------------------------+
+   | README.xml_templating.md    | Instructions for Rocoto XML templating with Jinja.           |
+   +-----------------------------+--------------------------------------------------------------+
 
 Additional information related to the ``diag_table_[CCPP]``, ``field_table_[CCPP]``, ``input.nml.FV3``, ``model_conigure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#input-files>`__,
 while information on the ``regional_grid.nml`` can be found in the `UFS_UTILS User’s Guide
