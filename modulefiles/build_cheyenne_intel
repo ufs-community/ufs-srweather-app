@@ -21,7 +21,6 @@ module load hpc-intel/2022.1
 module load hpc-mpt/2.25
 
 module load srw_common
-#module load g2/3.4.3
 
 setenv CMAKE_C_COMPILER mpicc
 setenv CMAKE_CXX_COMPILER mpicxx
