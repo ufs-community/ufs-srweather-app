@@ -168,15 +168,12 @@ Documentation for the UPP output files can be found in the `UPP User's Guide <ht
 
 For the SRW Application, the weather model netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH/postprd`` directory and have the naming convention (file->linked to):
 
-* ``BGRD3D_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.bgrd3df{fhr}.tmXX.grib2``
-* ``BGDAWP_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.bgdawpf{fhr}.tmXX.grib2``
-
-..
-   Is this still accurate? Or have the directories changed to, e.g., NATLEV and PRSLEV?
+* ``NATLEV_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.natlevf{fhr}.tmXX.grib2``
+* ``PRSLEV_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.prslevf{fhr}.tmXX.grib2``
 
 The default setting for the output file names uses ``rrfs`` for ``{domain}``. This may be overridden by the user in the ``config.sh`` settings.
 
-If you wish to modify the fields or levels that are output from the UPP, you will need to make modifications to file ``fv3lam.xml``, which resides in the UPP repository distributed with the UFS SRW Application. Specifically, if the code was cloned in the directory ``ufs-srweather-app``, the file will be located in ``ufs-srweather-app/src/UPP/parm``.
+If users wish to modify the fields or levels that are output from the UPP, they will need to make modifications to file ``fv3lam.xml``, which resides in the UPP repository distributed with the UFS SRW Application. Specifically, if the code was cloned in the directory ``ufs-srweather-app``, the file will be located in ``ufs-srweather-app/src/UPP/parm``.
 
 .. note::
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
@@ -197,7 +194,7 @@ Once you have created the new flat text file reflecting your changes, you will n
 
 which tells the workflow to use the custom file located in the user-defined path. The path should include the filename. If this is set to true and the file path is not found, then an error will occur when trying to generate the SRW Application workflow.
 
-You may then start your case workflow as usual and the UPP will use the new flat ``*.txt`` file.
+Users may then start their experiment workflow as usual and the UPP will use the new flat ``*.txt`` file.
 
 .. _DownloadingStagingInput:
 
@@ -210,26 +207,29 @@ A set of input files, including static (fix) data and raw initial and lateral bo
 Static Files
 ------------
 The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to
-the directories where the static files are located. If you are on a pre-configured or configurable platform (i.e., a Level 1 or 2 platform), there is no need to stage the fixed files manually because they have been prestaged, and the paths are set in ``regional_workflow/ush/setup.sh``. On Level 3 & 4 systems, the static files can be downloaded individually or as a full tar file from the `FTP data repository <https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/>`__ or from `Amazon Web Services (AWS) cloud storage <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/fix_files.tar.gz>`__ using the ``wget`` command. Then ``tar -xf <filename>`` will extract the compressed file: 
+the directories where the static files are located. If users are on a pre-configured or configurable platform (i.e., a Level 1 or 2 platform), there is no need to stage the fixed files manually because they have been prestaged, and the paths are set in ``regional_workflow/ush/setup.sh``. On Level 3 & 4 systems, the static files can be downloaded individually or as a full tar file from the `FTP data repository <https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/>`__ or from `Amazon Web Services (AWS) cloud storage <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/fix_files.tar.gz>`__ using the ``wget`` command. Then the ``tar`` command will extract the compressed file: 
 
 .. code-block:: console
 
    wget https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/fix_files.tar.gz
    tar -xf fix_files.tar.gz
 
-The paths to the staged files must then be set in ``config.sh``. Add the following code or alter the variable paths if they are already listed in the ``config.sh`` file:
+The paths to the files must then be set in ``config.sh``. Add the following code or alter the variable paths if they are already listed in the ``config.sh`` file:
 
-* ``FIXgsm=/path-to/fix/fix_am``
-* ``TOPO_DIR=/path-to/fix/fix_am/fix_orog``
-* ``SFC_CLIMO_INPUT_DIR=/path-to/fix_am/fix/sfc_climo/``
+* ``FIXgsm="/path-to/fix/fix_am"``
+* ``TOPO_DIR="/path-to/fix/fix_am/fix_orog"``
+* ``SFC_CLIMO_INPUT_DIR="/path-to/fix_am/fix/sfc_climo/"``
 
 .. _InitialConditions:
 
 Initial Condition Formats and Source
 ------------------------------------
-The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, netCDF, or :term:`GRIB2`. The SRW Application currently only supports the use of NEMSIO and netCDF input files from the GFS.
+The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, :term:`netCDF`, or :term:`GRIB2`. However, the SRW Application currently only supports the use of NEMSIO and netCDF input files from the GFS.
 
-The data required to run the "out-of-the-box" SRW App case described in :numref:`Chapter %s <QuickstartC>` is already preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users on other systems can find the required IC/LBC data in the `FTP data repository <https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz>`__ or on `AWS cloud storage <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz>`_. 
+..
+   COMMENT: So in reality, does this mean that only 2 formats are supported? 
+
+The data required to run the "out-of-the-box" SRW App case described in Chapters :numref:`%s <QuickstartC>` and :numref:`%s <BuildRunSRW>` is already preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users on Level 3 & 4 systems can find the required IC/LBC data in the `FTP data repository <https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/gst_model_data.tar.gz>`__ or on `AWS cloud storage <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz>`_. 
 
 To add this data to your system, run the following commands from the ``ufs-srweather-app`` directory:
 
@@ -251,18 +251,18 @@ Then, in ``config.sh``, set the following environment variables:
 
 .. code-block:: console
 
-   USE_USER_STAGED_EXTRN_FILES=TRUE
-   EXTRN_MDL_SOURCE_BASEDIR_ICS=<path/to/ufs-srweather-app/model_data/FV3GFS>
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS=<path/to/ufs-srweather-app/model_data/FV3GFS>
+   USE_USER_STAGED_EXTRN_FILES="TRUE"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="<path/to/ufs-srweather-app/model_data/FV3GFS>"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="<path/to/ufs-srweather-app/model_data/FV3GFS>"
 
-These environment variables describe what :term:`IC/LBC` files to use (pre-staged files or files to be automatically pulled from the NOAA HPSS) and the location of the IC/LBC files. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` is the directory where the initial conditions are located, and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` is the directory where the lateral boundary conditions are located. 
+These environment variables describe which :term:`IC/LBC` files to use (pre-staged files or files to be automatically pulled from NOAA HPSS) and the location of the IC/LBC files. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` is the directory where the initial conditions are located, and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` is the directory where the lateral boundary conditions are located. 
 
 Initial and Lateral Boundary Condition Organization
 ---------------------------------------------------
 The suggested directory structure and naming convention for the raw input files is described
 below. While there is flexibility to modify these settings, this will provide the most reusability for multiple dates when using the SRW Application workflow.
 
-For ease of reusing the ``config.sh`` for multiple dates and cycles, it is recommended to set up your raw :term:`IC/LBC` files such that it includes the model name (e.g., FV3GFS, NAM, RAP, HRRR) and ``YYYYMMDDHH``, for example: ``/path-to/model_data/FV3GFS/2019061518``. Since both initial and lateral boundary condition files are necessary, you can also include an ICS and LBCS directory. The sample IC/LBC's available at the FTP data repository are structured as follows:
+For ease of reusing the ``config.sh`` for multiple dates and cycles, it is recommended to set up the raw :term:`IC/LBC` files such that they includes the model name (e.g., FV3GFS, NAM, RAP, HRRR) and ``YYYYMMDDHH``, for example: ``/path-to/model_data/FV3GFS/2019061518``. Since both initial and lateral boundary condition files are necessary, you can also include an ICS and LBCS directory. The sample IC/LBC's available at the FTP data repository are structured as follows:
 
 * ``/path-to/model_data/MODEL/YYYYMMDDHH/ICS``
 * ``/path-to/model_data/MODEL/YYYYMMDDHH/LBCS``
