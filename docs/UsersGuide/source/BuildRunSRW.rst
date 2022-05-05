@@ -638,19 +638,20 @@ For WCOSS_CRAY:
 Configure METplus Verification Suite (Optional)
 --------------------------------------------------
 
-Users who want to use the METplus verification suite to evaluate their forecasts need to load the appropriate modules and add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
+Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
 
-.. note::
+.. attention::
    METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. For the v2 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
 
-Once installed, METplus users must load the appropriate modules (changing the module location and MET version to correspond to their system's installation):
+.. note::
+   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/regional_workflow/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
 
-.. code-block:: console
-   
-   module use -a </path/to/met/modulefiles/>
-   module load met/<10.0.0>
+   .. code-block:: console
+      
+      module use -a </path/to/met/modulefiles/>
+      module load met/<version.X.X>
 
-Then, the path to the MET and METplus directories must be added to ``config.sh``:
+To use METplus verification, the path to the MET and METplus directories must be added to ``config.sh``:
 
 .. code-block:: console
 
