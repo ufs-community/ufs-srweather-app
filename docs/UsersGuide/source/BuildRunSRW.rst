@@ -206,7 +206,7 @@ The ``build_macos_gnu`` modulefile initializes the module environment, lists the
    # This path should point to your SRW Application directory
    setenv SRW "/Users/username/ufs-srweather-app"
    
-An excerpt of the ``build_macos_gnu`` contents appears below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macos_gnu`` modulefile. Additionally, users need to verify that all file paths reflect their system's configuration and that the correct version numbers for software libraries appear in the file. 
+An excerpt of the ``build_macos_gnu`` contents appears below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macos_gnu`` modulefile. Additionally, users need to verify that all file paths reflect their system's configuration and that the correct version numbers for software libraries appear in the modulefile. 
 
 .. code-block:: console
 
@@ -228,7 +228,8 @@ Then, users must source the Lmod setup file, just as they would on other systems
    module use <path/to/ufs-srweather-app/modulefiles>
    module load build_macos_gnu
 
-If you execute ``source etc/lmod-setup.sh`` on systems that don't need it, it will simply do a ``module purge``. 
+.. note::
+   If you execute ``source etc/lmod-setup.sh`` on systems that don't need it, it will simply do a ``module purge``. 
 
 Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` to ``OFF`` in line 35 of the ``$SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt`` file. This change is optional if using Option 2 to build the SRW App. Using a text editor (e.g., vi, vim, emacs): 
 
@@ -236,11 +237,11 @@ Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` t
 
    option(ENABLE_QUAD_PRECISION "Enable compiler definition -DENABLE_QUAD_PRECISION" OFF)
 
-An alternative way to make this change is using a `sed` (streamline editor). (See :numref:`Step %s <MacMorePackages>` to install one) From the command line, users can run:
+An alternative way to make this change is using a `sed` (streamline editor). From the command line, users can run:
 
 .. code-block:: console
 
-   sed -i 's/QUAD_PRECISION\"  ON)/QUAD_PRECISION\" OFF)/g' CMakeLists.txt
+   sed -i -e 's/QUAD_PRECISION\" ON)/QUAD_PRECISION\" OFF)/' CMakeLists.txt
 
 
 .. _BuildExecutables:
@@ -786,22 +787,14 @@ In principle, the configuration process for MacOS systems is the same as for oth
 Install Additional Packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Check the version of bash, and upgrade it if it is lower than 4. Additionally, install the ``coreutils`` and ``gsed`` packages:
+Check the version of bash, and upgrade it if it is lower than 4. Additionally, install the ``coreutils`` package:
 
 .. code-block:: console
 
    bash --version
    brew upgrade bash
    brew install coreutils
-   brew install gsed
    
-The ``gsed``, or GNU streamline editor, can be set as a default for ``sed``. Add a ``gnubin`` directory to your $PATH variable in ``.bashrc`` : 
-
-.. code-block:: console
-
-	PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"    (Option1)
-	PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"       (Option 2)
-
 .. _MacVEnv:
 
 Create a Python Virtual Environment
