@@ -59,8 +59,14 @@ Glossary
    echo top
       The radar-indicated top of an area of precipitation. Specifically, it contains the height of the 18 dBZ reflectivity value.
 
+   EMC
+      The `Environmental Modeling Center <https://www.emc.ncep.noaa.gov/emc_new.php>`__. 
+
    EPIC
       EPIC stands for the `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__. EPIC seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement to produce the most accurate and reliable operational modeling system in the world. 
+
+   ESG
+      Extended Schmidt Gnomonic (ESG) grid. The ESG grid uses the map projection developed by Jim Purser of NOAA :term:`EMC` (:cite:t:`Purser_2020`). 
 
    ESMF
       `Earth System Modeling Framework <https://earthsystemmodeling.org/docs/release/ESMF_8_1_1/ESMF_usrdoc.pdf>`__. The ESMF defines itself as “a suite of software tools for developing high-performance, multi-component Earth science modeling applications.” 
@@ -141,6 +147,9 @@ Glossary
 
    NEMSIO
       A binary format for atmospheric model output from :term:`NCEP`'s Global Forecast System (GFS).
+
+   netCDF
+      NetCDF (Network Common Data Form) is a file format and community standard for storing multidimensional scientific data. It includes a set of software libraries and machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data (see https://www.unidata.ucar.edu/software/netcdf/).
 
    NUOPC
       The `National Unified Operational Prediction Capability <https://earthsystemmodeling.org/nuopc/>`__ Layer "defines conventions and a set of generic components for building coupled models using the Earth System Modeling Framework (:term:`ESMF`)." 

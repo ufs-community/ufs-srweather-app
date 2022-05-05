@@ -819,7 +819,7 @@ Predefined Grid Parameters
    | "RRFS_CONUS_25km"
    | "RRFS_CONUS_13km"
    | "RRFS_CONUS_3km"
-   | "RRFS_SUBCONUS_3km" 
+   | "SUBCONUS_Ind_3km" 
    
    **Other valid values include:**
 
@@ -837,6 +837,7 @@ Predefined Grid Parameters
    | "GSD_HRRR_AK_50km" 
    | "RRFS_NA_13km" 
    | "RRFS_NA_3km"
+   | "RRFS_SUBCONUS_3km" 
 
 ..
    COMMENT: Are all of these now being supported or still just the three main ones? Am I missing any?

@@ -78,7 +78,8 @@ Predefined SUBCONUS Grid Over Indianapolis
 
 .. _SUBCONUS_Ind_3km:
 
-.. figure:: _static/SUBCONUS_Ind_3km.sphr.native_wrtcmp.png
+.. figure:: _static/SUBCONUS_Ind_3km.png
+   :alt: Map of Indiana and portions of the surrounding states. The map shows the boundaries of the continental United States sub-grid centered over Indianapolis. The computational grid boundaries appear in red and the write-component grid appears just inside it in blue. 
 
    *The boundary of the SUBCONUS_Ind_3km computational grid (red) and corresponding write-component grid (blue).*
 
