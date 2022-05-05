@@ -125,7 +125,7 @@ Set the build environments and modules within the ``ufs-srweather-app`` director
    source /usr/share/lmod/6.6/init/profile
    module use /opt/hpc-modules/modulefiles/stack
    module load hpc hpc-gnu hpc-openmpi hpc-python
-   module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake gfsio wgrib2 upp
+   module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake gfsio upp
 
 
 
