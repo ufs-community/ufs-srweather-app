@@ -493,6 +493,11 @@ settings. There is usually no need for a user to modify the default configuratio
    +----------------------+------------------------------------------------------------+
    | Compiler             | COMPILER                                                   |
    +----------------------+------------------------------------------------------------+
+   | METplus              | MODEL, MET_INSTALL_DIR, MET_BIN_EXEC, METPLUS_PATH,        |
+   |                      | CCPA_OBS_DIR, MRMS_OBS_DIR, NDAS_OBS_DIR                   |
+   +----------------------+------------------------------------------------------------+
+
+
 
 
 .. _UserSpecificConfig:
@@ -539,29 +544,55 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+--------------------------------------------------------+
    | CYCL_HRS                       | ("HH1" "HH2")     | "00"                                                   |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_NAME_ICS             |  "FV3GFS"         | "FV3GFS"                                               |
+   | EXTRN_MDL_NAME_ICS             | "FV3GFS"          | "FV3GFS"                                               |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_NAME_LBCS            |  "FV3GFS"         | "FV3GFS"                                               |
+   | EXTRN_MDL_NAME_LBCS            | "FV3GFS"          | "FV3GFS"                                               |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | FV3GFS_FILE_FMT_ICS            |  "nemsio"         | "grib2"                                                |
+   | FV3GFS_FILE_FMT_ICS            | "nemsio"          | "grib2"                                                |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | FV3GFS_FILE_FMT_LBCS           |  "nemsio"         | "grib2"                                                |
+   | FV3GFS_FILE_FMT_LBCS           | "nemsio"          | "grib2"                                                |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | WTIME_RUN_FCST                 |  "04:30:00"       | "01:00:00"                                             |
+   | WTIME_RUN_FCST                 | "04:30:00"        | "01:00:00"                                             |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | USE_USER_STAGED_EXTRN_FILES    |  "FALSE"          | "TRUE"                                                 |
+   | USE_USER_STAGED_EXTRN_FILES    | "FALSE"           | "TRUE"                                                 |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASE_DIR_ICS  |  ""               | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+   | EXTRN_MDL_SOURCE_BASE_DIR_ICS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_FILES_ICS            |  ""               | "gfs.pgrb2.0p25.f000"                                  |
+   | EXTRN_MDL_FILES_ICS            | ""                | "gfs.pgrb2.0p25.f000"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  |  ""               | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_FILES_LBCS           |  ""               | "gfs.pgrb2.0p25.f006"                                  |
+   | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006"                                  |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | MODEL                          | ""                | FV3_GFS_v16_CONUS_25km"                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | METPLUS_PATH                   | ""                | "/path/to/METPlus"                                     |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | MET_INSTALL_DIR                | ""                | "/path/to/MET"                                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | CCPA_OBS_DIR                   | ""                | "/path/to/processed/CCPA/data"                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | MRMS_OBS_DIR                   | ""                | "/path/to/processed/MRMS/data"                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | NDAS_OBS_DIR                   | ""                | "/path/to/processed/NDAS/data"                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_GET_OBS_CCPA          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_GET_OBS_MRMS          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_GET_OBS_NDAS          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_GRIDSTAT           | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_POINTSTAT          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_ENSGRID            | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_ENSPOINT           | "FALSE"           | "FALSE"                                                |
    +--------------------------------+-------------------+--------------------------------------------------------+
 
-.. _CopyConfig:
- 
+
+
 To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
@@ -674,7 +705,56 @@ For WCOSS_CRAY:
    The values of the configuration variables should be consistent with those in the
    ``valid_param_vals script``. In addition, various example configuration files can be found in the ``regional_workflow/tests/baseline_configs`` directory.
 
+.. _VXConfig:
 
+Configure METplus Verification Suite (Optional)
+--------------------------------------------------
+
+Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
+
+.. attention::
+   METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. For the v2 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
+
+.. note::
+   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/regional_workflow/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
+
+   .. code-block:: console
+      
+      module use -a </path/to/met/modulefiles/>
+      module load met/<version.X.X>
+
+To use METplus verification, the path to the MET and METplus directories must be added to ``config.sh``:
+
+.. code-block:: console
+
+   METPLUS_PATH="</path/to/METplus/METplus-4.1.0>"
+   MET_INSTALL_DIR="</path/to/met/10.1.0>"
+
+Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and set the corresponding ``RUN_TASK_GET_OBS_*`` parameters to "FALSE" in ``config.sh``. 
+
+.. code-block:: console
+
+   CCPA_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/ccpa/proc"
+   MRMS_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/mrms/proc"
+   NDAS_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/ndas/proc"
+   RUN_TASK_GET_OBS_CCPA="FALSE"
+   RUN_TASK_GET_OBS_MRMS="FALSE"
+   RUN_TASK_GET_OBS_NDAS="FALSE"
+
+If users have access to NOAA HPSS but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to "TRUE", and the machine will attempt to download the appropriate data from NOAA HPSS. The ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
+
+Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
+
+Next, the verification tasks must be turned on according to the user's needs. Users should add some or all of the following tasks to ``config.sh``, depending on the verification procedure(s) they have in mind:
+
+.. code-block:: console
+
+   RUN_TASK_VX_GRIDSTAT="TRUE"
+   RUN_TASK_VX_POINTSTAT="TRUE"
+   RUN_TASK_VX_ENSGRID="TRUE"
+   RUN_TASK_VX_ENSPOINT="TRUE"
+
+These tasks are independent, so users may set some values to "TRUE" and others to "FALSE" depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>` More details on all of the parameters in this section are available in :numref:`Chapter %s <VXTasks>`. 
 
 .. _SetUpPythonEnv:
 
@@ -856,7 +936,7 @@ Description of Workflow Tasks
 .. note::
    This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <RocotoRun>`
 
-:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by adding the following lines to the ``config.sh`` file before running the ``generate_FV3LAM_wflow.sh`` script: 
+:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by adding the following lines to the ``config.sh`` file before running the ``generate_FV3LAM_wflow.sh`` script: 
 
 .. code-block:: console
 
@@ -867,7 +947,7 @@ Description of Workflow Tasks
 
 .. _WorkflowTasksFig:
 
-.. figure:: _static/FV3LAM_wflow_flowchart.png
+.. figure:: _static/FV3LAM_wflow_flowchart_v2.png
 
     *Flowchart of the workflow tasks*
 
@@ -877,7 +957,7 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workfl
 
 .. _WorkflowTasksTable:
 
-.. table::  Workflow tasks in the SRW App
+.. table::  Baseline workflow tasks in the SRW App
 
    +----------------------+------------------------------------------------------------+
    | **Workflow Task**    | **Task Description**                                       |
@@ -905,6 +985,106 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workfl
    +----------------------+------------------------------------------------------------+
    | run_post             | Run the post-processing tool (UPP)                         |
    +----------------------+------------------------------------------------------------+
+
+In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksTable>` above, users may choose to run some or all of the METplus verification tasks. These tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. 
+
+.. _VXWorkflowTasksTable:
+
+.. table:: Verification (VX) workflow tasks in the SRW App
+
+   +-----------------------+------------------------------------------------------------+
+   | **Workflow Task**     | **Task Description**                                       |
+   +=======================+============================================================+
+   | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="TRUE"``  |
+   |                       | *and* user has access to NOAA HPSS data.                   |
+   +-----------------------+------------------------------------------------------------+
+   | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS="TRUE"``  |
+   |                       | *and* user has access to NOAA HPSS data.                   |
+   +-----------------------+------------------------------------------------------------+
+   | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
+   |                       | reflectivity and :term:`echo top` data from NOAA HPSS. Can |
+   |                       | only be run if ``RUN_TASK_GET_OBS_MRMS="TRUE"`` *and* user |
+   |                       | has access to NOAA HPSS data.                              |
+   +-----------------------+------------------------------------------------------------+
+   | VX_GRIDSTAT           | Runs METplus grid-to-grid verification for 1-h accumulated |
+   |                       | precipitation                                              |
+   +-----------------------+------------------------------------------------------------+
+   | VX_GRIDSTAT_REFC      | Runs METplus grid-to-grid verification for composite       |
+   |                       | reflectivity                                               |
+   +-----------------------+------------------------------------------------------------+
+   | VX_GRIDSTAT_RETOP     | Runs METplus grid-to-grid verification for :term:`echo top`|
+   +-----------------------+------------------------------------------------------------+
+   | VX_GRIDSTAT_##h       | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
+   |                       | 24-h (i.e., daily) accumulated precipitation. Valid values |
+   |                       | of ``##`` are ``03``, ``06``, and ``24``.                  |
+   +-----------------------+------------------------------------------------------------+
+   | VX_POINTSTAT          | Runs METplus grid-to-point verification for surface and    |
+   |                       | upper-air variables                                        |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID            | Runs METplus grid-to-grid ensemble verification for 1-h    |
+   |                       | accumulated precipitation. Can only be run if              |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_REFC       | Runs METplus grid-to-grid ensemble verification for        |
+   |                       | composite reflectivity. Can only be run if                 |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and                                 |
+   |                       | ``RUN_TASK_VX_ENSGRID = "TRUE"``.                          |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_RETOP      | Runs METplus grid-to-grid ensemble verification for        |
+   |                       | :term:`echo top`. Can only be run if ``DO_ENSEMBLE="TRUE"``|
+   |                       | and ``RUN_TASK_VX_ENSGRID="TRUE"``.                        |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_##h        | Runs METplus grid-to-grid ensemble verification for 3-h,   |
+   |                       | 6-h, and 24-h (i.e., daily) accumulated precipitation.     |
+   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
+   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_MEAN       | Runs METplus grid-to-grid verification for ensemble mean   |
+   |                       | 1-h accumulated precipitation. Can only be run if          |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_PROB       | Runs METplus grid-to-grid verification for 1-h accumulated |
+   |                       | precipitation probabilistic output. Can only be run if     |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_MEAN_##h   | Runs METplus grid-to-grid verification for ensemble mean   |
+   |                       | 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation. |
+   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
+   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_PROB_##h   | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
+   |                       | 24h (i.e., daily) accumulated precipitation probabilistic  |
+   |                       | output. Valid values of ``##`` are ``03``, ``06``, and     |
+   |                       | ``24``. Can only be run if ``DO_ENSEMBLE="TRUE"`` and      |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_PROB_REFC  | Runs METplus grid-to-grid verification for ensemble        |
+   |                       | probabilities for composite reflectivity. Can only be run  |
+   |                       | if ``DO_ENSEMBLE="TRUE"`` and                              |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_PROB_RETOP | Runs METplus grid-to-grid verification for ensemble        |
+   |                       | probabilities for :term:`echo top`. Can only be run if     |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. | 
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSPOINT           | Runs METplus grid-to-point ensemble verification for       |
+   |                       | surface and upper-air variables. Can only be run if        |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSPOINT="TRUE"``.|
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSPOINT_MEAN      | Runs METplus grid-to-point verification for ensemble mean  |
+   |                       | surface and upper-air variables. Can only be run if        |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSPOINT="TRUE"``.|
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSPOINT_PROB      | Runs METplus grid-to-point verification for ensemble       |
+   |                       | probabilities for surface and upper-air variables. Can     |
+   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | ``RUN_TASK_VX_ENSPOINT="TRUE"``.                           |
+   +-----------------------+------------------------------------------------------------+
+
 
 
 
@@ -981,31 +1161,45 @@ This will output the last 40 lines of the log file, which list the status of the
      0 out of 1 cycles completed.
      Workflow status:  IN PROGRESS
 
-Error messages for each specific task can be found in the task log files located in ``$EXPTDIR/log``. 
+If all the tasks complete successfully, the "Workflow status" at the bottom of the log file will change from "IN PROGRESS" to "SUCCESS". If certain tasks could not complete, the "Workflow status" will instead change to "FAILURE". Error messages for each specific task can be found in the task log files located in ``$EXPTDIR/log``. 
 
-If everything goes smoothly, you will eventually get the following workflow status table as follows:
+.. _Success:
+
+The workflow run is complete when all tasks have "SUCCEEDED". If everything goes smoothly, users will eventually see a workflow status table similar to the following: 
 
 .. code-block:: console
 
-   CYCLE                    TASK                       JOBID        STATE   EXIT STATUS   TRIES  DURATION
-   ======================================================================================================
-   202006170000        make_grid                     8854765    SUCCEEDED             0       1       6.0
-   202006170000        make_orog                     8854809    SUCCEEDED             0       1      27.0
-   202006170000   make_sfc_climo                     8854849    SUCCEEDED             0       1      36.0
-   202006170000    get_extrn_ics                     8854763    SUCCEEDED             0       1      54.0
-   202006170000   get_extrn_lbcs                     8854764    SUCCEEDED             0       1      61.0
-   202006170000         make_ics                     8854914    SUCCEEDED             0       1     119.0
-   202006170000        make_lbcs                     8854913    SUCCEEDED             0       1      98.0
-   202006170000         run_fcst                     8854992    SUCCEEDED             0       1     655.0
-   202006170000      run_post_00                     8855459    SUCCEEDED             0       1       6.0
-   202006170000      run_post_01                     8855460    SUCCEEDED             0       1       6.0
-   202006170000      run_post_02                     8855461    SUCCEEDED             0       1       6.0
-   202006170000      run_post_03                     8855462    SUCCEEDED             0       1       6.0
-   202006170000      run_post_04                     8855463    SUCCEEDED             0       1       6.0
-   202006170000      run_post_05                     8855464    SUCCEEDED             0       1       6.0
-   202006170000      run_post_06                     8855465    SUCCEEDED             0       1       6.0
+   CYCLE              TASK                   JOBID         STATE        EXIT STATUS   TRIES   DURATION
+   ==========================================================================================================
+   201906150000       make_grid              4953154       SUCCEEDED         0          1          5.0
+   201906150000       make_orog              4953176       SUCCEEDED         0          1         26.0
+   201906150000       make_sfc_climo         4953179       SUCCEEDED         0          1         33.0
+   201906150000       get_extrn_ics          4953155       SUCCEEDED         0          1          2.0
+   201906150000       get_extrn_lbcs         4953156       SUCCEEDED         0          1          2.0
+   201906150000       make_ics               4953184       SUCCEEDED         0          1         16.0
+   201906150000       make_lbcs              4953185       SUCCEEDED         0          1         71.0
+   201906150000       run_fcst               4953196       SUCCEEDED         0          1       1035.0
+   201906150000       run_post_f000          4953244       SUCCEEDED         0          1          5.0
+   201906150000       run_post_f001          4953245       SUCCEEDED         0          1          4.0
+   ...
+   201906150000       run_post_f048          4953381       SUCCEEDED         0          1          7.0
 
-If all the tasks complete successfully, the workflow status in the log file will indicate “SUCCESS." Otherwise, the workflow status will indicate “FAILURE."
+If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f048``. The output will resemble the following but may be significantly longer when using ensemble verification: 
+
+.. code-block:: console
+
+   CYCLE              TASK                   JOBID          STATE       EXIT STATUS   TRIES   DURATION
+   ==========================================================================================================
+   201906150000       make_grid              30466134       SUCCEEDED        0          1          5.0
+   ...
+   201906150000       run_post_f048          30468271       SUCCEEDED        0          1          7.0
+   201906150000       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
+   201906150000       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
+   201906150000       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0
+   201906150000       run_gridstatvx_03h     30468491       SUCCEEDED        0          1         43.0
+   201906150000       run_gridstatvx_06h     30468492       SUCCEEDED        0          1         29.0
+   201906150000       run_gridstatvx_24h     30468493       SUCCEEDED        0          1         20.0
+   201906150000       run_pointstatvx        30468423       SUCCEEDED        0          1        670.0
 
 
 Launch the Rocoto Workflow Manually
@@ -1077,24 +1271,8 @@ After finishing the experiment, open the crontab using ``crontab -e`` and delete
 
    On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
    
-The workflow run is complete when all tasks have “SUCCEEDED", and the rocotostat command outputs the following:
 
-.. code-block:: console
-
-   CYCLE               TASK                 JOBID              STATE         EXIT STATUS   TRIES   DURATION
-   ==========================================================================================================
-   201906150000          make_grid           4953154           SUCCEEDED         0         1           5.0
-   201906150000          make_orog           4953176           SUCCEEDED         0         1          26.0
-   201906150000          make_sfc_climo      4953179           SUCCEEDED         0         1          33.0
-   201906150000          get_extrn_ics       4953155           SUCCEEDED         0         1           2.0
-   201906150000          get_extrn_lbcs      4953156           SUCCEEDED         0         1           2.0
-   201906150000          make_ics            4953184           SUCCEEDED         0         1          16.0
-   201906150000          make_lbcs           4953185           SUCCEEDED         0         1          71.0
-   201906150000          run_fcst            4953196           SUCCEEDED         0         1        1035.0
-   201906150000          run_post_f000       4953244           SUCCEEDED         0         1           5.0
-   201906150000          run_post_f001       4953245           SUCCEEDED         0         1           4.0
-   ...
-   201906150000          run_post_f048       4953381           SUCCEEDED         0         1           7.0
+The workflow run is complete when all tasks have "SUCCEEDED", and the rocotostat command outputs a table similar to the one :ref:`above <Success>`.
 
 .. _PlotOutput:
 
