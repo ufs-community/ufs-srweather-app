@@ -1,0 +1,29 @@
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module loads libraries for building SRW on"
+   puts stderr "the NOAA WCOSS Dell machine using Intel-18.0.1.163"
+}
+
+module-whatis "Loads libraries needed for building SRW on WCOSS Dell"
+
+module load ips/18.0.5.274
+module load impi/18.0.1
+module load lsf/10.1
+module load python/3.6.3
+
+### hpc-stack ###
+module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
+module load hpc/1.1.0
+module load hpc-ips/18.0.5.274
+module load hpc-impi/18.0.1
+
+module load srw_common
+
+module load cmake/3.20.0
+module load HPSS/5.0.2.5
+
+setenv CMAKE_C_COMPILER mpiicc
+setenv CMAKE_CXX_COMPILER mpiicpc
+setenv CMAKE_Fortran_COMPILER mpiifort
+setenv CMAKE_Platform wcoss_dell_p3
