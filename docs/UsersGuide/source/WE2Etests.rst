@@ -344,7 +344,7 @@ to suit specific testing needs.
 .. _ModExistingTest:
 
 Modifying an Existing Test
----------------------
+-----------------------------
 To modify an existing test, simply edit the configuration file for that test by changing
 existing variable values and/or adding new variables to suit the requirements of the
 modified test.  Such a change may also require modifications to the test description
@@ -372,7 +372,7 @@ above, say ``wflow_features``:
 .. _AddNewCategory:
 
 Adding a New WE2E Test Category
------------------------------
+-----------------------------------
 To create a new test category called, e.g. ``new_category``:
 
 1) In the directory ``ufs-srweather-app/regional_workflow/tests/WE2E/test_configs``,

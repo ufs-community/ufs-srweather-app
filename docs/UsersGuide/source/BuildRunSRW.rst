@@ -237,11 +237,12 @@ Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` t
 
    option(ENABLE_QUAD_PRECISION "Enable compiler definition -DENABLE_QUAD_PRECISION" OFF)
 
-An alternative way to make this change is using a `sed` (streamline editor). From the command line, users can run:
+An alternative way to make this change is using a `sed` (streamline editor). From the command line, users can run one of two commands (user's preference):
 
 .. code-block:: console
 
    sed -i -e 's/QUAD_PRECISION\" ON)/QUAD_PRECISION\" OFF)/' CMakeLists.txt
+   sed -i -e 's/bin\/sh/bin\/bash/g' *sh
 
 
 .. _BuildExecutables:
