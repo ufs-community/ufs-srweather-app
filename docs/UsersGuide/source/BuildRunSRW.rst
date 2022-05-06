@@ -20,8 +20,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
    * :ref:`Install prerequisites <HPCstackInfo>`
    * :ref:`Clone the SRW App from GitHub <DownloadSRWApp>`
    * :ref:`Check out the external repositories <CheckoutExternals>`
-   * :ref:`Set up the build environment <SetUpBuild>`
-   * :ref:`Build the executables <BuildExecutables>`
+   * :ref:`Set up the build environment and build the executables <BuildExecutables>`
    * :ref:`Download and stage data <Data>`
    * :ref:`Optional: Configure a new grid <GridSpecificConfig>`
    * :ref:`Generate a regional workflow experiment <GenerateForecast>`
@@ -124,81 +123,36 @@ Run the executable that pulls in SRW App components from external repositories:
    ./manage_externals/checkout_externals
 
 
-Build with ``devbuild.sh``
-==========================
+.. _BuildExecutables:
 
-On Level-1 systems, for which a modulefile is provided under ``modulefiles`` directory, we can build SRW App binaries with:
+Set Up the Environment and Build the Executables
+===================================================
+
+.. _DevBuild:
+
+``devbuild.sh`` Approach
+-----------------------------
+
+On Level 1 systems for which a modulefile is provided under the ``modulefiles`` directory, we can build the SRW App binaries with:
 
 .. code-block:: console
 
-   ./devbuild.sh --platform=hera
+   ./devbuild.sh --platform=<machine_name>
 
-If compiler auto-detection fails for some reason, specify it using
+where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
+
+If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. FOr example:
 
 .. code-block:: console
 
    ./devbuild.sh --platform=hera --compiler=intel
 
-If this method doesn't work, we will have to manually setup the environment, and build SRW app binaries with CMake.
+where valid values are ``intel`` or ``gnu``.
 
-.. _SetUpBuild:
+The last line of the console output should be ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-Set up the Build/Run Environment
-================================
+The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/bin`` directory. If this build method doesn't work, or it users are not on a supported machine, they will have to manually setup the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
 
-We need to setup our environment to run a workflow or to build the SRW app with CMake. Note that ``devbuild.sh`` does not prepare environment for workflow runs so this step is necessary even though binaries are built properly using ``devbuild.sh``.
-
-The build environment must be set up for the user's specific platform. First, we need to make sure ``Lmod`` is the app used for loading modulefiles. That is often the case on most systems, however, on some systems such as Gaea/Odin, the default modulefile loader is from Cray and we need to swap it for ``Lmod``. For example on Gaea, assuming a ``bash`` login shell, run:
-
-.. code-block:: console
-
-   source etc/lmod-setup.sh gaea
-
-or if your login shell is ``csh`` or ``tcsh``, source ``etc/lmod-setup.csh`` instead. If you execute the above command on systems that don't need it, it will simply do a ``module purge``. From here on, we can assume, ``Lmod`` is ready to load modulefiles needed by the SRW app.
-
-The modulefiles needed for building and running SRW App are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>`` , run:
-
-.. code-block:: console
-
-   module use <path/to/modulefiles/directory>
-   module load build_<platform>_<compiler>
-
-where ``<path/to/modulefiles/directory>`` is the full path to the ``modulefiles`` directory. This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory.
-
-On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
-
-.. code-block::
-
-   export <VARIABLE_NAME>=<PATH_TO_MODULE>
-   setenv <VARIABLE_NAME> <PATH_TO_MODULE>
-
-
-.. _BuildExecutables:
-
-Build the Executables
-=======================
-
-Create a directory to hold the build's executables: 
-
-.. code-block:: console
-
-   mkdir build
-   cd build
-
-From the build directory, run the following commands to build the pre-processing utilities, forecast model, and post-processor:
-
-.. code-block:: console
-
-   cmake .. -DCMAKE_INSTALL_PREFIX=..
-   make -j 4  >& build.out &
-
-``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. 
-
-The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
-
-.. hint::
-
-   If you see the build.out file, but there is no ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
 
 .. _ExecDescription:
 
@@ -256,6 +210,73 @@ The build will take a few minutes to complete. When it starts, a random number i
    | lakefrac               | Calculates the ratio of the lake area to the grid cell area at each atmospheric |
    |                        | grid point.                                                                     |
    +------------------------+---------------------------------------------------------------------------------+
+
+.. _CMakeApproach:
+
+CMake Approach
+-----------------
+
+Set Up the Workflow Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. attention::
+   If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
+
+If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, assuming a ``bash`` login shell, run:
+
+.. code-block:: console
+
+   source etc/lmod-setup.sh gaea
+
+or if the login shell is ``csh`` or ``tcsh``, run ``source etc/lmod-setup.csh`` instead. If users execute the above command on systems that don't need it, it will simply do a ``module purge``, and the user can continue without problems. From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>``, run:
+
+.. code-block:: console
+
+   module use <path/to/modulefiles/directory>
+   module load build_<platform>_<compiler>
+
+where ``<path/to/modulefiles/directory>`` is the full path to the ``modulefiles`` directory. This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory.
+
+On Level 2-4 systems, users will need to modify certain environment variables, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
+
+.. code-block::
+
+   export <VARIABLE_NAME>=<PATH_TO_MODULE>
+   setenv <VARIABLE_NAME> <PATH_TO_MODULE>
+
+..
+   COMMENT: Might be good to list an example here...
+
+.. _BuildCMake:
+
+Build the Executables Using CMake
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. attention::
+   If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
+
+In the ``ufs-srweather-app`` directory, create a subdirectory to hold the build's executables: 
+
+.. code-block:: console
+
+   mkdir build
+   cd build
+
+From the build directory, run the following commands to build the pre-processing utilities, forecast model, and post-processor:
+
+.. code-block:: console
+
+   cmake .. -DCMAKE_INSTALL_PREFIX=..
+   make -j 4  >& build.out &
+
+``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. 
+
+The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
+
+.. hint::
+
+   If you see the build.out file, but there is no ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
+
 
 .. _Data:
 
@@ -540,7 +561,7 @@ Sample settings are indicated below for Level 1 platforms. Detailed guidance app
 
 .. important::
 
-   If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuild>`, you will have to check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
+   If your modulefile uses a GNU compiler to set up the build environment in :numref:`Section %s <BuildExecutables>`, you will have to check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
 
 .. hint::
 

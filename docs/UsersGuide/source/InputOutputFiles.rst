@@ -19,7 +19,7 @@ Initial and Boundary Condition Files
 The external model files needed for initializing an experiment can be obtained in a number of
 ways, including: 
 
-   * pulled directly from `NOMADS <https://nomads.ncep.noaa.gov/pub/data/nccf/com/>`_ (limited data availability),
+   * pulled directly from `NOMADS <https://nomads.ncep.noaa.gov/pub/data/nccf/com/>`_ (limited timespan for data availability),
    * pulled from the NOAA High Performance Storage System (HPSS) during the workflow execution (requires user access), or 
    * obtained and staged by the user from a different source. 
 
