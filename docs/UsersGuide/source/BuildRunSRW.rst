@@ -131,7 +131,7 @@ Run the executable that pulls in SRW App components from external repositories:
 Build with ``devbuild.sh``
 ==========================
 
-On Level-1 systems, a modulefile is provided under ``modulefiles`` directory, which users can run to build the SRW App binaries:
+On Level 1 systems, a modulefile is provided under ``modulefiles`` directory, which users can run to build the SRW App binaries:
 
 .. code-block:: console
 
@@ -805,7 +805,7 @@ Users must create a python virtual environment for running the SRW on MacOS. Thi
 	
 .. code-block:: console
 
-   python3 -m pip -version 
+   python3 -m pip --version 
    python3 -m pip install --upgrade pip 
    python3 -m ensurepip --default-pip
    python3 -m venv $HOME/venv/regional_workflow 
