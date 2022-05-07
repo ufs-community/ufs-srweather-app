@@ -16,5 +16,4 @@ module load rocoto
 
 module load srw_common
 module load esmf/8.2.0
-prepend-path PATH /contrib/spack-stack/apps/miniconda/py39_4.11.0/bin
 
