@@ -12,6 +12,9 @@ Glossary
    advection
       According to the American Meteorological Society (AMS) `definition <https://glossary.ametsoc.org/wiki/Advection>`__, advection is "The process of transport of an atmospheric property solely by the mass motion (velocity field) of the atmosphere." In common parlance, advection is movement of atmospheric substances that are carried around by the wind.
 
+   CAPE
+      Convective Available Potential Energy. 
+
    CCPA
       Climatology-Calibrated Precipitation Analysis (CCPA) data. This data is required for use of the METplus verification suite within the SRW App. The most recent 8 days worth of data are publicly available and can be accessed `here <https://ftp.ncep.noaa.gov/data/nccf/com/ccpa/prod/>`__. 
 
@@ -21,6 +24,9 @@ Glossary
    chgres_cube
        The preprocessing software used to create initial and boundary condition files to 
        “coldstart” the forecast model.
+
+   CIN
+      Convective Inhibition.
 
    CRTM
       `Community Radiative Transfer Model <https://www.jcsda.org/jcsda-project-community-radiative-transfer-model>`__. CRTM is a fast and accurate radiative transfer model developed at the `Joint Center for Satellite Data Assimilation <https://www.jcsda.org/>`__ (JCSDA) in the United States. It is a sensor-based radiative transfer model and supports more than 100 sensors, including sensors on most meteorological satellites and some from other remote sensing satellites. 

@@ -345,6 +345,10 @@ NCDC archive:
 * NAM: https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/north-american-mesoscale-forecast-system-nam 
 * RAP: https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/rapid-refresh-rap
 
+..
+   COMMENT: These links don't work. Did they get moved? Or removed?
+   
+
 AWS S3:
 
 * GFS: https://registry.opendata.aws/noaa-gfs-bdp-pds/

@@ -228,7 +228,7 @@ If the ``devbuild.sh`` approach failed, users need to set up their environment t
 
    source etc/lmod-setup.sh gaea
 
-or if the login shell is ``csh`` or ``tcsh``, run ``source etc/lmod-setup.csh`` instead. If users execute the above command on systems that don't need it, it will simply do a ``module purge``, and the user can continue without problems. From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>``, run:
+or if the login shell is ``csh`` or ``tcsh``, run ``source etc/lmod-setup.csh`` instead. If users execute the above command on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>``, run:
 
 .. code-block:: console
 
@@ -714,6 +714,7 @@ The workflow requires Python 3 with the packages 'PyYAML', 'Jinja2', and 'f90nml
 .. code-block:: console
 
    module load wflow_<platform>
+   conda activate regional_workflow
 
 This command will activate the ``regional_workflow`` conda environment. The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
 
