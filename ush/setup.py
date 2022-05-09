@@ -337,7 +337,7 @@ def setup():
     #
     global MACHINE
     global MACHINE_FILE
-    global FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR, FIXLAM_NCO_BASEDIR, \
+    global FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR, DOMAIN_PREGEN_BASEDIR, \
            RELATIVE_LINK_FLAG, WORKFLOW_MANAGER, NCORES_PER_NODE, SCHED, \
            QUEUE_DEFAULT, QUEUE_HPSS, QUEUE_FCST, \
            PARTITION_DEFAULT, PARTITION_HPSS, PARTITION_FCST
@@ -362,7 +362,7 @@ def setup():
           FIXlut = \"{FIXlut or ""}
           TOPO_DIR = \"{TOPO_DIR or ""}
           SFC_CLIMO_INPUT_DIR = \"{SFC_CLIMO_INPUT_DIR or ""}
-          FIXLAM_NCO_BASEDIR = \"{FIXLAM_NCO_BASEDIR or ""}
+          DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR or ""}
         You can specify the missing location(s) in config.sh''')
 
     #
@@ -1042,12 +1042,17 @@ def setup():
     if USE_USER_STAGED_EXTRN_FILES:
     
       if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_ICS):
+      # Check for the base directory up to the first templated field.
+      idx = EXTRN_MDL_SOURCE_BASEDIR_ICS.find("$")
+      if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_ICS[:idx]):
         print_err_msg_exit(f'''
             The directory (EXTRN_MDL_SOURCE_BASEDIR_ICS) in which the user-staged 
             external model files for generating ICs should be located does not exist:
               EXTRN_MDL_SOURCE_BASEDIR_ICS = \"{EXTRN_MDL_SOURCE_BASEDIR_ICS}\"''')
     
       if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_LBCS):
+      idx = EXTRN_MDL_SOURCE_BASEDIR_LBCS.find("$")
+      if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_LBCS[:idx]): 
         print_err_msg_exit(f'''
             The directory (EXTRN_MDL_SOURCE_BASEDIR_LBCS) in which the user-staged 
             external model files for generating LBCs should be located does not exist:
@@ -1153,7 +1158,7 @@ def setup():
 
     if RUN_ENVIR == "nco":
     
-      nco_fix_dir = os.path.join(FIXLAM_NCO_BASEDIR, PREDEF_GRID_NAME)
+      nco_fix_dir = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
       if not os.path.exists(nco_fix_dir):
         print_err_msg_exit(f'''
             The directory (nco_fix_dir) that should contain the pregenerated grid,
@@ -1168,11 +1173,11 @@ def setup():
             When RUN_ENVIR is set to \"nco\", the workflow assumes that pregenerated
             grid files already exist in the directory 
             
-              {FIXLAM_NCO_BASEDIR}/{PREDEF_GRID_NAME}
+              {DOMAIN_PREGEN_BASEDIR}/{PREDEF_GRID_NAME}
             
             where
             
-              FIXLAM_NCO_BASEDIR = \"{FIXLAM_NCO_BASEDIR}\"
+              DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR}\"
               PREDEF_GRID_NAME = \"{PREDEF_GRID_NAME}\"
             
             Thus, the MAKE_GRID_TN task must not be run (i.e. RUN_TASK_MAKE_GRID must 
@@ -1205,11 +1210,11 @@ def setup():
         msg=f'''
             When RUN_ENVIR is set to \"nco\", the workflow assumes that pregenerated
             orography files already exist in the directory 
-              {FIXLAM_NCO_BASEDIR}/{PREDEF_GRID_NAME}
+              {DOMAIN_PREGEN_BASEDIR}/{PREDEF_GRID_NAME}
             
             where
             
-              FIXLAM_NCO_BASEDIR = \"{FIXLAM_NCO_BASEDIR}\"
+              DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR}\"
               PREDEF_GRID_NAME = \"{PREDEF_GRID_NAME}\"
             
             Thus, the MAKE_OROG_TN task must not be run (i.e. RUN_TASK_MAKE_OROG must 
@@ -1243,11 +1248,11 @@ def setup():
             When RUN_ENVIR is set to \"nco\", the workflow assumes that pregenerated
             surface climatology files already exist in the directory 
             
-              {FIXLAM_NCO_BASEDIR}/{PREDEF_GRID_NAME}
+              {DOMAIN_PREGEN_BASEDIR}/{PREDEF_GRID_NAME}
             
             where
             
-              FIXLAM_NCO_BASEDIR = \"{FIXLAM_NCO_BASEDIR}\"
+              DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR}\"
               PREDEF_GRID_NAME = \"{PREDEF_GRID_NAME}\"
             
             Thus, the MAKE_SFC_CLIMO_TN task must not be run (i.e. RUN_TASK_MAKE_SFC_CLIMO 
