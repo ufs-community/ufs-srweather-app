@@ -17,3 +17,5 @@ module load rocoto
 module load srw_common
 module load esmf/8.2.0
 
+module use /contrib/GST/miniconda3/modulefiles
+module load miniconda3/4.10.3
