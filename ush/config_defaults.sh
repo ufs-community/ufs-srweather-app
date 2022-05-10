@@ -411,6 +411,18 @@ WFLOW_LAUNCH_LOG_FN="log.launch_FV3LAM_wflow"
 #
 #-----------------------------------------------------------------------
 #
+# Set output file name. Definitions:
+#
+# POST_OUTPUT_DOMAIN_NAME:
+# Domain name used in naming the output files of run_post by UPP or inline post.
+# Output file name: $NET.tHHz.[var_name].f###.$POST_OUTPUT_DOMAIN_NAME.grib2
+#
+#-----------------------------------------------------------------------
+#
+POST_OUTPUT_DOMAIN_NAME=""
+#
+#-----------------------------------------------------------------------
+#
 # Set forecast parameters.  Definitions:
 #
 # DATE_FIRST_CYCL:

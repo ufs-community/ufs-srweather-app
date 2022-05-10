@@ -133,6 +133,7 @@ export METPLUS_CONF
 export MET_CONFIG
 export MODEL
 export NET
+export POST_OUTPUT_DOMAIN_NAME
 export NUM_ENS_MEMBERS 
 export NUM_PAD
 export LOG_SUFFIX

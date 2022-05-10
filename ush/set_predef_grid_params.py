@@ -23,6 +23,11 @@ def set_predef_grid_params():
     params_dict = load_config_file("predef_grid_params.yaml")
     params_dict = params_dict[PREDEF_GRID_NAME]
 
+    # if QUILTING = False, skip variables that start with "WRTCMP_"
+    if not QUILTING:
+        params_dict = {k: v for k,v in params_dict.items() \
+                            if not k.startswith("WRTCMP_") }
+
     # take care of special vars
     special_vars = ['DT_ATMOS', 'LAYOUT_X', 'LAYOUT_Y', 'BLOCKSIZE']
     for var in special_vars:
@@ -55,5 +60,5 @@ class Testing(unittest.TestCase):
         set_env_var('LAYOUT_X',18)
         set_env_var('LAYOUT_Y',36)
         set_env_var('BLOCKSIZE',28)
-        set_env_var('QUILTING',True)
+        set_env_var('QUILTING',False)
 

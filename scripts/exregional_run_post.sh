@@ -172,17 +172,6 @@ cyc=$hh
 #
 #-----------------------------------------------------------------------
 #
-# The tmmark is a reference value used in real-time, DA-enabled NCEP models.
-# It represents the delay between the onset of the DA cycle and the free
-# forecast.  With no DA in the SRW App at the moment, it is hard-wired to
-# tm00 for now. 
-#
-#-----------------------------------------------------------------------
-#
-tmmark="tm00"
-#
-#-----------------------------------------------------------------------
-#
 # Create the namelist file (itag) containing arguments to pass to the post-
 # processor's executable.
 #
@@ -300,7 +289,7 @@ if [ "${post_mn}" != "00" ]; then
 fi
 
 post_fn_suffix="GrbF${post_fhr}${dot_post_mn_or_null}"
-post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${tmmark}.grib2"
+post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 #
 # For convenience, change location to postprd_dir (where the final output
 # from UPP will be located).  Then loop through the two files that UPP
@@ -314,7 +303,7 @@ fids=( "prslev" "natlev" )
 for fid in "${fids[@]}"; do
   FID=$(echo_uppercase $fid)
   post_orig_fn="${FID}.${post_fn_suffix}"
-  post_renamed_fn="${NET}.t${cyc}z.${fid}${post_renamed_fn_suffix}"
+  post_renamed_fn="${NET}.t${cyc}z.${fid}.${post_renamed_fn_suffix}"
   mv_vrfy ${tmp_dir}/${post_orig_fn} ${post_renamed_fn}
   create_symlink_to_file target="${post_renamed_fn}" \
                          symlink="${FID}${symlink_suffix}" \

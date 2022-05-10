@@ -356,7 +356,7 @@
   WRTCMP_stdlat1: 39.77
   WRTCMP_stdlat2: 39.77
   WRTCMP_nx: 197
-  WRTCMP_ny: 195
+  WRTCMP_ny: 197
   WRTCMP_lon_lwr_left: -89.47120417
   WRTCMP_lat_lwr_left: 37.07809642
   WRTCMP_dx: 3000.0
@@ -435,6 +435,49 @@
   WRTCMP_ny: 1003
   WRTCMP_lon_lwr_left: -187.89737923
   WRTCMP_lat_lwr_left: 45.84576053
+  WRTCMP_dx: 3000.0
+  WRTCMP_dy: 3000.0
+#
+#-----------------------------------------------------------------------
+#
+# The WoFS domain with ~3km cells.
+#
+# Note:
+# The WoFS domain will generate a 301 x 301 output grid (WRITE COMPONENT) and
+# will eventually be movable (ESGgrid_LON_CTR/ESGgrid_LAT_CTR). A python script
+# python_utils/fv3write_parms_lambert will be useful to determine
+# WRTCMP_lon_lwr_left and WRTCMP_lat_lwr_left locations (only for Lambert map 
+# projection currently) of the quilting output when the domain location is 
+# moved. Later, it should be integrated into the workflow.
+#
+#-----------------------------------------------------------------------
+#
+"WoFS_3km":
+  GRID_GEN_METHOD: "ESGgrid"
+  ESGgrid_LON_CTR: -97.5
+  ESGgrid_LAT_CTR: 38.5
+  ESGgrid_DELX: 3000.0
+  ESGgrid_DELY: 3000.0
+  ESGgrid_NX: 361
+  ESGgrid_NY: 361
+  ESGgrid_PAZI: 0.0
+  ESGgrid_WIDE_HALO_WIDTH: 6
+  DT_ATMOS: 20
+  LAYOUT_X: 18
+  LAYOUT_Y: 12
+  BLOCKSIZE: 30
+  # if QUILTING = True
+  WRTCMP_write_groups: "1"
+  WRTCMP_write_tasks_per_group: 12
+  WRTCMP_output_grid: "lambert_conformal"
+  WRTCMP_cen_lon: -97.5
+  WRTCMP_cen_lat: 38.5
+  WRTCMP_stdlat1: 38.5
+  WRTCMP_stdlat2: 38.5
+  WRTCMP_nx: 301
+  WRTCMP_ny: 301
+  WRTCMP_lon_lwr_left: -102.3802487
+  WRTCMP_lat_lwr_left: 34.3407918
   WRTCMP_dx: 3000.0
   WRTCMP_dy: 3000.0
 #
