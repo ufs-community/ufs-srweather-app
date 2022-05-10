@@ -63,6 +63,8 @@ LAYOUT_X="6"
 LAYOUT_Y="6"
 BLOCKSIZE="26"
 
+POST_OUTPUT_DOMAIN_NAME="custom_GFDLgrid"
+
 QUILTING="TRUE"
 if [ "$QUILTING" = "TRUE" ]; then
   WRTCMP_write_groups="1"

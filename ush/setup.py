@@ -854,10 +854,10 @@ def setup():
         print_err_msg_exit(f'''
             The domain name used in naming the run_post output files 
             (POST_OUTPUT_DOMAIN_NAME) has not been set:
-            POST_OUTPUT_DOMAIN_NAME = \"${POST_OUTPUT_DOMAIN_NAME}\"
+            POST_OUTPUT_DOMAIN_NAME = \"{POST_OUTPUT_DOMAIN_NAME}\"
             If this experiment is not using a predefined grid (i.e. if 
             PREDEF_GRID_NAME is set to a null string), POST_OUTPUT_DOMAIN_NAME 
-            must be set in the configuration file (\"${EXPT_CONFIG_FN}\"). ''')
+            must be set in the configuration file (\"{EXPT_CONFIG_FN}\"). ''')
 
       POST_OUTPUT_DOMAIN_NAME = PREDEF_GRID_NAME
 
