@@ -27,12 +27,14 @@ the same cycle starting date/time and forecast hours.
 The Python scripts require a cycle starting date/time in YYYYMMDDHH format, a starting forecast 
 hour, an ending forecast hour, a forecast hour increment, paths to one or two experiment directories,
 and a path to the directory where the Cartopy Natural Earth shape files are located.
-The full set of Cartopy shape files can be downloaded at https://www.naturalearthdata.com/downloads/. 
+The full set of Cartopy shape files can be downloaded `here <https://www.naturalearthdata.com/downloads/>`. 
 For convenience, the small subset of files required for these Python scripts can be obtained from the 
 `EMC ftp data repository <https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/natural_earth/natural_earth_ufs-srw-release-v1.0.0.tar.gz>`_ 
 or from `AWS cloud storage <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/natural_earth/natural_earth_ufs-srw-release-v1.0.0.tar.gz>`_.  
+
 ..
    COMMENT: Update these links!!! 
+
 In addition, the Cartopy shape files are available on a number of Level 1 platforms in the following 
 locations:
 
@@ -142,11 +144,14 @@ To generate plots for a single cycle, the ``plot_allvars.py`` script must be cal
 following six command line arguments:
 
 #. Cycle date/time (``CDATE``) in YYYYMMDDHH format
-#. Starting forecast hour (same as ``CYCL_HRS`` value)
-#. Ending forecast hour 
-#. Forecast hour increment (same as ``LBC_SPEC_INTVL_HRS`` value)
+#. Starting forecast hour
+#. Ending forecast hour
+#. Forecast hour increment
 #. The top level of the experiment directory ``EXPTDIR`` containing the post-processed data. The script will look for the data files in the directory ``EXPTDIR/CDATE/postprd``.
 #. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shape files (``*.shp``) in the directory ``CARTOPY_DIR/shapefiles/natural_earth/cultural``.
+
+.. note::
+   If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
 
 An example of plotting output from a cycle generated using the sample experiment/workflow 
 configuration in the ``config.community.sh`` script (which uses the GFSv16 suite definition file)
