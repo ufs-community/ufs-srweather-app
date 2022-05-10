@@ -892,7 +892,7 @@ The ``regional_workflow`` environment can be activated on MacOS as it is for any
 .. code-block:: console
 
 	cd $SRW/regional_workflow/ush
- 	source ../../env/wflow_macos.env
+ 	module load wflow_macos
 
 This should activate the ``regional_workflow`` environment created in :numref:`Step %s <MacVEnv>`. From here, the user may continue to the :ref:`next step <GenerateWorkflow>` and generate the regional workflow. 
 
