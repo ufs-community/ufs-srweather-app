@@ -72,10 +72,8 @@ On NOAA Cloud:
 
 .. code-block:: console
 
-   /contrib/...........
+   /contrib/EPIC/NaturalEarth
 
-..
-   COMMENT: Update path for NOAA Cloud. 
 
 The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other 
 geopolitical borders on the map. Cartopy provides the ‘background_img()’ method to add background 
@@ -119,11 +117,11 @@ On Gaea:
 
 On NOAA Cloud:
 
-   module use ...............
-   module load ..................
+.. code-block:: console
 
-..
-   COMMENT: Update for NOAA Cloud. 
+   module use /contrib/GST/miniconda3/modulefiles
+   module load miniconda3/4.10.3
+   conda activate regional_workflow
 
 .. note::
 
@@ -202,7 +200,7 @@ Depending on the platform, users may also need to adjust the settings to use the
 
 When working with these batch scripts, several environment variables must be set prior to submission.
 If plotting output from a single cycle, the variables to set are ``HOMErrfs`` and ``EXPTDIR``.
-In this case, if the user's login shell is bash, these variables can be set as follows:
+If the user's login shell is bash, these variables can be set as follows:
 
 .. code-block:: console
 
@@ -217,7 +215,7 @@ If the user's login shell is csh/tcsh, they can be set as follows:
    setenv EXPTDIR /path-to/experiment/directory
 
 If plotting the difference between the same cycle from two different experiments, the variables 
-to set are ``HOMErrfs``, ``EXPTDIR1``, and ``EXPTDIR2``.  In this case, if the user's login shell 
+to set are ``HOMErrfs``, ``EXPTDIR1``, and ``EXPTDIR2``. If the user's login shell 
 is bash, these variables can be set as follows:
 
 .. code-block:: console
@@ -255,9 +253,6 @@ and ending with the last forecast hour, use:
    export FCST_START=6
    export FCST_END=${FCST_LEN_HRS}
    export FCST_INC=6
-
-..
-   COMMENT: Shouldn't the FCST_END line actually read: "export FCST_END=${FCST_START}+${FCST_LEN_HRS}"??? The current code would only work if the forecast starts at 00 hours. 
 
 The scripts must be submitted using the command appropriate for the job scheduler used on the user's platform. For example, on Hera, ``sq_job.sh`` can be submitted as follows:
 
