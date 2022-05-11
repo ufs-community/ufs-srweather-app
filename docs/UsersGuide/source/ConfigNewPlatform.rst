@@ -168,7 +168,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
          ./launch_FV3LAM_wflow.sh; tail -n 40 log.launch_FV3LAM_wflow
 
-Optionally, users may `configure their own grid <UserDefinedGrid>`, instead of using a predefined grid, and `plot the output <Graphics>` of their experiment(s).
+Optionally, users may :ref:`configure their own grid <UserDefinedGrid>`, instead of using a predefined grid, and :ref:`plot the output <Graphics>` of their experiment(s).
 
 
 Background Knowledge Prerequisites

@@ -111,7 +111,7 @@ However, for users who would like to use the 25-km domain for research, the ``FV
 
 Ultimately, the choice of grid is experiment-dependent and resource-dependent. For example, a user may wish to use the ``FV3_GFS_v16`` physics suite, which uses cumulus physics that are not configured to run at the 3-km resolution. In this case, the 13-km or 25-km domain options are better suited to the experiment. Users will also have fewer computational constraints when running with the 13-km and 25-km domains, so depending on the resources available to them, certain grids may be better options than others. 
 
-.. UserDefinedGrid:
+.. _UserDefinedGrid:
 
 Creating User-Generated Grids
 ===============================
