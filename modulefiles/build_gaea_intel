@@ -8,7 +8,7 @@ proc ModulesHelp { } {
 module-whatis "Loads libraries needed for building SRW on Gaea"
 
 module use /lustre/f2/pdata/ncep_shared/hpc-stack/modulefiles/stack
-module load hpc hpc-intel hpc-cray-mpich
+module load hpc/1.2.0 hpc-intel/18.0.6.288  hpc-cray-mpich/7.7.11
 module load srw_common
 
 module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles

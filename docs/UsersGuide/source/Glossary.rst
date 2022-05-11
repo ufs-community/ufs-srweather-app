@@ -6,6 +6,7 @@ Glossary
 
 .. glossary::
 
+<<<<<<< HEAD
    advect
       To transport substances in the atmostphere by :term:`advection`.
 
@@ -17,6 +18,10 @@ Glossary
 
    CCPA
       Climatology-Calibrated Precipitation Analysis (CCPA) data. This data is required for use of the METplus verification suite within the SRW App. The most recent 8 days worth of data are publicly available and can be accessed `here <https://ftp.ncep.noaa.gov/data/nccf/com/ccpa/prod/>`__. 
+=======
+   CCPA
+      Climatology-Calibrated Precipitation Analysis (CCPA) data. This data is required for METplus precipitation verification tasks within the SRW App. The most recent 8 days worth of data are publicly available and can be accessed `here <https://ftp.ncep.noaa.gov/data/nccf/com/ccpa/prod/>`__. 
+>>>>>>> origin/develop
 
    CCPP
       The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of codes containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
@@ -65,9 +70,12 @@ Glossary
    echo top
       The radar-indicated top of an area of precipitation. Specifically, it contains the height of the 18 dBZ reflectivity value.
 
+<<<<<<< HEAD
    EMC
       The `Environmental Modeling Center <https://www.emc.ncep.noaa.gov/emc_new.php>`__. 
 
+=======
+>>>>>>> origin/develop
    EPIC
       EPIC stands for the `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__. EPIC seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement to produce the most accurate and reliable operational modeling system in the world. 
 
@@ -117,7 +125,11 @@ Glossary
       MPI stands for Message Passing Interface. An MPI is a standardized communication system used in parallel programming. It establishes portable and efficient syntax for the exchange of messages and data between multiple processors that are used by a single computer program. An MPI is required for high-performance computing (HPC).
 
    MRMS
+<<<<<<< HEAD
       Multi-Radar/Multi-Sensor (MRMS) System Analysis data. This data is required for use of the METplus verification suite within the SRW App. A two-day archive of precipitation, radar, and aviation and severe weather fields is publicly available and can be accessed `here <https://mrms.ncep.noaa.gov/data/>`__.
+=======
+      Multi-Radar/Multi-Sensor (MRMS) System Analysis data. This data is required for METplus composite reflectivity or :term:`echo top` verification tasks within the SRW App. A two-day archive of precipitation, radar, and aviation and severe weather fields is publicly available and can be accessed `here <https://mrms.ncep.noaa.gov/data/>`__.
+>>>>>>> origin/develop
 
    NAM
       `North American Mesoscale Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/north-american-mesoscale>`_. NAM generates multiple grids (or domains) of weather forecasts over the North American continent at various horizontal resolutions. Each grid contains data for dozens of weather parameters, including temperature, precipitation, lightning, and turbulent kinetic energy. NAM uses additional numerical weather models to generate high-resolution forecasts over fixed regions, and occasionally to follow significant weather events like hurricanes.
@@ -145,7 +157,11 @@ Glossary
       visualization. Stands for NCAR Command Language. More information can be found at https://www.ncl.ucar.edu.
 
    NDAS
+<<<<<<< HEAD
       :term:`NAM` Data Assimilation System (NDAS) data. This data is required for use of the METplus verification suite within the SRW App. The most recent 1-2 days worth of data are publicly available in PrepBufr format and can be accessed `here <ftp://ftpprd.ncep.noaa.gov/pub/data/nccf/com/rap/prod>`__. The most recent 8 days of data can be accessed `here <https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/>`__.
+=======
+      :term:`NAM` Data Assimilation System (NDAS) data. This data is required for METplus surface and upper-air verification tasks within the SRW App. The most recent 1-2 days worth of data are publicly available in PrepBufr format and can be accessed `here <ftp://ftpprd.ncep.noaa.gov/pub/data/nccf/com/rap/prod>`__. The most recent 8 days of data can be accessed `here <https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/>`__.
+>>>>>>> origin/develop
 
    NEMS
       The NOAA Environmental Modeling System is a common modeling framework whose purpose is 

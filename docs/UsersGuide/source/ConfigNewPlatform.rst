@@ -222,13 +222,21 @@ Those requirements highlighted in **bold** are included in the `HPC-Stack <https
 
 * MPI (**MPICH**, OpenMPI, or other implementation)
 
+<<<<<<< HEAD
 * CMake v3.15+
+=======
+* CMake v3.12+
+>>>>>>> origin/develop
 
 * Software libraries
 
    * **netCDF (C and Fortran libraries)**
    * **HDF5** 
+<<<<<<< HEAD
    * **ESMF** 8.0.2
+=======
+   * **ESMF** 8.2.0
+>>>>>>> origin/develop
    * **Jasper**
    * **libJPG**
    * **libPNG**

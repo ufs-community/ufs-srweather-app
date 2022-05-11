@@ -515,6 +515,7 @@ The user must specify certain basic information about the experiment in a ``conf
    | EXTRN_MDL_FILES_ICS            | ""                | "gfs.pgrb2.0p25.f000"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
    | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+<<<<<<< HEAD
    +--------------------------------+-------------------+--------------------------------------------------------+
    | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
@@ -543,10 +544,45 @@ The user must specify certain basic information about the experiment in a ``conf
    | RUN_TASK_VX_ENSGRID            | "FALSE"           | "FALSE"                                                |
    +--------------------------------+-------------------+--------------------------------------------------------+
    | RUN_TASK_VX_ENSPOINT           | "FALSE"           | "FALSE"                                                |
+=======
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006"                                  |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | MODEL                          | ""                | FV3_GFS_v16_CONUS_25km"                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | METPLUS_PATH                   | ""                | "/path/to/METPlus"                                     |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | MET_INSTALL_DIR                | ""                | "/path/to/MET"                                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | CCPA_OBS_DIR                   | ""                | "/path/to/processed/CCPA/data"                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | MRMS_OBS_DIR                   | ""                | "/path/to/processed/MRMS/data"                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | NDAS_OBS_DIR                   | ""                | "/path/to/processed/NDAS/data"                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_GET_OBS_CCPA          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_GET_OBS_MRMS          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_GET_OBS_NDAS          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_GRIDSTAT           | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_POINTSTAT          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_ENSGRID            | "FALSE"           | "FALSE"                                                |
+>>>>>>> origin/develop
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_ENSPOINT           | "FALSE"           | "FALSE"                                                |
    +--------------------------------+-------------------+--------------------------------------------------------+
 
 
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> origin/develop
 To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
@@ -657,6 +693,7 @@ For WCOSS_CRAY:
    found in the ``regional_workflow/tests/baseline_configs`` directory.
 
 .. _VXConfig:
+<<<<<<< HEAD
 
 Configure METplus Verification Suite (Optional)
 --------------------------------------------------
@@ -696,6 +733,48 @@ If users have access to NOAA HPSS but have not pre-staged the data, they can sim
 Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
 
 Next, the verification tasks must be turned on according to the user's needs. Users should add the some or all of the following tasks to ``config.sh``, depending on the verification procedure(s) they have in mind:
+=======
+
+Configure METplus Verification Suite (Optional)
+--------------------------------------------------
+
+Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
+
+.. attention::
+   METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. For the v2 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
+
+.. note::
+   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/regional_workflow/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
+
+   .. code-block:: console
+      
+      module use -a </path/to/met/modulefiles/>
+      module load met/<version.X.X>
+
+To use METplus verification, the path to the MET and METplus directories must be added to ``config.sh``:
+
+.. code-block:: console
+
+   METPLUS_PATH="</path/to/METplus/METplus-4.1.0>"
+   MET_INSTALL_DIR="</path/to/met/10.1.0>"
+
+Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and set the corresponding ``RUN_TASK_GET_OBS_*`` parameters to "FALSE" in ``config.sh``. 
+
+.. code-block:: console
+
+   CCPA_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/ccpa/proc"
+   MRMS_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/mrms/proc"
+   NDAS_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/ndas/proc"
+   RUN_TASK_GET_OBS_CCPA="FALSE"
+   RUN_TASK_GET_OBS_MRMS="FALSE"
+   RUN_TASK_GET_OBS_NDAS="FALSE"
+
+If users have access to NOAA HPSS but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to "TRUE", and the machine will attempt to download the appropriate data from NOAA HPSS. The ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
+
+Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
+
+Next, the verification tasks must be turned on according to the user's needs. Users should add some or all of the following tasks to ``config.sh``, depending on the verification procedure(s) they have in mind:
+>>>>>>> origin/develop
 
 .. code-block:: console
 
@@ -771,7 +850,11 @@ Description of Workflow Tasks
 
 .. _WorkflowTasksFig:
 
+<<<<<<< HEAD
 .. figure:: _static/FV3LAM_wflow_flowchart_v2.svg
+=======
+.. figure:: _static/FV3LAM_wflow_flowchart_v2.png
+>>>>>>> origin/develop
 
     *Flowchart of the workflow tasks*
 
@@ -820,6 +903,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | **Workflow Task**     | **Task Description**                                       |
    +=======================+============================================================+
    | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
+<<<<<<< HEAD
    |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
@@ -828,6 +912,19 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
    |                       | reflectivity and :term:`echo top` data from NOAA HPSS. Can |
    |                       | only be run if ``RUN_TASK_GET_OBS_MRMS="TRUE"``.           |
+=======
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="TRUE"``  |
+   |                       | *and* user has access to NOAA HPSS data.                   |
+   +-----------------------+------------------------------------------------------------+
+   | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS="TRUE"``  |
+   |                       | *and* user has access to NOAA HPSS data.                   |
+   +-----------------------+------------------------------------------------------------+
+   | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
+   |                       | reflectivity and :term:`echo top` data from NOAA HPSS. Can |
+   |                       | only be run if ``RUN_TASK_GET_OBS_MRMS="TRUE"`` *and* user |
+   |                       | has access to NOAA HPSS data.                              |
+>>>>>>> origin/develop
    +-----------------------+------------------------------------------------------------+
    | VX_GRIDSTAT           | Runs METplus grid-to-grid verification for 1-h accumulated |
    |                       | precipitation                                              |
@@ -837,6 +934,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_GRIDSTAT_RETOP     | Runs METplus grid-to-grid verification for :term:`echo top`|
    +-----------------------+------------------------------------------------------------+
+<<<<<<< HEAD
    | VX_GRIDSTAT_03h       | Runs METplus grid-to-grid verification for 3-h accumulated |
    |                       | precipitation                                              |
    +-----------------------+------------------------------------------------------------+
@@ -845,6 +943,11 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_GRIDSTAT_24h       | Runs METplus grid-to-grid verification for daily           |
    |                       | accumulated precipitation                                  |
+=======
+   | VX_GRIDSTAT_##h       | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
+   |                       | 24-h (i.e., daily) accumulated precipitation. Valid values |
+   |                       | of ``##`` are ``03``, ``06``, and ``24``.                  |
+>>>>>>> origin/develop
    +-----------------------+------------------------------------------------------------+
    | VX_POINTSTAT          | Runs METplus grid-to-point verification for surface and    |
    |                       | upper-air variables                                        |
@@ -862,6 +965,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    |                       | :term:`echo top`. Can only be run if ``DO_ENSEMBLE="TRUE"``|
    |                       | and ``RUN_TASK_VX_ENSGRID="TRUE"``.                        |
    +-----------------------+------------------------------------------------------------+
+<<<<<<< HEAD
    | VX_ENSGRID_03h        | Runs METplus grid-to-grid ensemble verification for 3-h    |
    |                       | accumulated precipitation. Can only be run if              |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
@@ -873,11 +977,19 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | VX_ENSGRID_24h        | Runs METplus grid-to-grid ensemble verification for daily  |
    |                       | accumulated precipitation. Can only be run if              |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
+=======
+   | VX_ENSGRID_##h        | Runs METplus grid-to-grid ensemble verification for 3-h,   |
+   |                       | 6-h, and 24-h (i.e., daily) accumulated precipitation.     |
+   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
+   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+>>>>>>> origin/develop
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_MEAN       | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | 1-h accumulated precipitation. Can only be run if          |
    |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
    +-----------------------+------------------------------------------------------------+
+<<<<<<< HEAD
    | VX_ENSGRID_PROB       | Runs METplus grid-to-grid verification for ensemble        |
    |                       | probabilities for 1-h accumulated precipitation. Can only  |
    |                       | be run if ``DO_ENSEMBLE="TRUE"`` and                       |
@@ -908,6 +1020,22 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | VX_ENSGRID_PROB_24h   | Runs METplus grid-to-grid verification for ensemble        |
    |                       | probabilities for daily accumulated precipitation. Can     |
    |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+=======
+   | VX_ENSGRID_PROB       | Runs METplus grid-to-grid verification for 1-h accumulated |
+   |                       | precipitation probabilistic output. Can only be run if     |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_MEAN_##h   | Runs METplus grid-to-grid verification for ensemble mean   |
+   |                       | 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation. |
+   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
+   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_PROB_##h   | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
+   |                       | 24h (i.e., daily) accumulated precipitation probabilistic  |
+   |                       | output. Valid values of ``##`` are ``03``, ``06``, and     |
+   |                       | ``24``. Can only be run if ``DO_ENSEMBLE="TRUE"`` and      |
+>>>>>>> origin/develop
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB_REFC  | Runs METplus grid-to-grid verification for ensemble        |
@@ -932,6 +1060,11 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
    |                       | ``RUN_TASK_VX_ENSPOINT="TRUE"``.                           |
    +-----------------------+------------------------------------------------------------+
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/develop
 
 
 .. _RocotoRun:
@@ -1007,9 +1140,15 @@ This will output the last 40 lines of the log file, which list the status of the
      Workflow status:  IN PROGRESS
 
 If all the tasks complete successfully, the "Workflow status" at the bottom of the log file will change from "IN PROGRESS" to "SUCCESS". If certain tasks could not complete, the "Workflow status" will instead change to "FAILURE". Error messages for each specific task can be found in the task log files located in ``$EXPTDIR/log``. 
+<<<<<<< HEAD
 
 .. _Success:
 
+=======
+
+.. _Success:
+
+>>>>>>> origin/develop
 The workflow run is complete when all tasks have "SUCCEEDED". If everything goes smoothly, users will eventually see a workflow status table similar to the following: 
 
 .. code-block:: console
