@@ -4,12 +4,12 @@
 Limited Area Model (LAM) Grids:  Predefined and User-Generated Options
 ========================================================================
 In order to set up the workflow and experiment generation of the UFS SRW App, the user
-must choose between three predefined FV3-LAM grids, or generate a user-defined grid.
+must choose between three predefined FV3-LAM grids or generate a user-defined grid.
 At this time, full support will only be provided to those using one of the three predefined
 grids supported in this release. However, preliminary information is provided at the end of
 this chapter that describes how users can leverage the SRW App workflow scripts to generate
 their own user-defined grid. This feature is not fully supported at this time and is
-‘use at your own risk’.
+"use at your own risk".
 
 Predefined Grids
 ================
@@ -35,15 +35,15 @@ for use of High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/h
 initialize the SRW App, all three supported grids were created to fit completely within the HRRR domain. 
 Three resolution options were provided for flexibility related to compute resources
 and physics options.  For example, a user may wish to use the 13-km or 25-km domain when running
-with the ``FV3_GFS_v15p2`` suite definition file (SDF), since that SDF uses cumulus physics that are
-not configured to run at 3-km.  In addition, users will have much fewer computational
+with the ``FV3_GFS_v16`` suite definition file (SDF), since that SDF uses cumulus physics that are
+not configured to run at the 3-km resolution.  In addition, users will have fewer computational
 constraints when running with the 13-km and 25-km domains.
 
 The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red).
 Note that while it is possible to initialize the FV3-LAM with coarser external model data when using the
 ``RRFS_CONUS_3km`` domain, it is generally advised to use external model data that has a resolution
-similar to that of the native FV3-LAM (predefined) grid.  In addition, this grid is ideal for running the
-``FV3_RRFS_v1alpha`` suite definition file (SDF), since this SDF was specifically created for convection-allowing scales, and is the
+similar to that of the native FV3-LAM (predefined) grid. In addition, this grid is ideal for running the
+``FV3_RRFS_v1beta`` suite definition file (SDF), since this SDF was specifically created for convection-allowing scales and is the
 precursor to the operational physics suite that will be used in the RRFS.
 
 As can be seen in :numref:`Figure %s <RRFS_CONUS_3km>`, the boundary of the write-component grid (in blue) sits
@@ -52,11 +52,8 @@ utility (UPP) is currently unable to process data on the native FV3 gnomonic gri
 model data are interpolated to a Lambert conformal grid (the write component grid) in order for UPP to
 read in and correctly process the data.
 
-The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) also covers the full CONUS,
-but due to its coarser resolution, and the need to remain within the HRRR domain, areas of the
-contiguous United States, such as Northern Washington, Southern Texas, and the Florida Keys, are
-closer to the boundaries of the grid than in the ``RRFS_CONUS_3km`` grid.  This grid is meant to
-be run with the ``FV3_GFS_v15p2`` SDF.
+The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) also covers the full CONUS. This grid is meant to
+be run with the ``FV3_GFS_v16`` SDF.
 
 .. _RRFS_CONUS_13km:
 
@@ -66,7 +63,7 @@ be run with the ``FV3_GFS_v15p2`` SDF.
 
 The final predefined CONUS grid (:numref:`Fig. %s <RRFS_CONUS_25km>`) uses a 25-km resolution and
 is meant mostly for quick testing to ensure functionality prior to using a higher-resolution domain.
-However, for users who would like to use this domain for research, the ``FV3_GFS_v15p2`` SDF is recommended.
+However, for users who would like to use this domain for research, the ``FV3_GFS_v16`` SDF is recommended.
 
 .. _RRFS_CONUS_25km:
 
@@ -81,11 +78,11 @@ out with the SRW App, more advanced users may wish to create their own grid for 
 a different region and/or with a different resolution.  Creating a user-defined grid requires
 knowledge of how the SRW App workflow functions, in particular, understanding the set of
 scripts that handle the workflow and experiment generation.  It is also important to note that
-user-defined grids are not a supported feature of the current release, however information is
+user-defined grids are not a supported feature of the current release; however information is
 being provided for the benefit of the FV3-LAM community.
 
 With those caveats in mind, this section provides instructions for adding a new grid to the FV3-LAM
-workflow that will be generated using the "ESGgrid" method (i.e. using the regional_esg_grid code
+workflow that will be generated using the "ESGgrid" method (i.e., using the regional_esg_grid code
 in the UFS_UTILS repository, where ESG stands for "Extended Schmidt Gnomonic").  We assume here
 that the grid to be generated covers a domain that (1) does not contain either of the poles and
 (2) does not cross the -180 deg --> +180 deg discontinuity in longitude near the international
@@ -128,9 +125,11 @@ The following is an example of a stanza for "NEW_GRID" to be added to ``set_pred
    
    # The method used to generate the grid.  This example is specifically
    # for the "ESGgrid" method.
+
      GRID_GEN_METHOD= "ESGgrid"
    
    # The longitude and latitude of the center of the grid, in degrees.
+
      ESGgrid_LON_CTR=-97.5
      ESGgrid_LAT_CTR=38.5
    
@@ -142,10 +141,12 @@ The following is an example of a stanza for "NEW_GRID" to be added to ``set_pred
    # The advantage of the ESGgrid generation method over the GFDLgrid 
    # method is that an ESGgrid will have a much smaller variation in grid
    # size in physical space than a GFDLgrid.
+
      ESGgrid_DELX="25000.0"
      ESGgrid_DELY="25000.0"
    
    # The number of cells along the x and y axes.
+
      ESGgrid_NX=200
      ESGgrid_NY=112
    
@@ -156,6 +157,7 @@ The following is an example of a stanza for "NEW_GRID" to be added to ``set_pred
    # (as well as other codes) will actually use.  Recall that the halo is
    # needed to provide lateral boundary conditions to the forecast model.
    # Usually, there is no need to modify this parameter.
+
      ESGgrid_WIDE_HALO_WIDTH=6
    
    # The default physics time step that the forecast model will use. This
@@ -165,9 +167,10 @@ The following is an example of a stanza for "NEW_GRID" to be added to ``set_pred
    # forecast.  The values specified below are used only if DT_ATMOS is 
    # not explicitly set in the user-specified experiment configuration 
    # file config.sh.  Note that this parameter may be suite dependent.
-     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15p2" ]; then
+
+     if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16" ]; then
        DT_ATMOS=${DT_ATMOS:-"300"}
-     elif [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1alpha" ]; then
+     elif [ "${CCPP_PHYS_SUITE}" = "FV3_RRFS_v1beta" ]; then
        DT_ATMOS=${DT_ATMOS:-"40"}
      else
        DT_ATMOS=${DT_ATMOS:-"40"}
@@ -176,6 +179,7 @@ The following is an example of a stanza for "NEW_GRID" to be added to ``set_pred
    # Default MPI task layout (decomposition) along the x and y directions and blocksize.
    # The values specified below are used only if they are not explicitly set in the user-specified
    # experiment configuration file config.sh.
+
      LAYOUT_X=${LAYOUT_X:-"5"}
      LAYOUT_Y=${LAYOUT_Y:-"2"}
      BLOCKSIZE=${BLOCKSIZE:-"40"}
@@ -188,6 +192,7 @@ The following is an example of a stanza for "NEW_GRID" to be added to ``set_pred
    # not able to process fields on the native grid.  The variable 
    # "QUILTING", which specifies whether or not to use the 
    # write-component grid, is by default set to "TRUE".
+
      if [ "$QUILTING" = "TRUE" ]; then
    
    # The number of "groups" of MPI tasks that may be running at any given 
@@ -201,9 +206,11 @@ The following is an example of a stanza for "NEW_GRID" to be added to ``set_pred
    # to start writing the next set of files at the next output time (this
    # can happen, for instance, if the forecast model is trying to write 
    # output at every time step).
+
        WRTCMP_write_groups="1"
    
    # The number of MPI tasks to allocate to each write group.
+
        WRTCMP_write_tasks_per_group="2"
    
    # The coordinate system in which the write-component grid is 
@@ -211,15 +218,18 @@ The following is an example of a stanza for "NEW_GRID" to be added to ``set_pred
    # the script valid_param_vals.sh) for the values this can take on.  
    # The following example is specifically for the Lambert conformal 
    # coordinate system.
+
        WRTCMP_output_grid="lambert_conformal"
    
    # The longitude and latitude of the center of the write-component 
    # grid.
+
        WRTCMP_cen_lon="${ESGgrid_LON_CTR}"
        WRTCMP_cen_lat="${ESGgrid_LAT_CTR}"
    
    # The first and second standard latitudes needed for the Lambert 
    # conformal coordinate mapping.
+
        WRTCMP_stdlat1="${ESGgrid_LAT_CTR}"
        WRTCMP_stdlat2="${ESGgrid_LAT_CTR}"
    
@@ -228,11 +238,13 @@ The following is an example of a stanza for "NEW_GRID" to be added to ``set_pred
    # the write-component grid (which in this case is Lambert conformal).
    # Thus, it is in general different than the xy coordinate system of 
    # the native ESG grid.
+
        WRTCMP_nx="197"
        WRTCMP_ny="107"
    
    # The longitude and latitude of the lower-left corner of the 
    # write-component grid, in degrees.
+
        WRTCMP_lon_lwr_left="-121.12455072"
        WRTCMP_lat_lwr_left="23.89394570"
    
@@ -240,9 +252,11 @@ The following is an example of a stanza for "NEW_GRID" to be added to ``set_pred
    # write-component grid.  Units depend on the coordinate system used by
    # the grid (i.e. the value of WRTCMP_output_grid). For a Lambert 
    # conformal write-component grid, the units are in meters.
+
        WRTCMP_dx="${ESGgrid_DELX}"
        WRTCMP_dy="${ESGgrid_DELY}"
    
      fi
      ;;
-   
+
+
