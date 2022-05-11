@@ -1,8 +1,8 @@
 .. _WE2E_tests:
 
-================================
+==================================
 Workflow End-to-End (WE2E) Tests
-================================
+==================================
 The SRW App contains a set of end-to-end tests that exercise the App in various configurations.
 These are referred to as workflow end-to-end (WE2E) tests because they all use the Rocoto 
 workflow manager to run their individual workflows.  
@@ -35,9 +35,8 @@ where ``${test_name}`` is the name of the corresponding test.
 These configuration files are subsets of
 the full ``config.sh`` experiment configuration file used in :numref:`Section %s <SetUpConfigFileC>` 
 and described in :numref:`Section %s <UserSpecificConfig>`.
-For each test that the user wants 
-to run, the ``run_WE2E_tests.sh`` script reads in its configuration file and generates from 
-it a complete ``config.sh`` file.  It then calls ``generate_FV3LAM_wflow.sh``, which in turn
+For each test that the user wants to run, the ``run_WE2E_tests.sh`` script reads in its configuration file and generates from 
+it a complete ``config.sh`` file. It then calls ``generate_FV3LAM_wflow.sh``, which in turn
 reads in ``config.sh`` and generates a new experiment for the test.  
 The name of each experiment directory is set to that of the corresponding test, 
 and a copy of ``config.sh`` for each test is placed in its experiment directory.
@@ -272,7 +271,7 @@ time it is run in a fresh git clone of the SRW App.
 
 
 Checking Test Status
-====================
+======================
 If cron jobs are being used to periodically relaunch the tests, the status of
 each test can be checked by viewing the end of the log file ``log.launch_FV3LAM_wflow``
 (since the cron jobs use ``launch_FV3LAM_wflow.sh`` to relaunch the workflow, and
@@ -336,7 +335,7 @@ The values that this can take on are "SUCCESS", "FAILURE", and "IN PROGRESS".
 
 
 Modifying the WE2E System
-=========================
+============================
 This section describes various ways in which the WE2E testing system can be modified 
 to suit specific testing needs.
 
@@ -344,7 +343,7 @@ to suit specific testing needs.
 .. _ModExistingTest:
 
 Modifying an Existing Test
----------------------
+-----------------------------
 To modify an existing test, simply edit the configuration file for that test by changing
 existing variable values and/or adding new variables to suit the requirements of the
 modified test.  Such a change may also require modifications to the test description
@@ -372,7 +371,7 @@ above, say ``wflow_features``:
 .. _AddNewCategory:
 
 Adding a New WE2E Test Category
------------------------------
+-----------------------------------
 To create a new test category called, e.g. ``new_category``:
 
 1) In the directory ``ufs-srweather-app/regional_workflow/tests/WE2E/test_configs``,
@@ -399,7 +398,7 @@ New tests can now be added to ``new_category`` using the procedure described in
 .. _CreateAltTestNames:
 
 Creating Alternate Names for a Test
------------------------------------
+--------------------------------------
 In order to prevent proliferation of WE2E tests, users might want to use the same
 test for multiple purposes.  For example, consider the test 
 
