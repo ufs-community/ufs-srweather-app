@@ -93,10 +93,10 @@ Parameters for Running Without a Workflow Manager
 These settings control run commands for platforms without a workflow manager. Values will be ignored unless ``WORKFLOW_MANAGER="none"``.
 
 ``RUN_CMD_UTILS``: (Default: "mpirun -np 1")
-   The run command for pre-processing utilities (shave, orog, sfc_climo_gen, etc.). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`.
+   The run command for MPI-enabled pre-processing utilities (e.g., shave, orog, sfc_climo_gen). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a different command for launching an MPI-enabled executable depending on their machine and MPI installation.
 
 ``RUN_CMD_FCST``: (Default: "mpirun -np \${PE_MEMBER01}")
-   The run command for the model forecast step. This will be appended to the end of the variable definitions file (``var_defns.sh``).
+   The run command for the model forecast step. This will be appended to the end of the variable definitions file (``var_defns.sh``). Changing the ``${PE_MEMBER01}`` variable is **not** recommended; it refers to the number of MPI tasks that the Weather Model will expect to run with. Running the Weather Model with a different number of MPI tasks than the workflow has been set up for can lead to segmentation faults and other errors. It is also important to escape the ``$`` character or use single quotes here so that ``PE_MEMBER01`` is not referenced until runtime, since it is not defined at the beginning of the workflow generation script.
 
 ``RUN_CMD_POST``: (Default: "mpirun -np 1")
    The run command for post-processing (:term:`UPP`). Can be left blank for smaller domains, in which case UPP will run without :term:`MPI`.
