@@ -269,7 +269,7 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
 
 These last two variables describe where the :term:`IC` and :term:`LBC` file directories are located, respectively. For ease of reusing ``config.sh`` across experiments, it is recommended that users set up the raw :term:`IC/LBC` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR) and date (in ``YYYYMMDDHH`` format). In addition, users can include separate ICS and LBCS directories. For example: ``/path-to/model_data/FV3GFS/2019061518/ICS`` and ``/path-to/model_data/FV3GFS/2019061518/LBCS``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
-When files are pulled from the NOAA :term:`HPSS` (rather than downloaded from the Data Bucket), the naming convention looks something like:
+When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like:
 
 * FV3GFS (GRIB2): ``gfs.t{cycle}z.pgrb2.0p25.f{fhr}``
 * FV3GFS (NEMSIO): 
@@ -277,6 +277,8 @@ When files are pulled from the NOAA :term:`HPSS` (rather than downloaded from th
    * LBCs: ``gfs.t{cycle}z.atmf{fhr}.nemsio``
 * RAP (GRIB2): ``rap.t{cycle}z.wrfprsf{fhr}.grib2``
 * HRRR (GRIB2): ``hrrr.t{cycle}z.wrfprsf{fhr}.grib2``
+
+where {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and {fhr} corresponds to the nth hour of the forecast. For example, a forecast starting at 18h00 UTC would have a {cycle} value of 18, which is the 0th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f03``.
 
 In order to preserve the original file name, the ``f00`` files are placed in the ``ICS`` directory
 and all other forecast files are placed in the ``LBCS`` directory. Then, a symbolic link of the
@@ -292,12 +294,16 @@ Doing this allows for the following to be set in the ``config.sh`` regardless of
 .. code-block:: console
 
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/path-to/model_data/HRRR/YYYYMMDDHH/ICS"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/path-to/model_data/HRRR"
    EXTRN_MDL_FILES_ICS=( "hrrr.wrfprsf00.grib2" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path-to/model_data/RAP/YYYYMMDDHH/LBCS"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path-to/model_data/RAP"
    EXTRN_MDL_FILES_LBCS=( "rap.wrfprsf03.grib2" "rap.wrfprsf06.grib2" )
 
-If you choose to forgo the extra ``ICS`` and ``LBCS`` directory, you may either
+..
+   COMMENT: Does this work anymore though? Thought we needed cycle data and ICS/LBCS. 
+   COMMENT: Why do the ICS use HRRR, but the LBCS use RAP. Should they be the same?
+
+If users choose to forgo the extra ``ICS`` and ``LBCS`` directory, they may either
 rename the original files to remove the cycle or modify the ``config.sh`` to set: 
 
 .. code-block:: console
@@ -308,18 +314,16 @@ rename the original files to remove the cycle or modify the ``config.sh`` to set
 Default Initial and Lateral Boundary Conditions
 -----------------------------------------------
 The default initial and lateral boundary condition files are set to be a severe weather case
-from 20190615 at 00 UTC. FV3GFS GRIB2 files are the default model and file format. A tar file
-(``gst_model_data.tar.gz``) containing the model data for this case is available on EMC's FTP 
-data repository at https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/. It is 
-also available on Amazon Web Services (AWS) at https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/ic/gst_model_data.tar.gz.
+from 20190615 at 18 UTC. FV3GFS GRIB2 files are the default model and file format. A tar file
+(``gst_model_data.tar.gz``) containing the model data for this case is available in the `UFS SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__. 
+
+..
+   COMMENT: Update tar file name later.
 
 Running the App for Different Dates
 -----------------------------------
-If users want to run the SRW Application for dates other than 06-15-2019, you will need to
-make a change in the case to specify the desired data. This is done by modifying the
-``config.sh`` ``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL``, and ``CYCL_HRS`` settings. The
-forecast length can be modified by changing the ``FCST_LEN_HRS``. In addition, the lateral
-boundary interval can be specified using the ``LBC_SPEC_INTVL_HRS`` variable.
+If users want to run the SRW Application for dates other than June 15-16, 2019, they will need to
+make modify the ``config.sh`` settings, including the ``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL``, and ``CYCL_HRS`` variables. The forecast length can be modified by changing the ``FCST_LEN_HRS``. In addition, the lateral boundary interval can be specified using the ``LBC_SPEC_INTVL_HRS`` variable.
 
 Users will need to ensure that the initial and lateral boundary condition files are available
 in the specified path for their new date, cycle, and forecast length.
@@ -340,16 +344,6 @@ NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model
   https://nomads.ncep.noaa.gov/pub/data/nccf/com/rap/prod/ 
 * HRRR - available for the last 2 days
   https://nomads.ncep.noaa.gov/pub/data/nccf/com/hrrr/prod/
-
-NCDC archive:
-
-* GFS: https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-forcast-system-gfs 
-* NAM: https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/north-american-mesoscale-forecast-system-nam 
-* RAP: https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/rapid-refresh-rap
-
-..
-   COMMENT: These links don't work. Did they get moved? Or removed?
-   
 
 AWS S3:
 
