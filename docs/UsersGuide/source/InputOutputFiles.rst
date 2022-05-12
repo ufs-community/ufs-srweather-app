@@ -243,10 +243,7 @@ the directories where the static files are located. After downloading the experi
 
 Initial Condition Formats and Source
 ---------------------------------------
-The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, :term:`netCDF`, or :term:`GRIB2`. However, the SRW Application currently only supports the use of NEMSIO and netCDF input files from the GFS.
-
-..
-   COMMENT: So in reality, does this mean that only 2 formats are supported? 
+The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, :term:`netCDF`, or :term:`GRIB2`. 
 
 To download all available GRIB2 data for the FV3GFS model:
 
@@ -289,7 +286,7 @@ the cycle removed. For example:
 
    ln -sf /path-to/model_data/RAP/2020041212/ICS/rap.t12z.wrfprsf00.grib2 /path-to/model_data/RAP/2020041212/rap.wrfprsf00.grib2
 
-Doing this allows for the following to be set in the ``config.sh`` regardless of what cycle you are running:
+Linking the files like this removes the cycle-dependent part of the file names so that each cycle will use the same file name, regardless of initialization time. This allows for the following to be set in the ``config.sh`` regardless of what cycle you are running:
 
 .. code-block:: console
 
@@ -298,10 +295,6 @@ Doing this allows for the following to be set in the ``config.sh`` regardless of
    EXTRN_MDL_FILES_ICS=( "hrrr.wrfprsf00.grib2" )
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path-to/model_data/RAP"
    EXTRN_MDL_FILES_LBCS=( "rap.wrfprsf03.grib2" "rap.wrfprsf06.grib2" )
-
-..
-   COMMENT: Does this work anymore though? Thought we needed cycle data and ICS/LBCS. 
-   COMMENT: Why do the ICS use HRRR, but the LBCS use RAP. Should they be the same?
 
 If users choose to forgo the extra ``ICS`` and ``LBCS`` directory, they may either
 rename the original files to remove the cycle or modify the ``config.sh`` to set: 
@@ -354,6 +347,10 @@ Google Cloud:
 
 * HRRR: https://console.cloud.google.com/marketplace/product/noaa-public/hrrr
 
+FTP Data Repository: (data for SRW Release 1.0.0 & 1.0.1)
+* https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/
+* https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/
+
 Others: 
 
 * Univ. of Utah HRRR archive: http://home.chpc.utah.edu/~u0553130/Brian_Blaylock/cgi-bin/hrrr_download.cgi 
@@ -386,7 +383,7 @@ are initializing from NEMSIO format FV3GFS files.
 Best Practices for Conserving Disk Space and Keeping Files Safe
 ---------------------------------------------------------------
 Initial and lateral boundary condition files are large and can occupy a significant amount of
-disk space. If various users will employ a common file system to conduct runs, it is recommended
+disk space. If several users will employ a common file system to run forecasts, it is recommended
 that the users share the same ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``
 directories. That way, if raw model input files are already on disk for a given date they do not
 need to be replicated.
