@@ -22,6 +22,7 @@ elif [ "$L_MACHINE" = singularity ]; then
 elif [ "$L_MACHINE" = gaea ]; then
    export BASH_ENV="/lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/lmod/lmod/init/bash"
    source $BASH_ENV
+   module purge
 
 elif [ "$L_MACHINE" = odin ]; then
    module unload modules
