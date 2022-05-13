@@ -3,7 +3,7 @@
 
 # These owners will be the default owners for everything in the repo.
 #*       @defunkt
-*       @mkavulich @gsketefian @JeffBeck-NOAA @RatkoVasic-NOAA @BenjaminBlake-NOAA @ywangwof @chan-hoo @BenjaminBlake-NOAA @RatkoVasic-NOAA @panll @christinaholtNOAA @christopherwharrop-noaa @danielabdi-noaa @mark-a-potts @jkbk2004 @willmayfield @jwolff-ncar @dmwright526
+*       @mkavulich @gsketefian @JeffBeck-NOAA @RatkoVasic-NOAA @BenjaminBlake-NOAA @ywangwof @chan-hoo @panll @christinaholtNOAA @christopherwharrop-noaa @danielabdi-noaa @mark-a-potts @jkbk2004 @willmayfield @dmwright526 @gspetro-NOAA @natalie-perlin @EdwardSnyder-NOAA
 
 # Order is important. The last matching pattern has the most precedence.
 # So if a pull request only touches javascript files, only these owners
