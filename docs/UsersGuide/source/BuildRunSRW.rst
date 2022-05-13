@@ -870,21 +870,29 @@ For Option 1 (8 CPUs):
 
 .. code-block:: console
 
+   # Commands to run at the start of each workflow task.
+   PRE_TASK_CMDS='{ ulimit -a; }'
+
    # Architecture information
    WORKFLOW_MANAGER="none"
    NCORES_PER_NODE=${NCORES_PER_NODE:-8}	 (Option 2: when 4 CPUs, set to 4)
    SCHED=${SCHED:-"none"}
+   
+   # UFS SRW App specific paths
+   FIXgsm="path/to/FIXgsm/files"
+   FIXaer="path/to/FIXaer/files"
+   FIXlut="path/to/FIXlut/files"
+   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files 
+                                     used by the ``make_orog`` task) 
+   SFC_CLIMO_INPUT_DIR="path/to/FIXgsm/files" # (path to location of static surface climatology
+                                                input fields used by ``sfc_climo_gen``)
+
    # Run commands for executables
    RUN_CMD_SERIAL="time"
    RUN_CMD_UTILS="mpirun -np 4"
    RUN_CMD_FCST='mpirun -np ${PE_MEMBER01}'
    RUN_CMD_POST="mpirun -np 4"
-   PRE_TASK_CMDS=
-   FIXgsm="path/to/FIXgsm/files"
-   FIXaer="path/to/FIXaer/files"
-   FIXlut="path/to/FIXlut/files"
-   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files used by the ``make_orog`` task) 
-   SFC_CLIMO_INPUT_DIR="path/to/FIXgsm/files" # (path to location of static surface climatology input fields used by ``sfc_climo_gen``)
+   PRE_TASK_CMDS='{ulimit -a;}'
 
 The same settings can be used for Option 2, except that ``NCORES_PER_NODE=${NCORES_PER_NODE:-8}`` should be set to 4 instead of 8. 
 
