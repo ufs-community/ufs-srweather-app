@@ -824,8 +824,8 @@ Install Rocoto
    Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and is not supported for this release. 
 
 
-Configure the SRW
-^^^^^^^^^^^^^^^^^^^^
+Configure the SRW App
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Users will need to configure their experiment just like on any other system. From the ``$SRW/regional_workflow/ush`` directory, users can copy the settings from ``config.community.sh`` into a ``config.sh`` file (see :numref:`Section %s <UserSpecificConfig>`) above. In the ``config.sh`` file, users should set ``MACHINE="macos"`` and modify additional variables as needed. For example: 
 
@@ -898,7 +898,7 @@ The ``regional_workflow`` environment can be activated on MacOS as it is for any
 .. code-block:: console
 
 	cd $SRW/regional_workflow/ush
- 	source ../../env/wflow_macos.env
+ 	module load wflow_macos
 
 This should activate the ``regional_workflow`` environment created in :numref:`Step %s <MacVEnv>`. From here, the user may continue to the :ref:`next step <GenerateWorkflow>` and generate the regional workflow. 
 
