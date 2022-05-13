@@ -9,8 +9,6 @@ module-whatis "Loads libraries needed for running SRW on Hera"
 
 module load rocoto
 
-module unload miniconda3
-
 module use /contrib/miniconda3/modulefiles
 module load miniconda3/4.5.12
 
