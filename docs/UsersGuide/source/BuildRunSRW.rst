@@ -879,6 +879,12 @@ For Option 1 (8 CPUs):
    RUN_CMD_UTILS="mpirun -np 4"
    RUN_CMD_FCST='mpirun -np ${PE_MEMBER01}'
    RUN_CMD_POST="mpirun -np 4"
+   PRE_TASK_CMDS=
+   FIXgsm="path/to/FIXgsm/files"
+   FIXaer="path/to/FIXaer/files"
+   FIXlut="path/to/FIXlut/files"
+   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files used by the ``make_orog`` task) 
+   SFC_CLIMO_INPUT_DIR="path/to/FIXgsm/files" # (path to location of static surface climatology input fields used by ``sfc_climo_gen``)
 
 The same settings can be used for Option 2, except that ``NCORES_PER_NODE=${NCORES_PER_NODE:-8}`` should be set to 4 instead of 8. 
 
