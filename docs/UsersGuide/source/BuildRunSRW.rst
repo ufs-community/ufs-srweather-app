@@ -193,9 +193,6 @@ The SRW App can be built on MacOS systems, presuming HPC-Stack has already been 
 
 * **Option 2:** MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
 
-.. note::
-    Examples in this subsection presume that the user is running Terminal.app with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
-
 The ``build_macos_gnu`` modulefile initializes the module environment, lists the location of HPC-Stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW App. The modulefile must be modified to include the absolute path to the user's HPC-Stack installation and ``ufs-srweather-app`` directories. In particular, the following section must be modified:
 
 .. code-block:: console
@@ -224,9 +221,11 @@ Then, users must source the Lmod setup file, just as they would on other systems
 
 .. code-block:: console
 
-   source etc/lmod-setup.sh
+   source etc/lmod-setup.sh macos
    module use <path/to/ufs-srweather-app/modulefiles>
    module load build_macos_gnu
+
+In a csh/tcsh shell, users would run ``source etc/lmod-setup.csh macos`` in place of the first line in the code above. 
 
 .. note::
    If you execute ``source etc/lmod-setup.sh`` on systems that don't need it, it will simply do a ``module purge``. 
@@ -782,6 +781,9 @@ Configuring an Experiment on MacOS
 ------------------------------------------------------------
 
 In principle, the configuration process for MacOS systems is the same as for other systems. However, the details of the configuration process on MacOS require a few extra steps. 
+
+.. note::
+    Examples in this subsection presume that the user is running Terminal.app with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
 
 .. _MacMorePackages:
 
