@@ -12,7 +12,8 @@ jobs:
       - run: |
              cd ufs-srweather-app
              ./manage_externals/checkout_externals
-             source env/build_cheyenne_intel.env
+             module use modulefiles
+             module load build_cheyenne_intel
              mdkir build
              cd build
              cmake -DCMAKE_INSTALL_PREFIX=.. ..
