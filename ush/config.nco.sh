@@ -8,6 +8,9 @@ VERBOSE="TRUE"
 RUN_ENVIR="nco"
 PREEXISTING_DIR_METHOD="rename"
 
+USE_CRON_TO_RELAUNCH="TRUE"
+CRON_RELAUNCH_INTVL_MNTS="3"
+
 PREDEF_GRID_NAME="RRFS_CONUS_25km"
 QUILTING="TRUE"
 
@@ -26,16 +29,23 @@ EXTRN_MDL_NAME_LBCS="FV3GFS"
 FV3GFS_FILE_FMT_ICS="grib2"
 FV3GFS_FILE_FMT_LBCS="grib2"
 
+WTIME_RUN_FCST="01:00:00"
+
 WRITE_DOPOST="TRUE"
 
 #
-# The following must be modified for different platforms and users.
+# Output directory: {NET}/{model_ver}/{RUN}.YYYYMMDD/
+# Output file name: {NET}.tHHz.[var_name].f###.{POST_OUTPUT_DOMAIN_NAME}.grib2
 #
+POST_OUTPUT_DOMAIN_NAME="conus_25km"
 NET="rrfs"
 model_ver="v1.0"
 RUN="rrfs_test"
-COMIN="/scratch1/NCEPDEV/rstprod/com/gfs/prod"     # Path to directory containing files from the external model.
-FIXLAM_NCO_BASEDIR="/scratch2/BMC/det/FV3LAM_pregen"            # Path to directory containing the pregenerated grid, orography, and surface climatology "fixed" files to use for the experiment.
-STMP="/scratch2/NCEPDEV/fv3-cam/Chan-hoo.Jeon/01_OUT_DATA/stmp"  # Path to directory STMP that mostly contains input files.
-PTMP="/scratch2/NCEPDEV/fv3-cam/Chan-hoo.Jeon/01_OUT_DATA/ptmp"  # Path to directory PTMP in which the experiment's output files will be placed.
+#
+# The following must be modified for different platforms and users.
+#
+COMIN="/scratch1/NCEPDEV/rstprod/com/gfs/prod"  # Path to directory containing files from the external model.
+DOMAIN_PREGEN_BASEDIR="/scratch2/BMC/det/UFS_SRW_App/develop/FV3LAM_pregen"  # Path to directory containing the pregenerated grid, orography, and surface climatology "fixed" files to use for the experiment.
+STMP="/path/to/stmp/directory"  # Path to directory STMP that mostly contains input files.
+PTMP="/path/to/ptmp/directory"  # Path to directory PTMP in which the experiment's output files will be placed.
 
