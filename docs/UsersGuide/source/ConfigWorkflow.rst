@@ -5,9 +5,6 @@ Workflow Parameters: Configuring the Workflow in ``config.sh`` and ``config_defa
 ============================================================================================
 To create the experiment directory and workflow when running the SRW App, the user must create an experiment configuration file named ``config.sh``. This file contains experiment-specific information, such as dates, external model data, observation data, directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``regional_workflow`` repository’s ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first is for running experiments in community mode (``RUN_ENVIR`` set to "community"; see below), and the second is for running experiments in "nco" mode (``RUN_ENVIR`` set to "nco"). Note that for this release, only "community" mode is supported. These files can be used as the starting point from which to generate a variety of experiment configurations in which to run the SRW App.
 
-..
-   COMMENT: Is community mode still the only one supported? 
-
 There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these need to be explicitly set by the user in ``config.sh``. If a user does not define an entry in the ``config.sh`` script, either its value in ``config_defaults.sh`` will be used, or it will be reset depending on other parameters, such as the platform on which the experiment will be run (specified by ``MACHINE``). Note that ``config_defaults.sh`` contains the full list of experiment parameters that a user may set in ``config.sh`` (i.e., the user cannot set parameters in config.sh that are not initialized in ``config_defaults.sh``).
 
 The following is a list of the parameters in the ``config_defaults.sh`` file. For each parameter, the default value and a brief description is given. In addition, any relevant information on features and settings supported or unsupported in this release is specified.
@@ -26,9 +23,6 @@ Platform Environment
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
    The machine (a.k.a. platform) on which the workflow will run. Currently supported platforms include "WCOSS_DELL_P3", "HERA", "ORION", "JET", "ODIN", "CHEYENNE", "STAMPEDE", "GAEA", "SINGULARITY", "NOAACLOUD", "MACOS", and "LINUX". When running the SRW App in a container, set ``MACHINE`` to "SINGULARITY" regardless of the underlying platform. 
-
-..
-   COMMENT: Are we deleting WCOSS_CRAY and/or GAEA? They're not listed in valid_param_vals.sh. What is the difference between SINGULARITY & NOAACLOUD? Can we use just one? Any other machines to add? 
 
 ``MACHINE_FILE``: (Default: "")
    Path to a configuration file with machine-specific settings. If none is provided, ``setup.sh`` will attempt to set the path to a configuration file for a supported platform.
@@ -561,9 +555,6 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
 ``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
    The list of parameterizations to perturb: planetary boundary layer (PBL), surface physics (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: "pbl", "sfc", "rad", "gwd", and "mp".
 
-..
-   COMMENT: Needs review. Is "rad" radiation? Need confiromation. 
-
 
 Land Surface Model (LSM) SPP
 -------------------------------
@@ -838,9 +829,6 @@ Predefined Grid Parameters
    | "RRFS_NA_3km"
    | "RRFS_SUBCONUS_3km" 
 
-..
-   COMMENT: Are all of these now being supported or still just the three main ones? Am I missing any?
-
 .. note::
 
    * If ``PREDEF_GRID_NAME`` is set to a valid predefined grid name, the grid generation method ``GRID_GEN_METHOD``, the (native) grid parameters, and the write-component grid parameters are set to predefined values for the specified grid, overwriting any settings of these parameters in the user-specified experiment configuration file (``config.sh``).  In addition, if the time step ``DT_ATMOS`` and the computational parameters ``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE`` are not specified in that configuration file, they are also set to predefined values for the specified grid.
@@ -1105,10 +1093,6 @@ Verification Tasks
 ``RUN_TASK_GET_OBS_NDAS``: (Default: "FALSE")
    Flag that determines whether to run the ``GET_OBS_NDAS_TN`` task, which retrieves the :term:`NDAS` PrepBufr files used by METplus from NOAA HPSS. 
 
-..
-   COMMENT: Need confirmation that the above 3 task explanations are correct. 
-
-
 ``RUN_TASK_VX_GRIDSTAT``: (Default: "FALSE")
    Flag that determines whether to run the grid-stat verification task.
 
@@ -1287,7 +1271,7 @@ Subhourly Forecast Parameters
    Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). 
 
 ..
-   COMMENT: In valid_param_vals.sh only these values are listed: "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30". 
+   COMMENT: In valid_param_vals.sh only these values are listed: "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30", but it says in this description that any value 00-59 can be used. Which is is?
 
 Customized Post Configuration Parameters
 ========================================
