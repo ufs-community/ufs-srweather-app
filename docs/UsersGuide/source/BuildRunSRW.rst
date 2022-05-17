@@ -306,7 +306,7 @@ The SRW App officially supports four different predefined grids as shown in :num
    +----------------------+-------------------+--------------------------------+
    | RRFS_CONUS_3km       | ESG grid          | lambert_conformal              |
    +----------------------+-------------------+--------------------------------+
-   | RRFS_SUBCONUS_3km    | ESG grid          | lambert_conformal              |
+   | SUBCONUS_Ind_3km     | ESG grid          | lambert_conformal              |
    +----------------------+-------------------+--------------------------------+
 
 
