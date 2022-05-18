@@ -4,31 +4,31 @@
 Non-Container Quick Start
 ============================
 
-Installing the HPC-Stack
+Install the HPC-Stack
 ===========================
-Prior to building the UFS SRW Application on a new machine, users will need to install the :term:`HPC-Stack`. Installation instructions appear in both the `HPC-Stack documentation <https://hpc-stack.readthedocs.io/en/latest/>`__ and in :numref:`Chapter %s <InstallBuildHPCstack>` of this User's Guide. The instructions will vary somewhat depending on the user's platform. However, in all cases, the process involves cloning the `HPC-Stack repository <https://github.com/NOAA-EMC/hpc-stack>`__, creating and entering a build directory, and invoking ``cmake`` and ``make`` to build the code. This process will create a number of modulefiles and scripts that will be used for setting up the build environment for the UFS SRW App. 
+SRW App users who are not working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the :term:`HPC-Stack` prior to building the SRW App on a new machine. Installation instructions appear in both the `HPC-Stack documentation <https://hpc-stack.readthedocs.io/en/latest/>`__ and in :numref:`Chapter %s <InstallBuildHPCstack>` of this User's Guide. The steps will vary slightly depending on the user's platform. However, in all cases, the process involves cloning the `HPC-Stack repository <https://github.com/NOAA-EMC/hpc-stack>`__, creating and entering a build directory, and invoking ``cmake`` and ``make`` to build the code. This process will create a number of modulefiles and scripts that will be used for setting up the build environment for the UFS SRW App. 
 
 Once the HPC-Stack has been successfully installed, users can move on to building the UFS SRW Application.
 
-.. note::
-   The ``ESMFMKFILE`` variable allows HPC-Stack to find the location where ESMF has been built; if users receive an ``ESMF not found, abort`` error, they may need to specify a slightly different location:
-
-   .. code-block:: console
-
-      export ESMFMKFILE=${INSTALL_PREFIX}/lib64/esmf.mk
-
-   Then they can delete and re-create the build directory and continue the build process as described above.
-
-.. note::
-
-   If users skipped the building of any of the software provided by HPC-Stack, they may need to add the appropriate locations to their ``CMAKE_PREFIX_PATH`` variable. Multiple directories may be added, separated by semicolons (;) as in the following example:
-
-   .. code-block:: console
-
-      cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DCMAKE_PREFIX_PATH=”${INSTALL_PREFIX};/location/of/other/software” -DOPENMP=ON .. 2>&1 | tee log.cmake
-
-..
+.. 
    COMMENT: Are these notes relevant now that NCEPLIBS/NCEPLIBS-external have been changed to HPC-Stack?
+   .. note::
+      The ``ESMFMKFILE`` variable allows HPC-Stack to find the location where ESMF has been built; if users receive an ``ESMF not found, abort`` error, they may need to specify a slightly different location:
+
+      .. code-block:: console
+
+         export ESMFMKFILE=${INSTALL_PREFIX}/lib64/esmf.mk
+
+      Then they can delete and re-create the build directory and continue the build process as described above.
+
+   .. note::
+
+      If users skipped the building of any of the software provided by HPC-Stack, they may need to add the appropriate locations to their ``CMAKE_PREFIX_PATH`` variable. Multiple directories may be added, separated by semicolons (;) as in the following example:
+
+      .. code-block:: console
+
+         cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DCMAKE_PREFIX_PATH=”${INSTALL_PREFIX};/location/of/other/software” -DOPENMP=ON .. 2>&1 | tee log.cmake
+
 
 Building the UFS SRW Application 
 =======================================
