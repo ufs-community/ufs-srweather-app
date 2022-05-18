@@ -53,7 +53,17 @@ The UFS Weather Model draws on over 50 code libraries to run its applications. T
 
 Instructions
 -------------------------
-Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) or models that depend on it. Users can either build the HPC-Stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`.  
+Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) or models that depend on it. Users can either build the HPC-Stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing the HPC-Stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
+
+.. code-block:: console
+
+   # Linux, if allowed
+   ulimit -s unlimited
+
+   # MacOS, this corresponds to 65MB
+   ulimit -S -s unlimited
+
+For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`. 
 
 After completing installation, continue to the next section.
 
@@ -578,45 +588,50 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
    ACCOUNT="<my_account>"
    EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_App/develop/staged_extrn_mdl_files/<model_type>/<data_type>/<YYYYMMDDHH>/ICS"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/develop/staged_extrn_mdl_files/<model_type>/<data_type>/<YYYYMMDDHH>/LBCS"
+
+where: 
+* <model_type> refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
+* <data_type> refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
+* YYYYMMDDHH refers to a subdirectory containing data for the :term:`cycle` date. 
+
 
 **Hera, Jet, Orion, Gaea:**
 
-The ``MACHINE``, ``ACCOUNT``, and ``EXPT_SUBDIR`` settings are the same as for Cheyenne, except that ``"cheyenne"`` should be switched to ``"hera"``, ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. Set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, but replace the file paths to Cheyenne's data with the file paths for the correct machine. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` use the same file path. 
+The ``MACHINE``, ``ACCOUNT``, and ``EXPT_SUBDIR`` settings are the same as for Cheyenne, except that ``"cheyenne"`` should be switched to ``"hera"``, ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. Set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, but replace the file paths to Cheyenne's data with the file paths for the correct machine. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` use the same base file path. 
 
 On Hera: 
 
 .. code-block:: console
 
-   "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data"
+   "/scratch2/BMC/det/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/<ICS_or_LBCS>"
 
 On Jet: 
 
 .. code-block:: console
 
-   "/lfs4/BMC/wrfruc/FV3-LAM/model_data"
+   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/<ICS_or_LBCS>"
 
 On Orion: 
 
 .. code-block:: console
 
-   "/work/noaa/fv3-cam/UFS_SRW_app/v1p0/model_data"
+   "/work/noaa/fv3-cam/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/<ICS_or_LBCS>"
 
 
 On Gaea: 
 
 .. code-block:: console
 
-   "/lustre/f2/pdata/esrl/gsd/ufs/ufs-srw-release-v1.0.0/staged_extrn_mdl_files"
-
+   "/lustre/f2/dev/Mark.Potts/EPIC/UFS_SRW_App/develop/staged_extrn_mdl_files/<model_type>/<data_type>/YYYYMMDDHH/<ICS_or_LBCS>"
 
 For **WCOSS** systems, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
 
 .. code-block:: console
 
    MACHINE="wcoss_cray" or MACHINE="wcoss_dell_p3"
-   ACCOUNT="my_account"
+   ACCOUNT="valid_wcoss_project_code"
    EXPT_SUBDIR="my_expt_name"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
 
@@ -624,16 +639,8 @@ For WCOSS_DELL_P3:
    
 .. code-block:: console
 
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/model_data"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/model_data"
-
-For WCOSS_CRAY:
-
-.. code-block:: console
-   
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/model_data"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/model_data"
-
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/ICS"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/LBCS"
 
 **NOAA Cloud Systems:**
 
@@ -645,10 +652,10 @@ For WCOSS_CRAY:
    EXPT_BASEDIR="lustre/$USER/expt_dirs"
    COMPILER="gnu"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/model_data/FV3GFS"
-   EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/model_data/FV3GFS"
-   EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" )
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/develop/model_data/FV3GFS"
+   EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/develop/model_data/FV3GFS"
+   EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
 
 .. note::
 
