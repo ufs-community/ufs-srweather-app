@@ -13,13 +13,13 @@ UFS Short-Range Weather App Users Guide
 
    Introduction
    Quickstart
+   Non-ContainerQS
    BuildRunSRW
    Components
    Include-HPCInstall
    InputOutputFiles
    ConfigWorkflow
    LAMGrids
-   ConfigNewPlatform
    RocotoInfo
    WE2Etests
    Graphics

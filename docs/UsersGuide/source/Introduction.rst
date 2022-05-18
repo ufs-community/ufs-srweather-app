@@ -38,7 +38,7 @@ File paths or code that include angle brackets (e.g., ``build_<platform>_<compil
    * For an outline of SRW App components, see section :numref:`Section %s <ComponentsOverview>` below or refer to :numref:`Chapter %s <Components>` for a more in-depth treatment.
 
 
-.. _Prerequisites:
+.. _SRWPrerequisites:
 
 Prerequisites for Using the SRW Application
 ===============================================
