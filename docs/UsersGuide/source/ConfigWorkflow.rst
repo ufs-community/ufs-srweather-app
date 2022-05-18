@@ -813,10 +813,8 @@ Predefined Grid Parameters
    
    **Other valid values include:**
 
-   | "RRFS_AK_13km" 
-   | "RRFS_AK_3km" 
    | "CONUS_25km_GFDLgrid" 
-   | "CONUS_3km_GFDLgrid" 
+   | "CONUS_3km_GFDLgrid"
    | "EMC_AK" 
    | "EMC_HI" 
    | "EMC_PR" 
@@ -824,10 +822,16 @@ Predefined Grid Parameters
    | "GSL_HAFSV0.A_25km" 
    | "GSL_HAFSV0.A_13km" 
    | "GSL_HAFSV0.A_3km" 
-   | "GSD_HRRR_AK_50km" 
+   | "GSD_HRRR_AK_50km"
+   | "RRFS_AK_13km" 
+   | "RRFS_AK_3km" 
+   | "RRFS_CONUScompact_25km"
+   | "RRFS_CONUScompact_13km"
+   | "RRFS_CONUScompact_3km"
    | "RRFS_NA_13km" 
    | "RRFS_NA_3km"
    | "RRFS_SUBCONUS_3km" 
+   | "WoFS_3km"
 
 .. note::
 
@@ -1268,10 +1272,7 @@ Subhourly Forecast Parameters
    Flag that indicates whether the forecast model will generate output files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes). This will also cause the post-processor to process these sub-hourly files. If this variable is set to "TRUE", then ``DT_SUBHOURLY_POST_MNTS`` should be set to a value between "01" and "59".
 
 ``DT_SUB_HOURLY_POST_MNTS``: (Default: "00")
-   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). 
-
-..
-   COMMENT: In valid_param_vals.sh only these values are listed: "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30", but it says in this description that any value 00-59 can be used. Which is is?
+   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). Valid values: "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30".
 
 Customized Post Configuration Parameters
 ========================================
