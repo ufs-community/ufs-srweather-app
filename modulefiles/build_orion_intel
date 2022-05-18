@@ -25,3 +25,4 @@ setenv CMAKE_CXX_COMPILER mpiicpc
 setenv CMAKE_Fortran_COMPILER mpiifort
 setenv CMAKE_Platform orion.intel
 
+setenv I_MPI_DAPL_UD 1
