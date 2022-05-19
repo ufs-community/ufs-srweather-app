@@ -1,5 +1,6 @@
 #!/bin/bash 
 
+set -x
 
 function file_location() {
 
@@ -19,7 +20,7 @@ function file_location() {
   esac
   echo ${location:-}
 }
-
+export PROJ_LIB=/contrib/GST/miniconda/envs/regional_workflow/share/proj
 export OPT=/contrib/EPIC/hpc-modules
 export PATH=${PATH}:/contrib/GST/miniconda/envs/regional_workflow/bin
 
@@ -64,6 +65,9 @@ RUN_CMD_SERIAL="time"
 RUN_CMD_UTILS='mpiexec -np $nprocs'
 RUN_CMD_FCST='mpiexec -np ${PE_MEMBER01}'
 RUN_CMD_POST='mpiexec -np $nprocs'
+
+export build_mod_fn="wflow_noaacloud"
+BUILD_MOD_FN="wflow_noaacloud"
 
 # MET Installation Locations
 # MET Plus is not yet supported on noaacloud
