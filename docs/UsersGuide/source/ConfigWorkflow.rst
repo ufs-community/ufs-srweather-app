@@ -744,10 +744,7 @@ Write-Component (Quilting) Parameters
    The number of MPI tasks to allocate for each write group.
 
 ``WRTCMP_output_grid``: (Default: "''")
-   Sets the type (coordinate system) of the write component grid. The default empty string forces the user to set a valid value for ``WRTCMP_output_grid`` in ``config.sh`` if specifying a *custom* grid. Otherwise, the ordinary "regional_latlon" grid will be used. Valid values: "lambert_conformal" "regional_latlon" "rotated_latlon"
-
-..
-   COMMENT: If no value is specified in config.sh, would setup.sh (or some other script?) use the ordinary "regional_latlon"? Or would the experiment just fail?
+   Sets the type (coordinate system) of the write component grid. The default empty string forces the user to set a valid value for ``WRTCMP_output_grid`` in ``config.sh`` if specifying a *custom* grid. When creating an experiment with a user-defined grid, this parameter must be specified or the experiment will fail. Valid values: "lambert_conformal" "regional_latlon" "rotated_latlon"
 
 ``WRTCMP_cen_lon``: (Default: "")
    Longitude (in degrees) of the center of the write component grid. Can usually be set to the corresponding value from the native grid.
@@ -756,13 +753,10 @@ Write-Component (Quilting) Parameters
    Latitude (in degrees) of the center of the write component grid. Can usually be set to the corresponding value from the native grid.
 
 ``WRTCMP_lon_lwr_left``: (Default: "")
-   Longitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated longitude. Must be set manually.
-   
-..
-   COMMENT: Has this changed? Or still manual?
+   Longitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated longitude. Must be set manually when running an experiment with a user-defined grid.
 
 ``WRTCMP_lat_lwr_left``: (Default: "")
-   Latitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated latitude. Must be set manually.
+   Latitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated latitude. Must be set manually when running an experiment with a user-defined grid.
 
 **The following parameters must be set when** ``WRTCMP_output_grid`` **is set to "rotated_latlon":**
 

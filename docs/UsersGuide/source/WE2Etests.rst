@@ -365,18 +365,21 @@ in the ``grids_extrn_mdls_suites_community`` category directory.
 
 .. code-block:: console
 
-   ln -sf <path/to/config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh> <path/to/activate_inline_post>
+   ln -fs --relative </path/to/grids_extrn_mdls_suites_community/config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh> </path/to/wflow_features/config.activate_inline_post.sh>
+
+
 
 ..
    COMMENT: Is the above code correct? 
 
 In this situation, the primary name for the test is ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` 
-(because ``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh`` is an actual file, not a symlink), and ``activate_inline_post`` is an alternate name. This approach of allowing multiple names for the same test makes it easier to identify the multiple purposes that a test may serve.  
+(because ``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh`` is an actual file, not a symlink), and ``activate_inline_post`` is an alternate name. This approach of allowing multiple names for the same test makes it easier to identify the multiple purposes that a test may serve. 
 
 Note the following:
 
 * A primary test can have more than one alternate test name (by having more than one symlink point to the test's configuration file).
 * The symlinks representing the alternate test names can be in the same or a different category directory.
+* The --relative flag makes the symlink relative (i.e., within/below the ``regional_workflow`` directory structure) so that it stays valid when copied to other locations. However, the ``--relative`` flag may be different and/or not exist on every platform.
 * To determine whether a test has one or more alternate names, a user can 
   view the CSV file ``WE2E_test_info.csv`` that ``run_WE2E_tests.sh`` generates. 
   Recall from :numref:`Section %s <WE2ETestInfoFile>` that column 1 of this CSV 
@@ -387,4 +390,5 @@ Note the following:
   (e.g. ``my_tests.txt``) that ``run_WE2E_tests.sh`` reads in. If both primary and 
   one or more alternate test names are listed, then ``run_WE2E_tests.sh`` will exit 
   with a warning message without running any tests.
+
 

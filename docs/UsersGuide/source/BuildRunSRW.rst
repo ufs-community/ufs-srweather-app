@@ -588,8 +588,8 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
    ACCOUNT="<my_account>"
    EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_App/develop/staged_extrn_mdl_files/<model_type>/<data_type>/<YYYYMMDDHH>/ICS"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/develop/staged_extrn_mdl_files/<model_type>/<data_type>/<YYYYMMDDHH>/LBCS"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
 
 where: 
 * <model_type> refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
@@ -605,26 +605,25 @@ On Hera:
 
 .. code-block:: console
 
-   "/scratch2/BMC/det/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/<ICS_or_LBCS>"
+   "/scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 On Jet: 
 
 .. code-block:: console
 
-   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/<ICS_or_LBCS>"
+   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 On Orion: 
 
 .. code-block:: console
 
-   "/work/noaa/fv3-cam/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/<ICS_or_LBCS>"
-
+   "/work/noaa/fv3-cam/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 On Gaea: 
 
 .. code-block:: console
 
-   "/lustre/f2/dev/Mark.Potts/EPIC/UFS_SRW_App/develop/staged_extrn_mdl_files/<model_type>/<data_type>/YYYYMMDDHH/<ICS_or_LBCS>"
+   "/lustre/f2/dev/Mark.Potts/EPIC/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 For **WCOSS** systems, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
 
@@ -640,7 +639,7 @@ For WCOSS_DELL_P3:
 .. code-block:: console
 
    EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/ICS"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/LBCS"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/LBCS"
 
 **NOAA Cloud Systems:**
 
