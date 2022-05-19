@@ -1,21 +1,21 @@
 #%Module
 
 proc ModulesHelp { } {
-   puts stderr "This module loads libraries for building SRW on"
-   puts stderr "macOS Big Sur (Darwin20) using GNU 11.2 + openmpi/4.2.1"
+   puts stderr "This module loads libraries for building SRW on MacOS"
+   puts stderr "M1/arm64 and Intel/x86_64 platforms, Darwin 19,20,21 "
 }
 
-module-whatis "Loads libraries needed for building SRW on Hera"
+module-whatis "Loads libraries needed for building SRW on MacOS"
 
 if { [module-info mode load] } {
    system "ulimit -S -s unlimited;"
 }
 
 # This path should point to your HPCstack installation directory
-setenv HPCstack "/Users/username/hpc-stack/install"
+setenv HPCstack "/Users/username/HPC-stack/install-1.2.0"
 
 # This path should point to your SRW Application directory
-setenv SRW "/Users/username/ufs-srweather-app"
+setenv SRW "/Users/username/SRW/ufs-srweather-app"
 
 # Load HPC stack 
 module use $env(HPCstack)/modulefiles/stack
@@ -51,11 +51,11 @@ module load yafyaml/v0.5.1
 module load mapl/2.12.2-esmf-8_2_0
 module load gfsio/1.4.1
 module load landsfcutil/2.4.1
-module load nemsio/2.5.4
+module load nemsio/2.5.2
 module load nemsiogfs/2.5.3
 module load sfcio/1.4.1
 module load sigio/2.3.2
-module load w3emc/2.9.2
+module load w3emc/2.7.3
 module load wgrib2/2.0.8
 module list
 
@@ -79,5 +79,7 @@ setenv CMAKE_Fortran_COMPILER $env(MPI_FC)
 setenv CMAKE_Platform macos.gnu
 
 setenv CMAKE_Fortran_COMPILER_ID "GNU"
-setenv LDFLAGS "-L$env(MPI_ROOT)/lib"
 setenv FFLAGS "-DNO_QUAD_PRECISION -fallow-argument-mismatch "
+# set the environmental variable LDFLAGS in the shell 
+# after loading the present module:
+# export LDFLAGS="-L$MPI_ROOT/lib"
