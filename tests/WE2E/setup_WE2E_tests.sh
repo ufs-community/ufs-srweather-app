@@ -76,9 +76,12 @@ exec_subdir='bin_intel/bin'
 #-----------------------------------------------------------------------
 
 # Load Python Modules
-env_file="${SRW_APP_DIR}/env/wflow_${machine}.env"
-source ${env_file}
+env_path="${SRW_APP_DIR}/modulefiles"
+env_file="wflow_${machine}"
 echo "-- Load environment =>" $env_file
+module use ${env_path}
+module load ${env_file}
+conda activate regional_workflow
 
 module list
 
