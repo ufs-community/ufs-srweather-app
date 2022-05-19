@@ -48,31 +48,39 @@ For a detailed explanation of how to build and run the SRW App on any supported 
          cd ufs-srweather-app
          ./manage_externals/checkout_externals
 
-   #. Set up the build environment.
+   #. Set up the build environment and build the executables.
 
-      .. code-block:: console
+      * Option 1: 
 
-         source etc/lmod-setup.sh <machine>
+         .. code-block:: console
+            
+            ./devbuild.sh --platform=<machine_name>
 
-      where <machine> refers to the user's platform (e.g., ``macos``, ``gaea``, ``odin``, ``singularity``). 
+         where <machine_name> is replaced with the name of the platform the user is working on. Valid values are: cheyenne | gaea | hera | jet | macos | odin | orion | singularity | wcoss_dell_p3
 
-      Users will also need to load the "build" modulefile appropriate to their system. On Level 3 & 4 systems, users can adapt an existing modulefile (such as ``build_macos_gnu``) to their system. 
+      * Option 2:
 
-      .. code-block:: console
+         .. code-block:: console
 
-         module use <path/to/modulefiles/directory>
-         module load build_<platform>_<compiler>
+            source etc/lmod-setup.sh <machine>
 
-   #. Build the executables
+         where <machine> refers to the user's platform (e.g., ``macos``, ``gaea``, ``odin``, ``singularity``). 
 
-      From the top-level ``ufs-srweather-app`` directory, run:
+         Users will also need to load the "build" modulefile appropriate to their system. On Level 3 & 4 systems, users can adapt an existing modulefile (such as ``build_macos_gnu``) to their system. 
 
-      .. code-block:: console
+         .. code-block:: console
 
-         mkdir build
-         cd build
-         cmake .. -DCMAKE_INSTALL_PREFIX=..
-         make -j 4  >& build.out &
+            module use <path/to/modulefiles/directory>
+            module load build_<platform>_<compiler>
+
+         From the top-level ``ufs-srweather-app`` directory, run:
+
+         .. code-block:: console
+
+            mkdir build
+            cd build
+            cmake .. -DCMAKE_INSTALL_PREFIX=..
+            make -j 4  >& build.out &
 
    #. Download and stage data (both the fix files and the :term:`IC/LBC` files) according to the instructions in :numref:`Chapter %s <DownloadingStagingInput>` (if on a Level 3-4 system).
 
