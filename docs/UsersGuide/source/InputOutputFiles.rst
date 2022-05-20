@@ -252,7 +252,7 @@ Users on Level 3 & 4 systems can find the data required for the "out-of-the-box"
 Static Files
 --------------
 
-Many static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket. If users prefer not to download the tar file with the current release data in :numref:`Section %s <DownloadingStagingInput>` above, they can download static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. 
+Many static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket. If users prefer not to download the tar file with the current release data in :numref:`Section %s <DownloadingStagingInput>` above, they can download static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.0.0 data. 
 
 The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to
 the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.sh``. Add the following code or alter the variable paths if they are already listed in the ``config.sh`` file:
