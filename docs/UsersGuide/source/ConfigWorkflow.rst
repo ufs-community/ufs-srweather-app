@@ -1276,7 +1276,7 @@ Customized Post Configuration Parameters
 Community Radiative Transfer Model (CRTM) Parameters
 =======================================================
 
-These variables set parameters associated with outputting satellite fields in the :term:`UPP` :term:`grib2` files using the Community Radiative Transfer Model (:term:`CRTM`).
+These variables set parameters associated with outputting satellite fields in the :term:`UPP` :term:`grib2` files using the Community Radiative Transfer Model (:term:`CRTM`). :numref:`Section %s <SatelliteProducts>` includes further instructions on how to do this. 
 
 ..
    COMMENT: What actually happens here? Where are the satellite fields outputted to? When/why would this be used? What kind of satellites?
