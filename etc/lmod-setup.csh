@@ -20,7 +20,7 @@ else if ( "$L_MACHINE" == singularity ) then
    module purge
 
 else if ( "$L_MACHINE" == gaea ) then
-   set ENV="/lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/init/init_lmod.csh"
+   set ENV="/lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/lmod/lmod/init/csh"
    source $ENV
 
 else if ( "$L_MACHINE" == odin ) then
