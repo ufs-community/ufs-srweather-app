@@ -623,7 +623,7 @@ On Gaea:
 
 .. code-block:: console
 
-   "/lustre/f2/dev/Mark.Potts/EPIC/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
+   "/lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 For **WCOSS** systems, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
 
@@ -645,15 +645,15 @@ For WCOSS_DELL_P3:
 
 .. code-block:: console
 
-   MACHINE="SINGULARITY"
+   MACHINE="NOAACLOUD"
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
    EXPT_BASEDIR="lustre/$USER/expt_dirs"
    COMPILER="gnu"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/develop/model_data/FV3GFS"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/develop/input_model_data/FV3GFS"
    EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/develop/model_data/FV3GFS"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/develop/input_model_data/FV3GFS"
    EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
 
 .. note::

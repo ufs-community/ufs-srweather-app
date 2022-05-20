@@ -212,11 +212,8 @@ Users on Level 3 & 4 systems can find the data required for the "out-of-the-box"
 
 .. code-block:: console
 
-   wget https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/fix/files.tar.gz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data
    tar -xf files.tar.gz
-
-..
-   COMMENT: Fix/update path to tar file!
 
 
 .. _StaticFixFiles:
@@ -224,13 +221,7 @@ Users on Level 3 & 4 systems can find the data required for the "out-of-the-box"
 Static Files
 --------------
 
-To download the static files: 
-
-.. code-block:: console
-
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/
-
-This will download *all* static files in the UFS SRW App Data Bucket. Users may adjust the path in the ``wget`` command to select the subset of files they need for their experiment. 
+Many static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket. If users prefer not to download the tar file with the current release data in :numref:`Section %s <DownloadingStagingInput>` above, they can download static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. 
 
 The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to
 the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.sh``. Add the following code or alter the variable paths if they are already listed in the ``config.sh`` file:
@@ -241,17 +232,22 @@ the directories where the static files are located. After downloading the experi
 
 .. _InitialConditions:
 
-Initial Condition Formats and Source
----------------------------------------
+Inition Condition/Lateral Boundary Condition File Formats and Source
+-----------------------------------------------------------------------
 The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, :term:`netCDF`, or :term:`GRIB2`. 
 
-To download all available GRIB2 data for the FV3GFS model:
+To download the model input data for the 12-hour "out-of-the-box" experiment configuration in ``config.community.sh`` file, run:
 
 .. code-block:: console
 
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#input_model_data/FV3GFS/grib2/
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/input_model_data/FV3GFS/grib2/2019061518/gfs.t18z.pgrb2.0p25.f000
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/input_model_data/FV3GFS/grib2/2019061518/gfs.t18z.pgrb2.0p25.f006
 
-To download data for different models or in different formats, users can explore the data bucket and replace the link above with one that goes to their desired data. 
+..
+   COMMENT: Add the following line once PR #766 goes through & Data Bucket is updated:
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/input_model_data/FV3GFS/grib2/2019061518/gfs.t18z.pgrb2.0p25.f012
+
+To download data for different models or in different formats, users can explore the data bucket and replace the links above with ones that fetch their desired data. 
 
 Initial and Lateral Boundary Condition Organization
 ---------------------------------------------------
@@ -261,8 +257,8 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
 .. code-block:: console
 
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="<path/to/ufs-srweather-app/model_data/FV3GFS/YYYYMMDDHH/ICS>"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="<path/to/ufs-srweather-app/model_data/FV3GFS/YYYYMMDDHH/LBCS>"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH/ICS>"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH/LBCS>"
 
 These last two variables describe where the :term:`IC` and :term:`LBC` file directories are located, respectively. For ease of reusing ``config.sh`` across experiments, it is recommended that users set up the raw :term:`IC/LBC` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR) and date (in ``YYYYMMDDHH`` format). In addition, users can include separate ICS and LBCS directories. For example: ``/path-to/model_data/FV3GFS/2019061518/ICS`` and ``/path-to/model_data/FV3GFS/2019061518/LBCS``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 

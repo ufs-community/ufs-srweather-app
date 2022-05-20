@@ -56,7 +56,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             
             ./devbuild.sh --platform=<machine_name>
 
-         where <machine_name> is replaced with the name of the platform the user is working on. Valid values are: cheyenne | gaea | hera | jet | macos | odin | orion | singularity | wcoss_dell_p3
+         where <machine_name> is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
 
       * **Option 2:**
 
