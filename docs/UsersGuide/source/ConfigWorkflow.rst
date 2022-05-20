@@ -409,8 +409,6 @@ CCPP Parameter
    | "FV3_GFS_v15_thompson_mynn_lam3km"
    | "FV3_RRFS_v1alpha"
 
-..
-   COMMENT: "FV3_WoFS" technically has not been merged yet... and is called NSSL? What should I put for now? Current Default is "FV3_GFS_v15p2" - need to make sure we change that. 
 
 Stochastic Physics Parameters
 ================================
@@ -504,10 +502,7 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
       * 2-pattern is vorticity
 
 ``SKEB_VDOF``: (Default: "10")
-   The number of degrees of freedom in the vertical for the SKEB random pattern. 
-
-..
-   COMMENT: The vertical what?
+   The number of degrees of freedom in the vertical direction for the SKEB random pattern. 
 
 .. _SPP:
 

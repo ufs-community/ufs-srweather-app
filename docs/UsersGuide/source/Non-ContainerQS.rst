@@ -50,7 +50,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
    #. Set up the build environment and build the executables.
 
-      * Option 1: 
+      * **Option 1:** 
 
          .. code-block:: console
             
@@ -58,7 +58,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
          where <machine_name> is replaced with the name of the platform the user is working on. Valid values are: cheyenne | gaea | hera | jet | macos | odin | orion | singularity | wcoss_dell_p3
 
-      * Option 2:
+      * **Option 2:**
 
          .. code-block:: console
 
