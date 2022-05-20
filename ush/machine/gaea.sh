@@ -48,7 +48,7 @@ QUEUE_FCST=${QUEUE_DEFAULT:-"normal"}
 WTIME_MAKE_LBCS="00:60:00"
 
 # UFS SRW App specific paths
-staged_data_dir="/lustre/f2/dev/Mark.Potts/EPIC/UFS_SRW_App/develop"
+staged_data_dir="/lustre/f2/pdata/ncep/UFS_SRW_App/develop"
 FIXgsm=${FIXgsm:-"${staged_data_dir}/fix/fix_am"}
 FIXaer=${FIXaer:-"${staged_data_dir}/fix/fix_aer"}
 FIXlut=${FIXlut:-"${staged_data_dir}/fix/fix_lut"}
