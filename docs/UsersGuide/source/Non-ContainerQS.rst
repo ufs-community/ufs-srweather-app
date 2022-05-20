@@ -84,11 +84,6 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
    #. Download and stage data (both the fix files and the :term:`IC/LBC` files) according to the instructions in :numref:`Chapter %s <DownloadingStagingInput>` (if on a Level 3-4 system).
 
-      .. code-block:: console
-
-         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/<path/to/fix/files>
-         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#input_model_data/FV3GFS/grib2/2019061518/<file_name>
-
    #. Configure the experiment parameters.
 
       .. code-block:: console
