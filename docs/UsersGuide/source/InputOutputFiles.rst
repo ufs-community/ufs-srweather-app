@@ -179,6 +179,9 @@ For the SRW Application, the weather model netCDF output files are written to th
 
 The default setting for the output file names uses ``rrfs`` for ``{domain}``. This may be overridden by the user in the ``config.sh`` settings.
 
+Modifying the UPP Output
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 If users wish to modify the fields or levels that are output from the UPP, they will need to make modifications to ``fv3lam.xml``, which resides in the UPP repository distributed with the UFS SRW Application. If the code was cloned into the directory ``ufs-srweather-app``, the file will be located in ``ufs-srweather-app/src/UPP/parm``.
 
 .. note::
@@ -195,12 +198,40 @@ Once you have created the new flat text file reflecting your changes, you will n
 
 .. code-block:: console
 
-   USE_CUSTOM_POST_CONFIG_FILE=”TRUE”
-   CUSTOM_POST_CONFIG_PATH=”</path/to/custom/postxconfig-NT-fv3lam.txt>”
+   USE_CUSTOM_POST_CONFIG_FILE="TRUE"
+   CUSTOM_POST_CONFIG_PATH="</path/to/custom/postxconfig-NT-fv3lam.txt>"
 
 which tells the workflow to use the custom file located in the user-defined path. The path should include the filename. If this is set to true, and the file path is not found, then an error will occur when trying to generate the SRW Application workflow.
 
 Users may then start their experiment workflow as usual and the UPP will use the new flat ``*.txt`` file.
+
+.. _SatelliteProducts:
+
+Outputting Satellite Products from UPP
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Synthetic satellite products for several instruments and channels (e.g. GOES 16/17) may be output through the UPP using the Community Radiative Transfer Model (:term:`CRTM`). External CRTM coefficient files, available through the UPP stand-alone release, will need to be manually downloaded before running the workflow. These instructions assume that the UPP configuration file has already been set up to output satellite products.
+
+Download and unpack the external files:
+
+.. code-block:: console
+
+   mkdir crtm && cd crtm
+   wget https://github.com/NOAA-EMC/EMC_post/releases/download/upp_v10.1.0/fix.tar.gz
+   tar -xzf fix.tar.gz
+
+Modify the ``config.sh`` file to include the following lines:
+
+.. code-block:: console
+
+   USE_CRTM="TRUE"
+   CRTM_DIR="/path/to/top/crtm/dir"
+
+By setting ``USE_CRTM`` to "TRUE", the workflow will use the path defined in ``CRTM_DIR`` to link the necessary coefficient files to the working directory at runtime. Otherwise, it is assumed that no satellite fields are being requested in the UPP configuration. ``CRTM_DIR`` should point to the top CRTM directory where the fix files are located.
+
+.. note::
+   Dependencies for outputting synthetic satellite products may exist based on model configuration (e.g. model physics).
+
 
 .. _DownloadingStagingInput:
 

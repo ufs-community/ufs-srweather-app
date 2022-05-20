@@ -124,9 +124,6 @@ The following software is also required to run the SRW Application, but the :ter
    * libPNG
    * zlib
 
-..
-   COMMENT: Update version of ESMF? Need other version updates?
-
 For MacOS systems, some additional software is needed. It is recommended that users install this software using the `Homebrew <https://brew.sh/>`__ package manager for MacOS:
 
 * brew install gcc@11
