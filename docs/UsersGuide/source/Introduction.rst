@@ -82,13 +82,9 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * 4GB memory (CONUS 25km domain)
 
-* Fortran compiler with full Fortran 2008 standard support
-* Fortran compiler with support for Fortran 2003
+* Fortran compiler released since 2018
 
    * gfortran v9+ or ifort v18+ are the only ones tested, but others may work.
-
-..
-   COMMENT: Which one is it?! 
 
 * C and C++ compilers compatible with the Fortran compiler
 
