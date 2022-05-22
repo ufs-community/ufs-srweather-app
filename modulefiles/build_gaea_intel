@@ -2,13 +2,28 @@
 
 proc ModulesHelp { } {
    puts stderr "This module loads libraries for building SRW on"
-   puts stderr "the NOAA RDHPC machine Gaea using Intel-18.0.6.288"
+   puts stderr "the NOAA RDHPC machine Gaea using Intel-2021.3.0"
 }
 
 module-whatis "Loads libraries needed for building SRW on Gaea"
 
+module load PrgEnv-intel/6.0.5
+module rm intel
+module rm cray-mpich
+module rm netcdf
+module load intel/18.0.6.288
+module load cray-mpich/7.7.11
+module load cray-python/3.7.3.2
+# Needed at runtime:
+module load alps
+#needed for WW3 build
+module load gcc/8.3.0
+
 module use /lustre/f2/pdata/ncep_shared/hpc-stack/modulefiles/stack
-module load hpc/1.2.0 hpc-intel/18.0.6.288  hpc-cray-mpich/7.7.11
+module load hpc/1.1.0
+module load hpc-intel/2021.3.0
+module load hpc-cray-mpich/7.7.11
+
 module load srw_common
 
 module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
@@ -22,4 +37,3 @@ setenv CMAKE_C_COMPILER cc
 setenv CMAKE_CXX_COMPILER CC
 setenv CMAKE_Fortran_COMPILER ftn
 setenv CMAKE_Platform gaea.intel
-
