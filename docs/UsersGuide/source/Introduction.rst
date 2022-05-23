@@ -38,6 +38,109 @@ File paths or code that include angle brackets (e.g., ``build_<platform>_<compil
    * For an outline of SRW App components, see section :numref:`Section %s <ComponentsOverview>` below or refer to :numref:`Chapter %s <Components>` for a more in-depth treatment.
 
 
+.. _SRWPrerequisites:
+
+Prerequisites for Using the SRW Application
+===============================================
+
+Background Knowledge Prerequisites
+--------------------------------------
+
+The instructions in this documentation assume that users have certain background knowledge: 
+
+* Familiarity with LINUX/UNIX systems
+* Command line basics
+* System configuration knowledge (e.g., compilers, environment variables, paths, etc.)
+* Numerical Weather Prediction
+* Meteorology (particularly meteorology at the scales being predicted)
+
+..
+   COMMENT: Suggested sub-bullets for Meteorology/NWP? Cumulus and microphysics parameterizations? Convection? Microphysics?
+
+Additional background knowledge in the following areas could be helpful:
+* High-Performance Computing (HPC) Systems for those running the SRW App on an HPC system
+* Programming (particularly Python) for those interested in contributing to the SRW App code
+* Creating an SSH Tunnel to access HPC systems from the command line
+* Containerization
+* Workflow Managers/Rocoto
+
+
+Software/Operating System Requirements
+-----------------------------------------
+The UFS SRW Application has been designed so that any sufficiently up-to-date machine with a UNIX-based operating system should be capable of running the application. NOAA `Level 1 & 2 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ already have these prerequisites installed. However, users working on other systems must ensure that the following requirements are installed on their system: 
+
+**Minimum Platform Requirements:**
+
+* POSIX-compliant UNIX-style operating system
+
+* >40 GB disk space
+
+   * 18 GB input data from GFS, RAP, and HRRR for "out-of-the-box" SRW App case described in :numref:`Chapter %s <BuildRunSRW>`
+   * 6 GB for :term:`HPC-Stack` full installation
+   * 1 GB for ufs-srweather-app installation
+   * 11 GB for 48hr forecast on CONUS 25km domain
+
+* 4GB memory (CONUS 25km domain)
+
+* Fortran compiler released since 2018
+
+   * gfortran v9+ or ifort v18+ are the only ones tested, but others may work.
+
+* C and C++ compilers compatible with the Fortran compiler
+
+   * gcc v9+, ifort v18+, and clang v9+ (macOS, native Apple clang or LLVM clang) have been tested
+
+* Python v3.6+, including prerequisite packages ``jinja2``, ``pyyaml`` and ``f90nml``
+   
+   * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` are required for users who would like to use the provided graphics scripts
+
+* Perl 5
+
+* git v1.8+
+
+..
+   COMMENT: Should curl/wget/TIFF library also be required? These are listed as prerequisites for building HPC-Stack on generic MacOS/Linux 
+
+
+The following software is also required to run the SRW Application, but the :term:`HPC-Stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
+
+* CMake v3.15+
+
+* MPI (MPICH, OpenMPI, or other implementation)
+
+   * Only **MPICH** can be built with HPC-Stack. Other options must be installed separately by the user. 
+
+* Software libraries
+
+   * netCDF (C and Fortran libraries)
+   * HDF5 
+   * ESMF 8.2.0
+   * Jasper
+   * libJPG
+   * libPNG
+   * zlib
+
+For MacOS systems, some additional software is needed. It is recommended that users install this software using the `Homebrew <https://brew.sh/>`__ package manager for MacOS:
+
+* brew install gcc@11
+* brew install cmake
+* brew install make
+* brew install wget
+* brew install coreutils
+* brew install pkg-config
+
+.. 
+   COMMENT: Is this still accurate? It seems like we should delete the last one. And gcc@11 is basically the same as requiring fortran/C/C++ compilers, no? CMake is listed above. 
+
+Optional but recommended prerequisites for all systems:
+
+* Conda for installing/managing Python packages
+* Bash v4+
+* Rocoto Workflow Management System (1.3.1)
+* Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` for graphics
+* Lmod
+
+
 .. _ComponentsOverview: 
 
 SRW App Components Overview 
@@ -74,6 +177,10 @@ Unified Post-Processor (UPP)
 
 The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ (:term:`UPP`) processes raw output from a variety of numerical weather prediction (:term:`NWP`) models. In the SRW App, it converts data output from netCDF format to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp-v9.0.0/>`_. Output from the UPP can be used with visualization, plotting, and verification packages, or for further downstream post-processing (e.g., statistical post-processing techniques).
 
+METplus Verification Suite
+------------------------------
+
+The Model Evaluation Tools (MET) package is a set of statistical verification tools developed by the `Developmental Testbed Center <https://dtcenter.org/>`__ (DTC) for use by the :term:`NWP` community to help them assess and evaluate the performance of numerical weather predictions. MET is the core component of the enhanced METplus verification framework. The suite also includes the associated database and display systems called METviewer and METexpress. METplus spans a wide range of temporal and spatial scales. It is intended to be extensible through additional capabilities developed by the community. More details about METplus can be found in :numref:`Chapter %s <MetplusComponent>` and on the `METplus website <https://dtcenter.org/community-code/metplus>`__.
 
 Visualization Example
 -------------------------

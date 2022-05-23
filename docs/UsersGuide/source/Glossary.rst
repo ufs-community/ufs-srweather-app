@@ -6,12 +6,27 @@ Glossary
 
 .. glossary::
 
+   advect
+      To transport substances in the atmostphere by :term:`advection`.
+
+   advection
+      According to the American Meteorological Society (AMS) `definition <https://glossary.ametsoc.org/wiki/Advection>`__, advection is "The process of transport of an atmospheric property solely by the mass motion (velocity field) of the atmosphere." In common parlance, advection is movement of atmospheric substances that are carried around by the wind.
+
+   CAPE
+      Convective Available Potential Energy. 
+
+   CCPA
+      Climatology-Calibrated Precipitation Analysis (CCPA) data. This data is required for METplus precipitation verification tasks within the SRW App. The most recent 8 days worth of data are publicly available and can be accessed `here <https://ftp.ncep.noaa.gov/data/nccf/com/ccpa/prod/>`__. 
+
    CCPP
       The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of codes containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
 
    chgres_cube
        The preprocessing software used to create initial and boundary condition files to 
        “coldstart” the forecast model.
+
+   CIN
+      Convective Inhibition.
 
    CRTM
       `Community Radiative Transfer Model <https://www.jcsda.org/jcsda-project-community-radiative-transfer-model>`__. CRTM is a fast and accurate radiative transfer model developed at the `Joint Center for Satellite Data Assimilation <https://www.jcsda.org/>`__ (JCSDA) in the United States. It is a sensor-based radiative transfer model and supports more than 100 sensors, including sensors on most meteorological satellites and some from other remote sensing satellites. 
@@ -28,6 +43,10 @@ Glossary
    CONUS
       Continental United States
 
+   convection-allowing models
+   CAM
+      Convection-allowing models (CAMs) are models that run on high-resolution grids (usually with grid spacing at 4km or less) that are able to resolve the effects of small-scale convective processes. They typically run several times a day to provide frequent forecasts (e.g., hourly or even subhourly). 
+
    cycle
       An hour of the day on which a forecast is started. 
 
@@ -43,8 +62,17 @@ Glossary
    dynamical core
       Global atmospheric model based on fluid dynamics principles, including Euler's equations of motion.
 
+   echo top
+      The radar-indicated top of an area of precipitation. Specifically, it contains the height of the 18 dBZ reflectivity value.
+
+   EMC
+      The `Environmental Modeling Center <https://www.emc.ncep.noaa.gov/emc_new.php>`__. 
+
    EPIC
       EPIC stands for the `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__. EPIC seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement to produce the most accurate and reliable operational modeling system in the world. 
+
+   ESG
+      Extended Schmidt Gnomonic (ESG) grid. The ESG grid uses the map projection developed by Jim Purser of NOAA :term:`EMC` (:cite:t:`Purser_2020`). 
 
    ESMF
       `Earth System Modeling Framework <https://earthsystemmodeling.org/docs/release/ESMF_8_1_1/ESMF_usrdoc.pdf>`__. The ESMF defines itself as “a suite of software tools for developing high-performance, multi-component Earth science modeling applications.” 
@@ -52,7 +80,7 @@ Glossary
    FV3
       The Finite-Volume Cubed-Sphere dynamical core (dycore). Developed at NOAA's Geophysical 
       Fluid Dynamics Laboratory (GFDL), it is a scalable and flexible dycore capable of both 
-      hydrostatic and non-hydrostatic atmospheric simulations.  It is the dycore used in the 
+      hydrostatic and non-hydrostatic atmospheric simulations. It is the dycore used in the 
       UFS Weather Model.
 
    FVCOM
@@ -70,29 +98,41 @@ Glossary
    HPC-Stack
       The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ is a repository that provides a unified, shell script-based build system for building the software stack required for numerical weather prediction (NWP) tools such as the `Unified Forecast System (UFS) <https://ufscommunity.org/>`__ and the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`__ framework.
 
+   HPSS
+   NOAA HPSS
+      National Oceanic and Atmospheric Administration (NOAA) High Performance Storage System (HPSS).
+
    HRRR
       `High Resolution Rapid Refresh <https://rapidrefresh.noaa.gov/hrrr/>`__. The HRRR is a NOAA real-time 3-km resolution, hourly updated, cloud-resolving, convection-allowing atmospheric model, initialized by 3km grids with 3km radar assimilation. Radar data is assimilated in the HRRR every 15 min over a 1-h period adding further detail to that provided by the hourly data assimilation from the 13km radar-enhanced Rapid Refresh.
 
    IC/LBC
       Initial conditions/lateral boundary conditions
 
+   IC
    ICs
       Initial conditions
 
    LAM
       Limited Area Model, formerly known as the "Stand-Alone Regional Model," or SAR. LAM grids use a regional (rather than global) configuration of the FV3 dynamical core. 
 
+   LBC
    LBCs
       Lateral boundary conditions
 
    MPI
       MPI stands for Message Passing Interface. An MPI is a standardized communication system used in parallel programming. It establishes portable and efficient syntax for the exchange of messages and data between multiple processors that are used by a single computer program. An MPI is required for high-performance computing (HPC).
 
+   MRMS
+      Multi-Radar/Multi-Sensor (MRMS) System Analysis data. This data is required for METplus composite reflectivity or :term:`echo top` verification tasks within the SRW App. A two-day archive of precipitation, radar, and aviation and severe weather fields is publicly available and can be accessed `here <https://mrms.ncep.noaa.gov/data/>`__.
+
    NAM
       `North American Mesoscale Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/north-american-mesoscale>`_. NAM generates multiple grids (or domains) of weather forecasts over the North American continent at various horizontal resolutions. Each grid contains data for dozens of weather parameters, including temperature, precipitation, lightning, and turbulent kinetic energy. NAM uses additional numerical weather models to generate high-resolution forecasts over fixed regions, and occasionally to follow significant weather events like hurricanes.
 
    namelist
       A namelist defines a group of variables or arrays. Namelists are an I/O feature for format-free input and output of variables by key-value assignments in FORTRAN compilers. Fortran variables can be read from and written to plain-text files in a standardised format, usually with a ``.nml`` file ending.
+
+   NCAR
+      The `National Center for Atmospheric Research <https://ncar.ucar.edu/>`__. 
 
    NCEP
       National Centers for Environmental Prediction, an arm of the National Weather Service,
@@ -110,12 +150,18 @@ Glossary
       An interpreted programming language designed specifically for scientific data analysis and 
       visualization. Stands for NCAR Command Language. More information can be found at https://www.ncl.ucar.edu.
 
+   NDAS
+      :term:`NAM` Data Assimilation System (NDAS) data. This data is required for METplus surface and upper-air verification tasks within the SRW App. The most recent 1-2 days worth of data are publicly available in PrepBufr format and can be accessed `here <ftp://ftpprd.ncep.noaa.gov/pub/data/nccf/com/rap/prod>`__. The most recent 8 days of data can be accessed `here <https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/>`__.
+
    NEMS
       The NOAA Environmental Modeling System is a common modeling framework whose purpose is 
       to streamline components of operational modeling suites at :term:`NCEP`.
 
    NEMSIO
       A binary format for atmospheric model output from :term:`NCEP`'s Global Forecast System (GFS).
+
+   netCDF
+      NetCDF (Network Common Data Form) is a file format and community standard for storing multidimensional scientific data. It includes a set of software libraries and machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data (see https://www.unidata.ucar.edu/software/netcdf/).
 
    NUOPC
       The `National Unified Operational Prediction Capability <https://earthsystemmodeling.org/nuopc/>`__ Layer "defines conventions and a set of generic components for building coupled models using the Earth System Modeling Framework (:term:`ESMF`)." 
@@ -127,6 +173,7 @@ Glossary
       The branch of physical geography dealing with mountains.
 
    Parameterization
+   Parameterizations
       Simplified functions that approximate the effects of small-scale processes (e.g., microphysics, gravity wave drag) that cannot be explicitly resolved by a model grid’s representation of the earth.
 
    RAP
@@ -137,6 +184,10 @@ Glossary
 
    SDF
       Suite Definition File. An external file containing information about the construction of a physics suite. It describes the schemes that are called, in which order they are called, whether they are subcycled, and whether they are assembled into groups to be called together.
+
+   tracer
+   tracers
+      According to the American Meteorological Society (AMS) `definition <https://glossary.ametsoc.org/wiki/Tracer>`__, a tracer is "Any substance in the atmosphere that can be used to track the history [i.e., movement] of an air mass." Tracers are carried around by the motion of the atmosphere (i.e., by :term:`advection`). These substances are usually gases (e.g., water vapor, CO2), but they can also be non-gaseous (e.g., rain drops in microphysics parameterizations). In weather models, temperature (or potential temperature), absolute humidity, and radioactivity are also usually treated as tracers. According to AMS, "The main requirement for a tracer is that its lifetime be substantially longer than the transport process under study."
 
    UFS
       The Unified Forecast System is a community-based, coupled comprehensive Earth modeling 

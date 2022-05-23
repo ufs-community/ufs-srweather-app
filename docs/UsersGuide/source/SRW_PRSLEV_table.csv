@@ -1,0 +1,257 @@
+﻿No.,Field Description,Level Type,Short Name,nlvl
+1,Pressure on model surface,hybrid,PRES,2
+2,Height on model surface,hybrid,HGT,2
+3,Temperature on model surface,hybrid,TMP,2
+4,Potential temperature on model surface,hybrid,POT,2
+5,Dew point temperature on model surface,hybrid,DPT,2
+6,Specific humidity on model surface,hybrid,SPFH,1
+7,Relative humidity on model surface,hybrid,RH,1
+8,U component of wind on model surface,hybrid,UGRD,2
+9,V component of wind on model surface,hybrid,VGRD,2
+10,Omega on model surface,hybrid,VVEL,1
+11,Vertical velocity on model surface,hybrid,DZDT,1
+12,Turbulent kinetic energy on model surface,hybrid,TKE,2
+13,Rain mixing ratio on model surface,hybrid,RWMR,2
+14,Snow mixing ratio on model surface,hybrid,SNMR,2
+15,Rimming factor for Ferrier scheme on model surface,hybrid,RIME,2
+16,Total condensate for Ferrier scheme on mode surface,hybrid,TCOND,2
+17,Radar reflectivity on model surface,hybrid,REFD,2
+18,Master length scale on model surface,hybrid,BMIXL,1
+19,Height on pressure surface,isobaric,HGT,45
+20,Temperature on pressure surface,isobaric,TMP,45
+21,Dew point temperature on pressure surface,isobaric,DPT,45
+22,Specific humidity on pressure surface,isobaric,SPFH,45
+23,Relative humidity on pressure surface,isobaric,RH,45
+24,Moisture convergence on pressure surface,isobaric,MCONV,2
+25,U component of wind on pressure surface,isobaric,UGRD,45
+26,V component of wind on pressure surface,isobaric,VGRD,45
+27,Vertical velocity on pressure surface,isobaric,DZDT,45
+28,Omega on pressure surface,isobaric,VVEL,45
+29,Absolute vorticity on pressure surface,isobaric,ABSV,10
+30,Geostrophic streamfunction on pressure surface,isobaric,STRM,2
+31,Turbulent kinetic energy on pressure surface,isobaric,TKE,45
+32,Cloud ice mixing ratio on pressure surface,isobaric,ICMR,45
+33,Cloud water mixing ratio on pressure surface,isobaric,CLMR,45
+34,Rain mixing ratio on pressure surface,isobaric,RWMR,45
+35,Graupel mixing ratio on pressure surface,isobaric,GRLE,45
+36,Snow mixing ratio on pressure surface,isobaric,SNMR,45
+37,Rimming factor for Ferrier scheme on pressure surface,isobaric,RIME,45
+38,Mesinger (Membrane) sea level pressure,mean sea level,MSLET,1
+39,Shuell sea level pressure,mean sea level,PRES,1
+40,Temperature at 2m,height agl,TMP,1
+41,Specific humidity at 2m,height agl,SPFH,1
+42,Dew point temperature at 2m,height agl,DPT,1
+43,Relative humidity at 2m,height agl,RH,1
+44,U component of wind at 10m,height agl,UGRD,1
+45,V component of wind at 10m,height agl,VGRD,1
+46,Surface wind gust,surface,GUST,1
+47,LCL level pressure,pressure layer agl,PLPL,1
+48,Potential temperature at 10m,height agl,POT,1
+49,Specific humidity at 10m,height agl,SPFH,1
+50,Surface Pressure,surface,PRES,1
+51,Terrain height,surface,HGT,1
+52,Skin potential temperature,surface,POT,1
+53,Skin specific humidity,surface,SPFH,1
+54,Skin temperature,surface,TMP,1
+55,Soil temperature at 3m,depth below land surface,TSOIL,1
+56,Soil temperature in between each soil layer,depth below land surface,TSOIL,4
+57,Soil moisture in between each soil layer,depth below land surface,SOILW,4
+58,Liquid soil moisture in between each soil layer,depth below land surface,SOILL,4
+59,Total soil moisture,depth below land surface,SOILM,1
+60,Plant canopy surface water,surface,CNWAT,1
+61,Snow water equivalent,surface,WEASD,1
+62,Snow cover in percentage,surface,SNOWC,1
+63,Heat exchange coeff at surface,surface,SFEXC,1
+64,Vegetation cover,surface,VEG,1
+65,Vegetation type,surface,VGTYP,1
+66,Soil type,surface,SOTYP,1
+67,Snow free albedo,surface,SNFALB,1
+68,Maximum snow albedo,surface,MXSALB,1
+69,Canopy conductance,surface,CCOND,1
+70,Canopy conductance - solar component,surface,RCS,1
+71,Canopy conductance - temperature component,surface,RCT,1
+72,Canopy conductance - humidity component,surface,RCQ,1
+73,Canopy conductance - soil component,surface,RCSOL,1
+74,Soil moist reference,surface,SMREF,1
+75,Soil moist porosity,surface,POROS,1
+76,Number of root layers,surface,RLYRS,1
+77,Minimum stomatal resistance,surface,RSMIN,1
+78,Snow depth,surface,SNOD,1
+79,Air dry soil moisture,surface,SMDRY,1
+80,Soil moist wilting point,surface,WILT,1
+81,Soil moisture availability,depth below land surface,MSTAV,1
+82,Ground heat flux (instantaneous),surface,GFLUX,1
+83,Lifted index—surface based (500-1000 hPa),isobaric,LFTX,1
+84,Lifted index—best,pressure above ground,4LFTX,1
+85,Lifted index—parcel,pressure above ground,PLI,1
+86,Convective available potential energy,surface,CAPE,1
+87,Best cape,pressure above ground,CAPE,1
+88,Mixed layer cape,pressure above ground,CAPE,1
+89,Unstable cape,pressure above ground,CAPE,1
+90,Convective inhibition,surface,CIN,1
+91,Best cin,pressure above ground,CIN,1
+92,Mixed layer cin,pressure above ground,CIN,1
+93,Unstable cin,pressure above ground,CIN,1
+94,Column integrated precipitable water,entire atmosphere,PWAT,1
+95,Helicity,height agl,HLCY,2
+96,U component storm motion,height agl,USTM,1
+97,V component storm motion,height agl,VSTM,1
+98,Accumulated total precipitation,surface,APCP,1
+99,Accumulated grid-scale precipitation,surface,NCPCP,1
+100,Continuous accumulated total precipitation,surface,APCP,1
+101,Continuous accumulated grid-scale precipitation,surface,NCPCP,1
+102,Accumulated total snow melt,surface,SNOM,1
+103,Accumulated storm surface runoff,surface,SSRUN,1
+104,Accumulated base flow runoff,surface,BGRUN,1
+105,Average water runoff,surface,WATR,1
+106,Categorical rain (instantaneous),surface,CRAIN,1
+107,Categorical snow (instantaneous),surface,CSNOW,1
+108,Categorical ice pellets (instantaneous),surface,CICEP,1
+109,Categorical freezing rain (instantaneous),surface,CFRZR,1
+110,Precipitation rate (instantaneous),surface,PRATE,1
+111,Fraction of frozen precipitation,surface,CPOFP,1
+112,Cloud water mixing ratio on model surface,hybrid,CLMR,2
+113,Cloud ice mixing ratio on model surface,hybrid,ICMR,2
+114,Graupel mixing ratio on model surface,hybrid,GRLE,1
+115,Cloud fraction on model surface,hybrid,TCDC,2
+116,Low level cloud fraction,low cloud layer,LCDC,1
+117,Mid level cloud fraction,mid cloud layer,MCDC,1
+118,High level cloud fraction,high cloud layer,HCDC,1
+119,Total cloud fraction,entire atmosphere,TCDC,1
+120,Total cloud fraction (time-averaged),entire atmosphere,TCDC,1
+121,stratospheric cloud fraction (time-averaged),entire atmosphere,CDLYR,1
+122,GSD visibility,cloud top,VIS,1
+123,Above-ground height of LCL,adiabatic condensation from surface,HGT,1
+124,Pressure of LCL,adiabatic condensation from surface,PRES,1
+125,Outgoing surface shortwave radiation (instantaneous),surface,USWRF,1
+126,Outgoing surface longwave radiation (instantaneous),surface,ULWRF,1
+127,Incoming surface shortwave radiation (time-averaged),surface,DSWRF,1
+128,Incoming surface longwave radiation (time-averaged),surface,DLWRF,1
+129,Outgoing surface shortwave radiation (time-averaged),surface,USWRF,1
+130,Outgoing surface longwave radiation (time-averaged),surface,ULWRF,1
+131,Outgoing model top shortwave radiation (time-averaged),top of atmosphere,USWRF,1
+132,Outgoing model top longwave radiation (time-averaged),top of atmosphere,ULWRF,1
+133,Outgoing longwave at top of atmosphere (instantaneous),top of atmosphere,ULWRF,1
+134,Total spectrum brightness temperature,top of atmosphere,BRTMP,1
+135,Incoming surface shortwave radiation (instantaneous),surface,DSWRF,1
+136,Incoming surface longwave radiation (instantaneous),surface,DLWRF,1
+137,Clear sky incoming surface shortwave (instantaneous),surface,CSDSF,1
+138,Roughness length,surface,SFCR,1
+139,Friction velocity,surface,FRICV,1
+140,Surface drag coefficient,surface,CD,1
+141,Surface u wind stress,surface,UFLX,1
+142,Surface v wind stress,surface,VFLX,1
+143,Surface sensible heat flux (time-averaged),surface,SHTFL,1
+144,Ground heat flux (time-averaged),surface,GFLUX,1
+145,Snow phase change heat flux (time-averaged),surface,SNOHF,1
+146,Surface latent heat flux (time-averaged),surface,LHTFL,1
+147,Accumulated surface evaporation,surface,EVP,1
+148,Accumulated potential evaporation,surface,PEVAP,1
+149,Surface sensible heat flux (instantaneous),surface,SHTFL,1
+150,Surface latent heat flux (instantaneous),surface,LHTFL,1
+151,Latitude,surface,NLAT,1
+152,Longitude,surface,ELON,1
+153,Land sea mask (land=1 sea=0),surface,LAND,1
+154,Sea ice mask,surface,ICEC,1
+155,Surface albedo,surface,ALBDO,1
+156,Sea surface temperature,surface,WTMP,1
+157,Pressure at tropopause,tropopause,PRES,1
+158,Height at tropopause,tropopause,HGT,1
+159,Temperature at tropopause,tropopause,TMP,1
+160,Potential temperature at tropopause,tropopause,POT,1
+161,U component of wind at tropopause,tropopause,UGRD,1
+162,V component of wind at tropopause,tropopause,VGRD,1
+163,Wind shear at tropopause,tropopause,VWSH,1
+164,U component of 0-1km level wind shear,height agl,VUCSH,1
+165,V-component of 0-1km level wind shear,height agl,VVCSH,1
+166,U component of 0-6km level wind shear,height agl,VUCSH,1
+167,V-component of 0-6km level wind shear,height agl,VVCSH,1
+168,Temperature at flight levels,height msl,TMP,10
+169,Temperature at flight levels,height agl,TMP,4
+170,U component of wind at flight levels,height msl,UGRD,10
+171,U component of wind at flight levels,height agl,UGRD,4
+172,V component of wind at flight levels,height msl,VGRD,10
+173,V component of wind at flight levels,height agl,VGRD,4
+174,Specific humidity at flight levels,height msl,SPFH,1
+175,Specific humidity at flight levels,height agl,SPFH,4
+176,Pressure at flight levels,height agl,PRES,4
+177,Freezing level height,0 degree isotherm,HGT,1
+178,Freezing level relative humidity,0 degree isotherm,RH,1
+179,Highest freezing level height,highest tropospheric frz lvl,HGT,1
+180,Lowest wet bulb zero height,lowest lvl wet bulb zero,HGT,1
+181,Pressure in boundary layer (30 mb means),pressure agl,PRES,6
+182,Temperature in boundary layer (30 mb means),pressure agl,TMP,6
+183,Potential temperature in boundary layer (30 mb means),pressure agl,POT,1
+184,Dew point temperature in boundary layer (30 mb means),pressure agl,DPT,1
+185,Specific humidity in boundary layer (30 mb means),pressure agl,SPFH,6
+186,RH in boundary layer (30 mb means),pressure agl,RH,6
+187,Moisture convergence in boundary layer (30 mb means),pressure agl,MCONV,1
+188,Precipitable water in boundary layer (30 mb means),pressure agl,PWAT,1
+189,U wind in boundary layer (30 mb means),pressure agl,UGRD,6
+190,V wind in boundary layer (30 mb means),pressure agl,VGRD,6
+191,Omega in boundary layer (30 mb means),pressure agl,VVEL,3
+192,Cloud bottom pressure,cloud base,PRES,1
+193,Cloud top pressure,cloud top,PRES,1
+194,Cloud top temperature,cloud top,TMP,1
+195,Cloud bottom height (above MSL),cloud base,HGT,1
+196,Cloud top height (above MSL),cloud top,HGT,1
+197,Maximum wind pressure level,max wind,PRES,1
+198,Maximum wind height,max wind,HGT,1
+199,U-component of maximum wind,max wind,UGRD,1
+200,V-component of maximum wind,max wind,VGRD,1
+201,Composite radar reflectivity,entire atmosphere,REFC,1
+202,Composite rain radar reflectivity,entire atmosphere,REFZR,1
+203,Composite ice radar reflectivity,entire atmosphere,REFZI,1
+204,Radar reflectivity at certain above ground heights,height agl,REFD,2
+205,Radar reflectivity from rain,height agl,REFZR,2
+206,Radar reflectivity from ice,height agl,REFZI,2
+207,Planetary boundary layer height,surface,HPBL,1
+208,Grid scale cloud bottom pressure,grid scale cloud bottom,PRES,1
+209,Grid scale cloud top pressure,grid scale cloud top,PRES,1
+210,Column integrated cloud water,entire atmosphere,TCOLW,1
+211,Column integrated cloud ice,entire atmosphere,TCOLI,1
+212,Column integrated rain,entire atmosphere,TCOLR,1
+213,Column integrated snow,entire atmosphere,TCOLS,1
+214,Column integrated total condensate,entire atmosphere,TCOLC,1
+215,Column integrated graupel,entire atmosphere,TCOLG,1
+216,Column integrated super cool liquid water,entire atmosphere,TCLSW,1
+217,Column integrated melting ice,entire atmosphere,TCOLM,1
+218,Height of lowest level super cool liquid water,lwst bot lvl of supercooled liq wtr,HGT,1
+219,Height of highest level super cool liquid water,hghst top lvl of supercooled liq wtr,HGT,1
+220,Ceiling height,cloud ceiling,HGT,1
+221,Accumulated land surface model precipitation,surface,LSPA,1
+222,Model top pressure,top of atmosphere,PRES,1
+223,Total column shortwave temperature tendency,entire atmosphere,SWHR,1
+224,Total column longwave temperature tendency,entire atmosphere,LWHR,1
+225,Total column gridded temperature tendency,entire atmosphere,LRGHR,1
+226,Column integrated moisture convergence,entire atmosphere,MCONV,1
+227,Planetary boundary layer regime,surface,PBLREG,1
+228,Transport wind u component,planetary boundary layer,UGRD,1
+229,Transport wind v component,planetary boundary layer,VGRD,1
+230,Richardson number planetary boundary layer height,planetary boundary layer,HGT,1
+231,Mixing height,surface,MIXHT,1
+232,Radar echo top,entire atmosphere,RETOP,1
+233,Ventilation rate,planetary boundary layer,VRATE,1
+234,Haines index,surface,HINDEX,1
+235,Maximum 2m temperature,height agl,TMAX,1
+236,Minimum 2m temperature,height agl,TMIN,1
+237,Maximum 2m RH,height agl,MAXRH,1
+238,Minimum 2m RH,height agl,MINRH,1
+239,Maximum U-component wind at 10m,height agl,MAXUW,1
+240,Maximum V-component wind at 10m,height agl,MAXVW,1
+241,Maximum wind speed at 10m,height agl,WIND,1
+242,Maximum 1km reflectivity,height agl,MAXREF,1
+243,Maximum updraft vertical velocity 100-1000 hPa,isobaric layer,MAXUVV,1
+244,Maximum downdraft vertical velocity 100-1000 hPa,isobaric layer,MAXDVV,1
+245,Lightning,surface,LTNG,1
+246,Radar derived vertically integrated liquid,entire atmosphere,VIL,1
+247,Updraft helicity (2-5 km),height agl,UPHL,1
+248,Maximum updraft helicity (2-5 km),height agl,MXUPHL,1
+249,Minimum updraft helicity (2-5 km),height agl,MNUPHL,1
+250,Minimum updraft helicity (0-3 km),height agl,MNUPHL,1
+251,Maximum updraft helicity (0-3 km),height agl,MXUPHL,1
+252,Maximum relative vertical vorticity (0-1 km),height agl,RELV,1
+253,Maximum relative vertical vorticity at hybrid level 1,hybrid,RELV,1
+254,Maximum relative vertical vorticity (0-2 km),height agl,RELV,1
+255,Maximum derived radar reflectivity at -10 C,isothermal,MAXREF,1
+256,Radar reflectivity at -10 C,isothermal,REFD,1
