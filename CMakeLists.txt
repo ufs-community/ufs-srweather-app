@@ -45,6 +45,9 @@ FUNCTION(is_enabled feature ret_val)
   ENDIF(${feature})
 ENDFUNCTION()
 
+# User options
+option(ENABLE_RRFS "Build RRFS components" OFF)
+
 # Turn on testing.
 enable_testing()
 include(CTest)
