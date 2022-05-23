@@ -1,0 +1,54 @@
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module loads libraries for building SRW on"
+   puts stderr "the NSSL machine odin using Intel"
+}
+
+module-whatis "Loads libraries needed for building SRW on odin"
+
+prepend-path PATH "/home/yunheng.wang/tools/cmake-3.23.0-rc2/bin"
+setenv CMAKE "/home/yunheng.wang/tools/cmake-3.23.0-rc2/bin/cmake"
+
+module load hpc/1.2.0
+module load hpc-intel
+module load hpc-cray-mpich
+
+#module load srw_common
+
+module load jasper
+module load zlib
+module load png
+
+#module load cray-hdf5
+#module load cray-netcdf
+module load esmf
+module load fms
+
+module load bacio
+module load crtm
+module load g2
+module load g2tmpl
+module load ip
+module load sp
+module load w3nco
+module load upp
+
+module load gftl-shared
+module load yafyaml
+module load mapl
+
+module load gfsio
+module load landsfcutil
+module load nemsio
+module load nemsiogfs
+module load sfcio
+module load sigio
+module load w3emc
+module load wgrib2
+
+setenv CMAKE_C_COMPILER cc
+setenv CMAKE_CXX_COMPILER CC
+setenv CMAKE_Fortran_COMPILER ftn
+setenv CMAKE_Platform odin.intel
+
