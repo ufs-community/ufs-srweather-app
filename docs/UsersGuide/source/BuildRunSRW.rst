@@ -424,7 +424,7 @@ settings. There is usually no need for a user to modify the default configuratio
    +----------------------+------------------------------------------------------------+
    | NOMADS               | NOMADS, NOMADS_file_type                                   |
    +----------------------+------------------------------------------------------------+
-   | External model       | USE_USER_STAGED_EXTRN_FILES, EXTRN_MDL_SOURCE_BASEDRI_ICS, |
+   | External model       | USE_USER_STAGED_EXTRN_FILES, EXTRN_MDL_SOURCE_BASEDIR_ICS, |
    |                      | EXTRN_MDL_FILES_ICS, EXTRN_MDL_SOURCE_BASEDIR_LBCS,        |
    |                      | EXTRN_MDL_FILES_LBCS                                       |
    +----------------------+------------------------------------------------------------+
