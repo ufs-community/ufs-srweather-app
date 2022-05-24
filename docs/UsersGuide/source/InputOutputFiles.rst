@@ -273,9 +273,6 @@ To download the model input data for the 12-hour "out-of-the-box" experiment con
 
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/input_model_data/FV3GFS/grib2/2019061518/gfs.t18z.pgrb2.0p25.f000
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/input_model_data/FV3GFS/grib2/2019061518/gfs.t18z.pgrb2.0p25.f006
-
-..
-   COMMENT: Add the following line once PR #766 goes through & Data Bucket is updated:
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/input_model_data/FV3GFS/grib2/2019061518/gfs.t18z.pgrb2.0p25.f012
 
 To download data for different models or in different formats, users can explore the data bucket and replace the links above with ones that fetch their desired data. 
@@ -302,7 +299,7 @@ When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the da
 * RAP (GRIB2): ``rap.t{cycle}z.wrfprsf{fhr}.grib2``
 * HRRR (GRIB2): ``hrrr.t{cycle}z.wrfprsf{fhr}.grib2``
 
-where {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and {fhr} corresponds to the nth hour of the forecast. For example, a forecast starting at 18h00 UTC would have a {cycle} value of 18, which is the 0th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f03``.
+where {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and {fhr} corresponds to the 3-digit nth hour of the forecast. For example, a forecast starting at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``.
 
 In order to preserve the original file name, the ``f00`` files are placed in the ``ICS`` directory
 and all other forecast files are placed in the ``LBCS`` directory. Then, a symbolic link of the
