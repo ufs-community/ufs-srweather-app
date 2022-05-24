@@ -5,9 +5,6 @@ Workflow Parameters: Configuring the Workflow in ``config.sh`` and ``config_defa
 ============================================================================================
 To create the experiment directory and workflow when running the SRW App, the user must create an experiment configuration file named ``config.sh``. This file contains experiment-specific information, such as dates, external model data, observation data, directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``regional_workflow`` repository’s ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first is for running experiments in community mode (``RUN_ENVIR`` set to "community"; see below), and the second is for running experiments in "nco" mode (``RUN_ENVIR`` set to "nco"). Note that for this release, only "community" mode is supported. These files can be used as the starting point from which to generate a variety of experiment configurations in which to run the SRW App.
 
-..
-   COMMENT: Is community mode still the only one supported? 
-
 There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these need to be explicitly set by the user in ``config.sh``. If a user does not define an entry in the ``config.sh`` script, either its value in ``config_defaults.sh`` will be used, or it will be reset depending on other parameters, such as the platform on which the experiment will be run (specified by ``MACHINE``). Note that ``config_defaults.sh`` contains the full list of experiment parameters that a user may set in ``config.sh`` (i.e., the user cannot set parameters in config.sh that are not initialized in ``config_defaults.sh``).
 
 The following is a list of the parameters in the ``config_defaults.sh`` file. For each parameter, the default value and a brief description is given. In addition, any relevant information on features and settings supported or unsupported in this release is specified.
@@ -26,9 +23,6 @@ Platform Environment
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
    The machine (a.k.a. platform) on which the workflow will run. Currently supported platforms include "WCOSS_DELL_P3", "HERA", "ORION", "JET", "ODIN", "CHEYENNE", "STAMPEDE", "GAEA", "SINGULARITY", "NOAACLOUD", "MACOS", and "LINUX". When running the SRW App in a container, set ``MACHINE`` to "SINGULARITY" regardless of the underlying platform. 
-
-..
-   COMMENT: Are we deleting WCOSS_CRAY and/or GAEA? They're not listed in valid_param_vals.sh. What is the difference between SINGULARITY & NOAACLOUD? Can we use just one? Any other machines to add? 
 
 ``MACHINE_FILE``: (Default: "")
    Path to a configuration file with machine-specific settings. If none is provided, ``setup.sh`` will attempt to set the path to a configuration file for a supported platform.
@@ -93,10 +87,10 @@ Parameters for Running Without a Workflow Manager
 These settings control run commands for platforms without a workflow manager. Values will be ignored unless ``WORKFLOW_MANAGER="none"``.
 
 ``RUN_CMD_UTILS``: (Default: "mpirun -np 1")
-   The run command for pre-processing utilities (shave, orog, sfc_climo_gen, etc.). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`.
+   The run command for MPI-enabled pre-processing utilities (e.g., shave, orog, sfc_climo_gen). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a different command for launching an MPI-enabled executable depending on their machine and MPI installation.
 
 ``RUN_CMD_FCST``: (Default: "mpirun -np \${PE_MEMBER01}")
-   The run command for the model forecast step. This will be appended to the end of the variable definitions file (``var_defns.sh``).
+   The run command for the model forecast step. This will be appended to the end of the variable definitions file (``var_defns.sh``). Changing the ``${PE_MEMBER01}`` variable is **not** recommended; it refers to the number of MPI tasks that the Weather Model will expect to run with. Running the Weather Model with a different number of MPI tasks than the workflow has been set up for can lead to segmentation faults and other errors. It is also important to escape the ``$`` character or use single quotes here so that ``PE_MEMBER01`` is not referenced until runtime, since it is not defined at the beginning of the workflow generation script.
 
 ``RUN_CMD_POST``: (Default: "mpirun -np 1")
    The run command for post-processing (:term:`UPP`). Can be left blank for smaller domains, in which case UPP will run without :term:`MPI`.
@@ -320,8 +314,8 @@ METplus Parameters
 ``MRMS_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_mrms_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_MRMS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
 
-   .. note::
-      METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script, within the main script to retrieve MRMS data from the NOAA HPSS, is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file naming structure: ``regional_workflow/scripts/exregional_get_mrms_files.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``regional_workflow/ush/mrms_pull_topofhour.py``.
+.. note::
+   METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script, within the main script to retrieve MRMS data from the NOAA HPSS, is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file naming structure: ``regional_workflow/scripts/exregional_get_mrms_files.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``regional_workflow/ush/mrms_pull_topofhour.py``.
 
 
 ``NDAS_OBS_DIR``: (Default: "")
@@ -415,8 +409,6 @@ CCPP Parameter
    | "FV3_GFS_v15_thompson_mynn_lam3km"
    | "FV3_RRFS_v1alpha"
 
-..
-   COMMENT: "FV3_WoFS" technically has not been merged yet... and is called NSSL? What should I put for now? Current Default is "FV3_GFS_v15p2" - need to make sure we change that. 
 
 Stochastic Physics Parameters
 ================================
@@ -510,10 +502,7 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
       * 2-pattern is vorticity
 
 ``SKEB_VDOF``: (Default: "10")
-   The number of degrees of freedom in the vertical for the SKEB random pattern. 
-
-..
-   COMMENT: The vertical what?
+   The number of degrees of freedom in the vertical direction for the SKEB random pattern. 
 
 .. _SPP:
 
@@ -560,9 +549,6 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
 
 ``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
    The list of parameterizations to perturb: planetary boundary layer (PBL), surface physics (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: "pbl", "sfc", "rad", "gwd", and "mp".
-
-..
-   COMMENT: Needs review. Is "rad" radiation? Need confiromation. 
 
 
 Land Surface Model (LSM) SPP
@@ -728,22 +714,20 @@ Computational Forecast Parameters
    #. If the experiment is using a predefined grid and the user sets the ``BLOCKSIZE`` parameter in the user-specified experiment configuration file (i.e., ``config.sh``), that value will be used in the forecast(s). Otherwise, the default ``BLOCKSIZE`` for that predefined grid will be used.
    #. If the experiment is *not* using a predefined grid (i.e., it is using a custom grid whose parameters are specified in the experiment configuration file), then the user must specify a value for the ``BLOCKSIZE`` parameter in that configuration file. Otherwise, it will remain set to a null string, and the experiment generation will fail, because the generation scripts check to ensure that all the parameters defined in this section are set to non-empty strings before creating the experiment directory.
 
+.. _WriteComp:
 
 Write-Component (Quilting) Parameters
 ======================================
 
 .. note::
-   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a write-component grid before writing them to an output file. The output files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the write component. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html?highlight=write-component#model-configurefile>`__ of the UFS Weather Model documentation.  
+   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write-component grid** before writing them to an output file. The output files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html?highlight=write-component#model-configurefile>`__ of the UFS Weather Model documentation.  
 
 ``QUILTING``: (Default: "TRUE")
 
-   .. attention::
-      The regional grid requires the use of the write component, so users generally should not need to change the default value for ``QUILTING``. 
+.. attention::
+   The regional grid requires the use of the write component, so users generally should not need to change the default value for ``QUILTING``. 
 
-   Flag that determines whether to use the write component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-hour output forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to "TRUE" when running the SRW App. If ``QUILTING`` is set to "FALSE", the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to "TRUE" in the SRW App. 
-
-..
-   COMMENT: Still don't undertand what HHH refers to... can we give an example?
+   Flag that determines whether to use the write component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-digit forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. For example, the output files for the 3rd hour of the forecast would be ``dynf$003.nc`` and ``phyf$003.nc``. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to "TRUE" when running the SRW App. If ``QUILTING`` is set to "FALSE", the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to "TRUE" in the SRW App. 
 
 ``PRINT_ESMF``: (Default: "FALSE")
    Flag that determines whether to output extra (debugging) information from ESMF routines. Must be "TRUE" or "FALSE". Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory).
@@ -755,10 +739,7 @@ Write-Component (Quilting) Parameters
    The number of MPI tasks to allocate for each write group.
 
 ``WRTCMP_output_grid``: (Default: "''")
-   Sets the type (coordinate system) of the write component grid. The default empty string forces the user to set a valid value for ``WRTCMP_output_grid`` in ``config.sh`` if specifying a *custom* grid. Otherwise, the ordinary "regional_latlon" grid will be used. Valid values: "lambert_conformal" "regional_latlon" "rotated_latlon"
-
-..
-   COMMENT: If no value is specified in config.sh, would setup.sh (or some other script?) use the ordinary "regional_latlon"? Or would the experiment just fail?
+   Sets the type (coordinate system) of the write component grid. The default empty string forces the user to set a valid value for ``WRTCMP_output_grid`` in ``config.sh`` if specifying a *custom* grid. When creating an experiment with a user-defined grid, this parameter must be specified or the experiment will fail. Valid values: "lambert_conformal" "regional_latlon" "rotated_latlon"
 
 ``WRTCMP_cen_lon``: (Default: "")
    Longitude (in degrees) of the center of the write component grid. Can usually be set to the corresponding value from the native grid.
@@ -767,13 +748,10 @@ Write-Component (Quilting) Parameters
    Latitude (in degrees) of the center of the write component grid. Can usually be set to the corresponding value from the native grid.
 
 ``WRTCMP_lon_lwr_left``: (Default: "")
-   Longitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated longitude. Must be set manually.
-   
-..
-   COMMENT: Has this changed? Or still manual?
+   Longitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated longitude. Must be set manually when running an experiment with a user-defined grid.
 
 ``WRTCMP_lat_lwr_left``: (Default: "")
-   Latitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated latitude. Must be set manually.
+   Latitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated latitude. Must be set manually when running an experiment with a user-defined grid.
 
 **The following parameters must be set when** ``WRTCMP_output_grid`` **is set to "rotated_latlon":**
 
@@ -819,15 +797,13 @@ Predefined Grid Parameters
    
    | "RRFS_CONUS_25km"
    | "RRFS_CONUS_13km"
-   | "RRFS_CONUS_3km" 
+   | "RRFS_CONUS_3km"
+   | "SUBCONUS_Ind_3km" 
    
    **Other valid values include:**
 
-   | "RRFS_SUBCONUS_3km" 
-   | "RRFS_AK_13km" 
-   | "RRFS_AK_3km" 
    | "CONUS_25km_GFDLgrid" 
-   | "CONUS_3km_GFDLgrid" 
+   | "CONUS_3km_GFDLgrid"
    | "EMC_AK" 
    | "EMC_HI" 
    | "EMC_PR" 
@@ -835,12 +811,16 @@ Predefined Grid Parameters
    | "GSL_HAFSV0.A_25km" 
    | "GSL_HAFSV0.A_13km" 
    | "GSL_HAFSV0.A_3km" 
-   | "GSD_HRRR_AK_50km" 
+   | "GSD_HRRR_AK_50km"
+   | "RRFS_AK_13km" 
+   | "RRFS_AK_3km" 
+   | "RRFS_CONUScompact_25km"
+   | "RRFS_CONUScompact_13km"
+   | "RRFS_CONUScompact_3km"
    | "RRFS_NA_13km" 
    | "RRFS_NA_3km"
-
-..
-   COMMENT: Are all of these now being supported or still just the three main ones? Am I missing any?
+   | "RRFS_SUBCONUS_3km" 
+   | "WoFS_3km"
 
 .. note::
 
@@ -870,6 +850,8 @@ Debug Parameter
 =================
 ``DEBUG``: (Default: "FALSE")
    Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to TRUE, then VERBOSE will also get reset to TRUE if it isn't already. Valid values: "TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no"
+
+.. _WFTasks:
 
 Rocoto Workflow Tasks
 ========================
@@ -1104,10 +1086,6 @@ Verification Tasks
 ``RUN_TASK_GET_OBS_NDAS``: (Default: "FALSE")
    Flag that determines whether to run the ``GET_OBS_NDAS_TN`` task, which retrieves the :term:`NDAS` PrepBufr files used by METplus from NOAA HPSS. 
 
-..
-   COMMENT: Need confirmation that the above 3 task explanations are correct. 
-
-
 ``RUN_TASK_VX_GRIDSTAT``: (Default: "FALSE")
    Flag that determines whether to run the grid-stat verification task.
 
@@ -1283,10 +1261,7 @@ Subhourly Forecast Parameters
    Flag that indicates whether the forecast model will generate output files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes). This will also cause the post-processor to process these sub-hourly files. If this variable is set to "TRUE", then ``DT_SUBHOURLY_POST_MNTS`` should be set to a value between "01" and "59".
 
 ``DT_SUB_HOURLY_POST_MNTS``: (Default: "00")
-   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). 
-
-..
-   COMMENT: In valid_param_vals.sh only these values are listed: "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30". 
+   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). Valid values: "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30".
 
 Customized Post Configuration Parameters
 ========================================
@@ -1301,7 +1276,7 @@ Customized Post Configuration Parameters
 Community Radiative Transfer Model (CRTM) Parameters
 =======================================================
 
-These variables set parameters associated with outputting satellite fields in the :term:`UPP` :term:`grib2` files using the Community Radiative Transfer Model (:term:`CRTM`).
+These variables set parameters associated with outputting satellite fields in the :term:`UPP` :term:`grib2` files using the Community Radiative Transfer Model (:term:`CRTM`). :numref:`Section %s <SatelliteProducts>` includes further instructions on how to do this. 
 
 ..
    COMMENT: What actually happens here? Where are the satellite fields outputted to? When/why would this be used? What kind of satellites?

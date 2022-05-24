@@ -20,8 +20,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
    * :ref:`Install prerequisites <HPCstackInfo>`
    * :ref:`Clone the SRW App from GitHub <DownloadSRWApp>`
    * :ref:`Check out the external repositories <CheckoutExternals>`
-   * :ref:`Set up the build environment <SetUpBuild>`
-   * :ref:`Build the executables <BuildExecutables>`
+   * :ref:`Set up the build environment and build the executables <BuildExecutables>`
    * :ref:`Download and stage data <Data>`
    * :ref:`Optional: Configure a new grid <GridSpecificConfig>`
    * :ref:`Generate a regional workflow experiment <GenerateForecast>`
@@ -50,11 +49,21 @@ Install the HPC-Stack
 Background
 ----------------
 
-The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g. NCEPLIBS, FMS, etc.) to libraries developed by NOAA's partners (e.g. PIO, ESMF, etc.) to truly third party libraries (e.g. NETCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW App.
+The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g., NCEPLIBS, FMS) to libraries developed by NOAA's partners (e.g., PIO, ESMF) to truly third party libraries (e.g., NETCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW App.
 
 Instructions
 -------------------------
-Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) or models that depend on it. Users can either build the HPC-stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`.  
+Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) or models that depend on it. Users can either build the HPC-Stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing the HPC-Stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
+
+.. code-block:: console
+
+   # Linux, if allowed
+   ulimit -s unlimited
+
+   # MacOS, this corresponds to 65MB
+   ulimit -S -s unlimited
+
+For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`. 
 
 After completing installation, continue to the next section.
 
@@ -118,7 +127,7 @@ The cloned repository contains the configuration files and sub-directories shown
 Check Out External Components
 ================================
 
-The SRW App relies on a variety of components (e.g., regional_workflow, UFS_UTILS, ufs-weather-model, and UPP) detailed in :numref:`Chapter %s <Components>` of this User's Guide. Users must run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>` into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
+The SRW App relies on a variety of components (e.g., regional_workflow, UFS_UTILS, ufs-weather-model, and UPP) detailed in :numref:`Chapter %s <Components>` of this User's Guide. Each component has its own :term:`repository`. Users must run the ``checkout_externals`` script to collect the individual components of the SRW App from their respective git repositories. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>` into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
 
 Run the executable that pulls in SRW App components from external repositories:
 
@@ -127,47 +136,120 @@ Run the executable that pulls in SRW App components from external repositories:
    cd $SRW
    ./manage_externals/checkout_externals
 
+The script should output dialogue indicating that it is retrieving different code repositories. It may take several minutes to download these repositories.
 
-Build with ``devbuild.sh``
-==========================
 
-On Level 1 systems, a modulefile is provided under ``modulefiles`` directory, which users can run to build the SRW App binaries:
+.. _BuildExecutables:
+
+Set Up the Environment and Build the Executables
+===================================================
+
+.. _DevBuild:
+
+
+``devbuild.sh`` Approach
+-----------------------------
+
+On Level 1 systems for which a modulefile is provided under the ``modulefiles`` directory, we can build the SRW App binaries with:
 
 .. code-block:: console
 
-   ./devbuild.sh --platform=hera
+   ./devbuild.sh --platform=<machine_name>
 
-If compiler auto-detection fails for some reason, specify it using
+where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
+
+If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. For example:
 
 .. code-block:: console
 
    ./devbuild.sh --platform=hera --compiler=intel
 
-If this method doesn't work, users will have to manually setup the environment and build the SRW App binaries with CMake.
+where valid values are ``intel`` or ``gnu``.
 
-..
-  COMMENT: What would this entail?!
+The last line of the console output should be ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-.. _SetUpBuild:
+The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/bin`` directory. If this build method doesn't work, or it users are not on a supported machine, they will have to manually setup the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
 
-Set up the Build/Run Environment
-================================
 
-Before building the SRW App, users must set up their environment to run a workflow or to build the SRW App with CMake. Note that ``devbuild.sh`` does not prepare environment for workflow runs, so this step is necessary even though binaries are built properly using ``devbuild.sh``.
+.. _ExecDescription:
 
-The build environment must be set up for the user's specific platform. First, we need to make sure ``Lmod`` is the app used for loading modulefiles. That is often the case on most systems, however, on some systems such as Gaea/Odin, the default modulefile loader is from Cray and we need to swap it for ``Lmod``. For example on Gaea, assuming a ``bash`` login shell, run:
+.. table::  Names and descriptions of the executables produced by the build step and used by the SRW App
+
+   +------------------------+---------------------------------------------------------------------------------+
+   | **Executable Name**    | **Description**                                                                 |
+   +========================+=================================================================================+
+   | chgres_cube            | Reads in raw external model (global or regional) and surface climatology data   |
+   |                        | to create initial and lateral boundary conditions                               |
+   +------------------------+---------------------------------------------------------------------------------+
+   | filter_topo            | Filters topography based on resolution                                          |
+   +------------------------+---------------------------------------------------------------------------------+
+   | global_equiv_resol     | Calculates a global, uniform, cubed-sphere equivalent resolution for the        |
+   |                        | regional Extended Schmidt Gnomonic (ESG) grid                                   |
+   +------------------------+---------------------------------------------------------------------------------+
+   | make_solo_mosaic       | Creates mosaic files with halos                                                 |
+   +------------------------+---------------------------------------------------------------------------------+
+   | upp.x                  | Post-processor for the model output                                             |
+   +------------------------+---------------------------------------------------------------------------------+
+   | ufs_model              | UFS Weather Model executable                                                    |
+   +------------------------+---------------------------------------------------------------------------------+
+   | orog                   | Generates orography, land mask, and gravity wave drag files from fixed files    |
+   +------------------------+---------------------------------------------------------------------------------+
+   | regional_esg_grid      | Generates an ESG regional grid based on a user-defined namelist                 |
+   +------------------------+---------------------------------------------------------------------------------+
+   | sfc_climo_gen          | Creates surface climatology fields from fixed files for use in ``chgres_cube``  |
+   +------------------------+---------------------------------------------------------------------------------+
+   | shave                  | Shaves the excess halo rows down to what is required for the lateral boundary   |
+   |                        | conditions (LBC's) in the orography and grid files                              |
+   +------------------------+---------------------------------------------------------------------------------+
+   | vcoord_gen             | Generates hybrid coordinate interface profiles                                  |
+   +------------------------+---------------------------------------------------------------------------------+
+   | fvcom_to_FV3           | Determines lake surface conditions for the Great Lakes                          |
+   +------------------------+---------------------------------------------------------------------------------+
+   | make_hgrid             | Computes geo-referencing parameters (e.g., latitude, longitude, grid cell area) |
+   |                        | for global uniform grids                                                        |
+   +------------------------+---------------------------------------------------------------------------------+
+   | emcsfc_ice_blend       | Blends National Ice Center sea ice cover and EMC sea ice concentration data to  |
+   |                        | create a global sea ice analysis used to update the GFS once per day            |
+   +------------------------+---------------------------------------------------------------------------------+
+   | emcsfc_snow2mdl        | Blends National Ice Center snow cover and Air Force snow depth data to create a |
+   |                        | global depth analysis used to update the GFS snow field once per day            | 
+   +------------------------+---------------------------------------------------------------------------------+
+   | global_cycle           | Updates the GFS surface conditions using external snow and sea ice analyses     |
+   +------------------------+---------------------------------------------------------------------------------+
+   | inland                 | Creates an inland land mask by determining in-land (i.e. non-coastal) points    |
+   |                        | and assigning a value of 1. Default value is 0.                                 |
+   +------------------------+---------------------------------------------------------------------------------+
+   | orog_gsl               | Ceates orographic statistics fields required for the orographic drag suite      |
+   |                        | developed by NOAA's Global Systems Laboratory (GSL)                             |
+   +------------------------+---------------------------------------------------------------------------------+
+   | fregrid                | Remaps data from the input mosaic grid to the output mosaic grid                |
+   +------------------------+---------------------------------------------------------------------------------+
+   | lakefrac               | Calculates the ratio of the lake area to the grid cell area at each atmospheric |
+   |                        | grid point.                                                                     |
+   +------------------------+---------------------------------------------------------------------------------+
+
+.. _CMakeApproach:
+
+CMake Approach
+-----------------
+
+Set Up the Workflow Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. attention::
+   If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
+
+If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, assuming a ``bash`` login shell, run:
 
 .. code-block:: console
 
    source etc/lmod-setup.sh gaea
 
-or if your login shell is ``csh`` or ``tcsh``, source ``etc/lmod-setup.csh`` instead. If you execute the above command on systems that don't need it, it will simply do a ``module purge``. From here on, we can assume that ``Lmod`` is ready to load modulefiles needed by the SRW App.
-
-The modulefiles needed for building and running SRW App are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>`` , run:
+or if the login shell is ``csh`` or ``tcsh``, run ``source etc/lmod-setup.csh`` instead. If users execute the above command on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>``, run:
 
 .. code-block:: console
 
-   module use <path/to/ufs-srweather-app/modulefiles>
+   module use <path/to/modulefiles/directory>
    module load build_<platform>_<compiler>
 
 where ``<path/to/modulefiles/directory>`` is the full path to the ``modulefiles`` directory. This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory.
@@ -178,6 +260,39 @@ On Level 2-4 systems, users will need to modify certain environment variables, s
 
    export <VARIABLE_NAME>=<PATH_TO_MODULE>
    setenv <VARIABLE_NAME> <PATH_TO_MODULE>
+
+..
+   COMMENT: Might be good to list an example here...
+
+.. _BuildCMake:
+
+Build the Executables Using CMake
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. attention::
+   If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
+
+In the ``ufs-srweather-app`` directory, create a subdirectory to hold the build's executables: 
+
+.. code-block:: console
+
+   mkdir build
+   cd build
+
+From the build directory, run the following commands to build the pre-processing utilities, forecast model, and post-processor:
+
+.. code-block:: console
+
+   cmake .. -DCMAKE_INSTALL_PREFIX=..
+   make -j 4  >& build.out &
+
+``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. Although users can specify a larger or smaller number of threads (e.g., ``-j8``, ``-j2``), it is highly recommended to use at least 4 parallel threads to prevent overly long installation times. 
+
+The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
+
+.. hint::
+
+   If you see the build.out file, but there is no ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
 
 .. _MacDetails:
 
@@ -244,103 +359,19 @@ An alternative way to make this change is using a `sed` (streamline editor). Fro
    sed -i -e 's/bin\/sh/bin\/bash/g' *sh
 
 
-.. _BuildExecutables:
-
-Build the Executables
-=======================
-
-Create a directory within ``$SRW`` to hold the build's executables: 
-
-.. code-block:: console
-
-   mkdir build
-   cd build
-
-From the build directory, run the following commands to build the pre-processing utilities, forecast model, and post-processor:
-
-.. code-block:: console
-
-   cmake .. -DCMAKE_INSTALL_PREFIX=..
-   make -j 4  >& build.out &
-
-``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. 
-
-The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
-
-.. hint::
-
-   If you see the build.out file, but there is no ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
-
-.. _ExecDescription:
-
-.. table::  Names and descriptions of the executables produced by the build step and used by the SRW App
-
-   +------------------------+---------------------------------------------------------------------------------+
-   | **Executable Name**    | **Description**                                                                 |
-   +========================+=================================================================================+
-   | chgres_cube            | Reads in raw external model (global or regional) and surface climatology data   |
-   |                        | to create initial and lateral boundary conditions                               |
-   +------------------------+---------------------------------------------------------------------------------+
-   | filter_topo            | Filters topography based on resolution                                          |
-   +------------------------+---------------------------------------------------------------------------------+
-   | global_equiv_resol     | Calculates a global, uniform, cubed-sphere equivalent resolution for the        |
-   |                        | regional Extended Schmidt Gnomonic (ESG) grid                                   |
-   +------------------------+---------------------------------------------------------------------------------+
-   | make_solo_mosaic       | Creates mosaic files with halos                                                 |
-   +------------------------+---------------------------------------------------------------------------------+
-   | upp.x                  | Post-processor for the model output                                             |
-   +------------------------+---------------------------------------------------------------------------------+
-   | ufs_model              | UFS Weather Model executable                                                    |
-   +------------------------+---------------------------------------------------------------------------------+
-   | orog                   | Generates orography, land mask, and gravity wave drag files from fixed files    |
-   +------------------------+---------------------------------------------------------------------------------+
-   | regional_esg_grid      | Generates an ESG regional grid based on a user-defined namelist                 |
-   +------------------------+---------------------------------------------------------------------------------+
-   | sfc_climo_gen          | Creates surface climatology fields from fixed files for use in ``chgres_cube``  |
-   +------------------------+---------------------------------------------------------------------------------+
-   | shave                  | Shaves the excess halo rows down to what is required for the lateral boundary   |
-   |                        | conditions (LBC's) in the orography and grid files                              |
-   +------------------------+---------------------------------------------------------------------------------+
-   | vcoord_gen             | Generates hybrid coordinate interface profiles                                  |
-   +------------------------+---------------------------------------------------------------------------------+
-   | fvcom_to_FV3           | Determines lake surface conditions for the Great Lakes                          |
-   +------------------------+---------------------------------------------------------------------------------+
-   | make_hgrid             | Computes geo-referencing parameters (e.g., latitude, longitude, grid cell area) |
-   |                        | for global uniform grids                                                        |
-   +------------------------+---------------------------------------------------------------------------------+
-   | emcsfc_ice_blend       | Blends National Ice Center sea ice cover and EMC sea ice concentration data to  |
-   |                        | create a global sea ice analysis used to update the GFS once per day            |
-   +------------------------+---------------------------------------------------------------------------------+
-   | emcsfc_snow2mdl        | Blends National Ice Center snow cover and Air Force snow depth data to create a |
-   |                        | global depth analysis used to update the GFS snow field once per day            | 
-   +------------------------+---------------------------------------------------------------------------------+
-   | global_cycle           | Updates the GFS surface conditions using external snow and sea ice analyses     |
-   +------------------------+---------------------------------------------------------------------------------+
-   | inland                 | Creates an inland land mask by determining in-land (i.e. non-coastal) points    |
-   |                        | and assigning a value of 1. Default value is 0.                                 |
-   +------------------------+---------------------------------------------------------------------------------+
-   | orog_gsl               | Ceates orographic statistics fields required for the orographic drag suite      |
-   |                        | developed by NOAA's Global Systems Laboratory (GSL)                             |
-   +------------------------+---------------------------------------------------------------------------------+
-   | fregrid                | Remaps data from the input mosaic grid to the output mosaic grid                |
-   +------------------------+---------------------------------------------------------------------------------+
-   | lakefrac               | Calculates the ratio of the lake area to the grid cell area at each atmospheric |
-   |                        | grid point.                                                                     |
-   +------------------------+---------------------------------------------------------------------------------+
-
 .. _Data:
 
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW App tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW App tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GridSpecificConfig:
 
 Grid Configuration
 =======================
 
-The SRW App officially supports three different predefined grids as shown in :numref:`Table %s <PredefinedGrids>`. The "out-of-the-box" SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>` for those who are curious. Users who plan to utilize one of the three pre-defined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new domain should refer to :numref:`Chapter %s <LAMGrids>` for details on how to do so. At a minimum, these users will need to add the new grid name to the ``valid_param_vals`` script and add the corresponding grid-specific parameters in the ``set_predef_grid_params`` script. 
+The SRW App officially supports four different predefined grids as shown in :numref:`Table %s <PredefinedGrids>`. The "out-of-the-box" SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>` for those who are curious. Users who plan to utilize one of the four predefined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new domain should refer to :numref:`Chapter %s <LAMGrids>` for details on how to do so. At a minimum, these users will need to add the new grid name to the ``valid_param_vals`` script and add the corresponding grid-specific parameters in the ``set_predef_grid_params`` script. 
 
 .. _PredefinedGrids:
 
@@ -354,6 +385,8 @@ The SRW App officially supports three different predefined grids as shown in :nu
    | RRFS_CONUS_13km      | ESG grid          | lambert_conformal              |
    +----------------------+-------------------+--------------------------------+
    | RRFS_CONUS_3km       | ESG grid          | lambert_conformal              |
+   +----------------------+-------------------+--------------------------------+
+   | SUBCONUS_Ind_3km     | ESG grid          | lambert_conformal              |
    +----------------------+-------------------+--------------------------------+
 
 
@@ -613,7 +646,7 @@ Sample settings are indicated below for Level 1 platforms. Detailed guidance app
 
 .. important::
 
-   If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuild>`, you will have to check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
+   If your modulefile uses a GNU compiler to set up the build environment in :numref:`Section %s <BuildExecutables>`, you will have to check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
 
 .. hint::
 
@@ -629,45 +662,49 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
    ACCOUNT="<my_account>"
    EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+
+where: 
+* <model_type> refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
+* <data_type> refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
+* YYYYMMDDHH refers to a subdirectory containing data for the :term:`cycle` date. 
+
 
 **Hera, Jet, Orion, Gaea:**
 
-The ``MACHINE``, ``ACCOUNT``, and ``EXPT_SUBDIR`` settings are the same as for Cheyenne, except that ``"cheyenne"`` should be switched to ``"hera"``, ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. Set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, but replace the file paths to Cheyenne's data with the file paths for the correct machine. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` use the same file path. 
+The ``MACHINE``, ``ACCOUNT``, and ``EXPT_SUBDIR`` settings are the same as for Cheyenne, except that ``"cheyenne"`` should be switched to ``"hera"``, ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. Set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, but replace the file paths to Cheyenne's data with the file paths for the correct machine. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` use the same base file path. 
 
 On Hera: 
 
 .. code-block:: console
 
-   "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data"
+   "/scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 On Jet: 
 
 .. code-block:: console
 
-   "/lfs4/BMC/wrfruc/FV3-LAM/model_data"
+   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 On Orion: 
 
 .. code-block:: console
 
-   "/work/noaa/fv3-cam/UFS_SRW_app/v1p0/model_data"
-
+   "/work/noaa/fv3-cam/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 On Gaea: 
 
 .. code-block:: console
 
-   "/lustre/f2/pdata/esrl/gsd/ufs/ufs-srw-release-v1.0.0/staged_extrn_mdl_files"
-
+   "/lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 For **WCOSS** systems, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
 
 .. code-block:: console
 
    MACHINE="wcoss_cray" or MACHINE="wcoss_dell_p3"
-   ACCOUNT="my_account"
+   ACCOUNT="valid_wcoss_project_code"
    EXPT_SUBDIR="my_expt_name"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
 
@@ -675,31 +712,23 @@ For WCOSS_DELL_P3:
    
 .. code-block:: console
 
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/model_data"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/model_data"
-
-For WCOSS_CRAY:
-
-.. code-block:: console
-   
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/model_data"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/model_data"
-
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/ICS"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/LBCS"
 
 **NOAA Cloud Systems:**
 
 .. code-block:: console
 
-   MACHINE="SINGULARITY"
+   MACHINE="NOAACLOUD"
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
    EXPT_BASEDIR="lustre/$USER/expt_dirs"
    COMPILER="gnu"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/model_data/FV3GFS"
-   EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/model_data/FV3GFS"
-   EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" )
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/develop/input_model_data/FV3GFS"
+   EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/develop/input_model_data/FV3GFS"
+   EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
 
 .. note::
 
@@ -765,7 +794,9 @@ The workflow requires Python 3 with the packages 'PyYAML', 'Jinja2', and 'f90nml
 
 .. code-block:: console
 
+   module use <path/to/modulefiles>
    module load wflow_<platform>
+   conda activate regional_workflow
 
 This command will activate the ``regional_workflow`` conda environment. The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
 
@@ -1096,17 +1127,19 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
 
 
-
-
 .. _RocotoRun:
 
 Run the Workflow Using Rocoto
-==============================
+=============================
 
 .. attention::
-   If users are running the SRW App in a container or on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section. 
 
-The information in this section assumes that Rocoto is available on the desired platform. (Note that Rocoto cannot be used when running the workflow within a container.) If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
+   If users are running the SRW App in a container or on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
+
+The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, Rocoto cannot be used when running the workflow within a container. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
+
+.. note::
+   Users may find it helpful to review :numref:`Chapter %s <RocotoInfo>` to gain a better understanding of Rocoto commands and workflow management before continuing, but this is not required to run the experiment. 
 
 Optionally, an environment variable can be set to navigate to the ``$EXPTDIR`` more easily. If the login shell is bash, it can be set as follows:
 

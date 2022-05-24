@@ -12,4 +12,7 @@ module load rocoto
 module load miniconda3
 
 setenv CONDA_DEFAULT_ENV "regional_workflow"
-
+setenv PROJ_LIB /lustre/f2/pdata/esrl/gsd/contrib/miniconda3/4.8.3/envs/regional_workflow/share/proj
+#if { [module-info mode load] } {
+#   system "conda activate regional_workflow;"
+#}
