@@ -13,6 +13,11 @@ if [ "$L_MACHINE" = macos ]; then
 
    module purge
 
+elif [ "$L_MACHINE" = noaacloud ]; then
+   export BASH_ENV="/usr/share/lmod/lmod/init/bash"
+   source $BASH_ENV
+
+   module purge
 elif [ "$L_MACHINE" = singularity ]; then
    export BASH_ENV="/usr/share/lmod/lmod/init/bash"
    source $BASH_ENV
@@ -20,8 +25,9 @@ elif [ "$L_MACHINE" = singularity ]; then
    module purge
 
 elif [ "$L_MACHINE" = gaea ]; then
-   export BASH_ENV="/lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/init/init_lmod.sh"
+   export BASH_ENV="/lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/lmod/lmod/init/bash"
    source $BASH_ENV
+   module purge
 
 elif [ "$L_MACHINE" = odin ]; then
    module unload modules
