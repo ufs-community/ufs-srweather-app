@@ -2,13 +2,6 @@
 
 module load jasper/2.0.25
 module load zlib/1.2.11
-#module load libpng/1.6.37
-
-#module load hdf5/1.10.6
-#module load netcdf/4.7.4
-#module load pio/2.5.2
-#module load esmf/8.3.0b09
-#module load fms/2022.01
 module load-any png/1.6.35 libpng/1.6.35
 
 module load hdf5/1.10.6
@@ -26,10 +19,6 @@ module load ip/3.3.3
 module load sp/2.3.3
 module load w3nco/2.4.1
 module load upp/10.0.10
-
-#module load gftl-shared/v1.3.3
-#module load yafyaml/v0.5.1
-#module load mapl/2.11.0-esmf-8.3.0b09
 
 module load-any gftl-shared/v1.3.3 gftl-shared/1.3.3
 module load-any yafyaml/v0.5.1 yafyaml/0.5.1

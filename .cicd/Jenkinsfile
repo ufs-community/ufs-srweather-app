@@ -1,0 +1,170 @@
+pipeline {
+    agent none
+
+    options {
+        skipDefaultCheckout(true)
+    }
+
+    parameters {
+        // Allow job runner to filter based on platform
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
+        // Allow job runner to filter based on compiler
+        choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
+    }
+
+    stages {
+        /*
+        // Start the NOAA Parallel Works clusters, if necessary
+        stage('Start Parallel Works Clusters') {
+            matrix {
+                // Start all clusters by default or only the specified cluster given by SRW_PLATFORM_FILTER
+                when {
+                    anyOf {
+                        expression { params.SRW_PLATFORM_FILTER == 'all' }
+                        expression { params.SRW_PLATFORM_FILTER == env.SRW_PLATFORM }
+                    }
+                }
+
+                axes {
+                    axis {
+                        name 'SRW_PLATFORM'
+                        values 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'
+                    }
+                }
+
+                stages {
+                    // Call the parallel-works-jenkins-client/start-cluster job using SRW_PLATFORM for the
+                    // PW_CLUSTER_NAME parameter
+                    stage('Start Cluster') {
+                        steps {
+                            build job: 'parallel-works-jenkins-client/start-cluster', parameters: [string(name: 'PW_CLUSTER_NAME', value: env.SRW_PLATFORM), string(name: 'PW_CLUSTER_SSH_KEY', value: '~/.ssh/id_rsa'), string(name: 'JAVA_VERSION', value: '11')]
+                        }
+                    }
+                }
+            }
+        }
+        */
+
+        // Build and test the SRW application on all supported platforms using the supported compilers for each platform
+        stage('Build and Test') {
+            matrix {
+                // Run on all platform/compiler combinations by default or build and test only on the platform(s) and
+                // compiler(s) specified by SRW_PLATFORM_FILTER and SRW_COMPILER_FILTER
+                when {
+                    allOf {
+                        anyOf {
+                            expression { params.SRW_PLATFORM_FILTER == 'all' }
+                            expression { params.SRW_PLATFORM_FILTER == env.SRW_PLATFORM }
+                        }
+
+                        anyOf {
+                            expression { params.SRW_COMPILER_FILTER == 'all' }
+                            expression { params.SRW_COMPILER_FILTER == env.SRW_COMPILER }
+                        }
+                    }
+                }
+
+                axes {
+                    axis {
+                        name 'SRW_PLATFORM'
+                        // values 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'
+                        values 'cheyenne', 'gaea', 'hera', 'jet', 'orion'
+                    }
+
+                    axis {
+                        name 'SRW_COMPILER'
+                        values 'gnu', 'intel'
+                    }
+                }
+
+                excludes {
+                    // Exclude GNU from platforms that don't support it
+                    exclude {
+                            axis {
+                            name 'SRW_PLATFORM'
+                            values 'gaea', 'hera', 'jet', 'orion'
+                        }
+
+                        axis {
+                            name 'SRW_COMPILER'
+                            values 'gnu'
+                        }
+                    }
+                }
+
+                agent {
+                    label env.SRW_PLATFORM
+                }
+
+                environment {
+                    BRANCH_NAME_ESCAPED = env.BRANCH_NAME.replace('/', '_')
+                    BUILD_VERSION = "${env.SRW_PLATFORM}-${env.SRW_COMPILER}-${env.BRANCH_NAME_ESCAPED}-${env.BUILD_NUMBER}"
+                    BUILD_NAME = "ufs-srweather-app_${env.BUILD_VERSION}"
+                }
+
+                stages {
+                    // Clean the workspace, checkout the repository, and run checkout_externals
+                    stage('Initialize') {
+                        steps {
+                            echo "Initializing SRW (${env.SRW_COMPILER}) build environment on ${env.SRW_PLATFORM}"
+                            cleanWs()
+                            checkout scm
+                            sh '"${WORKSPACE}/manage_externals/checkout_externals"'
+                        }
+                    }
+
+                    // Run the unified build script; if successful create a tarball of the build and upload to S3
+                    stage('Build') {
+                        steps {
+                            echo "Building SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM}"
+                            sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_build.sh"'
+                        }
+
+                        post {
+                            success {
+                                sh 'tar --create --gzip --verbose --file "${WORKSPACE}/${BUILD_NAME}.tgz" bin include lib share'
+                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.BUILD_NAME}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
+                            }
+                        }
+                    }
+
+                    // Run the unified test script
+                    stage('Test') {
+                        steps {
+                            echo "Testing SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM}"
+                            sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_test.sh"'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+    post {
+        always {
+            // Stop any Parallel Works clusters that were started during the pipeline execution
+            script {
+                def pw_clusters = ['pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1']
+                def clusters = []
+
+                // Determine which clusters need to be stopped, if any
+                if (params.SRW_PLATFORM_FILTER == 'all') {
+                    clusters = pw_clusters
+                } else if (params.SRW_PLATFORM_FILTER in pw_clusters) {
+                    clusters = [params.SRW_PLATFORM_FILTER]
+                } else {
+                    echo 'No Parallel Works clusters were used in build'
+                }
+
+                for (int i = 0; i < clusters.size(); ++i) {
+                    // Call the parallel-works-jenkins-client/stop-cluster job using clusters[i] for the
+                    // PW_CLUSTER_NAME parameter
+                    build job: 'parallel-works-jenkins-client/stop-cluster', parameters: [string(name: 'PW_CLUSTER_NAME', value: clusters[i])]
+                }
+            }
+        }
+    }
+    */
+}
