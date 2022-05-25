@@ -21,10 +21,10 @@ module load hpc-intel/2022.1
 module load hpc-mpt/2.25
 
 module load srw_common
-module load g2/3.4.3
-module load esmf/8_2_0
+module load g2/3.4.5
+module load esmf/8.3.0b09
 module load netcdf/4.7.4
-module load png/1.6.35
+module load libpng/1.6.37
 module load pio/2.5.2
 
 setenv CMAKE_C_COMPILER mpicc
