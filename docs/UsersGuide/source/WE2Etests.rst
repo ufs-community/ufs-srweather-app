@@ -162,6 +162,7 @@ The full usage statement for ``run_WE2E_tests.sh`` is as follows:
       [use_cron_to_relaunch="..."] \
       [cron_relaunch_intvl_mnts="..."] \
       [verbose="..."] \
+      [generate_csv_file="..."] \
       [machine_file="..."] \
       [stmp="..."] \
       [ptmp="..."] \
@@ -192,26 +193,53 @@ file/sheet represent the full set of available tests (not just the ones to be ru
 while the columns contain the following information (column titles are included in the CSV file):
 
 | Column 1:
-| The primary test name and (in parentheses) the category subdirectory it is
-  located in.
+| The primary test name followed by the category subdirectory it is
+  located in (the latter in parentheses).
 
 | Column 2:
-| Any alternate names for the test (if any) followed by their category subdirectories
+| Any alternate names for the test followed by their category subdirectories
   (in parentheses).
 
 | Column 3:
 | The test description.
 
 | Column 4:
-| The number of times the forecast model will be run by the test.  This gives an idea
-  of how expensive the test is. It is calculated using quantities such as the number
-  of cycle dates (i.e. forecast model start dates) and the number of of ensemble members
-  (if running ensemble forecasts). The are in turn obtained directly or indirectly
-  from the quantities in Columns 5, 6, ....
+| The relative cost of running the dynamics in the test.  This gives an 
+  idea of how expensive the test is.  The cost is relative to a test 
+  that runs a single 6-hour forecast on the ``RRFS_CONUS_25km`` predefined 
+  grid using the default time step (``DT_ATMOS``) for this grid.  To calculate
+  the absolute cost, the relative cost ``abs_cost`` is calculated as
 
-| Columns 5,6,...:
-| The values of various experiment variables (if defined) in each test's configuration
-  file. Currently, the following experiment variables are included:
+    abs_cost = nx*ny*num_time_steps*num_fcsts
+
+  where ``nx`` and ``ny`` are the number of grid points in the horizontal (``x`` and 
+  ``y``) directions, ``num_time_steps`` is the number of time steps, and ``num_fcsts`` 
+  is the number of forecasts the test runs (this will be greater than 1 
+  for tests that include multiple starting dates and/or run ensembles). 
+  Note that this cost calculation does not differentiate between different 
+  physics suites. Relative cost is then calculated using
+
+    rel_cost = abs_cost/abs_cost_ref
+
+  where ``abs_cost_ref`` is the cost of running a single (``num_fcsts = 1``) 
+  6-hour forecast on the RRFS_CONUS_25km grid (currently with ``nx = 219``
+  and ``ny = 131``) with a time step of 40 sec (so that ``num_time_steps = 
+  6*3600/40 = 540``), i.e.
+
+    abs_cost_ref = 219*131*540*1 = 15,492,060
+
+| Column 5:
+| The number of times the forecast model will be run by the test.  This 
+  is calculated using quantities such as the number of cycle dates (i.e. 
+  forecast model start dates) and the number of of ensemble members (which 
+  is greater than 1 if running ensemble forecasts and 1 otherwise).  The 
+  latter are in turn obtained directly or indirectly from the quantities 
+  in Columns 6, 7, ....
+
+| Columns 6, 7, ...:
+| The values of various experiment variables (if defined) in each test's 
+  configuration file. Currently, the following experiment variables are 
+  included:
 
   |  ``PREDEF_GRID_NAME``
   |  ``CCPP_PHYS_SUITE``
@@ -222,10 +250,11 @@ while the columns contain the following information (column titles are included 
   |  ``CYCL_HRS``
   |  ``INCR_CYCL_FREQ``
   |  ``FCST_LEN_HRS``
+  |  ``DT_ATMOS``
   |  ``LBC_SPEC_INTVL_HRS``
   |  ``NUM_ENS_MEMBERS``
 
-Additional fields (columns) will likely be added to the CSV file in the near future.
+Additional fields (columns) may be added to the CSV file in the future.
 
 Note that the CSV file is not part of the ``regional_workflow`` repo (i.e. it is 
 not tracked by the repo). The ``run_WE2E_tests.sh`` script will generate a CSV 
