@@ -98,7 +98,8 @@ pipeline {
                 }
 
                 environment {
-                    BUILD_VERSION = "${env.SRW_PLATFORM}-${env.SRW_COMPILER}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                    BRANCH_NAME_ESCAPED = env.BRANCH_NAME.replace('/', '_')
+                    BUILD_VERSION = "${env.SRW_PLATFORM}-${env.SRW_COMPILER}-${env.BRANCH_NAME_ESCAPED}-${env.BUILD_NUMBER}"
                     BUILD_NAME = "ufs-srweather-app_${env.BUILD_VERSION}"
                 }
 
