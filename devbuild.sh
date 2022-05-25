@@ -136,12 +136,6 @@ while :; do
   shift
 done
 
-# Ensure platform name from variance ======================================
-if [[ "${PLATFORM}" == "wcoss2" || "${PLATFORM}" == "cactus" ||
-      "${PLATFORM}" == "dogwood" ]]; then
-  PLATFORM="wcoss2"
-fi
-
 # check if PLATFORM is set
 if [ -z $PLATFORM ] ; then
   printf "\nERROR: Please set PLATFORM.\n\n"
