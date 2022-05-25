@@ -14,10 +14,6 @@ The SRW App v2.0.0 citation is as follows and should be used when presenting res
 
 UFS Development Team. (2022, June 3). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
 
-..
-   COMMENT: Update version numbers for release! Also update release date for citation!
-
-
 How to Use This Document
 ========================
 
@@ -52,10 +48,7 @@ The instructions in this documentation assume that users have certain background
 * Command line basics
 * System configuration knowledge (e.g., compilers, environment variables, paths, etc.)
 * Numerical Weather Prediction
-* Meteorology (particularly meteorology at the scales being predicted)
-
-..
-   COMMENT: Suggested sub-bullets for Meteorology/NWP? Cumulus and microphysics parameterizations? Convection? Microphysics?
+* Meteorology (particularly meteorology at the scales being predicted: 25km, 13km, and 3km resolutions)
 
 Additional background knowledge in the following areas could be helpful:
 * High-Performance Computing (HPC) Systems for those running the SRW App on an HPC system

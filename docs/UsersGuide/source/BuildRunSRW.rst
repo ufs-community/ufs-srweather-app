@@ -75,10 +75,7 @@ The SRW Application source code is publicly available on GitHub. To download the
 
 .. code-block:: console
 
-   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
-
-..
-   COMMENT: This will need to be changed to the updated release branch of the SRW repo once it exists. 
+   git clone -b release/public-v2 https://github.com/ufs-community/ufs-srweather-app.git
 
 The cloned repository contains the configuration files and sub-directories shown in
 :numref:`Table %s <FilesAndSubDirs>`.
@@ -239,7 +236,7 @@ If the ``devbuild.sh`` approach failed, users need to set up their environment t
 
    source etc/lmod-setup.sh gaea
 
-or if the login shell is ``csh`` or ``tcsh``, run ``source etc/lmod-setup.csh`` instead. If users execute the above command on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>``, run:
+or if the login shell is ``csh`` or ``tcsh``, run ``source etc/lmod-setup.csh gaea`` instead. If users execute the above command on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>``, run:
 
 .. code-block:: console
 
@@ -254,9 +251,6 @@ On Level 2-4 systems, users will need to modify certain environment variables, s
 
    export <VARIABLE_NAME>=<PATH_TO_MODULE>
    setenv <VARIABLE_NAME> <PATH_TO_MODULE>
-
-..
-   COMMENT: Might be good to list an example here...
 
 .. _BuildCMake:
 

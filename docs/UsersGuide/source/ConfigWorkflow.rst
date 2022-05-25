@@ -62,10 +62,7 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
    The default queue or QOS to which workflow tasks are submitted (QOS is Slurm's term for queue; it stands for "Quality of Service"). If the task's ``QUEUE_HPSS`` or ``QUEUE_FCST`` parameters (see below) are not specified, the task will be submitted to the queue indicated by this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "batch" "dev" "normal" "regular" "workq"
 
 ``PARTITION_HPSS``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the partition specified in this variable. These links are needed to generate initial conditions (ICs) and lateral boundary conditions (LBCs) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "normal" "service" "workq"
-
-..
-   COMMENT: Wouldn't it be reset to the PARTITION_DEFAULT value? 
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the partition specified in this variable. These links are needed to generate initial conditions (:term:`ICs`) and lateral boundary conditions (:term:`LBCs`) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to the ``PARTITION_DEFAULT`` value (if set) or to a machine-dependent value. Valid values: "" "normal" "service" "workq"
 
 ``CLUSTERS_HPSS``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the clusters specified in this variable. These links are needed to generate initial conditions (ICs) and lateral boundary conditions (LBCs) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
@@ -103,9 +100,6 @@ Cron-Associated Parameters
 ``CRON_RELAUNCH_INTVL_MNTS``: (Default: "03")
    The interval (in minutes) between successive calls of the experiment launch script by a cron job to (re)launch the experiment (so that the workflow for the experiment kicks off where it left off). This is used only if ``USE_CRON_TO_RELAUNCH`` is set to "TRUE".
 
-..
-   COMMENT: Are these variables set in a machine script somewhere for Level 1 systems? I've used cron but never had to set these. It seems like the default for NOAA Cloud is "01". 
-
 Directory Parameters
 ====================
 ``EXPT_BASEDIR``: (Default: "")
@@ -135,9 +129,6 @@ These variables apply only when using NCO mode (i.e. when ``RUN_ENVIR`` is set t
    .. code-block:: console
 
       $COMINgfs/gfs.$yyyymmdd/$hh/atmos
-
-..
-   COMMENT: Should "atmos" be at the end of this file path? If so, is it standing in for something (like FV3GFS), or is "atmos" actually part of the file path? Are the files created directly in the "atmos" folder? Or is there an "ICS" and "LBCS" directory generated? 
 
 ``FIXLAM_NCO_BASEDIR``: (Default: "")
    The base directory containing pregenerated grid, orography, and surface climatology files. For the pregenerated grid specified by ``PREDEF_GRID_NAME``, these "fixed" files are located in:
@@ -248,9 +239,6 @@ Forecast Parameters
 
 ``INCR_CYCL_FREQ``: (Default: "24")
    Increment in hours for cycle frequency (cycl_freq). The default is "24", which means cycl_freq=24:00:00.
-
-..
-   COMMENT: What is cycl_freq from? It's not mentioned anywhere else here... In general, this definition could be better... need more info. 
 
 ``FCST_LEN_HRS``: (Default: "24")
    The length of each forecast, in integer hours.
@@ -532,20 +520,11 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
 ``SPP_SIGTOP1``: (Default: ( "0.1" "0.1" "0.1" "0.1" "0.1") )
    Controls vertical tapering of perturbations at the tropopause and corresponds to the lower sigma level at which to taper perturbations to zero. 
 
-..
-   COMMENT: Needs review. 
-
 ``SPP_SIGTOP2``: (Default: ( "0.025" "0.025" "0.025" "0.025" "0.025" ) )
    Controls vertical tapering of perturbations at the tropopause and corresponds to the upper sigma level at which to taper perturbations to zero.
 
-..
-   COMMENT: Needs review. 
-
 ``SPP_STDDEV_CUTOFF``: (Default: ( "1.5" "1.5" "2.5" "1.5" "1.5" ) )
    Perturbation magnitude cutoff in number of standard deviations from the mean. 
-
-..
-   COMMENT: Needs review. 
 
 ``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
    The list of parameterizations to perturb: planetary boundary layer (PBL), surface physics (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: "pbl", "sfc", "rad", "gwd", and "mp".
@@ -1203,7 +1182,6 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
    This array is used to set some of the :term:`namelist` variables in the forecast model's namelist file. It maps file symlinks to the actual fixed file locations in the ``FIXam`` directory. The symlink names appear in the first column (to the left of the "|" symbol), and the paths to these files (in the ``FIXam`` directory) are held in workflow variables, which appear to the right of the "|" symbol. It is possible to remove ``FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING`` as a workflow variable and make it only a local one since it is used in only one script.
 
 ..
-   COMMENT: Why is #"FNZORC | $FNZORC" \ commented out in config_defaults.sh?
    COMMENT: Is this an accurate rewording of the original? 
 
 
@@ -1278,9 +1256,6 @@ Community Radiative Transfer Model (CRTM) Parameters
 
 These variables set parameters associated with outputting satellite fields in the :term:`UPP` :term:`grib2` files using the Community Radiative Transfer Model (:term:`CRTM`). :numref:`Section %s <SatelliteProducts>` includes further instructions on how to do this. 
 
-..
-   COMMENT: What actually happens here? Where are the satellite fields outputted to? When/why would this be used? What kind of satellites?
-
 ``USE_CRTM``: (Default: "FALSE")
    Flag that defines whether external :term:`CRTM` coefficient files have been staged by the user in order to output synthetic satellite products available within the :term:`UPP`. If this is set to "TRUE", then the workflow will check for these files in the directory ``CRTM_DIR``. Otherwise, it is assumed that no satellite fields are being requested in the UPP configuration.
 
@@ -1328,10 +1303,7 @@ Thread Affinity Interface
 ===========================
 
 .. note::
-   Note that settings for the ``make_grid`` and ``make_orog`` tasks are not included below because they do not use parallelized code.
-
-..
-   COMMENT: The note above is in config_defaults.sh comments, but make_orog does seem to be included below... should I remove it? 
+   Note that settings for the ``make_grid`` and ``make_orog`` tasks are disabled/not included below because they do not use parallelized code.
 
 ``KMP_AFFINITY_*``: (Default: see below)
 
@@ -1356,14 +1328,10 @@ Thread Affinity Interface
       OMP_NUM_THREADS_MAKE_SFC_CLIMO="1"
       OMP_NUM_THREADS_MAKE_ICS="1"
       OMP_NUM_THREADS_MAKE_LBCS="1"
-      OMP_NUM_THREADS_RUN_FCST="2"    # atmos_nthreads in model_configure
+      OMP_NUM_THREADS_RUN_FCST="2"
       OMP_NUM_THREADS_RUN_POST="1"
 
    The number of OpenMP threads to use for parallel regions.
-
-..
-   COMMENT: What does the #atmos_nthreads comment mean? Can it be removed?
-
 
 ``OMP_STACKSIZE_*``: (Default: see below)
 
