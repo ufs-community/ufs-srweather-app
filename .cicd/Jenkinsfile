@@ -135,6 +135,12 @@ pipeline {
                             echo "Testing SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM}"
                             sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_test.sh"'
                         }
+
+                        post {
+                            always {
+                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'test_results-*-*.txt', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
+                            }
+                        }
                     }
                 }
             }
