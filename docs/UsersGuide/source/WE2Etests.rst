@@ -184,7 +184,8 @@ in the directory ``ufs-srweather-app/regional_workflow/tests/WE2E``.
 The WE2E Test Information File
 ================================
 In addition to creating the WE2E tests' experiment directories and optionally creating
-cron jobs to launch their workflows, the ``run_WE2E_tests.sh`` script generates (if necessary)
+cron jobs to launch their workflows, the ``run_WE2E_tests.sh`` script generates (if 
+necessary and if not explicitly disabled by the ``generate_csv_file="FALSE"`` flag to this script)
 a CSV (Comma-Separated Value) file named ``WE2E_test_info.csv`` that contains information 
 on the full set of WE2E tests.  This file serves as a single location where relevant 
 information about the WE2E tests can be found. It can be imported into Google Sheets 
@@ -192,43 +193,50 @@ using the "|" (pipe symbol) character as the custom field separator. The rows of
 file/sheet represent the full set of available tests (not just the ones to be run), 
 while the columns contain the following information (column titles are included in the CSV file):
 
-| Column 1:
+| **Column 1**
 | The primary test name followed by the category subdirectory it is
   located in (the latter in parentheses).
 
-| Column 2:
+| **Column 2**
 | Any alternate names for the test followed by their category subdirectories
   (in parentheses).
 
-| Column 3:
+| **Column 3**
 | The test description.
 
-| Column 4:
+| **Column 4**
 | The relative cost of running the dynamics in the test.  This gives an 
-  idea of how expensive the test is.  The cost is relative to a test 
-  that runs a single 6-hour forecast on the ``RRFS_CONUS_25km`` predefined 
-  grid using the default time step (``DT_ATMOS``) for this grid.  To calculate
-  the absolute cost, the relative cost ``abs_cost`` is calculated as
+  idea of how expensive the test is relative to a reference test that runs 
+  a single 6-hour forecast on the ``RRFS_CONUS_25km`` predefined grid using 
+  its default time step.  To calculate the relative cost, the absolute cost 
+  ``abs_cost`` is first calculated as follows:
 
-    abs_cost = nx*ny*num_time_steps*num_fcsts
+.. code-block::
 
-  where ``nx`` and ``ny`` are the number of grid points in the horizontal (``x`` and 
-  ``y``) directions, ``num_time_steps`` is the number of time steps, and ``num_fcsts`` 
-  is the number of forecasts the test runs (this will be greater than 1 
-  for tests that include multiple starting dates and/or run ensembles). 
-  Note that this cost calculation does not differentiate between different 
-  physics suites. Relative cost is then calculated using
+     abs_cost = nx*ny*num_time_steps*num_fcsts
+
+| Here, ``nx`` and ``ny`` are the number of grid points in the horizontal 
+  (``x`` and ``y``) directions, ``num_time_steps`` is the number of time 
+  steps in one forecast, and ``num_fcsts`` is the number of forecasts the 
+  test runs (see Column 5 below).  [Note that this cost calculation does 
+  not (yet) differentiate between different physics suites.]  The relative 
+  cost ``rel_cost`` is then calculated using
+
+.. code-block::
 
     rel_cost = abs_cost/abs_cost_ref
 
-  where ``abs_cost_ref`` is the cost of running a single (``num_fcsts = 1``) 
-  6-hour forecast on the RRFS_CONUS_25km grid (currently with ``nx = 219``
-  and ``ny = 131``) with a time step of 40 sec (so that ``num_time_steps = 
-  6*3600/40 = 540``), i.e.
+| where ``abs_cost_ref`` is the cost of running the reference forecast 
+  described above, i.e. a single (``num_fcsts = 1``) 6-hour forecast on the 
+  ``RRFS_CONUS_25km grid`` (which currently has ``nx = 219``, ``ny = 131``, 
+  and a time step ``DT_ATMOS =  40 sec`` (so that ``num_time_steps = 6*3600/40 
+  = 540``), i.e.
+
+.. code-block::
 
     abs_cost_ref = 219*131*540*1 = 15,492,060
 
-| Column 5:
+| **Column 5**
 | The number of times the forecast model will be run by the test.  This 
   is calculated using quantities such as the number of cycle dates (i.e. 
   forecast model start dates) and the number of of ensemble members (which 
@@ -236,7 +244,7 @@ while the columns contain the following information (column titles are included 
   latter are in turn obtained directly or indirectly from the quantities 
   in Columns 6, 7, ....
 
-| Columns 6, 7, ...:
+| **Columns 6, 7, ...**
 | The values of various experiment variables (if defined) in each test's 
   configuration file. Currently, the following experiment variables are 
   included:
@@ -258,11 +266,19 @@ Additional fields (columns) may be added to the CSV file in the future.
 
 Note that the CSV file is not part of the ``regional_workflow`` repo (i.e. it is 
 not tracked by the repo). The ``run_WE2E_tests.sh`` script will generate a CSV 
-file if (1) the CSV file doesn't already exist, or (2) the CSV file does exist 
-but changes have been made to one or more of the category subdirectories (e.g., 
-test configuration files modified, added, or deleted) since the creation of the 
-CSV file. Thus, ``run_WE2E_tests.sh`` will always create a CSV file the first
-time it is run in a fresh git clone of the SRW App.
+file if the ``generate_csv_file`` flag to this script has not explicitly been
+set to ``"FALSE"`` and if either one of the following is true:
+
+#. The CSV file doesn't already exist.
+#. The CSV file does exist, but changes have been made to one or more of the 
+   category subdirectories (e.g., test configuration files modified, added, 
+   or deleted) since the creation of the CSV file. 
+
+Thus, unless the ``generate_csv_file`` flag is set to ``"FALSE"``, the 
+``run_WE2E_tests.sh`` will create a CSV file the first time it is run in a 
+fresh git clone of the SRW App.  (The ``generate_csv_file`` flag is provided 
+because the CSV file generation can be slow, so users may wish to skip this 
+step since it is not a necessary part of running the tests.)
 
 
 Checking Test Status
@@ -401,9 +417,14 @@ In this situation, the primary name for the test is ``grid_RRFS_CONUScompact_25k
 
 Note the following:
 
-* A primary test can have more than one alternate test name (by having more than one symlink point to the test's configuration file).
-* The symlinks representing the alternate test names can be in the same or a different category directory.
-* The --relative flag makes the symlink relative (i.e., within/below the ``regional_workflow`` directory structure) so that it stays valid when copied to other locations. However, the ``--relative`` flag may be different and/or not exist on every platform.
+* A primary test can have more than one alternate test name (by having 
+  more than one symlink point to the test's configuration file).
+* The symlinks representing the alternate test names can be in the same 
+  or a different category directory.
+* The ``--relative`` flag makes the symlink relative (i.e., within/below 
+  the ``regional_workflow`` directory structure) so that it stays valid 
+  when copied to other locations. (Note however that this flag is 
+  platform-dependent and may not exist on some platform.)
 * To determine whether a test has one or more alternate names, a user can 
   view the CSV file ``WE2E_test_info.csv`` that ``run_WE2E_tests.sh`` generates. 
   Recall from :numref:`Section %s <WE2ETestInfoFile>` that column 1 of this CSV 
@@ -411,8 +432,9 @@ Note the following:
   any alternate names (and their categories).
 * With this primary/alternate test naming convention, a user can list either the 
   primary test name or one of the alternate test names in the experiments list file 
-  (e.g. ``my_tests.txt``) that ``run_WE2E_tests.sh`` reads in. If both primary and 
-  one or more alternate test names are listed, then ``run_WE2E_tests.sh`` will exit 
-  with a warning message without running any tests.
+  (e.g. ``my_tests.txt``) read in by ``run_WE2E_tests.sh``. If more than one name
+  is listed for the same test (e.g. the primary name and and an alternate name, 
+  two alternate names, etc), ``run_WE2E_tests.sh`` will exit with a warning message 
+  without running any tests.
 
 
