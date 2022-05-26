@@ -226,11 +226,11 @@ while the columns contain the following information (column titles are included 
 
     rel_cost = abs_cost/abs_cost_ref
 
-| where ``abs_cost_ref`` is the cost of running the reference forecast 
-  described above, i.e. a single (``num_fcsts = 1``) 6-hour forecast on the 
-  ``RRFS_CONUS_25km grid`` (which currently has ``nx = 219``, ``ny = 131``, 
-  and a time step ``DT_ATMOS =  40 sec`` (so that ``num_time_steps = 6*3600/40 
-  = 540``), i.e.
+| where ``abs_cost_ref`` is the absolute cost of running the reference forecast 
+  described above, i.e. a single (``num_fcsts = 1``) 6-hour forecast 
+  (``FCST_LEN_HRS = 6``) on the ``RRFS_CONUS_25km grid`` (which currently has 
+  ``nx = 219``, ``ny = 131``, and ``DT_ATMOS =  40 sec`` (so that ``num_time_steps 
+  = FCST_LEN_HRS*3600/DT_ATMOS = 6*3600/40 = 540``), i.e.
 
 .. code-block::
 
