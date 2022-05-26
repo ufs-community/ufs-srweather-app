@@ -327,6 +327,7 @@ above, such as ``wflow_features``:
 
 Adding a New WE2E Test Category
 -----------------------------------
+
 To create a new test category called, e.g., ``new_category``:
 
 #. In the directory ``ufs-srweather-app/regional_workflow/tests/WE2E/test_configs``, create a new directory named ``new_category``. 
