@@ -13,7 +13,7 @@ if { [module-info mode load] } {
 }
 
 # This path should point to your HPCstack installation directory
-setenv HPCstack "/Users/username/HPC-stack/install"
+setenv HPCstack "/Users/username/hpc-stack/install"
 
 # This path should point to your SRW Application directory
 setenv SRW "/Users/username/SRW/ufs-srweather-app"
