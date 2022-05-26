@@ -7,8 +7,8 @@ pipeline {
 
     parameters {
         // Allow job runner to filter based on platform
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'orion', 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'orion'], description: 'Specify the platform(s) to use')
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
     }
@@ -68,8 +68,8 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        // values 'cheyenne', 'gaea', 'orion', 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'
-                        values 'cheyenne', 'gaea', 'orion'
+                        // values 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'
+                        values 'cheyenne', 'gaea', 'hera', 'jet', 'orion'
                     }
 
                     axis {
@@ -83,7 +83,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            values 'gaea', 'orion'
+                            values 'gaea', 'hera', 'jet', 'orion'
                         }
 
                         axis {
@@ -98,7 +98,8 @@ pipeline {
                 }
 
                 environment {
-                    BUILD_VERSION = "${env.SRW_PLATFORM}-${env.SRW_COMPILER}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                    BRANCH_NAME_ESCAPED = env.BRANCH_NAME.replace('/', '_')
+                    BUILD_VERSION = "${env.SRW_PLATFORM}-${env.SRW_COMPILER}-${env.BRANCH_NAME_ESCAPED}-${env.BUILD_NUMBER}"
                     BUILD_NAME = "ufs-srweather-app_${env.BUILD_VERSION}"
                 }
 
