@@ -20,8 +20,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
    * :ref:`Install prerequisites <HPCstackInfo>`
    * :ref:`Clone the SRW App from GitHub <DownloadSRWApp>`
    * :ref:`Check out the external repositories <CheckoutExternals>`
-   * :ref:`Set up the build environment <SetUpBuild>`
-   * :ref:`Build the executables <BuildExecutables>`
+   * :ref:`Set up the build environment and build the executables <BuildExecutables>`
    * :ref:`Download and stage data <Data>`
    * :ref:`Optional: Configure a new grid <GridSpecificConfig>`
    * :ref:`Generate a regional workflow experiment <GenerateForecast>`
@@ -50,11 +49,21 @@ Install the HPC-Stack
 Background
 ----------------
 
-The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g. NCEPLIBS, FMS, etc.) to libraries developed by NOAA's partners (e.g. PIO, ESMF, etc.) to truly third party libraries (e.g. NETCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW App.
+The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g., NCEPLIBS, FMS) to libraries developed by NOAA's partners (e.g., PIO, ESMF) to truly third party libraries (e.g., NETCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW App.
 
 Instructions
 -------------------------
-Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) or models that depend on it. Users can either build the HPC-stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`.  
+Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) or models that depend on it. Users can either build the HPC-Stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing the HPC-Stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
+
+.. code-block:: console
+
+   # Linux, if allowed
+   ulimit -s unlimited
+
+   # MacOS, this corresponds to 65MB
+   ulimit -S -s unlimited
+
+For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`. 
 
 After completing installation, continue to the next section.
 
@@ -114,7 +123,7 @@ The cloned repository contains the configuration files and sub-directories shown
 Check Out External Components
 ================================
 
-The SRW App relies on a variety of components (e.g., regional_workflow, UFS_UTILS, ufs-weather-model, and UPP) detailed in :numref:`Chapter %s <Components>` of this User's Guide. Users must run the ``checkout_externals`` script to link the necessary external repositories to the SRW App. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>` into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
+The SRW App relies on a variety of components (e.g., regional_workflow, UFS_UTILS, ufs-weather-model, and UPP) detailed in :numref:`Chapter %s <Components>` of this User's Guide. Each component has its own :term:`repository`. Users must run the ``checkout_externals`` script to collect the individual components of the SRW App from their respective git repositories. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>` into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
 
 Run the executable that pulls in SRW App components from external repositories:
 
@@ -123,83 +132,38 @@ Run the executable that pulls in SRW App components from external repositories:
    cd ufs-srweather-app
    ./manage_externals/checkout_externals
 
+The script should output dialogue indicating that it is retrieving different code repositories. It may take several minutes to download these repositories.
 
+.. _BuildExecutables:
 
-Build with ``devbuild.sh``
-==========================
+Set Up the Environment and Build the Executables
+===================================================
 
-On Level-1 systems, for which a modulefile is provided under ``modulefiles`` directory, we can build SRW App binaries with:
+.. _DevBuild:
+
+``devbuild.sh`` Approach
+-----------------------------
+
+On Level 1 systems for which a modulefile is provided under the ``modulefiles`` directory, we can build the SRW App binaries with:
 
 .. code-block:: console
 
-   ./devbuild.sh --platform=hera
+   ./devbuild.sh --platform=<machine_name>
 
-If compiler auto-detection fails for some reason, specify it using
+where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
+
+If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. FOr example:
 
 .. code-block:: console
 
    ./devbuild.sh --platform=hera --compiler=intel
 
-If this method doesn't work, we will have to manually setup the environment, and build SRW app binaries with CMake.
+where valid values are ``intel`` or ``gnu``.
 
-.. _SetUpBuild:
+The last line of the console output should be ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-Set up the Build/Run Environment
-================================
+The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/bin`` directory. If this build method doesn't work, or it users are not on a supported machine, they will have to manually setup the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
 
-We need to setup our environment to run a workflow or to build the SRW app with CMake. Note that ``devbuild.sh`` does not prepare environment for workflow runs so this step is necessary even though binaries are built properly using ``devbuild.sh``.
-
-The build environment must be set up for the user's specific platform. First, we need to make sure ``Lmod`` is the app used for loading modulefiles. That is often the case on most systems, however, on some systems such as Gaea/Odin, the default modulefile loader is from Cray and we need to swap it for ``Lmod``. For example on Gaea, assuming a ``bash`` login shell, run:
-
-.. code-block:: console
-
-   source etc/lmod-setup.sh gaea
-
-or if your login shell is ``csh`` or ``tcsh``, source ``etc/lmod-setup.csh`` instead. If you execute the above command on systems that don't need it, it will simply do a ``module purge``. From here on, we can assume, ``Lmod`` is ready to load modulefiles needed by the SRW app.
-
-The modulefiles needed for building and running SRW App are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>`` , run:
-
-.. code-block:: console
-
-   module use <path/to/modulefiles/directory>
-   module load build_<platform>_<compiler>
-
-where ``<path/to/modulefiles/directory>`` is the full path to the ``modulefiles`` directory. This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory.
-
-On Level 2-4 systems, users will need to modify certain environment variables, such as the path to NCEP libraries, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
-
-.. code-block::
-
-   export <VARIABLE_NAME>=<PATH_TO_MODULE>
-   setenv <VARIABLE_NAME> <PATH_TO_MODULE>
-
-
-.. _BuildExecutables:
-
-Build the Executables
-=======================
-
-Create a directory to hold the build's executables: 
-
-.. code-block:: console
-
-   mkdir build
-   cd build
-
-From the build directory, run the following commands to build the pre-processing utilities, forecast model, and post-processor:
-
-.. code-block:: console
-
-   cmake .. -DCMAKE_INSTALL_PREFIX=..
-   make -j 4  >& build.out &
-
-``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. 
-
-The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
-
-.. hint::
-
-   If you see the build.out file, but there is no ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
 
 .. _ExecDescription:
 
@@ -258,19 +222,86 @@ The build will take a few minutes to complete. When it starts, a random number i
    |                        | grid point.                                                                     |
    +------------------------+---------------------------------------------------------------------------------+
 
+.. _CMakeApproach:
+
+CMake Approach
+-----------------
+
+Set Up the Workflow Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. attention::
+   If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
+
+If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, assuming a ``bash`` login shell, run:
+
+.. code-block:: console
+
+   source etc/lmod-setup.sh gaea
+
+or if the login shell is ``csh`` or ``tcsh``, run ``source etc/lmod-setup.csh`` instead. If users execute the above command on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>``, run:
+
+.. code-block:: console
+
+   module use <path/to/modulefiles/directory>
+   module load build_<platform>_<compiler>
+
+where ``<path/to/modulefiles/directory>`` is the full path to the ``modulefiles`` directory. This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory.
+
+On Level 2-4 systems, users will need to modify certain environment variables, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
+
+.. code-block::
+
+   export <VARIABLE_NAME>=<PATH_TO_MODULE>
+   setenv <VARIABLE_NAME> <PATH_TO_MODULE>
+
+..
+   COMMENT: Might be good to list an example here...
+
+.. _BuildCMake:
+
+Build the Executables Using CMake
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. attention::
+   If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
+
+In the ``ufs-srweather-app`` directory, create a subdirectory to hold the build's executables: 
+
+.. code-block:: console
+
+   mkdir build
+   cd build
+
+From the build directory, run the following commands to build the pre-processing utilities, forecast model, and post-processor:
+
+.. code-block:: console
+
+   cmake .. -DCMAKE_INSTALL_PREFIX=..
+   make -j 4  >& build.out &
+
+``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. Although users can specify a larger or smaller number of threads (e.g., ``-j8``, ``-j2``), it is highly recommended to use at least 4 parallel threads to prevent overly long installation times. 
+
+The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
+
+.. hint::
+
+   If you see the build.out file, but there is no ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
+
+
 .. _Data:
 
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW App tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW App tests are already available. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in :numref:`Section %s Downloading and Staging Input Data <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GridSpecificConfig:
 
 Grid Configuration
 =======================
 
-The SRW App officially supports three different predefined grids as shown in :numref:`Table %s <PredefinedGrids>`. The "out-of-the-box" SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>` for those who are curious. Users who plan to utilize one of the three pre-defined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new domain should refer to :numref:`Chapter %s <LAMGrids>` for details on how to do so. At a minimum, these users will need to add the new grid name to the ``valid_param_vals`` script and add the corresponding grid-specific parameters in the ``set_predef_grid_params`` script. 
+The SRW App officially supports four different predefined grids as shown in :numref:`Table %s <PredefinedGrids>`. The "out-of-the-box" SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>` for those who are curious. Users who plan to utilize one of the four predefined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new domain should refer to :numref:`Chapter %s <LAMGrids>` for details on how to do so. At a minimum, these users will need to add the new grid name to the ``valid_param_vals`` script and add the corresponding grid-specific parameters in the ``set_predef_grid_params`` script. 
 
 .. _PredefinedGrids:
 
@@ -284,6 +315,8 @@ The SRW App officially supports three different predefined grids as shown in :nu
    | RRFS_CONUS_13km      | ESG grid          | lambert_conformal              |
    +----------------------+-------------------+--------------------------------+
    | RRFS_CONUS_3km       | ESG grid          | lambert_conformal              |
+   +----------------------+-------------------+--------------------------------+
+   | SUBCONUS_Ind_3km     | ESG grid          | lambert_conformal              |
    +----------------------+-------------------+--------------------------------+
 
 
@@ -424,6 +457,11 @@ settings. There is usually no need for a user to modify the default configuratio
    +----------------------+------------------------------------------------------------+
    | Compiler             | COMPILER                                                   |
    +----------------------+------------------------------------------------------------+
+   | METplus              | MODEL, MET_INSTALL_DIR, MET_BIN_EXEC, METPLUS_PATH,        |
+   |                      | CCPA_OBS_DIR, MRMS_OBS_DIR, NDAS_OBS_DIR                   |
+   +----------------------+------------------------------------------------------------+
+
+
 
 
 .. _UserSpecificConfig:
@@ -470,28 +508,55 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+--------------------------------------------------------+
    | CYCL_HRS                       | ("HH1" "HH2")     | "00"                                                   |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_NAME_ICS             |  "FV3GFS"         | "FV3GFS"                                               |
+   | EXTRN_MDL_NAME_ICS             | "FV3GFS"          | "FV3GFS"                                               |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_NAME_LBCS            |  "FV3GFS"         | "FV3GFS"                                               |
+   | EXTRN_MDL_NAME_LBCS            | "FV3GFS"          | "FV3GFS"                                               |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | FV3GFS_FILE_FMT_ICS            |  "nemsio"         | "grib2"                                                |
+   | FV3GFS_FILE_FMT_ICS            | "nemsio"          | "grib2"                                                |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | FV3GFS_FILE_FMT_LBCS           |  "nemsio"         | "grib2"                                                |
+   | FV3GFS_FILE_FMT_LBCS           | "nemsio"          | "grib2"                                                |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | WTIME_RUN_FCST                 |  "04:30:00"       | "01:00:00"                                             |
+   | WTIME_RUN_FCST                 | "04:30:00"        | "01:00:00"                                             |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | USE_USER_STAGED_EXTRN_FILES    |  "FALSE"          | "TRUE"                                                 |
+   | USE_USER_STAGED_EXTRN_FILES    | "FALSE"           | "TRUE"                                                 |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASE_DIR_ICS  |  ""               | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+   | EXTRN_MDL_SOURCE_BASE_DIR_ICS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_FILES_ICS            |  ""               | "gfs.pgrb2.0p25.f000"                                  |
+   | EXTRN_MDL_FILES_ICS            | ""                | "gfs.pgrb2.0p25.f000"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  |  ""               | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_FILES_LBCS           |  ""               | "gfs.pgrb2.0p25.f006"                                  |
+   | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006"                                  |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | MODEL                          | ""                | FV3_GFS_v16_CONUS_25km"                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | METPLUS_PATH                   | ""                | "/path/to/METPlus"                                     |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | MET_INSTALL_DIR                | ""                | "/path/to/MET"                                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | CCPA_OBS_DIR                   | ""                | "/path/to/processed/CCPA/data"                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | MRMS_OBS_DIR                   | ""                | "/path/to/processed/MRMS/data"                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | NDAS_OBS_DIR                   | ""                | "/path/to/processed/NDAS/data"                         |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_GET_OBS_CCPA          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_GET_OBS_MRMS          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_GET_OBS_NDAS          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_GRIDSTAT           | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_POINTSTAT          | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_ENSGRID            | "FALSE"           | "FALSE"                                                |
+   +--------------------------------+-------------------+--------------------------------------------------------+
+   | RUN_TASK_VX_ENSPOINT           | "FALSE"           | "FALSE"                                                |
    +--------------------------------+-------------------+--------------------------------------------------------+
 
- 
+
+
 To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
@@ -503,11 +568,11 @@ The default settings in this file include a predefined 25-km :term:`CONUS` grid 
 
 Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged the initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
 
-Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
+Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 .. important::
 
-   If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuild>`, you will have to check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
+   If your modulefile uses a GNU compiler to set up the build environment in :numref:`Section %s <BuildExecutables>`, you will have to check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
 
 .. hint::
 
@@ -523,45 +588,49 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
    ACCOUNT="<my_account>"
    EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/staged_extrn_mdl_files"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+
+where: 
+* <model_type> refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
+* <data_type> refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
+* YYYYMMDDHH refers to a subdirectory containing data for the :term:`cycle` date. 
+
 
 **Hera, Jet, Orion, Gaea:**
 
-The ``MACHINE``, ``ACCOUNT``, and ``EXPT_SUBDIR`` settings are the same as for Cheyenne, except that ``"cheyenne"`` should be switched to ``"hera"``, ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. Set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, but replace the file paths to Cheyenne's data with the file paths for the correct machine. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` use the same file path. 
+The ``MACHINE``, ``ACCOUNT``, and ``EXPT_SUBDIR`` settings are the same as for Cheyenne, except that ``"cheyenne"`` should be switched to ``"hera"``, ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. Set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, but replace the file paths to Cheyenne's data with the file paths for the correct machine. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` use the same base file path. 
 
 On Hera: 
 
 .. code-block:: console
 
-   "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data"
+   "/scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 On Jet: 
 
 .. code-block:: console
 
-   "/lfs4/BMC/wrfruc/FV3-LAM/model_data"
+   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 On Orion: 
 
 .. code-block:: console
 
-   "/work/noaa/fv3-cam/UFS_SRW_app/v1p0/model_data"
-
+   "/work/noaa/fv3-cam/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 On Gaea: 
 
 .. code-block:: console
 
-   "/lustre/f2/pdata/esrl/gsd/ufs/ufs-srw-release-v1.0.0/staged_extrn_mdl_files"
-
+   "/lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
 For **WCOSS** systems, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
 
 .. code-block:: console
 
-   MACHINE=”wcoss_cray” or MACHINE=”wcoss_dell_p3”
-   ACCOUNT="my_account"
+   MACHINE="wcoss_cray" or MACHINE="wcoss_dell_p3"
+   ACCOUNT="valid_wcoss_project_code"
    EXPT_SUBDIR="my_expt_name"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
 
@@ -569,31 +638,23 @@ For WCOSS_DELL_P3:
    
 .. code-block:: console
 
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/model_data"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/model_data"
-
-For WCOSS_CRAY:
-
-.. code-block:: console
-   
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/model_data"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/hps3/emc/meso/noscrub/UFS_SRW_App/model_data"
-
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/ICS"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/LBCS"
 
 **NOAA Cloud Systems:**
 
 .. code-block:: console
 
-   MACHINE="SINGULARITY"
+   MACHINE="NOAACLOUD"
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
    EXPT_BASEDIR="lustre/$USER/expt_dirs"
    COMPILER="gnu"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/model_data/FV3GFS"
-   EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/model_data/FV3GFS"
-   EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" )
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/develop/input_model_data/FV3GFS"
+   EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/develop/input_model_data/FV3GFS"
+   EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
 
 .. note::
 
@@ -601,7 +662,56 @@ For WCOSS_CRAY:
    ``valid_param_vals script``. In addition, various example configuration files can be
    found in the ``regional_workflow/tests/baseline_configs`` directory.
 
+.. _VXConfig:
 
+Configure METplus Verification Suite (Optional)
+--------------------------------------------------
+
+Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
+
+.. attention::
+   METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. For the v2 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
+
+.. note::
+   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/regional_workflow/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
+
+   .. code-block:: console
+      
+      module use -a </path/to/met/modulefiles/>
+      module load met/<version.X.X>
+
+To use METplus verification, the path to the MET and METplus directories must be added to ``config.sh``:
+
+.. code-block:: console
+
+   METPLUS_PATH="</path/to/METplus/METplus-4.1.0>"
+   MET_INSTALL_DIR="</path/to/met/10.1.0>"
+
+Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and set the corresponding ``RUN_TASK_GET_OBS_*`` parameters to "FALSE" in ``config.sh``. 
+
+.. code-block:: console
+
+   CCPA_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/ccpa/proc"
+   MRMS_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/mrms/proc"
+   NDAS_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/ndas/proc"
+   RUN_TASK_GET_OBS_CCPA="FALSE"
+   RUN_TASK_GET_OBS_MRMS="FALSE"
+   RUN_TASK_GET_OBS_NDAS="FALSE"
+
+If users have access to NOAA HPSS but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to "TRUE", and the machine will attempt to download the appropriate data from NOAA HPSS. The ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
+
+Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
+
+Next, the verification tasks must be turned on according to the user's needs. Users should add some or all of the following tasks to ``config.sh``, depending on the verification procedure(s) they have in mind:
+
+.. code-block:: console
+
+   RUN_TASK_VX_GRIDSTAT="TRUE"
+   RUN_TASK_VX_POINTSTAT="TRUE"
+   RUN_TASK_VX_ENSGRID="TRUE"
+   RUN_TASK_VX_ENSPOINT="TRUE"
+
+These tasks are independent, so users may set some values to "TRUE" and others to "FALSE" depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>` More details on all of the parameters in this section are available in :numref:`Chapter %s <VXTasks>`. 
 
 .. _SetUpPythonEnv:
 
@@ -611,7 +721,9 @@ The workflow requires Python 3 with the packages 'PyYAML', 'Jinja2', and 'f90nml
 
 .. code-block:: console
 
+   module use <path/to/modulefiles>
    module load wflow_<platform>
+   conda activate regional_workflow
 
 This command will activate the ``regional_workflow`` conda environment. The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
 
@@ -655,18 +767,18 @@ Description of Workflow Tasks
 .. note::
    This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <RocotoRun>`
 
-:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by adding the following lines to the ``config.sh`` file before running the ``generate_FV3LAM_wflow.sh`` script: 
+:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by adding the following lines to the ``config.sh`` file before running the ``generate_FV3LAM_wflow.sh`` script: 
 
 .. code-block:: console
 
-   RUN_TASK_MAKE_GRID=”FALSE”
-   RUN_TASK_MAKE_OROG=”FALSE”
-   RUN_TASK_MAKE_SFC_CLIMO=”FALSE”
+   RUN_TASK_MAKE_GRID="FALSE"
+   RUN_TASK_MAKE_OROG="FALSE"
+   RUN_TASK_MAKE_SFC_CLIMO="FALSE"
 
 
 .. _WorkflowTasksFig:
 
-.. figure:: _static/FV3LAM_wflow_flowchart.png
+.. figure:: _static/FV3LAM_wflow_flowchart_v2.png
 
     *Flowchart of the workflow tasks*
 
@@ -676,7 +788,7 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workfl
 
 .. _WorkflowTasksTable:
 
-.. table::  Workflow tasks in the SRW App
+.. table::  Baseline workflow tasks in the SRW App
 
    +----------------------+------------------------------------------------------------+
    | **Workflow Task**    | **Task Description**                                       |
@@ -705,13 +817,119 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workfl
    | run_post             | Run the post-processing tool (UPP)                         |
    +----------------------+------------------------------------------------------------+
 
+In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksTable>` above, users may choose to run some or all of the METplus verification tasks. These tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. 
+
+.. _VXWorkflowTasksTable:
+
+.. table:: Verification (VX) workflow tasks in the SRW App
+
+   +-----------------------+------------------------------------------------------------+
+   | **Workflow Task**     | **Task Description**                                       |
+   +=======================+============================================================+
+   | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="TRUE"``  |
+   |                       | *and* user has access to NOAA HPSS data.                   |
+   +-----------------------+------------------------------------------------------------+
+   | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS="TRUE"``  |
+   |                       | *and* user has access to NOAA HPSS data.                   |
+   +-----------------------+------------------------------------------------------------+
+   | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
+   |                       | reflectivity and :term:`echo top` data from NOAA HPSS. Can |
+   |                       | only be run if ``RUN_TASK_GET_OBS_MRMS="TRUE"`` *and* user |
+   |                       | has access to NOAA HPSS data.                              |
+   +-----------------------+------------------------------------------------------------+
+   | VX_GRIDSTAT           | Runs METplus grid-to-grid verification for 1-h accumulated |
+   |                       | precipitation                                              |
+   +-----------------------+------------------------------------------------------------+
+   | VX_GRIDSTAT_REFC      | Runs METplus grid-to-grid verification for composite       |
+   |                       | reflectivity                                               |
+   +-----------------------+------------------------------------------------------------+
+   | VX_GRIDSTAT_RETOP     | Runs METplus grid-to-grid verification for :term:`echo top`|
+   +-----------------------+------------------------------------------------------------+
+   | VX_GRIDSTAT_##h       | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
+   |                       | 24-h (i.e., daily) accumulated precipitation. Valid values |
+   |                       | of ``##`` are ``03``, ``06``, and ``24``.                  |
+   +-----------------------+------------------------------------------------------------+
+   | VX_POINTSTAT          | Runs METplus grid-to-point verification for surface and    |
+   |                       | upper-air variables                                        |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID            | Runs METplus grid-to-grid ensemble verification for 1-h    |
+   |                       | accumulated precipitation. Can only be run if              |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_REFC       | Runs METplus grid-to-grid ensemble verification for        |
+   |                       | composite reflectivity. Can only be run if                 |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and                                 |
+   |                       | ``RUN_TASK_VX_ENSGRID = "TRUE"``.                          |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_RETOP      | Runs METplus grid-to-grid ensemble verification for        |
+   |                       | :term:`echo top`. Can only be run if ``DO_ENSEMBLE="TRUE"``|
+   |                       | and ``RUN_TASK_VX_ENSGRID="TRUE"``.                        |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_##h        | Runs METplus grid-to-grid ensemble verification for 3-h,   |
+   |                       | 6-h, and 24-h (i.e., daily) accumulated precipitation.     |
+   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
+   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_MEAN       | Runs METplus grid-to-grid verification for ensemble mean   |
+   |                       | 1-h accumulated precipitation. Can only be run if          |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_PROB       | Runs METplus grid-to-grid verification for 1-h accumulated |
+   |                       | precipitation probabilistic output. Can only be run if     |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_MEAN_##h   | Runs METplus grid-to-grid verification for ensemble mean   |
+   |                       | 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation. |
+   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
+   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_PROB_##h   | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
+   |                       | 24h (i.e., daily) accumulated precipitation probabilistic  |
+   |                       | output. Valid values of ``##`` are ``03``, ``06``, and     |
+   |                       | ``24``. Can only be run if ``DO_ENSEMBLE="TRUE"`` and      |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_PROB_REFC  | Runs METplus grid-to-grid verification for ensemble        |
+   |                       | probabilities for composite reflectivity. Can only be run  |
+   |                       | if ``DO_ENSEMBLE="TRUE"`` and                              |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSGRID_PROB_RETOP | Runs METplus grid-to-grid verification for ensemble        |
+   |                       | probabilities for :term:`echo top`. Can only be run if     |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSGRID="TRUE"``. | 
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSPOINT           | Runs METplus grid-to-point ensemble verification for       |
+   |                       | surface and upper-air variables. Can only be run if        |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSPOINT="TRUE"``.|
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSPOINT_MEAN      | Runs METplus grid-to-point verification for ensemble mean  |
+   |                       | surface and upper-air variables. Can only be run if        |
+   |                       | ``DO_ENSEMBLE="TRUE"`` and ``RUN_TASK_VX_ENSPOINT="TRUE"``.|
+   +-----------------------+------------------------------------------------------------+
+   | VX_ENSPOINT_PROB      | Runs METplus grid-to-point verification for ensemble       |
+   |                       | probabilities for surface and upper-air variables. Can     |
+   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | ``RUN_TASK_VX_ENSPOINT="TRUE"``.                           |
+   +-----------------------+------------------------------------------------------------+
 
 
 .. _RocotoRun:
 
 Run the Workflow Using Rocoto
 =============================
-The information in this section assumes that Rocoto is available on the desired platform. (Note that Rocoto cannot be used when running the workflow within a container.) If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
+
+.. attention::
+
+   If users are running the SRW App in a container or on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
+
+The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, Rocoto cannot be used when running the workflow within a container. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
+
+.. note::
+   Users may find it helpful to review :numref:`Chapter %s <RocotoInfo>` to gain a better understanding of Rocoto commands and workflow management before continuing, but this is not required to run the experiment. 
 
 Optionally, an environment variable can be set to navigate to the ``$EXPTDIR`` more easily. If the login shell is bash, it can be set as follows:
 
@@ -776,31 +994,45 @@ This will output the last 40 lines of the log file, which list the status of the
      0 out of 1 cycles completed.
      Workflow status:  IN PROGRESS
 
-Error messages for each specific task can be found in the task log files located in ``$EXPTDIR/log``. 
+If all the tasks complete successfully, the "Workflow status" at the bottom of the log file will change from "IN PROGRESS" to "SUCCESS". If certain tasks could not complete, the "Workflow status" will instead change to "FAILURE". Error messages for each specific task can be found in the task log files located in ``$EXPTDIR/log``. 
 
-If everything goes smoothly, you will eventually get the following workflow status table as follows:
+.. _Success:
+
+The workflow run is complete when all tasks have "SUCCEEDED". If everything goes smoothly, users will eventually see a workflow status table similar to the following: 
 
 .. code-block:: console
 
-   CYCLE                    TASK                       JOBID        STATE   EXIT STATUS   TRIES  DURATION
-   ======================================================================================================
-   202006170000        make_grid                     8854765    SUCCEEDED             0       1       6.0
-   202006170000        make_orog                     8854809    SUCCEEDED             0       1      27.0
-   202006170000   make_sfc_climo                     8854849    SUCCEEDED             0       1      36.0
-   202006170000    get_extrn_ics                     8854763    SUCCEEDED             0       1      54.0
-   202006170000   get_extrn_lbcs                     8854764    SUCCEEDED             0       1      61.0
-   202006170000         make_ics                     8854914    SUCCEEDED             0       1     119.0
-   202006170000        make_lbcs                     8854913    SUCCEEDED             0       1      98.0
-   202006170000         run_fcst                     8854992    SUCCEEDED             0       1     655.0
-   202006170000      run_post_00                     8855459    SUCCEEDED             0       1       6.0
-   202006170000      run_post_01                     8855460    SUCCEEDED             0       1       6.0
-   202006170000      run_post_02                     8855461    SUCCEEDED             0       1       6.0
-   202006170000      run_post_03                     8855462    SUCCEEDED             0       1       6.0
-   202006170000      run_post_04                     8855463    SUCCEEDED             0       1       6.0
-   202006170000      run_post_05                     8855464    SUCCEEDED             0       1       6.0
-   202006170000      run_post_06                     8855465    SUCCEEDED             0       1       6.0
+   CYCLE              TASK                   JOBID         STATE        EXIT STATUS   TRIES   DURATION
+   ==========================================================================================================
+   201906150000       make_grid              4953154       SUCCEEDED         0          1          5.0
+   201906150000       make_orog              4953176       SUCCEEDED         0          1         26.0
+   201906150000       make_sfc_climo         4953179       SUCCEEDED         0          1         33.0
+   201906150000       get_extrn_ics          4953155       SUCCEEDED         0          1          2.0
+   201906150000       get_extrn_lbcs         4953156       SUCCEEDED         0          1          2.0
+   201906150000       make_ics               4953184       SUCCEEDED         0          1         16.0
+   201906150000       make_lbcs              4953185       SUCCEEDED         0          1         71.0
+   201906150000       run_fcst               4953196       SUCCEEDED         0          1       1035.0
+   201906150000       run_post_f000          4953244       SUCCEEDED         0          1          5.0
+   201906150000       run_post_f001          4953245       SUCCEEDED         0          1          4.0
+   ...
+   201906150000       run_post_f048          4953381       SUCCEEDED         0          1          7.0
 
-If all the tasks complete successfully, the workflow status in the log file will indicate “SUCCESS." Otherwise, the workflow status will indicate “FAILURE."
+If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f048``. The output will resemble the following but may be significantly longer when using ensemble verification: 
+
+.. code-block:: console
+
+   CYCLE              TASK                   JOBID          STATE       EXIT STATUS   TRIES   DURATION
+   ==========================================================================================================
+   201906150000       make_grid              30466134       SUCCEEDED        0          1          5.0
+   ...
+   201906150000       run_post_f048          30468271       SUCCEEDED        0          1          7.0
+   201906150000       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
+   201906150000       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
+   201906150000       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0
+   201906150000       run_gridstatvx_03h     30468491       SUCCEEDED        0          1         43.0
+   201906150000       run_gridstatvx_06h     30468492       SUCCEEDED        0          1         29.0
+   201906150000       run_gridstatvx_24h     30468493       SUCCEEDED        0          1         20.0
+   201906150000       run_pointstatvx        30468423       SUCCEEDED        0          1        670.0
 
 
 Launch the Rocoto Workflow Manually
@@ -872,24 +1104,7 @@ After finishing the experiment, open the crontab using ``crontab -e`` and delete
 
    On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
    
-The workflow run is complete when all tasks have “SUCCEEDED”, and the rocotostat command outputs the following:
-
-.. code-block:: console
-
-   CYCLE               TASK                 JOBID              STATE         EXIT STATUS   TRIES   DURATION
-   ==========================================================================================================
-   201906150000          make_grid           4953154           SUCCEEDED         0         1           5.0
-   201906150000          make_orog           4953176           SUCCEEDED         0         1          26.0
-   201906150000          make_sfc_climo      4953179           SUCCEEDED         0         1          33.0
-   201906150000          get_extrn_ics       4953155           SUCCEEDED         0         1           2.0
-   201906150000          get_extrn_lbcs      4953156           SUCCEEDED         0         1           2.0
-   201906150000          make_ics            4953184           SUCCEEDED         0         1          16.0
-   201906150000          make_lbcs           4953185           SUCCEEDED         0         1          71.0
-   201906150000          run_fcst            4953196           SUCCEEDED         0         1        1035.0
-   201906150000          run_post_f000       4953244           SUCCEEDED         0         1           5.0
-   201906150000          run_post_f001       4953245           SUCCEEDED         0         1           4.0
-   ...
-   201906150000          run_post_f048       4953381           SUCCEEDED         0         1           7.0
+The workflow run is complete when all tasks have "SUCCEEDED", and the rocotostat command outputs a table similar to the one :ref:`above <Success>`.
 
 .. _PlotOutput:
 

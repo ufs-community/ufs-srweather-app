@@ -8,10 +8,10 @@ Usage: $0 --platform=PLATFORM [OPTIONS]...
 OPTIONS
   -h, --help
       show this help guide
-  --platform=PLATFORM
+  -p, --platform=PLATFORM
       name of machine you are building on
       (e.g. cheyenne | hera | jet | orion | wcoss_dell_p3)
-  --compiler=COMPILER
+  -c, --compiler=COMPILER
       compiler to use; default depends on platform
       (e.g. intel | gnu | cray | gccgfortran)
   --app=APPLICATION
@@ -104,10 +104,10 @@ fi
 while :; do
   case $1 in
     --help|-h) usage; exit 0 ;;
-    --platform=?*) PLATFORM=${1#*=} ;;
-    --platform|--platform=) usage_error "$1 requires argument." ;;
-    --compiler=?*) COMPILER=${1#*=} ;;
-    --compiler|--compiler=) usage_error "$1 requires argument." ;;
+    --platform=?*|-p=?*) PLATFORM=${1#*=} ;;
+    --platform|--platform=|-p|-p=) usage_error "$1 requires argument." ;;
+    --compiler=?*|-c=?*) COMPILER=${1#*=} ;;
+    --compiler|--compiler=|-c|-c=) usage_error "$1 requires argument." ;;
     --app=?*) APPLICATION=${1#*=} ;;
     --app|--app=) usage_error "$1 requires argument." ;;
     --ccpp=?*) CCPP=${1#*=} ;;
