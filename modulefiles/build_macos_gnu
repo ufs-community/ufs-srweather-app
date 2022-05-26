@@ -16,7 +16,7 @@ if { [module-info mode load] } {
 setenv HPCstack "/Users/username/hpc-stack/install"
 
 # This path should point to your SRW Application directory
-setenv SRW "/Users/username/SRW/ufs-srweather-app"
+setenv SRW "/Users/username/ufs-srweather-app"
 
 # Load HPC stack 
 module use $env(HPCstack)/modulefiles/stack
