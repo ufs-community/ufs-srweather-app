@@ -5,7 +5,7 @@ proc ModulesHelp { } {
    put stderr "macOS"
 }
 
-module-whatis "Loads libraries needed for running SRW on macOS"
+module-whatis "This module activates python environment for running SRW on macOS"
 
 setenv CMAKE_Platform macos
 
@@ -14,7 +14,7 @@ setenv CMAKE_Platform macos
 # 
 setenv VENV "/Users/username/venv/regional_workflow"
 if { [module-info mode load] } {
-   system "source $env(VENV)/bin/activate;"
+   puts "source $env(VENV)/bin/activate;"
 }
 
 # Uncomment if Rocoto workflow manager is used
