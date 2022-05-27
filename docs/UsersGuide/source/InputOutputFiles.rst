@@ -37,7 +37,7 @@ must be staged by the user unless the user is running on a `Level 1/pre-configur
 Unified Post Processor (UPP)
 ----------------------------
 Documentation for the UPP input files can be found in the `UPP User's Guide
-<https://upp.readthedocs.io/en/latest/InputsOutputs.html>`__.
+<https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html>`__.
 
 .. _WorkflowTemplates:
 
@@ -170,7 +170,7 @@ where HHH corresponds to the 3-digit forecast hour (e.g., ``dynf006.nc`` for the
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html>`__.
+Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html>`__.
 
 For the SRW Application, the weather model netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH/postprd`` directory and have the naming convention (file->linked to):
 
@@ -191,10 +191,9 @@ UPP Product Output Tables for the UFS SRW LAM Grid:
    * :doc:`3D Native Hybrid Level Fields <SRW_NATLEV_table>`
    * :doc:`3D Pressure Level Fields <SRW_PRSLEV_table>`
 
-Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file that the UPP reads, which is called ``postxconfig-NT-fv3lam.txt`` (default).
+Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file that the UPP reads, which is called ``postxconfig-NT-fv3lam.txt`` (default).
 
-Once you have created the new flat text file reflecting your changes, you will need to modify your
-``config.sh`` to point the workflow to the new text file. In your ``config.sh``, set the following:
+Once you have created the new flat text file reflecting your changes, you will need to modify your ``config.sh`` to point the workflow to the new text file. In your ``config.sh``, set the following:
 
 .. code-block:: console
 
@@ -254,8 +253,7 @@ Static Files
 
 Many static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket. If users prefer not to download the tar file with the current release data in :numref:`Section %s <DownloadingStagingInput>` above, they can download static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.0.0 data. 
 
-The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to
-the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.sh``. Add the following code or alter the variable paths if they are already listed in the ``config.sh`` file:
+The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.sh``. Add the following code or alter the variable paths if they are already listed in the ``config.sh`` file:
 
 * ``FIXgsm="/path-to/fix/fix_am"``
 * ``TOPO_DIR="/path-to/fix/fix_am/fix_orog"``
@@ -263,7 +261,7 @@ the directories where the static files are located. After downloading the experi
 
 .. _InitialConditions:
 
-Inition Condition/Lateral Boundary Condition File Formats and Source
+Initial Condition/Lateral Boundary Condition File Formats and Source
 -----------------------------------------------------------------------
 The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, :term:`netCDF`, or :term:`GRIB2`. 
 

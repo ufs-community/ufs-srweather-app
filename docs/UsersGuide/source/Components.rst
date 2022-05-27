@@ -42,7 +42,7 @@ The SRW App supports the use of both :term:`GRIB2` and :term:`NEMSIO` input data
 Post-processor
 ==============
 
-The SRW Application is distributed with the Unified Post Processor (:term:`UPP`) included in the workflow as a way to convert the netCDF output on the native model grid to :term:`GRIB2` format on standard isobaric vertical coordinates. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/latest/>`__.
+The SRW Application is distributed with the Unified Post Processor (:term:`UPP`) included in the workflow as a way to convert the netCDF output on the native model grid to :term:`GRIB2` format on standard isobaric vertical coordinates. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp_v10.1.0/>`__.
 
 Output from UPP can be used with visualization, plotting, and verification packages or in
 further downstream post-processing (e.g., statistical post-processing techniques).
