@@ -301,14 +301,14 @@ When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the da
 
 where {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and {fhr} corresponds to the 3-digit nth hour of the forecast. For example, a forecast starting at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``.
 
-In order to preserve the original file name, the ``f00`` files are placed in the ``ICS`` directory
-and all other forecast files are placed in the ``LBCS`` directory. Then, a symbolic link of the
-original files in the ``ICS/LBCS`` directory to the ``YYYYMMDDHH`` directory is suggested with
-the cycle removed. For example:
+In order to preserve the original file name, the ``f000`` files are placed in the ``ICS`` directory and all other forecast files are placed in the ``LBCS`` directory. Then, a symbolic link of the original files in the ``ICS/LBCS`` directory to the ``YYYYMMDDHH`` directory is suggested with the cycle removed. For example:
 
 .. code-block:: console
 
-   ln -sf /path-to/model_data/RAP/2020041212/ICS/rap.t12z.wrfprsf00.grib2 /path-to/model_data/RAP/2020041212/rap.wrfprsf00.grib2
+   ln -sf /path-to/input_model_data/RAP/2020041212/ICS/rap.t12z.wrfprsf00.grib2 /path-to/input_model_data/RAP/2020041212/rap.wrfprsf00.grib2
+
+..
+   COMMENT: RAP data seems to be formatted differently now... and why aren't there three zeros in rap.wrfprsf00.grib2??? Same with HRRR data below
 
 Linking the files like this removes the cycle-dependent part of the file names so that each cycle will use the same file name, regardless of initialization time. This allows for the following to be set in the ``config.sh`` regardless of what cycle you are running:
 
