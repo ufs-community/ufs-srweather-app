@@ -26,7 +26,7 @@ ways, including:
 The data format for these files can be :term:`GRIB2` or :term:`NEMSIO`. More information on downloading and setting up the external model data can be found in :numref:`Section %s <DownloadingStagingInput>`. Once the data is set up, the end-to-end application will run the system and write output files to disk.
 
 Pre-processing (UFS_UTILS)
---------------------------
+---------------------------
 When a user generates the regional workflow, as described in :numref:`Step %s <GenerateWorkflowC>` of the Quick Start Guide, the workflow generation script links the input data for the pre-processing utilities to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the `UFS_UTILS Documentation <https://noaa-emcufs-utils.readthedocs.io/en/latest/>`__.
 
 UFS Weather Model
