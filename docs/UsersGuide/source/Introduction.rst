@@ -17,7 +17,7 @@ UFS Development Team. (2022, June 3). Unified Forecast System (UFS) Short-Range 
 How to Use This Document
 ========================
 
-This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `UFS Forum <https://forums.ufscommunity.org/>`__.
+This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `UFS Forum <https://forums.ufscommunity.org/forum/short-range-weatherconvection-allowing-application>`__.
 
 .. code-block:: console
 
@@ -145,7 +145,7 @@ Pre-processor Utilities and Initial Conditions
 The SRW Application includes a number of pre-processing utilities that initialize and prepare the model. Tasks include generating a regional grid along with :term:`orography` and surface climatology files for that grid. One pre-processing utility converts the raw external model data into initial and lateral boundary condition files in netCDF format. Later, these files are used as input to the atmospheric model (FV3-LAM). Additional information about the pre-processor utilities can be found in :numref:`Chapter %s <Utils>` and in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`_.
 
 ..
-   COMMENT: CHeck link!
+   COMMENT: Update link!
 
 Forecast Model
 -----------------
@@ -155,6 +155,9 @@ Atmospheric Model
 
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
 (:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2021`). The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. 
+
+..
+   COMMENT: Update link! 
 
 Common Community Physics Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -229,6 +232,9 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
    +---------------------------------+---------------------------------------------------------+
 
 The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/CodeOverview.html>`__.
+
+..
+   COMMENT: Update link! 
 
 Note that the prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. :numref:`Chapter %s <InstallBuildHPCstack>` contains details on installing the HPC-Stack. 
 
@@ -358,6 +364,9 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    |  YYYYMMDDHH               | Cycle directory (empty)                                                                               |
    +---------------------------+-------------------------------------------------------------------------------------------------------+
 
+..
+   COMMENT: Update WM links in table with v3 docs!
+
 In addition, running the SRW App in *community* mode creates the ``fix_am`` and ``fix_lam`` directories in ``EXPTDIR``. The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files after the grid, orography, and/or surface climatology generation tasks are run. 
 
 .. _FixDirectories:
@@ -438,7 +447,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
    | **Documentation**          | **Location**                                                                    |
    +============================+=================================================================================+
-   | UFS SRW Application        | https://ufs-srweather-app.readthedocs.io/en/latest/                             |
+   | UFS SRW Application        | https://ufs-srweather-app.readthedocs.io/en/release-public-v2/                  |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | UFS_UTILS User's           | https://noaa-emcufs-utils.readthedocs.io/en/latest/                             |
@@ -449,23 +458,21 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
    | HPC-Stack Documentation    | https://hpc-stack.readthedocs.io/en/latest/                                     |
    +----------------------------+---------------------------------------------------------------------------------+
-   | NCEPLIBS Documentation     | https://github.com/NOAA-EMC/NCEPLIBS/wiki                                       |
-   +----------------------------+---------------------------------------------------------------------------------+
-   | NCEPLIBS-external          | https://github.com/NOAA-EMC/NCEPLIBS-external/wiki                              |
-   | Documentation              |                                                                                 |
-   +----------------------------+---------------------------------------------------------------------------------+
    | FV3 Documentation          | https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html                |
    +----------------------------+---------------------------------------------------------------------------------+
-   | CCPP Scientific            | https://dtcenter.ucar.edu/GMTB/v5.0.0/sci_doc/index.html                        |
+   | CCPP Scientific            | https://dtcenter.ucar.edu/GMTB/v6.0.0p/sci_doc/html/index.html                  |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/v5.0.0/                                  |
+   | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/latest/                                  |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | ESMF manual                | https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/                |
    +----------------------------+---------------------------------------------------------------------------------+
    | Unified Post Processor     | https://upp.readthedocs.io/en/upp_v10.1.0/                                      |
    +----------------------------+---------------------------------------------------------------------------------+
+
+..
+   COMMENT: Update HPC-Stack, CCPP Tech Docs, UFS WM Guide, UFS_UTILS links.
 
 The UFS community is encouraged to contribute to the development effort of all related
 utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`.

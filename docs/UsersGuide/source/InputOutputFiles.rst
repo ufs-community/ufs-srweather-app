@@ -29,10 +29,16 @@ Pre-processing (UFS_UTILS)
 ---------------------------
 When a user generates the regional workflow, as described in :numref:`Step %s <GenerateWorkflowC>` of the Quick Start Guide, the workflow generation script links the input data for the pre-processing utilities to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the `UFS_UTILS Documentation <https://noaa-emcufs-utils.readthedocs.io/en/latest/>`__.
 
+..
+   COMMENT: Update link! (UFS_UTILS)
+
 UFS Weather Model
 -----------------
 The input files for the Weather Model include both static (fixed) files and grid- and date-specific files (terrain, initial conditions, boundary conditions, etc). The static fix files
 must be staged by the user unless the user is running on a `Level 1/pre-configured <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform, in which case users can link to the existing copy of the data on their machine. See :numref:`Section %s <StaticFixFiles>` for instructions. The workflow scripts link the static, grid, and date-specific files in the experiment directory. An extensive description of the input files for the Weather Model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html>`__. The namelists and configuration files for the SRW Application are created from templates by the workflow generation script, as described in :numref:`Section %s <WorkflowTemplates>`.
+
+..
+   COMMENT: Update link! (for WM)
 
 Unified Post Processor (UPP)
 ----------------------------
@@ -97,9 +103,10 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    | README.xml_templating.md    | Instructions for Rocoto XML templating with Jinja.           |
    +-----------------------------+--------------------------------------------------------------+
 
-Additional information related to ``diag_table_[CCPP]``, ``field_table_[CCPP]``, ``input.nml.FV3``, ``model_conigure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#input-files>`__,
-while information on ``regional_grid.nml`` can be found in the `UFS_UTILS User's Guide
-<https://noaa-emcufs-utils.readthedocs.io/en/latest/>`_.
+Additional information related to ``diag_table_[CCPP]``, ``field_table_[CCPP]``, ``input.nml.FV3``, ``model_conigure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#input-files>`__, while information on ``regional_grid.nml`` can be found in the `UFS_UTILS User's Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`__.
+
+..
+   COMMENT: Update links! (for WM & UFS_UTILS)
 
 Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -147,10 +154,11 @@ experiment run directory ``EXPTDIR/YYYYMMDDHH/INPUT`` and consist of the followi
 * ``tmp_LBCS``
 
 These output files are used as inputs for the UFS Weather Model, and are described in the `UFS Weather Model User's Guide 
-<https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#grid-description-and-initial-condition-files>`__.
+<https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#input-files>`__.
 
 ..
-   COMMENT: Change link above (structure of "latest" is significantly different)
+   COMMENT: Update link! Change link above (structure of "latest" is significantly different)
+   Original: https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#grid-description-and-initial-condition-files
 
 UFS Weather Model
 ------------------
@@ -167,6 +175,8 @@ In this case, the netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH`` 
 where HHH corresponds to the 3-digit forecast hour (e.g., ``dynf006.nc`` for the 6th hour of the forecast). Additional details may be found in the `UFS Weather Model User's Guide
 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#output-files>`__.
 
+..
+   COMMENT: Update link!
 
 Unified Post Processor (UPP)
 ----------------------------
@@ -369,7 +379,7 @@ Google Cloud:
 
 * HRRR: https://console.cloud.google.com/marketplace/product/noaa-public/hrrr
 
-FTP Data Repository: (data for SRW Release 1.0.0 & 1.0.1)
+FTP Data Repository: (data for SRW Release v1.0.0 & v1.0.1)
 * https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/
 * https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/
 
