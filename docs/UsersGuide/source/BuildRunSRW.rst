@@ -17,23 +17,24 @@ This chapter walks users through how to build and run the "out-of-the-box" case 
 
 The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. The steps are as follows:
 
-   * :ref:`Install prerequisites <HPCstackInfo>`
-   * :ref:`Clone the SRW App from GitHub <DownloadSRWApp>`
-   * :ref:`Check out the external repositories <CheckoutExternals>`
-   * :ref:`Set up the build environment and build the executables <BuildExecutables>`
-   * :ref:`Download and stage data <Data>`
-   * :ref:`Optional: Configure a new grid <GridSpecificConfig>`
-   * :ref:`Generate a regional workflow experiment <GenerateForecast>`
+   #. :ref:`Install prerequisites <HPCstackInfo>`
+   #. :ref:`Clone the SRW App from GitHub <DownloadSRWApp>`
+   #. :ref:`Check out the external repositories <CheckoutExternals>`
+   #. :ref:`Set up the build environment and build the executables <BuildExecutables>`
+   #. :ref:`Download and stage data <Data>`
+   #. :ref:`Optional: Configure a new grid <GridSpecificConfig>`
+   #. :ref:`Generate a regional workflow experiment <GenerateForecast>`
       * :ref:`Configure the experiment parameters <UserSpecificConfig>`
       * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
-   * :ref:`Run the regional workflow <RocotoRun>` 
-   * :ref:`Optional: Plot the output <PlotOutput>`
+   #. :ref:`Run the regional workflow <RocotoRun>` 
+   #. :ref:`Optional: Plot the output <PlotOutput>`
 
 .. _AppOverallProc:
 
 .. figure:: _static/FV3LAM_wflow_overall.png
+   :alt: Flowchart describing the SRW App workflow steps. 
 
-    *Overall layout of the SRW App Workflow*
+   *Overall layout of the SRW App Workflow*
 
 
 .. _HPCstackInfo:
@@ -147,7 +148,7 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
    ./devbuild.sh --platform=<machine_name>
 
-where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
+where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3`` | ``noaacloud``
 
 If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. FOr example:
 
@@ -750,8 +751,12 @@ The generated workflow will appear in ``EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDI
 .. _WorkflowGeneration:
 
 .. figure:: _static/FV3regional_workflow_gen.png
+   :alt: Flowchart of the workflow generation process. Scripts are called in the following order: source_util_funcs.sh (which calls bash_utils), then set_FV3nml_sfc_climo_filenames.sh, set_FV3nml_stock_params.sh, create_diag_table_files.sh, and setup.sh. Setup.sh calls several scripts: set_cycle_dates.sh, set_grid_params_ESGgrid.sh, link_fix.sh, set_ozone_param.sh, config_defaults.sh, config.sh, and valid_param_vals.sh. Then, the grid name, FIXgsm, TOPO_DIR, and SFC_CLIMO_INPUT_DIR variables are set. Based on this information, set_predef_grid_params.sh sets the FIXam and FIXLAM directories for NCO mode, if applicable, as well as the forecast input files and the cycle-independent parameters. This script also sets the GRID_GEN_METHOD, checks various parameters, and generates shell scripts. Then, the workflow generation script sets up YAML-compliant strings and generates the actual Rocoto workflow XML file from the template file (fill_jinja_template.py). Symlinks to the module files and workflow launch script (launch_FV3LAM_wflow.sh) are generated. Several files and templates are copied to the experiment directory (e.g., fix files, templates for various input files, and the forecast model executable) are also copied to the experiment directory. Parameters are set in the FV3-LAM namelist files, and a new FV3 namelist file is created. Additional information appears in comments within each script. 
 
-    *Experiment generation description*
+   *Experiment generation description*
+
+..
+   COMMENT: Change NEMS references in diagram to ufs-weather-model! 
 
 .. _WorkflowTaskDescription: 
 
@@ -773,8 +778,9 @@ Description of Workflow Tasks
 .. _WorkflowTasksFig:
 
 .. figure:: _static/FV3LAM_wflow_flowchart_v2.png
+   :alt: Flowchart of the workflow tasks. If the make_grid, make_orog, and make_sfc_climo tasks are toggled off, they will not be run. If toggled on, make_grid, make_orog, and make_sfc_climo will run consecutively by calling the corresponding exregional script in the regional_workflow/scripts directory. The get_ics, get_lbcs, make_ics, make_lbcs, and run_fcst tasks call their respective exregional scripts. The run_post task will run, and if METplus verification tasks have been configured, those will run during post-processing by calling their exregional scripts. 
 
-    *Flowchart of the workflow tasks*
+   *Flowchart of the workflow tasks*
 
 
 The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workflow/jobs/JREGIONAL_[task name]``) in the prescribed order when the experiment is launched via the ``launch_FV3LAM_wflow.sh`` script or the ``rocotorun`` command. Each j-job task has its own source script (or "ex-script") named ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files named ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 

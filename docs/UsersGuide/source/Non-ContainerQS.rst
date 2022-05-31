@@ -10,25 +10,6 @@ SRW App users who are not working on a `Level 1 <https://github.com/ufs-communit
 
 Once the HPC-Stack has been successfully installed, users can move on to building the UFS SRW Application.
 
-.. 
-   COMMENT: Are these notes relevant now that NCEPLIBS/NCEPLIBS-external have been changed to HPC-Stack?
-   .. note::
-      The ``ESMFMKFILE`` variable allows HPC-Stack to find the location where ESMF has been built; if users receive an ``ESMF not found, abort`` error, they may need to specify a slightly different location:
-
-      .. code-block:: console
-
-         export ESMFMKFILE=${INSTALL_PREFIX}/lib64/esmf.mk
-
-      Then they can delete and re-create the build directory and continue the build process as described above.
-
-   .. note::
-
-      If users skipped the building of any of the software provided by HPC-Stack, they may need to add the appropriate locations to their ``CMAKE_PREFIX_PATH`` variable. Multiple directories may be added, separated by semicolons (;) as in the following example:
-
-      .. code-block:: console
-
-         cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DCMAKE_PREFIX_PATH=”${INSTALL_PREFIX};/location/of/other/software” -DOPENMP=ON .. 2>&1 | tee log.cmake
-
 
 Building and Running the UFS SRW Application 
 ===============================================
@@ -56,7 +37,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             
             ./devbuild.sh --platform=<machine_name>
 
-         where <machine_name> is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
+         where <machine_name> is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3`` | ``noaacloud``
 
       * **Option 2:**
 
