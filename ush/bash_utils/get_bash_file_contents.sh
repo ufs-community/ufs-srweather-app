@@ -21,7 +21,7 @@ function get_bash_file_contents() {
 
   local valid_args=( \
     "fp" \
-    "output_varname_contents" \
+    "outvarname_contents" \
     )
   process_args valid_args "$@"
   print_input_args "valid_args"
@@ -63,7 +63,7 @@ read was not specified in the call to this function:
   #
   # Set output variables.
   #
-  printf -v ${output_varname_contents} "${contents}"
+  printf -v ${outvarname_contents} "%s" "${contents}"
 
   { restore_shell_opts; } > /dev/null 2>&1
 

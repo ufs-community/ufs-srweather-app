@@ -27,29 +27,29 @@
 # Optional verbosity flag.  Should be set to "TRUE" or "FALSE".  Default
 # is "FALSE".
 #
-# output_varname_test_configs_basedir:
+# outvarname_test_configs_basedir:
 # Name of output variable in which to return the base directory of the 
 # WE2E test configuration files.
 #
-# output_varname_test_names:
+# outvarname_test_names:
 # Name of output array variable in which to return the names of the WE2E 
 # tests.
 #
-# output_varname_test_subdirs:
+# outvarname_test_subdirs:
 # Name of output array variable in which to return the category subdirectories 
 # in which the WE2E tests are located. 
 #
-# output_varname_test_ids:
+# outvarname_test_ids:
 # Name of output array variable in which to return the IDs of the WE2E 
 # tests. 
 #
-# output_varname_test_descs:
+# outvarname_test_descs:
 # Name of output array variable in which to return the descriptions of
 # the WE2E tests.
 #
 # Note that any input argument that is not specified in the call to this
 # function gets set to a null string in the body of the function.  In
-# particular, if any of the arguments that start with "output_varname_"
+# particular, if any of the arguments that start with "outvarname_"
 # (indicating that they specify the name of an output variable) are not
 # set in the call, the values corresponding to those variables are not 
 # returned to the calling script or function.
@@ -61,10 +61,10 @@
 #
 #   test_configs_basedir="${WE2Edir}/test_configs"
 #
-# If the argument output_varname_test_configs_basedir is specified in 
-# the call to this function, then the value of test_configs_basedir will 
-# be returned to the calling script or function (in the variable specified 
-# by output_varname_test_configs_basedir).
+# If the argument outvarname_test_configs_basedir is specified in the 
+# call to this function, then the value of test_configs_basedir will be 
+# returned to the calling script or function (in the variable specified 
+# by outvarname_test_configs_basedir).
 #
 # The WE2E test configuration files are located in subdirectories under
 # the base directory.  This function sets the names of these subdirectories
@@ -170,8 +170,8 @@
 #    in which the test configuration files corresponding to each test 
 #    name are located.
 # 3) The IDs corresponding to each of the test names.
-# 4) The test descriptions (if output_varname_test_descs is specified in
-#    the call to this function or if generate_csv_file is or gets set to
+# 4) The test descriptions (if outvarname_test_descs is specified in the
+#    call to this function or if generate_csv_file is or gets set to
 #    "TRUE"; see below).
 #
 # These local arrays are sorted in order of increasing test ID.  Within
@@ -189,10 +189,10 @@
 # the arrays in which each of the quantities listed above should be 
 # returned (to the calling script or function):
 #
-#   output_varname_test_names
-#   output_varname_test_subdirs
-#   output_varname_test_ids
-#   output_varname_test_descs
+#   outvarname_test_names
+#   outvarname_test_subdirs
+#   outvarname_test_ids
+#   outvarname_test_descs
 #
 # If any of these is not specified in the call to this function, then 
 # the corresponding quantity will not be returned to the calling script
@@ -206,7 +206,7 @@
 # 1) The user explicitly asks for the descriptions to be returned by 
 #    specifying in the call to this function the name of the array in 
 #    which to return them (by setting a value for the argument 
-#    output_varname_test_descs).  
+#    outvarname_test_descs).  
 # 2) A CSV file summarizing the WE2E tests will be generated (see below)
 #
 # For convenience, this function can generate a CSV (comma-separated 
@@ -267,11 +267,11 @@ function get_WE2Etest_names_subdirs_descs() {
     "WE2Edir" \
     "generate_csv_file" \
     "verbose" \
-    "output_varname_test_configs_basedir" \
-    "output_varname_test_names" \
-    "output_varname_test_subdirs" \
-    "output_varname_test_ids" \
-    "output_varname_test_descs" \
+    "outvarname_test_configs_basedir" \
+    "outvarname_test_names" \
+    "outvarname_test_subdirs" \
+    "outvarname_test_ids" \
+    "outvarname_test_descs" \
     )
   process_args "valid_args" "$@"
 #
@@ -294,7 +294,7 @@ function get_WE2Etest_names_subdirs_descs() {
 #
   verbose=${verbose:-"FALSE"}
   check_var_valid_value "verbose" "valid_vals_BOOLEAN"
-  verbose=$(boolify $verbose)
+  verbose=$(boolify "$verbose")
 #
 #-----------------------------------------------------------------------
 #
@@ -302,7 +302,9 @@ function get_WE2Etest_names_subdirs_descs() {
 #
 #-----------------------------------------------------------------------
 #
-  local all_items \
+  local abs_cost_ref \
+        ac \
+        all_items \
         alt_test_name \
         alt_test_names \
         alt_test_names_subdirs \
@@ -316,11 +318,15 @@ function get_WE2Etest_names_subdirs_descs() {
         column_titles \
         config_fn \
         crnt_item \
+        crnt_title \
         csv_delimiter \
         csv_fn \
         csv_fp \
         cwd \
         default_val \
+        dt_atmos \
+        fcst_len_hrs \
+        get_test_descs \
         hash_or_null \
         i \
         ii \
@@ -331,6 +337,7 @@ function get_WE2Etest_names_subdirs_descs() {
         mod_time_csv \
         mod_time_subdir \
         msg \
+        nf \
         num_alt_tests \
         num_category_subdirs \
         num_cdates \
@@ -338,20 +345,25 @@ function get_WE2Etest_names_subdirs_descs() {
         num_days \
         num_fcsts \
         num_fcsts_orig \
+        num_grid_pts \
         num_items \
         num_occurrences \
         num_prim_tests \
         num_tests \
+        num_time_steps \
         num_vars_to_extract \
         prim_array_names_vars_to_extract \
         prim_test_descs \
+        prim_test_dt_atmos \
         prim_test_ids \
         prim_test_name_subdir \
         prim_test_names \
         prim_test_num_fcsts \
+        prim_test_rel_cost \
         prim_test_subdirs \
-        get_test_descs \
+        rc \
         regex_search \
+        rel_cost \
         row_content \
         sort_inds \
         stripped_line \
@@ -386,11 +398,49 @@ function get_WE2Etest_names_subdirs_descs() {
         test_subdirs_orig \
         test_subdirs_str \
         test_type \
+        units \
+        ushdir \
         val \
-        valid_vals_generate_csv_file \
         var_name \
         var_name_at \
         vars_to_extract
+
+  local grid_gen_method \
+        \
+        gfdlgrid_lon_t6_ctr \
+        gfdlgrid_lat_t6_ctr \
+        gfdlgrid_res \
+        gfdlgrid_stretch_fac \
+        gfdlgrid_refine_ratio \
+        gfdlgrid_istart_of_rgnl_dom_on_t6g \
+        gfdlgrid_iend_of_rgnl_dom_on_t6g \
+        gfdlgrid_jstart_of_rgnl_dom_on_t6g \
+        gfdlgrid_jend_of_rgnl_dom_on_t6g \
+        \
+        esggrid_lon_ctr \
+        esggrid_lat_ctr \
+        esggrid_nx \
+        esggrid_ny \
+        esggrid_pazi \
+        esggrid_wide_halo_width \
+        esggrid_delx \
+        esggrid_dely \
+        \
+        nx \
+        ny \
+        dta
+#
+#-----------------------------------------------------------------------
+#
+# Source files.
+#
+#-----------------------------------------------------------------------
+#
+  ushdir=$( readlink -f "$WE2Edir/../../ush" )
+  . $ushdir/constants.sh
+  . $ushdir/set_predef_grid_params.sh
+  . $ushdir/set_gridparams_GFDLgrid.sh
+  . $ushdir/set_gridparams_ESGgrid.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -410,17 +460,8 @@ function get_WE2Etest_names_subdirs_descs() {
 #
   if [ ! -z "${generate_csv_file}" ]; then
 
-    valid_vals_generate_csv_file=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
-    check_var_valid_value "generate_csv_file" "valid_vals_generate_csv_file"
-
-    generate_csv_file=${generate_csv_file^^}
-    if [ "${generate_csv_file}" = "TRUE" ] || \
-       [ "${generate_csv_file}" = "YES" ]; then
-      generate_csv_file="TRUE"
-    elif [ "${generate_csv_file}" = "FALSE" ] || \
-         [ "${generate_csv_file}" = "NO" ]; then
-      generate_csv_file="FALSE"
-    fi
+    check_var_valid_value "generate_csv_file" "valid_vals_BOOLEAN"
+    generate_csv_file=$(boolify "${generate_csv_file}")
 #
 # If generate_csv_file was not specified as an input argument in the 
 # call to this function, then it will have been set above to a null 
@@ -521,6 +562,8 @@ information on all WE2E tests:
   prim_test_ids=()
   prim_test_subdirs=()
   prim_test_num_fcsts=()
+  prim_test_dt_atmos=()
+  prim_test_rel_cost=()
 
   alt_test_names=()
   alt_test_subdirs=()
@@ -859,18 +902,18 @@ they correspond to unique test names and rerun."
 #
 #-----------------------------------------------------------------------
 #
-# If the input argument output_varname_test_descs is not set to a null 
-# string (meaning that the name of the array in which to return the WE2E 
-# test descriptions is specified in the call to this function), or if 
-# the flag generate_csv_file is set to "TRUE", we need to obtain the 
-# WE2E test descriptions from the test configuration files.  In these
-# cases, set the local variable get_test_descs to "TRUE".  Otherwise,
-# set it to "FALSE".
+# If the input argument outvarname_test_descs is not set to a null string
+# (meaning that the name of the array in which to return the WE2E test 
+# descriptions is specified in the call to this function), or if the flag 
+# generate_csv_file is set to "TRUE", we need to obtain the WE2E test 
+# descriptions from the test configuration files.  In these cases, set 
+# the local variable get_test_descs to "TRUE".  Otherwise, set it to 
+# "FALSE".
 #
 #-----------------------------------------------------------------------
 #
   get_test_descs="FALSE"
-  if [ ! -z "${output_varname_test_descs}" ] || \
+  if [ ! -z "${outvarname_test_descs}" ] || \
      [ "${generate_csv_file}" = "TRUE" ]; then
     get_test_descs="TRUE"
   fi
@@ -924,9 +967,9 @@ they correspond to unique test names and rerun."
     prim_array_names_vars_to_extract=( $( printf "prim_test_%s_vals " "${vars_to_extract[@]}" ) )
     array_names_vars_to_extract=( $( printf "%s_vals " "${vars_to_extract[@]}" ) )
     for (( k=0; k<=$((num_vars_to_extract-1)); k++ )); do
-      cmd="${prim_array_names_vars_to_extract[$k]}=()"
+      cmd="local ${prim_array_names_vars_to_extract[$k]}=()"
       eval $cmd
-      cmd="${array_names_vars_to_extract[$k]}=()"
+      cmd="local ${array_names_vars_to_extract[$k]}=()"
       eval $cmd
     done
 
@@ -1117,19 +1160,220 @@ ${test_desc}${stripped_line} "
 #
 # Calculate the number of forecasts that will be launched by the current
 # test.  The "10#" forces bash to treat the following number as a decimal
-# (not hexadecimal, etc).
+# (not hexadecimal, etc).  Note that INCR_CYCL_FREQ is in units of hours,
+# so the factor of 24 is needed to convert the number of days to hours.
 #
       num_cycles_per_day=${#CYCL_HRS[@]}
       num_days=$(( (${DATE_LAST_CYCL} - ${DATE_FIRST_CYCL} + 1)*24/10#${INCR_CYCL_FREQ} ))
       num_cdates=$(( ${num_cycles_per_day}*${num_days} ))
       nf=$(( ${num_cdates}*10#${NUM_ENS_MEMBERS} ))
 #
-# In the following, the single quote at the beginning forces Google Sheets 
-# to interpret this quantity as a string.  This prevents any automatic 
-# number fomatting from being applied when the CSV file is imported into
-# Google Sheets.
+# Save the number of forecasts launched by the current test in an 
+# appropriately named array.  In the following, the single quote at the 
+# beginning forces Google Sheets to interpret this quantity as a string.  
+# This prevents any automatic number fomatting from being applied when 
+# the CSV file is imported into Google Sheets.
 #
       prim_test_num_fcsts+=( "'$nf" )
+#
+#-----------------------------------------------------------------------
+#
+# Calculate the relative dynamics cost of the test, i.e. the relative 
+# cost of running only the dynamics portion of the forecast model.  Here, 
+# we define the absolute cost of running the dynamics as
+#
+#   abs_cost = nx*ny*num_time_steps*num_fcsts
+#
+# where nx and ny are the horizontal dimensions of the grid, num_time_steps
+# is the number of time steps that need to be taken to complete one 
+# forecast within the test, and num_fcsts are the number of forecasts
+# the test makes (e.g. if the test performs an ensemble forecast, the 
+# value of this parameter will be greater than 1).  
+#
+# The relative cost is obtained by dividing the absolute cost of a test 
+# by the absolute cost of a reference 6-hour forecast on the RRFS_CONUS_25km 
+# predefined grid using the default time step for that grid.  This is 
+# calculated later below and saved in the variable abs_cost_ref.  Thus,
+# the relative cost is given by
+#
+#   rel_cost = abs_cost/abs_cost_ref
+#
+# defined as abs_cost_ref. 
+#
+# Note that the (absolute or relative) cost defined here does not take 
+# into account the costs of running different physics suites, nor does 
+# it take into account the costs of workflow tasks other than the forecast 
+# task (e.g. generation of initial and boundary conditions, post processing, 
+# verification, etc; that is why it is referred to as the relative DYNAMICS 
+# cost).  Note also that if in the future the number of levels in the 
+# vertical becomes a user-specified parameter, that will also have to be 
+# added to the definition of the cost.
+#
+#-----------------------------------------------------------------------
+#
+
+#
+# To calculate the absolute cost as defined above, we need the number of 
+# points in the two horizontal directions, nx and ny.  Also, to calculate
+# the number of time steps, we need the size of the time step (dt_atmos).
+# These depend on the grid being used and must be extracted from the grid 
+# parameters.  The way the latter are obtained depends on whether or not
+# a predefined grid is being used.
+#
+# If using a predefined grid, call the set_predef_grid_params() function
+# to get the grid parameters.
+#
+      if [ ! -z "${PREDEF_GRID_NAME}" ]; then
+#
+# Note:
+# Can set "quilting" to "FALSE" in the following argument list because
+# the write-component parameters are not needed below; only those of the
+# native grid are needed.
+#
+        set_predef_grid_params \
+          predef_grid_name="${PREDEF_GRID_NAME}" \
+          quilting="FALSE" \
+          outvarname_grid_gen_method="grid_gen_method" \
+          outvarname_esggrid_lon_ctr="esggrid_lon_ctr" \
+          outvarname_esggrid_lat_ctr="esggrid_lat_ctr" \
+          outvarname_esggrid_delx="esggrid_delx" \
+          outvarname_esggrid_dely="esggrid_dely" \
+          outvarname_esggrid_nx="esggrid_nx" \
+          outvarname_esggrid_ny="esggrid_ny" \
+          outvarname_esggrid_pazi="esggrid_pazi" \
+          outvarname_esggrid_wide_halo_width="esggrid_wide_halo_width" \
+          outvarname_gfdlgrid_lon_t6_ctr="gfdlgrid_lon_t6_ctr" \
+          outvarname_gfdlgrid_lat_t6_ctr="gfdlgrid_lat_t6_ctr" \
+          outvarname_gfdlgrid_stretch_fac="gfdlgrid_stretch_fac" \
+          outvarname_gfdlgrid_res="gfdlgrid_res" \
+          outvarname_gfdlgrid_refine_ratio="gfdlgrid_refine_ratio" \
+          outvarname_gfdlgrid_istart_of_rgnl_dom_on_t6g="gfdlgrid_istart_of_rgnl_dom_on_t6g" \
+          outvarname_gfdlgrid_iend_of_rgnl_dom_on_t6g="gfdlgrid_iend_of_rgnl_dom_on_t6g" \
+          outvarname_gfdlgrid_jstart_of_rgnl_dom_on_t6g="gfdlgrid_jstart_of_rgnl_dom_on_t6g" \
+          outvarname_gfdlgrid_jend_of_rgnl_dom_on_t6g="gfdlgrid_jend_of_rgnl_dom_on_t6g" \
+          outvarname_dt_atmos="dta"
+#
+# If using a custom grid, the test's configuration file should contain 
+# the grid parameters.  Source this file and set the values of the grid
+# parameters it contains to local variables.
+#
+      else
+
+        . ./${config_fn}
+        grid_gen_method="${GRID_GEN_METHOD}"
+        if [ "${grid_gen_method}" = "GFDLgrid" ]; then
+          gfdlgrid_lon_t6_ctr="${GFDLgrid_LON_T6_CTR}"
+          gfdlgrid_lat_t6_ctr="${GFDLgrid_LAT_T6_CTR}"
+          gfdlgrid_res="${GFDLgrid_RES}"
+          gfdlgrid_stretch_fac="${GFDLgrid_STRETCH_FAC}"
+          gfdlgrid_refine_ratio="${GFDLgrid_REFINE_RATIO}"
+          gfdlgrid_istart_of_rgnl_dom_on_t6g="${GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G}"
+          gfdlgrid_iend_of_rgnl_dom_on_t6g="${GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G}"
+          gfdlgrid_jstart_of_rgnl_dom_on_t6g="${GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G}"
+          gfdlgrid_jend_of_rgnl_dom_on_t6g="${GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G}"
+        elif [ "${grid_gen_method}" = "ESGgrid" ]; then
+          esggrid_lon_ctr="${ESGgrid_LON_CTR}"
+          esggrid_lat_ctr="${ESGgrid_LAT_CTR}"
+          esggrid_delx="${ESGgrid_DELX}"
+          esggrid_dely="${ESGgrid_DELY}"
+          esggrid_nx="${ESGgrid_NX}"
+          esggrid_ny="${ESGgrid_NY}"
+          esggrid_pazi="${ESGgrid_PAZI}"
+          esggrid_wide_halo_width="${ESGgrid_WIDE_HALO_WIDTH}"
+        fi
+        dta="${DT_ATMOS}"
+
+      fi
+#
+# Save the value of dta (which is just dt_atmos) in an array.  The single 
+# quote at the beginning forces Google Sheets to interpret this quantity 
+# as a string.  This prevents any automatic number fomatting from being 
+# applied when the CSV file is imported into Google Sheets.
+#
+      prim_test_dt_atmos+=( "'${dta}" )
+#
+# The way the number of grid points in the horizontal directions (nx and
+# ny) are calculated depends on the method used to generate the grid as 
+# well as the grid parameters for that method.
+#
+      if [ "${grid_gen_method}" = "GFDLgrid" ]; then
+#
+# Note:
+# The workflow generation mode (run_envir) can be set to "community" here
+# since this does not affect the values of nx and ny.
+#
+        set_gridparams_GFDLgrid \
+          lon_of_t6_ctr="${gfdlgrid_lon_t6_ctr}" \
+          lat_of_t6_ctr="${gfdlgrid_lat_t6_ctr}" \
+          res_of_t6g="${gfdlgrid_res}" \
+          stretch_factor="${gfdlgrid_stretch_fac}" \
+          refine_ratio_t6g_to_t7g="${gfdlgrid_refine_ratio}" \
+          istart_of_t7_on_t6g="${gfdlgrid_istart_of_rgnl_dom_on_t6g}" \
+          iend_of_t7_on_t6g="${gfdlgrid_iend_of_rgnl_dom_on_t6g}" \
+          jstart_of_t7_on_t6g="${gfdlgrid_jstart_of_rgnl_dom_on_t6g}" \
+          jend_of_t7_on_t6g="${gfdlgrid_jend_of_rgnl_dom_on_t6g}" \
+          verbose="$verbose" \
+          outvarname_nx_of_t7_on_t7g="nx" \
+          outvarname_ny_of_t7_on_t7g="ny"
+      
+      elif [ "${grid_gen_method}" = "ESGgrid" ]; then
+      
+        set_gridparams_ESGgrid \
+          lon_ctr="${esggrid_lon_ctr}" \
+          lat_ctr="${esggrid_lat_ctr}" \
+          nx="${esggrid_nx}" \
+          ny="${esggrid_ny}" \
+          pazi="${esggrid_pazi}" \
+          halo_width="${esggrid_wide_halo_width}" \
+          delx="${esggrid_delx}" \
+          dely="${esggrid_dely}" \
+          outvarname_nx="nx" \
+          outvarname_ny="ny"
+      
+      fi
+#
+# Calculate the total number of horizontal grid points.
+#
+      num_grid_pts=$(( nx*ny ))
+#
+# Calculate the number of time steps for the test.  Note that FCST_LEN_HRS 
+# is in units of hours while dta is in units of seconds.
+#
+      num_time_steps=$(( FCST_LEN_HRS*3600/dta + 1 ))
+#
+# Calculate the absolute cost of the test.
+#
+      ac=$(( num_grid_pts*num_time_steps*nf ))
+#
+# Unset all grid paramters so that they are not accidentally reused for
+# the next test.
+#
+      unset gfdlgrid_lon_t6_ctr \
+            gfdlgrid_lat_t6_ctr \
+            gfdlgrid_res \
+            gfdlgrid_stretch_fac \
+            gfdlgrid_refine_ratio \
+            gfdlgrid_istart_of_rgnl_dom_on_t6g \
+            gfdlgrid_iend_of_rgnl_dom_on_t6g \
+            gfdlgrid_jstart_of_rgnl_dom_on_t6g \
+            gfdlgrid_jend_of_rgnl_dom_on_t6g \
+            esggrid_lon_ctr \
+            esggrid_lat_ctr \
+            esggrid_nx \
+            esggrid_ny \
+            esggrid_pazi \
+            esggrid_wide_halo_width \
+            esggrid_delx \
+            esggrid_dely \
+            dta \
+            nx \
+            ny
+#
+# Save the absolute cost for this test in the array that will eventually
+# contain the relative cost.  The values in this array will be divided
+# by abs_cost_ref later below to obtain relative costs.
+#
+      prim_test_rel_cost+=( "$ac" )
 #
 # Unset the experiment variables defined for the current test so that 
 # they are not accidentally used for the next one.
@@ -1140,6 +1384,37 @@ ${test_desc}${stripped_line} "
         eval $cmd
       done
 
+    done # End loop over primary tests
+#
+#-----------------------------------------------------------------------
+#
+# Normalize the absolute costs calculated above for each test by the 
+# absolute cost of a reference 6-hour forecast on the RRFS_CONUS_25km 
+# predefined grid (using the default time step for that grid).
+#
+#-----------------------------------------------------------------------
+#
+    set_predef_grid_params \
+      predef_grid_name="RRFS_CONUS_25km" \
+      quilting="FALSE" \
+      outvarname_esggrid_nx="nx" \
+      outvarname_esggrid_ny="ny" \
+      outvarname_dt_atmos="dta"
+
+    num_grid_pts=$(( nx*ny ))
+    fcst_len_hrs="6"
+    num_time_steps=$(( fcst_len_hrs*3600/dta+ 1 ))
+    abs_cost_ref=$(( num_grid_pts*num_time_steps ))
+
+    for (( i=0; i<=$((num_prim_tests-1)); i++ )); do
+#
+# In the following, the single quote at the beginning forces Google Sheets 
+# to interpret this quantity as a string.  This prevents any automatic 
+# number fomatting from being applied when the CSV file is imported into
+# Google Sheets.
+#
+      prim_test_rel_cost[$i]="'"$( printf "%g" \
+        $( bc -l <<< " ${prim_test_rel_cost[$i]}/${abs_cost_ref}" ) )
     done
 
   fi
@@ -1158,6 +1433,8 @@ ${test_desc}${stripped_line} "
   if [ "${get_test_descs}" = "TRUE" ]; then
     test_descs=("${prim_test_descs[@]}")
     num_fcsts=("${prim_test_num_fcsts[@]}")
+    dt_atmos=("${prim_test_dt_atmos[@]}")
+    rel_cost=("${prim_test_rel_cost[@]}")
     for (( k=0; k<=$((num_vars_to_extract-1)); k++ )); do
       cmd="${array_names_vars_to_extract[$k]}=(\"\${${prim_array_names_vars_to_extract[$k]}[@]}\")"
       eval $cmd
@@ -1187,6 +1464,8 @@ ${test_desc}${stripped_line} "
         if [ "${get_test_descs}" = "TRUE" ]; then
           test_descs+=("${prim_test_descs[$j]}")
           num_fcsts+=("${prim_test_num_fcsts[$j]}")
+          dt_atmos+=("${prim_test_dt_atmos[$j]}")
+          rel_cost+=("${prim_test_rel_cost[$j]}")
           for (( k=0; k<=$((num_vars_to_extract-1)); k++ )); do
             cmd="${array_names_vars_to_extract[$k]}+=(\"\${${prim_array_names_vars_to_extract[$k]}[$j]}\")"
             eval $cmd
@@ -1266,9 +1545,9 @@ Please correct and rerun."
                      sed -n -r -e "s/${regex_search}/\2/p" )
   done
 
-  test_names_orig=( "${test_names[@]}" )
-  test_subdirs_orig=( "${test_subdirs[@]}" )
-  test_ids_orig=( "${test_ids[@]}" )
+  local test_names_orig=( "${test_names[@]}" )
+  local test_subdirs_orig=( "${test_subdirs[@]}" )
+  local test_ids_orig=( "${test_ids[@]}" )
   for (( i=0; i<=$((num_tests-1)); i++ )); do
     ii="${sort_inds[$i]}"
     test_names[$i]="${test_names_orig[$ii]}"
@@ -1278,10 +1557,12 @@ Please correct and rerun."
 
   if [ "${get_test_descs}" = "TRUE" ]; then
 
-    test_descs_orig=( "${test_descs[@]}" )
-    num_fcsts_orig=( "${num_fcsts[@]}" )
+    local test_descs_orig=( "${test_descs[@]}" )
+    local num_fcsts_orig=( "${num_fcsts[@]}" )
+    local dt_atmos_orig=( "${dt_atmos[@]}" )
+    local rel_cost_orig=( "${rel_cost[@]}" )
     for (( k=0; k<=$((num_vars_to_extract-1)); k++ )); do
-      cmd="${array_names_vars_to_extract[$k]}_orig=(\"\${${array_names_vars_to_extract[$k]}[@]}\")"
+      cmd="local ${array_names_vars_to_extract[$k]}_orig=(\"\${${array_names_vars_to_extract[$k]}[@]}\")"
       eval $cmd
     done
 
@@ -1289,6 +1570,8 @@ Please correct and rerun."
       ii="${sort_inds[$i]}"
       test_descs[$i]="${test_descs_orig[$ii]}"
       num_fcsts[$i]="${num_fcsts_orig[$ii]}"
+      dt_atmos[$i]="${dt_atmos_orig[$ii]}"
+      rel_cost[$i]="${rel_cost_orig[$ii]}"
       for (( k=0; k<=$((num_vars_to_extract-1)); k++ )); do
         cmd="${array_names_vars_to_extract[$k]}[$i]=\"\${${array_names_vars_to_extract[$k]}_orig[$ii]}\""
         eval $cmd
@@ -1325,14 +1608,44 @@ Please correct and rerun."
 # detail further below.
 #
     column_titles="\
-\"Test Name (Subdirectory)\" ${csv_delimiter} \
-\"Alternate Test Names (Subdirectories)\" ${csv_delimiter} \
+\"Test Name
+(Subdirectory)\" ${csv_delimiter} \
+\"Alternate Test Names
+(Subdirectories)\" ${csv_delimiter} \
 \"Test Purpose/Description\" ${csv_delimiter} \
+\"Relative Cost of Running Dynamics
+(1 corresponds to running a 6-hour forecast on the RRFS_CONUS_25km predefined grid using the default time step)\" ${csv_delimiter} \
 \"Number of Forecast Model Runs\""
     for (( k=0; k<=$((num_vars_to_extract-1)); k++ )); do
-      column_titles="\
-${column_titles} ${csv_delimiter} \
-\"${vars_to_extract[$k]}\""
+
+      crnt_title="${vars_to_extract[$k]}"
+      #
+      # Add units for select fields.
+      #
+      units=""
+      case "${vars_to_extract[$k]}" in
+      "INCR_CYCL_FREQ")
+        units="[hr]"
+        ;;
+      "FCST_LEN_HRS")
+        units="[hr]"
+        ;;
+      "LBC_SPEC_INTVL_HRS")
+        units="[hr]"
+        ;;
+      esac
+      crnt_title="${crnt_title}${units:+ $units}"
+
+      column_titles="${column_titles} ${csv_delimiter} \"${crnt_title}\""
+      #
+      # Insert a column for DT_ATMOS right after the one for FCST_LEN_HRS.
+      #
+      if [ "${vars_to_extract[$k]}" = "FCST_LEN_HRS" ]; then
+        units="[sec]"
+        crnt_title="DT_ATMOS${units:+ $units}"
+        column_titles="${column_titles} ${csv_delimiter} \"${crnt_title}\""
+      fi
+
     done
     printf "%s\n" "${column_titles}" >> "${csv_fp}"
 #
@@ -1349,7 +1662,7 @@ ${column_titles} ${csv_delimiter} \
 # Get the primary name of the test and the category subdirectory in which
 # it is located.
 #
-      prim_test_name_subdir="${test_names[$j]} (${test_subdirs[$j]})"
+      prim_test_name_subdir="${test_names[$j]}"$'\n'"(${test_subdirs[$j]})"
 #
 # Get the test ID.
 #
@@ -1365,8 +1678,15 @@ ${column_titles} ${csv_delimiter} \
 #
       test_desc=$( printf "%s" "${test_desc}" | sed -r -e "s/\"/\"\"/g" )
 #
-# Get the number of forecasts (number of times the forcast model is run,
-# due to a unique starting date, an ensemble member, etc).
+# Get the time step.
+#
+      dta="${dt_atmos[$j]}"
+#
+# Get the relative cost.
+#
+      rc="${rel_cost[$j]}"
+#
+# Get the number of forecasts (number of times the forcast model is run).
 #
       nf="${num_fcsts[$j]}"
 #
@@ -1382,15 +1702,15 @@ ${column_titles} ${csv_delimiter} \
       while [ "$jp1" -lt "${num_tests}" ]; do
         test_id_next="${test_ids[$jp1]}"
         if [ "${test_id_next}" -eq "${test_id}" ]; then
-          alt_test_names_subdirs="\
-${alt_test_names_subdirs}
-${test_names[$jp1]} (${test_subdirs[$jp1]})"
+          alt_test_names_subdirs="${alt_test_names_subdirs}${test_names[$jp1]}"$'\n'"(${test_subdirs[$jp1]})"$'\n'
           j="$jp1"
           jp1=$((j+1))
         else
           break
         fi
       done
+# Remove trailing newline.
+      alt_test_names_subdirs="${alt_test_names_subdirs%$'\n'}"
 #
 # Write a line to the CSV file representing a single row of the spreadsheet.
 # This row contains the following columns:
@@ -1400,35 +1720,54 @@ ${test_names[$jp1]} (${test_subdirs[$jp1]})"
 # located in (the latter in parentheses).
 #
 # Column 2:
-# The alternate test names (if any) followed by their subdirectories
-# (in parentheses).  Each alternate test name and subdirectory pair is
-# followed by a newline, but all lines will appear in a single cell of
-# the spreadsheet.
+# Any alternate test names followed by their category subdirectories (in
+# parentheses).  Each alternate test name and subdirectory pair is followed
+# by a newline, but all lines will appear in a single cell of the spreadsheet.
 #
 # Column 3:
 # The test description.
 #
 # Column 4:
-# The number of times the forecast model will be run by the test.  This
-# has been calculated above using the quantities that go in Columns 5, 
-# 6, ....
+# The relative cost of running the dynamics in the test.  See above for
+# details.
 #
-# Columns 5...:
-# The values of the experiment variables specified in vars_to_extract.
+# Column 5:
+# The number of times the forecast model will be run by the test.  This
+# is calculated using quantities such as the number of cycle dates (i.e.
+# forecast model start dates) and the number of of ensemble members (which
+# is greater than 1 if running ensemble forecasts and 1 otherwise). The
+# latter are in turn obtained directly or indirectly from the quantities
+# in Columns 6, 7, ....
+#
+# Columns 6, 7, ...:
+# The values of the experiment variables specified in vars_to_extract,
+# plus DT_ATMOS (included right after FCST_LEN_HRS).  Note that DT_ATMOS 
+# cannot be included in vars_to_extract because it is usually not in the 
+# WE2E test configuration file where this script looks for these variables 
+# (because most of the tests use predefined grids, and for those cases, 
+# DT_ATMOS is defined in the same file/script where the other grid 
+# parameters are defined).
 #
       row_content="\
 \"${prim_test_name_subdir}\" ${csv_delimiter} \
 \"${alt_test_names_subdirs}\" ${csv_delimiter} \
 \"${test_desc}\" ${csv_delimiter} \
+\"${rc}\" ${csv_delimiter} \
 \"${nf}\""
 
       for (( k=0; k<=$((num_vars_to_extract-1)); k++ )); do
+
         unset "val"
         cmd="val=\"\${${array_names_vars_to_extract[$k]}[$j]}\""
         eval $cmd
-        row_content="\
-${row_content} ${csv_delimiter} \
-\"${val}\""
+        row_content="${row_content} ${csv_delimiter} \"${val}\""
+#
+# Insert value of DT_ATMOS right after value of FCST_LEN_HRS.
+#
+        if [ "${vars_to_extract[$k]}" = "FCST_LEN_HRS" ]; then
+          row_content="${row_content} ${csv_delimiter} \"${dta}\""
+        fi
+
       done
 
       printf "%s\n" "${row_content}" >> "${csv_fp}"
@@ -1455,41 +1794,40 @@ containing information on all WE2E tests:
 #
 #-----------------------------------------------------------------------
 #
-  if [ ! -z "${output_varname_test_configs_basedir}" ]; then
-    eval ${output_varname_test_configs_basedir}="${test_configs_basedir}"
+  if [ ! -z "${outvarname_test_configs_basedir}" ]; then
+    eval ${outvarname_test_configs_basedir}="${test_configs_basedir}"
   fi
 
-  if [ ! -z "${output_varname_test_names}" ]; then
+  if [ ! -z "${outvarname_test_names}" ]; then
     test_names_str="( "$( printf "\"%s\" " "${test_names[@]}" )")"
-    eval ${output_varname_test_names}="${test_names_str}"
+    eval ${outvarname_test_names}="${test_names_str}"
   fi
 
-  if [ ! -z "${output_varname_test_subdirs}" ]; then
+  if [ ! -z "${outvarname_test_subdirs}" ]; then
     test_subdirs_str="( "$( printf "\"%s\" " "${test_subdirs[@]}" )")"
-    eval ${output_varname_test_subdirs}="${test_subdirs_str}"
+    eval ${outvarname_test_subdirs}="${test_subdirs_str}"
   fi
 
-  if [ ! -z "${output_varname_test_ids}" ]; then
+  if [ ! -z "${outvarname_test_ids}" ]; then
     test_ids_str="( "$( printf "\"%s\" " "${test_ids[@]}" )")"
-    eval ${output_varname_test_ids}="${test_ids_str}"
+    eval ${outvarname_test_ids}="${test_ids_str}"
   fi
 
-  if [ ! -z "${output_varname_test_descs}" ]; then
+  if [ ! -z "${outvarname_test_descs}" ]; then
 #
 # We want to treat all characters in the test descriptions literally
-# when evaluating the array specified by output_varname_test_descs
-# below using the eval function because otherwise, characters such as
-# "$", "(", ")", etc will be interpreted as indicating the value of a
-# variable, the start of an array, the end of an array, etc, and lead to
-# errors.  Thus, below, when forming the array that will be passed to
-# eval, we will surround each element of the local array test_descs
-# in single quotes.  However, the test descriptions themselves may
-# include single quotes (e.g. when a description contains a phrase such
-# as "Please see the User's Guide for...").  In order to treat these
-# single quotes literally (as opposed to as delimiters indicating the
-# start or end of array elements), we have to pass them as separate
-# strings by replacing each single quote with the following series of
-# characters:
+# when evaluating the array specified by outvarname_test_descs below 
+# using the eval function because otherwise, characters such as "$", 
+# "(", ")", etc will be interpreted as indicating the value of a variable, 
+# the start of an array, the end of an array, etc, and lead to errors.  
+# Thus, below, when forming the array that will be passed to eval, we 
+# will surround each element of the local array test_descs in single 
+# quotes.  However, the test descriptions themselves may include single 
+# quotes (e.g. when a description contains a phrase such as "Please see 
+# the User's Guide for...").  In order to treat these single quotes 
+# literally (as opposed to as delimiters indicating the start or end of 
+# array elements), we have to pass them as separate strings by replacing 
+# each single quote with the following series of characters:
 #
 #   '"'"'
 #
@@ -1507,8 +1845,8 @@ containing information on all WE2E tests:
 #
 #   See description of ${DOT_OR_USCORE} in the configuration file.
 #
-# Then, if output_varname_test_descs is set to "some_array", the
-# exact string we want to pass to eval is:
+# Then, if outvarname_test_descs is set to "some_array", the exact string 
+# we want to pass to eval is:
 #
 #   some_array=('Please see the User'"'"'s Guide.' 'See description of ${DOT_OR_USCORE} in the configuration file.')
 #
@@ -1518,7 +1856,7 @@ containing information on all WE2E tests:
                                sed -r -e "s/'/'\"'\"'/g" )
     done
     test_descs_str="( "$( printf "'%s' " "${test_descs_esc_sq[@]}" )")"
-    eval ${output_varname_test_descs}="${test_descs_str}"
+    eval ${outvarname_test_descs}="${test_descs_str}"
   fi
 #
 #-----------------------------------------------------------------------

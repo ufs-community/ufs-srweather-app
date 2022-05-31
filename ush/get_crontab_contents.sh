@@ -42,7 +42,7 @@ function get_crontab_contents() {
   #
   source $USHDIR/constants.sh
   check_var_valid_value "called_from_cron" "valid_vals_BOOLEAN"
-  called_from_cron=$( boolify ${called_from_cron} )
+  called_from_cron=$(boolify "${called_from_cron}")
 
   if [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
     __crontab_cmd__=""

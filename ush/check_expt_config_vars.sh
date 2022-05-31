@@ -47,10 +47,10 @@ function check_expt_config_vars() {
   # configuration file.
   #
   get_bash_file_contents fp="${default_config_fp}" \
-                         output_varname_contents="var_list_default"
+                         outvarname_contents="var_list_default"
 
   get_bash_file_contents fp="${config_fp}" \
-                         output_varname_contents="var_list_user"
+                         outvarname_contents="var_list_user"
   #
   # Loop through each line/variable in var_list_user.  For each line,
   # extract the the name of the variable that is being set (say VAR) and

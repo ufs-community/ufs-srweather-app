@@ -40,6 +40,23 @@ function set_gridparams_ESGgrid() {
 #
 #-----------------------------------------------------------------------
 #
+# Set directories.
+#
+#-----------------------------------------------------------------------
+#
+  local homerrfs=${scrfunc_dir%/*}
+  local ushdir="$homerrfs/ush"
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing various mathematical, physical, etc constants.
+#
+#-----------------------------------------------------------------------
+#
+  . $ushdir/constants.sh
+#
+#-----------------------------------------------------------------------
+#
 # Specify the set of valid argument names for this script/function.  
 # Then process the arguments provided to this script/function (which 
 # should consist of a set of name-value pairs of the form arg1="value1",
@@ -48,25 +65,25 @@ function set_gridparams_ESGgrid() {
 #-----------------------------------------------------------------------
 #
   local valid_args=( \
-"lon_ctr" \
-"lat_ctr" \
-"nx" \
-"ny" \
-"halo_width" \
-"delx" \
-"dely" \
-"pazi" \
-"output_varname_lon_ctr" \
-"output_varname_lat_ctr" \
-"output_varname_nx" \
-"output_varname_ny" \
-"output_varname_pazi" \
-"output_varname_halo_width" \
-"output_varname_stretch_factor" \
-"output_varname_del_angle_x_sg" \
-"output_varname_del_angle_y_sg" \
-"output_varname_neg_nx_of_dom_with_wide_halo" \
-"output_varname_neg_ny_of_dom_with_wide_halo" \
+    "lon_ctr" \
+    "lat_ctr" \
+    "nx" \
+    "ny" \
+    "halo_width" \
+    "delx" \
+    "dely" \
+    "pazi" \
+    "outvarname_lon_ctr" \
+    "outvarname_lat_ctr" \
+    "outvarname_nx" \
+    "outvarname_ny" \
+    "outvarname_pazi" \
+    "outvarname_halo_width" \
+    "outvarname_stretch_factor" \
+    "outvarname_del_angle_x_sg" \
+    "outvarname_del_angle_y_sg" \
+    "outvarname_neg_nx_of_dom_with_wide_halo" \
+    "outvarname_neg_ny_of_dom_with_wide_halo" \
   )
   process_args valid_args "$@"
 #
@@ -78,15 +95,7 @@ function set_gridparams_ESGgrid() {
 #
 #-----------------------------------------------------------------------
 #
-  print_input_args valid_args
-#
-#-----------------------------------------------------------------------
-#
-# Source the file containing various mathematical, physical, etc constants.
-#
-#-----------------------------------------------------------------------
-#
-  . ${USHDIR}/constants.sh
+#  print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
@@ -149,17 +158,49 @@ function set_gridparams_ESGgrid() {
 #
 #-----------------------------------------------------------------------
 #
-  eval ${output_varname_lon_ctr}="${lon_ctr}"
-  eval ${output_varname_lat_ctr}="${lat_ctr}"
-  eval ${output_varname_nx}="${nx}"
-  eval ${output_varname_ny}="${ny}"
-  eval ${output_varname_halo_width}="${halo_width}"
-  eval ${output_varname_stretch_factor}="${stretch_factor}"
-  eval ${output_varname_pazi}="${pazi}"
-  eval ${output_varname_del_angle_x_sg}="${del_angle_x_sg}"
-  eval ${output_varname_del_angle_y_sg}="${del_angle_y_sg}"
-  eval ${output_varname_neg_nx_of_dom_with_wide_halo}="${neg_nx_of_dom_with_wide_halo}"
-  eval ${output_varname_neg_ny_of_dom_with_wide_halo}="${neg_ny_of_dom_with_wide_halo}"
+  if [ ! -z "${outvarname_lon_ctr}" ]; then
+    printf -v ${outvarname_lon_ctr} "%s" "${lon_ctr}"
+  fi
+
+  if [ ! -z "${outvarname_lat_ctr}" ]; then
+    printf -v ${outvarname_lat_ctr} "%s" "${lat_ctr}"
+  fi
+
+  if [ ! -z "${outvarname_nx}" ]; then
+    printf -v ${outvarname_nx} "%s" "${nx}"
+  fi
+
+  if [ ! -z "${outvarname_ny}" ]; then
+    printf -v ${outvarname_ny} "%s" "${ny}"
+  fi
+
+  if [ ! -z "${outvarname_halo_width}" ]; then
+    printf -v ${outvarname_halo_width} "%s" "${halo_width}"
+  fi
+
+  if [ ! -z "${outvarname_stretch_factor}" ]; then
+    printf -v ${outvarname_stretch_factor} "%s" "${stretch_factor}"
+  fi
+
+  if [ ! -z "${outvarname_pazi}" ]; then
+    printf -v ${outvarname_pazi} "%s" "${pazi}"
+  fi
+
+  if [ ! -z "${outvarname_del_angle_x_sg}" ]; then
+    printf -v ${outvarname_del_angle_x_sg} "%s" "${del_angle_x_sg}"
+  fi
+
+  if [ ! -z "${outvarname_del_angle_y_sg}" ]; then
+    printf -v ${outvarname_del_angle_y_sg} "%s" "${del_angle_y_sg}"
+  fi
+
+  if [ ! -z "${outvarname_neg_nx_of_dom_with_wide_halo}" ]; then
+    printf -v ${outvarname_neg_nx_of_dom_with_wide_halo} "%s" "${neg_nx_of_dom_with_wide_halo}"
+  fi
+
+  if [ ! -z "${outvarname_neg_ny_of_dom_with_wide_halo}" ]; then
+    printf -v ${outvarname_neg_ny_of_dom_with_wide_halo} "%s" "${neg_ny_of_dom_with_wide_halo}"
+  fi
 #
 #-----------------------------------------------------------------------
 #

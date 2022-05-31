@@ -121,7 +121,7 @@ print_input_args "valid_args"
 #
 called_from_cron=${called_from_cron:-"FALSE"}
 check_var_valid_value "called_from_cron" "valid_vals_BOOLEAN"
-called_from_cron=$(boolify ${called_from_cron})
+called_from_cron=$(boolify "${called_from_cron}")
 #
 #-----------------------------------------------------------------------
 #
@@ -151,7 +151,7 @@ expt_name="${EXPT_SUBDIR}"
 #
 module use "${SR_WX_APP_TOP_DIR}/modulefiles"
 module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || print_err_msg_exit "\
-Loading platform-specific module file (WFLOW_MOD_FN) for the workflow 
+Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 
 task failed:
   WFLOW_MOD_FN = \"${WFLOW_MOD_FN}\""
 #

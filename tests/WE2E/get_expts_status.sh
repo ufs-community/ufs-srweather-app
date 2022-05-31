@@ -79,6 +79,7 @@ Usage:
 
   ${scrfunc_fn} \\
     expts_basedir=\"...\" \\
+    [num_log_lines=\"...\"] \\
     [verbose=\"...\"]
 
 The arguments in brackets are optional.  The arguments are defined as
@@ -144,7 +145,7 @@ num_log_lines=${num_log_lines:-"40"}
 #
 verbose=${verbose:-"FALSE"}
 check_var_valid_value "verbose" "valid_vals_BOOLEAN"
-verbose=$(boolify $verbose)
+verbose=$(boolify "$verbose")
 #
 #-----------------------------------------------------------------------
 #

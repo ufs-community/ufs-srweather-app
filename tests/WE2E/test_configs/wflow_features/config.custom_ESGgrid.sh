@@ -36,6 +36,8 @@ ESGgrid_DELY="25000.0"
 ESGgrid_NX="216"
 ESGgrid_NY="156"
 
+ESGgrid_PAZI="0.0"
+
 ESGgrid_WIDE_HALO_WIDTH="6"
 
 DT_ATMOS="40"
