@@ -38,4 +38,3 @@ elif [ "$L_MACHINE" = odin ]; then
 else
    module purge
 fi
-
