@@ -14,9 +14,6 @@ The SRW App v1.0.0 citation is as follows and should be used when presenting res
 
 UFS Development Team. (2021, March 4). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
 
-..
-   COMMENT: Update version numbers/citation for release! Also update release date for citation!
-
 
 How to Use This Document
 ========================
@@ -112,9 +109,6 @@ The following software is also required to run the SRW Application, but the :ter
 * MPI (MPICH, OpenMPI, or other implementation)
 
    * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user. 
-
-..
-    COMMENT: All the software libraries are removed from the list, as they are built by the HPC stack.
 
 For MacOS systems, some additional software is needed. It is recommended that users install this software using the `Homebrew <https://brew.sh/>`__ package manager for MacOS:
 
