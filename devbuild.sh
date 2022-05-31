@@ -163,7 +163,7 @@ if [ -z "${COMPILER}" ] ; then
     wcoss2) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;
     macos,singularity) COMPILER=gnu ;;
-    odin) COMPILER=intel ;;
+    odin,noaacloud) COMPILER=intel ;;
     *)
       COMPILER=intel
       printf "WARNING: Setting default COMPILER=intel for new platform ${PLATFORM}\n" >&2;
@@ -249,7 +249,7 @@ if [ "${VERBOSE}" = true ]; then
 fi
 
 # Before we go on load modules, we first need to activate Lmod for some systems
-source ${SRW_DIR}/etc/lmod-setup.sh
+source ${SRW_DIR}/etc/lmod-setup.sh $MACHINE
 
 # source the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
