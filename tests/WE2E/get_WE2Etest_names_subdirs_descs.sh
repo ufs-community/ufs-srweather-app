@@ -1337,9 +1337,12 @@ ${test_desc}${stripped_line} "
       num_grid_pts=$(( nx*ny ))
 #
 # Calculate the number of time steps for the test.  Note that FCST_LEN_HRS 
-# is in units of hours while dta is in units of seconds.
+# is in units of hours while dta is in units of seconds.  Also, the factor
+# dta - 1 in the numerator is to cause the division to round up to the
+# nearest integer (adding the denominator minus one to the numerator will
+# make this happen).
 #
-      num_time_steps=$(( FCST_LEN_HRS*3600/dta + 1 ))
+      num_time_steps=$(( (FCST_LEN_HRS*3600 + dta - 1)/dta ))
 #
 # Calculate the absolute cost of the test.
 #
@@ -1403,7 +1406,7 @@ ${test_desc}${stripped_line} "
 
     num_grid_pts=$(( nx*ny ))
     fcst_len_hrs="6"
-    num_time_steps=$(( fcst_len_hrs*3600/dta+ 1 ))
+    num_time_steps=$(( (fcst_len_hrs*3600 + dta - 1)/dta ))
     abs_cost_ref=$(( num_grid_pts*num_time_steps ))
 
     for (( i=0; i<=$((num_prim_tests-1)); i++ )); do
