@@ -42,7 +42,7 @@ On NOAA Cloud systems, certain environment variables must be set *before* buildi
 If the ``cache`` and ``tmp`` directories do not exist already, they must be created with a ``mkdir`` command. 
 
 .. note:: 
-   ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
+   ``/lustre`` is a fast but non-persistent file system used on NOAA Cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
 
 .. _WorkOnHPC:
 
@@ -93,7 +93,7 @@ Build the container:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu20.04-epic-srwapp-1.0 docker://noaaepic/ubuntu20.04-epic-srwapp:1.0
+   singularity build --sandbox ubuntu20.04-gnu9.3-ufs-srwapp-srw-public-v2 docker://noaaepic/ubuntu20.04-gnu9.3-ufs-srwapp:srw-public-v2
 
 .. hint::
    If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
@@ -102,7 +102,7 @@ Start the container and run an interactive shell within it:
 
 .. code-block:: console
 
-   singularity shell -e --writable --bind /<local_base_dir>:/<path_to_container_dir_w_same_name> ubuntu20.04-epic-srwapp-1.0
+   singularity shell -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp-srw-public-v2
 
 The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
@@ -120,7 +120,7 @@ Set the build environments and modules within the ``ufs-srweather-app`` director
 
 .. code-block:: console
 
-   cd ubuntu20.04-epic-srwapp-1.0/opt/ufs-srweather-app/
+   cd ubuntu20.04-gnu9.3-ufs-srwapp-srw-public-v2/opt/ufs-srweather-app/
    ln -s /usr/bin/python3 /usr/bin/python
    source /usr/share/lmod/6.6/init/profile
    module use /opt/hpc-modules/modulefiles/stack
