@@ -154,10 +154,7 @@ Atmospheric Model
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
-(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2021`). The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/>`__. 
-
-..
-   COMMENT: Update link! 
+(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2021`). The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/release-public-v3/>`__. 
 
 Common Community Physics Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -231,10 +228,7 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
    | Processor (UPP)                 |                                                         |
    +---------------------------------+---------------------------------------------------------+
 
-The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/CodeOverview.html>`__.
-
-..
-   COMMENT: Update link! 
+The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/release-public-v3/CodeOverview.html>`__.
 
 Note that the prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. :numref:`Chapter %s <InstallBuildHPCstack>` contains details on installing the HPC-Stack. 
 
@@ -324,48 +318,45 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
 .. table::  Files and sub-directory initially created in the experimental directory 
    :widths: 33 67 
 
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | **File Name**             | **Description**                                                                                       |
-   +===========================+=======================================================================================================+
-   | config.sh                 | User-specified configuration file, see :numref:`Section %s <UserSpecificConfig>`                      |
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | data_table                | Cycle-independent input file (empty)                                                                  |
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | field_table               | Tracers in the `forecast model                                                                        |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#field-table-file>`_        |
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                   |
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | input.nml                 | Namelist for the `UFS Weather model                                                                   |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#namelist-file-input-nml>`_ | 
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | launch_FV3LAM_wflow.sh    | Symlink to the shell script of                                                                        |
-   |                           | ``ufs-srweather-app/regional_workflow/ush/launch_FV3LAM_wflow.sh``                                    |
-   |                           | that can be used to (re)launch the Rocoto workflow.                                                   |
-   |                           | Each time this script is called, it appends to a log                                                  |
-   |                           | file named ``log.launch_FV3LAM_wflow``.                                                               |
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | log.generate_FV3LAM_wflow | Log of the output from the experiment generation script                                               |
-   |                           | ``generate_FV3LAM_wflow.sh``                                                                          |
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | nems.configure            | See `NEMS configuration file                                                                          |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#nems-configure-file>`_     |
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | suite_{CCPP}.xml          | CCPP suite definition file used by the forecast model                                                 |
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   | var_defns.sh              | Shell script defining the experiment parameters. It contains all                                      |
-   |                           | of the primary parameters specified in the default and                                                |
-   |                           | user-specified configuration files plus many secondary parameters                                     |
-   |                           | that are derived from the primary ones by the experiment                                              |
-   |                           | generation script. This file is sourced by various other scripts                                      |
-   |                           | in order to make all the experiment variables available to these                                      |
-   |                           | scripts.                                                                                              |
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-   |  YYYYMMDDHH               | Cycle directory (empty)                                                                               |
-   +---------------------------+-------------------------------------------------------------------------------------------------------+
-
-..
-   COMMENT: Update WM links in table with v3 docs!
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   | **File Name**             | **Description**                                                                                              |
+   +===========================+==============================================================================================================+
+   | config.sh                 | User-specified configuration file, see :numref:`Section %s <UserSpecificConfig>`                             |
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   | data_table                | Cycle-independent input file (empty)                                                                         |
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   | field_table               | Tracers in the `forecast model                                                                               |
+   |                           | <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#field-table-file>`__       |
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                          |
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   | input.nml                 | Namelist for the `UFS Weather model                                                                          |
+   |                           | <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#namelist-file-input-nml>`__| 
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   | launch_FV3LAM_wflow.sh    | Symlink to the shell script of                                                                               |
+   |                           | ``ufs-srweather-app/regional_workflow/ush/launch_FV3LAM_wflow.sh``                                           |
+   |                           | that can be used to (re)launch the Rocoto workflow.                                                          |
+   |                           | Each time this script is called, it appends to a log                                                         |
+   |                           | file named ``log.launch_FV3LAM_wflow``.                                                                      |
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   | log.generate_FV3LAM_wflow | Log of the output from the experiment generation script                                                      |
+   |                           | ``generate_FV3LAM_wflow.sh``                                                                                 |
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   | nems.configure            | See `NEMS configuration file                                                                                 |
+   |                           | <hhttps://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#nems-configure-file>`__   |
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   | suite_{CCPP}.xml          | CCPP suite definition file used by the forecast model                                                        |
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   | var_defns.sh              | Shell script defining the experiment parameters. It contains all                                             |
+   |                           | of the primary parameters specified in the default and                                                       |
+   |                           | user-specified configuration files plus many secondary parameters                                            |
+   |                           | that are derived from the primary ones by the experiment                                                     |
+   |                           | generation script. This file is sourced by various other scripts                                             |
+   |                           | in order to make all the experiment variables available to these                                             |
+   |                           | scripts.                                                                                                     |
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
+   |  YYYYMMDDHH               | Cycle directory (empty)                                                                                      |
+   +---------------------------+--------------------------------------------------------------------------------------------------------------+
 
 In addition, running the SRW App in *community* mode creates the ``fix_am`` and ``fix_lam`` directories in ``EXPTDIR``. The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files after the grid, orography, and/or surface climatology generation tasks are run. 
 
@@ -453,10 +444,10 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | UFS_UTILS User's           | https://noaa-emcufs-utils.readthedocs.io/en/latest/                             |
    | Guide                      |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | UFS Weather Model          | https://ufs-weather-model.readthedocs.io/en/latest/                             |
+   | UFS Weather Model          | https://ufs-weather-model.readthedocs.io/en/release-public-v3/                  |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | HPC-Stack Documentation    | https://hpc-stack.readthedocs.io/en/latest/                                     |
+   | HPC-Stack Documentation    | https://hpc-stack.readthedocs.io/en/release-srw-public-v2/                      |
    +----------------------------+---------------------------------------------------------------------------------+
    | FV3 Documentation          | https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html                |
    +----------------------------+---------------------------------------------------------------------------------+
@@ -472,7 +463,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
 
 ..
-   COMMENT: Update HPC-Stack, CCPP Tech Docs, UFS WM Guide, UFS_UTILS links.
+   COMMENT: Update CCPP Tech Docs, UFS_UTILS links.
 
 The UFS community is encouraged to contribute to the development effort of all related
 utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`.
