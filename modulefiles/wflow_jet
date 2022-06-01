@@ -9,7 +9,7 @@ module-whatis "Loads libraries needed for running SRW on Jet"
 
 module load rocoto
 
-module use -a /contrib/miniconda3/modulefiles
+module use /contrib/miniconda3/modulefiles
 module load miniconda3
 
 if { [module-info mode load] } {
