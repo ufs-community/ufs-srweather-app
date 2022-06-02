@@ -307,16 +307,13 @@ When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the da
 * RAP (GRIB2): ``rap.t{cycle}z.wrfprsf{fhr}.grib2``
 * HRRR (GRIB2): ``hrrr.t{cycle}z.wrfprsf{fhr}.grib2``
 
-where {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and {fhr} corresponds to the 3-digit nth hour of the forecast. For example, a forecast starting at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``.
+where {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and {fhr} corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS data and 2 digits for RAP/HRRR data). For example, a forecast using FV3GFS data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``.
 
 In order to preserve the original file name, the ``f000`` files are placed in the ``ICS`` directory and all other forecast files are placed in the ``LBCS`` directory. Then, a symbolic link of the original files in the ``ICS/LBCS`` directory to the ``YYYYMMDDHH`` directory is suggested with the cycle removed. For example:
 
 .. code-block:: console
 
-   ln -sf /path-to/input_model_data/RAP/2020041212/ICS/rap.t12z.wrfprsf00.grib2 /path-to/input_model_data/RAP/2020041212/rap.wrfprsf00.grib2
-
-..
-   COMMENT: RAP data seems to be formatted differently now... and why aren't there three zeros in rap.wrfprsf00.grib2??? Same with HRRR data below
+   ln -sf /path-to/input_model_data/RAP/2020041212/ICS/rap.t12z.wrfprsf00.grib2 /path-to/input_model_data/RAP/2020041212/rap.t12z.wrfprsf00.grib2
 
 Linking the files like this removes the cycle-dependent part of the file names so that each cycle will use the same file name, regardless of initialization time. This allows for the following to be set in the ``config.sh`` regardless of what cycle you are running:
 
@@ -324,9 +321,9 @@ Linking the files like this removes the cycle-dependent part of the file names s
 
    USE_USER_STAGED_EXTRN_FILES="TRUE"
    EXTRN_MDL_SOURCE_BASEDIR_ICS="/path-to/model_data/HRRR"
-   EXTRN_MDL_FILES_ICS=( "hrrr.wrfprsf00.grib2" )
+   EXTRN_MDL_FILES_ICS=( "hrrr.t12z.wrfprsf00.grib2" )
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path-to/model_data/RAP"
-   EXTRN_MDL_FILES_LBCS=( "rap.wrfprsf03.grib2" "rap.wrfprsf06.grib2" )
+   EXTRN_MDL_FILES_LBCS=( "rap.t12z.wrfprsf03.grib2" "rap.t12z.wrfprsf06.grib2" )
 
 If users choose to forgo the extra ``ICS`` and ``LBCS`` directory, they may either
 rename the original files to remove the cycle or modify the ``config.sh`` to set: 
