@@ -235,13 +235,8 @@ Set Up the Workflow Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. attention::
-<<<<<<< HEAD
    * If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
    * Users who want to build the SRW App on a generic MacOS should skip to :numref:`Step %s <MacDetails>` and follow the approach there.
-=======
-   If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
-   For the CMake steps on MacOS systems, follow the approach in :numref:`Step %s <MacDetails>`.
->>>>>>> ae7a11c (Updated the Introduction, build for MacOS (#281))
 
 If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, assuming a ``bash`` login shell, run:
 

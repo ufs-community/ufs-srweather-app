@@ -10,16 +10,10 @@ The UFS includes `multiple applications <https://ufscommunity.org/science/abouta
 
 This documentation provides a :ref:`Quick Start Guide <QuickstartC>` for running the SRW Application in a container and a :ref:`detailed guide <BuildRunSRW>` for running the SRW App on supported platforms. It also provides an overview of the :ref:`release components <Components>` and details on how to customize or modify different portions of the workflow.
 
-<<<<<<< HEAD
 The SRW App v2.0.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
 UFS Development Team. (2022, June 3). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
-=======
-The SRW App v1.0.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2021, March 4). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
-
->>>>>>> ae7a11c (Updated the Introduction, build for MacOS (#281))
 
 How to Use This Document
 ========================
@@ -54,16 +48,8 @@ The instructions in this documentation assume that users have certain background
 * Familiarity with LINUX/UNIX systems
 * Command line basics
 * System configuration knowledge (e.g., compilers, environment variables, paths, etc.)
-<<<<<<< HEAD
-* Numerical Weather Prediction
-* Meteorology (particularly meteorology at the scales being predicted: 25km, 13km, and 3km resolutions)
-=======
 * Numerical Weather Prediction (concepts of parameterizations: physical, microphysical, convective)
-* Meteorology (particularly meteorology at the scales being predicted)
-
-..
-   COMMENT: Suggested sub-bullets for Meteorology/NWP? Cumulus and microphysics parameterizations? Convection? Microphysics?
->>>>>>> ae7a11c (Updated the Introduction, build for MacOS (#281))
+* Meteorology (in particular, meteorology at the scales being predicted: 25km, 13km, and 3km resolutions)
 
 Additional background knowledge in the following areas could be helpful:
 * High-Performance Computing (HPC) Systems for those running the SRW App on an HPC system
@@ -111,9 +97,6 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 * curl 
 
 * wget
-
-..
-   COMMENT: Should curl/wget/TIFF library also be required? These are listed as prerequisites for building HPC-Stack on generic MacOS/Linux  | A: TIFF could be installed with the HPC-stack build; others are needed
 
 The following software is also required to run the SRW Application, but the :term:`HPC-Stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
 
