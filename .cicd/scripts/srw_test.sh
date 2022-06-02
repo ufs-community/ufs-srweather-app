@@ -17,6 +17,14 @@ else
     workspace="$(cd -- "${script_dir}/../.." && pwd)"
 fi
 
+# Normalize Parallel Works cluster platform value.
+declare platform
+if [[ "${SRW_PLATFORM}" =~ ^(az|g|p)cluster_noaa ]]; then
+    platform='noaacloud'
+else
+    platform="${SRW_PLATFORM}"
+fi
+
 we2e_experiment_base_dir="${workspace}/experiments"
 we2e_test_dir="${workspace}/regional_workflow/tests/WE2E"
 
@@ -87,12 +95,12 @@ function get_results() {
 [[ -s "${workspace}/bin/ufs_model" ]] || [[ -s "${workspace}/bin/NEMS.exe" ]]
 
 # Set test related environment variables and load required modules.
-source "${workspace}/etc/lmod-setup.sh" "${SRW_PLATFORM}"
+source "${workspace}/etc/lmod-setup.sh" "${platform}"
 module use "${workspace}/modulefiles"
-module load "build_${SRW_PLATFORM}_${SRW_COMPILER}"
-module load "wflow_${SRW_PLATFORM}"
+module load "build_${platform}_${SRW_COMPILER}"
+module load "wflow_${platform}"
 
-if [[ "${SRW_PLATFORM}" == 'cheyenne' ]]; then
+if [[ "${platform}" == 'cheyenne' ]]; then
     export PATH="/glade/p/ral/jntp/UFS_CAM/ncar_pylib_20200427/bin:${PATH}"
 else
     conda activate regional_workflow
@@ -109,7 +117,7 @@ done
 # Run the end-to-end tests.
 "${we2e_test_dir}/run_WE2E_tests.sh" \
     tests_file="${we2e_test_file}" \
-    machine="${SRW_PLATFORM}" \
+    machine="${platform}" \
     account="${SRW_PROJECT}" \
     expt_basedir="${we2e_experiment_base_dir}" \
     compiler="${SRW_COMPILER}"
@@ -126,7 +134,7 @@ done
 
 # Get test results and write to a file.
 results="$(get_results |\
-    tee "${workspace}/test_results-${SRW_PLATFORM}-${SRW_COMPILER}.txt")"
+    tee "${workspace}/test_results-${platform}-${SRW_COMPILER}.txt")"
 
 # Check that the number of tests equals the number of successes, otherwise
 # exit with a non-zero code that equals the difference.

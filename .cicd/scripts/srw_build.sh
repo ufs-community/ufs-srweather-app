@@ -16,12 +16,20 @@ else
     workspace="$(cd -- "${script_dir}/../.." && pwd)"
 fi
 
+# Normalize Parallel Works cluster platform value.
+declare platform
+if [[ "${SRW_PLATFORM}" =~ ^(az|g|p)cluster_noaa ]]; then
+    platform='noaacloud'
+else
+    platform="${SRW_PLATFORM}"
+fi
+
 build_dir="${workspace}/build"
 
 # Set build related environment variables and load required modules.
-source "${workspace}/etc/lmod-setup.sh" "${SRW_PLATFORM}"
+source "${workspace}/etc/lmod-setup.sh" "${platform}"
 module use "${workspace}/modulefiles"
-module load "build_${SRW_PLATFORM}_${SRW_COMPILER}"
+module load "build_${platform}_${SRW_COMPILER}"
 
 # Compile SRW application and install to repository root.
 mkdir "${build_dir}"
