@@ -26,12 +26,16 @@
 #                            CARTOPY_DIR/shapefiles/natural_earth/cultural/*.shp
 #                          -More information regarding files needed to setup
 #                            display maps in Cartopy, see SRW App Users' Guide
+#                       7. POST_OUTPUT_DOMAIN_NAME:  Name of native domain
+#                          used in forecast and in constructing the names 
+#                          of the post output files.
 #
-#           		To create plots for forecast hours 20-24 from 5/7 00Z
-#                        cycle with hourly output:
+#           		To create plots for a forecast on the RRFS_CONUS_25km
+#                       grid for hours 20-24 from the 5/7 00Z cycle with 
+#                       hourly output:
 #                          python plot_allvars.py 2020050700 20 24 1 \
 #                          /path/to/expt_dirs/experiment/name \
-#                          /path/to/base/cartopy/maps
+#                          /path/to/base/cartopy/maps RRFS_CONUS_25km
 #
 #                       The variable domains in this script can be set to either
 #                         'conus' for a CONUS map or 'regional' where the map
@@ -227,6 +231,7 @@ parser.add_argument("Ending forecast hour")
 parser.add_argument("Forecast hour increment")
 parser.add_argument("Path to experiment directory")
 parser.add_argument("Path to base directory of cartopy shapefiles")
+parser.add_argument("Name of native domain used in forecast (and in constructing post file names)")
 args = parser.parse_args()
 
 # Read date/time, forecast hour, and directory paths from command line
@@ -252,6 +257,7 @@ print(fhours)
 
 EXPT_DIR = str(sys.argv[5])
 CARTOPY_DIR = str(sys.argv[6])
+POST_OUTPUT_DOMAIN_NAME = str(sys.argv[7]).lower()
 
 # Loop over forecast hours
 for fhr in fhours:
@@ -261,7 +267,7 @@ for fhr in fhours:
   vtime = ndate(itime,int(fhr))
 
 # Define the location of the input file
-  data1 = pygrib.open(EXPT_DIR+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.prslevf'+fhour+'.tm00.grib2')
+  data1 = pygrib.open(EXPT_DIR+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.prslev.f'+fhour+'.'+POST_OUTPUT_DOMAIN_NAME+'.grib2')
 
 # Get the lats and lons
   grids = [data1]

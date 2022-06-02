@@ -29,12 +29,17 @@
 #                            CARTOPY_DIR/shapefiles/natural_earth/cultural/*.shp
 #                          -More information regarding files needed to setup
 #                            display maps in Cartopy, see SRW App Users' Guide
+#                       8. POST_OUTPUT_DOMAIN_NAME:  Name of native domain
+#                          used in forecasts and in constructing the names 
+#                          of the post output files.  This must be the same 
+#                          for both forecasts.
 #
-#           		To create plots for forecast hours 20-24 from 5/7 00Z
-#                        cycle with hourly output:
+#           		To create difference plots for two forecasts on the
+#                       RRFS_CONUS_25km grid for hours 20-24 from the 5/7
+#                       00Z cycle with hourly output:
 #                          python plot_allvars_diff.py 2020050700  20 24 1 \
 #                          /path/to/expt_dir_1 /path/to/expt_dir_2 \
-#                          /path/to/base/cartopy/maps
+#                          /path/to/base/cartopy/maps RRFS_CONUS_25km
 #
 #                       The variable domains in this script can be set to either
 #                         'conus' for a CONUS map or 'regional' where the map
@@ -231,6 +236,7 @@ parser.add_argument("Forecast hour increment")
 parser.add_argument("Path to experiment 1 directory")
 parser.add_argument("Path to experiment 2 directory")
 parser.add_argument("Path to base directory of cartopy shapefiles")
+parser.add_argument("Name of native domain used in forecasts (and in constructing post file names)")
 args = parser.parse_args()
 
 # Read date/time, forecast hour, and directory paths from command line
@@ -257,6 +263,7 @@ print(fhours)
 EXPT_DIR_1 = str(sys.argv[5])
 EXPT_DIR_2 = str(sys.argv[6])
 CARTOPY_DIR = str(sys.argv[7])
+POST_OUTPUT_DOMAIN_NAME = str(sys.argv[8]).lower()
 
 # Loop over forecast hours
 for fhr in fhours:
@@ -267,8 +274,8 @@ for fhr in fhours:
 
 
 # Define the location of the input files
-  data1 = pygrib.open(EXPT_DIR_1+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.prslevf'+fhour+'.tm00.grib2')
-  data2 = pygrib.open(EXPT_DIR_2+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.prslevf'+fhour+'.tm00.grib2')
+  data1 = pygrib.open(EXPT_DIR_1+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.prslev.f'+fhour+'.'+POST_OUTPUT_DOMAIN_NAME+'.grib2')
+  data2 = pygrib.open(EXPT_DIR_2+'/'+ymdh+'/postprd/rrfs.t'+cyc+'z.prslev.f'+fhour+'.'+POST_OUTPUT_DOMAIN_NAME+'.grib2')
 
 # Get the lats and lons
   grids = [data1, data2]

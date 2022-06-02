@@ -1240,9 +1240,6 @@ check_for_preexist_dir_file "$EXPTDIR" "${PREEXISTING_DIR_METHOD}"
 #
 # COMOUT_BASEDIR is not used by the workflow in community mode.
 #
-# POST_OUTPUT_DOMAIN_NAME:
-# The PREDEF_GRID_NAME is set by default.
-#
 #-----------------------------------------------------------------------
 #
 LOGDIR="${EXPTDIR}/log"
@@ -1262,8 +1259,20 @@ else
   COMROOT=""
   COMOUT_BASEDIR=""
 fi
-
+#
+#-----------------------------------------------------------------------
+#
+#
+# If POST_OUTPUT_DOMAIN_NAME has not been specified by the user, set it
+# to PREDEF_GRID_NAME (which won't be empty if using a predefined grid).
+# Then change it to lowercase.  Finally, ensure that it does not end up 
+# getting set to an empty string.
+#
+#-----------------------------------------------------------------------
+#
 POST_OUTPUT_DOMAIN_NAME="${POST_OUTPUT_DOMAIN_NAME:-${PREDEF_GRID_NAME}}"
+POST_OUTPUT_DOMAIN_NAME=$(echo_lowercase ${POST_OUTPUT_DOMAIN_NAME})
+
 if [ -z "${POST_OUTPUT_DOMAIN_NAME}" ]; then
   print_err_msg_exit "\
 The domain name used in naming the run_post output files (POST_OUTPUT_DOMAIN_NAME)
@@ -1273,7 +1282,6 @@ If this experiment is not using a predefined grid (i.e. if PREDEF_GRID_NAME
 is set to a null string), POST_OUTPUT_DOMAIN_NAME must be set in the SRW 
 App's configuration file (\"${EXPT_CONFIG_FN}\")."
 fi
-POST_OUTPUT_DOMAIN_NAME=$(echo_lowercase ${POST_OUTPUT_DOMAIN_NAME})
 #
 #-----------------------------------------------------------------------
 #
