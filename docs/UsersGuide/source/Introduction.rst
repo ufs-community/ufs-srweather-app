@@ -70,12 +70,14 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * POSIX-compliant UNIX-style operating system
 
-* >102 GB disk space
+* >82 GB disk space
 
-   * 54 GB input data from GFS, RAP, and HRRR for "out-of-the-box" SRW App case described in :numref:`Chapter %s <BuildRunSRW>`
+   * 53 GB input data for a standard collection of global database, or "fix" data (topography, climatology, observational database), and boundary conditions for a short 12-h test forecast on CONUS 25km domain. See data download instructions in :numref:`Step %s <DownloadingStagingInput>`.
    * 8 GB for :term:`HPC-Stack` full installation
    * 3 GB for ufs-srweather-app installation
-   * 17 GB for 12hr forecast on CONUS 25km domain
+   * 1 GB boundary conditions for a short 12-h test forecast on CONUS 25km domain. See data download instructions in :numref:`Step %s <DownloadingStagingInput>`
+   * 17 GB for a 12-h test forecast on CONUS 25km domain, with model output saved hourly, see :numref:`Step %s <GridSpecificConfig>`
+
 
 * 4GB memory (CONUS 25km domain)
 
