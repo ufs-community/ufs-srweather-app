@@ -147,6 +147,7 @@ following six command line arguments:
 #. Forecast hour increment
 #. The top level of the experiment directory ``EXPTDIR`` containing the post-processed data. The script will look for the data files in the directory ``EXPTDIR/CDATE/postprd``.
 #. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shape files (``*.shp``) in the directory ``CARTOPY_DIR/shapefiles/natural_earth/cultural``.
+#. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecast
 
 .. note::
    If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
@@ -157,7 +158,7 @@ is as follows:
 
 .. code-block:: console
 
-   python plot_allvars.py 2019061500 6 48 6 /path-to/expt_dirs/test_CONUS_25km_GFSv16 /path-to/NaturalEarth
+   python plot_allvars.py 2019061500 6 48 6 /path-to/expt_dirs/test_CONUS_25km_GFSv16 /path-to/NaturalEarth RRFS_CONUS_25km
 
 The output files (in ``.png`` format) will be located in the directory ``EXPTDIR/CDATE/postprd``,
 where in this case ``EXPTDIR`` is ``/path-to/expt_dirs/test_CONUS_25km_GFSv16`` and ``CDATE`` 
@@ -176,12 +177,13 @@ seven command line arguments:
 #. The top level of the first experiment directory ``EXPTDIR1`` containing the first set of post-processed data. The script will look for the data files in the directory ``EXPTDIR1/CDATE/postprd``.
 #. The top level of the first experiment directory ``EXPTDIR2`` containing the second set of post-processed data. The script will look for the data files in the directory ``EXPTDIR2/CDATE/postprd``.
 #. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shape files (``*.shp``) in the directory ``CARTOPY_DIR/shapefiles/natural_earth/cultural``.
+#. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecasts (this must be the same for the two forecasts)
 
 An example of plotting differences from two experiments for the same date and predefined domain where one uses the "FV3_GFS_v16" suite definition file (SDF) and one using the "FV3_RRFS_v1beta" SDF is as follows:
 
 .. code-block:: console
 
-   python plot_allvars_diff.py 2019061518 0 18 6 /path-to/expt_dirs1/test_CONUS_3km_GFSv16 /path-to/expt_dirs2/test_CONUS_3km_RRFSv1beta /path-to/NaturalEarth
+   python plot_allvars_diff.py 2019061518 0 18 6 /path-to/expt_dirs1/test_CONUS_3km_GFSv16 /path-to/expt_dirs2/test_CONUS_3km_RRFSv1beta /path-to/NaturalEarth RRFS_CONUS_25km
 
 In this case, the output ``.png`` files will be located in the directory ``EXPTDIR1/CDATE/postprd``.
 
