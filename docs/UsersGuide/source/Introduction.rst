@@ -106,20 +106,15 @@ The following software is also required to run the SRW Application, but the :ter
 
    * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user. 
 
-For MacOS systems, some additional software is needed. It is recommended that users install this software using the `Homebrew <https://brew.sh/>`__ package manager for MacOS:
+For MacOS systems, some additional software packages are needed. It is recommended that users install this software using the `Homebrew <https://brew.sh/>`__ package manager for MacOS:
 
-* brew install bash  
-
-  * OR:  brew upgrade bash 
-* brew install gcc@11
-* brew install cmake
-* brew install make
-* brew install wget
-* brew install lmod
-* brew install coreutils
-
-.. 
-   COMMENT: Is this still accurate? It seems like we should delete the last one. And gcc@11 is basically the same as requiring fortran/C/C++ compilers, no? CMake is listed above. | A: updated bash requirements
+* bash v4.x
+* gcc@11
+* cmake
+* make
+* wget
+* lmod
+* coreutils
 
 Optional but recommended prerequisites for all systems:
 
@@ -128,8 +123,6 @@ Optional but recommended prerequisites for all systems:
 * Rocoto Workflow Management System (1.3.1)
 * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` for graphics
 
-..
-   COMMENT: Lmod is listed as required
 
 .. _ComponentsOverview: 
 
@@ -451,7 +444,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | CCPP Scientific            | https://dtcenter.ucar.edu/GMTB/v6.0.0p/sci_doc/html/index.html                  |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/latest/                                  |
+   | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/v6.0.0/                                  |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | ESMF manual                | https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/                |
@@ -460,7 +453,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
 
 ..
-   COMMENT: Update CCPP Tech Docs, UFS_UTILS links.
+   COMMENT: Update UFS_UTILS links.
 
 The UFS community is encouraged to contribute to the development effort of all related
 utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`.

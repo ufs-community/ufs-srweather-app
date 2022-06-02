@@ -960,8 +960,6 @@ The generated workflow will appear in ``EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDI
 
    *Experiment generation description*
 
-..
-   COMMENT: Change NEMS references in diagram to ufs-weather-model! 
 
 .. _WorkflowTaskDescription: 
 
