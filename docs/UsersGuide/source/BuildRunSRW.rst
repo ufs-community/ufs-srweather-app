@@ -235,8 +235,13 @@ Set Up the Workflow Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. attention::
+<<<<<<< HEAD
    * If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
    * Users who want to build the SRW App on a generic MacOS should skip to :numref:`Step %s <MacDetails>` and follow the approach there.
+=======
+   If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
+   For the CMake steps on MacOS systems, follow the approach in :numref:`Step %s <MacDetails>`.
+>>>>>>> ae7a11c (Updated the Introduction, build for MacOS (#281))
 
 If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, assuming a ``bash`` login shell, run:
 
@@ -335,25 +340,20 @@ Then, users must source the Lmod setup file, just as they would on other systems
    source etc/lmod-setup.sh macos
    module use <path/to/ufs-srweather-app/modulefiles>
    module load build_macos_gnu
+   export LDFLAGS="-L${MPI_ROOT}/lib"
 
 In a csh/tcsh shell, users would run ``source etc/lmod-setup.csh macos`` in place of the first line in the code above. 
 
 .. note::
    If you execute ``source etc/lmod-setup.sh`` on systems that don't need it, it will simply do a ``module purge``. 
 
-Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` to ``OFF`` in line 35 of the ``$SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt`` file. This change is optional if using Option 2 to build the SRW App. Using a text editor (e.g., vi, vim, emacs): 
+Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` to ``OFF`` in ``$SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt`` file. This change is optional if using Option 2 to build the SRW App. You could use a streamline editor `sed` to change it: 
 
 .. code-block:: console
 
-   option(ENABLE_QUAD_PRECISION "Enable compiler definition -DENABLE_QUAD_PRECISION" OFF)
+   sed -i .bak 's/QUAD_PRECISION\"  ON)/QUAD_PRECISION\" OFF)/' $SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt
 
-An alternative way to make this change is using a `sed` (streamline editor). From the command line, users can run one of two commands (user's preference):
-
-.. code-block:: console
-
-   sed -i -e 's/QUAD_PRECISION\" ON)/QUAD_PRECISION\" OFF)/' CMakeLists.txt
-   sed -i -e 's/bin\/sh/bin\/bash/g' *sh
-
+Proceed to building executables using CMake in :numref:`Step %s <BuildCMake>`
 
 .. _Data:
 
@@ -904,7 +904,7 @@ For Option 1 (8 CPUs):
 
    # Architecture information
    WORKFLOW_MANAGER="none"
-   NCORES_PER_NODE=${NCORES_PER_NODE:-8}	 (Option 2: when 4 CPUs, set to 4)
+   NCORES_PER_NODE=${NCORES_PER_NODE:-8}	 
    SCHED=${SCHED:-"none"}
    
    # UFS SRW App specific paths
@@ -921,9 +921,8 @@ For Option 1 (8 CPUs):
    RUN_CMD_UTILS="mpirun -np 4"
    RUN_CMD_FCST='mpirun -np ${PE_MEMBER01}'
    RUN_CMD_POST="mpirun -np 4"
-   PRE_TASK_CMDS='{ulimit -a;}'
 
-The same settings can be used for Option 2, except that ``NCORES_PER_NODE=${NCORES_PER_NODE:-8}`` should be set to 4 instead of 8. 
+Using Option 2 with 4 CPUs requires ``NCORES_PER_NODE=${NCORES_PER_NODE:-4}`` in the above example. 
 
 .. _MacActivateWFenv:
 
