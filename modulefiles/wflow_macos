@@ -14,7 +14,10 @@ setenv CMAKE_Platform macos
 # 
 setenv VENV "/Users/username/venv/regional_workflow"
 if { [module-info mode load] } {
-   system "source $env(VENV)/bin/activate;"
+   puts "source $env(VENV)/bin/activate;"
+}
+if { [module-info mode remove] } {
+   puts "deactivate;"
 }
 
 # Uncomment if Rocoto workflow manager is used

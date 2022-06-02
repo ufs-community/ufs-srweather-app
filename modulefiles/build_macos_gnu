@@ -8,7 +8,7 @@ proc ModulesHelp { } {
 module-whatis "Loads libraries needed for building SRW on Hera"
 
 if { [module-info mode load] } {
-   system "ulimit -S -s unlimited;"
+   puts "ulimit -S -s unlimited;"
 }
 
 # This path should point to your HPCstack installation directory
@@ -79,5 +79,15 @@ setenv CMAKE_Fortran_COMPILER $env(MPI_FC)
 setenv CMAKE_Platform macos.gnu
 
 setenv CMAKE_Fortran_COMPILER_ID "GNU"
-setenv LDFLAGS "-L$env(MPI_ROOT)/lib"
 setenv FFLAGS "-DNO_QUAD_PRECISION -fallow-argument-mismatch "
+
+#leave setting LDFLAGS to user because MPI_ROOT does not have
+#valid value before this modulefile is fully loaded.
+set shell [module-info shelltype]
+if {$shell == "sh"} {
+   puts stderr {Please execute this command:
+        > export LDFLAGS=-L$MPI_ROOT/lib}
+} else {
+   puts stderr {Please execute this command:
+        > setenv LDFLAGS -L$MPI_ROOT/lib}
+}
