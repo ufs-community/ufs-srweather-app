@@ -246,28 +246,29 @@ By setting ``USE_CRTM`` to "TRUE", the workflow will use the path defined in ``C
 
 Downloading and Staging Input Data
 ==================================
-A set of input files, including static (fix) data and raw initial and lateral boundary conditions (:term:`IC/LBC`'s), is required to run the SRW Application. The data required for the "out-of-the-box" SRW App case described in Chapters :numref:`%s <QuickstartC>` and :numref:`%s <BuildRunSRW>` is already preinstalled on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, along with data required to run the :ref:`WE2E <WE2E_tests>` test cases. These users do not need to stage the fixed files manually because they have been prestaged, and the paths are set in ``regional_workflow/ush/setup.sh``. 
-
-Users on Level 3 & 4 systems can find the data required for the "out-of-the-box" SRW App case in the `UFS SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ by clicking on `Browse Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. In general, files required for a particular experiment must be downloaded individually. However, the input data required to run the default SRW App case from ``config.community.sh`` is available as a full tar file. To download the tar file: 
-
-.. code-block:: console
-
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data
-   tar -xf files.tar.gz
-
+A set of input files, including static (fix) data and raw initial and lateral boundary conditions (:term:`IC/LBCs`), is required to run the SRW Application. The data required for the "out-of-the-box" SRW App case described in Chapters :numref:`%s <QuickstartC>` and :numref:`%s <BuildRunSRW>` is already preinstalled on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, along with data required to run the :ref:`WE2E <WE2E_tests>` test cases. Therefore, users on these systems do not need to stage the fixed files manually because they have been prestaged, and the paths are set in ``regional_workflow/ush/setup.sh``. Users on Level 3 & 4 systems can find the SRW App v2.0.0 release data in the `UFS SRW Application Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ by clicking on `Browse Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
 .. _StaticFixFiles:
 
 Static Files
 --------------
 
-Many static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket. If users prefer not to download the tar file with the current release data in :numref:`Section %s <DownloadingStagingInput>` above, they can download static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.0.0 data. 
+Static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW App Data Bucket. Users can download the full set of fix files as a tar file:
 
-The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.sh``. Add the following code or alter the variable paths if they are already listed in the ``config.sh`` file:
+.. code-block:: console
 
-* ``FIXgsm="/path-to/fix/fix_am"``
-* ``TOPO_DIR="/path-to/fix/fix_am/fix_orog"``
-* ``SFC_CLIMO_INPUT_DIR="/path-to/fix_am/fix/sfc_climo/"``
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz
+   tar -xzf fix_data.tgz
+
+Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.0.0 data. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the data bucket. 
+
+The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.sh``. Add the following code to the ``config.sh`` file and alter the variable paths accordingly:
+
+.. code-block:: console
+
+   FIXgsm="/path-to/fix/fix_am"
+   TOPO_DIR="/path-to/fix/fix_am/fix_orog"
+   SFC_CLIMO_INPUT_DIR="/path-to/fix_am/fix/sfc_climo/"
 
 .. _InitialConditions:
 
@@ -279,11 +280,10 @@ To download the model input data for the 12-hour "out-of-the-box" experiment con
 
 .. code-block:: console
 
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/input_model_data/FV3GFS/grib2/2019061518/gfs.t18z.pgrb2.0p25.f000
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/input_model_data/FV3GFS/grib2/2019061518/gfs.t18z.pgrb2.0p25.f006
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/input_model_data/FV3GFS/grib2/2019061518/gfs.t18z.pgrb2.0p25.f012
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/gst_data.tgz
+   tar -xzf gst_data.tgz
 
-To download data for different models or in different formats, users can explore the data bucket and replace the links above with ones that fetch their desired data. 
+To download data for different dates, model types, and formats, users can explore the ``input_model_data`` section of the data bucket and replace the links above with ones that fetch their desired data. 
 
 Initial and Lateral Boundary Condition Organization
 ---------------------------------------------------
@@ -296,7 +296,7 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
    EXTRN_MDL_SOURCE_BASEDIR_ICS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH/ICS>"
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH/LBCS>"
 
-These last two variables describe where the :term:`IC` and :term:`LBC` file directories are located, respectively. For ease of reusing ``config.sh`` across experiments, it is recommended that users set up the raw :term:`IC/LBC` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR) and date (in ``YYYYMMDDHH`` format). In addition, users can include separate ICS and LBCS directories. For example: ``/path-to/model_data/FV3GFS/2019061518/ICS`` and ``/path-to/model_data/FV3GFS/2019061518/LBCS``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
+These last two variables describe where the :term:`IC` and :term:`LBC` file directories are located, respectively. For ease of reusing ``config.sh`` across experiments, it is recommended that users set up the raw :term:`IC/LBC` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), date (in ``YYYYMMDDHH`` format) and ICS or LBCS directory type. For example: ``/path-to/input_model_data/FV3GFS/2019061518/ICS`` and ``/path-to/input_model_data/FV3GFS/2019061518/LBCS``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
 When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like:
 
