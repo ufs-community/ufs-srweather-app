@@ -229,7 +229,8 @@ Set Up the Workflow Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. attention::
-   If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
+   * If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
+   * Users who want to build the SRW App on a generic MacOS should skip to :numref:`Step %s <MacDetails>` and follow the approach there.
 
 If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, assuming a ``bash`` login shell, run:
 
@@ -515,11 +516,11 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+--------------------------------------------------------+
    | USE_USER_STAGED_EXTRN_FILES    | "FALSE"           | "TRUE"                                                 |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASE_DIR_ICS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+   | EXTRN_MDL_SOURCE_BASEDIR_ICS   | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
    +--------------------------------+-------------------+--------------------------------------------------------+
    | EXTRN_MDL_FILES_ICS            | ""                | "gfs.pgrb2.0p25.f000"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/path/to/model_data/FV3GFS"                           |
    +--------------------------------+-------------------+--------------------------------------------------------+
    | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
@@ -575,6 +576,8 @@ Sample settings are indicated below for Level 1 platforms. Detailed guidance app
 
 Minimum parameter settings for running the out-of-the-box SRW App case on Level 1 machines:
 
+.. _SystemData:
+
 **Cheyenne:**
 
 .. code-block:: console
@@ -587,9 +590,9 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
 
 where: 
-* <model_type> refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
-* <data_type> refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
-* YYYYMMDDHH refers to a subdirectory containing data for the :term:`cycle` date. 
+   * <model_type> refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
+   * <data_type> refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
+   * YYYYMMDDHH refers to a subdirectory containing data for the :term:`cycle` date. 
 
 
 **Hera, Jet, Orion, Gaea:**
@@ -643,8 +646,6 @@ For WCOSS_DELL_P3:
    MACHINE="NOAACLOUD"
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
-   EXPT_BASEDIR="lustre/$USER/expt_dirs"
-   COMPILER="gnu"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
    EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/develop/input_model_data/FV3GFS"
    EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )

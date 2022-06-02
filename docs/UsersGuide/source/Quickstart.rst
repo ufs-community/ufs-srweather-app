@@ -166,7 +166,7 @@ Make a copy of ``config.community.sh`` to get started. From the ``ufs-srweather-
 
 .. code-block:: console
 
-   cd regional_workflow/ush
+   cd <path-to>/regional_workflow/ush
    cp config.community.sh config.sh
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
@@ -178,20 +178,18 @@ Next, edit the new ``config.sh`` file to customize it for your experiment. At a 
    MACHINE="SINGULARITY"
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
-   EXPT_BASEDIR="/home/$USER/expt_dirs"
-   COMPILER="gnu"
 
 Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct paths to the data. The following is a sample for a 24-hour forecast:
 
 .. code-block::
 
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/path/to/model_data/FV3GFS"
-   EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path/to/model_data/FV3GFS"
-   EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" "gfs.pgrb2.0p25.f018" "gfs.pgrb2.0p25.f024" )
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="</path/to/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
+   EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="</path/to/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
+   EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012")
 
-On Level 1 systems, ``/path/to/model_data/FV3GFS`` should correspond to the location of the machine's global data. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Step %s <InitialConditions>`. 
+On Level 1 systems, ``/path/to/input_model_data/FV3GFS`` should correspond to the location of the machine's global data, which can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Step %s <InitialConditions>`. 
 
 On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonEnvC>`. On other Level 1 systems, additional file paths must be set: 
 
@@ -276,7 +274,7 @@ The regional workflow can be run using standalone shell scripts in cases where t
 
    .. code-block:: console
 
-      cp ufs-srweather-app/regional_workflow/ush/wrappers/* .
+      cp <path-to>/ufs-srweather-app/regional_workflow/ush/wrappers/* .
 
 #. Set the ``OMP_NUM_THREADS`` variable and fix dash/bash shell issue (this ensures the system does not use an alias of ``sh`` to dash). 
 
