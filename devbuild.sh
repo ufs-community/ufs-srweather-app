@@ -17,6 +17,8 @@ OPTIONS
   -a, --app=APPLICATION
       weather model application to build
       (e.g. ATM | ATMW | S2S | S2SW)
+  -e, --extrn=EXTERNALS
+      check out external components (YES | NO)
   --ccpp="CCPP_SUITE1,CCPP_SUITE2..."
       CCPP suites (CCPP_SUITES) to include in build; delimited with ','
   --enable-options="OPTION1,OPTION2,..."
@@ -58,6 +60,7 @@ Settings:
   PLATFORM=${PLATFORM}
   COMPILER=${COMPILER}
   APP=${APPLICATION}
+  EXTRN=${EXTERNALS}
   CCPP=${CCPP_SUITES}
   ENABLE_OPTIONS=${ENABLE_OPTIONS}
   DISABLE_OPTIONS=${DISABLE_OPTIONS}
@@ -85,6 +88,7 @@ BUILD_DIR="${SRW_DIR}/build"
 INSTALL_DIR=${SRW_DIR}
 COMPILER=""
 APPLICATION=""
+EXTERNALS="NO"
 CCPP_SUITES=""
 ENABLE_OPTIONS=""
 DISABLE_OPTIONS=""
@@ -110,6 +114,8 @@ while :; do
     --compiler|--compiler=|-c|-c=) usage_error "$1 requires argument." ;;
     --app=?*|-a=?*) APPLICATION=${1#*=} ;;
     --app|--app=|-a|-a=) usage_error "$1 requires argument." ;;
+    --extrn=?*|-e=?*) EXTERNALS=${1#*=} ;;
+    --extrn|--extrn=|-e|-e=) usage_error "$1 requires argument." ;;
     --ccpp=?*) CCPP_SUITES=${1#*=} ;;
     --ccpp|--ccpp=) usage_error "$1 requires argument." ;;
     --enable-options=?*) ENABLE_OPTIONS=${1#*=} ;;
@@ -140,6 +146,7 @@ done
 APPLICATION="${APPLICATION^^}"
 PLATFORM="${PLATFORM,,}"
 COMPILER="${COMPILER,,}"
+EXTERNALS="${EXTERNALS^^}"
 
 # check if PLATFORM is set
 if [ -z $PLATFORM ] ; then
@@ -176,6 +183,12 @@ printf "COMPILER=${COMPILER}\n" >&2
 # print settings
 if [ "${VERBOSE}" = true ] ; then
   settings
+fi
+
+# Check out external components ===========================================
+if [ "${EXTERNALS}" = "YES" ]; then
+  printf "... Checking out the external components ...\n"
+  ./manage_externals/checkout_externals
 fi
 
 # set MODULE_FILE for this platform/compiler combination
