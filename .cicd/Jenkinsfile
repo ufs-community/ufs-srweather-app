@@ -90,10 +90,6 @@ pipeline {
                     }
                 }
 
-                agent {
-                    label env.SRW_PLATFORM
-                }
-
                 environment {
                     BRANCH_NAME_ESCAPED = env.BRANCH_NAME.replace('/', '_')
                     BUILD_VERSION = "${env.SRW_PLATFORM}-${env.SRW_COMPILER}-${env.BRANCH_NAME_ESCAPED}-${env.BUILD_NUMBER}"
@@ -103,6 +99,10 @@ pipeline {
                 stages {
                     // Clean the workspace, checkout the repository, and run checkout_externals
                     stage('Initialize') {
+                        agent {
+                            label env.SRW_PLATFORM
+                        }
+
                         steps {
                             echo "Initializing SRW (${env.SRW_COMPILER}) build environment on ${env.SRW_PLATFORM}"
                             cleanWs()
@@ -113,6 +113,10 @@ pipeline {
 
                     // Run the unified build script; if successful create a tarball of the build and upload to S3
                     stage('Build') {
+                        agent {
+                            label env.SRW_PLATFORM
+                        }
+
                         steps {
                             echo "Building SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM}"
                             sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_build.sh"'
@@ -128,6 +132,10 @@ pipeline {
 
                     // Run the unified test script
                     stage('Test') {
+                        agent {
+                            label env.SRW_PLATFORM
+                        }
+
                         steps {
                             echo "Testing SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM}"
                             sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_test.sh"'
