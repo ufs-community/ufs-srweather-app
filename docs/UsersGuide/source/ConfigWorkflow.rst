@@ -249,10 +249,7 @@ Model Configuration Parameters
 =================================
 
 ``DT_ATMOS``: (Default: "")
-   Time step for the outermost atmospheric model loop in seconds. This corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, tracer transport, and vertical dynamics routines; see the `FV3 dycore documentation <https://www.gfdl.noaa.gov/wp-content/uploads/2020/02/FV3-Technical-Description.pdf>`__ for details.) Must be set. Takes an integer value.
-
-..
-   COMMENT: FV3 documentation says DT_ATMOS must be set, but in our code, the default value is "". What is the actual default value? And is the default set by the FV3 dycore (or somewhere else) rather than in the SRW App itself?
+   Time step for the outermost atmospheric model loop in seconds. This corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, tracer transport, and vertical dynamics routines; see the `FV3 dycore scientific documentation <https://repository.library.noaa.gov/view/noaa/30725>`__ for details.) Must be set. Takes an integer value. In the SRW App, a default value for ``DT_ATMOS`` appears in the ``set_predef_grid_params.sh`` script, but a different value can be set in ``config.sh``. 
 
 ``RESTART_INTERVAL``: (Default: "0")
    Frequency of the output restart files in hours. Using the default interval ("0"), restart files are produced at the end of a forecast run. When ``RESTART_INTERVAL="1"``, restart files are produced every hour with the prefix "YYYYMMDD.HHmmSS." in the ``RESTART`` directory. 
@@ -404,8 +401,10 @@ CCPP Parameter
 Stochastic Physics Parameters
 ================================
 
-For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/namelist_options.html>`__.
+For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/>`__.
 
+..
+   COMMENT: Is this the best link/version?
 
 ``NEW_LSCALE``: (Default: "TRUE") 
    Use correct formula for converting a spatial legnth scale into spectral space. 
@@ -702,7 +701,7 @@ Write-Component (Quilting) Parameters
 ======================================
 
 .. note::
-   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write-component grid** before writing them to an output file. The output files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html?highlight=write-component#model-configurefile>`__ of the UFS Weather Model documentation.  
+   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write-component grid** before writing them to an output file. The output files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#model-configure-file>`__ of the UFS Weather Model documentation. 
 
 ``QUILTING``: (Default: "TRUE")
 

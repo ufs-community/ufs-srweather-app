@@ -439,7 +439,11 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
    | HPC-Stack Documentation    | https://hpc-stack.readthedocs.io/en/release-srw-public-v2/                      |
    +----------------------------+---------------------------------------------------------------------------------+
-   | FV3 Documentation          | https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html                |
+   | FV3 Scientific             | https://repository.library.noaa.gov/view/noaa/30725                             |
+   | Documentation              |                                                                                 |
+   +----------------------------+---------------------------------------------------------------------------------+
+   | FV3 Technical              | https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html                |
+   | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | CCPP Scientific            | https://dtcenter.ucar.edu/GMTB/v6.0.0p/sci_doc/html/index.html                  |
    | Documentation              |                                                                                 |
