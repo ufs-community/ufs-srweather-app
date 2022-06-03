@@ -103,6 +103,10 @@ module load "wflow_${platform}"
 if [[ "${platform}" == 'cheyenne' ]]; then
     export PATH="/glade/p/ral/jntp/UFS_CAM/ncar_pylib_20200427/bin:${PATH}"
 else
+    if [[ "${platform}" == 'noaacloud' && -z "${PROJ_LIB-}" ]]; then
+        PROJ_LIB=''
+    fi
+
     conda activate regional_workflow
 fi
 
