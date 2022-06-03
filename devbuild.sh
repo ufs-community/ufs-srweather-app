@@ -188,7 +188,11 @@ fi
 # Check out external components ===========================================
 if [ "${EXTERNALS}" = "YES" ]; then
   printf "... Checking out the external components ...\n"
-  ./manage_externals/checkout_externals
+  if [ -d "${SRW_DIR}/regional_workflow" ]; then
+    printf "External components already exist. This step will be skipped.\n"
+  else  
+   ./manage_externals/checkout_externals
+  fi
 fi
 
 # set MODULE_FILE for this platform/compiler combination
