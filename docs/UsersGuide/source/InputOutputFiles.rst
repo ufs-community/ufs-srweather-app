@@ -307,7 +307,7 @@ When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the da
 * RAP (GRIB2): ``rap.t{cycle}z.wrfprsf{fhr}.grib2``
 * HRRR (GRIB2): ``hrrr.t{cycle}z.wrfprsf{fhr}.grib2``
 
-where {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and {fhr} corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS data and 2 digits for RAP/HRRR data). For example, a forecast using FV3GFS data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``.
+where {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and {fhr} corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS data and 2 digits for RAP/HRRR data). For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``.
 
 In order to preserve the original file name, the ``f000`` files are placed in the ``ICS`` directory and all other forecast files are placed in the ``LBCS`` directory. Then, a symbolic link of the original files in the ``ICS/LBCS`` directory to the ``YYYYMMDDHH`` directory is suggested with the cycle removed. For example:
 

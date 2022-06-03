@@ -50,7 +50,7 @@ generate the experiment directories, but the workflows will fail.
 Supported Tests
 ===================
 
-The full list of WE2E tests is extensive; it is not recommended to run all of the tests, as some are computationally expensive. A subset of the tests are supported for the latest release of the SRW Application`. Frequent test cases appear in :numref:`Table %s <FrequentTests>` below, and complete test cases appear :doc:`here <CompleteTests>`. Frequent tests are a lightweight set of tests that can be automated and run regularly on each Level 1 platform. These tests and cover a wide scope of capabilities to ensure that there are no major, obvious faults in the underlying code. Complete tests include the remainder of the supported WE2E tests and cover a fuller list of workflow configurations.
+The full list of WE2E tests is extensive; it is not recommended to run all of the tests, as some are computationally expensive. A subset of the tests are supported for the latest release of the SRW Application. Frequent test cases appear in :numref:`Table %s <FrequentTests>` below, and complete test cases appear :doc:`here <CompleteTests>`. Frequent tests are a lightweight set of tests that can be automated and run regularly on each Level 1 platform. These tests and cover a wide scope of capabilities to ensure that there are no major, obvious faults in the underlying code. Complete tests include the remainder of the supported WE2E tests and cover a fuller list of workflow configurations.
 
 ..
    COMMENT: Add file w/supported tests to repo 

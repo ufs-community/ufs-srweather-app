@@ -69,7 +69,7 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * >82 GB disk space
 
-   * 53 GB input data for a standard collection of global database, or "fix" data (topography, climatology, observational database), and boundary conditions for a short 12-h test forecast on CONUS 25km domain. See data download instructions in :numref:`Step %s <DownloadingStagingInput>`.
+   * 53 GB input data for a standard collection of global database, or "fix" data (topography, climatology, observational database), and boundary conditions for a short 12-hour test forecast on CONUS 25km domain. See data download instructions in :numref:`Step %s <DownloadingStagingInput>`.
    * 8 GB for :term:`HPC-Stack` full installation
    * 3 GB for ufs-srweather-app installation
    * 1 GB boundary conditions for a short 12-h test forecast on CONUS 25km domain. See data download instructions in :numref:`Step %s <DownloadingStagingInput>`
