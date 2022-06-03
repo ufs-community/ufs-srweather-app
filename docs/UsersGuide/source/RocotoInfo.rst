@@ -1,13 +1,13 @@
 .. _RocotoInfo:
 
-=============================
-Additional Rocoto Information
-=============================
+==================================
+Rocoto Introductory Information
+==================================
 The tasks in the SRW Application (:numref:`Table %s <WorkflowTasksTable>`) are typically run using
 the Rocoto Workflow Manager. Rocoto is a Ruby program that communicates with the batch system on an
-HPC system to run and manage dependencies between the tasks. Rocoto submits jobs to the HPC batch
+:term:`HPC` system to run and manage dependencies between the tasks. Rocoto submits jobs to the HPC batch
 system as the task dependencies allow and runs one instance of the workflow for a set of user-defined
-cycles. More information about Rocoto can be found on the `Rocoto Wiki <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
+:term:`cycles`. More information about Rocoto can be found on the `Rocoto Wiki <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 
 The SRW App workflow is defined in a Jinja-enabled Rocoto XML template called ``FV3LAM_wflow.xml``,
 which resides in the ``regional_workflow/ush/templates`` directory. When the ``generate_FV3LAM_wflow.sh``
@@ -119,8 +119,8 @@ on your grid size and computational resources), the output of the ``rocotostat``
    201907010000        run_post_f005            -               -            -       -          -
    201907010000        run_post_f006            -               -            -       -          -
 
-When the workflow runs to completion, all tasks will be marked as SUCCEEDED. The log files from the tasks
-are located in ``$EXPTDIR/log``. If any tasks fail, the corresponding log file can be checked for error
+When the workflow runs to completion, all tasks will be marked as SUCCEEDED. The log file for each task
+is located in ``$EXPTDIR/log``. If any task fails, the corresponding log file can be checked for error
 messages. Optional arguments for the ``rocotostat`` command can be found in the `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 
 .. _rocotocheck:

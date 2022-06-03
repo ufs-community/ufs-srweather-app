@@ -48,6 +48,7 @@ Glossary
       Convection-allowing models (CAMs) are models that run on high-resolution grids (usually with grid spacing at 4km or less) that are able to resolve the effects of small-scale convective processes. They typically run several times a day to provide frequent forecasts (e.g., hourly or even subhourly). 
 
    cycle
+   cycles
       An hour of the day on which a forecast is started. 
 
    cycle-dependent 
