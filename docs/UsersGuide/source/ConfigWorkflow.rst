@@ -100,6 +100,8 @@ Cron-Associated Parameters
 ``CRON_RELAUNCH_INTVL_MNTS``: (Default: "03")
    The interval (in minutes) between successive calls of the experiment launch script by a cron job to (re)launch the experiment (so that the workflow for the experiment kicks off where it left off). This is used only if ``USE_CRON_TO_RELAUNCH`` is set to "TRUE".
 
+.. _DirParams:
+
 Directory Parameters
 ====================
 ``EXPT_BASEDIR``: (Default: "")
@@ -376,6 +378,7 @@ Set parameters associated with NOMADS online data.
 ``NOMADS_file_type``: (Default: "nemsio")
    Flag controlling the format of the data. Valid values: "GRIB2" "grib2" "NEMSIO" "nemsio"
 
+.. _CCPP_Params:
 
 CCPP Parameter
 ==============
