@@ -451,6 +451,9 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/v6.0.0/                                  |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
+   | Stochastic Physics         | https://stochastic-physics.readthedocs.io/en/release-public-v3/                 |
+   | Documentation              |                                                                                 |
+   +----------------------------+---------------------------------------------------------------------------------+
    | ESMF manual                | https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/                |
    +----------------------------+---------------------------------------------------------------------------------+
    | Unified Post Processor     | https://upp.readthedocs.io/en/upp_v10.1.0/                                      |

@@ -3,7 +3,7 @@
 ============================================================================================
 Workflow Parameters: Configuring the Workflow in ``config.sh`` and ``config_defaults.sh``		
 ============================================================================================
-To create the experiment directory and workflow when running the SRW App, the user must create an experiment configuration file named ``config.sh``. This file contains experiment-specific information, such as dates, external model data, observation data, directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``regional_workflow`` repository’s ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first is for running experiments in community mode (``RUN_ENVIR`` set to "community"; see below), and the second is for running experiments in "nco" mode (``RUN_ENVIR`` set to "nco"). Note that for this release, only "community" mode is supported. These files can be used as the starting point from which to generate a variety of experiment configurations in which to run the SRW App.
+To create the experiment directory and workflow when running the SRW Application, the user must create an experiment configuration file named ``config.sh``. This file contains experiment-specific information, such as dates, external model data, observation data, directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``regional_workflow`` repository’s ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first is for running experiments in community mode (``RUN_ENVIR`` set to "community"; see below), and the second is for running experiments in "nco" mode (``RUN_ENVIR`` set to "nco"). Note that for this release, only "community" mode is supported. These files can be used as the starting point from which to generate a variety of experiment configurations in which to run the SRW App.
 
 There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these need to be explicitly set by the user in ``config.sh``. If a user does not define an entry in the ``config.sh`` script, either its value in ``config_defaults.sh`` will be used, or it will be reset depending on other parameters, such as the platform on which the experiment will be run (specified by ``MACHINE``). Note that ``config_defaults.sh`` contains the full list of experiment parameters that a user may set in ``config.sh`` (i.e., the user cannot set parameters in config.sh that are not initialized in ``config_defaults.sh``).
 
@@ -401,10 +401,7 @@ CCPP Parameter
 Stochastic Physics Parameters
 ================================
 
-For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/>`__.
-
-..
-   COMMENT: Is this the best link/version?
+For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/release-public-v3/>`__.
 
 ``NEW_LSCALE``: (Default: "TRUE") 
    Use correct formula for converting a spatial legnth scale into spectral space. 
@@ -542,10 +539,10 @@ The parameters below turn on SPP in Noah or RUC LSM (support for Noah MP is in p
 ``DO_LSM_SPP``: (Default: "false") 
    Turns on Land Surface Model (LSM) Stochastic Physics Parameterizations (SPP). When "TRUE", sets ``lndp_type=2``, which applies land perturbations to the selected paramaters using a newer scheme designed for data assimilation (DA) ensemble spread. LSM SPP perturbs uncertain land surface fields ("smc" "vgf" "alb" "sal" "emi" "zol" "stc") based on recommendations from physics experts. 
 
-``LSM_SPP_TSCALE``: (Default: ( ( "21600" "21600" "21600" "21600" "21600" "21600" "21600" ) )
+``LSM_SPP_TSCALE``: (Default: ( ( "21600" "21600" "21600" "21600" "21600" "21600" "21600" ) ) )
    Decorrelation timescale in seconds. 
 
-``LSM_SPP_LSCALE``: (Default: ( ( "150000" "150000" "150000" "150000" "150000" "150000" "150000" ) )
+``LSM_SPP_LSCALE``: (Default: ( ( "150000" "150000" "150000" "150000" "150000" "150000" "150000" ) ) )
    Decorrelation spatial scale in meters.
 
 ``ISEED_LSM_SPP``: (Default: ("9") )
