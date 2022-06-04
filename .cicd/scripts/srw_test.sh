@@ -143,6 +143,4 @@ results="$(get_results |\
 # Check that the number of tests equals the number of successes, otherwise
 # exit with a non-zero code that equals the difference.
 successes="$(awk '$2 == "SUCCESS" {print $1}' <<< "${results}" | wc -l)"
-if [[ "${#we2e_default_tests[@]}" -ne "${successes}" ]]; then
-    exit "$(( "${#we2e_default_tests[@]}" - "${successes}" ))"
-fi
+exit "$(( ${#we2e_default_tests[@]} - ${successes} ))"
