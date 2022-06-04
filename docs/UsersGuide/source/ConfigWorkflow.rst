@@ -3,35 +3,35 @@
 ============================================================================================
 Workflow Parameters: Configuring the Workflow in ``config.sh`` and ``config_defaults.sh``		
 ============================================================================================
-To create the experiment directory and workflow when running the SRW Application, the user must create an experiment configuration file named ``config.sh``. This file contains experiment-specific information, such as dates, external model data, observation data, directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``regional_workflow`` repository’s ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first is for running experiments in community mode (``RUN_ENVIR`` set to "community"; see below), and the second is for running experiments in "nco" mode (``RUN_ENVIR`` set to "nco"). Note that for this release, only "community" mode is supported. These files can be used as the starting point from which to generate a variety of experiment configurations in which to run the SRW App.
+To create the experiment directory and workflow when running the SRW Application, the user must create an experiment configuration file named ``config.sh``. This file contains experiment-specific information, such as dates, external model data, observation data, directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``regional_workflow`` repository’s ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first is for running experiments in community mode (``RUN_ENVIR`` set to "community"), and the second is for running experiments in "nco" mode (``RUN_ENVIR`` set to "nco"). Note that for this release, only "community" mode is supported. These files can be used as the starting point from which to generate a variety of experiment configurations for the SRW App.
 
-There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these need to be explicitly set by the user in ``config.sh``. If a user does not define an entry in the ``config.sh`` script, either its value in ``config_defaults.sh`` will be used, or it will be reset depending on other parameters, such as the platform on which the experiment will be run (specified by ``MACHINE``). Note that ``config_defaults.sh`` contains the full list of experiment parameters that a user may set in ``config.sh`` (i.e., the user cannot set parameters in config.sh that are not initialized in ``config_defaults.sh``).
+There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these need to be explicitly set by the user in ``config.sh``. If a user does not define an entry in the ``config.sh`` script, either its value in ``config_defaults.sh`` will be used, or it will be reset depending on other parameters, such as the platform on which the experiment will be run (specified by ``MACHINE``). Note that ``config_defaults.sh`` contains the full list of experiment parameters that a user may set in ``config.sh`` (i.e., the user cannot set parameters in ``config.sh`` that are not initialized in ``config_defaults.sh``).
 
-The following is a list of the parameters in the ``config_defaults.sh`` file. For each parameter, the default value and a brief description is given. In addition, any relevant information on features and settings supported or unsupported in this release is specified.
+The following is a list of the parameters in the ``config_defaults.sh`` file. For each parameter, the default value and a brief description is given. In addition, relevant information on support for features and settings in the v2.0.0 release is provided.
 
 Platform Environment
 ====================
 ``RUN_ENVIR``: (Default: "nco")
-   This variable determines the mode that the workflow will run in. The user can choose between two modes: "nco" and "community". The "nco" mode uses a directory structure that mimics what is used in operations at NOAA/NCEP Central Operations (NCO) and at the NOAA/NCEP/Environmental Modeling Center (EMC), which is working with NCO on pre-implementation testing. Specifics of the conventions used in "nco" mode can be found in the following `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ document:
+   This variable determines the workflow mode. The user can choose between two options: "nco" and "community". The "nco" mode uses a directory structure that mimics what is used in operations at NOAA/NCEP Central Operations (NCO) and at the NOAA/NCEP/Environmental Modeling Center (EMC), which works with NCO on pre-implementation testing. Specifics of the conventions used in "nco" mode can be found in the following `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ document:
 
    | NCEP Central Operations
    | WCOSS Implementation Standards
    | January 19, 2022
    | Version 11.0.0
    
-   Setting ``RUN_ENVIR`` to "community" will use the standard directory structure and variable naming convention and is recommended in most cases for users who are not planning to implement their code into operations at NCO.
+   Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not planning to implement their code into operations at NCO.
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform) on which the workflow will run. Currently supported platforms include "WCOSS_DELL_P3", "HERA", "ORION", "JET", "ODIN", "CHEYENNE", "STAMPEDE", "GAEA", "SINGULARITY", "NOAACLOUD", "MACOS", and "LINUX". When running the SRW App in a container, set ``MACHINE`` to "SINGULARITY" regardless of the underlying platform. 
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParellelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). When running the SRW App in a container, set ``MACHINE`` to "SINGULARITY" regardless of the underlying platform (including on NOAA Cloud systems). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS_DELL_P3"``
 
 ``MACHINE_FILE``: (Default: "")
    Path to a configuration file with machine-specific settings. If none is provided, ``setup.sh`` will attempt to set the path to a configuration file for a supported platform.
 
 ``ACCOUNT``: (Default: "project_name")
-   The account under which to submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
+   The account under which users submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
 
 ``WORKFLOW_MANAGER``: (Default: "none")
-   The workflow manager to use (e.g. "ROCOTO"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "ROCOTO." Valid values: "rocoto" "none"
+   The workflow manager to use (e.g., "ROCOTO"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "ROCOTO." Valid values: ``"rocoto"`` | ``"none"``
 
 ``NCORES_PER_NODE``: (Default: "")
    The number of cores available per node on the compute platform. Set for supported platforms in ``setup.sh``, but it is now also configurable for all platforms.
@@ -46,23 +46,23 @@ Platform Environment
    Name of alternative workflow module file to use if running on an unsupported platform. Is set automatically for supported machines.
 
 ``SCHED``: (Default: "")
-   The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Set this to an empty string in order for the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: "slurm" "pbspro" "lsf" "lsfcray" "none"
+   The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Set this to an empty string in order for the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: ``"slurm"`` | ``"pbspro"`` | ``"lsf"`` | ``"lsfcray"`` | ``"none"``
 
 Machine-Dependent Parameters:
 -------------------------------
 These parameters vary depending on machine. On `Level 1 and 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, the appropriate values for each machine can be viewed in the ``regional_workflow/ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.sh`` file so that they override the ``config_defaults.sh`` and machine default values. 
 
 ``PARTITION_DEFAULT``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). This is the default partition to which Slurm submits workflow tasks. When a variable that designates the partition (e.g., ``PARTITION_HPSS``, ``PARTITION_FCST``; see below) is **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "hera" "normal" "orion" "sjet,vjet,kjet,xjet" "workq"
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). This is the default partition to which Slurm submits workflow tasks. When a variable that designates the partition (e.g., ``PARTITION_HPSS``, ``PARTITION_FCST``; see below) is **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: ``""`` | ``"hera"`` | ``"normal"`` | ``"orion"`` | ``"sjet,vjet,kjet,xjet"`` | ``"workq"``
 
 ``CLUSTERS_DEFAULT``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). These are the default clusters to which Slurm submits workflow tasks. If ``CLUSTERS_HPSS`` or ``CLUSTERS_FCST`` (see below) are not specified, the task will be submitted to the default clusters indicated in this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
 
 ``QUEUE_DEFAULT``: (Default: "")
-   The default queue or QOS to which workflow tasks are submitted (QOS is Slurm's term for queue; it stands for "Quality of Service"). If the task's ``QUEUE_HPSS`` or ``QUEUE_FCST`` parameters (see below) are not specified, the task will be submitted to the queue indicated by this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "batch" "dev" "normal" "regular" "workq"
+   The default queue or QOS to which workflow tasks are submitted (QOS is Slurm's term for queue; it stands for "Quality of Service"). If the task's ``QUEUE_HPSS`` or ``QUEUE_FCST`` parameters (see below) are not specified, the task will be submitted to the queue indicated by this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: ``""`` | ``"batch"`` | ``"dev"`` | ``"normal"`` | ``"regular"`` | ``"workq"``
 
 ``PARTITION_HPSS``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the partition specified in this variable. These links are needed to generate initial conditions (:term:`ICs`) and lateral boundary conditions (:term:`LBCs`) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to the ``PARTITION_DEFAULT`` value (if set) or to a machine-dependent value. Valid values: "" "normal" "service" "workq"
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the partition specified in this variable. These links are needed to generate initial conditions (:term:`ICs`) and lateral boundary conditions (:term:`LBCs`) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to the ``PARTITION_DEFAULT`` value (if set) or to a machine-dependent value. Valid values: ``""`` | ``"normal"`` | ``"service"`` | ``"workq"``
 
 ``CLUSTERS_HPSS``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the clusters specified in this variable. These links are needed to generate initial conditions (ICs) and lateral boundary conditions (LBCs) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
@@ -71,13 +71,13 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
    Tasks that get or create links to external model files are submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "batch" "dev_transfer" "normal" "regular" "workq"
 
 ``PARTITION_FCST``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). The task that runs forecasts is submitted to this partition. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "hera" "normal" "orion" "sjet,vjet,kjet,xjet" "workq"
+   This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). The task that runs forecasts is submitted to this partition. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: ``""`` | ``"hera"`` | ``"normal"`` | ``"orion"`` | ``"sjet,vjet,kjet,xjet"`` | ``"workq"``
 
 ``CLUSTERS_FCST``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). The task that runs forecasts is submitted to this cluster. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
 
 ``QUEUE_FCST``: (Default: "")
-   The task that runs a forecast is submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this variable is not set or set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "batch" "dev" "normal" "regular" "workq"
+   The task that runs a forecast is submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this variable is not set or set to an empty string, it will be (re)set to a machine-dependent value. Valid values: ``""`` | ``"batch"`` | ``"dev"`` | ``"normal"`` | ``"regular"`` | ``"workq"``
 
 Parameters for Running Without a Workflow Manager
 =================================================
@@ -170,7 +170,7 @@ These variables apply only when using NCO mode (i.e. when ``RUN_ENVIR`` is set t
 Pre-Processing File Separator Parameters
 ========================================
 ``DOT_OR_USCORE``: (Default: "_")
-   This variable sets the separator character(s) to use in the names of the grid, mosaic, and orography fixed files. Ideally, the same separator should be used in the names of these fixed files as in the surface climatology fixed files. Valid values: "_" "."
+   This variable sets the separator character(s) to use in the names of the grid, mosaic, and orography fixed files. Ideally, the same separator should be used in the names of these fixed files as in the surface climatology fixed files. Valid values: ``"_"`` | ``"."``
 
 File Name Parameters
 ====================
@@ -208,7 +208,7 @@ File Name Parameters
    Name of the forecast model executable stored in the executables directory (``EXECDIR``; set during experiment generation).
 
 ``FCST_MODEL``: (Default: "ufs-weather-model")
-   Name of forecast model. Valid values: "ufs-weather-model" "fv3gfs_aqm"
+   Name of forecast model. Valid values: ``"ufs-weather-model"`` | ``"fv3gfs_aqm"``
 
 ``WFLOW_XML_FN``: (Default: "FV3LAM_wflow.xml")
    Name of the Rocoto workflow XML file that the experiment generation script creates. This file defines the workflow for the experiment.
@@ -311,10 +311,10 @@ METplus Parameters
 Initial and Lateral Boundary Condition Generation Parameters
 ============================================================
 ``EXTRN_MDL_NAME_ICS``: (Default: "FV3GFS")
-   The name of the external model that will provide fields from which initial condition (IC) files, surface files, and 0-th hour boundary condition files will be generated for input into the forecast model. Valid values: "GSMGFS" "FV3GFS" "RAP" "HRRR" "NAM"
+   The name of the external model that will provide fields from which initial condition (IC) files, surface files, and 0-th hour boundary condition files will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
 
 ``EXTRN_MDL_NAME_LBCS``: (Default: "FV3GFS")
-   The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model. Valid values: "GSMGFS" "FV3GFS" "RAP" "HRRR" "NAM"
+   The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
 
 ``LBC_SPEC_INTVL_HRS``: (Default: "6")
    The interval (in integer hours) at which LBC files will be generated. This is also referred to as the *boundary specification interval*. Note that the model specified in ``EXTRN_MDL_NAME_LBCS`` must have data available at a frequency greater than or equal to that implied by ``LBC_SPEC_INTVL_HRS``. For example, if ``LBC_SPEC_INTVL_HRS`` is set to "6", then the model must have data available at least every 6 hours. It is up to the user to ensure that this is the case.
@@ -326,10 +326,10 @@ Initial and Lateral Boundary Condition Generation Parameters
    Users may wish to use lateral boundary conditions from a forecast that was started earlier than the initial time for the FV3 forecast configured here. This variable sets the number of hours earlier the external model started than when the FV3 forecast configured here should start. For example, if the forecast should use lateral boundary conditions from the GFS started 6 hours earlier, then ``EXTRN_MDL_LBCS_OFFSET_HRS="6"``. Note: the default value is model-dependent and set in ``set_extrn_mdl_params.sh``.
 
 ``FV3GFS_FILE_FMT_ICS``: (Default: "nemsio")
-   If using the FV3GFS model as the source of the :term:`ICs` (i.e., if ``EXTRN_MDL_NAME_ICS="FV3GFS"``), this variable specifies the format of the model files to use when generating the ICs. Valid values: "nemsio" "grib2" "netcdf"
+   If using the FV3GFS model as the source of the :term:`ICs` (i.e., if ``EXTRN_MDL_NAME_ICS="FV3GFS"``), this variable specifies the format of the model files to use when generating the ICs. Valid values: ``"nemsio"`` | ``"grib2"`` | ``"netcdf"``
 
 ``FV3GFS_FILE_FMT_LBCS``: (Default: "nemsio")
-   If using the FV3GFS model as the source of the :term:`LBCs` (i.e., if ``EXTRN_MDL_NAME_ICS="FV3GFS"``), this variable specifies the format of the model files to use when generating the LBCs. Valid values: "nemsio" "grib2" "netcdf"
+   If using the FV3GFS model as the source of the :term:`LBCs` (i.e., if ``EXTRN_MDL_NAME_ICS="FV3GFS"``), this variable specifies the format of the model files to use when generating the LBCs. Valid values: ``"nemsio"`` | ``"grib2"`` | ``"netcdf"``
 
 
 
@@ -373,7 +373,7 @@ Set parameters associated with NOMADS online data.
    Flag controlling whether to use NOMADS online data.
 
 ``NOMADS_file_type``: (Default: "nemsio")
-   Flag controlling the format of the data. Valid values: "GRIB2" "grib2" "NEMSIO" "nemsio"
+   Flag controlling the format of the data. Valid values: ``"GRIB2"`` | ``"grib2"`` | ``"NEMSIO"`` | ``"nemsio"``
 
 .. _CCPP_Params:
 
@@ -384,18 +384,18 @@ CCPP Parameter
    
    **Current supported settings for this parameter are:** 
 
-   | "FV3_GFS_v16" 
-   | "FV3_RRFS_v1beta" 
-   | "FV3_HRRR"
-   | "FV3_WoFS"
+   | ``"FV3_GFS_v16"`` 
+   | ``"FV3_RRFS_v1beta"`` 
+   | ``"FV3_HRRR"``
+   | ``"FV3_WoFS"``
 
    **Other valid values include:**
 
-   | "FV3_GFS_2017_gfdlmp"
-   | "FV3_GFS_2017_gfdlmp_regional"
-   | "FV3_GFS_v15p2"
-   | "FV3_GFS_v15_thompson_mynn_lam3km"
-   | "FV3_RRFS_v1alpha"
+   | ``"FV3_GFS_2017_gfdlmp"``
+   | ``"FV3_GFS_2017_gfdlmp_regional"``
+   | ``"FV3_GFS_v15p2"``
+   | ``"FV3_GFS_v15_thompson_mynn_lam3km"``
+   | ``"FV3_RRFS_v1alpha"``
 
 
 Stochastic Physics Parameters
@@ -526,7 +526,7 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
    Perturbation magnitude cutoff in number of standard deviations from the mean. 
 
 ``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
-   The list of parameterizations to perturb: planetary boundary layer (PBL), surface physics (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: "pbl", "sfc", "rad", "gwd", and "mp".
+   The list of parameterizations to perturb: planetary boundary layer (PBL), surface physics (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: ``"pbl"`` | ``"sfc"`` | ``"rad"`` | ``"gwd"`` | ``"mp"``
 
 
 Land Surface Model (LSM) SPP
@@ -630,11 +630,8 @@ The following parameters must be set if using the "GFDLgrid" method of generatin
    Latitude of the center of tile 6 (in degrees).
 
 ``GFDLgrid_RES``: (Default: "")
-   Number of points in either of the two horizontal directions (x and y) on each tile of the parent global cubed-sphere grid. Valid values: "48" "96" "192" "384" "768" "1152" "3072"
+   Number of points in either of the two horizontal directions (x and y) on each tile of the parent global cubed-sphere grid. Valid values: ``"48"`` | ``"96"`` | ``"192"`` | ``"384"`` | ``"768"`` | ``"1152"`` | ``"3072"``
 
-   ..
-      COMMENT: Are these still the valid values? Are there others?
-   
    .. note::
       ``GFDLgrid_RES`` is a misnomer because it specifies *number* of grid cells, not grid size (in meters or kilometers). However, we keep this name in order to remain consistent with the usage of the word "resolution" in the global forecast model and auxiliary codes. The mapping from ``GFDLgrid_RES`` to a nominal resolution (grid cell size) for several values of ``GFDLgrid_RES`` is as follows (assuming a uniform global grid, i.e., with Schmidt stretch factor ``GFDLgrid_STRETCH_FAC="1"``):
       
@@ -717,7 +714,7 @@ Write-Component (Quilting) Parameters
    The number of MPI tasks to allocate for each write group.
 
 ``WRTCMP_output_grid``: (Default: "''")
-   Sets the type (coordinate system) of the write component grid. The default empty string forces the user to set a valid value for ``WRTCMP_output_grid`` in ``config.sh`` if specifying a *custom* grid. When creating an experiment with a user-defined grid, this parameter must be specified or the experiment will fail. Valid values: "lambert_conformal" "regional_latlon" "rotated_latlon"
+   Sets the type (coordinate system) of the write component grid. The default empty string forces the user to set a valid value for ``WRTCMP_output_grid`` in ``config.sh`` if specifying a *custom* grid. When creating an experiment with a user-defined grid, this parameter must be specified or the experiment will fail. Valid values: ``"lambert_conformal"`` | ``"regional_latlon"`` | ``"rotated_latlon"``
 
 ``WRTCMP_cen_lon``: (Default: "")
    Longitude (in degrees) of the center of the write component grid. Can usually be set to the corresponding value from the native grid.
@@ -773,32 +770,32 @@ Predefined Grid Parameters
    
    **Currently supported options:**
    
-   | "RRFS_CONUS_25km"
-   | "RRFS_CONUS_13km"
-   | "RRFS_CONUS_3km"
-   | "SUBCONUS_Ind_3km" 
+   | ``"RRFS_CONUS_25km"``
+   | ``"RRFS_CONUS_13km"``
+   | ``"RRFS_CONUS_3km"``
+   | ``"SUBCONUS_Ind_3km"`` 
    
    **Other valid values include:**
 
-   | "CONUS_25km_GFDLgrid" 
-   | "CONUS_3km_GFDLgrid"
-   | "EMC_AK" 
-   | "EMC_HI" 
-   | "EMC_PR" 
-   | "EMC_GU" 
-   | "GSL_HAFSV0.A_25km" 
-   | "GSL_HAFSV0.A_13km" 
-   | "GSL_HAFSV0.A_3km" 
-   | "GSD_HRRR_AK_50km"
-   | "RRFS_AK_13km" 
-   | "RRFS_AK_3km" 
-   | "RRFS_CONUScompact_25km"
-   | "RRFS_CONUScompact_13km"
-   | "RRFS_CONUScompact_3km"
-   | "RRFS_NA_13km" 
-   | "RRFS_NA_3km"
-   | "RRFS_SUBCONUS_3km" 
-   | "WoFS_3km"
+   | ``"CONUS_25km_GFDLgrid"`` 
+   | ``"CONUS_3km_GFDLgrid"``
+   | ``"EMC_AK"`` 
+   | ``"EMC_HI"`` 
+   | ``"EMC_PR"`` 
+   | ``"EMC_GU"`` 
+   | ``"GSL_HAFSV0.A_25km"`` 
+   | ``"GSL_HAFSV0.A_13km"`` 
+   | ``"GSL_HAFSV0.A_3km"`` 
+   | ``"GSD_HRRR_AK_50km"``
+   | ``"RRFS_AK_13km"``
+   | ``"RRFS_AK_3km"`` 
+   | ``"RRFS_CONUScompact_25km"``
+   | ``"RRFS_CONUScompact_13km"``
+   | ``"RRFS_CONUScompact_3km"``
+   | ``"RRFS_NA_13km"`` 
+   | ``"RRFS_NA_3km"``
+   | ``"RRFS_SUBCONUS_3km"`` 
+   | ``"WoFS_3km"``
 
 .. note::
 
@@ -810,7 +807,7 @@ Predefined Grid Parameters
 Pre-existing Directory Parameter
 ================================
 ``PREEXISTING_DIR_METHOD``: (Default: "delete")
-   This variable determines the method to use to deal with pre-existing directories (generated by previous calls to the experiment generation script using the same experiment name (``EXPT_SUBDIR``) as the current experiment). This variable must be set to one of three valid values: "delete", "rename", and "quit".  The resulting behavior for each of these values is as follows:
+   This variable determines the method to use to deal with pre-existing directories (generated by previous calls to the experiment generation script using the same experiment name (``EXPT_SUBDIR``) as the current experiment). This variable must be set to one of three valid values: ``"delete"``, ``"rename"``, or ``"quit"``.  The resulting behavior for each of these values is as follows:
 
    * **"delete":** The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
 
@@ -822,12 +819,12 @@ Pre-existing Directory Parameter
 Verbose Parameter
 =================
 ``VERBOSE``: (Default: "TRUE")
-   Flag that determines whether the experiment generation and workflow task scripts print out extra informational messages. Valid values: "TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no"
+   Flag that determines whether the experiment generation and workflow task scripts print out extra informational messages. Valid values: ``"TRUE"`` | ``"true"`` | ``"YES"`` | ``"yes"`` | ``"FALSE"`` | ``"false"`` | ``"NO"`` | ``"no"``
 
 Debug Parameter
 =================
 ``DEBUG``: (Default: "FALSE")
-   Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to TRUE, then VERBOSE will also get reset to TRUE if it isn't already. Valid values: "TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no"
+   Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to TRUE, then VERBOSE will also get reset to TRUE if it isn't already. Valid values: ``"TRUE"`` | ``"true"`` | ``"YES"`` | ``"yes"`` | ``"FALSE"`` | ``"false"`` | ``"NO"`` | ``"no"``
 
 .. _WFTasks:
 
@@ -1238,7 +1235,7 @@ Subhourly Forecast Parameters
    Flag that indicates whether the forecast model will generate output files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes). This will also cause the post-processor to process these sub-hourly files. If this variable is set to "TRUE", then ``DT_SUBHOURLY_POST_MNTS`` should be set to a value between "01" and "59".
 
 ``DT_SUB_HOURLY_POST_MNTS``: (Default: "00")
-   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). Valid values: "1" "01" "2" "02" "3" "03" "4" "04" "5" "05" "6" "06" "10" "12" "15" "20" "30".
+   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). Valid values: ``"1"`` | ``"01"`` | ``"2"`` | ``"02"`` | ``"3"`` | ``"03"`` | ``"4"`` | ``"04"`` | ``"5"`` | ``"05"`` | ``"6"`` | ``"06"`` | ``"10"`` | ``"12"`` | ``"15"`` | ``"20"`` | ``"30"``
 
 Customized Post Configuration Parameters
 ========================================
@@ -1284,7 +1281,7 @@ FVCOM Parameter
    Flag that specifies whether or not to update surface conditions in FV3-LAM with fields generated from the Finite Volume Community Ocean Model (:term:`FVCOM`). If set to "TRUE", lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten using data provided by FVCOM. Setting ``USE_FVCOM`` to "TRUE" causes the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to run. This, in turn, modifies the file ``sfc_data.nc`` generated by ``chgres_cube``.  Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. 
 
 ``FVCOM_WCSTART``: (Default: "cold")
-   Define if this is a "warm" start or a "cold" start. Setting this to "warm" will read in ``sfc_data.nc`` generated in a RESTART directory. Setting this to "cold" will read in the ``sfc_data.nc`` generated from ``chgres_cube`` in the ``make_ics`` portion of the workflow. Valid values: "cold" "warm"
+   Define if this is a "warm" start or a "cold" start. Setting this to "warm" will read in ``sfc_data.nc`` generated in a RESTART directory. Setting this to "cold" will read in the ``sfc_data.nc`` generated from ``chgres_cube`` in the ``make_ics`` portion of the workflow. Valid values: ``"cold"`` | ``"warm"``
 
 ``FVCOM_DIR``: (Default: "/user/defined/dir/to/fvcom/data")
    User-defined directory where the ``fvcom.nc`` file containing :term:`FVCOM` data on the FV3-LAM native grid is located. The file name in this directory must be ``fvcom.nc``.
@@ -1295,7 +1292,7 @@ FVCOM Parameter
 Compiler Parameter
 ==================
 ``COMPILER``: (Default: "intel")
-   Type of compiler invoked during the build step. Currently, this must be set manually (i.e., it is not inherited from the build system in the ``ufs-srweather-app`` directory). Valid values: "intel" "gnu"
+   Type of compiler invoked during the build step. Currently, this must be set manually (i.e., it is not inherited from the build system in the ``ufs-srweather-app`` directory). Valid values: ``"intel"`` | ``"gnu"``
 
 
 Thread Affinity Interface
@@ -1315,7 +1312,7 @@ Thread Affinity Interface
       KMP_AFFINITY_RUN_FCST="scatter"
       KMP_AFFINITY_RUN_POST="scatter"
 
-   Intel's runtime library can bind OpenMP threads to physical processing units. The interface is controlled using the KMP_AFFINITY environment variable. Thread affinity restricts execution of certain threads to a subset of the physical processing units in a multiprocessor computer. Depending on the system (machine) topology, application, and operating system, thread affinity can have a dramatic effect on the application speed and on the execution speed of a program." Valid values: "scatter" "disabled" "balanced" "compact" "explicit" "none"
+   Intel's runtime library can bind OpenMP threads to physical processing units. The interface is controlled using the KMP_AFFINITY environment variable. Thread affinity restricts execution of certain threads to a subset of the physical processing units in a multiprocessor computer. Depending on the system (machine) topology, application, and operating system, thread affinity can have a dramatic effect on the application speed and on the execution speed of a program." Valid values: ``"scatter"`` | ``"disabled"`` | ``"balanced"`` | ``"compact"`` | ``"explicit"`` | ``"none"``
 
    For more information, see the `Intel Development Reference Guide <https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/optimization-and-programming-guide/openmp-support/openmp-library-support/thread-affinity-interface-linux-and-windows.html>`__. 
 
