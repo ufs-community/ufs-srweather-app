@@ -11,6 +11,7 @@ pipeline {
         choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
+        booleanParam name: 'SRW_WE2E_COMPREHENSIVE_TESTS', defaultValue: false, description: 'Whether to execute the comprehensive end-to-end tests'
     }
 
     stages {
@@ -138,7 +139,23 @@ pipeline {
 
                         steps {
                             echo "Testing SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM}"
-                            sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_test.sh"'
+
+                            // If executing for a Pull Request, check for the run_we2e_comprehensive_tests. If set,
+                            // override the value of the SRW_WE2E_COMPREHENSIVE_TESTS parameter
+                            script {
+                                def run_we2e_comprehensive_tests = params.SRW_WE2E_COMPREHENSIVE_TESTS
+                                def run_we2e_comprehensive_tests_label = 'run_we2e_comprehensive_tests'
+
+                                if (env.CHANGE_ID) {
+                                    pullRequest.labels.each {
+                                        if (it == run_we2e_comprehensive_tests_label) {
+                                            run_we2e_comprehensive_tests = true
+                                        }
+                                    }
+                                }
+
+                                sh "SRW_WE2E_COMPREHENSIVE_TESTS=${run_we2e_comprehensive_tests} bash --login ${env.WORKSPACE}/.cicd/scripts/srw_test.sh"
+                            }
                         }
                     }
                 }
