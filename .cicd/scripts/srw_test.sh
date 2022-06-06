@@ -30,13 +30,58 @@ we2e_test_dir="${workspace}/regional_workflow/tests/WE2E"
 
 we2e_test_file="${we2e_test_dir}/experiments.txt"
 
-# The default set of end-to-end tests to run.
-# TODO: Create a list of additional tests that can be run when a parameter
-# is set to true.
-declare -a we2e_default_tests
-we2e_default_tests=('grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
+# The fundamental set of end-to-end tests to run.
+declare -a we2e_fundamental_tests
+we2e_fundamental_tests=('grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
     'grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
     'grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16')
+
+# The comprehensive set of end-to-end tests to run.
+declare -a we2e_comprehensive_tests
+we2e_comprehensive_tests=('grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
+    'grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta'
+    'grid_RRFS_CONUScompact_13km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta'
+    'grid_RRFS_CONUScompact_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta'
+    'grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR'
+    'grid_RRFS_CONUScompact_13km_ics_HRRR_lbcs_RAP_suite_HRRR'
+    'grid_RRFS_CONUScompact_3km_ics_HRRR_lbcs_RAP_suite_HRRR'
+)
+
+# The set of workflow tests to run.
+declare -a we2e_workflow_tests
+we2e_workflow_tests=('community_ensemble_008mems'
+    'community_ensemble_2mems'
+    'deactivate_tasks'
+    'inline_post'
+    'MET_ensemble_verification'
+    'MET_verification'
+    'custom_ESGgrid'
+    'custom_GFDLgrid'
+    'custom_GFDLgrid__GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES_eq_FALSE'
+    'custom_GFDLgrid__GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES_eq_TRUE'
+    'specify_DOT_OR_USCORE'
+    'specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE'
+    'specify_RESTART_INTERVAL'
+    'specify_template_filenames'
+    # 'subhourly_post_ensemble_2mems'
+    # 'subhourly_post'
+)
+
+declare -a we2e_tests
+we2e_tests=("${we2e_fundamental_tests[@]}")
+if "${SRW_WE2E_COMPREHENSIVE_TESTS}"; then
+    we2e_tests+=("${we2e_comprehensive_tests[@]}" "${we2e_workflow_tests[@]}")
+
+    # Add additional tests for Hera.
+    if [[ "${platform}" == 'hera' ]]; then
+        we2e_tests+=('specify_EXTRN_MDL_SYSBASEDIR_ICS_LBCS')
+    fi
+
+    # Add additional tests for all platforms, except Gaea and Parallel Works.
+    if [[ "${platform}" != 'gaea' && "${platform}" != 'noaacloud' ]]; then
+        we2e_tests+=('pregen_grid_orog_sfc_climo')
+    fi
+fi
 
 # Parses the test log for the status of a specific test.
 function workflow_status() {
@@ -66,7 +111,7 @@ function check_progress() {
     local in_progress=false
     local remaining=0
 
-    for test in "${we2e_default_tests[@]}"; do
+    for test in "${we2e_tests[@]}"; do
         local status
         status="$(workflow_status "${test}")"
         if [[ "${status}" == 'IN PROGRESS' ]]; then
@@ -84,7 +129,7 @@ function check_progress() {
 
 # Prints the status of all tests.
 function get_results() {
-    for test in "${we2e_default_tests[@]}"; do
+    for test in "${we2e_tests[@]}"; do
         local status
         status="$(workflow_status "${test}")"
         echo "${test} ${status}"
@@ -114,7 +159,7 @@ fi
 mkdir "${we2e_experiment_base_dir}"
 
 # Generate the experiments/tests file.
-for test in "${we2e_default_tests[@]}"; do
+for test in "${we2e_tests[@]}"; do
     echo "${test}" >> "${we2e_test_file}"
 done
 
@@ -143,4 +188,4 @@ results="$(get_results |\
 # Check that the number of tests equals the number of successes, otherwise
 # exit with a non-zero code that equals the difference.
 successes="$(awk '$2 == "SUCCESS" {print $1}' <<< "${results}" | wc -l)"
-exit "$(( ${#we2e_default_tests[@]} - ${successes} ))"
+exit "$(( ${#we2e_tests[@]} - ${successes} ))"
