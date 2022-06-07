@@ -46,7 +46,7 @@ Platform Environment
    Name of alternative workflow module file to use if running on an unsupported platform. Is set automatically for supported machines.
 
 ``SCHED``: (Default: "")
-   The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Set this to an empty string in order for the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: ``"slurm"`` | ``"pbspro"`` | ``"lsf"`` | ``"lsfcray"`` | ``"none"``
+   The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Leaving this an empty string allows the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: ``"slurm"`` | ``"pbspro"`` | ``"lsf"`` | ``"lsfcray"`` | ``"none"``
 
 Machine-Dependent Parameters:
 -------------------------------
@@ -68,7 +68,7 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). Tasks that get or create links to external model files are submitted to the clusters specified in this variable. These links are needed to generate initial conditions (ICs) and lateral boundary conditions (LBCs) for the experiment. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. 
 
 ``QUEUE_HPSS``: (Default: "")
-   Tasks that get or create links to external model files are submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: "" "batch" "dev_transfer" "normal" "regular" "workq"
+   Tasks that get or create links to external model files are submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: ``""`` | ``"batch"`` | ``"dev_transfer"`` | ``"normal"`` | ``"regular"`` | ``"workq"``
 
 ``PARTITION_FCST``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). The task that runs forecasts is submitted to this partition. If this variable is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: ``""`` | ``"hera"`` | ``"normal"`` | ``"orion"`` | ``"sjet,vjet,kjet,xjet"`` | ``"workq"``
@@ -90,10 +90,13 @@ These settings control run commands for platforms without a workflow manager. Va
    The run command for the model forecast step. This will be appended to the end of the variable definitions file (``var_defns.sh``). Changing the ``${PE_MEMBER01}`` variable is **not** recommended; it refers to the number of MPI tasks that the Weather Model will expect to run with. Running the Weather Model with a different number of MPI tasks than the workflow has been set up for can lead to segmentation faults and other errors. It is also important to escape the ``$`` character or use single quotes here so that ``PE_MEMBER01`` is not referenced until runtime, since it is not defined at the beginning of the workflow generation script.
 
 ``RUN_CMD_POST``: (Default: "mpirun -np 1")
-   The run command for post-processing (:term:`UPP`). Can be left blank for smaller domains, in which case UPP will run without :term:`MPI`.
+   The run command for post-processing (via the :term:`UPP`). Can be left blank for smaller domains, in which case UPP will run without :term:`MPI`.
 
 Cron-Associated Parameters
 ==========================
+
+Cron is a job scheduler accessed through the command-line on UNIX-like operating systems. It is useful for automating tasks such as the ``rocotorun`` command, which launches each workflow task in the SRW App. Cron periodically checks a cron table (aka crontab) to see if any tasks are are ready to execute. If so, it runs them. 
+
 ``USE_CRON_TO_RELAUNCH``: (Default: "FALSE")
    Flag that determines whether or not a line is added to the user's cron table, which calls the experiment launch script every ``CRON_RELAUNCH_INTVL_MNTS`` minutes.
 
@@ -105,10 +108,10 @@ Cron-Associated Parameters
 Directory Parameters
 ====================
 ``EXPT_BASEDIR``: (Default: "")
-   The base directory in which the experiment directory will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMErrfs}/../../expt_dirs``, where ``${HOMErrfs}`` contains the full path to the ``regional_workflow`` directory.
+   The full path to the base directory inside of which the experiment directory (``EXPT_SUBDIR``) will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMErrfs}/../../expt_dirs``, where ``${HOMErrfs}`` contains the full path to the ``regional_workflow`` directory.
 
 ``EXPT_SUBDIR``: (Default: "")
-   The name that the experiment directory (without the full path) will have. The full path to the experiment directory, which will be contained in the variable ``EXPTDIR``, will be:
+   A descriptive name of the user's choice for the experiment directory (*not* its full path). The full path to the experiment directory, which will be contained in the variable ``EXPTDIR``, will be:
 
    .. code-block:: console
 
@@ -123,7 +126,7 @@ Directory Parameters
 
 NCO Mode Parameters
 ===================
-These variables apply only when using NCO mode (i.e. when ``RUN_ENVIR`` is set to "nco").
+These variables apply only when using NCO mode (i.e., when ``RUN_ENVIR`` is set to "nco").
 
 ``COMINgfs``: (Default: "/base/path/of/directory/containing/gfs/input/files")
    The beginning portion of the path to the directory that contains files generated by the external model (FV3GFS). The initial and lateral boundary condition generation tasks need this path in order to create initial and boundary condition files for a given cycle on the native FV3-LAM grid. For a cycle that starts on the date specified by the variable YYYYMMDD (consisting of the 4-digit year, 2-digit month, and 2-digit day of the month) and the hour specified by the variable HH (consisting of the 2-digit hour of the day), the directory in which the workflow will look for the external model files is:
@@ -133,13 +136,13 @@ These variables apply only when using NCO mode (i.e. when ``RUN_ENVIR`` is set t
       $COMINgfs/gfs.$yyyymmdd/$hh/atmos
 
 ``FIXLAM_NCO_BASEDIR``: (Default: "")
-   The base directory containing pregenerated grid, orography, and surface climatology files. For the pregenerated grid specified by ``PREDEF_GRID_NAME``, these "fixed" files are located in:
+   The base directory containing pregenerated grid, orography, and surface climatology files. For the pregenerated grid type specified in the variable ``PREDEF_GRID_NAME``, these "fixed" files are located in:
 
    .. code-block:: console
 
       ${FIXLAM_NCO_BASEDIR}/${PREDEF_GRID_NAME}
 
-   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the name of the grid being used) under this directory. This variable should be set to a null string in this file, but it can be specified in the user-specified workflow configuration file (e.g., ``config.sh``).
+   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the name of the grid being used) under this directory. This variable should be set to a null string in ``config_defaults.sh`` and specified by the user in the workflow configuration file (``config.sh``).
 
 ``STMP``: (Default: "/base/path/of/directory/containing/model/input/and/raw/output/files")
    The beginning portion of the path to the directory that will contain :term:`cycle-dependent` model input files, symlinks to :term:`cycle-independent` input files, and raw (i.e., before post-processing) forecast output files for a given :term:`cycle`. The format for cycle dates (cdate) is ``cdate="${YYYYMMDD}${HH}"``, where the date is specified using YYYYMMDD format, and the hour is specified using HH format. The files for a cycle date will be located in the following directory:
@@ -181,19 +184,19 @@ File Name Parameters
    Name of the file containing namelist settings for the code that generates an "ESGgrid" regional grid.
 
 ``FV3_NML_BASE_SUITE_FN``: (Default: "input.nml.FV3")
-   Name of the Fortran namelist file containing the forecast model's base suite namelist (i.e., the portion of the namelist that is common to all physics suites).
+   Name of the Fortran file containing the forecast model's base suite namelist (i.e., the portion of the namelist that is common to all physics suites).
 
 ``FV3_NML_YAML_CONFIG_FN``: (Default: "FV3.input.yml")
    Name of YAML configuration file containing the forecast model's namelist settings for various physics suites.
 
 ``FV3_NML_BASE_ENS_FN``: (Default: "input.nml.base_ens")
-   Name of the Fortran namelist file containing the forecast model's base ensemble namelist, i.e., the the namelist file that is the starting point from which the namelist files for each of the enesemble members are generated.
+   Name of the Fortran file containing the forecast model's base ensemble namelist (i.e., the original namelist file from which each of the ensemble members' namelist files are generated).
 
 ``DIAG_TABLE_FN``: (Default: "diag_table")
-   Name of the file that specifies the fields that the forecast model will output.
+   Name of the file specifying the fields that the forecast model will output.
 
 ``FIELD_TABLE_FN``: (Default: "field_table")
-   Name of the file that specifies the tracers that the forecast model will read in from the :term:`IC/LBC` files.
+   Name of the file specifying the :term:`tracers` that the forecast model will read in from the :term:`IC/LBC` files.
 
 ``DATA_TABLE_FN``: (Default: "data_table")
    Name of the file containing the data table read in by the forecast model.
@@ -257,11 +260,7 @@ Model Configuration Parameters
 .. _InlinePost:
 
 ``WRITE_DOPOST``: (Default: "FALSE")
-   Flag that determines whether to use the INLINE POST option. If TRUE, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to "TRUE", and the post-processing tasks get called from within the weather model so that the post files (:term:`grib2`) are output by the weather model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST="TRUE"``
-   turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to "FALSE") in ``setup.sh``.
-
-   ..
-      Should there be an underscore in inline post? 
+   Flag that determines whether to use the INLINE POST option. If TRUE, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to "TRUE", and the post-processing tasks get called from within the weather model so that the post-processed files (in :term:`grib2` format) are output by the weather model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST="TRUE"`` turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to "FALSE") in ``setup.sh``.
 
 METplus Parameters
 =====================
@@ -292,21 +291,26 @@ METplus Parameters
       * SS refers to the two-digit valid seconds of the hour
 
 ``CCPA_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_ccpa_tn`` task. (This task is activated in the workflow by setting ``RUN_TASK_GET_OBS_CCPA="TRUE"``). 
-   METplus configuration files require the use of predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. This path must be defind as ``/<full-path-to-obs>/ccpa/proc``. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.    
+   User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ccpa_tn`` task. (This task is activated in the workflow by setting ``RUN_TASK_GET_OBS_CCPA="TRUE"``). 
+
+   METplus configuration files require the use of a predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. This path must be defind as ``/<full-path-to-obs>/ccpa/proc``. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.    
 
    .. note::
       There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ccpa_files.sh``) has an example of how to account for this and organize the data into a more intuitive format. When a fix is provided, it will be accounted for in the ``exregional_get_ccpa_files.sh`` script.
 
 ``MRMS_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_mrms_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_MRMS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
+   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_mrms_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_MRMS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. 
+   
+   METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
 
 .. note::
-   METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script, within the main script to retrieve MRMS data from the NOAA HPSS, is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file naming structure: ``regional_workflow/scripts/exregional_get_mrms_files.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``regional_workflow/ush/mrms_pull_topofhour.py``.
+   METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script (within the main script that retrieves MRMS data from the NOAA HPSS) is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file-naming structure: ``regional_workflow/scripts/exregional_get_mrms_files.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``regional_workflow/ush/mrms_pull_topofhour.py``.
 
 
 ``NDAS_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA HPSS (if the user has access) via the ``get_obs_ndas_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_NDAS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defined as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ndas_files.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
+   User-specified location of top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ndas_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_NDAS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defined as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
+   
+   METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user-provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ndas_files.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
 
 Initial and Lateral Boundary Condition Generation Parameters
 ============================================================
@@ -317,13 +321,13 @@ Initial and Lateral Boundary Condition Generation Parameters
    The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
 
 ``LBC_SPEC_INTVL_HRS``: (Default: "6")
-   The interval (in integer hours) at which LBC files will be generated. This is also referred to as the *boundary specification interval*. Note that the model specified in ``EXTRN_MDL_NAME_LBCS`` must have data available at a frequency greater than or equal to that implied by ``LBC_SPEC_INTVL_HRS``. For example, if ``LBC_SPEC_INTVL_HRS`` is set to "6", then the model must have data available at least every 6 hours. It is up to the user to ensure that this is the case.
+   The interval (in integer hours) at which LBC files will be generated. This is also referred to as the *boundary specification interval*. Note that the model selected in ``EXTRN_MDL_NAME_LBCS`` must have data available at a frequency greater than or equal to that implied by ``LBC_SPEC_INTVL_HRS``. For example, if ``LBC_SPEC_INTVL_HRS`` is set to "6", then the model must have data available at least every 6 hours. It is up to the user to ensure that this is the case.
 
 ``EXTRN_MDL_ICS_OFFSET_HRS``: (Default: "0")
-   Users may wish to start a forecast using forecast data from a previous cycle of an external model. This variable sets the number of hours earlier the external model started than when the FV3 forecast configured here should start. For example, if the forecast should start from a 6 hour forecast of the GFS, then ``EXTRN_MDL_ICS_OFFSET_HRS="6"``.
+   Users may wish to start a forecast using forecast data from a previous cycle of an external model. This variable indicates how many hours earlier the external model started than the FV3 forecast configured here. For example, if the forecast should start from a 6-hour forecast of the GFS, then ``EXTRN_MDL_ICS_OFFSET_HRS="6"``.
 
 ``EXTRN_MDL_LBCS_OFFSET_HRS``: (Default: "")
-   Users may wish to use lateral boundary conditions from a forecast that was started earlier than the initial time for the FV3 forecast configured here. This variable sets the number of hours earlier the external model started than when the FV3 forecast configured here should start. For example, if the forecast should use lateral boundary conditions from the GFS started 6 hours earlier, then ``EXTRN_MDL_LBCS_OFFSET_HRS="6"``. Note: the default value is model-dependent and set in ``set_extrn_mdl_params.sh``.
+   Users may wish to use lateral boundary conditions from a forecast that was started earlier than the start of the forecast configured here. This variable indicates how many hours earlier the external model started than the FV3 forecast configured here. For example, if the forecast should use lateral boundary conditions from the GFS started 6 hours earlier, then ``EXTRN_MDL_LBCS_OFFSET_HRS="6"``. Note: the default value is model-dependent and is set in ``set_extrn_mdl_params.sh``.
 
 ``FV3GFS_FILE_FMT_ICS``: (Default: "nemsio")
    If using the FV3GFS model as the source of the :term:`ICs` (i.e., if ``EXTRN_MDL_NAME_ICS="FV3GFS"``), this variable specifies the format of the model files to use when generating the ICs. Valid values: ``"nemsio"`` | ``"grib2"`` | ``"netcdf"``
@@ -337,7 +341,7 @@ Base Directories for External Model Files
 ===========================================
 
 .. note::
-   Note that these must be defined as null strings in ``config_defaults.sh`` so that if they are specified by the user in the experiment configuration file (i.e., ``config.sh``), they remain set to those values, and if not, they get set to machine-dependent values.
+   These variables must be defined as null strings in ``config_defaults.sh`` so that if they are specified by the user in the experiment configuration file (``config.sh``), they remain set to those values, and if not, they get set to machine-dependent values.
 
 ``EXTRN_MDL_SYSBASEDIR_ICS``: (Default: "")
    Base directory on the local machine containing external model files for generating :term:`ICs` on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined in ``EXTRN_MDL_NAME_ICS`` above).
@@ -349,7 +353,7 @@ Base Directories for External Model Files
 User-Staged External Model Directory and File Parameters
 ========================================================
 ``USE_USER_STAGED_EXTRN_FILES``: (Default: "FALSE")
-   Flag that determines whether or not the workflow will look for the external model files needed for generating :term:`ICs` and :term:`LBCs` in user-specified directories (as opposed to fetching them from mass storage like NOAA HPSS).
+   Flag that determines whether the workflow will look for the external model files needed for generating :term:`ICs` and :term:`LBCs` in user-specified directories (rather than fetching them from mass storage like NOAA :term:`HPSS`).
 
 ``EXTRN_MDL_SOURCE_BASEDIR_ICS``: (Default: "/base/dir/containing/user/staged/extrn/mdl/files/for/ICs")
    Directory containing external model files for generating ICs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to "TRUE", the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_ICS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the :term:`ICs` on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to "FALSE".
@@ -359,9 +363,10 @@ User-Staged External Model Directory and File Parameters
 
 ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``: (Default: "/base/dir/containing/user/staged/extrn/mdl/files/for/ICs")
    Analogous to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` but for :term:`LBCs` instead of :term:`ICs`.
+   Directory containing external model files for generating LBCs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to "TRUE", the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_LBCS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the :term:`LBCs` on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to "FALSE".
 
 ``EXTRN_MDL_FILES_LBCS``: (Default: " "LBCS_file1" "LBCS_file2" "...")
-   Analogous to ``EXTRN_MDL_FILES_ICS`` but for :term:`LBCs` instead of :term:`ICs`.
+   Analogous to ``EXTRN_MDL_FILES_ICS`` but for :term:`LBCs` instead of :term:`ICs`. Array containing the file names to search for in the ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` directory. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to "FALSE".
 
 
 NOMADS Parameters
@@ -378,7 +383,7 @@ Set parameters associated with NOMADS online data.
 .. _CCPP_Params:
 
 CCPP Parameter
-==============
+===============
 ``CCPP_PHYS_SUITE``: (Default: "FV3_GFS_v16")
    This parameter indicates which :term:`CCPP` (Common Community Physics Package) physics suite to use for the forecast(s). The choice of physics suite determines the forecast model's namelist file, the diagnostics table file, the field table file, and the XML physics suite definition file, which are staged in the experiment directory or the :term:`cycle` directories under it. 
    
@@ -396,7 +401,6 @@ CCPP Parameter
    | ``"FV3_GFS_v15p2"``
    | ``"FV3_GFS_v15_thompson_mynn_lam3km"``
    | ``"FV3_RRFS_v1alpha"``
-
 
 Stochastic Physics Parameters
 ================================
@@ -456,7 +460,7 @@ SPPT perturbs full physics tendencies *after* the call to the physics suite, unl
    Interval in seconds to update random pattern (optional parameter). Perturbations still get applied at every time-step. Corresponds to the variable ``spptint`` in ``input.nml``.
 
 ``SPPT_SFCLIMIT``: (Default: "TRUE")
-   When "TRUE", tapers the SPPT perturbations to zero at the model’s lowest level, which reduces model crashes. 
+   When "TRUE", tapers the SPPT perturbations to zero at the model's lowest level, which reduces model crashes. 
 
 ``USE_ZMTNBLCK``: (Default: "FALSE")
    When "TRUE", do not apply perturbations below the dividing streamline that is diagnosed by the gravity wave drag, mountain blocking scheme
@@ -496,25 +500,25 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 Parameters for Stochastically Perturbed Parameterizations (SPP)
 ------------------------------------------------------------------
 
-Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics options. Unlike :ref:`SPPT physics <SPPT>`, SPP is applied within the physics, not afterward. SPP perturbs specific tuning parameters within a physics :term:`parameterization` (unlike `SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
+SPP perturbs specific tuning parameters within a physics :term:`parameterization` (unlike :ref:`SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
 .. note::
-   SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. 
+   SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. Among the supported physics suites, SPP can be used with the ``FV3_HRRR`` option for ``CCPP_PHYS_SUITE``.
 
 ``DO_SPP``: (Default: "false")
    Flag to turn SPP on or off. SPP perturbs parameters or variables with unknown or uncertain magnitudes within the physics code based on ranges provided by physics experts.
 
 ``ISEED_SPP``: (Default: ( "4" "4" "4" "4" "4" ) )
-   The initial seed value for the perturbation pattern. 
+   Seed for setting the random number sequence for the perturbation pattern. 
 
 ``SPP_MAG_LIST``: (Default: ( "0.2" "0.2" "0.75" "0.2" "0.2" ) ) 
-   Corresponds to the variable ``spp_prt_list`` in ``input.nml``
+   SPP perturbation magnitudes used in each parameterization. Corresponds to the variable ``spp_prt_list`` in ``input.nml``
 
 ``SPP_LSCALE``: (Default: ( "150000.0" "150000.0" "150000.0" "150000.0" "150000.0" ) )
-   Length scale in meters.
+   Decorrelation spatial scales in meters.
    
 ``SPP_TSCALE``: (Default: ( "21600.0" "21600.0" "21600.0" "21600.0" "21600.0" ) ) 
-   Time decorrelation length in seconds. Corresponds to the variable ``spp_tau`` in ``input.nml``.
+   Decorrelation timescales in seconds. Corresponds to the variable ``spp_tau`` in ``input.nml``.
 
 ``SPP_SIGTOP1``: (Default: ( "0.1" "0.1" "0.1" "0.1" "0.1") )
    Controls vertical tapering of perturbations at the tropopause and corresponds to the lower sigma level at which to taper perturbations to zero. 
@@ -523,7 +527,7 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
    Controls vertical tapering of perturbations at the tropopause and corresponds to the upper sigma level at which to taper perturbations to zero.
 
 ``SPP_STDDEV_CUTOFF``: (Default: ( "1.5" "1.5" "2.5" "1.5" "1.5" ) )
-   Perturbation magnitude cutoff in number of standard deviations from the mean. 
+   Limit for possible perturbation values in standard deviations from the mean.
 
 ``SPP_VAR_LIST``: (Default: ( "pbl" "sfc" "mp" "rad" "gwd" ) )
    The list of parameterizations to perturb: planetary boundary layer (PBL), surface physics (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: ``"pbl"`` | ``"sfc"`` | ``"rad"`` | ``"gwd"`` | ``"mp"``
@@ -532,7 +536,7 @@ Set default Stochastically Perturbed Parameterizations (SPP) stochastic physics 
 Land Surface Model (LSM) SPP
 -------------------------------
 
-Land surface perturbations can be applied to land model parameters and land model prognostic variables. The LSM scheme is intended to address errors in the land model and land-atmosphere interactions. LSM perturbations include soil moisture content [SMC] (volume fraction), vegetation fraction (VGF), albedo (ALB), salinity (SAL), emissivity (EMI), surface roughness (ZOL) (in cm), and soil temperature (STC). Perturbations to soil moisture content (SMC) are only applied at the first time step. Only five perturbations at a time can be applied currently, but all seven are shown below. In addition, only one unique *iseed* value is allowed at the moment, and it is used for each pattern.
+Land surface perturbations can be applied to land model parameters and land model prognostic variables. The LSM scheme is intended to address errors in the land model and land-atmosphere interactions. LSM perturbations include soil moisture content (SMC) (volume fraction), vegetation fraction (VGF), albedo (ALB), salinity (SAL), emissivity (EMI), surface roughness (ZOL) (in cm), and soil temperature (STC). Perturbations to soil moisture content (SMC) are only applied at the first time step. Only five perturbations at a time can be applied currently, but all seven are shown below. In addition, only one unique *iseed* value is allowed at the moment, and it is used for each pattern.
 
 The parameters below turn on SPP in Noah or RUC LSM (support for Noah MP is in progress). Please be aware of the :term:`SDF` that you choose if you wish to turn on Land Surface Model (LSM) SPP. SPP in LSM schemes is handled in the ``&nam_sfcperts`` namelist block instead of in ``&nam_sppperts``, where all other SPP is implemented. The default perturbation frequency is determined by the ``fhcyc`` namelist entry. Since that parameter is set to zero in the SRW App, use ``LSM_SPP_EACH_STEP`` to perturb every time step. 
 
@@ -540,24 +544,23 @@ The parameters below turn on SPP in Noah or RUC LSM (support for Noah MP is in p
    Turns on Land Surface Model (LSM) Stochastic Physics Parameterizations (SPP). When "TRUE", sets ``lndp_type=2``, which applies land perturbations to the selected paramaters using a newer scheme designed for data assimilation (DA) ensemble spread. LSM SPP perturbs uncertain land surface fields ("smc" "vgf" "alb" "sal" "emi" "zol" "stc") based on recommendations from physics experts. 
 
 ``LSM_SPP_TSCALE``: (Default: ( ( "21600" "21600" "21600" "21600" "21600" "21600" "21600" ) ) )
-   Decorrelation timescale in seconds. 
+   Decorrelation timescales in seconds. 
 
 ``LSM_SPP_LSCALE``: (Default: ( ( "150000" "150000" "150000" "150000" "150000" "150000" "150000" ) ) )
-   Decorrelation spatial scale in meters.
+   Decorrelation spatial scales in meters.
 
 ``ISEED_LSM_SPP``: (Default: ("9") )
    Seed to initialize the random perturbation pattern.
 
-``LSM_SPP_VAR_LIST``: (Default: ( ( "smc" "vgf" "alb" "sal" "emi" "zol" "stc" ) )
+``LSM_SPP_VAR_LIST``: (Default: ( ( "smc" "vgf" "alb" "sal" "emi" "zol" "stc" ) ) )
    Indicates which LSM variables to perturb. 
 
-``LSM_SPP_MAG_LIST``: (Default: ( ( "0.2" "0.001" "0.001" "0.001" "0.001" "0.001" "0.2" ) )
+``LSM_SPP_MAG_LIST``: (Default: ( ( "0.2" "0.001" "0.001" "0.001" "0.001" "0.001" "0.2" ) ) )
    Sets the maximum random pattern amplitude for each of the LSM perturbations. 
 
 ``LSM_SPP_EACH_STEP``: (Default: "true") 
    When set to "TRUE", it sets ``lndp_each_step=.true.`` and perturbs each time step. 
 
-.. This is a continuation of the ConfigWorkflow.rst chapter
 
 .. _ConfigParameters:
 
