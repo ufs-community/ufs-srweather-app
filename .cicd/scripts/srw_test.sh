@@ -25,7 +25,13 @@ else
     platform="${SRW_PLATFORM}"
 fi
 
-we2e_experiment_base_dir="${workspace}/experiments"
+declare we2e_experiment_base_dir
+if [[ -n "${SRW_WE2E_EXPERIMENT_BASE_DIR}" ]]; then
+    we2e_experiment_base_dir="${SRW_WE2E_EXPERIMENT_BASE_DIR}"
+else
+    we2e_experiment_base_dir="${workspace}/experiments"
+fi
+
 we2e_test_dir="${workspace}/regional_workflow/tests/WE2E"
 
 we2e_test_file="${we2e_test_dir}/experiments.txt"
@@ -183,7 +189,7 @@ done
 
 # Get test results and write to a file.
 results="$(get_results |\
-    tee "${workspace}/test_results-${platform}-${SRW_COMPILER}.txt")"
+    tee "${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt")"
 
 # Check that the number of tests equals the number of successes, otherwise
 # exit with a non-zero code that equals the difference.
