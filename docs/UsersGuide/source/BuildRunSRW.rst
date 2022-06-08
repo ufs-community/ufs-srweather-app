@@ -692,23 +692,7 @@ On Gaea:
 
    "/lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
-For **WCOSS** systems, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
-
-.. code-block:: console
-
-   MACHINE="wcoss_cray" or MACHINE="wcoss_dell_p3"
-   ACCOUNT="valid_wcoss_project_code"
-   EXPT_SUBDIR="my_expt_name"
-   USE_USER_STAGED_EXTRN_FILES="TRUE"
-
-For WCOSS_DELL_P3:
-   
-.. code-block:: console
-
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/ICS"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/LBCS"
-
-**NOAA Cloud Systems:**
+On NOAA Cloud Systems:
 
 .. code-block:: console
 
