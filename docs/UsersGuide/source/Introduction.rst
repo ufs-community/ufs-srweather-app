@@ -4,15 +4,15 @@
 Introduction
 ==============
 
-The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. NOAA’s operational model suite for numerical weather prediction (:term:`NWP`) is quickly transitioning to the UFS from a number of different modeling systems. The UFS enables research, development, and contribution opportunities within the broader :term:`weather enterprise` (e.g. government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufscommunity.org/>`__.
+The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. NOAA’s operational model suite for numerical weather prediction (:term:`NWP`) is quickly transitioning to the UFS from a number of different modeling systems. The UFS enables research, development, and contribution opportunities within the broader :term:`Weather Enterprise` (including government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufscommunity.org/>`__.
 
-The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.0.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. New and improved capabilities for this release include the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four Stochastically Perturbed Perturbation (SPP) schemes. Future work will expand the capabilities of the application to include data assimilation (DA) and a forecast restart/cycling capability. 
+The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.0.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`_. New and improved capabilities for this release include the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed perturbation schemes. Future work will expand the capabilities of the application to include data assimilation (DA) and a forecast restart/cycling capability. 
 
 This documentation provides a :ref:`Quick Start Guide <QuickstartC>` for running the SRW Application in a container and a :ref:`detailed guide <BuildRunSRW>` for running the SRW App on supported platforms. It also provides an overview of the :ref:`release components <Components>` and details on how to customize or modify different portions of the workflow.
 
 The SRW App v2.0.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2022, June 3). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
+UFS Development Team. (2022, June 10). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
 
 
 How to Use This Document
@@ -27,7 +27,7 @@ This guide instructs both novice and experienced users on downloading, building,
 
 Variables presented as ``AaBbCc123`` in this User's Guide typically refer to variables in scripts, names of files, and directories.
 
-File paths or code that include angle brackets (e.g., ``build_<platform>_<compiler>.env``) indicate that users should insert options appropriate to their SRW App configuration (e.g., ``build_orion_intel.env``). 
+File paths or code that include angle brackets (e.g., ``build_<platform>_<compiler>``) indicate that users should insert options appropriate to their SRW App configuration (e.g., ``build_orion_intel``). 
 
 .. hint:: 
    * To get started running the SRW App, see the :ref:`Quick Start Guide <QuickstartC>` for beginners or refer to the in-depth chapter on :ref:`Running the Short-Range Weather Application <BuildRunSRW>`. 
@@ -52,6 +52,7 @@ The instructions in this documentation assume that users have certain background
 * Meteorology (in particular, meteorology at the scales being predicted: 25km, 13km, and 3km resolutions)
 
 Additional background knowledge in the following areas could be helpful:
+
 * High-Performance Computing (HPC) Systems for those running the SRW App on an HPC system
 * Programming (particularly Python) for those interested in contributing to the SRW App code
 * Creating an SSH Tunnel to access HPC systems from the command line
@@ -69,11 +70,11 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * >82 GB disk space
 
-   * 53 GB input data for a standard collection of global database, or "fix" data (topography, climatology, observational database), and boundary conditions for a short 12-hour test forecast on CONUS 25km domain. See data download instructions in :numref:`Step %s <DownloadingStagingInput>`.
+   * 53 GB input data for a standard collection of global database, or "fix" data (topography, climatology, observational database), and boundary conditions for a short 12-hour test forecast on CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
    * 8 GB for :term:`HPC-Stack` full installation
-   * 3 GB for ufs-srweather-app installation
-   * 1 GB boundary conditions for a short 12-h test forecast on CONUS 25km domain. See data download instructions in :numref:`Step %s <DownloadingStagingInput>`
-   * 17 GB for a 12-h test forecast on CONUS 25km domain, with model output saved hourly, see :numref:`Step %s <GridSpecificConfig>`
+   * 3 GB for ``ufs-srweather-app`` installation
+   * 1 GB boundary conditions for a short 12-h test forecast on CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`
+   * 17 GB for a 12-h test forecast on CONUS 25km domain, with model output saved hourly, see :numref:`Section %s <GridSpecificConfig>`
 
 
 * 4GB memory (CONUS 25km domain)
@@ -88,7 +89,7 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * Python v3.6+, including prerequisite packages ``jinja2``, ``pyyaml`` and ``f90nml``
    
-   * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` are required for users who would like to use the provided graphics scripts
+   * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` are required for users who would like to use the provided graphics scripts.
 
 * Perl 5
 
@@ -98,22 +99,22 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * wget
 
+* Lmod
+
 The following software is also required to run the SRW Application, but the :term:`HPC-Stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
 
 * CMake v3.20+
 
 * MPI (MPICH, OpenMPI, or other implementation)
 
-   * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user. 
+   * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user (if desired). 
 
 For MacOS systems, some additional software packages are needed. It is recommended that users install this software using the `Homebrew <https://brew.sh/>`__ package manager for MacOS:
 
 * bash v4.x
-* gcc@11
+* `gcc@11` compiler package
 * cmake
 * make
-* wget
-* lmod
 * coreutils
 
 Optional but recommended prerequisites for all systems:
