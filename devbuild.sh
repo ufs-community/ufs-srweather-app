@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 # usage instructions
 usage () {
@@ -158,7 +158,7 @@ set -eu
 if [ -z "${COMPILER}" ] ; then
   case ${PLATFORM} in
     jet|hera|gaea) COMPILER=intel ;;
-    orion) COMPILER=intel ;;
+    orion|noaacloud) COMPILER=intel ;;
     wcoss_dell_p3) COMPILER=intel ;;
     wcoss2) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;

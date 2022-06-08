@@ -139,7 +139,7 @@ scripts:
    cd ufs-srweather-app/regional_workflow/ush/Python
 
 To generate plots for a single cycle, the ``plot_allvars.py`` script must be called with the 
-following six command line arguments:
+following command line arguments:
 
 #. Cycle date/time (``CDATE``) in YYYYMMDDHH format
 #. Starting forecast hour
@@ -168,7 +168,7 @@ Plotting Differences from Two Experiments
 =========================================
 
 To generate difference plots, the ``plot_allvars_diff.py`` script must be called with the following 
-seven command line arguments:
+command line arguments:
 
 #. Cycle date/time (``CDATE``) in YYYYMMDDHH format
 #. Starting forecast hour
@@ -178,7 +178,6 @@ seven command line arguments:
 #. The top level of the first experiment directory ``EXPTDIR2`` containing the second set of post-processed data. The script will look for the data files in the directory ``EXPTDIR2/CDATE/postprd``.
 #. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shape files (``*.shp``) in the directory ``CARTOPY_DIR/shapefiles/natural_earth/cultural``.
 #. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecasts (this must be the same for the two forecasts)
-
 An example of plotting differences from two experiments for the same date and predefined domain where one uses the "FV3_GFS_v16" suite definition file (SDF) and one using the "FV3_RRFS_v1beta" SDF is as follows:
 
 .. code-block:: console

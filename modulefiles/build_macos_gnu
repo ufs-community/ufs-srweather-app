@@ -1,11 +1,12 @@
 #%Module
 
 proc ModulesHelp { } {
-   puts stderr "This module loads libraries for building SRW on"
-   puts stderr "macOS Big Sur (Darwin20) using GNU 11.2 + openmpi/4.2.1"
+   puts stderr "Option 1: M1/arm64 platform, OS BigSur,Monterey (Darwin 20,21) "
+   puts stderr "Option 2: Intel/x86_64 platform, OS BigSur (Darwin 19) "
+   puts stderr "
 }
 
-module-whatis "Loads libraries needed for building SRW on Hera"
+module-whatis "Loads libraries needed for building SRW on MacOS"
 
 if { [module-info mode load] } {
    puts "ulimit -S -s unlimited;"
@@ -51,11 +52,11 @@ module load yafyaml/v0.5.1
 module load mapl/2.12.2-esmf-8_2_0
 module load gfsio/1.4.1
 module load landsfcutil/2.4.1
-module load nemsio/2.5.4
+module load nemsio/2.5.2
 module load nemsiogfs/2.5.3
 module load sfcio/1.4.1
 module load sigio/2.3.2
-module load w3emc/2.9.2
+module load w3emc/2.7.3
 module load wgrib2/2.0.8
 module list
 
@@ -64,7 +65,7 @@ setenv CC "/opt/homebrew/bin/gcc"
 setenv FC "/opt/homebrew/bin/gfortran"
 setenv CXX "/opt/homebrew/bin/g++"
 
-# Option 2 compiler paths:
+# Option 2 compiler paths (uncomment):
 #setenv CC "/usr/local/bin/gcc"
 #setenv FC "/usr/local/bin/gfortran"
 #setenv CXX "/usr/local/bin/g++"
@@ -81,13 +82,6 @@ setenv CMAKE_Platform macos.gnu
 setenv CMAKE_Fortran_COMPILER_ID "GNU"
 setenv FFLAGS "-DNO_QUAD_PRECISION -fallow-argument-mismatch "
 
-#leave setting LDFLAGS to user because MPI_ROOT does not have
-#valid value before this modulefile is fully loaded.
-set shell [module-info shelltype]
-if {$shell == "sh"} {
-   puts stderr {Please execute this command:
-        > export LDFLAGS=-L$MPI_ROOT/lib}
-} else {
-   puts stderr {Please execute this command:
-        > setenv LDFLAGS -L$MPI_ROOT/lib}
-}
+# export the environment variable LDFLAGS from the command line
+# after loading the current module:
+# export LDFLAGS="-L$MPI_ROOT/lib"
