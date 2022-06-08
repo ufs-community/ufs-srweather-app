@@ -139,7 +139,7 @@ scripts:
    cd ufs-srweather-app/regional_workflow/ush/Python
 
 To generate plots for a single cycle, the ``plot_allvars.py`` script must be called with the 
-following six command line arguments:
+following command line arguments:
 
 #. Cycle date/time (``CDATE``) in YYYYMMDDHH format
 #. Starting forecast hour
@@ -168,7 +168,7 @@ Plotting Differences from Two Experiments
 =========================================
 
 To generate difference plots, the ``plot_allvars_diff.py`` script must be called with the following 
-seven command line arguments:
+command line arguments:
 
 #. Cycle date/time (``CDATE``) in YYYYMMDDHH format
 #. Starting forecast hour
