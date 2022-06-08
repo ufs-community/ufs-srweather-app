@@ -132,7 +132,7 @@ SRW App Components Overview
 Pre-processor Utilities and Initial Conditions
 ------------------------------------------------
 
-The SRW Application includes a number of pre-processing utilities that initialize and prepare the model. Tasks include generating a regional grid along with :term:`orography` and surface climatology files for that grid. One pre-processing utility converts the raw external model data into initial and lateral boundary condition files in netCDF format. Later, these files are used as input to the atmospheric model (FV3-LAM). Additional information about the pre-processor utilities can be found in :numref:`Chapter %s <Utils>` and in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v1.7.0>`_.
+The SRW Application includes a number of pre-processing utilities that initialize and prepare the model. Tasks include generating a regional grid along with :term:`orography` and surface climatology files for that grid. One pre-processing utility converts the raw external model data into initial and lateral boundary condition files in netCDF format. Later, these files are used as input to the atmospheric model (FV3-LAM). Additional information about the pre-processor utilities can be found in :numref:`Chapter %s <Utils>` and in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_7_0/>`__.
 
 ..
    COMMENT: Update link!
@@ -431,7 +431,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | UFS SRW Application        | https://ufs-srweather-app.readthedocs.io/en/release-public-v2/                  |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | UFS_UTILS User's           | https://noaa-emcufs-utils.readthedocs.io/en/ufs-v1.7.0                          |
+   | UFS_UTILS User's           | https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_7_0/                    |
    | Guide                      |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | UFS Weather Model          | https://ufs-weather-model.readthedocs.io/en/release-public-v3/                  |
