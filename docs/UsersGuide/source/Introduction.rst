@@ -70,7 +70,7 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * >82 GB disk space
 
-   * 53 GB input data for a standard collection of global database, or "fix" data (topography, climatology, observational database), and boundary conditions for a short 12-hour test forecast on CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
+   * 53 GB input data for a standard collection of global database, or "fix" data (topography, climatology, observational database) for a short 12-hour test forecast on CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
    * 8 GB for :term:`HPC-Stack` full installation
    * 3 GB for ``ufs-srweather-app`` installation
    * 1 GB boundary conditions for a short 12-h test forecast on CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`
@@ -145,23 +145,23 @@ Atmospheric Model
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
-(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2021`). The dynamical core is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/release-public-v3/>`__. 
+(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2021`). The :term:`dynamical core` is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/release-public-v3/>`__. 
 
 Common Community Physics Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ (:term:`CCPP`) supports interoperable atmospheric physics and land surface model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The upcoming SRW App release includes four physics suites. 
+The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ (:term:`CCPP`) supports interoperable atmospheric physics and land surface model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The SRW App v2.0.0 release includes four physics suites. 
 
 Data Format
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The SRW App supports the use of external model data in :term:`GRIB2`, :term:`NEMSIO`, and netCDF format when generating initial and boundary conditions. The UFS Weather Model ingests initial and lateral boundary condition files produced by :term:`chgres_cube`. 
+The SRW App supports the use of external model data in :term:`GRIB2`, :term:`NEMSIO`, and :term:`netCDF` format when generating initial and boundary conditions. The UFS Weather Model ingests initial and lateral boundary condition files produced by :term:`chgres_cube`. 
 
 
 Unified Post-Processor (UPP)
 --------------------------------
 
-The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ (:term:`UPP`) processes raw output from a variety of numerical weather prediction (:term:`NWP`) models. In the SRW App, it converts data output from netCDF format to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp_v10.1.0/>`__. Output from the UPP can be used with visualization, plotting, and verification packages, or for further downstream post-processing (e.g., statistical post-processing techniques).
+The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ (:term:`UPP`) processes raw output from a variety of numerical weather prediction (:term:`NWP`) models. In the SRW App, it converts data output from netCDF format to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp_v10.1.0/>`__. Output from the UPP can be used with visualization, plotting, and verification packages or for further downstream post-processing (e.g., statistical post-processing techniques).
 
 METplus Verification Suite
 ------------------------------
@@ -171,16 +171,16 @@ The Model Evaluation Tools (MET) package is a set of statistical verification to
 Visualization Example
 -------------------------
 
-This SRW Application release provides Python scripts to create basic visualizations of the model output. :numref:`Chapter %s <Graphics>` contains usage information and instructions; instructions also appear at the top of the scripts. 
+The SRW Application v2.0.0 release provides Python scripts to create basic visualizations of the model output. :numref:`Chapter %s <Graphics>` contains usage information and instructions; instructions also appear at the top of the scripts. 
 
 Build System and Workflow
 ----------------------------
 
-The SRW Application has a portable CMake-based build system that packages together all the components required to build the SRW Application. Once built, users can generate a Rocoto-based workflow that will run each task in the proper sequence (see `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__ for more on workflow management). Individual workflow tasks can also be run in a stand-alone, command line fashion. 
+The SRW Application has a portable CMake-based build system that packages together all the components required to build the SRW Application. Once built, users can generate a Rocoto-based workflow that will run each task in the proper sequence (see the `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__ for more on workflow management). Individual workflow tasks can also be run in a stand-alone, command line fashion. 
 
 The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite used for the simulation. 
 
-This SRW Application release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g. Hera, Orion), cloud environments, and generic Linux and macOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries (HPC-Stack) available in a central location. The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms, the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildRunSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
+The SRW Application v2.0.0 release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Orion), cloud environments, and generic Linux and MacOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries available in a central location (via :term:`HPC-Stack`). The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms, the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildRunSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
 
 
 

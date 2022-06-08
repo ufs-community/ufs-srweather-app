@@ -94,7 +94,7 @@ On Hera:
 
 .. code-block:: console
 
-   /scratch2/BMC/det/UFS_SRW_app/v1p0/fix_files/NaturalEarth 
+   /scratch2/BMC/det/UFS_SRW_App/develop/fix_files/NaturalEarth
 
 On Jet:
  
