@@ -15,15 +15,14 @@ module load ncarcompilers/0.5.0
 module load python/3.7.9
 module unload netcdf
 
-module use /glade/work/epicufsrt/GMTB/tools/hpc-stack-v1.2.0_6eb6/modulefiles/stack
-
+module use /glade/work/epicufsrt/GMTB/tools/gnu/11.2.0/hpc-stack-v1.2.0/modulefiles/stack
 module load hpc/1.2.0
-module load hpc-gnu/10.1.0
-module load hpc-mpt/2.22
+module load hpc-gnu
+module load hpc-mpt/2.25
 
 module load srw_common
 module load g2/3.4.3
-module load esmf/v8.3.0b09 
+module load esmf/8.3.0b09 
 module load mapl/2.11.0-esmf-8.3.0b09
 module load netcdf/4.7.4
 module load png/1.6.35
