@@ -22,6 +22,13 @@ module load hpc-mpt/2.25
 
 module load srw_common
 
+module load g2/3.4.5
+module load esmf/8.3.0b09
+module load netcdf/4.7.4
+module load libpng/1.6.37
+module load pio/2.5.3
+module load fms/2022.01
+
 setenv CMAKE_C_COMPILER mpicc
 setenv CMAKE_CXX_COMPILER mpicxx
 setenv CMAKE_Fortran_COMPILER mpif90
