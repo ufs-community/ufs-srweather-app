@@ -110,3 +110,4 @@ Users can choose from one of three predefined grids for the SRW Application:
 
 An option also exists to create a user-defined grid, with information available in
 :numref:`Chapter %s <LAMGrids>`.
+
