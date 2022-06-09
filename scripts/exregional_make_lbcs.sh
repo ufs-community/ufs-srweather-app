@@ -442,7 +442,6 @@ list file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
 #
 settings="
 'config': {
- 'fix_dir_input_grid': ${FIXgsm},
  'fix_dir_target_grid': ${FIXLAM},
  'mosaic_file_target_grid': ${FIXLAM}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
  'orog_dir_target_grid': ${FIXLAM},
