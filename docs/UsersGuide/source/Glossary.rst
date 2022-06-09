@@ -19,7 +19,7 @@ Glossary
       Climatology-Calibrated Precipitation Analysis (CCPA) data. This data is required for METplus precipitation verification tasks within the SRW App. The most recent 8 days worth of data are publicly available and can be accessed `here <https://ftp.ncep.noaa.gov/data/nccf/com/ccpa/prod/>`__. 
 
    CCPP
-      The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of code containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
+      The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of codes containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
 
    chgres_cube
        The preprocessing software used to create initial and boundary condition files to 
@@ -43,12 +43,11 @@ Glossary
    CONUS
       Continental United States
 
-   CAM
    convection-allowing models
-      Convection-allowing models (CAMs) are models that run on high-resolution grids (usually with grid spacing at 4km or less). They are able to resolve the effects of small-scale convective processes. They typically run several times a day to provide frequent forecasts (e.g., hourly or subhourly). 
+   CAM
+      Convection-allowing models (CAMs) are models that run on high-resolution grids (usually with grid spacing at 4km or less) that are able to resolve the effects of small-scale convective processes. They typically run several times a day to provide frequent forecasts (e.g., hourly or even subhourly). 
 
    cycle
-   cycles
       An hour of the day on which a forecast is started. 
 
    cycle-dependent 
@@ -58,6 +57,8 @@ Glossary
       Describes a workflow task that only needs to be run once per experiment, regardless of the number of cycles in the experiment.
    
    dycore
+      See :term:`dynamical core`.
+
    dynamical core
       Global atmospheric model based on fluid dynamics principles, including Euler's equations of motion.
 
@@ -68,45 +69,43 @@ Glossary
       The `Environmental Modeling Center <https://www.emc.ncep.noaa.gov/emc_new.php>`__. 
 
    EPIC
-      The `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__. EPIC seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement in order to produce the most accurate and reliable operational modeling system in the world. 
+      EPIC stands for the `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__. EPIC seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement to produce the most accurate and reliable operational modeling system in the world. 
 
    ESG
       Extended Schmidt Gnomonic (ESG) grid. The ESG grid uses the map projection developed by Jim Purser of NOAA :term:`EMC` (:cite:t:`Purser_2020`). 
 
    ESMF
-      `Earth System Modeling Framework <https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/>`__. The ESMF defines itself as “a suite of software tools for developing high-performance, multi-component Earth science modeling applications.” 
+      `Earth System Modeling Framework <https://earthsystemmodeling.org/docs/release/ESMF_8_1_1/ESMF_usrdoc.pdf>`__. The ESMF defines itself as “a suite of software tools for developing high-performance, multi-component Earth science modeling applications.” 
 
    FV3
-      The Finite-Volume Cubed-Sphere :term:`dynamical core` (dycore). Developed at NOAA's `Geophysical 
-      Fluid Dynamics Laboratory <https://www.gfdl.noaa.gov/>`__ (GFDL), it is a scalable and flexible dycore capable of both hydrostatic and non-hydrostatic atmospheric simulations. It is the dycore used in the UFS Weather Model.
+      The Finite-Volume Cubed-Sphere dynamical core (dycore). Developed at NOAA's Geophysical 
+      Fluid Dynamics Laboratory (GFDL), it is a scalable and flexible dycore capable of both 
+      hydrostatic and non-hydrostatic atmospheric simulations. It is the dycore used in the 
+      UFS Weather Model.
 
    FVCOM
-      `Finite Volume Community Ocean Model <http://fvcom.smast.umassd.edu/fvcom/>`__. FVCOM is used in modeling work for the `Great Lakes Coastal Forecasting System (next-gen FVCOM) <https://www.glerl.noaa.gov/res/glcfs/>`__ conducted by the `Great Lakes Environmental Research Laboratory <https://www.glerl.noaa.gov/>`__. 
+      `Finite Volume Community Ocean Model <http://fvcom.smast.umassd.edu/>`__. FVCOM is used in modeling work for the `Great Lakes Coastal Forecasting System (next-gen FVCOM) <https://www.glerl.noaa.gov/res/glcfs/>`__ conducted by the `Great Lakes Environmental Research Laboratory <https://www.glerl.noaa.gov/>`__. 
 
    GFS
-      `Global Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast>`_. The GFS is a National Centers for Environmental Prediction (NCEP) weather forecast model that generates data for dozens of atmospheric and land-soil variables, including temperatures, winds, precipitation, soil moisture, and atmospheric ozone concentration. The system couples four separate models (atmosphere, ocean, land/soil, and sea ice) that work together to accurately depict weather conditions.
+      `Global Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast>`_. The GFS is a National Centers for Environmental Prediction (NCEP) weather forecast model that generates data for dozens of atmospheric and land-soil variables, including temperatures, winds, precipitation, soil moisture, and atmospheric ozone concentration. The system couples four separate models (atmosphere, ocean model, land/soil model, and sea ice) that work together to accurately depict weather conditions.
 
    GRIB2 
       The second version of the World Meterological Organization's (WMO) standard for distributing gridded data.  
 
    halo
-      A strip of cells on the edge of the regional grid. The :ref:`wide halo <WideHalo>` surrounds the regional grid and is used to feed the lateral boundary conditions into the grid. The :ref:`HALO_BLEND <HaloBlend>` parameter refers to a strip of cells *inside* the boundary of the native grid. This halo smooths out mismatches between the external and internal solutions. 
-
-   HPC
-   HPCs
-      High-Performance Computing.
+      A strip of cells on the edge of the regional grid. The :ref:`wide halo <WideHalo>` surrounds the regional grid and is used to feed the lateral boundary conditions into the grid. The :ref:`HALO_BLEND <HaloBlend>` parameter refers to a strip of cells on the *inside* the boundary of the native grid. This halo smooths out mismatches between the external and internal solutions. 
 
    HPC-Stack
       The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ is a repository that provides a unified, shell script-based build system for building the software stack required for numerical weather prediction (NWP) tools such as the `Unified Forecast System (UFS) <https://ufscommunity.org/>`__ and the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`__ framework.
 
    HPSS
-      High Performance Storage System (HPSS).
+   NOAA HPSS
+      National Oceanic and Atmospheric Administration (NOAA) High Performance Storage System (HPSS).
 
    HRRR
-      `High Resolution Rapid Refresh <https://rapidrefresh.noaa.gov/hrrr/>`__. The HRRR is a NOAA real-time 3-km resolution, hourly updated, cloud-resolving, convection-allowing atmospheric model initialized by 3km grids with 3km radar assimilation. Radar data is assimilated in the HRRR every 15 min over a 1-h period adding further detail to that provided by the hourly data assimilation from the 13km radar-enhanced Rapid Refresh.
+      `High Resolution Rapid Refresh <https://rapidrefresh.noaa.gov/hrrr/>`__. The HRRR is a NOAA real-time 3-km resolution, hourly updated, cloud-resolving, convection-allowing atmospheric model, initialized by 3km grids with 3km radar assimilation. Radar data is assimilated in the HRRR every 15 min over a 1-h period adding further detail to that provided by the hourly data assimilation from the 13km radar-enhanced Rapid Refresh.
 
    IC/LBC
-   IC/LBCs
       Initial conditions/lateral boundary conditions
 
    IC
@@ -114,14 +113,11 @@ Glossary
       Initial conditions
 
    LAM
-      Limited Area Model (grid type), formerly known as the "Stand-Alone Regional Model," or SAR. LAM grids use a regional (rather than global) configuration of the :term:`FV3` :term:`dynamical core`. 
+      Limited Area Model, formerly known as the "Stand-Alone Regional Model," or SAR. LAM grids use a regional (rather than global) configuration of the FV3 dynamical core. 
 
    LBC
    LBCs
       Lateral boundary conditions
-
-   MERRA2
-      The `Modern-Era Retrospective analysis for Research and Applications, Version 2 <https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/>`__ provides satellite observation data back to 1980. According to NASA, "It was introduced to replace the original MERRA dataset because of the advances made in the assimilation system that enable assimilation of modern hyperspectral radiance and microwave observations, along with GPS-Radio Occultation datasets. It also uses NASA's ozone profile observations that began in late 2004. Additional advances in both the GEOS model and the GSI assimilation system are included in MERRA-2. Spatial resolution remains about the same (about 50 km in the latitudinal direction) as in MERRA."
 
    MPI
       MPI stands for Message Passing Interface. An MPI is a standardized communication system used in parallel programming. It establishes portable and efficient syntax for the exchange of messages and data between multiple processors that are used by a single computer program. An MPI is required for high-performance computing (HPC).
@@ -139,7 +135,7 @@ Glossary
       The `National Center for Atmospheric Research <https://ncar.ucar.edu/>`__. 
 
    NCEP
-      National Centers for Environmental Prediction (NCEP) is an arm of the National Weather Service
+      National Centers for Environmental Prediction, an arm of the National Weather Service,
       consisting of nine centers. More information can be found at https://www.ncep.noaa.gov.
 
    NCEPLIBS
@@ -148,7 +144,7 @@ Glossary
 
    NCEPLIBS-external
       A collection of third-party libraries required to build :term:`NCEPLIBS`, :term:`chgres_cube`, 
-      the UFS Weather Model, and :term:`UPP`. They are included in the :term:`HPC-Stack`.  
+      the UFS Weather Model, and :term:`UPP`. They are included in the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__.  
 
    NCL
       An interpreted programming language designed specifically for scientific data analysis and 
@@ -162,10 +158,10 @@ Glossary
       to streamline components of operational modeling suites at :term:`NCEP`.
 
    NEMSIO
-      A binary format for atmospheric model output from :term:`NCEP`'s Global Forecast System (:term:`GFS`).
+      A binary format for atmospheric model output from :term:`NCEP`'s Global Forecast System (GFS).
 
    netCDF
-      NetCDF (`Network Common Data Form <https://www.unidata.ucar.edu/software/netcdf/>`__) is a file format and community standard for storing multidimensional scientific data. It includes a set of software libraries and machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data.
+      NetCDF (Network Common Data Form) is a file format and community standard for storing multidimensional scientific data. It includes a set of software libraries and machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data (see https://www.unidata.ucar.edu/software/netcdf/).
 
    NUOPC
       The `National Unified Operational Prediction Capability <https://earthsystemmodeling.org/nuopc/>`__ Layer "defines conventions and a set of generic components for building coupled models using the Earth System Modeling Framework (:term:`ESMF`)." 
@@ -181,7 +177,7 @@ Glossary
       Simplified functions that approximate the effects of small-scale processes (e.g., microphysics, gravity wave drag) that cannot be explicitly resolved by a model grid’s representation of the earth.
 
    RAP
-      `Rapid Refresh <https://rapidrefresh.noaa.gov/>`__. The continental-scale NOAA hourly-updated assimilation/modeling system operational at NCEP. RAP covers North America and is comprised primarily of a numerical forecast model and an analysis/assimilation system to initialize that model. RAP is complemented by the higher-resolution 3km High-Resolution Rapid Refresh (:term:`HRRR`) model.
+      `Rapid Refresh <https://rapidrefresh.noaa.gov/>`__. The continental-scale NOAA hourly-updated assimilation/modeling system operational at NCEP. RAP covers North America and is comprised primarily of a numerical forecast model and an analysis/assimilation system to initialize that model. RAP is complemented by the higher-resolution 3km High-Resolution Rapid Refresh (HRRR) model.
 
    Repository
       A central location in which files (e.g., data, code, documentation) are stored and managed. 
@@ -194,22 +190,24 @@ Glossary
       According to the American Meteorological Society (AMS) `definition <https://glossary.ametsoc.org/wiki/Tracer>`__, a tracer is "Any substance in the atmosphere that can be used to track the history [i.e., movement] of an air mass." Tracers are carried around by the motion of the atmosphere (i.e., by :term:`advection`). These substances are usually gases (e.g., water vapor, CO2), but they can also be non-gaseous (e.g., rain drops in microphysics parameterizations). In weather models, temperature (or potential temperature), absolute humidity, and radioactivity are also usually treated as tracers. According to AMS, "The main requirement for a tracer is that its lifetime be substantially longer than the transport process under study."
 
    UFS
-      The Unified Forecast System is a community-based, coupled, comprehensive Earth modeling 
+      The Unified Forecast System is a community-based, coupled comprehensive Earth modeling 
       system consisting of several applications (apps). These apps span regional to global 
-      domains and sub-hourly to seasonal time scales. The UFS is designed to support the :term:`Weather Enterprise` and to be the source system for NOAA's operational numerical weather prediction applications. For more information, visit https://ufscommunity.org/.
+      domains and sub-hourly to seasonal time scales. The UFS is designed to support the Weather 
+      Enterprise and to be the source system for NOAA's operational numerical weather prediction 
+      applications.  More information can be found at http://ufs-dev.rap.ucar.edu/index.html.
 
    UFS_UTILS
-      A collection of code used by multiple :term:`UFS` apps (e.g., the UFS Short-Range Weather App,
+      A collection of codes used by multiple :term:`UFS` apps (e.g. the UFS Short-Range Weather App,
       the UFS Medium-Range Weather App). The grid, orography, surface climatology, and initial 
       and boundary condition generation codes used by the UFS Short-Range Weather App are all 
       part of this collection.
 
    Umbrella repository
-      A repository that houses external code, or "externals," from additional repositories.
+      A repository that houses external code, or “externals,” from additional repositories.
 
    UPP
       The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ is software developed at :term:`NCEP` and used operationally to 
-      post-process raw output from a variety of :term:`NCEP`'s :term:`NWP` models, including the :term:`FV3`.
+      post-process raw output from a variety of :term:`NCEP`'s NWP models, including the FV3.
 
    Weather Enterprise
       Individuals and organizations from public, private, and academic sectors that contribute to the research, development, and production of weather forecast products; primary consumers of these weather forecast products.
@@ -217,4 +215,4 @@ Glossary
    Weather Model
       A prognostic model that can be used for short- and medium-range research and
       operational forecasts. It can be an atmosphere-only model or an atmospheric
-      model coupled with one or more additional components, such as a wave or ocean model. The SRW App uses the fully-coupled `UFS Weather Model <https://github.com/ufs-community/ufs-weather-model>`__.
+      model coupled with one or more additional components, such as a wave or ocean model.

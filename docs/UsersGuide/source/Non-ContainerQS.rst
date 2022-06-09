@@ -6,13 +6,32 @@ Non-Container Quick Start
 
 Install the HPC-Stack
 ===========================
-SRW App users who are not working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the :term:`HPC-Stack` prior to building the SRW App on a new machine. Installation instructions appear in both the `HPC-Stack documentation <https://hpc-stack.readthedocs.io/en/release-srw-public-v2/>`__ and in :numref:`Chapter %s <InstallBuildHPCstack>` of this User's Guide. The steps will vary slightly depending on the user's platform. However, in all cases, the process involves cloning the `HPC-Stack repository <https://github.com/NOAA-EMC/hpc-stack>`__, creating and entering a build directory, and invoking ``cmake`` and ``make`` to build the code. This process will create a number of modulefiles and scripts that will be used for setting up the build environment for the SRW App. 
+SRW App users who are not working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the :term:`HPC-Stack` prior to building the SRW App on a new machine. Installation instructions appear in both the `HPC-Stack documentation <https://hpc-stack.readthedocs.io/en/latest/>`__ and in :numref:`Chapter %s <InstallBuildHPCstack>` of this User's Guide. The steps will vary slightly depending on the user's platform. However, in all cases, the process involves cloning the `HPC-Stack repository <https://github.com/NOAA-EMC/hpc-stack>`__, creating and entering a build directory, and invoking ``cmake`` and ``make`` to build the code. This process will create a number of modulefiles and scripts that will be used for setting up the build environment for the UFS SRW App. 
 
-Once the HPC-Stack has been successfully installed, users can move on to building the SRW Application.
+Once the HPC-Stack has been successfully installed, users can move on to building the UFS SRW Application.
+
+.. 
+   COMMENT: Are these notes relevant now that NCEPLIBS/NCEPLIBS-external have been changed to HPC-Stack?
+   .. note::
+      The ``ESMFMKFILE`` variable allows HPC-Stack to find the location where ESMF has been built; if users receive an ``ESMF not found, abort`` error, they may need to specify a slightly different location:
+
+      .. code-block:: console
+
+         export ESMFMKFILE=${INSTALL_PREFIX}/lib64/esmf.mk
+
+      Then they can delete and re-create the build directory and continue the build process as described above.
+
+   .. note::
+
+      If users skipped the building of any of the software provided by HPC-Stack, they may need to add the appropriate locations to their ``CMAKE_PREFIX_PATH`` variable. Multiple directories may be added, separated by semicolons (;) as in the following example:
+
+      .. code-block:: console
+
+         cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DCMAKE_PREFIX_PATH=”${INSTALL_PREFIX};/location/of/other/software” -DOPENMP=ON .. 2>&1 | tee log.cmake
 
 
-Building and Running the UFS SRW Application 
-===============================================
+Building the UFS SRW Application 
+=======================================
 
 For a detailed explanation of how to build and run the SRW App on any supported system, see :numref:`Chapter %s <BuildRunSRW>`. The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. An overview of the required steps appears below. However, users can expect to access other referenced sections of this User's Guide for more detail. 
 
@@ -20,7 +39,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
 
-         git clone -b release/public-v2 https://github.com/ufs-community/ufs-srweather-app.git
+         git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
 
    #. Check out the external repositories:
 
@@ -37,7 +56,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             
             ./devbuild.sh --platform=<machine_name>
 
-         where <machine_name> is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3`` | ``noaacloud``
+         where <machine_name> is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
 
       * **Option 2:**
 
@@ -51,7 +70,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
          .. code-block:: console
 
-            module use modulefiles
+            module use <path/to/modulefiles/directory>
             module load build_<platform>_<compiler>
 
          From the top-level ``ufs-srweather-app`` directory, run:
@@ -63,7 +82,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             cmake .. -DCMAKE_INSTALL_PREFIX=..
             make -j 4  >& build.out &
 
-   #. Download and stage data (both the fix files and the :term:`IC/LBC` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a Level 3-4 system).
+   #. Download and stage data (both the fix files and the :term:`IC/LBC` files) according to the instructions in :numref:`Chapter %s <DownloadingStagingInput>` (if on a Level 3-4 system).
 
    #. Configure the experiment parameters.
 
@@ -72,7 +91,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
          cd regional_workflow/ush
          cp config.community.sh config.sh
       
-      Users will need to adjust the experiment parameters in the ``config.sh`` file to suit the needs of their experiment (e.g., date, time, grid, physics suite, etc.). More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. 
+      Users will need to adjust the experiment parameters in the ``config.sh`` file to suit the needs of their experiment (e.g., date, time, grid, physics suite, etc.). More detailed guidance is available in :numref:`Chapter %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. 
 
    #. Load the python environment for the regional workflow. Users on Level 3-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
 
@@ -88,7 +107,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
          ./generate_FV3LAM_wflow.sh
 
-   #. Run the regional workflow. There are several methods available for this step, which are discussed in :numref:`Section %s <RocotoRun>` and :numref:`Section %s <RunUsingStandaloneScripts>`. One possible method is summarized below. It requires the Rocoto Workflow Manager. 
+   #. Run the regional workflow. There are several methods available for this step, which are discussed in :numref:`Chapter %s <RocotoRun>` and :numref:`Chapter %s <RunUsingStandaloneScripts>`. One possible method is summarized below. It requires the Rocoto Workflow Manager. 
 
       .. code-block:: console
 

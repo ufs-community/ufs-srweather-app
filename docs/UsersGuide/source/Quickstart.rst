@@ -4,14 +4,13 @@
 Container-Based Quick Start Guide
 ====================================
 
-This Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`’s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. However, the container is not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. Additionally, the Singularity container can only run on a single compute node, which makes the container-based approach inadequate for large experiments. However, it is an excellent starting point for beginners running the "out-of-the-box" SRW App case and other small experiments. The :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability or more compute power, particularly if they already have experience running the SRW App.
+This Quick Start Guide will help users to build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`’s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. However, the container is not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. Additionally, the Singularity container can only run on a single compute node, which makes the container-based approach inadequate for large experiments. It is an excellent starting point for running the "out-of-the-box" SRW App case and other small experiments. However, the :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability or more compute power, particularly if they already have experience running the SRW App.
 
 The "out-of-the-box" SRW App case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. attention::
 
-   * All UFS applications support `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
-   * This chapter of the User's Guide should **only** be used for container builds. See :numref:`Section %s <NCQuickstart>` for a Quickstart Guide to building without a container (including on NOAA Cloud systems) or :numref:`Section %s <BuildRunSRW>` for a detailed guide to building the SRW App without a container.
+   All UFS applications support `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
 
 .. _DownloadCodeC:
 
@@ -21,10 +20,10 @@ Building the UFS SRW Application
 Prerequisites: Install Singularity
 ------------------------------------
 
-To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://sylabs.io/guides/3.2/user-guide/installation.html#>`__. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
+To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://sylabs.io/guides/3.2/user-guide/installation.html#>`_. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
 
 .. warning:: 
-   Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs`. Therefore, it is not possible to build the SRW, which uses the HPC-Stack, inside a Docker container on an HPC system. A Docker image may be pulled, but it must be run inside a container such as Singularity. 
+   Docker containers can only be run with root privileges, and users cannot have root privileges on HPC's. Therefore, it is not possible to build the SRW, which uses the HPC-Stack, inside a Docker container on an HPC system. A Docker image may be pulled, but it must be run inside a container such as Singularity. 
 
 
 Working in the Cloud
@@ -39,12 +38,11 @@ On NOAA Cloud systems, certain environment variables must be set *before* buildi
    sudo su
    export SINGULARITY_CACHEDIR=/lustre/cache
    export SINGULARITY_TEMPDIR=/lustre/tmp
-   exit
 
 If the ``cache`` and ``tmp`` directories do not exist already, they must be created with a ``mkdir`` command. 
 
 .. note:: 
-   ``/lustre`` is a fast but non-persistent file system used on NOAA Cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
+   ``/lustre`` is a fast but non-persistent file system used on NOAA cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
 
 .. _WorkOnHPC:
 
@@ -95,7 +93,7 @@ Build the container:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu20.04-gnu9.3-ufs-srwapp-srw-public-v2 docker://noaaepic/ubuntu20.04-gnu9.3-ufs-srwapp:srw-public-v2
+   singularity build --sandbox ubuntu20.04-epic-srwapp-1.0 docker://noaaepic/ubuntu20.04-epic-srwapp:1.0
 
 .. hint::
    If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
@@ -104,7 +102,7 @@ Start the container and run an interactive shell within it:
 
 .. code-block:: console
 
-   singularity shell -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp-srw-public-v2
+   singularity shell -e --writable --bind /<local_base_dir>:/<path_to_container_dir_w_same_name> ubuntu20.04-epic-srwapp-1.0
 
 The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
@@ -122,7 +120,7 @@ Set the build environments and modules within the ``ufs-srweather-app`` director
 
 .. code-block:: console
 
-   cd ubuntu20.04-gnu9.3-ufs-srwapp-srw-public-v2/opt/ufs-srweather-app/
+   cd ubuntu20.04-epic-srwapp-1.0/opt/ufs-srweather-app/
    ln -s /usr/bin/python3 /usr/bin/python
    source /usr/share/lmod/6.6/init/profile
    module use /opt/hpc-modules/modulefiles/stack
@@ -168,7 +166,7 @@ Make a copy of ``config.community.sh`` to get started. From the ``ufs-srweather-
 
 .. code-block:: console
 
-   cd <path-to>/regional_workflow/ush
+   cd regional_workflow/ush
    cp config.community.sh config.sh
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
@@ -180,18 +178,20 @@ Next, edit the new ``config.sh`` file to customize it for your experiment. At a 
    MACHINE="SINGULARITY"
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
+   EXPT_BASEDIR="/home/$USER/expt_dirs"
+   COMPILER="gnu"
 
 Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct paths to the data. The following is a sample for a 24-hour forecast:
 
 .. code-block::
 
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="</path/to/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
-   EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="</path/to/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
-   EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012")
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/path/to/model_data/FV3GFS"
+   EXTRN_MDL_FILES_ICS=( "gfs.pgrb2.0p25.f000" )
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path/to/model_data/FV3GFS"
+   EXTRN_MDL_FILES_LBCS=( "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012" "gfs.pgrb2.0p25.f018" "gfs.pgrb2.0p25.f024" )
 
-On Level 1 systems, ``/path/to/input_model_data/FV3GFS`` should correspond to the location of the machine's global data, which can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Step %s <InitialConditions>`. 
+On Level 1 systems, ``/path/to/model_data/FV3GFS`` should correspond to the location of the machine's global data. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Step %s <InitialConditions>`. 
 
 On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonEnvC>`. On other Level 1 systems, additional file paths must be set: 
 
@@ -276,7 +276,7 @@ The regional workflow can be run using standalone shell scripts in cases where t
 
    .. code-block:: console
 
-      cp <path-to>/ufs-srweather-app/regional_workflow/ush/wrappers/* .
+      cp ufs-srweather-app/regional_workflow/ush/wrappers/* .
 
 #. Set the ``OMP_NUM_THREADS`` variable and fix dash/bash shell issue (this ensures the system does not use an alias of ``sh`` to dash). 
 
@@ -333,12 +333,6 @@ Check the batch script output file in your experiment directory for a “SUCCESS
    | 6          | run_post.sh            | 48             | 0:25 (2 min per output     |
    |            |                        |                | forecast hour)             |
    +------------+------------------------+----------------+----------------------------+
-
-Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory. To see how the experiment is progressing, users can also check the end of the ``log.launch_FV3LAM_wflow`` file from the command line:
-
-.. code-block:: console
-
-   tail -n 40 log.launch_FV3LAM_wflow
 
 .. hint:: 
    If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA Cloud systems can be viewed in the :numref:`Step %s <WorkOnHPC>` as an example. 

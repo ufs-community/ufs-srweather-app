@@ -6,7 +6,7 @@ Building and Running the SRW App
 
 The Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application is an :term:`umbrella repository` consisting of a number of different :ref:`components <Components>` housed in external repositories. Once the SRW App is configured and built, users can generate predictions of atmospheric behavior over a limited spatial area and on time scales ranging from minutes out to several days. 
 
-This chapter walks users through how to build and run the "out-of-the-box" case for the SRW App. However, the steps are relevant to any SRW Application experiment and can be modified to suit user goals. The "out-of-the-box" SRW App case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) domain (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
+This chapter walks users through how to build and run the "out-of-the-box" case for the SRW App. However, the steps are relevant to any SRW Application experiment and can be modified to suit user goals. The "out-of-the-box" SRW App case builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) domain (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 15.2 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. attention::
 
@@ -17,24 +17,23 @@ This chapter walks users through how to build and run the "out-of-the-box" case 
 
 The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. The steps are as follows:
 
-   #. :ref:`Install prerequisites <HPCstackInfo>`
-   #. :ref:`Clone the SRW App from GitHub <DownloadSRWApp>`
-   #. :ref:`Check out the external repositories <CheckoutExternals>`
-   #. :ref:`Set up the build environment and build the executables <BuildExecutables>`
-   #. :ref:`Download and stage data <Data>`
-   #. :ref:`Optional: Configure a new grid <GridSpecificConfig>`
-   #. :ref:`Generate a regional workflow experiment <GenerateForecast>`
+   * :ref:`Install prerequisites <HPCstackInfo>`
+   * :ref:`Clone the SRW App from GitHub <DownloadSRWApp>`
+   * :ref:`Check out the external repositories <CheckoutExternals>`
+   * :ref:`Set up the build environment and build the executables <BuildExecutables>`
+   * :ref:`Download and stage data <Data>`
+   * :ref:`Optional: Configure a new grid <GridSpecificConfig>`
+   * :ref:`Generate a regional workflow experiment <GenerateForecast>`
       * :ref:`Configure the experiment parameters <UserSpecificConfig>`
       * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
-   #. :ref:`Run the regional workflow <RocotoRun>` 
-   #. :ref:`Optional: Plot the output <PlotOutput>`
+   * :ref:`Run the regional workflow <RocotoRun>` 
+   * :ref:`Optional: Plot the output <PlotOutput>`
 
 .. _AppOverallProc:
 
 .. figure:: _static/FV3LAM_wflow_overall.png
-   :alt: Flowchart describing the SRW App workflow steps. 
 
-   *Overall layout of the SRW App Workflow*
+    *Overall layout of the SRW App Workflow*
 
 
 .. _HPCstackInfo:
@@ -76,14 +75,13 @@ The SRW Application source code is publicly available on GitHub. To download the
 
 .. code-block:: console
 
-   git clone -b release/public-v2 https://github.com/ufs-community/ufs-srweather-app.git
+   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
+
+..
+   COMMENT: This will need to be changed to the updated release branch of the SRW repo once it exists. 
 
 The cloned repository contains the configuration files and sub-directories shown in
-:numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environmental variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the $HOME directory:
-
-.. code-block:: console
-
-    export SRW=$HOME/ufs-srweather-app
+:numref:`Table %s <FilesAndSubDirs>`.
 
 .. _FilesAndSubDirs:
 
@@ -131,11 +129,10 @@ Run the executable that pulls in SRW App components from external repositories:
 
 .. code-block:: console
 
-   cd $SRW
+   cd ufs-srweather-app
    ./manage_externals/checkout_externals
 
 The script should output dialogue indicating that it is retrieving different code repositories. It may take several minutes to download these repositories.
-
 
 .. _BuildExecutables:
 
@@ -143,7 +140,6 @@ Set Up the Environment and Build the Executables
 ===================================================
 
 .. _DevBuild:
-
 
 ``devbuild.sh`` Approach
 -----------------------------
@@ -154,9 +150,9 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
    ./devbuild.sh --platform=<machine_name>
 
-where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3`` | ``noaacloud``
+where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
 
-If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. For example:
+If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. FOr example:
 
 .. code-block:: console
 
@@ -235,8 +231,7 @@ Set Up the Workflow Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. attention::
-   * If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
-   * Users who want to build the SRW App on a generic MacOS should skip to :numref:`Step %s <MacDetails>` and follow the approach there.
+   If users successfully built the executables in :numref:`Step %s <DevBuild>`, they should skip to step :numref:`Step %s <Data>`.
 
 If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, assuming a ``bash`` login shell, run:
 
@@ -244,11 +239,11 @@ If the ``devbuild.sh`` approach failed, users need to set up their environment t
 
    source etc/lmod-setup.sh gaea
 
-or if the login shell is ``csh`` or ``tcsh``, run ``source etc/lmod-setup.csh gaea`` instead. If users execute the above command on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>``, run:
+or if the login shell is ``csh`` or ``tcsh``, run ``source etc/lmod-setup.csh`` instead. If users execute the above command on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>``, run:
 
 .. code-block:: console
 
-   module use modulefiles
+   module use <path/to/modulefiles/directory>
    module load build_<platform>_<compiler>
 
 where ``<path/to/modulefiles/directory>`` is the full path to the ``modulefiles`` directory. This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory.
@@ -259,6 +254,9 @@ On Level 2-4 systems, users will need to modify certain environment variables, s
 
    export <VARIABLE_NAME>=<PATH_TO_MODULE>
    setenv <VARIABLE_NAME> <PATH_TO_MODULE>
+
+..
+   COMMENT: Might be good to list an example here...
 
 .. _BuildCMake:
 
@@ -290,65 +288,6 @@ The build will take a few minutes to complete. When it starts, a random number i
 
    If you see the build.out file, but there is no ``ufs-srweather-app/bin`` directory, wait a few more minutes for the build to complete.
 
-.. _MacDetails:
-
-Additional Details for Building on MacOS
-------------------------------------------
-
-.. note::
-    Users not building the SRW App to run on MacOS may skip to the :ref:`next section <BuildExecutables>`. 
-
-The SRW App can be built on MacOS systems, presuming HPC-Stack has already been successfully installed. The following two options have been tested:
-
-* **Option 1:** MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
-
-* **Option 2:** MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
-
-The ``build_macos_gnu`` modulefile initializes the module environment, lists the location of HPC-Stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW App. The modulefile must be modified to include the absolute path to the user's HPC-Stack installation and ``ufs-srweather-app`` directories. In particular, the following section must be modified:
-
-.. code-block:: console
-
-   # This path should point to your HPCstack installation directory
-   setenv HPCstack "/Users/username/hpc-stack/install"
-
-   # This path should point to your SRW Application directory
-   setenv SRW "/Users/username/ufs-srweather-app"
-   
-An excerpt of the ``build_macos_gnu`` contents appears below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macos_gnu`` modulefile. Additionally, users need to verify that all file paths reflect their system's configuration and that the correct version numbers for software libraries appear in the modulefile. 
-
-.. code-block:: console
-
-   # Option 1 compiler paths: 
-   setenv CC "/opt/homebrew/bin/gcc"
-   setenv FC "/opt/homebrew/bin/gfortran"
-   setenv CXX "/opt/homebrew/bin/g++"
-
-   # Option 2 compiler paths:
-   #setenv CC "/usr/local/bin/gcc"
-   #setenv FC "/usr/local/bin/gfortran"
-   #setenv CXX "/usr/local/bin/g++"
-
-Then, users must source the Lmod setup file, just as they would on other systems, and load the modulefiles needed for building and running SRW App:
-
-.. code-block:: console
-
-   source etc/lmod-setup.sh macos
-   module use <path/to/ufs-srweather-app/modulefiles>
-   module load build_macos_gnu
-   export LDFLAGS="-L${MPI_ROOT}/lib"
-
-In a csh/tcsh shell, users would run ``source etc/lmod-setup.csh macos`` in place of the first line in the code above. 
-
-.. note::
-   If you execute ``source etc/lmod-setup.sh`` on systems that don't need it, it will simply do a ``module purge``. 
-
-Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` to ``OFF`` in ``$SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt`` file. This change is optional if using Option 2 to build the SRW App. You could use a streamline editor `sed` to change it: 
-
-.. code-block:: console
-
-   sed -i .bak 's/QUAD_PRECISION\"  ON)/QUAD_PRECISION\" OFF)/' $SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt
-
-Proceed to building executables using CMake in :numref:`Step %s <BuildCMake>`
 
 .. _Data:
 
@@ -448,7 +387,7 @@ settings. There is usually no need for a user to modify the default configuratio
    +----------------------+------------------------------------------------------------+
    | NOMADS               | NOMADS, NOMADS_file_type                                   |
    +----------------------+------------------------------------------------------------+
-   | External model       | USE_USER_STAGED_EXTRN_FILES, EXTRN_MDL_SOURCE_BASEDIR_ICS, |
+   | External model       | USE_USER_STAGED_EXTRN_FILES, EXTRN_MDL_SOURCE_BASEDRI_ICS, |
    |                      | EXTRN_MDL_FILES_ICS, EXTRN_MDL_SOURCE_BASEDIR_LBCS,        |
    |                      | EXTRN_MDL_FILES_LBCS                                       |
    +----------------------+------------------------------------------------------------+
@@ -581,11 +520,11 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+--------------------------------------------------------+
    | USE_USER_STAGED_EXTRN_FILES    | "FALSE"           | "TRUE"                                                 |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASEDIR_ICS   | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
+   | EXTRN_MDL_SOURCE_BASE_DIR_ICS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
    +--------------------------------+-------------------+--------------------------------------------------------+
    | EXTRN_MDL_FILES_ICS            | ""                | "gfs.pgrb2.0p25.f000"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/path/to/model_data/FV3GFS"                           |
+   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
    +--------------------------------+-------------------+--------------------------------------------------------+
    | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006"                                  |
    +--------------------------------+-------------------+--------------------------------------------------------+
@@ -622,18 +561,14 @@ To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather
 
 .. code-block:: console
 
-   cd $SRW/regional_workflow/ush
+   cd regional_workflow/ush
    cp config.community.sh config.sh
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged the initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
 
-.. note::
-
-   MacOS users should refer to :numref:`Section %s <MacConfig>` for details on configuring an experiment on MacOS. 
-
-Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
+Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 .. important::
 
@@ -644,8 +579,6 @@ Sample settings are indicated below for Level 1 platforms. Detailed guidance app
    To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
 
 Minimum parameter settings for running the out-of-the-box SRW App case on Level 1 machines:
-
-.. _SystemData:
 
 **Cheyenne:**
 
@@ -659,9 +592,9 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
 
 where: 
-   * <model_type> refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
-   * <data_type> refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
-   * YYYYMMDDHH refers to a subdirectory containing data for the :term:`cycle` date. 
+* <model_type> refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
+* <data_type> refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
+* YYYYMMDDHH refers to a subdirectory containing data for the :term:`cycle` date. 
 
 
 **Hera, Jet, Orion, Gaea:**
@@ -692,13 +625,31 @@ On Gaea:
 
    "/lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
-On NOAA Cloud Systems:
+For **WCOSS** systems, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
+
+.. code-block:: console
+
+   MACHINE="wcoss_cray" or MACHINE="wcoss_dell_p3"
+   ACCOUNT="valid_wcoss_project_code"
+   EXPT_SUBDIR="my_expt_name"
+   USE_USER_STAGED_EXTRN_FILES="TRUE"
+
+For WCOSS_DELL_P3:
+   
+.. code-block:: console
+
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/model_data/<model_type>/<data_type>/YYYYMMDDHH/ICS"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/gpfs/dell2/emc/modeling/noscrub/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/LBCS"
+
+**NOAA Cloud Systems:**
 
 .. code-block:: console
 
    MACHINE="NOAACLOUD"
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
+   EXPT_BASEDIR="lustre/$USER/expt_dirs"
+   COMPILER="gnu"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
    EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/develop/input_model_data/FV3GFS"
    EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
@@ -708,7 +659,8 @@ On NOAA Cloud Systems:
 .. note::
 
    The values of the configuration variables should be consistent with those in the
-   ``valid_param_vals script``. In addition, various example configuration files can be found in the ``regional_workflow/tests/baseline_configs`` directory.
+   ``valid_param_vals script``. In addition, various example configuration files can be
+   found in the ``regional_workflow/tests/baseline_configs`` directory.
 
 .. _VXConfig:
 
@@ -763,8 +715,8 @@ These tasks are independent, so users may set some values to "TRUE" and others t
 
 .. _SetUpPythonEnv:
 
-Set Up the Python and Other Environment Parameters
-----------------------------------------------------
+Set up the Python and other Environment Parameters
+--------------------------------------------------
 The workflow requires Python 3 with the packages 'PyYAML', 'Jinja2', and 'f90nml' available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
 
 .. code-block:: console
@@ -780,142 +732,6 @@ This command will activate the ``regional_workflow`` conda environment. The user
    conda init
    source ~/.bashrc
    conda activate regional_workflow
-
-.. _MacConfig:
-
-Configuring an Experiment on MacOS
-------------------------------------------------------------
-
-In principle, the configuration process for MacOS systems is the same as for other systems. However, the details of the configuration process on MacOS require a few extra steps. 
-
-.. note::
-    Examples in this subsection presume that the user is running Terminal.app with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
-
-.. _MacMorePackages:
-
-Install Additional Packages
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Check the version of bash, and upgrade it if it is lower than 4. Additionally, install the ``coreutils`` package:
-
-.. code-block:: console
-
-   bash --version
-   brew upgrade bash
-   brew install coreutils
-   
-.. _MacVEnv:
-
-Create a Python Virtual Environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Users must create a python virtual environment for running the SRW on MacOS. This involves setting python3 as default, adding required python modules, and sourcing the ``regional_workflow``. 
-	
-.. code-block:: console
-
-   python3 -m pip --version 
-   python3 -m pip install --upgrade pip 
-   python3 -m ensurepip --default-pip
-   python3 -m venv $HOME/venv/regional_workflow 
-   source $HOME/venv/regional_workflow/bin/activate
-   python3 -m pip install jinja2
-   python3 -m pip install pyyaml
-   python3 -m pip install f90nml
-   python3 -m pip install ruby         OR: brew install ruby
-
-The virtual environment can be deactivated by running the ``deactivate`` command. The virtual environment built here will be reactivated in :numref:`Step %s <MacActivateWFenv>` and needs to be used to generate the workflow and run the experiment. 
-
-Install Rocoto
-^^^^^^^^^^^^^^^^^^
-
-.. note::
-   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and is not supported for this release. 
-
-
-Configure the SRW App
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Users will need to configure their experiment just like on any other system. From the ``$SRW/regional_workflow/ush`` directory, users can copy the settings from ``config.community.sh`` into a ``config.sh`` file (see :numref:`Section %s <UserSpecificConfig>`) above. In the ``config.sh`` file, users should set ``MACHINE="macos"`` and modify additional variables as needed. For example: 
-
-.. code-block:: console
-
-   MACHINE="macos"
-   ACCOUNT="user" 
-   EXPT_SUBDIR="<test_community>"
-   COMPILER="gnu"
-   VERBOSE="TRUE"
-   RUN_ENVIR="community"
-   PREEXISTING_DIR_METHOD="rename"
-
-   PREDEF_GRID_NAME="RRFS_CONUS_25km"	
-   QUILTING="TRUE"
-
-Due to the limited number of processors on Mac OS systems, users must configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
-
-For :ref:`Option 1 <MacDetails>`, add the following information to ``config.sh``:
-
-.. code-block:: console
-
-   LAYOUT_X="${LAYOUT_X:-3}"
-   LAYOUT_Y="${LAYOUT_Y:-2}"
-   WRTCMP_write_groups="1"
-   WRTCMP_write_tasks_per_group="2"
-
-For :ref:`Option 2 <MacDetails>`, add the following information to ``config.sh``:
-
-.. code-block:: console
-
-   LAYOUT_X="${LAYOUT_X:-3}"
-   LAYOUT_Y="${LAYOUT_Y:-1}"
-   WRTCMP_write_groups="1"
-   WRTCMP_write_tasks_per_group="1"
-
-Configure the Machine File
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Configure the machine file based on the number of CPUs in the system (8 or 4). Specify the following variables in ``$SRW/regional_workflow/ush/machine/macos.sh``: 
-
-For Option 1 (8 CPUs):
-
-.. code-block:: console
-
-   # Commands to run at the start of each workflow task.
-   PRE_TASK_CMDS='{ ulimit -a; }'
-
-   # Architecture information
-   WORKFLOW_MANAGER="none"
-   NCORES_PER_NODE=${NCORES_PER_NODE:-8}	 
-   SCHED=${SCHED:-"none"}
-   
-   # UFS SRW App specific paths
-   FIXgsm="path/to/FIXgsm/files"
-   FIXaer="path/to/FIXaer/files"
-   FIXlut="path/to/FIXlut/files"
-   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files 
-                                     used by the ``make_orog`` task) 
-   SFC_CLIMO_INPUT_DIR="path/to/FIXgsm/files" # (path to location of static surface climatology
-                                                input fields used by ``sfc_climo_gen``)
-
-   # Run commands for executables
-   RUN_CMD_SERIAL="time"
-   RUN_CMD_UTILS="mpirun -np 4"
-   RUN_CMD_FCST='mpirun -np ${PE_MEMBER01}'
-   RUN_CMD_POST="mpirun -np 4"
-
-Using Option 2 with 4 CPUs requires ``NCORES_PER_NODE=${NCORES_PER_NODE:-4}`` in the above example. 
-
-.. _MacActivateWFenv:
-
-Activate the Workflow Environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``regional_workflow`` environment can be activated on MacOS as it is for any other system:
-
-.. code-block:: console
-
-	cd $SRW/regional_workflow/ush
- 	module load wflow_macos
-
-This should activate the ``regional_workflow`` environment created in :numref:`Step %s <MacVEnv>`. From here, the user may continue to the :ref:`next step <GenerateWorkflow>` and generate the regional workflow. 
 
 
 .. _GenerateWorkflow: 
@@ -939,11 +755,9 @@ The generated workflow will appear in ``EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDI
 
 .. _WorkflowGeneration:
 
-.. figure:: _static/FV3regional_workflow_gen_v2.png
-   :alt: Flowchart of the workflow generation process. Scripts are called in the following order: source_util_funcs.sh (which calls bash_utils), then set_FV3nml_sfc_climo_filenames.sh, set_FV3nml_stock_params.sh, create_diag_table_files.sh, and setup.sh. setup.sh calls several scripts: set_cycle_dates.sh, set_grid_params_GFDLgrid.sh, set_grid_params_ESGgrid.sh, link_fix.sh, set_ozone_param.sh, set_Thompson_mp_fix_files.sh, config_defaults.sh, config.sh, and valid_param_vals.sh. Then, it sets a number of variables, including FIXgsm, TOPO_DIR, and SFC_CLIMO_INPUT_DIR variables. Next, set_predef_grid_params.sh is called, and the FIXam and FIXLAM directories are set, along with the forecast input files. The setup script also calls set_extrn_mdl_params.sh, sets the GRID_GEN_METHOD with HALO, checks various parameters, and generates shell scripts. Then, the workflow generation script sets up YAML-compliant strings and generates the actual Rocoto workflow XML file from the template file (fill_jinja_template.py). The workflow generation script checks the crontab file and, if applicable, copies certain fix files to the experiment directory. Then, it copies templates of various input files to the experiment directory and sets parameters for the input.nml file. Finally, it generates the workflow. Additional information on each step appears in comments within each script. 
+.. figure:: _static/FV3regional_workflow_gen.png
 
-   *Experiment generation description*
-
+    *Experiment generation description*
 
 .. _WorkflowTaskDescription: 
 
@@ -965,9 +779,8 @@ Description of Workflow Tasks
 .. _WorkflowTasksFig:
 
 .. figure:: _static/FV3LAM_wflow_flowchart_v2.png
-   :alt: Flowchart of the workflow tasks. If the make_grid, make_orog, and make_sfc_climo tasks are toggled off, they will not be run. If toggled on, make_grid, make_orog, and make_sfc_climo will run consecutively by calling the corresponding exregional script in the regional_workflow/scripts directory. The get_ics, get_lbcs, make_ics, make_lbcs, and run_fcst tasks call their respective exregional scripts. The run_post task will run, and if METplus verification tasks have been configured, those will run during post-processing by calling their exregional scripts. 
 
-   *Flowchart of the workflow tasks*
+    *Flowchart of the workflow tasks*
 
 
 The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workflow/jobs/JREGIONAL_[task name]``) in the prescribed order when the experiment is launched via the ``launch_FV3LAM_wflow.sh`` script or the ``rocotorun`` command. Each j-job task has its own source script (or "ex-script") named ``exregional_[task name].sh`` in the ``regional_workflow/scripts`` directory. Two database files named ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
@@ -1128,7 +941,7 @@ If the login shell is csh/tcsh, it can be set using:
 
 .. code-block:: console
 
-   setenv EXPTDIR /<path-to-experiment>/<directory_name>
+   setenv EXPTDIR /path-to-experiment/directory
 
 
 Launch the Rocoto Workflow Using a Script
@@ -1291,7 +1104,6 @@ After finishing the experiment, open the crontab using ``crontab -e`` and delete
 
    On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
    
-
 The workflow run is complete when all tasks have "SUCCEEDED", and the rocotostat command outputs a table similar to the one :ref:`above <Success>`.
 
 .. _PlotOutput:
