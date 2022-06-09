@@ -51,7 +51,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
          .. code-block:: console
 
-            module use <path/to/modulefiles/directory>
+            module use modulefiles
             module load build_<platform>_<compiler>
 
          From the top-level ``ufs-srweather-app`` directory, run:
