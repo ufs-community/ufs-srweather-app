@@ -161,7 +161,7 @@ The SRW App supports the use of external model data in :term:`GRIB2`, :term:`NEM
 Unified Post-Processor (UPP)
 --------------------------------
 
-The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ (:term:`UPP`) processes raw output from a variety of numerical weather prediction (:term:`NWP`) models. In the SRW App, it converts data output from netCDF format to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp_v10.1.0/>`__. Output from the UPP can be used with visualization, plotting, and verification packages or for further downstream post-processing (e.g., statistical post-processing techniques).
+The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ (:term:`UPP`) processes raw output from a variety of numerical weather prediction (:term:`NWP`) models. In the SRW App, it converts data output from netCDF format to GRIB2 format. The UPP can also be used to compute a variety of useful diagnostic fields, as described in the `UPP User’s Guide <https://upp.readthedocs.io/en/upp_v10.1.0/>`__. 
 
 METplus Verification Suite
 ------------------------------
@@ -178,9 +178,9 @@ Build System and Workflow
 
 The SRW Application has a portable CMake-based build system that packages together all the components required to build the SRW Application. Once built, users can generate a Rocoto-based workflow that will run each task in the proper sequence (see the `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__ for more on workflow management). Individual workflow tasks can also be run in a stand-alone, command line fashion. 
 
-The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite used for the simulation. 
+The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite used for the simulation. More information on how to do this is available in :numref:`Section %s <UserSpecificConfig>`.
 
-The SRW Application v2.0.0 release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Orion), cloud environments, and generic Linux and MacOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries available in a central location (via :term:`HPC-Stack`). The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms, the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildRunSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
+The SRW Application v2.0.0 release has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Orion), cloud environments, and generic Linux and MacOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries available in a central location (via :term:`HPC-Stack`). The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms (Levels 2-4), the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildRunSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
 
 
 
@@ -193,7 +193,7 @@ Code Repositories and Directory Structure
 
 Hierarchical Repository Structure
 -----------------------------------
-The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather-app`` and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. An umbrella repository is a repository that houses external code, called "externals," from additional repositories. The SRW Application includes the ``manage_externals`` tool and a configuration file called ``Externals.cfg``, which describes the external repositories associated with the SRW App umbrella repository (see :numref:`Table %s <top_level_repos>`).
+The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather-app`` and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. An umbrella repository is a repository that houses external code, called "externals," from additional repositories. The SRW Application includes the ``manage_externals`` tool and a configuration file called ``Externals.cfg``, which tags the appropriate versions of the external repositories associated with the SRW App (see :numref:`Table %s <top_level_repos>`).
 
 .. _top_level_repos:
 
@@ -221,14 +221,15 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
 
 The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/release-public-v3/CodeOverview.html>`__.
 
-Note that the prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. :numref:`Chapter %s <InstallBuildHPCstack>` contains details on installing the HPC-Stack. 
+.. note::
+   The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. :numref:`Chapter %s <InstallBuildHPCstack>` contains details on installing the HPC-Stack. 
 
 
 .. _TopLevelDirStructure:
 
 Directory Structure
 ----------------------
-The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by the ``local_path`` settings contained within the ``Externals.cfg`` file. After ``manage_externals/checkout_externals`` is run (:numref:`Step %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some directories have been removed for brevity.
+The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by the ``local_path`` settings contained within the ``Externals.cfg`` file. After ``manage_externals/checkout_externals`` is run (see :numref:`Section %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some directories have been removed for brevity.
 
 .. code-block:: console
 
@@ -237,9 +238,11 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
    ├── (build)
    ├── docs  
    │     └── UsersGuide
+   ├── etc
    ├── (include)
    ├── (lib)
    ├── manage_externals
+   ├── modulefiles
    ├── regional_workflow
    │     ├── docs
    │     │     └── UsersGuide
@@ -255,23 +258,24 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
    │          ├── templates
    │          └── wrappers
    ├── (share)
-   └── src
-        ├── UPP
-        │     ├── parm
-        │     └── sorc
-        │          └── ncep_post.fd
-        ├── UFS_UTILS
-        │     ├── sorc
-        │     │    ├── chgres_cube.fd
-        │     │    ├── fre-nctools.fd
-        |     │    ├── grid_tools.fd
-        │     │    ├── orog_mask_tools.fd
-        │     │    └── sfc_climo_gen.fd
-        │     └── ush
-        └── ufs_weather_model
-    	     └── FV3
-                  ├── atmos_cubed_sphere
-                  └── ccpp
+   ├── src
+   │    ├── UPP
+   │    │     ├── parm
+   │    │     └── sorc
+   │    │          └── ncep_post.fd
+   │    ├── UFS_UTILS
+   │    │     ├── sorc
+   │    │     │    ├── chgres_cube.fd
+   │    │     │    ├── fre-nctools.fd
+   │    │     │    ├── grid_tools.fd
+   │    │     │    ├── orog_mask_tools.fd
+   │    │     │    └── sfc_climo_gen.fd
+   │    │     └── ush
+   │    └── ufs-weather-model
+   │	     └── FV3
+   │              ├── atmos_cubed_sphere
+   │              └── ccpp
+   └── test
 
 Regional Workflow Sub-Directories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -284,8 +288,6 @@ A number of sub-directories are created under the ``regional_workflow`` director
    +-------------------------+---------------------------------------------------------+
    | **Directory Name**      | **Description**                                         |
    +=========================+=========================================================+
-   | docs                    | User's Guide Documentation                              |
-   +-------------------------+---------------------------------------------------------+
    | jobs                    | J-job scripts launched by Rocoto                        |
    +-------------------------+---------------------------------------------------------+
    | modulefiles             | Files used to load modules needed for building and      |
@@ -302,7 +304,7 @@ A number of sub-directories are created under the ``regional_workflow`` director
 
 Experiment Directory Structure
 --------------------------------
-When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` script (:numref:`Step %s <GenerateWorkflow>`), a user-defined experimental directory (``EXPTDIR``) is created based on information specified in the ``config.sh`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before running the experiment workflow.
+When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` script (:numref:`Section %s <GenerateWorkflow>`), a user-defined experimental directory (``EXPTDIR``) is created based on information specified in the ``config.sh`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before running the experiment workflow.
 
 .. _ExptDirStructure:
 
@@ -314,29 +316,29 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    +===========================+==============================================================================================================+
    | config.sh                 | User-specified configuration file, see :numref:`Section %s <UserSpecificConfig>`                             |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-   | data_table                | Cycle-independent input file (empty)                                                                         |
+   | data_table                | :term:`Cycle-independent` input file (empty)                                                                 |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-   | field_table               | Tracers in the `forecast model                                                                               |
+   | field_table               | :term:`Tracers` in the `forecast model                                                                       |
    |                           | <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#field-table-file>`__       |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                          |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-   | input.nml                 | Namelist for the `UFS Weather model                                                                          |
+   | input.nml                 | :term:`Namelist` for the `UFS Weather Model                                                                  |
    |                           | <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#namelist-file-input-nml>`__| 
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | launch_FV3LAM_wflow.sh    | Symlink to the shell script of                                                                               |
-   |                           | ``ufs-srweather-app/regional_workflow/ush/launch_FV3LAM_wflow.sh``                                           |
-   |                           | that can be used to (re)launch the Rocoto workflow.                                                          |
+   |                           | ``ufs-srweather-app/regional_workflow/ush/launch_FV3LAM_wflow.sh``,                                          |
+   |                           | which can be used to (re)launch the Rocoto workflow.                                                         |
    |                           | Each time this script is called, it appends to a log                                                         |
    |                           | file named ``log.launch_FV3LAM_wflow``.                                                                      |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | log.generate_FV3LAM_wflow | Log of the output from the experiment generation script                                                      |
-   |                           | ``generate_FV3LAM_wflow.sh``                                                                                 |
+   |                           | (``generate_FV3LAM_wflow.sh``)                                                                               |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | nems.configure            | See `NEMS configuration file                                                                                 |
-   |                           | <hhttps://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#nems-configure-file>`__   |
+   |                           | <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#nems-configure-file>`__    |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-   | suite_{CCPP}.xml          | CCPP suite definition file used by the forecast model                                                        |
+   | suite_{CCPP}.xml          | :term:`CCPP` suite definition file used by the forecast model                                                |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | var_defns.sh              | Shell script defining the experiment parameters. It contains all                                             |
    |                           | of the primary parameters specified in the default and                                                       |
@@ -349,7 +351,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    |  YYYYMMDDHH               | Cycle directory (empty)                                                                                      |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
 
-In addition, running the SRW App in *community* mode creates the ``fix_am`` and ``fix_lam`` directories in ``EXPTDIR``. The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files after the grid, orography, and/or surface climatology generation tasks are run. 
+In addition, running the SRW App in *community* mode creates the ``fix_am`` and ``fix_lam`` directories (see :numref:`Table %s <FixDirectories>`) in ``$EXPTDIR``. The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files after the grid, orography, and/or surface climatology generation tasks run. 
 
 .. _FixDirectories:
 
@@ -364,13 +366,11 @@ In addition, running the SRW App in *community* mode creates the ``fix_am`` and 
    +-------------------------+----------------------------------------------------------+
    | fix_lam                 | Directory containing the regional fix (time-independent) |
    |                         | data files that describe the regional grid, orography,   |
-   |                         | and various surface climatology fields as well as        |
+   |                         | and various surface climatology fields, as well as       |
    |                         | symlinks to pre-generated files.                         |
    +-------------------------+----------------------------------------------------------+
 
-Once the workflow is launched with the ``launch_FV3LAM_wflow.sh`` script, a log file named
-``log.launch_FV3LAM_wflow`` will be created (unless it already exists) in ``EXPTDIR``. The first several workflow tasks (i.e., ``make_grid``, ``make_orog``, ``make_sfc_climo``, ``get_extrn_ics``, and ``get_extrn_lbc``) are preprocessing tasks, which result in the creation of new files and
-sub-directories, described in :numref:`Table %s <CreatedByWorkflow>`.
+Once the Rocoto workflow is launched, several files and directories are generated. A log file named ``log.launch_FV3LAM_wflow`` will be created (unless it already exists) in ``$EXPTDIR``. The first several workflow tasks (i.e., ``make_grid``, ``make_orog``, ``make_sfc_climo``, ``get_extrn_ics``, and ``get_extrn_lbc``) are preprocessing tasks, and these tasks also result in the creation of new files and sub-directories, described in :numref:`Table %s <CreatedByWorkflow>`.
 
 .. _CreatedByWorkflow:
 
@@ -394,8 +394,8 @@ sub-directories, described in :numref:`Table %s <CreatedByWorkflow>`.
    |                           | for the experiment                                                 |
    +---------------------------+--------------------------------------------------------------------+
    | log                       | Contains log files generated by the overall workflow and by its    |
-   |                           | various tasks. Look in these files to trace why a task may have    |
-   |                           | failed.                                                            |
+   |                           | various tasks. Look in these files to determine why a task may     |
+   |                           | have failed.                                                       |
    +---------------------------+--------------------------------------------------------------------+
    | orog                      | Directory generated by the ``make_orog`` task containing the       |
    |                           | orography files for the experiment                                 |
@@ -455,16 +455,16 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | Stochastic Physics         | https://stochastic-physics.readthedocs.io/en/release-public-v3/                 |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | ESMF manual                | https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/                |
+   | ESMF manual                | http://earthsystemmodeling.org/docs/release/ESMF_8_2_0/ESMF_usrdoc/             |
    +----------------------------+---------------------------------------------------------------------------------+
    | Unified Post Processor     | https://upp.readthedocs.io/en/upp_v10.1.0/                                      |
    +----------------------------+---------------------------------------------------------------------------------+
 
 ..
-   COMMENT: Update UFS_UTILS links.
+   COMMENT: Update UFS_UTILS links. Update ESMF link if we go with v8.3.0: http://earthsystemmodeling.org/docs/release/ESMF_8_3_0/ESMF_usrdoc/
 
 The UFS community is encouraged to contribute to the development effort of all related
-utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`.
+utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`. Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository or the `regional_workflow <https://github.com/ufs-community/regional_workflow>`__ repository should follow the guidelines contained in the :ref:`SRW App Contributor's Guide <ContributorsGuide>`.
 
 Future Direction
 =================
