@@ -334,6 +334,12 @@ Check the batch script output file in your experiment directory for a “SUCCESS
    |            |                        |                | forecast hour)             |
    +------------+------------------------+----------------+----------------------------+
 
+Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory. To see how the experiment is progressing, users can also check the end of the ``log.launch_FV3LAM_wflow`` file from the command line:
+
+.. code-block:: console
+
+   tail -n 40 log.launch_FV3LAM_wflow
+
 .. hint:: 
    If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA Cloud systems can be viewed in the :numref:`Step %s <WorkOnHPC>` as an example. 
 
