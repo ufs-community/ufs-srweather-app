@@ -126,17 +126,15 @@ Output files from each workflow task are written to a subdirectory within the ex
 Initial and boundary condition files
 ------------------------------------
 The external model data used by ``chgres_cube`` (as part of the pre-processing utilities) are located
-in the experiment directory under ``$EXPTDIR/YYYYMMDDHH/{EXTRN_MDL_NAME_ICS/LBCS}``.
+in the experiment directory under ``$EXPTDIR/YYYYMMDDHH/EXTRN_MDL_NAME/{for_ICS/LBCS}``.
 
 Pre-processing (UFS_UTILS)
 --------------------------
-The files output by the pre-processing utilities reside in the ``INPUT`` directory under the
-experiment run directory ``$EXPTDIR/YYYYMMDDHH/INPUT`` and consist of the following:
+The files output by the other pre-processing utilities reside in the ``INPUT`` directory under the
+experiment directory (``$EXPTDIR/YYYYMMDDHH/INPUT``) and consist of the following:
 
 * ``C403_grid.tile7.halo3.nc``
-* ``gfs_bndy.tile7.000.nc``
-* ``gfs_bndy.tile7.006.nc``
-* ``gfs_bndy.tile7.012.nc``
+* ``gfs_bndy.tile7.HHH.nc``
 * ``gfs_ctrl.nc``
 * ``gfs_data.nc``
 * ``gfs_data.tile7.halo0.nc``
@@ -150,16 +148,16 @@ experiment run directory ``$EXPTDIR/YYYYMMDDHH/INPUT`` and consist of the follow
 * ``tmp_LBCS``
 
 These output files are used as inputs for the UFS Weather Model, and are described in the `UFS Weather Model User's Guide 
-<https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#id8>`__.
+<https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#grid-description-and-initial-condition-files>`__. ``gfs_bndy.tile7.HHH.nc`` refers to a series of IC/LBC files where HHH is the 3-digit hour of the forecast. 
 
 UFS Weather Model
 ------------------
-As stated in :numref:`Section %s <UserSpecificConfig>`, the workflow can be run in 'community' or 'nco' mode, which determines the location and names of the output files. Weather Model output files can also be in :term:`netCDF` or :term:`NEMSIO` format. The output file format is set in the ``model_configure`` file (see :numref:`Table %s <TemplateFiles>`) using the ``output_file`` variable. At this time, due to limitations in the post-processing component, only netCDF output is recommended for the SRW Application.
+As stated in :numref:`Section %s <UserSpecificConfig>`, the workflow can be run in "community" mode or "nco" mode, which determines the location and names of the output files. Weather Model output files can be in :term:`netCDF` or :term:`NEMSIO` format. The output file format is set in the ``model_configure`` file (see :numref:`Table %s <TemplateFiles>`) using the ``output_file`` variable. At this time, due to limitations in the post-processing component, only netCDF output is recommended as output for the SRW Application.
 
 .. note::
-   The fully supported options for this release include running in 'community' mode with netCDF-formatted output files.
+   The fully supported options for this release include running in "community" mode with netCDF-formatted output files.
 
-In this case, the netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH`` directory. The bases of the file names are specified in the input file ``model_configure`` and are set to the following in the SRW Application:
+In this case, the netCDF output files are written to the ``$EXPTDIR/YYYYMMDDHH`` directory. The bases of the file names are specified in the input file ``model_configure`` and are set to the following in the SRW Application:
 
 * ``dynfHHH.nc``
 * ``phyfHHH.nc``
@@ -171,7 +169,7 @@ Unified Post Processor (UPP)
 ----------------------------
 Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html>`__.
 
-For the SRW Application, the weather model netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH/postprd`` directory and have the naming convention (file->linked to):
+For the SRW Application, the weather model netCDF output files are written to ``$EXPTDIR/YYYYMMDDHH/postprd`` and have the naming convention (file->linked to):
 
 * ``NATLEV_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.natlevf{fhr}.tmXX.grib2``
 * ``PRSLEV_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.prslevf{fhr}.tmXX.grib2``
@@ -190,25 +188,25 @@ UPP Product Output Tables for the UFS SRW LAM Grid:
    * :doc:`3D Native Hybrid Level Fields <SRW_NATLEV_table>`
    * :doc:`3D Pressure Level Fields <SRW_PRSLEV_table>`
 
-Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file that the UPP reads, which is called ``postxconfig-NT-fv3lam.txt`` (default).
+Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
 
-Once you have created the new flat text file reflecting your changes, you will need to modify your ``config.sh`` to point the workflow to the new text file. In your ``config.sh``, set the following:
+After creating the new flat text file to reflect the changes, users will need to modify their ``config.sh`` to point the workflow to the new text file. In ``config.sh``, set the following:
 
 .. code-block:: console
 
    USE_CUSTOM_POST_CONFIG_FILE="TRUE"
    CUSTOM_POST_CONFIG_PATH="</path/to/custom/postxconfig-NT-fv3lam.txt>"
 
-which tells the workflow to use the custom file located in the user-defined path. The path should include the filename. If this is set to true, and the file path is not found, then an error will occur when trying to generate the SRW Application workflow.
+which tells the workflow to use the custom file located in the user-defined path. The path should include the filename. If ``USE_CUSTOM_POST_CONFIG_FILE`` is set to "TRUE", but the file path is not found, then an error will occur when trying to generate the SRW Application workflow.
 
-Users may then start their experiment workflow as usual and the UPP will use the new flat ``*.txt`` file.
+Users may then start their experiment workflow as usual, and the UPP will use the new flat ``*.txt`` file.
 
 .. _SatelliteProducts:
 
 Outputting Satellite Products from UPP
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Synthetic satellite products for several instruments and channels (e.g. GOES 16/17) may be output through the UPP using the Community Radiative Transfer Model (:term:`CRTM`). External CRTM coefficient files, available through the UPP stand-alone release, will need to be manually downloaded before running the workflow. These instructions assume that the UPP configuration file has already been set up to output satellite products.
+Synthetic satellite products for several instruments and channels (e.g., GOES 16/17) may be output through the UPP using the Community Radiative Transfer Model (:term:`CRTM`). External CRTM coefficient files, available through the UPP stand-alone release, will need to be manually downloaded before running the workflow. These instructions assume that the UPP configuration file has already been set up to output satellite products.
 
 Download and unpack the external files:
 
@@ -223,12 +221,12 @@ Modify the ``config.sh`` file to include the following lines:
 .. code-block:: console
 
    USE_CRTM="TRUE"
-   CRTM_DIR="/path/to/top/crtm/dir"
+   CRTM_DIR="</path/to/top/crtm/dir>"
 
 By setting ``USE_CRTM`` to "TRUE", the workflow will use the path defined in ``CRTM_DIR`` to link the necessary coefficient files to the working directory at runtime. Otherwise, it is assumed that no satellite fields are being requested in the UPP configuration. ``CRTM_DIR`` should point to the top CRTM directory where the fix files are located.
 
 .. note::
-   Dependencies for outputting synthetic satellite products may exist based on model configuration (e.g. model physics).
+   Dependencies for outputting synthetic satellite products may exist based on model configuration (e.g., model physics).
 
 
 .. _DownloadingStagingInput:
@@ -249,15 +247,15 @@ Static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz
    tar -xzf fix_data.tgz
 
-Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.0.0 data. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the data bucket. 
+Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.0.0 fix file data. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the data bucket. 
 
-The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.sh``. Add the following code to the ``config.sh`` file and alter the variable paths accordingly:
+The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.sh``. Add the following code to the ``config.sh`` file, and alter the variable paths accordingly:
 
 .. code-block:: console
 
-   FIXgsm="/path-to/fix/fix_am"
-   TOPO_DIR="/path-to/fix/fix_am/fix_orog"
-   SFC_CLIMO_INPUT_DIR="/path-to/fix_am/fix/sfc_climo/"
+   FIXgsm="</path-to/fix/fix_am>"
+   TOPO_DIR="</path-to/fix/fix_am/fix_orog>"
+   SFC_CLIMO_INPUT_DIR="</path-to/fix_am/fix/sfc_climo/>"
 
 .. _InitialConditions:
 
@@ -282,8 +280,8 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
 .. code-block:: console
 
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH/ICS>"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH/LBCS>"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
 
 These last two variables describe where the :term:`IC` and :term:`LBC` file directories are located, respectively. For ease of reusing ``config.sh`` across experiments, it is recommended that users set up the raw :term:`IC/LBC` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), date (in ``YYYYMMDDHH`` format) and ICS or LBCS directory type. For example: ``/path-to/input_model_data/FV3GFS/2019061518/ICS`` and ``/path-to/input_model_data/FV3GFS/2019061518/LBCS``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
