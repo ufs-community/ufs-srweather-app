@@ -19,7 +19,7 @@ Initial and Boundary Condition Files
 The external model files needed for initializing an experiment can be obtained in a number of
 ways, including: 
 
-   * pulled directly from `NOMADS <https://nomads.ncep.noaa.gov/pub/data/nccf/com/>`_ (limited timespan for data availability),
+   * pulled directly from `NOMADS <https://nomads.ncep.noaa.gov/pub/data/nccf/com/>`__ (limited timespan for data availability),
    * pulled from the NOAA High Performance Storage System (HPSS) during the workflow execution (requires user access), or 
    * obtained and staged by the user from a different source. 
 
@@ -27,7 +27,7 @@ The data format for these files can be :term:`GRIB2` or :term:`NEMSIO`. More inf
 
 Pre-processing (UFS_UTILS)
 ---------------------------
-When a user generates the regional workflow, as described in :numref:`Step %s <GenerateWorkflowC>` of the Quick Start Guide, the workflow generation script links the input data for the pre-processing utilities to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the `UFS_UTILS Documentation <https://noaa-emcufs-utils.readthedocs.io/en/latest/>`__.
+When a user generates the regional workflow, as described in :numref:`Section %s <GenerateWorkflow>`, the workflow generation script links the input data for the pre-processing utilities to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the `UFS_UTILS Documentation <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_7_0/>`__.
 
 ..
    COMMENT: Update link! (UFS_UTILS)
@@ -35,25 +35,22 @@ When a user generates the regional workflow, as described in :numref:`Step %s <G
 UFS Weather Model
 -----------------
 The input files for the Weather Model include both static (fixed) files and grid- and date-specific files (terrain, initial conditions, boundary conditions, etc). The static fix files
-must be staged by the user unless the user is running on a `Level 1/pre-configured <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform, in which case users can link to the existing copy of the data on their machine. See :numref:`Section %s <StaticFixFiles>` for instructions. The workflow scripts link the static, grid, and date-specific files in the experiment directory. An extensive description of the input files for the Weather Model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html>`__. The namelists and configuration files for the SRW Application are created from templates by the workflow generation script, as described in :numref:`Section %s <WorkflowTemplates>`.
-
-..
-   COMMENT: Update link! (for WM)
+must be staged by the user unless the user is running on a `Level 1/pre-configured <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform, in which case users can link to the existing copy of the data on their machine. See :numref:`Section %s <StaticFixFiles>` for instructions. The workflow scripts link the static, grid, and date-specific files in the experiment directory. An extensive description of the input files for the Weather Model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html>`__. The namelists and configuration files for the SRW Application are created from templates by the workflow generation script, as described in :numref:`Section %s <WorkflowTemplates>`.
 
 Unified Post Processor (UPP)
 ----------------------------
 Documentation for the UPP input files can be found in the `UPP User's Guide
-<https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html>`__.
+<https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html#input-files>`__.
 
 .. _WorkflowTemplates:
 
 Workflow
---------
+---------
 The SRW Application uses a series of template files, combined with user-selected settings,
 to create the required namelists and parameter files needed by the Application workflow. (See :numref:`Figure %s <WorkflowGeneration>` for a visual summary of the workflow generation process, including template use.) These templates can be reviewed to see which defaults are used and where configuration parameters from the ``config.sh`` file are assigned.
 
 List of Template Files
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 The template files for the SRW Application are located in ``regional_workflow/ush/templates``
 and are shown in :numref:`Table %s <TemplateFiles>`.
 
@@ -103,14 +100,14 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    | README.xml_templating.md    | Instructions for Rocoto XML templating with Jinja.           |
    +-----------------------------+--------------------------------------------------------------+
 
-Additional information related to ``diag_table_[CCPP]``, ``field_table_[CCPP]``, ``input.nml.FV3``, ``model_conigure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#input-files>`__, while information on ``regional_grid.nml`` can be found in the `UFS_UTILS User's Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs-v2.0.0/>`__.
+Additional information related to ``diag_table_[CCPP]``, ``field_table_[CCPP]``, ``input.nml.FV3``, ``model_conigure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#model-configuration-files>`__, while information on ``regional_grid.nml`` can be found in the `UFS_UTILS User's Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_7_0/>`__.
 
 ..
-   COMMENT: Update links! (for WM & UFS_UTILS)
+   COMMENT: Update links! (for UFS_UTILS)
 
 Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-:numref:`Figure %s <MigratoryRoute>` shows how the input files in the template directory (``ufs-srweather-app/regional_workflow/ush/templates/``) flow to the experiment directory. First, the CCPP physics suite is specified in the configuration file. The template input files corresponding to the selected physics suite, such as ``field_table_[CCPP]`` and ``nems.configure_[CCPP]``, are copied to the experiment directory (``$EXPTDIR``). Additionally, the namelist file of the Weather Model (``input.nml``) is created from the ``input.nml.FV3`` and ``FV3.input.yml`` files by running the workflow generation script. While running the ``RUN_FCST`` task in the regional workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`, the ``field_table``, ``nems.configure``, and ``input.nml`` files, located in ``$EXPTDIR``, are linked to the cycle directory ``$CYCLE_DIR``. Additionally, ``diag_table`` and ``model_configure`` are copied from the ``templates`` directory. Finally, these files are updated with the variables specified in ``var_defn.sh``.
+:numref:`Figure %s <MigratoryRoute>` shows how the input files in the template directory (``ufs-srweather-app/regional_workflow/ush/templates/``) flow to the experiment directory. First, the CCPP physics suite is specified in the configuration file. The template input files corresponding to the selected physics suite, such as ``field_table_[CCPP]`` and ``nems.configure_[CCPP]``, are copied to the experiment directory (``$EXPTDIR``). Additionally, the namelist file of the Weather Model (``input.nml``) is created from the ``input.nml.FV3`` and ``FV3.input.yml`` files by running the workflow generation script. While running the ``RUN_FCST`` task in the regional workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`, the ``field_table``, ``nems.configure``, and ``input.nml`` files, located in ``$EXPTDIR``, are linked to the cycle directory (``$CYCLE_DIR``). Additionally, ``diag_table`` and ``model_configure`` are copied from the ``templates`` directory. Finally, these files are updated with the variables specified in ``var_defn.sh``.
 
 .. _MigratoryRoute:
 
@@ -124,18 +121,17 @@ Migratory Route of the Input Files in the Workflow
 Output Files
 ==============
 
-The location of the output files written to disk is within a subdirectory of the experiment directory,
-``EXPTDIR/YYYYMMDDHH``, named based on the settings in ``config.sh``. 
+Output files from each workflow task are written to a subdirectory within the experiment directory (``$EXPTDIR/YYYYMMDDHH``), named based on the settings in ``config.sh``. 
 
 Initial and boundary condition files
 ------------------------------------
 The external model data used by ``chgres_cube`` (as part of the pre-processing utilities) are located
-in the experiment run directory under ``EXPTDIR/YYYYMMDDHH/{EXTRN_MDL_NAME_ICS/LBCS}``.
+in the experiment directory under ``$EXPTDIR/YYYYMMDDHH/{EXTRN_MDL_NAME_ICS/LBCS}``.
 
 Pre-processing (UFS_UTILS)
 --------------------------
 The files output by the pre-processing utilities reside in the ``INPUT`` directory under the
-experiment run directory ``EXPTDIR/YYYYMMDDHH/INPUT`` and consist of the following:
+experiment run directory ``$EXPTDIR/YYYYMMDDHH/INPUT`` and consist of the following:
 
 * ``C403_grid.tile7.halo3.nc``
 * ``gfs_bndy.tile7.000.nc``
@@ -154,11 +150,7 @@ experiment run directory ``EXPTDIR/YYYYMMDDHH/INPUT`` and consist of the followi
 * ``tmp_LBCS``
 
 These output files are used as inputs for the UFS Weather Model, and are described in the `UFS Weather Model User's Guide 
-<https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#input-files>`__.
-
-..
-   COMMENT: Update link! Change link above (structure of "latest" is significantly different)
-   Original: https://ufs-weather-model.readthedocs.io/en/ufs-v2.0.0/InputsOutputs.html#grid-description-and-initial-condition-files
+<https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#id8>`__.
 
 UFS Weather Model
 ------------------
@@ -173,10 +165,7 @@ In this case, the netCDF output files are written to the ``EXPTDIR/YYYYMMDDHH`` 
 * ``phyfHHH.nc``
 
 where HHH corresponds to the 3-digit forecast hour (e.g., ``dynf006.nc`` for the 6th hour of the forecast). Additional details may be found in the `UFS Weather Model User's Guide
-<https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#output-files>`__.
-
-..
-   COMMENT: Update link!
+<https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#output-files>`__.
 
 Unified Post Processor (UPP)
 ----------------------------
@@ -337,10 +326,7 @@ Default Initial and Lateral Boundary Conditions
 -----------------------------------------------
 The default initial and lateral boundary condition files are set to be a severe weather case
 from 20190615 at 18 UTC. FV3GFS GRIB2 files are the default model and file format. A tar file
-(``gst_model_data.tar.gz``) containing the model data for this case is available in the `UFS SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__. 
-
-..
-   COMMENT: Update tar file name later.
+(``gst_data.tgz``) containing the model data for this case is available in the `UFS SRW App Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#current_srw_release_data/>`__. 
 
 Running the App for Different Dates
 -----------------------------------
