@@ -10,7 +10,8 @@ The "out-of-the-box" SRW App case described in this User's Guide builds a weathe
 
 .. attention::
 
-   All UFS applications support `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
+   * All UFS applications support `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
+   * This chapter of the User's Guide should **only** be used for container builds. See :numref:`Section %s <NCQuickstart>` for a Quickstart Guide to building without a container (including on NOAA Cloud systems) or :numref:`Section %s <BuildRunSRW>` for a detailed guide to building the SRW App without a container.
 
 .. _DownloadCodeC:
 
@@ -38,6 +39,7 @@ On NOAA Cloud systems, certain environment variables must be set *before* buildi
    sudo su
    export SINGULARITY_CACHEDIR=/lustre/cache
    export SINGULARITY_TEMPDIR=/lustre/tmp
+   exit
 
 If the ``cache`` and ``tmp`` directories do not exist already, they must be created with a ``mkdir`` command. 
 

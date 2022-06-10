@@ -30,6 +30,9 @@ Platform Environment
 ``ACCOUNT``: (Default: "project_name")
    The account under which users submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
 
+``COMPILER``: (Default: "intel")
+   Type of compiler invoked during the build step. Currently, this must be set manually (i.e., it is not inherited from the build system in the ``ufs-srweather-app`` directory). Valid values: ``"intel"`` | ``"gnu"``
+
 ``WORKFLOW_MANAGER``: (Default: "none")
    The workflow manager to use (e.g., "ROCOTO"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "ROCOTO." Valid values: ``"rocoto"`` | ``"none"``
 
@@ -503,7 +506,7 @@ Parameters for Stochastically Perturbed Parameterizations (SPP)
 SPP perturbs specific tuning parameters within a physics :term:`parameterization` (unlike :ref:`SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
 .. note::
-   SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. Among the supported physics suites, SPP can be used with the ``FV3_HRRR`` option for ``CCPP_PHYS_SUITE``.
+   SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. Among the supported physics suites, the full set of parameterizations can only be used with the ``FV3_HRRR`` option for ``CCPP_PHYS_SUITE``.
 
 ``DO_SPP``: (Default: "false")
    Flag to turn SPP on or off. SPP perturbs parameters or variables with unknown or uncertain magnitudes within the physics code based on ranges provided by physics experts.
@@ -571,7 +574,7 @@ Grid Generation Parameters
 
    * **"ESGgrid":** The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. 
 
-   * **"GFDLgrid":** The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" grid generation method is the legacy grid generation method. It is not supported in *all* predefined domains. 
+   * **"GFDLgrid":** The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" method is the legacy grid generation method. It is not supported in *all* predefined domains. 
 
 .. attention::
 
@@ -579,14 +582,14 @@ Grid Generation Parameters
 
 .. note::
 
-   If the experiment uses a **user-defined grid** (i.e. if ``PREDEF_GRID_NAME`` is set to a null string), then ``GRID_GEN_METHOD`` must be set in the experiment configuration file. Otherwise, the experiment generation will fail because the generation scripts check to ensure that the grid name is set to a non-empty string before creating the experiment directory.
+   If the experiment uses a **user-defined grid** (i.e., if ``PREDEF_GRID_NAME`` is set to a null string), then ``GRID_GEN_METHOD`` must be set in the experiment configuration file. Otherwise, the experiment generation will fail because the generation scripts check to ensure that the grid name is set to a non-empty string before creating the experiment directory.
 
 .. _ESGgrid:
 
 ESGgrid Settings
 -------------------
 
-The following parameters must be set if using the "ESGgrid" method of generating a regional grid (i.e., when ``GRID_GEN_METHOD="ESGgrid"``). 
+The following parameters must be set if using the "ESGgrid" method to generate a regional grid (i.e., when ``GRID_GEN_METHOD="ESGgrid"``). 
 
 ``ESGgrid_LON_CTR``: (Default: "")
    The longitude of the center of the grid (in degrees).
@@ -606,25 +609,21 @@ The following parameters must be set if using the "ESGgrid" method of generating
 ``ESGgrid_NY``: (Default: "")
    The number of cells in the meridional direction on the regional grid.
 
-``ESGgrid_WIDE_HALO_WIDTH``: (Default: "")
-   The width (in number of grid cells) of the :term:`halo` to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model. 
-
 ``ESGgrid_PAZI``: (Default: "")
    The rotational parameter for the "ESGgrid" (in degrees).
+
+``ESGgrid_WIDE_HALO_WIDTH``: (Default: "")
+   The width (in number of grid cells) of the :term:`halo` to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model. 
 
 .. _WideHalo:
 
 .. note::
-   A :term:`halo` is the strip of cells surrounding the regional grid; the halo is used to feed in the lateral boundary conditions to the grid. The forecast model requires **grid** files containing 3-cell- and 4-cell-wide halos and **orography** files with 0-cell- and 3-cell- wide halos. In order to generate grid and orography files with appropriately-sized halos, the grid and orography tasks create preliminary files with halos around the regional domain of width ``ESGgrid_WIDE_HALO_WIDTH`` cells. The files are then read in and "shaved" down to obtain grid files with 3-cell-wide and 4-cell-wide halos and orography files with 0-cell-wide and 3-cell-wide halos. The original halo that gets shaved down is referred to as the "wide" halo because it is wider than the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos that we eventually end up with. Note that the grid and orography files with the wide halo are only needed as intermediates in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos; they are not needed by the forecast model.
-
-..
-   COMMENT: There's a note that we "probably don't need to make ESGgrid_WIDE_HALO_WIDTH a user-specified variable.  Just set it in the function set_gridparams_ESGgrid.sh". Has this been done? I thought there was a default value of 6. Does this come from set_gridparams_ESGgrid.sh? Will it overwirte what's added here?
-
+   A :term:`halo` is the strip of cells surrounding the regional grid; the halo is used to feed in the lateral boundary conditions to the grid. The forecast model requires **grid** files containing 3-cell- and 4-cell-wide halos and **orography** files with 0-cell- and 3-cell-wide halos. In order to generate grid and orography files with appropriately-sized halos, the grid and orography tasks create preliminary files with halos around the regional domain of width ``ESGgrid_WIDE_HALO_WIDTH`` cells. The files are then read in and "shaved" down to obtain grid files with 3-cell-wide and 4-cell-wide halos and orography files with 0-cell-wide and 3-cell-wide halos. The original halo that gets shaved down is referred to as the "wide" halo because it is wider than the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos that users eventually end up with. Note that the grid and orography files with the wide halo are only needed as intermediates in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos; they are not needed by the forecast model.
 
 GFDLgrid Settings
 ---------------------
 
-The following parameters must be set if using the "GFDLgrid" method of generating a regional grid (i.e., when ``GRID_GEN_METHOD="GFDLgrid"``). Note that the regional grid is defined with respect to a "parent" global cubed-sphere grid. Thus, all the parameters for a global cubed-sphere grid must be specified even though the model equations are integrated only on the regional grid. Tile 6 has arbitrarily been chosen as the tile to use to orient the global parent grid on the sphere (Earth). For convenience, the regional grid is denoted as "tile 7" even though it is embedded within tile 6 (i.e., it doesn't extend beyond the boundary of tile 6). Its exact location within tile 6 is determined by specifying the starting and ending i- and j-indices of the regional grid on tile 6, where i is the grid index in the x direction and j is the grid index in the y direction. All of this information is set in the variables below. 
+The following parameters must be set if using the "GFDLgrid" method to generate a regional grid (i.e., when ``GRID_GEN_METHOD="GFDLgrid"``). Note that the regional grid is defined with respect to a "parent" global cubed-sphere grid. Thus, all the parameters for a global cubed-sphere grid must be specified even though the model equations are integrated only on the regional grid. Tile 6 has arbitrarily been chosen as the tile to use to orient the global parent grid on the sphere (Earth). For convenience, the regional grid is denoted as "tile 7" even though it is embedded within tile 6 (i.e., it doesn't extend beyond the boundary of tile 6). Its exact location within tile 6 is determined by specifying the starting and ending i- and j-indices of the regional grid on tile 6, where *i* is the grid index in the x direction and *j* is the grid index in the y direction. All of this information is set in the variables below. 
 
 ``GFDLgrid_LON_T6_CTR``: (Default: "")
    Longitude of the center of tile 6 (in degrees).
@@ -636,7 +635,7 @@ The following parameters must be set if using the "GFDLgrid" method of generatin
    Number of points in either of the two horizontal directions (x and y) on each tile of the parent global cubed-sphere grid. Valid values: ``"48"`` | ``"96"`` | ``"192"`` | ``"384"`` | ``"768"`` | ``"1152"`` | ``"3072"``
 
    .. note::
-      ``GFDLgrid_RES`` is a misnomer because it specifies *number* of grid cells, not grid size (in meters or kilometers). However, we keep this name in order to remain consistent with the usage of the word "resolution" in the global forecast model and auxiliary codes. The mapping from ``GFDLgrid_RES`` to a nominal resolution (grid cell size) for several values of ``GFDLgrid_RES`` is as follows (assuming a uniform global grid, i.e., with Schmidt stretch factor ``GFDLgrid_STRETCH_FAC="1"``):
+      ``GFDLgrid_RES`` is a misnomer because it specifies *number* of grid cells, not grid size (in meters or kilometers). However, we keep this name in order to remain consistent with the usage of the word "resolution" in the global forecast model and auxiliary codes. The mapping from ``GFDLgrid_RES`` to a nominal resolution (grid cell size) for several values of ``GFDLgrid_RES`` is as follows (assuming a uniform global grid, i.e., with Schmidt stretch factor of 1: ``GFDLgrid_STRETCH_FAC="1"``):
       
          +----------------+--------------------+
          | GFDLgrid_RES   | typical cell size  |
@@ -656,7 +655,7 @@ The following parameters must be set if using the "GFDLgrid" method of generatin
 
 
 ``GFDLgrid_STRETCH_FAC``: (Default: "")
-   Stretching factor used in the Schmidt transformation applied to the parent cubed-sphere grid. Setting the Schmidt stretching factor (``GFDLgrid_STRETCH_FAC``) to a value greater than 1 shrinks tile 6, while setting it to a value less than 1 (but still greater than 0) expands it. The remaining 5 tiles change shape as necessary to maintain global coverage of the grid.
+   Stretching factor used in the Schmidt transformation applied to the parent cubed-sphere grid. Setting the Schmidt stretching factor to a value greater than 1 shrinks tile 6, while setting it to a value less than 1 (but still greater than 0) expands it. The remaining 5 tiles change shape as necessary to maintain global coverage of the grid.
 
 ``GFDLgrid_REFINE_RATIO``: (Default: "")
    Cell refinement ratio for the regional grid. It refers to the number of cells in either the x or y direction on the regional grid (tile 7) that abut one cell on its parent tile (tile 6).
@@ -674,7 +673,7 @@ The following parameters must be set if using the "GFDLgrid" method of generatin
    j-index on tile 6 at which the regional grid (tile 7) ends.
 
 ``GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES``: (Default: "")
-   Flag that determines the file naming convention to use for grid, orography, and surface climatology files (or, if using pregenerated files, the naming convention that was used to name these files).  These files usually start with the string ``"C${RES}_"``, where ``RES`` is an integer. In the global forecast model, ``RES`` is the number of points in each of the two horizontal directions (x and y) on each tile of the global grid (defined here as ``GFDLgrid_RES``). If this flag is set to "TRUE", ``RES`` will be set to ``GFDLgrid_RES`` just as in the global forecast model. If it is set to "FALSE", we calculate (in the grid generation task) an "equivalent global uniform cubed-sphere resolution" -- call it ``RES_EQUIV`` -- and then set ``RES`` equal to it. ``RES_EQUIV`` is the number of grid points in each of the x and y directions on each tile that a global UNIFORM (i.e., stretch factor of 1) cubed-sphere grid would need to have in order to have the same average grid size as the regional grid. This is a more useful indicator of the grid size because it takes into account the effects of ``GFDLgrid_RES``, ``GFDLgrid_STRETCH_FAC``, and ``GFDLgrid_REFINE_RATIO`` in determining the regional grid's typical grid size, whereas simply setting RES to ``GFDLgrid_RES`` doesn't take into account the effects of ``GFDLgrid_STRETCH_FAC`` and ``GFDLgrid_REFINE_RATIO`` on the regional grid's resolution. Nevertheless, some users still prefer to use ``GFDLgrid_RES`` in the file names, so we allow for that here by setting this flag to "TRUE".
+   Flag that determines the file naming convention to use for grid, orography, and surface climatology files (or, if using pregenerated files, the naming convention that was used to name these files).  These files usually start with the string ``"C${RES}_"``, where ``RES`` is an integer. In the global forecast model, ``RES`` is the number of points in each of the two horizontal directions (x and y) on each tile of the global grid (defined here as ``GFDLgrid_RES``). If this flag is set to "TRUE", ``RES`` will be set to ``GFDLgrid_RES`` just as in the global forecast model. If it is set to "FALSE", we calculate (in the grid generation task) an "equivalent global uniform cubed-sphere resolution" --- call it ``RES_EQUIV`` --- and then set ``RES`` equal to it. ``RES_EQUIV`` is the number of grid points in each of the x and y directions on each tile that a global uniform cubed-sphere grid (i.e., stretch factor of 1) would need to have in order to have the same average grid size as the regional grid. This is a more useful indicator of the grid size because it takes into account the effects of ``GFDLgrid_RES``, ``GFDLgrid_STRETCH_FAC``, and ``GFDLgrid_REFINE_RATIO`` in determining the regional grid's typical grid size, whereas simply setting RES to ``GFDLgrid_RES`` doesn't take into account the effects of ``GFDLgrid_STRETCH_FAC`` and ``GFDLgrid_REFINE_RATIO`` on the regional grid's resolution. Nevertheless, some users still prefer to use ``GFDLgrid_RES`` in the file names, so we allow for that here by setting this flag to "TRUE".
 
 Computational Forecast Parameters
 =================================
@@ -698,17 +697,17 @@ Write-Component (Quilting) Parameters
 ======================================
 
 .. note::
-   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write-component grid** before writing them to an output file. The output files written by the UFS Weather Model model use an Earth System Modeling Framework (ESMF) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#model-configure-file>`__ of the UFS Weather Model documentation. 
+   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write-component grid** before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (:term:`ESMF`) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#model-configure-file>`__ of the UFS Weather Model documentation. 
 
 ``QUILTING``: (Default: "TRUE")
 
-.. attention::
-   The regional grid requires the use of the write component, so users generally should not need to change the default value for ``QUILTING``. 
+   .. attention::
+      The regional grid requires the use of the write component, so users generally should not need to change the default value for ``QUILTING``. 
 
    Flag that determines whether to use the write component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-digit forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. For example, the output files for the 3rd hour of the forecast would be ``dynf$003.nc`` and ``phyf$003.nc``. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to "TRUE" when running the SRW App. If ``QUILTING`` is set to "FALSE", the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to "TRUE" in the SRW App. 
 
 ``PRINT_ESMF``: (Default: "FALSE")
-   Flag that determines whether to output extra (debugging) information from ESMF routines. Must be "TRUE" or "FALSE". Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory).
+   Flag that determines whether to output extra (debugging) information from :term:`ESMF` routines. Must be "TRUE" or "FALSE". Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory).
 
 ``WRTCMP_write_groups``: (Default: "1")
    The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write component.
@@ -769,7 +768,7 @@ Write-Component (Quilting) Parameters
 Predefined Grid Parameters
 ==========================
 ``PREDEF_GRID_NAME``: (Default: "")
-   This parameter specifies the name of a predefined regional grid. Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid parameters are specified in the script ``ush/set_predef_grid_params.sh``. 
+   This parameter indicates which (if any) predefined regional grid to use for the experiment. Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid settings can be viewed in the script ``ush/set_predef_grid_params.sh``. 
    
    **Currently supported options:**
    
@@ -802,19 +801,19 @@ Predefined Grid Parameters
 
 .. note::
 
-   * If ``PREDEF_GRID_NAME`` is set to a valid predefined grid name, the grid generation method ``GRID_GEN_METHOD``, the (native) grid parameters, and the write-component grid parameters are set to predefined values for the specified grid, overwriting any settings of these parameters in the user-specified experiment configuration file (``config.sh``).  In addition, if the time step ``DT_ATMOS`` and the computational parameters ``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE`` are not specified in that configuration file, they are also set to predefined values for the specified grid.
+   * If ``PREDEF_GRID_NAME`` is set to a valid predefined grid name, the grid generation method, the (native) grid parameters, and the write component grid parameters are set to predefined values for the specified grid, overwriting any settings of these parameters in the user-specified experiment configuration file (``config.sh``). In addition, if the time step ``DT_ATMOS`` and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) are not specified in that configuration file, they are also set to predefined values for the specified grid.
 
-   * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies the user is providing the native grid parameters in the user-specified experiment configuration file (``EXPT_CONFIG_FN``).  In this case, the grid generation method ``GRID_GEN_METHOD``, the native grid parameters, and the write-component grid parameters as well as the main time step (``DT_ATMOS``) and the computational parameters ``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE`` must be set in that configuration file. Otherwise, the values of all of these parameters in this default experiment configuration file will be used.
+   * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies that the user will provide the native grid parameters in the user-specified experiment configuration file (``config.sh``).  In this case, the grid generation method, the native grid parameters, the write component grid parameters, the main time step (``DT_ATMOS``), and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) must be set in the configuration file. Otherwise, the values of the parameters in the default experiment configuration file (``config_defaults.sh``) will be used.
 
 
 Pre-existing Directory Parameter
 ================================
 ``PREEXISTING_DIR_METHOD``: (Default: "delete")
-   This variable determines the method to use to deal with pre-existing directories (generated by previous calls to the experiment generation script using the same experiment name (``EXPT_SUBDIR``) as the current experiment). This variable must be set to one of three valid values: ``"delete"``, ``"rename"``, or ``"quit"``.  The resulting behavior for each of these values is as follows:
+   This variable determines how to deal with pre-existing directories (resulting from previous calls to the experiment generation script using the same experiment name [``EXPT_SUBDIR``] as the current experiment). This variable must be set to one of three valid values: ``"delete"``, ``"rename"``, or ``"quit"``.  The behavior for each of these values is as follows:
 
    * **"delete":** The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
 
-   * **"rename":** The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created. The new name of the preexisting directory consists of its original name and the suffix "_oldNNN", where NNN is a 3-digit integer chosen to make the new name unique.
+   * **"rename":** The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created. The new name of the preexisting directory consists of its original name and the suffix "_old###", where ### is a 3-digit integer chosen to make the new name unique.
 
    * **"quit":** The preexisting directory is left unchanged, but execution of the currently running script is terminated. In this case, the preexisting directory must be dealt with manually before rerunning the script.
 
@@ -827,7 +826,7 @@ Verbose Parameter
 Debug Parameter
 =================
 ``DEBUG``: (Default: "FALSE")
-   Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to TRUE, then VERBOSE will also get reset to TRUE if it isn't already. Valid values: ``"TRUE"`` | ``"true"`` | ``"YES"`` | ``"yes"`` | ``"FALSE"`` | ``"false"`` | ``"NO"`` | ``"no"``
+   Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to TRUE, then VERBOSE will also be reset to TRUE if it isn't already. Valid values: ``"TRUE"`` | ``"true"`` | ``"YES"`` | ``"yes"`` | ``"FALSE"`` | ``"false"`` | ``"NO"`` | ``"no"``
 
 .. _WFTasks:
 
@@ -885,7 +884,7 @@ Set the names of the various Rocoto workflow tasks. These names usually do not n
 
 Workflow Task Parameters
 ========================
-For each workflow task, additional parameters set the values to pass to the job scheduler (e.g., Slurm) that will submit a job for each task to be run.  Parameters include the number of nodes to use to run the job, the number of MPI processes per node, the maximum walltime to allow for the job to complete, and the maximum number of times to attempt to run each task.
+For each workflow task, additional parameters determine the values to pass to the job scheduler (e.g., Slurm), which submits a job for each task. Parameters include the number of nodes to use for the job, the number of :term:`MPI` processes per node, the maximum walltime to allow for the job to complete, and the maximum number of times to attempt each task.
 
 **Number of nodes:**
 
@@ -1021,16 +1020,16 @@ Baseline Workflow Tasks
    The directory containing pre-generated grid files when ``RUN_TASK_MAKE_GRID`` is set to "FALSE".
 
 ``RUN_TASK_MAKE_OROG``: (Default: "TRUE")
-   Same as ``RUN_TASK_MAKE_GRID`` but for the orography generation task (``MAKE_OROG_TN``).
+   Same as ``RUN_TASK_MAKE_GRID`` but for the orography generation task (``MAKE_OROG_TN``). Flag that determines whether to run the orography file generation task (``MAKE_OROG_TN``). If this is set to "TRUE", the orography generation task is run and new orography files are generated. If it is set to "FALSE", then the scripts look for pre-generated orography files in the directory specified by ``OROG_DIR`` (see below).
 
 ``OROG_DIR``: (Default: "/path/to/pregenerated/orog/files")
-   Same as ``GRID_DIR`` but for the orography generation task (``MAKE_OROG_TN``).
+   The directory containing pre-generated orography files when ``MAKE_OROG_TN`` is set to "FALSE".
 
 ``RUN_TASK_MAKE_SFC_CLIMO``: (Default: "TRUE")
-   Same as ``RUN_TASK_MAKE_GRID`` but for the surface climatology generation task (``MAKE_SFC_CLIMO_TN``).
+   Same as ``RUN_TASK_MAKE_GRID`` but for the surface climatology generation task (``MAKE_SFC_CLIMO_TN``). Flag that determines whether to run the surface climatology file generation task (``MAKE_SFC_CLIMO_TN``). If this is set to "TRUE", the surface climatology generation task is run and new surface climatology files are generated. If it is set to "FALSE", then the scripts look for pre-generated surface climatology files in the directory specified by ``SFC_CLIMO_DIR`` (see below).
 
 ``SFC_CLIMO_DIR``: (Default: "/path/to/pregenerated/surface/climo/files")
-   Same as ``GRID_DIR`` but for the surface climatology generation task (``MAKE_SFC_CLIMO_TN``).
+   The directory containing pre-generated surface climatology files when ``MAKE_SFC_CLIMO_TN`` is set to "FALSE".
 
 ``RUN_TASK_GET_EXTRN_ICS``: (Default: "TRUE")
    Flag that determines whether to run the ``GET_EXTRN_ICS_TN`` task.
@@ -1056,7 +1055,7 @@ Verification Tasks
 --------------------
 
 ``RUN_TASK_GET_OBS_CCPA``: (Default: "FALSE")
-   Flag that determines whether to run the ``GET_OBS_CCPA_TN`` task, which retrieves the :term:`CCPA` hourly precipitation files used by METplus from NOAA HPSS. 
+   Flag that determines whether to run the ``GET_OBS_CCPA_TN`` task, which retrieves the :term:`CCPA` hourly precipitation files used by METplus from NOAA :term:`HPSS`. 
 
 ``RUN_TASK_GET_OBS_MRMS``: (Default: "FALSE")
    Flag that determines whether to run the ``GET_OBS_MRMS_TN`` task, which retrieves the :term:`MRMS` composite reflectivity files used by METplus from NOAA HPSS. 
@@ -1076,17 +1075,11 @@ Verification Tasks
 ``RUN_TASK_VX_ENSPOINT``: (Default: "FALSE")
    Flag that determines whether to run the ensemble point verification task. If this flag is set, both ensemble-stat point verification and point verification of ensemble-stat output is computed.
 
-..
-   COMMENT: Might be worth defining "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"
-
 Aerosol Climatology Parameter
 ================================
 
 ``USE_MERRA_CLIMO``: (Default: "FALSE")
-   Flag that determines whether MERRA2 aerosol climatology data and lookup tables for optics properties are obtained. 
-
-..
-   COMMENT: When would it be appropriate to obtain these files?
+   Flag that determines whether :term:`MERRA2` aerosol climatology data and lookup tables for optics properties are obtained. 
 
 Surface Climatology Parameter
 =============================
@@ -1101,7 +1094,7 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
    System directory in which the majority of fixed (i.e., time-independent) files that are needed to run the FV3-LAM model are located.
 
 ``FIXaer``: (Default: "")
-   System directory where MERRA2 aerosol climatology files are located.
+   System directory where :term:`MERRA2` aerosol climatology files are located.
 
 ``FIXlut``: (Default: "")
    System directory where the lookup tables for optics properties are located.
@@ -1180,10 +1173,6 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
 
    This array is used to set some of the :term:`namelist` variables in the forecast model's namelist file. It maps file symlinks to the actual fixed file locations in the ``FIXam`` directory. The symlink names appear in the first column (to the left of the "|" symbol), and the paths to these files (in the ``FIXam`` directory) are held in workflow variables, which appear to the right of the "|" symbol. It is possible to remove ``FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING`` as a workflow variable and make it only a local one since it is used in only one script.
 
-..
-   COMMENT: Is this an accurate rewording of the original? 
-
-
 ``FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING``: (Default: see below)
    .. code-block:: console
 
@@ -1199,9 +1188,6 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
        "FNABSC  | maximum_snow_albedo" )
 
    This array is used to set some of the :term:`namelist` variables in the forecast model's namelist file. The variable names appear in the first column (to the left of the "|" symbol), and the paths to these surface climatology files on the native FV3-LAM grid (in the ``FIXLAM`` directory) are derived from the corresponding surface climatology fields (the second column of the array).
-
-..
-   COMMENT: Is this an accurate rewording of the original?  
    
 ``CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING``: (Default: see below)
    .. code-block:: console
@@ -1229,16 +1215,16 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
        "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt" \
        "global_o3prdlos.f77        | " )
 
-   This array specifies the mapping to use between the symlinks that need to be created in each cycle directory (these are the "files" that FV3 looks for) and their targets in the ``FIXam`` directory. The first column of the array specifies the symlink to be created, and the second column specifies its target file in ``FIXam`` (where columns are delineated by the pipe symbol "|").
+   This array specifies the mapping to use between the symlinks that need to be created in each cycle directory (these are the "files" that :term:`FV3` looks for) and their targets in the ``FIXam`` directory. The first column of the array specifies the symlink to be created, and the second column specifies its target file in ``FIXam`` (where columns are delineated by the pipe symbol "|").
 
 Subhourly Forecast Parameters
 =================================
 
 ``SUB_HOURLY_POST``: (Default: "FALSE")
-   Flag that indicates whether the forecast model will generate output files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes). This will also cause the post-processor to process these sub-hourly files. If this variable is set to "TRUE", then ``DT_SUBHOURLY_POST_MNTS`` should be set to a value between "01" and "59".
+   Flag that indicates whether the forecast model will generate output files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes). This will also cause the post-processor to process these sub-hourly files. If this variable is set to "TRUE", then ``DT_SUBHOURLY_POST_MNTS`` should be set to a valid value between "01" and "59".
 
 ``DT_SUB_HOURLY_POST_MNTS``: (Default: "00")
-   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). Valid values: ``"1"`` | ``"01"`` | ``"2"`` | ``"02"`` | ``"3"`` | ``"03"`` | ``"4"`` | ``"04"`` | ``"5"`` | ``"05"`` | ``"6"`` | ``"06"`` | ``"10"`` | ``"12"`` | ``"15"`` | ``"20"`` | ``"30"``
+   Time interval in minutes between the forecast model output files. If ``SUB_HOURLY_POST`` is set to "TRUE", this needs to be set to a valid two-digit integer between "01" and "59". Note that if ``SUB_HOURLY_POST`` is set to "TRUE" but ``DT_SUB_HOURLY_POST_MNTS`` is set to "00", ``SUB_HOURLY_POST`` will get reset to "FALSE" in the experiment generation scripts (there will be an informational message in the log file to emphasize this). Valid values: ``"1"`` | ``"01"`` | ``"2"`` | ``"02"`` | ``"3"`` | ``"03"`` | ``"4"`` | ``"04"`` | ``"5"`` | ``"05"`` | ``"6"`` | ``"06"`` | ``"10"`` | ``"12"`` | ``"15"`` | ``"20"`` | ``"30"``
 
 Customized Post Configuration Parameters
 ========================================
@@ -1247,7 +1233,7 @@ Customized Post Configuration Parameters
    Flag that determines whether a user-provided custom configuration file should be used for post-processing the model data. If this is set to "TRUE", then the workflow will use the custom post-processing (:term:`UPP`) configuration file specified in ``CUSTOM_POST_CONFIG_FP``. Otherwise, a default configuration file provided in the UPP repository will be used.
 
 ``CUSTOM_POST_CONFIG_FP``: (Default: "")
-   The full path to the custom post flat file, including filename, to be used for post-processing. This is only used if ``CUSTOM_POST_CONFIG_FILE`` is set to "TRUE".
+   The full path to the custom flat file, including filename, to be used for post-processing. This is only used if ``CUSTOM_POST_CONFIG_FILE`` is set to "TRUE".
 
 
 Community Radiative Transfer Model (CRTM) Parameters
@@ -1275,7 +1261,7 @@ Ensemble Model Parameters
 Halo Blend Parameter
 ====================
 ``HALO_BLEND``: (Default: "10")
-   Number of cells to use for “blending” the external solution (obtained from the :term:`LBCs`) with the internal solution from the FV3LAM dycore. Specifically, it refers to the number of rows into the computational domain that should be blended with the LBCs. Cells at which blending occurs are all within the boundary of the native grid; they don’t involve the 4 cells outside the boundary where the LBCs are specified (which is a different :term:`halo`). Blending is necessary to smooth out waves generated due to mismatch between the external and internal solutions. To shut :term:`halo` blending off, set this to zero. 
+   Number of cells to use for “blending” the external solution (obtained from the :term:`LBCs`) with the internal solution from the FV3LAM :term:`dycore`. Specifically, it refers to the number of rows into the computational domain that should be blended with the LBCs. Cells at which blending occurs are all within the boundary of the native grid; they don’t involve the 4 cells outside the boundary where the LBCs are specified (which is a different :term:`halo`). Blending is necessary to smooth out waves generated due to mismatch between the external and internal solutions. To shut :term:`halo` blending off, set this to zero. 
 
 
 FVCOM Parameter
@@ -1292,17 +1278,11 @@ FVCOM Parameter
 ``FVCOM_FILE``: (Default: "fvcom.nc")
    Name of file located in ``FVCOM_DIR`` that has :term:`FVCOM` data interpolated to the FV3-LAM grid. This file will be copied later to a new location and the name changed to ``fvcom.nc`` if a name other than ``fvcom.nc`` is selected.
 
-Compiler Parameter
-==================
-``COMPILER``: (Default: "intel")
-   Type of compiler invoked during the build step. Currently, this must be set manually (i.e., it is not inherited from the build system in the ``ufs-srweather-app`` directory). Valid values: ``"intel"`` | ``"gnu"``
-
-
 Thread Affinity Interface
 ===========================
 
 .. note::
-   Note that settings for the ``make_grid`` and ``make_orog`` tasks are disabled/not included below because they do not use parallelized code.
+   Note that settings for the ``make_grid`` and ``make_orog`` tasks are disabled or not included below because they do not use parallelized code.
 
 ``KMP_AFFINITY_*``: (Default: see below)
 
@@ -1315,7 +1295,7 @@ Thread Affinity Interface
       KMP_AFFINITY_RUN_FCST="scatter"
       KMP_AFFINITY_RUN_POST="scatter"
 
-   Intel's runtime library can bind OpenMP threads to physical processing units. The interface is controlled using the KMP_AFFINITY environment variable. Thread affinity restricts execution of certain threads to a subset of the physical processing units in a multiprocessor computer. Depending on the system (machine) topology, application, and operating system, thread affinity can have a dramatic effect on the application speed and on the execution speed of a program." Valid values: ``"scatter"`` | ``"disabled"`` | ``"balanced"`` | ``"compact"`` | ``"explicit"`` | ``"none"``
+   "Intel's runtime library can bind OpenMP threads to physical processing units. The interface is controlled using the KMP_AFFINITY environment variable. Thread affinity restricts execution of certain threads to a subset of the physical processing units in a multiprocessor computer. Depending on the system (machine) topology, application, and operating system, thread affinity can have a dramatic effect on the application speed and on the execution speed of a program." Valid values: ``"scatter"`` | ``"disabled"`` | ``"balanced"`` | ``"compact"`` | ``"explicit"`` | ``"none"``
 
    For more information, see the `Intel Development Reference Guide <https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/optimization-and-programming-guide/openmp-support/openmp-library-support/thread-affinity-interface-linux-and-windows.html>`__. 
 

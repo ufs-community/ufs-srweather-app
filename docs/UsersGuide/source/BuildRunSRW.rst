@@ -248,7 +248,7 @@ or if the login shell is ``csh`` or ``tcsh``, run ``source etc/lmod-setup.csh ga
 
 .. code-block:: console
 
-   module use <path/to/modulefiles/directory>
+   module use modulefiles
    module load build_<platform>_<compiler>
 
 where ``<path/to/modulefiles/directory>`` is the full path to the ``modulefiles`` directory. This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory.
@@ -692,7 +692,7 @@ On Gaea:
 
    "/lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
 
-**NOAA Cloud Systems:**
+On NOAA Cloud Systems:
 
 .. code-block:: console
 
