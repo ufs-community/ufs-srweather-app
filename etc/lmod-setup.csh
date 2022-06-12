@@ -1,7 +1,14 @@
 #!/bin/csh
 
 if ( $# == 0 ) then
-   set L_MACHINE=${MACHINE}
+   cat << EOF_USAGE
+Usage: source etc/lmod-setup.csh PLATFORM
+
+OPTIONS:
+   PLATFORM - name of machine you are building on
+      (e.g. cheyenne | hera | jet | orion | wcoss_dell_p3)
+EOF_USAGE
+   exit 1
 else
    set L_MACHINE=$1
 endif
