@@ -88,37 +88,37 @@ On Cheyenne:
 
 .. code-block:: console
 
-   /glade/p/ral/jntp/UFS_SRW_app/tools/NaturalEarth
+   /glade/p/ral/jntp/UFS_SRW_App/develop/NaturalEarth
 
 On Hera:
 
 .. code-block:: console
 
-   /scratch2/BMC/det/UFS_SRW_App/develop/fix_files/NaturalEarth
+   /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
 
 On Jet:
  
 .. code-block:: console
  
-   /lfs4/BMC/wrfruc/FV3-LAM/NaturalEarth
+   /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/NaturalEarth
 
 On Orion: 
 
 .. code-block:: console
 
-   /work/noaa/gsd-fv3-dev/UFS_SRW_App/v1p0/fix_files/NaturalEarth
+   /work/noaa/fv3-cam/UFS_SRW_App/develop/NaturalEarth
 
 On Gaea:
 
 .. code-block:: console
 
-   /lustre/f2/pdata/esrl/gsd/ufs/NaturalEarth
+   /lustre/f2/pdata/ncep/UFS_SRW_App/develop/NaturalEarth
 
 On NOAA Cloud:
 
 .. code-block:: console
 
-   /contrib/EPIC/NaturalEarth
+   /contrib/EPIC/UFS_SRW_App/develop/NaturalEarth
 
 
 Running the Plotting Scripts
