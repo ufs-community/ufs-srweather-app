@@ -458,7 +458,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | Stochastic Physics         | https://stochastic-physics.readthedocs.io/en/release-public-v3/                 |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | ESMF manual                | http://earthsystemmodeling.org/docs/release/ESMF_8_2_0/ESMF_usrdoc/             |
+   | ESMF manual                | http://earthsystemmodeling.org/docs/release/ESMF_8_3_0/ESMF_usrdoc/             |
    +----------------------------+---------------------------------------------------------------------------------+
    | Unified Post Processor     | https://upp.readthedocs.io/en/upp_v10.1.0/                                      |
    +----------------------------+---------------------------------------------------------------------------------+
