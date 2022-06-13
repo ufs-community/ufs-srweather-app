@@ -283,42 +283,33 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
    EXTRN_MDL_SOURCE_BASEDIR_ICS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
 
-These last two variables describe where the :term:`IC` and :term:`LBC` file directories are located, respectively. For ease of reusing ``config.sh`` across experiments, it is recommended that users set up the raw :term:`IC/LBC` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), date (in ``YYYYMMDDHH`` format) and ICS or LBCS directory type. For example: ``/path-to/input_model_data/FV3GFS/2019061518/ICS`` and ``/path-to/input_model_data/FV3GFS/2019061518/LBCS``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
+These last two variables describe where the :term:`IC` and :term:`LBC` file directories are located, respectively. For ease of reusing ``config.sh`` across experiments, it is recommended that users set up the raw :term:`IC/LBC` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
 When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like:
 
 * FV3GFS (GRIB2): ``gfs.t{cycle}z.pgrb2.0p25.f{fhr}``
 * FV3GFS (NEMSIO): 
+
    * ICs: ``gfs.t{cycle}z.atmanl.nemsio`` and ``gfs.t{cycle}z.sfcanl.nemsio``;
    * LBCs: ``gfs.t{cycle}z.atmf{fhr}.nemsio``
+
 * RAP (GRIB2): ``rap.t{cycle}z.wrfprsf{fhr}.grib2``
 * HRRR (GRIB2): ``hrrr.t{cycle}z.wrfprsf{fhr}.grib2``
 
-where {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and {fhr} corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS data and 2 digits for RAP/HRRR data). For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``.
+where:
 
-In order to preserve the original file name, the ``f000`` files are placed in the ``ICS`` directory and all other forecast files are placed in the ``LBCS`` directory. Then, a symbolic link of the original files in the ``ICS/LBCS`` directory to the ``YYYYMMDDHH`` directory is suggested with the cycle removed. For example:
+   * {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and 
+   * {fhr} corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS data and 2 digits for RAP/HRRR data). 
 
-.. code-block:: console
-
-   ln -sf /path-to/input_model_data/RAP/2020041212/ICS/rap.t12z.wrfprsf00.grib2 /path-to/input_model_data/RAP/2020041212/rap.t12z.wrfprsf00.grib2
-
-Linking the files like this removes the cycle-dependent part of the file names so that each cycle will use the same file name, regardless of initialization time. This allows for the following to be set in the ``config.sh`` regardless of what cycle you are running:
+For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``. An example ``config.sh`` setting using HRRR and RAP data appears below: 
 
 .. code-block:: console
 
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/path-to/model_data/HRRR"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/path-to/input_model_data/HRRR/grib2/2020081012"
    EXTRN_MDL_FILES_ICS=( "hrrr.t12z.wrfprsf00.grib2" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path-to/model_data/RAP"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path-to/input_model_data/RAP/grib2/2020081012"
    EXTRN_MDL_FILES_LBCS=( "rap.t12z.wrfprsf03.grib2" "rap.t12z.wrfprsf06.grib2" )
-
-If users choose to forgo the extra ``ICS`` and ``LBCS`` directory, they may either
-rename the original files to remove the cycle or modify the ``config.sh`` to set: 
-
-.. code-block:: console
-
-   EXTRN_MDL_FILES_ICS=( "hrrr.t{cycle}z.wrfprsf00.grib2" )
-   EXTRN_MDL_FILES_LBCS=( "rap.t{cycle}z.wrfprsf03.grib2" "rap.t{cycle}z.wrfprsf06.grib2" )
 
 Default Initial and Lateral Boundary Conditions
 -----------------------------------------------
@@ -328,17 +319,16 @@ from 20190615 at 18 UTC. FV3GFS GRIB2 files are the default model and file forma
 
 Running the App for Different Dates
 -----------------------------------
-If users want to run the SRW Application for dates other than June 15-16, 2019, they will need to
-make modify the ``config.sh`` settings, including the ``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL``, and ``CYCL_HRS`` variables. The forecast length can be modified by changing the ``FCST_LEN_HRS``. In addition, the lateral boundary interval can be specified using the ``LBC_SPEC_INTVL_HRS`` variable.
+If users want to run the SRW Application for dates other than June 15-16, 2019, they will need to modify the ``config.sh`` settings, including the ``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL``, and ``CYCL_HRS`` variables. The forecast length can be modified by changing the ``FCST_LEN_HRS``. In addition, the lateral boundary interval can be specified using the ``LBC_SPEC_INTVL_HRS`` variable.
 
 Users will need to ensure that the initial and lateral boundary condition files are available
 in the specified path for their new date, cycle, and forecast length.
 
 Staging Initial Conditions Manually
 -----------------------------------
-If users want to run the SRW Application with raw model files for dates other than what
+If users want to run the SRW Application with raw model files for dates other than those that
 are currently available on the preconfigured platforms, they need to stage the data manually.
-The data should be placed in ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. The path to these variables can be set in the ``config.sh`` file. Raw model files are available from a number of sources. A few examples are provided here for convenience. 
+The data should be placed in ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` (which may be the same directory). The path to these variables can be set in the ``config.sh`` file. Raw model files are available from a number of sources. A few examples are provided here for convenience. 
 
 NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model may be:
 
@@ -361,44 +351,41 @@ Google Cloud:
 * HRRR: https://console.cloud.google.com/marketplace/product/noaa-public/hrrr
 
 FTP Data Repository: (data for SRW Release v1.0.0 & v1.0.1)
+
 * https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/
 * https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/
 
 Others: 
 
-* Univ. of Utah HRRR archive: http://home.chpc.utah.edu/~u0553130/Brian_Blaylock/cgi-bin/hrrr_download.cgi 
+* University of Utah HRRR archive: http://home.chpc.utah.edu/~u0553130/Brian_Blaylock/cgi-bin/hrrr_download.cgi 
 * NAM nest archive: https://www.ready.noaa.gov/archives.php
 * NAM data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=NAM218&subqueryby=STATION&applname=&outdest=FILE
 * RAP isobaric data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=RAP130&subqueryby=STATION&applname=&outdest=FILE
 
 Coexistence of Multiple Files for the Same Date
------------------------------------------------
-If you would like to have multiple file formats (e.g., GRIB2, NEMSIO, netCDF) for the same date
-it is recommended to have a separate directory for each file format. For example, if you have GFS
-GRIB2 and NEMSIO files your directory structure might look like:
+-------------------------------------------------
+It is recommended that users have a separate directory for each file format if they choose to store files in multiple formats (e.g., GRIB2, NEMSIO, netCDF) for the same date. For example, the directory structure for a user storing GFS GRIB2 and NEMSIO files might resemble the following:
 
 .. code-block:: console
 
-   /path-to/model_data/FV3GFS/YYYYMMDDHH/ICS and LBCS
-   /path-to/model_data/FV3GFS_nemsio/YYYYMMDDHH/ICS and LBCS
+   /path-to/model_data/FV3GFS/grib2/YYYYMMDDHH
+   /path-to/model_data/FV3GFS/nemsio/YYYYMMDDHH
 
-If you want to use GRIB2 format files for FV3GFS you must also set additional environment
-variables, including:
+Additionally, users must set the following environment variables if they plan to use GRIB2-formatted files for FV3GFS:
 
 .. code-block:: console
 
    FV3GFS_FILE_FMT_ICS="grib2"
    FV3GFS_FILE_FMT_LBCS="grib2"
 
-This is ONLY necessary if you are using FV3GFS GRIB2 files. These settings may be removed if you
-are initializing from NEMSIO format FV3GFS files.
+This is ONLY necessary when using FV3GFS GRIB2 files. These settings may be removed when initializing from the default NEMSIO format for FV3GFS files.
 
 Best Practices for Conserving Disk Space and Keeping Files Safe
 ---------------------------------------------------------------
 Initial and lateral boundary condition files are large and can occupy a significant amount of
 disk space. If several users will employ a common file system to run forecasts, it is recommended
 that the users share the same ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``
-directories. That way, if raw model input files are already on disk for a given date they do not
+directories. That way, if raw model input files are already on disk for a given date, they do not
 need to be replicated.
 
 The files in the subdirectories of the ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` directories should be write-protected. This prevents these files from being accidentally modified or deleted. The directories should generally be group writable so the directory can be shared among multiple users.
