@@ -14,9 +14,6 @@ The SRW App v1.0.0 citation is as follows and should be used when presenting res
 
 UFS Development Team. (2021, March 4). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.4534994
 
-..
-   COMMENT: Update version numbers/citation for release! Also update release date for citation!
-
 
 How to Use This Document
 ========================
@@ -51,7 +48,7 @@ The instructions in this documentation assume that users have certain background
 * Familiarity with LINUX/UNIX systems
 * Command line basics
 * System configuration knowledge (e.g., compilers, environment variables, paths, etc.)
-* Numerical Weather Prediction
+* Numerical Weather Prediction (concepts of parameterizations: physical, microphysical, convective)
 * Meteorology (particularly meteorology at the scales being predicted)
 
 ..
@@ -73,12 +70,14 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * POSIX-compliant UNIX-style operating system
 
-* >40 GB disk space
+* >82 GB disk space
 
-   * 18 GB input data from GFS, RAP, and HRRR for "out-of-the-box" SRW App case described in :numref:`Chapter %s <BuildRunSRW>`
-   * 6 GB for :term:`HPC-Stack` full installation
-   * 1 GB for ufs-srweather-app installation
-   * 11 GB for 48hr forecast on CONUS 25km domain
+   * 53 GB input data for a standard collection of global database, or "fix" data (topography, climatology, observational database), and boundary conditions for a short 12-h test forecast on CONUS 25km domain. See data download instructions in :numref:`Step %s <DownloadingStagingInput>`.
+   * 8 GB for :term:`HPC-Stack` full installation
+   * 3 GB for ufs-srweather-app installation
+   * 1 GB boundary conditions for a short 12-h test forecast on CONUS 25km domain. See data download instructions in :numref:`Step %s <DownloadingStagingInput>`
+   * 17 GB for a 12-h test forecast on CONUS 25km domain, with model output saved hourly, see :numref:`Step %s <GridSpecificConfig>`
+
 
 * 4GB memory (CONUS 25km domain)
 
@@ -88,7 +87,7 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * C and C++ compilers compatible with the Fortran compiler
 
-   * gcc v9+, ifort v18+, and clang v9+ (macOS, native Apple clang or LLVM clang) have been tested
+   * gcc v9+, ifort v18+, and clang v9+ (macOS, native Apple clang, LLVM clang, GNU) have been tested
 
 * Python v3.6+, including prerequisite packages ``jinja2``, ``pyyaml`` and ``f90nml``
    
@@ -96,41 +95,37 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * Perl 5
 
-* git v1.8+
+* git v2.12+
+
+* curl 
+
+* wget
 
 ..
-   COMMENT: Should curl/wget/TIFF library also be required? These are listed as prerequisites for building HPC-Stack on generic MacOS/Linux 
-
+   COMMENT: Should curl/wget/TIFF library also be required? These are listed as prerequisites for building HPC-Stack on generic MacOS/Linux  | A: TIFF could be installed with the HPC-stack build; others are needed
 
 The following software is also required to run the SRW Application, but the :term:`HPC-Stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
 
-* CMake v3.15+
+* CMake v3.20+
 
 * MPI (MPICH, OpenMPI, or other implementation)
 
-   * Only **MPICH** can be built with HPC-Stack. Other options must be installed separately by the user. 
-
-* Software libraries
-
-   * netCDF (C and Fortran libraries)
-   * HDF5 
-   * ESMF 8.2.0
-   * Jasper
-   * libJPG
-   * libPNG
-   * zlib
+   * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user. 
 
 For MacOS systems, some additional software is needed. It is recommended that users install this software using the `Homebrew <https://brew.sh/>`__ package manager for MacOS:
 
+* brew install bash  
+
+  * OR:  brew upgrade bash 
 * brew install gcc@11
 * brew install cmake
 * brew install make
 * brew install wget
+* brew install lmod
 * brew install coreutils
-* brew install pkg-config
 
 .. 
-   COMMENT: Is this still accurate? It seems like we should delete the last one. And gcc@11 is basically the same as requiring fortran/C/C++ compilers, no? CMake is listed above. 
+   COMMENT: Is this still accurate? It seems like we should delete the last one. And gcc@11 is basically the same as requiring fortran/C/C++ compilers, no? CMake is listed above. | A: updated bash requirements
 
 Optional but recommended prerequisites for all systems:
 
@@ -138,8 +133,9 @@ Optional but recommended prerequisites for all systems:
 * Bash v4+
 * Rocoto Workflow Management System (1.3.1)
 * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` for graphics
-* Lmod
 
+..
+   COMMENT: Lmod is listed as required
 
 .. _ComponentsOverview: 
 
