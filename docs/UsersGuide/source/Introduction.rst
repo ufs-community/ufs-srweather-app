@@ -12,7 +12,7 @@ This documentation provides a :ref:`Quick Start Guide <QuickstartC>` for running
 
 The SRW App v2.0.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2022, June 10). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
+UFS Development Team. (2022, June 17). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
 
 
 How to Use This Document
@@ -101,6 +101,7 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * Lmod
 
+
 The following software is also required to run the SRW Application, but the :term:`HPC-Stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
 
 * CMake v3.20+
@@ -109,7 +110,7 @@ The following software is also required to run the SRW Application, but the :ter
 
    * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user (if desired). 
 
-For MacOS systems, some additional software packages are needed. It is recommended that users install this software using the `Homebrew <https://brew.sh/>`__ package manager for MacOS:
+For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :numref:`Chapter %s <MacInstall>` and :numref:`Chapter %s <MacConfig>` for further guidance on installing these prerequisites on MacOS.
 
 * bash v4.x
 * `gcc@11` compiler package
@@ -124,6 +125,8 @@ Optional but recommended prerequisites for all systems:
 * Rocoto Workflow Management System (1.3.1)
 * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` for graphics
 
+..
+   COMMENT: Lmod is listed as required
 
 .. _ComponentsOverview: 
 

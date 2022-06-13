@@ -81,6 +81,7 @@ setenv CMAKE_Platform macos.gnu
 
 setenv CMAKE_Fortran_COMPILER_ID "GNU"
 setenv FFLAGS "-DNO_QUAD_PRECISION -fallow-argument-mismatch "
+
 # export the environment variable LDFLAGS from the command line
 # after loading the current module:
 # export LDFLAGS="-L$MPI_ROOT/lib"

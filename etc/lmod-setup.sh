@@ -2,6 +2,14 @@
 
 if [ $# = 0 ]; then
    L_MACHINE=${MACHINE}
+   cat << EOF_USAGE
+Usage: source etc/lmod-setup.sh PLATFORM
+
+OPTIONS:
+   PLATFORM - name of machine you are building on
+      (e.g. cheyenne | hera | jet | orion | wcoss_dell_p3)
+EOF_USAGE
+   exit 1
 else
    L_MACHINE=$1
 fi
@@ -43,4 +51,3 @@ elif [ "$L_MACHINE" = odin ]; then
 else
    module purge
 fi
-
