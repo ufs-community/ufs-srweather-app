@@ -40,7 +40,10 @@ we2e_test_file="${we2e_test_dir}/experiments.txt"
 declare -a we2e_fundamental_tests
 we2e_fundamental_tests=('grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
     'grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
-    'grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16')
+    'grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
+    'grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta'
+    'grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_HRRR'
+    'grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_WoFS_v0')
 
 # The comprehensive set of end-to-end tests to run.
 declare -a we2e_comprehensive_tests
