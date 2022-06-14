@@ -20,10 +20,12 @@ module use /glade/work/epicufsrt/GMTB/tools/intel/2022.1/hpc-stack-v1.2.0_6eb6/m
 module load hpc/1.2.0
 module load hpc-intel/2022.1
 module load hpc-mpt/2.25
+
 module load srw_common
 
 module load g2/3.4.5
 module load esmf/8.3.0b09
+module load mapl/2.11.0-esmf-8.3.0b09
 module load netcdf/4.7.4
 module load libpng/1.6.37
 module load pio/2.5.3
