@@ -739,9 +739,9 @@ Users who have already staged the observation data needed for METplus (i.e., the
 
 .. code-block:: console
 
-   CCPA_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/ccpa/proc"
-   MRMS_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/mrms/proc"
-   NDAS_OBS_DIR="/path/to/UFS_SRW_app/develop/obs_data/ndas/proc"
+   CCPA_OBS_DIR="/path/to/UFS_SRW_App/v2p0/obs_data/ccpa/proc"
+   MRMS_OBS_DIR="/path/to/UFS_SRW_App/v2p0/obs_data/mrms/proc"
+   NDAS_OBS_DIR="/path/to/UFS_SRW_App/v2p0/obs_data/ndas/proc"
    RUN_TASK_GET_OBS_CCPA="FALSE"
    RUN_TASK_GET_OBS_MRMS="FALSE"
    RUN_TASK_GET_OBS_NDAS="FALSE"

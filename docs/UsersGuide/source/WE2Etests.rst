@@ -19,14 +19,13 @@ that all input files are available and readable, calling executables with correc
 For convenience, the WE2E tests are currently grouped into the following categories:
 
 * ``grids_extrn_mdls_suites_community``
-   This category of tests ensures that the SRW App workflow running in **community mode** (i.e. with ``RUN_ENVIR`` set to ``"community"``) completes successfully for various combinations of predefined grids, physics suites, and external models for ICs and LBCs. Note that in community mode, all output from the App is placed under a single experiment directory.
+   This category of tests ensures that the SRW App workflow running in **community mode** (i.e., with ``RUN_ENVIR`` set to ``"community"``) completes successfully for various combinations of predefined grids, physics suites, and external models for ICs and LBCs. Note that in community mode, all output from the App is placed under a single experiment directory.
 
 * ``grids_extrn_mdls_suites_nco``
-   This category of tests ensures that the workflow running in **NCO mode** (i.e. with ``RUN_ENVIR`` set to ``"nco"``) completes successfully for various combinations of predefined grids, physics suites, and external models for ICs and LBCs. Note that in NCO mode, an operational run environment (i.e. variable names) is used along with a directory structure in which output is placed in multiple directories (see 
+   This category of tests ensures that the workflow running in **NCO mode** (i.e., with ``RUN_ENVIR`` set to ``"nco"``) completes successfully for various combinations of predefined grids, physics suites, and external models for ICs and LBCs. Note that in NCO mode, an operational run environment (i.e., variable names) is used along with a directory structure in which output is placed in multiple directories (see 
    Sections :numref:`%s <UserSpecificConfig>` and :numref:`%s <NCOModeParms>`).
 
 * ``wflow_features``
-
    This category of tests ensures that the workflow with various features/capabilities activated
    completes successfully. To reduce computational cost, most tests in this category use coarser grids.
 
@@ -38,58 +37,55 @@ The test configuration files for these categories are located in the following d
    ufs-srweather-app/regional_workflow/tests/WE2E/test_configs/grids_extrn_mdls_suites_nco
    ufs-srweather-app/regional_workflow/tests/WE2E/test_configs/wflow_features
 
-The script to run the WE2E tests is named ``run_WE2E_tests.sh`` and is located in the directory ``ufs-srweather-app/regional_workflow/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.sh``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full ``config.sh`` experiment configuration file used in :numref:`Section %s <SetUpConfigFileC>` and described in :numref:`Section %s <UserSpecificConfig>`. For each test, the ``run_WE2E_tests.sh`` script reads in its configuration file and generates from it a complete ``config.sh`` file. It then calls ``generate_FV3LAM_wflow.sh``, which in turn reads in ``config.sh`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.sh`` for each test is placed in its experiment directory.
+The script to run the WE2E tests is named ``run_WE2E_tests.sh`` and is located in the directory ``ufs-srweather-app/regional_workflow/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.sh``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.sh`` experiment configuration options (see :numref:`Section %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.sh``). For each test, the ``run_WE2E_tests.sh`` script reads in the test configuration file and generates from it a complete ``config.sh`` file. It then calls ``generate_FV3LAM_wflow.sh``, which in turn reads in ``config.sh`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.sh`` for each test is placed in its experiment directory.
 
 Since ``run_WE2E_tests.sh`` calls ``generate_FV3LAM_wflow.sh`` for each test, the 
 Python modules required for experiment generation must be loaded before ``run_WE2E_tests.sh`` 
 can be called. See :numref:`Section %s <SetUpPythonEnv>` for information on loading the Python
 environment on supported platforms. Note also that ``run_WE2E_tests.sh`` assumes that all of 
-the executables have been built. If they have not, then ``run_WE2E_tests.sh`` will still
-generate the experiment directories, but the workflows will fail.
+the executables have been built (see :numref:`Section %s <BuildExecutables>`). If they have not, then ``run_WE2E_tests.sh`` will still generate the experiment directories, but the workflows will fail.
 
 Supported Tests
 ===================
 
-The full list of WE2E tests is extensive; it is not recommended to run all of the tests, as some are computationally expensive. A subset of the tests are supported for the latest release of the SRW Application. Frequent test cases appear in :numref:`Table %s <FrequentTests>` below, and complete test cases appear :doc:`here <CompleteTests>`. Frequent tests are a lightweight set of tests that can be automated and run regularly on each Level 1 platform. These tests and cover a wide scope of capabilities to ensure that there are no major, obvious faults in the underlying code. Complete tests include the remainder of the supported WE2E tests and cover a fuller list of workflow configurations.
+The full list of WE2E tests is extensive; it is not recommended to run all the tests, as some are computationally expensive. Tests fall into two broad categories: fundamental and comprehensive. Fundamental tests consist of a lightweight set of tests that can be automated and run regularly on each Level 1 platform. Comprehensive tests ensure that a broader range of capacities is tested, including specific workflow components. 
 
-..
-   COMMENT: Add file w/supported tests to repo 
-   COMMENT: Contrib Guide says that "Fundamental testing consists of a lightweight set of tests that can be automated and run regularly on each Level 1 platform. These are mostly low-resolution tests and cover a wide scope of capabilities to ensure that there are no major, obvious faults in the underlying code. Comprehensive testing includes the entire set of WE2E tests." How would we define frequent v complete? 
+A subset of the full WE2E test suite is supported for the latest release of the SRW Application. Supported fundamental test cases appear in :numref:`Table %s <FrequentTests>` below, and supported comprehensive test cases appear :doc:`here <CompleteTests>`. 
 
 .. _FrequentTests:
 
-.. table:: Frequent Test Cases (Supported)
+.. table:: Fundamental Test Cases (Supported)
 
-   +------------------+--------+--------+---------------+--------------+---------------------------------------------------------------------+
-   | Grid             | ICs    | LBCs   | Physics Suite | Dataset Used | Script Name                                                         |
-   +==================+========+========+===============+==============+=====================================================================+
-   | CONUS_25km       | FV3GFS | FV3GFS | GFS_v16       | 2019-07-01   | config.grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh |
-   +------------------+--------+--------+---------------+--------------+---------------------------------------------------------------------+
-   | CONUS_13km       | FV3GFS | FV3GFS | GFS_v16       | 2019-07-01   | config.grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh |
-   +------------------+--------+--------+---------------+--------------+---------------------------------------------------------------------+
-   | INDIANAPOLIS_3km | FV3GFS | FV3GFS | GFS_v16       | 2019-06-15   | config.SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh     |
-   +------------------+--------+--------+---------------+--------------+---------------------------------------------------------------------+
-   | INDIANAPOLIS_3km | HRRR   | RAP    | RRFS_v1beta   | 2019-06-15   | config.SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta.sh      |
-   +------------------+--------+--------+---------------+--------------+---------------------------------------------------------------------+
-   | INDIANAPOLIS_3km | HRRR   | RAP    | HRRR          | 2019-06-15   | config.SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_HRRR.sh             |
-   +------------------+--------+--------+---------------+--------------+---------------------------------------------------------------------+
-   | INDIANAPOLIS_3km | HRRR   | RAP    | WoFS          | 2019-06-15   | config.SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_WoFS.sh             |
-   +------------------+--------+--------+---------------+--------------+---------------------------------------------------------------------+
+   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
+   | Grid             | ICs    | LBCs   | Physics Suite | Dataset Used | Time (UTC) | Script Name                                                          |
+   +==================+========+========+===============+==============+============+======================================================================+
+   | RRFS_CONUS_25km  | FV3GFS | FV3GFS | GFS_v16       | 2019-07-01   | 00         | config.grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh  |
+   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
+   | RRFS_CONUS_13km  | FV3GFS | FV3GFS | GFS_v16       | 2019-07-01   | 00         | config.grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh  |
+   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
+   | SUBCONUS_Ind_3km | FV3GFS | FV3GFS | GFS_v16       | 2019-06-15   | 18         | config.grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh |
+   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
+   | SUBCONUS_Ind_3km | HRRR   | RAP    | RRFS_v1beta   | 2019-08-01   | 00         | config.grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta.sh  |
+   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
+   | SUBCONUS_Ind_3km | HRRR   | RAP    | HRRR          | 2019-08-10   | 00         | config.grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_HRRR.sh         |
+   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
+   | SUBCONUS_Ind_3km | HRRR   | RAP    | WoFS          | 2019-08-01   | 00         | config.grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_WoFS.sh         |
+   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
 
 
 Running the WE2E Tests
 ================================
 
-Users may specify the set of tests to run by creating a text file, such as ``my_tests.txt``, which contains a list of the WE2E tests to run (one per line). Then, they pass the name of that file to ``run_WE2E_tests.sh``. For example, to run the tests ``new_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` (from the ``wflow_features`` and ``grids_extrn_mdls_suites_community`` categories, respectively), users would enter the following:
+Users may specify the set of tests to run by creating a text file, such as ``my_tests.txt``, which contains a list of the WE2E tests to run (one per line). Then, they pass the name of that file to ``run_WE2E_tests.sh``. For example, to run the tests ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` (from the ``wflow_features`` and ``grids_extrn_mdls_suites_community`` categories, respectively), users would enter the following from ``ufs-srweather-app/regional_workflow/tests/WE2E/``:
 
 .. code-block:: console
 
-   > cat my_tests.txt
-   new_ESGgrid
-   grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+   cat > cat my_tests.txt
+   wflow_features/custom_ESGgrid
+   grids_extrn_mdls_suites_community/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
  
 
-For each test in ``my_tests.txt``, ``run_WE2E_tests.sh`` will generate a new experiment directory and, by default, create a new cron job in the user's cron table that will (re)launch the workflow every 2 minutes. This cron job calls the workflow launch script ``launch_FV3LAM_wflow.sh`` until the workflow either completes successfully (i.e., all tasks are successful) or fails (i.e., at least one task fails). 
+(and ``Ctrl + D`` to exit). For each test in ``my_tests.txt``, ``run_WE2E_tests.sh`` will generate a new experiment directory and, by default, create a new :term:`cron` job in the user's cron table that will (re)launch the workflow every 2 minutes. This cron job calls the workflow launch script ``launch_FV3LAM_wflow.sh`` until the workflow either completes successfully (i.e., all tasks are successful) or fails (i.e., at least one task fails). 
 The cron job is then removed from the user's cron table.
 
 The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` can be called with the ``my_tests.txt`` file above.
@@ -99,14 +95,14 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
 
    .. code-block::
 
-      > run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr"
+      ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr"
 
    This will create the experiment subdirectories for the two sample WE2E tests in the directory ``${SR_WX_APP_TOP_DIR}/../expt_dirs``, where ``SR_WX_APP_TOP_DIR`` is the directory in which the ufs-srweather-app repository is cloned (usually set to something like ``/path/to/ufs-srweather-app``).
    Thus, the following two experiment directories will be created:
 
    .. code-block::
 
-      ${SR_WX_APP_TOP_DIR}/../expt_dirs/new_ESGgrid
+      ${SR_WX_APP_TOP_DIR}/../expt_dirs/custom_ESGgrid
       ${SR_WX_APP_TOP_DIR}/../expt_dirs/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
 
    In addition, by default, cron jobs will be added to the user's cron table to relaunch the workflows of these experiments every 2 minutes.
@@ -124,7 +120,7 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
 
       > run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" use_cron_to_relaunch="FALSE"
 
-   In this case, the user will have to go into each test's experiment directory and either manually call the ``launch_FV3LAM_wflow.sh`` script or use the Rocoto commands described in :numref:`Chapter %s <RocotoInfo>` to (re)launch the workflow. Note that if using the Rocoto commands directly, the log file ``log.launch_FV3LAM_wflow`` will not be created; in this case, the status of the workflow can be checked using the ``rocotostat`` command (see :numref:`Chapter %s <RocotoInfo>`).
+   In this case, the user will have to go into each test's experiment directory and either manually call the ``launch_FV3LAM_wflow.sh`` script or use the Rocoto commands described in :numref:`Section %s <RocotoRun>` to (re)launch the workflow. Note that if using the Rocoto commands directly, the log file ``log.launch_FV3LAM_wflow`` will not be created; in this case, the status of the workflow can be checked using the ``rocotostat`` command (see :numref:`Section %s <RocotoStat>`).
 
 #. To place the experiment subdirectories in a subdirectory named ``test_set_01`` under 
    ``${SR_WX_APP_TOP_DIR}/../expt_dirs`` (instead of immediately under the latter), use:
@@ -137,7 +133,7 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
 
    .. code-block::
 
-      ${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/new_ESGgrid
+      ${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/custom_ESGgrid
       ${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
 
    This is useful for grouping various sets of tests.
@@ -185,8 +181,7 @@ The WE2E Test Information File
 ================================
 In addition to creating the WE2E tests' experiment directories and optionally creating
 cron jobs to launch their workflows, the ``run_WE2E_tests.sh`` script generates (if 
-necessary and if not explicitly disabled by the ``generate_csv_file="FALSE"`` flag to this script)
-a CSV (Comma-Separated Value) file named ``WE2E_test_info.csv`` that contains information 
+necessary and if not explicitly disabled by the ``generate_csv_file="FALSE"`` flag to this script) a CSV (Comma-Separated Value) file named ``WE2E_test_info.csv`` that contains information 
 on the full set of WE2E tests.  This file serves as a single location where relevant 
 information about the WE2E tests can be found. It can be imported into Google Sheets 
 using the "|" (pipe symbol) character as the custom field separator. The rows of the 
@@ -315,11 +310,11 @@ Here is an example of how to call ``get_expts_status.sh`` along with sample outp
    The number of active experiments found is:
      num_expts = 2
    The list of experiments whose workflow status will be checked is:
-     'new_ESGgrid'
+     'custom_ESGgrid'
      'grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
 
    ======================================
-   Checking workflow status of experiment "new_ESGgrid" ...
+   Checking workflow status of experiment "custom_ESGgrid" ...
    Workflow status:  SUCCESS
    ======================================
 

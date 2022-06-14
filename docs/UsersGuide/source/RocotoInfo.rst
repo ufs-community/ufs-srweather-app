@@ -20,6 +20,8 @@ There are a number of Rocoto commands available to run and monitor the workflow;
 complete `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 Descriptions and examples of commonly used commands are discussed below.
 
+.. _RocotoRun:
+
 rocotorun
 ==========
 The ``rocotorun`` command is used to run the workflow by submitting tasks to the batch system. It will
@@ -53,6 +55,8 @@ file, the batch system is queried, jobs are submitted for tasks whose dependenci
 and the current state of the workflow is saved in ``FV3LAM_wflow.db``. If there is a need to relaunch
 the workflow from scratch, both database files can be deleted, and the workflow can be run by executing the ``rocotorun`` command
 or the launch script (``launch_FV3LAM_wflow.sh``) multiple times.
+
+.. _RocotoStat:
 
 rocotostat
 ===========

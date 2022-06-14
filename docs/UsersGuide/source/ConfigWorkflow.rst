@@ -95,6 +95,8 @@ These settings control run commands for platforms without a workflow manager. Va
 ``RUN_CMD_POST``: (Default: "mpirun -np 1")
    The run command for post-processing (via the :term:`UPP`). Can be left blank for smaller domains, in which case UPP will run without :term:`MPI`.
 
+.. _Cron:
+
 Cron-Associated Parameters
 ==========================
 

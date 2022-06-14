@@ -81,7 +81,7 @@ The Python plotting scripts also require a path to the directory where the Carto
 The full set of Cartopy shape files can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. They are also available on all `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms in the following locations:
 
 ..
-   COMMENT: Update these links!!! For convenience/In addition, the small subset of files required for these Python scripts can be obtained from the `EMC ftp data repository <https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/natural_earth/natural_earth_ufs-srw-release-v1.0.0.tar.gz>`__ or from `AWS cloud storage <https://ufs-data.s3.amazonaws.com/public_release/ufs-srweather-app-v1.0.0/natural_earth/natural_earth_ufs-srw-release-v1.0.0.tar.gz>`__.  
+   COMMENT: Update these links!!! For convenience, the small subset of files required for these Python scripts can be obtained from the `SRW Data Bucket <>`__.  
 
 
 On Cheyenne:
