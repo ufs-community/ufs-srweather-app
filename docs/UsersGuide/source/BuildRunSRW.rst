@@ -154,7 +154,7 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
    ./devbuild.sh --platform=<machine_name>
 
-where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``linux`` | ``noaacloud``
+where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``linux`` | ``wcoss_dell_p3`` | ``noaacloud``
 
 If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. For example:
 
