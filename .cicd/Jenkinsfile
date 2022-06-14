@@ -3,6 +3,7 @@ pipeline {
 
     options {
         disableConcurrentBuilds()
+        overrideIndexTriggers(false)
         skipDefaultCheckout(true)
     }
 
