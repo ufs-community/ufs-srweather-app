@@ -659,9 +659,9 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
 
 where: 
-   * <model_type> refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
-   * <data_type> refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
-   * YYYYMMDDHH refers to a subdirectory containing data for the :term:`cycle` date. 
+   * ``<model_type>`` refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
+   * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
+   * ``YYYYMMDDHH`` refers to a subdirectory containing data for the :term:`cycle` date. 
 
 
 **Hera, Jet, Orion, Gaea:**

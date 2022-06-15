@@ -288,12 +288,12 @@ METplus Parameters
 
 .. note::
    Where a date field is required: 
-      * YYYY refers to the 4-digit valid year
-      * MM refers to the 2-digit valid month
-      * DD refers to the 2-digit valid day of the month
-      * HH refers to the 2-digit valid hour of the day
-      * mm refers to the 2-digit valid minutes of the hour
-      * SS refers to the two-digit valid seconds of the hour
+      * ``YYYY`` refers to the 4-digit valid year
+      * ``MM`` refers to the 2-digit valid month
+      * ``DD`` refers to the 2-digit valid day of the month
+      * ``HH`` refers to the 2-digit valid hour of the day
+      * ``mm`` refers to the 2-digit valid minutes of the hour
+      * ``SS`` refers to the two-digit valid seconds of the hour
 
 ``CCPA_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ccpa_tn`` task. (This task is activated in the workflow by setting ``RUN_TASK_GET_OBS_CCPA="TRUE"``). 
@@ -625,7 +625,7 @@ The following parameters must be set if using the "ESGgrid" method to generate a
 GFDLgrid Settings
 ---------------------
 
-The following parameters must be set if using the "GFDLgrid" method to generate a regional grid (i.e., when ``GRID_GEN_METHOD="GFDLgrid"``). Note that the regional grid is defined with respect to a "parent" global cubed-sphere grid. Thus, all the parameters for a global cubed-sphere grid must be specified even though the model equations are integrated only on the regional grid. Tile 6 has arbitrarily been chosen as the tile to use to orient the global parent grid on the sphere (Earth). For convenience, the regional grid is denoted as "tile 7" even though it is embedded within tile 6 (i.e., it doesn't extend beyond the boundary of tile 6). Its exact location within tile 6 is determined by specifying the starting and ending i- and j-indices of the regional grid on tile 6, where *i* is the grid index in the x direction and *j* is the grid index in the y direction. All of this information is set in the variables below. 
+The following parameters must be set if using the "GFDLgrid" method to generate a regional grid (i.e., when ``GRID_GEN_METHOD="GFDLgrid"``). Note that the regional grid is defined with respect to a "parent" global cubed-sphere grid. Thus, all the parameters for a global cubed-sphere grid must be specified even though the model equations are integrated only on the regional grid. Tile 6 has arbitrarily been chosen as the tile to use to orient the global parent grid on the sphere (Earth). For convenience, the regional grid is denoted as "tile 7" even though it is embedded within tile 6 (i.e., it doesn't extend beyond the boundary of tile 6). Its exact location within tile 6 is determined by specifying the starting and ending i- and j-indices of the regional grid on tile 6, where ``i`` is the grid index in the x direction and ``j`` is the grid index in the y direction. All of this information is set in the variables below. 
 
 ``GFDLgrid_LON_T6_CTR``: (Default: "")
    Longitude of the center of tile 6 (in degrees).
@@ -706,7 +706,7 @@ Write-Component (Quilting) Parameters
    .. attention::
       The regional grid requires the use of the write component, so users generally should not need to change the default value for ``QUILTING``. 
 
-   Flag that determines whether to use the write component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where HHH is the 3-digit forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. For example, the output files for the 3rd hour of the forecast would be ``dynf$003.nc`` and ``phyf$003.nc``. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to "TRUE" when running the SRW App. If ``QUILTING`` is set to "FALSE", the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to "TRUE" in the SRW App. 
+   Flag that determines whether to use the write component for writing forecast output files to disk. If set to "TRUE", the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where ``HHH`` is the 3-digit forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. For example, the output files for the 3rd hour of the forecast would be ``dynf$003.nc`` and ``phyf$003.nc``. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to "FALSE", then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to "TRUE" when running the SRW App. If ``QUILTING`` is set to "FALSE", the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code that this task calls cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to "TRUE" in the SRW App. 
 
 ``PRINT_ESMF``: (Default: "FALSE")
    Flag that determines whether to output extra (debugging) information from :term:`ESMF` routines. Must be "TRUE" or "FALSE". Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory).
@@ -815,7 +815,7 @@ Pre-existing Directory Parameter
 
    * **"delete":** The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
 
-   * **"rename":** The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created. The new name of the preexisting directory consists of its original name and the suffix "_old###", where ### is a 3-digit integer chosen to make the new name unique.
+   * **"rename":** The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created. The new name of the preexisting directory consists of its original name and the suffix "_old###", where ``###`` is a 3-digit integer chosen to make the new name unique.
 
    * **"quit":** The preexisting directory is left unchanged, but execution of the currently running script is terminated. In this case, the preexisting directory must be dealt with manually before rerunning the script.
 

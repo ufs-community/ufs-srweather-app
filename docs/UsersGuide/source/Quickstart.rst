@@ -10,8 +10,8 @@ The "out-of-the-box" SRW App case described in this User's Guide builds a weathe
 
 .. attention::
 
-   * All UFS applications support `four platform levels <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
-   * This chapter of the User's Guide should **only** be used for container builds. See :numref:`Section %s <NCQuickstart>` for a Quickstart Guide to building without a container (including on NOAA Cloud systems) or :numref:`Section %s <BuildRunSRW>` for a detailed guide to building the SRW App without a container.
+   * The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
+   * This chapter of the User's Guide should **only** be used for container builds. See :numref:`Chapter %s <NCQuickstart>` for the Quick Start Guide on building without a container (including on NOAA Cloud systems) or :numref:`Section %s <BuildRunSRW>` for a *detailed* guide to building the SRW App without a container.
 
 .. _DownloadCodeC:
 
@@ -144,7 +144,7 @@ From the ``ufs-srweather-app`` directory, ``cd`` into the build directory and ru
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 and 2 systems, the data required to run SRW App tests are already available, as long as the ``--bind`` command in :numref:`Step %s <BuildC>` included the directory with the data. For Level 3 and 4 systems, the data must be added. Detailed instructions on how to add the data can be found in the :numref:`Section %s <DownloadingStagingInput>`. :numref:`Sections %s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available, as long as the ``--bind`` command in :numref:`Step %s <BuildC>` included the directory with the input model data. For Level 2-4 systems, the data must be added manually by the user. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GenerateForecastC:
 
@@ -162,7 +162,7 @@ The first two steps depend on the platform being used and are described here for
 
 Set the Experiment Parameters
 -------------------------------
-Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in the ``config.sh`` file. Two example ``config.sh`` templates are provided: ``config.community.sh`` and ``config.nco.sh``. They can be found in the ``ufs-srweather-app/regional_workflow/ush`` directory. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release. 
+Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in the ``config.sh`` file. Two example ``config.sh`` templates are provided: ``config.community.sh`` and ``config.nco.sh``. They can be found in the ``ufs-srweather-app/regional_workflow/ush`` directory. The first file (``config.community.sh``) is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second file is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and is fully supported for this release. 
 
 Make a copy of ``config.community.sh`` to get started. From the ``ufs-srweather-app`` directory, run the following commands:
 
@@ -181,7 +181,7 @@ Next, edit the new ``config.sh`` file to customize it for your experiment. At a 
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
 
-Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct paths to the data. The following is a sample for a 24-hour forecast:
+Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct paths to the data. The following is a sample for a 12-hour forecast:
 
 .. code-block::
 
@@ -221,7 +221,9 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
          SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/contrib/global/glopara/fix/fix_sfc_climo"}
          FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
 
-On Level 1 systems, it should be possible to continue to the :ref:`next step <SetUpPythonEnvC>` after changing the settings above. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. For users interested in experimenting with a different grid, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
+On Level 1 systems, it should be possible to continue to the :ref:`next step <SetUpPythonEnvC>` after changing these settings. Detailed guidance on the variables in the code fragment above can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`. 
+
+For users interested in experimenting with a different grid, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s <LAMGrids>`.
 
 .. _SetUpPythonEnvC:
 
@@ -265,14 +267,14 @@ The regional workflow can be run using standalone shell scripts in cases where t
 
 #. ``cd`` into the experiment directory
 
-#. Set the environment variable ``EXPTDIR`` for either bash or csh, respectively:
+#. Set the environment variable ``$EXPTDIR`` for either bash or csh, respectively:
 
    .. code-block:: console
 
       export EXPTDIR=`pwd`
       setenv EXPTDIR `pwd`
 
-#. Copy the wrapper scripts from the regional_workflow directory into the experiment directory. Each workflow task has a wrapper script that sets environment variables and runs the job script.
+#. Copy the wrapper scripts from the ``regional_workflow`` directory into the experiment directory. Each workflow task has a wrapper script that sets environment variables and runs the job script.
 
    .. code-block:: console
 
@@ -341,7 +343,7 @@ Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory.
    tail -n 40 log.launch_FV3LAM_wflow
 
 .. hint:: 
-   If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA Cloud systems can be viewed in the :numref:`Step %s <WorkOnHPC>` as an example. 
+   If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA Cloud systems can be viewed in :numref:`Section %s <WorkOnHPC>` as an example. 
 
 .. note::
    On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first two jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided (``sq_job.sh`` and ``qsub_job.sh``, respectively). These examples will need to be adapted to each user's system. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). 

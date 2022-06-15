@@ -40,7 +40,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             
             ./devbuild.sh --platform=<machine_name>
 
-         where <machine_name> is replaced with the name of the platform the user's platform/system. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3`` | ``noaacloud``
+         where ``<machine_name>`` is replaced with the name of the platform the user's platform/system. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3`` | ``noaacloud``
 
       * **Option 2:**
 
@@ -48,7 +48,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
             source etc/lmod-setup.sh <machine>
 
-         where <machine> refers to the user's platform (e.g., ``macos``, ``gaea``, ``odin``, ``singularity``). 
+         where ``<machine>`` refers to the user's platform (e.g., ``macos``, ``gaea``, ``odin``, ``singularity``). 
 
          Users will also need to load the "build" modulefile appropriate to their system. On Level 3 & 4 systems, users can adapt an existing modulefile (such as ``build_macos_gnu``) to their system. 
 

@@ -148,7 +148,7 @@ experiment directory (``$EXPTDIR/YYYYMMDDHH/INPUT``) and consist of the followin
 * ``tmp_LBCS``
 
 These output files are used as inputs for the UFS Weather Model, and are described in the `UFS Weather Model User's Guide 
-<https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#grid-description-and-initial-condition-files>`__. ``gfs_bndy.tile7.HHH.nc`` refers to a series of IC/LBC files where HHH is the 3-digit hour of the forecast. 
+<https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#grid-description-and-initial-condition-files>`__. ``gfs_bndy.tile7.HHH.nc`` refers to a series of IC/LBC files where ``HHH`` is the 3-digit hour of the forecast. 
 
 UFS Weather Model
 ------------------
@@ -162,7 +162,7 @@ In this case, the netCDF output files are written to the ``$EXPTDIR/YYYYMMDDHH``
 * ``dynfHHH.nc``
 * ``phyfHHH.nc``
 
-where HHH corresponds to the 3-digit forecast hour (e.g., ``dynf006.nc`` for the 6th hour of the forecast). Additional details may be found in the `UFS Weather Model User's Guide
+where ``HHH`` corresponds to the 3-digit forecast hour (e.g., ``dynf006.nc`` for the 6th hour of the forecast). Additional details may be found in the `UFS Weather Model User's Guide
 <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#output-files>`__.
 
 Unified Post Processor (UPP)
@@ -298,8 +298,8 @@ When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the da
 
 where:
 
-   * {cycle} corresponds to the 2-digit hour of the day when the forecast cycle starts, and 
-   * {fhr} corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS data and 2 digits for RAP/HRRR data). 
+   * ``{cycle}`` corresponds to the 2-digit hour of the day when the forecast cycle starts, and 
+   * ``{fhr}`` corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS data and 2 digits for RAP/HRRR data). 
 
 For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``. An example ``config.sh`` setting using HRRR and RAP data appears below: 
 
