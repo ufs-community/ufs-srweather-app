@@ -34,6 +34,7 @@ module load "build_${platform}_${SRW_COMPILER}"
 # Compile SRW application and install to repository root.
 mkdir "${build_dir}"
 pushd "${build_dir}"
-    cmake -DCMAKE_INSTALL_PREFIX="${workspace}" -DENABLE_RRFS=on "${workspace}"
-    make -j "${MAKE_JOBS}"
+    build_log_file="${build_dir}/srw_build-${platform}-${SRW_COMPILER}.log"
+    cmake -DCMAKE_INSTALL_PREFIX="${workspace}" "${workspace}" | tee "${build_log_file}"
+    make -j "${MAKE_JOBS}" | tee --append "${build_log_file}"
 popd
