@@ -1,12 +1,15 @@
 .. _NCQuickstart:
 
-============================
-Non-Container Quick Start
-============================
+====================
+Quick Start Guide
+====================
+
+This chapter provides a brief summary of how to build and run the SRW Application. The steps will run most smoothly on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users should expect to reference other chapters of this User's Guide, particularly :numref:`Chapter %s <BuildRunSRW>`, for additional explanations regarding each step. 
+
 
 Install the HPC-Stack
 ===========================
-SRW App users who are not working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the :term:`HPC-Stack` prior to building the SRW App on a new machine. Installation instructions appear in both the `HPC-Stack documentation <https://hpc-stack.readthedocs.io/en/release-srw-public-v2/>`__ and in :numref:`Chapter %s <InstallBuildHPCstack>` of this User's Guide. The steps will vary slightly depending on the user's platform. However, in all cases, the process involves cloning the `HPC-Stack repository <https://github.com/NOAA-EMC/hpc-stack>`__, creating and entering a build directory, and invoking ``cmake`` and ``make`` to build the code. This process will create a number of modulefiles and scripts that will be used for setting up the build environment for the SRW App. 
+SRW App users who are not working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the :term:`HPC-Stack` prior to building the SRW App on a new machine. Installation instructions appear in both the `HPC-Stack documentation <https://hpc-stack.readthedocs.io/en/release-srw-public-v2/>`__ and in :numref:`Chapter %s <InstallBuildHPCstack>` of this User's Guide. The steps will vary slightly depending on the user's platform. However, in all cases, the process involves cloning the `HPC-Stack repository <https://github.com/NOAA-EMC/hpc-stack>`__, creating and entering a build directory, and invoking ``cmake`` and ``make`` commands to build the stack. This process will create a number of modulefiles and scripts that will be used for setting up the build environment for the SRW App. 
 
 Once the HPC-Stack has been successfully installed, users can move on to building the SRW Application.
 
@@ -37,7 +40,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             
             ./devbuild.sh --platform=<machine_name>
 
-         where <machine_name> is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3`` | ``noaacloud``
+         where <machine_name> is replaced with the name of the platform the user's platform/system. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3`` | ``noaacloud``
 
       * **Option 2:**
 
@@ -63,7 +66,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             cmake .. -DCMAKE_INSTALL_PREFIX=..
             make -j 4  >& build.out &
 
-   #. Download and stage data (both the fix files and the :term:`IC/LBC` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a Level 3-4 system).
+   #. Download and stage data (both the fix files and the :term:`IC/LBC` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a Level 2-4 system).
 
    #. Configure the experiment parameters.
 
