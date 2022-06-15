@@ -26,6 +26,7 @@ module load w3emc/2.9.2
 module load esmf/8.3.0b09 
 module load mapl/2.11.0-esmf-8.3.0b09
 module load netcdf/4.7.4
+module load libpng/1.6.35
 module load pio/2.5.2
 
 setenv CMAKE_C_COMPILER mpicc
