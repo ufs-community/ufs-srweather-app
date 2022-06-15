@@ -76,19 +76,19 @@ A subset of the full WE2E test suite is supported for the latest release of the 
 Running the WE2E Tests
 ================================
 
-Users may specify the set of tests to run by creating a text file, such as ``my_tests.txt``, which contains a list of the WE2E tests to run (one per line). Then, they pass the name of that file to ``run_WE2E_tests.sh``. For example, to run the tests ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` (from the ``wflow_features`` and ``grids_extrn_mdls_suites_community`` categories, respectively), users would enter the following from ``ufs-srweather-app/regional_workflow/tests/WE2E/``:
+Users may specify the set of tests to run by creating a text file, such as ``my_tests.txt``, which contains a list of the WE2E tests to run (one per line). Then, they pass the name of that file to ``run_WE2E_tests.sh``. For example, to run the tests ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` (from the ``wflow_features`` and ``grids_extrn_mdls_suites_community`` categories, respectively), users would enter the following from the ``WE2E`` directory (``ufs-srweather-app/regional_workflow/tests/WE2E/``):
 
 .. code-block:: console
 
-   cat > cat my_tests.txt
-   wflow_features/custom_ESGgrid
-   grids_extrn_mdls_suites_community/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+   cat > my_tests.txt
+   custom_ESGgrid
+   grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
  
 
 (and ``Ctrl + D`` to exit). For each test in ``my_tests.txt``, ``run_WE2E_tests.sh`` will generate a new experiment directory and, by default, create a new :term:`cron` job in the user's cron table that will (re)launch the workflow every 2 minutes. This cron job calls the workflow launch script ``launch_FV3LAM_wflow.sh`` until the workflow either completes successfully (i.e., all tasks are successful) or fails (i.e., at least one task fails). 
 The cron job is then removed from the user's cron table.
 
-The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` can be called with the ``my_tests.txt`` file above.
+The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` can be called with the ``my_tests.txt`` file above. These examples assume that the user has already built the SRW App and loaded the regional workflow as described in :numref:`Chapter %s <NCQuickstart>` (and in detail in :numref:`Chapter %s <BuildRunSRW>`).
 
 #. To run the tests listed in ``my_tests.txt`` on Hera and charge the computational
    resources used to the "rtrr" account, use:
@@ -112,22 +112,22 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
 
    .. code-block::
 
-      > run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" cron_relaunch_intvl_mnts="01"
+      ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" cron_relaunch_intvl_mnts="01"
 
 #. To disable use of cron (which implies the worfkow for each test will have to be relaunched manually from within each experiment directory), use:
 
    .. code-block::
 
-      > run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" use_cron_to_relaunch="FALSE"
+      ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" use_cron_to_relaunch="FALSE"
 
-   In this case, the user will have to go into each test's experiment directory and either manually call the ``launch_FV3LAM_wflow.sh`` script or use the Rocoto commands described in :numref:`Section %s <RocotoRun>` to (re)launch the workflow. Note that if using the Rocoto commands directly, the log file ``log.launch_FV3LAM_wflow`` will not be created; in this case, the status of the workflow can be checked using the ``rocotostat`` command (see :numref:`Section %s <RocotoStat>`).
+   In this case, the user will have to go into each test's experiment directory and either manually call the ``launch_FV3LAM_wflow.sh`` script or use the Rocoto commands described in :numref:`Section %s <RocotoRunCmd>` to (re)launch the workflow. Note that if using the Rocoto commands directly, the log file ``log.launch_FV3LAM_wflow`` will not be created; in this case, the status of the workflow can be checked using the ``rocotostat`` command (see :numref:`Section %s <RocotoManualRun>` or :numref:`Section %s <RocotoStatCmd>`).
 
 #. To place the experiment subdirectories in a subdirectory named ``test_set_01`` under 
    ``${SR_WX_APP_TOP_DIR}/../expt_dirs`` (instead of immediately under the latter), use:
 
    .. code-block::
 
-      > run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" expt_basedir="test_set_01"
+      ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" expt_basedir="test_set_01"
 
    In this case, the full paths to the experiment directories will be:
 
@@ -142,7 +142,7 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
 
    .. code-block::
 
-      > run_WE2E_tests.sh tests_file="/path/to/custom/location/my_tests.txt" machine="hera" account="rtrr" expt_basedir="/path/to/custom/expt_dirs"
+      ./run_WE2E_tests.sh tests_file="/path/to/custom/location/my_tests.txt" machine="hera" account="rtrr" expt_basedir="/path/to/custom/expt_dirs"
 
 
 The full usage statement for ``run_WE2E_tests.sh`` is as follows:
@@ -166,7 +166,7 @@ The full usage statement for ``run_WE2E_tests.sh`` is as follows:
       [build_env_fn="..."]
 
 The arguments in brackets are optional. A complete description of these arguments can be 
-obtained by issuing
+obtained by issuing:
 
 .. code-block::
 
