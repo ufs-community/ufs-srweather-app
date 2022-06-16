@@ -11,5 +11,5 @@ The UFS SRW App User's Guide associated with the development branch is at: https
 For instructions on how to clone the repository, build the code, and run the workflow, see:
 https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
 
-UFS Development Team. (2022, June 3). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
+UFS Development Team. (2022, June 17). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
 

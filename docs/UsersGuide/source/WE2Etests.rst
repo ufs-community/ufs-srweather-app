@@ -44,30 +44,7 @@ the executables have been built (see :numref:`Section %s <BuildExecutables>`). I
 Supported Tests
 ===================
 
-The full list of WE2E tests is extensive; it is not recommended to run all the tests, as some are computationally expensive. Tests fall into two broad categories: fundamental and comprehensive. Fundamental tests consist of a lightweight set of tests that can be automated and run regularly on each Level 1 platform. Comprehensive tests ensure that a broader range of capacities is tested, including specific workflow components. 
-
-A subset of the full WE2E test suite is supported for the latest release of the SRW Application. Supported fundamental test cases appear in :numref:`Table %s <FrequentTests>` below, and supported comprehensive test cases appear :doc:`here <CompleteTests>`. 
-
-.. _FrequentTests:
-
-.. table:: Fundamental Test Cases (Supported)
-
-   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
-   | Grid             | ICs    | LBCs   | Physics Suite | Dataset Used | Time (UTC) | Script Name                                                          |
-   +==================+========+========+===============+==============+============+======================================================================+
-   | RRFS_CONUS_25km  | FV3GFS | FV3GFS | GFS_v16       | 2019-07-01   | 00         | config.grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh  |
-   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
-   | RRFS_CONUS_13km  | FV3GFS | FV3GFS | GFS_v16       | 2019-07-01   | 00         | config.grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh  |
-   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
-   | SUBCONUS_Ind_3km | FV3GFS | FV3GFS | GFS_v16       | 2019-06-15   | 18         | config.grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh |
-   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
-   | SUBCONUS_Ind_3km | HRRR   | RAP    | RRFS_v1beta   | 2019-08-01   | 00         | config.grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta.sh  |
-   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
-   | SUBCONUS_Ind_3km | HRRR   | RAP    | HRRR          | 2019-08-10   | 00         | config.grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_HRRR.sh         |
-   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
-   | SUBCONUS_Ind_3km | HRRR   | RAP    | WoFS          | 2019-08-01   | 00         | config.grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_WoFS.sh         |
-   +------------------+--------+--------+---------------+--------------+------------+----------------------------------------------------------------------+
-
+The full list of WE2E tests is extensive; it is not recommended to run all the tests, as some are computationally expensive. A subset of the full WE2E test suite is supported for the latest release of the SRW Application. Supported test cases can be viewed in :doc:`this table <Tests>`. 
 
 Running the WE2E Tests
 ================================
