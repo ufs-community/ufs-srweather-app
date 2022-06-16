@@ -16,8 +16,8 @@ RRFS_CONUS_25km,FV3GFS,FV3GFS,FV3_GFS_v15p2,2019-06-15,00,config.MET_ensemble_ve
 RRFS_CONUS_25km,FV3GFS,FV3GFS,FV3_GFS_v15p2,2019-06-15,00,config.MET_verification.sh,Complete/wflow
 ESGgrid,FV3GFS,FV3GFS,FV3_GFS_2017_gfdlmp_regional,2019-07-01,00,config.new_ESGgrid.sh,Complete/wflow
 GFDLgrid,FV3GFS,FV3GFS,FV3_GFS_2017_gfdlmp,2019-07-01,00,config.new_GFDLgrid.sh,Complete/wflow
-GFDLgrid,FV3GFS,FV3GFS,FV3_GFS_2017_gfdlmp,2019-07-01,00,config.new_GFDLgrid__GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES_eq_FALSE.sh,Complete/wflow
-GFDLgrid,FV3GFS,FV3GFS,FV3_GFS_2017_gfdlmp,2019-07-01,00,config.new_GFDLgrid__GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES_eq_TRUE.sh,Complete/wflow
+GFDLgrid,FV3GFS,FV3GFS,FV3_GFS_2017_gfdlmp,2019-07-01,00,config.new_GFDLgrid__GFDLgrid_USE_NUM_CELLS_IN_FILENAMES_eq_FALSE.sh,Complete/wflow
+GFDLgrid,FV3GFS,FV3GFS,FV3_GFS_2017_gfdlmp,2019-07-01,00,config.new_GFDLgrid__GFDLgrid_USE_NUM_CELLS_IN_FILENAMES_eq_TRUE.sh,Complete/wflow
 RRFS_CONUS_25km,FV3GFS,FV3GFS,FV3_GFS_v15p2,2019-07-01,00,config.pregen_grid_orog_sfc_climo.sh,Complete/wflow
 RRFS_CONUS_25km,GSMGFS,GSMGFS,FV3_GFS_2017_gfdlmp,2019-05-20,00,config.specify_DOT_OR_USCORE.sh,Complete/wflow
 RRFS_CONUScompact_25km,HRRR,RAP,FV3_HRRR,2020-08-01,00,config.specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE.sh,Complete/wflow
