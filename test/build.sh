@@ -146,7 +146,7 @@ declare -a executables_rrfs_utl_created=( adjust_soiltq.exe \
   # check for existence of executables.
   #-----------------------------------------------------------------------
   n_fail=0
-  for file in "${executables_created[@]} ${executables_gsi_created[@]} ${executables_rrfs_utl_created[@]}" ; do
+  for file in "${executables_created[@]}" "${executables_gsi_created[@]}" "${executables_rrfs_utl_created[@]}" ; do
     exec_file=${EXEC_DIR}/${file}
     if [ -f ${exec_file} ]; then
       echo "SUCCEED: ${compiler} executable file ${exec_file} exists" >> ${TEST_OUTPUT}
