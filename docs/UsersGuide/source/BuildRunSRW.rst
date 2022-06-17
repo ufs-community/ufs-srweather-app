@@ -166,7 +166,7 @@ If compiler auto-detection fails for some reason, specify it using the ``--compi
 
 where valid values are ``intel`` or ``gnu``.
 
-If users want to build the optional GSI and rrfs_utl components for RRFS, they can add the --rrfs argument. For example:
+If users want to build the optional GSI and rrfs_utl components for RRFS (NOTE: These components are not currently available for use at runtime), they can add the --rrfs argument.  For example:
 .. code-block:: console
 
    ./devbuild.sh --platform=hera --rrfs
@@ -363,7 +363,7 @@ From the build directory, run the following commands to build the pre-processing
 
 ``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. Although users can specify a larger or smaller number of threads (e.g., ``-j8``, ``-j2``), it is highly recommended to use at least 4 parallel threads to prevent overly long installation times. 
 
-If users want to build the optional GSI and rrfs_utl components for RRFS, they can add ENABLE_RRFS=on to the original cmake command. For example:
+If users want to build the optional GSI and rrfs_utl components for RRFS (NOTE: These components are not currently available for use at runtime), they can add ENABLE_RRFS=on to the original cmake command. For example:
 .. code-block:: console
 
    cmake .. -DCMAKE_INSTALL_PREFIX=.. ENABLE_RRFS=on
