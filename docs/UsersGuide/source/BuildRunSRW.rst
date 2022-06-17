@@ -405,7 +405,14 @@ The first two steps depend on the platform being used and are described here for
 Set Experiment Parameters
 ---------------------------- 
 
-Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in ``config_defaults.sh`` and in the user-specified ``config.sh`` file. When generating a new experiment, the SRW App first reads and assigns default values from the ``config_defaults.sh`` file. Then, it reads and (re)assigns variables from the user's custom ``config.sh`` file. For background info on ``config_defaults.sh``, read :numref:`Section %s <DefaultConfigSection>`, or jump to :numref:`Section %s <UserSpecificConfig>` to continue configuring the experiment. 
+Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in ``config_defaults.sh`` and in the user-specified ``config.sh`` file. When generating a new experiment, the SRW App first reads and assigns default values from the ``config_defaults.sh`` file. Then, it reads and (re)assigns variables from the user's custom ``config.sh`` file. 
+
+Section Overview: 
+
+   * For background information on ``config_defaults.sh``, read :numref:`Section %s <DefaultConfigSection>`.
+   * Jump to :numref:`Section %s <UserSpecificConfig>` to continue configuring the experiment. 
+   * Go to :numref:`Section %s <LinuxMacEnvConfig>` for additional details on configuring an experiment on a generic Linux or MacOS system.  
+
 
 .. _DefaultConfigSection:
 
@@ -704,7 +711,6 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
 
 
-
 To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
@@ -797,6 +803,137 @@ On NOAA Cloud Systems:
    The values of the configuration variables should be consistent with those in the
    ``valid_param_vals script``. In addition, various example configuration files can be found in the ``regional_workflow/tests/baseline_configs`` directory.
 
+
+To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>`.
+
+.. _LinuxMacEnvConfig:
+
+User-specific Configuration on a General Linux/MacOS System
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The configuration process for Linux and MacOS systems is similar to the process for other systems, but it requires a few extra steps.
+
+.. note::
+    Examples in this subsection presume that the user is running Terminal.app with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
+
+.. _MacMorePackages:
+
+Install/Upgrade Mac-Specific Packages
+````````````````````````````````````````
+MacOS requires the installation of a few additional packages and, possibly, an upgrade to bash. Users running on MacOS should execute the following commands:
+
+.. code-block:: console
+
+   bash --version
+   brew upgrade bash
+   brew install coreutils
+
+.. _LinuxMacVEnv: 
+
+Creating a Virtual Environment on Linux and Mac
+``````````````````````````````````````````````````
+
+Users should ensure that the following packages are installed and up-to-date:
+
+.. code-block:: console
+
+   python3 -m pip --version 
+   python3 -m pip install --upgrade pip 
+   python3 -m ensurepip --default-pip
+   python3 -m pip install ruby             OR(on MacOS only): brew install ruby
+
+Users must create a virtual environment (``regional_workflow``), store it in their ``$HOME/venv/`` directory, and install additional python packages:
+
+.. code-block:: console
+
+   [[ -d $HOME/venv ]] | mkdir -p $HOME/venv
+   python3 -m venv $HOME/venv/regional_workflow 
+   source $HOME/venv/regional_workflow/bin/activate
+   python3 -m pip install jinja2
+   python3 -m pip install pyyaml
+   python3 -m pip install f90nml
+
+The virtual environment can be deactivated by running the ``deactivate`` command. The virtual environment built here will be reactivated in :numref:`Step %s <LinuxMacActivateWFenv>` and needs to be used to generate the workflow and run the experiment. 
+
+
+.. _LinuxMacExptConfig:
+
+Configuring an Experiment on General Linux and MacOS Systems
+``````````````````````````````````````````````````````````````
+
+**Optional: Install Rocoto**
+
+.. note::
+   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and had limited testing on general Linux plaforms. 
+
+
+**Configure the SRW App:**
+
+Configure an experiment using a template. Copy a ``config.community.sh`` file in the ``$SRW/regional_workflow/ush`` directory into ``config.sh`` file (see :numref:`Section %s <UserSpecificConfig>`) above. In the ``config.sh`` file, set ``MACHINE="macos"`` or ``MACHINE="linux"``, and modify account and experiment info. For example: 
+
+.. code-block:: console
+
+   MACHINE="macos"
+   ACCOUNT="user" 
+   EXPT_SUBDIR="<test_community>"
+   COMPILER="gnu"
+   VERBOSE="TRUE"
+   RUN_ENVIR="community"
+   PREEXISTING_DIR_METHOD="rename"
+
+   PREDEF_GRID_NAME="RRFS_CONUS_25km"	
+   QUILTING="TRUE"
+
+Due to the limited number of processors on Mac OS systems, users must configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
+
+For :ref:`Option 1 <MacDetails>`, add the following information to ``config.sh``:
+
+.. code-block:: console
+
+   LAYOUT_X="${LAYOUT_X:-3}"
+   LAYOUT_Y="${LAYOUT_Y:-2}"
+   WRTCMP_write_groups="1"
+   WRTCMP_write_tasks_per_group="2"
+
+For :ref:`Option 2 <MacDetails>`, add the following information to ``config.sh``:
+
+.. code-block:: console
+
+   LAYOUT_X="${LAYOUT_X:-3}"
+   LAYOUT_Y="${LAYOUT_Y:-1}"
+   WRTCMP_write_groups="1"
+   WRTCMP_write_tasks_per_group="1"
+
+**Configure the Machine File**
+
+Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflow/ush/machine/`` based on the number of CPUs in the system (8 or 4 in MacOS), or a given number for Linux systems, ``<ncores>``. Job scheduler, ``<sched>`` options are ``none``, ``slurm``, or another scheduler used by the system.
+
+.. code-block:: console
+
+   # Commands to run at the start of each workflow task.
+   PRE_TASK_CMDS='{ ulimit -a; }'
+
+   # Architecture information
+   WORKFLOW_MANAGER="none"
+   NCORES_PER_NODE=${NCORES_PER_NODE:-<ncores>}	 
+   SCHED=${SCHED:-"<sched>"}
+   
+   # UFS SRW App specific paths
+   FIXgsm="path/to/FIXgsm/files"
+   FIXaer="path/to/FIXaer/files"
+   FIXlut="path/to/FIXlut/files"
+   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files 
+                                     used by the ``make_orog`` task) 
+   SFC_CLIMO_INPUT_DIR="path/to/FIXgsm/files" # (path to location of static surface climatology
+                                                input fields used by ``sfc_climo_gen``)
+
+   # Run commands for executables
+   RUN_CMD_SERIAL="time"
+   RUN_CMD_UTILS="mpirun -np 4"
+   RUN_CMD_FCST='mpirun -np ${PE_MEMBER01}'
+   RUN_CMD_POST="mpirun -np 4"
+
+
 .. _VXConfig:
 
 Configure METplus Verification Suite (Optional)
@@ -852,7 +989,7 @@ These tasks are independent, so users may set some values to "TRUE" and others t
 
 Set Up the Python and Other Environment Parameters
 ----------------------------------------------------
-The workflow requires Python 3 with the packages 'PyYAML', 'Jinja2', and 'f90nml' available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
+The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f90nml`` available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
 
 .. code-block:: console
 
@@ -868,141 +1005,11 @@ This command will activate the ``regional_workflow`` conda environment. The user
    source ~/.bashrc
    conda activate regional_workflow
 
-To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>`.
-
-.. _LinuxMacEnvConfig:
-
-Configuring the Python Environment on a General Linux/MacOS System
-------------------------------------------------------------------------------
-
-The configuration process for Linux and MacOS systems is similar to that for other systems, but requires a few extra steps.
-
-.. note::
-    Examples in this subsection presume that the user is running Terminal.app with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
-
-.. _MacMorePackages:
-
-On Mac
-^^^^^^^^^^^
-MacOS requires the installation of a few additional packages and, possibly, and upgrade to bash:
-
-.. code-block:: console
-
-   bash --version
-   brew upgrade bash
-   brew install coreutils
-
-.. _LinuxMacVEnv: 
-
-On Linux and Mac:
-^^^^^^^^^^^^^^^^^^^
-
-Users should ensure that the following packages are installed and up-to-date:
-
-.. code-block:: console
-
-   python3 -m pip --version 
-   python3 -m pip install --upgrade pip 
-   python3 -m ensurepip --default-pip
-   python3 -m pip install ruby             OR(on MacOS only): brew install ruby
-
-Users must create a virtual environment (``regional_workflow``), store it in their ``$HOME/venv/`` directory, and install additional python packages:
-
-.. code-block:: console
-
-   [[ -d $HOME/venv ]] | mkdir -p $HOME/venv
-   python3 -m venv $HOME/venv/regional_workflow 
-   source $HOME/venv/regional_workflow/bin/activate
-   python3 -m pip install jinja2
-   python3 -m pip install pyyaml
-   python3 -m pip install f90nml
-
-The virtual environment can be deactivated by running the ``deactivate`` command. The virtual environment built here will be reactivated in :numref:`Step %s <LinuxMacActivateWFenv>` and needs to be used to generate the workflow and run the experiment. 
-
-
-.. _LinuxMacExptConfig:
-
-Configuring an Experiment on General Linux and MacOS Systems
----------------------------------------------------------------------
-
-Optional: Install Rocoto
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. note::
-   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and had limited testing on general Linux plaforms. 
-
-
-Configure the SRW App
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Configure an experiment using a template. Copy a ``config.community.sh`` file in the ``$SRW/regional_workflow/ush`` directory into ``config.sh`` file (see :numref:`Section %s <UserSpecificConfig>`) above. In the ``config.sh`` file, set ``MACHINE="macos"`` or ``MACHINE="linux"``, and modify account and experiment info. For example: 
-
-.. code-block:: console
-
-   MACHINE="macos"
-   ACCOUNT="user" 
-   EXPT_SUBDIR="<test_community>"
-   COMPILER="gnu"
-   VERBOSE="TRUE"
-   RUN_ENVIR="community"
-   PREEXISTING_DIR_METHOD="rename"
-
-   PREDEF_GRID_NAME="RRFS_CONUS_25km"	
-   QUILTING="TRUE"
-
-Due to the limited number of processors on Mac OS systems, users must configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
-
-For :ref:`Option 1 <MacDetails>`, add the following information to ``config.sh``:
-
-.. code-block:: console
-
-   LAYOUT_X="${LAYOUT_X:-3}"
-   LAYOUT_Y="${LAYOUT_Y:-2}"
-   WRTCMP_write_groups="1"
-   WRTCMP_write_tasks_per_group="2"
-
-For :ref:`Option 2 <MacDetails>`, add the following information to ``config.sh``:
-
-.. code-block:: console
-
-   LAYOUT_X="${LAYOUT_X:-3}"
-   LAYOUT_Y="${LAYOUT_Y:-1}"
-   WRTCMP_write_groups="1"
-   WRTCMP_write_tasks_per_group="1"
-
-Configure the Machine File
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflow/ush/machine/`` based on the number of CPUs in the system (8 or 4 in MacOS), or a given number for Linux systems, ``<ncores>``. Job scheduler, ``<sched>`` options are ``none``, ``slurm``, or another scheduler used by the system.
-
-.. code-block:: console
-
-   # Commands to run at the start of each workflow task.
-   PRE_TASK_CMDS='{ ulimit -a; }'
-
-   # Architecture information
-   WORKFLOW_MANAGER="none"
-   NCORES_PER_NODE=${NCORES_PER_NODE:-<ncores>}	 
-   SCHED=${SCHED:-"<sched>"}
-   
-   # UFS SRW App specific paths
-   FIXgsm="path/to/FIXgsm/files"
-   FIXaer="path/to/FIXaer/files"
-   FIXlut="path/to/FIXlut/files"
-   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files 
-                                     used by the ``make_orog`` task) 
-   SFC_CLIMO_INPUT_DIR="path/to/FIXgsm/files" # (path to location of static surface climatology
-                                                input fields used by ``sfc_climo_gen``)
-
-   # Run commands for executables
-   RUN_CMD_SERIAL="time"
-   RUN_CMD_UTILS="mpirun -np 4"
-   RUN_CMD_FCST='mpirun -np ${PE_MEMBER01}'
-   RUN_CMD_POST="mpirun -np 4"
 
 .. _LinuxMacActivateWFenv:
 
-Activate the Workflow Environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Activate the Workflow Environment on General MacOS/Linux Systems
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``regional_workflow`` environment can be activated as follows for ``<platform>="macos"``, or ``"<platorm>=linux"``:
 
@@ -1011,7 +1018,7 @@ The ``regional_workflow`` environment can be activated as follows for ``<platfor
 	cd $SRW/regional_workflow/ush
  	module load wflow_<platform>
 
-This should activate the ``regional_workflow`` environment created in :numref:`Step %s <LinuxMacVEnv>`. From here, the user may continue to the :ref:`next step <GenerateWorkflow>` and generate the regional workflow. 
+This should activate the ``regional_workflow`` environment created in :numref:`Step %s <LinuxMacVEnv>`. From here, the user may continue to :numref:`Section %s <GenerateWorkflow>` to generate the regional workflow. 
 
 
 .. _GenerateWorkflow: 

@@ -449,7 +449,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | FV3 Technical              | https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html                |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | CCPP Scientific            | https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/index.html                  |
+   | CCPP Scientific            | https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/index.html                        |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/v6.0.0/                                  |
