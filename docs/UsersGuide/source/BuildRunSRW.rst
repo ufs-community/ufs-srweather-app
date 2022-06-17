@@ -252,7 +252,7 @@ If users execute one of the above commands on systems that don't need it, it wil
 
 .. code-block:: console
 
-   module use modulefiles
+   module use <path/to/>modulefiles
    module load build_<platform>_<compiler>
 
 where ``<path/to/modulefiles/directory>`` is the full path to the ``modulefiles`` directory. This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory.
@@ -270,9 +270,6 @@ However, building the SRW App without Lmod is not supported for this release. Us
 
 Build the Executables Using CMake
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. attention::
-   If users successfully built the executables listed in :numref:`Table %s <ExecDescription>`, they should skip to step :numref:`Step %s <Data>`.
 
 In the ``ufs-srweather-app`` directory, create a subdirectory to hold the build's executables: 
 
@@ -904,6 +901,9 @@ For :ref:`Option 2 <MacDetails>`, add the following information to ``config.sh``
    WRTCMP_write_groups="1"
    WRTCMP_write_tasks_per_group="1"
 
+.. note::
+   The number of MPI processes required by the forecast will be equal to LAYOUT_X * LAYOUT_Y + WRTCMP_write_tasks_per_group. 
+
 **Configure the Machine File**
 
 Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflow/ush/machine/`` based on the number of CPUs in the system (8 or 4 in MacOS), or a given number for Linux systems, ``<ncores>``. Job scheduler, ``<sched>`` options are ``none``, ``slurm``, or another scheduler used by the system.
@@ -989,15 +989,22 @@ These tasks are independent, so users may set some values to "TRUE" and others t
 
 Set Up the Python and Other Environment Parameters
 ----------------------------------------------------
+
 The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f90nml`` available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
 
 .. code-block:: console
 
    module use <path/to/modulefiles>
    module load wflow_<platform>
-   conda activate regional_workflow
 
-This command will activate the ``regional_workflow`` conda environment. The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
+The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
+
+.. code-block:: console
+
+   Please do the following to activate conda:
+       > conda activate regional_workflow
+
+then the user should run ``conda activate regional_workflow``. This will activate the ``regional_workflow`` conda environment. However, the command(s) will vary from system to system. Regardless, the user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
 
 .. code-block:: console
 
