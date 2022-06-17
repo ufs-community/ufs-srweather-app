@@ -104,7 +104,7 @@ Start the container and run an interactive shell within it:
 
 .. code-block:: console
 
-   singularity shell -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp
+   singularity shell -H $HOME/singularity-home -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp
 
 The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
@@ -124,13 +124,8 @@ Set the build environments and modules within the ``ufs-srweather-app`` director
 
    cd ubuntu20.04-gnu9.3-ufs-srwapp/opt/ufs-srweather-app/
    source /usr/share/lmod/6.6/init/profile
-   module use /opt/hpc-modules/modulefiles/stack
-   module load hpc hpc-gnu hpc-openmpi hpc-python
-   module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake gfsio upp
-
-..
-   COMMENT: Removed "ln -s /usr/bin/python3 /usr/bin/python" Check on GCP/Azure, to make sure it's not needed. 
-
+   module use /opt/ufs-srweather-app/modulefiles
+   module load module load build_singularity_gnu
 
 Build the Executables
 ======================
@@ -358,7 +353,7 @@ To restart the container at a later time to run a new experiment, users will nee
 
 .. code-block:: console
 
-   singularity shell -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp
+   singularity shell -H $HOME/singularity-home -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp
 
 Then, users can change the experiment configuration in their ``config.sh`` file, as outlined in :numref:`Section %s <SetUpConfigFileC>`. After adjusting the configuration file, reactivate the regional workflow, as described in :numref:`Section %s <SetUpPythonEnvC>`. Then, follow the steps to generate the experiment. 
 
