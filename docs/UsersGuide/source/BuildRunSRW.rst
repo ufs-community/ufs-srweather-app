@@ -900,7 +900,7 @@ On Linux and Mac:
 Users should ensure that the following packages are installed and up-to-date:
 
 .. code-block:: console
-   
+
    python3 -m pip --version 
    python3 -m pip install --upgrade pip 
    python3 -m ensurepip --default-pip
@@ -1004,7 +1004,7 @@ Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflo
 Activate the Workflow Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``regional_workflow`` environment can be activated as following for <platform>="macos", or "<platorm>=linux":
+The ``regional_workflow`` environment can be activated as following for ``<platform>="macos"``, or ``"<platorm>=linux"``:
 
 .. code-block:: console
 
