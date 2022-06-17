@@ -125,7 +125,7 @@ Set the build environments and modules within the ``ufs-srweather-app`` director
    cd ubuntu20.04-gnu9.3-ufs-srwapp/opt/ufs-srweather-app/
    source /usr/share/lmod/6.6/init/profile
    module use /opt/ufs-srweather-app/modulefiles
-   module load module load build_singularity_gnu
+   module load build_singularity_gnu
 
 Build the Executables
 ======================
