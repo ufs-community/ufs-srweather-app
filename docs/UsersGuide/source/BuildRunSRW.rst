@@ -607,91 +607,101 @@ settings. There is usually no need for a user to modify the default configuratio
 User-specific configuration: ``config.sh``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The user must specify certain basic information about the experiment in a ``config.sh`` file located in the ``ufs-srweather-app/regional_workflow/ush`` directory. Two example templates are provided in that directory: ``config.community.sh`` and ``config.nco.sh``. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and will be fully supported for this release. The operational/NCO mode will typically be used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` shows the configuration variables, along with their default values in ``config_default.sh`` and the values defined in ``config.community.sh``.
+The user must specify certain basic information about the experiment in a ``config.sh`` file located in the ``ufs-srweather-app/regional_workflow/ush`` directory. Two example templates are provided in that directory: ``config.community.sh`` and ``config.nco.sh``. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and is fully supported for this release. The operational/NCO mode is typically used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` shows the configuration variables that appear in the ``config.community.sh``, along with their default values in ``config_default.sh`` and the values defined in ``config.community.sh``.
 
 .. _ConfigCommunity:
 
 .. table::   Configuration variables specified in the config.community.sh script
 
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | **Parameter**                  | **Default Value** | **config.community.sh Value**                          |
-   +================================+===================+========================================================+
-   | MACHINE                        | "BIG_COMPUTER"    | "hera"                                                 |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | ACCOUNT                        | "project_name"    | "an_account"                                           |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXPT_SUBDIR                    | ""                | "test_CONUS_25km_GFSv16"                               |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | VERBOSE                        | "TRUE"            | "TRUE"                                                 |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | RUN_ENVIR                      | "nco"             | "community"                                            |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | PREEXISTING_DIR_METHOD         | "delete"          | "rename"                                               |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | PREDEF_GRID_NAME               | ""                | "RRFS_CONUS_25km"                                      |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | GRID_GEN_METHOD                | "ESGgrid"         | "ESGgrid"                                              |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | QUILTING                       | "TRUE"            | "TRUE"                                                 |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | CCPP_PHYS_SUITE                | "FV3_GSD_V0"      | "FV3_GFS_v16"                                          |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | FCST_LEN_HRS                   | "24"              | "48"                                                   |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | LBC_SPEC_INTVL_HRS             | "6"               | "6"                                                    |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | DATE_FIRST_CYCL                | "YYYYMMDD"        | "20190615"                                             |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | DATE_LAST_CYCL                 | "YYYYMMDD"        | "20190615"                                             |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | CYCL_HRS                       | ("HH1" "HH2")     | "00"                                                   |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_NAME_ICS             | "FV3GFS"          | "FV3GFS"                                               |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_NAME_LBCS            | "FV3GFS"          | "FV3GFS"                                               |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | FV3GFS_FILE_FMT_ICS            | "nemsio"          | "grib2"                                                |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | FV3GFS_FILE_FMT_LBCS           | "nemsio"          | "grib2"                                                |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | WTIME_RUN_FCST                 | "04:30:00"        | "01:00:00"                                             |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | USE_USER_STAGED_EXTRN_FILES    | "FALSE"           | "TRUE"                                                 |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASEDIR_ICS   | ""                | "/scratch2/BMC/det/UFS_SRW_app/v1p0/model_data/FV3GFS" |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_FILES_ICS            | ""                | "gfs.pgrb2.0p25.f000"                                  |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/path/to/model_data/FV3GFS"                           |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006"                                  |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | MODEL                          | ""                | FV3_GFS_v16_CONUS_25km"                                |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | METPLUS_PATH                   | ""                | "/path/to/METPlus"                                     |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | MET_INSTALL_DIR                | ""                | "/path/to/MET"                                         |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | CCPA_OBS_DIR                   | ""                | "/path/to/processed/CCPA/data"                         |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | MRMS_OBS_DIR                   | ""                | "/path/to/processed/MRMS/data"                         |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | NDAS_OBS_DIR                   | ""                | "/path/to/processed/NDAS/data"                         |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | RUN_TASK_GET_OBS_CCPA          | "FALSE"           | "FALSE"                                                |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | RUN_TASK_GET_OBS_MRMS          | "FALSE"           | "FALSE"                                                |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | RUN_TASK_GET_OBS_NDAS          | "FALSE"           | "FALSE"                                                |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | RUN_TASK_VX_GRIDSTAT           | "FALSE"           | "FALSE"                                                |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | RUN_TASK_VX_POINTSTAT          | "FALSE"           | "FALSE"                                                |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | RUN_TASK_VX_ENSGRID            | "FALSE"           | "FALSE"                                                |
-   +--------------------------------+-------------------+--------------------------------------------------------+
-   | RUN_TASK_VX_ENSPOINT           | "FALSE"           | "FALSE"                                                |
-   +--------------------------------+-------------------+--------------------------------------------------------+
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | **Parameter**                  | **Default Value** | **config.community.sh Value**                                                    |
+   +================================+===================+==================================================================================+
+   | MACHINE                        | "BIG_COMPUTER"    | "hera"                                                                           |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | ACCOUNT                        | "project_name"    | "an_account"                                                                     |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | EXPT_SUBDIR                    | ""                | "test_CONUS_25km_GFSv16"                                                         |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | COMPILER                       | "intel"           | "intel"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | VERBOSE                        | "TRUE"            | "TRUE"                                                                           |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_ENVIR                      | "nco"             | "community"                                                                      |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | PREEXISTING_DIR_METHOD         | "delete"          | "rename"                                                                         |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | PREDEF_GRID_NAME               | ""                | "RRFS_CONUS_25km"                                                                |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | DO_ENSEMBLE                    | "FALSE"           | "FALSE"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | NUM_ENS_MEMBERS                | "1"               | "2"                                                                              |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | QUILTING                       | "TRUE"            | "TRUE"                                                                           |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | CCPP_PHYS_SUITE                | "FV3_GFS_v16"     | "FV3_GFS_v16"                                                                    |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | FCST_LEN_HRS                   | "24"              | "12"                                                                             |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | LBC_SPEC_INTVL_HRS             | "6"               | "6"                                                                              |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | DATE_FIRST_CYCL                | "YYYYMMDD"        | "20190615"                                                                       |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | DATE_LAST_CYCL                 | "YYYYMMDD"        | "20190615"                                                                       |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | CYCL_HRS                       | ("HH1" "HH2")     | "18"                                                                             |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | EXTRN_MDL_NAME_ICS             | "FV3GFS"          | "FV3GFS"                                                                         |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | EXTRN_MDL_NAME_LBCS            | "FV3GFS"          | "FV3GFS"                                                                         |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | FV3GFS_FILE_FMT_ICS            | "nemsio"          | "grib2"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | FV3GFS_FILE_FMT_LBCS           | "nemsio"          | "grib2"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | WTIME_RUN_FCST                 | "04:30:00"        | "02:00:00"                                                                       |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | USE_USER_STAGED_EXTRN_FILES    | "FALSE"           | "TRUE"                                                                           |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | EXTRN_MDL_SOURCE_BASEDIR_ICS   | ""                | "/scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518" |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | EXTRN_MDL_FILES_ICS            | ""                | "gfs.pgrb2.0p25.f000"                                                            |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | EXTRN_MDL_SOURCE_BASEDIR_LBCS  | ""                | "/scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518" |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | EXTRN_MDL_FILES_LBCS           | ""                | "gfs.pgrb2.0p25.f006" "gfs.pgrb2.0p25.f012"                                      |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | MODEL                          | ""                | FV3_GFS_v16_CONUS_25km"                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | METPLUS_PATH                   | ""                | "/path/to/METPlus"                                                               |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | MET_INSTALL_DIR                | ""                | "/path/to/MET"                                                                   |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | CCPA_OBS_DIR                   | ""                | "/path/to/processed/CCPA/data"                                                   |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | MRMS_OBS_DIR                   | ""                | "/path/to/processed/MRMS/data"                                                   |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | NDAS_OBS_DIR                   | ""                | "/path/to/processed/NDAS/data"                                                   |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_TASK_MAKE_GRID             | "TRUE"            | "TRUE"                                                                           |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_TASK_MAKE_OROG             | "TRUE"            | "TRUE"                                                                           |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_TASK_MAKE_SFC_CLIMO        | "TRUE"            | "TRUE"                                                                           |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_TASK_GET_OBS_CCPA          | "FALSE"           | "FALSE"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_TASK_GET_OBS_MRMS          | "FALSE"           | "FALSE"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_TASK_GET_OBS_NDAS          | "FALSE"           | "FALSE"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_TASK_VX_GRIDSTAT           | "FALSE"           | "FALSE"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_TASK_VX_POINTSTAT          | "FALSE"           | "FALSE"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_TASK_VX_ENSGRID            | "FALSE"           | "FALSE"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | RUN_TASK_VX_ENSPOINT           | "FALSE"           | "FALSE"                                                                          |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
 
 
 
@@ -708,7 +718,7 @@ Next, edit the new ``config.sh`` file to customize it for your machine. At a min
 
 .. note::
 
-   Generic Linux and MacOS users should refer to :numref:`Section %s <MacConfig>` for details on configuring an experiment and python environment. 
+   Generic Linux and MacOS users should refer to :numref:`Section %s <LinuxMacEnvConfig>` for details on configuring an experiment and python environment. 
 
 Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
@@ -858,63 +868,46 @@ This command will activate the ``regional_workflow`` conda environment. The user
    source ~/.bashrc
    conda activate regional_workflow
 
-To configure an experiment and python environment for a general Linux system, see  :numref:`Step %s <LinuxConfig>` , and for a MacOS see :numref:`Step %s <MacConfig>`. 
+To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>`.
 
-.. _LinuxConfig:
+.. _LinuxMacEnvConfig:
 
-Configuring Python Environment and an Experiment on general/Linux system
-------------------------------------------------------------------------
+Configuring the Python Environment on a General Linux/MacOS System
+------------------------------------------------------------------------------
 
-Create a virtual environment, e.g., ``regional_workflow``, store it in your ``$HOME/venv/`` directory, and install additional packges ``jinja2``, ``pyyaml``, ``f90nml``:
-
-.. code-block:: console
-
-   [[ -d $HOME/venv ]] | mkdir -p $HOME/venv
-   python3 -m venv $HOME/venv/regional_workflow 
-   source $HOME/venv/regional_workflow/bin/activate
-   python3 -m pip install jinja2
-   python3 -m pip install pyyaml
-   python3 -m pip install f90nml
-
-.. _MacConfig:
-
-Configuring Python Environment and an Experiment on General/Linux and MacOS systems
------------------------------------------------------------------------------------
-
-The configuration process for Linux and MacOS systems is similar to that for other systems, except for a few extra steps. 
+The configuration process for Linux and MacOS systems is similar to that for other systems, but requires a few extra steps.
 
 .. note::
     Examples in this subsection presume that the user is running Terminal.app with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
 
 .. _MacMorePackages:
 
-Install Additional Packages on Mac OS
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Check the version of bash, and upgrade it if it is lower than 4. Additionally, install the ``coreutils`` package:
+On Mac
+^^^^^^^^^^^
+MacOS requires the installation of a few additional packages and, possibly, and upgrade to bash:
 
 .. code-block:: console
 
    bash --version
    brew upgrade bash
    brew install coreutils
-   
-.. _MacVEnv:
 
-Create a Python Virtual Environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _LinuxMacVEnv: 
 
-A python virtual environment is needed for running the SRW, and a few additional steps for MacOS (may or may not work for Linux):
+On Linux and Mac:
+^^^^^^^^^^^^^^^^^^^
+
+Users should ensure that the following packages are installed and up-to-date:
 
 .. code-block:: console
-
+   
    python3 -m pip --version 
    python3 -m pip install --upgrade pip 
    python3 -m ensurepip --default-pip
-   python3 -m pip install ruby                        OR: brew install ruby
+   python3 -m pip install ruby             OR(on MacOS only): brew install ruby
 
-The example below shows the steps to create and activate a``regional_workflow`` environment in user's home directory, ``$HOME/venv``, and installing required python modules.
-	
+Users must create a virtual environment (``regional_workflow``), store it in their ``$HOME/venv/`` directory, and install additional python packages:
+
 .. code-block:: console
 
    [[ -d $HOME/venv ]] | mkdir -p $HOME/venv
@@ -924,11 +917,16 @@ The example below shows the steps to create and activate a``regional_workflow`` 
    python3 -m pip install pyyaml
    python3 -m pip install f90nml
 
+The virtual environment can be deactivated by running the ``deactivate`` command. The virtual environment built here will be reactivated in :numref:`Step %s <LinuxMacActivateWFenv>` and needs to be used to generate the workflow and run the experiment. 
 
-The virtual environment can be deactivated by running the ``deactivate`` command. The virtual environment built here will be reactivated in :numref:`Step %s <MacActivateWFenv>` and needs to be used to generate the workflow and run the experiment. 
 
-Install Rocoto
-^^^^^^^^^^^^^^^^^^
+.. _LinuxMacExptConfig:
+
+Configuring an Experiment on General Linux and MacOS Systems
+---------------------------------------------------------------------
+
+Optional: Install Rocoto
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
    Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and had limited testing on general Linux plaforms. 
@@ -974,7 +972,7 @@ For :ref:`Option 2 <MacDetails>`, add the following information to ``config.sh``
 
 Configure the Machine File
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Configure a ``macos.sh`` or ``./linux.sh`` machine file in ``$SRW/regional_workflow/ush/machine/`` based on the number of CPUs in the system (8 or 4 in MacOS), or a given number for Linux systems, ``<ncores>``. Job scheduler, ``<sched>``, could be either ``none``, or ``slurm``, or another one used by the system.
+Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflow/ush/machine/`` based on the number of CPUs in the system (8 or 4 in MacOS), or a given number for Linux systems, ``<ncores>``. Job scheduler, ``<sched>`` options are ``none``, ``slurm``, or another scheduler used by the system.
 
 .. code-block:: console
 
@@ -1001,7 +999,7 @@ Configure a ``macos.sh`` or ``./linux.sh`` machine file in ``$SRW/regional_workf
    RUN_CMD_FCST='mpirun -np ${PE_MEMBER01}'
    RUN_CMD_POST="mpirun -np 4"
 
-.. _MacActivateWFenv:
+.. _LinuxMacActivateWFenv:
 
 Activate the Workflow Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1013,7 +1011,7 @@ The ``regional_workflow`` environment can be activated as following for <platfor
 	cd $SRW/regional_workflow/ush
  	module load wflow_<platform>
 
-This should activate the ``regional_workflow`` environment created in :numref:`Step %s <MacVEnv>`. From here, the user may continue to the :ref:`next step <GenerateWorkflow>` and generate the regional workflow. 
+This should activate the ``regional_workflow`` environment created in :numref:`Step %s <LinuxMacVEnv>`. From here, the user may continue to the :ref:`next step <GenerateWorkflow>` and generate the regional workflow. 
 
 
 .. _GenerateWorkflow: 

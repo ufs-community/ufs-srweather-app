@@ -110,7 +110,7 @@ The following software is also required to run the SRW Application, but the :ter
 
    * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user (if desired). 
 
-For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :numref:`Chapter %s <MacInstall>` and :numref:`Chapter %s <MacConfig>` for further guidance on installing these prerequisites on MacOS.
+For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :numref:`Chapter %s <MacInstall>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
 
 * bash v4.x
 * `gcc@11` compiler package

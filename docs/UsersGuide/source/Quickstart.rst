@@ -309,7 +309,7 @@ Check the batch script output file in your experiment directory for a “SUCCESS
             when running a 48-h forecast on the 25-km CONUS domain. For a brief description of tasks, see :numref:`Table %s <WorkflowTasksTable>`. 
 
    +------------+------------------------+----------------+----------------------------+
-   | **Stage/** | **Task Run Script**    | **Number of**  | **Wall clock time (H:MM)** |
+   | **Stage/** | **Task Run Script**    | **Number of**  | **Wall clock time (H:mm)** |
    | **step**   |                        | **Processors** |                            |             
    +============+========================+================+============================+
    | 1          | run_get_ics.sh         | 1              | 0:20 (depends on HPSS vs   |
@@ -349,11 +349,15 @@ Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory.
 New Experiment
 ===============
 
-To restart the container at a later time to run a new experiment, users will need to rerun the following command to restart the shell:
+To restart the container at a later time to run a new experiment, users will need to rerun the following commands to restart the shell and load the required modules:
 
 .. code-block:: console
 
    singularity shell -H $HOME/singularity-home -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp
+   cd ubuntu20.04-gnu9.3-ufs-srwapp/opt/ufs-srweather-app/
+   source /usr/share/lmod/6.6/init/profile
+   module use /opt/ufs-srweather-app/modulefiles
+   module load build_singularity_gnu
 
 Then, users can change the experiment configuration in their ``config.sh`` file, as outlined in :numref:`Section %s <SetUpConfigFileC>`. After adjusting the configuration file, reactivate the regional workflow, as described in :numref:`Section %s <SetUpPythonEnvC>`. Then, follow the steps to generate the experiment. 
 
