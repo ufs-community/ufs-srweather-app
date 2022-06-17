@@ -1004,7 +1004,7 @@ Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflo
 Activate the Workflow Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``regional_workflow`` environment can be activated as following for ``<platform>="macos"``, or ``"<platorm>=linux"``:
+The ``regional_workflow`` environment can be activated as follows for ``<platform>="macos"``, or ``"<platorm>=linux"``:
 
 .. code-block:: console
 
