@@ -18,8 +18,8 @@ UFS Short-Range Weather App Users Guide
    Components
    Include-HPCInstall
    InputOutputFiles
-   ConfigWorkflow
    LAMGrids
+   ConfigWorkflow
    RocotoInfo
    WE2Etests
    Graphics

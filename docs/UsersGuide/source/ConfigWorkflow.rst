@@ -566,6 +566,46 @@ The parameters below turn on SPP in Noah or RUC LSM (support for Noah MP is in p
 ``LSM_SPP_EACH_STEP``: (Default: "true") 
    When set to "TRUE", it sets ``lndp_each_step=.true.`` and perturbs each time step. 
 
+Predefined Grid Parameters
+==========================
+``PREDEF_GRID_NAME``: (Default: "")
+   This parameter indicates which (if any) predefined regional grid to use for the experiment. Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid settings can be viewed in the script ``ush/set_predef_grid_params.sh``. 
+   
+   **Currently supported options:**
+   
+   | ``"RRFS_CONUS_25km"``
+   | ``"RRFS_CONUS_13km"``
+   | ``"RRFS_CONUS_3km"``
+   | ``"SUBCONUS_Ind_3km"`` 
+   
+   **Other valid values include:**
+
+   | ``"CONUS_25km_GFDLgrid"`` 
+   | ``"CONUS_3km_GFDLgrid"``
+   | ``"EMC_AK"`` 
+   | ``"EMC_HI"`` 
+   | ``"EMC_PR"`` 
+   | ``"EMC_GU"`` 
+   | ``"GSL_HAFSV0.A_25km"`` 
+   | ``"GSL_HAFSV0.A_13km"`` 
+   | ``"GSL_HAFSV0.A_3km"`` 
+   | ``"GSD_HRRR_AK_50km"``
+   | ``"RRFS_AK_13km"``
+   | ``"RRFS_AK_3km"`` 
+   | ``"RRFS_CONUScompact_25km"``
+   | ``"RRFS_CONUScompact_13km"``
+   | ``"RRFS_CONUScompact_3km"``
+   | ``"RRFS_NA_13km"`` 
+   | ``"RRFS_NA_3km"``
+   | ``"RRFS_SUBCONUS_3km"`` 
+   | ``"WoFS_3km"``
+
+.. note::
+
+   * If ``PREDEF_GRID_NAME`` is set to a valid predefined grid name, the grid generation method, the (native) grid parameters, and the write component grid parameters are set to predefined values for the specified grid, overwriting any settings of these parameters in the user-specified experiment configuration file (``config.sh``). In addition, if the time step ``DT_ATMOS`` and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) are not specified in that configuration file, they are also set to predefined values for the specified grid.
+
+   * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies that the user will provide the native grid parameters in the user-specified experiment configuration file (``config.sh``).  In this case, the grid generation method, the native grid parameters, the write component grid parameters, the main time step (``DT_ATMOS``), and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) must be set in the configuration file. Otherwise, the values of the parameters in the default experiment configuration file (``config_defaults.sh``) will be used.
+
 
 .. _ConfigParameters:
 
@@ -765,48 +805,6 @@ Write-Component (Quilting) Parameters
 
 ``WRTCMP_dy``: (Default: "")
    Grid cell size (in meters) along the y-axis of the Lambert conformal projection. 
-
-
-Predefined Grid Parameters
-==========================
-``PREDEF_GRID_NAME``: (Default: "")
-   This parameter indicates which (if any) predefined regional grid to use for the experiment. Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid settings can be viewed in the script ``ush/set_predef_grid_params.sh``. 
-   
-   **Currently supported options:**
-   
-   | ``"RRFS_CONUS_25km"``
-   | ``"RRFS_CONUS_13km"``
-   | ``"RRFS_CONUS_3km"``
-   | ``"SUBCONUS_Ind_3km"`` 
-   
-   **Other valid values include:**
-
-   | ``"CONUS_25km_GFDLgrid"`` 
-   | ``"CONUS_3km_GFDLgrid"``
-   | ``"EMC_AK"`` 
-   | ``"EMC_HI"`` 
-   | ``"EMC_PR"`` 
-   | ``"EMC_GU"`` 
-   | ``"GSL_HAFSV0.A_25km"`` 
-   | ``"GSL_HAFSV0.A_13km"`` 
-   | ``"GSL_HAFSV0.A_3km"`` 
-   | ``"GSD_HRRR_AK_50km"``
-   | ``"RRFS_AK_13km"``
-   | ``"RRFS_AK_3km"`` 
-   | ``"RRFS_CONUScompact_25km"``
-   | ``"RRFS_CONUScompact_13km"``
-   | ``"RRFS_CONUScompact_3km"``
-   | ``"RRFS_NA_13km"`` 
-   | ``"RRFS_NA_3km"``
-   | ``"RRFS_SUBCONUS_3km"`` 
-   | ``"WoFS_3km"``
-
-.. note::
-
-   * If ``PREDEF_GRID_NAME`` is set to a valid predefined grid name, the grid generation method, the (native) grid parameters, and the write component grid parameters are set to predefined values for the specified grid, overwriting any settings of these parameters in the user-specified experiment configuration file (``config.sh``). In addition, if the time step ``DT_ATMOS`` and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) are not specified in that configuration file, they are also set to predefined values for the specified grid.
-
-   * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies that the user will provide the native grid parameters in the user-specified experiment configuration file (``config.sh``).  In this case, the grid generation method, the native grid parameters, the write component grid parameters, the main time step (``DT_ATMOS``), and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) must be set in the configuration file. Otherwise, the values of the parameters in the default experiment configuration file (``config_defaults.sh``) will be used.
-
 
 Pre-existing Directory Parameter
 ================================

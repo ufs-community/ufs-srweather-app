@@ -95,7 +95,7 @@ Build the container:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu20.04-gnu9.3-ufs-srwapp-srw-public-v2 docker://noaaepic/ubuntu20.04-gnu9.3-ufs-srwapp:srw-public-v2
+   singularity build --sandbox ubuntu20.04-gnu9.3-ufs-srwapp docker://noaaepic/ubuntu20.04-gnu9.3-ufs-srwapp:srw-public-v2
 
 .. hint::
    If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
@@ -104,7 +104,7 @@ Start the container and run an interactive shell within it:
 
 .. code-block:: console
 
-   singularity shell -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp-srw-public-v2
+   singularity shell -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp
 
 The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
@@ -122,13 +122,14 @@ Set the build environments and modules within the ``ufs-srweather-app`` director
 
 .. code-block:: console
 
-   cd ubuntu20.04-gnu9.3-ufs-srwapp-srw-public-v2/opt/ufs-srweather-app/
-   ln -s /usr/bin/python3 /usr/bin/python
+   cd ubuntu20.04-gnu9.3-ufs-srwapp/opt/ufs-srweather-app/
    source /usr/share/lmod/6.6/init/profile
    module use /opt/hpc-modules/modulefiles/stack
    module load hpc hpc-gnu hpc-openmpi hpc-python
    module load netcdf hdf5 bacio sfcio sigio nemsio w3emc esmf fms crtm g2 png zlib g2tmpl ip sp w3nco cmake gfsio upp
 
+..
+   COMMENT: Removed "ln -s /usr/bin/python3 /usr/bin/python" Check on GCP/Azure, to make sure it's not needed. 
 
 
 Build the Executables
@@ -180,6 +181,7 @@ Next, edit the new ``config.sh`` file to customize it for your experiment. At a 
    MACHINE="SINGULARITY"
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
+   COMPILER="gnu"
 
 Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct paths to the data. The following is a sample for a 12-hour forecast:
 
@@ -191,7 +193,7 @@ Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct pa
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="</path/to/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
    EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012")
 
-On Level 1 systems, ``/path/to/input_model_data/FV3GFS`` should correspond to the location of the machine's global data, which can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Step %s <InitialConditions>`. 
+On Level 1 systems, ``/path/to/input_model_data/FV3GFS`` should correspond to the location of the machine's global data, which can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
 
 On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonEnvC>`. On other Level 1 systems, additional file paths must be set: 
 
@@ -229,6 +231,7 @@ For users interested in experimenting with a different grid, information about t
 
 Activate the Regional Workflow
 ----------------------------------------------
+
 Next, activate the regional workflow: 
 
 .. code-block:: console
@@ -347,6 +350,17 @@ Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory.
 
 .. note::
    On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first two jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided (``sq_job.sh`` and ``qsub_job.sh``, respectively). These examples will need to be adapted to each user's system. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). 
+
+New Experiment
+===============
+
+To restart the container at a later time to run a new experiment, users will need to rerun the following command to restart the shell:
+
+.. code-block:: console
+
+   singularity shell -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp
+
+Then, users can change the experiment configuration in their ``config.sh`` file, as outlined in :numref:`Section %s <SetUpConfigFileC>`. After adjusting the configuration file, reactivate the regional workflow, as described in :numref:`Section %s <SetUpPythonEnvC>`. Then, follow the steps to generate the experiment. 
 
 Plot the Output
 ===============
