@@ -397,7 +397,7 @@ CCPP Parameter
    | ``"FV3_GFS_v16"`` 
    | ``"FV3_RRFS_v1beta"`` 
    | ``"FV3_HRRR"``
-   | ``"FV3_WoFS"``
+   | ``"FV3_WoFS_v0"``
 
    **Other valid values include:**
 
