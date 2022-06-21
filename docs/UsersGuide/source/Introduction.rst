@@ -12,7 +12,7 @@ This documentation provides a :ref:`Quick Start Guide <QuickstartC>` for running
 
 The SRW App v2.0.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2022, June 17). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
+UFS Development Team. (2022, June 22). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
 
 
 How to Use This Document
@@ -125,9 +125,6 @@ Optional but recommended prerequisites for all systems:
 * Rocoto Workflow Management System (1.3.1)
 * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` for graphics
 
-..
-   COMMENT: Lmod is listed as required
-
 .. _ComponentsOverview: 
 
 SRW App Components Overview 
@@ -136,10 +133,7 @@ SRW App Components Overview
 Pre-processor Utilities and Initial Conditions
 ------------------------------------------------
 
-The SRW Application includes a number of pre-processing utilities that initialize and prepare the model. Tasks include generating a regional grid along with :term:`orography` and surface climatology files for that grid. One pre-processing utility converts the raw external model data into initial and lateral boundary condition files in netCDF format. Later, these files are used as input to the atmospheric model (FV3-LAM). Additional information about the pre-processor utilities can be found in :numref:`Chapter %s <Utils>` and in the `UFS_UTILS User’s Guide <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_7_0/>`__.
-
-..
-   COMMENT: Update link!
+The SRW Application includes a number of pre-processing utilities that initialize and prepare the model. Tasks include generating a regional grid along with :term:`orography` and surface climatology files for that grid. One pre-processing utility converts the raw external model data into initial and lateral boundary condition files in netCDF format. Later, these files are used as input to the atmospheric model (FV3-LAM). Additional information about the pre-processor utilities can be found in :numref:`Chapter %s <Utils>`, in the `UFS_UTILS Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_7_0/>`__, and in the `UFS_UTILS Scientific Documentation <https://ufs-community.github.io/UFS_UTILS/ver-1.7.0/index.html>`__.
 
 Forecast Model
 -----------------
@@ -435,8 +429,11 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | UFS SRW Application        | https://ufs-srweather-app.readthedocs.io/en/release-public-v2/                  |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | UFS_UTILS User's           | https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_7_0/                    |
-   | Guide                      |                                                                                 |
+   | UFS_UTILS Technical        | https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_7_0/                    |
+   | Documentation              |                                                                                 |
+   +----------------------------+---------------------------------------------------------------------------------+
+   | UFS_UTILS Scientific       | https://ufs-community.github.io/UFS_UTILS/ver-1.7.0/index.html                  |
+   | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | UFS Weather Model          | https://ufs-weather-model.readthedocs.io/en/release-public-v3/                  |
    | User's Guide               |                                                                                 |
@@ -462,9 +459,6 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
    | Unified Post Processor     | https://upp.readthedocs.io/en/upp_v10.1.0/                                      |
    +----------------------------+---------------------------------------------------------------------------------+
-
-..
-   COMMENT: Update UFS_UTILS links. 
 
 The UFS community is encouraged to contribute to the development effort of all related
 utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`. Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository or the `regional_workflow <https://github.com/ufs-community/regional_workflow>`__ repository should follow the guidelines contained in the :ref:`SRW App Contributor's Guide <ContributorsGuide>`.
