@@ -55,7 +55,7 @@ If the ``cache`` and ``tmp`` directories do not exist already, they must be crea
 
 .. _BuildC:
 
-Set Up the Container
+Build the Container
 ------------------------
 
 Build the container:
@@ -66,6 +66,51 @@ Build the container:
 
 .. hint::
    If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
+
+.. _WorkOnHPC:
+
+Allocate a Compute Node
+--------------------------
+
+Those *not* working on HPC systems may skip to the :ref:`next step <RunContainer>`. 
+On HPC systems (including NOAA's Cloud platforms), allocate a compute node on which to run the SRW App. On NOAA's Cloud platforms, the following commands will allocate a compute node:
+
+.. code-block:: console
+
+   salloc -N 1 
+   module load gnu openmpi
+   mpirun -n 1 hostname
+   ssh <hostname>
+
+The third command will output a hostname. Replace ``<hostname>`` in the last command with the output from the third command. After "ssh-ing" to the compute node in the last command, build and run the SRW App from that node. 
+
+The appropriate commands on other Level 1 platforms will vary, and users should consult the `documentation <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ for those platforms. In general, the allocation command will follow one of these two patterns depending on whether the system uses the Slurm or PBS resource manager respectively:
+
+.. code-block:: console
+
+   salloc -N 1 -n <cores-per-node> -A <account> -t <time> -q <queue/qos> --partition=<system> [-M <cluster>]
+   qsub -I -lwalltime=<time> -A <account> -q <destination> -lselect=1:ncpus=36:mpiprocs=36
+
+For example, on Orion, which uses the Slurm resource manager, run:
+
+.. code-block:: console
+
+   salloc -N 1 -n 40 -A epic-ps -t 2:30:00 -q batch --partition=orion
+
+For more information on the ``salloc`` command options, see Slurm's `documentation <https://slurm.schedmd.com/salloc.html>`__. 
+
+On Cheyenne, which uses the PBS resource manager, run:
+
+.. code-block:: console
+
+   qsub -I -lwalltime=1:00:00 -A scsg0002 -q regular -lselect=1:ncpus=36:mpiprocs=36
+
+For more information on the ``qsub`` command options, see the `PBS Manual §2.59.3 <https://2021.help.altair.com/2021.1/PBSProfessional/PBS2021.1.pdf>`__, (p. 1416).
+
+.. _RunContainer:
+
+Start Up the Container
+----------------------
 
 Start the container and run an interactive shell within it: 
 
@@ -101,16 +146,6 @@ Set the build environments and modules within the ``ufs-srweather-app`` director
    source /usr/share/lmod/6.6/init/profile
    module use /opt/ufs-srweather-app/modulefiles
    module load build_singularity_gnu
-
-Build the Executables
-======================
-
-From the ``ufs-srweather-app`` directory, ``cd`` into the build directory and run the script that builds the SRW App: 
-
-.. code-block:: console
-
-   cd build
-   source build-srw.sh
 
 Download and Stage the Data
 ============================
@@ -172,6 +207,7 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
    #. Copy the section of code starting after ``# UFS SRW App specific paths``. For example, on Orion, the following text must be copied:
 
       .. code-block:: console
+         
          staged_data_dir="/work/noaa/fv3-cam/UFS_SRW_App/v2p0"
          FIXgsm=${FIXgsm:-"${staged_data_dir}/fix/fix_am"}
          FIXaer=${FIXaer:-"${staged_data_dir}/fix/fix_aer"}
@@ -213,49 +249,6 @@ Next, activate the regional workflow:
    conda activate regional_workflow
 
 The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. 
-
-
-.. _WorkOnHPC:
-
-Allocate a Compute Node
---------------------------
-
-Those *not* working on HPC systems may skip to the :ref:`next step <GenerateWorkflowC>`. 
-On HPC systems (including NOAA's Cloud platforms), allocate a compute node on which to run the SRW App. On NOAA's Cloud platforms, the following commands will allocate a compute node:
-
-.. code-block:: console
-
-   salloc -N 1 
-   module load gnu openmpi
-   mpirun -n 1 hostname
-   ssh <hostname>
-
-The third command will output a hostname. Replace ``<hostname>`` in the last command with the output from the third command. After "ssh-ing" to the compute node in the last command, build and run the SRW App from that node. 
-
-The appropriate commands on other Level 1 platforms will vary, and users should consult the `documentation <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ for those platforms. In general, the allocation command will follow one of these two patterns depending on whether the system uses the Slurm or PBS resource manager respectively:
-
-.. code-block:: console
-
-   salloc -N 1 -n <cores-per-node> -A <account> -t <time> -q <queue/qos> --partition=<system> [-M <cluster>]
-   qsub -I -lwalltime=<time> -A <account> -q <destination> -lselect=1:ncpus=36:mpiprocs=36
-
-For example, on Orion, which uses the Slurm resource manager, run:
-
-.. code-block:: console
-
-   salloc -N 1 -n 40 -A epic-ps -t 2:30:00 -q batch --partition=orion
-
-For more information on the ``salloc`` command options, see Slurm's `documentation <https://slurm.schedmd.com/salloc.html>`__. 
-
-On Cheyenne, which uses the PBS resource manager, run:
-
-.. code-block:: console
-
-   qsub -I -lwalltime=1:00:00 -A scsg0002 -q regular -lselect=1:ncpus=36:mpiprocs=36
-
-For more information on the ``qsub`` command options, see the `PBS Manual §2.59.3 <https://2021.help.altair.com/2021.1/PBSProfessional/PBS2021.1.pdf>`__, (p. 1416).
-
-
 
 .. _GenerateWorkflowC: 
 
