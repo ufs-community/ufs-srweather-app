@@ -10,7 +10,7 @@ This chapter walks users through how to build and run the "out-of-the-box" case 
 
 .. attention::
 
-   The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. This chapter can also serve as a starting point for running the SRW App on other systems, but the user may need to perform additional troubleshooting. 
+   The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. This chapter can also serve as a starting point for running the SRW App on other systems (including generic Linux/MacOS system), but the user may need to perform additional troubleshooting. 
 
 .. note::
    The :ref:`container approach <QuickstartC>` is recommended for a smoother first-time build and run experience. Building without a container allows for the use of the Rocoto workflow manager and may allow for more customization. However, the non-container approach requires more in-depth system-based knowledge, especially on Level 3 and 4 systems, so it is less appropriate for beginners. 
@@ -1378,7 +1378,16 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
 
 Automated Option
 ----------------------
-For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add a crontab entry using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *`` or ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+
+For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add the following commands to their ``config.sh`` file:
+
+.. code-block:: console
+
+   USE_CRON_TO_RELAUNCH="TRUE"
+   CRON_RELAUNCH_INTVL_MNTS="02"
+
+
+Alternatively, the user can add a crontab entry using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *`` or ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
 
 .. code-block:: console
 
