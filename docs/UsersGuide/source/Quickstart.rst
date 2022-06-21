@@ -207,7 +207,7 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
    #. Copy the section of code starting after ``# UFS SRW App specific paths``. For example, on Orion, the following text must be copied:
 
       .. code-block:: console
-         
+
          staged_data_dir="/work/noaa/fv3-cam/UFS_SRW_App/v2p0"
          FIXgsm=${FIXgsm:-"${staged_data_dir}/fix/fix_am"}
          FIXaer=${FIXaer:-"${staged_data_dir}/fix/fix_aer"}
@@ -215,8 +215,6 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
          TOPO_DIR=${TOPO_DIR:-"${staged_data_dir}/fix/fix_orog"}
          SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"${staged_data_dir}/fix/fix_sfc_climo"}
          DOMAIN_PREGEN_BASEDIR=${DOMAIN_PREGEN_BASEDIR:-"${staged_data_dir}/FV3LAM_pregen"}
-
-
 
    #. Exit the system-specific file and open ``singularity.sh``. 
    #. Comment out or delete the corresponding chunk of text in ``singularity.sh``, and paste the correct paths from the system-specific file in its place. For example, on Orion, delete the text below from ``singularity.sh``, and replace it with the Orion-specific text copied in the previous step. 

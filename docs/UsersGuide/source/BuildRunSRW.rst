@@ -754,25 +754,25 @@ On Hera:
 
 .. code-block:: console
 
-   "/scratch2/BMC/det/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
+   "/scratch2/BMC/det/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On Jet: 
 
 .. code-block:: console
 
-   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
+   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On Orion: 
 
 .. code-block:: console
 
-   "/work/noaa/fv3-cam/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
+   "/work/noaa/fv3-cam/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On Gaea: 
 
 .. code-block:: console
 
-   "/lustre/f2/pdata/ncep/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
+   "/lustre/f2/pdata/ncep/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On NOAA Cloud Systems:
 
@@ -782,9 +782,9 @@ On NOAA Cloud Systems:
    ACCOUNT="none"
    EXPT_SUBDIR="<expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/FV3GFS/grib2/YYYYMMDDHH/"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/FV3GFS/grib2/<YYYYMMDDHH>/"
    EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/FV3GFS/grib2/YYYYMMDDHH/"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/FV3GFS/grib2/<YYYYMMDDHH>/"
    EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
 
 .. note::
