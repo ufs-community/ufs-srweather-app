@@ -390,11 +390,11 @@ Generate the Forecast Experiment
 =================================
 Generating the forecast experiment requires three steps:
 
-* :ref:`Set experiment parameters <ExptConfig>`
-* :ref:`Set Python and other environment parameters <SetUpPythonEnv>`
-* :ref:`Run a script to generate the experiment workflow <GenerateWorkflow>`
+#. :ref:`Set experiment parameters <ExptConfig>`
+#. :ref:`Set Python and other environment parameters <SetUpPythonEnv>`
+#. :ref:`Run a script to generate the experiment workflow <GenerateWorkflow>`
 
-The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. Information in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>` can help with this. 
+The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to reflect their machine configuration if they are working on a Level 2-4 platform. Information in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>` can help with this. 
 
 .. _ExptConfig:
 
@@ -402,13 +402,6 @@ Set Experiment Parameters
 ---------------------------- 
 
 Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in ``config_defaults.sh`` and in the user-specified ``config.sh`` file. When generating a new experiment, the SRW App first reads and assigns default values from the ``config_defaults.sh`` file. Then, it reads and (re)assigns variables from the user's custom ``config.sh`` file. 
-
-Section Overview: 
-
-   * For background information on ``config_defaults.sh``, read :numref:`Section %s <DefaultConfigSection>`.
-   * Jump to :numref:`Section %s <UserSpecificConfig>` to continue configuring the experiment. 
-   * Go to :numref:`Section %s <LinuxMacEnvConfig>` for additional details on configuring an experiment on a generic Linux or MacOS system.  
-
 
 .. _DefaultConfigSection:
 

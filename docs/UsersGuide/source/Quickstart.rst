@@ -24,15 +24,22 @@ Prerequisites: Install Singularity
 To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://sylabs.io/guides/3.2/user-guide/installation.html#>`__. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
 
 .. warning:: 
-   Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs`. Therefore, it is not possible to build the SRW, which uses the HPC-Stack, inside a Docker container on an HPC system. A Docker image may be pulled, but it must be run inside a container such as Singularity. 
+   Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs`. Therefore, it is not possible to build the SRW, which uses the HPC-Stack, inside a Docker container on an HPC system. However, a Singularity image may be built directly from a Docker image for use on the system.
 
 
-Working in the Cloud
------------------------
+Working in the Cloud or on HPC Systems
+-----------------------------------------
 
-For those working on non-cloud-based systems, skip to :numref:`Step %s <BuildC>`. Users building the SRW App using NOAA's Cloud resources must complete a few additional steps to ensure that the SRW App builds and runs correctly. 
+For users working on systems with limited disk space in their ``/home`` directory, it is recommended to set the ``SINGULARITY_CACHEDIR`` and ``SINGULARITY_TEMPDIR`` environment variables to point to a location with adequate disk space. For example:
 
-On NOAA Cloud systems, certain environment variables must be set *before* building the container:
+.. code-block:: 
+
+   export SINGULARITY_CACHEDIR=</absolute/path/to/writable/directory/cache>
+   export SINGULARITY_TEMPDIR=</absolute/path/to/writable/directory/tmp>
+
+where ``/absolute/path/to/writable/directory/`` refers to a writable directory (usually a project or user directory within ``/lustre``, ``/work``, ``/scratch2``, or ``/glade`` on NOAA Level 1 systems). 
+
+On NOAA Cloud systems, the ``sudo su`` command may also be required:
    
 .. code-block:: 
 
@@ -66,12 +73,20 @@ Start the container and run an interactive shell within it:
 
    singularity shell -H $HOME/singularity-home -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp
 
+..
+   singularity shell -e -B /work:/work -H $HOME/singularity-home ubuntu20.04-gnu9.3-ufs-srwapp.img
+   singularity shell -e -B /<local_base_dir>:/<container_dir_w_same_name> -H $HOME/singularity-home ubuntu20.04-gnu9.3-ufs-srwapp.img
+
 The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
 .. attention::
-   * When binding two directories, they must have the same name. It may be necessary to ``cd`` into the container and create an appropriately named directory in the container using the ``mkdir`` command if one is not already there. 
    * Be sure to bind the directory that contains the experiment data. 
 
+When binding two directories, it is helpful to give them the same name. For example, if the host system's top-level directory is ``/glade``, users can create a ``glade`` directory in the container:
+
+.. code-block:: console
+
+   mkdir <path/to/container>/glade
 
 .. _SetUpBuildC:
 
@@ -154,16 +169,18 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
 
    #. From the ``regional_workflow/ush`` directory, run: ``cd machine``. 
    #. Open the file corresponding to the Level 1 platform in use (e.g., ``vi orion.sh``).
-   #. Copy the section of code starting after ``#UFS SRW App specific paths``. For example, on Orion, the following text must be copied:
+   #. Copy the section of code starting after ``# UFS SRW App specific paths``. For example, on Orion, the following text must be copied:
 
       .. code-block:: console
+         staged_data_dir="/work/noaa/fv3-cam/UFS_SRW_App/v2p0"
+         FIXgsm=${FIXgsm:-"${staged_data_dir}/fix/fix_am"}
+         FIXaer=${FIXaer:-"${staged_data_dir}/fix/fix_aer"}
+         FIXlut=${FIXlut:-"${staged_data_dir}/fix/fix_lut"}
+         TOPO_DIR=${TOPO_DIR:-"${staged_data_dir}/fix/fix_orog"}
+         SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"${staged_data_dir}/fix/fix_sfc_climo"}
+         DOMAIN_PREGEN_BASEDIR=${DOMAIN_PREGEN_BASEDIR:-"${staged_data_dir}/FV3LAM_pregen"}
 
-         FIXgsm=${FIXgsm:-"/work/noaa/global/glopara/fix/fix_am"}
-         FIXaer=${FIXaer:-"/work/noaa/global/glopara/fix/fix_aer"}
-         FIXlut=${FIXlut:-"/work/noaa/global/glopara/fix/fix_lut"}
-         TOPO_DIR=${TOPO_DIR:-"/work/noaa/global/glopara/fix/fix_orog"}
-         SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/work/noaa/global/glopara/fix/fix_sfc_climo"}
-         FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
+
 
    #. Exit the system-specific file and open ``singularity.sh``. 
    #. Comment out or delete the corresponding chunk of text in ``singularity.sh``, and paste the correct paths from the system-specific file in its place. For example, on Orion, delete the text below from ``singularity.sh``, and replace it with the Orion-specific text copied in the previous step. 
@@ -176,7 +193,7 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
          FIXlut=${FIXlut:-"/contrib/global/glopara/fix/fix_lut"}
          TOPO_DIR=${TOPO_DIR:-"/contrib/global/glopara/fix/fix_orog"}
          SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/contrib/global/glopara/fix/fix_sfc_climo"}
-         FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
+         DOMAIN_PREGEN_BASEDIR=${DOMAIN_PREGEN_BASEDIR:-"/needs/to/be/specified"}
 
 On Level 1 systems, it should be possible to continue to the :ref:`next step <SetUpPythonEnvC>` after changing these settings. Detailed guidance on the variables in the code fragment above can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`. 
 
@@ -280,12 +297,11 @@ The regional workflow can be run using standalone shell scripts in cases where t
 
       cp <path-to>/ufs-srweather-app/regional_workflow/ush/wrappers/* .
 
-#. Set the ``OMP_NUM_THREADS`` variable and fix dash/bash shell issue (this ensures the system does not use an alias of ``sh`` to dash). 
+#. Set the ``OMP_NUM_THREADS`` variable. 
 
    .. code-block:: console
 
       export OMP_NUM_THREADS=1
-      sed -i 's/bin\/sh/bin\/bash/g' *sh
 
 #. Run each of the listed scripts in order.  Scripts with the same stage number (listed in :numref:`Table %s <RegionalWflowTasks>`) may be run simultaneously.
 
