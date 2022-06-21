@@ -10,7 +10,7 @@ This chapter walks users through how to build and run the "out-of-the-box" case 
 
 .. attention::
 
-   The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. This chapter can also serve as a starting point for running the SRW App on other systems (including generic Linux/MacOS system), but the user may need to perform additional troubleshooting. 
+   The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. This chapter can also serve as a starting point for running the SRW App on other systems (including generic Linux/Mac systems), but the user may need to perform additional troubleshooting. 
 
 .. note::
    The :ref:`container approach <QuickstartC>` is recommended for a smoother first-time build and run experience. Building without a container allows for the use of the Rocoto workflow manager and may allow for more customization. However, the non-container approach requires more in-depth system-based knowledge, especially on Level 3 and 4 systems, so it is less appropriate for beginners. 
@@ -56,7 +56,7 @@ The UFS Weather Model draws on over 50 code libraries to run its applications. T
 
 Instructions
 -------------------------
-Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) or models that depend on it. Users can either build the HPC-Stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing the HPC-Stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
+Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) that depend on it. Users can either build the HPC-Stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing the HPC-Stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
 
 .. code-block:: console
 
@@ -68,20 +68,20 @@ Users working on systems that fall under `Support Levels 2-4 <https://github.com
 
 For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`. 
 
-After completing installation, continue to the next section.
+After completing installation, continue to the next section (:numref:`Section %s: Download the UFS SRW Application Code <DownloadSRWApp>`). 
 
 .. _DownloadSRWApp:
 
 Download the UFS SRW Application Code
 ======================================
-The SRW Application source code is publicly available on GitHub. To download the SRW App, clone the ``release/public-v2`` branch of the repository:
+The SRW Application source code is publicly available on GitHub. To download the SRW App code, clone the ``release/public-v2`` branch of the repository:
 
 .. code-block:: console
 
    git clone -b release/public-v2 https://github.com/ufs-community/ufs-srweather-app.git
 
 The cloned repository contains the configuration files and sub-directories shown in
-:numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environmental variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the ``$HOME`` directory, the following commands will set an ``$SRW`` environmental variable in a bash or csh shell, respectively:
+:numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environment variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the ``$HOME`` directory, the following commands will set an ``$SRW`` environment variable in a bash or csh shell, respectively:
 
 .. code-block:: console
 
@@ -119,7 +119,7 @@ The cloned repository contains the configuration files and sub-directories shown
    | manage_externals               | Utility for checking out external repositories         |
    +--------------------------------+--------------------------------------------------------+
    | src                            | Contains CMakeLists.txt; external repositories         |
-   |                                | will be cloned in this directory.                      |
+   |                                | will be cloned into this directory.                    |
    +--------------------------------+--------------------------------------------------------+
 
 
@@ -234,7 +234,7 @@ The executables listed in :numref:`Table %s <ExecDescription>` should appear in 
 CMake Approach
 -----------------
 
-Set Up the Workflow Environment
+Set Up the Build Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. attention::
@@ -248,30 +248,32 @@ If the ``devbuild.sh`` approach failed, users need to set up their environment t
    source etc/lmod-setup.sh gaea
    source etc/lmod-setup.csh gaea
 
-If users execute one of the above commands on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in the ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using ``<compiler>``, run:
+If users execute one of the above commands on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). 
+
+From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in the ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using a given ``<compiler>``, run:
 
 .. code-block:: console
 
-   module use <path/to/>modulefiles
+   module use <path/to/modulefiles>
    module load build_<platform>_<compiler>
 
-where ``<path/to/modulefiles/directory>`` is the full path to the ``modulefiles`` directory. This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory.
+where ``<path/to/modulefiles/>`` is the full path to the ``modulefiles`` directory. 
 
-On Level 2-4 systems, users will need to modify certain environment variables, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands despending on whether they are using a bash or csh/tcsh shell, respectively: 
+This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory. On Level 2-4 systems, users will need to modify certain environment variables, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands, depending on whether they are using a bash or csh/tcsh shell, respectively: 
 
 .. code-block::
 
    export <VARIABLE_NAME>=<PATH_TO_MODULE>
    setenv <VARIABLE_NAME> <PATH_TO_MODULE>
 
-However, building the SRW App without Lmod is not supported for this release. Users are encouraged to install Lmod on their system. 
+Note that building the SRW App without Lmod is not supported for this release. It should be possible to do so, but it has not been tested. Users are encouraged to install Lmod on their system. 
 
 .. _BuildCMake:
 
 Build the Executables Using CMake
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In the ``ufs-srweather-app`` directory, create a subdirectory to hold the build's executables: 
+After setting up the build environment in the preceding section, users need to build the executables required to run the SRW App. In the ``ufs-srweather-app`` directory, create a subdirectory to hold the build's executables: 
 
 .. code-block:: console
 
@@ -301,7 +303,7 @@ Additional Details for Building on MacOS
 .. note::
     Users who are **not** building the SRW App on a MacOS machine may skip to the :ref:`next section <BuildExecutables>`. 
 
-The SRW App can be built on MacOS machines, presuming HPC-Stack has already been successfully installed. The following two options have been tested:
+The SRW App can be built on MacOS machines, presuming HPC-Stack has already been installed successfully. The following two options have been tested:
 
 * **Option 1:** MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
 
@@ -341,9 +343,6 @@ Then, users must source the Lmod setup file, just as they would on other systems
    export LDFLAGS="-L${MPI_ROOT}/lib"
 
 In a csh/tcsh shell, users would run ``source etc/lmod-setup.csh macos`` in place of the first line in the code block above. 
-
-.. note::
-   If you execute ``source etc/lmod-setup.sh`` on systems that don't need it, it will simply do a ``module purge``. 
 
 Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` to ``OFF`` in the ``$SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt`` file. This change is optional if using Option 2 to build the SRW App. To make this change using a streamline editor (`sed`), run: 
 
