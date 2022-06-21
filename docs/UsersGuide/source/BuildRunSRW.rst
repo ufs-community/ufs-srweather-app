@@ -424,7 +424,7 @@ settings. There is usually no need for a user to modify the default configuratio
    +======================+==============================================================+
    | Experiment mode      | RUN_ENVIR                                                    | 
    +----------------------+--------------------------------------------------------------+
-   | Machine and queue    | MACHINE, MACHINE_FILE, ACCOUNT, COMPILER                     |
+   | Machine and queue    | MACHINE, MACHINE_FILE, ACCOUNT, COMPILER,                    |
    |                      | NCORES_PER_NODE, LMOD_PATH, BUILD_MOD_FN, WFLOW_MOD_FN,      |
    |                      | SCHED, PARTITION_DEFAULT, CLUSTERS_DEFAULT, QUEUE_DEFAULT,   |
    |                      | PARTITION_HPSS, CLUSTERS_HPSS, QUEUE_HPSS, PARTITION_FCST,   |
@@ -505,7 +505,7 @@ settings. There is usually no need for a user to modify the default configuratio
    |                      | OROG_DIR, RUN_TASK_MAKE_SFC_CLIMO, SFC_CLIMO_DIR             |
    +----------------------+--------------------------------------------------------------+
    | Cycle dependent      | RUN_TASK_GET_EXTRN_ICS, RUN_TASK_GET_EXTRN_LBCS,             |
-   |                      | RUN_TASK_MAKE_ICS, RUN_TASK_MAKE_LBCS, RUN_TASK_RUN_FCST     |
+   |                      | RUN_TASK_MAKE_ICS, RUN_TASK_MAKE_LBCS, RUN_TASK_RUN_FCST,    |
    |                      | RUN_TASK_RUN_POST                                            |
    +----------------------+--------------------------------------------------------------+
    | VX run tasks         | RUN_TASK_GET_OBS_CCPA, RUN_TASK_GET_OBS_MRMS,                |
@@ -513,9 +513,9 @@ settings. There is usually no need for a user to modify the default configuratio
    |                      | RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID,                  |
    |                      | RUN_TASK_VX_ENSPOINT                                         |
    +----------------------+--------------------------------------------------------------+
-   | Surface climatology  | SFC_CLIMO_FIELDS, FIXgsm, TOPO_DIR, SFC_CLIMO_INPUT_DIR,     |
-   |                      | FNGLAC, FNMXIC, FNTSFC, FNSNOC, FNZORC, FNAISC, FNSMCC,      |
-   |                      | FNMSKH, FIXgsm_FILES_TO_COPY_TO_FIXam,                       |
+   | Fixed File Parameters| FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR,       |
+   |                      | FNGLAC, FNMXIC, FNTSFC, FNSNOC, FNZORC,                      |
+   |                      | FNAISC, FNSMCC, FNMSKH, FIXgsm_FILES_TO_COPY_TO_FIXam,       |
    |                      | FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING,                      |
    |                      | FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING,                  |
    |                      | CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING                        |
@@ -563,7 +563,7 @@ settings. There is usually no need for a user to modify the default configuratio
    | Maximum attempt      | MAXTRIES_MAKE_GRID, MAXTRIES_MAKE_OROG,                      |
    |                      | MAXTRIES_MAKE_SFC_CLIMO, MAXTRIES_GET_EXTRN_ICS,             |
    |                      | MAXTRIES_GET_EXTRN_LBCS, MAXTRIES_MAKE_ICS,                  |
-   |                      | MAXTRIES_MAKE_LBCS, MAXTRIES_RUN_FCST, MAXTRIES_RUN_POST     |
+   |                      | MAXTRIES_MAKE_LBCS, MAXTRIES_RUN_FCST, MAXTRIES_RUN_POST,    |
    |                      | MAXTRIES_GET_OBS_CCPA, MAXTRIES_GET_OBS_MRMS,                |
    |                      | MAXTRIES_GET_OBS_NDAS, MAXTRIES_VX_GRIDSTAT,                 |
    |                      | MAXTRIES_VX_GRIDSTAT_REFC, MAXTRIES_VX_GRIDSTAT_RETOP,       |
@@ -576,9 +576,7 @@ settings. There is usually no need for a user to modify the default configuratio
    |                      | MAXTRIES_VX_ENSGRID_PROB_RETOP, MAXTRIES_VX_ENSPOINT,        |
    |                      | MAXTRIES_VX_ENSPOINT_MEAN, MAXTRIES_VX_ENSPOINT_PROB         |
    +----------------------+--------------------------------------------------------------+
-   | Aerosol climatology  | USE_MERRA_CLIMO, FIXaer                                      |
-   +----------------------+--------------------------------------------------------------+
-   | Fixed file params    | FIXlut                                                       |
+   | Climatology          | SFC_CLIMO_FIELDS, USE_MERRA_CLIMO                            |
    +----------------------+--------------------------------------------------------------+
    | CRTM                 | USE_CRTM, CRTM_DIR                                           |
    +----------------------+--------------------------------------------------------------+

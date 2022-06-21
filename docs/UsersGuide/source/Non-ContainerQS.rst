@@ -85,6 +85,15 @@ For a detailed explanation of how to build and run the SRW App on any supported 
          module load wflow_<platform>
          conda activate regional_workflow
 
+      After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
+
+      .. code-block:: console
+
+         Please do the following to activate conda:
+            > conda activate regional_workflow
+      
+      then the user should run ``conda activate regional_workflow`` to activate the ``regional_workflow`` environment. 
+
    #. Generate the experiment workflow. 
 
       .. code-block:: console
