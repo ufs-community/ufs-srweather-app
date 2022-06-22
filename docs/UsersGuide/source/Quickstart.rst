@@ -217,7 +217,7 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
          DOMAIN_PREGEN_BASEDIR=${DOMAIN_PREGEN_BASEDIR:-"${staged_data_dir}/FV3LAM_pregen"}
 
    #. Exit the system-specific file and open ``singularity.sh``. 
-   #. Comment out or delete the corresponding chunk of text in ``singularity.sh``, and paste the correct paths from the system-specific file in its place. For example, on Orion, delete the text below from ``singularity.sh``, and replace it with the Orion-specific text copied in the previous step. 
+   #. Comment out or delete the corresponding chunk of text in ``singularity.sh`` (see code excerpt below), and paste the correct paths from the system-specific file in its place. For example, on Orion, delete the text below from ``singularity.sh``, and replace it with the Orion-specific text copied in the previous step. 
 
       .. code-block:: console
 

@@ -409,7 +409,7 @@ Default configuration: ``config_defaults.sh``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
-   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. This information is informative, but users do not need to modify ``config_defaults.sh`` to run the out-of-the-box case for the SRW App. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
+   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. It is informative, but users do not need to modify ``config_defaults.sh`` to run the out-of-the-box case for the SRW App. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
 
 Configuration variables in the ``config_defaults.sh`` file appear in 
 :numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.sh`` file. Any settings provided in ``config.sh`` will override the ``config_defaults.sh`` 
@@ -424,9 +424,9 @@ settings. There is usually no need for a user to modify the default configuratio
    +======================+==============================================================+
    | Experiment mode      | RUN_ENVIR                                                    | 
    +----------------------+--------------------------------------------------------------+
-   | Machine and queue    | MACHINE, MACHINE_FILE, ACCOUNT, COMPILER,                    |
-   |                      | NCORES_PER_NODE, LMOD_PATH, BUILD_MOD_FN, WFLOW_MOD_FN,      |
-   |                      | SCHED, PARTITION_DEFAULT, CLUSTERS_DEFAULT, QUEUE_DEFAULT,   |
+   | Machine and queue    | MACHINE, MACHINE_FILE, ACCOUNT, COMPILER, SCHED,             |
+   |                      | LMOD_PATH, NCORES_PER_NODE, BUILD_MOD_FN, WFLOW_MOD_FN,      |
+   |                      | PARTITION_DEFAULT, CLUSTERS_DEFAULT, QUEUE_DEFAULT,          |
    |                      | PARTITION_HPSS, CLUSTERS_HPSS, QUEUE_HPSS, PARTITION_FCST,   |
    |                      | CLUSTERS_FCST, QUEUE_FCST                                    |
    +----------------------+--------------------------------------------------------------+
@@ -707,17 +707,13 @@ To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
-Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged the initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
+Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
 
 .. note::
 
    Generic Linux and MacOS users should refer to :numref:`Section %s <LinuxMacEnvConfig>` for details on configuring an experiment and python environment. 
 
-Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
-
-.. important::
-
-   If your modulefile uses a GNU compiler to set up the build environment in :numref:`Section %s <BuildExecutables>`, you will have to check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
+Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 .. hint::
 
@@ -739,9 +735,11 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
 
 where: 
+   * ``<my_account>`` refers to a valid account name.
+   * ``<my_expt_name>`` is an experiment name of the user's choice.
    * ``<model_type>`` refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
-   * ``YYYYMMDDHH`` refers to a subdirectory containing data for the :term:`cycle` date. 
+   * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date in YYYYMMDDHH format. 
 
 
 **Hera, Jet, Orion, Gaea:**
@@ -778,7 +776,7 @@ On NOAA Cloud Systems:
 
    MACHINE="NOAACLOUD"
    ACCOUNT="none"
-   EXPT_SUBDIR="<expt_name>"
+   EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
    EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/FV3GFS/grib2/<YYYYMMDDHH>/"
    EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
@@ -788,10 +786,10 @@ On NOAA Cloud Systems:
 .. note::
 
    The values of the configuration variables should be consistent with those in the
-   ``valid_param_vals script``. In addition, various example configuration files can be found in the ``regional_workflow/tests/baseline_configs`` directory.
+   ``valid_param_vals.sh`` script. In addition, various sample configuration files can be found in the ``regional_workflow/tests/baseline_configs`` directory.
 
 
-To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>`.
+To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>`.
 
 .. _LinuxMacEnvConfig:
 
