@@ -24,15 +24,22 @@ Prerequisites: Install Singularity
 To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://sylabs.io/guides/3.2/user-guide/installation.html#>`__. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
 
 .. warning:: 
-   Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs`. Therefore, it is not possible to build the SRW, which uses the HPC-Stack, inside a Docker container on an HPC system. A Docker image may be pulled, but it must be run inside a container such as Singularity. 
+   Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs`. Therefore, it is not possible to build the SRW, which uses the HPC-Stack, inside a Docker container on an HPC system. However, a Singularity image may be built directly from a Docker image for use on the system.
 
 
-Working in the Cloud
------------------------
+Working in the Cloud or on HPC Systems
+-----------------------------------------
 
-For those working on non-cloud-based systems, skip to :numref:`Step %s <BuildC>`. Users building the SRW App using NOAA's Cloud resources must complete a few additional steps to ensure that the SRW App builds and runs correctly. 
+For users working on systems with limited disk space in their ``/home`` directory, it is recommended to set the ``SINGULARITY_CACHEDIR`` and ``SINGULARITY_TEMPDIR`` environment variables to point to a location with adequate disk space. For example:
 
-On NOAA Cloud systems, certain environment variables must be set *before* building the container:
+.. code-block:: 
+
+   export SINGULARITY_CACHEDIR=</absolute/path/to/writable/directory/cache>
+   export SINGULARITY_TEMPDIR=</absolute/path/to/writable/directory/tmp>
+
+where ``/absolute/path/to/writable/directory/`` refers to a writable directory (usually a project or user directory within ``/lustre``, ``/work``, ``/scratch2``, or ``/glade`` on NOAA Level 1 systems). 
+
+On NOAA Cloud systems, the ``sudo su`` command may also be required:
    
 .. code-block:: 
 
@@ -46,9 +53,10 @@ If the ``cache`` and ``tmp`` directories do not exist already, they must be crea
 .. note:: 
    ``/lustre`` is a fast but non-persistent file system used on NOAA Cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
 
+
 .. _BuildC:
 
-Set Up the Container
+Build the Container
 ------------------------
 
 Build the container:
@@ -60,6 +68,51 @@ Build the container:
 .. hint::
    If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
 
+.. _WorkOnHPC:
+
+Allocate a Compute Node
+--------------------------
+
+Those *not* working on HPC systems may skip to the :ref:`next step <RunContainer>`. 
+On HPC systems (including NOAA's Cloud platforms), allocate a compute node on which to run the SRW App. On NOAA's Cloud platforms, the following commands will allocate a compute node:
+
+.. code-block:: console
+
+   salloc -N 1 
+   module load gnu openmpi
+   mpirun -n 1 hostname
+   ssh <hostname>
+
+The third command will output a hostname. Replace ``<hostname>`` in the last command with the output from the third command. After "ssh-ing" to the compute node in the last command, build and run the SRW App from that node. 
+
+The appropriate commands on other Level 1 platforms will vary, and users should consult the `documentation <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ for those platforms. In general, the allocation command will follow one of these two patterns depending on whether the system uses the Slurm or PBS resource manager respectively:
+
+.. code-block:: console
+
+   salloc -N 1 -n <cores-per-node> -A <account> -t <time> -q <queue/qos> --partition=<system> [-M <cluster>]
+   qsub -I -lwalltime=<time> -A <account> -q <destination> -lselect=1:ncpus=36:mpiprocs=36
+
+For example, on Orion, which uses the Slurm resource manager, run:
+
+.. code-block:: console
+
+   salloc -N 1 -n 40 -A epic-ps -t 2:30:00 -q batch --partition=orion
+
+For more information on the ``salloc`` command options, see Slurm's `documentation <https://slurm.schedmd.com/salloc.html>`__. 
+
+On Cheyenne, which uses the PBS resource manager, run:
+
+.. code-block:: console
+
+   qsub -I -lwalltime=1:00:00 -A scsg0002 -q regular -lselect=1:ncpus=36:mpiprocs=36
+
+For more information on the ``qsub`` command options, see the `PBS Manual §2.59.3 <https://2021.help.altair.com/2021.1/PBSProfessional/PBS2021.1.pdf>`__, (p. 1416).
+
+.. _RunContainer:
+
+Start Up the Container
+----------------------
+
 Start the container and run an interactive shell within it: 
 
 .. code-block:: console
@@ -69,9 +122,13 @@ Start the container and run an interactive shell within it:
 The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
 .. attention::
-   * When binding two directories, they must have the same name. It may be necessary to ``cd`` into the container and create an appropriately named directory in the container using the ``mkdir`` command if one is not already there. 
-   * Be sure to bind the directory that contains the experiment data. 
+   Be sure to bind the directory that contains the experiment data! 
 
+When binding two directories, it is helpful to give them the same name. For example, if the host system's top-level directory is ``/glade``, users can create a ``glade`` directory in the container:
+
+.. code-block:: console
+
+   mkdir <path/to/container>/glade
 
 .. _SetUpBuildC:
 
@@ -87,15 +144,6 @@ Set the build environments and modules within the ``ufs-srweather-app`` director
    module use /opt/ufs-srweather-app/modulefiles
    module load build_singularity_gnu
 
-Build the Executables
-======================
-
-From the ``ufs-srweather-app`` directory, ``cd`` into the build directory and run the script that builds the SRW App: 
-
-.. code-block:: console
-
-   cd build
-   source build-srw.sh
 
 Download and Stage the Data
 ============================
@@ -143,9 +191,9 @@ Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct pa
 .. code-block::
 
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="</path/to/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="</path/to/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
    EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="</path/to/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="</path/to/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
    EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012")
 
 On Level 1 systems, ``/path/to/input_model_data/FV3GFS`` should correspond to the location of the machine's global data, which can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
@@ -154,19 +202,20 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
 
    #. From the ``regional_workflow/ush`` directory, run: ``cd machine``. 
    #. Open the file corresponding to the Level 1 platform in use (e.g., ``vi orion.sh``).
-   #. Copy the section of code starting after ``#UFS SRW App specific paths``. For example, on Orion, the following text must be copied:
+   #. Copy the section of code starting after ``# UFS SRW App specific paths``. For example, on Orion, the following text must be copied:
 
       .. code-block:: console
 
-         FIXgsm=${FIXgsm:-"/work/noaa/global/glopara/fix/fix_am"}
-         FIXaer=${FIXaer:-"/work/noaa/global/glopara/fix/fix_aer"}
-         FIXlut=${FIXlut:-"/work/noaa/global/glopara/fix/fix_lut"}
-         TOPO_DIR=${TOPO_DIR:-"/work/noaa/global/glopara/fix/fix_orog"}
-         SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/work/noaa/global/glopara/fix/fix_sfc_climo"}
-         FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
+         staged_data_dir="/work/noaa/fv3-cam/UFS_SRW_App/v2p0"
+         FIXgsm=${FIXgsm:-"${staged_data_dir}/fix/fix_am"}
+         FIXaer=${FIXaer:-"${staged_data_dir}/fix/fix_aer"}
+         FIXlut=${FIXlut:-"${staged_data_dir}/fix/fix_lut"}
+         TOPO_DIR=${TOPO_DIR:-"${staged_data_dir}/fix/fix_orog"}
+         SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"${staged_data_dir}/fix/fix_sfc_climo"}
+         DOMAIN_PREGEN_BASEDIR=${DOMAIN_PREGEN_BASEDIR:-"${staged_data_dir}/FV3LAM_pregen"}
 
    #. Exit the system-specific file and open ``singularity.sh``. 
-   #. Comment out or delete the corresponding chunk of text in ``singularity.sh``, and paste the correct paths from the system-specific file in its place. For example, on Orion, delete the text below from ``singularity.sh``, and replace it with the Orion-specific text copied in the previous step. 
+   #. Comment out or delete the corresponding chunk of text in ``singularity.sh`` (see code excerpt below), and paste the correct paths from the system-specific file in its place. For example, on Orion, delete the text below from ``singularity.sh``, and replace it with the Orion-specific text copied in the previous step. 
 
       .. code-block:: console
 
@@ -176,7 +225,7 @@ On NOAA Cloud platforms, users may continue to the :ref:`next step <SetUpPythonE
          FIXlut=${FIXlut:-"/contrib/global/glopara/fix/fix_lut"}
          TOPO_DIR=${TOPO_DIR:-"/contrib/global/glopara/fix/fix_orog"}
          SFC_CLIMO_INPUT_DIR=${SFC_CLIMO_INPUT_DIR:-"/contrib/global/glopara/fix/fix_sfc_climo"}
-         FIXLAM_NCO_BASEDIR=${FIXLAM_NCO_BASEDIR:-"/needs/to/be/specified"}
+         DOMAIN_PREGEN_BASEDIR=${DOMAIN_PREGEN_BASEDIR:-"/needs/to/be/specified"}
 
 On Level 1 systems, it should be possible to continue to the :ref:`next step <SetUpPythonEnvC>` after changing these settings. Detailed guidance on the variables in the code fragment above can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`. 
 
@@ -196,48 +245,6 @@ Next, activate the regional workflow:
    conda activate regional_workflow
 
 The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. 
-
-
-.. _WorkOnHPC:
-
-Allocate a Compute Node
---------------------------
-
-Those *not* working on HPC systems may skip to the :ref:`next step <GenerateWorkflowC>`. 
-On HPC systems (including NOAA's Cloud platforms), allocate a compute node on which to run the SRW App. On NOAA's Cloud platforms, the following commands will allocate a compute node:
-
-.. code-block:: console
-
-   salloc -N 1 
-   module load gnu openmpi
-   mpirun -n 1 hostname
-   ssh <hostname>
-
-The third command will output a hostname. Replace ``<hostname>`` in the last command with the output from the third command. After "ssh-ing" to the compute node in the last command, build and run the SRW App from that node. 
-
-The appropriate commands on other Level 1 platforms will vary, and users should consult the `documentation <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ for those platforms. In general, the allocation command will follow one of these two patterns depending on whether the system uses the Slurm or PBS resource manager respectively:
-
-.. code-block:: console
-
-   salloc -N 1 -n <cores-per-node> -A <account> -t <time> -q <queue/qos> --partition=<system> [-M <cluster>]
-   qsub -I -lwalltime=<time> -A <account> -q <destination> -lselect=1:ncpus=36:mpiprocs=36
-
-For example, on Orion, which uses the Slurm resource manager, run:
-
-.. code-block:: console
-
-   salloc -N 1 -n 40 -A epic-ps -t 2:30:00 -q batch --partition=orion
-
-For more information on the ``salloc`` command options, see Slurm's `documentation <https://slurm.schedmd.com/salloc.html>`__. 
-
-On Cheyenne, which uses the PBS resource manager, run:
-
-.. code-block:: console
-
-   qsub -I -lwalltime=1:00:00 -A scsg0002 -q regular -lselect=1:ncpus=36:mpiprocs=36
-
-For more information on the ``qsub`` command options, see the `PBS Manual §2.59.3 <https://2021.help.altair.com/2021.1/PBSProfessional/PBS2021.1.pdf>`__, (p. 1416).
-
 
 
 .. _GenerateWorkflowC: 
@@ -280,12 +287,11 @@ The regional workflow can be run using standalone shell scripts in cases where t
 
       cp <path-to>/ufs-srweather-app/regional_workflow/ush/wrappers/* .
 
-#. Set the ``OMP_NUM_THREADS`` variable and fix dash/bash shell issue (this ensures the system does not use an alias of ``sh`` to dash). 
+#. Set the ``OMP_NUM_THREADS`` variable. 
 
    .. code-block:: console
 
       export OMP_NUM_THREADS=1
-      sed -i 's/bin\/sh/bin\/bash/g' *sh
 
 #. Run each of the listed scripts in order.  Scripts with the same stage number (listed in :numref:`Table %s <RegionalWflowTasks>`) may be run simultaneously.
 

@@ -159,6 +159,9 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
 where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
 
+.. note::
+   Although build modulefiles exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in Sections :numref:`%s <CMakeApproach>` & :numref:`%s <MacDetails>`. It is recommended that users on these systems build the SRW App with the :ref:`CMake Approach <CMakeApproach>` instead. 
+
 If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. For example:
 
 .. code-block:: console
@@ -239,7 +242,7 @@ Set Up the Build Environment
 
 .. attention::
    * If users successfully built the executables in :numref:`Table %s <ExecDescription>`, they should skip to step :numref:`Step %s <Data>`.
-   * Users who want to build the SRW App on a generic MacOS should skip to :numref:`Step %s <MacDetails>` and follow the approach there.
+   * Users who want to build the SRW App on a generic MacOS should skip to :numref:`Section %s <MacDetails>` and follow the approach there.  
 
 If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, users can run one of the following two commands depending on whether they have a bash or csh shell, respectively:
 
@@ -259,7 +262,7 @@ From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. T
 
 where ``<path/to/modulefiles/>`` is the full path to the ``modulefiles`` directory. 
 
-This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory. On Level 2-4 systems, users will need to modify certain environment variables, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands, depending on whether they are using a bash or csh/tcsh shell, respectively: 
+This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory. On Level 2-4 systems (including generic Linux/MacOS systems), users will need to modify certain environment variables, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands, depending on whether they are using a bash or csh/tcsh shell, respectively: 
 
 .. code-block::
 
@@ -273,7 +276,7 @@ Note that building the SRW App without Lmod is not supported for this release. I
 Build the Executables Using CMake
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After setting up the build environment in the preceding section, users need to build the executables required to run the SRW App. In the ``ufs-srweather-app`` directory, create a subdirectory to hold the build's executables: 
+After setting up the build environment in the preceding section (by loading the ``build_<platform>_<compiler>`` modulefile), users need to build the executables required to run the SRW App. In the ``ufs-srweather-app`` directory, create a subdirectory to hold the build's executables: 
 
 .. code-block:: console
 
@@ -390,11 +393,11 @@ Generate the Forecast Experiment
 =================================
 Generating the forecast experiment requires three steps:
 
-* :ref:`Set experiment parameters <ExptConfig>`
-* :ref:`Set Python and other environment parameters <SetUpPythonEnv>`
-* :ref:`Run a script to generate the experiment workflow <GenerateWorkflow>`
+#. :ref:`Set experiment parameters <ExptConfig>`
+#. :ref:`Set Python and other environment parameters <SetUpPythonEnv>`
+#. :ref:`Run a script to generate the experiment workflow <GenerateWorkflow>`
 
-The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if they are working on a Level 2-4 platform. Information in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>` can help with this. 
+The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to reflect their machine configuration if they are working on a Level 2-4 platform. Information in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>` can help with this. 
 
 .. _ExptConfig:
 
@@ -403,23 +406,15 @@ Set Experiment Parameters
 
 Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in ``config_defaults.sh`` and in the user-specified ``config.sh`` file. When generating a new experiment, the SRW App first reads and assigns default values from the ``config_defaults.sh`` file. Then, it reads and (re)assigns variables from the user's custom ``config.sh`` file. 
 
-Section Overview: 
-
-   * For background information on ``config_defaults.sh``, read :numref:`Section %s <DefaultConfigSection>`.
-   * Jump to :numref:`Section %s <UserSpecificConfig>` to continue configuring the experiment. 
-   * Go to :numref:`Section %s <LinuxMacEnvConfig>` for additional details on configuring an experiment on a generic Linux or MacOS system.  
-
-
 .. _DefaultConfigSection:
 
 Default configuration: ``config_defaults.sh``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
-   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. This information is informative, but users do not need to modify ``config_defaults.sh`` to run the out-of-the-box case for the SRW App. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
+   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. It is informative, but users do not need to modify ``config_defaults.sh`` to run the out-of-the-box case for the SRW App. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
 
-Important configuration variables in the ``config_defaults.sh`` file appear in 
-:numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.sh`` file. Any settings provided in ``config.sh`` will override the ``config_defaults.sh`` 
+Configuration variables in the ``config_defaults.sh`` file appear in :numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.sh`` file. Any settings provided in ``config.sh`` will override the ``config_defaults.sh`` 
 settings. There is usually no need for a user to modify the default configuration file. Additional information on the default settings can be found in the file itself and in :numref:`Chapter %s <ConfigWorkflow>`. 
 
 .. _ConfigVarsDefault:
@@ -431,9 +426,9 @@ settings. There is usually no need for a user to modify the default configuratio
    +======================+==============================================================+
    | Experiment mode      | RUN_ENVIR                                                    | 
    +----------------------+--------------------------------------------------------------+
-   | Machine and queue    | MACHINE, MACHINE_FILE, ACCOUNT, COMPILER                     |
-   |                      | NCORES_PER_NODE, LMOD_PATH, BUILD_MOD_FN, WFLOW_MOD_FN,      |
-   |                      | SCHED, PARTITION_DEFAULT, CLUSTERS_DEFAULT, QUEUE_DEFAULT,   |
+   | Machine and queue    | MACHINE, MACHINE_FILE, ACCOUNT, COMPILER, SCHED,             |
+   |                      | LMOD_PATH, NCORES_PER_NODE, BUILD_MOD_FN, WFLOW_MOD_FN,      |
+   |                      | PARTITION_DEFAULT, CLUSTERS_DEFAULT, QUEUE_DEFAULT,          |
    |                      | PARTITION_HPSS, CLUSTERS_HPSS, QUEUE_HPSS, PARTITION_FCST,   |
    |                      | CLUSTERS_FCST, QUEUE_FCST                                    |
    +----------------------+--------------------------------------------------------------+
@@ -512,7 +507,7 @@ settings. There is usually no need for a user to modify the default configuratio
    |                      | OROG_DIR, RUN_TASK_MAKE_SFC_CLIMO, SFC_CLIMO_DIR             |
    +----------------------+--------------------------------------------------------------+
    | Cycle dependent      | RUN_TASK_GET_EXTRN_ICS, RUN_TASK_GET_EXTRN_LBCS,             |
-   |                      | RUN_TASK_MAKE_ICS, RUN_TASK_MAKE_LBCS, RUN_TASK_RUN_FCST     |
+   |                      | RUN_TASK_MAKE_ICS, RUN_TASK_MAKE_LBCS, RUN_TASK_RUN_FCST,    |
    |                      | RUN_TASK_RUN_POST                                            |
    +----------------------+--------------------------------------------------------------+
    | VX run tasks         | RUN_TASK_GET_OBS_CCPA, RUN_TASK_GET_OBS_MRMS,                |
@@ -520,9 +515,9 @@ settings. There is usually no need for a user to modify the default configuratio
    |                      | RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID,                  |
    |                      | RUN_TASK_VX_ENSPOINT                                         |
    +----------------------+--------------------------------------------------------------+
-   | Surface climatology  | SFC_CLIMO_FIELDS, FIXgsm, TOPO_DIR, SFC_CLIMO_INPUT_DIR,     |
-   |                      | FNGLAC, FNMXIC, FNTSFC, FNSNOC, FNZORC, FNAISC, FNSMCC,      |
-   |                      | FNMSKH, FIXgsm_FILES_TO_COPY_TO_FIXam,                       |
+   | Fixed File Parameters| FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR,       |
+   |                      | FNGLAC, FNMXIC, FNTSFC, FNSNOC, FNZORC,                      |
+   |                      | FNAISC, FNSMCC, FNMSKH, FIXgsm_FILES_TO_COPY_TO_FIXam,       |
    |                      | FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING,                      |
    |                      | FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING,                  |
    |                      | CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING                        |
@@ -570,7 +565,7 @@ settings. There is usually no need for a user to modify the default configuratio
    | Maximum attempt      | MAXTRIES_MAKE_GRID, MAXTRIES_MAKE_OROG,                      |
    |                      | MAXTRIES_MAKE_SFC_CLIMO, MAXTRIES_GET_EXTRN_ICS,             |
    |                      | MAXTRIES_GET_EXTRN_LBCS, MAXTRIES_MAKE_ICS,                  |
-   |                      | MAXTRIES_MAKE_LBCS, MAXTRIES_RUN_FCST, MAXTRIES_RUN_POST     |
+   |                      | MAXTRIES_MAKE_LBCS, MAXTRIES_RUN_FCST, MAXTRIES_RUN_POST,    |
    |                      | MAXTRIES_GET_OBS_CCPA, MAXTRIES_GET_OBS_MRMS,                |
    |                      | MAXTRIES_GET_OBS_NDAS, MAXTRIES_VX_GRIDSTAT,                 |
    |                      | MAXTRIES_VX_GRIDSTAT_REFC, MAXTRIES_VX_GRIDSTAT_RETOP,       |
@@ -583,9 +578,7 @@ settings. There is usually no need for a user to modify the default configuratio
    |                      | MAXTRIES_VX_ENSGRID_PROB_RETOP, MAXTRIES_VX_ENSPOINT,        |
    |                      | MAXTRIES_VX_ENSPOINT_MEAN, MAXTRIES_VX_ENSPOINT_PROB         |
    +----------------------+--------------------------------------------------------------+
-   | Aerosol climatology  | USE_MERRA_CLIMO, FIXaer                                      |
-   +----------------------+--------------------------------------------------------------+
-   | Fixed file params    | FIXlut                                                       |
+   | Climatology          | SFC_CLIMO_FIELDS, USE_MERRA_CLIMO                            |
    +----------------------+--------------------------------------------------------------+
    | CRTM                 | USE_CRTM, CRTM_DIR                                           |
    +----------------------+--------------------------------------------------------------+
@@ -716,17 +709,13 @@ To get started, make a copy of ``config.community.sh``. From the ``ufs-srweather
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
-Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged the initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
+Next, edit the new ``config.sh`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
 
 .. note::
 
-   Generic Linux and MacOS users should refer to :numref:`Section %s <LinuxMacEnvConfig>` for details on configuring an experiment and python environment. 
+   Generic Linux and MacOS users should refer to :numref:`Section %s <LinuxMacEnvConfig>` for additional details on configuring an experiment and python environment. 
 
-Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the three predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
-
-.. important::
-
-   If your modulefile uses a GNU compiler to set up the build environment in :numref:`Section %s <BuildExecutables>`, you will have to check that the line ``COMPILER="gnu"`` appears in the ``config.sh`` file.
+Sample ``config.sh`` settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 .. hint::
 
@@ -748,9 +737,11 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
 
 where: 
-   * ``<model_type>`` refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
+   * ``<my_account>`` refers to a valid account name.
+   * ``<my_expt_name>`` is an experiment name of the user's choice.
+   * ``<model_type>`` refers to a subdirectory, such as "FV3GFS" or "HRRR", containing the experiment data. 
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
-   * ``YYYYMMDDHH`` refers to a subdirectory containing data for the :term:`cycle` date. 
+   * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). 
 
 
 **Hera, Jet, Orion, Gaea:**
@@ -761,25 +752,25 @@ On Hera:
 
 .. code-block:: console
 
-   "/scratch2/BMC/det/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
+   "/scratch2/BMC/det/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On Jet: 
 
 .. code-block:: console
 
-   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
+   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On Orion: 
 
 .. code-block:: console
 
-   "/work/noaa/fv3-cam/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
+   "/work/noaa/fv3-cam/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On Gaea: 
 
 .. code-block:: console
 
-   "/lustre/f2/pdata/ncep/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/"
+   "/lustre/f2/pdata/ncep/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On NOAA Cloud Systems:
 
@@ -787,20 +778,20 @@ On NOAA Cloud Systems:
 
    MACHINE="NOAACLOUD"
    ACCOUNT="none"
-   EXPT_SUBDIR="<expt_name>"
+   EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/FV3GFS/grib2/YYYYMMDDHH/"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
    EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/FV3GFS/grib2/YYYYMMDDHH/"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
    EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
 
 .. note::
 
    The values of the configuration variables should be consistent with those in the
-   ``valid_param_vals script``. In addition, various example configuration files can be found in the ``regional_workflow/tests/baseline_configs`` directory.
+   ``valid_param_vals.sh`` script. In addition, various sample configuration files can be found in the ``regional_workflow/tests/baseline_configs`` directory.
 
 
-To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>`.
+To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>`.
 
 .. _LinuxMacEnvConfig:
 
@@ -851,7 +842,6 @@ Users must create a virtual environment (``regional_workflow``), store it in the
 
 The virtual environment can be deactivated by running the ``deactivate`` command. The virtual environment built here will be reactivated in :numref:`Step %s <LinuxMacActivateWFenv>` and needs to be used to generate the workflow and run the experiment. 
 
-
 .. _LinuxMacExptConfig:
 
 Configuring an Experiment on General Linux and MacOS Systems
@@ -860,12 +850,19 @@ Configuring an Experiment on General Linux and MacOS Systems
 **Optional: Install Rocoto**
 
 .. note::
-   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and had limited testing on general Linux plaforms. 
+   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and has had limited testing on general Linux plaforms. 
 
 
 **Configure the SRW App:**
 
-Configure an experiment using a template. Copy a ``config.community.sh`` file in the ``$SRW/regional_workflow/ush`` directory into ``config.sh`` file (see :numref:`Section %s <UserSpecificConfig>`) above. In the ``config.sh`` file, set ``MACHINE="macos"`` or ``MACHINE="linux"``, and modify account and experiment info. For example: 
+Configure an experiment using a template. Copy the contents of ``config.community.sh`` into ``config.sh``: 
+
+.. code-block:: console
+
+   cd $SRW/regional_workflow/ush
+   cp config.community.sh config.sh
+
+In the ``config.sh`` file, set ``MACHINE="macos"`` or ``MACHINE="linux"``, and modify the account and experiment info. For example: 
 
 .. code-block:: console
 
@@ -880,7 +877,7 @@ Configure an experiment using a template. Copy a ``config.community.sh`` file in
    PREDEF_GRID_NAME="RRFS_CONUS_25km"	
    QUILTING="TRUE"
 
-Due to the limited number of processors on Mac OS systems, users must configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
+Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
 
 For :ref:`Option 1 <MacDetails>`, add the following information to ``config.sh``:
 
@@ -901,11 +898,11 @@ For :ref:`Option 2 <MacDetails>`, add the following information to ``config.sh``
    WRTCMP_write_tasks_per_group="1"
 
 .. note::
-   The number of MPI processes required by the forecast will be equal to LAYOUT_X * LAYOUT_Y + WRTCMP_write_tasks_per_group. 
+   The number of MPI processes required by the forecast will be equal to ``LAYOUT_X`` * ``LAYOUT_Y`` + ``WRTCMP_write_tasks_per_group``. 
 
 **Configure the Machine File**
 
-Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflow/ush/machine/`` based on the number of CPUs in the system (8 or 4 in MacOS), or a given number for Linux systems, ``<ncores>``. Job scheduler, ``<sched>`` options are ``none``, ``slurm``, or another scheduler used by the system.
+Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflow/ush/machine/`` based on the number of CPUs (``<ncores>``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
 
 .. code-block:: console
 
@@ -921,10 +918,10 @@ Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflo
    FIXgsm="path/to/FIXgsm/files"
    FIXaer="path/to/FIXaer/files"
    FIXlut="path/to/FIXlut/files"
-   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files 
-                                     used by the ``make_orog`` task) 
+   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files used by the 
+                                     make_orog task) 
    SFC_CLIMO_INPUT_DIR="path/to/FIXgsm/files" # (path to location of static surface climatology
-                                                input fields used by ``sfc_climo_gen``)
+                                                input fields used by sfc_climo_gen)
 
    # Run commands for executables
    RUN_CMD_SERIAL="time"
@@ -941,7 +938,7 @@ Configure METplus Verification Suite (Optional)
 Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
 
 .. attention::
-   METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on many `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. For the v2 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
+   METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on many `Level 1 & 2 <https://dtcenter.org/community-code/metplus/metplus-4-1-existing-builds>`__ systems. For the v2.0.0 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
 
 .. note::
    If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/regional_workflow/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
@@ -969,7 +966,7 @@ Users who have already staged the observation data needed for METplus (i.e., the
    RUN_TASK_GET_OBS_MRMS="FALSE"
    RUN_TASK_GET_OBS_NDAS="FALSE"
 
-If users have access to NOAA HPSS but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to "TRUE", and the machine will attempt to download the appropriate data from NOAA HPSS. The ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
+If users have access to NOAA :term:`HPSS` but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to "TRUE", and the machine will attempt to download the appropriate data from NOAA HPSS. The ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
 
 Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
 
@@ -982,14 +979,14 @@ Next, the verification tasks must be turned on according to the user's needs. Us
    RUN_TASK_VX_ENSGRID="TRUE"
    RUN_TASK_VX_ENSPOINT="TRUE"
 
-These tasks are independent, so users may set some values to "TRUE" and others to "FALSE" depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>` More details on all of the parameters in this section are available in :numref:`Chapter %s <VXTasks>`. 
+These tasks are independent, so users may set some values to "TRUE" and others to "FALSE" depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`. More details on all of the parameters in this section are available in :numref:`Section %s <VXTasks>`. 
 
 .. _SetUpPythonEnv:
 
 Set Up the Python and Other Environment Parameters
 ----------------------------------------------------
 
-The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f90nml`` available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
+The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f90nml`` available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way:
 
 .. code-block:: console
 
@@ -1011,21 +1008,27 @@ then the user should run ``conda activate regional_workflow``. This will activat
    source ~/.bashrc
    conda activate regional_workflow
 
-
 .. _LinuxMacActivateWFenv:
 
-Activate the Workflow Environment on General MacOS/Linux Systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Activating the Workflow Environment on Non-Level 1 Systems
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``regional_workflow`` environment can be activated as follows for ``<platform>="macos"``, or ``"<platorm>=linux"``:
+Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. ``wflow_macos`` and ``wflow_linux`` template files are provided with the release. After making appropriate modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow. 
+
+On generic Linux or MacOS systems, loading the designated ``wflow_<platform>`` file will output instructions similar to the following:
 
 .. code-block:: console
 
-	cd $SRW/regional_workflow/ush
- 	module load wflow_<platform>
+   Please do the following to activate conda:
+       > source $VENV/bin/activate
 
-This should activate the ``regional_workflow`` environment created in :numref:`Step %s <LinuxMacVEnv>`. From here, the user may continue to :numref:`Section %s <GenerateWorkflow>` to generate the regional workflow. 
+If that does not work, users can also try:  
 
+.. code-block:: console
+
+   source $HOME/venv/regional_workflow/bin/activate
+
+However, it may instead be necessary to make additional adjustments to the ``wflow_<platform>`` file. 
 
 .. _GenerateWorkflow: 
 
@@ -1038,15 +1041,13 @@ Run the following command from the ``ufs-srweather-app/regional_workflow/ush`` d
 
    ./generate_FV3LAM_wflow.sh
 
-The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and :ref:`used later <Automate>` to automatically run portions of the workflow. 
+The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and :ref:`used later <Automate>` to automatically run portions of the workflow if users have the Rocoto workflow manager installed on their system. 
 
-When not using Rocoto on Linux or MacOS systems, the experiment could be launched using stand-alone scripts as :numref:`Section %s <RunUsingStandaloneScripts>`.  
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.sh`` runs the ``setup.sh`` script to set the configuration parameters. Second, it copies the time-independent (fix) files and other necessary data input files from their location in the ufs-weather-model directory to the experiment directory (``$EXPTDIR``). Third, it copies the weather model executable (``ufs_model``) from the ``bin`` directory to ``$EXPTDIR`` and creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the regional_workflow/ush/templates directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.sh`` runs the ``setup.sh`` script to set the configuration parameters. Second, it copies the time-independent (fix) files and other necessary data input files from their location in the ufs-weather-model directory to the experiment directory (``EXPTDIR``). Third, it copies the weather model executable (``ufs_model``) from the ``bin`` directory to ``EXPTDIR`` and creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the regional_workflow/ush/templates directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
+The ``setup.sh`` script reads three other configuration scripts in order: (1) ``config_default.sh`` (:numref:`Section %s <DefaultConfigSection>`), (2) ``config.sh`` (:numref:`Section %s <UserSpecificConfig>`), and (3) ``set_predef_grid_params.sh``. If a parameter is specified differently in these scripts, the file containing the last defined value will be used.
 
-The ``setup.sh`` script reads three other configuration scripts in order: (1) ``config_default.sh`` (:numref:`Section %s <DefaultConfigSection>`), (2) ``config.sh`` (:numref:`Section %s <UserSpecificConfig>`), and (3) ``set_predef_grid_params.sh`` (:numref:`Section %s <GridSpecificConfig>`). If a parameter is specified differently in these scripts, the file containing the last defined value will be used.
-
-The generated workflow will appear in ``EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in :numref:`Step %s <UserSpecificConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``. 
+The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in :numref:`Step %s <UserSpecificConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``. 
 
 .. _WorkflowGeneration:
 
@@ -1104,11 +1105,11 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workfl
    |                      | initial conditions                                         |
    +----------------------+------------------------------------------------------------+
    | get_extrn_lbcs       | Cycle-specific task to obtain external data for the        |
-   |                      | lateral boundary conditions (LBC's)                        |
+   |                      | lateral boundary conditions (LBCs)                         |
    +----------------------+------------------------------------------------------------+
    | make_ics             | Generate initial conditions from the external data         |
    +----------------------+------------------------------------------------------------+
-   | make_lbcs            | Generate LBC's from the external data                      |
+   | make_lbcs            | Generate LBCs from the external data                       |
    +----------------------+------------------------------------------------------------+
    | run_fcst             | Run the forecast model (UFS weather model)                 |
    +----------------------+------------------------------------------------------------+
@@ -1126,7 +1127,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +=======================+============================================================+
    | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
    |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="TRUE"``  |
-   |                       | *and* user has access to NOAA HPSS data.                   |
+   |                       | *and* user has access to NOAA :term:`HPSS` data.           |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
    |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS="TRUE"``  |
@@ -1147,7 +1148,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_GRIDSTAT_##h       | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
    |                       | 24-h (i.e., daily) accumulated precipitation. Valid values |
-   |                       | of ``##`` are ``03``, ``06``, and ``24``.                  |
+   |                       | for ``##`` are ``03``, ``06``, and ``24``.                 |
    +-----------------------+------------------------------------------------------------+
    | VX_POINTSTAT          | Runs METplus grid-to-point verification for surface and    |
    |                       | upper-air variables                                        |
@@ -1159,7 +1160,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | VX_ENSGRID_REFC       | Runs METplus grid-to-grid ensemble verification for        |
    |                       | composite reflectivity. Can only be run if                 |
    |                       | ``DO_ENSEMBLE="TRUE"`` and                                 |
-   |                       | ``RUN_TASK_VX_ENSGRID = "TRUE"``.                          |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_RETOP      | Runs METplus grid-to-grid ensemble verification for        |
    |                       | :term:`echo top`. Can only be run if ``DO_ENSEMBLE="TRUE"``|
@@ -1167,8 +1168,8 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_##h        | Runs METplus grid-to-grid ensemble verification for 3-h,   |
    |                       | 6-h, and 24-h (i.e., daily) accumulated precipitation.     |
-   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
-   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | Valid values for ``##`` are ``03``, ``06``, and ``24``.    |
+   |                       | Can only be run if ``DO_ENSEMBLE="TRUE"`` and              |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_MEAN       | Runs METplus grid-to-grid verification for ensemble mean   |
@@ -1181,13 +1182,13 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_MEAN_##h   | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation. |
-   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
-   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | Valid values for ``##`` are ``03``, ``06``, and ``24``.    |
+   |                       | Can only be run if ``DO_ENSEMBLE="TRUE"`` and              |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB_##h   | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
    |                       | 24h (i.e., daily) accumulated precipitation probabilistic  |
-   |                       | output. Valid values of ``##`` are ``03``, ``06``, and     |
+   |                       | output. Valid values for ``##`` are ``03``, ``06``, and    |
    |                       | ``24``. Can only be run if ``DO_ENSEMBLE="TRUE"`` and      |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
@@ -1222,9 +1223,11 @@ Run the Workflow Using Rocoto
 
 .. attention::
 
-   If users are running the SRW App in a container or on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
+   If users are running the SRW App in a container or on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS or generic Linux systems), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
 
-The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, Rocoto cannot be used when running the workflow within a container. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
+The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, Rocoto cannot be used when running the workflow within a container. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. 
+
+There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
 
 .. note::
    Users may find it helpful to review :numref:`Chapter %s <RocotoInfo>` to gain a better understanding of Rocoto commands and workflow management before continuing, but this is not required to run the experiment. 
@@ -1252,7 +1255,7 @@ To run Rocoto using the ``launch_FV3LAM_wflow.sh`` script provided, simply call 
    cd $EXPTDIR
    ./launch_FV3LAM_wflow.sh
 
-This script creates a log file named ``log.launch_FV3LAM_wflow`` in ``$EXPTDIR`` or appends information to it if the file already exists. The launch script also creates the ``log/FV3LAM_wflow.log`` file, which shows Rocoto task information. Check the end of the log files periodically to see how the experiment is progressing:
+This script creates a log file named ``log.launch_FV3LAM_wflow`` in ``$EXPTDIR`` or appends information to the file if it already exists. The launch script also creates the ``log/FV3LAM_wflow.log`` file, which shows Rocoto task information. Check the end of the log file periodically to see how the experiment is progressing:
 
 .. code-block:: console
 
@@ -1313,9 +1316,9 @@ The workflow run is complete when all tasks have "SUCCEEDED". If everything goes
    201906150000       run_post_f000          4953244       SUCCEEDED         0          1          5.0
    201906150000       run_post_f001          4953245       SUCCEEDED         0          1          4.0
    ...
-   201906150000       run_post_f048          4953381       SUCCEEDED         0          1          7.0
+   201906150000       run_post_f012          4953381       SUCCEEDED         0          1          7.0
 
-If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f048``. The output will resemble the following but may be significantly longer when using ensemble verification: 
+If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f012``. The output will resemble the following but may be significantly longer when using ensemble verification: 
 
 .. code-block:: console
 
@@ -1323,7 +1326,7 @@ If users choose to run METplus verification tasks as part of their experiment, t
    ==========================================================================================================
    201906150000       make_grid              30466134       SUCCEEDED        0          1          5.0
    ...
-   201906150000       run_post_f048          30468271       SUCCEEDED        0          1          7.0
+   201906150000       run_post_f012          30468271       SUCCEEDED        0          1          7.0
    201906150000       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
    201906150000       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
    201906150000       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0
@@ -1378,7 +1381,7 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
 Automated Option
 ----------------------
 
-For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add the following commands to their ``config.sh`` file:
+For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add the following commands to their ``config.sh`` file *before* generating the experiment:
 
 .. code-block:: console
 
@@ -1390,14 +1393,14 @@ Alternatively, the user can add a crontab entry using the ``crontab -e`` command
 
 .. code-block:: console
 
-   */3 * * * * cd <path/to/experiment/subdirectory> && /apps/rocoto/1.3.3/bin/rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+   */3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
 
-where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``, and ``/apps/rocoto/1.3.3/bin/rocotorun`` corresponds to the location of the ``rocotorun`` command on the user's system. The number ``3`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every three minutes.
+where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``. The number ``3`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every three minutes.
 
 .. hint::
 
    * On NOAA Cloud instances, ``*/1 * * * *`` is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
-   * On other NOAA HPC systems, admins discourage the ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` is the preferred option for cron jobs on non-Cloud systems. 
+   * On other NOAA HPC systems, admins discourage the ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` is the preferred option for cron jobs on non-NOAA Cloud systems. 
 
 To check the experiment progress:
 
