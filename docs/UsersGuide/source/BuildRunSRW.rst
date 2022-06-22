@@ -711,9 +711,9 @@ Next, edit the new ``config.sh`` file to customize it for your machine. At a min
 
 .. note::
 
-   Generic Linux and MacOS users should refer to :numref:`Section %s <LinuxMacEnvConfig>` for details on configuring an experiment and python environment. 
+   Generic Linux and MacOS users should refer to :numref:`Section %s <LinuxMacEnvConfig>` for additional details on configuring an experiment and python environment. 
 
-Sample settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
+Sample ``config.sh`` settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 .. hint::
 
@@ -737,9 +737,9 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
 where: 
    * ``<my_account>`` refers to a valid account name.
    * ``<my_expt_name>`` is an experiment name of the user's choice.
-   * ``<model_type>`` refers to a subdirectory such as "FV3GFS" or "HRRR" containing the experiment data. 
+   * ``<model_type>`` refers to a subdirectory, such as "FV3GFS" or "HRRR", containing the experiment data. 
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
-   * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date in YYYYMMDDHH format. 
+   * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). 
 
 
 **Hera, Jet, Orion, Gaea:**
@@ -778,9 +778,9 @@ On NOAA Cloud Systems:
    ACCOUNT="none"
    EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/FV3GFS/grib2/<YYYYMMDDHH>/"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
    EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/FV3GFS/grib2/<YYYYMMDDHH>/"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
    EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
 
 .. note::
@@ -849,12 +849,19 @@ Configuring an Experiment on General Linux and MacOS Systems
 **Optional: Install Rocoto**
 
 .. note::
-   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and had limited testing on general Linux plaforms. 
+   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and has had limited testing on general Linux plaforms. 
 
 
 **Configure the SRW App:**
 
-Configure an experiment using a template. Copy a ``config.community.sh`` file in the ``$SRW/regional_workflow/ush`` directory into ``config.sh`` file (see :numref:`Section %s <UserSpecificConfig>`) above. In the ``config.sh`` file, set ``MACHINE="macos"`` or ``MACHINE="linux"``, and modify account and experiment info. For example: 
+Configure an experiment using a template. Copy the contents of ``config.community.sh`` into ``config.sh``: 
+
+.. code-block:: console
+
+   cd $SRW/regional_workflow/ush
+   cp config.community.sh config.sh
+
+In the ``config.sh`` file, set ``MACHINE="macos"`` or ``MACHINE="linux"``, and modify the account and experiment info. For example: 
 
 .. code-block:: console
 
@@ -869,7 +876,7 @@ Configure an experiment using a template. Copy a ``config.community.sh`` file in
    PREDEF_GRID_NAME="RRFS_CONUS_25km"	
    QUILTING="TRUE"
 
-Due to the limited number of processors on Mac OS systems, users must configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
+Due to the limited number of processors on Mac OS systems, users must also configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
 
 For :ref:`Option 1 <MacDetails>`, add the following information to ``config.sh``:
 
@@ -890,11 +897,11 @@ For :ref:`Option 2 <MacDetails>`, add the following information to ``config.sh``
    WRTCMP_write_tasks_per_group="1"
 
 .. note::
-   The number of MPI processes required by the forecast will be equal to LAYOUT_X * LAYOUT_Y + WRTCMP_write_tasks_per_group. 
+   The number of MPI processes required by the forecast will be equal to ``LAYOUT_X`` * ``LAYOUT_Y`` + ``WRTCMP_write_tasks_per_group``. 
 
 **Configure the Machine File**
 
-Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflow/ush/machine/`` based on the number of CPUs in the system (8 or 4 in MacOS), or a given number for Linux systems, ``<ncores>``. Job scheduler, ``<sched>`` options are ``none``, ``slurm``, or another scheduler used by the system.
+Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflow/ush/machine/`` based on the number of CPUs (``<ncores>``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
 
 .. code-block:: console
 
@@ -910,10 +917,10 @@ Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflo
    FIXgsm="path/to/FIXgsm/files"
    FIXaer="path/to/FIXaer/files"
    FIXlut="path/to/FIXlut/files"
-   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files 
-                                     used by the ``make_orog`` task) 
+   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files used by the 
+                                     make_orog task) 
    SFC_CLIMO_INPUT_DIR="path/to/FIXgsm/files" # (path to location of static surface climatology
-                                                input fields used by ``sfc_climo_gen``)
+                                                input fields used by sfc_climo_gen)
 
    # Run commands for executables
    RUN_CMD_SERIAL="time"
@@ -930,7 +937,7 @@ Configure METplus Verification Suite (Optional)
 Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
 
 .. attention::
-   METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on many `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. For the v2 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
+   METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on many `Level 1 & 2 <https://dtcenter.org/community-code/metplus/metplus-4-1-existing-builds>`__ systems. For the v2.0.0 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
 
 .. note::
    If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/regional_workflow/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
@@ -958,7 +965,7 @@ Users who have already staged the observation data needed for METplus (i.e., the
    RUN_TASK_GET_OBS_MRMS="FALSE"
    RUN_TASK_GET_OBS_NDAS="FALSE"
 
-If users have access to NOAA HPSS but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to "TRUE", and the machine will attempt to download the appropriate data from NOAA HPSS. The ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
+If users have access to NOAA :term:`HPSS` but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to "TRUE", and the machine will attempt to download the appropriate data from NOAA HPSS. The ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
 
 Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
 
@@ -971,7 +978,7 @@ Next, the verification tasks must be turned on according to the user's needs. Us
    RUN_TASK_VX_ENSGRID="TRUE"
    RUN_TASK_VX_ENSPOINT="TRUE"
 
-These tasks are independent, so users may set some values to "TRUE" and others to "FALSE" depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>` More details on all of the parameters in this section are available in :numref:`Chapter %s <VXTasks>`. 
+These tasks are independent, so users may set some values to "TRUE" and others to "FALSE" depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`. More details on all of the parameters in this section are available in :numref:`Section %s <VXTasks>`. 
 
 .. _SetUpPythonEnv:
 

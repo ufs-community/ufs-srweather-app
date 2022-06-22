@@ -48,6 +48,8 @@ Platform Environment
 ``WFLOW_MOD_FN``: (Default: "")
    Name of alternative workflow module file to use if running on an unsupported platform. Is set automatically for supported machines.
 
+.. _sched:
+
 ``SCHED``: (Default: "")
    The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Leaving this an empty string allows the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: ``"slurm"`` | ``"pbspro"`` | ``"lsf"`` | ``"lsfcray"`` | ``"none"``
 
