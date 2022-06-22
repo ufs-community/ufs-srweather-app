@@ -125,7 +125,7 @@ Start the container and run an interactive shell within it:
 The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
 .. attention::
-   * Be sure to bind the directory that contains the experiment data. 
+   Be sure to bind the directory that contains the experiment data! 
 
 When binding two directories, it is helpful to give them the same name. For example, if the host system's top-level directory is ``/glade``, users can create a ``glade`` directory in the container:
 
@@ -193,9 +193,9 @@ Additionally, set ``USE_USER_STAGED_EXTRN_FILES="TRUE"``, and add the correct pa
 .. code-block::
 
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="</path/to/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="</path/to/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
    EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="</path/to/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="</path/to/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
    EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012")
 
 On Level 1 systems, ``/path/to/input_model_data/FV3GFS`` should correspond to the location of the machine's global data, which can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
