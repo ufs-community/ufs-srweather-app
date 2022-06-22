@@ -160,7 +160,7 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
 
 .. note::
-   Although build files exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in `Section %s <MacDetails>`. It is recommended that users on these systems build the SRW App with the `CMake Approach <CMakeApproach>` instead. 
+   Although build modulefiles exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in :numref:`Section %s <MacDetails>`. It is recommended that users on these systems build the SRW App with the :ref:`CMake Approach <CMakeApproach>` instead. 
 
 If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. For example:
 
