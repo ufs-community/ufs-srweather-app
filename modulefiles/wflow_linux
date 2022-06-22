@@ -20,4 +20,10 @@ if { [module-info mode load] } {
        > source \$VENV/bin/activate "
 }
 
+# Uncomment if Rocoto workflow manager is used
+# This path should point to your Rocoto module location
+# setenv ROCOTOmod "/Users/username/modules"
+# module use $env(ROCOTOmod)
+# module load rocoto
+
 
