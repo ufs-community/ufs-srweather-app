@@ -411,8 +411,7 @@ Default configuration: ``config_defaults.sh``
 .. note::
    This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. It is informative, but users do not need to modify ``config_defaults.sh`` to run the out-of-the-box case for the SRW App. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
 
-Configuration variables in the ``config_defaults.sh`` file appear in 
-:numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.sh`` file. Any settings provided in ``config.sh`` will override the ``config_defaults.sh`` 
+Configuration variables in the ``config_defaults.sh`` file appear in :numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.sh`` file. Any settings provided in ``config.sh`` will override the ``config_defaults.sh`` 
 settings. There is usually no need for a user to modify the default configuration file. Additional information on the default settings can be found in the file itself and in :numref:`Chapter %s <ConfigWorkflow>`. 
 
 .. _ConfigVarsDefault:
@@ -839,7 +838,6 @@ Users must create a virtual environment (``regional_workflow``), store it in the
    python3 -m pip install f90nml
 
 The virtual environment can be deactivated by running the ``deactivate`` command. The virtual environment built here will be reactivated in :numref:`Step %s <LinuxMacActivateWFenv>` and needs to be used to generate the workflow and run the experiment. 
-
 
 .. _LinuxMacExptConfig:
 

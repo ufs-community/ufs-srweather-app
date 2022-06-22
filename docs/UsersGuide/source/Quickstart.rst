@@ -53,6 +53,7 @@ If the ``cache`` and ``tmp`` directories do not exist already, they must be crea
 .. note:: 
    ``/lustre`` is a fast but non-persistent file system used on NOAA Cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
 
+
 .. _BuildC:
 
 Build the Container
@@ -118,10 +119,6 @@ Start the container and run an interactive shell within it:
 
    singularity shell -H $HOME/singularity-home -e --writable --bind /<local_base_dir>:/<container_dir_w_same_name> ubuntu20.04-gnu9.3-ufs-srwapp
 
-..
-   singularity shell -e -B /work:/work -H $HOME/singularity-home ubuntu20.04-gnu9.3-ufs-srwapp.img
-   singularity shell -e -B /<local_base_dir>:/<container_dir_w_same_name> -H $HOME/singularity-home ubuntu20.04-gnu9.3-ufs-srwapp.img
-
 The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., /lustre, /contrib, /work, or /home). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
 .. attention::
@@ -146,6 +143,7 @@ Set the build environments and modules within the ``ufs-srweather-app`` director
    source /usr/share/lmod/6.6/init/profile
    module use /opt/ufs-srweather-app/modulefiles
    module load build_singularity_gnu
+
 
 Download and Stage the Data
 ============================
@@ -247,6 +245,7 @@ Next, activate the regional workflow:
    conda activate regional_workflow
 
 The user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. 
+
 
 .. _GenerateWorkflowC: 
 
