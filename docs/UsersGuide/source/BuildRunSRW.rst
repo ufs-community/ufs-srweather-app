@@ -985,7 +985,7 @@ These tasks are independent, so users may set some values to "TRUE" and others t
 Set Up the Python and Other Environment Parameters
 ----------------------------------------------------
 
-The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f90nml`` available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way (from ``/ufs-srweather-app/regional_workflow/ush``):
+The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f90nml`` available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way:
 
 .. code-block:: console
 
@@ -1013,14 +1013,14 @@ then the user should run ``conda activate regional_workflow``. This will activat
 Activate the Workflow Environment on General MacOS/Linux Systems
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``regional_workflow`` environment can be activated as follows for ``<platform>="macos"``, or ``"<platorm>=linux"``:
+The ``regional_workflow`` environment can be activated as follows for ``<platform>="macos"``, or ``"<platform>=linux"``:
 
 .. code-block:: console
 
 	cd $SRW/regional_workflow/ush
  	module load wflow_<platform>
 
-This should activate the ``regional_workflow`` environment created in :numref:`Step %s <LinuxMacVEnv>`. From here, the user may continue to :numref:`Section %s <GenerateWorkflow>` to generate the regional workflow. 
+This should activate the ``regional_workflow`` environment created in :numref:`Step %s <LinuxMacVEnv>`. From here, the user may continue to the :ref:`next section <GenerateWorkflow>` to generate the regional workflow. 
 
 
 .. _GenerateWorkflow: 
@@ -1034,15 +1034,13 @@ Run the following command from the ``ufs-srweather-app/regional_workflow/ush`` d
 
    ./generate_FV3LAM_wflow.sh
 
-The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and :ref:`used later <Automate>` to automatically run portions of the workflow. 
+The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and :ref:`used later <Automate>` to automatically run portions of the workflow if users have the Rocoto workflow manager installed on their system. 
 
-When not using Rocoto on Linux or MacOS systems, the experiment could be launched using stand-alone scripts as :numref:`Section %s <RunUsingStandaloneScripts>`.  
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.sh`` runs the ``setup.sh`` script to set the configuration parameters. Second, it copies the time-independent (fix) files and other necessary data input files from their location in the ufs-weather-model directory to the experiment directory (``$EXPTDIR``). Third, it copies the weather model executable (``ufs_model``) from the ``bin`` directory to ``$EXPTDIR`` and creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the regional_workflow/ush/templates directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.sh`` runs the ``setup.sh`` script to set the configuration parameters. Second, it copies the time-independent (fix) files and other necessary data input files from their location in the ufs-weather-model directory to the experiment directory (``EXPTDIR``). Third, it copies the weather model executable (``ufs_model``) from the ``bin`` directory to ``EXPTDIR`` and creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the regional_workflow/ush/templates directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
+The ``setup.sh`` script reads three other configuration scripts in order: (1) ``config_default.sh`` (:numref:`Section %s <DefaultConfigSection>`), (2) ``config.sh`` (:numref:`Section %s <UserSpecificConfig>`), and (3) ``set_predef_grid_params.sh``. If a parameter is specified differently in these scripts, the file containing the last defined value will be used.
 
-The ``setup.sh`` script reads three other configuration scripts in order: (1) ``config_default.sh`` (:numref:`Section %s <DefaultConfigSection>`), (2) ``config.sh`` (:numref:`Section %s <UserSpecificConfig>`), and (3) ``set_predef_grid_params.sh`` (:numref:`Section %s <GridSpecificConfig>`). If a parameter is specified differently in these scripts, the file containing the last defined value will be used.
-
-The generated workflow will appear in ``EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in :numref:`Step %s <UserSpecificConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``. 
+The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.sh`` file in :numref:`Step %s <UserSpecificConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.sh`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``. 
 
 .. _WorkflowGeneration:
 
@@ -1100,11 +1098,11 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``regional_workfl
    |                      | initial conditions                                         |
    +----------------------+------------------------------------------------------------+
    | get_extrn_lbcs       | Cycle-specific task to obtain external data for the        |
-   |                      | lateral boundary conditions (LBC's)                        |
+   |                      | lateral boundary conditions (LBCs)                         |
    +----------------------+------------------------------------------------------------+
    | make_ics             | Generate initial conditions from the external data         |
    +----------------------+------------------------------------------------------------+
-   | make_lbcs            | Generate LBC's from the external data                      |
+   | make_lbcs            | Generate LBCs from the external data                       |
    +----------------------+------------------------------------------------------------+
    | run_fcst             | Run the forecast model (UFS weather model)                 |
    +----------------------+------------------------------------------------------------+
@@ -1122,7 +1120,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +=======================+============================================================+
    | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
    |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA="TRUE"``  |
-   |                       | *and* user has access to NOAA HPSS data.                   |
+   |                       | *and* user has access to NOAA :term:`HPSS` data.           |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
    |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS="TRUE"``  |
@@ -1143,7 +1141,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_GRIDSTAT_##h       | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
    |                       | 24-h (i.e., daily) accumulated precipitation. Valid values |
-   |                       | of ``##`` are ``03``, ``06``, and ``24``.                  |
+   |                       | for ``##`` are ``03``, ``06``, and ``24``.                 |
    +-----------------------+------------------------------------------------------------+
    | VX_POINTSTAT          | Runs METplus grid-to-point verification for surface and    |
    |                       | upper-air variables                                        |
@@ -1155,7 +1153,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | VX_ENSGRID_REFC       | Runs METplus grid-to-grid ensemble verification for        |
    |                       | composite reflectivity. Can only be run if                 |
    |                       | ``DO_ENSEMBLE="TRUE"`` and                                 |
-   |                       | ``RUN_TASK_VX_ENSGRID = "TRUE"``.                          |
+   |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_RETOP      | Runs METplus grid-to-grid ensemble verification for        |
    |                       | :term:`echo top`. Can only be run if ``DO_ENSEMBLE="TRUE"``|
@@ -1163,8 +1161,8 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_##h        | Runs METplus grid-to-grid ensemble verification for 3-h,   |
    |                       | 6-h, and 24-h (i.e., daily) accumulated precipitation.     |
-   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
-   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | Valid values for ``##`` are ``03``, ``06``, and ``24``.    |
+   |                       | Can only be run if ``DO_ENSEMBLE="TRUE"`` and              |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_MEAN       | Runs METplus grid-to-grid verification for ensemble mean   |
@@ -1177,13 +1175,13 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_MEAN_##h   | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation. |
-   |                       | Valid values of ``##`` are ``03``, ``06``, and ``24``. Can |
-   |                       | only be run if ``DO_ENSEMBLE="TRUE"`` and                  |
+   |                       | Valid values for ``##`` are ``03``, ``06``, and ``24``.    |
+   |                       | Can only be run if ``DO_ENSEMBLE="TRUE"`` and              |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB_##h   | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
    |                       | 24h (i.e., daily) accumulated precipitation probabilistic  |
-   |                       | output. Valid values of ``##`` are ``03``, ``06``, and     |
+   |                       | output. Valid values for ``##`` are ``03``, ``06``, and    |
    |                       | ``24``. Can only be run if ``DO_ENSEMBLE="TRUE"`` and      |
    |                       | ``RUN_TASK_VX_ENSGRID="TRUE"``.                            |
    +-----------------------+------------------------------------------------------------+
@@ -1218,7 +1216,7 @@ Run the Workflow Using Rocoto
 
 .. attention::
 
-   If users are running the SRW App in a container or on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
+   If users are running the SRW App in a container or on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS or generic Linux systems), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
 
 The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, Rocoto cannot be used when running the workflow within a container. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
 
