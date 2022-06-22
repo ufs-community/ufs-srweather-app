@@ -77,13 +77,12 @@ For a detailed explanation of how to build and run the SRW App on any supported 
       
       Users will need to adjust the experiment parameters in the ``config.sh`` file to suit the needs of their experiment (e.g., date, time, grid, physics suite, etc.). More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. 
 
-   #. Load the python environment for the regional workflow. Users on Level 3-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
+   #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
 
       .. code-block:: console
 
          module use <path/to/modulefiles>
          module load wflow_<platform>
-         conda activate regional_workflow
 
       After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
 
