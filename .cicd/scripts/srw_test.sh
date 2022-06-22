@@ -54,7 +54,12 @@ we2e_comprehensive_tests=('grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_
     'grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR'
     'grid_RRFS_CONUScompact_13km_ics_HRRR_lbcs_RAP_suite_HRRR'
     'grid_RRFS_CONUScompact_3km_ics_HRRR_lbcs_RAP_suite_HRRR'
-)
+    'grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_RRFS_v1beta'
+    'grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR'
+    'grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_RRFS_v1beta'
+    'grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR'
+    'grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_RRFS_v1beta'
+    'grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR')
 
 # The set of workflow tests to run.
 declare -a we2e_workflow_tests
@@ -62,8 +67,6 @@ we2e_workflow_tests=('community_ensemble_008mems'
     'community_ensemble_2mems'
     'deactivate_tasks'
     'inline_post'
-    'MET_ensemble_verification'
-    'MET_verification'
     'custom_ESGgrid'
     'custom_GFDLgrid'
     'custom_GFDLgrid__GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES_eq_FALSE'
@@ -79,7 +82,8 @@ we2e_workflow_tests=('community_ensemble_008mems'
 declare -a we2e_tests
 we2e_tests=("${we2e_fundamental_tests[@]}")
 if "${SRW_WE2E_COMPREHENSIVE_TESTS}"; then
-    we2e_tests+=("${we2e_comprehensive_tests[@]}" "${we2e_workflow_tests[@]}")
+    we2e_tests+=("${we2e_comprehensive_tests[@]}"
+        "${we2e_workflow_tests[@]}")
 
     # Add additional tests for Hera.
     if [[ "${platform}" == 'hera' ]]; then
@@ -88,7 +92,9 @@ if "${SRW_WE2E_COMPREHENSIVE_TESTS}"; then
 
     # Add additional tests for all platforms, except Gaea and Parallel Works.
     if [[ "${platform}" != 'gaea' && "${platform}" != 'noaacloud' ]]; then
-        we2e_tests+=('pregen_grid_orog_sfc_climo')
+        we2e_tests+=('pregen_grid_orog_sfc_climo'
+            'MET_ensemble_verification'
+            'MET_verification')
     fi
 fi
 
