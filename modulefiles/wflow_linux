@@ -11,7 +11,7 @@ setenv CMAKE_Platform linux
 # This path should point to your python virtual environment directory,
 # `regional_workflow`, created earlier for 
 # 
-setenv VENV "/home/username/venv/regional_workflow"
+setenv VENV "$env(HOME)/venv/regional_workflow"
 if { [module-info mode load] } {
    puts stderr "Verify the Python virtual environment path \$VENV shown below is correct, "
    puts stderr "set to the correct path otherwise: "
