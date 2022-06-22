@@ -76,8 +76,6 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
    * 1 GB for boundary conditions for a short 12-h test forecast on the CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`
    * 17 GB for a 12-h test forecast on the CONUS 25km domain, with model output saved hourly, see :numref:`Section %s <GridSpecificConfig>`
 
-* 4GB memory (CONUS 25km domain)
-
 * Fortran compiler released since 2018
 
    * gfortran v9+ or ifort v18+ are the only ones tested, but others may work.
