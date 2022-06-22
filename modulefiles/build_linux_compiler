@@ -1,0 +1,91 @@
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module needs to be customized for the user's Linux environment:"
+   puts stderr "specify compilers, path for HPC-stack, load the modules, set compiler and linker flags"
+}
+
+module-whatis "Loads libraries needed for building SRW on Linux"
+
+# This path should point to your HPCstack installation directory
+setenv HPCstack "/home/username/hpc-stack/install"
+
+# Load HPC stack 
+module use $env(HPCstack)/modulefiles/stack
+module load hpc
+module load hpc-python
+#
+module load hpc-gnu
+module load openmpi
+module load hpc-openmpi
+
+module load jasper/2.0.25
+module load zlib/1.2.11
+
+module load hdf5/1.10.6
+module load netcdf/4.7.4
+module load pio/2.5.3
+module load esmf/8.3.0b09
+module load fms/2022.01
+
+module load bacio/2.4.1
+module load crtm/2.3.0
+module load g2/3.4.3
+module load g2tmpl/1.10.0
+module load ip/3.3.3
+module load sp/2.3.3
+module load w3nco/2.4.1
+module load upp/10.0.10
+
+module load gftl-shared/1.3.3
+module load yafyaml/0.5.1
+module load mapl/2.11.0-esmf-8.3.0b09
+module load gfsio/1.4.1
+module load landsfcutil/2.4.1
+module load nemsio/2.5.2
+module load nemsiogfs/2.5.3
+module load sfcio/1.4.1
+module load sigio/2.3.2
+module load w3emc/2.7.3
+module load wgrib2/2.0.8
+
+# Set the env. variables for the serial compilers (CC, FC, CXX), if not present
+setenv CC "/usr/local/bin/gcc"
+setenv FC "/usr/local/bin/gfortran"
+setenv CXX "/usr/local/bin/g++"
+
+# Set MPI compilers depending on the MPI libraries built:
+setenv MPI_CC mpicc
+setenv MPI_CXX mpicxx
+setenv MPI_FC mpif90
+
+# Set compilers and platform names for CMake:
+setenv CMAKE_C_COMPILER $env(MPI_CC)
+setenv CMAKE_CXX_COMPILER $env(MPI_CXX)
+setenv CMAKE_Fortran_COMPILER $env(MPI_FC)
+
+setenv CMAKE_Platform linux.gnu
+#setenv CMAKE_Platform linux.intel
+
+setenv CMAKE_Fortran_COMPILER_ID "GNU"
+#setenv CMAKE_Fortran_COMPILER_ID "Intel"
+
+# Set compiler and linker flags if needed: 
+setenv FFLAGS " -fallow-argument-mismatch"
+
+if { [module-info mode load] } {
+   puts stderr "This module needs to be customized for the user's Linux environment:"
+   puts stderr "load the environment modules if present, hpc-stack modules,"
+   puts stderr "specify compilers, path for HPC-stack and SRW directory on Linux systems"
+   puts stderr "1) env. variable HPCstack is the hpc-stack installation directory"
+   puts stderr "2) Load the modules build with the hpc-stack on your system"
+   puts stderr "3) Specify compilers, compiler and linker flags, and a platform name"
+   puts stderr "   The example below is for the GNU compilers built with OpenMPI libraries"
+   puts stderr "    "
+   puts stderr "NB: After the module is customized, comment out the this line and the `puts stderr` lines above"
+   puts stderr " "
+   puts stderr "Please export env. variable LDFLAGS after the module is successfully loaded:
+       > export LDFLAGS=\"-L\$MPI_ROOT/lib \" "
+}
+
+
