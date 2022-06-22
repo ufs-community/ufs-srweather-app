@@ -242,7 +242,7 @@ Set Up the Build Environment
 
 .. attention::
    * If users successfully built the executables in :numref:`Table %s <ExecDescription>`, they should skip to step :numref:`Step %s <Data>`.
-   * Users who want to build the SRW App on a generic MacOS should skip to :numref:`Step %s <MacDetails>` and follow the approach there.
+   * Users who want to build the SRW App on a generic MacOS should skip to :numref:`Section %s <MacDetails>` and follow the approach there.  
 
 If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, users can run one of the following two commands depending on whether they have a bash or csh shell, respectively:
 
@@ -262,7 +262,7 @@ From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. T
 
 where ``<path/to/modulefiles/>`` is the full path to the ``modulefiles`` directory. 
 
-This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory. On Level 2-4 systems, users will need to modify certain environment variables, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands, depending on whether they are using a bash or csh/tcsh shell, respectively: 
+This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory. On Level 2-4 systems (including generic Linux/MacOS systems), users will need to modify certain environment variables, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. For systems with Lmod installed, one of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands, depending on whether they are using a bash or csh/tcsh shell, respectively: 
 
 .. code-block::
 
@@ -1008,21 +1008,27 @@ then the user should run ``conda activate regional_workflow``. This will activat
    source ~/.bashrc
    conda activate regional_workflow
 
-
 .. _LinuxMacActivateWFenv:
 
-Activate the Workflow Environment on General MacOS/Linux Systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Activating the Workflow Environment on Non-Level 1 Systems
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``regional_workflow`` environment can be activated as follows for ``<platform>="macos"``, or ``"<platform>=linux"``:
+Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. ``wflow_macos`` and ``wflow_linux`` template files are provided with the release. After making appropriate modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow. 
+
+On generic Linux or MacOS systems, loading the designated ``wflow_<platform>`` file will output instructions similar to the following:
 
 .. code-block:: console
 
-	module use <path/to/modulefiles>
- 	module load wflow_<platform>
+   Please do the following to activate conda:
+       > source $VENV/bin/activate
 
-This should activate the ``regional_workflow`` environment created in :numref:`Step %s <LinuxMacVEnv>`. From here, the user may continue to the :ref:`next section <GenerateWorkflow>` to generate the regional workflow. 
+If that does not work, users can also try:  
 
+.. code-block:: console
+
+   source $HOME/venv/regional_workflow/bin/activate
+
+However, they may simply need to make additional adjustments to their ``wflow_<platform>`` file. 
 
 .. _GenerateWorkflow: 
 
