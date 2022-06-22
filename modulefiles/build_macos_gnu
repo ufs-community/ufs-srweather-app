@@ -1,9 +1,11 @@
 #%Module
 
 proc ModulesHelp { } {
+   puts stderr "This module needs to be customized for the user's MacOS environment:" 
+   puts stderr "specify compilers, path for HPC-stack, load the modules, set compiler and linker flags"
    puts stderr "Option 1: M1/arm64 platform, OS BigSur, Monterey (Darwin 20,21) "
    puts stderr "Option 2: Intel/x86_64 platform, OS Catalina (Darwin 19) "
-   puts stderr "
+   puts stderr " "
 }
 
 module-whatis "Loads libraries needed for building SRW on MacOS"
@@ -15,9 +17,6 @@ if { [module-info mode load] } {
 # This path should point to your HPCstack installation directory
 setenv HPCstack "/Users/username/hpc-stack/install"
 
-# This path should point to your SRW Application directory
-setenv SRW "/Users/username/ufs-srweather-app"
-
 # Load HPC stack 
 module use $env(HPCstack)/modulefiles/stack
 module load hpc
@@ -27,8 +26,6 @@ module load hpc-gnu
 module load openmpi
 module load hpc-openmpi
 
-module use $env(SRW)/modulefiles
-#module load srw_common
 module load jasper/2.0.25
 module load zlib/1.2.11
 
@@ -82,6 +79,12 @@ setenv CMAKE_Platform macos.gnu
 setenv CMAKE_Fortran_COMPILER_ID "GNU"
 setenv FFLAGS "-DNO_QUAD_PRECISION -fallow-argument-mismatch "
 
-# export the environment variable LDFLAGS from the command line
-# after loading the current module:
+# export the env. variable LDFLAGS after loading the current module
 # export LDFLAGS="-L$MPI_ROOT/lib"
+if { [module-info mode load] } {
+   puts stderr " "
+   puts stderr "Please export env. variable LDFLAGS after the module is successfully loaded:
+       > export LDFLAGS=\"-L\$MPI_ROOT/lib \" "
+}
+
+
