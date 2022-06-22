@@ -877,7 +877,7 @@ In the ``config.sh`` file, set ``MACHINE="macos"`` or ``MACHINE="linux"``, and m
    PREDEF_GRID_NAME="RRFS_CONUS_25km"	
    QUILTING="TRUE"
 
-Due to the limited number of processors on Mac OS systems, users must also configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
+Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
 
 For :ref:`Option 1 <MacDetails>`, add the following information to ``config.sh``:
 
@@ -1028,7 +1028,7 @@ If that does not work, users can also try:
 
    source $HOME/venv/regional_workflow/bin/activate
 
-However, it may instead be necessary to make additional adjustments to their ``wflow_<platform>`` file. 
+However, it may instead be necessary to make additional adjustments to the ``wflow_<platform>`` file. 
 
 .. _GenerateWorkflow: 
 
