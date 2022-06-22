@@ -1028,7 +1028,7 @@ If that does not work, users can also try:
 
    source $HOME/venv/regional_workflow/bin/activate
 
-However, they may simply need to make additional adjustments to their ``wflow_<platform>`` file. 
+However, it may instead be necessary to make additional adjustments to their ``wflow_<platform>`` file. 
 
 .. _GenerateWorkflow: 
 
