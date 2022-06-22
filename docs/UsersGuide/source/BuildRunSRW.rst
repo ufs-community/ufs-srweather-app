@@ -1218,7 +1218,9 @@ Run the Workflow Using Rocoto
 
    If users are running the SRW App in a container or on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS or generic Linux systems), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
 
-The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, Rocoto cannot be used when running the workflow within a container. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
+The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, Rocoto cannot be used when running the workflow within a container. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. 
+
+There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
 
 .. note::
    Users may find it helpful to review :numref:`Chapter %s <RocotoInfo>` to gain a better understanding of Rocoto commands and workflow management before continuing, but this is not required to run the experiment. 
@@ -1246,7 +1248,7 @@ To run Rocoto using the ``launch_FV3LAM_wflow.sh`` script provided, simply call 
    cd $EXPTDIR
    ./launch_FV3LAM_wflow.sh
 
-This script creates a log file named ``log.launch_FV3LAM_wflow`` in ``$EXPTDIR`` or appends information to it if the file already exists. The launch script also creates the ``log/FV3LAM_wflow.log`` file, which shows Rocoto task information. Check the end of the log files periodically to see how the experiment is progressing:
+This script creates a log file named ``log.launch_FV3LAM_wflow`` in ``$EXPTDIR`` or appends information to the file if it already exists. The launch script also creates the ``log/FV3LAM_wflow.log`` file, which shows Rocoto task information. Check the end of the log file periodically to see how the experiment is progressing:
 
 .. code-block:: console
 
@@ -1307,9 +1309,9 @@ The workflow run is complete when all tasks have "SUCCEEDED". If everything goes
    201906150000       run_post_f000          4953244       SUCCEEDED         0          1          5.0
    201906150000       run_post_f001          4953245       SUCCEEDED         0          1          4.0
    ...
-   201906150000       run_post_f048          4953381       SUCCEEDED         0          1          7.0
+   201906150000       run_post_f012          4953381       SUCCEEDED         0          1          7.0
 
-If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f048``. The output will resemble the following but may be significantly longer when using ensemble verification: 
+If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f012``. The output will resemble the following but may be significantly longer when using ensemble verification: 
 
 .. code-block:: console
 
@@ -1317,7 +1319,7 @@ If users choose to run METplus verification tasks as part of their experiment, t
    ==========================================================================================================
    201906150000       make_grid              30466134       SUCCEEDED        0          1          5.0
    ...
-   201906150000       run_post_f048          30468271       SUCCEEDED        0          1          7.0
+   201906150000       run_post_f012          30468271       SUCCEEDED        0          1          7.0
    201906150000       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
    201906150000       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
    201906150000       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0
@@ -1372,7 +1374,7 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
 Automated Option
 ----------------------
 
-For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add the following commands to their ``config.sh`` file:
+For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add the following commands to their ``config.sh`` file *before* generating the experiment:
 
 .. code-block:: console
 
@@ -1391,7 +1393,7 @@ where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user
 .. hint::
 
    * On NOAA Cloud instances, ``*/1 * * * *`` is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
-   * On other NOAA HPC systems, admins discourage the ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` is the preferred option for cron jobs on non-Cloud systems. 
+   * On other NOAA HPC systems, admins discourage the ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` is the preferred option for cron jobs on non-NOAA Cloud systems. 
 
 To check the experiment progress:
 
