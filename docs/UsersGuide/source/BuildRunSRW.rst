@@ -159,6 +159,9 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
 where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss_dell_p3``
 
+.. note::
+   Although build files exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in `Section %s <MacDetails>`. It is recommended that users on these systems build the SRW App with the `CMake Approach <CMakeApproach>` instead. 
+
 If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. For example:
 
 .. code-block:: console
@@ -1015,7 +1018,7 @@ The ``regional_workflow`` environment can be activated as follows for ``<platfor
 
 .. code-block:: console
 
-	cd $SRW/regional_workflow/ush
+	module use <path/to/modulefiles>
  	module load wflow_<platform>
 
 This should activate the ``regional_workflow`` environment created in :numref:`Step %s <LinuxMacVEnv>`. From here, the user may continue to the :ref:`next section <GenerateWorkflow>` to generate the regional workflow. 
