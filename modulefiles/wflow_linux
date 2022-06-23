@@ -1,12 +1,12 @@
 #%Module
 
 proc ModulesHelp { } {
-   puts stderr "This module activates python environement for running SRW on macOS"
+   puts stderr "This module activates python environement for running SRW on general Linux"
 }
 
-module-whatis "This module activates python environment for running SRW on macOS"
+module-whatis "This module activates python environment for running SRW on general Linux"
 
-setenv CMAKE_Platform macos
+setenv CMAKE_Platform linux
 
 # This path should point to your python virtual environment directory,
 # `regional_workflow`, created earlier for 
@@ -25,4 +25,5 @@ if { [module-info mode load] } {
 # setenv ROCOTOmod "/Users/username/modules"
 # module use $env(ROCOTOmod)
 # module load rocoto
+
 
