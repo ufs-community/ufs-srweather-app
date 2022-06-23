@@ -167,13 +167,15 @@ def setup():
     #
     #-----------------------------------------------------------------------
     #
-    global N_VAR_LNDP, LNDP_TYPE, FHCYC_LSM_SPP_OR_NOT
+    global N_VAR_LNDP, LNDP_TYPE, LNDP_MODEL_TYPE, FHCYC_LSM_SPP_OR_NOT
     N_VAR_LNDP=0
     LNDP_TYPE=0
+    LNDP_MODEL_TYPE=0
     FHCYC_LSM_SPP_OR_NOT=0
     if DO_LSM_SPP:
       N_VAR_LNDP=len(LSM_SPP_VAR_LIST)
       LNDP_TYPE=2
+      LNDP_MODEL_TYPE=2
       FHCYC_LSM_SPP_OR_NOT=999
     #
     #-----------------------------------------------------------------------
@@ -2163,6 +2165,7 @@ def setup():
         N_VAR_SPP='{N_VAR_SPP}'
         N_VAR_LNDP='{N_VAR_LNDP}'
         LNDP_TYPE='{LNDP_TYPE}'
+        LNDP_MODEL_TYPE='{LNDP_MODEL_TYPE}'
         FHCYC_LSM_SPP_OR_NOT='{FHCYC_LSM_SPP_OR_NOT}'
         """
 

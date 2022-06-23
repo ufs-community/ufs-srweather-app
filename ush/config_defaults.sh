@@ -1901,10 +1901,6 @@ ISEED_SPP=( "4" "5" "6" "7" "8" )
 # SPP in LSM schemes is handled in the &nam_sfcperts namelist block 
 # instead of in &nam_sppperts, where all other SPP is implemented.
 #
-# The default perturbation frequency is determined by the fhcyc namelist 
-# entry.  Since that parameter is set to zero in the SRW App, use 
-# LSM_SPP_EACH_STEP to perturb every time step. 
-#
 # Perturbations to soil moisture content (SMC) are only applied at the 
 # first time step.
 #
@@ -1916,13 +1912,12 @@ ISEED_SPP=( "4" "5" "6" "7" "8" )
 # are shown below.  In addition, only one unique iseed value is allowed 
 # at the moment, and is used for each pattern.
 #
-DO_LSM_SPP="false" #If true, sets lndp_type=2
+DO_LSM_SPP="false" #If true, sets lndp_type=2, lndp_model_type=2
 LSM_SPP_TSCALE=( "21600" "21600" "21600" "21600" "21600" "21600" "21600" )
 LSM_SPP_LSCALE=( "150000" "150000" "150000" "150000" "150000" "150000" "150000" )
 ISEED_LSM_SPP=( "9" )
 LSM_SPP_VAR_LIST=( "smc" "vgf" "alb" "sal" "emi" "zol" "stc" )
 LSM_SPP_MAG_LIST=( "0.017" "0.001" "0.001" "0.001" "0.001" "0.001" "0.2" )
-LSM_SPP_EACH_STEP="true" #Sets lndp_each_step=.true.
 #
 #-----------------------------------------------------------------------
 # 

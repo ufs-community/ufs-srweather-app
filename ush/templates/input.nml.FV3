@@ -47,7 +47,7 @@
 
 &fms_nml
     clock_grain = 'ROUTINE'
-    domains_stack_size = 3000000
+    domains_stack_size = 5000000
     print_memory_usage = .false.
 /
 
@@ -184,6 +184,7 @@
     random_clds = .false.
     redrag = .true.
     satmedmf = .false.
+    sfclay_compute_flux = .false.
     shal_cnv = .false.
     swhtr = .true.
     trans_trac = .true.

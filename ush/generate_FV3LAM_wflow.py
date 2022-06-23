@@ -737,7 +737,6 @@ def generate_FV3LAM_wflow():
         'n_var_spp': N_VAR_SPP,
         'n_var_lndp': N_VAR_LNDP,
         'lndp_type': LNDP_TYPE,
-        'lndp_each_step': LSM_SPP_EACH_STEP,
         'fhcyc': FHCYC_LSM_SPP_OR_NOT
     }
     #
@@ -865,6 +864,7 @@ def generate_FV3LAM_wflow():
     if DO_LSM_SPP:
       nam_sfcperts_dict = {
         'lndp_type': LNDP_TYPE,
+        'lndp_model_type': LNDP_MODEL_TYPE,
         'lndp_tau': LSM_SPP_TSCALE,
         'lndp_lscale': LSM_SPP_LSCALE,
         'iseed_lndp': ISEED_LSM_SPP,
