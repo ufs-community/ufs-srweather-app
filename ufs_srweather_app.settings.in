@@ -22,4 +22,4 @@ Extra libraries:	@LIBS@
 # Features
 ----------
 Parallel Support:	@HAS_PARALLEL@
-
+RRFS Components:        @ENABLE_RRFS@

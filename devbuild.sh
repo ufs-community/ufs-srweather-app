@@ -19,6 +19,8 @@ OPTIONS
       (e.g. ATM | ATMW | S2S | S2SW)
   --ccpp="CCPP_SUITE1,CCPP_SUITE2..."
       CCPP suites (CCPP_SUITES) to include in build; delimited with ','
+  --rrfs
+      build rrfs system components: GSI, rrfs_utl
   --enable-options="OPTION1,OPTION2,..."
       enable ufs-weather-model options; delimited with ','
       (e.g. 32BIT | INLINE_POST | UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
@@ -86,6 +88,7 @@ INSTALL_DIR=${SRW_DIR}
 COMPILER=""
 APPLICATION=""
 CCPP_SUITES=""
+RRFS="off"
 ENABLE_OPTIONS=""
 DISABLE_OPTIONS=""
 BUILD_TYPE="RELEASE"
@@ -112,6 +115,8 @@ while :; do
     --app|--app=|-a|-a=) usage_error "$1 requires argument." ;;
     --ccpp=?*) CCPP_SUITES=${1#*=} ;;
     --ccpp|--ccpp=) usage_error "$1 requires argument." ;;
+    --rrfs) RRFS="on" ;;
+    --rrfs=*) usage_error "$1 argument ignored." ;;
     --enable-options=?*) ENABLE_OPTIONS=${1#*=} ;;
     --enable-options|--enable-options=) usage_error "$1 requires argument." ;;
     --disable-options=?*) DISABLE_OPTIONS=${1#*=} ;;
@@ -234,6 +239,9 @@ if [ ! -z "${APPLICATION}" ]; then
 fi
 if [ ! -z "${CCPP_SUITES}" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DCCPP_SUITES=${CCPP_SUITES}"
+fi
+if [ ! -z "${RRFS}" ]; then
+  CMAKE_SETTINGS="${CMAKE_SETTINGS} -DENABLE_RRFS=${RRFS}"
 fi
 if [ ! -z "${ENABLE_OPTIONS}" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DENABLE_OPTIONS=${ENABLE_OPTIONS}"
