@@ -343,7 +343,7 @@ This will work on Level 1 systems, where a modulefile is available in the ``modu
    export <VARIABLE_NAME>=<PATH_TO_MODULE>
    setenv <VARIABLE_NAME> <PATH_TO_MODULE>
 
-Note that building the SRW App without Lmod is not supported for this release. It should be possible to do so, but it has not been tested. Users are encouraged to install Lmod on their system. 
+Note that building the SRW App without Lmod is not supported at this time. It should be possible to do so, but it has not been tested. Users are encouraged to install Lmod on their system. 
 
 .. _BuildCMake:
 
@@ -487,13 +487,15 @@ Set Experiment Parameters
 
 Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in ``config_defaults.sh`` and in the user-specified ``config.sh`` file. When generating a new experiment, the SRW App first reads and assigns default values from the ``config_defaults.sh`` file. Then, it reads and (re)assigns variables from the user's custom ``config.sh`` file. 
 
+For background info on ``config_defaults.sh``, read :numref:`Section %s <DefaultConfigSection>`, or jump to :numref:`Section %s <UserSpecificConfig>` to continue configuring the experiment.
+
 .. _DefaultConfigSection:
 
 Default configuration: ``config_defaults.sh``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
-   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. It is informative, but users do not need to modify ``config_defaults.sh`` to run the out-of-the-box case for the SRW App. Users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
+   This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. It is informative, but users do not need to modify ``config_defaults.sh`` to run the out-of-the-box case for the SRW App. Therefore, users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
 
 Configuration variables in the ``config_defaults.sh`` file appear in :numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.sh`` file. Any settings provided in ``config.sh`` will override the ``config_defaults.sh`` 
 settings. There is usually no need for a user to modify the default configuration file. Additional information on the default settings can be found in the file itself and in :numref:`Chapter %s <ConfigWorkflow>`. 
@@ -684,7 +686,7 @@ settings. There is usually no need for a user to modify the default configuratio
 User-specific configuration: ``config.sh``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The user must specify certain basic information about the experiment in a ``config.sh`` file located in the ``ufs-srweather-app/regional_workflow/ush`` directory. Two example templates are provided in that directory: ``config.community.sh`` and ``config.nco.sh``. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``).  The *community* mode is recommended in most cases and is fully supported for this release. The operational/NCO mode is typically used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` shows the configuration variables that appear in the ``config.community.sh``, along with their default values in ``config_default.sh`` and the values defined in ``config.community.sh``.
+The user must specify certain basic information about the experiment in a ``config.sh`` file located in the ``ufs-srweather-app/regional_workflow/ush`` directory. Two example templates are provided in that directory: ``config.community.sh`` and ``config.nco.sh``. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases and is fully supported for this release. The operational/NCO mode is typically used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` shows the configuration variables that appear in the ``config.community.sh``, along with their default values in ``config_default.sh`` and the values defined in ``config.community.sh``.
 
 .. _ConfigCommunity:
 
@@ -814,8 +816,8 @@ Minimum parameter settings for running the out-of-the-box SRW App case on Level 
    ACCOUNT="<my_account>"
    EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
 
 where: 
    * ``<my_account>`` refers to a valid account name.
@@ -833,25 +835,25 @@ On Hera:
 
 .. code-block:: console
 
-   "/scratch2/BMC/det/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
+   "/scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On Jet: 
 
 .. code-block:: console
 
-   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
+   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On Orion: 
 
 .. code-block:: console
 
-   "/work/noaa/fv3-cam/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
+   "/work/noaa/fv3-cam/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On Gaea: 
 
 .. code-block:: console
 
-   "/lustre/f2/pdata/ncep/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
+   "/lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
 
 On NOAA Cloud Systems:
 
@@ -861,9 +863,9 @@ On NOAA Cloud Systems:
    ACCOUNT="none"
    EXPT_SUBDIR="<my_expt_name>"
    USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
+   EXTRN_MDL_SOURCE_BASEDIR_ICS="/contrib/EPIC/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
    EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/v2p0/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
+   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/contrib/EPIC/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
    EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
 
 .. note::
@@ -1040,9 +1042,9 @@ Users who have already staged the observation data needed for METplus (i.e., the
 
 .. code-block:: console
 
-   CCPA_OBS_DIR="/path/to/UFS_SRW_App/v2p0/obs_data/ccpa/proc"
-   MRMS_OBS_DIR="/path/to/UFS_SRW_App/v2p0/obs_data/mrms/proc"
-   NDAS_OBS_DIR="/path/to/UFS_SRW_App/v2p0/obs_data/ndas/proc"
+   CCPA_OBS_DIR="/path/to/UFS_SRW_App/develop/obs_data/ccpa/proc"
+   MRMS_OBS_DIR="/path/to/UFS_SRW_App/develop/obs_data/mrms/proc"
+   NDAS_OBS_DIR="/path/to/UFS_SRW_App/develop/obs_data/ndas/proc"
    RUN_TASK_GET_OBS_CCPA="FALSE"
    RUN_TASK_GET_OBS_MRMS="FALSE"
    RUN_TASK_GET_OBS_NDAS="FALSE"
