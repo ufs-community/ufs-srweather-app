@@ -56,7 +56,7 @@ The UFS Weather Model draws on over 50 code libraries to run its applications. T
 
 Instructions
 -------------------------
-Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) that depend on it. Users can either build the HPC-Stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing the HPC-Stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
+Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) that depend on it. Users can either build the HPC-Stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing the HPC-Stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
 
 .. code-block:: console
 
@@ -74,11 +74,11 @@ After completing installation, continue to the next section (:numref:`Section %s
 
 Download the UFS SRW Application Code
 ======================================
-The SRW Application source code is publicly available on GitHub. To download the SRW App code, clone the ``release/public-v2`` branch of the repository:
+The SRW Application source code is publicly available on GitHub. To download the SRW App code, clone the ``develop`` branch of the repository:
 
 .. code-block:: console
 
-   git clone -b release/public-v2 https://github.com/ufs-community/ufs-srweather-app.git
+   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
 
 The cloned repository contains the configuration files and sub-directories shown in
 :numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environment variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the ``$HOME`` directory, the following commands will set an ``$SRW`` environment variable in a bash or csh shell, respectively:
