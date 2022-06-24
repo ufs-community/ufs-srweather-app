@@ -73,7 +73,7 @@ Glossary
       The `Environmental Modeling Center <https://www.emc.ncep.noaa.gov/emc_new.php>`__. 
 
    EPIC
-      The `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__. EPIC seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement in order to produce the most accurate and reliable operational modeling system in the world. 
+      The `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__ seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement in order to produce the most accurate and reliable operational modeling system in the world. 
 
    ESG
       Extended Schmidt Gnomonic (ESG) grid. The ESG grid uses the map projection developed by Jim Purser of NOAA :term:`EMC` (:cite:t:`Purser_2020`). 
