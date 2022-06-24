@@ -1,4 +1,2 @@
 #%Module
 module load pylib_regional_workflow
-module use /glade/p/ral/jntp/MET/MET_releases/modulefiles
-module load met/10.0.0
