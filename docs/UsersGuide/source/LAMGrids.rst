@@ -4,25 +4,20 @@
 Limited Area Model (:term:`LAM`) Grids:  Predefined and User-Generated Options
 =================================================================================
 In order to set up the workflow and generate an experiment with the SRW Application, the user
-must choose between four predefined :term:`FV3`-:term:`LAM` grids or generate a user-defined grid.
-At this time, full support will only be provided to those using one of the four predefined
-grids supported in the v2.0.0 release. However, preliminary information is provided at the end of
-this chapter that describes how users can leverage the SRW App workflow scripts to generate
-their own user-defined grid. Currently, this feature is not fully supported and is
-"use at your own risk."
+must choose between various predefined :term:`FV3`-:term:`LAM` grids or generate a user-defined grid.
+At this time, full support is only provided to those using one of the four predefined
+grids supported in the v2.0.0 release, but other predefined grids are available. Preliminary information is also provided at the end of this chapter describing how users can leverage the SRW App workflow scripts to generate their own user-defined grid. Currently, this feature is not fully supported and is "use at your own risk."
 
 Predefined Grids
 =================
-The SRW App v2.0.0 release includes four predefined limited area model (:term:`LAM`) grids. To select a predefined grid,
-the ``PREDEF_GRID_NAME`` variable within the ``config.sh`` script must be set to one
-of the following four options:
+The SRW App v2.0.0 release includes four predefined limited area model (:term:`LAM`) grids. To select a supported predefined grid, the ``PREDEF_GRID_NAME`` variable within the ``config.sh`` script must be set to one of the following four options:
 
 * ``RRFS_CONUS_3km``
 * ``RRFS_CONUS_13km``
 * ``RRFS_CONUS_25km``
 * ``SUBCONUS_Ind_3km``
 
-These four options are provided for flexibility related to compute resources and supported physics options. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the four supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the fourth supported physics suite: ``FV3_GFS_v16``. 
+These four options are provided for flexibility related to compute resources and supported physics options. Other predefined grids are listed :ref:`here <PredefGrid>`. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the four supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the fourth supported physics suite: ``FV3_GFS_v16``. 
 
 .. _GridPhysicsCombos:
 
@@ -118,7 +113,7 @@ While the four predefined grids available in this release are ideal for users ju
 out with the SRW App, more advanced users may wish to create their own grid for testing over
 a different region and/or with a different resolution. Creating a user-defined grid requires
 knowledge of how the SRW App workflow functions. In particular, it is important to understand the set of
-scripts that handle the workflow and experiment generation (see :numref:`Figure %s <WorkflowGeneration>` and :numref:`Figure %s <WorkflowTasksFig>`). It is also important to note that user-defined grids are not a supported feature of the v2.0.0 release; however, information is being provided for the benefit of the FV3-LAM community.
+scripts that handle the workflow and experiment generation (see :numref:`Figure %s <WorkflowGeneration>` and :numref:`Figure %s <WorkflowTasksFig>`). It is also important to note that user-defined grids are not a supported feature of the current release; however, information is being provided for the benefit of the FV3-LAM community.
 
 With those caveats in mind, this section provides instructions for adding a new grid to the FV3-LAM
 workflow that will be generated using the "ESGgrid" method (i.e., using the regional_esg_grid code
