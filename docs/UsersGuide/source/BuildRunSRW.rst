@@ -919,6 +919,7 @@ MacOS requires the installation of a few additional packages and, possibly, an u
    bash --version
    brew upgrade bash
    brew install coreutils
+   brew gsed
 
 .. _LinuxMacVEnv: 
 
