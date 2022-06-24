@@ -7,7 +7,7 @@ To create the experiment directory and workflow when running the SRW Application
 
 There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these need to be explicitly set by the user in ``config.sh``. If a user does not define an entry in the ``config.sh`` script, either its value in ``config_defaults.sh`` will be used, or it will be reset depending on other parameters, such as the platform on which the experiment will be run (specified by ``MACHINE``). Note that ``config_defaults.sh`` contains the full list of experiment parameters that a user may set in ``config.sh`` (i.e., the user cannot set parameters in ``config.sh`` that are not initialized in ``config_defaults.sh``).
 
-The following is a list of the parameters in the ``config_defaults.sh`` file. For each parameter, the default value and a brief description is given. In addition, relevant information on support for features and settings in the v2.0.0 release is provided.
+The following is a list of the parameters in the ``config_defaults.sh`` file. For each parameter, the default value and a brief description is given. 
 
 Platform Environment
 ====================
@@ -197,7 +197,7 @@ File Name Parameters
    Name of YAML configuration file containing the forecast model's namelist settings for various physics suites.
 
 ``FV3_NML_BASE_ENS_FN``: (Default: "input.nml.base_ens")
-   Name of the Fortran file containing the forecast model's base ensemble namelist (i.e., the original namelist file from which each of the ensemble members' namelist files are generated).
+   Name of the Fortran file containing the forecast model's base ensemble namelist (i.e., the original namelist file from which each of the ensemble members' namelist files is generated).
 
 ``DIAG_TABLE_FN``: (Default: "diag_table")
    Name of the file specifying the fields that the forecast model will output.
@@ -267,7 +267,7 @@ Model Configuration Parameters
 .. _InlinePost:
 
 ``WRITE_DOPOST``: (Default: "FALSE")
-   Flag that determines whether to use the INLINE POST option. If TRUE, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to "TRUE", and the post-processing tasks get called from within the weather model so that the post-processed files (in :term:`grib2` format) are output by the weather model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST="TRUE"`` turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to "FALSE") in ``setup.sh``.
+   Flag that determines whether to use the INLINE POST option. If TRUE, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to "TRUE", and the post-processing tasks get called from within the weather model so that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST="TRUE"`` turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to "FALSE") in ``setup.sh``.
 
 METplus Parameters
 =====================
@@ -412,7 +412,7 @@ CCPP Parameter
 Stochastic Physics Parameters
 ================================
 
-For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/release-public-v3/>`__.
+For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/release-public-v3/namelist_options.html>`__.
 
 ``NEW_LSCALE``: (Default: "TRUE") 
    Use correct formula for converting a spatial legnth scale into spectral space. 
@@ -741,7 +741,7 @@ Write-Component (Quilting) Parameters
 ======================================
 
 .. note::
-   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write-component grid** before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (:term:`ESMF`) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/release-public-v3/InputsOutputs.html#model-configure-file>`__ of the UFS Weather Model documentation. 
+   The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write-component grid** before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (:term:`ESMF`) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#model-configure-file>`__ of the UFS Weather Model documentation. 
 
 ``QUILTING``: (Default: "TRUE")
 
@@ -1025,13 +1025,13 @@ Baseline Workflow Tasks
    Same as ``RUN_TASK_MAKE_GRID`` but for the orography generation task (``MAKE_OROG_TN``). Flag that determines whether to run the orography file generation task (``MAKE_OROG_TN``). If this is set to "TRUE", the orography generation task is run and new orography files are generated. If it is set to "FALSE", then the scripts look for pre-generated orography files in the directory specified by ``OROG_DIR`` (see below).
 
 ``OROG_DIR``: (Default: "/path/to/pregenerated/orog/files")
-   The directory containing pre-generated orography files when ``MAKE_OROG_TN`` is set to "FALSE".
+   The directory containing pre-generated orography files to use when ``MAKE_OROG_TN`` is set to "FALSE".
 
 ``RUN_TASK_MAKE_SFC_CLIMO``: (Default: "TRUE")
    Same as ``RUN_TASK_MAKE_GRID`` but for the surface climatology generation task (``MAKE_SFC_CLIMO_TN``). Flag that determines whether to run the surface climatology file generation task (``MAKE_SFC_CLIMO_TN``). If this is set to "TRUE", the surface climatology generation task is run and new surface climatology files are generated. If it is set to "FALSE", then the scripts look for pre-generated surface climatology files in the directory specified by ``SFC_CLIMO_DIR`` (see below).
 
 ``SFC_CLIMO_DIR``: (Default: "/path/to/pregenerated/surface/climo/files")
-   The directory containing pre-generated surface climatology files when ``MAKE_SFC_CLIMO_TN`` is set to "FALSE".
+   The directory containing pre-generated surface climatology files to use when ``MAKE_SFC_CLIMO_TN`` is set to "FALSE".
 
 ``RUN_TASK_GET_EXTRN_ICS``: (Default: "TRUE")
    Flag that determines whether to run the ``GET_EXTRN_ICS_TN`` task.
@@ -1077,11 +1077,17 @@ Verification Tasks
 ``RUN_TASK_VX_ENSPOINT``: (Default: "FALSE")
    Flag that determines whether to run the ensemble point verification task. If this flag is set, both ensemble-stat point verification and point verification of ensemble-stat output is computed.
 
+..
+   COMMENT: Might be worth defining "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"
+
 Aerosol Climatology Parameter
 ================================
 
 ``USE_MERRA_CLIMO``: (Default: "FALSE")
    Flag that determines whether :term:`MERRA2` aerosol climatology data and lookup tables for optics properties are obtained. 
+
+..
+   COMMENT: When would it be appropriate to obtain these files?
 
 Surface Climatology Parameter
 =============================
@@ -1309,10 +1315,14 @@ Thread Affinity Interface
       OMP_NUM_THREADS_MAKE_SFC_CLIMO="1"
       OMP_NUM_THREADS_MAKE_ICS="1"
       OMP_NUM_THREADS_MAKE_LBCS="1"
-      OMP_NUM_THREADS_RUN_FCST="2"
+      OMP_NUM_THREADS_RUN_FCST="2"     # atmos_nthreads in model_configure
       OMP_NUM_THREADS_RUN_POST="1"
 
    The number of OpenMP threads to use for parallel regions.
+
+..
+   COMMENT: What does the #atmos_nthreads comment mean? Can it be removed?
+   
 
 ``OMP_STACKSIZE_*``: (Default: see below)
 
