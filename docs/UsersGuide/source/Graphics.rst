@@ -73,12 +73,12 @@ On NOAA Cloud:
 
 .. _Cartopy:
 
-Cartopy Shape Files
+Cartopy Shapefiles
 =======================
 
-The Python plotting scripts also require a path to the directory where the Cartopy Natural Earth shape files are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. Cartopy provides the 'background_img()' method to add background images in a convenient way. The default scale (resolution) of background attributes in the Python scripts is 1:50m Natural Earth I with Shaded Relief and Water, which should be sufficient for most regional applications. 
+The Python plotting scripts also require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. Cartopy provides the 'background_img()' method to add background images in a convenient way. The default scale (resolution) of background attributes in the Python scripts is 1:50m Natural Earth I with Shaded Relief and Water, which should be sufficient for most regional applications. 
 
-The full set of Cartopy shape files can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. For convenience, the small subset of files required for these Python scripts can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. They are also available on all `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms in the following locations:
+The full set of Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. For convenience, the small subset of files required for these Python scripts can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. They are also available on all `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms in the following locations:
 
 On Cheyenne:
 
@@ -137,8 +137,8 @@ following command line arguments:
 #. Starting forecast hour
 #. Ending forecast hour
 #. Forecast hour increment
-#. The top level of the experiment directory ``EXPTDIR`` containing the post-processed data. The script will look for the data files in the directory ``$EXPTDIR/CDATE/postprd``.
-#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shape files (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``.
+#. The top level of the experiment directory ``$EXPTDIR`` containing the post-processed data. The script will look for the data files in the directory ``$EXPTDIR/CDATE/postprd``.
+#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``.
 #. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecast
 
 .. note::
@@ -166,9 +166,9 @@ command line arguments:
 #. Starting forecast hour
 #. Ending forecast hour 
 #. Forecast hour increment
-#. The top level of the first experiment directory ``EXPTDIR1`` containing the first set of post-processed data. The script will look for the data files in the directory ``$EXPTDIR1/CDATE/postprd``.
-#. The top level of the second experiment directory ``EXPTDIR2`` containing the second set of post-processed data. The script will look for the data files in the directory ``$EXPTDIR2/CDATE/postprd``.
-#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shape files (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``.
+#. The top level of the first experiment directory ``$EXPTDIR1`` containing the first set of post-processed data. The script will look for the data files in the directory ``$EXPTDIR1/CDATE/postprd``.
+#. The top level of the second experiment directory ``$EXPTDIR2`` containing the second set of post-processed data. The script will look for the data files in the directory ``$EXPTDIR2/CDATE/postprd``.
+#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``.
 #. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecasts (this must be the same for the two forecasts)
 
 An example of plotting differences from two experiments for the same date and predefined domain where one uses the "FV3_GFS_v16" suite definition file (SDF) and one using the "FV3_RRFS_v1beta" SDF is as follows:
@@ -176,6 +176,8 @@ An example of plotting differences from two experiments for the same date and pr
 .. code-block:: console
 
    python plot_allvars_diff.py 2019061518 0 12 6 /path-to/expt_dirs1/test_CONUS_3km_GFSv16 /path-to/expt_dirs2/test_CONUS_3km_RRFSv1beta /path-to/NaturalEarth RRFS_CONUS_25km
+
+In this case, the output ``.png`` files will be located in the directory ``$EXPTDIR1/CDATE/postprd``.
 
 .. _Batch:
 
@@ -190,10 +192,10 @@ At a minimum, the account should be set appropriately prior to job submission:
 
    #SBATCH --account=<account_name>
 
-Depending on the platform, users may also need to adjust the settings to use the correct Python environment and path to the shape files.
+Depending on the platform, users may also need to adjust the settings to use the correct Python environment and path to the shapefiles.
 
 When working with these batch scripts, several environment variables must be set prior to submission.
-If plotting output from a single cycle, the variables to set are ``HOMErrfs`` and ``EXPTDIR``.
+If plotting output from a single cycle, the variables to set are ``$HOMErrfs`` and ``$EXPTDIR``.
 If the user's login shell is bash, these variables can be set as follows:
 
 .. code-block:: console
@@ -209,7 +211,7 @@ If the user's login shell is csh/tcsh, they can be set as follows:
    setenv EXPTDIR /path-to/experiment/directory
 
 If plotting the difference between the same cycle from two different experiments, the variables 
-to set are ``HOMErrfs``, ``EXPTDIR1``, and ``EXPTDIR2``. If the user's login shell 
+to set are ``$HOMErrfs``, ``$EXPTDIR1``, and ``$EXPTDIR2``. If the user's login shell 
 is bash, these variables can be set as follows:
 
 .. code-block:: console
