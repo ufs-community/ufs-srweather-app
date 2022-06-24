@@ -87,7 +87,7 @@ The steps below should be followed in order to make changes to the ``develop`` b
          
     #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g., ``commit -m "Issue #23 - <commit message>"``). Test code modifications on as many platforms as possible, and request help with further testing from the code management team when unable to test on all platforms. Document changes to the workflow and capabilities (either in the ``.rst`` files or separately) so that the SRW App documentation stays up-to-date. 
     #. **Pull request** - When ready to merge changes back to the ``develop`` branch, the code developer should initiate a pull request (PR) of the feature branch into the ``develop`` branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. When a PR is initiated, the :ref:`PR Template <Template>` autofills. Developers should use the template to provide information about the PR in the proper fields. See the guidelines in :numref:`Section %s <GoodPR>` for more details on making a good pull request. Developers should also tag all relevant reviewers from the code management team to the PR.
-    #. **Merge** - When review and testing is complete, a code manager will complete the pull request and subsequent merge. If the PR was issued by a code manager, that specific code manager should perform the merge or explicitly delegate another code manager to do so. 
+    #. **Merge** - When review and testing is complete, a code manager will complete the pull request and subsequent merge. If the PR was issued by a code manager, that same code manager should perform the merge or explicitly delegate another code manager to do so. 
     #. **Cleanup** - After the PR is merged, the code developer should delete the branch on their fork and close the issue.
 
 .. note::
@@ -259,7 +259,7 @@ Code and Configuration Standards
 General
 -----------
 
-Platform-specific settings should be handled only through configuration and module files, not in code or scripts.
+Platform-specific settings should be handled only through configuration and modulefiles, not in code or scripts.
 
 SRW Application
 ------------------
@@ -274,10 +274,10 @@ Externals.cfg
 Build system
     * Each component should build with CMake
     * Each component should build with Intel compilers on official `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms and with GNU or Intel compilers on other platforms. 
-    * Each component should have a mechanism for platform independence (i.e., no hard-coded machine-specific settings outside of established environment, configuration, and module files). 
+    * Each component should have a mechanism for platform independence (i.e., no hard-coded machine-specific settings outside of established environment, configuration, and modulefiles). 
     * Each component should build with the latest release of the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__. 
 
-Module files (env files)
+Modulefiles
     * Each component should build using the common modules located in the ``modulefiles/srw_common`` file.
 
 
@@ -296,7 +296,7 @@ The ``regional_workflow`` repository must not contain source code for compiled p
 
 **Workflow Design:** Follow the `NCO Guidelines <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ for what is incorporated in each layer of the workflow. This is particularly important in the ``scripts`` directory. 
 
-**Module files:** All official platforms should have a module file that can be sourced to provide the appropriate python packages and other settings for the platform. 
+**Modulefiles:** All official platforms should have a modulefile that can be sourced to provide the appropriate python packages and other settings for the platform. 
 
 **Management of the Configuration File:** New configurable options must be consistent with existing configurable options and documented in ``docs/UsersGuide/source/ConfigWorkflow.rst``. Add necessary checks on acceptable options where applicable. Add appropriate default values in ``config_defaults.sh``.
 
