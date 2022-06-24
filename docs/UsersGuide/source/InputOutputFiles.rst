@@ -37,7 +37,7 @@ must be staged by the user unless the user is running on a `Level 1/pre-configur
 Unified Post Processor (UPP)
 ----------------------------
 Documentation for the UPP input files can be found in the `UPP User's Guide
-<https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html#input-files>`__.
+<https://upp.readthedocs.io/en/latest/InputsOutputs.html#input-files>`__.
 
 .. _WorkflowTemplates:
 
@@ -161,7 +161,7 @@ where ``HHH`` corresponds to the 3-digit forecast hour (e.g., ``dynf006.nc`` for
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html>`__.
+Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html>`__.
 
 For the SRW Application, the weather model netCDF output files are written to ``$EXPTDIR/YYYYMMDDHH/postprd`` and have the naming convention (file->linked to):
 
@@ -182,7 +182,7 @@ UPP Product Output Tables for the UFS SRW LAM Grid:
    * :doc:`3D Native Hybrid Level Fields <SRW_NATLEV_table>`
    * :doc:`3D Pressure Level Fields <SRW_PRSLEV_table>`
 
-Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/upp_v10.1.0/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
+Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
 
 After creating the new flat text file to reflect the changes, users will need to modify their ``config.sh`` to point the workflow to the new text file. In ``config.sh``, set the following:
 
