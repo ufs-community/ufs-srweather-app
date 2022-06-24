@@ -313,12 +313,12 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    | data_table                | :term:`Cycle-independent` input file (empty)                                                                 |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | field_table               | :term:`Tracers` in the `forecast model                                                                       |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#field-table-file>`__       |
+   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#field-table-file>`__                  |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                          |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | input.nml                 | :term:`Namelist` for the `UFS Weather Model                                                                  |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#namelist-file-input-nml>`__| 
+   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#namelist-file-input-nml>`__           | 
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | launch_FV3LAM_wflow.sh    | Symlink to the shell script of                                                                               |
    |                           | ``ufs-srweather-app/regional_workflow/ush/launch_FV3LAM_wflow.sh``,                                          |
@@ -330,7 +330,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    |                           | (``generate_FV3LAM_wflow.sh``)                                                                               |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | nems.configure            | See `NEMS configuration file                                                                                 |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#nems-configure-file>`__    |
+   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#nems-configure-file>`__               |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | suite_{CCPP}.xml          | :term:`CCPP` suite definition file used by the forecast model                                                |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+

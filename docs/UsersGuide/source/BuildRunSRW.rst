@@ -240,6 +240,7 @@ The executables listed in :numref:`Table %s <ExecDescription>` should appear in 
 
 
 .. table::  Names and descriptions of the executables produced when the RRFS option is enabled
+   
    +----------------------------+-----------------------------------------------------------------------------+
    | **Executable Name**        | **Description**                                                             |
    +============================+=============================================================================+

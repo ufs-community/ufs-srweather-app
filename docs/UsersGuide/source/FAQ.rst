@@ -96,7 +96,7 @@ advance the workflow, the job will be resubmitted.
 How do I change the grid?
 ===========================
 
-To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``config.sh`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.sh`` file). Users can choose from one of four predefined grids for the SRW Application v2.0.0 release:
+To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``config.sh`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.sh`` file). The four supported predefined grids for the SRW Application v2.0.0 release were:
 
 .. code-block:: console
 
@@ -105,5 +105,5 @@ To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the `
    RRFS_CONUS_25km
    SUBCONUS_Ind_3km
 
-An option also exists to create a user-defined grid, with information available in :numref:`Chapter %s <UserDefinedGrid>`. However, the user-defined grid option is not fully-supported for this release and is provided for informational purposes only. 
+However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Chapter %s <UserDefinedGrid>`. However, the user-defined grid option is not fully-supported for this release and is provided for informational purposes only. 
 

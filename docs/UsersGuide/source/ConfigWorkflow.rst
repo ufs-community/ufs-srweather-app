@@ -568,6 +568,8 @@ The parameters below turn on SPP in Noah or RUC LSM (support for Noah MP is in p
 ``LSM_SPP_EACH_STEP``: (Default: "true") 
    When set to "TRUE", it sets ``lndp_each_step=.true.`` and perturbs each time step. 
 
+.. _PredefGrid:
+
 Predefined Grid Parameters
 ==========================
 ``PREDEF_GRID_NAME``: (Default: "")
