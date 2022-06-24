@@ -6,7 +6,7 @@ Limited Area Model (:term:`LAM`) Grids:  Predefined and User-Generated Options
 In order to set up the workflow and generate an experiment with the SRW Application, the user
 must choose between various predefined :term:`FV3`-:term:`LAM` grids or generate a user-defined grid.
 At this time, full support is only provided to those using one of the four predefined
-grids supported in the v2.0.0 release, but other predefined grids are available. Preliminary information is also provided at the end of this chapter describing how users can leverage the SRW App workflow scripts to generate their own user-defined grid. Currently, this feature is not fully supported and is "use at your own risk."
+grids supported in the v2.0.0 release, but other predefined grids are available (see :numref:`Section %s <PredefGrid>` for more detail). Preliminary information is also provided at the end of this chapter describing how users can leverage the SRW App workflow scripts to generate their own user-defined grid. Currently, this feature is not fully supported and is "use at your own risk."
 
 Predefined Grids
 =================
