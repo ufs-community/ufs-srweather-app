@@ -120,7 +120,7 @@ Output files from each workflow task are written to a subdirectory within the ex
 Initial and boundary condition files
 ------------------------------------
 The external model data used by ``chgres_cube`` (as part of the pre-processing utilities) are located
-in the experiment directory under ``$EXPTDIR/YYYYMMDDHH/EXTRN_MDL_NAME/{for_ICS/LBCS}``.
+in the experiment directory under ``$EXPTDIR/YYYYMMDDHH/EXTRN_MDL_NAME/{for_ICS/for_LBCS}``.
 
 Pre-processing (UFS_UTILS)
 --------------------------
@@ -227,7 +227,7 @@ By setting ``USE_CRTM`` to "TRUE", the workflow will use the path defined in ``C
 
 Downloading and Staging Input Data
 ==================================
-A set of input files, including static (fix) data and raw initial and lateral boundary conditions (:term:`IC/LBCs`), is required to run the SRW Application. The data required for the "out-of-the-box" SRW App case described in Chapters :numref:`%s <QuickstartC>` and :numref:`%s <BuildRunSRW>` is already preinstalled on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, along with data required to run the :ref:`WE2E <WE2E_tests>` test cases. Therefore, users on these systems do not need to stage the fixed files manually because they have been prestaged, and the paths are set in ``regional_workflow/ush/setup.sh``. Users on Level 3 & 4 systems can find the SRW App v2.0.0 release data in the `UFS SRW Application Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ by clicking on `Browse Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
+A set of input files, including static (fix) data and raw initial and lateral boundary conditions (:term:`IC/LBCs`), is required to run the SRW Application. The data required for the "out-of-the-box" SRW App case described in Chapters :numref:`%s <QuickstartC>` and :numref:`%s <BuildRunSRW>` is already preinstalled on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, along with data required to run the :ref:`WE2E <WE2E_tests>` test cases. Therefore, users on these systems do not need to stage the fixed files manually because they have been prestaged, and the paths are set in ``regional_workflow/ush/setup.sh``. Users on Level 3 & 4 systems can find the most recent SRW App release data in the `UFS SRW Application Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ by clicking on `Browse Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
 .. _StaticFixFiles:
 
@@ -241,7 +241,7 @@ Static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz
    tar -xzf fix_data.tgz
 
-Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.0.0 fix file data. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the data bucket. 
+Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.0.0 fix file data. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the `Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
 The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.sh``. Add the following code to the ``config.sh`` file, and alter the variable paths accordingly:
 
