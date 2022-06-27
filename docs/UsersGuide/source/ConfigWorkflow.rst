@@ -677,27 +677,30 @@ The following parameters must be set if using the "GFDLgrid" method to generate 
 ``GFDLgrid_LAT_T6_CTR``: (Default: "")
    Latitude of the center of tile 6 (in degrees).
 
-``GFDLgrid_RES``: (Default: "")
-   Number of points in either of the two horizontal directions (x and y) on each tile of the parent global cubed-sphere grid. Valid values: ``"48"`` | ``"96"`` | ``"192"`` | ``"384"`` | ``"768"`` | ``"1152"`` | ``"3072"``
+``GFDLgrid_NUM_CELLS``: (Default: "")
+   Number of grid cells in either of the two horizontal directions (x and y) on each of the six tiles of the parent global cubed-sphere grid. Valid values: ``"48"`` | ``"96"`` | ``"192"`` | ``"384"`` | ``"768"`` | ``"1152"`` | ``"3072"``
 
-   .. note::
-      ``GFDLgrid_RES`` is a misnomer because it specifies *number* of grid cells, not grid size (in meters or kilometers). However, we keep this name in order to remain consistent with the usage of the word "resolution" in the global forecast model and auxiliary codes. The mapping from ``GFDLgrid_RES`` to a nominal resolution (grid cell size) for several values of ``GFDLgrid_RES`` is as follows (assuming a uniform global grid, i.e., with Schmidt stretch factor of 1: ``GFDLgrid_STRETCH_FAC="1"``):
-      
-         +----------------+--------------------+
-         | GFDLgrid_RES   | typical cell size  |
-         +================+====================+
-         | 192            |      50 km         |
-         +----------------+--------------------+
-         | 384            |      25 km         |
-         +----------------+--------------------+
-         | 768            |      13 km         |
-         +----------------+--------------------+
-         | 1152           |      8.5 km        |
-         +----------------+--------------------+
-         | 3072           |      3.2 km        |
-         +----------------+--------------------+
+   To give an idea of what these values translate to in terms of grid cell size in kilometers, we list below the approximate grid cell size on a uniform global grid having the specified value of ``GFDLgrid_NUM_CELLS``, where by "uniform" we mean with Schmidt stretch factor ``GFDLgrid_STRETCH_FAC="1"`` (although in regional applications ``GFDLgrid_STRETCH_FAC`` will typically be set to a value greater than ``"1"`` to obtain a smaller grid size on tile 6):
 
-      Note that these are only typical cell sizes. The actual cell size on the global grid tiles varies somewhat as we move across a tile.
+         +---------------------+--------------------+
+         | GFDLgrid_NUM_CELLS  | typical cell size  |
+         +=====================+====================+
+         |  48                 |     208 km         |
+         +---------------------+--------------------+
+         |  96                 |     104 km         |
+         +---------------------+--------------------+
+         | 192                 |      52 km         |
+         +---------------------+--------------------+
+         | 384                 |      26 km         |
+         +---------------------+--------------------+
+         | 768                 |      13 km         |
+         +---------------------+--------------------+
+         | 1152                |      8.7 km        |
+         +---------------------+--------------------+
+         | 3072                |      3.3 km        |
+         +---------------------+--------------------+
+
+      Note that these are only typical cell sizes. The actual cell size on the global grid tiles varies somewhat as we move across a tile (and is dependent on ``GFDLgrid_STRETCH_FAC``).
 
 
 ``GFDLgrid_STRETCH_FAC``: (Default: "")
@@ -718,8 +721,8 @@ The following parameters must be set if using the "GFDLgrid" method to generate 
 ``GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G``: (Default: "")
    j-index on tile 6 at which the regional grid (tile 7) ends.
 
-``GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES``: (Default: "")
-   Flag that determines the file naming convention to use for grid, orography, and surface climatology files (or, if using pregenerated files, the naming convention that was used to name these files).  These files usually start with the string ``"C${RES}_"``, where ``RES`` is an integer. In the global forecast model, ``RES`` is the number of points in each of the two horizontal directions (x and y) on each tile of the global grid (defined here as ``GFDLgrid_RES``). If this flag is set to "TRUE", ``RES`` will be set to ``GFDLgrid_RES`` just as in the global forecast model. If it is set to "FALSE", we calculate (in the grid generation task) an "equivalent global uniform cubed-sphere resolution" --- call it ``RES_EQUIV`` --- and then set ``RES`` equal to it. ``RES_EQUIV`` is the number of grid points in each of the x and y directions on each tile that a global uniform cubed-sphere grid (i.e., stretch factor of 1) would need to have in order to have the same average grid size as the regional grid. This is a more useful indicator of the grid size because it takes into account the effects of ``GFDLgrid_RES``, ``GFDLgrid_STRETCH_FAC``, and ``GFDLgrid_REFINE_RATIO`` in determining the regional grid's typical grid size, whereas simply setting RES to ``GFDLgrid_RES`` doesn't take into account the effects of ``GFDLgrid_STRETCH_FAC`` and ``GFDLgrid_REFINE_RATIO`` on the regional grid's resolution. Nevertheless, some users still prefer to use ``GFDLgrid_RES`` in the file names, so we allow for that here by setting this flag to "TRUE".
+``GFDLgrid_USE_NUM_CELLS_IN_FILENAMES``: (Default: "")
+   Flag that determines the file naming convention to use for grid, orography, and surface climatology files (or, if using pregenerated files, the naming convention that was used to name these files).  These files usually start with the string ``"C${RES}_"``, where ``RES`` is an integer. In the global forecast model, ``RES`` is the number of points in each of the two horizontal directions (x and y) on each tile of the global grid (defined here as ``GFDLgrid_NUM_CELLS``). If this flag is set to "TRUE", ``RES`` will be set to ``GFDLgrid_NUM_CELLS`` just as in the global forecast model. If it is set to "FALSE", we calculate (in the grid generation task) an "equivalent global uniform cubed-sphere resolution" -- call it ``RES_EQUIV`` -- and then set ``RES`` equal to it. ``RES_EQUIV`` is the number of grid points in each of the x and y directions on each tile that a global UNIFORM (i.e., stretch factor of 1) cubed-sphere grid would need to have in order to have the same average grid size as the regional grid. This is a more useful indicator of the grid size because it takes into account the effects of ``GFDLgrid_NUM_CELLS``, ``GFDLgrid_STRETCH_FAC``, and ``GFDLgrid_REFINE_RATIO`` in determining the regional grid's typical grid size, whereas simply setting ``RES`` to ``GFDLgrid_NUM_CELLS`` doesn't take into account the effects of ``GFDLgrid_STRETCH_FAC`` and ``GFDLgrid_REFINE_RATIO`` on the regional grid's resolution. Nevertheless, some users still prefer to use ``GFDLgrid_NUM_CELLS`` in the file names, so we allow for that here by setting this flag to "TRUE".
 
 Computational Forecast Parameters
 =================================
