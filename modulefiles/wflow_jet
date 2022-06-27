@@ -9,8 +9,8 @@ module-whatis "Loads libraries needed for running SRW on Jet"
 
 module load rocoto
 
-module use -a /contrib/miniconda3/modulefiles
-module load miniconda3
+module use /contrib/miniconda3/modulefiles
+module load miniconda3/4.5.12
 
 if { [module-info mode load] } {
   puts stderr "Please do the following to activate conda:

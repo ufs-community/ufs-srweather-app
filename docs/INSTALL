@@ -42,7 +42,7 @@ source etc/lmod-setup.sh PLATFORM
 # From here on, we can assume Lmod is loaded and ready to go. Then we load the specific
 # module for a given PLATFORM and COMPILER as follows
 
-module use modulefiles
+module use $PWD/modulefiles   #full path to modulefiles directory
 module load build_[PLATFORM]_[COMPILER]
 
 # Supported CMake flags:

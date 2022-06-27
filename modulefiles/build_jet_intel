@@ -2,7 +2,7 @@
 
 proc ModulesHelp { } {
    puts stderr "This module loads libraries for building SRW on"
-   puts stderr "the NOAA RDHPC machine JET using Intel-18.0.5.274"
+   puts stderr "the NOAA RDHPC machine JET using Intel-2022.1.2"
 }
 
 module-whatis "Loads libraries needed for building SRW on JET"
@@ -14,11 +14,14 @@ module load cmake/3.20.1
 
 module use /lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack
 
-module load hpc/1.1.0
-module load hpc-intel/18.0.5.274
-module load hpc-impi/2018.4.274
+module load hpc/1.2.0
+module load hpc-intel/2022.1.2
+module load hpc-impi/2022.1.2
 
 module load srw_common
+
+module load nccmp/1.8.9.0
+module load prod_util/1.2.2
 
 setenv CMAKE_C_COMPILER mpiicc
 setenv CMAKE_CXX_COMPILER mpiicpc
