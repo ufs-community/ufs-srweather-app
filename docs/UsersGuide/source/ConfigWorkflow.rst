@@ -1274,7 +1274,7 @@ Ensemble Model Parameters
 Halo Blend Parameter
 ====================
 ``HALO_BLEND``: (Default: "10")
-   Number of cells to use for ?blending? the external solution (obtained from the :term:`LBCs`) with the internal solution from the FV3LAM :term:`dycore`. Specifically, it refers to the number of rows into the computational domain that should be blended with the LBCs. Cells at which blending occurs are all within the boundary of the native grid; they don?t involve the 4 cells outside the boundary where the LBCs are specified (which is a different :term:`halo`). Blending is necessary to smooth out waves generated due to mismatch between the external and internal solutions. To shut :term:`halo` blending off, set this to zero. 
+   Number of cells to use for "blending" the external solution (obtained from the :term:`LBCs`) with the internal solution from the FV3LAM :term:`dycore`. Specifically, it refers to the number of rows into the computational domain that should be blended with the LBCs. Cells at which blending occurs are all within the boundary of the native grid; they don't involve the 4 cells outside the boundary where the LBCs are specified (which is a different :term:`halo`). Blending is necessary to smooth out waves generated due to mismatch between the external and internal solutions. To shut :term:`halo` blending off, set this to zero. 
 
 
 FVCOM Parameter
