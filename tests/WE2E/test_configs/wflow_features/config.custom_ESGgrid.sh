@@ -25,6 +25,7 @@ LBC_SPEC_INTVL_HRS="3"
 #
 # Define custom grid.
 #
+POST_OUTPUT_DOMAIN_NAME="custom_ESGgrid"
 GRID_GEN_METHOD="ESGgrid"
 
 ESGgrid_LON_CTR="-97.5"
@@ -45,8 +46,6 @@ DT_ATMOS="40"
 LAYOUT_X="8"
 LAYOUT_Y="12"
 BLOCKSIZE="13"
-
-POST_OUTPUT_DOMAIN_NAME="custom_ESGgrid"
 
 QUILTING="TRUE"
 if [ "$QUILTING" = "TRUE" ]; then

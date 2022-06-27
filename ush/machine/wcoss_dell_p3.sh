@@ -83,3 +83,7 @@ MET_BIN_EXEC=${MET_BIN_EXEC:-"exec"}
 TEST_PREGEN_BASEDIR="${staged_data_dir}/FV3LAM_pregen"
 TEST_COMIN="${staged_data_dir}/COMGFS"
 TEST_EXTRN_MDL_SOURCE_BASEDIR="${staged_data_dir}/input_model_data"
+
+# Computational resources
+WTIME_MAKE_OROG="01:00:00"
+

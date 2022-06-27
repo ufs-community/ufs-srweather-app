@@ -373,7 +373,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 #
 # Really depends on what EMC wants to do.
 
-  res="${GFDLgrid_RES}"
+  res="${GFDLgrid_NUM_CELLS}"
 #  stretch_fac="${GFDLgrid_STRETCH_FAC}"
   refine_ratio="${GFDLgrid_REFINE_RATIO}"
 

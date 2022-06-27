@@ -9,7 +9,7 @@
 #           David Wright 	Org: University of Michigan
 #
 # Instructions:		Make sure all the necessary modules can be imported.
-#                       Six command line arguments are needed:
+#                       The following command line arguments are needed:
 #                       1. Cycle date/time in YYYYMMDDHH format
 #                       2. Starting forecast hour
 #                       3. Ending forecast hour

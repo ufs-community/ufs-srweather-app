@@ -807,20 +807,20 @@ GRID_GEN_METHOD=""
 #   though the model equations are not integrated on (they are integrated
 #   only on the regional grid).
 #
-# * GFDLgrid_RES is the number of grid cells in either one of the two 
-#   horizontal directions x and y on any one of the 6 tiles of the parent
-#   global cubed-sphere grid.  The mapping from GFDLgrid_RES to a nominal
-#   resolution (grid cell size) for a uniform global grid (i.e. Schmidt
-#   stretch factor GFDLgrid_STRETCH_FAC set to 1) for several values of
-#   GFDLgrid_RES is as follows:
+# * GFDLgrid_NUM_CELLS is the number of grid cells in either one of the 
+#   two horizontal directions x and y on any one of the 6 tiles of the 
+#   parent global cubed-sphere grid.  The mapping from GFDLgrid_NUM_CELLS 
+#   to a nominal resolution (grid cell size) for a uniform global grid 
+#   (i.e. Schmidt stretch factor GFDLgrid_STRETCH_FAC set to 1) for 
+#   several values of GFDLgrid_NUM_CELLS is as follows:
 #
-#     GFDLgrid_RES      typical cell size
-#     ------------      -----------------
-#              192                  50 km
-#              384                  25 km
-#              768                  13 km
-#             1152                 8.5 km
-#             3072                 3.2 km
+#     GFDLgrid_NUM_CELLS      typical cell size
+#     ------------------      -----------------
+#                    192                  50 km
+#                    384                  25 km
+#                    768                  13 km
+#                   1152                 8.5 km
+#                   3072                 3.2 km
 #
 #   Note that these are only typical cell sizes.  The actual cell size on
 #   the global grid tiles varies somewhat as we move across a tile.
@@ -835,10 +835,10 @@ GRID_GEN_METHOD=""
 #   1 (but still greater than 0) expands it.  The remaining 5 tiles change
 #   shape as necessary to maintain global coverage of the grid.
 #
-# * The cell size on a given global tile depends on both GFDLgrid_RES and
-#   GFDLgrid_STRETCH_FAC (since changing GFDLgrid_RES changes the number
-#   of cells in the tile, and changing GFDLgrid_STRETCH_FAC modifies the
-#   shape and size of the tile).
+# * The cell size on a given global tile depends on both GFDLgrid_NUM_CELLS 
+#   and GFDLgrid_STRETCH_FAC (since changing GFDLgrid_NUM_CELLS changes 
+#   the number of cells in the tile, and changing GFDLgrid_STRETCH_FAC 
+#   modifies the shape and size of the tile).
 #
 # * The regional grid is embedded within tile 6 (i.e. it doesn't extend
 #   beyond the boundary of tile 6).  Its exact location within tile 6 is
@@ -861,13 +861,13 @@ GRID_GEN_METHOD=""
 #
 # * GFDLgrid_REFINE_RATIO is the refinement ratio of the regional grid 
 #   (tile 7) with respect to the grid on its parent tile (tile 6), i.e.
-#   it is the number of grid cells along the boundary of the regional grid
-#   that abut one cell on tile 6.  Thus, the cell size on the regional 
-#   grid depends not only on GFDLgrid_RES and GFDLgrid_STRETCH_FAC (because
-#   the cell size on tile 6 depends on these two parameters) but also on 
-#   GFDLgrid_REFINE_RATIO.  Note that as on the tiles of the global grid, 
-#   the cell size on the regional grid is not uniform but varies as we 
-#   move across the grid.
+#   it is the number of grid cells along the boundary of the regional 
+#   grid that abut one cell on tile 6.  Thus, the cell size on the regional 
+#   grid depends not only on GFDLgrid_NUM_CELLS and GFDLgrid_STRETCH_FAC 
+#   (because the cell size on tile 6 depends on these two parameters) 
+#   but also on GFDLgrid_REFINE_RATIO.  Note that as on the tiles of the 
+#   global grid, the cell size on the regional grid is not uniform but 
+#   varies as we move across the grid.
 #
 # Definitions of parameters that need to be specified when GRID_GEN_METHOD
 # is set to "GFDLgrid":
@@ -878,14 +878,9 @@ GRID_GEN_METHOD=""
 # GFDLgrid_LAT_T6_CTR:
 # Latitude of the center of tile 6 (in degrees).
 #
-# GFDLgrid_RES:
-# Number of points in each of the two horizontal directions (x and y) on
-# each tile of the parent global grid.  Note that the name of this parameter
-# is really a misnomer because although it has the stirng "RES" (for 
-# "resolution") in its name, it specifies number of grid cells, not grid
-# size (in say meters or kilometers).  However, we keep this name in order
-# to remain consistent with the usage of the word "resolution" in the 
-# global forecast model and other auxiliary codes.
+# GFDLgrid_NUM_CELLS:
+# Number of grid cells in each of the two horizontal directions (x and 
+# y) on each tile of the parent global grid.
 #
 # GFDLgrid_STRETCH_FAC:
 # Stretching factor used in the Schmidt transformation applied to the
@@ -908,29 +903,30 @@ GRID_GEN_METHOD=""
 # GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G:
 # j-index on tile 6 at which the regional grid (tile 7) ends.
 #
-# GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES:
-# Flag that determines the file naming convention to use for grid, orography,
-# and surface climatology files (or, if using pregenerated files, the
-# naming convention that was used to name these files).  These files 
-# usually start with the string "C${RES}_", where RES is an integer.
-# In the global forecast model, RES is the number of points in each of
-# the two horizontal directions (x and y) on each tile of the global grid
-# (defined here as GFDLgrid_RES).  If this flag is set to "TRUE", RES will
-# be set to GFDLgrid_RES just as in the global forecast model.  If it is
-# set to "FALSE", we calculate (in the grid generation task) an "equivalent
-# global uniform cubed-sphere resolution" -- call it RES_EQUIV -- and 
-# then set RES equal to it.  RES_EQUIV is the number of grid points in 
-# each of the x and y directions on each tile that a global UNIFORM (i.e. 
-# stretch factor of 1) cubed-sphere grid would have to have in order to
-# have the same average grid size as the regional grid.  This is a more
-# useful indicator of the grid size because it takes into account the 
-# effects of GFDLgrid_RES, GFDLgrid_STRETCH_FAC, and GFDLgrid_REFINE_RATIO
-# in determining the regional grid's typical grid size, whereas simply
-# setting RES to GFDLgrid_RES doesn't take into account the effects of
+# GFDLgrid_USE_NUM_CELLS_IN_FILENAMES:
+# Flag that determines the file naming convention to use for grid, 
+# orography, and surface climatology files (or, if using pregenerated 
+# files, the naming convention that was used to name these files).  
+# These files usually start with the string "C${RES}_", where RES is an 
+# integer.  In the global forecast model, RES is the number of grid 
+# cells in each of the two horizontal directions (x and y) on each tile 
+# of the global grid (defined here as GFDLgrid_NUM_CELLS).  If this flag 
+# is set to "TRUE", RES will be set to GFDLgrid_NUM_CELLS just as in the 
+# global forecast model.  If it is set to "FALSE", we calculate (in the 
+# grid generation task) an "equivalent global uniform cubed-sphere 
+# resolution" -- call it RES_EQUIV -- and then set RES equal to it.  
+# RES_EQUIV is the number of grid points in each of the x and y directions 
+# on each tile that a global UNIFORM (i.e. stretch factor of 1) cubed-
+# sphere grid would have to have in order to have the same average grid 
+# size as the regional grid.  This is a more useful indicator of the grid 
+# size because it takes into account the effects of GFDLgrid_NUM_CELLS, 
+# GFDLgrid_STRETCH_FAC, and GFDLgrid_REFINE_RATIO in determining the 
+# regional grid's typical grid size, whereas simply setting RES to 
+# GFDLgrid_NUM_CELLS doesn't take into account the effects of 
 # GFDLgrid_STRETCH_FAC and GFDLgrid_REFINE_RATIO on the regional grid's
-# resolution.  Nevertheless, some users still prefer to use GFDLgrid_RES
-# in the file names, so we allow for that here by setting this flag to
-# "TRUE".
+# resolution.  Nevertheless, some users still prefer to use 
+# GFDLgrid_NUM_CELLS in the file names, so we allow for that here by 
+# setting this flag to "TRUE".
 #
 # Note that:
 #
@@ -964,14 +960,14 @@ GRID_GEN_METHOD=""
 #
 GFDLgrid_LON_T6_CTR=""
 GFDLgrid_LAT_T6_CTR=""
-GFDLgrid_RES=""
+GFDLgrid_NUM_CELLS=""
 GFDLgrid_STRETCH_FAC=""
 GFDLgrid_REFINE_RATIO=""
 GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G=""
 GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G=""
 GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G=""
 GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G=""
-GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES=""
+GFDLgrid_USE_NUM_CELLS_IN_FILENAMES=""
 #
 #-----------------------------------------------------------------------
 #
@@ -1651,7 +1647,7 @@ PPN_VX_ENSPOINT_PROB="1"
 # Walltimes.
 #
 WTIME_MAKE_GRID="00:20:00"
-WTIME_MAKE_OROG="01:00:00"
+WTIME_MAKE_OROG="00:20:00"
 WTIME_MAKE_SFC_CLIMO="00:20:00"
 WTIME_GET_EXTRN_ICS="00:45:00"
 WTIME_GET_EXTRN_LBCS="00:45:00"

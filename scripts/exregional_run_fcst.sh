@@ -167,8 +167,8 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 #target="${FIXLAM}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
 #if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
 #   [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
-#   [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "FALSE" ]; then
-#  symlink="C${GFDLgrid_RES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
+#   [ "${GFDLgrid_USE_NUM_CELLS_IN_FILENAMES}" = "FALSE" ]; then
+#  symlink="C${GFDLgrid_NUM_CELLS}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
 #else
 #  symlink="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
 #fi

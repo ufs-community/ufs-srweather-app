@@ -398,29 +398,9 @@ Please ensure that all files have the same resolution."
 #-----------------------------------------------------------------------
 #
   if [ "${file_group}" = "grid" ]; then
-
     target="${cres}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
     symlink="${cres}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
     create_symlink_to_file target="$target" symlink="$symlink" relative="TRUE"
-#
-# The surface climatology file generation code looks for a grid file
-# having a name of the form "C${GFDLgrid_RES}_grid.tile7.halo4.nc" (i.e.
-# the C-resolution used in the name of this file is the number of grid 
-# points per horizontal direction per tile, just like in the global model).
-# Thus, if we are running the MAKE_SFC_CLIMO_TN task, if the grid is of 
-# GFDLgrid type, and if we are not using GFDLgrid_RES in filenames (i.e. 
-# we are using the equivalent global uniform grid resolution instead), 
-# then create a link whose name uses the GFDLgrid_RES that points to the 
-# link whose name uses the equivalent global uniform resolution.
-#
-    if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
-       [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
-       [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "FALSE" ]; then
-      target="${cres}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
-      symlink="C${GFDLgrid_RES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
-      create_symlink_to_file target="$target" symlink="$symlink" relative="TRUE"
-    fi
-
   fi
 #
 #-----------------------------------------------------------------------

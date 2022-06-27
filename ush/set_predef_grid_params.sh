@@ -82,13 +82,13 @@ function set_predef_grid_params() {
     "outvarname_gfdlgrid_lon_t6_ctr" \
     "outvarname_gfdlgrid_lat_t6_ctr" \
     "outvarname_gfdlgrid_stretch_fac" \
-    "outvarname_gfdlgrid_res" \
+    "outvarname_gfdlgrid_num_cells" \
     "outvarname_gfdlgrid_refine_ratio" \
     "outvarname_gfdlgrid_istart_of_rgnl_dom_on_t6g" \
     "outvarname_gfdlgrid_iend_of_rgnl_dom_on_t6g" \
     "outvarname_gfdlgrid_jstart_of_rgnl_dom_on_t6g" \
     "outvarname_gfdlgrid_jend_of_rgnl_dom_on_t6g" \
-    "outvarname_gfdlgrid_use_gfdlgrid_res_in_filenames" \
+    "outvarname_gfdlgrid_use_num_cells_in_filenames" \
     "outvarname_dt_atmos" \
     "outvarname_layout_x" \
     "outvarname_layout_y" \
@@ -131,13 +131,13 @@ function set_predef_grid_params() {
         __gfdlgrid_lon_t6_ctr__="" \
         __gfdlgrid_lat_t6_ctr__="" \
         __gfdlgrid_stretch_fac__="" \
-        __gfdlgrid_res__="" \
+        __gfdlgrid_num_cells__="" \
         __gfdlgrid_refine_ratio__="" \
         __gfdlgrid_istart_of_rgnl_dom_on_t6g__="" \
         __gfdlgrid_iend_of_rgnl_dom_on_t6g__="" \
         __gfdlgrid_jstart_of_rgnl_dom_on_t6g__="" \
         __gfdlgrid_jend_of_rgnl_dom_on_t6g__="" \
-        __gfdlgrid_use_gfdlgrid_res_in_filenames__="" \
+        __gfdlgrid_use_num_cells_in_filenames__="" \
         __dt_atmos__="" \
         __layout_x__="" \
         __layout_y__="" \
@@ -694,22 +694,22 @@ function set_predef_grid_params() {
 #      __gfdlgrid_lon_t6_ctr__="-160.8"
 #      __gfdlgrid_lat_t6_ctr__="63.0"
 #      __gfdlgrid_stretch_fac__="1.161"
-#      __gfdlgrid_res__="768"
+#      __gfdlgrid_num_cells__="768"
 #      __gfdlgrid_refine_ratio__="4"
 #
 #      num_margin_cells_T6_left="204"
 #      __gfdlgrid_istart_of_rgnl_dom_on_t6g__=$(( num_margin_cells_T6_left + 1 ))
 #
 #      num_margin_cells_T6_right="204"
-#      __gfdlgrid_iend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_res__ - num_margin_cells_T6_right ))
+#      __gfdlgrid_iend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_num_cells__ - num_margin_cells_T6_right ))
 #
 #      num_margin_cells_T6_bottom="249"
 #      __gfdlgrid_jstart_of_rgnl_dom_on_t6g__=$(( num_margin_cells_T6_bottom + 1 ))
 #
 #      num_margin_cells_T6_top="249"
-#      __gfdlgrid_jend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_res__ - num_margin_cells_T6_top ))
+#      __gfdlgrid_jend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_num_cells__ - num_margin_cells_T6_top ))
 #
-#      __gfdlgrid_use_gfdlgrid_res_in_filenames__="FALSE"
+#      __gfdlgrid_use_num_cells_in_filenames__="FALSE"
 #
 #      __dt_atmos__="${dt_atmos:-18}"
 #
@@ -845,22 +845,22 @@ function set_predef_grid_params() {
     __gfdlgrid_lon_t6_ctr__="-97.5"
     __gfdlgrid_lat_t6_ctr__="38.5"
     __gfdlgrid_stretch_fac__="1.4"
-    __gfdlgrid_res__="96"
+    __gfdlgrid_num_cells__="96"
     __gfdlgrid_refine_ratio__="3"
 
     num_margin_cells_T6_left="12"
     __gfdlgrid_istart_of_rgnl_dom_on_t6g__=$(( num_margin_cells_T6_left + 1 ))
 
     num_margin_cells_T6_right="12"
-    __gfdlgrid_iend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_res__ - num_margin_cells_T6_right ))
+    __gfdlgrid_iend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_num_cells__ - num_margin_cells_T6_right ))
 
     num_margin_cells_T6_bottom="16"
     __gfdlgrid_jstart_of_rgnl_dom_on_t6g__=$(( num_margin_cells_T6_bottom + 1 ))
 
     num_margin_cells_T6_top="16"
-    __gfdlgrid_jend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_res__ - num_margin_cells_T6_top ))
+    __gfdlgrid_jend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_num_cells__ - num_margin_cells_T6_top ))
 
-    __gfdlgrid_use_gfdlgrid_res_in_filenames__="TRUE"
+    __gfdlgrid_use_num_cells_in_filenames__="TRUE"
 
     __dt_atmos__="${dt_atmos:-225}"
 
@@ -900,22 +900,22 @@ function set_predef_grid_params() {
     __gfdlgrid_lon_t6_ctr__="-97.5"
     __gfdlgrid_lat_t6_ctr__="38.5"
     __gfdlgrid_stretch_fac__="1.5"
-    __gfdlgrid_res__="768"
+    __gfdlgrid_num_cells__="768"
     __gfdlgrid_refine_ratio__="3"
 
     num_margin_cells_T6_left="69"
     __gfdlgrid_istart_of_rgnl_dom_on_t6g__=$(( num_margin_cells_T6_left + 1 ))
 
     num_margin_cells_T6_right="69"
-    __gfdlgrid_iend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_res__ - num_margin_cells_T6_right ))
+    __gfdlgrid_iend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_num_cells__ - num_margin_cells_T6_right ))
 
     num_margin_cells_T6_bottom="164"
     __gfdlgrid_jstart_of_rgnl_dom_on_t6g__=$(( num_margin_cells_T6_bottom + 1 ))
 
     num_margin_cells_T6_top="164"
-    __gfdlgrid_jend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_res__ - num_margin_cells_T6_top ))
+    __gfdlgrid_jend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_num_cells__ - num_margin_cells_T6_top ))
 
-    __gfdlgrid_use_gfdlgrid_res_in_filenames__="TRUE"
+    __gfdlgrid_use_num_cells_in_filenames__="TRUE"
 
     __dt_atmos__="${dt_atmos:-18}"
 
@@ -985,22 +985,22 @@ function set_predef_grid_params() {
 #      __gfdlgrid_lon_t6_ctr__="-153.0"
 #      __gfdlgrid_lat_t6_ctr__="61.0"
 #      __gfdlgrid_stretch_fac__="1.0"  # ???
-#      __gfdlgrid_res__="768"
+#      __gfdlgrid_num_cells__="768"
 #      __gfdlgrid_refine_ratio__="3"   # ???
 #
 #      num_margin_cells_T6_left="61"
 #      __gfdlgrid_istart_of_rgnl_dom_on_t6g__=$(( num_margin_cells_T6_left + 1 ))
 #
 #      num_margin_cells_T6_right="67"
-#      __gfdlgrid_iend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_res__ - num_margin_cells_T6_right ))
+#      __gfdlgrid_iend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_num_cells__ - num_margin_cells_T6_right ))
 #
 #      num_margin_cells_T6_bottom="165"
 #      __gfdlgrid_jstart_of_rgnl_dom_on_t6g__=$(( num_margin_cells_T6_bottom + 1 ))
 #
 #      num_margin_cells_T6_top="171"
-#      __gfdlgrid_jend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_res__ - num_margin_cells_T6_top ))
+#      __gfdlgrid_jend_of_rgnl_dom_on_t6g__=$(( __gfdlgrid_num_cells__ - num_margin_cells_T6_top ))
 #
-#      __gfdlgrid_use_gfdlgrid_res_in_filenames__="TRUE"
+#      __gfdlgrid_use_num_cells_in_filenames__="TRUE"
 #
 #      __dt_atmos__="${dt_atmos:-18}"
 #
@@ -1641,8 +1641,8 @@ function set_predef_grid_params() {
     printf -v ${outvarname_gfdlgrid_stretch_fac} "%s" "${__gfdlgrid_stretch_fac__}"
   fi
 
-  if [ ! -z "${outvarname_gfdlgrid_res}" ]; then
-    printf -v ${outvarname_gfdlgrid_res} "%s" "${__gfdlgrid_res__}"
+  if [ ! -z "${outvarname_gfdlgrid_num_cells}" ]; then
+    printf -v ${outvarname_gfdlgrid_num_cells} "%s" "${__gfdlgrid_num_cells__}"
   fi
 
   if [ ! -z "${outvarname_gfdlgrid_refine_ratio}" ]; then
@@ -1665,8 +1665,8 @@ function set_predef_grid_params() {
     printf -v ${outvarname_gfdlgrid_jend_of_rgnl_dom_on_t6g} "%s" "${__gfdlgrid_jend_of_rgnl_dom_on_t6g__}"
   fi
 
-  if [ ! -z "${outvarname_gfdlgrid_use_gfdlgrid_res_in_filenames}" ]; then
-    printf -v ${outvarname_gfdlgrid_use_gfdlgrid_res_in_filenames} "%s" "${__gfdlgrid_use_gfdlgrid_res_in_filenames__}"
+  if [ ! -z "${outvarname_gfdlgrid_use_num_cells_in_filenames}" ]; then
+    printf -v ${outvarname_gfdlgrid_use_num_cells_in_filenames} "%s" "${__gfdlgrid_use_num_cells_in_filenames__}"
   fi
 
   if [ ! -z "${outvarname_dt_atmos}" ]; then

@@ -951,13 +951,13 @@ if [ ! -z "${PREDEF_GRID_NAME}" ]; then
     outvarname_gfdlgrid_lon_t6_ctr="GFDLgrid_LON_T6_CTR" \
     outvarname_gfdlgrid_lat_t6_ctr="GFDLgrid_LAT_T6_CTR" \
     outvarname_gfdlgrid_stretch_fac="GFDLgrid_STRETCH_FAC" \
-    outvarname_gfdlgrid_res="GFDLgrid_RES" \
+    outvarname_gfdlgrid_num_cells="GFDLgrid_NUM_CELLS" \
     outvarname_gfdlgrid_refine_ratio="GFDLgrid_REFINE_RATIO" \
     outvarname_gfdlgrid_istart_of_rgnl_dom_on_t6g="GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G" \
     outvarname_gfdlgrid_iend_of_rgnl_dom_on_t6g="GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G" \
     outvarname_gfdlgrid_jstart_of_rgnl_dom_on_t6g="GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G" \
     outvarname_gfdlgrid_jend_of_rgnl_dom_on_t6g="GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G" \
-    outvarname_gfdlgrid_use_gfdlgrid_res_in_filenames="GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES" \
+    outvarname_gfdlgrid_use_num_cells_in_filenames="GFDLgrid_USE_NUM_CELLS_IN_FILENAMES" \
     outvarname_dt_atmos="DT_ATMOS" \
     outvarname_layout_x="LAYOUT_X" \
     outvarname_layout_y="LAYOUT_Y" \
@@ -997,17 +997,17 @@ check_var_valid_value \
 #
 #-----------------------------------------------------------------------
 #
-# For a "GFDLgrid" type of grid, make sure GFDLgrid_RES is set to a valid
-# value.
+# For a "GFDLgrid" type of grid, make sure GFDLgrid_NUM_CELLS is set to 
+# a valid value.
 #
 #-----------------------------------------------------------------------
 #
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
   err_msg="\
 The number of grid cells per tile in each horizontal direction specified
-in GFDLgrid_RES is not supported:
-  GFDLgrid_RES = \"${GFDLgrid_RES}\""
-  check_var_valid_value "GFDLgrid_RES" "valid_vals_GFDLgrid_RES" "${err_msg}"
+in GFDLgrid_NUM_CELLS is not supported:
+  GFDLgrid_NUM_CELLS = \"${GFDLgrid_NUM_CELLS}\""
+  check_var_valid_value "GFDLgrid_NUM_CELLS" "valid_vals_GFDLgrid_NUM_CELLS" "${err_msg}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -1903,7 +1903,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
   set_gridparams_GFDLgrid \
     lon_of_t6_ctr="${GFDLgrid_LON_T6_CTR}" \
     lat_of_t6_ctr="${GFDLgrid_LAT_T6_CTR}" \
-    res_of_t6g="${GFDLgrid_RES}" \
+    res_of_t6g="${GFDLgrid_NUM_CELLS}" \
     stretch_factor="${GFDLgrid_STRETCH_FAC}" \
     refine_ratio_t6g_to_t7g="${GFDLgrid_REFINE_RATIO}" \
     istart_of_t7_on_t6g="${GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G}" \

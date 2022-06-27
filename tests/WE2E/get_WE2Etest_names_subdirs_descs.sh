@@ -409,7 +409,7 @@ function get_WE2Etest_names_subdirs_descs() {
         \
         gfdlgrid_lon_t6_ctr \
         gfdlgrid_lat_t6_ctr \
-        gfdlgrid_res \
+        gfdlgrid_num_cells \
         gfdlgrid_stretch_fac \
         gfdlgrid_refine_ratio \
         gfdlgrid_istart_of_rgnl_dom_on_t6g \
@@ -1245,7 +1245,7 @@ ${test_desc}${stripped_line} "
           outvarname_gfdlgrid_lon_t6_ctr="gfdlgrid_lon_t6_ctr" \
           outvarname_gfdlgrid_lat_t6_ctr="gfdlgrid_lat_t6_ctr" \
           outvarname_gfdlgrid_stretch_fac="gfdlgrid_stretch_fac" \
-          outvarname_gfdlgrid_res="gfdlgrid_res" \
+          outvarname_gfdlgrid_num_cells="gfdlgrid_num_cells" \
           outvarname_gfdlgrid_refine_ratio="gfdlgrid_refine_ratio" \
           outvarname_gfdlgrid_istart_of_rgnl_dom_on_t6g="gfdlgrid_istart_of_rgnl_dom_on_t6g" \
           outvarname_gfdlgrid_iend_of_rgnl_dom_on_t6g="gfdlgrid_iend_of_rgnl_dom_on_t6g" \
@@ -1264,7 +1264,7 @@ ${test_desc}${stripped_line} "
         if [ "${grid_gen_method}" = "GFDLgrid" ]; then
           gfdlgrid_lon_t6_ctr="${GFDLgrid_LON_T6_CTR}"
           gfdlgrid_lat_t6_ctr="${GFDLgrid_LAT_T6_CTR}"
-          gfdlgrid_res="${GFDLgrid_RES}"
+          gfdlgrid_num_cells="${GFDLgrid_NUM_CELLS}"
           gfdlgrid_stretch_fac="${GFDLgrid_STRETCH_FAC}"
           gfdlgrid_refine_ratio="${GFDLgrid_REFINE_RATIO}"
           gfdlgrid_istart_of_rgnl_dom_on_t6g="${GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G}"
@@ -1305,7 +1305,7 @@ ${test_desc}${stripped_line} "
         set_gridparams_GFDLgrid \
           lon_of_t6_ctr="${gfdlgrid_lon_t6_ctr}" \
           lat_of_t6_ctr="${gfdlgrid_lat_t6_ctr}" \
-          res_of_t6g="${gfdlgrid_res}" \
+          res_of_t6g="${gfdlgrid_num_cells}" \
           stretch_factor="${gfdlgrid_stretch_fac}" \
           refine_ratio_t6g_to_t7g="${gfdlgrid_refine_ratio}" \
           istart_of_t7_on_t6g="${gfdlgrid_istart_of_rgnl_dom_on_t6g}" \
@@ -1353,7 +1353,7 @@ ${test_desc}${stripped_line} "
 #
       unset gfdlgrid_lon_t6_ctr \
             gfdlgrid_lat_t6_ctr \
-            gfdlgrid_res \
+            gfdlgrid_num_cells \
             gfdlgrid_stretch_fac \
             gfdlgrid_refine_ratio \
             gfdlgrid_istart_of_rgnl_dom_on_t6g \

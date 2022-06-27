@@ -246,7 +246,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # Set local variables needed in the call to the executable that generates
 # a GFDLgrid-type grid.
 #
-  nx_t6sg=$(( 2*GFDLgrid_RES ))
+  nx_t6sg=$(( 2*GFDLgrid_NUM_CELLS ))
   grid_name="${GRID_GEN_METHOD}"
 #
 # Call the executable that generates the grid file.  Note that this call
@@ -402,8 +402,8 @@ res_equiv=${res_equiv//$'\n'/}
 #-----------------------------------------------------------------------
 #
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-  if [ "${GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES}" = "TRUE" ]; then
-    CRES="C${GFDLgrid_RES}"
+  if [ "${GFDLgrid_USE_NUM_CELLS_IN_FILENAMES}" = "TRUE" ]; then
+    CRES="C${GFDLgrid_NUM_CELLS}"
   else
     CRES="C${res_equiv}"
   fi
