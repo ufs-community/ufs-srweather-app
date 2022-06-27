@@ -3,30 +3,21 @@
 =================================================================================
 Limited Area Model (:term:`LAM`) Grids:  Predefined and User-Generated Options
 =================================================================================
-In order to set up the workflow and generate an experiment with the UFS SRW App, the user
-must choose between four predefined :term:`FV3`-:term:`LAM` grids or generate a user-defined grid.
-At this time, full support will only be provided to those using one of the four predefined
-grids supported in this release. However, preliminary information is provided at the end of
-this chapter that describes how users can leverage the SRW App workflow scripts to generate
-their own user-defined grid. Currently, this feature is not fully supported and is
-"use at your own risk."
+In order to set up the workflow and generate an experiment with the SRW Application, the user
+must choose between various predefined :term:`FV3`-:term:`LAM` grids or generate a user-defined grid.
+At this time, full support is only provided to those using one of the four predefined
+grids supported in the v2.0.0 release, but other predefined grids are available (see :numref:`Section %s <PredefGrid>` for more detail). Preliminary information is also provided at the end of this chapter describing how users can leverage the SRW App workflow scripts to generate their own user-defined grid. Currently, this feature is not fully supported and is "use at your own risk."
 
 Predefined Grids
 =================
-The UFS SRW App release includes four predefined limited area model (:term:`LAM`) grids to choose between
-prior to configuring an experiment and generating a workflow. To select a predefined grid,
-the ``PREDEF_GRID_NAME`` variable within the ``config.sh`` script needs to be set to one
-of the following four options:
+The SRW App v2.0.0 release includes four predefined limited area model (:term:`LAM`) grids. To select a supported predefined grid, the ``PREDEF_GRID_NAME`` variable within the ``config.sh`` script must be set to one of the following four options:
 
 * ``RRFS_CONUS_3km``
-* ``SUBCONUS_Ind_3km``
 * ``RRFS_CONUS_13km``
 * ``RRFS_CONUS_25km``
+* ``SUBCONUS_Ind_3km``
 
-These four options are provided for flexibility related to compute resources and supported physics options. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the four supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the fourth supported physics suite: ``FV3_GFS_v16``. 
-
-..
-   COMMENT: FV3_WoFS can run on a 13-km and 25-km grid according to Yunheng. Can the HRRR and RRFS_v1beta also run on the 13-km and 25-km grids? Why is FV3_GFS_v16 preferred? Because it has cumulus physics?
+These four options are provided for flexibility related to compute resources and supported physics options. Other predefined grids are listed :ref:`here <PredefGrid>`. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the four supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the fourth supported physics suite: ``FV3_GFS_v16``. 
 
 .. _GridPhysicsCombos:
 
@@ -52,7 +43,7 @@ These four options are provided for flexibility related to compute resources and
    | RRFS_CONUS_25km   | FV3_GFS_v16      |
    +-------------------+------------------+
 
-In theory, any of the supported physics suites could be used with any of the predefined grids, but the results will be more accurate and meaningful with appropriate grid/physics pairings. 
+In theory, it is possible to run any of the supported physics suites with any of the predefined grids, but the results will be more accurate and meaningful with appropriate grid/physics pairings. 
 
 The predefined :term:`CONUS` grids follow the naming convention (e.g., RRFS_CONUS_*km) of the prototype 3-km continental United States (CONUS) grid being tested for the Rapid Refresh Forecast System (RRFS). The RRFS will be a convection-allowing, hourly-cycled, :term:`FV3`-:term:`LAM`-based ensemble planned for operational implementation in 2024. All four supported grids were created to fit completely within the High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_) domain to allow for use of HRRR data to initialize the SRW App. 
 
@@ -64,13 +55,14 @@ The 3km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite,
 .. _RRFS_CONUS_3km:
 
 .. figure:: _static/RRFS_CONUS_3km.sphr.native_wrtcmp.png
+   :alt: Map of the continental United States 3 kilometer domain. The computational grid boundaries appear in red and the write-component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the RRFS_CONUS_3km computational grid (red) and corresponding write-component grid (blue).*
 
-The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red), and the boundary of the :ref:`write-component grid <WriteComp>` sits just inside the computational domain (in blue). This extra grid is required because the post-processing utility (:term:`UPP`) is currently unable to process data on the native FV3 gnomonic grid (in red). Therefore, model data are interpolated to a Lambert conformal grid (the write component grid) in order for UPP to read in and correctly process the data.
+The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red), and the boundary of the :ref:`write-component grid <WriteComp>` sits just inside the computational domain (in blue). This extra grid is required because the post-processing utility (:term:`UPP`) is unable to process data on the native FV3 gnomonic grid (in red). Therefore, model data are interpolated to a Lambert conformal grid (the write component grid) in order for UPP to read in and correctly process the data.
 
 .. note::
-   While it is possible to initialize the FV3-LAM with coarser external model data when using the ``RRFS_CONUS_3km`` domain, it is generally advised to use external model data that has a resolution similar to that of the native FV3-LAM (predefined) grid.
+   While it is possible to initialize the FV3-LAM with coarser external model data when using the ``RRFS_CONUS_3km`` domain, it is generally advised to use external model data (such as HRRR or RAP data) that has a resolution similar to that of the native FV3-LAM (predefined) grid.
 
 
 Predefined SUBCONUS Grid Over Indianapolis
@@ -79,11 +71,11 @@ Predefined SUBCONUS Grid Over Indianapolis
 .. _SUBCONUS_Ind_3km:
 
 .. figure:: _static/SUBCONUS_Ind_3km.png
-   :alt: Map of Indiana and portions of the surrounding states. The map shows the boundaries of the continental United States sub-grid centered over Indianapolis. The computational grid boundaries appear in red and the write-component grid appears just inside it in blue. 
+   :alt: Map of Indiana and portions of the surrounding states. The map shows the boundaries of the continental United States sub-grid centered over Indianapolis. The computational grid boundaries appear in red and the write-component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the SUBCONUS_Ind_3km computational grid (red) and corresponding write-component grid (blue).*
 
-The ``SUBCONUS_Ind_3km`` grid covers only a small section of the :term:`CONUS` over Indianapolis. Like the ``RRFS_CONUS_3km`` grid, it is ideally paired with the ``FV3_RRFS_v1beta``, ``FV3_HRRR``, or ``FV3_WoFS`` physics suites, since these are all convection-allowing physics suites designed to work well on high-resolution grids. 
+The ``SUBCONUS_Ind_3km`` grid covers only a small section of the :term:`CONUS` centered over Indianapolis. Like the ``RRFS_CONUS_3km`` grid, it is ideally paired with the ``FV3_RRFS_v1beta``, ``FV3_HRRR``, or ``FV3_WoFS`` physics suites, since these are all convection-allowing physics suites designed to work well on high-resolution grids. 
 
 Predefined 13-km Grid
 ------------------------
@@ -91,6 +83,7 @@ Predefined 13-km Grid
 .. _RRFS_CONUS_13km:
 
 .. figure:: _static/RRFS_CONUS_13km.sphr.native_wrtcmp.png
+   :alt: Map of the continental United States 13 kilometer domain. The computational grid boundaries appear in red and the write-component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the RRFS_CONUS_13km computational grid (red) and corresponding write-component grid (blue).*
 
@@ -102,6 +95,7 @@ Predefined 25-km Grid
 .. _RRFS_CONUS_25km:
 
 .. figure:: _static/RRFS_CONUS_25km.sphr.native_wrtcmp.png
+   :alt: Map of the continental United States 25 kilometer domain. The computational grid boundaries appear in red and the write-component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the RRFS_CONUS_25km computational grid (red) and corresponding write-component grid (blue).*
 
@@ -109,7 +103,7 @@ The final predefined :term:`CONUS` grid (:numref:`Fig. %s <RRFS_CONUS_25km>`) us
 is meant mostly for quick testing to ensure functionality prior to using a higher-resolution domain.
 However, for users who would like to use the 25-km domain for research, the ``FV3_GFS_v16`` :term:`SDF` is recommended for the reasons mentioned :ref:`above <RRFS_CONUS_13km>`. 
 
-Ultimately, the choice of grid is experiment-dependent and resource-dependent. For example, a user may wish to use the ``FV3_GFS_v16`` physics suite, which uses cumulus physics that are not configured to run at the 3-km resolution. In this case, the 13-km or 25-km domain options are better suited to the experiment. Users will also have fewer computational constraints when running with the 13-km and 25-km domains, so depending on the resources available to them, certain grids may be better options than others. 
+Ultimately, the choice of grid is experiment-dependent and resource-dependent. For example, a user may wish to use the ``FV3_GFS_v16`` physics suite, which uses cumulus physics that are not configured to run at the 3-km resolution. In this case, the 13-km or 25-km domain options are better suited to the experiment. Users will also have fewer computational constraints when running with the 13-km and 25-km domains, so depending on the resources available, certain grids may be better options than others. 
 
 .. _UserDefinedGrid:
 
@@ -142,7 +136,7 @@ To run a forecast experiment on NEW_GRID, start with a workflow configuration fi
 
    PREDEF_GRID_NAME="NEW_GRID"
 
-Then, generate a new experiment/workflow using ``generate_FV3LAM_wflow.sh`` in the :ref:`usual way <GenerateWorkflow>`.
+Then, generate a new experiment/workflow using the ``generate_FV3LAM_wflow.sh`` script in the :ref:`usual way <GenerateWorkflow>`.
 
 Code Example
 ---------------
@@ -216,22 +210,23 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``set
        DT_ATMOS=${DT_ATMOS:-"40"}
      fi
    
-   # Default MPI task layout (decomposition) along the x and y directions and blocksize.
-   # The values specified below are used only if they are not explicitly set in the user-specified
-   # experiment configuration file config.sh.
+   # Default MPI task layout (decomposition) along the x and y directions and
+   # blocksize. The values specified below are used only if they are not explicitly
+   # set in the user-specified experiment configuration file config.sh.
 
      LAYOUT_X=${LAYOUT_X:-"5"}
      LAYOUT_Y=${LAYOUT_Y:-"2"}
      BLOCKSIZE=${BLOCKSIZE:-"40"}
    
-   # The parameters for the write-component (aka "quilting") grid. This 
-   # is the grid to which the output fields from the forecast are 
-   # interpolated. The output fields are not specified on the native grid 
-   # but are instead remapped to this write-component grid because the 
-   # post-processing software (UPP; called during the run_post tasks) is
-   # not able to process fields on the native grid. The variable 
+   # The parameters for the write-component (aka "quilting") grid. The 
+   # Unified Post Processor (called by the ``RUN_POST_TN`` task) cannot
+   # process output on the native ESGgrid, so output fields are interpolated
+   # to a **write-component grid** before writing them to an output file. 
+   # The output fields are not specified on the native grid 
+   # but are instead remapped to this write-component grid. The variable 
    # "QUILTING", which specifies whether or not to use the 
    # write-component grid, is by default set to "TRUE".
+    
 
      if [ "$QUILTING" = "TRUE" ]; then
    
@@ -253,8 +248,8 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``set
 
        WRTCMP_write_tasks_per_group="2"
    
-   # The coordinate system in which the write-component grid is 
-   # specified. See the array valid_vals_WRTCMP_output_grid (defined in 
+   # The coordinate system for the write-component grid 
+   # See the array valid_vals_WRTCMP_output_grid (defined in 
    # the script valid_param_vals.sh) for the values this can take on.  
    # The following example is specifically for the Lambert conformal 
    # coordinate system.
@@ -290,7 +285,7 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``set
    
    # The grid cell sizes along the x and y directions of the 
    # write-component grid. Units depend on the coordinate system used by
-   # the grid (i.e. the value of WRTCMP_output_grid). For a Lambert 
+   # the grid (i.e., the value of WRTCMP_output_grid). For a Lambert 
    # conformal write-component grid, the units are in meters.
 
        WRTCMP_dx="${ESGgrid_DELX}"

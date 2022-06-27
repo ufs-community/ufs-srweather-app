@@ -39,6 +39,12 @@ Scientists from across multiple labs and organizations have volunteered to revie
     | EPIC             | Mark Potts (@mark-a-potts)                     |
     |                  |                                                |
     |                  | Jong Kim (@jkbk2004)                           |
+    |                  |                                                |                  
+    |                  | Natalie Perlin (@natalie-perlin)               |
+    |                  |                                                |
+    |                  | Gillian Petro (@gspetro-NOAA)                  |
+    |                  |                                                |
+    |                  | Edward Snyder (@EdwardSnyder-NOAA)             |
     +------------------+------------------------------------------------+
     | GLERL/UM         | David Wright (@dmwright526)                    |
     +------------------+------------------------------------------------+
@@ -57,8 +63,6 @@ Scientists from across multiple labs and organizations have volunteered to revie
     | NCAR             | Mike Kavulich (@mkavulich)                     |
     |                  |                                                |
     |                  | Will Mayfield (@willmayfield)                  |
-    |                  |                                                |
-    |                  | Jamie Wolff (@jwolff-ncar)                     |
     +------------------+------------------------------------------------+
     | NSSL             | Yunheng Wang (@ywangwof)                       |
     +------------------+------------------------------------------------+
@@ -83,7 +87,7 @@ The steps below should be followed in order to make changes to the ``develop`` b
          
     #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g., ``commit -m "Issue #23 - <commit message>"``). Test code modifications on as many platforms as possible, and request help with further testing from the code management team when unable to test on all platforms. Document changes to the workflow and capabilities (either in the ``.rst`` files or separately) so that the SRW App documentation stays up-to-date. 
     #. **Pull request** - When ready to merge changes back to the ``develop`` branch, the code developer should initiate a pull request (PR) of the feature branch into the ``develop`` branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. When a PR is initiated, the :ref:`PR Template <Template>` autofills. Developers should use the template to provide information about the PR in the proper fields. See the guidelines in :numref:`Section %s <GoodPR>` for more details on making a good pull request. Developers should also tag all relevant reviewers from the code management team to the PR.
-    #. **Merge** - When review and testing is complete, a code manager will complete the pull request and subsequent merge.
+    #. **Merge** - When review and testing is complete, a code manager will complete the pull request and subsequent merge. If the PR was issued by a code manager, that same code manager should perform the merge or explicitly delegate another code manager to do so. 
     #. **Cleanup** - After the PR is merged, the code developer should delete the branch on their fork and close the issue.
 
 .. note::
@@ -143,7 +147,7 @@ Choose from three options:
             Directly reference any issues or PRs in this or other repositories 
             that this is related to, and describe how they are related.
 
-    #. **Text-Only Changes:** Propose text-only changes using the "Text-only request" template. This template's content is the same as for the "Feature Request" template above. 
+    #. `Text-Only Changes <https://github.com/ufs-community/ufs-srweather-app/issues/new?assignees=&labels=textonly&template=textonly_request.md&title=>`__: Propose text-only changes using the "Text-only request" template. This template's content is the same as for the "Feature Request" template above. 
 
     #. `Other <https://github.com/ufs-community/ufs-srweather-app/issues/new>`__: Open a blank issue, and use the "Feature Request" template above as a starting point to describe the issue. 
 
@@ -219,7 +223,7 @@ Here is the template that is provided when developers click "Create pull request
 Additional Guidance
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-**TITLE:** Titles should give code reviewers a clear idea of what the change will do in approximately 5-10 words. Some good examples from the past:
+**TITLE:** The title should give code reviewers a clear idea of what the change will do in approximately 5-10 words. Some good examples from the past:
 
     * Make thompson_mynn_lam3km ccpp suite available
     * Fix module loads on Hera
@@ -228,21 +232,21 @@ Additional Guidance
 All of the above examples concisely describe the changes contained in the pull request. The title will not get cut off in emails and web pages. In contrast, here are some made-up (but plausible) examples of BAD pull request titles:
 
     * Bug fixes (Bug fixes on what part of the code?)
-    * Changes to surface scheme (What kind of changes? What surface scheme?)
+    * Changes to surface scheme (What kind of changes? Which surface scheme?)
 
 **DESCRIPTION OF CHANGES:** The first line of the description should be a single-line "purpose" for this change. Note the type of change (i.e., bug fix, feature, enhancement, text-only). Summarize the problem, proposed solution, and required changes. If this is an enhancement or new feature, describe why the change is important.
 
 **DOCUMENTATION:** Developers should include documentation on new capabilities and enhancements by updating the appropriate ``.rst`` documentation files in their ``ufs-srweather-app`` fork prior to the PR. These documentation updates should be noted in the "Documentation" section of the PR message. If necessary, contributors may submit the ``.rst`` documentation in a subsequent PR. In these cases, the developers should include any existing documentation in the "Documentation" section of the initial PR message or as a file attachment to the PR. Then, the contributor should open an issue (see :numref:`Step %s <Issue>`) reflecting the need for official ``.rst`` documentation updates and include the issue number and explanation in the "Documentation" section of the initial PR template.
  
 
-Tips, Best Practices, and Protocols to Follow When Issuing a PR
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Tips, Best Practices, and Protocols to Follow When Submitting a PR
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* **Indicate urgency.** If a PR is particularly urgent, this information should be provided in the PR "Description" section, and multiple code management team members should be tagged to draw attention to this PR. After submitting the PR, a "high priority" label should be added to it. 
+* **Indicate urgency.** If a PR is particularly urgent, this information should be provided in the PR "Description" section, and multiple code management team members should be tagged to draw attention to this PR. After submitting the PR, a "high priority" label should be added to it (see below). 
 * **Indicate the scope of the PR.** If the PR is extremely minor (e.g., change to the README file), indicate this in the PR message. If it is an extensive PR, the developer should test it on as many platforms as possible and stress the necessity that it be tested on systems for which they do not have access.
 * **Clarify in the PR message where the code has been tested.** At a minimum, code should be tested on the platform where code modification has taken place. It should also be tested on machines where code modifications will impact results. If the developer does not have access to these platforms, this should be noted in the PR. 
 * **Follow separation of concerns.** For example, module loads are only handled in the appropriate modulefiles, Rocoto always sets the work directory, j-jobs make the work directory, and ex-scripts require the work directory to exist.
-* **Label PR status appropriately.** If the PR is not completely ready to be merged please add a “draft” or “do not merge” label. Urgent PRs should be marked "high priority." All PRs should have a type label (e.g., "bug," "enhancement"). Labels can be added on the right-hand side of a submitted PR request by clicking on the gear icon beside "Labels" (below the list of Reviewers).
+* **Label PR status appropriately.** If the PR is not completely ready to be merged please add a “Work in Progress” label. Urgent PRs should be marked "high priority." All PRs should have a type label (e.g., "bug," "enhancement"). Labels can be added on the right-hand side of a submitted PR request by clicking on the gear icon beside "Labels" (below the list of Reviewers).
 * **Target subject matter experts (SMEs) among the code management team.** When possible, tag team members who are familiar with the modifications made in the PR so that the code management team can provide effective and streamlined PR reviews and approvals. Developers can tag SMEs by selecting the gear icon next to "Assignees" (under the Reviewers list) and adding the appropriate names. 
 * **Schedule a live code review** if the PR is exceptionally complex in order to brief members of the code management team on the PR either in-person or through a teleconference. Developers should indicate in the PR message that they are interested in a live code review if they believe that it would be beneficial. 
 
@@ -255,7 +259,7 @@ Code and Configuration Standards
 General
 -----------
 
-Platform-specific settings should be handled only through configuration and module files, not in code or scripts.
+Platform-specific settings should be handled only through configuration and modulefiles, not in code or scripts.
 
 SRW Application
 ------------------
@@ -270,11 +274,11 @@ Externals.cfg
 Build system
     * Each component should build with CMake
     * Each component should build with Intel compilers on official `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms and with GNU or Intel compilers on other platforms. 
-    * Each component should have a mechanism for platform independence (i.e., no hard-coded machine-specific settings outside of established environment, configuration, and module files). 
+    * Each component should have a mechanism for platform independence (i.e., no hard-coded machine-specific settings outside of established environment, configuration, and modulefiles). 
     * Each component should build with the latest release of the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__. 
 
-Module files (env files)
-    * Each component should build using the common modules located in the ``env/srw_common`` file.
+Modulefiles
+    * Each component should build using the common modules located in the ``modulefiles/srw_common`` file.
 
 
 Regional Workflow
@@ -288,13 +292,13 @@ The ``regional_workflow`` repository must not contain source code for compiled p
 
 **Python Coding Standards:** 
     * All Python code contributions should come with an appropriate ``environment.yaml`` file for the feature. 
-    * Keep the use of external Python packages to a minimum for necessary workflow tasks. Currently these include ``f90nml``, ``pyyaml``, and ``jinja``. 
+    * Keep the use of external Python packages to a minimum for necessary workflow tasks. Currently, the required external Python packages are: ``f90nml``, ``pyyaml``, and ``jinja``. 
 
 **Workflow Design:** Follow the `NCO Guidelines <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ for what is incorporated in each layer of the workflow. This is particularly important in the ``scripts`` directory. 
 
-**Module files (env files):** All official platforms should have an environment file that can be sourced to provide the appropriate python packages and other settings for the platform. 
+**Modulefiles:** All official platforms should have a modulefile that can be sourced to provide the appropriate python packages and other settings for the platform. 
 
-**Management of the Configuration File:** New configurable options must be consistent with existing configurable options. Add necessary checks on acceptable options where applicable. Add appropriate default values.
+**Management of the Configuration File:** New configurable options must be consistent with existing configurable options and documented in ``docs/UsersGuide/source/ConfigWorkflow.rst``. Add necessary checks on acceptable options where applicable. Add appropriate default values in ``config_defaults.sh``.
 
 **Management of Template Files:** If a new configurable option is required in an existing template, it must be handled similarly to its counterparts in the scripts that fill in the template.
 
@@ -317,7 +321,7 @@ All changes should be associated with a GitHub Issue. If developers are working 
     * Modifications should not break any existing supported capabilities on any supported platforms.
     * Developers will not be required to run tests on *all* supported platforms, but if a failure is pointed out by another reviewer (or by automated testing), then the developer should work with reviewers and code managers to ensure that the problem is resolved prior to merging.
     * If possible, developers should run a fundamental test suite (see :numref:`Section %s <Testing>`) on at least one supported platform and report on the outcome in the PR template.
-    * If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweather-app`` should be opened to update the regional_workflow hash. 
+    * If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweather-app`` should be opened to update the ``regional_workflow`` hash. 
     * Update the ``.rst`` documentation files where appropriate as part of the PR. If necessary, contributors may update the documentation in a subsequent PR. In these cases, the contributor should open an issue reflecting the need for documentation (see :numref:`Step %s <Issue>`) and include the issue number and explanation in the Documentation section of the initial PR template. 
 
 **Guidelines for New Features:**
@@ -332,7 +336,7 @@ All changes should be associated with a GitHub Issue. If developers are working 
 Testing
 ===============
 
-The ``ufs-srweather-app`` repository uses the established workflow end-to-end (WE2E) testing framework (see :numref:`Chapter %s <WE2E_tests>`) to implement two tiers of testing: fundamental and comprehensive. *Fundamental testing* consists of a lightweight set of tests that can be automated and run regularly on each `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform. These are mostly low-resolution tests and cover a wide scope of capabilities to ensure that there are no major, obvious faults in the underlying code. *Comprehensive testing* includes the entire set of WE2E tests. 
+The ``ufs-srweather-app`` repository uses the established workflow end-to-end (WE2E) testing framework (see :numref:`Chapter %s <WE2E_tests>`) to implement two tiers of testing: fundamental and comprehensive. *Fundamental testing* consists of a lightweight set of tests that can be automated and run regularly on each `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform. These are mostly low-resolution tests and cover a wide scope of capabilities to ensure that there are no major, obvious faults in the underlying code. *Comprehensive testing* involves a broader range of capabilities, configurations, and components. 
 
 Before opening a PR, a minimum set of tests should be run: 
     * At least one end-to-end test (preferably a fundamental test suite) should be run on at least one supported platform
