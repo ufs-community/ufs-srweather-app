@@ -1,3 +1,3 @@
-[submodule "hpc-stack-mod"]
-	path = hpc-stack-mod
+[submodule "docs/UsersGuide/docs/UsersGuide/hpcdocs"]
+	path = docs/UsersGuide/docs/UsersGuide/hpcdocs
 	url = https://github.com/NOAA-EMC/hpc-stack.git
