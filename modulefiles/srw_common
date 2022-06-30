@@ -27,6 +27,7 @@ module load-any mapl/2.11.0-esmf-8.3.0b09 mapl/2.11.0-esmf-8.2.0
 module load nemsio/2.5.4
 module load sfcio/1.4.1
 module load sigio/2.3.2
+module load wgrib2/2.0.8
 
 module load w3emc/2.9.2
 module load wrf_io/1.2.0
