@@ -87,7 +87,7 @@ The steps below should be followed in order to make changes to the ``develop`` b
          
     #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g., ``commit -m "Issue #23 - <commit message>"``). Test code modifications on as many platforms as possible, and request help with further testing from the code management team when unable to test on all platforms. Document changes to the workflow and capabilities (either in the ``.rst`` files or separately) so that the SRW App documentation stays up-to-date. 
     #. **Pull request** - When ready to merge changes back to the ``develop`` branch, the code developer should initiate a pull request (PR) of the feature branch into the ``develop`` branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. When a PR is initiated, the :ref:`PR Template <Template>` autofills. Developers should use the template to provide information about the PR in the proper fields. See the guidelines in :numref:`Section %s <GoodPR>` for more details on making a good pull request. Developers should also tag all relevant reviewers from the code management team to the PR.
-    #. **Merge** - When review and testing is complete, a code manager will complete the pull request and subsequent merge. If the PR was issued by a code manager, that same code manager should perform the merge or explicitly delegate another code manager to do so. 
+    #. **Merge** - When review and testing are complete, a code manager will merge the PR into ``develop``. PRs that are not ready for merging should have a "Work in Progress" label on them. 
     #. **Cleanup** - After the PR is merged, the code developer should delete the branch on their fork and close the issue.
 
 .. note::
@@ -223,11 +223,12 @@ Here is the template that is provided when developers click "Create pull request
 Additional Guidance
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-**TITLE:** The title should give code reviewers a clear idea of what the change will do in approximately 5-10 words. Some good examples from the past:
+**TITLE:** Titles should start with the branch name in brackets and should give code reviewers a clear idea of what the change will do in approximately 5-10 words. Some examples:
 
-    * Make thompson_mynn_lam3km ccpp suite available
-    * Fix module loads on Hera
-    * Add support for Rocoto with generic LINUX platform
+    * [develop] Make thompson_mynn_lam3km ccpp suite available
+    * [release/public-v2] Add a build_linux_compiler modulefile
+    * [develop] Fix module loads on Hera
+    * [develop] Add support for Rocoto with generic LINUX platform
 
 All of the above examples concisely describe the changes contained in the pull request. The title will not get cut off in emails and web pages. In contrast, here are some made-up (but plausible) examples of BAD pull request titles:
 
@@ -246,7 +247,7 @@ Tips, Best Practices, and Protocols to Follow When Submitting a PR
 * **Indicate the scope of the PR.** If the PR is extremely minor (e.g., change to the README file), indicate this in the PR message. If it is an extensive PR, the developer should test it on as many platforms as possible and stress the necessity that it be tested on systems for which they do not have access.
 * **Clarify in the PR message where the code has been tested.** At a minimum, code should be tested on the platform where code modification has taken place. It should also be tested on machines where code modifications will impact results. If the developer does not have access to these platforms, this should be noted in the PR. 
 * **Follow separation of concerns.** For example, module loads are only handled in the appropriate modulefiles, Rocoto always sets the work directory, j-jobs make the work directory, and ex-scripts require the work directory to exist.
-* **Label PR status appropriately.** If the PR is not completely ready to be merged please add a “Work in Progress” label. Urgent PRs should be marked "high priority." All PRs should have a type label (e.g., "bug," "enhancement"). Labels can be added on the right-hand side of a submitted PR request by clicking on the gear icon beside "Labels" (below the list of Reviewers).
+* **Label PR status appropriately.** If the PR is not completely ready to be merged please add a "Work in Progress" label. Urgent PRs should be marked "high priority." All PRs should have a type label (e.g., "bug," "enhancement"). Labels can be added on the right-hand side of a submitted PR request by clicking on the gear icon beside "Labels" (below the list of Reviewers).
 * **Target subject matter experts (SMEs) among the code management team.** When possible, tag team members who are familiar with the modifications made in the PR so that the code management team can provide effective and streamlined PR reviews and approvals. Developers can tag SMEs by selecting the gear icon next to "Assignees" (under the Reviewers list) and adding the appropriate names. 
 * **Schedule a live code review** if the PR is exceptionally complex in order to brief members of the code management team on the PR either in-person or through a teleconference. Developers should indicate in the PR message that they are interested in a live code review if they believe that it would be beneficial. 
 
@@ -340,7 +341,41 @@ The ``ufs-srweather-app`` repository uses the established workflow end-to-end (W
 
 Before opening a PR, a minimum set of tests should be run: 
     * At least one end-to-end test (preferably a fundamental test suite) should be run on at least one supported platform
+      * Code owners should run the fundamental test suite on their own PRs by adding the ``run_we2e_fundamental_tests`` to their PR. 
+
+    ..
+      COMMENT: Is this accurate?
+
     * Any new functionality should be tested explicitly, and tests should be described in detail in the PR message. Depending on the impact of this functionality, this test should be added to the WE2E suite of fundamental or comprehensive tests. 
+
+**Testing on Jenkins**
+
+`Jenkins <https://www.jenkins.io/>`__ is "open source automation server" that allows users to automate code testing. In the SRW App, developers with write, maintain, or admin `roles <https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-roles-for-an-organization>`__ on the SRW App repository can add labels to their PR that automatically initiate particular test suites. 
+
+The following automated testing labels are currently available for the SRW App:
+   * run_ci 
+
+   ..
+      COMMENT: Also, 
+      * run_we2e_comprehensive_tests
+      * run_we2e_fundamental_tests
+      What about ci-hera-gnu-WE, etc?
+
+Developers with permissions should run the fundamental test suites on their own PRs by adding the ``run_we2e_fundamental_tests`` label to their PR. Developers without the appropriate permissions should communicate with the code management team to ensure that the fundamental tests are run on their PR. 
+
+The results of the tests can be viewed by anyone on GitHub. Users must scroll down to the bottom of the PR, where PR approvals, checks, and conflicts are listed. Under checks, GitHub will list which checks have passed and which have failed. Users can click on "Details" beside each check to see the Jenkins log files. This will take users the Jenkins page with informtion on their PR's tests. 
+
+..
+      COMMENT: Can they actually be viewed by anyone...?
+
+.. _JenkinsCheck:
+
+.. figure:: _static/JenkinsCICD.png
+   :alt: Screenshot of the bottom of the PR where information on Jenkins tests is located.
+
+   *Sample of Jenkins Test Results*
+
+Once on the `Jenkins <https://jenkins-epic.woc.noaa.gov>` page specific to the PR check in question, users can view all of the testing output, including "artifacts" from the build. To do this, users must click on the arrow icon in the top right corner of the page. Then, in the left navigation menu, they can click on S3 Artifacts and download any files listed there for in-depth review.
 
 **Updating the Testing Suite:** When new capabilities are added or new bugs/issues are discovered, WE2E tests should be created and/or modified to verify that new features are not broken in subsequent PRs. For example, if a new physics suite is introduced, it may be possible to alter an existing test rather than creating an entirely new test. Code developers introducing new capabilities should work with code managers to provide the proper configuration files, data, and other information necessary to create new tests for these capabilities.
 
