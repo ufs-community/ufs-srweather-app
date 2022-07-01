@@ -372,7 +372,7 @@ The results of the tests can be viewed by anyone on GitHub. Users must scroll do
 
    *Sample of Jenkins Test Results*
 
-Once on the `Jenkins <https://jenkins-epic.woc.noaa.gov>` page specific to the PR check in question, users can view all of the testing output, including "artifacts" from the build. To do this, users must click on the arrow icon in the top right corner of the page. Then, in the left navigation menu, they can click on S3 Artifacts and download any files listed there for in-depth review.
+Once on the `Jenkins <https://jenkins-epic.woc.noaa.gov>`__ page specific to the PR check in question, users can view all of the testing output, including "artifacts" from the build. To do this, users must click on the arrow icon in the top right corner of the page. Then, in the left navigation menu, they can click on S3 Artifacts and download any files listed there for in-depth review.
 
 **Updating the Testing Suite:** When new capabilities are added or new bugs/issues are discovered, WE2E tests should be created and/or modified to verify that new features are not broken in subsequent PRs. For example, if a new physics suite is introduced, it may be possible to alter an existing test rather than creating an entirely new test. Code developers introducing new capabilities should work with code managers to provide the proper configuration files, data, and other information necessary to create new tests for these capabilities.
 
