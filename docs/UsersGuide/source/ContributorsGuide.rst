@@ -360,7 +360,7 @@ The following automated testing labels are currently available for the SRW App:
 
 Developers with permissions should run the fundamental test suites on their own PRs by adding the ``run_we2e_fundamental_tests`` label to their PR. Developers without the appropriate permissions should communicate with the code management team to ensure that the fundamental tests are run on their PR. 
 
-The results of the tests can be viewed by anyone on GitHub. Users must scroll down to the bottom of the PR, where PR approvals, checks, and conflicts are listed. Under checks, GitHub will list which checks have passed and which have failed. Users can click on "Details" beside each check to see the Jenkins log files. This will take users the Jenkins page with informtion on their PR's tests. 
+The results of the tests can be viewed by anyone on GitHub. Users must scroll down to the bottom of the PR, where PR approvals, checks, and conflicts are listed. Under checks, GitHub will list which checks have passed and which have failed. Users can click on "Details" beside each check to see the Jenkins log files (see :numref:`Figure %s <JenkinsCheck>`). This will take users the Jenkins page with informtion on their PR's tests. 
 
 ..
       COMMENT: Can they actually be viewed by anyone...?
