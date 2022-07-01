@@ -340,20 +340,20 @@ Testing
 The ``ufs-srweather-app`` repository uses the established workflow end-to-end (WE2E) testing framework (see :numref:`Chapter %s <WE2E_tests>`) to implement two tiers of testing: fundamental and comprehensive. *Fundamental testing* consists of a lightweight set of tests that can be automated and run regularly on each `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform. These are mostly low-resolution tests and cover a wide scope of capabilities to ensure that there are no major, obvious faults in the underlying code. *Comprehensive testing* involves a broader range of capabilities, configurations, and components. 
 
 Before opening a PR, a minimum set of tests should be run: 
-    * At least one end-to-end test (preferably a fundamental test suite) should be run on at least one supported platform. Code owners should run the entire fundamental test suite on their own PRs either manually or by adding the label ``run_we2e_fundamental_tests`` to their PR. 
+    * At least one end-to-end test (preferably the entire fundamental test suite) should be run on at least one supported platform. Code owners should run the entire fundamental test suite on their own PRs either manually or by adding the label ``run_we2e_fundamental_tests`` to their PR. 
     ..
       COMMENT: Is this accurate?
 
-    * Any new functionality should be tested explicitly, and tests should be described in detail in the PR message. Depending on the impact of this functionality, this test should be added to the WE2E suite of fundamental or comprehensive tests. 
+    * Any new functionality should be tested explicitly, and new tests should be described in detail in the PR message. Depending on the impact of this functionality, new tests should be added to the WE2E suite of fundamental and/or comprehensive tests. 
 
 **Testing on Jenkins**
 
 `Jenkins <https://www.jenkins.io/>`__ is an "open source automation server" that allows users to automate code testing. In the SRW App, developers with write, maintain, or admin `roles <https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-roles-for-an-organization>`__ on the SRW App repository can add labels to their PR that automatically initiate particular test suites. 
 
 The following automated testing labels are currently available for the SRW App:
-   * run_ci 
-   * run_we2e_comprehensive_tests
-   * run_we2e_fundamental_tests
+   * ``run_ci`` 
+   * ``run_we2e_comprehensive_tests``
+   * ``run_we2e_fundamental_tests``
 
    ..
       COMMENT: What about ci-hera-gnu-WE, etc?
