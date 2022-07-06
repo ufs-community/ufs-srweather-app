@@ -16,7 +16,7 @@ Authoritative branch
 The main development branch for the ``ufs-srweather-app`` repository is ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual sub-components, including the ``regional_workflow``. Pull requests (PRs) will be merged to ``develop``. 
 
 The ``develop`` branch is protected by the code management team:
-    #. Pull requests for this branch require approval by at least two code reviewers.
+    #. Pull requests for this branch require approval by at least two code managers.
     #. A code manager should perform the review and the merge, but other contributors are welcome to provide comments/suggestions.
 
 
