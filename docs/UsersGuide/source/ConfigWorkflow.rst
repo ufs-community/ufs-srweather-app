@@ -407,7 +407,6 @@ CCPP Parameter
    | ``"FV3_GFS_2017_gfdlmp_regional"``
    | ``"FV3_GFS_v15p2"``
    | ``"FV3_GFS_v15_thompson_mynn_lam3km"``
-   | ``"FV3_RRFS_v1alpha"``
 
 Stochastic Physics Parameters
 ================================
