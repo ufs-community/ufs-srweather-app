@@ -42,7 +42,6 @@ valid_vals_CCPP_PHYS_SUITE=( \
 "FV3_GFS_v15_thompson_mynn_lam3km" \
 "FV3_GFS_v16" \
 "FV3_RRFS_v1beta" \
-"FV3_RRFS_v1alpha" \
 "FV3_HRRR" \
 )
 valid_vals_GFDLgrid_NUM_CELLS=("48" "96" "192" "384" "768" "1152" "3072")

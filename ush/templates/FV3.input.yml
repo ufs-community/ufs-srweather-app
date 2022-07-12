@@ -12,10 +12,10 @@
 # and provide this file and the desired section via the -c option.
 
 
-FV3_RRFS_v1alpha:
-  gfs_physics_nml: &RRFS_v1alpha_phys
+FV3_RRFS_v1beta:
+  gfs_physics_nml: &RRFS_v1beta_phys
     do_deep: False
-    do_mynnsfclay: False
+    do_mynnsfclay: True
     imfdeepcnv: -1
     imfshalcnv: -1
     iopt_alb: 2
@@ -34,11 +34,6 @@ FV3_RRFS_v1alpha:
     lsm: 2
     lsoil_lsm: 4
 
-FV3_RRFS_v1beta:
-  gfs_physics_nml:
-    <<: *RRFS_v1alpha_phys
-    do_mynnsfclay: True
-
 FV3_HRRR:
   fv_core_nml:
     hord_dp: -5
@@ -52,7 +47,7 @@ FV3_HRRR:
     nord_tr: 2
     nrows_blend: 10
   gfs_physics_nml:
-    <<: *RRFS_v1alpha_phys
+    <<: *RRFS_v1beta_phys
     cdmbgwd: [3.5, 1.0]
     do_mynnsfclay: True
     do_sfcperts: !!python/none
@@ -282,19 +277,19 @@ FV3_GFS_v15_thompson_mynn_lam3km:
   atmos_model_nml:
     avg_max_length: 3600.0
   fv_core_nml:
-    agrid_vel_rst: true
+    agrid_vel_rst: True
     full_zs_filter: !!python/none
     n_sponge: 9
     npz_type: ''
-    rf_fast: false
+    rf_fast: False
     sg_cutoff: 10000.0
     vtdm4: 0.02
   gfs_physics_nml:
     avg_max_length: 3600.0
     cdmbgwd: [0.88, 0.04]
-    do_deep: false
-    do_mynnsfclay: true
-    do_ugwp: false
+    do_deep: False
+    do_mynnsfclay: True
+    do_ugwp: False
     fhswr: 900.0
     fhlwr: 900.0
     iaer: 1011
@@ -316,11 +311,11 @@ FV3_GFS_v15_thompson_mynn_lam3km:
     iopt_tbot: 2
     iopt_trs: 2
     iovr: 3
-    ldiag_ugwp: false
-    lgfdlmprad: false
+    ldiag_ugwp: False
+    lgfdlmprad: False
     lsm: 1
     lsoil_lsm: !!python/none
-    ltaerosol: false    
+    ltaerosol: False    
     xkzminv: 0.3
     xkzm_m: 1.0
     xkzm_h: 1.0
@@ -330,7 +325,7 @@ FV3_GFS_v16:
     launch_level: 27
   fv_core_nml:
     <<: *gfs_v15_fv_core
-    agrid_vel_rst: false
+    agrid_vel_rst: False
     d2_bg_k1: 0.2
     d2_bg_k2: 0.0
     fv_sg_adj: 450
@@ -339,7 +334,7 @@ FV3_GFS_v16:
     hord_tm: 5
     hord_vt: 5
     k_split: 6
-    make_nh: false
+    make_nh: False
     n_split: 6
     n_sponge: 10
     na_init: 0
