@@ -12,14 +12,6 @@
 #
 #-----------------------------------------------------------------------
 #
-# Source other necessary files.
-#
-#-----------------------------------------------------------------------
-#
-. $USHDIR/link_fix.sh
-#
-#-----------------------------------------------------------------------
-#
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
 #
@@ -241,9 +233,9 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-link_fix \
-  verbose="$VERBOSE" \
-  file_group="sfc_climo" || \
+python3  $USHDIR/link_fix.py \
+  --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+  --file-group "sfc_climo" || \
 print_err_msg_exit "\
 Call to function to create links to surface climatology files failed."
 #

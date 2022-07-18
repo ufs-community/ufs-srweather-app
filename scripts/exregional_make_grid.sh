@@ -17,8 +17,6 @@
 #-----------------------------------------------------------------------
 #
 . $USHDIR/make_grid_mosaic_file.sh
-. $USHDIR/link_fix.sh
-. $USHDIR/set_FV3nml_sfc_climo_filenames.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -589,9 +587,9 @@ halo failed."
 #
 #-----------------------------------------------------------------------
 #
-link_fix \
-  verbose="$VERBOSE" \
-  file_group="grid" || \
+python3  $USHDIR/link_fix.py \
+  --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+  --file-group "grid" || \
 print_err_msg_exit "\
 Call to function to create symlinks to the various grid and mosaic files
 failed."
@@ -607,7 +605,9 @@ failed."
 #
 #-----------------------------------------------------------------------
 #
-set_FV3nml_sfc_climo_filenames || print_err_msg_exit "\
+python3 $USHDIR/set_FV3nml_sfc_climo_filenames.py \
+  --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+    || print_err_msg_exit "\
 Call to function to set surface climatology file names in the FV3 namelist
 file failed."
 #

@@ -14,7 +14,10 @@ returnded by load_config to make queries.
 """
 
 import argparse
-import yaml
+try:
+    import yaml
+except:
+    pass
 import json
 import sys
 import os
@@ -49,7 +52,10 @@ def join_str(loader, node):
     seq = loader.construct_sequence(node)
     return ''.join([str(i) for i in seq])
 
-yaml.add_constructor('!join_str', join_str, Loader=yaml.SafeLoader)
+try:
+    yaml.add_constructor('!join_str', join_str, Loader=yaml.SafeLoader)
+except:
+    pass
 
 ##########
 # JSON
@@ -86,12 +92,15 @@ def load_shell_config(config_file):
     # Save env vars before and after sourcing the scipt and then
     # do a diff to get variables specifically defined/updated in the script
     # Method sounds brittle but seems to work ok so far
+    pid = os.getpid()
     code = dedent(f'''      #!/bin/bash
-      (set -o posix; set) > ./_t1
+      t1="./t1.{pid}"
+      t2="./t2.{pid}"
+      (set -o posix; set) > $t1
       {{ . {config_file}; set +x; }} &>/dev/null
-      (set -o posix; set) > ./_t2
-      diff ./_t1 ./_t2 | grep "> " | cut -c 3-
-      rm -rf ./_t1 ./_t2
+      (set -o posix; set) > $t2
+      diff $t1 $t2 | grep "> " | cut -c 3-
+      rm -rf $t1 $t2
     ''')
     (_,config_str,_) = run_command(code)
     lines = config_str.splitlines()
@@ -131,7 +140,7 @@ def load_ini_config(config_file):
     if not os.path.exists(config_file):
         print_err_msg_exit(f'''
             The specified configuration file does not exist:
-                  \"{file_name}\"''')
+                  \"{config_file}\"''')
     
     config = configparser.ConfigParser()
     config.read(config_file)

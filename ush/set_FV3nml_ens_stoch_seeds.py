@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 
-import unittest
 import os
+import sys
+import argparse
+import unittest
 from textwrap import dedent
 from datetime import datetime
 
 from python_utils import print_input_args, print_info_msg, print_err_msg_exit,\
-                         date_to_str, mkdir_vrfy,cp_vrfy,\
-                         import_vars,set_env_var,\
-                         define_macos_utilities, cfg_to_yaml_str
+                         date_to_str, mkdir_vrfy, cp_vrfy, str_to_type, \
+                         import_vars,set_env_var, \
+                         define_macos_utilities, cfg_to_yaml_str, \
+                         load_shell_config
 
 from set_namelist import set_namelist
 
@@ -109,6 +112,25 @@ def set_FV3nml_ens_stoch_seeds(cdate):
                 settings =
             {settings_str}'''))
 
+def parse_args(argv):
+    """ Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description='Creates stochastic seeds for an ensemble experiment.'
+    )
+
+    parser.add_argument('-c', '--cdate',
+                        dest='cdate',
+                        required=True,
+                        help='Date.')
+
+    return parser.parse_args(argv)
+
+if __name__ == '__main__':
+    args = parse_args(sys.argv[1:])
+    cfg = load_shell_config(args.path_to_defns)
+    import_vars(dictionary=cfg)
+    set_FV3nml_ens_stoch_seeds(str_to_type(args.cdate))
+
 class Testing(unittest.TestCase):
     def test_set_FV3nml_ens_stoch_seeds(self):
         set_FV3nml_ens_stoch_seeds(cdate=self.cdate)
@@ -116,22 +138,23 @@ class Testing(unittest.TestCase):
         define_macos_utilities();
         set_env_var('DEBUG',True)
         set_env_var('VERBOSE',True)
+        self.cdate=datetime(2021, 1, 1)
         USHDIR = os.path.dirname(os.path.abspath(__file__))
         EXPTDIR = os.path.join(USHDIR,"test_data","expt");
         cp_vrfy(os.path.join(USHDIR,f'templates{os.sep}input.nml.FV3'), \
                 os.path.join(EXPTDIR,'input.nml'))
-        self.cdate=datetime(2021, 1, 1)
+        for i in range(2):
+            mkdir_vrfy("-p", os.path.join(EXPTDIR,f"{date_to_str(self.cdate,True)}{os.sep}mem{i+1}"))
         
-        mkdir_vrfy("-p", os.path.join(EXPTDIR,f'{date_to_str(self.cdate,True)}{os.sep}mem0'))
         set_env_var("USHDIR",USHDIR)
         set_env_var("CYCLE_BASEDIR",EXPTDIR)
-        set_env_var("ENSMEM_INDX",0)
+        set_env_var("ENSMEM_INDX",2)
         set_env_var("FV3_NML_FN","input.nml")
         set_env_var("FV3_NML_FP",os.path.join(EXPTDIR,"input.nml"))
         set_env_var("DO_SPP",True)
         set_env_var("DO_SHUM",True)
         set_env_var("DO_SKEB",True)
         set_env_var("DO_LSM_SPP",True)
-        ISEED_SPP = [ 4, 4, 4, 4, 4]
+        ISEED_SPP = [ 4, 5, 6, 7, 8]
         set_env_var("ISEED_SPP",ISEED_SPP)
 

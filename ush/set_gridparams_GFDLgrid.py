@@ -2,8 +2,6 @@
 
 import unittest
 
-from constants import radius_Earth,degs_per_radian
-
 from python_utils import import_vars, set_env_var, print_input_args, \
                          print_info_msg, print_err_msg_exit
 

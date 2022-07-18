@@ -3,7 +3,6 @@
 import unittest
 from datetime import datetime,timedelta
 
-from constants import radius_Earth,degs_per_radian
 from python_utils import import_vars, set_env_var, print_input_args
 
 def set_gridparams_ESGgrid(lon_ctr,lat_ctr,nx,ny,halo_width,delx,dely,pazi):
@@ -24,6 +23,10 @@ def set_gridparams_ESGgrid(lon_ctr,lat_ctr,nx,ny,halo_width,delx,dely,pazi):
     """
 
     print_input_args(locals())
+
+    # get needed environment variables
+    IMPORTS = ['RADIUS_EARTH', 'DEGS_PER_RADIAN']
+    import_vars(env_vars=IMPORTS)
     #
     #-----------------------------------------------------------------------
     #
@@ -57,8 +60,8 @@ def set_gridparams_ESGgrid(lon_ctr,lat_ctr,nx,ny,halo_width,delx,dely,pazi):
     #
     #-----------------------------------------------------------------------
     #
-    del_angle_x_sg = (delx / (2.0 * radius_Earth)) * degs_per_radian
-    del_angle_y_sg = (dely / (2.0 * radius_Earth)) * degs_per_radian
+    del_angle_x_sg = (delx / (2.0 * RADIUS_EARTH)) * DEGS_PER_RADIAN
+    del_angle_y_sg = (dely / (2.0 * RADIUS_EARTH)) * DEGS_PER_RADIAN
     neg_nx_of_dom_with_wide_halo = -(nx + 2 * halo_width)
     neg_ny_of_dom_with_wide_halo = -(ny + 2 * halo_width)
     #
@@ -69,10 +72,10 @@ def set_gridparams_ESGgrid(lon_ctr,lat_ctr,nx,ny,halo_width,delx,dely,pazi):
     #-----------------------------------------------------------------------
     #
     return (lon_ctr,lat_ctr,nx,ny,pazi,halo_width,stretch_factor,
-            "{:0.10f}".format(del_angle_x_sg),
-            "{:0.10f}".format(del_angle_y_sg),
-            "{:.0f}".format(neg_nx_of_dom_with_wide_halo),
-            "{:.0f}".format(neg_ny_of_dom_with_wide_halo))
+            del_angle_x_sg,
+            del_angle_y_sg,
+            int(neg_nx_of_dom_with_wide_halo),
+            int(neg_ny_of_dom_with_wide_halo))
 
 class Testing(unittest.TestCase):
     def test_set_gridparams_ESGgrid(self):
@@ -93,18 +96,18 @@ class Testing(unittest.TestCase):
 
         self.assertEqual(\
          (LON_CTR,LAT_CTR,NX,NY,PAZI,NHW,STRETCH_FAC,
-          DEL_ANGLE_X_SG,
-          DEL_ANGLE_Y_SG,
+          round(DEL_ANGLE_X_SG,10),
+          round(DEL_ANGLE_Y_SG,10),
           NEG_NX_OF_DOM_WITH_WIDE_HALO,
           NEG_NY_OF_DOM_WITH_WIDE_HALO),
          (-97.5, 38.5, 1748, 1038, 0.0, 6,0.999,
-          "0.0134894006",
-          "0.0134894006",
-          "-1760",
-          "-1050")
+          0.0134894006,
+          0.0134894006,
+          -1760,
+          -1050)
         )
 
     def setUp(self):
-        set_env_var('DEBUG',True)
-        set_env_var('VERBOSE',True)
+        set_env_var('RADIUS_EARTH',6371200.0)
+        set_env_var('DEGS_PER_RADIAN',57.2957795131)
 

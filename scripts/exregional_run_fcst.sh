@@ -9,16 +9,6 @@
 #
 . ${GLOBAL_VAR_DEFNS_FP}
 . $USHDIR/source_util_funcs.sh
-. $USHDIR/set_FV3nml_ens_stoch_seeds.sh
-#
-#-----------------------------------------------------------------------
-#
-# Source other necessary files.
-#
-#-----------------------------------------------------------------------
-#
-. $USHDIR/create_model_configure_file.sh
-. $USHDIR/create_diag_table_file.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -446,7 +436,9 @@ fi
 
 if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] \
    [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
-  set_FV3nml_ens_stoch_seeds cdate="$cdate" || print_err_msg_exit "\
+  python3 $USHDIR/set_FV3nml_ens_stoch_seeds.py \
+      --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+      --cdate "$cdate" || print_err_msg_exit "\
 Call to function to create the ensemble-based namelist for the current
 cycle's (cdate) run directory (run_dir) failed:
   cdate = \"${cdate}\"
@@ -464,12 +456,13 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-create_model_configure_file \
-  cdate="$cdate" \
-  run_dir="${run_dir}" \
-  sub_hourly_post="${SUB_HOURLY_POST}" \
-  dt_subhourly_post_mnts="${DT_SUBHOURLY_POST_MNTS}" \
-  dt_atmos="${DT_ATMOS}" || print_err_msg_exit "\
+python3 $USHDIR/create_model_configure_file.py \
+  --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+  --cdate "$cdate" \
+  --run-dir "${run_dir}" \
+  --sub-hourly-post "${SUB_HOURLY_POST}" \
+  --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
+  --dt-atmos "${DT_ATMOS}" || print_err_msg_exit "\
 Call to function to create a model configuration file for the current
 cycle's (cdate) run directory (run_dir) failed:
   cdate = \"${cdate}\"
@@ -482,8 +475,9 @@ cycle's (cdate) run directory (run_dir) failed:
 #
 #-----------------------------------------------------------------------
 #
-create_diag_table_file \
-  run_dir="${run_dir}" || print_err_msg_exit "\
+python3 $USHDIR/create_diag_table_file.py \
+  --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+  --run-dir "${run_dir}" || print_err_msg_exit "\
 Call to function to create a diag table file for the current cycle's 
 (cdate) run directory (run_dir) failed:
   run_dir = \"${run_dir}\""

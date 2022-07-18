@@ -1,3 +1,5 @@
+[![Python unittests](https://github.com/ufs-community/regional_workflow/actions/workflows/python_unittests.yaml/badge.svg)](https://github.com/ufs-community/regional_workflow/actions/workflows/python_unittests.yaml)
+
 # Regional Workflow
   
 **The regional workflow in this repository can no longer be run in a stand-alone configuration. To clone the end-to-end system, build the code, and run the workflow, see:**

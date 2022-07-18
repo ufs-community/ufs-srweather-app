@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
 import os
+import sys
+import argparse
 import unittest
 from textwrap import dedent
 
 from python_utils import import_vars, set_env_var, print_input_args, \
-                         print_info_msg, print_err_msg_exit, cfg_to_yaml_str
+                         print_info_msg, print_err_msg_exit, cfg_to_yaml_str, \
+                         load_shell_config
 
 from fill_jinja_template import fill_jinja_template
 
@@ -60,6 +63,30 @@ def create_diag_table_file(run_dir):
             !!!!!!!!!!!!!!!!!''')
         return False
     return True
+
+def parse_args(argv):
+    """ Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description='Creates diagnostic table file.'
+    )
+
+    parser.add_argument('-r', '--run-dir',
+                        dest='run_dir',
+                        required=True,
+                        help='Run directory.')
+
+    parser.add_argument('-p', '--path-to-defns',
+                        dest='path_to_defns',
+                        required=True,
+                        help='Path to var_defns file.')
+
+    return parser.parse_args(argv)
+
+if __name__ == '__main__':
+    args = parse_args(sys.argv[1:])
+    cfg = load_shell_config(args.path_to_defns)
+    import_vars(dictionary=cfg)
+    create_diag_table_file(args.run_dir)
 
 class Testing(unittest.TestCase):
     def test_create_diag_table_file(self):

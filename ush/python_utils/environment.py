@@ -4,25 +4,30 @@ import os
 import inspect
 import shlex
 from datetime import datetime, date
+from types import ModuleType
 
 def str_to_date(s):
     """ Get python datetime object from string.
-    It tests for only two formats used in RRFS: YYYYMMDD and YYYYMMDDHHMM
 
     Args:
         s: a string
     Returns:
         datetime object or None
     """
+    v = None
     try:
-        v = datetime.strptime(s, "%Y%m%d%H%M")
-        return v
-    except:
-        try:
+        l = len(s)
+        if l == 8:
             v = datetime.strptime(s, "%Y%m%d")
-            return v
-        except:
-            return None
+        if l == 10:
+            v = datetime.strptime(s, "%Y%m%d%H")
+        elif l == 12:
+            v = datetime.strptime(s, "%Y%m%d%H%M")
+        elif l == 14:
+            v = datetime.strptime(s, "%Y%m%d%H%M%S")
+    except:
+        v = None
+    return v
 
 def date_to_str(d,short=False):
     """ Get string from python datetime object.
@@ -240,7 +245,9 @@ def export_vars(dictionary=None, source_dict=None, env_vars=None):
         # skip functions and other unlikely variable names
         if callable(v):
             continue
-        if not k or k.islower() or k[0] == '_':
+        if isinstance(v,ModuleType):
+            continue
+        if not k or k[0] == '_':
             continue
         dictionary[k] = list_to_str(v)
 

@@ -99,7 +99,6 @@ fi
 . $USHDIR/constants.sh
 . $USHDIR/source_util_funcs.sh
 . $USHDIR/init_env.sh
-. $USHDIR/get_crontab_contents.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -393,35 +392,14 @@ script for this experiment:
   CRONTAB_LINE = \"${CRONTAB_LINE}\"
 "
 #
-# Below, we use "grep" to determine whether the crontab line that the
-# variable CRONTAB_LINE contains is already present in the cron table.
-# For that purpose, we need to escape the asterisks in the string in
-# CRONTAB_LINE with backslashes.  Do this next.
+# Remove CRONTAB_LINE from cron table
 #
-    crontab_line_esc_astr=$( printf "%s" "${CRONTAB_LINE}" | \
-                             $SED -r -e "s%[*]%\\\\*%g" )
-#
-# Get the full contents of the user's cron table.  
-#
-    get_crontab_contents called_from_cron=${called_from_cron} \
-                         outvarname_crontab_cmd="crontab_cmd" \
-                         outvarname_crontab_contents="crontab_contents"
-#
-# Remove the line in the contents of the cron table corresponding to the 
-# current forecast experiment (if that line is part of the contents).
-# Then record the results back into the user's cron table.
-#
-# In the string passed to the grep command below, we use the line start
-# and line end anchors ("^" and "$", respectively) to ensure that we
-# only find lines in the crontab that contain exactly the string in 
-# crontab_line_esc_astr without any leading or trailing characters.
-#
-    crontab_contents=$( echo "${crontab_contents}" | grep -v "^${crontab_line_esc_astr}$" )
-
-    if [ "$MACHINE" = "WCOSS_DELL_P3" ]; then
-      echo "${crontab_contents}" > "/u/$USER/cron/mycrontab"
+    if [ "${called_from_cron}" = "TRUE" ]; then
+       MACHINE=$MACHINE CRONTAB_LINE=$CRONTAB_LINE \
+           python3 $USHDIR/get_crontab_contents.py --delete --called-from-cron
     else
-      echo "${crontab_contents}" | ${crontab_cmd} 
+       MACHINE=$MACHINE CRONTAB_LINE=$CRONTAB_LINE \
+           python3 $USHDIR/get_crontab_contents.py --delete
     fi
 
   fi

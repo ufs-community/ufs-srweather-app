@@ -4,7 +4,7 @@
 # This file sets the experiment's configuration variables (which are
 # global shell variables) to their default values.  For many of these
 # variables, the valid values that they may take on are defined in the
-# file $USHDIR/valid_param_vals.sh.
+# file $USHDIR/valid_param_vals.py.
 #
 #-----------------------------------------------------------------------
 #
@@ -45,7 +45,7 @@ RUN_ENVIR="nco"
 # supported platform, and you want to use the Rocoto workflow manager,
 # you will need set MACHINE="linux" and WORKFLOW_MANAGER="rocoto". This
 # combination will assume a Slurm batch manager when generating the XML.
-# Please see ush/valid_param_vals.sh for a full list of supported
+# Please see ush/valid_param_vals.py for a full list of supported
 # platforms.
 #
 # MACHINE_FILE:
@@ -623,7 +623,7 @@ NDAS_OBS_DIR=""
 # conditions from the GFS started 6 hours earlier, then
 # EXTRN_MDL_LBCS_OFFSET_HRS=6.
 # Note: the default value is model-dependent and set in
-# set_extrn_mdl_params.sh
+# set_extrn_mdl_params.py
 #
 # FV3GFS_FILE_FMT_ICS:
 # If using the FV3GFS model as the source of the ICs (i.e. if EXTRN_MDL_NAME_ICS
@@ -1016,7 +1016,7 @@ GFDLgrid_USE_NUM_CELLS_IN_FILENAMES=""
 # in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos;
 # they are not needed by the forecast model.  
 # NOTE: Probably don't need to make ESGgrid_WIDE_HALO_WIDTH a user-specified 
-#       variable.  Just set it in the function set_gridparams_ESGgrid.sh.
+#       variable.  Just set it in the function set_gridparams_ESGgrid.py.
 #
 # Note that:
 #
@@ -1176,7 +1176,7 @@ WRTCMP_dy=""
 # commonly used set of grid-dependent parameters.  The predefined grid 
 # parameters are specified in the script 
 #
-#   $HOMErrfs/ush/set_predef_grid_params.sh
+#   $HOMErrfs/ush/set_predef_grid_params.py
 #
 #-----------------------------------------------------------------------
 #
@@ -1914,6 +1914,7 @@ LSM_SPP_LSCALE=( "150000" "150000" "150000" "150000" "150000" "150000" "150000" 
 ISEED_LSM_SPP=( "9" )
 LSM_SPP_VAR_LIST=( "smc" "vgf" "alb" "sal" "emi" "zol" "stc" )
 LSM_SPP_MAG_LIST=( "0.017" "0.001" "0.001" "0.001" "0.001" "0.001" "0.2" )
+LSM_SPP_EACH_STEP="true" #Sets lndp_each_step=.true.
 #
 #-----------------------------------------------------------------------
 # 

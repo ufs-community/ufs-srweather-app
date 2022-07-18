@@ -438,9 +438,6 @@ function get_WE2Etest_names_subdirs_descs() {
 #
   ushdir=$( readlink -f "$WE2Edir/../../ush" )
   . $ushdir/constants.sh
-  . $ushdir/set_predef_grid_params.sh
-  . $ushdir/set_gridparams_GFDLgrid.sh
-  . $ushdir/set_gridparams_ESGgrid.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -1220,70 +1217,16 @@ ${test_desc}${stripped_line} "
 # parameters.  The way the latter are obtained depends on whether or not
 # a predefined grid is being used.
 #
-# If using a predefined grid, call the set_predef_grid_params() function
-# to get the grid parameters.
-#
-      if [ ! -z "${PREDEF_GRID_NAME}" ]; then
-#
-# Note:
-# Can set "quilting" to "FALSE" in the following argument list because
-# the write-component parameters are not needed below; only those of the
-# native grid are needed.
-#
-        set_predef_grid_params \
-          predef_grid_name="${PREDEF_GRID_NAME}" \
-          quilting="FALSE" \
-          outvarname_grid_gen_method="grid_gen_method" \
-          outvarname_esggrid_lon_ctr="esggrid_lon_ctr" \
-          outvarname_esggrid_lat_ctr="esggrid_lat_ctr" \
-          outvarname_esggrid_delx="esggrid_delx" \
-          outvarname_esggrid_dely="esggrid_dely" \
-          outvarname_esggrid_nx="esggrid_nx" \
-          outvarname_esggrid_ny="esggrid_ny" \
-          outvarname_esggrid_pazi="esggrid_pazi" \
-          outvarname_esggrid_wide_halo_width="esggrid_wide_halo_width" \
-          outvarname_gfdlgrid_lon_t6_ctr="gfdlgrid_lon_t6_ctr" \
-          outvarname_gfdlgrid_lat_t6_ctr="gfdlgrid_lat_t6_ctr" \
-          outvarname_gfdlgrid_stretch_fac="gfdlgrid_stretch_fac" \
-          outvarname_gfdlgrid_num_cells="gfdlgrid_num_cells" \
-          outvarname_gfdlgrid_refine_ratio="gfdlgrid_refine_ratio" \
-          outvarname_gfdlgrid_istart_of_rgnl_dom_on_t6g="gfdlgrid_istart_of_rgnl_dom_on_t6g" \
-          outvarname_gfdlgrid_iend_of_rgnl_dom_on_t6g="gfdlgrid_iend_of_rgnl_dom_on_t6g" \
-          outvarname_gfdlgrid_jstart_of_rgnl_dom_on_t6g="gfdlgrid_jstart_of_rgnl_dom_on_t6g" \
-          outvarname_gfdlgrid_jend_of_rgnl_dom_on_t6g="gfdlgrid_jend_of_rgnl_dom_on_t6g" \
-          outvarname_dt_atmos="dta"
-#
-# If using a custom grid, the test's configuration file should contain 
-# the grid parameters.  Source this file and set the values of the grid
-# parameters it contains to local variables.
-#
-      else
+params=$(\
+  PREDEF_GRID_NAME="${PREDEF_GRID_NAME}" \
+  QUILTING="FALSE" \
+  RADIUS_EARTH=${RADIUS_EARTH} \
+  DEGS_PER_RADIAN=${DEGS_PER_RADIAN} \
+  NH4=${NH4} \
+    $ushdir/calculate_cost.py -c "${test_configs_basedir}/$subdir/${config_fn}")
 
-        . ./${config_fn}
-        grid_gen_method="${GRID_GEN_METHOD}"
-        if [ "${grid_gen_method}" = "GFDLgrid" ]; then
-          gfdlgrid_lon_t6_ctr="${GFDLgrid_LON_T6_CTR}"
-          gfdlgrid_lat_t6_ctr="${GFDLgrid_LAT_T6_CTR}"
-          gfdlgrid_num_cells="${GFDLgrid_NUM_CELLS}"
-          gfdlgrid_stretch_fac="${GFDLgrid_STRETCH_FAC}"
-          gfdlgrid_refine_ratio="${GFDLgrid_REFINE_RATIO}"
-          gfdlgrid_istart_of_rgnl_dom_on_t6g="${GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G}"
-          gfdlgrid_iend_of_rgnl_dom_on_t6g="${GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G}"
-          gfdlgrid_jstart_of_rgnl_dom_on_t6g="${GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G}"
-          gfdlgrid_jend_of_rgnl_dom_on_t6g="${GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G}"
-        elif [ "${grid_gen_method}" = "ESGgrid" ]; then
-          esggrid_lon_ctr="${ESGgrid_LON_CTR}"
-          esggrid_lat_ctr="${ESGgrid_LAT_CTR}"
-          esggrid_delx="${ESGgrid_DELX}"
-          esggrid_dely="${ESGgrid_DELY}"
-          esggrid_nx="${ESGgrid_NX}"
-          esggrid_ny="${ESGgrid_NY}"
-          esggrid_pazi="${ESGgrid_PAZI}"
-          esggrid_wide_halo_width="${ESGgrid_WIDE_HALO_WIDTH}"
-        fi
-        dta="${DT_ATMOS}"
+read dta nxny dta_r nxny_r <<< "${params}"
 
-      fi
 #
 # Save the value of dta (which is just dt_atmos) in an array.  The single 
 # quote at the beginning forces Google Sheets to interpret this quantity 
@@ -1292,49 +1235,9 @@ ${test_desc}${stripped_line} "
 #
       prim_test_dt_atmos+=( "'${dta}" )
 #
-# The way the number of grid points in the horizontal directions (nx and
-# ny) are calculated depends on the method used to generate the grid as 
-# well as the grid parameters for that method.
-#
-      if [ "${grid_gen_method}" = "GFDLgrid" ]; then
-#
-# Note:
-# The workflow generation mode (run_envir) can be set to "community" here
-# since this does not affect the values of nx and ny.
-#
-        set_gridparams_GFDLgrid \
-          lon_of_t6_ctr="${gfdlgrid_lon_t6_ctr}" \
-          lat_of_t6_ctr="${gfdlgrid_lat_t6_ctr}" \
-          res_of_t6g="${gfdlgrid_num_cells}" \
-          stretch_factor="${gfdlgrid_stretch_fac}" \
-          refine_ratio_t6g_to_t7g="${gfdlgrid_refine_ratio}" \
-          istart_of_t7_on_t6g="${gfdlgrid_istart_of_rgnl_dom_on_t6g}" \
-          iend_of_t7_on_t6g="${gfdlgrid_iend_of_rgnl_dom_on_t6g}" \
-          jstart_of_t7_on_t6g="${gfdlgrid_jstart_of_rgnl_dom_on_t6g}" \
-          jend_of_t7_on_t6g="${gfdlgrid_jend_of_rgnl_dom_on_t6g}" \
-          verbose="$verbose" \
-          outvarname_nx_of_t7_on_t7g="nx" \
-          outvarname_ny_of_t7_on_t7g="ny"
-      
-      elif [ "${grid_gen_method}" = "ESGgrid" ]; then
-      
-        set_gridparams_ESGgrid \
-          lon_ctr="${esggrid_lon_ctr}" \
-          lat_ctr="${esggrid_lat_ctr}" \
-          nx="${esggrid_nx}" \
-          ny="${esggrid_ny}" \
-          pazi="${esggrid_pazi}" \
-          halo_width="${esggrid_wide_halo_width}" \
-          delx="${esggrid_delx}" \
-          dely="${esggrid_dely}" \
-          outvarname_nx="nx" \
-          outvarname_ny="ny"
-      
-      fi
-#
 # Calculate the total number of horizontal grid points.
 #
-      num_grid_pts=$(( nx*ny ))
+      num_grid_pts=$nxny
 #
 # Calculate the number of time steps for the test.  Note that FCST_LEN_HRS 
 # is in units of hours while dta is in units of seconds.  Also, the factor
@@ -1347,30 +1250,6 @@ ${test_desc}${stripped_line} "
 # Calculate the absolute cost of the test.
 #
       ac=$(( num_grid_pts*num_time_steps*nf ))
-#
-# Unset all grid paramters so that they are not accidentally reused for
-# the next test.
-#
-      unset gfdlgrid_lon_t6_ctr \
-            gfdlgrid_lat_t6_ctr \
-            gfdlgrid_num_cells \
-            gfdlgrid_stretch_fac \
-            gfdlgrid_refine_ratio \
-            gfdlgrid_istart_of_rgnl_dom_on_t6g \
-            gfdlgrid_iend_of_rgnl_dom_on_t6g \
-            gfdlgrid_jstart_of_rgnl_dom_on_t6g \
-            gfdlgrid_jend_of_rgnl_dom_on_t6g \
-            esggrid_lon_ctr \
-            esggrid_lat_ctr \
-            esggrid_nx \
-            esggrid_ny \
-            esggrid_pazi \
-            esggrid_wide_halo_width \
-            esggrid_delx \
-            esggrid_dely \
-            dta \
-            nx \
-            ny
 #
 # Save the absolute cost for this test in the array that will eventually
 # contain the relative cost.  The values in this array will be divided
@@ -1397,16 +1276,9 @@ ${test_desc}${stripped_line} "
 #
 #-----------------------------------------------------------------------
 #
-    set_predef_grid_params \
-      predef_grid_name="RRFS_CONUS_25km" \
-      quilting="FALSE" \
-      outvarname_esggrid_nx="nx" \
-      outvarname_esggrid_ny="ny" \
-      outvarname_dt_atmos="dta"
-
-    num_grid_pts=$(( nx*ny ))
+    num_grid_pts=$nxny_r
     fcst_len_hrs="6"
-    num_time_steps=$(( (fcst_len_hrs*3600 + dta - 1)/dta ))
+    num_time_steps=$(( (fcst_len_hrs*3600 + dta_r - 1)/dta_r ))
     abs_cost_ref=$(( num_grid_pts*num_time_steps ))
 
     for (( i=0; i<=$((num_prim_tests-1)); i++ )); do

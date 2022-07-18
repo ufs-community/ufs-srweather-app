@@ -2,11 +2,13 @@
 
 import unittest
 import os
+import sys
+import argparse
 from textwrap import dedent
 
 from python_utils import print_input_args, print_info_msg, print_err_msg_exit,\
                          check_var_valid_value,mv_vrfy,mkdir_vrfy,cp_vrfy,\
-                         rm_vrfy,import_vars,set_env_var,\
+                         rm_vrfy,import_vars,set_env_var,load_shell_config,\
                          define_macos_utilities,find_pattern_in_str,cfg_to_yaml_str
 
 from set_namelist import set_namelist
@@ -91,6 +93,25 @@ def set_FV3nml_sfc_climo_filenames():
             {settings_str}''')
 
     rm_vrfy(f'{fv3_nml_base_fp}')
+
+def parse_args(argv):
+    """ Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description='Set surface climatology fields.'
+    )
+
+    parser.add_argument('-p', '--path-to-defns',
+                        dest='path_to_defns',
+                        required=True,
+                        help='Path to var_defns file.')
+
+    return parser.parse_args(argv)
+
+if __name__ == '__main__':
+    args = parse_args(sys.argv[1:])
+    cfg = load_shell_config(args.path_to_defns)
+    import_vars(dictionary=cfg)
+    set_FV3nml_sfc_climo_filenames()
 
 class Testing(unittest.TestCase):
     def test_set_FV3nml_sfc_climo_filenames(self):

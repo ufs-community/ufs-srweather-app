@@ -2,12 +2,14 @@
 
 import unittest
 import os
+import sys
+import argparse
 import glob
 
 from python_utils import import_vars, set_env_var, print_input_args, \
                          print_info_msg, print_err_msg_exit, create_symlink_to_file, \
                          define_macos_utilities, check_var_valid_value, \
-                         cd_vrfy, mkdir_vrfy, find_pattern_in_str
+                         cd_vrfy, mkdir_vrfy, find_pattern_in_str, load_shell_config
 
 def link_fix(verbose, file_group):
     """ This file defines a function that ...
@@ -300,27 +302,9 @@ def link_fix(verbose, file_group):
     #-----------------------------------------------------------------------
     #
     if file_group == "grid":
-    
         target=f"{cres}{DOT_OR_USCORE}grid.tile{TILE_RGNL}.halo{NH4}.nc"
         symlink=f"{cres}{DOT_OR_USCORE}grid.tile{TILE_RGNL}.nc"
         create_symlink_to_file(target,symlink,True)
-    #
-    # The surface climatology file generation code looks for a grid file
-    # having a name of the form "C${GFDLgrid_RES}_grid.tile7.halo4.nc" (i.e.
-    # the C-resolution used in the name of this file is the number of grid 
-    # points per horizontal direction per tile, just like in the global model).
-    # Thus, if we are running the MAKE_SFC_CLIMO_TN task, if the grid is of 
-    # GFDLgrid type, and if we are not using GFDLgrid_RES in filenames (i.e. 
-    # we are using the equivalent global uniform grid resolution instead), 
-    # then create a link whose name uses the GFDLgrid_RES that points to the 
-    # link whose name uses the equivalent global uniform resolution.
-    #
-        if RUN_TASK_MAKE_SFC_CLIMO and \
-           GRID_GEN_METHOD == "GFDLgrid" and \
-           not GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES:
-          target=f"{cres}{DOT_OR_USCORE}grid.tile{TILE_RGNL}.halo{NH4}.nc"
-          symlink=f"C{GFDLgrid_RES}{DOT_OR_USCORE}grid.tile{TILE_RGNL}.nc"
-          create_symlink_to_file(target,symlink,relative)
     #
     #-----------------------------------------------------------------------
     #
@@ -366,6 +350,30 @@ def link_fix(verbose, file_group):
 
     return res
    
+def parse_args(argv):
+    """ Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description='Creates symbolic links to FIX directories.'
+    )
+
+    parser.add_argument('-f', '--file-group',
+                        dest='file_group',
+                        required=True,
+                        help='File group, could be one of ["grid", "orog", "sfc_climo"].')
+
+    parser.add_argument('-p', '--path-to-defns',
+                        dest='path_to_defns',
+                        required=True,
+                        help='Path to var_defns file.')
+
+    return parser.parse_args(argv)
+
+if __name__ == '__main__':
+    args = parse_args(sys.argv[1:])
+    cfg = load_shell_config(args.path_to_defns)
+    import_vars(dictionary=cfg)
+    link_fix(VERBOSE, args.file_group)
+
 class Testing(unittest.TestCase):
     def test_link_fix(self):
         res = link_fix(verbose=True, file_group="grid")
