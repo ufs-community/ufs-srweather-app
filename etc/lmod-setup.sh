@@ -7,7 +7,7 @@ Usage: source etc/lmod-setup.sh PLATFORM
 
 OPTIONS:
    PLATFORM - name of machine you are building on
-      (e.g. cheyenne | hera | jet | orion | wcoss_dell_p3)
+      (e.g. cheyenne | hera | jet | orion | wcoss2 )
 EOF_USAGE
    exit 1
 else
