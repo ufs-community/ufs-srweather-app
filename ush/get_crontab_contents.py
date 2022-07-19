@@ -42,22 +42,18 @@ def get_crontab_contents(called_from_cron):
     IMPORTS = ["MACHINE", "USER"]
     import_vars(env_vars=IMPORTS)
   
-    if MACHINE == "WCOSS_DELL_P3":
-      __crontab_cmd__=""
-      (_,__crontab_contents__,_)=run_command(f'''cat "/u/{USER}/cron/mycrontab"''')
-    else:
-      __crontab_cmd__="crontab"
-      #
-      # On Cheyenne, simply typing "crontab" will launch the crontab command 
-      # at "/glade/u/apps/ch/opt/usr/bin/crontab".  This is a containerized 
-      # version of crontab that will work if called from scripts that are 
-      # themselves being called as cron jobs.  In that case, we must instead 
-      # call the system version of crontab at /usr/bin/crontab.
-      #
-      if MACHINE == "CHEYENNE":
-        if called_from_cron:
-          __crontab_cmd__="/usr/bin/crontab"
-      (_,__crontab_contents__,_)=run_command(f'''{__crontab_cmd__} -l''')
+    __crontab_cmd__="crontab"
+    #
+    # On Cheyenne, simply typing "crontab" will launch the crontab command 
+    # at "/glade/u/apps/ch/opt/usr/bin/crontab".  This is a containerized 
+    # version of crontab that will work if called from scripts that are 
+    # themselves being called as cron jobs.  In that case, we must instead 
+    # call the system version of crontab at /usr/bin/crontab.
+    #
+    if MACHINE == "CHEYENNE":
+      if called_from_cron:
+        __crontab_cmd__="/usr/bin/crontab"
+    (_,__crontab_contents__,_)=run_command(f'''{__crontab_cmd__} -l''')
   
     return __crontab_cmd__, __crontab_contents__
 
@@ -108,10 +104,7 @@ def add_crontab_line():
         NEWLINE_CHAR="\n"
     
       #add the crontab line
-      if MACHINE == "WCOSS_DELL_P3":
-        run_command(f'''printf "%b%s\n" '{NEWLINE_CHAR}' '{CRONTAB_LINE}' >> "/u/{USER}/cron/mycrontab"''')
-      else:
-        run_command(f'''printf "%s%b%s\n" '{crontab_contents}' '{NEWLINE_CHAR}' '{CRONTAB_LINE}' | {crontab_cmd}''')
+      run_command(f'''printf "%s%b%s\n" '{crontab_contents}' '{NEWLINE_CHAR}' '{CRONTAB_LINE}' | {crontab_cmd}''')
 
 def delete_crontab_line(called_from_cron):
     """ Delete crontab line after job is complete i.e. either SUCCESS/FAILURE
@@ -137,10 +130,7 @@ def delete_crontab_line(called_from_cron):
     else:
         crontab_contents = crontab_contents.replace(CRONTAB_LINE,'')
 
-    if MACHINE == "WCOSS_DELL_P3":
-        run_command(f'''echo '{crontab_contents}' > "/u/{USER}/cron/mycrontab"''')
-    else:
-        run_command(f'''echo '{crontab_contents}' | {crontab_cmd}''')
+    run_command(f'''echo '{crontab_contents}' | {crontab_cmd}''')
 
 def parse_args(argv):
     """ Parse command line arguments for deleting crontab line.

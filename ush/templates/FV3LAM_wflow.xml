@@ -178,11 +178,7 @@ MODULES_RUN_TASK_FP script.
 
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;" "&JOBSDIR;/JREGIONAL_MAKE_GRID"</command>
-  {%- if machine in ["WCOSS_DELL_P3"]  %}
-    <nodes>{{ nnodes_make_grid }}:ppn=1</nodes>
-  {%- else %}
     <nodes>{{ nnodes_make_grid }}:ppn={{ ppn_make_grid }}</nodes>
-  {%- endif %}
     <walltime>{{ wtime_make_grid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
   {%- if machine in ["GAEA"]  %}
@@ -204,11 +200,7 @@ MODULES_RUN_TASK_FP script.
 
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_OROG_TN;" "&JOBSDIR;/JREGIONAL_MAKE_OROG"</command>
-  {%- if machine in ["WCOSS_DELL_P3"]  %}
-    <nodes>{{ nnodes_make_orog }}:ppn=1</nodes>
-  {%- else %}
     <nodes>{{ nnodes_make_orog }}:ppn={{ ppn_make_orog }}</nodes>
-  {%- endif %}
     <walltime>{{ wtime_make_orog }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
   {%- if machine in ["GAEA"]  %}
@@ -275,9 +267,6 @@ MODULES_RUN_TASK_FP script.
 
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
-  {%- if machine in ["WCOSS_DELL_P3"] %}
-    <memory>2048M</memory><native>-R affinity[core]</native>
-  {%- endif %}
     <nodes>{{ nnodes_get_extrn_ics }}:ppn={{ ppn_get_extrn_ics }}</nodes>
     <walltime>{{ wtime_get_extrn_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -304,9 +293,6 @@ MODULES_RUN_TASK_FP script.
 
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
-  {%- if machine in ["WCOSS_DELL_P3"] %}
-    <memory>2048M</memory><native>-R affinity[core]</native>
-  {%- endif %}
     <nodes>{{ nnodes_get_extrn_lbcs }}:ppn={{ ppn_get_extrn_lbcs }}</nodes>
     <walltime>{{ wtime_get_extrn_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -728,9 +714,6 @@ the <task> tag to be identical to the ones above for other output times.
 
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_CCPA"</command>
-  {%- if machine in ["WCOSS_DELL_P3"] %}
-    <memory>2048M</memory><native>-R affinity[core]</native>
-  {%- endif %}
     <nodes>{{ nnodes_get_obs_ccpa }}:ppn={{ ppn_get_obs_ccpa }}</nodes>
     <walltime>{{ wtime_get_obs_ccpa }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -761,9 +744,6 @@ the <task> tag to be identical to the ones above for other output times.
 
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_MRMS"</command>
-  {%- if machine in ["WCOSS_DELL_P3"] %}
-    <memory>2048M</memory><native>-R affinity[core]</native>
-  {%- endif %}
     <nodes>{{ nnodes_get_obs_mrms }}:ppn={{ ppn_get_obs_mrms }}</nodes>
     <walltime>{{ wtime_get_obs_mrms }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -795,9 +775,6 @@ the <task> tag to be identical to the ones above for other output times.
 
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_NDAS"</command>
-  {%- if machine in ["WCOSS_DELL_P3"] %}
-    <memory>2048M</memory><native>-R affinity[core]</native>
-  {%- endif %}
     <nodes>{{ nnodes_get_obs_ndas }}:ppn={{ ppn_get_obs_ndas }}</nodes>
     <walltime>{{ wtime_get_obs_ndas }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>

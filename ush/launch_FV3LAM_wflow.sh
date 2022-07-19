@@ -401,7 +401,6 @@ script for this experiment:
        MACHINE=$MACHINE CRONTAB_LINE=$CRONTAB_LINE \
            python3 $USHDIR/get_crontab_contents.py --delete
     fi
-
   fi
 #
 # Print the workflow completion message to the launch log file.

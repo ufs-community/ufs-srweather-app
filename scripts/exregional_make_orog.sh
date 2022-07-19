@@ -68,8 +68,7 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-# Set OpenMP variables.  The orog executable runs with OMP. On
-# WCOSS (Cray), it is optimized for six threads, which is the default.
+# Set OpenMP variables.  The orog executable runs with OMP.
 #
 #-----------------------------------------------------------------------
 #
