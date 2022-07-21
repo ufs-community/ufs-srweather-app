@@ -19,7 +19,9 @@ source /etc/profile.d/modules.sh
 ############
 # Python environment for Cheyenne 
 ############
-ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/python_graphics
+module load ncarenv
+module load conda/latest
+conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/python_graphics
 
 ############
 # Path to shape files

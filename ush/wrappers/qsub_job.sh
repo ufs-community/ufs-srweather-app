@@ -38,7 +38,8 @@ module load esmf/8.0.0
 #
 #module use /glade/p/ral/jntp/MET/MET_releases/modulefiles
 #module load met/10.0.0
-#ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/python_graphics
+#module load conda/latest
+#conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/python_graphics
 
 #./run_pointvx.sh # Run grod-to-point deterministic vx
 #./run_gridvx.sh # Run grid-stat deterministic vx
