@@ -20,6 +20,7 @@ module load hpc-impi/2022.1.2
 module load srw_common
 
 module load nccmp/1.8.9.0
+module load nco/4.9.3
 
 setenv CMAKE_C_COMPILER mpiicc
 setenv CMAKE_CXX_COMPILER mpiicpc

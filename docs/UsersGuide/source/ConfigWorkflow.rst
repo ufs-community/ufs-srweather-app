@@ -22,7 +22,7 @@ Platform Environment
    Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not planning to implement their code into operations at NCO.
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParellelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). When running the SRW App in a container, set ``MACHINE`` to "SINGULARITY" regardless of the underlying platform (including on NOAA Cloud systems). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS_DELL_P3"``
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParellelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). When running the SRW App in a container, set ``MACHINE`` to "SINGULARITY" regardless of the underlying platform (including on NOAA Cloud systems). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"``
 
 ``MACHINE_FILE``: (Default: "")
    Path to a configuration file with machine-specific settings. If none is provided, ``setup.sh`` will attempt to set the path to a configuration file for a supported platform.
@@ -407,7 +407,6 @@ CCPP Parameter
    | ``"FV3_GFS_2017_gfdlmp_regional"``
    | ``"FV3_GFS_v15p2"``
    | ``"FV3_GFS_v15_thompson_mynn_lam3km"``
-   | ``"FV3_RRFS_v1alpha"``
 
 Stochastic Physics Parameters
 ================================
