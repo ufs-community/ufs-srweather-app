@@ -214,6 +214,8 @@ def find_archive_files(paths, file_names, cycle_date):
 
     zipped_archive_file_paths = zip(paths, file_names)
 
+    existing_archive={}
+
     # Narrow down which HPSS files are available for this date
     for list_item, (archive_path, archive_file_names) in \
         enumerate(zipped_archive_file_paths):
@@ -226,9 +228,14 @@ def find_archive_files(paths, file_names, cycle_date):
         file_path = os.path.join(archive_path, archive_file_names[0])
         file_path = fill_template(file_path, cycle_date)
 
-        existing_archive = hsi_single_file(file_path)
+        existing_archive[0] = hsi_single_file(file_path)
 
-        if existing_archive:
+        if len(archive_file_names)>1:
+            file_path_b = os.path.join(archive_path, archive_file_names[1])
+            file_path_b = fill_template(file_path_b, cycle_date)
+            existing_archive[1] = hsi_single_file(file_path_b)
+
+        if existing_archive[0]:
             logging.info(f'Found HPSS file: {file_path}')
             return existing_archive, list_item
 
@@ -387,6 +394,7 @@ def hpss_requested_files(cla, file_names, store_specs):
         source_paths = []
         for fcst_hr in cla.fcst_hrs:
             for file_name in file_names:
+
                 source_paths.append(fill_template(
                     os.path.join(archive_internal_dir, file_name),
                     cla.cycle_date,
@@ -395,13 +403,13 @@ def hpss_requested_files(cla, file_names, store_specs):
 
         if store_specs.get('archive_format', 'tar') == 'zip':
             # Get the entire file from HPSS
-            existing_archive = hsi_single_file(existing_archive, mode='get')
+            existing_archive[0] = hsi_single_file(existing_archive[0], mode='get')
 
             # Grab only the necessary files from the archive
-            cmd = f'unzip -o {os.path.basename(existing_archive)} {" ".join(source_paths)}'
+            cmd = f'unzip -o {os.path.basename(existing_archive[0])} {" ".join(source_paths)}'
 
         else:
-            cmd = f'htar -xvf {existing_archive} {" ".join(source_paths)}'
+            cmd = f'htar -xvf {existing_archive[0]} {" ".join(source_paths)}'
 
         logging.info(f'Running command \n {cmd}')
         subprocess.run(cmd,
@@ -409,13 +417,22 @@ def hpss_requested_files(cla, file_names, store_specs):
                        shell=True,
                        )
 
+        if len(existing_archive)>1:
+            cmd = f'htar -xvf {existing_archive[1]} {" ".join(source_paths)}'
+            logging.info(f'Running command \n {cmd}')
+            subprocess.run(cmd,
+                           check=True,
+                           shell=True,
+                           )
+
         # Check that files exist and Remove any data transfer artifacts.
         unavailable = clean_up_output_dir(
             expected_subdir=archive_internal_dir,
-            local_archive=os.path.basename(existing_archive),
+            local_archive=os.path.basename(existing_archive[0]),
             output_path=output_path,
             source_paths=source_paths,
             )
+
         if not unavailable:
             return unavailable
 
