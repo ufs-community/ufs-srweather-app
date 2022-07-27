@@ -55,6 +55,9 @@ def get_crontab_contents(called_from_cron):
         __crontab_cmd__="/usr/bin/crontab"
     (_,__crontab_contents__,_)=run_command(f'''{__crontab_cmd__} -l''')
   
+    # replace single quotes (hopefully in comments) with double quotes
+    __crontab_contents__ = __crontab_contents__.replace("'", '"')
+
     return __crontab_cmd__, __crontab_contents__
 
 def add_crontab_line():

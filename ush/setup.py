@@ -329,7 +329,7 @@ def setup():
     SRC_DIR = os.path.join(SR_WX_APP_TOP_DIR,"src")
     PARMDIR = os.path.join(HOMErrfs,"parm")
     MODULES_DIR = os.path.join(HOMErrfs,"modulefiles")
-    EXECDIR = os.path.join(SR_WX_APP_TOP_DIR,"bin")
+    EXECDIR = os.path.join(SR_WX_APP_TOP_DIR,EXEC_SUBDIR)
     TEMPLATE_DIR = os.path.join(USHDIR,"templates")
     VX_CONFIG_DIR = os.path.join(TEMPLATE_DIR,"parm")
     METPLUS_CONF = os.path.join(TEMPLATE_DIR,"parm","metplus")
