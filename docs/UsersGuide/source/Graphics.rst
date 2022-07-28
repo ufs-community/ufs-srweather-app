@@ -34,7 +34,8 @@ On Cheyenne:
 .. code-block:: console
 
    module load ncarenv
-   ncar_pylib /glade/p/ral/jntp/UFS_SRW_app/ncar_pylib/python_graphics
+   module load conda/latest
+   conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/python_graphics
 
 On Hera and Jet:
 
