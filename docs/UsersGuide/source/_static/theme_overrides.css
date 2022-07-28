@@ -6,6 +6,10 @@
          this as on RTD they are loaded after this stylesheet */
       white-space: normal !important;
    }
+   
+   .wy-nav-content {
+      max-width: 100% !important;
+   }
 
    /* .wy-table-responsive { */
    /*   overflow: visible !important; */
