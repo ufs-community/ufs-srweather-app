@@ -39,62 +39,61 @@ we2e_test_file="${we2e_test_dir}/experiments.txt"
 # The fundamental set of end-to-end tests to run.
 declare -a we2e_fundamental_tests
 we2e_fundamental_tests=('grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
-    'grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
+    'grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_RRFS_v1beta'
+    'grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR'
+    'grid_RRFS_CONUS_25km_ics_NAM_lbcs_NAM_suite_HRRR'
+    'grid_RRFS_CONUS_25km_ics_NAM_lbcs_NAM_suite_RRFS_v1beta'
+    'grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
+    'grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_HRRR'
+    'grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR'
+    'grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta'
     'grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
-    'grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta'
     'grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_HRRR'
-    'grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_WoFS_v0')
+    'grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta'
+    'nco_grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR'
+    'community_ensemble_2mems'
+    'custom_ESGgrid'
+    'deactivate_tasks'
+    'inline_post'
+    'nco_ensemble'
+    'specify_DOT_OR_USCORE'
+    'specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE'
+    'specify_RESTART_INTERVAL'
+    'specify_template_filenames')
+
+if [[ "${platform}" != 'gaea' && "${platform}" != 'noaacloud' ]]; then
+    we2e_fundamental_tests+=('MET_ensemble_verification'
+        'MET_verification'
+        'pregen_grid_orog_sfc_climo')
+fi
 
 # The comprehensive set of end-to-end tests to run.
 declare -a we2e_comprehensive_tests
-we2e_comprehensive_tests=('grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
-    'grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta'
+we2e_comprehensive_tests=('grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
+    'grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
     'grid_RRFS_CONUScompact_13km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta'
     'grid_RRFS_CONUScompact_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta'
-    'grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR'
     'grid_RRFS_CONUScompact_13km_ics_HRRR_lbcs_RAP_suite_HRRR'
     'grid_RRFS_CONUScompact_3km_ics_HRRR_lbcs_RAP_suite_HRRR'
-    'grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_RRFS_v1beta'
     'grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR'
     'grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_RRFS_v1beta'
     'grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR'
     'grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_RRFS_v1beta'
-    'grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR')
-
-# The set of workflow tests to run.
-declare -a we2e_workflow_tests
-we2e_workflow_tests=('community_ensemble_008mems'
-    'community_ensemble_2mems'
-    'deactivate_tasks'
-    'inline_post'
-    'custom_ESGgrid'
+    'grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR'
+    'grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_WoFS_v0'
+    'community_ensemble_008mems'
     'custom_GFDLgrid'
     'custom_GFDLgrid__GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES_eq_FALSE'
-    'custom_GFDLgrid__GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES_eq_TRUE'
-    'specify_DOT_OR_USCORE'
-    'specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE'
-    'specify_RESTART_INTERVAL'
-    'specify_template_filenames'
-    # 'subhourly_post_ensemble_2mems'
-    # 'subhourly_post'
-)
+    'custom_GFDLgrid__GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES_eq_TRUE')
 
 declare -a we2e_tests
 we2e_tests=("${we2e_fundamental_tests[@]}")
 if "${SRW_WE2E_COMPREHENSIVE_TESTS}"; then
-    we2e_tests+=("${we2e_comprehensive_tests[@]}"
-        "${we2e_workflow_tests[@]}")
+    we2e_tests+=("${we2e_comprehensive_tests[@]}")
 
     # Add additional tests for Hera.
     if [[ "${platform}" == 'hera' ]]; then
         we2e_tests+=('specify_EXTRN_MDL_SYSBASEDIR_ICS_LBCS')
-    fi
-
-    # Add additional tests for all platforms, except Gaea and Parallel Works.
-    if [[ "${platform}" != 'gaea' && "${platform}" != 'noaacloud' ]]; then
-        we2e_tests+=('pregen_grid_orog_sfc_climo'
-            'MET_ensemble_verification'
-            'MET_verification')
     fi
 fi
 
