@@ -27,45 +27,45 @@ Scientists from across multiple labs and organizations have volunteered to revie
 
 .. table::
 
-    +------------------+------------------------------------------------+--------------------------------------------------------------------------+
-    | **Organization** | **Reviewers**                                  | **Areas of Expertise**                                                   |
-    +==================+================================================+==========================================================================+
-    | EMC              | Chan-Hoo Jeon (@chan-hoo)                      |                                                                          |
-    |                  |                                                |                                                                          |
-    |                  | Ben Blake (@BenjaminBlake-NOAA)                |                                                                          |
-    |                  |                                                |                                                                          |
-    |                  | Ratko Vasic (@RatkoVasic-NOAA)                 |                                                                          |
-    +------------------+------------------------------------------------+--------------------------------------------------------------------------+
-    | EPIC             | Mark Potts (@mark-a-potts)                     |                                                                          |
-    |                  |                                                |                                                                          |
-    |                  | Jong Kim (@jkbk2004)                           |                                                                          |
-    |                  |                                                |                                                                          |
-    |                  | Natalie Perlin (@natalie-perlin)               |                                                                          |
-    |                  |                                                |                                                                          |
-    |                  | Gillian Petro (@gspetro-NOAA)                  | Documentation                                                            |
-    |                  |                                                |                                                                          |
-    |                  | Edward Snyder (@EdwardSnyder-NOAA)             |                                                                          |
-    +------------------+------------------------------------------------+--------------------------------------------------------------------------+
-    | GLERL/UM         | David Wright (@dmwright526)                    |                                                                          |
-    +------------------+------------------------------------------------+--------------------------------------------------------------------------+
-    | GSL              | Jeff Beck (@JeffBeck-NOAA)                     |                                                                          |
-    |                  |                                                |                                                                          |
-    |                  | Gerard Ketefian (@gsketefian)                  | ``regional_workflow`` scripts, jinja templates, and verification tasks   |
-    |                  |                                                |                                                                          |
-    |                  | Linlin Pan (@panll)                            |                                                                          |
-    |                  |                                                |                                                                          |
-    |                  | Christina Holt (@christinaholtNOAA)            |                                                                          |
-    |                  |                                                |                                                                          |
-    |                  | Christopher Harrop (@christopherwharrop-noaa)  |                                                                          |
-    |                  |                                                |                                                                          |
-    |                  | Daniel Abdi (@danielabdi-noaa)                 |                                                                          |
-    +------------------+------------------------------------------------+--------------------------------------------------------------------------+
-    | NCAR             | Mike Kavulich (@mkavulich)                     |                                                                          |
-    |                  |                                                |                                                                          |
-    |                  | Will Mayfield (@willmayfield)                  |                                                                          |
-    +------------------+------------------------------------------------+--------------------------------------------------------------------------+
-    | NSSL             | Yunheng Wang (@ywangwof)                       |                                                                          |
-    +------------------+------------------------------------------------+--------------------------------------------------------------------------+
+    +------------------+------------------------------------------------+-----------------------------------------------------------------------------+
+    | **Organization** | **Reviewers**                                  | **Areas of Expertise**                                                      |
+    +==================+================================================+=============================================================================+
+    | EMC              | Chan-Hoo Jeon (@chan-hoo)                      |                                                                             |
+    |                  |                                                |                                                                             |
+    |                  | Ben Blake (@BenjaminBlake-NOAA)                |                                                                             |
+    |                  |                                                |                                                                             |
+    |                  | Ratko Vasic (@RatkoVasic-NOAA)                 |                                                                             |
+    +------------------+------------------------------------------------+-----------------------------------------------------------------------------+
+    | EPIC             | Mark Potts (@mark-a-potts)                     |                                                                             |
+    |                  |                                                |                                                                             |
+    |                  | Jong Kim (@jkbk2004)                           |                                                                             |
+    |                  |                                                |                                                                             |
+    |                  | Natalie Perlin (@natalie-perlin)               | Generic Linux/Mac installations, hpc-stack/spack-stack                      |
+    |                  |                                                |                                                                             |
+    |                  | Gillian Petro (@gspetro-NOAA)                  | Documentation                                                               |
+    |                  |                                                |                                                                             |
+    |                  | Edward Snyder (@EdwardSnyder-NOAA)             | WE2E testing, input data                                                    |
+    +------------------+------------------------------------------------+-----------------------------------------------------------------------------+
+    | GLERL/UM         | David Wright (@dmwright526)                    |                                                                             |
+    +------------------+------------------------------------------------+-----------------------------------------------------------------------------+
+    | GSL              | Jeff Beck (@JeffBeck-NOAA)                     | SRW App configuration/workflow, code management, meteorological evaluation. |
+    |                  |                                                |                                                                             |
+    |                  | Gerard Ketefian (@gsketefian)                  | ``regional_workflow`` scripts, jinja templates, and verification tasks      |
+    |                  |                                                |                                                                             |
+    |                  | Linlin Pan (@panll)                            |                                                                             |
+    |                  |                                                |                                                                             |
+    |                  | Christina Holt (@christinaholtNOAA)            |                                                                             |
+    |                  |                                                |                                                                             |
+    |                  | Christopher Harrop (@christopherwharrop-noaa)  |                                                                             |
+    |                  |                                                |                                                                             |
+    |                  | Daniel Abdi (@danielabdi-noaa)                 |                                                                             |
+    +------------------+------------------------------------------------+-----------------------------------------------------------------------------+
+    | NCAR             | Mike Kavulich (@mkavulich)                     |                                                                             |
+    |                  |                                                |                                                                             |
+    |                  | Will Mayfield (@willmayfield)                  |                                                                             |
+    +------------------+------------------------------------------------+-----------------------------------------------------------------------------+
+    | NSSL             | Yunheng Wang (@ywangwof)                       |                                                                             |
+    +------------------+------------------------------------------------+-----------------------------------------------------------------------------+
 
 ..
    COMMENT: Add Areas of Expertise or delete? 
