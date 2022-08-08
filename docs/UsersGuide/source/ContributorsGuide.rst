@@ -250,18 +250,19 @@ Here is the template that is provided when developers click "Create pull request
     <!-- One or more paragraphs describing the problem, solution, and required changes. -->
 
     ### Type of change
-    <!-- Please delete options that are not relevant. -->
-      - [ ] Bug fix (non-breaking change which fixes an issue)
-      - [ ] New feature (non-breaking change which adds functionality)
-      - [ ] Breaking change (fix or feature that would cause existing functionality 
-            to not work as expected)
-      - [ ] This change requires a documentation update
+    <!-- Please delete options that are not relevant. Add an X to check off a box. -->
+    - [ ] Bug fix (non-breaking change which fixes an issue)
+    - [ ] New feature (non-breaking change which adds functionality)
+    - [ ] Breaking change (fix or feature that would cause existing functionality 
+          to not work as expected)
+    - [ ] This change requires a documentation update
 
     ## TESTS CONDUCTED: 
     <!-- Explicitly state what tests were run on these changes, or if any are still pending 
     (for README or other text-only changes, just put "None required"). Make note of the 
     compilers used, the platform/machine, and other relevant details as necessary. For 
     more complicated changes, or those resulting in scientific changes, please be explicit! -->
+    <!-- Add an X to check off a box. -->
 
     - [ ] hera.intel
     - [ ] orion.intel
@@ -292,6 +293,7 @@ Here is the template that is provided when developers click "Create pull request
     bug in https://github.com/ufs-community/other_repository/pull/63" -->
 
     ## CHECKLIST
+    <!-- Add an X to check off a box. -->
     - [ ] My code follows the style guidelines in the Contributor's Guide
     - [ ] I have performed a self-review of my own code using the Code Reviewer's Guide
     - [ ] I have commented my code, particularly in hard-to-understand areas
