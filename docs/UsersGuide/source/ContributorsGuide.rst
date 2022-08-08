@@ -32,7 +32,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +==================+================================================+===================================================================================+
     | EMC              | Chan-Hoo Jeon (@chan-hoo)                      |                                                                                   |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
-    |                  | Ben Blake (@BenjaminBlake-NOAA)                |                                                                                   |
+    |                  | Ben Blake (@BenjaminBlake-NOAA)                | Output visualization                                                              |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Ratko Vasic (@RatkoVasic-NOAA)                 |                                                                                   |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
@@ -48,17 +48,17 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
     | GLERL            | David Wright (@dmwright526)                    | FVCOM Integration, Output Visualization, Preprocessing Tasks                      |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
-    | GSL              | Jeff Beck (@JeffBeck-NOAA)                     | SRW App configuration/workflow, code management, meteorological evaluation.       |
+    | GSL              | Jeff Beck (@JeffBeck-NOAA)                     | SRW App configuration/workflow, code management, meteorological evaluation        |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Gerard Ketefian (@gsketefian)                  | ``regional_workflow`` scripts, jinja templates, and verification tasks            |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
-    |                  | Linlin Pan (@panll)                            |                                                                                   |
+    |                  | Linlin Pan (@panll)                            | Workflow, CCPP/physics, verification                                              |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Christina Holt (@christinaholtNOAA)            | Workflow, conda environment support, and testing                                  |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Christopher Harrop (@christopherwharrop-noaa)  | Rocoto                                                                            |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
-    |                  | Daniel Abdi (@danielabdi-noaa)                 |                                                                                   |
+    |                  | Daniel Abdi (@danielabdi-noaa)                 | Workflow generation, testing RRFS on the cloud, environment modules               |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
     | NCAR             | Mike Kavulich (@mkavulich)                     | CCPP/physics                                                                      |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
