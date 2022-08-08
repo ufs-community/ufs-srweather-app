@@ -36,7 +36,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Ratko Vasic (@RatkoVasic-NOAA)                 |                                                                                   |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
-    | EPIC             | Mark Potts (@mark-a-potts)                     |                                                                                   |
+    | EPIC             | Mark Potts (@mark-a-potts)                     | HPC systems                                                                       |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Jong Kim (@jkbk2004)                           | UFS Weather Model configuration, forecast sensitivity analysis, data assimilation |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
@@ -67,9 +67,6 @@ Scientists from across multiple labs and organizations have volunteered to revie
     | NSSL             | Yunheng Wang (@ywangwof)                       |                                                                                   |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
 
-..
-   COMMENT: Add Areas of Expertise or delete? 
-
 .. _ContribProcess:
 
 Contribution Process
@@ -80,13 +77,13 @@ The steps below should be followed in order to make changes to the ``develop`` b
     #. **Issue** - Open an issue to document changes. Click `here <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ to open a new ``ufs-srweather-app`` issue or see :numref:`Step %s <Issue>` for detailed instructions. 
     #. **GitFlow** - Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`__ procedures for development. 
     #. **Fork the repository** - Read more `here <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`__ about forking in GitHub.
-    #. **Create a branch** - Create a branch in your fork of the authoritative repository. Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`__ conventions when creating the branch. Branches should be named as follows, where [name] is a one-word description of the branch:
+    #. **Create a branch** - Create a branch in your fork of the authoritative repository. Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`__ conventions when creating the branch. All development should take place on a branch, *not* on ``develop``. Branches should be named as follows, where [name] is a one-word description of the branch:
 
         * **bugfix/[name]:** Fixes a demonstrably incorrect portion of code
         * **feature/[name]:** Adds a new feature to the code or improves an existing portion of the code
-        * **textonly/[name]:** Changes elements of the repository that do not impact program output or log files (e.g., changes to README, documentation, comments, changing quoted Registry elements, white space alignment). Any change that does not impact the compiled code in any way should fall under this category.
+        * **text/[name]:** Changes elements of the repository that do not impact program output or log files (e.g., changes to README, documentation, comments, changing quoted Registry elements, white space alignment). Any change that does not impact the compiled code in any way should fall under this category.
          
-    #. **Development** - Perform and test changes in the branch. Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g., ``commit -m "Issue #23 - <commit message>"``). Test code modifications on as many platforms as possible, and request help with further testing from the code management team when unable to test on all Level 1 platforms. Document changes to the workflow and capabilities in the ``.rst`` files so that the SRW App documentation stays up-to-date. 
+    #. **Development** - Perform and test changes in the branch (not on ``develop``!). Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g., ``commit -m "Issue #23 - <commit message>"``). Test code modifications on as many platforms as possible, and request help with further testing from the code management team when unable to test on all Level 1 platforms. Document changes to the workflow and capabilities in the ``.rst`` files so that the SRW App documentation stays up-to-date. 
     #. **Pull request** - When ready to merge changes back to the ``develop`` branch, the code developer should initiate a pull request (PR) of the feature branch into the ``develop`` branch. Read `here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`__ about pull requests in GitHub. When a PR is initiated, the :ref:`PR Template <Template>` autofills. Developers should use the template to provide information about the PR in the proper fields. See the guidelines in :numref:`Section %s <GoodPR>` for more details on making a good pull request. Developers should also tag all relevant reviewers from the code management team on the PR.
     #. **Merge** - When review and testing are complete, a code manager will merge the PR into the target branch (usually ``develop``). PRs that are not ready for merging should have a "Work in Progress" label on them. Users who lack the permissions required to add the label can request in their PR that a code manager do so. 
     #. **Cleanup** - After the PR is merged, the code developer should delete the branch on their fork and close the issue.
@@ -185,42 +182,76 @@ Here is the template that is provided when developers click "Create pull request
     - Update develop to head at ufs-community
     - Use this template to give a detailed message describing the change 
     you want to make to the code.
-    - You may delete any sections labeled "optional".
-    - If you are unclear on what should be written here, see https://github.com/wrf-model/WRF/wiki/Making-a-good-pull-request-message 
+    - You may delete any sections labeled "optional" and any instructions within <!-- these sections -->.
+    - If you are unclear on what should be written here, see https://github.com/wrf-model/WRF/wiki/Making-a-good-pull-request-message for some guidance and review the Code Contributor's Guide at https://github.com/ufs-community/ufs-srweather-app/wiki/Code-Manager's-Guide. 
     for some guidance. 
+    - Code reviewers will assess the PR based on the criteria laid out in the Code Reviewer's Guide (https://github.com/ufs-community/ufs-srweather-app/wiki/Code-Manager's-Guide). 
     - The title of this pull request should be a brief summary (ideally less than 100 
     characters) of the changes included in this PR. Please also include the branch to 
-    which this PR is being issued.
+    which this PR is being issued (e.g., "[develop]: Updated UFS_UTILS hash").
     - Use the "Preview" tab to see what your PR will look like when you hit "Create pull request"
 
     # --- Delete this line and those above before hitting "Create pull request" ---
 
     ## DESCRIPTION OF CHANGES: 
-    One or more paragraphs describing the problem, solution, and required changes.
+    <!-- One or more paragraphs describing the problem, solution, and required changes. -->
+
+    ### Type of change
+    <!-- Please delete options that are not relevant. -->
+      - [ ] Bug fix (non-breaking change which fixes an issue)
+      - [ ] New feature (non-breaking change which adds functionality)
+      - [ ] Breaking change (fix or feature that would cause existing functionality 
+            to not work as expected)
+      - [ ] This change requires a documentation update
 
     ## TESTS CONDUCTED: 
-    Explicitly state what tests were run on these changes, or if any are still pending 
-    (for README or other text-only changes, just put "None required". Make note of the 
+    <!-- Explicitly state what tests were run on these changes, or if any are still pending 
+    (for README or other text-only changes, just put "None required"). Make note of the 
     compilers used, the platform/machine, and other relevant details as necessary. For 
-    more complicated changes, or those resulting in scientific changes, please be explicit!
+    more complicated changes, or those resulting in scientific changes, please be explicit! -->
+
+    - [ ] hera.intel
+    - [ ] orion.intel
+    - [ ] cheyenne.intel
+    - [ ] cheyenne.gnu
+    - [ ] gaea.intel
+    - [ ] jet.intel
+    - [ ] wcoss2.intel
+    - [ ] NOAA Cloud (indicate which platform)
+    - [ ] Jenkins
+    - [ ] fundamental test suite
+    - [ ] comprehensive tests (specify *which* if a subset was used)
 
     ## DEPENDENCIES:
-    Add any links to external PRs (e.g. regional_workflow and/or UFS PRs). For example:
+    <!-- Add any links to external PRs (e.g. regional_workflow and/or UFS PRs). For example:
     - ufs-community/regional_workflow/pull/<pr_number>
     - ufs-community/UFS_UTILS/pull/<pr_number>
-    - ufs-community/ufs-weather-model/pull/<pr_number>
+    - ufs-community/ufs-weather-model/pull/<pr_number> -->
 
     ## DOCUMENTATION:
-    If this PR is contributing new capabilities that need to be documented, please also 
-    include updates to the RST files (docs/UsersGuide/source) as supporting material.
+    <!-- If this PR is contributing new capabilities that need to be documented, please also 
+    include updates to the RST files (docs/UsersGuide/source) as supporting material. -->
 
-    ## ISSUE (optional): 
-    If this PR is resolving or referencing one or more issues, in this repository or 
-    elewhere, list them here. For example, "Fixes issue mentioned in #123" or "Related to 
-    bug in https://github.com/ufs-community/other_repository/pull/63"
+    ## ISSUE: 
+    <!-- If this PR is resolving or referencing one or more issues, in this repository or 
+    elsewhere, list them here (Remember, issues must always be created before starting work 
+    on a PR branch!). For example, "Fixes issue mentioned in #123" or "Related to 
+    bug in https://github.com/ufs-community/other_repository/pull/63" -->
+
+    ## CHECKLIST
+    - [ ] My code follows the style guidelines in the Contributor's Guide
+    - [ ] I have performed a self-review of my own code using the Code Reviewer's Guide
+    - [ ] I have commented my code, particularly in hard-to-understand areas
+    - [ ] My changes need updates to the documentation. I have made corresponding changes 
+          to the documentation
+    - [ ] My changes do not require updates to the documentation (explain).
+    - [ ] My changes generate no new warnings
+    - [ ] New and existing tests pass with my changes
+    - [ ] Any dependent changes have been merged and published
 
     ## CONTRIBUTORS (optional): 
-    If others have contributed to this work aside from the PR author, list them here
+    <!-- If others have contributed to this work aside from the PR author, list them here -->
+
 
 
 Additional Guidance
