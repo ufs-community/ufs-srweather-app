@@ -105,28 +105,46 @@ Choose from three options:
 
         .. code-block:: console
 
-            ## Description
-            Provide a clear and concise description of the bug and what behavior 
-            you are expecting.
+            <!-- Please remove unwanted/unrelated/irrelevant information such as comments.
+            Please copy any output files into a public Github gist (see https://gist.github.com/) 
+            and link to the gist, rather than relying on paths that might change. -->
 
-            ## Steps to Reproduce
-            Please provide detailed steps for reproducing the issue.
+            Your bug may already be reported!
+            Please search on the [Issue tracker](https://github.com/ufs-community/ufs-srweather-app/issues) 
+            before creating a new issue. If an issue already exists, please use that issue to add any 
+            additional information.
 
-                1. step 1
-                2. step 2
-                3. see the bug...
+            ## Expected behavior
+            <!-- Tell us what should happen. -->
 
-            ## Additional Context
-            Please provide any relevant information about your setup. This is important in 
-            case the issue is not reproducible except for under certain conditions.
+            ## Current behavior
+            <!-- Tell us what happens instead of the expected behavior. -->
 
-                * Machine
-                * Compiler
-                * Reference other issues or PRs in other repositories that this 
-                is related to, and how they are related.
+            ## Machines affected
+            <!--- Please provide any relevant information about your setup, including 
+            machine/compiler combination. -->
+            <!-- Reference other issues or PRs in other repositories that this issue is 
+            related to, and how they are related. -->
 
-            ## Output
-            Please include any relevant log files, screenshots or other output here.
+            ## Steps To Reproduce
+            <!--- Provide a link to a live example, a code snippet, and/or an explicit 
+            set of steps to reproduce this bug.
+            1. do this
+            2. then that
+            3. then, oops, look at the bug -->
+
+            ## Detailed Description of Fix (optional)
+            <!--- Provide a detailed description of the change or addition you are proposing. -->
+
+            ## Additional Information (optional)
+            <!-- Any other relevant information that we should know to correctly understand and 
+            reproduce the issue. Please describe in as much detail as possible. -->
+
+            ## Possible Implementation (optional)
+            <!--- Not obligatory, but suggest an idea for implementing addition or change. -->
+
+            ## Output (optional)
+            <!-- Please include any relevant log files, screenshots or other output here. -->
 
 
     #. `Feature Request <https://github.com/ufs-community/ufs-srweather-app/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=>`__: New features and feature enhancements fall under this category. Propose features and enhancements using the following template. Optional sections may be deleted.
