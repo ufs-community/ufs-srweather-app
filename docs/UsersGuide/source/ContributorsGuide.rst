@@ -165,7 +165,23 @@ Choose from three options:
             Directly reference any issues or PRs in this or other repositories 
             that this is related to, and describe how they are related.
 
-    #. `Text-Only Changes <https://github.com/ufs-community/ufs-srweather-app/issues/new?assignees=&labels=textonly&template=textonly_request.md&title=>`__: Propose text-only changes using the "Text-only request" template. This template's content is the same as for the "Feature Request" template above. 
+    #. `Text-Only Changes <https://github.com/ufs-community/ufs-srweather-app/issues/new?assignees=&labels=textonly&template=textonly_request.md&title=>`__: Propose text-only changes using the "Text-only request" template. Optional sections may be deleted.
+
+         .. code-block:: console
+
+            ## Description
+            <!-- Provide a clear and concise description of the problem to be solved. -->
+
+            ## Solution
+            <!-- Add a clear and concise description of the proposed solution. -->
+
+            ## Alternatives (optional)
+            <!-- If applicable, add a description of any alternative solutions or 
+            features you've considered. -->
+
+            ## Related to (optional)
+            <!-- Directly reference any issues or PRs in this or other repositories 
+            that this is related to, and describe how they are related. -->
 
     #. `Other <https://github.com/ufs-community/ufs-srweather-app/issues/new>`__: Open a blank issue, and use the "Feature Request" template above as a starting point to describe the issue. 
 
