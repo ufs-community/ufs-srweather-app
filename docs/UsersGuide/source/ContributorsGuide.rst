@@ -146,24 +146,43 @@ Choose from three options:
             ## Output (optional)
             <!-- Please include any relevant log files, screenshots or other output here. -->
 
-
     #. `Feature Request <https://github.com/ufs-community/ufs-srweather-app/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=>`__: New features and feature enhancements fall under this category. Propose features and enhancements using the following template. Optional sections may be deleted.
 
         .. code-block:: console
 
+            <!-- Please remove unwanted/unrelated/irrelevant information such as comments.
+            Please copy any output files into a public Github gist (see https://gist.github.com/) 
+            and link to the gist, rather than relying on paths that might change. -->
+
+            Your issue may already be reported!
+            Please search on the [Issue tracker](https://github.com/ufs-community/ufs-srweather-app/issues) before creating a new issue. If an issue already exists, please use that issue to add any additional information.
+
+
             ## Description
-            Provide a clear and concise description of the problem to be solved.
+            <!-- Provide a clear and concise description of the problem to be solved. -->
+            <!-- What problem needs to be fixed? -->
+            <!-- What new capability needs to be added? --> 
 
             ## Solution
-            Add a clear and concise description of the proposed solution.
+            <!-- Add a clear and concise description of the proposed solution. -->
 
-            ## Alternatives (optional)
-            If applicable, add a description of any alternative solutions or 
-            features you've considered.
+            ## Requirements**
+            <!-- What does the new code need to accomplish? Does it require an update 
+            to a version of software (e.g. modules of NCEPLibs, NetCDF, etc.), components 
+            (e.g. UFS-Weather-Model), or system tools (e.g. python3) -->
 
-            ## Related to (optional)
-            Directly reference any issues or PRs in this or other repositories 
-            that this is related to, and describe how they are related.
+            ## Acceptance Criteria (Definition of Done)
+            <!-- What does it mean for this feature to be finished? -->
+
+            ## Dependencies (optional)
+            <!-- Directly reference any issues or PRs in this or other repositories that this 
+            issue is related to, and describe how they are related. -->
+            <!-- Does this block progress on other issues? Add this issue as a dependency to 
+            other issues as appropriate e.g. #IssueNumber has a dependency on this issue -->
+
+            ## Alternative Solutions (optional)
+            <!-- If applicable, add a description of any alternative solutions or features 
+            you've considered. -->
 
     #. `Text-Only Changes <https://github.com/ufs-community/ufs-srweather-app/issues/new?assignees=&labels=textonly&template=textonly_request.md&title=>`__: Propose text-only changes using the "Text-only request" template. Optional sections may be deleted.
 
