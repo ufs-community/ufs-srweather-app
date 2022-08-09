@@ -51,16 +51,24 @@ def create_diag_table_file(run_dir):
     }
     settings_str = cfg_to_yaml_str(settings)
 
+    print_info_msg(dedent(f'''
+        The variable \"settings\" specifying values to be used in the \"{DIAG_TABLE_FN}\"
+        file has been set as follows:\n
+        settings =\n\n''') + settings_str,verbose=VERBOSE)
+
     #call fill jinja
     try:
         fill_jinja_template(["-q", "-u", settings_str, "-t", DIAG_TABLE_TMPL_FP, "-o", diag_table_fp])
     except:
-        print_err_msg_exit(f'''
-            !!!!!!!!!!!!!!!!!
-            
-            fill_jinja_template.py failed!
-            
-            !!!!!!!!!!!!!!!!!''')
+        print_err_msg_exit(dedent(f'''
+            Call to python script fill_jinja_template.py to create a \"{DIAG_TABLE_FN}\"
+            file from a jinja2 template failed.  Parameters passed to this script are:
+              Full path to template diag table file:
+                DIAG_TABLE_TMPL_FP = \"{DIAG_TABLE_TMPL_FP}\"
+              Full path to output diag table file:
+                diag_table_fp = \"{diag_table_fp}\"
+              Namelist settings specified on command line:\n
+                settings =\n\n''') + settings_str)
         return False
     return True
 

@@ -29,20 +29,17 @@ def str_to_date(s):
         v = None
     return v
 
-def date_to_str(d,short=False):
+def date_to_str(d, format="%Y%m%d%H%M"):
     """ Get string from python datetime object.
     By default it converts to YYYYMMDDHHMM format unless
-    told otherwise with `short` or HHMM=0
+    told otherwise by passing a different format
 
     Args:
         d: datetime object
     Returns:
-        string in YYYYMMDDHHMM or YYYYMMDD format
+        string in YYYYMMDDHHMM or shorter version of it
     """
-    if short or (d.hour == 0 and d.minute == 0):
-        v = d.strftime("%Y%m%d")
-    else:
-        v = d.strftime("%Y%m%d%H%M")
+    v = d.strftime(format)
     return v
 
 def str_to_type(s, just_get_me_the_string = False):

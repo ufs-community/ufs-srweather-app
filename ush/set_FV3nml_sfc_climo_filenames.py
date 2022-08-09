@@ -66,12 +66,11 @@ def set_FV3nml_sfc_climo_filenames():
     settings_str = cfg_to_yaml_str(settings)
 
 
-    print_info_msg(f'''
+    print_info_msg(dedent(f'''
         The variable \"settings\" specifying values of the namelist variables
         has been set as follows:
         
-        settings =
-        {settings_str}''', verbose=DEBUG)
+        settings =\n\n''') + settings_str, verbose=VERBOSE)
 
     # Rename the FV3 namelist and call set_namelist
     fv3_nml_base_fp = f'{FV3_NML_FP}.base' 
@@ -80,7 +79,7 @@ def set_FV3nml_sfc_climo_filenames():
     try:
         set_namelist(["-q", "-n", fv3_nml_base_fp, "-u", settings_str, "-o", FV3_NML_FP])
     except:
-        print_err_msg_exit(f'''
+        print_err_msg_exit(dedent(f'''
             Call to python script set_namelist.py to set the variables in the FV3
             namelist file that specify the paths to the surface climatology files
             failed.  Parameters passed to this script are:
@@ -88,9 +87,8 @@ def set_FV3nml_sfc_climo_filenames():
                 fv3_nml_base_fp = \"{fv3_nml_base_fp}\"
               Full path to output namelist file:
                 FV3_NML_FP = \"{FV3_NML_FP}\"
-              Namelist settings specified on command line (these have highest precedence):
-                settings =
-            {settings_str}''')
+              Namelist settings specified on command line (these have highest precedence):\n
+                settings =\n\n''') + settings_str)
 
     rm_vrfy(f'{fv3_nml_base_fp}')
 

@@ -169,9 +169,8 @@ def create_model_configure_file(cdate,run_dir,sub_hourly_post,dt_subhourly_post_
     
     print_info_msg(dedent(f'''
         The variable \"settings\" specifying values to be used in the \"{MODEL_CONFIG_FN}\"
-        file has been set as follows:
-        #-----------------------------------------------------------------------
-        settings =\n''') + settings_str,verbose=VERBOSE)
+        file has been set as follows:\n
+        settings =\n\n''') + settings_str,verbose=VERBOSE)
     #
     #-----------------------------------------------------------------------
     #
@@ -185,16 +184,15 @@ def create_model_configure_file(cdate,run_dir,sub_hourly_post,dt_subhourly_post_
     try:
         fill_jinja_template(["-q", "-u", settings_str, "-t", MODEL_CONFIG_TMPL_FP, "-o", model_config_fp])
     except:
-        print_err_msg_exit(f'''
+        print_err_msg_exit(dedent(f'''
             Call to python script fill_jinja_template.py to create a \"{MODEL_CONFIG_FN}\"
             file from a jinja2 template failed.  Parameters passed to this script are:
-              Full path to template rocoto XML file:
+              Full path to template model config file:
                 MODEL_CONFIG_TMPL_FP = \"{MODEL_CONFIG_TMPL_FP}\"
-              Full path to output rocoto XML file:
+              Full path to output model config file:
                 model_config_fp = \"{model_config_fp}\"
-              Namelist settings specified on command line:
-                settings =
-            {settings_str}''')
+              Namelist settings specified on command line:\n
+                settings =\n\n''') + settings_str)
         return False
 
     return True
