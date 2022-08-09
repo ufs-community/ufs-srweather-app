@@ -111,9 +111,8 @@ Choose from three options:
             and link to the gist, rather than relying on paths that might change. -->
 
             Your bug may already be reported!
-            Please search on the [Issue tracker](https://github.com/ufs-community/ufs-srweather-app/issues) 
-            before creating a new issue. If an issue already exists, please use that issue to add any 
-            additional information.
+            Please search on the [Issue tracker](https://github.com/ufs-community/ufs-srweather-app/issues) before creating a new issue. 
+            If an issue already exists, please use that issue to add any additional information.
 
             ## Expected behavior
             <!-- Tell us what should happen. -->
@@ -126,11 +125,10 @@ Choose from three options:
             <!-- Reference other issues or PRs in other repositories that this issue is related to, and how they are related. -->
 
             ## Steps To Reproduce
-            <!--- Provide a link to a live example, a code snippet, and/or an explicit 
-            set of steps to reproduce this bug.
-            1. do this
-            2. then that
-            3. then, oops, look at the bug -->
+            <!--- Provide a link to a live example, a code snippet, and/or an explicit set of steps to reproduce this bug.
+            1. Step 1
+            2. Step 2
+            3. See the bug... -->
 
             ## Detailed Description of Fix (optional)
             <!--- Provide a detailed description of the change or addition you are proposing. -->
@@ -153,7 +151,8 @@ Choose from three options:
             (see https://gist.github.com/) and link to the gist, rather than relying on paths that might change. -->
 
             Your issue may already be reported!
-            Please search on the [Issue tracker](https://github.com/ufs-community/ufs-srweather-app/issues) before creating a new issue. If an issue already exists, please use that issue to add any additional information.
+            Please search on the [Issue tracker](https://github.com/ufs-community/ufs-srweather-app/issues) before creating a new issue. 
+            If an issue already exists, please use that issue to add any additional information.
 
 
             ## Description
