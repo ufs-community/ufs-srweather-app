@@ -46,7 +46,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Edward Snyder (@EdwardSnyder-NOAA)             | WE2E testing, input data                                                          |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
-    | GLERL            | David Wright (@dmwright526)                    | FVCOM Integration, Output Visualization, Preprocessing Tasks                      |
+    | GLERL            | David Wright (@dmwright526)                    | FVCOM integration, output visualization, rreprocessing tasks                      |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
     | GSL              | Jeff Beck (@JeffBeck-NOAA)                     | SRW App configuration/workflow, code management, meteorological evaluation        |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
@@ -64,7 +64,8 @@ Scientists from across multiple labs and organizations have volunteered to revie
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Will Mayfield (@willmayfield)                  | Verification/METplus tasks, regional_workflow (esp. on Cheyenne)                  |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
-    | NSSL             | Yunheng Wang (@ywangwof)                       |                                                                                   |
+    | NSSL             | Yunheng Wang (@ywangwof)                       | HPC systems, code management and regional workflow especially on Stampede, Jet    |
+    |                  |                                                | and NSSL computers                                                                |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
 
 .. _ContribProcess:
@@ -220,7 +221,7 @@ Pull requests will be reviewed and approved by at least two code reviewers, at l
 
     * If a developer wants to make use of automated testing, any ``ufs-srweather-app`` + ``regional_workflow`` dependencies must be opened in PRs from dependent branches of forks belonging to the same user.
     * The ``Externals.cfg`` file should point to any dependent branches in ``regional_workflow`` (and other components, if necessary) while those branches are under review. Once the corresponding ``regional_workflow`` PR has been merged, the developer should update the references in their ``Externals.cfg`` file to reflect the appropriate hashes in the authoritative repositories. 
-    * Developers should mention in their ``ufs-srweather-app`` PR description that they are temporarily pointing to a branch/hash in their fork of ``regional_worklfow`` and that it will be updated once the corresponding ``regional_workflow`` PR is merged.
+    * Developers should mention in their ``ufs-srweather-app`` PR description that they are temporarily pointing to a branch/hash in their fork of ``regional_workflow`` and that it will be updated once the corresponding ``regional_workflow`` PR is merged.
 
 
 .. _Template:
@@ -236,9 +237,12 @@ Here is the template that is provided when developers click "Create pull request
     - Use this template to give a detailed message describing the change 
     you want to make to the code.
     - You may delete any sections labeled "optional" and any instructions within <!-- these sections -->.
-    - If you are unclear on what should be written here, see https://github.com/wrf-model/WRF/wiki/Making-a-good-pull-request-message for some guidance and review the Code Contributor's Guide at https://github.com/ufs-community/ufs-srweather-app/wiki/Code-Manager's-Guide. 
-    for some guidance. 
-    - Code reviewers will assess the PR based on the criteria laid out in the Code Reviewer's Guide (https://github.com/ufs-community/ufs-srweather-app/wiki/Code-Manager's-Guide). 
+    - If you are unclear on what should be written here, 
+    see https://github.com/wrf-model/WRF/wiki/Making-a-good-pull-request-message 
+    for some guidance and review the Code Contributor's Guide at 
+    https://github.com/ufs-community/ufs-srweather-app/wiki/Code-Manager's-Guide. 
+    - Code reviewers will assess the PR based on the criteria laid out in the Code Reviewer's Guide 
+    (https://github.com/ufs-community/ufs-srweather-app/wiki/Code-Manager's-Guide). 
     - The title of this pull request should be a brief summary (ideally less than 100 
     characters) of the changes included in this PR. Please also include the branch to 
     which this PR is being issued (e.g., "[develop]: Updated UFS_UTILS hash").
@@ -306,8 +310,6 @@ Here is the template that is provided when developers click "Create pull request
 
     ## CONTRIBUTORS (optional): 
     <!-- If others have contributed to this work aside from the PR author, list them here -->
-
-
 
 Additional Guidance
 ^^^^^^^^^^^^^^^^^^^^^^^^
