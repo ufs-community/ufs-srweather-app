@@ -230,18 +230,15 @@ Here is the template that is provided when developers click "Create pull request
 .. code-block:: console
     
     - Update develop to head at ufs-community
-    - Use this template to give a detailed message describing the change 
-    you want to make to the code.
+    - Use this template to give a detailed message describing the change you want to make to the code.
     - You may delete any sections labeled "optional" and any instructions within <!-- these sections -->.
-    - If you are unclear on what should be written here, 
-    see https://github.com/wrf-model/WRF/wiki/Making-a-good-pull-request-message 
-    for some guidance and review the Code Contributor's Guide at 
-    https://github.com/ufs-community/ufs-srweather-app/wiki/Code-Manager's-Guide. 
+    - If you are unclear on what should be written here, see https://github.com/wrf-model/WRF/wiki/Making-a-good-pull-request-message 
+    for some guidance and review the Code Contributor's Guide
+    (https://github.com/ufs-community/ufs-srweather-app/wiki/Contributor's-Guide). 
     - Code reviewers will assess the PR based on the criteria laid out in the Code Reviewer's Guide 
     (https://github.com/ufs-community/ufs-srweather-app/wiki/Code-Manager's-Guide). 
-    - The title of this pull request should be a brief summary (ideally less than 100 
-    characters) of the changes included in this PR. Please also include the branch to 
-    which this PR is being issued (e.g., "[develop]: Updated UFS_UTILS hash").
+    - The title of this pull request should be a brief summary (ideally less than 100 characters) of the changes included 
+    in this PR. Please also include the branch to which this PR is being issued (e.g., "[develop]: Updated UFS_UTILS hash").
     - Use the "Preview" tab to see what your PR will look like when you hit "Create pull request"
 
     # --- Delete this line and those above before hitting "Create pull request" ---
@@ -303,6 +300,25 @@ Here is the template that is provided when developers click "Create pull request
     - [ ] My changes generate no new warnings
     - [ ] New and existing tests pass with my changes
     - [ ] Any dependent changes have been merged and published
+
+    ## LABELS (optional): 
+    <!-- If you do not have permissions to add labels to your own PR, request that labels be added here. 
+    Add an X to check off a box. Delete any unnecessary labels. -->
+    A Code Manager needs to add the following labels to this PR: 
+    - [ ] Work In Progress
+    - [ ] bug
+    - [ ] enhancement
+    - [ ] documentation
+    - [ ] release
+    - [ ] high priority
+    - [ ] run_ci
+    - [ ] run_we2e_fundamental_tests
+    - [ ] run_we2e_comprehensive_tests
+    - [ ] Needs Cheyenne test 
+    - [ ] Needs Jet test 
+    - [ ] Needs Hera test 
+    - [ ] Needs Orion test 
+    - [ ] help wanted
 
     ## CONTRIBUTORS (optional): 
     <!-- If others have contributed to this work aside from the PR author, list them here -->

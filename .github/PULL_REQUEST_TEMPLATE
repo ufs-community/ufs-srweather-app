@@ -65,6 +65,25 @@
 - [ ] New and existing tests pass with my changes
 - [ ] Any dependent changes have been merged and published
 
+## LABELS (optional): 
+<!-- If you do not have permissions to add labels to your own PR, request that labels be added here. 
+Add an X to check off a box. Delete any unnecessary labels. -->
+A Code Manager needs to add the following labels to this PR: 
+- [ ] Work In Progress
+- [ ] bug
+- [ ] enhancement
+- [ ] documentation
+- [ ] release
+- [ ] high priority
+- [ ] run_ci
+- [ ] run_we2e_fundamental_tests
+- [ ] run_we2e_comprehensive_tests
+- [ ] Needs Cheyenne test 
+- [ ] Needs Jet test 
+- [ ] Needs Hera test 
+- [ ] Needs Orion test 
+- [ ] help wanted
+
 ## CONTRIBUTORS (optional): 
 <!-- If others have contributed to this work aside from the PR author, list them here -->
 
