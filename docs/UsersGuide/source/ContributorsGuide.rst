@@ -375,7 +375,7 @@ SRW Application
 Externals.cfg
     * All externals live in a single ``Externals.cfg`` file.
     * Only a single hash will be maintained for any given external code base. All externals should point to this static hash (not to the top of a branch). 
-    * All new entries in `Externals.cfg` must point only to authoritative repositories. In other words, entries must point to either a [UFS Community GitHub organization](https://github.com/ufs-community) repository or another NOAA project organization repository. 
+    * All new entries in ``Externals.cfg`` must point only to authoritative repositories. In other words, entries must point to either a `UFS Community GitHub organization <https://github.com/ufs-community>`__ repository or another NOAA project organization repository. 
 
         * Temporary exceptions are made for a PR into the ``develop`` branch of ``ufs-srweather-app`` that is dependent on another PR (e.g., a ``regional_workflow`` PR from the same contributor). When the component PR is merged, the contributor must update the corresponding ``ufs-srweather-app`` PR with the hash of the component's authoritative repository.
     
@@ -402,7 +402,7 @@ If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweat
 
 **Python Coding Standards:** 
     * All Python code contributions should come with an appropriate ``environment.yaml`` file for the feature. 
-    * Keep the use of external Python packages to a minimum for necessary workflow tasks. Currently, the required external Python packages are: ``f90nml``, ``pyyaml``, and ``jinja``. 
+    * Keep the use of external Python packages to a minimum for necessary workflow tasks. Currently, the required external Python packages are: ``f90nml``, ``pyyaml``, and ``Jinja2``. 
 
 **Workflow Design:** Follow the `NCO Guidelines <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ for what is incorporated in each layer of the workflow. This is particularly important in the ``scripts`` directory. 
 
@@ -410,7 +410,7 @@ If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweat
 
 **Management of the Configuration File:** New configurable options must be consistent with existing configurable options and be documented in ``ufs-srweather-app/docs/UsersGuide/source/ConfigWorkflow.rst``. Add necessary checks on acceptable options where applicable. Add appropriate default values in ``config_defaults.sh``.
 
-**Management of Template Files:** If a new configurable option is required in an existing template, it must be handled similarly to its counterparts in the scripts that fill in the template. For example, if a new type of namelist is introduced for a new application component, it should make use of the existing `jinja` framework for populating namelist settings.
+**Management of Template Files:** If a new configurable option is required in an existing template, it must be handled similarly to its counterparts in the scripts that fill in the template. For example, if a new type of namelist is introduced for a new application component, it should make use of the existing ``jinja`` framework for populating namelist settings.
 
 **Namelist Management:** Namelists in ``ufs-srweather-app`` and ``regional_workflow`` are generated using a Python tool and managed by setting YAML configuration parameters. This allows for the management of multiple configuration settings with maximum flexibility and minimum duplication of information.     
 
@@ -419,34 +419,34 @@ If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweat
 Testing
 ===============
 
-The ``ufs-srweather-app`` repository uses the established workflow end-to-end (WE2E) testing framework (see :numref:`Chapter %s <WE2E_tests>`) to implement two tiers of testing: fundamental and comprehensive. *Fundamental testing* consists of a lightweight set of tests that can be automated and run regularly on each `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform. These tests verify that there are no major, obvious faults in the underlying code when running common combinations of grids, input data, and physics suites. *Comprehensive testing* includes the entire set of WE2E tests and covers a broader range of capabilities, configurations, and components. Eventually, new tests will be added, including regression tests and unit tests. 
+The ``ufs-srweather-app`` repository uses the established workflow end-to-end (WE2E) testing framework (see :numref:`Chapter %s <WE2E_tests>`) to implement two tiers of testing: fundamental and comprehensive. **Fundamental testing** consists of a lightweight set of tests that can be automated and run regularly on each `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform. These tests verify that there are no major, obvious faults in the underlying code when running common combinations of grids, input data, and physics suites. **Comprehensive testing** includes the entire set of WE2E tests and covers a broader range of capabilities, configurations, and components. Eventually, new tests will be added, including regression tests and unit tests. 
 
 Before opening a PR, a minimum set of tests should be run: 
-    * Developers should run at least one end-to-end test (preferably the entire fundamental test suite) on at least one supported platform and report on the outcome in the PR template (see :numref:`Section %s <Testing>`). 
-    * Developers will not be required to run tests on *all* supported platforms, but if a failure is pointed out by another reviewer (or by automated testing), then the developer should work with reviewers and code managers to ensure that the problem is resolved prior to merging.
+    * Developers should run the fundamental test suite manually on at least one supported platform and report on the outcome in the PR template (see :numref:`Section %s <Testing>`). 
+      
+      * Developers will not be required to run tests on *all* supported platforms, but if a failure is pointed out by another reviewer (or by automated testing), then the developer should work with reviewers and code managers to ensure that the problem is resolved prior to merging.
     
-      * Code owners should run the entire fundamental test suite on their own PRs either manually or by adding the label ``run_we2e_fundamental_tests`` to their PR (once the label becomes available). 
+    * If the PR impacts functionality contained within comprehensive WE2E tests not included in the fundamental test suite, the developer must run those tests on the PR.
+    * Any new functionality must be tested explicitly, and any new tests should be described in detail in the PR message. Depending on the impact of this functionality, new tests should be added to the suite of comprehensive WE2E tests, followed by a discussion with code managers on whether they should also be included as fundamental tests.
     
-    * Any new functionality must be tested explicitly, and any new tests should be described in detail in the PR message. Depending on the impact of this functionality, new tests should be added to the WE2E suite of fundamental and/or comprehensive tests. 
+      * In some cases, it may be possible to modify a current test instead of creating a completely new test. Code developers introducing new capabilities should work with code managers to provide the proper configuration files, data, and other information necessary to create new tests for these capabilities.
 
-**Testing on Jenkins**
+    * **Coming Soon:** When the above tests are complete, a code manager will add the ``run_we2e_comprehensive_tests`` to initiate fundamental testing on all Level 1 platforms via Jenkins (see :ref:`below <jenkins>`).
+
+
+.. _jenkins:
+
+Testing on Jenkins
+---------------------
 
 `Jenkins <https://www.jenkins.io/>`__ is an "open source automation server" that allows users to automate code testing. In the SRW App, developers with write, maintain, or admin `roles <https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-roles-for-an-organization>`__ on the SRW App repository can add labels to their PR that automatically initiate particular test suites. 
 
-The following automated testing labels are currently available for the SRW App:
+The following automated testing labels are available (or will be soon) for the SRW App:
    * ``run_ci`` 
+   * *Coming Soon:* ``run_we2e_comprehensive_tests``
+   * *Coming Soon:* ``run_we2e_fundamental_tests``
 
-   ..
-      COMMENT: What about ci-hera-gnu-WE, etc?
-      * ``run_we2e_comprehensive_tests``
-      * ``run_we2e_fundamental_tests``
-
-Developers with permissions should run the fundamental test suites on their own PRs by adding the ``run_we2e_fundamental_tests`` label to their PR. Developers without the appropriate permissions should communicate with the code management team to ensure that the fundamental tests are run on their PR. 
-
-The results of the tests can be viewed by anyone on GitHub. Users must scroll down to the bottom of the PR, where PR approvals, checks, and conflicts are listed. Under checks, GitHub will list which checks have passed and which have failed. Users can click on "Details" beside each check to see the Jenkins log files (see :numref:`Figure %s <JenkinsCheck>`). This will take users to the Jenkins page with information on their PR's tests. 
-
-..
-      COMMENT: Can they actually be viewed by anyone...?
+Once a testing label is added to the PR and the tests are run, the results of the tests can be viewed by anyone on GitHub. Users must scroll down to the bottom of the PR, where PR approvals, checks, and conflicts are listed. Under checks, GitHub will list which checks have passed and which have failed. Users can click on "Details" beside each check to see the Jenkins log files (see :numref:`Figure %s <JenkinsCheck>`). This will take users to the Jenkins page with information on their PR's tests.
 
 .. _JenkinsCheck:
 
@@ -456,15 +456,6 @@ The results of the tests can be viewed by anyone on GitHub. Users must scroll do
    *Sample of Jenkins Test Results*
 
 Once on the `Jenkins <https://jenkins-epic.woc.noaa.gov>`__ page specific to the PR check in question, users can view all of the testing output, including "artifacts" from the build. To do this, users must click on the arrow icon in the top right corner of the page. Then, in the left navigation menu, they can click on *S3 Artifacts* and download any files listed there for in-depth review.
-
-**Updating the Testing Suite:** When new capabilities are added or new bugs/issues are discovered, WE2E tests should be created and/or modified to verify that new features are not broken in subsequent PRs. For example, if a new physics suite is introduced, it may be possible to alter an existing test rather than creating an entirely new test. Code developers introducing new capabilities should work with code managers to provide the proper configuration files, data, and other information necessary to create new tests for these capabilities.
-
-
-
-
-
-
-
 
 
 
