@@ -30,11 +30,11 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
     | **Organization** | **Reviewers**                                  | **Areas of Expertise**                                                            |
     +==================+================================================+===================================================================================+
-    | EMC              | Chan-Hoo Jeon (@chan-hoo)                      |                                                                                   |
+    | EMC              | Chan-Hoo Jeon (@chan-hoo)                      | Workflow, NCO requirements, and WCOSS2 platform testing                           |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Ben Blake (@BenjaminBlake-NOAA)                | Output visualization                                                              |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
-    |                  | Ratko Vasic (@RatkoVasic-NOAA)                 |                                                                                   |
+    |                  | Ratko Vasic (@RatkoVasic-NOAA)                 | Workflow, NCO requirements, and WCOSS2 platform testing                           |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
     | EPIC             | Mark Potts (@mark-a-potts)                     | HPC systems                                                                       |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
@@ -46,7 +46,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Edward Snyder (@EdwardSnyder-NOAA)             | WE2E testing, input data                                                          |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
-    | GLERL            | David Wright (@dmwright526)                    | FVCOM integration, output visualization, rreprocessing tasks                      |
+    | GLERL            | David Wright (@dmwright526)                    | FVCOM integration, output visualization, preprocessing tasks                      |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
     | GSL              | Jeff Beck (@JeffBeck-NOAA)                     | SRW App configuration/workflow, code management, meteorological evaluation        |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
