@@ -175,7 +175,7 @@ The SRW Application has a portable CMake-based build system that packages togeth
 
 The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite used for the simulation. More information on how to do this is available in :numref:`Section %s <UserSpecificConfig>`.
 
-The SRW Application has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Orion), cloud environments, and generic Linux and MacOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries available in a central location (via :term:`HPC-Stack`). The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms (Levels 2-4), the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildRunSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
+The SRW Application has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Orion), cloud environments, and generic Linux and MacOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries available in a central location (via :term:`HPC-Stack`). The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms (Levels 2-4), the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildRunSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
 
 
 
@@ -239,17 +239,14 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
    ├── manage_externals
    ├── modulefiles
    ├── regional_workflow
-   │     ├── docs
-   │     │     └── UsersGuide
    │     ├── (fix)
    │     ├── jobs
    │     ├── modulefiles
    │     ├── scripts
    │     ├── tests
-   │     │     └── baseline_configs
    │     └── ush
+   │          ├── machine
    │          ├── Python
-   │          ├── rocoto
    │          ├── templates
    │          └── wrappers
    ├── (share)
