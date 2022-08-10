@@ -436,8 +436,8 @@ Before opening a PR, a minimum set of tests should be run:
 
 .. _jenkins:
 
-Testing on Jenkins
----------------------
+Automated Testing on Jenkins
+-------------------------------
 
 `Jenkins <https://www.jenkins.io/>`__ is an "open source automation server" that allows users to automate code testing. In the SRW App, developers with write, maintain, or admin `roles <https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-roles-for-an-organization>`__ on the SRW App repository can add labels to their PR that automatically initiate particular test suites. 
 
