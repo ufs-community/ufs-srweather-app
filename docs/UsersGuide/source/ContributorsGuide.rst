@@ -32,7 +32,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +==================+================================================+===================================================================================+
     | EMC              | Chan-Hoo Jeon (@chan-hoo)                      | Workflow, NCO requirements, and operational platform testing                      |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
-    |                  | Ben Blake (@BenjaminBlake-NOAA)                | Output visualization                                                              |
+    |                  | Ben Blake (@BenjaminBlake-NOAA)                | Output visualization, Rocoto                                                      |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Ratko Vasic (@RatkoVasic-NOAA)                 | Workflow, NCO requirements, and operational platform testing                      |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
@@ -54,7 +54,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Linlin Pan (@panll)                            | Workflow, CCPP/physics, verification                                              |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
-    |                  | Christina Holt (@christinaholtNOAA)            | Workflow, conda environment support, and testing                                  |
+    |                  | Christina Holt (@christinaholtNOAA)            | Workflow, conda environment support, testing, and code management                 |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Christopher Harrop (@christopherwharrop-noaa)  | Rocoto, code management, and testing                                              |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
