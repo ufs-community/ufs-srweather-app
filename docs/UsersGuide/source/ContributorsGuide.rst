@@ -30,11 +30,11 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
     | **Organization** | **Reviewers**                                  | **Areas of Expertise**                                                            |
     +==================+================================================+===================================================================================+
-    | EMC              | Chan-Hoo Jeon (@chan-hoo)                      | Workflow, NCO requirements, and WCOSS2 platform testing                           |
+    | EMC              | Chan-Hoo Jeon (@chan-hoo)                      | Workflow, NCO requirements, and operational platform testing                      |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Ben Blake (@BenjaminBlake-NOAA)                | Output visualization                                                              |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
-    |                  | Ratko Vasic (@RatkoVasic-NOAA)                 | Workflow, NCO requirements, and WCOSS2 platform testing                           |
+    |                  | Ratko Vasic (@RatkoVasic-NOAA)                 | Workflow, NCO requirements, and operational platform testing                      |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
     | EPIC             | Mark Potts (@mark-a-potts)                     | HPC systems                                                                       |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
