@@ -56,7 +56,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Christina Holt (@christinaholtNOAA)            | Workflow, conda environment support, and testing                                  |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
-    |                  | Christopher Harrop (@christopherwharrop-noaa)  | Rocoto                                                                            |
+    |                  | Christopher Harrop (@christopherwharrop-noaa)  | Rocoto, code management, and testing                                              |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Daniel Abdi (@danielabdi-noaa)                 | Workflow generation, testing RRFS on the cloud, environment modules               |
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
