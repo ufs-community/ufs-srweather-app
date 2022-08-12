@@ -319,7 +319,7 @@ Call to python script set_namelist.py to set the variables in the
 regional_esg_grid namelist file failed.  Parameters passed to this script
 are:
   Full path to output namelist file:
-    rgnl_grid_nml_fp = \"${rgn_grid_nml_fp}\"
+    rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\"
   Namelist settings specified on command line (these have highest precedence):
     settings =
 $settings"
