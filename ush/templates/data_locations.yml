@@ -24,9 +24,9 @@
 #   for that type of file. Both are required for external models ICS and
 #   LBCS. Each file name may (and likely should) include templates.
 #
-#   If the SRW App accepts different file formats,
-#   as it does for FV3GFS, an intermediary level indicating the value
-#   associate with a FV3GFS_FILE_FMT_* variable.
+#   If the SRW App accepts different file formats, as it does for
+#   FV3GFS, an intermediary level indicating the value associate with a
+#   FV3GFS_FILE_FMT_* variable.
 #
 # 3rd level optional:
 #
@@ -108,6 +108,68 @@ FV3GFS:
     file_names:
       <<: *gfs_file_names
 
+GDAS:
+  hpss:
+    protocol: htar
+    archive_path:
+      - /NCEPPROD/5year/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/5year/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+    archive_internal_dir:
+      - ./enkfgdas.{yyyymmdd}/{hh}/atmos/mem{mem:03d}
+    archive_file_names:
+      nemsio:
+        anl:
+          - com_gfs_prod_enkfgdas.{yyyymmdd}_{hh}.enkfgdas_grp{ens_group}.tar
+          - gpfs_dell1_nco_ops_com_gfs_prod_enkfgdas.{yyyymmdd}_{hh}.enkfgdas_grp{ens_group}.tar
+        fcst:
+          - com_gfs_prod_enkfgdas.{yyyymmdd}_{hh}.enkfgdas_grp{ens_group}.tar
+          - gpfs_dell1_nco_ops_com_gfs_prod_enkfgdas.{yyyymmdd}_{hh}.enkfgdas_grp{ens_group}.tar
+      netcdf:
+        anl:
+          - com_gfs_prod_enkfgdas.{yyyymmdd}_{hh}.enkfgdas_grp{ens_group}.tar
+          - gpfs_dell1_nco_ops_com_gfs_prod_enkfgdas.{yyyymmdd}_{hh}.enkfgdas_grp{ens_group}.tar
+        fcst:
+          - com_gfs_prod_enkfgdas.{yyyymmdd}_{hh}.enkfgdas_grp{ens_group}.tar
+          - gpfs_dell1_nco_ops_com_gfs_prod_enkfgdas.{yyyymmdd}_{hh}.enkfgdas_grp{ens_group}.tar
+    file_names:
+      nemsio:
+        anl:
+          - gdas.t{hh}z.atmf{fcst_hr:03d}.nemsio
+        fcst:
+          - gdas.t{hh}.sfcf{fcst_hr:03d}.nemsio
+      netcdf:
+        anl:
+          - gdas.t{hh}z.atmf{fcst_hr:03d}.nc
+          - gdas.t{hh}z.sfcf{fcst_hr:03d}.nc
+        fcst:
+          - gdas.t{hh}z.atmf{fcst_hr:03d}.nc
+  nomads:
+    protocol: download
+    url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/enkfgdas.{yyyymmdd}/{hh}/atmos/mem{mem:03d}
+    file_names:
+      netcdf:
+        fcst:
+          - gdas.t{hh}z.sfcf{fcst_hr:03d}.nc
+  aws:
+    protocol: download
+    url: https://noaa-gfs-bdp-pds.s3.amazonaws.com/enkfgdas.{yyyymmdd}/{hh}/atmos/mem{mem:03d}
+    file_names:
+      netcdf:
+        anl:
+          - gdas.t{hh}z.sfcf{fcst_hr:03d}.nc
+
+GEFS:
+  aws:
+    protocol: download
+    url:
+      - ['https://noaa-gefs-pds.s3.amazonaws.com/gefs.{yyyymmdd}/{hh}/atmos/pgrb2ap5', 'https://noaa-gefs-pds.s3.amazonaws.com/gefs.{yyyymmdd}/{hh}/atmos/pgrb2bp5']
+      - ['https://noaa-gefs-pds.s3.amazonaws.com/gefs.{yyyymmdd}/{hh}/pgrb2a', 'https://noaa-gefs-pds.s3.amazonaws.com/gefs.{yyyymmdd}/{hh}/pgrb2b']
+      - ['https://noaa-gefs-pds.s3.amazonaws.com/gefs.{yyyymmdd}/{hh}', 'https://noaa-gefs-pds.s3.amazonaws.com/gefs.{yyyymmdd}/{hh}']
+    file_names:
+      - ['gep{mem:02d}.t{hh}z.pgrb2a.0p50.f{fcst_hr:03d}', 'gep{mem:02d}.t{hh}z.pgrb2b.0p50.f{fcst_hr:03d}']
+      - ['gep{mem:02d}.t{hh}z.pgrb2af{fcst_hr:02d}', 'gep{mem:02d}.t{hh}z.pgrb2bf{fcst_hr:02d}']
+      - ['gep{mem:02d}.t{hh}z.pgrb2af{fcst_hr:03d}', 'gep{mem:02d}.t{hh}z.pgrb2bf{fcst_hr:03d}' ]
+
 GSMGFS:
   hpss:
     protocol: htar
@@ -186,7 +248,10 @@ NAM:
     archive_format: tar
     archive_path:
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+    archive_internal_dir:
+      - ./
     archive_file_names:
+      - com_nam_prod_nam.{yyyymmddhh}.awphys.tar
       - com_nam_prod_nam.{yyyymmddhh}.awphys{fcst_hr:02d}.tar
     file_names:
       anl:

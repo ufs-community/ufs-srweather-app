@@ -1,0 +1,33 @@
+name: Python unittests
+on:
+  push:
+    paths:
+      - ush/*retrieve_data.py
+      - ush/templates/data_locations.yml
+  pull_request:
+
+env:
+  CI: true
+
+jobs:
+  python_functests:
+    name: Python Functional Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3 python3-pip netcdf-bin
+          sudo pip3 install pyyaml jinja2 f90nml
+          sudo pip3 install numpy matplotlib basemap
+
+      # Run python functional tests
+      - name: Run python functional tests
+        run: |
+          cd ush
+          python3 -m unittest -b test_retrieve_data.FunctionalTesting
