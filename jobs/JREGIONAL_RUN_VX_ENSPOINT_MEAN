@@ -60,7 +60,7 @@ by initialitation time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_run_enspointvx_mean.sh \
+$SCRIPTSDIR/exregional_run_vx_enspoint_mean.sh \
   cycle_dir="${CYCLE_DIR}" || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."

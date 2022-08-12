@@ -62,7 +62,7 @@ on gridded fields by initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_run_ensgridvx_prob.sh \
+$SCRIPTSDIR/exregional_run_vx_ensgrid_prob.sh \
   cycle_dir="${CYCLE_DIR}" || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
