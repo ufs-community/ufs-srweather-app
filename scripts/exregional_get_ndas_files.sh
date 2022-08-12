@@ -1,7 +1,31 @@
 #!/bin/bash
 
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
 # This script reorganizes the NDAS data into a more intuitive structure:
 # A valid YYYYMMDD directory is created, and all files for the valid day are placed within the directory.
+#
+#-----------------------------------------------------------------------
+#
 
 # Top-level NDAS directory
 ndas_dir=${OBS_DIR}/..
@@ -143,3 +167,13 @@ echo "vhh_noZero=$vhh_noZero"
   echo "new fcst=${current_fcst}"
 
 done
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+

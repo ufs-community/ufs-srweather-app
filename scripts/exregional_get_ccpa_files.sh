@@ -1,9 +1,33 @@
 #!/bin/bash
 
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
 # This script reorganizes the CCPA data into a more intuitive structure:
 # A valid YYYYMMDD directory is created, and all files for the valid day are placed within the directory.
 # Supported accumulations: 01h, 03h, and 06h. NOTE: Accumulation is currently hardcoded to 01h.
 # The verification uses MET/pcp-combine to sum 01h files into desired accumulations.
+#
+#-----------------------------------------------------------------------
+#
 
 # Top-level CCPA directory
 ccpa_dir=${OBS_DIR}/..
@@ -224,4 +248,13 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   echo "Current fcst hr=${current_fcst}"
 
 done
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
 

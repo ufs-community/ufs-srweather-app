@@ -1,10 +1,32 @@
 #!/bin/bash
 
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
 . ${GLOBAL_VAR_DEFNS_FP}
-
+. $USHDIR/source_util_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
 # This script pulls MRMS data from the NOAA HPSS
 # Top-level MRMS directory
-set -x
+#
+#-----------------------------------------------------------------------
+#
+
 mrms_dir=${OBS_DIR}/..
 if [[ ! -d "$mrms_dir" ]]; then
   mkdir -p $mrms_dir
@@ -139,3 +161,13 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
   cur_ut=`expr ${start_valid_ut} + ${fcst_sec}`
   
 done
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+
