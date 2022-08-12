@@ -252,7 +252,7 @@ function get_WE2Etest_names_subdirs_descs() {
 #
 #-----------------------------------------------------------------------
 #
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #

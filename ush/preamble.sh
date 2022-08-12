@@ -51,7 +51,7 @@ fi
 if [[ $TRACE == "TRUE" ]]; then
     export TRACE_CMD="set -x"
     # Print the script name and line number of each command as it is executed
-    export PS4='+ $(basename $BASH_SOURCE)[$LINEFALSE]'"$id: "
+    export PS4='+ $(basename $BASH_SOURCE)[$LINENO]'"$id: "
 fi
 
 function postamble() {
