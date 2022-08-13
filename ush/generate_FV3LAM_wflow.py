@@ -955,7 +955,7 @@ def generate_FV3LAM_wflow():
     #
     # -----------------------------------------------------------------------
     #
-    cp_vrfy(os.path.join(USHDIR, EXPT_CONFIG_FN), EXPTDIR)
+    cp_vrfy(os.path.join(USHrrfs, EXPT_CONFIG_FN), EXPTDIR)
     #
     # -----------------------------------------------------------------------
     #
@@ -1046,7 +1046,7 @@ def generate_FV3LAM_wflow():
         print("Getting NOMADS online data")
         print(f"NOMADS_file_type= {NOMADS_file_type}")
         cd_vrfy(EXPTDIR)
-        NOMADS_script = os.path.join(USHDIR, "NOMADS_get_extrn_mdl_files.h")
+        NOMADS_script = os.path.join(USHrrfs, "NOMADS_get_extrn_mdl_files.h")
         run_command(
             f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
                       {CYCL_HRS} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}"""

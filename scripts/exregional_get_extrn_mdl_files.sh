@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHrrfs/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -154,10 +154,10 @@ fi
 #-----------------------------------------------------------------------
 #
 cmd="
-python3 -u ${USHDIR}/retrieve_data.py \
+python3 -u ${USHrrfs}/retrieve_data.py \
   --debug \
   --anl_or_fcst ${anl_or_fcst} \
-  --config ${USHDIR}/templates/data_locations.yml \
+  --config ${USHrrfs}/templates/data_locations.yml \
   --cycle_date ${extrn_mdl_cdate} \
   --data_stores ${data_stores} \
   --external_model ${extrn_mdl_name} \

@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHrrfs/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -128,7 +128,7 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-source $USHDIR/source_machine_file.sh
+source $USHrrfs/source_machine_file.sh
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
@@ -152,7 +152,7 @@ fi
 # Set the name and path to the executable and make sure that it exists.
 #
 exec_fn="sfc_climo_gen"
-exec_fp="$EXECDIR/${exec_fn}"
+exec_fp="$EXECrrfs/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
 The executable (exec_fp) for generating the surface climatology files
@@ -233,7 +233,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHDIR/link_fix.py \
+python3 $USHrrfs/link_fix.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --file-group "sfc_climo" || \
 print_err_msg_exit "\

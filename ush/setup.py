@@ -348,18 +348,18 @@ def setup():
     #
     # Define some other useful paths
     #
-    global USHDIR, SCRIPTSDIR, JOBSDIR, SORCDIR, SRC_DIR, PARMDIR, MODULES_DIR
-    global EXECDIR, TEMPLATE_DIR, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
+    global USHrrfs, SCRIPTSDIR, JOBSDIR, SORCDIR, SRC_DIR, PARMrrfs, MODULES_DIR
+    global EXECrrfs, TEMPLATE_DIR, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
 
-    USHDIR = os.path.join(SR_WX_APP_TOP_DIR, "ush")
-    SCRIPTSDIR = os.path.join(SR_WX_APP_TOP_DIR, "scripts")
-    JOBSDIR = os.path.join(SR_WX_APP_TOP_DIR, "jobs")
-    SORCDIR = os.path.join(SR_WX_APP_TOP_DIR, "sorc")
+    USHrrfs = os.path.join(HOMErrfs, "ush")
+    SCRIPTSDIR = os.path.join(HOMErrfs, "scripts")
+    JOBSDIR = os.path.join(HOMErrfs, "jobs")
+    SORCDIR = os.path.join(HOMErrfs, "sorc")
     SRC_DIR = os.path.join(SR_WX_APP_TOP_DIR, "src")
-    PARMDIR = os.path.join(SR_WX_APP_TOP_DIR, "parm")
-    MODULES_DIR = os.path.join(SR_WX_APP_TOP_DIR, "modulefiles")
-    EXECDIR = os.path.join(SR_WX_APP_TOP_DIR, EXEC_SUBDIR)
-    TEMPLATE_DIR = os.path.join(USHDIR, "templates")
+    PARMrrfs = os.path.join(HOMErrfs, "parm")
+    MODULES_DIR = os.path.join(HOMErrfs, "modulefiles")
+    EXECrrfs = os.path.join(SR_WX_APP_TOP_DIR, EXEC_SUBDIR)
+    TEMPLATE_DIR = os.path.join(USHrrfs, "templates")
     VX_CONFIG_DIR = os.path.join(TEMPLATE_DIR, "parm")
     METPLUS_CONF = os.path.join(TEMPLATE_DIR, "parm", "metplus")
     MET_CONFIG = os.path.join(TEMPLATE_DIR, "parm", "met")
@@ -380,7 +380,7 @@ def setup():
     MACHINE = uppercase(MACHINE)
     RELATIVE_LINK_FLAG = "--relative"
     MACHINE_FILE = MACHINE_FILE or os.path.join(
-        USHDIR, "machine", f"{lowercase(MACHINE)}.sh"
+        USHrrfs, "machine", f"{lowercase(MACHINE)}.sh"
     )
     machine_cfg = load_shell_config(MACHINE_FILE)
     import_vars(dictionary=machine_cfg)
@@ -896,7 +896,7 @@ def setup():
     #
     #   $COMROOT/$NET/$envir/$RUN.$yyyymmdd/$hh
     #
-    # Below, we set COMROOT in terms of PTMP as COMROOT="$PTMP/com".  COMOROOT
+    # Below, we set COMROOT in terms of PTMP as COMROOT="$PTMP/com".  COMROOT
     # is not used by the workflow in community mode.
     #
     # COMOUT_BASEDIR:
@@ -913,7 +913,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global LOGDIR, FIXam, FIXclim, FIXLAM, CYCLE_BASEDIR, COMROOT
+    global LOGDIR, FIXam, FIXclim, FIXLAM, CYCLE_BASEDIR, COMROOT, DCOMROOT
     global COMOUT_BASEDIR, POST_OUTPUT_DOMAIN_NAME
 
     LOGDIR = os.path.join(EXPTDIR, "log")
@@ -927,6 +927,7 @@ def setup():
         CYCLE_BASEDIR = os.path.join(STMP, "tmpnwprd", RUN)
         check_for_preexist_dir_file(CYCLE_BASEDIR, PREEXISTING_DIR_METHOD)
         COMROOT = os.path.join(PTMP, "com")
+        DCOMROOT = os.path.join(PTMP, "dcom")
         COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
         check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
 
@@ -934,6 +935,7 @@ def setup():
 
         CYCLE_BASEDIR = EXPTDIR
         COMROOT = ""
+        DCOMROOT = ""
         COMOUT_BASEDIR = ""
 
     #
@@ -1214,7 +1216,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     global FV3_EXEC_FP
-    FV3_EXEC_FP = os.path.join(EXECDIR, FV3_EXEC_FN)
+    FV3_EXEC_FP = os.path.join(EXECrrfs, FV3_EXEC_FN)
     #
     # -----------------------------------------------------------------------
     #
@@ -1227,7 +1229,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     global WFLOW_LAUNCH_SCRIPT_FP, WFLOW_LAUNCH_LOG_FP, CRONTAB_LINE
-    WFLOW_LAUNCH_SCRIPT_FP = os.path.join(USHDIR, WFLOW_LAUNCH_SCRIPT_FN)
+    WFLOW_LAUNCH_SCRIPT_FP = os.path.join(USHrrfs, WFLOW_LAUNCH_SCRIPT_FN)
     WFLOW_LAUNCH_LOG_FP = os.path.join(EXPTDIR, WFLOW_LAUNCH_LOG_FN)
     if USE_CRON_TO_RELAUNCH:
         CRONTAB_LINE = (
@@ -1245,7 +1247,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     global LOAD_MODULES_RUN_TASK_FP
-    LOAD_MODULES_RUN_TASK_FP = os.path.join(USHDIR, "load_modules_run_task.sh")
+    LOAD_MODULES_RUN_TASK_FP = os.path.join(USHrrfs, "load_modules_run_task.sh")
     #
     # -----------------------------------------------------------------------
     #
@@ -1825,13 +1827,13 @@ def setup():
     #
     # 1) Copying the default workflow/experiment configuration file (speci-
     #    fied by EXPT_DEFAULT_CONFIG_FN and located in the shell script di-
-    #    rectory specified by USHDIR) to the experiment directory and rena-
+    #    rectory specified by USHrrfs) to the experiment directory and rena-
     #    ming it to the name specified by GLOBAL_VAR_DEFNS_FN.
     #
     # 2) Resetting the default variable values in this file to their current
     #    values.  This is necessary because these variables may have been
     #    reset by the user-specified configuration file (if one exists in
-    #    USHDIR) and/or by this setup script, e.g. because predef_domain is
+    #    USHrrfs) and/or by this setup script, e.g. because predef_domain is
     #    set to a valid non-empty value.
     #
     # 3) Appending to the variable definitions file any new variables intro-
@@ -1889,14 +1891,15 @@ def setup():
         # -----------------------------------------------------------------------
         #
         "SR_WX_APP_TOP_DIR": SR_WX_APP_TOP_DIR,
-        "USHDIR": USHDIR,
+        "HOMErrfs": HOMErrfs,
+        "USHrrfs": USHrrfs,
         "SCRIPTSDIR": SCRIPTSDIR,
         "JOBSDIR": JOBSDIR,
         "SORCDIR": SORCDIR,
         "SRC_DIR": SRC_DIR,
-        "PARMDIR": PARMDIR,
+        "PARMrrfs": PARMrrfs,
         "MODULES_DIR": MODULES_DIR,
-        "EXECDIR": EXECDIR,
+        "EXECrrfs": EXECrrfs,
         "FIXam": FIXam,
         "FIXclim": FIXclim,
         "FIXLAM": FIXLAM,

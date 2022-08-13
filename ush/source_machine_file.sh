@@ -10,7 +10,7 @@
 #-----------------------------------------------------------------------
 #
 
-{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
 
 source ${MACHINE_FILE}
 

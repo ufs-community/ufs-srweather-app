@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHrrfs/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -146,7 +146,7 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
       hour=0
       while [[ ${hour} -le 23 ]]; do
         echo "hour=${hour}"
-        python ${USHDIR}/mrms_pull_topofhour.py ${vyyyy}${vmm}${vdd}${hour} ${mrms_proc} ${mrms_raw} ${field_base_name} ${level}
+        python ${USHrrfs}/mrms_pull_topofhour.py ${vyyyy}${vmm}${vdd}${hour} ${mrms_proc} ${mrms_raw} ${field_base_name} ${level}
       hour=$((${hour} + 1)) # hourly increment
       done
     fi

@@ -306,7 +306,7 @@ if __name__ == "__main__":
 
 class Testing(unittest.TestCase):
     def test_create_model_configure_file(self):
-        path = os.path.join(os.getenv("USHDIR"), "test_data")
+        path = os.path.join(os.getenv("USHrrfs"), "test_data")
         self.assertTrue(
             create_model_configure_file(
                 run_dir=path,
@@ -318,9 +318,9 @@ class Testing(unittest.TestCase):
         )
 
     def setUp(self):
-        USHDIR = os.path.dirname(os.path.abspath(__file__))
+        USHrrfs = os.path.dirname(os.path.abspath(__file__))
         MODEL_CONFIG_FN = "model_configure"
-        MODEL_CONFIG_TMPL_FP = os.path.join(USHDIR, "templates", MODEL_CONFIG_FN)
+        MODEL_CONFIG_TMPL_FP = os.path.join(USHrrfs, "templates", MODEL_CONFIG_FN)
 
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
@@ -328,7 +328,7 @@ class Testing(unittest.TestCase):
         set_env_var("PRINT_ESMF", True)
         set_env_var("CPL", True)
         set_env_var("WRITE_DOPOST", True)
-        set_env_var("USHDIR", USHDIR)
+        set_env_var("USHrrfs", USHrrfs)
         set_env_var("MODEL_CONFIG_FN", MODEL_CONFIG_FN)
         set_env_var("MODEL_CONFIG_TMPL_FP", MODEL_CONFIG_TMPL_FP)
         set_env_var("PE_MEMBER01", 24)

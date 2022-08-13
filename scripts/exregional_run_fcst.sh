@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHrrfs/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -89,7 +89,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
 #
 #-----------------------------------------------------------------------
 #
-source $USHDIR/source_machine_file.sh
+source $USHrrfs/source_machine_file.sh
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_RUN_FCST*PPN_RUN_FCST ))
@@ -445,7 +445,7 @@ fi
 
 if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
    [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
-  python3 $USHDIR/set_FV3nml_ens_stoch_seeds.py \
+  python3 $USHrrfs/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$cdate" || print_err_msg_exit "\
 Call to function to create the ensemble-based namelist for the current
@@ -465,7 +465,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHDIR/create_model_configure_file.py \
+python3 $USHrrfs/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$cdate" \
   --run-dir "${run_dir}" \
@@ -484,7 +484,7 @@ cycle's (cdate) run directory (run_dir) failed:
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHDIR/create_diag_table_file.py \
+python3 $USHrrfs/create_diag_table_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${run_dir}" || print_err_msg_exit "\
 Call to function to create a diag table file for the current cycle's 

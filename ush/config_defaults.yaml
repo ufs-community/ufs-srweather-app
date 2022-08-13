@@ -420,13 +420,17 @@ workflow:
   # 
   #   $PTMP/com/$NET/$model_ver/$RUN.$yyyymmdd/$hh
   #
+  # For more information on NCO standards
+  #   
+  #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
+  #
   #-----------------------------------------------------------------------
   #
-  COMIN: "/path/of/directory/containing/data/files/for/IC/LBCS"
   envir: "para"
   NET: "rrfs"
-  model_ver: "v1.0.0"
   RUN: "rrfs"
+  model_ver: "v1.0.0"
+  COMIN: "/path/of/directory/containing/data/files/for/IC/LBCS"
   STMP: "/base/path/of/directory/containing/model/input/and/raw/output/files"
   PTMP: "/base/path/of/directory/containing/postprocessed/output/files"
   #

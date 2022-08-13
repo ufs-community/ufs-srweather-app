@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHrrfs/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -92,7 +92,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_POST}
 #
 #-----------------------------------------------------------------------
 #
-source $USHDIR/source_machine_file.sh
+source $USHrrfs/source_machine_file.sh
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_RUN_POST*PPN_RUN_POST ))
@@ -244,7 +244,7 @@ EOF
 print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
-${RUN_CMD_POST} ${EXECDIR}/upp.x < itag || print_err_msg_exit "\
+${RUN_CMD_POST} ${EXECrrfs}/upp.x < itag || print_err_msg_exit "\
 Call to executable to run post for forecast hour $fhr returned with non-
 zero exit code."
 #

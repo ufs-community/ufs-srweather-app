@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHrrfs/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -16,7 +16,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/make_grid_mosaic_file.sh
+. $USHrrfs/make_grid_mosaic_file.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -25,7 +25,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -81,7 +81,7 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-source $USHDIR/source_machine_file.sh
+source $USHrrfs/source_machine_file.sh
 eval ${PRE_TASK_CMDS}
 
 if [ -z "${RUN_CMD_SERIAL:-}" ] ; then
@@ -222,7 +222,7 @@ elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
   exec_fn="regional_esg_grid"
 fi
 
-exec_fp="$EXECDIR/${exec_fn}"
+exec_fp="$EXECrrfs/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
 The executable (exec_fp) for generating the grid file does not exist:
@@ -313,7 +313,7 @@ generation executable (exec_fp):
 #
 # Call the python script to create the namelist file.
 #
-  ${USHDIR}/set_namelist.py -q -u "$settings" -o ${rgnl_grid_nml_fp} || \
+  ${USHrrfs}/set_namelist.py -q -u "$settings" -o ${rgnl_grid_nml_fp} || \
     print_err_msg_exit "\
 Call to python script set_namelist.py to set the variables in the
 regional_esg_grid namelist file failed.  Parameters passed to this script
@@ -356,7 +356,7 @@ Grid file generation completed successfully."
 #-----------------------------------------------------------------------
 #
 exec_fn="global_equiv_resol"
-exec_fp="$EXECDIR/${exec_fn}"
+exec_fp="$EXECrrfs/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
 The executable (exec_fp) for calculating the regional grid's global uniform
@@ -458,7 +458,7 @@ fi
 # Set the name and path to the executable and make sure that it exists.
 #
 exec_fn="shave"
-exec_fp="$EXECDIR/${exec_fn}"
+exec_fp="$EXECrrfs/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit " \
 The executable (exec_fp) for \"shaving\" down the halo in the grid file
@@ -587,7 +587,7 @@ halo failed."
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHDIR/link_fix.py \
+python3 $USHrrfs/link_fix.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --file-group "grid" || \
 print_err_msg_exit "\
@@ -605,7 +605,7 @@ failed."
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHDIR/set_FV3nml_sfc_climo_filenames.py \
+python3 $USHrrfs/set_FV3nml_sfc_climo_filenames.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     || print_err_msg_exit "\
 Call to function to set surface climatology file names in the FV3 namelist

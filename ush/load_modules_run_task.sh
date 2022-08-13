@@ -8,9 +8,9 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
-. $USHDIR/source_machine_file.sh
-. $USHDIR/init_env.sh
+. $USHrrfs/source_util_funcs.sh
+. $USHrrfs/source_machine_file.sh
+. $USHrrfs/init_env.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -19,7 +19,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #

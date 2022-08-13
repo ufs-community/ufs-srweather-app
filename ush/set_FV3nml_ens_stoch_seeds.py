@@ -172,10 +172,10 @@ class Testing(unittest.TestCase):
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
         self.cdate = datetime(2021, 1, 1)
-        USHDIR = os.path.dirname(os.path.abspath(__file__))
-        EXPTDIR = os.path.join(USHDIR, "test_data", "expt")
+        USHrrfs = os.path.dirname(os.path.abspath(__file__))
+        EXPTDIR = os.path.join(USHrrfs, "test_data", "expt")
         cp_vrfy(
-            os.path.join(USHDIR, f"templates{os.sep}input.nml.FV3"),
+            os.path.join(USHrrfs, f"templates{os.sep}input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
         )
         for i in range(2):
@@ -187,7 +187,7 @@ class Testing(unittest.TestCase):
                 ),
             )
 
-        set_env_var("USHDIR", USHDIR)
+        set_env_var("USHrrfs", USHrrfs)
         set_env_var("CYCLE_BASEDIR", EXPTDIR)
         set_env_var("ENSMEM_INDX", 2)
         set_env_var("FV3_NML_FN", "input.nml")
