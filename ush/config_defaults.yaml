@@ -369,7 +369,7 @@ workflow:
   #
   EXPT_BASEDIR: ""
   EXPT_SUBDIR: ""
-  EXEC_SUBDIR: "bin"
+  EXEC_SUBDIR: "exec"
   #
   #-----------------------------------------------------------------------
   #
