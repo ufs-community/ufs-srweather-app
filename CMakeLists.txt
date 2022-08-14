@@ -122,7 +122,7 @@ MESSAGE(${UFS-SRWEATHER-APP_SETTINGS})
 # Install ufs_srweather_app.settings file into same location
 # as the app.
 INSTALL(FILES "${CMAKE_BINARY_DIR}/ufs_srweather_app.settings"
-  DESTINATION bin)
+  DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 #####
 # Create 'ufs_srweather_app_meta.h' include file.
