@@ -5,6 +5,19 @@ if(CMAKE_INSTALL_BINDIR STREQUAL "exec")
   set(EMC_EXEC_DIR on)
 endif()
 
+# Options
+option(BUILD_UFS "Build UFS weather model" ON)
+option(BUILD_UFS_UTILS "Build UFS utilities" ON)
+option(BUILD_UPP "Build UPP" ON)
+option(BUILD_GSI "Build GSI" OFF)
+option(BUILD_RRFS_UTILS "Build RRFS utilities" OFF)
+
+message(STATUS "BUILD_UFS ............... ${BUILD_UFS}")
+message(STATUS "BUILD_UFS_UTILS ......... ${BUILD_UFS_UTILS}")
+message(STATUS "BUILD_GSI ............... ${BUILD_GSI}")
+message(STATUS "BUILD_UPP ............... ${BUILD_UPP}")
+message(STATUS "BUILD_RRFS_UTILS ........ ${BUILD_RRFS_UTILS}")
+
 # Build UFS utilities
 if(BUILD_UFS_UTILS)
 

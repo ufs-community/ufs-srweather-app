@@ -45,15 +45,14 @@ FUNCTION(is_enabled feature ret_val)
   ENDIF(${feature})
 ENDFUNCTION()
 
-# User options
-option(ENABLE_RRFS "Build RRFS components" OFF)
-
 # Turn on testing.
 enable_testing()
 include(CTest)
 
-# Build in this subdirectory.
-#add_subdirectory(src)
+# Default bin directory
+if(NOT DEFINED CMAKE_INSTALL_BINDIR)
+    set(CMAKE_INSTALL_BINDIR bin)
+endif()
 
 #####
 # Configure and print the ufs-srweather-app.settings file.
