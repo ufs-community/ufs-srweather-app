@@ -3,7 +3,7 @@
 # usage instructions
 usage () {
 cat << EOF_USAGE
-Usage: $0 --platform=PLATFORM [OPTIONS]... [TARGET]
+Usage: $0 --platform=PLATFORM [OPTIONS] ... [TARGETS]
 
 OPTIONS
   -h, --help
@@ -34,7 +34,7 @@ OPTIONS
   --install-dir=INSTALL_DIR
       installation prefix
   --bin-dir=BIN_DIR
-      installation binary directory
+      installation binary directory name ("bin" or "exec")
   --build-type=BUILD_TYPE
       build type; defaults to RELEASE
       (e.g. DEBUG | RELEASE | RELWITHDEBINFO)
@@ -44,7 +44,8 @@ OPTIONS
       build with verbose output
 
 TARGETS
-   all = builds the default list of apps (also not passing any target does the same)
+   default = builds the default list of apps (also not passing any target does the same)
+   all = builds all apps
    Or any combinations of (ufs, ufs_utils, upp, gsi, rrfs_utils)
 
 NOTE: This script is for internal developer use only;
@@ -73,6 +74,11 @@ Settings:
   BUILD_TYPE=${BUILD_TYPE}
   BUILD_JOBS=${BUILD_JOBS}
   VERBOSE=${VERBOSE}
+  BUILD_UFS=${BUILD_UFS}
+  BUILD_UFS_UTILS=${BUILD_UFS_UTILS}
+  BUILD_UPP=${BUILD_UPP}
+  BUILD_GSI=${BUILD_GSI}
+  BUILD_RRFS_UTILS=${BUILD_RRFS_UTILS}
 
 EOF_SETTINGS
 }
@@ -149,12 +155,15 @@ while :; do
     --verbose|-v) VERBOSE=true ;;
     --verbose=?*|--verbose=) usage_error "$1 argument ignored." ;;
     # targets
-    all) ;;
+    default) ;;
+    all) DEFAULT_BUILD=false; BUILD_UFS="on";
+         BUILD_UFS_UTILS="on"; BUILD_UPP="on";
+         BUILD_GSI="on"; BUILD_RRFS_UTILS="on";;
     ufs) DEFAULT_BUILD=false; BUILD_UFS="on" ;;
     ufs_utils) DEFAULT_BUILD=false; BUILD_UFS_UTILS="on" ;;
     upp) DEFAULT_BUILD=false; BUILD_UPP="on" ;;
     gsi) DEFAULT_BUILD=false; BUILD_GSI="on" ;;
-    rrfs_utils) DEFAULT_BUILD=false; BUILD_GSI="on" ;;
+    rrfs_utils) DEFAULT_BUILD=false; BUILD_RRFS_UTILS="on" ;;
     # unknown
     -?*|?*) usage_error "Unknown option $1" ;;
     *) break
@@ -167,8 +176,6 @@ if [ "${DEFAULT_BUILD}" = true ]; then
   BUILD_UFS="on"
   BUILD_UFS_UTILS="on"
   BUILD_UPP="on"
-  BUILD_GSI="off"
-  BUILD_RRFS_UTILS="off"
 fi
 
 # Ensure uppercase / lowercase ============================================
