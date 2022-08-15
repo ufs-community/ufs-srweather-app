@@ -27,8 +27,14 @@ OPTIONS
       (e.g. 32BIT | INLINE_POST | UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
   --continue
       continue with existing build
-  --clean
+  --remove
       removes existing build; overrides --continue
+  --clean
+      does a "make clean"
+  --build
+      does a "make"
+  --install
+      does a "make install"
   --build-dir=BUILD_DIR
       build directory
   --install-dir=INSTALL_DIR
@@ -69,7 +75,7 @@ Settings:
   CCPP=${CCPP_SUITES}
   ENABLE_OPTIONS=${ENABLE_OPTIONS}
   DISABLE_OPTIONS=${DISABLE_OPTIONS}
-  CLEAN=${CLEAN}
+  REMOVE=${REMOVE}
   CONTINUE=${CONTINUE}
   BUILD_TYPE=${BUILD_TYPE}
   BUILD_JOBS=${BUILD_JOBS}
@@ -104,17 +110,22 @@ ENABLE_OPTIONS=""
 DISABLE_OPTIONS=""
 BUILD_TYPE="RELEASE"
 BUILD_JOBS=4
-CLEAN=false
+REMOVE=false
 CONTINUE=false
 VERBOSE=false
 
-#Turn off all apps to build and choose default later
+# Turn off all apps to build and choose default later
 DEFAULT_BUILD=true 
 BUILD_UFS="off"
 BUILD_UFS_UTILS="off"
 BUILD_UPP="off"
 BUILD_GSI="off"
 BUILD_RRFS_UTILS="off"
+
+# Make options
+CLEAN=false
+BUILD=false
+INSTALL=false
 
 # process required arguments
 if [[ ("$1" == "--help") || ("$1" == "-h") ]]; then
@@ -138,10 +149,13 @@ while :; do
     --enable-options|--enable-options=) usage_error "$1 requires argument." ;;
     --disable-options=?*) DISABLE_OPTIONS=${1#*=} ;;
     --disable-options|--disable-options=) usage_error "$1 requires argument." ;;
-    --clean) CLEAN=true ;;
-    --clean=?*|--clean=) usage_error "$1 argument ignored." ;;
+    --remove) REMOVE=true ;;
+    --remove=?*|--remove=) usage_error "$1 argument ignored." ;;
     --continue) CONTINUE=true ;;
     --continue=?*|--continue=) usage_error "$1 argument ignored." ;;
+    --clean) CLEAN=true ;;
+    --build) BUILD=true ;;
+    --install) INSTALL=true ;;
     --build-dir=?*) BUILD_DIR=${1#*=} ;;
     --build-dir|--build-dir=) usage_error "$1 requires argument." ;;
     --install-dir=?*) INSTALL_DIR=${1#*=} ;;
@@ -234,7 +248,7 @@ fi
 printf "MODULE_FILE=${MODULE_FILE}\n" >&2
 
 # if build directory already exists then exit
-if [ "${CLEAN}" = true ]; then
+if [ "${REMOVE}" = true ]; then
   printf "Remove build directory\n"
   printf "  BUILD_DIR=${BUILD_DIR}\n\n"
   rm -rf ${BUILD_DIR}
@@ -307,9 +321,22 @@ module load ${MODULE_FILE}
 module list
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
+
 printf "... Generate CMAKE configuration ...\n"
 cmake ${SRW_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
-printf "... Compile executables ...\n"
-make ${MAKE_SETTINGS} 2>&1 | tee log.make
+
+if [ "${CLEAN}" = true ]; then
+    printf "... Clean executables ...\n"
+    make ${MAKE_SETTINGS} clean 2>&1 | tee log.make
+elif [ "${BUILD}" = true ]; then
+    printf "... Compile executables ...\n"
+    make ${MAKE_SETTINGS} mbuild 2>&1 | tee log.make
+elif [ "${INSTALL}" = true ]; then
+    printf "... Install executables ...\n"
+    make ${MAKE_SETTINGS} minstall 2>&1 | tee log.make
+else
+    printf "... Compile and install executables ...\n"
+    make ${MAKE_SETTINGS} 2>&1 | tee log.make
+fi
 
 exit 0
