@@ -299,7 +299,7 @@ the header and footer.
       err_msg="\n$1"
     fi
 
-    printf "${msg_header}${err_msg}${msg_footer}\n" 1>&2
+    printf "FATAL ERROR: ${msg_header}${err_msg}${msg_footer}\n" 1>&2
     exit 1
 
   fi
