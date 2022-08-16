@@ -913,8 +913,14 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global LOGDIR, FIXam, FIXclim, FIXLAM, CYCLE_BASEDIR, COMROOT, DCOMROOT
-    global COMOUT_BASEDIR, POST_OUTPUT_DOMAIN_NAME
+    global LOGDIR, FIXam, FIXclim, FIXLAM
+    global POST_OUTPUT_DOMAIN_NAME
+    global CYCLE_BASEDIR, COMROOT_BASEDIR
+
+    global OPSROOT, COMROOT, PACKAGEROOT, DATAROOT, DCOMROOT, DBNROOT
+    global SENDECF, SENDDBN, SENDDBN_NTC, SENDCOM, SENDWEB
+    global module_ver, extmodel_ver
+    global KEEPDATA, MAILTO, MAILCC
 
     LOGDIR = os.path.join(EXPTDIR, "log")
 
@@ -924,19 +930,41 @@ def setup():
 
     if RUN_ENVIR == "nco":
 
-        CYCLE_BASEDIR = os.path.join(STMP, "tmpnwprd", RUN)
-        check_for_preexist_dir_file(CYCLE_BASEDIR, PREEXISTING_DIR_METHOD)
-        COMROOT = os.path.join(PTMP, "com")
-        DCOMROOT = os.path.join(PTMP, "dcom")
-        COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
-        check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
+        if COMROOT is None:
+            CYCLE_BASEDIR = os.path.join(STMP, "tmpnwprd", RUN)
+            check_for_preexist_dir_file(CYCLE_BASEDIR, PREEXISTING_DIR_METHOD)
+            COMOUT_BASEDIR = os.path.join(PTMP, "com", NET, model_ver)
+            check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
+        else:
+            CYCLE_BASEDIR = os.path.join(COMROOT, NET, model_ver, RUN)
+            check_for_preexist_dir_file(CYCLE_BASEDIR, PREEXISTING_DIR_METHOD)
+            COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver, RUN)
+            check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
 
     else:
 
         CYCLE_BASEDIR = EXPTDIR
-        COMROOT = ""
-        DCOMROOT = ""
-        COMOUT_BASEDIR = ""
+        COMOUT_BASEDIR = None
+
+    try:
+        OPSROOT
+    except:
+        OPSROOT = PTMP
+        COMROOT = os.path.join(OPSROOT, "com")
+        PACKAGEROOT = os.path.join(OPSROOT, "packages")
+        DATAROOT = os.path.join(OPSROOT, "tmp")
+        DCOMROOT = os.path.join(OPSROOT, "dcom")
+        DBNROOT = None
+        SENDECF = False
+        SENDDBN = False
+        SENDDBN_NTC = False
+        SENDCOM = False
+        SENDWEB = False
+        module_ver = "8.5.2"
+        extmodel_ver = "00"
+        KEEPDATA = True
+        MAILTO = None
+        MAILCC = None
 
     #
     # -----------------------------------------------------------------------
@@ -1906,8 +1934,6 @@ def setup():
         "FIXgsm": FIXgsm,
         "FIXaer": FIXaer,
         "FIXlut": FIXlut,
-        "COMROOT": COMROOT,
-        "COMOUT_BASEDIR": COMOUT_BASEDIR,
         "TEMPLATE_DIR": TEMPLATE_DIR,
         "VX_CONFIG_DIR": VX_CONFIG_DIR,
         "METPLUS_CONF": METPLUS_CONF,
@@ -1919,7 +1945,6 @@ def setup():
         "UPP_DIR": UPP_DIR,
         "EXPTDIR": EXPTDIR,
         "LOGDIR": LOGDIR,
-        "CYCLE_BASEDIR": CYCLE_BASEDIR,
         "GRID_DIR": GRID_DIR,
         "OROG_DIR": OROG_DIR,
         "SFC_CLIMO_DIR": SFC_CLIMO_DIR,
@@ -2131,6 +2156,35 @@ def setup():
     # write derived settings
     cfg_d["derived"] = settings
 
+    #
+    # -----------------------------------------------------------------------
+    #
+    # NCO specific settings
+    #
+    # -----------------------------------------------------------------------
+    #
+    settings = {
+        "CYCLE_BASEDIR": CYCLE_BASEDIR,
+        "COMOUT_BASEDIR": COMOUT_BASEDIR,
+        "OPSROOT": OPSROOT,
+        "COMROOT": COMROOT,
+        "PACKAGEROOT": PACKAGEROOT,
+        "DATAROOT": DATAROOT,
+        "DCOMROOT": DCOMROOT,
+        "DBNROOT": DBNROOT,
+        "SENDECF": SENDECF,
+        "SENDDBN": SENDDBN,
+        "SENDDBN_NTC": SENDDBN_NTC,
+        "SENDCOM": SENDCOM,
+        "SENDWEB": SENDWEB,
+        "module_ver": module_ver,
+        "extmodel_ver": extmodel_ver,
+        "KEEPDATA": KEEPDATA,
+        "MAILTO": MAILTO,
+        "MAILCC": MAILCC,
+    }
+
+    cfg_d["nco"] = settings
     #
     # -----------------------------------------------------------------------
     #

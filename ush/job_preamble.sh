@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-if [ ! -z ${DATAROOT} ]; then
+if [ -e ${DATAROOT} ]; then
     export DATA=${DATAROOT}/${jobid}
     mkdir_vrfy -p $DATA
     cd $DATA
@@ -36,6 +36,15 @@ export pgmerr="errfile"
 #
 #-----------------------------------------------------------------------
 #
+# Set COMIN / COMOUT
+#
+#-----------------------------------------------------------------------
+#
+export COMIN="${CYCLE_BASEDIR}/${RUN}.${PDY}"
+export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}"
+#
+#-----------------------------------------------------------------------
+#
 # Add a postamble function
 #
 #-----------------------------------------------------------------------
@@ -48,9 +57,9 @@ function job_postamble() {
     fi
 
     # Remove temp directory
-    if [ ! -z ${DATAROOT} ]; then
+    if [ -e ${DATAROOT} ]; then
         cd $DATAROOT
-        [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+        [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
     fi
 
     # Print exit message
