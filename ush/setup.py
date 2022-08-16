@@ -883,7 +883,7 @@ def setup():
     # the fixed files containing the grid, orography, and surface climatology
     # on the native FV3-LAM grid.
     #
-    # CYCLE_BASEDIR:
+    # COMIN_BASEDIR:
     # The base directory in which the directories for the various cycles will
     # be placed.
     #
@@ -914,7 +914,7 @@ def setup():
     #
     global LOGDIR, FIXam, FIXclim, FIXLAM
     global POST_OUTPUT_DOMAIN_NAME
-    global CYCLE_BASEDIR, COMROOT_BASEDIR
+    global COMIN_BASEDIR, COMROOT_BASEDIR
 
     global OPSROOT, COMROOT, PACKAGEROOT, DATAROOT, DCOMROOT, DBNROOT
     global SENDECF, SENDDBN, SENDDBN_NTC, SENDCOM, SENDWEB
@@ -930,19 +930,19 @@ def setup():
     if RUN_ENVIR == "nco":
 
         if COMROOT is None:
-            CYCLE_BASEDIR = os.path.join(STMP, "tmpnwprd", RUN)
-            check_for_preexist_dir_file(CYCLE_BASEDIR, PREEXISTING_DIR_METHOD)
+            COMIN_BASEDIR = os.path.join(STMP, "tmpnwprd", RUN)
+            check_for_preexist_dir_file(COMIN_BASEDIR, PREEXISTING_DIR_METHOD)
             COMOUT_BASEDIR = os.path.join(PTMP, "com", NET, model_ver)
             check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
         else:
-            CYCLE_BASEDIR = os.path.join(COMROOT, NET, model_ver, RUN)
-            check_for_preexist_dir_file(CYCLE_BASEDIR, PREEXISTING_DIR_METHOD)
+            COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver, RUN)
+            check_for_preexist_dir_file(COMIN_BASEDIR, PREEXISTING_DIR_METHOD)
             COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver, RUN)
             check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
 
     else:
 
-        CYCLE_BASEDIR = EXPTDIR
+        COMIN_BASEDIR = EXPTDIR
         COMOUT_BASEDIR = None
 
     try:
@@ -2162,7 +2162,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     settings = {
-        "CYCLE_BASEDIR": CYCLE_BASEDIR,
+        "COMIN_BASEDIR": COMIN_BASEDIR,
         "COMOUT_BASEDIR": COMOUT_BASEDIR,
         "OPSROOT": OPSROOT,
         "COMROOT": COMROOT,

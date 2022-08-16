@@ -60,7 +60,7 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     ensmem_name = f"mem{ENSMEM_INDX}"
 
     fv3_nml_ensmem_fp = os.path.join(
-        CYCLE_BASEDIR,
+        COMIN_BASEDIR,
         f'{date_to_str(cdate,format="%Y%m%d%H")}{os.sep}{ensmem_name}{os.sep}{FV3_NML_FN}',
     )
 
@@ -188,7 +188,7 @@ class Testing(unittest.TestCase):
             )
 
         set_env_var("USHrrfs", USHrrfs)
-        set_env_var("CYCLE_BASEDIR", EXPTDIR)
+        set_env_var("COMIN_BASEDIR", EXPTDIR)
         set_env_var("ENSMEM_INDX", 2)
         set_env_var("FV3_NML_FN", "input.nml")
         set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml"))

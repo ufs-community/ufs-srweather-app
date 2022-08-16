@@ -370,7 +370,7 @@ def generate_FV3LAM_wflow():
             "jobsdir": JOBSDIR,
             "logdir": LOGDIR,
             "scriptsdir": SCRIPTSDIR,
-            "cycle_basedir": CYCLE_BASEDIR,
+            "comin_basedir": COMIN_BASEDIR,
             "global_var_defns_fp": GLOBAL_VAR_DEFNS_FP,
             "load_modules_run_task_fp": LOAD_MODULES_RUN_TASK_FP,
             #

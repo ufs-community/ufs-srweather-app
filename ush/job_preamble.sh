@@ -40,7 +40,7 @@ export pgmerr="errfile"
 #
 #-----------------------------------------------------------------------
 #
-export COMIN="${CYCLE_BASEDIR}/${RUN}.${PDY}"
+export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}"
 export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}"
 #
 #-----------------------------------------------------------------------
