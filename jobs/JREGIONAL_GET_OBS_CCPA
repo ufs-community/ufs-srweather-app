@@ -21,6 +21,7 @@
 #
 . ${GLOBAL_VAR_DEFNS_FP}
 . $USHrrfs/source_util_funcs.sh
+. $USHrrfs/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
