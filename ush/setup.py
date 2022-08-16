@@ -929,30 +929,41 @@ def setup():
 
     if RUN_ENVIR == "nco":
 
-        if COMROOT is None:
-            COMIN_BASEDIR = os.path.join(STMP, "tmpnwprd", RUN)
+        try:
+            OPSROOT
+        except NameError:
+            if PTMP is not None:
+                OPSROOT = PTMP
+                COMROOT = os.path.join(OPSROOT, "com")
+                PACKAGEROOT = os.path.join(OPSROOT, "packages")
+                DATAROOT = os.path.join(OPSROOT, "tmp")
+                DCOMROOT = os.path.join(OPSROOT, "dcom")
+            else:
+                OPSROOT = None
+                COMROOT = None
+                PACKAGEROOT = None
+                DATAROOT = None
+                DCOMROOT = None
+
+        if OPSROOT is not None:
+            COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
             check_for_preexist_dir_file(COMIN_BASEDIR, PREEXISTING_DIR_METHOD)
-            COMOUT_BASEDIR = os.path.join(PTMP, "com", NET, model_ver)
-            check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
-        else:
-            COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver, RUN)
-            check_for_preexist_dir_file(COMIN_BASEDIR, PREEXISTING_DIR_METHOD)
-            COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver, RUN)
+            COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
             check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
 
     else:
 
         COMIN_BASEDIR = EXPTDIR
         COMOUT_BASEDIR = None
+        OPSROOT = None
+        COMROOT = None
+        PACKAGEROOT = None
+        DATAROOT = None
+        DCOMROOT = None
 
     try:
-        OPSROOT
-    except:
-        OPSROOT = PTMP
-        COMROOT = os.path.join(OPSROOT, "com")
-        PACKAGEROOT = os.path.join(OPSROOT, "packages")
-        DATAROOT = os.path.join(OPSROOT, "tmp")
-        DCOMROOT = os.path.join(OPSROOT, "dcom")
+        DBNROOT
+    except NameError:
         DBNROOT = None
         SENDECF = False
         SENDDBN = False
@@ -964,6 +975,16 @@ def setup():
         KEEPDATA = True
         MAILTO = None
         MAILCC = None
+
+    # create NCO directories
+    if OPSROOT is not None:
+        mkdir_vrfy(f' -p "{OPSROOT}"')
+        mkdir_vrfy(f' -p "{COMROOT}"')
+        mkdir_vrfy(f' -p "{PACKAGEROOT}"')
+        mkdir_vrfy(f' -p "{DATAROOT}"')
+        mkdir_vrfy(f' -p "{DCOMROOT}"')
+    if DBNROOT is not None:
+        mkdir_vrfy(f' -p "{DBNROOT}"')
 
     #
     # -----------------------------------------------------------------------

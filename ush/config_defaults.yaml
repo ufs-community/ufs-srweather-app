@@ -430,9 +430,8 @@ workflow:
   NET: "rrfs"
   RUN: "rrfs"
   model_ver: "v1.0.0"
-  COMIN: "/path/of/directory/containing/data/files/for/IC/LBCS"
-  STMP: "/base/path/of/directory/containing/model/input/and/raw/output/files"
-  PTMP: "/base/path/of/directory/containing/postprocessed/output/files"
+  STMP: ""
+  PTMP: ""
   #
   #-----------------------------------------------------------------------
   #
