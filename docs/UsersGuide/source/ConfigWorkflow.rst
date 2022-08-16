@@ -9,6 +9,8 @@ There is an extensive list of experiment parameters that a user can set when con
 
 The following is a list of the parameters in the ``config_defaults.sh`` file. For each parameter, the default value and a brief description is given. 
 
+.. _PlatEnv:
+
 Platform Environment
 ====================
 ``RUN_ENVIR``: (Default: "nco")
