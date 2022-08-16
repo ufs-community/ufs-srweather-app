@@ -278,6 +278,8 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
@@ -304,6 +306,8 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>ICS_OR_LBCS</name><value>LBCS</value></envar>
@@ -340,6 +344,8 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
@@ -387,6 +393,8 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
@@ -439,6 +447,8 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
@@ -492,12 +502,13 @@ later below for other output times.
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+      <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+      <envar><name>fhr</name><value>#fhr#</value></envar>
+      <envar><name>fmn</name><value>#fmn#</value></envar>
       <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
       <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
-      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-      <envar><name>fhr</name><value>#fhr#</value></envar>
-      <envar><name>fmn</name><value>#fmn#</value></envar>
 
 <!--
 Note that because the forecast minutes and seconds corresponding to the
@@ -549,12 +560,13 @@ for other output times.
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
         <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+        <envar><name>fhr</name><value>#fhr#</value></envar>
+        <envar><name>fmn</name><value>#fmn#</value></envar>
         <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
         <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
         <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
-        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-        <envar><name>fhr</name><value>#fhr#</value></envar>
-        <envar><name>fmn</name><value>#fmn#</value></envar>
 
         <dependency>
           <or>
@@ -616,16 +628,17 @@ always zero).
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
         <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-        <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
-        <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
-        <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
         <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
         {%- if sub_hourly_post %}
         <envar><name>fhr</name><value>#fhr#</value></envar>
         <envar><name>fmn</name><value>#fmn#</value></envar>
         {%- else %}
         <envar><name>fhr</name><value>#fhr#</value></envar>
         {%- endif %}
+        <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+        <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+        <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
 
         <dependency>
           <or>
@@ -682,12 +695,13 @@ the <task> tag to be identical to the ones above for other output times.
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+      <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+      <envar><name>fhr</name><value>#fhr#</value></envar>
+      <envar><name>fmn</name><value>#fmn#</value></envar>
       <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
       <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
-      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-      <envar><name>fhr</name><value>#fhr#</value></envar>
-      <envar><name>fmn</name><value>#fmn#</value></envar>
 
       <dependency>
         <or>
@@ -729,6 +743,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>ACCUM</name><value>01</value></envar>
 
@@ -759,6 +774,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>SCRIPTSDIR</name><value>&SCRIPTSDIR;</value></envar>
     <envar><name>VAR</name><value>REFC RETOP</value></envar>
@@ -790,6 +806,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
 
   </task>
@@ -819,6 +836,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>01</value></envar>
@@ -872,6 +890,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>REFC</value></envar>
     {%- if do_ensemble %}
@@ -924,6 +943,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>RETOP</value></envar>
     {%- if do_ensemble %}
@@ -976,6 +996,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(3, fcst_len_hrs+1, 3) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>03</value></envar>
@@ -1014,6 +1035,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(6, fcst_len_hrs+1, 6) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>06</value></envar>
@@ -1052,6 +1074,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(24, fcst_len_hrs+1, 24) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>24</value></envar>
@@ -1090,6 +1113,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     {%- if do_ensemble %}
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
@@ -1145,6 +1169,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>01</value></envar>
@@ -1180,6 +1205,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(3, fcst_len_hrs+1, 3) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>03</value></envar>
@@ -1214,7 +1240,8 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar> 
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(6, fcst_len_hrs+1, 6) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>06</value></envar>
@@ -1250,6 +1277,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(24, fcst_len_hrs+1, 24) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>24</value></envar>
@@ -1284,6 +1312,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>REFC</value></envar>
 
@@ -1317,6 +1346,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>RETOP</value></envar>
 
@@ -1349,6 +1379,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>01</value></envar>
@@ -1383,6 +1414,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>01</value></envar>
@@ -1417,6 +1449,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(3, fcst_len_hrs+1, 3) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>03</value></envar>
@@ -1451,6 +1484,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(3, fcst_len_hrs+1, 3) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>03</value></envar>
@@ -1486,6 +1520,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(6, fcst_len_hrs+1, 6) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>06</value></envar>
@@ -1520,6 +1555,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(6, fcst_len_hrs+1, 6) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>06</value></envar>
@@ -1555,6 +1591,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(24, fcst_len_hrs+1, 24) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>24</value></envar>
@@ -1589,6 +1626,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(24, fcst_len_hrs+1, 24) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM</name><value>24</value></envar>
@@ -1623,6 +1661,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>REFC</value></envar>
 
@@ -1656,6 +1695,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>RETOP</value></envar>
 
@@ -1690,6 +1730,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
 
     <dependency>
@@ -1721,6 +1762,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
 
     <dependency>
@@ -1752,6 +1794,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
 
     <dependency>
