@@ -32,19 +32,19 @@
 # Top-level CCPA directory
 ccpa_dir=${OBS_DIR}/..
 if [[ ! -d "$ccpa_dir" ]]; then
-  mkdir -p $ccpa_dir
+  mkdir_vrfy -p $ccpa_dir
 fi
 
 # CCPA data from HPSS
 ccpa_raw=$ccpa_dir/raw
 if [[ ! -d "$ccpa_raw" ]]; then
-  mkdir -p $ccpa_raw
+  mkdir_vrfy -p $ccpa_raw
 fi
 
 # Reorganized CCPA location
 ccpa_proc=$ccpa_dir/proc
 if [[ ! -d "$ccpa_proc" ]]; then
-  mkdir -p $ccpa_proc
+  mkdir_vrfy -p $ccpa_proc
 fi
 
 # Accumulation is for accumulation of CCPA data to pull (hardcoded to 01h, see note above.)
@@ -102,19 +102,19 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
   # Create necessary raw and prop directories
   if [[ ! -d "$ccpa_raw/${vyyyymmdd}" ]]; then
-    mkdir -p $ccpa_raw/${vyyyymmdd}
+    mkdir_vrfy -p $ccpa_raw/${vyyyymmdd}
   fi
 
   if [[ ! -d "$ccpa_raw/${vyyyymmdd_m1}" ]]; then
-    mkdir -p $ccpa_raw/${vyyyymmdd_m1}
+    mkdir_vrfy -p $ccpa_raw/${vyyyymmdd_m1}
   fi
 
   if [[ ! -d "$ccpa_raw/${vyyyymmdd_p1}" ]]; then
-    mkdir -p $ccpa_raw/${vyyyymmdd_p1}
+    mkdir_vrfy -p $ccpa_raw/${vyyyymmdd_p1}
   fi
 
   if [[ ! -d "$ccpa_proc/${vyyyymmdd}" ]]; then
-    mkdir -p $ccpa_proc/${vyyyymmdd}
+    mkdir_vrfy -p $ccpa_proc/${vyyyymmdd}
   fi
 
   # Name of CCPA tar file on HPSS is dependent on date. Logic accounts for files from 2019 until Sept. 2020.
@@ -161,13 +161,13 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
     if [[ ${accum} == "01" ]]; then
       # Check if valid hour is 00
       if [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
-        cd $ccpa_raw/${vyyyymmdd_p1}
+        cd_vrfy $ccpa_raw/${vyyyymmdd_p1}
         # Pull CCPA data from HPSS
         TarCommand="htar -xvf ${TarFile_p1} \`htar -tf ${TarFile_p1} | egrep \"ccpa.t${vhh}z.${accum}h.hrap.conus.gb2\" | awk '{print $7}'\`"
         echo "CALLING: ${TarCommand}"
         htar -xvf ${TarFile_p1} `htar -tf ${TarFile_p1} | egrep "ccpa.t${vhh}z.${accum}h.hrap.conus.gb2" | awk '{print $7}'`
       else 
-        cd $ccpa_raw/${vyyyymmdd}
+        cd_vrfy $ccpa_raw/${vyyyymmdd}
         # Pull CCPA data from HPSS
         TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"ccpa.t${vhh}z.${accum}h.hrap.conus.gb2\" | awk '{print $7}'\`"
         echo "CALLING: ${TarCommand}"
@@ -177,35 +177,35 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
       # One hour CCPA files have incorrect metadeta in the files under the "00" directory from 20180718 to 20210504.
       # After data is pulled, reorganize into correct valid yyyymmdd structure.
       if [[ ${vhh_noZero} -ge 1 && ${vhh_noZero} -le 6 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/06/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/06/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -ge 7 && ${vhh_noZero} -le 12 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/12/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/12/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -ge 13 && ${vhh_noZero} -le 18 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/18/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/18/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
         if [[ ${vyyyymmdd} -ge 20180718 && ${vyyyymmdd} -le 20210504 ]]; then
           wgrib2 $ccpa_raw/${vyyyymmdd_p1}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -set_date -24hr -grib $ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -s
         else
-          cp $ccpa_raw/${vyyyymmdd_p1}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+          cp_vrfy $ccpa_raw/${vyyyymmdd_p1}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
         fi
       elif [[ ${vhh_noZero} -eq 0 ]]; then
         if [[ ${vyyyymmdd} -ge 20180718 && ${vyyyymmdd} -le 20210504 ]]; then
           wgrib2 $ccpa_raw/${vyyyymmdd}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -set_date -24hr -grib $ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -s
         else
-          cp $ccpa_raw/${vyyyymmdd}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+          cp_vrfy $ccpa_raw/${vyyyymmdd}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
         fi
       fi
 
     elif [[ ${accum} == "03" ]]; then
       # Check if valid hour is 21
       if [[ ${vhh_noZero} -ne 21 ]]; then
-        cd $ccpa_raw/${vyyyymmdd}
+        cd_vrfy $ccpa_raw/${vyyyymmdd}
         # Pull CCPA data from HPSS
         TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"ccpa.t${vhh}z.${accum}h.hrap.conus.gb2\" | awk '{print $7}'\`" 
         echo "CALLING: ${TarCommand}"
         htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "ccpa.t${vhh}z.${accum}h.hrap.conus.gb2" | awk '{print $7}'`
       elif [[ ${vhh_noZero} -eq 21 ]]; then
-        cd $ccpa_raw/${vyyyymmdd_p1}
+        cd_vrfy $ccpa_raw/${vyyyymmdd_p1}
         # Pull CCPA data from HPSS
         TarCommand="htar -xvf ${TarFile_p1} \`htar -tf ${TarFile_p1} | egrep \"ccpa.t${vhh}z.${accum}h.hrap.conus.gb2\" | awk '{print $7}'\`"
         echo "CALLING: ${TarCommand}"
@@ -213,32 +213,32 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
       fi
 
       if [[ ${vhh_noZero} -eq 0 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -eq 3 || ${vhh_noZero} -eq 6 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/06/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/06/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -eq 9 || ${vhh_noZero} -eq 12 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/12/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/12/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -eq 15 || ${vhh_noZero} -eq 18 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/18/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/18/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -eq 21 ]]; then
-        cp $ccpa_raw/${vyyyymmdd_p1}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd_p1}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       fi
 
     elif [[ ${accum} == "06" ]]; then
-      cd $ccpa_raw/${vyyyymmdd}
+      cd_vrfy $ccpa_raw/${vyyyymmdd}
       # Pull CCPA data from HPSS
       TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"ccpa.t${vhh}z.${accum}h.hrap.conus.gb2\" | awk '{print $7}'\`"
       echo "CALLING: ${TarCommand}"
       htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "ccpa.t${vhh}z.${accum}h.hrap.conus.gb2" | awk '{print $7}'`
 
       if [[ ${vhh_noZero} -eq 0 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -eq 6 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/06/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/06/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -eq 12 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/12/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/12/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -eq 18 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/18/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp_vrfy $ccpa_raw/${vyyyymmdd}/18/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       fi
     fi
   fi

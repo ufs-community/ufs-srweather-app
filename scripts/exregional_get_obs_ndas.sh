@@ -30,19 +30,19 @@
 # Top-level NDAS directory
 ndas_dir=${OBS_DIR}/..
 if [[ ! -d "$ndas_dir" ]]; then
-  mkdir -p $ndas_dir
+  mkdir_vrfy -p $ndas_dir
 fi
 
 # NDAS data from HPSS
 ndas_raw=$ndas_dir/raw
 if [[ ! -d "$ndas_raw" ]]; then
-  mkdir -p $ndas_raw
+  mkdir_vrfy -p $ndas_raw
 fi
 
 # Reorganized NDAS location
 ndas_proc=$ndas_dir/proc
 if [[ ! -d "$ndas_proc" ]]; then
-  mkdir -p $ndas_proc
+  mkdir_vrfy -p $ndas_proc
 fi
 
 # Initialization
@@ -127,9 +127,9 @@ echo "vhh_noZero=$vhh_noZero"
 
   if [[ ! -f "${ndas_file}" ]]; then 
     if [[ ! -d "$ndas_raw/${vyyyymmdd}${vhh}" ]]; then
-      mkdir -p $ndas_raw/${vyyyymmdd}${vhh}
+      mkdir_vrfy -p $ndas_raw/${vyyyymmdd}${vhh}
     fi      
-    cd $ndas_raw/${vyyyymmdd}${vhh}
+    cd_vrfy $ndas_raw/${vyyyymmdd}${vhh}
 
     # Name of NDAS tar file on HPSS is dependent on date. Logic accounts for files from 2019 until July 2020.
     if [[ ${vyyyymmdd} -ge 20190101 && ${vyyyymmdd} -le 20190820 ]]; then
@@ -150,17 +150,17 @@ echo "vhh_noZero=$vhh_noZero"
     fi
 
     if [[ ! -d "$ndas_proc" ]]; then
-      mkdir -p $ndas_proc
+      mkdir_vrfy -p $ndas_proc
     fi 
  
     if [[ ${vhh_noZero} -eq 0 || ${vhh} -eq 6 || ${vhh} -eq 12 || ${vhh} -eq 18 ]]; then
       #echo "$ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm00.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd}${vhh}"
-      cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm00.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd}${vhh}
-      cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm01.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd_m1h}${vhh_m1h}
-      cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm02.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd_m2h}${vhh_m2h}
-      cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm03.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd_m3h}${vhh_m3h}
-      cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm04.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd_m4h}${vhh_m4h}
-      cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm05.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd_m5h}${vhh_m5h}
+      cp_vrfy $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm00.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd}${vhh}
+      cp_vrfy $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm01.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd_m1h}${vhh_m1h}
+      cp_vrfy $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm02.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd_m2h}${vhh_m2h}
+      cp_vrfy $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm03.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd_m3h}${vhh_m3h}
+      cp_vrfy $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm04.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd_m4h}${vhh_m4h}
+      cp_vrfy $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm05.nr $ndas_proc/prepbufr.ndas.${vyyyymmdd_m5h}${vhh_m5h}
     fi
   fi
   current_fcst=$((${current_fcst} + 6))

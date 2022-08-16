@@ -29,19 +29,19 @@
 
 mrms_dir=${OBS_DIR}/..
 if [[ ! -d "$mrms_dir" ]]; then
-  mkdir -p $mrms_dir
+  mkdir_vrfy -p $mrms_dir
 fi
 
 # MRMS data from HPSS
 mrms_raw=$mrms_dir/raw
 if [[ ! -d "$mrms_raw" ]]; then
-  mkdir -p $mrms_raw
+  mkdir_vrfy -p $mrms_raw
 fi
 
 # Reorganized MRMS location
 mrms_proc=$mrms_dir/proc
 if [[ ! -d "$mrms_proc" ]]; then
-  mkdir -p $mrms_proc
+  mkdir_vrfy -p $mrms_proc
 fi
 
 # Initialization
@@ -83,7 +83,7 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
 
   # Create necessary raw and proc directories
   if [[ ! -d "$mrms_raw/${vyyyymmdd}" ]]; then
-    mkdir -p $mrms_raw/${vyyyymmdd}
+    mkdir_vrfy -p $mrms_raw/${vyyyymmdd}
   fi
 
   # Set field of interest from the MRMS products, including name and level information. 
@@ -104,7 +104,7 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
   echo "MRMS FILE:${mrms_file}"
 
   if [[ ! -f "${mrms_file}" ]]; then
-    cd $mrms_raw/${vyyyymmdd}
+    cd_vrfy $mrms_raw/${vyyyymmdd}
 
     # Name of MRMS tar file on HPSS is dependent on date. Logic accounts for files from 2019 until Sept. 2020.
     if [[ ${vyyyymmdd} -ge 20190101 && ${vyyyymmdd} -lt 20200303 ]]; then
@@ -140,7 +140,7 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
       exit ${Status}
     else
       if [[ ! -d "$mrms_proc/${vyyyymmdd}" ]]; then
-        mkdir -p $mrms_proc/${vyyyymmdd}
+        mkdir_vrfy -p $mrms_proc/${vyyyymmdd}
       fi
 	
       hour=0
