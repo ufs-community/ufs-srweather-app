@@ -32,9 +32,7 @@ OPTIONS
   --clean
       does a "make clean"
   --build
-      does a "make"
-  --install
-      does a "make install"
+      does a "make" (build only)
   --build-dir=BUILD_DIR
       build directory
   --install-dir=INSTALL_DIR
@@ -125,7 +123,6 @@ BUILD_RRFS_UTILS="off"
 # Make options
 CLEAN=false
 BUILD=false
-INSTALL=false
 
 # process required arguments
 if [[ ("$1" == "--help") || ("$1" == "-h") ]]; then
@@ -155,7 +152,6 @@ while :; do
     --continue=?*|--continue=) usage_error "$1 argument ignored." ;;
     --clean) CLEAN=true ;;
     --build) BUILD=true ;;
-    --install) INSTALL=true ;;
     --build-dir=?*) BUILD_DIR=${1#*=} ;;
     --build-dir|--build-dir=) usage_error "$1 requires argument." ;;
     --install-dir=?*) INSTALL_DIR=${1#*=} ;;
@@ -330,13 +326,10 @@ if [ "${CLEAN}" = true ]; then
     make ${MAKE_SETTINGS} clean 2>&1 | tee log.make
 elif [ "${BUILD}" = true ]; then
     printf "... Compile executables ...\n"
-    make ${MAKE_SETTINGS} mbuild 2>&1 | tee log.make
-elif [ "${INSTALL}" = true ]; then
-    printf "... Install executables ...\n"
-    make ${MAKE_SETTINGS} minstall 2>&1 | tee log.make
+    make ${MAKE_SETTINGS} build 2>&1 | tee log.make
 else
     printf "... Compile and install executables ...\n"
-    make ${MAKE_SETTINGS} 2>&1 | tee log.make
+    make ${MAKE_SETTINGS} install 2>&1 | tee log.make
 fi
 
 exit 0

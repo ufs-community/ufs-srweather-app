@@ -33,7 +33,7 @@ if(BUILD_UFS_UTILS)
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     CMAKE_ARGS ${UFS_UTILS_ARGS} -DEMC_EXEC_DIR=${EMC_EXEC_DIR}
     BUILD_ALWAYS TRUE
-    STEP_TARGETS build install
+    STEP_TARGETS build
     )
 endif()
 
@@ -93,7 +93,7 @@ if (BUILD_UFS)
     CMAKE_ARGS ${UFS_WEATHER_MODEL_ARGS}
     INSTALL_COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR} && cp ${CMAKE_CURRENT_BINARY_DIR}/ufs-weather-model/src/ufs-weather-model-build/ufs_model ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
     BUILD_ALWAYS TRUE
-    STEP_TARGETS build install
+    STEP_TARGETS build
     )
 endif()
 
@@ -107,7 +107,7 @@ if (BUILD_UPP)
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DEMC_EXEC_DIR=${EMC_EXEC_DIR}
     BUILD_ALWAYS TRUE
-    STEP_TARGETS build install
+    STEP_TARGETS build
     )
 endif()
 
@@ -121,7 +121,7 @@ if (BUILD_GSI)
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR} -DGSI_MODE=Regional -DENKF_MODE=FV3REG
     BUILD_ALWAYS TRUE
-    STEP_TARGETS build install
+    STEP_TARGETS build
     )
 endif()
 
@@ -135,7 +135,7 @@ if (BUILD_RRFS_UTILS)
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}
     BUILD_ALWAYS TRUE
-    STEP_TARGETS build install
+    STEP_TARGETS build
     DEPENDS GSI
     )
 endif()
@@ -143,8 +143,6 @@ endif()
 # add custom target for separate build and install
 foreach(i ${TARGET_LIST})
     list(APPEND BUILD_LIST "${i}-build")
-    list(APPEND INSTALL_LIST "${i}-install")
 endforeach()
 
 add_custom_target(pbuild DEPENDS ${BUILD_LIST})
-add_custom_target(pinstall DEPENDS ${INSTALL_LIST})

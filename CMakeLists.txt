@@ -132,7 +132,6 @@ configure_file(
 
 FILE(COPY "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app_meta.h" DESTINATION include)
 
-add_custom_target(mbuild DEPENDS sorc/pbuild)
-add_custom_target(minstall DEPENDS sorc/pinstall)
+add_custom_target(build DEPENDS sorc/pbuild)
 
 add_subdirectory(sorc)
