@@ -33,3 +33,32 @@ fi
 #
 export pgmout="OUTPUT.$$"
 export pgmerr="errfile"
+#
+#-----------------------------------------------------------------------
+#
+# Add a postamble function
+#
+#-----------------------------------------------------------------------
+#
+function job_postamble() {
+
+    # Print output file to stdout
+    if [ -e "$pgmout" ]; then
+        cat $pgmout
+    fi
+
+    # Remove temp directory
+    if [ ! -z ${DATAROOT} ]; then
+        cd $DATAROOT
+        [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+    fi
+
+    # Print exit message
+    print_info_msg "
+========================================================================
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
+}
+
+
