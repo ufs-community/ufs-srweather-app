@@ -348,16 +348,15 @@ def setup():
     #
     # Define some other useful paths
     #
-    global USHrrfs, SCRIPTSDIR, JOBSDIR, SORCDIR, SRC_DIR, PARMrrfs, MODULES_DIR
+    global USHrrfs, SCRIPTSDIR, JOBSDIR, SORCrrfs, PARMrrfs, MODULESrrfs
     global EXECrrfs, TEMPLATE_DIR, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
 
     USHrrfs = os.path.join(HOMErrfs, "ush")
     SCRIPTSDIR = os.path.join(HOMErrfs, "scripts")
     JOBSDIR = os.path.join(HOMErrfs, "jobs")
-    SORCDIR = os.path.join(HOMErrfs, "sorc")
-    SRC_DIR = os.path.join(SR_WX_APP_TOP_DIR, "src")
+    SORCrrfs = os.path.join(HOMErrfs, "sorc")
     PARMrrfs = os.path.join(HOMErrfs, "parm")
-    MODULES_DIR = os.path.join(HOMErrfs, "modulefiles")
+    MODULESrrfs = os.path.join(HOMErrfs, "modulefiles")
     EXECrrfs = os.path.join(SR_WX_APP_TOP_DIR, EXEC_SUBDIR)
     TEMPLATE_DIR = os.path.join(USHrrfs, "templates")
     VX_CONFIG_DIR = os.path.join(TEMPLATE_DIR, "parm")
@@ -1923,10 +1922,9 @@ def setup():
         "USHrrfs": USHrrfs,
         "SCRIPTSDIR": SCRIPTSDIR,
         "JOBSDIR": JOBSDIR,
-        "SORCDIR": SORCDIR,
-        "SRC_DIR": SRC_DIR,
+        "SORCrrfs": SORCrrfs,
         "PARMrrfs": PARMrrfs,
-        "MODULES_DIR": MODULES_DIR,
+        "MODULESrrfs": MODULESrrfs,
         "EXECrrfs": EXECrrfs,
         "FIXam": FIXam,
         "FIXclim": FIXclim,
