@@ -132,7 +132,7 @@ If the command worked properly, ``stage-srw.sh`` should appear in the local dire
 .. attention::
    Be sure to bind the directory that contains the experiment data! 
 
-The container provided includes directories that reflect the names of other Level 1 file systems. To explore the container, users can run the following commands:
+To explore the container and view available directories, users can run the following commands:
 
 .. code-block:: console
 
@@ -144,11 +144,11 @@ The directories printed will look like this:
 
 .. code-block:: console
 
-   bin	   discover       lfs   lib     media  run	      singularity    usr
-   boot	   environment    lfs1  lib32   mnt    sbin        srv	         var
-   contrib  etc	         lfs2  lib64   opt    scratch     sys	         work
-   data	   glade	         lfs3  libx32  proc   scratch1    tmp
-   dev	   home	         lfs4  lustre  root   scratch2    u
+   bin      discover       lfs   lib     media  run         singularity    usr
+   boot     environment    lfs1  lib32   mnt    sbin        srv            var
+   contrib  etc            lfs2  lib64   opt    scratch     sys            work
+   data     glade          lfs3  libx32  proc   scratch1    tmp
+   dev      home           lfs4  lustre  root   scratch2    u
 
 
 Download and Stage the Data
