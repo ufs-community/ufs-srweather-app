@@ -180,7 +180,7 @@ If users want to build the optional ``GSI`` and ``rrfs_utl`` components for RRFS
 
 The last line of the console output should be ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/bin`` directory. If this build method doesn't work, or if users are not on a supported machine, they will have to manually setup the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
+The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/bin`` directory. If users choose to build the ``GSI`` and ``rrfs_utl`` components, the executables listed in :numref:`Table %s <RRFSexec>` will also appear there. If this build method did not work, or if users are not on a supported machine, they will have to manually setup the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
 
 
 .. _ExecDescription:
@@ -240,7 +240,7 @@ The executables listed in :numref:`Table %s <ExecDescription>` should appear in 
    | vcoord_gen             | Generates hybrid coordinate interface profiles                                  |
    +------------------------+---------------------------------------------------------------------------------+
 
-
+.. _RRFSexec:
 
 .. table::  Names and descriptions of the executables produced when the RRFS option is enabled
    
@@ -371,7 +371,8 @@ From the build directory, run the following commands to build the pre-processing
 
 ``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. Although users can specify a larger or smaller number of threads (e.g., ``-j8``, ``-j2``), it is highly recommended to use at least 4 parallel threads to prevent overly long installation times. 
 
-If users want to build the optional GSI and rrfs_utl components for RRFS (NOTE: These components are not currently available for use at runtime), they can add ENABLE_RRFS=on to the original cmake command. For example:
+If users want to build the optional ``GSI`` and ``rrfs_utl`` components for RRFS (NOTE: These components are not currently available for use at runtime), they can add ``ENABLE_RRFS=on`` to the original cmake command. For example:
+
 .. code-block:: console
 
    cmake .. -DCMAKE_INSTALL_PREFIX=.. ENABLE_RRFS=on
