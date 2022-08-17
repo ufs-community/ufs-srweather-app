@@ -140,7 +140,7 @@ To explore the container and view available directories, users can run the follo
    cd /
    ls 
 
-The directories printed will look like this: 
+The list of directories printed will be similar to this: 
 
 .. code-block:: console
 
@@ -150,11 +150,12 @@ The directories printed will look like this:
    data     glade          lfs3  libx32  proc   scratch1    tmp
    dev      home           lfs4  lustre  root   scratch2    u
 
+Users can run ``exit`` to exit the shell. 
 
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available, as long as the ``--bind`` command in :numref:`Step %s <BuildC>` included the directory with the input model data. For Level 2-4 systems, the data must be added manually by the user. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available, as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. For Level 2-4 systems, the data must be added manually by the user. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GenerateForecastC:
 
@@ -204,7 +205,7 @@ where:
 
    * ``-c`` refers to the compiler on the user's local machine 
    * ``-m`` refers to the :term:`MPI` on the user's local machine
-   * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``)
+   * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <PlatEnv>` for a full list of options. 
    * ``-i`` refers to the name of the container image that was built in :numref:`Step %s <BuildC>`
 
 After this command runs, the working directory should contain ``srw.sh`` and a ``ufs-srweather-app`` directory. Users who need to bind more than one directory system to run their experiment must manually add an argument to the last line of the ``srw.sh`` file. For example, if the user already bound the ``/contrib`` directory and also wants to bind ``/lustre`` directories, they would add ``-B /lustre:/lustre`` to the last line of ``srw.sh`` as follows: 
@@ -253,18 +254,16 @@ From here, the user can follow detailed instructions in :numref:`Section %s <Use
          USE_CRON_TO_RELAUNCH="TRUE"
          CRON_RELAUNCH_INTVL_MNTS="02"
 
-      There are instructions for running the experiment via additional methods in :numref:`Section %s <RocotoRun>`. However, automation via cron table is the simplest option. To view experiment progress, users can ``cd`` to the experiment directory and run:
-
-      .. code-block:: console
-
-         rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
-
-      For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for information on how to run the workflow without Rocoto. 
+      There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via cron table is the simplest option. 
 
 .. _GenerateWorkflowC: 
 
 Generate the Workflow
 -----------------------------
+
+.. attention::
+
+   This section assumes that Rocoto is installed on the user's machine. If it is not, the user will need to allocate a compute node (described in :numref:`Section %s <WorkOnHPC>`) and run the workflow using standalone scripts as described in :numref:`Section %s <RunUsingStandaloneScripts>`. 
 
 Run the following command to generate the workflow:
 
@@ -274,7 +273,14 @@ Run the following command to generate the workflow:
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/1 * * * *`` or ``*/3 * * * *``. 
 
-The generated workflow will be in the experiment directory specified in the ``config.sh`` file in :numref:`Step %s <SetUpConfigFileC>`.  
+The generated workflow will be in the experiment directory specified in the ``config.sh`` file in :numref:`Step %s <SetUpConfigFileC>`. The default location is ``expt_dirs/test_community``. To view experiment progress, users can ``cd`` to the experiment directory from ``ufs-srweather-app/regional_workflow/ush`` and run:
+
+.. code-block:: console
+
+   cd ../../../expt_dirs/test_community
+   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
+For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for information on how to run the workflow without Rocoto. 
 
 
 New Experiment

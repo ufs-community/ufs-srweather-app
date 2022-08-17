@@ -28,7 +28,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
       * :ref:`Configure the experiment parameters <UserSpecificConfig>`
       * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
 
-   #. :ref:`Run the regional workflow <RocotoRun>` 
+   #. :ref:`Run the regional workflow <Run>` 
    #. :ref:`Optional: Plot the output <PlotOutput>`
 
 .. _AppOverallProc:
@@ -377,7 +377,6 @@ If users want to build the optional ``GSI`` and ``rrfs_utl`` components for RRFS
 
    cmake .. -DCMAKE_INSTALL_PREFIX=.. ENABLE_RRFS=on
    make -j 4 >& build.out &
-
 
 The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
 
@@ -1179,7 +1178,7 @@ Description of Workflow Tasks
 --------------------------------
 
 .. note::
-   This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <RocotoRun>`
+   This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <Run>`
 
 :numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by adding the following lines to the ``config.sh`` file before running the ``generate_FV3LAM_wflow.sh`` script: 
 
@@ -1332,7 +1331,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
 
 
-.. _RocotoRun:
+.. _Run:
 
 Run the Workflow 
 =======================
@@ -1341,7 +1340,7 @@ The workflow can be run using the Rocoto workflow manager (see :numref:`Section 
 
 .. attention::
 
-   If users are running the SRW App in a container or on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS or generic Linux systems), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
+   If users are running the SRW App on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS or generic Linux systems), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
 
 
 .. _UseRocoto:
@@ -1555,7 +1554,7 @@ Run the Workflow Using Stand-Alone Scripts
 .. note:: 
    The Rocoto workflow manager cannot be used inside a container. 
 
-The regional workflow can be run using standalone shell scripts in cases where the Rocoto software is not available on a given platform. If Rocoto *is* available, see :numref:`Section %s <RocotoRun>` to run the workflow using Rocoto. 
+The regional workflow can be run using standalone shell scripts in cases where the Rocoto software is not available on a given platform. If Rocoto *is* available, see :numref:`Section %s <Run>` to run the workflow using Rocoto. 
 
 #. ``cd`` into the experiment directory
 
