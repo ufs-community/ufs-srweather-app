@@ -49,13 +49,11 @@ Install the HPC-Stack
 
 **Definition:** :term:`HPC-Stack` is a repository that provides a unified, shell script-based build system to build the software stack required for `UFS <https://ufscommunity.org/>`_ applications such as the SRW App. 
 
-----------------
 Background
 ----------------
 
 The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g., NCEPLIBS, FMS) to libraries developed by NOAA's partners (e.g., PIO, ESMF) to truly third party libraries (e.g., NETCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW App.
 
--------------------------
 Instructions
 -------------------------
 Users working on systems that fall under `Support Levels 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ will need to install the HPC-Stack the first time they try to build applications (such as the SRW App) that depend on it. Users can either build the HPC-Stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing the HPC-Stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
@@ -149,7 +147,6 @@ Set Up the Environment and Build the Executables
 
 .. _DevBuild:
 
------------------------------
 ``devbuild.sh`` Approach
 -----------------------------
 
@@ -312,12 +309,11 @@ The executables listed in :numref:`Table %s <ExecDescription>` should appear in 
 
 .. _CMakeApproach:
 
------------------
 CMake Approach
 -----------------
 
 Set Up the Build Environment
---------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. attention::
    * If users successfully built the executables in :numref:`Table %s <ExecDescription>`, they should skip to step :numref:`Step %s <Data>`.
@@ -353,7 +349,7 @@ Note that building the SRW App without Lmod is not supported at this time. It sh
 .. _BuildCMake:
 
 Build the Executables Using CMake
--------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 After setting up the build environment in the preceding section (by loading the ``build_<platform>_<compiler>`` modulefile), users need to build the executables required to run the SRW App. In the ``ufs-srweather-app`` directory, create a subdirectory to hold the build's executables: 
 
@@ -386,7 +382,6 @@ The build will take a few minutes to complete. When it starts, a random number i
 
 .. _MacDetails:
 
-------------------------------------------
 Additional Details for Building on MacOS
 ------------------------------------------
 
@@ -488,7 +483,6 @@ The first two steps depend on the platform being used and are described here for
 
 .. _ExptConfig:
 
-----------------------------
 Set Experiment Parameters
 ---------------------------- 
 
@@ -499,7 +493,7 @@ For background info on ``config_defaults.sh``, read :numref:`Section %s <Default
 .. _DefaultConfigSection:
 
 Default configuration: ``config_defaults.sh``
-------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
    This section provides background information on how the SRW App uses the ``config_defaults.sh`` file. It is informative, but users do not need to modify ``config_defaults.sh`` to run the out-of-the-box case for the SRW App. Therefore, users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
@@ -691,7 +685,7 @@ settings. There is usually no need for a user to modify the default configuratio
 .. _UserSpecificConfig:
 
 User-specific configuration: ``config.sh``
-----------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The user must specify certain basic information about the experiment in a ``config.sh`` file located in the ``ufs-srweather-app/regional_workflow/ush`` directory. Two example templates are provided in that directory: ``config.community.sh`` and ``config.nco.sh``. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases and is fully supported for this release. The operational/NCO mode is typically used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` shows the configuration variables that appear in the ``config.community.sh``, along with their default values in ``config_default.sh`` and the values defined in ``config.community.sh``.
 
@@ -907,7 +901,7 @@ To configure an experiment and python environment for a general Linux or Mac sys
 .. _LinuxMacEnvConfig:
 
 User-specific Configuration on a General Linux/MacOS System
---------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The configuration process for Linux and MacOS systems is similar to the process for other systems, but it requires a few extra steps.
 
@@ -1045,7 +1039,7 @@ Configure a ``macos.sh`` or ``linux.sh`` machine file in ``$SRW/regional_workflo
 .. _VXConfig:
 
 Configure METplus Verification Suite (Optional)
---------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.sh`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
 
@@ -1095,7 +1089,6 @@ These tasks are independent, so users may set some values to "TRUE" and others t
 
 .. _SetUpPythonEnv:
 
-----------------------------------------------------
 Set Up the Python and Other Environment Parameters
 ----------------------------------------------------
 
@@ -1124,7 +1117,7 @@ then the user should run ``conda activate regional_workflow``. This will activat
 .. _LinuxMacActivateWFenv:
 
 Activating the Workflow Environment on Non-Level 1 Systems
--------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. ``wflow_macos`` and ``wflow_linux`` template files are provided with the release. After making appropriate modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow. 
 
@@ -1145,7 +1138,6 @@ However, it may instead be necessary to make additional adjustments to the ``wfl
 
 .. _GenerateWorkflow: 
 
--------------------------------------------
 Generate the Regional Workflow
 -------------------------------------------
 
@@ -1173,7 +1165,6 @@ The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASED
 
 .. _WorkflowTaskDescription: 
 
---------------------------------
 Description of Workflow Tasks
 --------------------------------
 
@@ -1345,7 +1336,6 @@ The workflow can be run using the Rocoto workflow manager (see :numref:`Section 
 
 .. _UseRocoto:
 
---------------------------------
 Run the Workflow Using Rocoto
 --------------------------------
 
@@ -1372,7 +1362,7 @@ If the login shell is csh/tcsh, it can be set using:
 .. _Automate:
 
 Automated Option
-----------------------
+^^^^^^^^^^^^^^^^^^^
 
 The simplest way to run the Rocoto workflow is to automate the process using a job scheduler such as :term:`Cron`. For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add the following commands to their ``config.sh`` file *before* generating the experiment:
 
@@ -1449,7 +1439,7 @@ If users choose to run METplus verification tasks as part of their experiment, t
 
 
 Launch the Rocoto Workflow Using a Script
------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Users who prefer not to automate their experiments can run the Rocoto workflow using the ``launch_FV3LAM_wflow.sh`` script provided. Simply call it without any arguments from the experiment directory: 
 
@@ -1506,10 +1496,9 @@ The workflow run is complete when all tasks have "SUCCEEDED", and the ``rocotost
 .. _RocotoManualRun:
 
 Launch the Rocoto Workflow Manually
----------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Load Rocoto
-^^^^^^^^^^^^^^^^
+**Load Rocoto**
 
 Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can load Rocoto and any other required modules. This gives the user more control over the process and allows them to view experiment progress more easily. On Level 1 systems, the Rocoto modules are loaded automatically in :numref:`Step %s <SetUpPythonEnv>`. For most other systems, a variant on the following commands will be necessary to load the Rocoto module:
 
@@ -1520,8 +1509,7 @@ Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can load Rocot
 
 Some systems may require a version number (e.g., ``module load rocoto/1.3.3``)
 
-Run the Rocoto Workflow
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+**Run the Rocoto Workflow**
 
 After loading Rocoto, call ``rocotorun`` from the experiment directory to launch the workflow tasks. This will start any tasks that do not have a dependency. As the workflow progresses through its stages, ``rocotostat`` will show the state of each task and allow users to monitor progress: 
 
@@ -1547,7 +1535,6 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
 
 .. _RunUsingStandaloneScripts:
 
----------------------------------------------
 Run the Workflow Using Stand-Alone Scripts
 ---------------------------------------------
 
