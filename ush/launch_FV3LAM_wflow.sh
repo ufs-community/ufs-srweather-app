@@ -96,9 +96,9 @@ fi
 #
 . $exptdir/var_defns.sh
 . $USHrrfs/source_util_funcs.sh
-. $USHrrfs/source_machine_file.sh
 . $USHrrfs/constants.sh
 . $USHrrfs/init_env.sh
+. ${MACHINE_FILE}
 #
 #-----------------------------------------------------------------------
 #

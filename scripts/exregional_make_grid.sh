@@ -81,7 +81,7 @@ print_input_args valid_args
 #
 #-----------------------------------------------------------------------
 #
-source $USHrrfs/source_machine_file.sh
+. ${MACHINE_FILE}
 eval ${PRE_TASK_CMDS}
 
 if [ -z "${RUN_CMD_SERIAL:-}" ] ; then

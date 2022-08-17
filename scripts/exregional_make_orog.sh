@@ -86,7 +86,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_OROG}
 #
 #-----------------------------------------------------------------------
 #
-source $USHrrfs/source_machine_file.sh
+. ${MACHINE_FILE}
 eval ${PRE_TASK_CMDS}
 
 if [ -z "${RUN_CMD_SERIAL:-}" ] ; then

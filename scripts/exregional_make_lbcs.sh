@@ -86,7 +86,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 #-----------------------------------------------------------------------
 #
-source $USHrrfs/source_machine_file.sh
+. ${MACHINE_FILE}
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_MAKE_LBCS*PPN_MAKE_LBCS ))

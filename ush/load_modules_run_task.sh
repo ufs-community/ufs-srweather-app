@@ -9,7 +9,6 @@
 #
 . ${GLOBAL_VAR_DEFNS_FP}
 . $USHrrfs/source_util_funcs.sh
-. $USHrrfs/source_machine_file.sh
 . $USHrrfs/init_env.sh
 #
 #-----------------------------------------------------------------------
@@ -72,6 +71,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+. ${MACHINE_FILE}
 env_init_scripts_fps_str="( "$(printf "\"%s\" " "${ENV_INIT_SCRIPTS_FPS[@]}")")"
 init_env env_init_scripts_fps="${env_init_scripts_fps_str}"
 #
