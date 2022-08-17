@@ -57,7 +57,8 @@ specified cycle.
 #
 valid_args=( \
 "cdate" \
-"cycle_dir" \
+"ics_lbcs_dir" \
+"run_dir" \
 "ensmem_indx" \
 "slash_ensmem_subdir" \
 )
@@ -103,14 +104,6 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_FCST}\'."
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Set the forecast run directory.
-#
-#-----------------------------------------------------------------------
-#
-run_dir="${cycle_dir}${slash_ensmem_subdir}"
 #
 #-----------------------------------------------------------------------
 #
@@ -267,21 +260,38 @@ of the current run directory (run_dir), where
 ..."
 
 cd_vrfy ${run_dir}/INPUT
+
+#
+# run_dir and ics_lbcs_dir are different
+#
+if [ "${run_dir}" != "${ics_lbcs_dir}" ]; then
+
+  relative_link_flag="FALSE"
+  for f_nm_path in ${ics_lbcs_dir}/INPUT/*; do
+    symlink=$( basename "${f_nm_path}" )
+    target="${f_nm_path}"
+    create_symlink_to_file target="$target" symlink="$symlink" \
+                         relative="${relative_link_flag}"
+  done
+
+fi
+
 #
 # The symlinks to be created point to files in the same directory (INPUT),
 # so it's most straightforward to use relative paths.
 #
-relative_link_flag="TRUE"
+relative_link_flag="FALSE"
 
-target="gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${ics_lbcs_dir}/INPUT/gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="gfs_data.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
 
-target="sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${ics_lbcs_dir}/INPUT/sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="sfc_data.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
+
 #
 #-----------------------------------------------------------------------
 #
@@ -490,6 +500,35 @@ python3 $USHrrfs/create_diag_table_file.py \
 Call to function to create a diag table file for the current cycle's 
 (cdate) run directory (run_dir) failed:
   run_dir = \"${run_dir}\""
+#
+#-----------------------------------------------------------------------
+#
+# Pre-generate symlinks to forecast output in DATA pointing to COMOUT
+#
+#-----------------------------------------------------------------------
+#
+comout_dir="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
+if [ ! -z ${DATA} ] && [ "${run_dir}" != "${comout_dir}" ]; then
+
+  # create comout directory
+  mkdir_vrfy -p ${comout_dir}
+
+  # first set suffix for minutes and seconds of forecast time
+  mnts_secs_str=""
+  if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+    if [ ${fhr}${fmn} = "00000" ]; then
+      mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${dt_atmos} seconds" "+%M:%S" )
+    else
+      mnts_secs_str=":${fmn}:00"
+    fi
+  fi
+
+  # create the symlinks
+  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
+    ln_vrfy -sf "${comout_dir}/dynf${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
+    ln_vrfy -sf "${comout_dir}/phyf${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
+  done
+fi
 #
 #-----------------------------------------------------------------------
 #
