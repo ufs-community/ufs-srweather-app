@@ -60,11 +60,21 @@ mkdir_vrfy -p "${ics_dir}"
 #
 #-----------------------------------------------------------------------
 #
+# Set the run directory
+#
+#-----------------------------------------------------------------------
+#
+run_dir="${DATA:-${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}}"
+mkdir_vrfy -p "${run_dir}"
+#
+#-----------------------------------------------------------------------
+#
 # Call the ex-script for this J-job and pass to it the necessary variables.
 #
 #-----------------------------------------------------------------------
 #
 $SCRIPTSDIR/exregional_make_ics.sh \
+  run_dir="${run_dir}" \
   ics_dir="${ics_dir}" || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."

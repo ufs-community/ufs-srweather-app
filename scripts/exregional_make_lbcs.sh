@@ -57,6 +57,7 @@ hour zero).
 #
 valid_args=( \
 "lbcs_dir" \
+"run_dir" \
 )
 process_args valid_args "$@"
 #
@@ -118,7 +119,7 @@ extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}"
 #
 #-----------------------------------------------------------------------
 #
-workdir="${lbcs_dir}/tmp_LBCS"
+workdir="${run_dir}/tmp_LBCS"
 mkdir_vrfy -p "$workdir"
 cd_vrfy $workdir
 #

@@ -57,6 +57,7 @@ This is the ex-script for the task that generates initial condition
 #
 valid_args=( \
 "ics_dir" \
+"run_dir" \
 )
 process_args valid_args "$@"
 #
@@ -120,7 +121,7 @@ extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}"
 #
 #-----------------------------------------------------------------------
 #
-workdir="${ics_dir}/tmp_ICS"
+workdir="${run_dir}/tmp_ICS"
 mkdir_vrfy -p "$workdir"
 cd_vrfy $workdir
 #
