@@ -4,7 +4,7 @@
 Container-Based Quick Start Guide
 ====================================
 
-This Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`’s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. However, the container is not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. Additionally, the Singularity container can only run on a single compute node, which makes the container-based approach inadequate for large experiments. However, it is an excellent starting point for beginners running the "out-of-the-box" SRW App case and other small experiments. The :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability or more compute power, particularly if they already have experience running the SRW App.
+This Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`'s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. However, the container is not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. Additionally, the Singularity container can only run on a single compute node, which makes the container-based approach inadequate for large experiments. However, it is an excellent starting point for beginners running the "out-of-the-box" SRW App case and other small experiments. The :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability or more compute power, particularly if they already have experience running the SRW App.
 
 .. COMMENT: Change this!
 
@@ -131,7 +131,7 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
    singularity exec -B /<local_base_dir>:/<container_dir_w_same_name> ./ubuntu20.04-intel22-ufs-srwapp.img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``--bind /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
+If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
 
 .. COMMENT: Can we bind more than one directory with the new method? Didn't seem to work on AWS w/contrib & /lustre...
 
@@ -226,7 +226,7 @@ From here, the user can follow detailed instructions in :numref:`Section %s <Use
 
       .. note::
 
-         On ``JET``, users must also add the line ``PARTITION_DEFAULT="xjet".
+         On ``JET``, users must also add the line ``PARTITION_DEFAULT="xjet"``.
    
    #. Edit ``config.sh`` to include the correct data paths. For example, on Hera, simply uncomment lines at the bottom of the ``config.sh`` file: 
 
@@ -249,9 +249,9 @@ From here, the user can follow detailed instructions in :numref:`Section %s <Use
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <RocotoRun>`. However, automation via cron table is the simplest option. To view experiment progress, users can ``cd`` to the experiment directory and run:
 
-         .. code-block:: console
+      .. code-block:: console
 
-            rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+         rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
       For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for information on how to run the workflow without Rocoto. 
 
@@ -274,11 +274,7 @@ The generated workflow will be in the experiment directory specified in the ``co
 New Experiment
 ===============
 
-To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.sh`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment:
-
-.. code-block:: console
-
-   ./generate_FV3LAM_wflow.sh
+To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.sh`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.sh``
 
 
 Plot the Output
