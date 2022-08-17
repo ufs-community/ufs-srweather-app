@@ -20,7 +20,7 @@ fi
 #-----------------------------------------------------------------------
 #
 export cycle="t${cyc}${subcyc}z"
-if [ command -v setpdy.sh ]; then
+if [ ! -z $(command -v setpdy.sh) ]; then
     setpdy.sh
     . ./PDY
 fi
