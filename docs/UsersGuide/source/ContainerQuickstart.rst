@@ -4,9 +4,7 @@
 Container-Based Quick Start Guide
 ====================================
 
-This Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`'s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. However, the container is not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. Additionally, the Singularity container can only run on a single compute node, which makes the container-based approach inadequate for large experiments. However, it is an excellent starting point for beginners running the "out-of-the-box" SRW App case and other small experiments. The :ref:`non-container approach <BuildRunSRW>` may be more appropriate for those users who desire additional customizability or more compute power, particularly if they already have experience running the SRW App.
-
-.. COMMENT: Change this!
+This Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`'s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. Normally, containers can only run on a single compute node and are not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. However, the Singularity container described in this chapter has been adapted such that it is able to run on multiple nodes using Rocoto. This makes it an excellent starting point for beginners. However, the :ref:`non-container approach <BuildRunSRW>` may still be more appropriate for users who desire additional customizability, particularly if they already have experience running the SRW App.
 
 The "out-of-the-box" SRW App case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
@@ -23,7 +21,7 @@ Download the Container
 Prerequisites: 
 -------------------
 
-Users must have an Intel Compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported container option assumes that Rocoto is pre-installed. 
+Users must have an Intel compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option for the ``develop`` branch assumes that Rocoto is pre-installed. 
 
 Install Singularity
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -63,18 +61,16 @@ On NOAA Cloud systems, the ``sudo su`` command may also be required:
 Download SRW App Code
 ------------------------
 
-Clone the SRW Application from GitHub and check out the external repositories:
+Clone the SRW Application from GitHub and run the executable that pulls in SRW App components from external repositories:
 
-   .. code-block:: console
+.. code-block:: console
 
-      git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git srw-local
-      cd srw-local
-      ./manage_externals/checkout_externals
-      cd ..
+   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git srw-local
+   cd srw-local
+   ./manage_externals/checkout_externals
+   cd ..
 
 The container will use elements of ``srw-local`` when running across compute nodes. 
-
-.. COMMENT: Do we have a workaround for this yet? If not, if this explanation correct?
 
 .. _BuildC:
 
@@ -87,7 +83,7 @@ Build the container:
 
    sudo singularity build ubuntu20.04-intel22-ufs-srwapp.img docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:latest
 
-.. hint::
+.. note::
    If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
 
 .. _WorkOnHPC:
@@ -95,7 +91,7 @@ Build the container:
 Allocate a Compute Node
 --------------------------
 
-Users working on HPC systems that do **not** have Rocoto installed must allocate a compute node. All other users may skip to the :ref:`next step <RunContainer>`. 
+Users working on HPC systems that do **not** have Rocoto installed must `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ or allocate a compute node. All other users may skip to the :ref:`next step <RunContainer>`. 
 
 .. note::
    
@@ -129,24 +125,30 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
 .. code-block:: console
 
-   singularity exec -B /<local_base_dir>:/<container_dir_w_same_name> ./ubuntu20.04-intel22-ufs-srwapp.img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
+   singularity exec -B /<local_base_dir>:/<container_dir> ./ubuntu20.04-intel22-ufs-srwapp.img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On Level 1 systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. 
-
-.. COMMENT: Can we bind more than one directory with the new method? Didn't seem to work on AWS w/contrib & /lustre...
+If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). In general, it is preferable for the local base directory and container directory to have the same name, but this is not required. Also, only one directory can be bound at this phase, but others may be added later. 
 
 .. attention::
    Be sure to bind the directory that contains the experiment data! 
 
+The container provided includes directories that reflect the names of other Level 1 file systems. To explore the container, users can run the following commands:
 
-.. COMMENT: Delete? Update?
-   When binding two directories, it is helpful to give them the same name. For example, if the host system's top-level directory is ``/glade``, users can create a ``glade`` directory in the container:
+.. code-block:: console
 
-   .. code-block:: console
+   singularity shell ./ubuntu20.04-intel22-ufs-srwapp.img
+   cd /
+   ls 
 
-      mkdir <path/to/container>/glade
+The directories printed will look like this: 
 
-.. COMMENT: Is this still possible? How would it be done? How do users check what is in the container? 
+.. code-block:: console
+
+   bin	   discover       lfs   lib     media  run	      singularity    usr
+   boot	   environment    lfs1  lib32   mnt    sbin        srv	         var
+   contrib  etc	         lfs2  lib64   opt    scratch     sys	         work
+   data	   glade	         lfs3  libx32  proc   scratch1    tmp
+   dev	   home	         lfs4  lustre  root   scratch2    u
 
 
 Download and Stage the Data
@@ -205,7 +207,11 @@ where:
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``)
    * ``-i`` refers to the name of the container image that was built in :numref:`Step %s <BuildC>`
 
-After this command runs, the working directory should contain ``srw.sh`` and a ``ufs-srweather-app`` directory. 
+After this command runs, the working directory should contain ``srw.sh`` and a ``ufs-srweather-app`` directory. Users who need to bind more than one directory system to run their experiment must manually add an argument to the last line of the ``srw.sh`` file. For example, if the user already bound the ``/contrib`` directory and also wants to bind ``/lustre`` directories, they would add ``-B /lustre:/lustre`` to the last line of ``srw.sh`` as follows: 
+
+.. code-block:: console
+
+   /usr/bin/singularity exec -B /contrib:/contrib -B /lustre:/lustre "${dir}/${img}" $cmd $arg
 
 .. attention::
 
@@ -217,7 +223,7 @@ From here, the user can follow detailed instructions in :numref:`Section %s <Use
       
       .. code-block:: console
 
-         cd <path/to/regional_workflow/ush>
+         cd ufs-srweather-app/regional_workflow/ush
          cp config.community.sh config.sh
 
       The default settings include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
