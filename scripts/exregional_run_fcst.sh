@@ -559,8 +559,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   fmn="00"
 
   if [ "${RUN_ENVIR}" = "nco" ]; then
-    COMOUT="${COMOUT_BASEDIR}/$RUN.$PDY/$cyc${SLASH_ENSMEM_SUBDIR}"
-    postprd_dir="$COMOUT"
+    postprd_dir="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
   else
     postprd_dir="${run_dir}/postprd"
   fi

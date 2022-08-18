@@ -62,7 +62,7 @@ on the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-run_dir="${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}"
+run_dir="${DATA:-${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}}"
 #
 # If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
 # minutes (fmn) are set to "00".  This is necessary in order to pass
@@ -91,17 +91,16 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  COMOUT="${COMOUT_BASEDIR}/$RUN.$PDY/$cyc${SLASH_ENSMEM_SUBDIR}"
-  postprd_dir="$COMOUT"
+  postprd_dir="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
 else
   postprd_dir="${run_dir}/postprd"
 fi
 mkdir_vrfy -p "${postprd_dir}"
 
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
-  tmp_dir="${postprd_dir}/$fhr$fmn"
+  tmp_dir="${DATA:-$postprd_dir}/$fhr$fmn"
 else
-  tmp_dir="${postprd_dir}/$fhr"
+  tmp_dir="${DATA:-$postprd_dir}/$fhr"
 fi
 check_for_preexist_dir_file "${tmp_dir}" "delete"
 mkdir_vrfy -p "${tmp_dir}"

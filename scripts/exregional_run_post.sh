@@ -199,8 +199,13 @@ fi
 #
 # Set the names of the forecast model's write-component output files.
 #
-dyn_file="${run_dir}/dynf${fhr}${mnts_secs_str}.nc"
-phy_file="${run_dir}/phyf${fhr}${mnts_secs_str}.nc"
+if [ -z ${DATA} ]; then
+    comout_dir=${run_dir}
+else
+    comout_dir="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
+fi
+dyn_file="${comout_dir}/dynf${fhr}${mnts_secs_str}.nc"
+phy_file="${comout_dir}/phyf${fhr}${mnts_secs_str}.nc"
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
