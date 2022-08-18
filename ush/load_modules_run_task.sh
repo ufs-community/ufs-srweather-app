@@ -8,8 +8,8 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_machine_file.sh
 . $USHDIR/source_util_funcs.sh
+. $USHDIR/source_machine_file.sh
 . $USHDIR/init_env.sh
 #
 #-----------------------------------------------------------------------
