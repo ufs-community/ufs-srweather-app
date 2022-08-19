@@ -7,7 +7,8 @@
 #
 #-----------------------------------------------------------------------
 #
-if [ -e ${DATAROOT} ]; then
+export DATA=
+if [ ! -z ${DATAROOT} ] && [ -d ${DATAROOT} ]; then
     export DATA=${DATAROOT}/${jobid}
     mkdir_vrfy -p $DATA
     cd $DATA
@@ -57,8 +58,7 @@ function job_postamble() {
     fi
 
     # Remove temp directory
-    if [ -e ${DATAROOT} ]; then
-        cd $DATAROOT
+    if [ ! -z ${DATA} ] && [ -d ${DATA} ]; then
         [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
     fi
 
