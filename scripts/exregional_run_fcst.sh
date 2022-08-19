@@ -48,34 +48,6 @@ specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  
-# Then process the arguments provided to this script/function (which 
-# should consist of a set of name-value pairs of the form arg1="value1",
-# etc).
-#
-#-----------------------------------------------------------------------
-#
-valid_args=( \
-"cdate" \
-"ics_lbcs_dir" \
-"run_dir" \
-"ensmem_indx" \
-"slash_ensmem_subdir" \
-)
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args valid_args
-#
-#-----------------------------------------------------------------------
-#
 # Set OpenMP variables.
 #
 #-----------------------------------------------------------------------
@@ -120,7 +92,7 @@ the grid and (filtered) orography files ..."
 # Create links to fix files in the FIXLAM directory.
 
 
-cd_vrfy ${run_dir}/INPUT
+cd_vrfy ${DATA}/INPUT
 
 #
 # For experiments in which the MAKE_GRID_TN task is run, we make the 
@@ -255,19 +227,19 @@ fi
 #
 print_info_msg "$VERBOSE" "
 Creating links with names that FV3 looks for in the INPUT subdirectory
-of the current run directory (run_dir), where
-  run_dir = \"${run_dir}\"
+of the current run directory (DATA), where
+  DATA = \"${DATA}\"
 ..."
 
-cd_vrfy ${run_dir}/INPUT
+cd_vrfy ${DATA}/INPUT
 
 #
-# run_dir and ics_lbcs_dir are different
+# DATA and INPUT_DATA are different
 #
-if [ "${run_dir}" != "${ics_lbcs_dir}" ]; then
+if [ "${DATA}" != "${INPUT_DATA}" ]; then
 
   relative_link_flag="FALSE"
-  for f_nm_path in ${ics_lbcs_dir}/INPUT/*; do
+  for f_nm_path in ${INPUT_DATA}/INPUT/*; do
     symlink=$( basename "${f_nm_path}" )
     target="${f_nm_path}"
     create_symlink_to_file target="$target" symlink="$symlink" \
@@ -282,12 +254,12 @@ fi
 #
 relative_link_flag="FALSE"
 
-target="${ics_lbcs_dir}/INPUT/gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${INPUT_DATA}/INPUT/gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="gfs_data.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
 
-target="${ics_lbcs_dir}/INPUT/sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${INPUT_DATA}/INPUT/sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="sfc_data.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
@@ -303,13 +275,13 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${run_dir}
+cd_vrfy ${DATA}
 
 print_info_msg "$VERBOSE" "
-Creating links in the current run directory (run_dir) to fixed (i.e.
+Creating links in the current run directory (DATA) to fixed (i.e.
 static) files in the FIXam directory:
   FIXam = \"${FIXam}\"
-  run_dir = \"${run_dir}\""
+  DATA = \"${DATA}\""
 #
 # For experiments that are run in "community" mode, the FIXam directory
 # is an actual directory (i.e. not a symlink) located under the experiment 
@@ -338,7 +310,7 @@ for (( i=0; i<${num_symlinks}; i++ )); do
   target=$( printf "%s\n" "$mapping" | \
             $SED -n -r -e "s/${regex_search}/\2/p" )
 
-  symlink="${run_dir}/$symlink"
+  symlink="${DATA}/$symlink"
   target="$FIXam/$target"
   create_symlink_to_file target="$target" symlink="$symlink" \
                          relative="${relative_link_flag}"
@@ -359,9 +331,9 @@ if [ "${USE_MERRA_CLIMO}" = "TRUE" ]; then
 
     if [ "${pre_f}" = "merra2" ]; then
       mnth=$( printf "%s\n" "${f_nm}" | grep -o -P '(?<=2014.m).*(?=.nc)' )
-      symlink="${run_dir}/aeroclim.m${mnth}.nc"
+      symlink="${DATA}/aeroclim.m${mnth}.nc"
     else
-      symlink="${run_dir}/${pre_f}.dat"
+      symlink="${DATA}/${pre_f}.dat"
     fi
     target="${f_nm_path}"
     create_symlink_to_file target="$target" symlink="$symlink" \
@@ -377,7 +349,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${run_dir}
+cd_vrfy ${DATA}
 rm_vrfy -f time_stamp.out
 #
 #-----------------------------------------------------------------------
@@ -409,19 +381,19 @@ else
 fi
 
 create_symlink_to_file target="${DATA_TABLE_FP}" \
-                       symlink="${run_dir}/${DATA_TABLE_FN}" \
+                       symlink="${DATA}/${DATA_TABLE_FN}" \
                        relative="${relative_link_flag}"
 
 create_symlink_to_file target="${FIELD_TABLE_FP}" \
-                       symlink="${run_dir}/${FIELD_TABLE_FN}" \
+                       symlink="${DATA}/${FIELD_TABLE_FN}" \
                        relative="${relative_link_flag}"
 
 create_symlink_to_file target="${NEMS_CONFIG_FP}" \
-                       symlink="${run_dir}/${NEMS_CONFIG_FN}" \
+                       symlink="${DATA}/${NEMS_CONFIG_FN}" \
                        relative="${relative_link_flag}"
 
 create_symlink_to_file target="${FIELD_DICT_FP}" \
-                       symlink="${run_dir}/${FIELD_DICT_FN}" \
+                       symlink="${DATA}/${FIELD_DICT_FN}" \
                        relative="${relative_link_flag}"
 
 if [ ${WRITE_DOPOST} = "TRUE" ]; then
@@ -457,14 +429,14 @@ if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TR
    [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
   python3 $USHrrfs/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-      --cdate "$cdate" || print_err_msg_exit "\
+      --cdate "$CDATE" || print_err_msg_exit "\
 Call to function to create the ensemble-based namelist for the current
-cycle's (cdate) run directory (run_dir) failed:
-  cdate = \"${cdate}\"
-  run_dir = \"${run_dir}\""
+cycle's (cdate) run directory (DATA) failed:
+  cdate = \"${CDATE}\"
+  DATA = \"${DATA}\""
 else
   create_symlink_to_file target="${FV3_NML_FP}" \
-                         symlink="${run_dir}/${FV3_NML_FN}" \
+                         symlink="${DATA}/${FV3_NML_FN}" \
                          relative="${relative_link_flag}"
 fi
 #
@@ -477,15 +449,15 @@ fi
 #
 python3 $USHrrfs/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-  --cdate "$cdate" \
-  --run-dir "${run_dir}" \
+  --cdate "$CDATE" \
+  --run-dir "${DATA}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
   --dt-atmos "${DT_ATMOS}" || print_err_msg_exit "\
 Call to function to create a model configuration file for the current
-cycle's (cdate) run directory (run_dir) failed:
-  cdate = \"${cdate}\"
-  run_dir = \"${run_dir}\""
+cycle's (cdate) run directory (DATA) failed:
+  cdate = \"${CDATE}\"
+  DATA = \"${DATA}\""
 #
 #-----------------------------------------------------------------------
 #
@@ -496,10 +468,10 @@ cycle's (cdate) run directory (run_dir) failed:
 #
 python3 $USHrrfs/create_diag_table_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-  --run-dir "${run_dir}" || print_err_msg_exit "\
+  --run-dir "${DATA}" || print_err_msg_exit "\
 Call to function to create a diag table file for the current cycle's 
-(cdate) run directory (run_dir) failed:
-  run_dir = \"${run_dir}\""
+(cdate) run directory (DATA) failed:
+  DATA = \"${DATA}\""
 #
 #-----------------------------------------------------------------------
 #
@@ -508,7 +480,7 @@ Call to function to create a diag table file for the current cycle's
 #-----------------------------------------------------------------------
 #
 comout_dir="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
-if [ ! -z ${DATA} ] && [ "${run_dir}" != "${comout_dir}" ]; then
+if [ ! -z ${DATAROOT} ] && [ "${DATA}" != "${comout_dir}" ]; then
 
   # create comout directory
   mkdir_vrfy -p ${comout_dir}
@@ -553,15 +525,15 @@ code."
 #
 if [ ${WRITE_DOPOST} = "TRUE" ]; then
 
-  yyyymmdd=${cdate:0:8}
-  hh=${cdate:8:2}
+  yyyymmdd=${CDATE:0:8}
+  hh=${CDATE:8:2}
   cyc=$hh
   fmn="00"
 
   if [ "${RUN_ENVIR}" = "nco" ]; then
     postprd_dir="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
   else
-    postprd_dir="${run_dir}/postprd"
+    postprd_dir="${DATA}/postprd"
   fi
   mkdir_vrfy -p "${postprd_dir}"
 
@@ -588,7 +560,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       FID=$(echo_uppercase $fid)
       post_orig_fn="${FID}.${post_fn_suffix}"
       post_renamed_fn="${NET}.t${cyc}z.${fid}.${post_renamed_fn_suffix}"
-      mv_vrfy ${run_dir}/${post_orig_fn} ${post_renamed_fn}
+      mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
       ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
     done
   done

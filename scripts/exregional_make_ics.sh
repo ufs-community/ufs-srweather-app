@@ -49,30 +49,6 @@ This is the ex-script for the task that generates initial condition
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  Then
-# process the arguments provided to this script/function (which should
-# consist of a set of name-value pairs of the form arg1="value1", etc).
-#
-#-----------------------------------------------------------------------
-#
-valid_args=( \
-"ics_dir" \
-"run_dir" \
-)
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args valid_args
-#
-#-----------------------------------------------------------------------
-#
 # Set OpenMP variables.
 #
 #-----------------------------------------------------------------------
@@ -121,9 +97,9 @@ extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}"
 #
 #-----------------------------------------------------------------------
 #
-workdir="${run_dir}/tmp_ICS"
-mkdir_vrfy -p "$workdir"
-cd_vrfy $workdir
+DATA="${DATA}/tmp_ICS"
+mkdir_vrfy -p "$DATA"
+cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -600,14 +576,14 @@ located in the following directory:
 #-----------------------------------------------------------------------
 #
 mv_vrfy out.atm.tile${TILE_RGNL}.nc \
-        ${ics_dir}/gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
+        ${INPUT_DATA}/gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
 
 mv_vrfy out.sfc.tile${TILE_RGNL}.nc \
-        ${ics_dir}/sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
+        ${INPUT_DATA}/sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
 
-mv_vrfy gfs_ctrl.nc ${ics_dir}
+mv_vrfy gfs_ctrl.nc ${INPUT_DATA}
 
-mv_vrfy gfs.bndy.nc ${ics_dir}/gfs_bndy.tile${TILE_RGNL}.000.nc
+mv_vrfy gfs.bndy.nc ${INPUT_DATA}/gfs_bndy.tile${TILE_RGNL}.000.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -628,7 +604,7 @@ native grid does not exist:
   fvcom_exec_fp = \"${fvcom_exec_fp}\"
 Please ensure that you've built this executable."
   fi
-  cp_vrfy ${fvcom_exec_fp} ${ics_dir}/.
+  cp_vrfy ${fvcom_exec_fp} ${INPUT_DATA}/.
   fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
   if [ ! -f "${fvcom_data_fp}" ]; then
     print_err_msg_exit "\
@@ -639,8 +615,8 @@ Please check the following user defined variables:
   FVCOM_FILE= \"${FVCOM_FILE}\" "
   fi
 
-  cp_vrfy ${fvcom_data_fp} ${ics_dir}/fvcom.nc
-  cd_vrfy ${ics_dir}
+  cp_vrfy ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
+  cd_vrfy ${INPUT_DATA}
   ${RUN_CMD_UTILS} ${fvcom_exec_fn} sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time}|| \
   print_err_msg_exit "\
 Call to executable (fvcom_exe) to modify sfc fields for FV3-LAM failed:
@@ -650,7 +626,7 @@ The following variables were being used:
   FVCOM_FILE = \"${FVCOM_FILE}\"
   fvcom_time = \"${fvcom_time}\"
   FVCOM_WCSTART = \"${FVCOM_WCSTART}\"
-  ics_dir = \"${ics_dir}\"
+  INPUT_DATA = \"${INPUT_DATA}\"
   fvcom_exe_dir = \"${fvcom_exe_dir}\"
   fvcom_exe = \"${fvcom_exe}\""
 fi

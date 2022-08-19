@@ -55,27 +55,6 @@ This is the ex-script for the task that generates grid files.
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  Then
-# process the arguments provided to this script/function (which should
-# consist of a set of name-value pairs of the form arg1="value1", etc).
-#
-#-----------------------------------------------------------------------
-#
-valid_args=("workdir")
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args valid_args
-#
-#-----------------------------------------------------------------------
-#
 # Set the machine-dependent run command.  Also, set resource limits as
 # necessary.
 #
@@ -218,7 +197,7 @@ fi
 #
 # Change location to the temporary (work) directory.
 #
-cd_vrfy "$workdir"
+cd_vrfy "$DATA"
 
 print_info_msg "$VERBOSE" "
 Starting grid file generation..."
@@ -271,7 +250,7 @@ elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
 # Create the namelist file read in by the ESGgrid-type grid generation
 # code in the temporary subdirectory.
 #
-  rgnl_grid_nml_fp="$workdir/${RGNL_GRID_NML_FN}"
+  rgnl_grid_nml_fp="$DATA/${RGNL_GRID_NML_FN}"
 
   print_info_msg "$VERBOSE" "
 Creating namelist file (rgnl_grid_nml_fp) to be read in by the grid
@@ -328,7 +307,7 @@ fi
 # Set the full path to the grid file generated above.  Then change location
 # to the original directory.
 #
-grid_fp="$workdir/${grid_fn}"
+grid_fp="$DATA/${grid_fn}"
 cd_vrfy -
 
 print_info_msg "$VERBOSE" "
@@ -459,11 +438,11 @@ fi
 #
 unshaved_fp="${grid_fp}"
 #
-# We perform the work in workdir, so change location to that directory.
-# Once it is complete, we will move the resultant file from workdir to
+# We perform the work in DATA, so change location to that directory.
+# Once it is complete, we will move the resultant file from DATA to
 # GRID_DIR.
 #
-cd_vrfy "$workdir"
+cd_vrfy "$DATA"
 #
 # Create an input namelist file for the shave executable to generate a
 # grid file with a 3-cell-wide halo from the one with a wide halo.  Then
@@ -475,7 +454,7 @@ print_info_msg "$VERBOSE" "
 halo..."
 
 nml_fn="input.shave.grid.halo${NH3}"
-shaved_fp="${workdir}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
+shaved_fp="${DATA}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
 printf "%s %s %s %s %s\n" \
   $NX $NY ${NH3} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
@@ -486,9 +465,9 @@ Call to executable (exec_fp) to generate a grid file with a ${NH3}-cell-wide
 halo from the grid file with a ${NHW}-cell-wide halo returned with nonzero
 exit code:
   exec_fp = \"${exec_fp}\"
-The namelist file (nml_fn) used in this call is in directory workdir:
+The namelist file (nml_fn) used in this call is in directory DATA:
   nml_fn = \"${nml_fn}\"
-  workdir = \"${workdir}\""
+  DATA = \"${DATA}\""
 mv_vrfy ${shaved_fp} ${GRID_DIR}
 #
 # Create an input namelist file for the shave executable to generate a
@@ -501,7 +480,7 @@ print_info_msg "$VERBOSE" "
 halo..."
 
 nml_fn="input.shave.grid.halo${NH4}"
-shaved_fp="${workdir}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
+shaved_fp="${DATA}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
 printf "%s %s %s %s %s\n" \
   $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
@@ -512,9 +491,9 @@ Call to executable (exec_fp) to generate a grid file with a ${NH4}-cell-wide
 halo from the grid file with a ${NHW}-cell-wide halo returned with nonzero
 exit code:
   exec_fp = \"${exec_fp}\"
-The namelist file (nml_fn) used in this call is in directory workdir:
+The namelist file (nml_fn) used in this call is in directory DATA:
   nml_fn = \"${nml_fn}\"
-  workdir = \"${workdir}\""
+  DATA = \"${DATA}\""
 mv_vrfy ${shaved_fp} ${GRID_DIR}
 #
 # Change location to the original directory.

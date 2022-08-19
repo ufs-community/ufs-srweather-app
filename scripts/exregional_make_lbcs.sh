@@ -49,30 +49,6 @@ hour zero).
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  Then
-# process the arguments provided to this script/function (which should
-# consist of a set of name-value pairs of the form arg1="value1", etc).
-#
-#-----------------------------------------------------------------------
-#
-valid_args=( \
-"lbcs_dir" \
-"run_dir" \
-)
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args valid_args
-#
-#-----------------------------------------------------------------------
-#
 # Set OpenMP variables.
 #
 #-----------------------------------------------------------------------
@@ -119,9 +95,9 @@ extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}"
 #
 #-----------------------------------------------------------------------
 #
-workdir="${run_dir}/tmp_LBCS"
-mkdir_vrfy -p "$workdir"
-cd_vrfy $workdir
+DATA="${DATA}/tmp_LBCS"
+mkdir_vrfy -p "$DATA"
+cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -512,7 +488,7 @@ located in the following directory:
 # that of the external model since their start times may be offset).
 #
   fcst_hhh_FV3LAM=$( printf "%03d" "${LBC_SPEC_FCST_HRS[$i]}" )
-  mv_vrfy gfs.bndy.nc ${lbcs_dir}/gfs_bndy.tile7.${fcst_hhh_FV3LAM}.nc
+  mv_vrfy gfs.bndy.nc ${INPUT_DATA}/gfs_bndy.tile7.${fcst_hhh_FV3LAM}.nc
 
 done
 #

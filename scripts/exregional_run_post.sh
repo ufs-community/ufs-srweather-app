@@ -48,36 +48,6 @@ the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  
-# Then process the arguments provided to this script/function (which 
-# should consist of a set of name-value pairs of the form arg1="value1",
-# etc).
-#
-#-----------------------------------------------------------------------
-#
-valid_args=( \
-"cdate" \
-"run_dir" \
-"postprd_dir" \
-"tmp_dir" \
-"fhr" \
-"fmn" \
-"dt_atmos" \
-)
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args valid_args
-#
-#-----------------------------------------------------------------------
-#
 # Set OpenMP variables.
 #
 #-----------------------------------------------------------------------
@@ -109,7 +79,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Remove any files from previous runs and stage necessary files in the 
-# temporary work directory specified by tmp_dir.
+# temporary work directory specified by DATA_FHR.
 #
 #-----------------------------------------------------------------------
 #
@@ -120,9 +90,9 @@ if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   print_info_msg "
 ====================================================================
 Copying the user-defined post flat file specified by CUSTOM_POST_CONFIG_FP
-to the temporary work directory (tmp_dir):
+to the temporary work directory (DATA_FHR):
   CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
-  tmp_dir = \"${tmp_dir}\"
+  DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 else
   if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
@@ -133,9 +103,9 @@ else
   print_info_msg "
 ====================================================================
 Copying the default post flat file specified by post_config_fp to the 
-temporary work directory (tmp_dir):
+temporary work directory (DATA_FHR):
   post_config_fp = \"${post_config_fp}\"
-  tmp_dir = \"${tmp_dir}\"
+  DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 fi
 cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
@@ -153,21 +123,21 @@ if [ ${USE_CRTM} = "TRUE" ]; then
   print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from CRTM_DIR to the temporary
-work directory (tmp_dir):
+work directory (DATA_FHR):
   CRTM_DIR = \"${CRTM_DIR}\"
-  tmp_dir = \"${tmp_dir}\"
+  DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 fi
 #
 #-----------------------------------------------------------------------
 #
 # Get the cycle date and hour (in formats of yyyymmdd and hh, respectively)
-# from cdate.
+# from CDATE.
 #
 #-----------------------------------------------------------------------
 #
-yyyymmdd=${cdate:0:8}
-hh=${cdate:8:2}
+yyyymmdd=${CDATE:0:8}
+hh=${CDATE:8:2}
 cyc=$hh
 #
 #-----------------------------------------------------------------------
@@ -191,7 +161,7 @@ cyc=$hh
 mnts_secs_str=""
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
   if [ ${fhr}${fmn} = "00000" ]; then
-    mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${dt_atmos} seconds" "+%M:%S" )
+    mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${DT_ATMOS} seconds" "+%M:%S" )
   else
     mnts_secs_str=":${fmn}:00"
   fi
@@ -199,8 +169,8 @@ fi
 #
 # Set the names of the forecast model's write-component output files.
 #
-if [ -z ${DATA} ]; then
-    comout_dir=${run_dir}
+if [ -z ${DATAROOT} ]; then
+    comout_dir=${DATA}
 else
     comout_dir="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
 fi
@@ -241,7 +211,7 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-# Run the UPP executable in the temporary directory (tmp_dir) for this
+# Run the UPP executable in the temporary directory (DATA_FHR) for this
 # output time.
 #
 #-----------------------------------------------------------------------
@@ -256,7 +226,7 @@ zero exit code."
 #-----------------------------------------------------------------------
 #
 # Move and rename the output files from the work directory to their final 
-# location in postprd_dir.  Also, create symlinks in postprd_dir to the
+# location in OUTPUT_DATA.  Also, create symlinks in OUTPUT_DATA to the
 # grib2 files that are needed by the data services group.  Then delete 
 # the work directory.
 #
@@ -296,12 +266,12 @@ fi
 post_fn_suffix="GrbF${post_fhr}${dot_post_mn_or_null}"
 post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 #
-# For convenience, change location to postprd_dir (where the final output
+# For convenience, change location to OUTPUT_DATA (where the final output
 # from UPP will be located).  Then loop through the two files that UPP
 # generates (i.e. "...prslev..." and "...natlev..." files) and move, 
 # rename, and create symlinks to them.
 #
-cd_vrfy "${postprd_dir}"
+cd_vrfy "${OUTPUT_DATA}"
 basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
 symlink_suffix="_${basetime}f${fhr}${post_mn}"
 fids=( "prslev" "natlev" )
@@ -309,13 +279,13 @@ for fid in "${fids[@]}"; do
   FID=$(echo_uppercase $fid)
   post_orig_fn="${FID}.${post_fn_suffix}"
   post_renamed_fn="${NET}.t${cyc}z.${fid}.${post_renamed_fn_suffix}"
-  mv_vrfy ${tmp_dir}/${post_orig_fn} ${post_renamed_fn}
+  mv_vrfy ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
   create_symlink_to_file target="${post_renamed_fn}" \
                          symlink="${FID}${symlink_suffix}" \
                          relative="TRUE"
 done
 
-rm_vrfy -rf ${tmp_dir}
+rm_vrfy -rf ${DATA_FHR}
 #
 #-----------------------------------------------------------------------
 #

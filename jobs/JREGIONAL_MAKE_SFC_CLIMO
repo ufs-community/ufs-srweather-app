@@ -63,9 +63,9 @@ mkdir_vrfy -p "${SFC_CLIMO_DIR}"
 #
 #-----------------------------------------------------------------------
 #
-workdir="${DATA:-${SFC_CLIMO_DIR}/tmp}"
-check_for_preexist_dir_file "$workdir" "delete"
-mkdir_vrfy $workdir
+DATA="${DATA:-${SFC_CLIMO_DIR}/tmp}"
+check_for_preexist_dir_file "$DATA" "delete"
+mkdir_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -74,8 +74,7 @@ mkdir_vrfy $workdir
 #
 #-----------------------------------------------------------------------
 #
-${SCRIPTSDIR}/exregional_make_sfc_climo.sh \
-  workdir="$workdir" || \
+${SCRIPTSDIR}/exregional_make_sfc_climo.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

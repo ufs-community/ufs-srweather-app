@@ -49,29 +49,6 @@ the UPP output files by initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  
-# Then process the arguments provided to this script/function (which 
-# should consist of a set of name-value pairs of the form arg1="value1",
-# etc).
-#
-#-----------------------------------------------------------------------
-#
-valid_args=( "cycle_dir" )
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args valid_args
-
-#
-#-----------------------------------------------------------------------
-#
 # Get the cycle date and hour (in formats of yyyymmdd and hh, respect-
 # ively) from CDATE. Also read in FHR and create a comma-separated list
 # for METplus to run over.

@@ -47,29 +47,6 @@ the UPP output files by initialization time for all forecast hours for
 gridded data.
 ========================================================================"
 
-#
-#-----------------------------------------------------------------------
-#
-# Specify the set of valid argument names for this script/function.  
-# Then process the arguments provided to this script/function (which 
-# should consist of a set of name-value pairs of the form arg1="value1",
-# etc).
-#
-#-----------------------------------------------------------------------
-#
-valid_args=( "cycle_dir" )
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args valid_args
-
 #-----------------------------------------------------------------------
 #
 # Begin grid-to-grid vx on ensemble output.
