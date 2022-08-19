@@ -61,7 +61,7 @@ This is the ex-script for the task that generates grid files.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=()
+valid_args=("workdir")
 process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
@@ -93,20 +93,6 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Create the (cycle-independent) subdirectories under the experiment
-# directory (EXPTDIR) that are needed by the various steps and substeps
-# in this script.
-#
-#-----------------------------------------------------------------------
-#
-check_for_preexist_dir_file "${GRID_DIR}" "${PREEXISTING_DIR_METHOD}"
-mkdir_vrfy -p "${GRID_DIR}"
-
-tmpdir="${GRID_DIR}/tmp"
-mkdir_vrfy -p "$tmpdir"
 #
 #-----------------------------------------------------------------------
 #
@@ -232,7 +218,7 @@ fi
 #
 # Change location to the temporary (work) directory.
 #
-cd_vrfy "$tmpdir"
+cd_vrfy "$workdir"
 
 print_info_msg "$VERBOSE" "
 Starting grid file generation..."
@@ -285,7 +271,7 @@ elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
 # Create the namelist file read in by the ESGgrid-type grid generation
 # code in the temporary subdirectory.
 #
-  rgnl_grid_nml_fp="$tmpdir/${RGNL_GRID_NML_FN}"
+  rgnl_grid_nml_fp="$workdir/${RGNL_GRID_NML_FN}"
 
   print_info_msg "$VERBOSE" "
 Creating namelist file (rgnl_grid_nml_fp) to be read in by the grid
@@ -342,7 +328,7 @@ fi
 # Set the full path to the grid file generated above.  Then change location
 # to the original directory.
 #
-grid_fp="$tmpdir/${grid_fn}"
+grid_fp="$workdir/${grid_fn}"
 cd_vrfy -
 
 print_info_msg "$VERBOSE" "
@@ -473,11 +459,11 @@ fi
 #
 unshaved_fp="${grid_fp}"
 #
-# We perform the work in tmpdir, so change location to that directory.
-# Once it is complete, we will move the resultant file from tmpdir to
+# We perform the work in workdir, so change location to that directory.
+# Once it is complete, we will move the resultant file from workdir to
 # GRID_DIR.
 #
-cd_vrfy "$tmpdir"
+cd_vrfy "$workdir"
 #
 # Create an input namelist file for the shave executable to generate a
 # grid file with a 3-cell-wide halo from the one with a wide halo.  Then
@@ -489,7 +475,7 @@ print_info_msg "$VERBOSE" "
 halo..."
 
 nml_fn="input.shave.grid.halo${NH3}"
-shaved_fp="${tmpdir}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
+shaved_fp="${workdir}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
 printf "%s %s %s %s %s\n" \
   $NX $NY ${NH3} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
@@ -500,9 +486,9 @@ Call to executable (exec_fp) to generate a grid file with a ${NH3}-cell-wide
 halo from the grid file with a ${NHW}-cell-wide halo returned with nonzero
 exit code:
   exec_fp = \"${exec_fp}\"
-The namelist file (nml_fn) used in this call is in directory tmpdir:
+The namelist file (nml_fn) used in this call is in directory workdir:
   nml_fn = \"${nml_fn}\"
-  tmpdir = \"${tmpdir}\""
+  workdir = \"${workdir}\""
 mv_vrfy ${shaved_fp} ${GRID_DIR}
 #
 # Create an input namelist file for the shave executable to generate a
@@ -515,7 +501,7 @@ print_info_msg "$VERBOSE" "
 halo..."
 
 nml_fn="input.shave.grid.halo${NH4}"
-shaved_fp="${tmpdir}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
+shaved_fp="${workdir}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
 printf "%s %s %s %s %s\n" \
   $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
@@ -526,9 +512,9 @@ Call to executable (exec_fp) to generate a grid file with a ${NH4}-cell-wide
 halo from the grid file with a ${NHW}-cell-wide halo returned with nonzero
 exit code:
   exec_fp = \"${exec_fp}\"
-The namelist file (nml_fn) used in this call is in directory tmpdir:
+The namelist file (nml_fn) used in this call is in directory workdir:
   nml_fn = \"${nml_fn}\"
-  tmpdir = \"${tmpdir}\""
+  workdir = \"${workdir}\""
 mv_vrfy ${shaved_fp} ${GRID_DIR}
 #
 # Change location to the original directory.
