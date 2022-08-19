@@ -172,10 +172,10 @@ fi
 if [ -z ${DATAROOT} ]; then
     comout_dir=${DATA}
 else
-    comout_dir="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
+    comout_dir="${COMOUT}"
 fi
-dyn_file="${comout_dir}/dynf${fhr}${mnts_secs_str}.nc"
-phy_file="${comout_dir}/phyf${fhr}${mnts_secs_str}.nc"
+dyn_file="${comout_dir}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.dynf${fhr}${mnts_secs_str}.nc"
+phy_file="${comout_dir}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.phyf${fhr}${mnts_secs_str}.nc"
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
@@ -226,7 +226,7 @@ zero exit code."
 #-----------------------------------------------------------------------
 #
 # Move and rename the output files from the work directory to their final 
-# location in OUTPUT_DATA.  Also, create symlinks in OUTPUT_DATA to the
+# location in COMOUT.  Also, create symlinks in COMOUT to the
 # grib2 files that are needed by the data services group.  Then delete 
 # the work directory.
 #
@@ -266,19 +266,19 @@ fi
 post_fn_suffix="GrbF${post_fhr}${dot_post_mn_or_null}"
 post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 #
-# For convenience, change location to OUTPUT_DATA (where the final output
+# For convenience, change location to COMOUT (where the final output
 # from UPP will be located).  Then loop through the two files that UPP
 # generates (i.e. "...prslev..." and "...natlev..." files) and move, 
 # rename, and create symlinks to them.
 #
-cd_vrfy "${OUTPUT_DATA}"
+cd_vrfy "${COMOUT}"
 basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
-symlink_suffix="_${basetime}f${fhr}${post_mn}"
+symlink_suffix="_mem${ENSMEM_INDX}_${basetime}f${fhr}${post_mn}"
 fids=( "prslev" "natlev" )
 for fid in "${fids[@]}"; do
   FID=$(echo_uppercase $fid)
   post_orig_fn="${FID}.${post_fn_suffix}"
-  post_renamed_fn="${NET}.t${cyc}z.${fid}.${post_renamed_fn_suffix}"
+  post_renamed_fn="${NET}.t${cyc}z.mem${ENSMEM_INDX}.${fid}.${post_renamed_fn_suffix}"
   mv_vrfy ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
   create_symlink_to_file target="${post_renamed_fn}" \
                          symlink="${FID}${symlink_suffix}" \

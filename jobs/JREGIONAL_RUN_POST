@@ -74,8 +74,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If it doesn't already exist, create the directory (OUTPUT_DATA) in which 
-# to store post-processing output.  (Note that OUTPUT_DATA may have already 
+# If it doesn't already exist, create the directory (COMOUT) in which 
+# to store post-processing output.  (Note that COMOUT may have already 
 # been created by this post-processing script for a different output time 
 # from the same forecast start time and/or ensemble member.)  Also, create 
 # a temporary work directory (DATA_FHR) for the current output time.  This
@@ -90,17 +90,15 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  export OUTPUT_DATA="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
-else
-  export OUTPUT_DATA="${DATA}/postprd"
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  export COMOUT="${DATA}/postprd"
 fi
-mkdir_vrfy -p "${OUTPUT_DATA}"
+mkdir_vrfy -p "${COMOUT}"
 
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
-  export DATA_FHR="${DATA:-$OUTPUT_DATA}/$fhr$fmn"
+  export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
 else
-  export DATA_FHR="${DATA:-$OUTPUT_DATA}/$fhr"
+  export DATA_FHR="${DATA:-$COMOUT}/$fhr"
 fi
 check_for_preexist_dir_file "${DATA_FHR}" "delete"
 mkdir_vrfy -p "${DATA_FHR}"

@@ -479,11 +479,10 @@ Call to function to create a diag table file for the current cycle's
 #
 #-----------------------------------------------------------------------
 #
-comout_dir="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
-if [ ! -z ${DATAROOT} ] && [ "${DATA}" != "${comout_dir}" ]; then
+if [ ! -z ${DATAROOT} ] && [ "${DATA}" != "${COMOUT}" ]; then
 
   # create comout directory
-  mkdir_vrfy -p ${comout_dir}
+  mkdir_vrfy -p ${COMOUT}
 
   # first set suffix for minutes and seconds of forecast time
   mnts_secs_str=""
@@ -497,8 +496,8 @@ if [ ! -z ${DATAROOT} ] && [ "${DATA}" != "${comout_dir}" ]; then
 
   # create the symlinks
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-    ln_vrfy -sf "${comout_dir}/dynf${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
-    ln_vrfy -sf "${comout_dir}/phyf${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
+    ln_vrfy -sf "${COMOUT}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.dynf${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
+    ln_vrfy -sf "${COMOUT}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.phyf${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
   done
 fi
 #
