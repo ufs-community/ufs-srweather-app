@@ -141,7 +141,7 @@ fi
 # Create a temporary (work) directory in which to generate the raw orography
 # file and change location to it.
 #
-tmp_dir="${raw_dir}/tmp"
+tmp_dir="${DATA:-${raw_dir}/tmp}"
 mkdir_vrfy -p "${tmp_dir}"
 cd_vrfy "${tmp_dir}"
 #
@@ -266,7 +266,7 @@ mv_vrfy "${raw_orog_fp_orig}" "${raw_orog_fp}"
 #-----------------------------------------------------------------------
 #
 if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
-  tmp_dir="${OROG_DIR}/temp_orog_data"
+  tmp_dir="${DATA:-${OROG_DIR}/temp_orog_data}"
   mkdir_vrfy -p ${tmp_dir}
   cd_vrfy ${tmp_dir}
   mosaic_fn_gwd="${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
