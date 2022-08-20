@@ -20,7 +20,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export cycle="t${cyc}${subcyc}z"
+export cycle="t${cyc}z"
 if [ "${RUN_ENVIR}" = "nco" ]; then
     if [ ! -z $(command -v setpdy.sh) ]; then
         setpdy.sh

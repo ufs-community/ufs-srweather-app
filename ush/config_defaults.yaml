@@ -373,44 +373,6 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
-  # set to "nco").  Definitions:
-  #
-  # envir, NET, model_ver, RUN:
-  # Standard environment variables defined in the NCEP Central Operations WCOSS
-  # Implementation Standards document as follows:
-  #
-  #   envir:
-  #   Set to "test" during the initial testing phase, "para" when running
-  #   in parallel (on a schedule), and "prod" in production.
-  #
-  #   NET:
-  #   Model name (first level of com directory structure)
-  #
-  #   model_ver:
-  #   Version number of package in three digits (second level of com directory)
-  #
-  #   RUN:
-  #   Name of model run (third level of com directory structure).
-  #   In general, same as $NET
-  #
-  # OPSROOT:
-  # The operations root directory in NCO mode.
-  # 
-  # For more information on NCO standards
-  #   
-  #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
-  #
-  #-----------------------------------------------------------------------
-  #
-  envir: "para"
-  NET: "rrfs"
-  RUN: "rrfs"
-  model_ver: "v1.0.0"
-  OPSROOT: ""
-  #
-  #-----------------------------------------------------------------------
-  #
   # Set the separator character(s) to use in the names of the grid, mosaic,
   # and orography fixed files.
   #
@@ -686,6 +648,49 @@ workflow:
   VX_ENSGRID_TN: "run_ensgridvx"
   VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
   MAXTRIES_VX_ENSGRID_PROB_REFC: 1
+
+#----------------------------
+# NCO specific variables
+#-----------------------------
+nco:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
+  # set to "nco").  Definitions:
+  #
+  # envir, NET, model_ver, RUN:
+  # Standard environment variables defined in the NCEP Central Operations WCOSS
+  # Implementation Standards document as follows:
+  #
+  #   envir:
+  #   Set to "test" during the initial testing phase, "para" when running
+  #   in parallel (on a schedule), and "prod" in production.
+  #
+  #   NET:
+  #   Model name (first level of com directory structure)
+  #
+  #   model_ver:
+  #   Version number of package in three digits (second level of com directory)
+  #
+  #   RUN:
+  #   Name of model run (third level of com directory structure).
+  #   In general, same as $NET
+  #
+  # OPSROOT:
+  # The operations root directory in NCO mode.
+  # 
+  # For more information on NCO standards
+  #   
+  #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
+  #
+  #-----------------------------------------------------------------------
+  #
+  envir: "para"
+  NET: "rrfs"
+  RUN: "rrfs"
+  model_ver: "v1.0.0"
+  OPSROOT: ""
 
 #----------------------------
 # WORKFLOW SWITCHES config parameters

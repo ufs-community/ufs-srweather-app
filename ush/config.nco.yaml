@@ -11,11 +11,6 @@ workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
   EXPT_SUBDIR: test_nco
-  COMIN: /scratch1/NCEPDEV/rstprod/com/gfs/prod
-  NET: rrfs
-  model_ver: v1.0
-  RUN: rrfs_test
-  OPSROOT: /path/to/opsroot/directory
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '20220407'
   DATE_LAST_CYCL: '20220407'
@@ -25,6 +20,11 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
+nco:
+  NET: rrfs
+  model_ver: v1.0
+  RUN: rrfs_test
+  OPSROOT: /path/to/opsroot/directory
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2

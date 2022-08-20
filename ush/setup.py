@@ -2171,7 +2171,7 @@ def setup():
         "MAILCC": MAILCC,
     }
 
-    cfg_d["nco"] = settings
+    cfg_d["nco"].update(settings)
     #
     # -----------------------------------------------------------------------
     #
