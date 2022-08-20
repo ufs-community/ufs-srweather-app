@@ -170,12 +170,12 @@ fi
 # Set the names of the forecast model's write-component output files.
 #
 if [ -z ${DATAROOT} ]; then
-    comout_dir=${DATA}
+    dyn_file="${DATA}/dynf${fhr}${mnts_secs_str}.nc"
+    phy_file="${DATA}/phyf${fhr}${mnts_secs_str}.nc"
 else
-    comout_dir="${COMOUT}"
+    dyn_file="${COMOUT}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.dynf${fhr}${mnts_secs_str}.nc"
+    phy_file="${COMOUT}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.phyf${fhr}${mnts_secs_str}.nc"
 fi
-dyn_file="${comout_dir}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.dynf${fhr}${mnts_secs_str}.nc"
-phy_file="${comout_dir}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.phyf${fhr}${mnts_secs_str}.nc"
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
