@@ -924,11 +924,11 @@ def setup():
 
         COMIN_BASEDIR = EXPTDIR
         COMOUT_BASEDIR = EXPTDIR
-        OPSROOT = None
-        COMROOT = None
-        PACKAGEROOT = None
-        DATAROOT = None
-        DCOMROOT = None
+        OPSROOT = EXPTDIR
+        COMROOT = EXPTDIR
+        PACKAGEROOT = EXPTDIR
+        DATAROOT = EXPTDIR
+        DCOMROOT = EXPTDIR
 
         LOGDIR = os.path.join(EXPTDIR, "log")
 
