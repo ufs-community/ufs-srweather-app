@@ -897,7 +897,6 @@ def setup():
     global module_ver, extmodel_ver
     global KEEPDATA, MAILTO, MAILCC
 
-    LOGDIR = os.path.join(EXPTDIR, "log")
 
     FIXam = os.path.join(EXPTDIR, "fix_am")
     FIXclim = os.path.join(EXPTDIR, "fix_clim")
@@ -919,6 +918,8 @@ def setup():
         COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
         check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
 
+        LOGDIR = os.path.join(COMROOT,"output", "logs")
+
     else:
 
         COMIN_BASEDIR = EXPTDIR
@@ -928,6 +929,8 @@ def setup():
         PACKAGEROOT = None
         DATAROOT = None
         DCOMROOT = None
+
+        LOGDIR = os.path.join(EXPTDIR, "log")
 
     try:
         DBNROOT
