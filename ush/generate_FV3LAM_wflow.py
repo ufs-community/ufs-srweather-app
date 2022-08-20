@@ -179,6 +179,12 @@ def generate_FV3LAM_wflow():
             "machine": MACHINE,
             "slurm_native_cmd": SLURM_NATIVE_CMD,
             #
+            # Run environment
+            #
+            "run_envir": RUN_ENVIR,
+            "run": RUN,
+            "net": NET,
+            #
             # Workflow task names.
             #
             "make_grid_tn": MAKE_GRID_TN,

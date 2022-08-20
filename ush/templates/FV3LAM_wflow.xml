@@ -22,7 +22,7 @@ Parameters needed by the job scheduler.
 <!--
 Workflow task names.
 -->
-<!ENTITY SLURM_NATIVE_CMD           "{{ slurm_native_cmd }}">
+<!ENTITY SLURM_NATIVE_CMD          "{{ slurm_native_cmd }}">
 <!ENTITY MAKE_GRID_TN              "{{ make_grid_tn }}">
 <!ENTITY MAKE_OROG_TN              "{{ make_orog_tn }}">
 <!ENTITY MAKE_SFC_CLIMO_TN         "{{ make_sfc_climo_tn }}">
@@ -93,6 +93,13 @@ Directories and files.
 <!ENTITY COMOUT_BASEDIR           "{{ comout_basedir }}">
 <!ENTITY GLOBAL_VAR_DEFNS_FP      "{{ global_var_defns_fp }}">
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "{{ load_modules_run_task_fp }}">
+{%- if run_envir == "nco"  %}
+<!ENTITY DYN_DIR  "{{ comout_basedir }}/{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.dyn">
+<!ENTITY PHY_DIR  "{{ comout_basedir }}/{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.phy">
+{%- else %}
+<!ENTITY DYN_DIR  "{{ comout_basedir }}/@Y@m@d@H{{ slash_ensmem_subdir }}/dyn">
+<!ENTITY PHY_DIR  "{{ comout_basedir }}/@Y@m@d@H{{ slash_ensmem_subdir }}/phy">
+{%- endif %}
 
 <!ENTITY MET_INSTALL_DIR "{{ met_install_dir }}">
 <!ENTITY METPLUS_PATH "{{ metplus_path }}">
@@ -518,8 +525,8 @@ names in the dependencies.
         <or>
           <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
           <and>
-            <datadep age="05:00"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf{{ first_fv3_file_tstr }}.nc</cyclestr></datadep>
-            <datadep age="05:00"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf{{ first_fv3_file_tstr }}.nc</cyclestr></datadep>
+            <datadep age="05:00"><cyclestr>&DYN_DIR;f{{ first_fv3_file_tstr }}.nc</cyclestr></datadep>
+            <datadep age="05:00"><cyclestr>&PHY_DIR;f{{ first_fv3_file_tstr }}.nc</cyclestr></datadep>
           </and>
         </or>
       </dependency>
@@ -570,8 +577,8 @@ for other output times.
           <or>
             <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
             <and>
-              <datadep age="05:00"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmn#:00.nc</cyclestr></datadep>
-              <datadep age="05:00"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmn#:00.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&DYN_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&PHY_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
             </and>
           </or>
         </dependency>
@@ -643,11 +650,11 @@ always zero).
             <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
             <and>
             {%- if sub_hourly_post %}
-              <datadep age="05:00"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmn#:00.nc</cyclestr></datadep>
-              <datadep age="05:00"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmn#:00.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&DYN_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&PHY_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
             {%- else %}
-              <datadep age="05:00"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#.nc</cyclestr></datadep>
-              <datadep age="05:00"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&DYN_DIR;f#fhr#.nc</cyclestr></datadep>
+              <datadep age="05:00"><cyclestr>&PHY_DIR;f#fhr#.nc</cyclestr></datadep>
             {%- endif %}
             </and>
           </or>
@@ -705,8 +712,8 @@ the <task> tag to be identical to the ones above for other output times.
         <or>
           <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
           <and>
-            <datadep age="05:00"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/dynf#fhr#:#fmn#:00.nc</cyclestr></datadep>
-            <datadep age="05:00"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/phyf#fhr#:#fmn#:00.nc</cyclestr></datadep>
+            <datadep age="05:00"><cyclestr>&DYN_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
+            <datadep age="05:00"><cyclestr>&PHY_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
           </and>
         </or>
       </dependency>
