@@ -42,7 +42,7 @@ export pgmerr="errfile"
 #-----------------------------------------------------------------------
 #
 if [ ! -z ${DATAROOT} ]; then
-    export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}"
+    export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}/${cyc}"
     export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}"
 else
     export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
