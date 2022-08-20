@@ -138,7 +138,7 @@ python3 -u ${USHrrfs}/retrieve_data.py \
   --summary_file ${EXTRN_MDL_VAR_DEFNS_FN} \
   $additional_flags"
 
-$cmd || print_err_msg_exit "\
+$cmd >>$pgmout 2>$pgmerr || print_err_msg_exit "\
 Call to retrieve_data.py failed with a non-zero exit status.
 
 The command was:

@@ -511,7 +511,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-${RUN_CMD_FCST} ${FV3_EXEC_FP} || print_err_msg_exit "\
+${RUN_CMD_FCST} ${FV3_EXEC_FP}  >>$pgmout 2>$pgmerr || print_err_msg_exit "\
 Call to executable to run FV3-LAM forecast returned with nonzero exit
 code."
 #

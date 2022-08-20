@@ -34,8 +34,13 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export pgmout="OUTPUT.$$"
-export pgmerr="errfile"
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    export pgmout="${DATA}/OUTPUT.$$"
+    export pgmerr="${DATA}/errfile"
+else
+    export pgmout="${LOGDIR}/OUTPUT.$$"
+    export pgmerr="${LOGDIR}/errfile"
+fi
 #
 #-----------------------------------------------------------------------
 #

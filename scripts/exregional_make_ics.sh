@@ -557,7 +557,7 @@ $settings"
 # exit code of chgres_cube is nonzero.  A similar thing happens in the
 # forecast task.
 #
-${RUN_CMD_UTILS} ${exec_fp} || \
+${RUN_CMD_UTILS} ${exec_fp} >>$pgmout 2>$pgmerr || \
   print_err_msg_exit "\
 Call to executable (exec_fp) to generate surface and initial conditions
 (ICs) files for the FV3-LAM failed:
@@ -617,8 +617,8 @@ Please check the following user defined variables:
 
   cp_vrfy ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
   cd_vrfy ${INPUT_DATA}
-  ${RUN_CMD_UTILS} ${fvcom_exec_fn} sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time}|| \
-  print_err_msg_exit "\
+  ${RUN_CMD_UTILS} ${fvcom_exec_fn} sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
+      >>$pgmout 2>$pgmerr || print_err_msg_exit "\
 Call to executable (fvcom_exe) to modify sfc fields for FV3-LAM failed:
   fvcom_exe = \"${fvcom_exe}\"
 The following variables were being used:
