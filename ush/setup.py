@@ -883,30 +883,6 @@ def setup():
     # the fixed files containing the grid, orography, and surface climatology
     # on the native FV3-LAM grid.
     #
-    # COMIN_BASEDIR:
-    # The base directory in which the directories for the various cycles will
-    # be placed.
-    #
-    # COMROOT:
-    # In NCO mode, this is the full path to the "com" directory under which
-    # output from the RUN_POST_TN task will be placed.  Note that this output
-    # is not placed directly under COMROOT but several directories further
-    # down.  More specifically, for a cycle starting at yyyymmddhh, it is at
-    #
-    #   $COMROOT/$NET/$envir/$RUN.$yyyymmdd/$hh
-    #
-    # Below, we set COMROOT in terms of PTMP as COMROOT="$PTMP/com".  COMROOT
-    # is not used by the workflow in community mode.
-    #
-    # COMOUT_BASEDIR:
-    # In NCO mode, this is the base directory directly under which the output
-    # from the RUN_POST_TN task will be placed, i.e. it is the cycle-independent
-    # portion of the RUN_POST_TN task's output directory.  It is given by
-    #
-    #   $COMROOT/$NET/$model_ver
-    #
-    # COMOUT_BASEDIR is not used by the workflow in community mode.
-    #
     # POST_OUTPUT_DOMAIN_NAME:
     # The PREDEF_GRID_NAME is set by default.
     #
@@ -930,26 +906,18 @@ def setup():
     if RUN_ENVIR == "nco":
 
         try:
-            OPSROOT
+            COMROOT
         except NameError:
-            if PTMP is not None:
-                OPSROOT = PTMP
-                COMROOT = os.path.join(OPSROOT, "com")
-                PACKAGEROOT = os.path.join(OPSROOT, "packages")
-                DATAROOT = os.path.join(OPSROOT, "tmp")
-                DCOMROOT = os.path.join(OPSROOT, "dcom")
-            else:
-                OPSROOT = None
-                COMROOT = None
-                PACKAGEROOT = None
-                DATAROOT = None
-                DCOMROOT = None
+            OPSROOT = OPSROOT or EXPTDIR
+            COMROOT = os.path.join(OPSROOT, "com")
+            PACKAGEROOT = os.path.join(OPSROOT, "packages")
+            DATAROOT = os.path.join(OPSROOT, "tmp")
+            DCOMROOT = os.path.join(OPSROOT, "dcom")
 
-        if OPSROOT is not None:
-            COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
-            check_for_preexist_dir_file(COMIN_BASEDIR, PREEXISTING_DIR_METHOD)
-            COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
-            check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
+        COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
+        check_for_preexist_dir_file(COMIN_BASEDIR, PREEXISTING_DIR_METHOD)
+        COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
+        check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
 
     else:
 

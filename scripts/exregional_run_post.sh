@@ -169,7 +169,7 @@ fi
 #
 # Set the names of the forecast model's write-component output files.
 #
-if [ -z ${DATAROOT} ]; then
+if [ "${RUN_ENVIR}" != "nco" ]; then
     dyn_file="${DATA}/dynf${fhr}${mnts_secs_str}.nc"
     phy_file="${DATA}/phyf${fhr}${mnts_secs_str}.nc"
 else

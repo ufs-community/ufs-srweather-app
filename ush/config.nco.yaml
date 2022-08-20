@@ -15,8 +15,7 @@ workflow:
   NET: rrfs
   model_ver: v1.0
   RUN: rrfs_test
-  STMP: /path/to/stmp/directory
-  PTMP: /path/to/ptmp/directory
+  OPSROOT: /path/to/opsroot/directory
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '20220407'
   DATE_LAST_CYCL: '20220407'

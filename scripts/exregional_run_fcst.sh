@@ -479,7 +479,7 @@ Call to function to create a diag table file for the current cycle's
 #
 #-----------------------------------------------------------------------
 #
-if [ ! -z ${DATAROOT} ] && [ "${DATA}" != "${COMOUT}" ]; then
+if [ "${RUN_ENVIR}" = "nco" ]; then
 
   # create comout directory
   mkdir_vrfy -p ${COMOUT}

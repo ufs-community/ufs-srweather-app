@@ -92,8 +92,7 @@ Usage:
     [verbose=\"...\"] \\
     [generate_csv_file=\"...\"] \\
     [machine_file=\"...\"] \\
-    [stmp=\"...\"] \\
-    [ptmp=\"...\"] \\
+    [opsroot=\"...\"] \\
     [compiler=\"...\"] \\
     [build_mod_fn=\"...\"]
 
@@ -192,29 +191,8 @@ machine_file:
 Optional argument specifying the full path to a machine configuration 
 file.  If not set, a supported platform machine file may be used.
 
-stmp:
-Optional argument used to explicitly set the experiment variable STMP in 
-the experiment configuration files of all the WE2E tests the user wants 
-to run that are in NCO mode, i.e. they have test configuration files that
-set the experiment variable RUN_ENVIR to \"nco\".  (A description of 
-STMP can be found in the default experiment configuration file.)  If 
-stmp is specified in the call to this script, its value is used to set 
-STMP in the configuration files of all tests that will run in NCO mode.  
-If it is not specified, STMP is (effectively) set as follows in the 
-configuration files (of all NCO mode tests to be run):
-
-    STMP=\$( readlink -f \"\$SR_WX_APP_TOP_DIR/../nco_dirs/stmp\" \)
-
-Here, SR_WX_APP_TOP_DIR is the base directory in which the UFS SRW App
-repository is cloned.  Note that it is not possible to specify a different 
-value for STMP for each test via this argument; all tests will use the
-same value for STMP (either the value specified in the call to this 
-script or the default value above).  Note also that the value of this 
-argument is not used for any tests that are not in NCO mode.
-
-ptmp:
-Same as the argument \"stmp\" described above but for setting the 
-experiment variable PTMP for all tests that will run in NCO mode.
+opsroot:
+Operations root directory in NCO mode
 
 compiler:
 Optional argument used to explicitly set the experiment variable COMPILER 
@@ -340,8 +318,7 @@ valid_args=( \
   "verbose" \
   "generate_csv_file" \
   "machine_file" \
-  "stmp" \
-  "ptmp" \
+  "opsroot" \
   "compiler" \
   "build_mod_fn" \
   )
@@ -928,82 +905,22 @@ SFC_CLIMO_DIR=\"${SFC_CLIMO_DIR}\""
 #
     expt_config_str=${expt_config_str}"
 #
-# In order to prevent simultaneous WE2E (Workflow End-to-End) tests that
-# are running in NCO mode and which run the same cycles from interfering
-# with each other, for each cycle, each such test must have a distinct
-# path to the following two directories:
-#
-# 1) The directory in which the cycle-dependent model input files, symlinks
-#    to cycle-independent input files, and raw (i.e. before post-processing)
-#    forecast output files for a given cycle are stored.  The path to this
-#    directory is
-#
-#      \$STMP/tmpnwprd/\$RUN/\$cdate
-#
-#    where cdate is the starting year (yyyy), month (mm), day (dd) and
-#    hour of the cycle in the form yyyymmddhh.
-#
-# 2) The directory in which the output files from the post-processor (UPP)
-#    for a given cycle are stored.  The path to this directory is
-#
-#      \$PTMP/com/\$NET/\$model_ver/\$RUN.\$yyyymmdd/\$hh
-#
-# Here, we make the first directory listed above unique to a WE2E test
-# by setting RUN to the name of the current test.  This will also make
-# the second directory unique because it also conains the variable RUN
-# in its full path, but if this directory -- or set of directories since
-# it involves a set of cycles and forecast hours -- already exists from
-# a previous run of the same test, then it is much less confusing to the
-# user to first move or delete this set of directories during the workflow
-# generation step and then start the experiment (whether we move or delete
-# depends on the setting of PREEXISTING_DIR_METHOD).  For this purpose,
-# it is most convenient to put this set of directories under an umbrella
-# directory that has the same name as the experiment.  This can be done
-# by setting the variable envir to the name of the current test.  Since
-# as mentiond above we will store this name in RUN, below we simply set
-# envir to the same value as RUN (which is just EXPT_SUBDIR).  Then, for
-# this test, the UPP output will be located in the directory
-#
-#   \$PTMP/com/\$NET/\we2e/\$RUN.\$yyyymmdd/\$hh
+# Set NCO mode RUN and model_ver
 #
 RUN=\"\${EXPT_SUBDIR}\"
 model_ver="we2e""
 
 #
-# Set COMIN.
-
-    COMIN=${TEST_COMIN:-}
-
-    if [ ! -d "${COMIN:-}" ] ; then
-      print_err_msg_exit "\
-The directory (COMIN) that needs to be specified when running the
-workflow in NCO mode (RUN_ENVIR set to \"nco\") AND using the FV3GFS or
-the GSMGFS as the external model for ICs and/or LBCs has not been specified
-for this machine (MACHINE):
-  MACHINE= \"${MACHINE}\""
-    fi
+# Set OPSROOT.
+#
+    nco_basedir=$( readlink -f "$homerrfs/../../nco_dirs" )
+    OPSROOT=${opsroot:-"${nco_basedir}/OPSROOT"}
 
     expt_config_str=${expt_config_str}"
 #
-# Directory that needs to be specified when running the workflow in NCO
-# mode (RUN_ENVIR set to \"nco\").
+# Set NCO mode OPSROOT
 #
-COMIN=\"${COMIN}\""
-
-#
-# Set STMP and PTMP.
-#
-    nco_basedir=$( readlink -f "$SR_WX_APP_TOP_DIR/../nco_dirs" )
-    STMP=${stmp:-"${nco_basedir}/stmp"}
-    PTMP=${ptmp:-"${nco_basedir}/ptmp"}
-
-    expt_config_str=${expt_config_str}"
-#
-# Directories STMP and PTMP that need to be specified when running the
-# workflow in NCO-mode (i.e. RUN_ENVIR set to "nco").
-#
-STMP=\"${STMP}\"
-PTMP=\"${PTMP}\""
+OPSROOT=\"${OPSROOT}\""
 
   fi
 #

@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 export DATA=
-if [ ! -z ${DATAROOT} ]; then
+if [ "${RUN_ENVIR}" = "nco" ]; then
     export DATA=${DATAROOT}/${jobid}
     mkdir_vrfy -p $DATA
     cd $DATA
@@ -21,9 +21,11 @@ fi
 #-----------------------------------------------------------------------
 #
 export cycle="t${cyc}${subcyc}z"
-if [ ! -z $(command -v setpdy.sh) ]; then
-    setpdy.sh
-    . ./PDY
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    if [ ! -z $(command -v setpdy.sh) ]; then
+        setpdy.sh
+        . ./PDY
+    fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -41,7 +43,7 @@ export pgmerr="errfile"
 #
 #-----------------------------------------------------------------------
 #
-if [ ! -z ${DATAROOT} ]; then
+if [ "${RUN_ENVIR}" = "nco" ]; then
     export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}/${cyc}"
     export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}"
 else
@@ -63,7 +65,7 @@ function job_postamble() {
     fi
 
     # Remove temp directory
-    if [ ! -z ${DATA} ]; then
+    if [ "${RUN_ENVIR}" = "nco" ]; then
         [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
     fi
 
