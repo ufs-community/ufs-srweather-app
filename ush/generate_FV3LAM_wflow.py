@@ -371,6 +371,7 @@ def generate_FV3LAM_wflow():
             "logdir": LOGDIR,
             "scriptsdir": SCRIPTSDIR,
             "comin_basedir": COMIN_BASEDIR,
+            "comout_basedir": COMOUT_BASEDIR,
             "global_var_defns_fp": GLOBAL_VAR_DEFNS_FP,
             "load_modules_run_task_fp": LOAD_MODULES_RUN_TASK_FP,
             #

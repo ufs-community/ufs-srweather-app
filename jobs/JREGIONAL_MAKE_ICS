@@ -55,7 +55,7 @@ for the FV3 (in NetCDF format).
 #
 #-----------------------------------------------------------------------
 #
-export INPUT_DATA="${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}/INPUT"
+export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
 mkdir_vrfy -p "${INPUT_DATA}"
 #
 #-----------------------------------------------------------------------
@@ -64,7 +64,7 @@ mkdir_vrfy -p "${INPUT_DATA}"
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}}"
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 mkdir_vrfy -p "${DATA}"
 #
 #-----------------------------------------------------------------------

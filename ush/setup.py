@@ -914,7 +914,7 @@ def setup():
     #
     global LOGDIR, FIXam, FIXclim, FIXLAM
     global POST_OUTPUT_DOMAIN_NAME
-    global COMIN_BASEDIR, COMROOT_BASEDIR
+    global COMIN_BASEDIR, COMOUT_BASEDIR
 
     global OPSROOT, COMROOT, PACKAGEROOT, DATAROOT, DCOMROOT, DBNROOT
     global SENDECF, SENDDBN, SENDDBN_NTC, SENDCOM, SENDWEB
@@ -954,7 +954,7 @@ def setup():
     else:
 
         COMIN_BASEDIR = EXPTDIR
-        COMOUT_BASEDIR = None
+        COMOUT_BASEDIR = EXPTDIR
         OPSROOT = None
         COMROOT = None
         PACKAGEROOT = None

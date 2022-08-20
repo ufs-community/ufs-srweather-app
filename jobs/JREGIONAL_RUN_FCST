@@ -63,7 +63,7 @@ the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-export INPUT_DATA="${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}"
+export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -71,7 +71,7 @@ export INPUT_DATA="${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}"
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}}"
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 mkdir_vrfy -p ${DATA}/INPUT
 mkdir_vrfy -p ${DATA}/RESTART
 #
