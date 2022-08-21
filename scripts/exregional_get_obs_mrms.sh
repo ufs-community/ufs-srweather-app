@@ -118,8 +118,7 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
         if [[ ${Status} == 0 ]]; then
           TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/ldmdata.tide.${vyyyy}${vmm}${vdd}.tar" 
         else
-          echo "ERROR: MRMS data not available for ${vyyyy}${vmm}${vdd}!"
-          exit 
+          print_err_msg_exit "MRMS data not available for ${vyyyy}${vmm}${vdd}!"
         fi
       fi
     fi 
@@ -135,9 +134,9 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
     Status=$?
 
     if [[ ${Status} != 0 ]]; then
-      echo "WARNING: Bad return status (${Status}) for date \"${CurDate}\".  Did you forget to run \"module load hpss\"?"
-      echo "WARNING: ${TarCommand}"
-      exit ${Status}
+      print_err_msg_exit "Bad return status (${Status}) for date \"${CurDate}\".\
+Did you forget to run \"module load hpss\"?\
+      COMMAND: ${TarCommand}"
     else
       if [[ ! -d "$mrms_proc/${vyyyymmdd}" ]]; then
         mkdir_vrfy -p $mrms_proc/${vyyyymmdd}
