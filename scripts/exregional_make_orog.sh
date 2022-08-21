@@ -73,7 +73,6 @@ if [ -z "${RUN_CMD_SERIAL:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_SERIAL for your platform"
 else
-  RUN_CMD_SERIAL=$(eval echo ${RUN_CMD_SERIAL})
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
 fi
@@ -210,7 +209,7 @@ cat "${input_redirect_fn}"
 print_info_msg "$VERBOSE" "\
 Starting orography file generation..."
 
-${RUN_CMD_SERIAL} "${exec_fp}" < "${input_redirect_fn}"  >>$pgmout 2>$pgmerr || \
+eval ${RUN_CMD_SERIAL} "${exec_fp}" < "${input_redirect_fn}"  ${REDIRECT_OUT_ERR} || \
       print_err_msg_exit "\
 Call to executable (exec_fp) that generates the raw orography file returned
 with nonzero exit code:
@@ -282,7 +281,7 @@ Please ensure that you've built this executable."
   print_info_msg "$VERBOSE" "
 Starting orography file generation..."
 
-  ${RUN_CMD_SERIAL} "${exec_fp}" < "${input_redirect_fn}"  >>$pgmout 2>$pgmerr || \
+  eval ${RUN_CMD_SERIAL} "${exec_fp}" < "${input_redirect_fn}"  ${REDIRECT_OUT_ERR} || \
       print_err_msg_exit "\
 Call to executable (exec_fp) that generates the GSL orography GWD data files
 returned with nonzero exit code:
@@ -430,7 +429,7 @@ cd_vrfy "${filter_dir}"
 print_info_msg "$VERBOSE" "
 Starting filtering of orography..."
 
-${RUN_CMD_SERIAL} "${exec_fp}" >>$pgmout 2>$pgmerr || \
+eval ${RUN_CMD_SERIAL} "${exec_fp}" ${REDIRECT_OUT_ERR} || \
   print_err_msg_exit "\
 Call to executable that generates filtered orography file returned with
 non-zero exit code."
@@ -499,7 +498,7 @@ printf "%s %s %s %s %s\n" \
   $NX $NY ${NH0} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
-${RUN_CMD_SERIAL} ${exec_fp} < ${nml_fn} >>$pgmout 2>$pgmerr || \
+eval ${RUN_CMD_SERIAL} ${exec_fp} < ${nml_fn} ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate a (filtered) orography file with
 a ${NH0}-cell-wide halo from the orography file with a {NHW}-cell-wide halo
@@ -525,7 +524,7 @@ printf "%s %s %s %s %s\n" \
   $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
-${RUN_CMD_SERIAL} ${exec_fp} < ${nml_fn} >>$pgmout 2>$pgmerr || \
+eval ${RUN_CMD_SERIAL} ${exec_fp} < ${nml_fn} ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate a (filtered) orography file with
 a ${NH4}-cell-wide halo from the orography file with a {NHW}-cell-wide halo

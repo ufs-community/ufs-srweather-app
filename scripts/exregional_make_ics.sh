@@ -73,7 +73,6 @@ if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_UTILS for your platform"
 else
-  RUN_CMD_UTILS=$(eval echo ${RUN_CMD_UTILS})
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
 fi
@@ -557,7 +556,7 @@ $settings"
 # exit code of chgres_cube is nonzero.  A similar thing happens in the
 # forecast task.
 #
-${RUN_CMD_UTILS} ${exec_fp} >>$pgmout 2>$pgmerr || \
+eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
   print_err_msg_exit "\
 Call to executable (exec_fp) to generate surface and initial conditions
 (ICs) files for the FV3-LAM failed:
@@ -617,8 +616,9 @@ Please check the following user defined variables:
 
   cp_vrfy ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
   cd_vrfy ${INPUT_DATA}
-  ${RUN_CMD_UTILS} ${fvcom_exec_fn} sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
-      >>$pgmout 2>$pgmerr || print_err_msg_exit "\
+  eval ${RUN_CMD_UTILS} ${fvcom_exec_fn} \
+       sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
+       ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable (fvcom_exe) to modify sfc fields for FV3-LAM failed:
   fvcom_exe = \"${fvcom_exe}\"
 The following variables were being used:

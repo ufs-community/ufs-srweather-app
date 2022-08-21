@@ -72,7 +72,6 @@ if [ -z "${RUN_CMD_FCST:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_FCST for your platform"
 else
-  RUN_CMD_FCST=$(eval echo ${RUN_CMD_FCST})
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_FCST}\'."
 fi
@@ -511,7 +510,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-${RUN_CMD_FCST} ${FV3_EXEC_FP}  >>$pgmout 2>$pgmerr || print_err_msg_exit "\
+eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run FV3-LAM forecast returned with nonzero exit
 code."
 #

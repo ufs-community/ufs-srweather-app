@@ -68,7 +68,6 @@ if [ -z "${RUN_CMD_SERIAL:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_SERIAL for your platform"
 else
-  RUN_CMD_SERIAL=$(eval echo ${RUN_CMD_SERIAL})
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
 fi
@@ -217,7 +216,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # for the 6 global tiles.  However, after this call we will only need the
 # regional grid file.
 #
-  $RUN_CMD_SERIAL ${exec_fp} \
+  eval $RUN_CMD_SERIAL ${exec_fp} \
     --grid_type gnomonic_ed \
     --nlon ${nx_t6sg} \
     --grid_name ${grid_name} \
@@ -233,7 +232,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
     --iend_nest ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
     --jend_nest ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
     --halo 1 \
-    --great_circle_algorithm >>$pgmout 2>$pgmerr || \
+    --great_circle_algorithm ${REDIRECT_OUT_ERR} || \
   print_err_msg_exit "\
 Call to executable (exec_fp) that generates grid files returned with
 nonzero exit code.
@@ -291,7 +290,7 @@ $settings"
 #
 # Call the executable that generates the grid file.
 #
-  $RUN_CMD_SERIAL ${exec_fp} ${rgnl_grid_nml_fp}  >>$pgmout 2>$pgmerr || \
+  eval $RUN_CMD_SERIAL ${exec_fp} ${rgnl_grid_nml_fp} ${REDIRECT_OUT_ERR} || \
     print_err_msg_exit "\
 Call to executable (exec_fp) that generates a ESGgrid-type regional grid
 returned with nonzero exit code:
@@ -330,7 +329,7 @@ cubed-sphere grid equivalent resolution does not exist:
 Please ensure that you've built this executable."
 fi
 
-$RUN_CMD_SERIAL ${exec_fp} "${grid_fp}"  >>$pgmout 2>$pgmerr || \
+eval $RUN_CMD_SERIAL ${exec_fp} "${grid_fp}" ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) that calculates the regional grid's global
 uniform cubed-sphere grid equivalent resolution returned with nonzero exit
@@ -459,7 +458,7 @@ printf "%s %s %s %s %s\n" \
   $NX $NY ${NH3} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
-$RUN_CMD_SERIAL ${exec_fp} < ${nml_fn}  >>$pgmout 2>$pgmerr || \
+eval $RUN_CMD_SERIAL ${exec_fp} < ${nml_fn} ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate a grid file with a ${NH3}-cell-wide
 halo from the grid file with a ${NHW}-cell-wide halo returned with nonzero
@@ -485,7 +484,7 @@ printf "%s %s %s %s %s\n" \
   $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
-$RUN_CMD_SERIAL ${exec_fp} < ${nml_fn}  >>$pgmout 2>$pgmerr || \
+eval $RUN_CMD_SERIAL ${exec_fp} < ${nml_fn} ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate a grid file with a ${NH4}-cell-wide
 halo from the grid file with a ${NHW}-cell-wide halo returned with nonzero

@@ -37,9 +37,11 @@ fi
 if [ "${RUN_ENVIR}" = "nco" ]; then
     export pgmout="${DATA}/OUTPUT.$$"
     export pgmerr="${DATA}/errfile"
+    export REDIRECT_OUT_ERR=">>${pgmout} 2>${pgmerr}"
 else
-    export pgmout="${LOGDIR}/OUTPUT.$$"
-    export pgmerr="${LOGDIR}/errfile"
+    export pgmout=
+    export pgmerr=
+    export REDIRECT_OUT_ERR=
 fi
 #
 #-----------------------------------------------------------------------
@@ -64,13 +66,13 @@ fi
 #
 function job_postamble() {
 
-    # Print output file to stdout
-    if [ -e "$pgmout" ]; then
-        cat $pgmout
-    fi
-
-    # Remove temp directory
     if [ "${RUN_ENVIR}" = "nco" ]; then
+        # Print output file to stdout
+        if [ -e "$pgmout" ]; then
+            cat $pgmout
+        fi
+
+        # Remove temp directory
         cd ${DATAROOT}
         [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
     fi

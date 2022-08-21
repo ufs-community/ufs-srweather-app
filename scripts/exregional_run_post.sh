@@ -71,7 +71,6 @@ if [ -z "${RUN_CMD_POST:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_POST for your platform"
 else
-  RUN_CMD_POST=$(eval echo ${RUN_CMD_POST})
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_POST}\'."
 fi
@@ -219,7 +218,7 @@ EOF
 print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
-${RUN_CMD_POST} ${EXECrrfs}/upp.x < itag  >>$pgmout 2>$pgmerr || print_err_msg_exit "\
+eval ${RUN_CMD_POST} ${EXECrrfs}/upp.x < itag ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run post for forecast hour $fhr returned with non-
 zero exit code."
 #

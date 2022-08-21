@@ -116,7 +116,6 @@ if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_UTILS for your platform"
 else
-  RUN_CMD_UTILS=$(eval echo ${RUN_CMD_UTILS})
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
 fi
@@ -139,7 +138,7 @@ does not exist:
 Please ensure that you've built this executable."
 fi
 
-${RUN_CMD_UTILS} ${exec_fp} || \
+eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate surface climatology files returned
 with nonzero exit code:
