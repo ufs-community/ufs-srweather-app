@@ -218,6 +218,7 @@ EOF
 print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
+PREP_STEP
 eval ${RUN_CMD_POST} ${EXECrrfs}/upp.x < itag ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run post for forecast hour $fhr returned with non-
 zero exit code."

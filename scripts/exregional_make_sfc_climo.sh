@@ -138,6 +138,7 @@ does not exist:
 Please ensure that you've built this executable."
 fi
 
+PREP_STEP
 eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate surface climatology files returned

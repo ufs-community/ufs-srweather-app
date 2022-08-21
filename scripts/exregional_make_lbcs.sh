@@ -469,6 +469,7 @@ $settings"
 # exit code of chgres_cube is nonzero.  A similar thing happens in the
 # forecast task.
 #
+  PREP_STEP
   eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
     print_err_msg_exit "\
 Call to executable (exec_fp) to generate lateral boundary conditions (LBCs)

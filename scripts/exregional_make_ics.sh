@@ -556,6 +556,7 @@ $settings"
 # exit code of chgres_cube is nonzero.  A similar thing happens in the
 # forecast task.
 #
+PREP_STEP
 eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
   print_err_msg_exit "\
 Call to executable (exec_fp) to generate surface and initial conditions
@@ -616,6 +617,7 @@ Please check the following user defined variables:
 
   cp_vrfy ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
   cd_vrfy ${INPUT_DATA}
+  PREP_STEP
   eval ${RUN_CMD_UTILS} ${fvcom_exec_fn} \
        sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
        ${REDIRECT_OUT_ERR} || print_err_msg_exit "\

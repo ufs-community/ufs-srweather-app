@@ -216,6 +216,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 # for the 6 global tiles.  However, after this call we will only need the
 # regional grid file.
 #
+  PREP_STEP
   eval $RUN_CMD_SERIAL ${exec_fp} \
     --grid_type gnomonic_ed \
     --nlon ${nx_t6sg} \
@@ -290,6 +291,7 @@ $settings"
 #
 # Call the executable that generates the grid file.
 #
+  PREP_STEP
   eval $RUN_CMD_SERIAL ${exec_fp} ${rgnl_grid_nml_fp} ${REDIRECT_OUT_ERR} || \
     print_err_msg_exit "\
 Call to executable (exec_fp) that generates a ESGgrid-type regional grid
@@ -329,6 +331,7 @@ cubed-sphere grid equivalent resolution does not exist:
 Please ensure that you've built this executable."
 fi
 
+PREP_STEP
 eval $RUN_CMD_SERIAL ${exec_fp} "${grid_fp}" ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) that calculates the regional grid's global
@@ -458,6 +461,7 @@ printf "%s %s %s %s %s\n" \
   $NX $NY ${NH3} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
+PREP_STEP
 eval $RUN_CMD_SERIAL ${exec_fp} < ${nml_fn} ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate a grid file with a ${NH3}-cell-wide
@@ -484,6 +488,7 @@ printf "%s %s %s %s %s\n" \
   $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
+PREP_STEP
 eval $RUN_CMD_SERIAL ${exec_fp} < ${nml_fn} ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate a grid file with a ${NH4}-cell-wide

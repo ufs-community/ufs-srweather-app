@@ -35,13 +35,32 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
+    export pgm="$(basename $0):$LINENO"
     export pgmout="${DATA}/OUTPUT.$$"
     export pgmerr="${DATA}/errfile"
     export REDIRECT_OUT_ERR=">>${pgmout} 2>${pgmerr}"
+
+    function PREP_STEP() {
+        if [ ! -z $(command -v prep_step) ]; then
+            . prep_step
+        else
+            # Append header
+            if [ -n "$pgm" ] && [ -n "$pgmout" ]; then
+              echo "$pgm" >> $pgmout
+            fi
+            # Remove error file
+            if [ -f $pgmerr ]; then
+              rm $pgmerr
+            fi
+        fi
+    }
+    export -f PREP_STEP
 else
+    export pgm=
     export pgmout=
     export pgmerr=
     export REDIRECT_OUT_ERR=
+    export PREP_STEP=
 fi
 #
 #-----------------------------------------------------------------------

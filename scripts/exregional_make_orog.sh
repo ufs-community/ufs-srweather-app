@@ -209,6 +209,7 @@ cat "${input_redirect_fn}"
 print_info_msg "$VERBOSE" "\
 Starting orography file generation..."
 
+PREP_STEP
 eval ${RUN_CMD_SERIAL} "${exec_fp}" < "${input_redirect_fn}"  ${REDIRECT_OUT_ERR} || \
       print_err_msg_exit "\
 Call to executable (exec_fp) that generates the raw orography file returned
@@ -281,6 +282,7 @@ Please ensure that you've built this executable."
   print_info_msg "$VERBOSE" "
 Starting orography file generation..."
 
+  PREP_STEP
   eval ${RUN_CMD_SERIAL} "${exec_fp}" < "${input_redirect_fn}"  ${REDIRECT_OUT_ERR} || \
       print_err_msg_exit "\
 Call to executable (exec_fp) that generates the GSL orography GWD data files
@@ -429,6 +431,7 @@ cd_vrfy "${filter_dir}"
 print_info_msg "$VERBOSE" "
 Starting filtering of orography..."
 
+PREP_STEP
 eval ${RUN_CMD_SERIAL} "${exec_fp}" ${REDIRECT_OUT_ERR} || \
   print_err_msg_exit "\
 Call to executable that generates filtered orography file returned with
@@ -498,6 +501,7 @@ printf "%s %s %s %s %s\n" \
   $NX $NY ${NH0} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
+PREP_STEP
 eval ${RUN_CMD_SERIAL} ${exec_fp} < ${nml_fn} ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate a (filtered) orography file with
@@ -524,6 +528,7 @@ printf "%s %s %s %s %s\n" \
   $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
+PREP_STEP
 eval ${RUN_CMD_SERIAL} ${exec_fp} < ${nml_fn} ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to executable (exec_fp) to generate a (filtered) orography file with
