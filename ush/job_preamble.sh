@@ -71,6 +71,7 @@ function job_postamble() {
 
     # Remove temp directory
     if [ "${RUN_ENVIR}" = "nco" ]; then
+        cd ${DATAROOT}
         [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
     fi
 

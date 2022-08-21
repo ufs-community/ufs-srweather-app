@@ -529,14 +529,12 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   cyc=$hh
   fmn="00"
 
-  if [ "${RUN_ENVIR}" = "nco" ]; then
-    postprd_dir="${COMOUT}/$cyc${SLASH_ENSMEM_SUBDIR}"
-  else
-    postprd_dir="${DATA}/postprd"
+  if [ "${RUN_ENVIR}" != "nco" ]; then
+    export COMOUT="${DATA}/postprd"
   fi
-  mkdir_vrfy -p "${postprd_dir}"
+  mkdir_vrfy -p "${COMOUT}"
 
-  cd_vrfy ${postprd_dir}
+  cd_vrfy ${COMOUT}
 
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
 
@@ -558,7 +556,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
     for fid in "${fids[@]}"; do
       FID=$(echo_uppercase $fid)
       post_orig_fn="${FID}.${post_fn_suffix}"
-      post_renamed_fn="${NET}.t${cyc}z.${fid}.${post_renamed_fn_suffix}"
+      post_renamed_fn="${NET}.t${cyc}z.mem${ENSMEM_INDX}.${fid}.${post_renamed_fn_suffix}"
       mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
       ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
     done
