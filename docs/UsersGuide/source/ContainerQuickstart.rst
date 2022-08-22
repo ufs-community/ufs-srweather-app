@@ -218,7 +218,7 @@ After this command runs, the working directory should contain ``srw.sh`` and a `
 
    The user must have an Intel compiler and MPI on their system because the container uses an Intel compiler and MPI. Intel compilers are now available for free as part of `Intel's oneAPI Toolkit <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__.
 
-From here, the user can follow detailed instructions in :numref:`Section %s <UserSpecificConfig>` to configure their experiment. To run the simple, out-of-the-box case with an automated Rocoto workflow, the user can follow the steps below. 
+From here, users can follow the steps below to configure the out-of-the-box SRW App case with an automated Rocoto workflow. For more detailed instructions on experiment configuration, users can refer to :numref:`Section %s <UserSpecificConfig>`. 
 
    #. Copy the out-of-the-box case from ``config.community.sh`` to ``config.sh``. This file contains basic information (e.g., forecast date, grid, physics suite) required for the experiment.   
       
