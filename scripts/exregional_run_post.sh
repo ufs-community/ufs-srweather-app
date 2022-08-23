@@ -284,6 +284,10 @@ for fid in "${fids[@]}"; do
   create_symlink_to_file target="${post_renamed_fn}" \
                          symlink="${FID}${symlink_suffix}" \
                          relative="TRUE"
+  # DBN alert
+  if [ $SENDDBN = "TRUE" ]; then
+    $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
+  fi
 done
 
 rm_vrfy -rf ${DATA_FHR}

@@ -560,6 +560,10 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       post_renamed_fn="${NET}.t${cyc}z.mem${ENSMEM_INDX}.${fid}.${post_renamed_fn_suffix}"
       mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
       ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
+      # DBN alert
+      if [ $SENDDBN = "TRUE" ]; then
+        $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
+      fi
     done
   done
 
