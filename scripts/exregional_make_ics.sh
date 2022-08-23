@@ -567,6 +567,7 @@ The external model from which the ICs files are to be generated is:
 The external model files that are inputs to the executable (exec_fp) are
 located in the following directory:
   extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
+POST_STEP
 #
 #-----------------------------------------------------------------------
 #
@@ -631,6 +632,7 @@ The following variables were being used:
   INPUT_DATA = \"${INPUT_DATA}\"
   fvcom_exe_dir = \"${fvcom_exe_dir}\"
   fvcom_exe = \"${fvcom_exe}\""
+  POST_STEP
 fi
 #
 #-----------------------------------------------------------------------

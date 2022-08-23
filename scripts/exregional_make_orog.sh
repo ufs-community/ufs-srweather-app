@@ -215,6 +215,7 @@ eval ${RUN_CMD_SERIAL} "${exec_fp}" < "${input_redirect_fn}"  ${REDIRECT_OUT_ERR
 Call to executable (exec_fp) that generates the raw orography file returned
 with nonzero exit code:
   exec_fp = \"${exec_fp}\""
+POST_STEP
 
 #
 # Change location to the original directory.
@@ -288,6 +289,7 @@ Starting orography file generation..."
 Call to executable (exec_fp) that generates the GSL orography GWD data files
 returned with nonzero exit code:
   exec_fp = \"${exec_fp}\""
+  POST_STEP
 
   mv_vrfy "${CRES}${DOT_OR_USCORE}oro_data_ss.tile${TILE_RGNL}.halo${NH0}.nc" \
           "${CRES}${DOT_OR_USCORE}oro_data_ls.tile${TILE_RGNL}.halo${NH0}.nc" \
@@ -436,6 +438,7 @@ eval ${RUN_CMD_SERIAL} "${exec_fp}" ${REDIRECT_OUT_ERR} || \
   print_err_msg_exit "\
 Call to executable that generates filtered orography file returned with
 non-zero exit code."
+POST_STEP
 #
 # For clarity, rename the filtered orography file in filter_dir
 # such that its new name contains the halo size.
@@ -511,6 +514,7 @@ returned with nonzero exit code:
 The namelist file (nml_fn) used in this call is in directory shave_dir:
   nml_fn = \"${nml_fn}\"
   shave_dir = \"${shave_dir}\""
+POST_STEP
 mv_vrfy ${shaved_fp} ${OROG_DIR}
 #
 # Create an input namelist file for the shave executable to generate an
@@ -538,6 +542,7 @@ returned with nonzero exit code:
 The namelist file (nml_fn) used in this call is in directory shave_dir:
   nml_fn = \"${nml_fn}\"
   shave_dir = \"${shave_dir}\""
+POST_STEP
 mv_vrfy "${shaved_fp}" "${OROG_DIR}"
 #
 # Change location to the original directory.

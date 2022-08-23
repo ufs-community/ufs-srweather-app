@@ -481,6 +481,7 @@ The external model from which the LBCs files are to be generated is:
 The external model files that are inputs to the executable (exec_fp) are
 located in the following directory:
   extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
+  POST_STEP
 #
 # Move LBCs file for the current lateral boundary update time to the LBCs
 # work directory.  Note that we rename the file by including in its name

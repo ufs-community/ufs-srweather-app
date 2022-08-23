@@ -222,6 +222,7 @@ PREP_STEP
 eval ${RUN_CMD_POST} ${EXECrrfs}/upp.x < itag ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run post for forecast hour $fhr returned with non-
 zero exit code."
+POST_STEP
 #
 #-----------------------------------------------------------------------
 #
