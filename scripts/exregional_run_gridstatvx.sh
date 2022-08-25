@@ -121,6 +121,25 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure directories in which output files will be placed exist.
+#
+#-----------------------------------------------------------------------
+#
+mkdir_vrfy -p "${OUTPUT_BASE}/metprd/grid_stat"
+#
+# If the variable is accumulated precipitation for a time interval 
+# (bucket) other than 1 hour, the MET/METplus tools called below will
+# include pcp_combine.  In that case, create (if necessary) directories
+# needed by pcp_combine.
+#
+if [ "${VAR}" = "APCP" ] && [ "${ACCUM: -1}" != "1" ]; then
+  mkdir_vrfy -p "${EXPTDIR}/metprd/pcp_combine"      # For observations
+  mkdir_vrfy -p "${OUTPUT_BASE}/metprd/pcp_combine"  # For forecast
+fi
+
+#
+#-----------------------------------------------------------------------
+#
 # Check for existence of top-level OBS_DIR 
 #
 #-----------------------------------------------------------------------

@@ -113,6 +113,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure directories in which output files will be placed exist.
+#
+#-----------------------------------------------------------------------
+#
+mkdir_vrfy -p "${EXPTDIR}/metprd/pb2nc"           # Output directory for pb2nc tool.
+mkdir_vrfy -p "${OUTPUT_BASE}/metprd/point_stat"  # Output directory for point_stat tool.
+
+#
+#-----------------------------------------------------------------------
+#
 # Check for existence of top-level OBS_DIR 
 #
 #-----------------------------------------------------------------------

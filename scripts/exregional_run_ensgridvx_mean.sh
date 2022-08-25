@@ -118,6 +118,15 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure directory in which output files will be placed exist.
+#
+#-----------------------------------------------------------------------
+#
+mkdir_vrfy -p "${EXPTDIR}/${CDATE}/metprd/ensemble_stat_mean"  # Output directory for grid_stat tool.
+
+#
+#-----------------------------------------------------------------------
+#
 # Check for existence of top-level OBS_DIR 
 #
 #-----------------------------------------------------------------------
