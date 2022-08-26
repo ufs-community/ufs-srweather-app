@@ -91,7 +91,7 @@ if [ $RUN_ENVIR = "nco" ]; then
 else
     extrn_mdl_staging_dir="${COMIN}/${cyc}/${EXTRN_MDL_NAME_ICS}/for_ICS"
 fi
-extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.sh"
+extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 . ${extrn_mdl_var_defns_fp}
 #
 #-----------------------------------------------------------------------
