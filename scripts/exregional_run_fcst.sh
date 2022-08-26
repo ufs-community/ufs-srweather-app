@@ -238,24 +238,24 @@ cd_vrfy ${DATA}/INPUT
 #
 relative_link_flag="FALSE"
 
-target="${INPUT_DATA}/gfs_data.${cycle}${dot_ensmem}.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="gfs_data.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
 
-target="${INPUT_DATA}/sfc_data.${cycle}${dot_ensmem}.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="sfc_data.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
 
-target="${INPUT_DATA}/gfs_ctrl.${cycle}${dot_ensmem}.nc"
+target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
 symlink="gfs_ctrl.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
 
 
 for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-  target="${INPUT_DATA}/gfs_bndy.${cycle}${dot_ensmem}.tile${TILE_RGNL}.f${fhr}.nc"
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
   symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
   create_symlink_to_file target="$target" symlink="$symlink" \
                          relative="${relative_link_flag}"

@@ -493,7 +493,7 @@ located in the following directory:
 # that of the external model since their start times may be offset).
 #
   fcst_hhh_FV3LAM=$( printf "%03d" "${LBC_SPEC_FCST_HRS[$i]}" )
-  mv_vrfy gfs.bndy.nc ${INPUT_DATA}/gfs_bndy.${cycle}${dot_ensmem}.tile7.f${fcst_hhh_FV3LAM}.nc
+  mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
 
 done
 #
