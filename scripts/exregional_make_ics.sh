@@ -581,14 +581,14 @@ POST_STEP
 #-----------------------------------------------------------------------
 #
 mv_vrfy out.atm.tile${TILE_RGNL}.nc \
-        ${INPUT_DATA}/gfs_data.${cycle}.mem${ENSMEM_INDX}.tile${TILE_RGNL}.halo${NH0}.nc
+        ${INPUT_DATA}/gfs_data.${cycle}${dot_ensmem}.tile${TILE_RGNL}.halo${NH0}.nc
 
 mv_vrfy out.sfc.tile${TILE_RGNL}.nc \
-        ${INPUT_DATA}/sfc_data.${cycle}.mem${ENSMEM_INDX}.tile${TILE_RGNL}.halo${NH0}.nc
+        ${INPUT_DATA}/sfc_data.${cycle}${dot_ensmem}.tile${TILE_RGNL}.halo${NH0}.nc
 
-mv_vrfy gfs_ctrl.nc ${INPUT_DATA}/gfs_ctrl.${cycle}.mem${ENSMEM_INDX}.nc
+mv_vrfy gfs_ctrl.nc ${INPUT_DATA}/gfs_ctrl.${cycle}${dot_ensmem}.nc
 
-mv_vrfy gfs.bndy.nc ${INPUT_DATA}/gfs_bndy.${cycle}.mem${ENSMEM_INDX}.tile${TILE_RGNL}.f000.nc
+mv_vrfy gfs.bndy.nc ${INPUT_DATA}/gfs_bndy.${cycle}${dot_ensmem}.tile${TILE_RGNL}.f000.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -624,7 +624,7 @@ Please check the following user defined variables:
   cd_vrfy ${INPUT_DATA}
   PREP_STEP
   eval ${RUN_CMD_UTILS} ${fvcom_exec_fn} \
-       sfc_data.${cycle}.mem${ENSMEM_INDX}.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
+       sfc_data.${cycle}${dot_ensmem}.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
        ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable (fvcom_exe) to modify sfc fields for FV3-LAM failed:
   fvcom_exe = \"${fvcom_exe}\"
