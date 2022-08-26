@@ -126,9 +126,9 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}_${cyc}_${EXTRN_MDL_NAME}_${ICS_OR_LBCS}"
+    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.${cycle}.${EXTRN_MDL_NAME}.${ICS_OR_LBCS}.sh"
 else
-    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}"
+    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
 cmd="
 python3 -u ${USHrrfs}/retrieve_data.py \
