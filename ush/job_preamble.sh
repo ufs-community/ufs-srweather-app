@@ -79,7 +79,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-    export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}/${cyc}"
+    export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}"
     export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}"
 else
     export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"

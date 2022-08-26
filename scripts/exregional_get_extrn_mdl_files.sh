@@ -125,6 +125,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+if [ $RUN_ENVIR = "nco" ]; then
+    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}_${cyc}_${EXTRN_MDL_NAME}_${ICS_OR_LBCS}"
+else
+    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}"
+fi
 cmd="
 python3 -u ${USHrrfs}/retrieve_data.py \
   --debug \
@@ -135,7 +140,7 @@ python3 -u ${USHrrfs}/retrieve_data.py \
   --external_model ${EXTRN_MDL_NAME} \
   --fcst_hrs ${fcst_hrs[@]} \
   --output_path ${EXTRN_MDL_STAGING_DIR} \
-  --summary_file ${EXTRN_MDL_VAR_DEFNS_FN} \
+  --summary_file ${EXTRN_DEFNS} \
   $additional_flags"
 
 $cmd || print_err_msg_exit "\

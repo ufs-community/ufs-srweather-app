@@ -84,8 +84,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_LBCS}/for_LBCS"
-extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}"
+if [ $RUN_ENVIR = "nco" ]; then
+    extrn_mdl_staging_dir="${COMIN}"
+else
+    extrn_mdl_staging_dir="${COMIN}/${cyc}/${EXTRN_MDL_NAME_ICS}/for_LBCS"
+fi
+extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}_${cyc}_${EXTRN_MDL_NAME_LBCS}_LBCS"
 . ${extrn_mdl_var_defns_fp}
 #
 #-----------------------------------------------------------------------
