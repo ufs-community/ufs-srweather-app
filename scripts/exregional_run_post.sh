@@ -172,8 +172,8 @@ if [ "${RUN_ENVIR}" != "nco" ]; then
     dyn_file="${DATA}/dynf${fhr}${mnts_secs_str}.nc"
     phy_file="${DATA}/phyf${fhr}${mnts_secs_str}.nc"
 else
-    dyn_file="${COMOUT}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.dynf${fhr}${mnts_secs_str}.nc"
-    phy_file="${COMOUT}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.phyf${fhr}${mnts_secs_str}.nc"
+    dyn_file="${COMOUT}/${NET}.${cycle}.mem${ENSMEM_INDX}.dynf${fhr}${mnts_secs_str}.nc"
+    phy_file="${COMOUT}/${NET}.${cycle}.mem${ENSMEM_INDX}.phyf${fhr}${mnts_secs_str}.nc"
 fi
 #
 # Set parameters that specify the actual time (not forecast time) of the
@@ -279,7 +279,7 @@ fids=( "prslev" "natlev" )
 for fid in "${fids[@]}"; do
   FID=$(echo_uppercase $fid)
   post_orig_fn="${FID}.${post_fn_suffix}"
-  post_renamed_fn="${NET}.t${cyc}z.mem${ENSMEM_INDX}.${fid}.${post_renamed_fn_suffix}"
+  post_renamed_fn="${NET}.${cycle}.mem${ENSMEM_INDX}.${fid}.${post_renamed_fn_suffix}"
   mv_vrfy ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
   create_symlink_to_file target="${post_renamed_fn}" \
                          symlink="${FID}${symlink_suffix}" \

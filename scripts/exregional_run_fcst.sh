@@ -233,35 +233,33 @@ of the current run directory (DATA), where
 cd_vrfy ${DATA}/INPUT
 
 #
-# DATA and INPUT_DATA are different
-#
-if [ "${DATA}" != "${INPUT_DATA}" ]; then
-
-  relative_link_flag="FALSE"
-  for f_nm_path in ${INPUT_DATA}/INPUT/*; do
-    symlink=$( basename "${f_nm_path}" )
-    target="${f_nm_path}"
-    create_symlink_to_file target="$target" symlink="$symlink" \
-                         relative="${relative_link_flag}"
-  done
-
-fi
-
-#
 # The symlinks to be created point to files in the same directory (INPUT),
 # so it's most straightforward to use relative paths.
 #
 relative_link_flag="FALSE"
 
-target="${INPUT_DATA}/INPUT/gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${INPUT_DATA}/gfs_data.${cycle}.mem${ENSMEM_INDX}.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="gfs_data.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
 
-target="${INPUT_DATA}/INPUT/sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${INPUT_DATA}/sfc_data.${cycle}.mem${ENSMEM_INDX}.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="sfc_data.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
+
+target="${INPUT_DATA}/gfs_ctrl.${cycle}.mem${ENSMEM_INDX}.nc"
+symlink="gfs_ctrl.nc"
+create_symlink_to_file target="$target" symlink="$symlink" \
+                       relative="${relative_link_flag}"
+
+
+for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+  target="${INPUT_DATA}/gfs_bndy.${cycle}.mem${ENSMEM_INDX}.tile${TILE_RGNL}.f${fhr}.nc"
+  symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                         relative="${relative_link_flag}"
+done
 
 #
 #-----------------------------------------------------------------------
@@ -495,8 +493,8 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 
   # create the symlinks
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-    ln_vrfy -sf "${COMOUT}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.dynf${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
-    ln_vrfy -sf "${COMOUT}/${NET}.t${cyc}z.mem${ENSMEM_INDX}.phyf${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
+    ln_vrfy -sf "${COMOUT}/${NET}.${cycle}.mem${ENSMEM_INDX}.dynf${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
+    ln_vrfy -sf "${COMOUT}/${NET}.${cycle}.mem${ENSMEM_INDX}.phyf${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
   done
 fi
 #
@@ -557,7 +555,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
     for fid in "${fids[@]}"; do
       FID=$(echo_uppercase $fid)
       post_orig_fn="${FID}.${post_fn_suffix}"
-      post_renamed_fn="${NET}.t${cyc}z.mem${ENSMEM_INDX}.${fid}.${post_renamed_fn_suffix}"
+      post_renamed_fn="${NET}.${cycle}.mem${ENSMEM_INDX}.${fid}.${post_renamed_fn_suffix}"
       mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
       ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
       # DBN alert

@@ -63,7 +63,11 @@ the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-export INPUT_DATA="${COMIN}/${cyc}${SLASH_ENSMEM_SUBDIR}"
+if [ $RUN_ENVIR = "nco" ]; then
+    export INPUT_DATA="${COMIN}"
+else
+    export INPUT_DATA="${COMIN}/${cyc}${SLASH_ENSMEM_SUBDIR}/INPUT"
+fi
 #
 #-----------------------------------------------------------------------
 #
