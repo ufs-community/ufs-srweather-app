@@ -281,9 +281,11 @@ for fid in "${fids[@]}"; do
   post_orig_fn="${FID}.${post_fn_suffix}"
   post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
   mv_vrfy ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
-  create_symlink_to_file target="${post_renamed_fn}" \
+  if [ $RUN_ENVIR != "nco" ]; then
+    create_symlink_to_file target="${post_renamed_fn}" \
                          symlink="${FID}${symlink_suffix}" \
                          relative="TRUE"
+  fi
   # DBN alert
   if [ $SENDDBN = "TRUE" ]; then
     $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
