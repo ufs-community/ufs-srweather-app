@@ -172,8 +172,8 @@ if [ "${RUN_ENVIR}" != "nco" ]; then
     dyn_file="${DATA}/dynf${fhr}${mnts_secs_str}.nc"
     phy_file="${DATA}/phyf${fhr}${mnts_secs_str}.nc"
 else
-    dyn_file="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
-    phy_file="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
+    dyn_file="${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
+    phy_file="${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
 fi
 #
 # Set parameters that specify the actual time (not forecast time) of the

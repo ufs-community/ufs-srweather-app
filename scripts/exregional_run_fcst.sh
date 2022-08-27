@@ -472,14 +472,11 @@ Call to function to create a diag table file for the current cycle's
 #
 #-----------------------------------------------------------------------
 #
-# Pre-generate symlinks to forecast output in DATA pointing to COMOUT
+# Pre-generate symlinks to forecast output in DATA pointing to DATA_SHARED
 #
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-
-  # create comout directory
-  mkdir_vrfy -p ${COMOUT}
 
   # first set suffix for minutes and seconds of forecast time
   mnts_secs_str=""
@@ -493,8 +490,8 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 
   # create the symlinks
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-    ln_vrfy -sf "${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
-    ln_vrfy -sf "${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
+    ln_vrfy -sf "${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
+    ln_vrfy -sf "${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
   done
 fi
 #

@@ -3,41 +3,43 @@
 #
 #-----------------------------------------------------------------------
 #
+# Set cycle and ensemble member names in file/diectory names
+#
+#-----------------------------------------------------------------------
+#
+export cycle="t${cyc}z"
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+    export dot_ensmem=".mem${ENSMEM_INDX}"
+else
+    export dot_ensmem=
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Create a temp working directory (DATA) and cd into it.
 #
 #-----------------------------------------------------------------------
 #
 export DATA=
+export DATA_SHARED=
 if [ "${RUN_ENVIR}" = "nco" ]; then
     export DATA=${DATAROOT}/${jobid}
-    mkdir_vrfy -p $DATA
+    export DATA_SHARED=${DATAROOT}/${RUN}.${PDY}
+    mkdir_vrfy -p $DATA $DATA_SHARED
     cd $DATA
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Set cycle and run setpdy to initialize PDYm and PDYp variables
+# Run setpdy to initialize PDYm and PDYp variables
 #
 #-----------------------------------------------------------------------
 #
-export cycle="t${cyc}z"
 if [ "${RUN_ENVIR}" = "nco" ]; then
     if [ ! -z $(command -v setpdy.sh) ]; then
         setpdy.sh
         . ./PDY
     fi
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Set ensemble member name in file names
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${DO_ENSEMBLE}" = "TRUE" ]; then
-    export dot_ensmem=".mem${ENSMEM_INDX}"
-else
-    export dot_ensmem=
 fi
 #
 #-----------------------------------------------------------------------
@@ -109,7 +111,7 @@ function job_postamble() {
     if [ "${RUN_ENVIR}" = "nco" ]; then
         # Remove temp directory
         cd ${DATAROOT}
-        [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
+        [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA $DATA_SHARED
     fi
 
     # Print exit message
