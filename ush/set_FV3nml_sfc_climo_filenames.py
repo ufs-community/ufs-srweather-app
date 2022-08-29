@@ -154,7 +154,7 @@ class Testing(unittest.TestCase):
         FIXLAM = os.path.join(EXPTDIR, "fix_lam")
         mkdir_vrfy("-p", FIXLAM)
         cp_vrfy(
-            os.path.join(USHrrfs, "input.nml.FV3"),
+            os.path.join(PARMrrfs, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
         )
         set_env_var("USHrrfs", USHrrfs)

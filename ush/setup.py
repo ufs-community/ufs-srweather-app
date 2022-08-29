@@ -359,9 +359,9 @@ def setup():
     MODULESrrfs = os.path.join(HOMErrfs, "modulefiles")
     EXECrrfs = os.path.join(SR_WX_APP_TOP_DIR, EXEC_SUBDIR)
     PARMrrfs = os.path.join(HOMErrfs, "parm")
-    VX_CONFIG_DIR = os.path.join(PARMrrfs, "parm")
-    METPLUS_CONF = os.path.join(PARMrrfs, "parm", "metplus")
-    MET_CONFIG = os.path.join(PARMrrfs, "parm", "met")
+    VX_CONFIG_DIR = PARMrrfs
+    METPLUS_CONF = os.path.join(PARMrrfs, "metplus")
+    MET_CONFIG = os.path.join(PARMrrfs, "met")
 
     #
     # -----------------------------------------------------------------------

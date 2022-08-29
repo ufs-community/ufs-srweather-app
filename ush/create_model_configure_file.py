@@ -320,7 +320,7 @@ class Testing(unittest.TestCase):
     def setUp(self):
         USHrrfs = os.path.dirname(os.path.abspath(__file__))
         MODEL_CONFIG_FN = "model_configure"
-        MODEL_CONFIG_TMPL_FP = os.path.join(USHrrfs, "templates", MODEL_CONFIG_FN)
+        MODEL_CONFIG_TMPL_FP = os.path.join(PARMrrfs, MODEL_CONFIG_FN)
 
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
