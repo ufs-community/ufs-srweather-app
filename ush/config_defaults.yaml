@@ -1643,7 +1643,7 @@ task_run_fcst:
   # model's namelist file that represent the relative or absolute paths of 
   # various fixed files (the first column of the array, where columns are 
   # delineated by the pipe symbol "|") to the full paths to surface climatology 
-  # files (on the native FV3-LAM grid) in the FIXLAM directory derived from 
+  # files (on the native FV3-LAM grid) in the FIXlam directory derived from 
   # the corresponding surface climatology fields (the second column of the 
   # array).
   #

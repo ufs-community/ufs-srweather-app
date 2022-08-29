@@ -131,6 +131,7 @@ class Testing(unittest.TestCase):
 
     def setUp(self):
         USHrrfs = os.path.dirname(os.path.abspath(__file__))
+        PARMrrfs = os.path.join(USHrrfs, "..", "parm")
         DIAG_TABLE_FN = "diag_table"
         DIAG_TABLE_TMPL_FP = os.path.join(
             PARMrrfs, f"{DIAG_TABLE_FN}.FV3_GFS_v15p2"

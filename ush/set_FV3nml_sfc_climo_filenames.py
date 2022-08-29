@@ -34,7 +34,7 @@ def set_FV3nml_sfc_climo_filenames():
     climatology files on the FV3LAM native grid (which are either pregenerated
     or created by the MAKE_SFC_CLIMO_TN task).  Note that the workflow
     generation scripts create symlinks to these surface climatology files
-    in the FIXLAM directory, and the values in the namelist file that get
+    in the FIXlam directory, and the values in the namelist file that get
     set by this function are relative or full paths to these links.
 
     Args:
@@ -70,7 +70,7 @@ def set_FV3nml_sfc_climo_filenames():
 
         check_var_valid_value(sfc_climo_field_name, SFC_CLIMO_FIELDS)
 
-        fp = os.path.join(FIXLAM, f"{CRES}.{sfc_climo_field_name}.{suffix}")
+        fp = os.path.join(FIXlam, f"{CRES}.{sfc_climo_field_name}.{suffix}")
         if RUN_ENVIR != "nco":
             fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
 
@@ -150,16 +150,17 @@ class Testing(unittest.TestCase):
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
         USHrrfs = os.path.dirname(os.path.abspath(__file__))
+        PARMrrfs = os.path.join(USHrrfs, "..", "parm")
         EXPTDIR = os.path.join(USHrrfs, "test_data", "expt")
-        FIXLAM = os.path.join(EXPTDIR, "fix_lam")
-        mkdir_vrfy("-p", FIXLAM)
+        FIXlam = os.path.join(EXPTDIR, "fix_lam")
+        mkdir_vrfy("-p", FIXlam)
         cp_vrfy(
             os.path.join(PARMrrfs, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
         )
         set_env_var("USHrrfs", USHrrfs)
         set_env_var("EXPTDIR", EXPTDIR)
-        set_env_var("FIXLAM", FIXLAM)
+        set_env_var("FIXlam", FIXlam)
         set_env_var("DO_ENSEMBLE", False)
         set_env_var("CRES", "C3357")
         set_env_var("RUN_ENVIR", "nco")

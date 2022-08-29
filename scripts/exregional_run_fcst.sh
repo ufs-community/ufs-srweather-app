@@ -88,7 +88,7 @@ Creating links in the INPUT subdirectory of the current run directory to
 the grid and (filtered) orography files ..."
 
 
-# Create links to fix files in the FIXLAM directory.
+# Create links to fix files in the FIXlam directory.
 
 
 cd_vrfy ${DATA}/INPUT
@@ -111,14 +111,14 @@ else
 fi
 
 # Symlink to mosaic file with a completely different name.
-#target="${FIXLAM}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"   # Should this point to this halo4 file or a halo3 file???
-target="${FIXLAM}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc"   # Should this point to this halo4 file or a halo3 file???
+#target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"   # Should this point to this halo4 file or a halo3 file???
+target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc"   # Should this point to this halo4 file or a halo3 file???
 symlink="grid_spec.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
 
 ## Symlink to halo-3 grid file with "halo3" stripped from name.
-#target="${FIXLAM}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
+#target="${FIXlam}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
 #if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
 #   [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
 #   [ "${GFDLgrid_USE_NUM_CELLS_IN_FILENAMES}" = "FALSE" ]; then
@@ -131,7 +131,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 mosaic_fn="grid_spec.nc"
 grid_fn=$( get_charvar_from_netcdf "${mosaic_fn}" "gridfiles" )
 
-target="${FIXLAM}/${grid_fn}"
+target="${FIXlam}/${grid_fn}"
 symlink="${grid_fn}"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
@@ -148,7 +148,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # Note that even though the message says "Stopped", the task still con-
 # sumes core-hours.
 #
-target="${FIXLAM}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
+target="${FIXlam}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
 symlink="grid.tile${TILE_RGNL}.halo${NH4}.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
@@ -166,7 +166,7 @@ else
 fi
 
 # Symlink to halo-0 orography file with "${CRES}_" and "halo0" stripped from name.
-target="${FIXLAM}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="oro_data.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
@@ -183,7 +183,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # Note that even though the message says "Stopped", the task still con-
 # sumes core-hours.
 #
-target="${FIXLAM}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
+target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 symlink="oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
@@ -199,7 +199,7 @@ if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
 
   fileids=( "ss" "ls" )
   for fileid in "${fileids[@]}"; do
-    target="${FIXLAM}/${CRES}${DOT_OR_USCORE}oro_data_${fileid}.tile${TILE_RGNL}.halo${NH0}.nc"
+    target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data_${fileid}.tile${TILE_RGNL}.halo${NH0}.nc"
     symlink="oro_data_${fileid}.nc"
     create_symlink_to_file target="$target" symlink="$symlink" \
                            relative="${relative_link_flag}"

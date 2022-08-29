@@ -498,9 +498,9 @@ fi
 #
 settings="
 'config': {
- 'fix_dir_target_grid': ${FIXLAM},
- 'mosaic_file_target_grid': ${FIXLAM}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
- 'orog_dir_target_grid': ${FIXLAM},
+ 'fix_dir_target_grid': ${FIXlam},
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
+ 'orog_dir_target_grid': ${FIXlam},
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
  'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
  'varmap_file': ${UFS_UTILS_DIR}/parm/varmap_tables/${varmap_file},

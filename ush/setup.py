@@ -349,7 +349,7 @@ def setup():
     # Define some other useful paths
     #
     global USHrrfs, SCRIPTSrrfs, JOBSrrfs, SORCrrfs, PARMrrfs, MODULESrrfs
-    global EXECrrfs, PARMrrfs, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
+    global EXECrrfs, PARMrrfs, FIXrrfs, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
 
     USHrrfs = os.path.join(HOMErrfs, "ush")
     SCRIPTSrrfs = os.path.join(HOMErrfs, "scripts")
@@ -358,7 +358,7 @@ def setup():
     PARMrrfs = os.path.join(HOMErrfs, "parm")
     MODULESrrfs = os.path.join(HOMErrfs, "modulefiles")
     EXECrrfs = os.path.join(SR_WX_APP_TOP_DIR, EXEC_SUBDIR)
-    PARMrrfs = os.path.join(HOMErrfs, "parm")
+    FIXrrfs = os.path.join(HOMErrfs, "fix")
     VX_CONFIG_DIR = PARMrrfs
     METPLUS_CONF = os.path.join(PARMrrfs, "metplus")
     MET_CONFIG = os.path.join(PARMrrfs, "met")
@@ -878,7 +878,7 @@ def setup():
     # This is the directory that will contain the MERRA2 aerosol climatology
     # data file and lookup tables for optics properties
     #
-    # FIXLAM:
+    # FIXlam:
     # This is the directory that will contain the fixed files or symlinks to
     # the fixed files containing the grid, orography, and surface climatology
     # on the native FV3-LAM grid.
@@ -888,7 +888,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global LOGDIR, FIXam, FIXclim, FIXLAM
+    global LOGDIR, FIXam, FIXclim, FIXlam
     global POST_OUTPUT_DOMAIN_NAME
     global COMIN_BASEDIR, COMOUT_BASEDIR
 
@@ -898,9 +898,9 @@ def setup():
     global KEEPDATA, MAILTO, MAILCC
 
 
-    FIXam = os.path.join(EXPTDIR, "fix_am")
-    FIXclim = os.path.join(EXPTDIR, "fix_clim")
-    FIXLAM = os.path.join(EXPTDIR, "fix_lam")
+    FIXam = os.path.join(FIXrrfs, "fix_am")
+    FIXclim = os.path.join(FIXrrfs, "fix_clim")
+    FIXlam = os.path.join(FIXrrfs, "fix_lam")
 
     if RUN_ENVIR == "nco":
 
@@ -1631,21 +1631,21 @@ def setup():
     # -----------------------------------------------------------------------
     #
     # If not running the MAKE_GRID_TN, MAKE_OROG_TN, and/or MAKE_SFC_CLIMO
-    # tasks, create symlinks under the FIXLAM directory to pregenerated grid,
+    # tasks, create symlinks under the FIXlam directory to pregenerated grid,
     # orography, and surface climatology files.  In the process, also set
     # RES_IN_FIXLAM_FILENAMES, which is the resolution of the grid (in units
     # of number of grid points on an equivalent global uniform cubed-sphere
-    # grid) used in the names of the fixed files in the FIXLAM directory.
+    # grid) used in the names of the fixed files in the FIXlam directory.
     #
     # -----------------------------------------------------------------------
     #
-    mkdir_vrfy(f' -p "{FIXLAM}"')
+    mkdir_vrfy(f' -p "{FIXlam}"')
     RES_IN_FIXLAM_FILENAMES = ""
     #
     # -----------------------------------------------------------------------
     #
     # If the grid file generation task in the workflow is going to be skipped
-    # (because pregenerated files are available), create links in the FIXLAM
+    # (because pregenerated files are available), create links in the FIXlam
     # directory to the pregenerated grid files.
     #
     # -----------------------------------------------------------------------
@@ -1666,7 +1666,7 @@ def setup():
     #
     # If the orography file generation task in the workflow is going to be
     # skipped (because pregenerated files are available), create links in
-    # the FIXLAM directory to the pregenerated orography files.
+    # the FIXlam directory to the pregenerated orography files.
     #
     # -----------------------------------------------------------------------
     #
@@ -1691,7 +1691,7 @@ def setup():
     #
     # If the surface climatology file generation task in the workflow is
     # going to be skipped (because pregenerated files are available), create
-    # links in the FIXLAM directory to the pregenerated surface climatology
+    # links in the FIXlam directory to the pregenerated surface climatology
     # files.
     #
     # -----------------------------------------------------------------------
@@ -1918,13 +1918,13 @@ def setup():
         "PARMrrfs": PARMrrfs,
         "MODULESrrfs": MODULESrrfs,
         "EXECrrfs": EXECrrfs,
+        "FIXrrfs": FIXrrfs,
         "FIXam": FIXam,
         "FIXclim": FIXclim,
-        "FIXLAM": FIXLAM,
+        "FIXlam": FIXlam,
         "FIXgsm": FIXgsm,
         "FIXaer": FIXaer,
         "FIXlut": FIXlut,
-        "PARMrrfs": PARMrrfs,
         "VX_CONFIG_DIR": VX_CONFIG_DIR,
         "METPLUS_CONF": METPLUS_CONF,
         "MET_CONFIG": MET_CONFIG,

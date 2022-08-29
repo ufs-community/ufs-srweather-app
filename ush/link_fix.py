@@ -43,7 +43,7 @@ def link_fix(verbose, file_group):
     #
     # -----------------------------------------------------------------------
     #
-    # Create symlinks in the FIXLAM directory pointing to the grid files.
+    # Create symlinks in the FIXlam directory pointing to the grid files.
     # These symlinks are needed by the make_orog, make_sfc_climo, make_ic,
     # make_lbc, and/or run_fcst tasks.
     #
@@ -55,7 +55,7 @@ def link_fix(verbose, file_group):
     # -----------------------------------------------------------------------
     #
     print_info_msg(
-        f"Creating links in the FIXLAM directory to the grid files...", verbose=verbose
+        f"Creating links in the FIXlam directory to the grid files...", verbose=verbose
     )
     #
     # -----------------------------------------------------------------------
@@ -65,7 +65,7 @@ def link_fix(verbose, file_group):
     #
     #
     # For grid files (i.e. file_group set to "grid"), symlinks are created
-    # in the FIXLAM directory to files (of the same names) in the GRID_DIR.
+    # in the FIXlam directory to files (of the same names) in the GRID_DIR.
     # These symlinks/files and the reason each is needed is listed below:
     #
     # 1) "C*.mosaic.halo${NHW}.nc"
@@ -265,18 +265,18 @@ def link_fix(verbose, file_group):
     # -----------------------------------------------------------------------
     #
     # In creating the various symlinks below, it is convenient to work in
-    # the FIXLAM directory.  We will change directory back to the original
+    # the FIXlam directory.  We will change directory back to the original
     # later below.
     #
     # -----------------------------------------------------------------------
     #
     SAVE_DIR = os.getcwd()
-    cd_vrfy(FIXLAM)
+    cd_vrfy(FIXlam)
     #
     # -----------------------------------------------------------------------
     #
     # Use the set of full file paths generated above as the link targets to
-    # create symlinks to these files in the FIXLAM directory.
+    # create symlinks to these files in the FIXlam directory.
     #
     # -----------------------------------------------------------------------
     #
@@ -345,7 +345,7 @@ def link_fix(verbose, file_group):
             create_symlink_to_file(target, symlink, True)
         #
         # In order to be able to specify the surface climatology file names in
-        # the forecast model's namelist file, in the FIXLAM directory a symlink
+        # the forecast model's namelist file, in the FIXlam directory a symlink
         # must be created for each surface climatology field that has "tile1" in
         # its name (and no "halo") and which points to the corresponding "tile7.halo0"
         # file.
@@ -413,9 +413,9 @@ class Testing(unittest.TestCase):
     def setUp(self):
         define_macos_utilities()
         TEST_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
-        FIXLAM = os.path.join(TEST_DIR, "expt", "fix_lam")
-        mkdir_vrfy("-p", FIXLAM)
-        set_env_var("FIXLAM", FIXLAM)
+        FIXlam = os.path.join(TEST_DIR, "expt", "fix_lam")
+        mkdir_vrfy("-p", FIXlam)
+        set_env_var("FIXlam", FIXlam)
         set_env_var("DOT_OR_USCORE", "_")
         set_env_var("TILE_RGNL", 7)
         set_env_var("NH0", 0)

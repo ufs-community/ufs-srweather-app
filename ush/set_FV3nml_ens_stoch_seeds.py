@@ -173,6 +173,7 @@ class Testing(unittest.TestCase):
         set_env_var("VERBOSE", True)
         self.cdate = datetime(2021, 1, 1)
         USHrrfs = os.path.dirname(os.path.abspath(__file__))
+        PARMrrfs = os.path.join(USHrrfs, "..", "parm")
         EXPTDIR = os.path.join(USHrrfs, "test_data", "expt")
         cp_vrfy(
             os.path.join(PARMrrfs, "input.nml.FV3"),
