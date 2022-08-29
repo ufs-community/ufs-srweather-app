@@ -62,7 +62,7 @@ on the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 #
 # If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
 # minutes (fmn) are set to "00".  This is necessary in order to pass

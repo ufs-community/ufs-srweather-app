@@ -58,7 +58,7 @@ hour zero).
 if [ $RUN_ENVIR = "nco" ]; then
     export INPUT_DATA="${COMIN}"
 else
-    export INPUT_DATA="${COMIN}/${cyc}${SLASH_ENSMEM_SUBDIR}/INPUT"
+    export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
 fi
 mkdir_vrfy -p "${INPUT_DATA}"
 #
@@ -68,7 +68,7 @@ mkdir_vrfy -p "${INPUT_DATA}"
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 mkdir_vrfy -p "${DATA}"
 #
 #-----------------------------------------------------------------------

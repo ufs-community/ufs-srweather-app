@@ -76,15 +76,19 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
             pgmout_lines=$((pgmout_lines + 1))
         fi
     }
-    export -f PREP_STEP
-    export -f POST_STEP
 else
     export pgmout=
     export pgmerr=
     export REDIRECT_OUT_ERR=
-    export PREP_STEP=
-    export POST_STEP=
+    function PREP_STEP() {
+        :
+    }
+    function POST_STEP() {
+        :
+    }
 fi
+export -f PREP_STEP
+export -f POST_STEP
 #
 #-----------------------------------------------------------------------
 #

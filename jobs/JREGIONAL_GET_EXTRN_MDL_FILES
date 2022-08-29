@@ -211,7 +211,7 @@ esac
 if [ $RUN_ENVIR = "nco" ]; then
     export EXTRN_MDL_STAGING_DIR="${COMIN}"
 else
-    export EXTRN_MDL_STAGING_DIR="${COMIN}/${cyc}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
+    export EXTRN_MDL_STAGING_DIR="${COMIN}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
 fi
 mkdir_vrfy -p "${EXTRN_MDL_STAGING_DIR}"
 cd_vrfy "${EXTRN_MDL_STAGING_DIR}"
