@@ -358,7 +358,6 @@ def setup():
     PARMrrfs = os.path.join(HOMErrfs, "parm")
     MODULESrrfs = os.path.join(HOMErrfs, "modulefiles")
     EXECrrfs = os.path.join(SR_WX_APP_TOP_DIR, EXEC_SUBDIR)
-    FIXrrfs = os.path.join(HOMErrfs, "fix")
     VX_CONFIG_DIR = PARMrrfs
     METPLUS_CONF = os.path.join(PARMrrfs, "metplus")
     MET_CONFIG = os.path.join(PARMrrfs, "met")
@@ -897,6 +896,10 @@ def setup():
     global module_ver, extmodel_ver
     global KEEPDATA, MAILTO, MAILCC
 
+    if RUN_ENVIR == "nco":
+        FIXrrfs = os.path.join(HOMErrfs, "fix")
+    else:
+        FIXrrfs = EXPTDIR
 
     FIXam = os.path.join(FIXrrfs, "fix_am")
     FIXclim = os.path.join(FIXrrfs, "fix_clim")
