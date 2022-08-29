@@ -23,6 +23,8 @@ Prerequisites:
 
 Users must have an Intel compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option for the ``develop`` branch assumes that Rocoto is pre-installed. 
 
+.. COMMENT: Remove "for the develop branch"?
+
 Install Singularity
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -65,12 +67,15 @@ Clone the SRW Application from GitHub and run the executable that pulls in SRW A
 
 .. code-block:: console
 
-   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git srw-local
+   git clone -b release/public-v2 https://github.com/ufs-community/ufs-srweather-app.git srw-local
    cd srw-local
    ./manage_externals/checkout_externals
    cd ..
 
 The container will use elements of ``srw-local`` when running across compute nodes. 
+
+.. COMMENT: Need to test release branch clones:
+   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git srw-local
 
 .. _BuildC:
 
@@ -81,6 +86,9 @@ Build the container:
 
 .. code-block:: console
 
+   sudo singularity build ubuntu20.04-intel22-ufs-srwapp.img docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
+
+.. COMMENT: Test "latest" container?
    sudo singularity build ubuntu20.04-intel22-ufs-srwapp.img docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:latest
 
 .. note::
@@ -127,7 +135,7 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
    singularity exec -B /<local_base_dir>:/<container_dir> ./ubuntu20.04-intel22-ufs-srwapp.img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). In general, it is preferable for the local base directory and container directory to have the same name, but this is not required. Also, only one directory can be bound at this phase, but others may be added later. 
+If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). In general, it is preferable for the local base directory and container directory to have the same name, but this is not required. Only one directory can be bound at this phase, but others may be added later. 
 
 .. attention::
    Be sure to bind the directory that contains the experiment data! 
@@ -217,6 +225,8 @@ After this command runs, the working directory should contain ``srw.sh`` and a `
 .. attention::
 
    The user must have an Intel compiler and MPI on their system because the container uses an Intel compiler and MPI. Intel compilers are now available for free as part of `Intel's oneAPI Toolkit <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__.
+
+.. COMMENT: Add note about updating machine files on NOAACloud?
 
 From here, users can follow the steps below to configure the out-of-the-box SRW App case with an automated Rocoto workflow. For more detailed instructions on experiment configuration, users can refer to :numref:`Section %s <UserSpecificConfig>`. 
 
