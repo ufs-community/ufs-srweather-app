@@ -44,6 +44,8 @@ OPTIONS
       (e.g. DEBUG | RELEASE | RELWITHDEBINFO)
   --build-jobs=BUILD_JOBS
       number of build jobs; defaults to 4
+  --use-sub-modules
+      Use sub-component modules instead of top-level level SRW modules
   -v, --verbose
       build with verbose output
 
@@ -123,6 +125,7 @@ BUILD_RRFS_UTILS="off"
 # Make options
 CLEAN=false
 BUILD=false
+USE_SUB_MODULES=false #change default to true later
 
 # process required arguments
 if [[ ("$1" == "--help") || ("$1" == "-h") ]]; then
@@ -164,6 +167,7 @@ while :; do
     --build-jobs|--build-jobs=) usage_error "$1 requires argument." ;;
     --verbose|-v) VERBOSE=true ;;
     --verbose=?*|--verbose=) usage_error "$1 argument ignored." ;;
+    --use-sub-modules) USE_SUB_MODULES=true ;;
     # targets
     default) ;;
     all) DEFAULT_BUILD=false; BUILD_UFS="on";
@@ -312,9 +316,41 @@ source ${SRW_DIR}/etc/lmod-setup.sh $MACHINE
 
 # source the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
-module use ${SRW_DIR}/modulefiles
-module load ${MODULE_FILE}
+if [ $USE_SUB_MODULES = true ]; then
+    if [ $BUILD_UFS = "on" ]; then
+        module use ${SRW_DIR}/sorc/ufs-weather-model/modulefiles
+        MODULE_FILE="ufs_${PLATFORM}.${COMPILER}"
+        if [ $BUILD_TYPE != "RELEASE" ]; then
+            MODULE_FILE="${MODULE_FILE}.debug"
+        fi
+        module load ${MODULE_FILE}
+    fi
+    if [ $BUILD_UFS_UTILS = "on" ]; then
+        module use ${SRW_DIR}/sorc/UFS_UTILS/modulefiles
+        MODULE_FILE="build.${PLATFORM}.${COMPILER}"
+        module load ${MODULE_FILE}
+    fi
+    if [ $BUILD_UPP = "on" ]; then
+        module use ${SRW_DIR}/sorc/UPP/modulefiles
+        MODULE_FILE="${PLATFORM}"
+        module load ${MODULE_FILE}
+    fi
+    if [ $BUILD_GSI = "on" ]; then
+        module use ${SRW_DIR}/sorc/gsi/modulefiles
+        MODULE_FILE="gsi_${PLATFORM}.${COMPILER}"
+        module load ${MODULE_FILE}
+    fi
+    if [ $BUILD_RRFS_UTILS = "on" ]; then
+        #use top level until rrfs_utils has its own modulefiles
+        module use ${SRW_DIR}/modulefiles
+        module load ${MODULE_FILE}
+    fi
+else
+    module use ${SRW_DIR}/modulefiles
+    module load ${MODULE_FILE}
+fi
 module list
+
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
