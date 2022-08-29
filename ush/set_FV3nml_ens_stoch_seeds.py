@@ -175,7 +175,7 @@ class Testing(unittest.TestCase):
         USHrrfs = os.path.dirname(os.path.abspath(__file__))
         EXPTDIR = os.path.join(USHrrfs, "test_data", "expt")
         cp_vrfy(
-            os.path.join(USHrrfs, f"templates{os.sep}input.nml.FV3"),
+            os.path.join(PARMrrfs, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
         )
         for i in range(2):

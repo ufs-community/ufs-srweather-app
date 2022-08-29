@@ -6,7 +6,7 @@ URLS and HPSS (only on supported NOAA platforms), or from user-supplied
 data locations on disk.
 
 Several supported data streams are included in
-ush/templates/data_locations.yml, which provides locations and naming
+parm/data_locations.yml, which provides locations and naming
 conventions for files commonly used with the SRW App. Provide the file
 to this tool via the --config flag. Users are welcome to provide their
 own file with alternative locations and naming conventions.
@@ -16,7 +16,7 @@ provide the path to the data location, which can include Python
 templates. The file names follow those included in the --config file by
 default, or can be user-supplied via the --file_name flag. That flag
 takes a YAML-formatted string that follows the same conventions outlined
-in the ush/templates/data_locations.yml file for naming files.
+in the parm/data_locations.yml file for naming files.
 
 To see usage for this script:
 
@@ -899,7 +899,7 @@ def parse_args(argv):
         "--config",
         help="Full path to a configuration file containing paths and \
         naming conventions for known data streams. The default included \
-        in this repository is in ush/templates/data_locations.yml",
+        in this repository is in parm/data_locations.yml",
         type=config_exists,
     )
     parser.add_argument(

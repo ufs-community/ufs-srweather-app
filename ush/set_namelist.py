@@ -27,7 +27,7 @@ settings are provided under the correct sections and variable names.
 
 The optional base configuration file (provided via the -c command line argument)
 contains the known set of configurations used and supported by the community, if
-using the one provided in ush/templates/FV3.input.yml. If maintaining this file
+using the one provided in parm/FV3.input.yml. If maintaining this file
 for a different set of configurations, ensure that the heirarchy is such that it
 names the configuration at the top level (section), and the subsequent sections
 match those in the F90 namelist that will be updated.
@@ -40,7 +40,7 @@ Examples
 
   To produce a namelist (fv3_expt.nml) by specifying a physics package:
 
-    set_namelist.py -n templates/input.nml.FV3 -c templates/FV3.input.yml FV3_HRRR
+    set_namelist.py -n ../parm/input.nml.FV3 -c ../parm/FV3.input.yml FV3_HRRR
         -o fv3_expt.nml
 
   To produce a YAML file (fv3_namelist.yml) from a user namelist:
@@ -49,7 +49,7 @@ Examples
 
   To produce a YAML file (fv3_my_namelist.yml) with differences from base nml:
 
-    set_namelist.py -n templates/input.nml.FV3 -i my_namelist.nml -t yaml
+    set_namelist.py -n ../parm/input.nml.FV3 -i my_namelist.nml -t yaml
         -o fv3_my_namelist.nml
 
 Expected behavior:

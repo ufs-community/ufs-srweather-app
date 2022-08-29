@@ -138,7 +138,7 @@ def generate_FV3LAM_wflow():
     #
     if WORKFLOW_MANAGER == "rocoto":
 
-        template_xml_fp = os.path.join(TEMPLATE_DIR, WFLOW_XML_FN)
+        template_xml_fp = os.path.join(PARMrrfs, WFLOW_XML_FN)
 
         print_info_msg(
             f'''

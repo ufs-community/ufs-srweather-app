@@ -1,7 +1,7 @@
 # This configuration file maintains the modifications that need to be 
 # made to the base FV3 namelist specified in 
 #
-#   ush/templates/input.nml.FV3
+#   parm/input.nml.FV3
 #
 # to obtain the namelist for each physics suite that the SRW App can 
 # run with.  To build a namelist for one of these configurations, use 

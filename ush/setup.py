@@ -349,7 +349,7 @@ def setup():
     # Define some other useful paths
     #
     global USHrrfs, SCRIPTSDIR, JOBSDIR, SORCrrfs, PARMrrfs, MODULESrrfs
-    global EXECrrfs, TEMPLATE_DIR, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
+    global EXECrrfs, PARMrrfs, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
 
     USHrrfs = os.path.join(HOMErrfs, "ush")
     SCRIPTSDIR = os.path.join(HOMErrfs, "scripts")
@@ -358,10 +358,10 @@ def setup():
     PARMrrfs = os.path.join(HOMErrfs, "parm")
     MODULESrrfs = os.path.join(HOMErrfs, "modulefiles")
     EXECrrfs = os.path.join(SR_WX_APP_TOP_DIR, EXEC_SUBDIR)
-    TEMPLATE_DIR = os.path.join(USHrrfs, "templates")
-    VX_CONFIG_DIR = os.path.join(TEMPLATE_DIR, "parm")
-    METPLUS_CONF = os.path.join(TEMPLATE_DIR, "parm", "metplus")
-    MET_CONFIG = os.path.join(TEMPLATE_DIR, "parm", "met")
+    PARMrrfs = os.path.join(HOMErrfs, "parm")
+    VX_CONFIG_DIR = os.path.join(PARMrrfs, "parm")
+    METPLUS_CONF = os.path.join(PARMrrfs, "parm", "metplus")
+    MET_CONFIG = os.path.join(PARMrrfs, "parm", "met")
 
     #
     # -----------------------------------------------------------------------
@@ -1050,14 +1050,14 @@ def setup():
     MODEL_CONFIG_TMPL_FN = MODEL_CONFIG_TMPL_FN or MODEL_CONFIG_FN
     NEMS_CONFIG_TMPL_FN = NEMS_CONFIG_TMPL_FN or NEMS_CONFIG_FN
 
-    DATA_TABLE_TMPL_FP = os.path.join(TEMPLATE_DIR, DATA_TABLE_TMPL_FN)
-    DIAG_TABLE_TMPL_FP = os.path.join(TEMPLATE_DIR, DIAG_TABLE_TMPL_FN)
-    FIELD_TABLE_TMPL_FP = os.path.join(TEMPLATE_DIR, FIELD_TABLE_TMPL_FN)
-    FV3_NML_BASE_SUITE_FP = os.path.join(TEMPLATE_DIR, FV3_NML_BASE_SUITE_FN)
-    FV3_NML_YAML_CONFIG_FP = os.path.join(TEMPLATE_DIR, FV3_NML_YAML_CONFIG_FN)
+    DATA_TABLE_TMPL_FP = os.path.join(PARMrrfs, DATA_TABLE_TMPL_FN)
+    DIAG_TABLE_TMPL_FP = os.path.join(PARMrrfs, DIAG_TABLE_TMPL_FN)
+    FIELD_TABLE_TMPL_FP = os.path.join(PARMrrfs, FIELD_TABLE_TMPL_FN)
+    FV3_NML_BASE_SUITE_FP = os.path.join(PARMrrfs, FV3_NML_BASE_SUITE_FN)
+    FV3_NML_YAML_CONFIG_FP = os.path.join(PARMrrfs, FV3_NML_YAML_CONFIG_FN)
     FV3_NML_BASE_ENS_FP = os.path.join(EXPTDIR, FV3_NML_BASE_ENS_FN)
-    MODEL_CONFIG_TMPL_FP = os.path.join(TEMPLATE_DIR, MODEL_CONFIG_TMPL_FN)
-    NEMS_CONFIG_TMPL_FP = os.path.join(TEMPLATE_DIR, NEMS_CONFIG_TMPL_FN)
+    MODEL_CONFIG_TMPL_FP = os.path.join(PARMrrfs, MODEL_CONFIG_TMPL_FN)
+    NEMS_CONFIG_TMPL_FP = os.path.join(PARMrrfs, NEMS_CONFIG_TMPL_FN)
     #
     # -----------------------------------------------------------------------
     #
@@ -1924,7 +1924,7 @@ def setup():
         "FIXgsm": FIXgsm,
         "FIXaer": FIXaer,
         "FIXlut": FIXlut,
-        "TEMPLATE_DIR": TEMPLATE_DIR,
+        "PARMrrfs": PARMrrfs,
         "VX_CONFIG_DIR": VX_CONFIG_DIR,
         "METPLUS_CONF": METPLUS_CONF,
         "MET_CONFIG": MET_CONFIG,

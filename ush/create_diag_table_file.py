@@ -133,7 +133,7 @@ class Testing(unittest.TestCase):
         USHrrfs = os.path.dirname(os.path.abspath(__file__))
         DIAG_TABLE_FN = "diag_table"
         DIAG_TABLE_TMPL_FP = os.path.join(
-            USHrrfs, "templates", f"{DIAG_TABLE_FN}.FV3_GFS_v15p2"
+            PARMrrfs, f"{DIAG_TABLE_FN}.FV3_GFS_v15p2"
         )
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)

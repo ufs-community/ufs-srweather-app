@@ -134,7 +134,7 @@ cmd="
 python3 -u ${USHrrfs}/retrieve_data.py \
   --debug \
   --anl_or_fcst ${anl_or_fcst} \
-  --config ${USHrrfs}/templates/data_locations.yml \
+  --config ${PARMrrfs}/data_locations.yml \
   --cycle_date ${EXTRN_MDL_CDATE} \
   --data_stores ${data_stores} \
   --external_model ${EXTRN_MDL_NAME} \
