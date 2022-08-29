@@ -77,7 +77,7 @@ mkdir_vrfy -p "${DATA}"
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_make_ics.sh || \
+$SCRIPTSrrfs/exregional_make_ics.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

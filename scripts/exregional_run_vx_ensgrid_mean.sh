@@ -119,7 +119,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export SCRIPTSDIR
+export SCRIPTSrrfs
 export EXPTDIR
 export MET_INSTALL_DIR
 export MET_BIN_EXEC

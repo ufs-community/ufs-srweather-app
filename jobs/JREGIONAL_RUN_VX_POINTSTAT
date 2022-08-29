@@ -54,7 +54,7 @@ by initialitation time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_run_vx_pointstat.sh || \
+$SCRIPTSrrfs/exregional_run_vx_pointstat.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

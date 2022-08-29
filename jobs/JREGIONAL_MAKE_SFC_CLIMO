@@ -74,7 +74,7 @@ mkdir_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
-${SCRIPTSDIR}/exregional_make_sfc_climo.sh || \
+${SCRIPTSrrfs}/exregional_make_sfc_climo.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

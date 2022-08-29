@@ -373,9 +373,9 @@ def generate_FV3LAM_wflow():
             #
             # Directories and files.
             #
-            "jobsdir": JOBSDIR,
+            "jobsrrfs": JOBSrrfs,
             "logdir": LOGDIR,
-            "scriptsdir": SCRIPTSDIR,
+            "scriptsrrfs": SCRIPTSrrfs,
             "comin_basedir": COMIN_BASEDIR,
             "comout_basedir": COMOUT_BASEDIR,
             "global_var_defns_fp": GLOBAL_VAR_DEFNS_FP,

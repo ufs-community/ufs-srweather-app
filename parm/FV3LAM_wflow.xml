@@ -86,9 +86,9 @@ specifies the number of processes per node being used (the PPN_... entities).
 <!--
 Directories and files.
 -->
-<!ENTITY JOBSDIR                  "{{ jobsdir }}">
+<!ENTITY JOBSrrfs                 "{{ jobsrrfs }}">
 <!ENTITY LOGDIR                   "{{ logdir }}">
-<!ENTITY SCRIPTSDIR               "{{ scriptsdir }}">
+<!ENTITY SCRIPTSrrfs              "{{ scriptsrrfs }}">
 <!ENTITY COMIN_BASEDIR            "{{ comin_basedir }}">
 <!ENTITY COMOUT_BASEDIR           "{{ comout_basedir }}">
 <!ENTITY GLOBAL_VAR_DEFNS_FP      "{{ global_var_defns_fp }}">
@@ -166,7 +166,7 @@ we are already sourcing other files in the J-job anyway.
 -->
 <!--
     <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;";
-               &JOBSDIR;/JREGIONAL_MAKE_GRID;
+               &JOBSrrfs;/JREGIONAL_MAKE_GRID;
              }</command>
 -->
 <!--
@@ -185,7 +185,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&MAKE_GRID_TN;" cycledefs="at_start" maxtries="{{ maxtries_make_grid }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;" "&JOBSDIR;/JREGIONAL_MAKE_GRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;" "&JOBSrrfs;/JREGIONAL_MAKE_GRID"</command>
     <nodes>{{ nnodes_make_grid }}:ppn={{ ppn_make_grid }}</nodes>
     <walltime>{{ wtime_make_grid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -207,7 +207,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&MAKE_OROG_TN;" cycledefs="at_start" maxtries="{{ maxtries_make_orog }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_OROG_TN;" "&JOBSDIR;/JREGIONAL_MAKE_OROG"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_OROG_TN;" "&JOBSrrfs;/JREGIONAL_MAKE_OROG"</command>
     <nodes>{{ nnodes_make_orog }}:ppn={{ ppn_make_orog }}</nodes>
     <walltime>{{ wtime_make_orog }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -237,7 +237,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&MAKE_SFC_CLIMO_TN;" cycledefs="at_start" maxtries="{{ maxtries_make_sfc_climo }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_SFC_CLIMO_TN;" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_SFC_CLIMO_TN;" "&JOBSrrfs;/JREGIONAL_MAKE_SFC_CLIMO"</command>
     <nodes>{{ nnodes_make_sfc_climo }}:ppn={{ ppn_make_sfc_climo }}</nodes>
     <walltime>{{ wtime_make_sfc_climo }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -274,7 +274,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&GET_EXTRN_ICS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_ics }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSrrfs;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_ics }}:ppn={{ ppn_get_extrn_ics }}</nodes>
     <walltime>{{ wtime_get_extrn_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -301,7 +301,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&GET_EXTRN_LBCS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_lbcs }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSrrfs;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_lbcs }}:ppn={{ ppn_get_extrn_lbcs }}</nodes>
     <walltime>{{ wtime_get_extrn_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -338,7 +338,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&MAKE_ICS_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_make_ics }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_ICS_TN;" "&JOBSDIR;/JREGIONAL_MAKE_ICS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_ICS_TN;" "&JOBSrrfs;/JREGIONAL_MAKE_ICS"</command>
     <nodes>{{ nnodes_make_ics }}:ppn={{ ppn_make_ics }}</nodes>
     <walltime>{{ wtime_make_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -387,7 +387,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_make_lbcs }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_LBCS_TN;" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_LBCS_TN;" "&JOBSrrfs;/JREGIONAL_MAKE_LBCS"</command>
     <nodes>{{ nnodes_make_lbcs }}:ppn={{ ppn_make_lbcs }}</nodes>
     <walltime>{{ wtime_make_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -436,7 +436,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&RUN_FCST_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_fcst }}">
 
     &RSRV_FCST;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_FCST_TN;" "&JOBSDIR;/JREGIONAL_RUN_FCST"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_FCST_TN;" "&JOBSrrfs;/JREGIONAL_RUN_FCST"</command>
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_fcst }}</cores>
     <native>{{ native_run_fcst }}</native>
@@ -495,7 +495,7 @@ later below for other output times.
     <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
-      <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSrrfs;/JREGIONAL_RUN_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -553,7 +553,7 @@ for other output times.
       <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSrrfs;/JREGIONAL_RUN_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -616,7 +616,7 @@ always zero).
   {%- endif %}
 
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSrrfs;/JREGIONAL_RUN_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -688,7 +688,7 @@ the <task> tag to be identical to the ones above for other output times.
     <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
-      <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSDIR;/JREGIONAL_RUN_POST"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSrrfs;/JREGIONAL_RUN_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -732,7 +732,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&GET_OBS_CCPA_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_ccpa }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_CCPA"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSrrfs;/JREGIONAL_GET_OBS_CCPA"</command>
     <nodes>{{ nnodes_get_obs_ccpa }}:ppn={{ ppn_get_obs_ccpa }}</nodes>
     <walltime>{{ wtime_get_obs_ccpa }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -762,7 +762,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&GET_OBS_MRMS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_mrms }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_MRMS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSrrfs;/JREGIONAL_GET_OBS_MRMS"</command>
     <nodes>{{ nnodes_get_obs_mrms }}:ppn={{ ppn_get_obs_mrms }}</nodes>
     <walltime>{{ wtime_get_obs_mrms }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -779,7 +779,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
-    <envar><name>SCRIPTSDIR</name><value>&SCRIPTSDIR;</value></envar>
+    <envar><name>SCRIPTSrrfs</name><value>&SCRIPTSrrfs;</value></envar>
     <envar><name>VAR</name><value>REFC RETOP</value></envar>
  
   </task>
@@ -793,7 +793,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&GET_OBS_NDAS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_ndas }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSDIR;/JREGIONAL_GET_OBS_NDAS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSrrfs;/JREGIONAL_GET_OBS_NDAS"</command>
     <nodes>{{ nnodes_get_obs_ndas }}:ppn={{ ppn_get_obs_ndas }}</nodes>
     <walltime>{{ wtime_get_obs_ndas }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -822,7 +822,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -876,7 +876,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_GRIDSTAT_REFC_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_refc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -929,7 +929,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_GRIDSTAT_RETOP_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_retop }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -982,7 +982,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_GRIDSTAT_03h_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1021,7 +1021,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_GRIDSTAT_06h_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1060,7 +1060,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_GRIDSTAT_24h_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1099,7 +1099,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_POINTSTAT_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_pointstat }}">
     &RSRV_DEFAULT;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_POINTSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_POINTSTAT"</command>
     <nodes>{{ nnodes_vx_pointstat }}:ppn={{ ppn_vx_pointstat }}</nodes>
     <walltime>{{ wtime_vx_pointstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1155,7 +1155,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1190,7 +1190,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_03h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1225,7 +1225,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_06h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1260,7 +1260,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_24h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1294,7 +1294,7 @@ the <task> tag to be identical to the ones above for other output times.
 <task name="&VX_ENSGRID_REFC_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_refc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1327,7 +1327,7 @@ the <task> tag to be identical to the ones above for other output times.
 <task name="&VX_ENSGRID_RETOP_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_retop }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1359,7 +1359,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_MEAN_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1393,7 +1393,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_PROB_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1427,7 +1427,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_MEAN_03h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean_03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1461,7 +1461,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_PROB_03h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1496,7 +1496,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_MEAN_06h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean_06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1530,7 +1530,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_PROB_06h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1565,7 +1565,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_MEAN_24h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean_24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1599,7 +1599,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_PROB_24h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1633,7 +1633,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_PROB_REFC_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_refc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1666,7 +1666,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSGRID_PROB_RETOP_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_retop }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1700,7 +1700,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSPOINT_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_enspoint }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSPOINT"</command>
     <nodes>{{ nnodes_vx_enspoint }}:ppn={{ ppn_vx_enspoint }}</nodes>
     <walltime>{{ wtime_vx_enspoint }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1731,7 +1731,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSPOINT_MEAN_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_enspoint_mean }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT_MEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSPOINT_MEAN"</command>
     <nodes>{{ nnodes_vx_enspoint_mean }}:ppn={{ ppn_vx_enspoint_mean }}</nodes>
     <walltime>{{ wtime_vx_enspoint_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1762,7 +1762,7 @@ the <task> tag to be identical to the ones above for other output times.
   <task name="&VX_ENSPOINT_PROB_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_enspoint_prob }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSrrfs;/JREGIONAL_RUN_VX_ENSPOINT_PROB"</command>
     <nodes>{{ nnodes_vx_enspoint_prob }}:ppn={{ ppn_vx_enspoint_prob }}</nodes>
     <walltime>{{ wtime_vx_enspoint_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>

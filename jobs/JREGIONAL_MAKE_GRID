@@ -171,7 +171,7 @@ mkdir_vrfy -p "$DATA"
 #
 #-----------------------------------------------------------------------
 #
-${SCRIPTSDIR}/exregional_make_grid.sh || \
+${SCRIPTSrrfs}/exregional_make_grid.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

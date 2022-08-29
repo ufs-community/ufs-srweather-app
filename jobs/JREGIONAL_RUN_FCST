@@ -86,7 +86,7 @@ mkdir_vrfy -p ${DATA}/RESTART
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_run_fcst.sh || \
+$SCRIPTSrrfs/exregional_run_fcst.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

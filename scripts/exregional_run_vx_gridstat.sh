@@ -133,7 +133,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export SCRIPTSDIR
+export SCRIPTSrrfs
 export EXPTDIR
 export INPUT_BASE
 export OUTPUT_BASE

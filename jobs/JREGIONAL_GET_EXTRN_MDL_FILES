@@ -222,7 +222,7 @@ cd_vrfy "${EXTRN_MDL_STAGING_DIR}"
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_get_extrn_mdl_files.sh || \
+$SCRIPTSrrfs/exregional_get_extrn_mdl_files.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

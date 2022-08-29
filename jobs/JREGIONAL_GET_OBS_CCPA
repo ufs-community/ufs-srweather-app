@@ -68,7 +68,7 @@ for verification purposes.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_get_obs_ccpa.sh || \
+$SCRIPTSrrfs/exregional_get_obs_ccpa.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

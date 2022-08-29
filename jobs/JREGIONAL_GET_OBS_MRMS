@@ -68,7 +68,7 @@ echo "VAR=${VAR}"
 for field in ${VAR[@]}; do
   export field
   echo "Field=${field}"
-  $SCRIPTSDIR/exregional_get_obs_mrms.sh || \
+  $SCRIPTSrrfs/exregional_get_obs_mrms.sh || \
   print_err_msg_exit "\
   Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 done

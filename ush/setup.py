@@ -348,12 +348,12 @@ def setup():
     #
     # Define some other useful paths
     #
-    global USHrrfs, SCRIPTSDIR, JOBSDIR, SORCrrfs, PARMrrfs, MODULESrrfs
+    global USHrrfs, SCRIPTSrrfs, JOBSrrfs, SORCrrfs, PARMrrfs, MODULESrrfs
     global EXECrrfs, PARMrrfs, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
 
     USHrrfs = os.path.join(HOMErrfs, "ush")
-    SCRIPTSDIR = os.path.join(HOMErrfs, "scripts")
-    JOBSDIR = os.path.join(HOMErrfs, "jobs")
+    SCRIPTSrrfs = os.path.join(HOMErrfs, "scripts")
+    JOBSrrfs = os.path.join(HOMErrfs, "jobs")
     SORCrrfs = os.path.join(HOMErrfs, "sorc")
     PARMrrfs = os.path.join(HOMErrfs, "parm")
     MODULESrrfs = os.path.join(HOMErrfs, "modulefiles")
@@ -1912,8 +1912,8 @@ def setup():
         "SR_WX_APP_TOP_DIR": SR_WX_APP_TOP_DIR,
         "HOMErrfs": HOMErrfs,
         "USHrrfs": USHrrfs,
-        "SCRIPTSDIR": SCRIPTSDIR,
-        "JOBSDIR": JOBSDIR,
+        "SCRIPTSrrfs": SCRIPTSrrfs,
+        "JOBSrrfs": JOBSrrfs,
         "SORCrrfs": SORCrrfs,
         "PARMrrfs": PARMrrfs,
         "MODULESrrfs": MODULESrrfs,
