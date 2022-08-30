@@ -49,6 +49,8 @@ On NOAA Cloud systems, the ``sudo su`` command may also be required:
    
 .. code-block:: 
 
+   mkdir /lustre/cache
+   mkdir /lustre/tmp
    sudo su
    export SINGULARITY_CACHEDIR=/lustre/cache
    export SINGULARITY_TEMPDIR=/lustre/tmp
@@ -163,7 +165,7 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
    singularity exec -B /<local_base_dir>:/<container_dir> ./<container_name> cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel22-ufs-srwapp``) or the ``.img`` file. 
+where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel22-ufs-srwapp``) or the name of the container ``.img`` file. 
 
 If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory to have the same name. 
 
@@ -244,14 +246,14 @@ Run ``stage-srw.sh``:
 
 .. code-block:: console
 
-   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=<platform> -i=ubuntu20.04-intel22-ufs-srwapp.img
+   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=<platform> -i=<container_name>
 
 where: 
 
    * ``-c`` refers to the compiler on the user's local machine 
    * ``-m`` refers to the :term:`MPI` on the user's local machine
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <PlatEnv>` for a full list of options. 
-   * ``-i`` refers to the name of the container image that was built in :numref:`Step %s <BuildC>`
+   * ``-i`` refers to the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel22-ufs-srwapp`` or ``ubuntu20.04-intel22-ufs-srwapp.img`` by default).
 
 After this command runs, the working directory should contain ``srw.sh`` and a ``ufs-srweather-app`` directory. 
 
@@ -299,8 +301,6 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via cron table is the simplest option. 
 
-.. COMMENT:
-
    #. On NOAA Cloud platforms only, users must modify the ``noaacloud.sh`` machine file as follows:
 
       #. Comment out lines 23, 25, and 74:
@@ -318,7 +318,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
             export PROJ_LIB=/contrib/GST/miniconda3/4.10.3/envs/regional_workflow/share/proj
             export PATH=${PATH}:/contrib/GST/miniconda3/4.10.3/envs/regional_workflow/bin
 
-
+.. COMMENT: Remove machine file section?
          
 
 .. _GenerateWorkflowC: 
