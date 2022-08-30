@@ -45,15 +45,14 @@ FUNCTION(is_enabled feature ret_val)
   ENDIF(${feature})
 ENDFUNCTION()
 
-# User options
-option(ENABLE_RRFS "Build RRFS components" OFF)
-
 # Turn on testing.
 enable_testing()
 include(CTest)
 
-# Build in this subdirectory.
-#add_subdirectory(src)
+# Default bin directory
+if(NOT DEFINED CMAKE_INSTALL_BINDIR)
+    set(CMAKE_INSTALL_BINDIR bin)
+endif()
 
 #####
 # Configure and print the ufs-srweather-app.settings file.
@@ -122,7 +121,7 @@ MESSAGE(${UFS-SRWEATHER-APP_SETTINGS})
 # Install ufs_srweather_app.settings file into same location
 # as the app.
 INSTALL(FILES "${CMAKE_BINARY_DIR}/ufs_srweather_app.settings"
-  DESTINATION bin)
+  DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 #####
 # Create 'ufs_srweather_app_meta.h' include file.
@@ -133,4 +132,6 @@ configure_file(
 
 FILE(COPY "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app_meta.h" DESTINATION include)
 
-add_subdirectory(src)
+add_custom_target(build DEPENDS sorc/pbuild)
+
+add_subdirectory(sorc)

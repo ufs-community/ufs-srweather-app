@@ -1,0 +1,147 @@
+include(ExternalProject)
+
+# Hack to turn on EMC style bin_dir
+if(CMAKE_INSTALL_BINDIR STREQUAL "exec")
+  set(EMC_EXEC_DIR on)
+endif()
+
+# Options
+option(BUILD_UFS "Build UFS weather model" ON)
+option(BUILD_UFS_UTILS "Build UFS utilities" ON)
+option(BUILD_UPP "Build UPP" ON)
+option(BUILD_GSI "Build GSI" OFF)
+option(BUILD_RRFS_UTILS "Build RRFS utilities" OFF)
+
+message(STATUS "BUILD_UFS ............... ${BUILD_UFS}")
+message(STATUS "BUILD_UFS_UTILS ......... ${BUILD_UFS_UTILS}")
+message(STATUS "BUILD_GSI ............... ${BUILD_GSI}")
+message(STATUS "BUILD_UPP ............... ${BUILD_UPP}")
+message(STATUS "BUILD_RRFS_UTILS ........ ${BUILD_RRFS_UTILS}")
+
+# Build UFS utilities
+if(BUILD_UFS_UTILS)
+  list(APPEND TARGET_LIST UFS_UTILS)
+
+  list(APPEND UFS_UTILS_ARGS
+    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+    "-DBUILD_TESTING=OFF"
+  )
+
+  ExternalProject_Add(UFS_UTILS
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/UFS_UTILS
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/UFS_UTILS
+    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    CMAKE_ARGS ${UFS_UTILS_ARGS} -DEMC_EXEC_DIR=${EMC_EXEC_DIR}
+    BUILD_ALWAYS TRUE
+    STEP_TARGETS build
+    )
+endif()
+
+# Build UFS weather model
+if (BUILD_UFS)
+  list(APPEND TARGET_LIST UFS)
+
+  if(NOT CCPP_SUITES)
+    set(CCPP_SUITES "FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GFS_v15p2,FV3_GFS_v16,FV3_RRFS_v1beta,FV3_HRRR,FV3_GFS_v15_thompson_mynn_lam3km")
+  endif()
+  
+  if(NOT APP)
+    set(APP "ATM")
+  endif()
+  
+  if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "RELEASE")
+  endif()
+  
+  list(APPEND UFS_WEATHER_MODEL_ARGS
+    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+    "-DCCPP_SUITES=${CCPP_SUITES}"
+    "-DCMAKE_C_COMPILER=${MPI_C_COMPILER}"
+    "-DCMAKE_CXX_COMPILER=${MPI_CXX_COMPILER}"
+    "-DCMAKE_Fortran_COMPILER=${MPI_Fortran_COMPILER}"
+    "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+    "-DCMAKE_MODULE_PATH=${MAPL_ROOT}/share/MAPL/cmake"
+    "-DNETCDF_DIR=$ENV{NETCDF}"
+    "-D32BIT=ON"
+    "-DINLINE_POST=ON"
+    "-DAPP=${APP}"
+  )
+  
+  string(TOUPPER "${CMAKE_BUILD_TYPE}" TOUPPER_CMAKE_BUILD_TYPE)
+  if (TOUPPER_CMAKE_BUILD_TYPE MATCHES "DEBUG")
+    list(APPEND UFS_WEATHER_MODEL_ARGS "-DDEBUG=ON")
+  endif()
+  
+  if (BUILD_OPTIONS)
+    string(REPLACE "," ";" BUILD_OPTIONS "${BUILD_OPTIONS}")
+    foreach (option_on IN ITEMS ${BUILD_OPTIONS})
+      list(APPEND UFS_WEATHER_MODEL_ARGS "-D${option_on}=ON")
+    endforeach()
+  endif()
+  
+  if (DISABLE_OPTIONS)
+    string(REPLACE "," ";" DISABLE_OPTIONS "${DISABLE_OPTIONS}")
+    foreach (option_off IN ITEMS ${DISABLE_OPTIONS})
+      list(APPEND UFS_WEATHER_MODEL_ARGS "-D${option_off}=OFF")
+    endforeach()
+  endif()
+
+  ExternalProject_Add(ufs-weather-model
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ufs-weather-model
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ufs-weather-model
+    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    CMAKE_ARGS ${UFS_WEATHER_MODEL_ARGS}
+    INSTALL_COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR} && cp ${CMAKE_CURRENT_BINARY_DIR}/ufs-weather-model/src/ufs-weather-model-build/ufs_model ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+    BUILD_ALWAYS TRUE
+    STEP_TARGETS build
+    )
+endif()
+
+# Build UPP
+if (BUILD_UPP)
+  list(APPEND TARGET_LIST UPP)
+
+  ExternalProject_Add(UPP
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/UPP
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/UPP
+    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -Dexec_dir=${CMAKE_INSTALL_BINDIR}
+    BUILD_ALWAYS TRUE
+    STEP_TARGETS build
+    )
+endif()
+
+# Build GSI
+if (BUILD_GSI)
+  list(APPEND TARGET_LIST GSI)
+
+  ExternalProject_Add(GSI
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/GSI
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gsi
+    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR} -DGSI_MODE=Regional -DENKF_MODE=FV3REG
+    BUILD_ALWAYS TRUE
+    STEP_TARGETS build
+    )
+endif()
+
+# Build rrfs_utl
+if (BUILD_RRFS_UTILS)
+  list(APPEND TARGET_LIST RRFS_UTILS)
+
+  ExternalProject_Add(RRFS_UTILS
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/rrfs_utl
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/rrfs_utl
+    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}
+    BUILD_ALWAYS TRUE
+    STEP_TARGETS build
+    )
+endif()
+
+# add custom target for separate build and install
+foreach(i ${TARGET_LIST})
+    list(APPEND BUILD_LIST "${i}-build")
+endforeach()
+
+add_custom_target(pbuild DEPENDS ${BUILD_LIST})
