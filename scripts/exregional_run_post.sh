@@ -83,7 +83,7 @@ fi
 #-----------------------------------------------------------------------
 #
 rm_vrfy -f fort.*
-cp_vrfy ${UPP_DIR}/parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp_vrfy ${PARMrrfs}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
@@ -95,9 +95,9 @@ to the temporary work directory (DATA_FHR):
 ===================================================================="
 else
   if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
-    post_config_fp="${UPP_DIR}/parm/postxconfig-NT-fv3lam_cmaq.txt"
+    post_config_fp="${PARMrrfs}/upp/postxconfig-NT-fv3lam_cmaq.txt"
   else
-    post_config_fp="${UPP_DIR}/parm/postxconfig-NT-fv3lam.txt"
+    post_config_fp="${PARMrrfs}/upp/postxconfig-NT-fv3lam.txt"
   fi
   print_info_msg "
 ====================================================================
@@ -108,7 +108,7 @@ temporary work directory (DATA_FHR):
 ===================================================================="
 fi
 cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-cp_vrfy ${UPP_DIR}/parm/params_grib2_tbl_new .
+cp_vrfy ${PARMrrfs}/upp/params_grib2_tbl_new .
 if [ ${USE_CRTM} = "TRUE" ]; then
   cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Water/Big_Endian/Nalli.IRwater.EmisCoeff.bin ./
   cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/MW_Water/Big_Endian/FAST*.bin ./
