@@ -302,50 +302,6 @@ def setup():
             build the executable, and then rerun the workflow."""
         )
     #
-    # Get the base directory of the UFS_UTILS codes.
-    #
-    external_name = "ufs_utils"
-    UFS_UTILS_DIR = get_ini_value(cfg, external_name, property_name)
-
-    if not UFS_UTILS_DIR:
-        print_err_msg_exit(
-            f"""
-            Externals.cfg does not contain "{external_name}"."""
-        )
-
-    UFS_UTILS_DIR = os.path.join(SR_WX_APP_TOP_DIR, UFS_UTILS_DIR)
-    if not os.path.exists(UFS_UTILS_DIR):
-        print_err_msg_exit(
-            f"""
-            The base directory in which the UFS utilities source codes should be lo-
-            cated (UFS_UTILS_DIR) does not exist:
-              UFS_UTILS_DIR = \"{UFS_UTILS_DIR}\"
-            Please clone the external repository containing the code in this direct-
-            ory, build the executables, and then rerun the workflow."""
-        )
-    #
-    # Get the base directory of the UPP code.
-    #
-    external_name = "UPP"
-    UPP_DIR = get_ini_value(cfg, external_name, property_name)
-    if not UPP_DIR:
-        print_err_msg_exit(
-            f"""
-            Externals.cfg does not contain "{external_name}"."""
-        )
-
-    UPP_DIR = os.path.join(SR_WX_APP_TOP_DIR, UPP_DIR)
-    if not os.path.exists(UPP_DIR):
-        print_err_msg_exit(
-            f"""
-            The base directory in which the UPP source code should be located
-            (UPP_DIR) does not exist:
-              UPP_DIR = \"{UPP_DIR}\"
-            Please clone the external repository containing the code in this directory,
-            build the executable, and then rerun the workflow."""
-        )
-
-    #
     # Define some other useful paths
     #
     global USHrrfs, SCRIPTSrrfs, JOBSrrfs, SORCrrfs, PARMrrfs, MODULESrrfs
@@ -1932,10 +1888,8 @@ def setup():
         "METPLUS_CONF": METPLUS_CONF,
         "MET_CONFIG": MET_CONFIG,
         "UFS_WTHR_MDL_DIR": UFS_WTHR_MDL_DIR,
-        "UFS_UTILS_DIR": UFS_UTILS_DIR,
         "SFC_CLIMO_INPUT_DIR": SFC_CLIMO_INPUT_DIR,
         "TOPO_DIR": TOPO_DIR,
-        "UPP_DIR": UPP_DIR,
         "EXPTDIR": EXPTDIR,
         "LOGDIR": LOGDIR,
         "GRID_DIR": GRID_DIR,
