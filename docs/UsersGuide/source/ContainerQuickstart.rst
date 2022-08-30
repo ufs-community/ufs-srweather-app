@@ -82,11 +82,39 @@ The container will use elements of ``srw-local`` when running across compute nod
 Build the Container
 ------------------------
 
-Build the container:
+.. COMMENT:
+
+   On Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp.img`` has already been built at the following locations:
+
+   .. table:: Locations of pre-built containers
+
+      +--------------+--------------------------------------------------------+
+      | Machine      | File location                                          |
+      +==============+========================================================+
+      | Cheyenne     |                                                        |
+      +--------------+--------------------------------------------------------+
+      | Gaea         |                                                        |
+      +--------------+--------------------------------------------------------+
+      | Hera         |                                                        |
+      +--------------+--------------------------------------------------------+
+      | Jet          |                                                        |
+      +--------------+--------------------------------------------------------+
+      | NOAA Cloud   |                                                        |
+      +--------------+--------------------------------------------------------+
+      | Orion        |                                                        |
+      +--------------+--------------------------------------------------------+
+
+   If users prefer to convert the container ``.img`` file to a writable sandbox, they can run:
+
+      .. code-block:: console
+
+         sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp ubuntu20.04-intel22-ufs-srwapp.img
+
+On other systems, users should build the container in a writable sandbox:
 
 .. code-block:: console
 
-   sudo singularity build ubuntu20.04-intel22-ufs-srwapp.img docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
+   sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
 
 .. COMMENT: Test "latest" container?
    sudo singularity build ubuntu20.04-intel22-ufs-srwapp.img docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:latest
@@ -133,12 +161,21 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
 .. code-block:: console
 
-   singularity exec -B /<local_base_dir>:/<container_dir> ./ubuntu20.04-intel22-ufs-srwapp.img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
+   singularity exec -B /<local_base_dir>:/<container_dir> ./<container_name> cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). In general, it is preferable for the local base directory and container directory to have the same name, but this is not required. Only one directory can be bound at this phase, but others may be added later. 
+where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel22-ufs-srwapp``) or the ``.img`` file. 
+
+If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory to have the same name. 
 
 .. attention::
    Be sure to bind the directory that contains the experiment data! 
+
+.. COMMENT: 
+   When binding two directories, it is helpful to give them the same name. For example, if the host system's top-level directory is ``/glade``, users can create a ``glade`` directory in the container:
+
+   .. code-block:: console
+
+      mkdir <path/to/container>/glade
 
 To explore the container and view available directories, users can run the following commands:
 
@@ -216,11 +253,7 @@ where:
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <PlatEnv>` for a full list of options. 
    * ``-i`` refers to the name of the container image that was built in :numref:`Step %s <BuildC>`
 
-After this command runs, the working directory should contain ``srw.sh`` and a ``ufs-srweather-app`` directory. Users who need to bind more than one directory system to run their experiment must manually add an argument to the last line of the ``srw.sh`` file. For example, if the user already bound the ``/contrib`` directory and also wants to bind ``/lustre`` directories, they would add ``-B /lustre:/lustre`` to the last line of ``srw.sh`` as follows: 
-
-.. code-block:: console
-
-   /usr/bin/singularity exec -B /contrib:/contrib -B /lustre:/lustre "${dir}/${img}" $cmd $arg
+After this command runs, the working directory should contain ``srw.sh`` and a ``ufs-srweather-app`` directory. 
 
 .. attention::
 
@@ -265,6 +298,28 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          CRON_RELAUNCH_INTVL_MNTS="02"
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via cron table is the simplest option. 
+
+.. COMMENT:
+
+   #. On NOAA Cloud platforms only, users must modify the ``noaacloud.sh`` machine file as follows:
+
+      #. Comment out lines 23, 25, and 74:
+
+         .. code-block:: console
+            
+            #export PROJ_LIB=/contrib/GST/miniconda/envs/regional_workflow/share/proj
+            #export PATH=${PATH}:/contrib/GST/miniconda/envs/regional_workflow/bin
+            #. /contrib/EPIC/.bash_conda
+      
+      #. Add the following lines:
+
+         .. code-block:: console
+            
+            export PROJ_LIB=/contrib/GST/miniconda3/4.10.3/envs/regional_workflow/share/proj
+            export PATH=${PATH}:/contrib/GST/miniconda3/4.10.3/envs/regional_workflow/bin
+
+
+         
 
 .. _GenerateWorkflowC: 
 
