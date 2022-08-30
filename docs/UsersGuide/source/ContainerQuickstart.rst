@@ -76,7 +76,7 @@ Clone the SRW Application from GitHub and run the executable that pulls in SRW A
 
 The container will use elements of ``srw-local`` when running across compute nodes. 
 
-.. COMMENT: Need to test release branch clones:
+.. COMMENT: Need to test develop branch clones:
    git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git srw-local
 
 .. _BuildC:
@@ -84,33 +84,33 @@ The container will use elements of ``srw-local`` when running across compute nod
 Build the Container
 ------------------------
 
-.. COMMENT:
+On Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp.img`` has already been built at the following locations:
 
-   On Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp.img`` has already been built at the following locations:
+.. table:: Locations of pre-built containers
 
-   .. table:: Locations of pre-built containers
+   +--------------+--------------------------------------------------------+
+   | Machine      | File location                                          |
+   +==============+========================================================+
+   | Cheyenne     | /glade/p/ral/jntp/UFS_SRW_App/develop/                 |
+   +--------------+--------------------------------------------------------+
+   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/develop/             |
+   +--------------+--------------------------------------------------------+
+   | Hera         | /scratch2/BMC/det/UFS_SRW_App/develop/                 |
+   +--------------+--------------------------------------------------------+
+   | Jet          | /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/              |
+   +--------------+--------------------------------------------------------+
+   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/develop/                     |
+   +--------------+--------------------------------------------------------+
+   | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/develop/                |
+   +--------------+--------------------------------------------------------+
 
-      +--------------+--------------------------------------------------------+
-      | Machine      | File location                                          |
-      +==============+========================================================+
-      | Cheyenne     |                                                        |
-      +--------------+--------------------------------------------------------+
-      | Gaea         |                                                        |
-      +--------------+--------------------------------------------------------+
-      | Hera         |                                                        |
-      +--------------+--------------------------------------------------------+
-      | Jet          |                                                        |
-      +--------------+--------------------------------------------------------+
-      | NOAA Cloud   |                                                        |
-      +--------------+--------------------------------------------------------+
-      | Orion        |                                                        |
-      +--------------+--------------------------------------------------------+
+If users prefer to convert the container ``.img`` file to a writable sandbox, they can run:
 
-   If users prefer to convert the container ``.img`` file to a writable sandbox, they can run:
+   .. code-block:: console
 
-      .. code-block:: console
+      sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp ubuntu20.04-intel22-ufs-srwapp.img
 
-         sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp ubuntu20.04-intel22-ufs-srwapp.img
+.. COMMENT: Check that containers are actually added here before merging!!!
 
 On other systems, users should build the container in a writable sandbox:
 
@@ -167,19 +167,17 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
 where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel22-ufs-srwapp``) or the name of the container ``.img`` file. 
 
-If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory to have the same name. 
+If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the container sandbox and then bind it:
+
+   .. code-block:: console
+
+      mkdir <path/to/container>/user1234
+      singularity exec -B /user1234:/user1234 .ubuntu20.04-intel22-ufs-srwapp cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
 .. attention::
    Be sure to bind the directory that contains the experiment data! 
 
-.. COMMENT: 
-   When binding two directories, it is helpful to give them the same name. For example, if the host system's top-level directory is ``/glade``, users can create a ``glade`` directory in the container:
-
-   .. code-block:: console
-
-      mkdir <path/to/container>/glade
-
-To explore the container and view available directories, users can run the following commands:
+To explore the container and view available directories, users can ``cd`` into it and run ``ls`` (if it was built as a sandbox) or run the following commands:
 
 .. code-block:: console
 
@@ -301,7 +299,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via cron table is the simplest option. 
 
-   #. On NOAA Cloud platforms only, users must modify the ``noaacloud.sh`` machine file as follows:
+   #. On NOAA Cloud platforms only, users must modify the ``noaacloud.sh`` machine file (located in ``/ufs-srweather-app/regional_workflow/ush/machine``) as follows:
 
       #. Comment out lines 23, 25, and 74:
 
@@ -310,6 +308,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
             #export PROJ_LIB=/contrib/GST/miniconda/envs/regional_workflow/share/proj
             #export PATH=${PATH}:/contrib/GST/miniconda/envs/regional_workflow/bin
             #. /contrib/EPIC/.bash_conda
+
       
       #. Add the following lines:
 
