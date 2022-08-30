@@ -316,31 +316,57 @@ source ${SRW_DIR}/etc/lmod-setup.sh $MACHINE
 
 # source the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
+
 if [ $USE_SUB_MODULES = true ]; then
-    if [ $BUILD_UFS = "on" ]; then
-        module use ${SRW_DIR}/sorc/ufs-weather-model/modulefiles
-        MODULE_FILE="ufs_${PLATFORM}.${COMPILER}"
+    #helper to try and load module
+    function load_module() {
+        set +e
+        #try most specialized modulefile first
+        MODF="$1${PLATFORM}.${COMPILER}"
         if [ $BUILD_TYPE != "RELEASE" ]; then
-            MODULE_FILE="${MODULE_FILE}.debug"
+            MODF="${MODF}.debug"
+        else
+            MODF="${MODF}.release"
         fi
-        module load ${MODULE_FILE}
+        module is-avail ${MODF}
+        if [ $? -eq 0 ]; then
+            module load ${MODF}
+            return
+        fi
+        # without build type
+        MODF="$1${PLATFORM}.${COMPILER}"
+        module is-avail ${MODF}
+        if [ $? -eq 0 ]; then
+            module load ${MODF}
+            return
+        fi
+        # without compiler
+        MODF="$1${PLATFORM}"
+        module load ${MODF}
+        set -e
+    }
+    if [ $BUILD_UFS = "on" ]; then
+        printf "... Loading UFS modules ...\n"
+        module use ${SRW_DIR}/sorc/ufs-weather-model/modulefiles
+        load_module "ufs_"
     fi
     if [ $BUILD_UFS_UTILS = "on" ]; then
+        printf "... Loading UFS_UTILS modules ...\n"
         module use ${SRW_DIR}/sorc/UFS_UTILS/modulefiles
-        MODULE_FILE="build.${PLATFORM}.${COMPILER}"
-        module load ${MODULE_FILE}
+        load_module "build."
     fi
     if [ $BUILD_UPP = "on" ]; then
+        printf "... Loading UPP modules ...\n"
         module use ${SRW_DIR}/sorc/UPP/modulefiles
-        MODULE_FILE="${PLATFORM}"
-        module load ${MODULE_FILE}
+        load_module ""
     fi
     if [ $BUILD_GSI = "on" ]; then
+        printf "... Loading GSI modules ...\n"
         module use ${SRW_DIR}/sorc/gsi/modulefiles
-        MODULE_FILE="gsi_${PLATFORM}.${COMPILER}"
-        module load ${MODULE_FILE}
+        load_module "gsi_"
     fi
     if [ $BUILD_RRFS_UTILS = "on" ]; then
+        printf "... Loading top-level modules for RRFS_UTILS ...\n"
         #use top level until rrfs_utils has its own modulefiles
         module use ${SRW_DIR}/modulefiles
         module load ${MODULE_FILE}
