@@ -320,6 +320,7 @@ printf "... Load MODULE_FILE and create BUILD directory ...\n"
 if [ $USE_SUB_MODULES = true ]; then
     #helper to try and load module
     function load_module() {
+
         set +e
         #try most specialized modulefile first
         MODF="$1${PLATFORM}.${COMPILER}"
@@ -342,8 +343,17 @@ if [ $USE_SUB_MODULES = true ]; then
         fi
         # without compiler
         MODF="$1${PLATFORM}"
-        module load ${MODF}
+        module is-avail ${MODF}
+        if [ $? -eq 0 ]; then
+            module load ${MODF}
+            return
+        fi
         set -e
+
+        # else fallback on app level modulefile
+        printf "... Fall back to app level modulefile ...\n"
+        module use ${SRW_DIR}/modulefiles
+        module load ${MODULE_FILE}
     }
     if [ $BUILD_UFS = "on" ]; then
         printf "... Loading UFS modules ...\n"
@@ -366,10 +376,8 @@ if [ $USE_SUB_MODULES = true ]; then
         load_module "gsi_"
     fi
     if [ $BUILD_RRFS_UTILS = "on" ]; then
-        printf "... Loading top-level modules for RRFS_UTILS ...\n"
-        #use top level until rrfs_utils has its own modulefiles
-        module use ${SRW_DIR}/modulefiles
-        module load ${MODULE_FILE}
+        printf "... Loading RRFS_UTILS modules ...\n"
+        load_module ""
     fi
 else
     module use ${SRW_DIR}/modulefiles
