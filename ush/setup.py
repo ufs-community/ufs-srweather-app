@@ -1218,6 +1218,47 @@ def setup():
     #
     global LOAD_MODULES_RUN_TASK_FP
     LOAD_MODULES_RUN_TASK_FP = os.path.join(USHrrfs, "load_modules_run_task.sh")
+
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Turn off some tasks that can not be run in NCO mode
+    #
+    # -----------------------------------------------------------------------
+    #
+    global RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO
+    global RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID, RUN_TASK_VX_ENSPOINT
+
+    if RUN_ENVIR == "nco":
+        if RUN_TASK_VX_GRIDSTAT:
+            RUN_TASK_VX_GRIDSTAT = False
+            print_info_msg("""Turning off task RUN_TASK_VX_GRIDSTAT""")
+        if RUN_TASK_VX_POINTSTAT:
+            RUN_TASK_VX_POINTSTAT = False
+            print_info_msg("""Turning off task RUN_TASK_VX_POINTSTAT""")
+        if RUN_TASK_VX_ENSPOINT:
+            RUN_TASK_VX_ENSPOINT = False
+            print_info_msg("""Turning off task RUN_TASK_VX_ENSPOINT""")
+        if RUN_TASK_VX_ENSGRID:
+            RUN_TASK_VX_ENSGRID = False
+            print_info_msg("""Turning off task RUN_TASK_VX_ENSGRID""")
+
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Make sure that DO_ENSEMBLE is set to TRUE when running ensemble vx.
+    #
+    # -----------------------------------------------------------------------
+    #
+    if (not DO_ENSEMBLE) and (RUN_TASK_VX_ENSGRID or RUN_TASK_VX_ENSPOINT):
+        print_err_msg_exit(
+            f'''
+            Ensemble verification can not be run unless running in ensemble mode:
+               DO_ENSEMBLE = \"{DO_ENSEMBLE}\"
+               RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
+               RUN_TASK_VX_ENSPOINT = \"{RUN_TASK_VX_ENSPOINT}\"'''
+        )
+
     #
     # -----------------------------------------------------------------------
     #
@@ -1242,225 +1283,47 @@ def setup():
     #
     # ----------------------------------------------------------------------
     #
-    global RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO
     global GRID_DIR, OROG_DIR, SFC_CLIMO_DIR
-    global RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID
 
     #
-    # -----------------------------------------------------------------------
+    # If RUN_TASK_MAKE_GRID is set to False, the workflow will look for
+    # the pregenerated grid files in GRID_DIR.  In this case, make sure that
+    # GRID_DIR exists.  Otherwise, set it to a predefined location under the
+    # experiment directory (EXPTDIR).
     #
-    # Make sure that DO_ENSEMBLE is set to TRUE when running ensemble vx.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if (not DO_ENSEMBLE) and (RUN_TASK_VX_ENSGRID or RUN_TASK_VX_ENSPOINT):
-        print_err_msg_exit(
-            f'''
-            Ensemble verification can not be run unless running in ensemble mode:
-               DO_ENSEMBLE = \"{DO_ENSEMBLE}\"
-               RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
-               RUN_TASK_VX_ENSPOINT = \"{RUN_TASK_VX_ENSPOINT}\"'''
-        )
+    if not RUN_TASK_MAKE_GRID:
+        if (GRID_DIR is None) or (not os.path.exists(GRID_DIR)):
+            GRID_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
 
-    if RUN_ENVIR == "nco":
-
-        nco_fix_dir = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
-        if not os.path.exists(nco_fix_dir):
-            print_err_msg_exit(
-                f'''
-                The directory (nco_fix_dir) that should contain the pregenerated grid,
-                orography, and surface climatology files does not exist:
-                  nco_fix_dir = \"{nco_fix_dir}\"'''
-            )
-
-        if RUN_TASK_MAKE_GRID or (not RUN_TASK_MAKE_GRID and GRID_DIR != nco_fix_dir):
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", the workflow assumes that pregenerated
-               grid files already exist in the directory
-
-                 {DOMAIN_PREGEN_BASEDIR}/{PREDEF_GRID_NAME}
-
-               where
-
-                 DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR}\"
-                 PREDEF_GRID_NAME = \"{PREDEF_GRID_NAME}\"
-
-               Thus, the MAKE_GRID_TN task must not be run (i.e. RUN_TASK_MAKE_GRID must
-               be set to \"FALSE\"), and the directory in which to look for the grid
-               files (i.e. GRID_DIR) must be set to the one above.  Current values for
-               these quantities are:
-
-                 RUN_TASK_MAKE_GRID = \"{RUN_TASK_MAKE_GRID}\"
-                 GRID_DIR = \"{GRID_DIR}\"
-
-               Resetting RUN_TASK_MAKE_GRID to \"FALSE\" and GRID_DIR to the one above.
-               Reset values are:
-            """
-
-            RUN_TASK_MAKE_GRID = False
-            GRID_DIR = nco_fix_dir
-
-            msg += f"""
-               RUN_TASK_MAKE_GRID = \"{RUN_TASK_MAKE_GRID}\"
+            msg = f"""Setting GRID_DIR to:
                GRID_DIR = \"{GRID_DIR}\"
             """
-
             print_info_msg(msg)
 
-        if RUN_TASK_MAKE_OROG or (not RUN_TASK_MAKE_OROG and OROG_DIR != nco_fix_dir):
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", the workflow assumes that pregenerated
-               orography files already exist in the directory
-                 {DOMAIN_PREGEN_BASEDIR}/{PREDEF_GRID_NAME}
-
-               where
-
-                 DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR}\"
-                 PREDEF_GRID_NAME = \"{PREDEF_GRID_NAME}\"
-
-               Thus, the MAKE_OROG_TN task must not be run (i.e. RUN_TASK_MAKE_OROG must
-               be set to \"FALSE\"), and the directory in which to look for the orography
-               files (i.e. OROG_DIR) must be set to the one above.  Current values for
-               these quantities are:
-
-                 RUN_TASK_MAKE_OROG = \"{RUN_TASK_MAKE_OROG}\"
-                 OROG_DIR = \"{OROG_DIR}\"
-
-               Resetting RUN_TASK_MAKE_OROG to \"FALSE\" and OROG_DIR to the one above.
-               Reset values are:
-            """
-
-            RUN_TASK_MAKE_OROG = False
-            OROG_DIR = nco_fix_dir
-
-            msg += f"""
-               RUN_TASK_MAKE_OROG = \"{RUN_TASK_MAKE_OROG}\"
-               OROG_DIR = \"{OROG_DIR}\"
-            """
-
-            print_info_msg(msg)
-
-        if RUN_TASK_MAKE_SFC_CLIMO or (
-            not RUN_TASK_MAKE_SFC_CLIMO and SFC_CLIMO_DIR != nco_fix_dir
-        ):
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", the workflow assumes that pregenerated
-               surface climatology files already exist in the directory
-
-                 {DOMAIN_PREGEN_BASEDIR}/{PREDEF_GRID_NAME}
-
-               where
-
-                 DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR}\"
-                 PREDEF_GRID_NAME = \"{PREDEF_GRID_NAME}\"
-
-               Thus, the MAKE_SFC_CLIMO_TN task must not be run (i.e. RUN_TASK_MAKE_SFC_CLIMO
-               must be set to \"FALSE\"), and the directory in which to look for the
-               surface climatology files (i.e. SFC_CLIMO_DIR) must be set to the one
-               above.  Current values for these quantities are:
-
-                 RUN_TASK_MAKE_SFC_CLIMO = \"{RUN_TASK_MAKE_SFC_CLIMO}\"
-                 SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"
-
-               Resetting RUN_TASK_MAKE_SFC_CLIMO to \"FALSE\" and SFC_CLIMO_DIR to the
-               one above.  Reset values are:
-            """
-
-            RUN_TASK_MAKE_SFC_CLIMO = False
-            SFC_CLIMO_DIR = nco_fix_dir
-
-            msg += f"""
-               RUN_TASK_MAKE_SFC_CLIMO = \"{RUN_TASK_MAKE_SFC_CLIMO}\"
-               SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"
-            """
-
-            print_info_msg(msg)
-
-        if RUN_TASK_VX_GRIDSTAT:
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", it is assumed that the verification
-               will not be run.
-                 RUN_TASK_VX_GRIDSTAT = \"{RUN_TASK_VX_GRIDSTAT}\"
-               Resetting RUN_TASK_VX_GRIDSTAT to \"FALSE\"
-               Reset value is:"""
-
-            RUN_TASK_VX_GRIDSTAT = False
-
-            msg += f"""
-               RUN_TASK_VX_GRIDSTAT = \"{RUN_TASK_VX_GRIDSTAT}\"
-            """
-
-            print_info_msg(msg)
-
-        if RUN_TASK_VX_POINTSTAT:
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", it is assumed that the verification
-               will not be run.
-                 RUN_TASK_VX_POINTSTAT = \"{RUN_TASK_VX_POINTSTAT}\"
-               Resetting RUN_TASK_VX_POINTSTAT to \"FALSE\"
-               Reset value is:"""
-
-            RUN_TASK_VX_POINTSTAT = False
-
-            msg = f"""
-               RUN_TASK_VX_POINTSTAT = \"{RUN_TASK_VX_POINTSTAT}\"
-            """
-
-            print_info_msg(msg)
-
-        if RUN_TASK_VX_ENSGRID:
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", it is assumed that the verification
-               will not be run.
-                 RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
-               Resetting RUN_TASK_VX_ENSGRID to \"FALSE\"
-               Reset value is:"""
-
-            RUN_TASK_VX_ENSGRID = False
-
-            msg += f"""
-               RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
-            """
-
-            print_info_msg(msg)
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Now consider community mode.
-    #
-    # -----------------------------------------------------------------------
-    #
-    else:
-        #
-        # If RUN_TASK_MAKE_GRID is set to False, the workflow will look for
-        # the pregenerated grid files in GRID_DIR.  In this case, make sure that
-        # GRID_DIR exists.  Otherwise, set it to a predefined location under the
-        # experiment directory (EXPTDIR).
-        #
-        if not RUN_TASK_MAKE_GRID:
-            if not os.path.exists(GRID_DIR):
+            if not os.path.exists(GRID_DIR): 
                 print_err_msg_exit(
                     f'''
                     The directory (GRID_DIR) that should contain the pregenerated grid files
                     does not exist:
                       GRID_DIR = \"{GRID_DIR}\"'''
                 )
-        else:
-            GRID_DIR = os.path.join(EXPTDIR, "grid")
-        #
-        # If RUN_TASK_MAKE_OROG is set to False, the workflow will look for
-        # the pregenerated orography files in OROG_DIR.  In this case, make sure
-        # that OROG_DIR exists.  Otherwise, set it to a predefined location under
-        # the experiment directory (EXPTDIR).
-        #
-        if not RUN_TASK_MAKE_OROG:
+    else:
+        GRID_DIR = os.path.join(EXPTDIR, "grid")
+    #
+    # If RUN_TASK_MAKE_OROG is set to False, the workflow will look for
+    # the pregenerated orography files in OROG_DIR.  In this case, make sure
+    # that OROG_DIR exists.  Otherwise, set it to a predefined location under
+    # the experiment directory (EXPTDIR).
+    #
+    if not RUN_TASK_MAKE_OROG:
+        if (OROG_DIR is None) or (not os.path.exists(OROG_DIR)):
+            OROG_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
+
+            msg = f"""Setting OROG_DIR to:
+               OROG_DIR = \"{OROG_DIR}\"
+            """
+            print_info_msg(msg)
+
             if not os.path.exists(OROG_DIR):
                 print_err_msg_exit(
                     f'''
@@ -1468,15 +1331,23 @@ def setup():
                     files does not exist:
                       OROG_DIR = \"{OROG_DIR}\"'''
                 )
-        else:
-            OROG_DIR = os.path.join(EXPTDIR, "orog")
-        #
-        # If RUN_TASK_MAKE_SFC_CLIMO is set to False, the workflow will look
-        # for the pregenerated surface climatology files in SFC_CLIMO_DIR.  In
-        # this case, make sure that SFC_CLIMO_DIR exists.  Otherwise, set it to
-        # a predefined location under the experiment directory (EXPTDIR).
-        #
-        if not RUN_TASK_MAKE_SFC_CLIMO:
+    else:
+        OROG_DIR = os.path.join(EXPTDIR, "orog")
+    #
+    # If RUN_TASK_MAKE_SFC_CLIMO is set to False, the workflow will look
+    # for the pregenerated surface climatology files in SFC_CLIMO_DIR.  In
+    # this case, make sure that SFC_CLIMO_DIR exists.  Otherwise, set it to
+    # a predefined location under the experiment directory (EXPTDIR).
+    #
+    if not RUN_TASK_MAKE_SFC_CLIMO:
+        if (SFC_CLIMO_DIR is None) or (not os.path.exists(SFC_CLIMO_DIR)):
+            SFC_CLIMO_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
+
+            msg = f"""Setting SFC_CLIMO_DIR to:
+               SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"
+            """
+            print_info_msg(msg)
+
             if not os.path.exists(SFC_CLIMO_DIR):
                 print_err_msg_exit(
                     f'''
@@ -1484,8 +1355,8 @@ def setup():
                     climatology files does not exist:
                       SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"'''
                 )
-        else:
-            SFC_CLIMO_DIR = os.path.join(EXPTDIR, "sfc_climo")
+    else:
+        SFC_CLIMO_DIR = os.path.join(EXPTDIR, "sfc_climo")
 
     # -----------------------------------------------------------------------
     #

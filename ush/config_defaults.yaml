@@ -792,7 +792,7 @@ task_make_grid:
   # 
   #-----------------------------------------------------------------------
   # 
-  GRID_DIR: "/path/to/pregenerated/grid/files"
+  GRID_DIR: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -1073,7 +1073,7 @@ task_make_orog:
   KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
-  OROG_DIR: "/path/to/pregenerated/orog/files"
+  OROG_DIR: ""
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1087,7 +1087,7 @@ task_make_sfc_climo:
   KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
-  SFC_CLIMO_DIR: "/path/to/pregenerated/surface/climo/files"
+  SFC_CLIMO_DIR: ""
 
 #----------------------------
 # EXTRN ICS config parameters
