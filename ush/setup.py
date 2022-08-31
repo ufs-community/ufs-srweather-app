@@ -852,15 +852,6 @@ def setup():
     global KEEPDATA, MAILTO, MAILCC
 
     if RUN_ENVIR == "nco":
-        FIXrrfs = os.path.join(HOMErrfs, "fix")
-    else:
-        FIXrrfs = EXPTDIR
-
-    FIXam = os.path.join(FIXrrfs, "fix_am")
-    FIXclim = os.path.join(FIXrrfs, "fix_clim")
-    FIXlam = os.path.join(FIXrrfs, "fix_lam")
-
-    if RUN_ENVIR == "nco":
 
         try:
             COMROOT
@@ -872,11 +863,10 @@ def setup():
             DCOMROOT = os.path.join(OPSROOT, "dcom")
 
         COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
-        check_for_preexist_dir_file(COMIN_BASEDIR, PREEXISTING_DIR_METHOD)
         COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
-        check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
 
         LOGDIR = os.path.join(COMROOT,"output", "logs")
+        FIXrrfs = os.path.join(HOMErrfs, "fix")
 
     else:
 
@@ -889,6 +879,11 @@ def setup():
         DCOMROOT = EXPTDIR
 
         LOGDIR = os.path.join(EXPTDIR, "log")
+        FIXrrfs = EXPTDIR
+
+    FIXam = os.path.join(FIXrrfs, "fix_am")
+    FIXclim = os.path.join(FIXrrfs, "fix_clim")
+    FIXlam = os.path.join(FIXrrfs, "fix_lam")
 
     try:
         DBNROOT
