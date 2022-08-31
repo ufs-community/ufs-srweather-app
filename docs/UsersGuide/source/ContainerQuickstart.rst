@@ -84,24 +84,26 @@ The container will use elements of ``srw-local`` when running across compute nod
 Build the Container
 ------------------------
 
-On Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp.img`` has already been built at the following locations:
+.. COMMENT: Check name of container!
+
+On many Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp.img`` has already been built at the following locations:
 
 .. table:: Locations of pre-built containers
 
    +--------------+--------------------------------------------------------+
    | Machine      | File location                                          |
    +==============+========================================================+
-   | Cheyenne     | /glade/p/ral/jntp/UFS_SRW_App/develop/                 |
+   | Cheyenne     | /glade/scratch/epicufsrt/containers                    |
    +--------------+--------------------------------------------------------+
-   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/develop/             |
+   | Hera         | /scratch1/NCEPDEV/nems/role.epic/containers            |
    +--------------+--------------------------------------------------------+
-   | Hera         | /scratch2/BMC/det/UFS_SRW_App/develop/                 |
+   | Jet          | /mnt/lfs4/HFIP/hfv3gfs/role.epic/containers            |
    +--------------+--------------------------------------------------------+
-   | Jet          | /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/              |
+   | Orion        | /work/noaa/epic-ps/role-epic-ps/containers             |
    +--------------+--------------------------------------------------------+
-   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/develop/                     |
-   +--------------+--------------------------------------------------------+
-   | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/develop/                |
+
+.. COMMENT: Add:
+   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/develop/             | 
    +--------------+--------------------------------------------------------+
 
 If users prefer to convert the container ``.img`` file to a writable sandbox, they can run:
@@ -226,7 +228,7 @@ To activate the regional workflow, run the following commands:
    module use srw-local/modulefiles
    module load wflow_<platform>
 
-The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
+where ``<platform>`` is a valid machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <PlatEnv>`). The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
 
 .. code-block:: console
 
@@ -344,7 +346,7 @@ The generated workflow will be in the experiment directory specified in the ``co
    cd ../../../expt_dirs/test_community
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for information on how to run the workflow without Rocoto. 
+Users can track the experiment's progress by reissuing the ``rocotostat`` command above every so often until the experiment runs to completion. For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for information on how to run the workflow without Rocoto. 
 
 
 New Experiment
