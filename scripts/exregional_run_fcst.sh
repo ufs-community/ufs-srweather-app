@@ -554,7 +554,9 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       post_orig_fn="${FID}.${post_fn_suffix}"
       post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
       mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
-      ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
+      if [ $RUN_ENVIR != "nco" ]; then
+        ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
+      fi
       # DBN alert
       if [ $SENDDBN = "TRUE" ]; then
         $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
