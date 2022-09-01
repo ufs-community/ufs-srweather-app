@@ -86,7 +86,7 @@ Build the Container
 
 .. COMMENT: Check name of container!
 
-On many Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp.img`` has already been built at the following locations:
+On most Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp-rp2.img`` has already been built at the following locations:
 
 .. table:: Locations of pre-built containers
 
@@ -99,29 +99,31 @@ On many Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp.img`
    +--------------+--------------------------------------------------------+
    | Jet          | /mnt/lfs4/HFIP/hfv3gfs/role.epic/containers            |
    +--------------+--------------------------------------------------------+
+   | NOAA Cloud   | /contrib/EPIC/containers                               |
+   +--------------+--------------------------------------------------------+
    | Orion        | /work/noaa/epic-ps/role-epic-ps/containers             |
    +--------------+--------------------------------------------------------+
 
-.. COMMENT: Add:
-   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/develop/             | 
-   +--------------+--------------------------------------------------------+
+Users can simply copy the container to their local working directory. For example, on Hera:
 
-If users prefer to convert the container ``.img`` file to a writable sandbox, they can run:
+.. code-block:: console
 
-   .. code-block:: console
+   cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel22-ufs-srwapp-rp2.img .
 
-      sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp ubuntu20.04-intel22-ufs-srwapp.img
+.. note::
+   Singularity is not available on Gaea, and therefore container use is not supported on Gaea. 
 
-.. COMMENT: Check that containers are actually added here before merging!!!
+Optionally, users may convert the container ``.img`` file to a writable sandbox by running:
+
+.. code-block:: console
+
+   singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp ubuntu20.04-intel22-ufs-srwapp-rp2.img
 
 On other systems, users should build the container in a writable sandbox:
 
 .. code-block:: console
 
    sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
-
-.. COMMENT: Test "latest" container?
-   sudo singularity build ubuntu20.04-intel22-ufs-srwapp.img docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:latest
 
 .. note::
    If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
@@ -171,10 +173,10 @@ where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu2
 
 If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the container sandbox and then bind it:
 
-   .. code-block:: console
+.. code-block:: console
 
-      mkdir <path/to/container>/user1234
-      singularity exec -B /user1234:/user1234 .ubuntu20.04-intel22-ufs-srwapp cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
+   mkdir <path/to/container>/user1234
+   singularity exec -B /user1234:/user1234 ./ubuntu20.04-intel22-ufs-srwapp cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
 .. attention::
    Be sure to bind the directory that contains the experiment data! 
@@ -301,6 +303,8 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via cron table is the simplest option. 
 
+.. COMMENT: Works on Azure. Remove?
+
    #. On NOAA Cloud platforms only, users must modify the ``noaacloud.sh`` machine file (located in ``/ufs-srweather-app/regional_workflow/ush/machine``) as follows:
 
       #. Comment out lines 23, 25, and 74:
@@ -353,6 +357,8 @@ New Experiment
 ===============
 
 To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.sh`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.sh``
+
+.. COMMENT: rm srw.sh and ufs-srweather-app?
 
 
 Plot the Output
