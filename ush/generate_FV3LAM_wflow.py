@@ -510,9 +510,11 @@ def generate_FV3LAM_wflow():
     #
     # -----------------------------------------------------------------------
     #
-    # First, consider NCO mode.
+
     #
-    if RUN_ENVIR == "nco":
+    # Symlink fix files
+    #
+    if SYMLINK_FIX_FILES:
 
         ln_vrfy(f'''-fsn "{FIXgsm}" "{FIXam}"''')
         #
@@ -537,7 +539,7 @@ def generate_FV3LAM_wflow():
                 the experiment generation script."""
             )
     #
-    # Now consider community mode.
+    # Copy relevant fix files.
     #
     else:
 
@@ -579,8 +581,12 @@ def generate_FV3LAM_wflow():
         check_for_preexist_dir_file(FIXclim, "delete")
         mkdir_vrfy("-p", FIXclim)
 
-        cp_vrfy(os.path.join(FIXaer, "merra2.aerclim*.nc"), FIXclim)
-        cp_vrfy(os.path.join(FIXlut, "optics*.dat"), FIXclim)
+        if SYMLINK_FIX_FILES:
+            ln_vrfy("-fsn", os.path.join(FIXaer, "merra2.aerclim*.nc"), FIXclim)
+            ln_vrfy("-fsn", os.path.join(FIXlut, "optics*.dat"), FIXclim)
+        else:
+            cp_vrfy(os.path.join(FIXaer, "merra2.aerclim*.nc"), FIXclim)
+            cp_vrfy(os.path.join(FIXlut, "optics*.dat"), FIXclim)
     #
     # -----------------------------------------------------------------------
     #

@@ -1660,6 +1660,8 @@ task_run_fcst:
   # Because the default values are dependent on the platform, we set these
   # to a null string which will then be overwritten in setup.sh unless the
   # user has specified a different value in config.sh
+  #
+  SYMLINK_FIX_FILES: true
   FIXgsm: ""
   FIXaer: ""
   FIXlut: ""

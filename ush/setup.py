@@ -1223,20 +1223,24 @@ def setup():
     #
     global RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO
     global RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID, RUN_TASK_VX_ENSPOINT
+    global SYMLINK_FIX_FILES
 
     if RUN_ENVIR == "nco":
         if RUN_TASK_VX_GRIDSTAT:
             RUN_TASK_VX_GRIDSTAT = False
-            print_info_msg("""Turning off task RUN_TASK_VX_GRIDSTAT""")
+            print_info_msg("""Setting RUN_TASK_VX_GRIDSTAT={RUN_TASK_VX_GRIDSTAT}""")
         if RUN_TASK_VX_POINTSTAT:
             RUN_TASK_VX_POINTSTAT = False
-            print_info_msg("""Turning off task RUN_TASK_VX_POINTSTAT""")
+            print_info_msg("""Setting RUN_TASK_VX_POINTSTAT={RUN_TASK_VX_POINTSTAT}""")
         if RUN_TASK_VX_ENSPOINT:
             RUN_TASK_VX_ENSPOINT = False
-            print_info_msg("""Turning off task RUN_TASK_VX_ENSPOINT""")
+            print_info_msg("""Setting RUN_TASK_VX_ENSPOINT={RUN_TASK_VX_ENSPOINT}""")
         if RUN_TASK_VX_ENSGRID:
             RUN_TASK_VX_ENSGRID = False
-            print_info_msg("""Turning off task RUN_TASK_VX_ENSGRID""")
+            print_info_msg("""Setting RUN_TASK_VX_ENSGRID={RUN_TASK_VX_ENSGRID}""")
+        if not SYMLINK_FIX_FILES:
+            SYMLINK_FIX_FILES = True
+            print_info_msg("""Setting SYMLINK_FIX_FILES={SYMLINK_FIX_FILES}""")
 
     # Fix file location
     if RUN_TASK_MAKE_GRID:
