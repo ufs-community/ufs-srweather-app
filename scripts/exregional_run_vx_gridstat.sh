@@ -70,21 +70,52 @@ export fhr_list
 #
 #-----------------------------------------------------------------------
 #
+# Pick a directory structure for METplus output files
+#
+#-----------------------------------------------------------------------
+#
+if [ $RUN_ENVIR = "nco" ]; then
+    export INPUT_BASE=$COMIN
+    export OUTPUT_BASE=$COMOUT/metout
+    export MEM_BASE=$OUTPUT_BASE
+    export LOG_DIR=$LOGDIR
+
+    export POSTPRD=
+    export MEM_STAR=
+    export MEM_CUSTOM=
+    export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
+else
+    if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
+      export INPUT_BASE=${EXPTDIR}/${CDATE}/postprd
+      export OUTPUT_BASE=${EXPTDIR}/${CDATE}
+    else
+      export INPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}/postprd
+      export OUTPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}
+    fi
+    export MEM_BASE=$EXPTDIR/$CDATE
+    export LOG_DIR=${EXPTDIR}/log
+
+    export POSTPRD="postprd/"
+    export MEM_STAR="mem*/"
+    export MEM_CUSTOM="{custom?fmt=%s}/"
+    export DOT_MEM_CUSTOM=
+fi
+export DOT_ENSMEM=${dot_ensmem}
+
+#
+#-----------------------------------------------------------------------
+#
 # Create INPUT_BASE and LOG_SUFFIX to read into METplus conf files.
 #
 #-----------------------------------------------------------------------
 #
 if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
-  INPUT_BASE=${EXPTDIR}/${CDATE}/postprd
-  OUTPUT_BASE=${EXPTDIR}/${CDATE}
   if [ ${VAR} == "APCP" ]; then
     LOG_SUFFIX=gridstat_${CDATE}_${VAR}_${ACCUM}h
   else
     LOG_SUFFIX=gridstat_${CDATE}_${VAR}
   fi
 elif [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-  INPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}/postprd
-  OUTPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}
   ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
   MODEL=${MODEL}_${ENSMEM}
   if [ ${VAR} == "APCP" ]; then
@@ -92,25 +123,6 @@ elif [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
   else
     LOG_SUFFIX=gridstat_${CDATE}_${ENSMEM}_${VAR}
   fi
-fi
-
-#
-#-----------------------------------------------------------------------
-#
-# Make sure directories in which output files will be placed exist.
-#
-#-----------------------------------------------------------------------
-#
-mkdir_vrfy -p "${OUTPUT_BASE}/metprd/grid_stat"
-#
-# If the variable is accumulated precipitation for a time interval 
-# (bucket) other than 1 hour, the MET/METplus tools called below will
-# include pcp_combine.  In that case, create (if necessary) directories
-# needed by pcp_combine.
-#
-if [ "${VAR}" = "APCP" ] && [ "${ACCUM: -1}" != "1" ]; then
-  mkdir_vrfy -p "${EXPTDIR}/metprd/pcp_combine"      # For observations
-  mkdir_vrfy -p "${OUTPUT_BASE}/metprd/pcp_combine"  # For forecast
 fi
 
 #
@@ -133,10 +145,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export SCRIPTSrrfs
-export EXPTDIR
-export INPUT_BASE
-export OUTPUT_BASE
 export LOG_SUFFIX
 export MET_INSTALL_DIR
 export MET_BIN_EXEC

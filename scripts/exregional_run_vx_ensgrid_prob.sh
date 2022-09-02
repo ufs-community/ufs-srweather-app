@@ -79,26 +79,46 @@ export fhr_list
 #
 #-----------------------------------------------------------------------
 #
+# Pick a directory structure for METplus output files
+#
+#-----------------------------------------------------------------------
+#
+if [ $RUN_ENVIR = "nco" ]; then
+    export INPUT_BASE=$COMOUT/metout/${CDATE}/metprd/ensemble_stat
+    export OUTPUT_BASE=$COMOUT/metout
+    export MEM_BASE=$OUTPUT_BASE
+    export LOG_DIR=$LOGDIR
+
+    export POSTPRD=
+    export MEM_STAR=
+    export MEM_CUSTOM=
+    export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
+else
+    export INPUT_BASE=${EXPTDIR}/${CDATE}/metprd/ensemble_stat
+    export OUTPUT_BASE=$EXPTDIR
+    export MEM_BASE=$EXPTDIR/$CDATE
+    export LOG_DIR=${EXPTDIR}/log
+
+    export POSTPRD="postprd/"
+    export MEM_STAR="mem*/"
+    export MEM_CUSTOM="{custom?fmt=%s}/"
+    export DOT_MEM_CUSTOM=
+fi
+export DOT_ENSMEM=${dot_ensmem}
+
+#
+#-----------------------------------------------------------------------
+#
 # Create INPUT_BASE and LOG_SUFFIX to read into METplus conf files.
 #
 #-----------------------------------------------------------------------
 #
-INPUT_BASE=${EXPTDIR}/${CDATE}/metprd/ensemble_stat
 
 if [ ${VAR} == "APCP" ]; then
   LOG_SUFFIX=ensgrid_prob_${CDATE}_${VAR}_${ACCUM}h
 else
   LOG_SUFFIX=ensgrid_prob_${CDATE}_${VAR}
 fi
-
-#
-#-----------------------------------------------------------------------
-#
-# Make sure directory in which output files will be placed exist.
-#
-#-----------------------------------------------------------------------
-#
-mkdir_vrfy -p "${EXPTDIR}/${CDATE}/metprd/ensemble_stat_prob"  # Output directory for grid_stat tool.
 
 #
 #-----------------------------------------------------------------------
@@ -119,9 +139,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export SCRIPTSrrfs
-export INPUT_BASE
-export EXPTDIR
 export MET_INSTALL_DIR
 export MET_BIN_EXEC
 export METPLUS_PATH

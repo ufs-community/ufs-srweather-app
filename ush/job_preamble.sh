@@ -12,7 +12,7 @@ if [ $subcyc -eq 0 ]; then
 else
     export cycle="t${cyc}${subcyc}z"
 fi
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z $ENSMEM_INDX ]; then
     export dot_ensmem=".mem${ENSMEM_INDX}"
 else
     export dot_ensmem=

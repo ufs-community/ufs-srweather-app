@@ -1239,18 +1239,6 @@ def setup():
     global SYMLINK_FIX_FILES
 
     if RUN_ENVIR == "nco":
-        if RUN_TASK_VX_GRIDSTAT:
-            RUN_TASK_VX_GRIDSTAT = False
-            print_info_msg("""Setting RUN_TASK_VX_GRIDSTAT={RUN_TASK_VX_GRIDSTAT}""")
-        if RUN_TASK_VX_POINTSTAT:
-            RUN_TASK_VX_POINTSTAT = False
-            print_info_msg("""Setting RUN_TASK_VX_POINTSTAT={RUN_TASK_VX_POINTSTAT}""")
-        if RUN_TASK_VX_ENSPOINT:
-            RUN_TASK_VX_ENSPOINT = False
-            print_info_msg("""Setting RUN_TASK_VX_ENSPOINT={RUN_TASK_VX_ENSPOINT}""")
-        if RUN_TASK_VX_ENSGRID:
-            RUN_TASK_VX_ENSGRID = False
-            print_info_msg("""Setting RUN_TASK_VX_ENSGRID={RUN_TASK_VX_ENSGRID}""")
         if not SYMLINK_FIX_FILES:
             SYMLINK_FIX_FILES = True
             print_info_msg("""Setting SYMLINK_FIX_FILES={SYMLINK_FIX_FILES}""")

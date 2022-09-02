@@ -78,21 +78,41 @@ export fhr_list
 #
 #-----------------------------------------------------------------------
 #
+# Pick a directory structure for METplus output files
+#
+#-----------------------------------------------------------------------
+#
+if [ $RUN_ENVIR = "nco" ]; then
+    export INPUT_BASE=$COMIN
+    export OUTPUT_BASE=$COMOUT/metout
+    export MEM_BASE=$OUTPUT_BASE
+    export LOG_DIR=$LOGDIR
+
+    export POSTPRD=
+    export MEM_STAR=
+    export MEM_CUSTOM=
+    export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
+else
+    export INPUT_BASE=$EXPTDIR/$CDATE
+    export OUTPUT_BASE=$EXPTDIR
+    export MEM_BASE=$EXPTDIR/$CDATE
+    export LOG_DIR=${EXPTDIR}/log
+
+    export POSTPRD="postprd/"
+    export MEM_STAR="mem*/"
+    export MEM_CUSTOM="{custom?fmt=%s}/"
+    export DOT_MEM_CUSTOM=
+fi
+export DOT_ENSMEM=${dot_ensmem}
+
+#
+#-----------------------------------------------------------------------
+#
 # Create LOG_SUFFIX to read into METplus conf files.
 #
 #-----------------------------------------------------------------------
 #
 LOG_SUFFIX=enspoint_${CDATE}
-
-#
-#-----------------------------------------------------------------------
-#
-# Make sure directories in which output files will be placed exist.
-#
-#-----------------------------------------------------------------------
-#
-mkdir_vrfy -p "${EXPTDIR}/metprd/pb2nc"                   # Output directory for pb2nc tool.
-mkdir_vrfy -p "${EXPTDIR}/${CDATE}/metprd/ensemble_stat"  # Output directory for ensemble_stat tool.
 
 #
 #-----------------------------------------------------------------------
@@ -113,7 +133,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export EXPTDIR
 export LOG_SUFFIX
 export MET_INSTALL_DIR
 export MET_BIN_EXEC

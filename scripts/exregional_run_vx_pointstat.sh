@@ -70,31 +70,52 @@ export fhr_list
 #
 #-----------------------------------------------------------------------
 #
+# Pick a directory structure for METplus output files
+#
+#-----------------------------------------------------------------------
+#
+if [ $RUN_ENVIR = "nco" ]; then
+    export INPUT_BASE=$COMIN
+    export OUTPUT_BASE=$COMOUT/metout
+    export MEM_BASE=$OUTPUT_BASE
+    export LOG_DIR=$LOGDIR
+
+    export POSTPRD=
+    export MEM_STAR=
+    export MEM_CUSTOM=
+    export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
+else
+    if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
+      export INPUT_BASE=${EXPTDIR}/${CDATE}/postprd
+      export OUTPUT_BASE=${EXPTDIR}/${CDATE}
+    else
+      export INPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}/postprd
+      export OUTPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}
+    fi
+    export MEM_BASE=$EXPTDIR/$CDATE
+    export LOG_DIR=${EXPTDIR}/log
+
+    export POSTPRD="postprd/"
+    export MEM_STAR="mem*/"
+    export MEM_CUSTOM="{custom?fmt=%s}/"
+    export DOT_MEM_CUSTOM=
+fi
+export DOT_ENSMEM=${dot_ensmem}
+
+#
+#-----------------------------------------------------------------------
+#
 # Create INPUT_BASE to read into METplus conf files.
 #
 #-----------------------------------------------------------------------
 #
 if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
-  INPUT_BASE=${EXPTDIR}/${CDATE}/postprd
-  OUTPUT_BASE=${EXPTDIR}/${CDATE}
   LOG_SUFFIX=pointstat_${CDATE}
 elif [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-  INPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}/postprd
-  OUTPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}
   ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
   MODEL=${MODEL}_${ENSMEM}
   LOG_SUFFIX=pointstat_${CDATE}_${ENSMEM}
 fi
-
-#
-#-----------------------------------------------------------------------
-#
-# Make sure directories in which output files will be placed exist.
-#
-#-----------------------------------------------------------------------
-#
-mkdir_vrfy -p "${EXPTDIR}/metprd/pb2nc"           # Output directory for pb2nc tool.
-mkdir_vrfy -p "${OUTPUT_BASE}/metprd/point_stat"  # Output directory for point_stat tool.
 
 #
 #-----------------------------------------------------------------------
@@ -115,9 +136,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export EXPTDIR
-export INPUT_BASE
-export OUTPUT_BASE
 export LOG_SUFFIX
 export MET_INSTALL_DIR
 export MET_BIN_EXEC
