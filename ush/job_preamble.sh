@@ -28,7 +28,7 @@ export DATA=
 export DATA_SHARED=
 if [ "${RUN_ENVIR}" = "nco" ]; then
     export DATA=${DATAROOT}/${jobid}
-    export DATA_SHARED=${DATAROOT}/${RUN}.${PDY}
+    export DATA_SHARED=${DATAROOT}/${RUN}.${PDY}.${WORKFLOW_ID}
     mkdir_vrfy -p $DATA $DATA_SHARED
     cd $DATA
 fi

@@ -115,6 +115,19 @@ def setup():
     #
     cfg_c = load_config_file(os.path.join(ushdir, CONSTANTS_FN))
     import_vars(dictionary=cfg_c)
+
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Generate a unique number for this workflow run. This maybe used to
+    # get unique log file names for example
+    #
+    # -----------------------------------------------------------------------
+    #
+    global WORKFLOW_ID
+    WORKFLOW_ID = "id_" + str(int(datetime.datetime.now().timestamp()))
+    print_info_msg(f"""WORKFLOW ID = {WORKFLOW_ID}""")
+
     #
     # -----------------------------------------------------------------------
     #
@@ -866,7 +879,7 @@ def setup():
         COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
         COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
 
-        LOGDIR = os.path.join(COMROOT,"output")
+        LOGDIR = os.path.join(OPSROOT,"output")
 
     else:
 

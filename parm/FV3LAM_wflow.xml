@@ -102,14 +102,12 @@ Directories and files.
 {%- endif %}
 
 {%- if run_envir == "nco"  %}
-{%- if machine == "WCOSS2"  %}
 <!ENTITY LOGDIR                   "{{ logdir }}/@Y@m@d">
-{%- else %}
-<!ENTITY LOGDIR                   "{{ logdir }}/{{ run }}.@Y@m@d">
-{%- endif %}
 {%- else %}
 <!ENTITY LOGDIR                   "{{ logdir }}">
 {%- endif %}
+<!ENTITY LOGEXT                   ".{{ workflow_id }}.log" >
+<!ENTITY CMPEXT                   "_task_complete_{{ workflow_id }}.txt">
 
 <!ENTITY MET_INSTALL_DIR "{{ met_install_dir }}">
 <!ENTITY METPLUS_PATH "{{ metplus_path }}">
@@ -157,7 +155,7 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 {%- endfor %}
 
   <log>
-    <cyclestr>&LOGDIR;/FV3LAM_wflow.log</cyclestr>
+    <cyclestr>&LOGDIR;/FV3LAM_wflow_{{ workflow_id }}.log</cyclestr>
   </log>
 
 <!-- 
@@ -203,7 +201,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&MAKE_GRID_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&MAKE_GRID_TN;.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&MAKE_GRID_TN;&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -229,7 +227,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&MAKE_OROG_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&MAKE_OROG_TN;.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&MAKE_OROG_TN;&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -240,7 +238,7 @@ MODULES_RUN_TASK_FP script.
     <dependency>
       <or>
 <!--        <taskdep task="make_grid"/> -->
-        <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;_task_complete.txt</datadep>
+        <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;&CMPEXT;</datadep>
         <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
       </or>
     </dependency>
@@ -263,7 +261,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&MAKE_SFC_CLIMO_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&MAKE_SFC_CLIMO_TN;.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&MAKE_SFC_CLIMO_TN;&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -275,12 +273,12 @@ MODULES_RUN_TASK_FP script.
       <and>
         <or>
 <!--          <taskdep task="&MAKE_GRID_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;_task_complete.txt</datadep>
+          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_OROG_TN;_task_complete.txt</datadep>
+          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_OROG_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -304,7 +302,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&GET_EXTRN_ICS_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&GET_EXTRN_ICS_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&GET_EXTRN_ICS_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -332,7 +330,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&GET_EXTRN_LBCS_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&GET_EXTRN_LBCS_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&GET_EXTRN_LBCS_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -370,7 +368,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&MAKE_ICS_TN;{{ uscore_ensmem_name }}</jobname>
-    <join><cyclestr>&LOGDIR;/&MAKE_ICS_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&MAKE_ICS_TN;{{ uscore_ensmem_name }}_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -386,17 +384,17 @@ MODULES_RUN_TASK_FP script.
         <taskdep task="&GET_EXTRN_ICS_TN;"/>
         <or>
 <!--          <taskdep task="&MAKE_GRID_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;_task_complete.txt</datadep>
+          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_OROG_TN;_task_complete.txt</datadep>
+          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_OROG_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_SFC_CLIMO_TN;_task_complete.txt</datadep>
+          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_SFC_CLIMO_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -420,7 +418,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&MAKE_LBCS_TN;{{ uscore_ensmem_name }}</jobname>
-    <join><cyclestr>&LOGDIR;/&MAKE_LBCS_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&MAKE_LBCS_TN;{{ uscore_ensmem_name }}_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -436,17 +434,17 @@ MODULES_RUN_TASK_FP script.
         <taskdep task="&GET_EXTRN_LBCS_TN;"/>
         <or>
 <!--          <taskdep task="&MAKE_GRID_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;_task_complete.txt</datadep>
+          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_OROG_TN;_task_complete.txt</datadep>
+          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_OROG_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_SFC_CLIMO_TN;_task_complete.txt</datadep>
+          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_SFC_CLIMO_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -475,7 +473,7 @@ MODULES_RUN_TASK_FP script.
   {%- endif %}
     <walltime>{{ wtime_run_fcst }}</walltime>
     <jobname>&RUN_FCST_TN;{{ uscore_ensmem_name }}</jobname>
-    <join><cyclestr>&LOGDIR;/&RUN_FCST_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&RUN_FCST_TN;{{ uscore_ensmem_name }}_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -530,7 +528,7 @@ later below for other output times.
       <native>&SLURM_NATIVE_CMD;</native>
     {%- endif %}
       <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
-      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H.log</cyclestr></join>
+      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -589,7 +587,7 @@ for other output times.
         <native>&SLURM_NATIVE_CMD;</native>
       {%- endif %}
         <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
-        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H.log</cyclestr></join>
+        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
         <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -654,10 +652,10 @@ always zero).
       {%- endif %}
         {%- if sub_hourly_post %}
         <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
-        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H.log</cyclestr></join>
+        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H&LOGEXT;</cyclestr></join>
         {%- else %}
         <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
-        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#_@Y@m@d@H.log</cyclestr></join>
+        <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#_@Y@m@d@H&LOGEXT;</cyclestr></join>
         {%- endif %}
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -726,7 +724,7 @@ the <task> tag to be identical to the ones above for other output times.
       <native>&SLURM_NATIVE_CMD;</native>
     {%- endif %}
       <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
-      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H.log</cyclestr></join>
+      <join><cyclestr>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -771,7 +769,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&GET_OBS_CCPA_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&GET_OBS_CCPA_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&GET_OBS_CCPA_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -802,7 +800,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&GET_OBS_MRMS_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&GET_OBS_MRMS_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&GET_OBS_MRMS_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
@@ -834,7 +832,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&GET_OBS_NDAS_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&GET_OBS_NDAS_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&GET_OBS_NDAS_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
@@ -864,7 +862,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_GRIDSTAT_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -919,7 +917,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_GRIDSTAT_REFC_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_REFC_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_REFC_TN;{{ uscore_ensmem_name }}_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
@@ -973,7 +971,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_GRIDSTAT_RETOP_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_RETOP_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_RETOP_TN;{{ uscore_ensmem_name }}_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
@@ -1027,7 +1025,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_GRIDSTAT_03h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_03h_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_03h_TN;{{ uscore_ensmem_name }}_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1067,7 +1065,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_GRIDSTAT_06h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_06h_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_06h_TN;{{ uscore_ensmem_name }}_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1107,7 +1105,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_GRIDSTAT_24h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_24h_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_GRIDSTAT_24h_TN;{{ uscore_ensmem_name }}_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1147,7 +1145,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_POINTSTAT_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_POINTSTAT_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_POINTSTAT_TN;{{ uscore_ensmem_name }}_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
@@ -1204,7 +1202,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1240,7 +1238,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_03h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_03h_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_03h_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1276,7 +1274,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_06h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_06h_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_06h_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1312,7 +1310,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_24h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_24h_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_24h_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1347,7 +1345,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_REFC_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_REFC_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_REFC_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
@@ -1381,7 +1379,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_RETOP_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_RETOP_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_RETOP_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
@@ -1414,7 +1412,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_MEAN_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_MEAN_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_MEAN_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1449,7 +1447,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_PROB_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1484,7 +1482,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_MEAN_03h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_MEAN_03h_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_MEAN_03h_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1519,7 +1517,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_PROB_03h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_03h_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_03h_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1555,7 +1553,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_MEAN_06h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_MEAN_06h_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_MEAN_06h_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1590,7 +1588,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_PROB_06h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_06h_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_06h_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1626,7 +1624,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_MEAN_24h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_MEAN_24h_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_MEAN_24h_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1661,7 +1659,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_PROB_24h_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_24h_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_24h_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
@@ -1696,7 +1694,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_PROB_REFC_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_REFC_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_REFC_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
@@ -1730,7 +1728,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSGRID_PROB_RETOP_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_RETOP_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSGRID_PROB_RETOP_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
@@ -1765,7 +1763,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSPOINT_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSPOINT_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSPOINT_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
@@ -1797,7 +1795,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSPOINT_MEAN_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSPOINT_MEAN_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSPOINT_MEAN_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
@@ -1829,7 +1827,7 @@ the <task> tag to be identical to the ones above for other output times.
     <native>&SLURM_NATIVE_CMD;</native>
   {%- endif %}
     <jobname>&VX_ENSPOINT_PROB_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&VX_ENSPOINT_PROB_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&LOGDIR;/&VX_ENSPOINT_PROB_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>

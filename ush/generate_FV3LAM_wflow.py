@@ -178,6 +178,7 @@ def generate_FV3LAM_wflow():
             "queue_fcst": QUEUE_FCST,
             "machine": MACHINE,
             "slurm_native_cmd": SLURM_NATIVE_CMD,
+            "workflow_id": WORKFLOW_ID,
             #
             # Run environment
             #

@@ -323,6 +323,14 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
+  # Unique ID for workflow run that will be set in setup.py
+  #
+  #-----------------------------------------------------------------------
+  #
+  WORKFLOW_ID: ""
+  #
+  #-----------------------------------------------------------------------
+  #
   # Set cron-associated parameters.  Definitions:
   #
   # USE_CRON_TO_RELAUNCH:
