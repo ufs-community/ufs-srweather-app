@@ -4,14 +4,14 @@
 Container-Based Quick Start Guide
 ====================================
 
-This Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`'s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. Normally, containers can only run on a single compute node and are not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. However, the Singularity container described in this chapter has been adapted such that it is able to run on multiple nodes using Rocoto. This makes it an excellent starting point for beginners. However, the :ref:`non-container approach <BuildRunSRW>` may still be more appropriate for users who desire additional customizability, particularly if they already have experience running the SRW App.
+This Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`'s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. Normally, containers can only run on a single compute node and are not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. However, the Singularity container described in this chapter has been adapted such that it is able to run on multiple nodes using Rocoto. This makes it an excellent starting point for beginners. The :ref:`non-container approach <BuildRunSRW>` may still be more appropriate for users who desire additional customizability, particularly if they already have experience running the SRW App.
 
 The "out-of-the-box" SRW App case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. attention::
 
    * The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
-   * This chapter of the User's Guide should **only** be used for container builds. See :numref:`Chapter %s <NCQuickstart>` for the Quick Start Guide on building without a container (including on NOAA Cloud systems) or :numref:`Section %s <BuildRunSRW>` for a *detailed* guide to building the SRW App without a container.
+   * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Chapter %s <NCQuickstart>` for a Quick Start Guide to building **without** a container or :numref:`Section %s <BuildRunSRW>` for a **detailed** guide to building the SRW App without a container.
 
 .. _DownloadCodeC:
 
@@ -59,32 +59,10 @@ On NOAA Cloud systems, the ``sudo su`` command may also be required:
 .. note:: 
    ``/lustre`` is a fast but non-persistent file system used on NOAA Cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
 
-.. COMMENT: Remove this section-no longer needed
-   .. _Download:
-
-   Download SRW App Code
-   ------------------------
-
-   Clone the SRW Application from GitHub and run the executable that pulls in SRW App components from external repositories:
-
-   .. code-block:: console
-
-      git clone -b release/public-v2 https://github.com/ufs-community/ufs-srweather-app.git srw-local
-      cd srw-local
-      ./manage_externals/checkout_externals
-      cd ..
-
-   The container will use elements of ``srw-local`` when running across compute nodes. 
-
-   .. COMMENT: Need to test develop branch clones:
-      git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git srw-local
-
 .. _BuildC:
 
 Build the Container
 ------------------------
-
-.. COMMENT: Check name of container!
 
 On most Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp-rp2.img`` has already been built at the following locations:
 
