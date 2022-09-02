@@ -59,25 +59,25 @@ On NOAA Cloud systems, the ``sudo su`` command may also be required:
 .. note:: 
    ``/lustre`` is a fast but non-persistent file system used on NOAA Cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
 
+.. COMMENT: Remove this section-no longer needed
+   .. _Download:
 
-.. _Download:
+   Download SRW App Code
+   ------------------------
 
-Download SRW App Code
-------------------------
+   Clone the SRW Application from GitHub and run the executable that pulls in SRW App components from external repositories:
 
-Clone the SRW Application from GitHub and run the executable that pulls in SRW App components from external repositories:
+   .. code-block:: console
 
-.. code-block:: console
+      git clone -b release/public-v2 https://github.com/ufs-community/ufs-srweather-app.git srw-local
+      cd srw-local
+      ./manage_externals/checkout_externals
+      cd ..
 
-   git clone -b release/public-v2 https://github.com/ufs-community/ufs-srweather-app.git srw-local
-   cd srw-local
-   ./manage_externals/checkout_externals
-   cd ..
+   The container will use elements of ``srw-local`` when running across compute nodes. 
 
-The container will use elements of ``srw-local`` when running across compute nodes. 
-
-.. COMMENT: Need to test develop branch clones:
-   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git srw-local
+   .. COMMENT: Need to test develop branch clones:
+      git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git srw-local
 
 .. _BuildC:
 
@@ -104,14 +104,14 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp-rp2.
    | Orion        | /work/noaa/epic-ps/role-epic-ps/containers             |
    +--------------+--------------------------------------------------------+
 
+.. note::
+   Singularity is not available on Gaea, and therefore container use is not supported on Gaea. 
+
 Users can simply copy the container to their local working directory. For example, on Hera:
 
 .. code-block:: console
 
    cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel22-ufs-srwapp-rp2.img .
-
-.. note::
-   Singularity is not available on Gaea, and therefore container use is not supported on Gaea. 
 
 Optionally, users may convert the container ``.img`` file to a writable sandbox by running:
 
@@ -119,11 +119,22 @@ Optionally, users may convert the container ``.img`` file to a writable sandbox 
 
    singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp ubuntu20.04-intel22-ufs-srwapp-rp2.img
 
+The following warnings are common on Level 1 systems and can be ignored:
+
+.. code-block:: console
+
+   INFO:    Starting build...
+   INFO:    Verifying bootstrap image ubuntu20.04-intel22-ufs-srwapp-rp2.img
+   WARNING: integrity: signature not found for object group 1
+   WARNING: Bootstrap image could not be verified, but build will continue.
+
 On other systems, users should build the container in a writable sandbox:
 
 .. code-block:: console
 
    sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
+
+Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
 .. note::
    If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
@@ -223,11 +234,19 @@ The first two steps depend on the platform being used and are described here for
 Activate the Regional Workflow
 -------------------------------------
 
+Copy the container's modulefiles to the current working directory so that they can be accessed outside of the container:
+
+.. code-block:: console
+
+   singularity exec -B /<local_base_dir>:/<container_dir> ./<container_name> cp -r /opt/ufs-srweather-app/modulefiles .
+
+After this command runs, the working directory should contain the ``modulefiles`` directory. 
+
 To activate the regional workflow, run the following commands: 
 
 .. code-block:: console
 
-   module use srw-local/modulefiles
+   module use $PWD/modulefiles 
    module load wflow_<platform>
 
 where ``<platform>`` is a valid machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <PlatEnv>`). The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
@@ -248,22 +267,20 @@ Run ``stage-srw.sh``:
 
 .. code-block:: console
 
-   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=<platform> -i=<container_name>
+   ./stage-srw.sh -c=<compiler> -m=<mpi_implementation> -p=<platform> -i=<container_name>
 
 where: 
 
-   * ``-c`` refers to the compiler on the user's local machine 
-   * ``-m`` refers to the :term:`MPI` on the user's local machine
+   * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``)
+   * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``)
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <PlatEnv>` for a full list of options. 
-   * ``-i`` refers to the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel22-ufs-srwapp`` or ``ubuntu20.04-intel22-ufs-srwapp.img`` by default).
+   * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel22-ufs-srwapp`` or ``ubuntu20.04-intel22-ufs-srwapp.img`` by default).
 
 After this command runs, the working directory should contain ``srw.sh`` and a ``ufs-srweather-app`` directory. 
 
 .. attention::
 
    The user must have an Intel compiler and MPI on their system because the container uses an Intel compiler and MPI. Intel compilers are now available for free as part of `Intel's oneAPI Toolkit <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__.
-
-.. COMMENT: Add note about updating machine files on NOAACloud?
 
 From here, users can follow the steps below to configure the out-of-the-box SRW App case with an automated Rocoto workflow. For more detailed instructions on experiment configuration, users can refer to :numref:`Section %s <UserSpecificConfig>`. 
 
@@ -303,29 +320,6 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via cron table is the simplest option. 
 
-.. COMMENT: Works on Azure. Remove?
-
-   #. On NOAA Cloud platforms only, users must modify the ``noaacloud.sh`` machine file (located in ``/ufs-srweather-app/regional_workflow/ush/machine``) as follows:
-
-      #. Comment out lines 23, 25, and 74:
-
-         .. code-block:: console
-            
-            #export PROJ_LIB=/contrib/GST/miniconda/envs/regional_workflow/share/proj
-            #export PATH=${PATH}:/contrib/GST/miniconda/envs/regional_workflow/bin
-            #. /contrib/EPIC/.bash_conda
-
-      
-      #. Add the following lines:
-
-         .. code-block:: console
-            
-            export PROJ_LIB=/contrib/GST/miniconda3/4.10.3/envs/regional_workflow/share/proj
-            export PATH=${PATH}:/contrib/GST/miniconda3/4.10.3/envs/regional_workflow/bin
-
-.. COMMENT: Remove machine file section?
-         
-
 .. _GenerateWorkflowC: 
 
 Generate the Workflow
@@ -352,14 +346,23 @@ The generated workflow will be in the experiment directory specified in the ``co
 
 Users can track the experiment's progress by reissuing the ``rocotostat`` command above every so often until the experiment runs to completion. For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for information on how to run the workflow without Rocoto. 
 
+Troubleshooting
+------------------
+If a task goes DEAD, it will be necessary to restart it according to the instructions in :numref:`Section %s <RestartTask>`. To determine what caused the task to go DEAD, users should view the log file for the task in ``$EXPTDIR/log/<task_log>``, where ``<task_log>`` refers to the name of the task's log file. After fixing the problem and clearing the DEAD task, it is sometimes necessary to reinitialize the crontab. Users can copy-paste the crontab command from the bottom of the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file into the crontab:
+
+.. code-block:: console
+
+   crontab -e
+   i
+   */3 * * * * cd /lustre/First.Last/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
+   esc
+   :wq + Enter
+
 
 New Experiment
 ===============
 
 To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.sh`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.sh``
-
-.. COMMENT: rm srw.sh and ufs-srweather-app?
-
 
 Plot the Output
 ===============
