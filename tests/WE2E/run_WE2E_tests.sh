@@ -93,6 +93,7 @@ Usage:
     [generate_csv_file=\"...\"] \\
     [machine_file=\"...\"] \\
     [opsroot=\"...\"] \\
+    [run_envir=\"...\"] \\
     [compiler=\"...\"] \\
     [build_mod_fn=\"...\"]
 
@@ -193,6 +194,9 @@ file.  If not set, a supported platform machine file may be used.
 
 opsroot:
 Operations root directory in NCO mode
+
+run_envir:
+Overrides RUN_ENVIR variable to a new value ( nco or community )
 
 compiler:
 Optional argument used to explicitly set the experiment variable COMPILER 
@@ -319,6 +323,7 @@ valid_args=( \
   "generate_csv_file" \
   "machine_file" \
   "opsroot" \
+  "run_envir" \
   "compiler" \
   "build_mod_fn" \
   )
@@ -829,6 +834,20 @@ VERBOSE=\"${VERBOSE}\""
 # End of section from this test's configuration file.
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------"
+
+#
+# Set RUN_ENVIR from the $run_envir argument passed to this script
+#
+if [ ! -z ${run_envir} ]; then
+    expt_config_str=${expt_config_str}"
+#
+# Set RUN_ENVIR
+#
+RUN_ENVIR=${run_envir}"
+
+    RUN_ENVIR=${run_envir}
+fi
+
 #
 #-----------------------------------------------------------------------
 #
