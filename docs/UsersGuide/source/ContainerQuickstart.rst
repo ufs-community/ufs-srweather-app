@@ -275,7 +275,10 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
       .. note::
 
-         On ``JET``, users must also add the line ``PARTITION_DEFAULT="xjet"``.
+         On ``JET``, users must also add the lines 
+         
+            * ``PARTITION_DEFAULT="xjet"``
+            * ``PARTITION_FCST="xjet"``
    
    #. Edit ``config.sh`` to include the correct data paths. For example, on Hera, simply uncomment lines at the bottom of the ``config.sh`` file: 
 
