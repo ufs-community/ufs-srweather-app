@@ -27,24 +27,24 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-# Set the full path to the top-level directory of the regional_workflow 
-# repository.  We denote this path by homerrfs.  The current script 
+# Set the full path to the top-level directory of the UFS SRW App 
+# repository. We denote this path by SR_WX_APP_TOP_DIR. The current script 
 # should be located in the "tests/WE2E" subdirectory under this directory.
-# Thus, homerrfs is the directory two levels above the directory in which 
-# the current script is located.
+# Thus, SR_WX_APP_TOP_DIR is the directory two levels above the directory
+# in which the current script is located.
 #
 #-----------------------------------------------------------------------
 #
-homerrfs=${scrfunc_dir%/*/*}
+SR_WX_APP_TOP_DIR=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-# Set other directories that depend on homerrfs.
+# Set other directories that depend on SR_WX_APP_TOP_DIR.
 #
 #-----------------------------------------------------------------------
 #
-ushdir="$homerrfs/ush"
-testsdir="$homerrfs/tests"
+ushdir="$SR_WX_APP_TOP_DIR/ush"
+testsdir="$SR_WX_APP_TOP_DIR/tests"
 WE2Edir="$testsdir/WE2E"
 #
 #-----------------------------------------------------------------------
@@ -203,9 +203,9 @@ STMP in the configuration files of all tests that will run in NCO mode.
 If it is not specified, STMP is (effectively) set as follows in the 
 configuration files (of all NCO mode tests to be run):
 
-    STMP=\$( readlink -f \"\$homerrfs/../../nco_dirs/stmp\" \)
+    STMP=\$( readlink -f \"\$SR_WX_APP_TOP_DIR/../nco_dirs/stmp\" \)
 
-Here, homerrfs is the base directory in which the regional_workflow
+Here, SR_WX_APP_TOP_DIR is the base directory in which the UFS SRW App
 repository is cloned.  Note that it is not possible to specify a different 
 value for STMP for each test via this argument; all tests will use the
 same value for STMP (either the value specified in the call to this 
@@ -993,7 +993,7 @@ COMIN=\"${COMIN}\""
 #
 # Set STMP and PTMP.
 #
-    nco_basedir=$( readlink -f "$homerrfs/../../nco_dirs" )
+    nco_basedir=$( readlink -f "$SR_WX_APP_TOP_DIR/../nco_dirs" )
     STMP=${stmp:-"${nco_basedir}/stmp"}
     PTMP=${ptmp:-"${nco_basedir}/ptmp"}
 

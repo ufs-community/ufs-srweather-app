@@ -256,7 +256,7 @@ def setup():
     # directory of the current script.
     #
     SR_WX_APP_TOP_DIR = os.path.abspath(
-        os.path.dirname(__file__) + os.sep + os.pardir + os.sep + os.pardir
+        os.path.dirname(__file__) + os.sep + os.pardir
     )
 
     #
@@ -279,19 +279,6 @@ def setup():
         pass
     property_name = "local_path"
     cfg = load_ini_config(mng_extrns_cfg_fn)
-    #
-    # Get the path to the workflow scripts
-    #
-    external_name = "regional_workflow"
-    HOMErrfs = get_ini_value(cfg, external_name, property_name)
-
-    if not HOMErrfs:
-        print_err_msg_exit(
-            f"""
-            Externals.cfg does not contain "{external_name}"."""
-        )
-
-    HOMErrfs = os.path.join(SR_WX_APP_TOP_DIR, HOMErrfs)
     #
     # Get the base directory of the FV3 forecast model code.
     #
@@ -364,13 +351,13 @@ def setup():
     global USHDIR, SCRIPTSDIR, JOBSDIR, SORCDIR, SRC_DIR, PARMDIR, MODULES_DIR
     global EXECDIR, TEMPLATE_DIR, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
 
-    USHDIR = os.path.join(HOMErrfs, "ush")
-    SCRIPTSDIR = os.path.join(HOMErrfs, "scripts")
-    JOBSDIR = os.path.join(HOMErrfs, "jobs")
-    SORCDIR = os.path.join(HOMErrfs, "sorc")
+    USHDIR = os.path.join(SR_WX_APP_TOP_DIR, "ush")
+    SCRIPTSDIR = os.path.join(SR_WX_APP_TOP_DIR, "scripts")
+    JOBSDIR = os.path.join(SR_WX_APP_TOP_DIR, "jobs")
+    SORCDIR = os.path.join(SR_WX_APP_TOP_DIR, "sorc")
     SRC_DIR = os.path.join(SR_WX_APP_TOP_DIR, "src")
-    PARMDIR = os.path.join(HOMErrfs, "parm")
-    MODULES_DIR = os.path.join(HOMErrfs, "modulefiles")
+    PARMDIR = os.path.join(SR_WX_APP_TOP_DIR, "parm")
+    MODULES_DIR = os.path.join(SR_WX_APP_TOP_DIR, "modulefiles")
     EXECDIR = os.path.join(SR_WX_APP_TOP_DIR, EXEC_SUBDIR)
     TEMPLATE_DIR = os.path.join(USHDIR, "templates")
     VX_CONFIG_DIR = os.path.join(TEMPLATE_DIR, "parm")
@@ -1902,7 +1889,6 @@ def setup():
         # -----------------------------------------------------------------------
         #
         "SR_WX_APP_TOP_DIR": SR_WX_APP_TOP_DIR,
-        "HOMErrfs": HOMErrfs,
         "USHDIR": USHDIR,
         "SCRIPTSDIR": SCRIPTSDIR,
         "JOBSDIR": JOBSDIR,

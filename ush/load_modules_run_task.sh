@@ -111,23 +111,23 @@ for the workflow task specified by task_name failed:
 # sets environment variables (including prepending/appending to paths)
 # and loads modules.
 #
-# The regional_workflow repository contains module files for the
+# The UFS SRW App repository contains module files for the
 # workflow tasks in the template rocoto XML file for the FV3-LAM work-
 # flow that need modules not loaded in the BUILD_MOD_FN above.
 #
 # The full path to a module file for a given task is
 #
-#   $HOMErrfs/modulefiles/$machine/${task_name}.local
+#   $SR_WX_APP_TOP_DIR/modulefiles/$machine/${task_name}.local
 #
-# where HOMErrfs is the base directory of the workflow, machine is the
+# where SR_WX_APP_TOP_DIR is the base directory of the workflow, machine is the
 # name of the machine that we're running on (in lowercase), and task_-
 # name is the name of the current task (an input to this script).
 #
 #-----------------------------------------------------------------------
 #
-modules_dir="$HOMErrfs/modulefiles/tasks/$machine"
+modules_dir="$SR_WX_APP_TOP_DIR/modulefiles/tasks/$machine"
 modulefile_name="${task_name}"
-default_modules_dir="$HOMErrfs/modulefiles"
+default_modules_dir="$SR_WX_APP_TOP_DIR/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
