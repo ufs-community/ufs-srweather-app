@@ -1,0 +1,50 @@
+metadata:
+  description: >-
+    Sample community config
+user:
+  RUN_ENVIR: community
+  MACHINE: hera
+  ACCOUNT: an_account
+platform:
+  MODEL: FV3_GFS_v16_CONUS_25km
+  MET_INSTALL_DIR: path/to/MET
+  METPLUS_PATH: path/to/METPlus
+  CCPA_OBS_DIR: /path/to/processed/CCPA/data
+  MRMS_OBS_DIR: /path/to/processed/MRMS/data
+  NDAS_OBS_DIR: /path/to/processed/NDAS/data
+workflow:
+  EXPT_SUBDIR: test_community
+  CCPP_PHYS_SUITE: FV3_GFS_v16
+  DATE_FIRST_CYCL: '20190615'
+  DATE_LAST_CYCL: '20190615'
+  CYCL_HRS:
+    - 18
+  FCST_LEN_HRS: 12
+  PREEXISTING_DIR_METHOD: rename
+  VERBOSE: true
+  COMPILER: intel
+workflow_switches:
+  RUN_TASK_MAKE_GRID: true
+  RUN_TASK_MAKE_OROG: true
+  RUN_TASK_MAKE_SFC_CLIMO: true
+  RUN_TASK_GET_OBS_CCPA: false
+  RUN_TASK_GET_OBS_MRMS: false
+  RUN_TASK_GET_OBS_NDAS: false
+  RUN_TASK_VX_GRIDSTAT: false
+  RUN_TASK_VX_POINTSTAT: false
+  RUN_TASK_VX_ENSGRID: false
+  RUN_TASK_VX_ENSPOINT: false
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  FV3GFS_FILE_FMT_ICS: grib2
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  LBC_SPEC_INTVL_HRS: 6
+  FV3GFS_FILE_FMT_LBCS: grib2
+task_run_fcst:
+  WTIME_RUN_FCST: 02:00:00
+  QUILTING: true
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+global:
+  DO_ENSEMBLE: false
+  NUM_ENS_MEMBERS: 2

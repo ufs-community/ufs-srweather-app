@@ -1,0 +1,48 @@
+metadata:
+  description: |-
+    This test has two purposes:
+    1) It checks that the various workflow tasks can be deactivated, i.e.
+       removed from the Rocoto XML.
+    2) It checks the capability of the workflow to use "template" experiment
+       variables, i.e. variables whose definitions include references to
+       other variables, e.g.
+         MY_VAR='\${ANOTHER_VAR}'
+    Note that we do not deactivate all tasks in the workflow; we leave the
+    MAKE_GRID_TN, MAKE_OROG_TN, and MAKE_SFC_CLIMO_TN activated because:
+    1) There is already a WE2E test that runs with these three tasks
+       deactivated (that test is to ensure that pre-generated grid,
+       orography, and surface climatology files can be used).
+    2) In checking the template variable capability, we want to make sure
+       that the variable defintions file (GLOBAL_VAR_DEFNS_FN) generated
+       does not have syntax or other errors in it by sourcing it in these
+       three tasks.
+user:
+  RUN_ENVIR: community
+platform:
+  RUN_CMD_UTILS: cd $yyyymmdd
+  RUN_CMD_FCST: mpirun -np ${PE_MEMBER01}
+  RUN_CMD_POST: echo hello $yyyymmdd
+workflow:
+  CCPP_PHYS_SUITE: FV3_GFS_v15p2
+  DATE_FIRST_CYCL: '20190701'
+  DATE_LAST_CYCL: '20190701'
+  CYCL_HRS:
+    - 0
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+workflow_switches:
+  RUN_TASK_GET_EXTRN_ICS: false
+  RUN_TASK_GET_EXTRN_LBCS: false
+  RUN_TASK_MAKE_ICS: false
+  RUN_TASK_MAKE_LBCS: false
+  RUN_TASK_RUN_FCST: false
+  RUN_TASK_RUN_POST: false
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  USE_USER_STAGED_EXTRN_FILES: true
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  LBC_SPEC_INTVL_HRS: 3
+  USE_USER_STAGED_EXTRN_FILES: true
+task_run_fcst:
+  PREDEF_GRID_NAME: RRFS_CONUS_25km

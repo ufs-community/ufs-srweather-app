@@ -229,6 +229,14 @@ function source_util_funcs() {
 #-----------------------------------------------------------------------
 #
   . ${bashutils_dir}/get_bash_file_contents.sh
+#
+#-----------------------------------------------------------------------
+#
+# Source the file containing the function that sources config files
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/source_config.sh
 
 }
 source_util_funcs

@@ -572,7 +572,7 @@ cd_vrfy -
 #
 #-----------------------------------------------------------------------
 #
-python3  $USHDIR/link_fix.py \
+python3 $USHDIR/link_fix.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --file-group "orog" || \
 print_err_msg_exit "\

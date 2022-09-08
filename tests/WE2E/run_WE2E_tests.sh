@@ -712,7 +712,7 @@ for (( i=0; i<=$((num_tests_to_run-1)); i++ )); do
 # Generate the full path to the current WE2E test's configuration file.
 # Then ensure that this file exists.
 #
-  test_config_fp="${avail_WE2E_test_configs_basedir}/${test_subdir}/config.${test_name}.sh"
+  test_config_fp="${avail_WE2E_test_configs_basedir}/${test_subdir}/config.${test_name}.yaml"
 
   if [ ! -f "${test_config_fp}" ]; then
     print_err_msg_exit "\
@@ -732,8 +732,8 @@ Please correct and rerun."
 #
 #-----------------------------------------------------------------------
 #
-  . ${ushdir}/config_defaults.sh
-  . ${test_config_fp}
+  source_config ${ushdir}/config_defaults.yaml
+  source_config ${test_config_fp}
 #
 #-----------------------------------------------------------------------
 #
@@ -742,7 +742,7 @@ Please correct and rerun."
 # have.  Once this variable is constructed, we will write its contents
 # to the generic configuration file that the experiment generation script
 # reads in (specified by the variable EXPT_CONFIG_FN in the default 
-# configuration file config_defaults.sh sourced above) and then run that
+# configuration file config_defaults.yaml sourced above) and then run that
 # script to generate an experiment for the current WE2E test.
 #
 # We name the multiline variable that will contain the contents of the
@@ -760,7 +760,7 @@ Please correct and rerun."
 # that depend on the input arguments to this script (as opposed to 
 # variable settings in the test configuration file specified by 
 # test_config_fp).  Note that any values of these parameters specified 
-# in the default experiment configuration file (config_defaults.sh) 
+# in the default experiment configuration file (config_defaults.yaml) 
 # or in the test configuraiton file (test_config_fp) that were sourced 
 # above will be overwritten by the settings below.
 #
@@ -846,7 +846,7 @@ VERBOSE=\"${VERBOSE}\""
 # The following section is a copy of this WE2E test's configuration file.
 #
 "
-  expt_config_str=${expt_config_str}$( cat "${test_config_fp}" )
+  expt_config_str=${expt_config_str}$( config_to_shell_str "${test_config_fp}" )
   expt_config_str=${expt_config_str}"
 #
 # End of section from this test's configuration file.
@@ -1172,14 +1172,11 @@ MAXTRIES_RUN_POST=\"${MAXTRIES_RUN_POST}\""
   fi
 #
 #-----------------------------------------------------------------------
-#
-# Set the full path to the configuration file that the experiment 
-# generation script reads in.  Then write the contents of expt_config_str 
-# to that file.
-#
+# Write content to a temporary config file
 #-----------------------------------------------------------------------
 #
-  expt_config_fp="$ushdir/${EXPT_CONFIG_FN}"
+  temp_file="$PWD/_config_temp_.sh"
+  expt_config_fp="${temp_file}"
   printf "%s" "${expt_config_str}" > "${expt_config_fp}"
 #
 #-----------------------------------------------------------------------
@@ -1273,6 +1270,19 @@ exist or is not a directory:
 
 
   fi
+#
+#-----------------------------------------------------------------------
+#
+# Set the full path to the configuration file that the experiment 
+# generation script reads in.  Then write the contents of expt_config_str 
+# to that file.
+#
+#-----------------------------------------------------------------------
+#
+  expt_config_fp="$ushdir/${EXPT_CONFIG_FN}"
+  ext="${EXPT_CONFIG_FN##*.}"
+  config_to_str "${ext}" "${temp_file}" -t "$ushdir/config_defaults.yaml" >"${expt_config_fp}"
+  rm -rf "${temp_file}"
 #
 #-----------------------------------------------------------------------
 #

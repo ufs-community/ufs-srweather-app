@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''
+"""
 This utility updates a Fortran namelist file using the f90nml package. The
 settings that are modified are supplied via command line YAML-formatted string
 and/or YAML configuration files.
@@ -64,7 +64,7 @@ Expected behavior:
     - Given a user namelist and a base namelist, the script can dump the
       difference in the two to a YAML file that can be included as a section
       in the supported configs.
-'''
+"""
 
 import argparse
 import collections
@@ -77,10 +77,10 @@ import yaml
 
 def config_exists(arg):
 
-    '''
+    """
     Checks whether the config file exists and if it contains the input
     section. Returns the arg as provided if checks are passed.
-    '''
+    """
 
     # Agument is expected to be a 2-item list of file name and internal section
     # name.
@@ -90,43 +90,46 @@ def config_exists(arg):
     file_exists(file_name)
 
     # Load the YAML file into a dictionary
-    with open(file_name, 'r') as fn:
+    with open(file_name, "r") as fn:
         cfg = yaml.load(fn, Loader=yaml.Loader)
 
     # Grab only the section that is specified by the user
     try:
         cfg = cfg[section_name]
     except KeyError:
-        msg = f'Section {section_name} does not exist in top level of {file_name}'
+        msg = f"Section {section_name} does not exist in top level of {file_name}"
         raise argparse.ArgumentTypeError(msg)
 
     return [cfg, section_name]
 
+
 def file_exists(arg):
 
-    ''' Check for existence of file '''
+    """Check for existence of file"""
 
     if not os.path.exists(arg):
-        msg = f'{arg} does not exist!'
+        msg = f"{arg} does not exist!"
         raise argparse.ArgumentTypeError(msg)
 
     return arg
 
+
 def load_config(arg):
 
-    '''
+    """
     Check to ensure that the provided config file exists. If it does, load it
     with YAML's safe loader and return the resulting dict.
-    '''
+    """
 
     return yaml.safe_load(arg)
 
+
 def path_ok(arg):
 
-    '''
+    """
     Check whether the path to the file exists, and is writeable. Return the path
     if it passes all checks, otherwise raise an error.
-    '''
+    """
 
     # Get the absolute path provided by arg
     dir_name = os.path.abspath(os.path.dirname(arg))
@@ -135,71 +138,87 @@ def path_ok(arg):
     if os.path.lexists(dir_name) and os.access(dir_name, os.W_OK):
         return arg
 
-    msg = f'{arg} is not a writable path!'
+    msg = f"{arg} is not a writable path!"
     raise argparse.ArgumentTypeError(msg)
+
 
 def parse_args(argv):
 
-    '''
+    """
     Function maintains the arguments accepted by this script. Please see
     Python's argparse documenation for more information about settings of each
     argument.
-    '''
+    """
 
     parser = argparse.ArgumentParser(
-        description='Update a Fortran namelist with user-defined settings.'
+        description="Update a Fortran namelist with user-defined settings."
     )
 
     # Required
-    parser.add_argument('-o', '--outfile',
-                        help='Required: Full path to output file. This is a \
-                        namelist by default.',
-                        required=True,
-                        type=path_ok,
-                        )
+    parser.add_argument(
+        "-o",
+        "--outfile",
+        help="Required: Full path to output file. This is a \
+                        namelist by default.",
+        required=True,
+        type=path_ok,
+    )
 
     # Optional
-    parser.add_argument('-c', '--config',
-                        help='Full path to a YAML config file containing multiple \
-                        configurations, and the top-level section to use. Optional.',
-                        metavar=('[FILE,', 'SECTION]'),
-                        nargs=2,
-                        )
-    parser.add_argument('-i', '--input_nml',
-                        help='Path to a user namelist. Use with -n and \
-                        -t yaml to get a YAML file to use with workflow.',
-                        type=file_exists,
-                        )
-    parser.add_argument('-n', '--basenml',
-                        dest='nml',
-                        help='Full path to the input Fortran namelist. Optional.',
-                        type=file_exists,
-                        )
-    parser.add_argument('-t', '--type',
-                        choices=['nml', 'yaml'],
-                        default='nml',
-                        help='Output file type.',
-                        )
-    parser.add_argument('-u', '--user_config',
-                        help='Command-line user config options in YAML-formatted \
+    parser.add_argument(
+        "-c",
+        "--config",
+        help="Full path to a YAML config file containing multiple \
+                        configurations, and the top-level section to use. Optional.",
+        metavar=("[FILE,", "SECTION]"),
+        nargs=2,
+    )
+    parser.add_argument(
+        "-i",
+        "--input_nml",
+        help="Path to a user namelist. Use with -n and \
+                        -t yaml to get a YAML file to use with workflow.",
+        type=file_exists,
+    )
+    parser.add_argument(
+        "-n",
+        "--basenml",
+        dest="nml",
+        help="Full path to the input Fortran namelist. Optional.",
+        type=file_exists,
+    )
+    parser.add_argument(
+        "-t",
+        "--type",
+        choices=["nml", "yaml"],
+        default="nml",
+        help="Output file type.",
+    )
+    parser.add_argument(
+        "-u",
+        "--user_config",
+        help="Command-line user config options in YAML-formatted \
                         string. These options will override any provided in an \
-                        input file. Optional.',
-                        metavar='YAML STRING',
-                        type=load_config,
-                        )
+                        input file. Optional.",
+        metavar="YAML STRING",
+        type=load_config,
+    )
 
     # Flags
-    parser.add_argument('-q', '--quiet',
-                        action='store_true',
-                        help='If provided, suppress all output.',
-                        )
+    parser.add_argument(
+        "-q",
+        "--quiet",
+        action="store_true",
+        help="If provided, suppress all output.",
+    )
     return parser.parse_args(argv)
+
 
 def dict_diff(dict1, dict2):
 
-    '''
+    """
     Produces a dictionary of how dict2 differs from dict1
-    '''
+    """
 
     diffs = {}
 
@@ -208,7 +227,7 @@ def dict_diff(dict1, dict2):
         for key, val in items.items():
 
             # If dict 2 has a different value, record the dict2 value
-            if val != dict2.get(sect, {}).get(key, ''):
+            if val != dict2.get(sect, {}).get(key, ""):
                 if not diffs.get(sect):
                     diffs[sect] = {}
                 diffs[sect][key] = dict2.get(sect, {}).get(key)
@@ -219,18 +238,19 @@ def dict_diff(dict1, dict2):
         for key, val in items.items():
 
             # If dict1 has a diffent value than dict2, record the dict2 value
-            if val != dict1.get(sect, {}).get(key, ''):
+            if val != dict1.get(sect, {}).get(key, ""):
 
                 # Check to make sure it hasn't already been recorded
-                if diffs.get(sect, {}).get(key, 'DNE') == 'DNE':
+                if diffs.get(sect, {}).get(key, "DNE") == "DNE":
                     if not diffs.get(sect):
                         diffs[sect] = {}
                     diffs[sect][key] = val
     return diffs
 
+
 def to_dict(odict):
 
-    ''' Recursively convert OrderedDict to Python dict. '''
+    """Recursively convert OrderedDict to Python dict."""
 
     if not isinstance(odict, collections.OrderedDict):
         return odict
@@ -241,9 +261,10 @@ def to_dict(odict):
             ret[key] = to_dict(value)
     return ret
 
+
 def update_dict(dest, newdict, quiet=False):
 
-    '''
+    """
     Overwrites all values in dest dictionary with values from newdict. Turn off
     print statements with queit=True.
 
@@ -262,7 +283,7 @@ def update_dict(dest, newdict, quiet=False):
     Result:
 
         The dest dict is updated in place.
-    '''
+    """
 
     for sect, values in newdict:
         # If section is set to None, remove all contents from namelist
@@ -271,7 +292,7 @@ def update_dict(dest, newdict, quiet=False):
         else:
             for key, value in values.items():
                 if not quiet:
-                    print(f'Setting {sect}.{key} = {value}')
+                    print(f"Setting {sect}.{key} = {value}")
 
                 # Remove key from dict if config is set to None
                 if value is None:
@@ -285,9 +306,10 @@ def update_dict(dest, newdict, quiet=False):
                         dest[sect] = {}
                         dest[sect][key] = value
 
+
 def set_namelist(argv):
 
-    ''' Using input command line arguments (cla), update a Fortran namelist file. '''
+    """Using input command line arguments (cla), update a Fortran namelist file."""
 
     # parse argumetns
     cla = parse_args(argv)
@@ -310,11 +332,11 @@ def set_namelist(argv):
         update_dict(nml, cla.user_config.items(), quiet=cla.quiet)
 
     # Write the resulting file
-    with open(cla.outfile, 'w') as fn:
-        if cla.type == 'nml':
+    with open(cla.outfile, "w") as fn:
+        if cla.type == "nml":
             nml.write(fn, sort=True)
 
-        if cla.type == 'yaml':
+        if cla.type == "yaml":
             if cla.input_nml:
                 input_nml = f90nml.read(cla.input_nml)
 
@@ -329,5 +351,5 @@ def set_namelist(argv):
                 yaml.dump(to_dict(nml.todict()), fn)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     set_namelist(sys.argv[1:])

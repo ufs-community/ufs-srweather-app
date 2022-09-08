@@ -4,7 +4,8 @@ import traceback
 import sys
 from textwrap import dedent
 
-def print_err_msg_exit(error_msg="",stack_trace=True):
+
+def print_err_msg_exit(error_msg="", stack_trace=True):
     """Function to print out an error message to stderr and exit.
     It can optionally print the stack trace as well.
 
@@ -17,12 +18,13 @@ def print_err_msg_exit(error_msg="",stack_trace=True):
     if stack_trace:
         traceback.print_stack(file=sys.stderr)
 
-    msg_footer='\nExiting with nonzero status.'
+    msg_footer = "\nExiting with nonzero status."
     print(dedent(error_msg) + msg_footer, file=sys.stderr)
     sys.exit(1)
 
-def print_info_msg(info_msg,verbose=True):
-    """ Function to print information message to stdout, when verbose 
+
+def print_info_msg(info_msg, verbose=True):
+    """Function to print information message to stdout, when verbose
     is set to True. It does proper "dedentation" that is needed for readability
     of python code.
 
@@ -32,9 +34,8 @@ def print_info_msg(info_msg,verbose=True):
     Returns:
         True: if message is successfully printed
     """
-  
-    if verbose == True:
+
+    if verbose:
         print(dedent(info_msg))
         return True
     return False
-

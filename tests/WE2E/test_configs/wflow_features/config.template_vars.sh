@@ -1,1 +1,0 @@
-config.deactivate_tasks.sh

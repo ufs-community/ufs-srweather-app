@@ -1,4 +1,4 @@
-name: Python unittests
+name: Python functional tests
 on:
   push:
     paths:

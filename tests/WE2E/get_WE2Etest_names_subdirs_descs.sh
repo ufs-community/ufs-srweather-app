@@ -405,30 +405,10 @@ function get_WE2Etest_names_subdirs_descs() {
         var_name_at \
         vars_to_extract
 
-  local grid_gen_method \
-        \
-        gfdlgrid_lon_t6_ctr \
-        gfdlgrid_lat_t6_ctr \
-        gfdlgrid_num_cells \
-        gfdlgrid_stretch_fac \
-        gfdlgrid_refine_ratio \
-        gfdlgrid_istart_of_rgnl_dom_on_t6g \
-        gfdlgrid_iend_of_rgnl_dom_on_t6g \
-        gfdlgrid_jstart_of_rgnl_dom_on_t6g \
-        gfdlgrid_jend_of_rgnl_dom_on_t6g \
-        \
-        esggrid_lon_ctr \
-        esggrid_lat_ctr \
-        esggrid_nx \
-        esggrid_ny \
-        esggrid_pazi \
-        esggrid_wide_halo_width \
-        esggrid_delx \
-        esggrid_dely \
-        \
-        nx \
-        ny \
-        dta
+  local dta \
+        nxny \
+        dta_r \
+        nxny_r
 #
 #-----------------------------------------------------------------------
 #
@@ -591,7 +571,11 @@ information on all WE2E tests:
 # statement will be false.
 #
     if [ -z "${generate_csv_file}" ]; then
-      mod_time_subdir=$( stat --format=%Y "${subdir_fp}" )
+      if [ -f "${subdir_fp}/*.yaml" ]; then
+        mod_time_subdir=$( stat --format=%Y "${subdir_fp}"/*.yaml | sort -n | tail -1 )
+      else
+        mod_time_subdir="0"
+      fi
       if [ "${mod_time_subdir}" -gt "${mod_time_csv}" ]; then
         generate_csv_file="TRUE"
         print_info_msg "
@@ -633,7 +617,7 @@ to generate a new CSV file:
 # "config.${test_name}.sh", in which case it will be equal to ${test_name}.
 # Otherwise, it will be a null string.
 #
-      regex_search="^config\.(.*)\.sh$"
+      regex_search="^config\.(.*)\.yaml$"
       test_name_or_null=$( printf "%s\n" "${crnt_item}" | \
                            sed -n -r -e "s/${regex_search}/\1/p" )
 #
@@ -887,7 +871,7 @@ name (test_name) is not 1:
   test_name = \"${test_name}\"
   num_occurrences = ${num_occurrences}
 These configuration files all have the name
-  \"config.${test_name}.sh\"
+  \"config.${test_name}.yaml\"
 and are located in the following category subdirectories under 
 test_configs_basedir:
   subdirs = ( $( printf "\"%s\" " "${subdirs[@]}" ))
@@ -995,80 +979,11 @@ configuration files of the primary WE2E tests...
 # leading spaces, the hash symbol, and possibly another space and append
 # what remains to the local variable test_desc.
 #
-      config_fn="config.${test_name}.sh"
-      test_desc=""
-      while read -r line; do
-
-        regex_search="^[ ]*(#)([ ]{0,1})(.*)"
-        hash_or_null=$( printf "%s" "${line}" | \
-                        sed -n -r -e "s/${regex_search}/\1/p" )
-#
-# If the current line is part of the file header containing the test
-# description, then...
-#
-        if [ "${hash_or_null}" = "#" ]; then
-#
-# Strip from the current line any leading whitespace followed by the
-# hash symbol possibly followed by a single space.  If what remains is
-# empty, it means there are no comments on that line and it is just a
-# separator line.  In that case, simply add a newline to test_desc.
-# Otherwise, append what remains after stripping to what test_desc
-# already contains, followed by a single space in preparation for
-# appending the next (stripped) line.
-#
-          stripped_line=$( printf "%s" "${line}" | \
-                           sed -n -r -e "s/${regex_search}/\3/p" )
-          if [ -z "${stripped_line}" ]; then
-            test_desc="\
-${test_desc}
-
-"
-          else
-            test_desc="\
-${test_desc}${stripped_line} "
-          fi
-#
-# If the current line is not part of the file header containing the test
-# description, break out of the while-loop (and thus stop reading the
-# file).
-#
-        else
-          break
-        fi
-
-      done < "${config_fn}"
-#
-# At this point, test_desc contains a description of the current test.
-# Note that:
-#
-# 1) It will be empty if the configuration file for the current test
-#    does not contain a header describing the test.
-# 2) It will contain newlines if the description header contained lines
-#    that start with the hash symbol and contain no other characters.
-#    These are used to delimit paragraphs within the description.
-# 3) It may contain leading and trailing whitespace.
-#
-# Next, for clarity, we remove any leading and trailing whitespace using
-# bash's pattern matching syntax.
-#
-# Note that the right-hand sides of the following two lines are NOT
-# regular expressions.  They are expressions that use bash's pattern
-# matching syntax (gnu.org/software/bash/manual/html_node/Pattern-Matching.html,
-# wiki.bash-hackers.org/syntax/pattern) used in substring removal
-# (tldp.org/LDP/abs/html/string-manipulation.html).  For example,
-#
-#   ${var%%[![:space:]]*}
-#
-# says "remove from var its longest substring that starts with a non-
-# space character".
-#
-# First remove leading whitespace.
-#
-      test_desc="${test_desc#"${test_desc%%[![:space:]]*}"}"
-#
-# Now remove trailing whitespace.
-#
-      test_desc="${test_desc%"${test_desc##*[![:space:]]}"}"
+      config_fn="config.${test_name}.yaml"
+      config_fp="${test_configs_basedir}/$subdir/$config_fn"
+      test_desc="$(config_to_yaml_str $config_fp -k "metadata")"
+      test_desc="${test_desc:27}"
+      test_desc="${test_desc::${#test_desc}-1}"
 #
 # Finally, save the description of the current test as the next element
 # of the array prim_test_descs.
@@ -1079,10 +994,11 @@ ${test_desc}${stripped_line} "
 # variables specified in "vars_to_extract".  Then save the value in the
 # arrays specified by "prim_array_names_vars_to_extract".
 #
+      config_content=$(config_to_shell_str $config_fp)
       for (( k=0; k<=$((num_vars_to_extract-1)); k++ )); do
 
         var_name="${vars_to_extract[$k]}"
-        cmd=$( grep "^[ ]*${var_name}=" "${config_fn}" )
+        cmd=$( grep "^[ ]*${var_name}=" <<< "${config_content}" )
         eval $cmd
 
         if [ -z "${!var_name+x}" ]; then
@@ -1689,49 +1605,8 @@ containing information on all WE2E tests:
   fi
 
   if [ ! -z "${outvarname_test_descs}" ]; then
-#
-# We want to treat all characters in the test descriptions literally
-# when evaluating the array specified by outvarname_test_descs below 
-# using the eval function because otherwise, characters such as "$", 
-# "(", ")", etc will be interpreted as indicating the value of a variable, 
-# the start of an array, the end of an array, etc, and lead to errors.  
-# Thus, below, when forming the array that will be passed to eval, we 
-# will surround each element of the local array test_descs in single 
-# quotes.  However, the test descriptions themselves may include single 
-# quotes (e.g. when a description contains a phrase such as "Please see 
-# the User's Guide for...").  In order to treat these single quotes 
-# literally (as opposed to as delimiters indicating the start or end of 
-# array elements), we have to pass them as separate strings by replacing 
-# each single quote with the following series of characters:
-#
-#   '"'"'
-#
-# In this, the first single quote indicates the end of the previous
-# single-quoted string, the "'" indicates a string containing a literal
-# single quote, and the last single quote inidicates the start of the
-# next single-quoted string.
-#
-# For example, let's assume there are only two WE2E tests to consider.
-# Assume the description of the first is
-#
-#   Please see the User's Guide.
-#
-# and that of the second is:
-#
-#   See description of ${DOT_OR_USCORE} in the configuration file.
-#
-# Then, if outvarname_test_descs is set to "some_array", the exact string 
-# we want to pass to eval is:
-#
-#   some_array=('Please see the User'"'"'s Guide.' 'See description of ${DOT_OR_USCORE} in the configuration file.')
-#
-    test_descs_esc_sq=()
-    for (( i=0; i<=$((num_tests-1)); i++ )); do
-      test_descs_esc_sq[$i]=$( printf "%s" "${test_descs[$i]}" | \
-                               sed -r -e "s/'/'\"'\"'/g" )
-    done
-    test_descs_str="( "$( printf "'%s' " "${test_descs_esc_sq[@]}" )")"
-    eval ${outvarname_test_descs}="${test_descs_str}"
+    test_descs_str="( "$( printf "'%s' " "${test_descs[@]}" )")"
+    eval ${output_varname_test_descs}="${test_descs_str}"
   fi
 #
 #-----------------------------------------------------------------------

@@ -1,4 +1,5 @@
 [![Python unittests](https://github.com/ufs-community/regional_workflow/actions/workflows/python_unittests.yaml/badge.svg)](https://github.com/ufs-community/regional_workflow/actions/workflows/python_unittests.yaml)
+[![Python functional tests](https://github.com/ufs-community/regional_workflow/actions/workflows/python_func_tests.yaml/badge.svg)](https://github.com/ufs-community/regional_workflow/actions/workflows/python_func_tests.yaml)
 
 # Regional Workflow
   
