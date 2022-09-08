@@ -44,13 +44,13 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 # The current script should be located in the "tests" subdirectory of the
-# workflow's top-level directory, which we denote by homerrfs.  Thus,
-# homerrfs is the directory one level above the directory in which the
-# current script is located.  Set homerrfs accordingly.
+# workflow's top-level directory, which we denote by SR_WX_APP_TOP_DIR.
+# SR_WX_APP_TOP_DIR is the directory two levels above the directory in
+# which the current script is located; Set SR_WX_APP_TOP_DIR accordingly.
 #
 #-----------------------------------------------------------------------
 #
-homerrfs=${scrfunc_dir%/*/*}
+SR_WX_APP_TOP_DIR=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
@@ -58,7 +58,7 @@ homerrfs=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-ushdir="$homerrfs/ush"
+ushdir="$SR_WX_APP_TOP_DIR/ush"
 #
 #-----------------------------------------------------------------------
 #
