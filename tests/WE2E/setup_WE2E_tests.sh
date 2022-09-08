@@ -68,7 +68,7 @@ auto_file=${scrfunc_dir}/machine_suites/${machine}.txt
 # Use exec_subdir consistent with the automated build.
 #----------------------------------------------------------------------
 
-exec_subdir='bin_intel/bin'
+exec_subdir='bin_intel/exec'
 
 #-----------------------------------------------------------------------
 # Run E2E Tests

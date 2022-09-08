@@ -28,7 +28,7 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 # Set the full path to the top-level directory of the UFS SRW App 
-# repository. We denote this path by SR_WX_APP_TOP_DIR. The current script 
+# repository.  We denote this path by homerrfs.  The current script 
 # should be located in the "tests/WE2E" subdirectory under this directory.
 # Thus, SR_WX_APP_TOP_DIR is the directory two levels above the directory
 # in which the current script is located.

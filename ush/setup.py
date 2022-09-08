@@ -293,6 +293,10 @@ def setup():
     property_name = "local_path"
     cfg = load_ini_config(mng_extrns_cfg_fn)
     #
+    # Get the path to the workflow scripts
+    #
+    HOMErrfs = SR_WX_APP_TOP_DIR
+    #
     # Get the base directory of the FV3 forecast model code.
     #
     external_name = FCST_MODEL
@@ -326,7 +330,7 @@ def setup():
     SORCrrfs = os.path.join(HOMErrfs, "sorc")
     PARMrrfs = os.path.join(HOMErrfs, "parm")
     MODULESrrfs = os.path.join(HOMErrfs, "modulefiles")
-    EXECrrfs = os.path.join(SR_WX_APP_TOP_DIR, EXEC_SUBDIR)
+    EXECrrfs = os.path.join(HOMErrfs, EXEC_SUBDIR)
     VX_CONFIG_DIR = PARMrrfs
     METPLUS_CONF = os.path.join(PARMrrfs, "metplus")
     MET_CONFIG = os.path.join(PARMrrfs, "met")
