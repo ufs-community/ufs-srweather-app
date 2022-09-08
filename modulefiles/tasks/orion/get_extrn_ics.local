@@ -1,0 +1,7 @@
+#%Module#####################################################
+## Module file for get_extrn_ics task.
+#############################################################
+
+module purge
+module load miniconda_regional_workflow
+

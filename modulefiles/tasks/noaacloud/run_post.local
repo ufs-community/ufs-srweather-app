@@ -1,0 +1,14 @@
+#%Module
+
+module use /contrib/spack-stack/apps/srw-app-test/modulefiles/Core
+module load stack-intel
+module load stack-intel-oneapi-mpi
+module load netcdf-c
+module load netcdf-fortran
+module load libpng
+module load jasper
+
+module load miniconda_regional_workflow
+module load rocoto
+prepend-path PATH /contrib/GST/miniconda/envs/regional_workflow/bin
+setenv SRW_ENV regional_workflow

@@ -1,0 +1,125 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHDIR/source_util_funcs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the J-job script for the task that generates surface fields from
+climatology.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Create the output directory for the surface climatology files.  If it
+# already exists, deal with it as specified by PREEXISTING_DIR_METHOD.
+#
+#-----------------------------------------------------------------------
+#
+check_for_preexist_dir_file "${SFC_CLIMO_DIR}" "${PREEXISTING_DIR_METHOD}"
+mkdir_vrfy -p "${SFC_CLIMO_DIR}"
+#
+#-----------------------------------------------------------------------
+#
+# Create a work directory.  If it already exists, delete it.
+#
+#-----------------------------------------------------------------------
+#
+workdir="${SFC_CLIMO_DIR}/tmp"
+check_for_preexist_dir_file "$workdir" "delete"
+mkdir_vrfy $workdir
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
+#
+#-----------------------------------------------------------------------
+#
+${SCRIPTSDIR}/exregional_make_sfc_climo.sh \
+  workdir="$workdir" || \
+print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Create a flag file to make rocoto aware that the make_sfc_climo task
+# has successfully completed (so that other tasks that depend on it can
+# be launched).  
+#
+# Although we can use the <taskdep> tag to make other tasks depend on 
+# the successful completion of make_sfc_climo, it turns out that the 
+# <taskdep> tag assumes that the task it specifies (in this case make_-
+# sfc_climo) runs for the same set of cycles as the one in which it ap-
+# pears as a dependency.  Thus, if we use <taskdep> in a cycle-dependent
+# task in the workflow to make it depend on the make_sfc_climo, then the
+# workflow will wait for make_sfc_climo to run for each cycle for which
+# that cycle-dependent task is defined before running the task.  But 
+# since make_sfc_climo will not run for each cycle (except possibly for
+# the very first one), the cycle-dependent task will not be able to run
+# for any of the cycles except the first one.  For this reason, we can-
+# not use the <taskdep> tag to make other cycle-dependent tasks depend
+# on make_sfc_climo and must instead use a flag file.
+#
+#-----------------------------------------------------------------------
+#
+touch "$LOGDIR/make_sfc_climo_task_complete.txt"
+#
+#-----------------------------------------------------------------------
+#
+# Print exit message.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+

@@ -1,0 +1,42 @@
+metadata:
+  description: >-
+    Sample nco config
+user:
+  RUN_ENVIR: nco
+  MACHINE: hera
+  ACCOUNT: an_account
+platform:
+  DOMAIN_PREGEN_BASEDIR: /scratch2/BMC/det/UFS_SRW_App/develop/FV3LAM_pregen
+workflow:
+  USE_CRON_TO_RELAUNCH: true
+  CRON_RELAUNCH_INTVL_MNTS: 3
+  EXPT_SUBDIR: test_nco
+  COMIN: /scratch1/NCEPDEV/rstprod/com/gfs/prod
+  NET: rrfs
+  model_ver: v1.0
+  RUN: rrfs_test
+  STMP: /path/to/stmp/directory
+  PTMP: /path/to/ptmp/directory
+  CCPP_PHYS_SUITE: FV3_GFS_v16
+  DATE_FIRST_CYCL: '20220407'
+  DATE_LAST_CYCL: '20220407'
+  CYCL_HRS:
+    - 0
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+  VERBOSE: true
+  COMPILER: intel
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  FV3GFS_FILE_FMT_ICS: grib2
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  LBC_SPEC_INTVL_HRS: 3
+  FV3GFS_FILE_FMT_LBCS: grib2
+task_run_fcst:
+  WTIME_RUN_FCST: 01:00:00
+  WRITE_DOPOST: true
+  QUILTING: true
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+task_run_post:
+  POST_OUTPUT_DOMAIN_NAME: conus_25km

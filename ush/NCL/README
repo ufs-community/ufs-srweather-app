@@ -1,0 +1,163 @@
+
+This script generates a 2-D color plot of one or more of the tiles on
+a cubed-sphere grid on top of a map of the continents.  Each tile is
+depicted in the output graphics file as a uniformly colored region.
+
+An example of a call to this script from the command line is as fol-
+lows:
+
+  ncl -n plot_fields.ncl \
+      'help=False' \
+      'grid_dir="./some_dir/grid"' \
+      'input_file="nggps2d.nc"' \
+      'fields="u1000"' \
+      'res=96' \
+      'tile_inds=(/1,2,3/)' \
+      'draw_tile_bdy=True' \
+      'draw_tile_grid=True' \
+      'draw_RAP_domain=True' \
+      'RAP_grid_fn="./some_dir/RAP_grid.nc"' \
+      'draw_RAP_bdy=True' \
+      'draw_RAP_grid=True' \
+      'map_proj="cyln"' \
+      'map_proj_ctr=(/0,90/)' \
+      'subreg=(/-30,30,-25,25/)' \
+      'graphics_type="ncgm"'
+
+The output is a graphics file named
+
+  C[res]_grid.[ext]
+
+where res is the specified resolution and ext is the graphics file ex-
+tension (determined by the specified output graphics type graphics_-
+type).  The input arguments to this script are:
+
+help:
+This argument specifies whether or not to print out the documentation
+for this script and exit.  It is either True or False.  Default is
+False.  If this is set to True, this script prints out the documenta-
+tion and exits, ignoring all other arguments.  To see the documenta-
+tion, type "ncl plot_fields.ncl 'help=True'" on the command line in the
+directory of this script.
+
+grid_dir:
+This argument specifies the directory in which the grid files are lo-
+cated.  It is assumed that these are NetCDF files with names of the
+form
+
+   C[res]_grid.tile[N].nc
+
+where res is the resolution specified on the command line and N is the
+tile number.  The tile numbers to consider are specified by the input
+argument tile_inds (see below).  Default value is the current directo-
+ry, i.e. "./".
+
+input_file:
+This argument specifies the file that contains the fields to be plotted.
+It can be any of the FV3 output files that are typically named nggps2d.nc,
+nggps3d_4xdaily.nc, atmos_4xdaily.nc, atmos_static.nc, etc.
+
+fields:
+This argument specifies the fields from the input_file that will be plotted.
+
+nlev:
+Index of vertical (presssure) level to plot.
+
+fcst_index:
+Forecast index to plot.
+
+res:
+This argument specifies the cubed-sphere resolution, i.e. the number
+of cells in each of the two horizontal directions on each of the 6
+tiles of the global cubed-sphere grid.  Valid values are: 48, 96, 192,
+384, 768, 1152, and 3072.
+
+tile_inds:
+This argument specifies the indices of those tiles on the cubed-sphere
+grid that are to be plotted.  For example, to plot tiles 1, 3, and 5, 
+specify
+
+  tile_inds = (/ 1, 3, 5 /)
+
+If this is not specified, all available tiles are plotted (where by 
+"available", we mean all tiles for which there exists a grid file in
+grid_dir).
+
+draw_tile_bdy:
+This argument specifies whether or not to draw the boundary of each 
+specified tile.  It is either True or False.  Default is True.
+
+draw_tile_grid:
+This argument specifies whether or not to draw the boundaries of all
+grid cells on each tile that is being plotted.  It is either True or 
+False.  Default is False.  For a high-resolution grid, this can make
+it difficult to see the underlying color of the tile in the output
+graphics file (because there would be many grid lines drawn very close
+together).
+
+draw_RAP_domain:
+This argument specifies whether or not to draw the original [i.e. pre-
+FV3 RAP (RAPid Refresh) domain].  It is either True or False.  Default
+is False.  If this is set to True, the RAP domain is added to the plot
+as a uniformly colored region (with a color that is different from any
+of the cubed-sphere tiles).
+
+RAP_grid_fn:
+This argument specifies the full (i.e. including directory) file name
+of the NetCDF file that describes the RAP grid.  This is used only if
+draw_RAP_domain is set to True.
+
+draw_RAP_bdy:
+This argument specifies whether or not to draw the boundary of the RAP
+domain.  It is either True or False.  Default is True.  This has no
+effect if draw_RAP_domain is set to False.
+
+draw_RAP_grid:
+This argument specifies whether or not to draw the boundaries of all
+grid cells on the RAP domain.  It is either True or False.  Default is
+False.  For a high-resolution RAP grid, setting this to True can make
+it difficult to see the underlying color of the RAP domain in the out-
+put graphics file (because there would be many grid lines drawn very
+close together.  This has no effect if draw_RAP_domain is set to
+False.
+
+map_proj:
+This argument specifies the map projection to use for the plot.  Valid
+values are:
+
+  "cyln" - for cylindrical-equidistant projection
+  "ortho" - for orthographic (i.e. on a sphere) projection
+  "lamb" - for Lambert equal-area projection
+
+If this argument is omitted, a cylindrical-equidistant projection is
+used.  
+
+map_proj_ctr:
+This argument specifies the point on the sphere at which to center the
+map projection used for the plot.  It consists of the point's longi-
+tude and latitude (in degrees), as follows:
+
+  map_proj_ctr = (/ 30, 40 /)
+
+If this is not specified, it is set to (/0,0/) for the cylindrical-
+equidistant and orthographic (i.e. on a sphere) projections and to
+(/0,90/) (i.e. the North Pole) for the Lambert equal-area projection.
+
+subreg:
+If using a cylindrical-equidistant map projection, this argument spe-
+cifies the minimum and maximum longitudes and latitudes (in degrees)
+of the subregion to plot.  It has the format
+
+  subreg = (/ lon_min, lon_max, lat_min, lat_max /)
+
+where lon_min and lon_max are the minimum and maximum values of the
+longitude and lat_min and lat_max are the minimum and maximum values
+of the latitude.  If this arbument is omitted, the field is plotted on
+the whole globe.  It is ignored for projections other than cylindri-
+cal-equidistant.
+
+graphics_type:
+This argument specifies the type of graphics file to generate as out-
+put.  It can be either "ncgm" (NCAR Graphics) or "png".  Default is
+"ncgm".
+

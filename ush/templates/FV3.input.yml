@@ -1,0 +1,385 @@
+# This configuration file maintains the modifications that need to be 
+# made to the base FV3 namelist specified in 
+#
+#   ush/templates/input.nml.FV3
+#
+# to obtain the namelist for each physics suite that the SRW App can 
+# run with.  To build a namelist for one of these configurations, use 
+# the Python helper script 
+#
+#   ush/set_namelist.py
+#
+# and provide this file and the desired section via the -c option.
+
+
+FV3_RRFS_v1beta:
+  gfs_physics_nml: &RRFS_v1beta_phys
+    do_deep: False
+    do_mynnsfclay: True
+    imfdeepcnv: -1
+    imfshalcnv: -1
+    iopt_alb: 2
+    iopt_btr: 1
+    iopt_crs: 1
+    iopt_dveg: 2
+    iopt_frz: 1
+    iopt_inf: 1
+    iopt_rad: 1
+    iopt_run: 1
+    iopt_sfc: 1
+    iopt_snf: 4
+    iopt_stc: 1
+    iopt_tbot: 2
+    iopt_trs: 2
+    lsm: 2
+    lsoil_lsm: 4
+
+FV3_HRRR:
+  fv_core_nml:
+    hord_dp: -5
+    hord_mt: 5
+    hord_tm: 5
+    hord_vt: 5
+    kord_mt: 9
+    kord_tm: -9
+    kord_tr: 9
+    kord_wz: 9
+    nord_tr: 2
+    nrows_blend: 10
+  gfs_physics_nml:
+    <<: *RRFS_v1beta_phys
+    cdmbgwd: [3.5, 1.0]
+    do_mynnsfclay: True
+    do_sfcperts: !!python/none
+    gwd_opt: 3
+    do_gsl_drag_ss: True
+    do_gsl_drag_tofd: True
+    do_gsl_drag_ls_bl: True 
+    iaer: 5111
+    icliq_sw: 2
+    iovr: 3
+    lsm: 3
+    lsoil_lsm: 9
+    sfclay_compute_flux: True
+
+FV3_GFS_2017_gfdlmp:
+  atmos_model_nml:
+    avg_max_length: 3600.0
+  fv_core_nml: &gfs_2017_gfdlmp_fv_core
+    agrid_vel_rst: False
+    d4_bg: 0.15
+    delt_max: 0.008
+    dnats: 1
+    do_sat_adj: True
+    fv_debug: False
+    k_split: 6
+    n_split: 6
+    nord: 2
+    nord_zs_filter: !!python/none
+    range_warn: False
+    vtdm4: 0.075
+  gfs_physics_nml: &gfs_2017_gfdlmp_phys
+    avg_max_length: 3600.0
+    bl_mynn_tkeadvect: !!python/none
+    bl_mynn_edmf: !!python/none
+    bl_mynn_edmf_mom: !!python/none
+    cdmbgwd: [3.5, 0.01]
+    cplflx: !!python/none
+    do_deep: False
+    do_mynnedmf: !!python/none
+    do_mynnsfclay: !!python/none
+    fhcyc: 0.0
+    fhlwr: 3600.0
+    fhswr: 3600.0
+    hybedmf: True
+    icloud_bl: !!python/none
+    imfdeepcnv: 2
+    imfshalcnv: 2
+    imp_physics: 11
+    lgfdlmprad: True
+    lheatstrg: !!python/none
+    lndp_type: !!python/none
+    lsm: !!python/none
+    lsoil: !!python/none
+    lsoil_lsm: !!python/none
+    ltaerosol: !!python/none
+    n_var_lndp: !!python/none
+    oz_phys: True
+    oz_phys_2015: False
+    satmedmf: !!python/none
+    shal_cnv: True
+    ttendlim: !!python/none
+  gfdl_cloud_microphysics_nml: &gfs_gfdl_cloud_mp
+    c_cracw: 0.8
+    c_paut: 0.5
+    c_pgacs: 0.01
+    c_psaci: 0.05
+    ccn_l: 300.0
+    ccn_o: 100.0
+    const_vg: False
+    const_vi: False
+    const_vr: False
+    const_vs: False
+    de_ice: False
+    do_qa: True
+    do_sedi_heat: False
+    dw_land: 0.16
+    dw_ocean: 0.1
+    fast_sat_adj: True
+    fix_negative: True
+    icloud_f: 1
+    mono_prof: True
+    mp_time: 90.0
+    prog_ccn: False
+    qi0_crt: 8.0e-05
+    qi_lim: 1.0
+    ql_gen: 0.001
+    ql_mlt: 0.001
+    qs0_crt: 0.001
+    rad_graupel: True
+    rad_rain: True
+    rad_snow: True
+    rh_inc: 0.3
+    rh_inr: 0.3
+    rh_ins: 0.3
+    rthresh: 1.0e-05
+    sedi_transport: False
+    tau_g2v: 900.0
+    tau_i2s: 1000.0
+    tau_l2v: 180.0
+    tau_v2l: 90.0
+    use_ccn: True
+    use_ppm: False
+    vg_max: 12.0
+    vi_max: 1.0
+    vr_max: 12.0
+    vs_max: 2.0
+    z_slope_ice: True
+    z_slope_liq: True
+
+FV3_GFS_2017_gfdlmp_regional:
+  atmos_model_nml:
+    avg_max_length: 3600.0
+  fv_core_nml:
+    <<: *gfs_2017_gfdlmp_fv_core
+    k_split: 2
+  gfs_physics_nml:
+    <<: *gfs_2017_gfdlmp_phys
+    cplflx: False
+    effr_in: False
+    iopt_alb: 2
+    iopt_btr: 1
+    iopt_crs: 1
+    iopt_dveg: 2
+    iopt_frz: 1
+    iopt_inf: 1
+    iopt_rad: 1
+    iopt_run: 1
+    iopt_sfc: 1
+    iopt_snf: 4
+    iopt_stc: 1
+    iopt_tbot: 2
+    iopt_trs: 2
+    lgfdlmprad: True
+    lheatstrg: False
+    lndp_type: 0
+    lsm: 1
+    n_var_lndp: 0
+    nstf_name: [2, 0, 0, 0, 0]
+    oz_phys: False
+    oz_phys_2015: True
+    satmedmf: False
+  gfdl_cloud_microphysics_nml:
+    <<: *gfs_gfdl_cloud_mp
+
+FV3_GFS_v15p2:
+  fv_core_nml: &gfs_v15_fv_core
+    agrid_vel_rst: False
+    d2_bg_k1: 0.15
+    d2_bg_k2: 0.02
+    dnats: 1
+    do_sat_adj: True
+    fv_debug: False
+    fv_sg_adj: 600
+    k_split: 1
+    kord_mt: 9
+    kord_tm: -9
+    kord_tr: 9
+    kord_wz: 9
+    n_split: 8
+    n_sponge: 30
+    nord_zs_filter: !!python/none
+    nudge_qv: True
+    range_warn: False
+    rf_cutoff: 750.0
+    rf_fast: False
+  gfdl_cloud_microphysics_nml:
+    <<: *gfs_gfdl_cloud_mp
+    sedi_transport: True
+    tau_l2v: 225.0
+    tau_v2l: 150.0
+  gfs_physics_nml: &gfs_v15_gfs_physics
+    bl_mynn_edmf: !!python/none
+    bl_mynn_edmf_mom: !!python/none
+    bl_mynn_tkeadvect: !!python/none
+    cnvcld: True
+    cnvgwd: True    
+    cplflx: !!python/none
+    do_myjpbl: False
+    do_myjsfc: False
+    do_mynnedmf: !!python/none
+    do_mynnsfclay: !!python/none
+    do_tofd: False
+    do_ugwp: False
+    do_ysu: False
+    fhcyc: 0.0
+    fhlwr: 3600.0
+    fhswr: 3600.0
+    hybedmf: True
+    iau_delthrs: !!python/none
+    iaufhrs: !!python/none
+    imfdeepcnv: 2
+    imfshalcnv: 2
+    imp_physics: 11
+    icloud_bl: !!python/none
+    iopt_alb: 2
+    iopt_btr: 1
+    iopt_crs: 1
+    iopt_dveg: 2
+    iopt_frz: 1
+    iopt_inf: 1
+    iopt_rad: 1
+    iopt_run: 1
+    iopt_sfc: 1
+    iopt_snf: 4
+    iopt_stc: 1
+    iopt_tbot: 2
+    iopt_trs: 2
+    ldiag_ugwp: False
+    lgfdlmprad: True
+    lradar: !!python/none
+    lsm: 1
+    lsoil: !!python/none
+    lsoil_lsm: !!python/none
+    ltaerosol: !!python/none
+    shal_cnv: True
+    shinhong: False
+    ttendlim: !!python/none
+    xkzm_h: 1.0
+    xkzm_m: 1.0
+    xkzminv: 0.3
+  namsfc:
+    landice: True
+    ldebug: False
+  surf_map_nml:
+
+FV3_GFS_v15_thompson_mynn_lam3km:
+  atmos_model_nml:
+    avg_max_length: 3600.0
+  fv_core_nml:
+    agrid_vel_rst: True
+    full_zs_filter: !!python/none
+    n_sponge: 9
+    npz_type: ''
+    rf_fast: False
+    sg_cutoff: 10000.0
+    vtdm4: 0.02
+  gfs_physics_nml:
+    avg_max_length: 3600.0
+    cdmbgwd: [0.88, 0.04]
+    do_deep: False
+    do_mynnsfclay: True
+    do_ugwp: False
+    fhswr: 900.0
+    fhlwr: 900.0
+    iaer: 1011
+    iccn: 2
+    icliq_sw: 2
+    imfdeepcnv: 2
+    imfshalcnv: 2
+    iopt_alb: 2
+    iopt_btr: 1
+    iopt_crs: 1
+    iopt_dveg: 2
+    iopt_frz: 1
+    iopt_inf: 1
+    iopt_rad: 1
+    iopt_run: 1
+    iopt_sfc: 1
+    iopt_snf: 4
+    iopt_stc: 1
+    iopt_tbot: 2
+    iopt_trs: 2
+    iovr: 3
+    ldiag_ugwp: False
+    lgfdlmprad: False
+    lsm: 1
+    lsoil_lsm: !!python/none
+    ltaerosol: False    
+    xkzminv: 0.3
+    xkzm_m: 1.0
+    xkzm_h: 1.0
+
+FV3_GFS_v16:
+  cires_ugwp_nml:
+    launch_level: 27
+  fv_core_nml:
+    <<: *gfs_v15_fv_core
+    agrid_vel_rst: False
+    d2_bg_k1: 0.2
+    d2_bg_k2: 0.0
+    fv_sg_adj: 450
+    hord_dp: -5
+    hord_mt: 5
+    hord_tm: 5
+    hord_vt: 5
+    k_split: 6
+    make_nh: False
+    n_split: 6
+    n_sponge: 10
+    na_init: 0
+    nudge_dz: False
+    res_latlon_dynamics: ''
+    rf_fast: !!python/none
+    tau: 10.0
+  gfdl_cloud_microphysics_nml:
+    <<: *gfs_gfdl_cloud_mp
+    mp_time: 150.0
+    reiflag: 2
+    sedi_transport: True
+    tau_l2v: 225.0
+    tau_v2l: 150.0
+  gfs_physics_nml:
+    <<: *gfs_v15_gfs_physics
+    cdmbgwd: [4.0, 0.15, 1.0, 1.0]
+    do_myjpbl: !!python/none
+    do_myjsfc: !!python/none
+    do_tofd: True
+    do_ysu: !!python/none
+    hybedmf: False
+    iaer: 5111
+    icliq_sw: 2
+    iopt_dveg: 1
+    iovr: 3
+    isatmedmf: 1
+    lgfdlmprad: True
+    lheatstrg: True
+    lndp_type: !!python/none
+    lsoil: 4
+    n_var_lndp: !!python/none
+    nstf_name: [2, 1, 0, 0, 0]
+    prautco: [0.00015, 0.00015]
+    psautco: [0.0008, 0.0005]
+    satmedmf: True
+    shinhong: !!python/none
+    xkzminv: !!python/none
+    xkzm_m: !!python/none
+    xkzm_h: !!python/none
+  mpp_io_nml:
+    deflate_level: 1
+    shuffle: 1
+  namsfc:
+    landice: True
+    ldebug: False
+  surf_map_nml: !!python/none
+

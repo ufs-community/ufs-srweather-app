@@ -1,0 +1,91 @@
+!
+!***********************************************************************
+!
+! Parameter descriptions:
+! ======================
+!
+! plon:
+! ----
+! Longitude (in degrees) of the center of the regional domain.
+!
+! plat:
+! ----
+! Latitude (in degrees) of the center of the regional domain.
+!
+! delx:
+! ----
+! Grid spacing (in degrees) in the x direction ON THE SUPERGRID.  Since
+! the supergrid has twice the resolution of the actual grid, the grid 
+! spacing in the x direction on the actual grid will be twice this re-
+! solution.  
+!
+! The physical grid spacing del_dist_x in the x direction on the ACTUAL
+! grid is related to delx by
+!
+!   del_dist_x = 2*delx*(circumf_Earth/360 deg)
+!
+! where circumf_Earth is the Earth's circumference, and the factor of 2
+! appears due to delx being the grid angle in the x direction on the su-
+! pergrid.  Since circumf_Earth = 2*pi*radius_Earth, then solving the 
+! above for delx gives
+!
+!   delx = (del_dist_x/(2*radius_Earth))*degs_per_radian
+!
+! where degs_per_radian = (360 deg/2*pi).  For example, to obtain a grid
+! with a del_dist_x =  3 km actual grid spacting, we must use
+!
+!   delx = (3 km/(2*6371 km)*(360 deg/(2*pi))
+!        = 0.0135 deg
+! dely:
+! ----
+! Grid spacing (in degrees) in the y direction ON THE SUPERGRID.  Since
+! the supergrid has twice the resolution of the actual grid, the grid 
+! spacing in the y direction on the actual grid will be twice this re-
+! solution.  
+!
+! lx:
+! --
+! Negative of the number of cells in the x direction ON THE SUPERGRID 
+! from the lower-left corner of the regional domain to the grid center.
+! Thus, if nx_SG is the number of cells on the supergrid in the x direc-
+! tion, this is simply -nx_SG/2.  Since the number of cells on the su-
+! pergrid is twice the number of cells on the actual grid, i.e. nx_SG =
+! 2*nx where nx is the number of points on the actual grid, then this 
+! becomes 
+!
+!   lx = -nx_SG/2 = -(2*nx)/2 = -nx
+!
+! To include a halo region of width nhalo cells (where the cells are 
+! counted on the actual grid), set this to
+!
+!   lx = -(nx + 2*nhalo)
+!
+! and include nhalo in the calculation of ly, i.e.
+!
+!   ly = -(ny + 2*nhalo)
+!
+! where ny is the number of cells in the y direction on the actual grid.
+! The factor of 2 multiplying nhalo in the above two expressions appears
+! because the halo is present on both sides of a given direction (e.g.
+! both west and east, both south and north, etc).
+!
+! ly:
+! --
+! Analogous to lx but in the y direction.
+!
+! pazi:
+! ----
+! Rotation angle for the ESG grid in degrees.
+!
+!***********************************************************************
+!
+
+&regional_grid_nml
+  plon = <plon>
+  plat = <plat>
+  delx = <delx>
+  dely = <dely>
+  lx   = <lx>
+  ly   = <ly>
+  pazi = <pazi>
+/

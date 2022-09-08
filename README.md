@@ -10,3 +10,7 @@ For instructions on how to clone the repository, build the code, and run the wor
 https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
 
 UFS Development Team. (2022, June 23). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
+
+[![Python unittests](https://github.com/ufs-community/ufs-srweather-app/actions/workflows/python_unittests.yaml/badge.svg)](https://github.com/ufs-community/ufs-srweather-app/actions/workflows/python_unittests.yaml)
+[![Python functional tests](https://github.com/ufs-community/ufs-srweather-app/actions/workflows/python_func_tests.yaml/badge.svg)](https://github.com/ufs-community/ufs-srweather-app/actions/workflows/python_func_tests.yaml)
+
