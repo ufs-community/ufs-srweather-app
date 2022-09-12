@@ -134,17 +134,17 @@ for the workflow task specified by task_name failed:
 #
 # The full path to a module file for a given task is
 #
-#   $SR_WX_APP_TOP_DIR/modulefiles/$machine/${task_name}.local
+#   $HOMErrfs/modulefiles/$machine/${task_name}.local
 #
-# where SR_WX_APP_TOP_DIR is the base directory of the workflow, machine is the
+# where HOMErrfs is the base directory of the workflow, machine is the
 # name of the machine that we're running on (in lowercase), and task_-
 # name is the name of the current task (an input to this script).
 #
 #-----------------------------------------------------------------------
 #
-modules_dir="$SR_WX_APP_TOP_DIR/modulefiles/tasks/$machine"
+modules_dir="$HOMErrfs/modulefiles/tasks/$machine"
 modulefile_name="${task_name}"
-default_modules_dir="$SR_WX_APP_TOP_DIR/modulefiles"
+default_modules_dir="$HOMErrfs/modulefiles"
 #
 #-----------------------------------------------------------------------
 #

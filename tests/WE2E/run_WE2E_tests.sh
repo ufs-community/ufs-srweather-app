@@ -28,23 +28,23 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 # Set the full path to the top-level directory of the UFS SRW App 
-# repository.  We denote this path by homerrfs.  The current script 
+# repository.  We denote this path by HOMErrfs.  The current script 
 # should be located in the "tests/WE2E" subdirectory under this directory.
-# Thus, SR_WX_APP_TOP_DIR is the directory two levels above the directory
-# in which the current script is located.
+# Thus, HOMErrfs is the directory two levels above the directory in which 
+# the current script is located.
 #
 #-----------------------------------------------------------------------
 #
-SR_WX_APP_TOP_DIR=${scrfunc_dir%/*/*}
+HOMErrfs=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-# Set other directories that depend on SR_WX_APP_TOP_DIR.
+# Set other directories that depend on HOMErrfs.
 #
 #-----------------------------------------------------------------------
 #
-ushdir="$SR_WX_APP_TOP_DIR/ush"
-testsdir="$SR_WX_APP_TOP_DIR/tests"
+ushdir="$HOMErrfs/ush"
+testsdir="$HOMErrfs/tests"
 WE2Edir="$testsdir/WE2E"
 #
 #-----------------------------------------------------------------------
@@ -932,7 +932,7 @@ model_ver="we2e""
 #
 # Set OPSROOT.
 #
-    nco_basedir=$( readlink -f "$homerrfs/../../nco_dirs" )
+    nco_basedir=$( readlink -f "$HOMErrfs/../../nco_dirs" )
     OPSROOT=${opsroot:-"${nco_basedir}/OPSROOT"}
 
     expt_config_str=${expt_config_str}"

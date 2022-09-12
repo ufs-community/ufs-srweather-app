@@ -356,7 +356,7 @@ workflow:
   # EXPT_BASEDIR:
   # The base directory in which the experiment directory will be created.  
   # If this is not specified or if it is set to an empty string, it will
-  # default to ${SR_WX_APP_TOP_DIR}/../expt_dirs.  
+  # default to ${HOMErrfs}/../expt_dirs.  
   #
   # EXPT_SUBDIR:
   # The name that the experiment directory (without the full path) will
@@ -1563,7 +1563,7 @@ task_run_fcst:
   # commonly used set of grid-dependent parameters.  The predefined grid 
   # parameters are specified in the script 
   #
-  #   $SR_WX_APP_TOP_DIR/ush/set_predef_grid_params.sh
+  #   $HOMErrfs/ush/set_predef_grid_params.sh
   #
   #-----------------------------------------------------------------------
   #
