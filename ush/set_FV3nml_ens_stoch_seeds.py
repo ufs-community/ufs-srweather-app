@@ -14,6 +14,7 @@ from python_utils import (
     date_to_str,
     mkdir_vrfy,
     cp_vrfy,
+    cd_vrfy,
     str_to_type,
     import_vars,
     set_env_var,
@@ -57,12 +58,7 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     #
     # -----------------------------------------------------------------------
     #
-    ensmem_name = f"mem{ENSMEM_INDX}"
-
-    fv3_nml_ensmem_fp = os.path.join(
-        COMIN_BASEDIR,
-        f'{date_to_str(cdate,format="%Y%m%d%H")}{os.sep}{ensmem_name}{os.sep}{FV3_NML_FN}',
-    )
+    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}"
 
     ensmem_num = ENSMEM_INDX
 
@@ -175,6 +171,10 @@ class Testing(unittest.TestCase):
         USHrrfs = os.path.dirname(os.path.abspath(__file__))
         PARMrrfs = os.path.join(USHrrfs, "..", "parm")
         EXPTDIR = os.path.join(USHrrfs, "test_data", "expt")
+        print(
+            os.path.join(PARMrrfs, "input.nml.FV3"),
+            os.path.join(EXPTDIR, "input.nml"),
+        )
         cp_vrfy(
             os.path.join(PARMrrfs, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
@@ -188,8 +188,9 @@ class Testing(unittest.TestCase):
                 ),
             )
 
+        cd_vrfy(f'{EXPTDIR}{os.sep}{date_to_str(self.cdate,format="%Y%m%d%H")}{os.sep}mem2')
+
         set_env_var("USHrrfs", USHrrfs)
-        set_env_var("COMIN_BASEDIR", EXPTDIR)
         set_env_var("ENSMEM_INDX", 2)
         set_env_var("FV3_NML_FN", "input.nml")
         set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml"))
