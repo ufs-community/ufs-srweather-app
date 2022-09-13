@@ -92,6 +92,7 @@ Directories and files.
 <!ENTITY COMOUT_BASEDIR           "{{ comout_basedir }}">
 <!ENTITY GLOBAL_VAR_DEFNS_FP      "{{ global_var_defns_fp }}">
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "{{ load_modules_run_task_fp }}">
+<!ENTITY EXPTDIR                  "{{ exptdir }}">
 
 {%- if run_envir == "nco"  %}
 <!ENTITY DYN_DIR  "{{ comout_basedir }}/{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.dyn">
@@ -107,7 +108,7 @@ Directories and files.
 <!ENTITY LOGDIR                   "{{ logdir }}">
 {%- endif %}
 <!ENTITY LOGEXT                   ".{{ workflow_id }}.log" >
-<!ENTITY CMPEXT                   "_task_complete_{{ workflow_id }}.txt">
+<!ENTITY CMPEXT                   "_task_complete.txt">
 
 <!ENTITY MET_INSTALL_DIR "{{ met_install_dir }}">
 <!ENTITY METPLUS_PATH "{{ metplus_path }}">
@@ -238,7 +239,7 @@ MODULES_RUN_TASK_FP script.
     <dependency>
       <or>
 <!--        <taskdep task="make_grid"/> -->
-        <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;&CMPEXT;</datadep>
+        <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
         <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
       </or>
     </dependency>
@@ -273,12 +274,12 @@ MODULES_RUN_TASK_FP script.
       <and>
         <or>
 <!--          <taskdep task="&MAKE_GRID_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;&CMPEXT;</datadep>
+          <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_OROG_TN;&CMPEXT;</datadep>
+          <datadep age="00:00:00:05">&EXPTDIR;/orog/&MAKE_OROG_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -384,17 +385,17 @@ MODULES_RUN_TASK_FP script.
         <taskdep task="&GET_EXTRN_ICS_TN;"/>
         <or>
 <!--          <taskdep task="&MAKE_GRID_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;&CMPEXT;</datadep>
+          <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_OROG_TN;&CMPEXT;</datadep>
+          <datadep age="00:00:00:05">&EXPTDIR;/orog/&MAKE_OROG_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_SFC_CLIMO_TN;&CMPEXT;</datadep>
+          <datadep age="00:00:00:05">&EXPTDIR;/sfc_climo/&MAKE_SFC_CLIMO_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -434,17 +435,17 @@ MODULES_RUN_TASK_FP script.
         <taskdep task="&GET_EXTRN_LBCS_TN;"/>
         <or>
 <!--          <taskdep task="&MAKE_GRID_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_GRID_TN;&CMPEXT;</datadep>
+          <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_OROG_TN;&CMPEXT;</datadep>
+          <datadep age="00:00:00:05">&EXPTDIR;/orog/&MAKE_OROG_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
 <!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
-          <datadep age="00:00:00:05"><cyclestr>&LOGDIR;</cyclestr>/&MAKE_SFC_CLIMO_TN;&CMPEXT;</datadep>
+          <datadep age="00:00:00:05">&EXPTDIR;/sfc_climo/&MAKE_SFC_CLIMO_TN;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>

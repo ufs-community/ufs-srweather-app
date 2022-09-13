@@ -79,7 +79,7 @@ Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
-touch "$LOGDIR/make_orog_task_complete_${WORKFLOW_ID}.txt"
+touch "$OROG_DIR/make_orog_task_complete.txt"
 #
 #-----------------------------------------------------------------------
 #

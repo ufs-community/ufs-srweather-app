@@ -374,6 +374,7 @@ def generate_FV3LAM_wflow():
             #
             # Directories and files.
             #
+            "exptdir": EXPTDIR,
             "jobsrrfs": JOBSrrfs,
             "logdir": LOGDIR,
             "scriptsrrfs": SCRIPTSrrfs,
