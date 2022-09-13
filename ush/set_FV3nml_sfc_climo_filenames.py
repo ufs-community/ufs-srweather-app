@@ -154,6 +154,7 @@ class Testing(unittest.TestCase):
         EXPTDIR = os.path.join(USHrrfs, "test_data", "expt")
         FIXlam = os.path.join(EXPTDIR, "fix_lam")
         mkdir_vrfy("-p", FIXlam)
+        mkdir_vrfy("-p", EXPTDIR)
         cp_vrfy(
             os.path.join(PARMrrfs, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),

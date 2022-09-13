@@ -23,5 +23,7 @@ jobs:
         run: |
           cd ush
           python3 -m unittest -b python_utils/test_python_utils.py
-          python3 -m unittest -b *.py
+          files=$(find . -maxdepth 1 -name '*.py' -a ! -name 'test_retrieve_data.py' -exec basename {} \;)
+          files=$(echo $(echo "${files[@]}"))
+          python3 -m unittest -b ${files[@]}
 

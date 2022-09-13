@@ -171,10 +171,7 @@ class Testing(unittest.TestCase):
         USHrrfs = os.path.dirname(os.path.abspath(__file__))
         PARMrrfs = os.path.join(USHrrfs, "..", "parm")
         EXPTDIR = os.path.join(USHrrfs, "test_data", "expt")
-        print(
-            os.path.join(PARMrrfs, "input.nml.FV3"),
-            os.path.join(EXPTDIR, "input.nml"),
-        )
+        mkdir_vrfy("-p", EXPTDIR)
         cp_vrfy(
             os.path.join(PARMrrfs, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
