@@ -43,7 +43,7 @@ module load w3emc/$::env(w3emc_ver)
 module load nemsio/$::env(nemsio_ver)
 module load sigio/$::env(sigio_ver)
 module load sfcio/$::env(sfcio_ver)
-module load wrf_io/$::env(wrfio_ver)
+module load wrf_io/$::env(wrf_io_ver)
 
 setenv CMAKE_C_COMPILER cc
 setenv CMAKE_CXX_COMPILER CC
