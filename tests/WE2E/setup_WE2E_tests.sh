@@ -53,8 +53,7 @@ scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 
 TESTS_DIR=$( dirname "${scrfunc_dir}" )
-REGIONAL_WORKFLOW_DIR=$( dirname "${TESTS_DIR}" )
-SRW_APP_DIR=$( dirname "${REGIONAL_WORKFLOW_DIR}" )
+SRW_APP_DIR=$( dirname "${TESTS_DIR}" )
 TOP_DIR=$( dirname "${SRW_APP_DIR}" )
 
 EXPTS_DIR=${TOP_DIR}/expt_dirs
