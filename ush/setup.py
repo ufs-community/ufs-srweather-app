@@ -871,14 +871,16 @@ def setup():
     # Main directory locations
     if RUN_ENVIR == "nco":
 
-        try:
-            COMROOT
-        except NameError:
-            OPSROOT = OPSROOT or EXPTDIR
-            COMROOT = os.path.join(OPSROOT, "com")
-            PACKAGEROOT = os.path.join(OPSROOT, "packages")
-            DATAROOT = os.path.join(OPSROOT, "tmp")
-            DCOMROOT = os.path.join(OPSROOT, "dcom")
+        try: OPSROOT
+        except NameError: OPSROOT = OPSROOT or EXPTDIR
+        try: COMROOT
+        except NameError: COMROOT = os.path.join(OPSROOT, "com")
+        try: PACKAGEROOT
+        except NameError: PACKAGEROOT = os.path.join(OPSROOT, "packages")
+        try: DATAROOT
+        except NameError: DATAROOT = os.path.join(OPSROOT, "tmp")
+        try: DCOMROOT
+        except NameError: DCOMROOT = os.path.join(OPSROOT, "dcom")
 
         COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
         COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
@@ -897,21 +899,27 @@ def setup():
 
         LOGDIR = os.path.join(EXPTDIR, "log")
 
-    try:
-        DBNROOT
-    except NameError:
-        DBNROOT = None
-        SENDECF = False
-        SENDDBN = False
-        SENDDBN_NTC = False
-        SENDCOM = False
-        SENDWEB = False
-        KEEPDATA = True
-        MAILTO = None
-        MAILCC = None
+    try: DBNROOT
+    except NameError: DBNROOT = None
+    try: SENDECF
+    except NameError: SENDECF = False
+    try: SENDDBN
+    except NameError: SENDDBN = False
+    try: SENDDBN_NTC
+    except NameError: SENDDBN_NTC = False
+    try: SENDCOM
+    except NameError: SENDCOM = False
+    try: SENDWEB
+    except NameError: SENDWEB = False
+    try: KEEPDATA
+    except NameError: KEEPDATA = True
+    try: MAILTO
+    except NameError: MAILTO = None
+    try: MAILCC
+    except NameError: MAILCC = None
 
     # create NCO directories
-    if OPSROOT is not None:
+    if RUN_ENVIR == "nco":
         mkdir_vrfy(f' -p "{OPSROOT}"')
         mkdir_vrfy(f' -p "{COMROOT}"')
         mkdir_vrfy(f' -p "{PACKAGEROOT}"')
