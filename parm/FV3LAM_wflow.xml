@@ -104,10 +104,11 @@ Directories and files.
 
 {%- if run_envir == "nco"  %}
 <!ENTITY LOGDIR                   "{{ logdir }}/@Y@m@d">
+<!ENTITY LOGEXT                   ".{{ workflow_id }}.log" >
 {%- else %}
 <!ENTITY LOGDIR                   "{{ logdir }}">
+<!ENTITY LOGEXT                   ".log" >
 {%- endif %}
-<!ENTITY LOGEXT                   ".{{ workflow_id }}.log" >
 <!ENTITY CMPEXT                   "_task_complete.txt">
 
 <!ENTITY MET_INSTALL_DIR "{{ met_install_dir }}">
@@ -156,7 +157,11 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 {%- endfor %}
 
   <log>
+  {%- if run_envir == "nco"  %}
     <cyclestr>&LOGDIR;/FV3LAM_wflow_{{ workflow_id }}.log</cyclestr>
+  {%- else %}
+    <cyclestr>&LOGDIR;/FV3LAM_wflow.log</cyclestr>
+  {%- endif %}
   </log>
 
 <!-- 
