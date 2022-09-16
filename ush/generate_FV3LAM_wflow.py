@@ -4,6 +4,7 @@ import os
 import sys
 import platform
 import subprocess
+import unittest
 from multiprocessing import Process
 from textwrap import dedent
 from datetime import datetime, timedelta
@@ -25,6 +26,7 @@ from python_utils import (
     check_for_preexist_dir_file,
     cfg_to_yaml_str,
     find_pattern_in_str,
+    set_env_var,
 )
 
 from setup import setup
@@ -518,28 +520,15 @@ def generate_FV3LAM_wflow():
     #
     if SYMLINK_FIX_FILES:
 
+        print_info_msg(
+            f'''
+            Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
+              FIXgsm = \"{FIXgsm}\"
+              FIXam = \"{FIXam}\"''',
+            verbose=VERBOSE,
+        )
+
         ln_vrfy(f'''-fsn "{FIXgsm}" "{FIXam}"''')
-        #
-        # Resolve the target directory that the FIXam symlink points to and check
-        # that it exists.
-        #
-        try:
-            path_resolved = os.path.realpath(FIXam)
-        except:
-            path_resolved = FIXam
-        if not os.path.exists(path_resolved):
-            print_err_msg_exit(
-                f"""
-                In order to be able to generate a forecast experiment in NCO mode (i.e.
-                when RUN_ENVIR set to \"nco\"), the path specified by FIXam after resolving
-                all symlinks (path_resolved) must be an existing directory (but in this
-                case isn't):
-                  RUN_ENVIR = \"{RUN_ENVIR}\"
-                  FIXam = \"{FIXam}\"
-                  path_resolved = \"{path_resolved}\"
-                Please ensure that path_resolved is an existing directory and then rerun
-                the experiment generation script."""
-            )
     #
     # Copy relevant fix files.
     #
@@ -547,8 +536,7 @@ def generate_FV3LAM_wflow():
 
         print_info_msg(
             f'''
-            Copying fixed files from system directory (FIXgsm) to a subdirectory
-            (FIXam) in the experiment directory:
+            Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = \"{FIXgsm}\"
               FIXam = \"{FIXam}\"''',
             verbose=VERBOSE,
@@ -1165,3 +1153,13 @@ if __name__ == "__main__":
               log_fp = \"{log_fp}\"
             Stopping."""
         )
+
+class Testing(unittest.TestCase):
+    def test_generate_FV3LAM_wflow(self):
+        USHdir = os.path.dirname(os.path.abspath(__file__))
+        ln_vrfy("-fs", f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
+        generate_FV3LAM_wflow()
+
+    def setUp(self):
+        set_env_var("DEBUG", False)
+        set_env_var("VERBOSE", False)
