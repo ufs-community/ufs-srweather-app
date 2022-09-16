@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHrrfs/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -464,7 +464,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 #-----------------------------------------------------------------------
 #
 exec_fn="chgres_cube"
-exec_fp="$EXECrrfs/${exec_fn}"
+exec_fp="$EXECdir/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
 The executable (exec_fp) for generating initial conditions on the FV3-LAM
@@ -503,7 +503,7 @@ settings="
  'orog_dir_target_grid': ${FIXlam},
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
  'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
- 'varmap_file': ${PARMrrfs}/ufs_utils/varmap_tables/${varmap_file},
+ 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
  'data_dir_input_grid': ${extrn_mdl_staging_dir},
  'atm_files_input_grid': ${fn_atm},
  'sfc_files_input_grid': ${fn_sfc},
@@ -536,7 +536,7 @@ settings="
 # Call the python script to create the namelist file.
 #
 nml_fn="fort.41"
-${USHrrfs}/set_namelist.py -q -u "$settings" -o ${nml_fn} || \
+${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn} || \
   print_err_msg_exit "\
 Call to python script set_namelist.py to set the variables in the namelist
 file read in by the ${exec_fn} executable failed.  Parameters passed to
@@ -601,7 +601,7 @@ if [ "${USE_FVCOM}" = "TRUE" ]; then
 
 #Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
   fvcom_exec_fn="fvcom_to_FV3"
-  fvcom_exec_fp="$EXECrrfs/${fvcom_exec_fn}"
+  fvcom_exec_fp="$EXECdir/${fvcom_exec_fn}"
   fvcom_time="${DATE_FIRST_CYCL:0:4}-${DATE_FIRST_CYCL:4:2}-${DATE_FIRST_CYCL:6:2}T${CYCL_HRS[0]}:00:00.000000"
   if [ ! -f "${fvcom_exec_fp}" ]; then
     print_err_msg_exit "\

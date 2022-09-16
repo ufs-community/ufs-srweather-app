@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHrrfs/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -131,10 +131,10 @@ else
     EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
 cmd="
-python3 -u ${USHrrfs}/retrieve_data.py \
+python3 -u ${USHdir}/retrieve_data.py \
   --debug \
   --anl_or_fcst ${anl_or_fcst} \
-  --config ${PARMrrfs}/data_locations.yml \
+  --config ${PARMdir}/data_locations.yml \
   --cycle_date ${EXTRN_MDL_CDATE} \
   --data_stores ${data_stores} \
   --external_model ${EXTRN_MDL_NAME} \

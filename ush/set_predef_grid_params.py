@@ -36,8 +36,8 @@ def set_predef_grid_params():
     ]
     import_vars(env_vars=IMPORTS)
 
-    USHrrfs = os.path.dirname(os.path.abspath(__file__))
-    params_dict = load_config_file(os.path.join(USHrrfs, "predef_grid_params.yaml"))
+    USHdir = os.path.dirname(os.path.abspath(__file__))
+    params_dict = load_config_file(os.path.join(USHdir, "predef_grid_params.yaml"))
     params_dict = params_dict[PREDEF_GRID_NAME]
 
     # if QUILTING = False, remove key

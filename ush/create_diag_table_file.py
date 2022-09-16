@@ -126,19 +126,19 @@ if __name__ == "__main__":
 
 class Testing(unittest.TestCase):
     def test_create_diag_table_file(self):
-        path = os.path.join(os.getenv("USHrrfs"), "test_data")
+        path = os.path.join(os.getenv("USHdir"), "test_data")
         self.assertTrue(create_diag_table_file(run_dir=path))
 
     def setUp(self):
-        USHrrfs = os.path.dirname(os.path.abspath(__file__))
-        PARMrrfs = os.path.join(USHrrfs, "..", "parm")
+        USHdir = os.path.dirname(os.path.abspath(__file__))
+        PARMdir = os.path.join(USHdir, "..", "parm")
         DIAG_TABLE_FN = "diag_table"
         DIAG_TABLE_TMPL_FP = os.path.join(
-            PARMrrfs, f"{DIAG_TABLE_FN}.FV3_GFS_v15p2"
+            PARMdir, f"{DIAG_TABLE_FN}.FV3_GFS_v15p2"
         )
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
-        set_env_var("USHrrfs", USHrrfs)
+        set_env_var("USHdir", USHdir)
         set_env_var("DIAG_TABLE_FN", DIAG_TABLE_FN)
         set_env_var("DIAG_TABLE_TMPL_FP", DIAG_TABLE_TMPL_FP)
         set_env_var("CRES", "C48")

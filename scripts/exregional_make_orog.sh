@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHrrfs/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -108,7 +108,7 @@ mkdir_vrfy -p "${shave_dir}"
 # file and make sure that it exists.
 #
 exec_fn="orog"
-exec_fp="$EXECrrfs/${exec_fn}"
+exec_fp="$EXECdir/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
 The executable (exec_fp) for generating the orography file does not exist:
@@ -271,7 +271,7 @@ ${NH4}
 EOF
 
   exec_fn="orog_gsl"
-  exec_fp="$EXECrrfs/${exec_fn}"
+  exec_fp="$EXECdir/${exec_fn}"
   if [ ! -f "${exec_fp}" ]; then
     print_err_msg_exit "\
 The executable (exec_fp) for generating the GSL orography GWD data files
@@ -361,7 +361,7 @@ fi
 # Set the name and path to the executable and make sure that it exists.
 #
 exec_fn="filter_topo"
-exec_fp="$EXECrrfs/${exec_fn}"
+exec_fp="$EXECdir/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
 The executable (exec_fp) for filtering the raw orography does not exist:
@@ -469,7 +469,7 @@ Filtering of orography complete."
 # Set the name and path to the executable and make sure that it exists.
 #
 exec_fn="shave"
-exec_fp="$EXECrrfs/${exec_fn}"
+exec_fp="$EXECdir/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
 The executable (exec_fp) for \"shaving\" down the halo in the orography
@@ -560,7 +560,7 @@ cd_vrfy -
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHrrfs/link_fix.py \
+python3 $USHdir/link_fix.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --file-group "orog" || \
 print_err_msg_exit "\

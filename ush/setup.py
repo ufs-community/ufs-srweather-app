@@ -56,9 +56,9 @@ def setup():
       None
     """
 
-    global USHrrfs
-    USHrrfs = os.path.dirname(os.path.abspath(__file__))
-    cd_vrfy(USHrrfs)
+    global USHdir
+    USHdir = os.path.dirname(os.path.abspath(__file__))
+    cd_vrfy(USHdir)
 
     # import all environment variables
     import_vars()
@@ -79,7 +79,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     EXPT_DEFAULT_CONFIG_FN = "config_defaults.yaml"
-    cfg_d = load_config_file(os.path.join(USHrrfs, EXPT_DEFAULT_CONFIG_FN))
+    cfg_d = load_config_file(os.path.join(USHdir, EXPT_DEFAULT_CONFIG_FN))
     import_vars(dictionary=flatten_dict(cfg_d))
 
     #
@@ -104,7 +104,7 @@ def setup():
         # configuration file are also assigned default values in the default
         # configuration file.
         #
-        cfg_u = load_config_file(os.path.join(USHrrfs, EXPT_CONFIG_FN))
+        cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
         cfg_u = flatten_dict(cfg_u)
         import_vars(dictionary=cfg_u)
         update_dict(cfg_u, cfg_d)
@@ -114,7 +114,7 @@ def setup():
     # Source constants.sh and save its contents to a variable for later
     # -----------------------------------------------------------------------
     #
-    cfg_c = load_config_file(os.path.join(USHrrfs, CONSTANTS_FN))
+    cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
     import_vars(dictionary=cfg_c)
 
     #
@@ -296,7 +296,7 @@ def setup():
     #
     # Get the path to the workflow scripts
     #
-    HOMErrfs = SR_WX_APP_TOP_DIR
+    HOMEdir = SR_WX_APP_TOP_DIR
     #
     # Get the base directory of the FV3 forecast model code.
     #
@@ -322,19 +322,19 @@ def setup():
     #
     # Define some other useful paths
     #
-    global SCRIPTSrrfs, JOBSrrfs, SORCrrfs, PARMrrfs, MODULESrrfs
-    global EXECrrfs, PARMrrfs, FIXrrfs, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
+    global SCRIPTSdir, JOBSdir, SORCdir, PARMdir, MODULESdir
+    global EXECdir, PARMdir, FIXdir, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
 
-    USHrrfs = os.path.join(HOMErrfs, "ush")
-    SCRIPTSrrfs = os.path.join(HOMErrfs, "scripts")
-    JOBSrrfs = os.path.join(HOMErrfs, "jobs")
-    SORCrrfs = os.path.join(HOMErrfs, "sorc")
-    PARMrrfs = os.path.join(HOMErrfs, "parm")
-    MODULESrrfs = os.path.join(HOMErrfs, "modulefiles")
-    EXECrrfs = os.path.join(HOMErrfs, EXEC_SUBDIR)
-    VX_CONFIG_DIR = PARMrrfs
-    METPLUS_CONF = os.path.join(PARMrrfs, "metplus")
-    MET_CONFIG = os.path.join(PARMrrfs, "met")
+    USHdir = os.path.join(HOMEdir, "ush")
+    SCRIPTSdir = os.path.join(HOMEdir, "scripts")
+    JOBSdir = os.path.join(HOMEdir, "jobs")
+    SORCdir = os.path.join(HOMEdir, "sorc")
+    PARMdir = os.path.join(HOMEdir, "parm")
+    MODULESdir = os.path.join(HOMEdir, "modulefiles")
+    EXECdir = os.path.join(HOMEdir, EXEC_SUBDIR)
+    VX_CONFIG_DIR = PARMdir
+    METPLUS_CONF = os.path.join(PARMdir, "metplus")
+    MET_CONFIG = os.path.join(PARMdir, "met")
 
     #
     # -----------------------------------------------------------------------
@@ -352,7 +352,7 @@ def setup():
     MACHINE = uppercase(MACHINE)
     RELATIVE_LINK_FLAG = "--relative"
     MACHINE_FILE = MACHINE_FILE or os.path.join(
-        USHrrfs, "machine", f"{lowercase(MACHINE)}.sh"
+        USHdir, "machine", f"{lowercase(MACHINE)}.sh"
     )
     machine_cfg = load_shell_config(MACHINE_FILE)
     import_vars(dictionary=machine_cfg)
@@ -1022,14 +1022,14 @@ def setup():
     MODEL_CONFIG_TMPL_FN = MODEL_CONFIG_TMPL_FN or MODEL_CONFIG_FN
     NEMS_CONFIG_TMPL_FN = NEMS_CONFIG_TMPL_FN or NEMS_CONFIG_FN
 
-    DATA_TABLE_TMPL_FP = os.path.join(PARMrrfs, DATA_TABLE_TMPL_FN)
-    DIAG_TABLE_TMPL_FP = os.path.join(PARMrrfs, DIAG_TABLE_TMPL_FN)
-    FIELD_TABLE_TMPL_FP = os.path.join(PARMrrfs, FIELD_TABLE_TMPL_FN)
-    FV3_NML_BASE_SUITE_FP = os.path.join(PARMrrfs, FV3_NML_BASE_SUITE_FN)
-    FV3_NML_YAML_CONFIG_FP = os.path.join(PARMrrfs, FV3_NML_YAML_CONFIG_FN)
+    DATA_TABLE_TMPL_FP = os.path.join(PARMdir, DATA_TABLE_TMPL_FN)
+    DIAG_TABLE_TMPL_FP = os.path.join(PARMdir, DIAG_TABLE_TMPL_FN)
+    FIELD_TABLE_TMPL_FP = os.path.join(PARMdir, FIELD_TABLE_TMPL_FN)
+    FV3_NML_BASE_SUITE_FP = os.path.join(PARMdir, FV3_NML_BASE_SUITE_FN)
+    FV3_NML_YAML_CONFIG_FP = os.path.join(PARMdir, FV3_NML_YAML_CONFIG_FN)
     FV3_NML_BASE_ENS_FP = os.path.join(EXPTDIR, FV3_NML_BASE_ENS_FN)
-    MODEL_CONFIG_TMPL_FP = os.path.join(PARMrrfs, MODEL_CONFIG_TMPL_FN)
-    NEMS_CONFIG_TMPL_FP = os.path.join(PARMrrfs, NEMS_CONFIG_TMPL_FN)
+    MODEL_CONFIG_TMPL_FP = os.path.join(PARMdir, MODEL_CONFIG_TMPL_FN)
+    NEMS_CONFIG_TMPL_FP = os.path.join(PARMdir, NEMS_CONFIG_TMPL_FN)
     #
     # -----------------------------------------------------------------------
     #
@@ -1207,7 +1207,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     global FV3_EXEC_FP
-    FV3_EXEC_FP = os.path.join(EXECrrfs, FV3_EXEC_FN)
+    FV3_EXEC_FP = os.path.join(EXECdir, FV3_EXEC_FN)
     #
     # -----------------------------------------------------------------------
     #
@@ -1220,7 +1220,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     global WFLOW_LAUNCH_SCRIPT_FP, WFLOW_LAUNCH_LOG_FP, CRONTAB_LINE
-    WFLOW_LAUNCH_SCRIPT_FP = os.path.join(USHrrfs, WFLOW_LAUNCH_SCRIPT_FN)
+    WFLOW_LAUNCH_SCRIPT_FP = os.path.join(USHdir, WFLOW_LAUNCH_SCRIPT_FN)
     WFLOW_LAUNCH_LOG_FP = os.path.join(EXPTDIR, WFLOW_LAUNCH_LOG_FN)
     if USE_CRON_TO_RELAUNCH:
         CRONTAB_LINE = (
@@ -1238,7 +1238,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     global LOAD_MODULES_RUN_TASK_FP
-    LOAD_MODULES_RUN_TASK_FP = os.path.join(USHrrfs, "load_modules_run_task.sh")
+    LOAD_MODULES_RUN_TASK_FP = os.path.join(USHdir, "load_modules_run_task.sh")
 
     #
     # -----------------------------------------------------------------------
@@ -1258,13 +1258,13 @@ def setup():
 
     # Fix file location
     if RUN_TASK_MAKE_GRID:
-        FIXrrfs = EXPTDIR
+        FIXdir = EXPTDIR
     else:
-        FIXrrfs = os.path.join(HOMErrfs, "fix")
+        FIXdir = os.path.join(HOMEdir, "fix")
 
-    FIXam = os.path.join(FIXrrfs, "fix_am")
-    FIXclim = os.path.join(FIXrrfs, "fix_clim")
-    FIXlam = os.path.join(FIXrrfs, "fix_lam")
+    FIXam = os.path.join(FIXdir, "fix_am")
+    FIXclim = os.path.join(FIXdir, "fix_clim")
+    FIXlam = os.path.join(FIXdir, "fix_lam")
 
     #
     # -----------------------------------------------------------------------
@@ -1691,13 +1691,13 @@ def setup():
     #
     # 1) Copying the default workflow/experiment configuration file (speci-
     #    fied by EXPT_DEFAULT_CONFIG_FN and located in the shell script di-
-    #    rectory specified by USHrrfs) to the experiment directory and rena-
+    #    rectory specified by USHdir) to the experiment directory and rena-
     #    ming it to the name specified by GLOBAL_VAR_DEFNS_FN.
     #
     # 2) Resetting the default variable values in this file to their current
     #    values.  This is necessary because these variables may have been
     #    reset by the user-specified configuration file (if one exists in
-    #    USHrrfs) and/or by this setup script, e.g. because predef_domain is
+    #    USHdir) and/or by this setup script, e.g. because predef_domain is
     #    set to a valid non-empty value.
     #
     # 3) Appending to the variable definitions file any new variables intro-
@@ -1755,15 +1755,15 @@ def setup():
         # -----------------------------------------------------------------------
         #
         "SR_WX_APP_TOP_DIR": SR_WX_APP_TOP_DIR,
-        "HOMErrfs": HOMErrfs,
-        "USHrrfs": USHrrfs,
-        "SCRIPTSrrfs": SCRIPTSrrfs,
-        "JOBSrrfs": JOBSrrfs,
-        "SORCrrfs": SORCrrfs,
-        "PARMrrfs": PARMrrfs,
-        "MODULESrrfs": MODULESrrfs,
-        "EXECrrfs": EXECrrfs,
-        "FIXrrfs": FIXrrfs,
+        "HOMEdir": HOMEdir,
+        "USHdir": USHdir,
+        "SCRIPTSdir": SCRIPTSdir,
+        "JOBSdir": JOBSdir,
+        "SORCdir": SORCdir,
+        "PARMdir": PARMdir,
+        "MODULESdir": MODULESdir,
+        "EXECdir": EXECdir,
+        "FIXdir": FIXdir,
         "FIXam": FIXam,
         "FIXclim": FIXclim,
         "FIXlam": FIXlam,

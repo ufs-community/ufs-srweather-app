@@ -8,8 +8,8 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHrrfs/source_util_funcs.sh
-. $USHrrfs/init_env.sh
+. $USHdir/source_util_funcs.sh
+. $USHdir/init_env.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -18,7 +18,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -134,17 +134,17 @@ for the workflow task specified by task_name failed:
 #
 # The full path to a module file for a given task is
 #
-#   $HOMErrfs/modulefiles/$machine/${task_name}.local
+#   $HOMEdir/modulefiles/$machine/${task_name}.local
 #
-# where HOMErrfs is the base directory of the workflow, machine is the
+# where HOMEdir is the base directory of the workflow, machine is the
 # name of the machine that we're running on (in lowercase), and task_-
 # name is the name of the current task (an input to this script).
 #
 #-----------------------------------------------------------------------
 #
-modules_dir="$HOMErrfs/modulefiles/tasks/$machine"
+modules_dir="$HOMEdir/modulefiles/tasks/$machine"
 modulefile_name="${task_name}"
-default_modules_dir="$HOMErrfs/modulefiles"
+default_modules_dir="$HOMEdir/modulefiles"
 #
 #-----------------------------------------------------------------------
 #

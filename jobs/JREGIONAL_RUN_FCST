@@ -18,8 +18,8 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHrrfs/source_util_funcs.sh
-. $USHrrfs/job_preamble.sh
+. $USHdir/source_util_funcs.sh
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -28,7 +28,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -86,7 +86,7 @@ mkdir_vrfy -p ${DATA}/RESTART
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSrrfs/exregional_run_fcst.sh || \
+$SCRIPTSdir/exregional_run_fcst.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

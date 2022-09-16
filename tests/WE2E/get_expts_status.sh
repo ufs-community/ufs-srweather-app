@@ -44,13 +44,13 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 # The current script should be located in the "tests" subdirectory of the
-# workflow's top-level directory, which we denote by HOMErrfs.  Thus,
-# HOMErrfs is the directory one level above the directory in which the
-# current script is located.  Set HOMErrfs accordingly.
+# workflow's top-level directory, which we denote by HOMEdir.  Thus,
+# HOMEdir is the directory one level above the directory in which the
+# current script is located.  Set HOMEdir accordingly.
 #
 #-----------------------------------------------------------------------
 #
-HOMErrfs=${scrfunc_dir%/*/*}
+HOMEdir=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
@@ -58,7 +58,7 @@ HOMErrfs=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-USHrrfs="$HOMErrfs/ush"
+USHdir="$HOMEdir/ush"
 #
 #-----------------------------------------------------------------------
 #
@@ -66,7 +66,7 @@ USHrrfs="$HOMErrfs/ush"
 #
 #-----------------------------------------------------------------------
 #
-. $USHrrfs/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #

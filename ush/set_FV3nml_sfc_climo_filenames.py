@@ -149,17 +149,17 @@ class Testing(unittest.TestCase):
         define_macos_utilities()
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
-        USHrrfs = os.path.dirname(os.path.abspath(__file__))
-        PARMrrfs = os.path.join(USHrrfs, "..", "parm")
-        EXPTDIR = os.path.join(USHrrfs, "test_data", "expt")
+        USHdir = os.path.dirname(os.path.abspath(__file__))
+        PARMdir = os.path.join(USHdir, "..", "parm")
+        EXPTDIR = os.path.join(USHdir, "test_data", "expt")
         FIXlam = os.path.join(EXPTDIR, "fix_lam")
         mkdir_vrfy("-p", FIXlam)
         mkdir_vrfy("-p", EXPTDIR)
         cp_vrfy(
-            os.path.join(PARMrrfs, "input.nml.FV3"),
+            os.path.join(PARMdir, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
         )
-        set_env_var("USHrrfs", USHrrfs)
+        set_env_var("USHdir", USHdir)
         set_env_var("EXPTDIR", EXPTDIR)
         set_env_var("FIXlam", FIXlam)
         set_env_var("DO_ENSEMBLE", False)

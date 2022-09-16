@@ -28,24 +28,24 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 # Set the full path to the top-level directory of the UFS SRW App 
-# repository.  We denote this path by HOMErrfs.  The current script 
+# repository.  We denote this path by HOMEdir.  The current script 
 # should be located in the "tests/WE2E" subdirectory under this directory.
-# Thus, HOMErrfs is the directory two levels above the directory in which 
+# Thus, HOMEdir is the directory two levels above the directory in which 
 # the current script is located.
 #
 #-----------------------------------------------------------------------
 #
-HOMErrfs=${scrfunc_dir%/*/*}
+HOMEdir=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-# Set other directories that depend on HOMErrfs.
+# Set other directories that depend on HOMEdir.
 #
 #-----------------------------------------------------------------------
 #
-USHrrfs="$HOMErrfs/ush"
-TESTSrrfs="$HOMErrfs/tests"
-WE2Errfs="$TESTSrrfs/WE2E"
+USHdir="$HOMEdir/ush"
+TESTSdir="$HOMEdir/tests"
+WE2Edir="$TESTSdir/WE2E"
 #
 #-----------------------------------------------------------------------
 #
@@ -53,7 +53,7 @@ WE2Errfs="$TESTSrrfs/WE2E"
 #
 #-----------------------------------------------------------------------
 #
-. $USHrrfs/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -61,7 +61,7 @@ WE2Errfs="$TESTSrrfs/WE2E"
 #
 #-----------------------------------------------------------------------
 #
-. ${WE2Errfs}/get_WE2Etest_names_subdirs_descs.sh
+. ${WE2Edir}/get_WE2Etest_names_subdirs_descs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -70,7 +70,7 @@ WE2Errfs="$TESTSrrfs/WE2E"
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -491,7 +491,7 @@ print_info_msg "
 Getting information about all available WE2E tests..."
 
 get_WE2Etest_names_subdirs_descs \
-  WE2Errfs="${WE2Errfs}" \
+  WE2Edir="${WE2Edir}" \
   generate_csv_file="${generate_csv_file}" \
   outvarname_test_configs_basedir="avail_WE2E_test_configs_basedir" \
   outvarname_test_names="avail_WE2E_test_names" \
@@ -714,7 +714,7 @@ Please correct and rerun."
 #
 #-----------------------------------------------------------------------
 #
-  source_config ${USHrrfs}/config_defaults.yaml
+  source_config ${USHdir}/config_defaults.yaml
   source_config ${test_config_fp}
 #
 #-----------------------------------------------------------------------
@@ -766,7 +766,7 @@ Please correct and rerun."
   CRON_RELAUNCH_INTVL_MNTS=${cron_relaunch_intvl_mnts:-"02"}
   VERBOSE=${verbose:-"TRUE"}
 
-  MACHINE_FILE=${machine_file:-"${USHrrfs}/machine/${machine,,}.sh"}
+  MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.sh"}
 
   # Set the machine-specific configuration settings by sourcing the
   # machine file in the ush directory
@@ -932,7 +932,7 @@ model_ver="we2e""
 #
 # Set OPSROOT.
 #
-    nco_basedir=$( readlink -f "$HOMErrfs/../../nco_dirs" )
+    nco_basedir=$( readlink -f "$HOMEdir/../../nco_dirs" )
     OPSROOT=${opsroot:-"${nco_basedir}/OPSROOT"}
 
     expt_config_str=${expt_config_str}"
@@ -1215,9 +1215,9 @@ exist or is not a directory:
 #
 #-----------------------------------------------------------------------
 #
-  expt_config_fp="$USHrrfs/${EXPT_CONFIG_FN}"
+  expt_config_fp="$USHdir/${EXPT_CONFIG_FN}"
   ext="${EXPT_CONFIG_FN##*.}"
-  config_to_str "${ext}" "${temp_file}" -t "$USHrrfs/config_defaults.yaml" >"${expt_config_fp}"
+  config_to_str "${ext}" "${temp_file}" -t "$USHdir/config_defaults.yaml" >"${expt_config_fp}"
   rm -rf "${temp_file}"
 #
 #-----------------------------------------------------------------------
@@ -1227,7 +1227,7 @@ exist or is not a directory:
 #
 #-----------------------------------------------------------------------
 #
-  $USHrrfs/generate_FV3LAM_wflow.py || \
+  $USHdir/generate_FV3LAM_wflow.py || \
     print_err_msg_exit "\
 Could not generate an experiment for the test specified by test_name:
   test_name = \"${test_name}\""

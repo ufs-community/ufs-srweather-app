@@ -81,8 +81,8 @@ def generate_FV3LAM_wflow():
         )
     )
 
-    # set USHrrfs
-    USHrrfs = os.path.dirname(os.path.abspath(__file__))
+    # set USHdir
+    USHdir = os.path.dirname(os.path.abspath(__file__))
 
     # check python version
     major, minor, patch = platform.python_version_tuple()
@@ -138,7 +138,7 @@ def generate_FV3LAM_wflow():
     #
     if WORKFLOW_MANAGER == "rocoto":
 
-        template_xml_fp = os.path.join(PARMrrfs, WFLOW_XML_FN)
+        template_xml_fp = os.path.join(PARMdir, WFLOW_XML_FN)
 
         print_info_msg(
             f'''
@@ -375,9 +375,9 @@ def generate_FV3LAM_wflow():
             # Directories and files.
             #
             "exptdir": EXPTDIR,
-            "jobsrrfs": JOBSrrfs,
+            "jobsdir": JOBSdir,
             "logdir": LOGDIR,
-            "scriptsrrfs": SCRIPTSrrfs,
+            "scriptsdir": SCRIPTSdir,
             "comin_basedir": COMIN_BASEDIR,
             "comout_basedir": COMOUT_BASEDIR,
             "global_var_defns_fp": GLOBAL_VAR_DEFNS_FP,
@@ -970,7 +970,7 @@ def generate_FV3LAM_wflow():
     #
     # -----------------------------------------------------------------------
     #
-    cp_vrfy(os.path.join(USHrrfs, EXPT_CONFIG_FN), EXPTDIR)
+    cp_vrfy(os.path.join(USHdir, EXPT_CONFIG_FN), EXPTDIR)
     #
     # -----------------------------------------------------------------------
     #
@@ -1061,7 +1061,7 @@ def generate_FV3LAM_wflow():
         print("Getting NOMADS online data")
         print(f"NOMADS_file_type= {NOMADS_file_type}")
         cd_vrfy(EXPTDIR)
-        NOMADS_script = os.path.join(USHrrfs, "NOMADS_get_extrn_mdl_files.h")
+        NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.h")
         run_command(
             f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
                       {CYCL_HRS} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}"""
@@ -1084,21 +1084,21 @@ if __name__ == "__main__":
     #
     # -----------------------------------------------------------------------
     #
-    USHrrfs = os.path.dirname(os.path.abspath(__file__))
+    USHdir = os.path.dirname(os.path.abspath(__file__))
     #
     # Set the name of and full path to the temporary file in which we will
     # save some experiment/workflow variables.  The need for this temporary
     # file is explained below.
     #
     tmp_fn = "tmp"
-    tmp_fp = os.path.join(USHrrfs, tmp_fn)
+    tmp_fp = os.path.join(USHdir, tmp_fn)
     rm_vrfy("-f", tmp_fp)
     #
     # Set the name of and full path to the log file in which the output from
     # the experiment/workflow generation function will be saved.
     #
     log_fn = "log.generate_FV3LAM_wflow"
-    log_fp = os.path.join(USHrrfs, log_fn)
+    log_fp = os.path.join(USHdir, log_fn)
     rm_vrfy("-f", log_fp)
     #
     # Call the generate_FV3LAM_wflow function defined above to generate the

@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHrrfs/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -394,7 +394,7 @@ create_symlink_to_file target="${FIELD_DICT_FP}" \
                        relative="${relative_link_flag}"
 
 if [ ${WRITE_DOPOST} = "TRUE" ]; then
-  cp_vrfy ${PARMrrfs}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+  cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
   if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
     print_info_msg "
@@ -402,7 +402,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
 ===================================================================="
   else
-    post_config_fp="${PARMrrfs}/upp/postxconfig-NT-fv3lam.txt"
+    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
     print_info_msg "
 ====================================================================
   post_config_fp = \"${post_config_fp}\"
@@ -410,7 +410,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   fi
   cp_vrfy ${post_config_fp} ./postxconfig-NT_FH00.txt
   cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-  cp_vrfy ${PARMrrfs}/upp/params_grib2_tbl_new .
+  cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
   # Set itag for inline-post:
 cat > itag <<EOF
 &MODEL_INPUTS
@@ -424,7 +424,7 @@ fi
 
 if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
    [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
-  python3 $USHrrfs/set_FV3nml_ens_stoch_seeds.py \
+  python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\
 Call to function to create the ensemble-based namelist for the current
@@ -444,7 +444,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHrrfs/create_model_configure_file.py \
+python3 $USHdir/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$CDATE" \
   --run-dir "${DATA}" \
@@ -463,7 +463,7 @@ cycle's (cdate) run directory (DATA) failed:
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHrrfs/create_diag_table_file.py \
+python3 $USHdir/create_diag_table_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}" || print_err_msg_exit "\
 Call to function to create a diag table file for the current cycle's 

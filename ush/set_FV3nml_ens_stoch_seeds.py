@@ -168,12 +168,12 @@ class Testing(unittest.TestCase):
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
         self.cdate = datetime(2021, 1, 1)
-        USHrrfs = os.path.dirname(os.path.abspath(__file__))
-        PARMrrfs = os.path.join(USHrrfs, "..", "parm")
-        EXPTDIR = os.path.join(USHrrfs, "test_data", "expt")
+        USHdir = os.path.dirname(os.path.abspath(__file__))
+        PARMdir = os.path.join(USHdir, "..", "parm")
+        EXPTDIR = os.path.join(USHdir, "test_data", "expt")
         mkdir_vrfy("-p", EXPTDIR)
         cp_vrfy(
-            os.path.join(PARMrrfs, "input.nml.FV3"),
+            os.path.join(PARMdir, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
         )
         for i in range(2):
@@ -187,7 +187,7 @@ class Testing(unittest.TestCase):
 
         cd_vrfy(f'{EXPTDIR}{os.sep}{date_to_str(self.cdate,format="%Y%m%d%H")}{os.sep}mem2')
 
-        set_env_var("USHrrfs", USHrrfs)
+        set_env_var("USHdir", USHdir)
         set_env_var("ENSMEM_INDX", 2)
         set_env_var("FV3_NML_FN", "input.nml")
         set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml"))
