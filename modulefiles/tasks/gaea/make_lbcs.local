@@ -1,6 +1,3 @@
 #%Module
-module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
-module load rocoto
-module load miniconda3
 
-setenv SRW_ENV regional_workflow
+module load miniconda_regional_workflow
