@@ -92,7 +92,7 @@ jjob_fp="$2"
 #
 machine=$(echo_lowercase $MACHINE)
 
-source "${SR_WX_APP_TOP_DIR}/etc/lmod-setup.sh"
+source "${SR_WX_APP_TOP_DIR}/etc/lmod-setup.sh ${machine}"
 module use "${SR_WX_APP_TOP_DIR}/modulefiles"
 module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
 Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
