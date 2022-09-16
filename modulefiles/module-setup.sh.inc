@@ -37,6 +37,8 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
         # the module command fails.  Hence we actually have to source
         # /etc/profile here.
         source /etc/profile
+        # initialize Lmod/8.7.12 using a wrapper script
+        source /lustre/f2/dev/role.epic/contrib/Lmod_init.sh
         __ms_source_etc_profile=yes
     else
         __ms_source_etc_profile=no

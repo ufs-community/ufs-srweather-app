@@ -28,6 +28,8 @@ else if ( { test -d /lustre -a -d /ncrc } ) then
         # the module command fails.  Hence we actually have to source
         # /etc/csh.login here.
         source /etc/csh.login
+        # initialize Lmod/8.7.12 using a wrapper script
+        source /lustre/f2/dev/role.epic/contrib/Lmod_init.sh
         set __ms_source_etc_csh_login=yes
     else
         set __ms_source_etc_csh_login=no
