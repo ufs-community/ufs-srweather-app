@@ -81,8 +81,8 @@ def generate_FV3LAM_wflow():
         )
     )
 
-    # set ushdir
-    ushdir = os.path.dirname(os.path.abspath(__file__))
+    # set USHrrfs
+    USHrrfs = os.path.dirname(os.path.abspath(__file__))
 
     # check python version
     major, minor, patch = platform.python_version_tuple()
@@ -1084,21 +1084,21 @@ if __name__ == "__main__":
     #
     # -----------------------------------------------------------------------
     #
-    ushdir = os.path.dirname(os.path.abspath(__file__))
+    USHrrfs = os.path.dirname(os.path.abspath(__file__))
     #
     # Set the name of and full path to the temporary file in which we will
     # save some experiment/workflow variables.  The need for this temporary
     # file is explained below.
     #
     tmp_fn = "tmp"
-    tmp_fp = os.path.join(ushdir, tmp_fn)
+    tmp_fp = os.path.join(USHrrfs, tmp_fn)
     rm_vrfy("-f", tmp_fp)
     #
     # Set the name of and full path to the log file in which the output from
     # the experiment/workflow generation function will be saved.
     #
     log_fn = "log.generate_FV3LAM_wflow"
-    log_fp = os.path.join(ushdir, log_fn)
+    log_fp = os.path.join(USHrrfs, log_fn)
     rm_vrfy("-f", log_fp)
     #
     # Call the generate_FV3LAM_wflow function defined above to generate the

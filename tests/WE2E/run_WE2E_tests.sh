@@ -43,9 +43,9 @@ HOMErrfs=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-ushdir="$HOMErrfs/ush"
-testsdir="$HOMErrfs/tests"
-WE2Edir="$testsdir/WE2E"
+USHrrfs="$HOMErrfs/ush"
+TESTSrrfs="$HOMErrfs/tests"
+WE2Errfs="$TESTSrrfs/WE2E"
 #
 #-----------------------------------------------------------------------
 #
@@ -53,7 +53,7 @@ WE2Edir="$testsdir/WE2E"
 #
 #-----------------------------------------------------------------------
 #
-. $ushdir/source_util_funcs.sh
+. $USHrrfs/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -61,7 +61,7 @@ WE2Edir="$testsdir/WE2E"
 #
 #-----------------------------------------------------------------------
 #
-. ${WE2Edir}/get_WE2Etest_names_subdirs_descs.sh
+. ${WE2Errfs}/get_WE2Etest_names_subdirs_descs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -70,7 +70,7 @@ WE2Edir="$testsdir/WE2E"
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -491,7 +491,7 @@ print_info_msg "
 Getting information about all available WE2E tests..."
 
 get_WE2Etest_names_subdirs_descs \
-  WE2Edir="${WE2Edir}" \
+  WE2Errfs="${WE2Errfs}" \
   generate_csv_file="${generate_csv_file}" \
   outvarname_test_configs_basedir="avail_WE2E_test_configs_basedir" \
   outvarname_test_names="avail_WE2E_test_names" \
@@ -714,7 +714,7 @@ Please correct and rerun."
 #
 #-----------------------------------------------------------------------
 #
-  source_config ${ushdir}/config_defaults.yaml
+  source_config ${USHrrfs}/config_defaults.yaml
   source_config ${test_config_fp}
 #
 #-----------------------------------------------------------------------
@@ -766,7 +766,7 @@ Please correct and rerun."
   CRON_RELAUNCH_INTVL_MNTS=${cron_relaunch_intvl_mnts:-"02"}
   VERBOSE=${verbose:-"TRUE"}
 
-  MACHINE_FILE=${machine_file:-"${ushdir}/machine/${machine,,}.sh"}
+  MACHINE_FILE=${machine_file:-"${USHrrfs}/machine/${machine,,}.sh"}
 
   # Set the machine-specific configuration settings by sourcing the
   # machine file in the ush directory
@@ -1215,9 +1215,9 @@ exist or is not a directory:
 #
 #-----------------------------------------------------------------------
 #
-  expt_config_fp="$ushdir/${EXPT_CONFIG_FN}"
+  expt_config_fp="$USHrrfs/${EXPT_CONFIG_FN}"
   ext="${EXPT_CONFIG_FN##*.}"
-  config_to_str "${ext}" "${temp_file}" -t "$ushdir/config_defaults.yaml" >"${expt_config_fp}"
+  config_to_str "${ext}" "${temp_file}" -t "$USHrrfs/config_defaults.yaml" >"${expt_config_fp}"
   rm -rf "${temp_file}"
 #
 #-----------------------------------------------------------------------
@@ -1227,7 +1227,7 @@ exist or is not a directory:
 #
 #-----------------------------------------------------------------------
 #
-  $ushdir/generate_FV3LAM_wflow.py || \
+  $USHrrfs/generate_FV3LAM_wflow.py || \
     print_err_msg_exit "\
 Could not generate an experiment for the test specified by test_name:
   test_name = \"${test_name}\""

@@ -14,7 +14,7 @@
 #
 # The function takes as inputs the following arguments:
 #
-# WE2Edir:
+# WE2Errfs:
 # Directory in which the WE2E testing system is located.  This system
 # consists of the main script for running WE2E tests, various auxiliary 
 # scripts, and the test configuration files.
@@ -59,7 +59,7 @@
 # of the base directory in which the test configuration files (which may
 # be ordinary files or symlinks) are located.  It sets this as follows:
 #
-#   test_configs_basedir="${WE2Edir}/test_configs"
+#   test_configs_basedir="${WE2Errfs}/test_configs"
 #
 # If the argument outvarname_test_configs_basedir is specified in the 
 # call to this function, then the value of test_configs_basedir will be 
@@ -212,7 +212,7 @@
 # For convenience, this function can generate a CSV (comma-separated 
 # value) file containing information about the WE2E tests.  If it does,
 # the file will be placed in the main WE2E testing system directory 
-# specified by the input argument WE2Edir.  The CSV file can be read 
+# specified by the input argument WE2Errfs.  The CSV file can be read 
 # into a spreadsheet in Google Sheets (or another similar tool) to get
 # an overview of all the available WE2E tests.  The rows of the CSV file 
 # correspond to the primary WE2E tests, and the columns correspond to 
@@ -220,7 +220,7 @@
 # number of times the test calls the forecast model, and values of various 
 # SRW App experiment variables for that test.
 #
-# A CSV file will be generated in the directory specified by WE2Edir if 
+# A CSV file will be generated in the directory specified by WE2Errfs if 
 # one or more of the following conditions hold:
 #
 # 1) The input argument generate_csv_file is set to "TRUE" in the call
@@ -237,7 +237,7 @@
 # A CSV file is not generated if generate_csv_file is explicitly set to 
 # "FALSE" in the call to this function (regardless of whether or not a 
 # CSV file already exists).  If a CSV file is generated, it is placed in 
-# the directory specified by the input argment WE2Edir, and it overwrites 
+# the directory specified by the input argment WE2Errfs, and it overwrites 
 # any existing copies of the file in that directory.  The contents of
 # each column of the CSV file are described below.
 #
@@ -252,7 +252,7 @@ function get_WE2Etest_names_subdirs_descs() {
 #
 #-----------------------------------------------------------------------
 #
-  { save_shell_opts; . $USHDIR/preamble.sh; } > /dev/null 2>&1
+  { save_shell_opts; . $USHrrfs/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -264,7 +264,7 @@ function get_WE2Etest_names_subdirs_descs() {
 #-----------------------------------------------------------------------
 #
   local valid_args=( \
-    "WE2Edir" \
+    "WE2Errfs" \
     "generate_csv_file" \
     "verbose" \
     "outvarname_test_configs_basedir" \
@@ -399,7 +399,6 @@ function get_WE2Etest_names_subdirs_descs() {
         test_subdirs_str \
         test_type \
         units \
-        ushdir \
         val \
         var_name \
         var_name_at \
@@ -416,8 +415,7 @@ function get_WE2Etest_names_subdirs_descs() {
 #
 #-----------------------------------------------------------------------
 #
-  ushdir=$( readlink -f "$WE2Edir/../../ush" )
-  . $ushdir/constants.sh
+  . $USHrrfs/constants.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -430,7 +428,7 @@ function get_WE2Etest_names_subdirs_descs() {
 # Set the name and full path to the CSV file.
 #
   csv_fn="WE2E_test_info.csv"
-  csv_fp="${WE2Edir}/${csv_fn}"
+  csv_fp="${WE2Errfs}/${csv_fn}"
 #
 # If generate_csv_file is specified as an input argument in the call to
 # this function, make sure that it is set to a valid value.
@@ -483,7 +481,7 @@ information on all WE2E tests:
 #
 #-----------------------------------------------------------------------
 #
-  test_configs_basedir="${WE2Edir}/test_configs"
+  test_configs_basedir="${WE2Errfs}/test_configs"
 #
 #-----------------------------------------------------------------------
 #
@@ -1139,7 +1137,7 @@ params=$(\
   RADIUS_EARTH=${RADIUS_EARTH} \
   DEGS_PER_RADIAN=${DEGS_PER_RADIAN} \
   NH4=${NH4} \
-    $ushdir/calculate_cost.py -c "${test_configs_basedir}/$subdir/${config_fn}")
+    $USHrrfs/calculate_cost.py -c "${test_configs_basedir}/$subdir/${config_fn}")
 
 read dta nxny dta_r nxny_r <<< "${params}"
 

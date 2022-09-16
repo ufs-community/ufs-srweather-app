@@ -12,5 +12,5 @@ jobs:
       - run: |
              cd ufs-srweather-app
              ./manage_externals/checkout_externals
-             ./devbuild.sh -p=cheynne -c=intel
+             ./devbuild.sh -p=cheyenne -c=intel
       - run: echo "🍏 This job's status is ${{ job.status }}."

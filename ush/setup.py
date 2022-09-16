@@ -56,8 +56,9 @@ def setup():
       None
     """
 
-    ushdir = os.path.dirname(os.path.abspath(__file__))
-    cd_vrfy(ushdir)
+    global USHrrfs
+    USHrrfs = os.path.dirname(os.path.abspath(__file__))
+    cd_vrfy(USHrrfs)
 
     # import all environment variables
     import_vars()
@@ -78,7 +79,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     EXPT_DEFAULT_CONFIG_FN = "config_defaults.yaml"
-    cfg_d = load_config_file(os.path.join(ushdir, EXPT_DEFAULT_CONFIG_FN))
+    cfg_d = load_config_file(os.path.join(USHrrfs, EXPT_DEFAULT_CONFIG_FN))
     import_vars(dictionary=flatten_dict(cfg_d))
 
     #
@@ -103,7 +104,7 @@ def setup():
         # configuration file are also assigned default values in the default
         # configuration file.
         #
-        cfg_u = load_config_file(os.path.join(ushdir, EXPT_CONFIG_FN))
+        cfg_u = load_config_file(os.path.join(USHrrfs, EXPT_CONFIG_FN))
         cfg_u = flatten_dict(cfg_u)
         import_vars(dictionary=cfg_u)
         update_dict(cfg_u, cfg_d)
@@ -113,7 +114,7 @@ def setup():
     # Source constants.sh and save its contents to a variable for later
     # -----------------------------------------------------------------------
     #
-    cfg_c = load_config_file(os.path.join(ushdir, CONSTANTS_FN))
+    cfg_c = load_config_file(os.path.join(USHrrfs, CONSTANTS_FN))
     import_vars(dictionary=cfg_c)
 
     #
@@ -321,7 +322,7 @@ def setup():
     #
     # Define some other useful paths
     #
-    global USHrrfs, SCRIPTSrrfs, JOBSrrfs, SORCrrfs, PARMrrfs, MODULESrrfs
+    global SCRIPTSrrfs, JOBSrrfs, SORCrrfs, PARMrrfs, MODULESrrfs
     global EXECrrfs, PARMrrfs, FIXrrfs, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
 
     USHrrfs = os.path.join(HOMErrfs, "ush")
