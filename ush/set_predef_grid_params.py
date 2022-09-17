@@ -4,7 +4,6 @@ import unittest
 import os
 
 from python_utils import (
-    process_args,
     import_vars,
     export_vars,
     set_env_var,
