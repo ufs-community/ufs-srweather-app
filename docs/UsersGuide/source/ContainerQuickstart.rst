@@ -64,12 +64,13 @@ On NOAA Cloud systems, the ``sudo su`` command may also be required:
 Build the Container
 ------------------------
 
+.. hint::
+   If a ``singularity: command not found`` error message appears in any of the following steps, try running: ``module load singularity``.
+
 Level 1 Systems
 ^^^^^^^^^^^^^^^^^^
 
-On most Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp-rp2.img`` has already been built at the following locations:
-
-.. COMMENT: Update container name.
+On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.img`` has already been built at the following locations:
 
 .. table:: Locations of pre-built containers
 
@@ -94,24 +95,20 @@ Users can simply copy the container to their local working directory. For exampl
 
 .. code-block:: console
 
-   cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel22-ufs-srwapp-rp2.img .
-
-.. COMMENT: Update container name.
+   cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel-srwapp-develop.img .
 
 Optionally, users may convert the container ``.img`` file to a writable sandbox by running:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp ubuntu20.04-intel22-ufs-srwapp-rp2.img
-
-.. COMMENT: Update container name.
+   singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp ubuntu20.04-intel-srwapp-develop.img
 
 When making a writable sandbox on Level 1 systems, the following warnings commonly appear and can be ignored:
 
 .. code-block:: console
 
    INFO:    Starting build...
-   INFO:    Verifying bootstrap image ubuntu20.04-intel22-ufs-srwapp-rp2.img
+   INFO:    Verifying bootstrap image ubuntu20.04-intel-srwapp-develop.img
    WARNING: integrity: signature not found for object group 1
    WARNING: Bootstrap image could not be verified, but build will continue.
 
@@ -122,14 +119,17 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 
 .. code-block:: console
 
-   sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
-
-.. COMMENT: Update container name.
+   sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:develop
 
 Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
 .. note::
-   If a ``singularity: command not found`` error message appears, try running: ``module load singularity``.
+   Users can choose to build a v2.0.0 release version of the container using a similar command:
+   
+   .. code-block:: console
+
+      sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
+
 
 .. _WorkOnHPC:
 
@@ -359,7 +359,7 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
 where: 
 
    * ``<path/to>`` is replaced by the actual path to the user's experiment directory, and 
-   * ``esc`` and ``enter`` refer to the escape and enter/return **keys** (not a typed command). 
+   * ``esc`` and ``enter`` refer to the escape and enter **keys** (not a typed command). 
 
 New Experiment
 ===============
