@@ -24,7 +24,7 @@ nco:
   NET: rrfs
   model_ver: v1.0
   RUN: rrfs_test
-  OPSROOT: /path/to/opsroot/directory
+  OPSROOT: ""
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
