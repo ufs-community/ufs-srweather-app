@@ -1156,9 +1156,26 @@ if __name__ == "__main__":
 
 class Testing(unittest.TestCase):
     def test_generate_FV3LAM_wflow(self):
+
+        # run workflows in separate process to avoid conflict
+        def workflow_func():
+            generate_FV3LAM_wflow()
+
+        def run_workflow():
+            p = Process(target=workflow_func)
+            p.start()
+            p.join()
+
         USHdir = os.path.dirname(os.path.abspath(__file__))
+
+        # community test case
         ln_vrfy("-fs", f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
-        generate_FV3LAM_wflow()
+        run_workflow()
+
+        # nco test case
+        set_env_var("OPSROOT", f"{USHdir}/../../nco_dirs")
+        ln_vrfy("-fs", f"{USHdir}/config.nco.yaml", f"{USHdir}/config.yaml")
+        run_workflow()
 
     def setUp(self):
         set_env_var("DEBUG", False)
