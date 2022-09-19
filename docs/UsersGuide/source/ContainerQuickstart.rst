@@ -4,14 +4,14 @@
 Container-Based Quick Start Guide
 ====================================
 
-This Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ :term:`container`. The container approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`'s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. Normally, containers can only run on a single compute node and are not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. However, the Singularity container described in this chapter has been adapted such that it is able to run on multiple nodes using Rocoto. This makes it an excellent starting point for beginners. The :ref:`non-container approach <BuildRunSRW>` may still be more appropriate for users who desire additional customizability, particularly if they already have experience running the SRW App.
+This Container-Based Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ container. The :term:`container` approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`'s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. Normally, containers can only run on a single compute node and are not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. However, the Singularity container described in this chapter has been adapted such that it is able to run across multiple nodes using Rocoto. This makes it an excellent starting point for beginners. The :ref:`non-container approach <BuildRunSRW>` may still be more appropriate for users who desire additional customizability, particularly if they already have experience running the SRW App.
 
 The "out-of-the-box" SRW App case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. attention::
 
    * The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
-   * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Chapter %s <NCQuickstart>` for a Quick Start Guide to building **without** a container or :numref:`Section %s <BuildRunSRW>` for a **detailed** guide to building the SRW App without a container.
+   * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Chapter %s <NCQuickstart>` for a Quick Start Guide to building **without** a container or :numref:`Chapter %s <BuildRunSRW>` for a **detailed** guide to building the SRW App without a container.
 
 .. _DownloadCodeC:
 
@@ -21,7 +21,7 @@ Download the Container
 Prerequisites: 
 -------------------
 
-Users must have an Intel compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option for the ``develop`` branch assumes that Rocoto is pre-installed. 
+Users must have an **Intel** compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option for the ``develop`` branch assumes that Rocoto is pre-installed. 
 
 .. COMMENT: Remove "for the develop branch"?
 
@@ -43,7 +43,7 @@ For users working on systems with limited disk space in their ``/home`` director
    export SINGULARITY_CACHEDIR=</absolute/path/to/writable/directory/cache>
    export SINGULARITY_TEMPDIR=</absolute/path/to/writable/directory/tmp>
 
-where ``/absolute/path/to/writable/directory/`` refers to a writable directory (usually a project or user directory within ``/lustre``, ``/work``, ``/scratch2``, or ``/glade`` on NOAA Level 1 systems). If the ``cache`` and ``tmp`` directories do not exist already, they must be created with a ``mkdir`` command. 
+where ``/absolute/path/to/writable/directory/`` refers to a writable directory (usually a project or user directory within ``/lustre``, ``/work``, ``/scratch``, or ``/glade`` on NOAA Level 1 systems). If the ``cache`` and ``tmp`` directories do not exist already, they must be created with a ``mkdir`` command. 
 
 On NOAA Cloud systems, the ``sudo su`` command may also be required:
    
@@ -64,7 +64,12 @@ On NOAA Cloud systems, the ``sudo su`` command may also be required:
 Build the Container
 ------------------------
 
+Level 1 Systems
+^^^^^^^^^^^^^^^^^^
+
 On most Level 1 systems, a container named ``ubuntu20.04-intel22-ufs-srwapp-rp2.img`` has already been built at the following locations:
+
+.. COMMENT: Update container name.
 
 .. table:: Locations of pre-built containers
 
@@ -91,13 +96,17 @@ Users can simply copy the container to their local working directory. For exampl
 
    cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel22-ufs-srwapp-rp2.img .
 
+.. COMMENT: Update container name.
+
 Optionally, users may convert the container ``.img`` file to a writable sandbox by running:
 
 .. code-block:: console
 
    singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp ubuntu20.04-intel22-ufs-srwapp-rp2.img
 
-The following warnings are common on Level 1 systems and can be ignored:
+.. COMMENT: Update container name.
+
+When making a writable sandbox on Level 1 systems, the following warnings commonly appear and can be ignored:
 
 .. code-block:: console
 
@@ -106,11 +115,16 @@ The following warnings are common on Level 1 systems and can be ignored:
    WARNING: integrity: signature not found for object group 1
    WARNING: Bootstrap image could not be verified, but build will continue.
 
-On other systems, users should build the container in a writable sandbox:
+Level 2-4 Systems
+^^^^^^^^^^^^^^^^^^^^^
+
+On non-Level 1 systems, users should build the container in a writable sandbox:
 
 .. code-block:: console
 
    sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
+
+.. COMMENT: Update container name.
 
 Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
@@ -144,7 +158,7 @@ If users have the PBS resource manager installed on their system, the allocation
 
 For more information on the ``qsub`` command options, see the `PBS Manual §2.59.3 <https://2021.help.altair.com/2021.1/PBSProfessional/PBS2021.1.pdf>`__, (p. 1416).
 
-These commands should output a hostname. Users can then run ``ssh <hostname>``. After "ssh-ing" to the compute node, they can run the container from that node. 
+These commands should output a hostname. Users can then run ``ssh <hostname>``. After "ssh-ing" to the compute node, they can run the container from that node. To run larger experiments, it may be necessary to allocate multiple compute nodes. 
 
 
 .. _RunContainer:
@@ -158,7 +172,7 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
    singularity exec -B /<local_base_dir>:/<container_dir> ./<container_name> cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel22-ufs-srwapp``) or the name of the container ``.img`` file. 
+where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel22-ufs-srwapp``) or the name of the ``.img`` container file. 
 
 If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the container sandbox and then bind it:
 
@@ -205,14 +219,14 @@ To generate the forecast experiment, users must:
 #. :ref:`Set experiment parameters <SetUpConfigFileC>`
 #. :ref:`Run a script to generate the experiment workflow <GenerateWorkflowC>`
 
-The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to their machine if their local machine is a Level 2-4 platform. 
+The first two steps depend on the platform being used and are described here for Level 1 platforms. Users will need to adjust the instructions to their machine if their local machine is a Level 2-4 platform. 
 
 .. _SetUpPythonEnvC:
 
 Activate the Regional Workflow
 -------------------------------------
 
-Copy the container's modulefiles to the current working directory so that they can be accessed outside of the container:
+Copy the container's modulefiles to the local working directory so that the files can be accessed outside of the container:
 
 .. code-block:: console
 
@@ -224,10 +238,15 @@ To activate the regional workflow, run the following commands:
 
 .. code-block:: console
 
-   module use $PWD/modulefiles 
+   module use <path/to/modulefiles> 
    module load wflow_<platform>
 
-where ``<platform>`` is a valid machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <PlatEnv>`). The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
+where: 
+
+   * ``<path/to/modulefiles>`` is replaced with the actual path to the modulefiles on the user's system (often ``$PWD/modulefiles``), and 
+   * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <PlatEnv>`). 
+
+The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
 
 .. code-block:: console
 
@@ -287,16 +306,16 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          EXTRN_MDL_SOURCE_BASEDIR_LBCS="/scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518"
          EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
 
-      On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` so that they reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
+      On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
 
-   #. To automate the workflow, add these two lines to ``config.sh``. 
+   #. To automate the workflow, add these two lines to ``config.sh``: 
 
       .. code-block:: console
 
          USE_CRON_TO_RELAUNCH="TRUE"
          CRON_RELAUNCH_INTVL_MNTS="02"
 
-      There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via cron table is the simplest option. 
+      There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via :term:`crontab` is the simplest option. 
 
 .. _GenerateWorkflowC: 
 
@@ -315,7 +334,7 @@ Run the following command to generate the workflow:
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/1 * * * *`` or ``*/3 * * * *``. 
 
-The generated workflow will be in the experiment directory specified in the ``config.sh`` file in :numref:`Step %s <SetUpConfigFileC>`. The default location is ``expt_dirs/test_community``. To view experiment progress, users can ``cd`` to the experiment directory from ``ufs-srweather-app/regional_workflow/ush`` and run:
+The generated workflow will be in the experiment directory specified in the ``config.sh`` file in :numref:`Step %s <SetUpConfigFileC>`. The default location is ``expt_dirs/test_community``. To view experiment progress, users can ``cd`` to the experiment directory from ``ufs-srweather-app/regional_workflow/ush`` and run the ``rocotostat`` command to check the experiment's status:
 
 .. code-block:: console
 
@@ -332,15 +351,20 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
 
    crontab -e
    i
-   */3 * * * * cd /lustre/First.Last/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
+   */3 * * * * cd /<path/to>/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
    esc
-   :wq + Enter
+   :wq
+   enter
 
+where: 
+
+   * ``<path/to>`` is replaced by the actual path to the user's experiment directory, and 
+   * ``esc`` and ``enter`` refer to the escape and enter/return **keys** (not a typed command). 
 
 New Experiment
 ===============
 
-To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.sh`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.sh``
+To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.sh`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.sh``.
 
 Plot the Output
 ===============
