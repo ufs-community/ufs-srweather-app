@@ -35,7 +35,7 @@ function usage {
 
 }
 
-machines=( hera jet )
+machines=( hera jet cheyenne orion wcoss2 gaea odin singularity macos noaacloud )
 
 if [ "$1" = "-h" ] ; then usage ; fi
 [[ $# -le 1 ]] && usage
@@ -62,7 +62,7 @@ EXPTS_DIR=${TOP_DIR}/expt_dirs
 # Set the path to the machine-specific test suite file.
 #-----------------------------------------------------------------------
 
-auto_file=${scrfunc_dir}/machine_suites/${machine}.txt
+auto_file=${scrfunc_dir}/machine_suites/fundamental.txt
 
 #----------------------------------------------------------------------
 # Use exec_subdir consistent with the automated build.
