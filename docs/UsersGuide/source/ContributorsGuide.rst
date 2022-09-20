@@ -30,7 +30,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +------------------+------------------------------------------------+-----------------------------------------------------------------------------------+
     | **Organization** | **Reviewers**                                  | **Areas of Expertise**                                                            |
     +==================+================================================+===================================================================================+
-    | EMC              | Chan-Hoo Jeon (@chan-hoo)                      | Workflow, NCO requirements, and operational platform testing                      |
+    | EMC              | Chan-Hoo Jeon (@chan-hoo)                      | Workflow, Operational platform testing (WCOSS/NCO), and Air quality modeling (Online-CMAQ)  |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
     |                  | Ben Blake (@BenjaminBlake-NOAA)                | Output visualization, Rocoto                                                      |
     |                  +------------------------------------------------+-----------------------------------------------------------------------------------+
