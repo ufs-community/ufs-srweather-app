@@ -9,8 +9,8 @@ pipeline {
 
     parameters {
         // Allow job runner to filter based on platform
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1'], description: 'Specify the platform(s) to use')
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         booleanParam name: 'SRW_WE2E_COMPREHENSIVE_TESTS', defaultValue: false, description: 'Whether to execute the comprehensive end-to-end tests'
@@ -31,7 +31,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'pcluster_noaa_v2_use1' //, 'azcluster_noaa', 'gcluster_noaa_v2_usc1'
+                        values 'pclusternoaav2use1' //, 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
                 }
 
@@ -69,7 +69,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1' //, 'azcluster_noaa', 'gcluster_noaa_v2_usc1'
+                        values 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1' //, 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -83,7 +83,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            values 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1' //, 'azcluster_noaa', 'gcluster_noaa_v2_usc1'
+                            values 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1' //, 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                         }
 
                         axis {
@@ -182,8 +182,8 @@ pipeline {
         always {
             // Stop any Parallel Works clusters that were started during the pipeline execution
             script {
-                // def pw_clusters = ['pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1']
-                def pw_clusters = ['pcluster_noaa_v2_use1']
+                // def pw_clusters = ['pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1']
+                def pw_clusters = ['pclusternoaav2use1']
                 def clusters = []
 
                 // Determine which clusters need to be stopped, if any

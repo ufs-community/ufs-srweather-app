@@ -19,7 +19,7 @@ fi
 
 # Normalize Parallel Works cluster platform value.
 declare platform
-if [[ "${SRW_PLATFORM}" =~ ^(az|g|p)cluster_noaa ]]; then
+if [[ "${SRW_PLATFORM}" =~ ^(az|g|p)clusternoaa ]]; then
     platform='noaacloud'
 else
     platform="${SRW_PLATFORM}"
