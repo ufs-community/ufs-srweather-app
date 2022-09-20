@@ -932,8 +932,7 @@ model_ver="we2e""
 #
 # Set OPSROOT.
 #
-    nco_basedir=$( readlink -f "$HOMEdir/../../nco_dirs" )
-    OPSROOT=${opsroot:-"${nco_basedir}/OPSROOT"}
+    OPSROOT=${opsroot:-$( readlink -f "$HOMEdir/../nco_dirs" )}
 
     expt_config_str=${expt_config_str}"
 #
