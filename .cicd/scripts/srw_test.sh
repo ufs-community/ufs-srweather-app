@@ -32,7 +32,7 @@ else
     we2e_experiment_base_dir="${workspace}/experiments"
 fi
 
-we2e_test_dir="${workspace}/regional_workflow/tests/WE2E"
+we2e_test_dir="${workspace}/tests/WE2E"
 
 we2e_test_file="${we2e_test_dir}/experiments.txt"
 
