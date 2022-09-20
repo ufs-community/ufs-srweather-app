@@ -996,7 +996,9 @@ configuration files of the primary WE2E tests...
       for (( k=0; k<=$((num_vars_to_extract-1)); k++ )); do
 
         var_name="${vars_to_extract[$k]}"
+        set +e
         cmd=$( grep "^[ ]*${var_name}=" <<< "${config_content}" )
+        set -e
         eval $cmd
 
         if [ -z "${!var_name+x}" ]; then
