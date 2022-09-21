@@ -97,7 +97,7 @@ Users can simply copy the container to their local working directory. For exampl
 
    cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel-srwapp-develop.img .
 
-Optionally, users may convert the container ``.img`` file to a writable sandbox by running:
+Users may convert the container ``.img`` file to a writable sandbox. This step is equired when running on Cheyenne but is optional on other systems:
 
 .. code-block:: console
 
@@ -125,7 +125,7 @@ Some users may prefer to issue the command without the ``sudo`` prefix. Whether 
 
 .. note::
    Users can choose to build a v2.0.0 release version of the container using a similar command:
-   
+
    .. code-block:: console
 
       sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
@@ -173,6 +173,9 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
    singularity exec -B /<local_base_dir>:/<container_dir> ./<container_name> cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
 where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel22-ufs-srwapp``) or the name of the ``.img`` container file. 
+
+.. hint::
+   On Jet, users may need to bind to an ``lfs`` directory (e.g., ``/lfs4``) rather than ``mnt``.
 
 If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the container sandbox and then bind it:
 
@@ -281,22 +284,22 @@ After this command runs, the working directory should contain ``srw.sh`` and a `
 
 From here, users can follow the steps below to configure the out-of-the-box SRW App case with an automated Rocoto workflow. For more detailed instructions on experiment configuration, users can refer to :numref:`Section %s <UserSpecificConfig>`. 
 
-   #. Copy the out-of-the-box case from ``config.community.sh`` to ``config.sh``. This file contains basic information (e.g., forecast date, grid, physics suite) required for the experiment.   
+   #. Copy the out-of-the-box case from ``config.community.yaml`` to ``config.yaml``. This file contains basic information (e.g., forecast date, grid, physics suite) required for the experiment.   
       
       .. code-block:: console
 
-         cd ufs-srweather-app/regional_workflow/ush
-         cp config.community.sh config.sh
+         cd ufs-srweather-app/ush
+         cp config.community.yaml config.yaml
 
       The default settings include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
-   #. Edit the ``MACHINE`` and ``ACCOUNT`` variables in ``config.sh``. See :numref:`Section %s <PlatEnv>` for details on valid values. 
+   #. Edit the ``MACHINE`` and ``ACCOUNT`` variables in ``config.yaml``. See :numref:`Section %s <PlatEnv>` for details on valid values. 
 
       .. note::
 
-         On ``JET``, users must also add ``PARTITION_DEFAULT="xjet"`` and ``PARTITION_FCST="xjet"`` to the ``config.sh`` file. 
+         On ``JET``, users must also add ``PARTITION_DEFAULT="xjet"`` and ``PARTITION_FCST="xjet"`` to the ``config.yaml`` file. 
    
-   #. Edit ``config.sh`` to include the correct data paths. For example, on Hera, simply uncomment lines at the bottom of the ``config.sh`` file: 
+   #. Edit ``config.yaml`` to include the correct data paths. For example, on Hera, simply uncomment lines at the bottom of the ``config.yaml`` file: 
 
       .. code-block:: console
 
@@ -308,7 +311,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
       On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
 
-   #. To automate the workflow, add these two lines to ``config.sh``: 
+   #. To automate the workflow, add these two lines to ``config.yaml``: 
 
       .. code-block:: console
 
@@ -330,11 +333,11 @@ Run the following command to generate the workflow:
 
 .. code-block:: console
 
-   ./generate_FV3LAM_wflow.sh
+   python generate_FV3LAM_wflow.py
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/1 * * * *`` or ``*/3 * * * *``. 
 
-The generated workflow will be in the experiment directory specified in the ``config.sh`` file in :numref:`Step %s <SetUpConfigFileC>`. The default location is ``expt_dirs/test_community``. To view experiment progress, users can ``cd`` to the experiment directory from ``ufs-srweather-app/regional_workflow/ush`` and run the ``rocotostat`` command to check the experiment's status:
+The generated workflow will be in the experiment directory specified in the ``config.yaml`` file in :numref:`Step %s <SetUpConfigFileC>`. The default location is ``expt_dirs/test_community``. To view experiment progress, users can ``cd`` to the experiment directory from ``ufs-srweather-app/regional_workflow/ush`` and run the ``rocotostat`` command to check the experiment's status:
 
 .. code-block:: console
 
@@ -351,10 +354,12 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
 
    crontab -e
    i
-   */3 * * * * cd /<path/to>/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
+   */3 * * * * cd /<path/to>/expt_dirs/test_community && python launch_FV3LAM_wflow.yaml called_from_cron="TRUE"
    esc
    :wq
    enter
+
+.. COMMENT: Check the crontab command to reflect python workflow.s
 
 where: 
 
@@ -364,7 +369,7 @@ where:
 New Experiment
 ===============
 
-To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.sh`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.sh``.
+To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``python generate_FV3LAM_wflow.py``.
 
 Plot the Output
 ===============
