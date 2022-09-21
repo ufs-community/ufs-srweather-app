@@ -47,7 +47,7 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     unavailable = {}
     # Check to make sure the files exist on disk
     for file_path in source_paths:
-        local_file_path = os.path.join(output_path, file_path.lstrip("/"))
+        local_file_path = os.path.join( os.getcwd(), file_path.lstrip("/") )
         if not os.path.exists(local_file_path):
             logging.info(f"File does not exist: {local_file_path}")
             unavailable["hpss"] = source_paths
@@ -347,7 +347,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
     input_locs = input_locs if isinstance(input_locs, list) else [input_locs]
 
-    orig_path = os.path.dirname(__file__)
+    orig_path = os.getcwd()
     unavailable = []
 
     locs_files = pair_locs_with_files(input_locs, file_templates, check_all)
@@ -509,9 +509,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
 
             output_path = fill_template(cla.output_path, cla.cycle_date, mem=mem)
             logging.info(f"Will place files in {os.path.abspath(output_path)}")
-            orig_path = os.path.dirname(__file__)
             logging.debug(f"CWD: {os.getcwd()}")
-            os.chdir(orig_path)
 
             if mem != -1:
                 archive_internal_dir = fill_template(
@@ -521,8 +519,6 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                 )
                 output_path = create_target_path(output_path)
                 logging.info(f"Will place files in {os.path.abspath(output_path)}")
-
-            os.chdir(output_path)
 
             source_paths = []
             for fcst_hr in cla.fcst_hrs:
@@ -581,8 +577,6 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
         # Report only the files that are truly unavailable
         if not expected == unavailable:
             return unavailable - expected
-
-    os.chdir(orig_path)
 
     return {}
 
