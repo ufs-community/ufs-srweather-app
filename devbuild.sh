@@ -38,7 +38,7 @@ OPTIONS
   --install-dir=INSTALL_DIR
       installation prefix
   --bin-dir=BIN_DIR
-      installation binary directory name ("bin" by default; any name is available)
+      installation binary directory name ("exec" by default; any name is available)
   --build-type=BUILD_TYPE
       build type; defaults to RELEASE
       (e.g. DEBUG | RELEASE | RELWITHDEBINFO)
