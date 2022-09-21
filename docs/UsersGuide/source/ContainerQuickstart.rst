@@ -124,7 +124,7 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
 .. note::
-   Users can choose to build a v2.0.0 release version of the container using a similar command:
+   Users can choose to build a release version of the container (SRW App v2.0.0) using a similar command:
 
    .. code-block:: console
 
@@ -142,7 +142,7 @@ Users working on HPC systems that do **not** have Rocoto installed must `install
    
    All NOAA Level 1 systems have Rocoto pre-installed. 
 
-The appropriate commands for allocating a compute node will vary based on the user's system and resource manager (e.g., Slurm, PBS). If the user's system has the Slurm resource manager, the allocation command will be similar to this:
+The appropriate commands for allocating a compute node will vary based on the user's system and resource manager (e.g., Slurm, PBS). If the user's system has the Slurm resource manager, the allocation command will follow this pattern:
 
 .. code-block:: console
 
@@ -150,7 +150,7 @@ The appropriate commands for allocating a compute node will vary based on the us
 
 For more information on the ``salloc`` command options, see Slurm's `documentation <https://slurm.schedmd.com/salloc.html>`__.
 
-If users have the PBS resource manager installed on their system, the allocation command will be similar to this:
+If users have the PBS resource manager installed on their system, the allocation command will follow this pattern:
 
 .. code-block:: console
 
