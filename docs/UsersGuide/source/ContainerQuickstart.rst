@@ -31,7 +31,7 @@ Install Singularity
 To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://sylabs.io/guides/3.2/user-guide/installation.html#>`__. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
 
 .. warning:: 
-   Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs`. Therefore, it is not possible to build the SRW, which uses the HPC-Stack, inside a Docker container on an HPC system. However, a Singularity image may be built directly from a Docker image for use on the system.
+   Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs`. Therefore, it is not possible to build the SRW App, which uses the HPC-Stack, inside a Docker container on an HPC system. However, a Singularity image may be built directly from a Docker image for use on the system.
 
 Working in the Cloud or on HPC Systems
 -----------------------------------------
@@ -97,11 +97,11 @@ Users can simply copy the container to their local working directory. For exampl
 
    cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel-srwapp-develop.img .
 
-Users may convert the container ``.img`` file to a writable sandbox. This step is equired when running on Cheyenne but is optional on other systems:
+Users may convert the container ``.img`` file to a writable sandbox. This step is required when running on Cheyenne but is optional on other systems:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp ubuntu20.04-intel-srwapp-develop.img
+   singularity build --sandbox ubuntu20.04-intel-srwapp ubuntu20.04-intel-srwapp-develop.img
 
 When making a writable sandbox on Level 1 systems, the following warnings commonly appear and can be ignored:
 
@@ -119,7 +119,7 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 
 .. code-block:: console
 
-   sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:develop
+   sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:develop
 
 Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
@@ -128,7 +128,7 @@ Some users may prefer to issue the command without the ``sudo`` prefix. Whether 
 
    .. code-block:: console
 
-      sudo singularity build --sandbox ubuntu20.04-intel22-ufs-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
+      sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
 
 
 .. _WorkOnHPC:
@@ -172,7 +172,7 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
    singularity exec -B /<local_base_dir>:/<container_dir> ./<container_name> cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel22-ufs-srwapp``) or the name of the ``.img`` container file. 
+where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel-srwapp``) or the name of the ``.img`` container file. 
 
 .. hint::
    On Jet, users may need to bind to an ``lfs`` directory (e.g., ``/lfs4``) rather than ``mnt``.
@@ -182,7 +182,7 @@ If the command worked properly, ``stage-srw.sh`` should appear in the local dire
 .. code-block:: console
 
    mkdir <path/to/container>/user1234
-   singularity exec -B /user1234:/user1234 ./ubuntu20.04-intel22-ufs-srwapp cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
+   singularity exec -B /user1234:/user1234 ./ubuntu20.04-intel-srwapp cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
 .. attention::
    Be sure to bind the directory that contains the experiment data! 
@@ -191,7 +191,7 @@ To explore the container and view available directories, users can ``cd`` into i
 
 .. code-block:: console
 
-   singularity shell ./ubuntu20.04-intel22-ufs-srwapp.img
+   singularity shell ./ubuntu20.04-intel-srwapp.img
    cd /
    ls 
 
@@ -274,7 +274,7 @@ where:
    * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``)
    * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``)
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <PlatEnv>` for a full list of options. 
-   * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel22-ufs-srwapp`` or ``ubuntu20.04-intel22-ufs-srwapp.img`` by default).
+   * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-develop.img`` by default).
 
 After this command runs, the working directory should contain ``srw.sh`` and a ``ufs-srweather-app`` directory. 
 
