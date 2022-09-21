@@ -293,30 +293,40 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
       The default settings include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
-   #. Edit the ``MACHINE`` and ``ACCOUNT`` variables in ``config.yaml``. See :numref:`Section %s <PlatEnv>` for details on valid values. 
+   #. Edit the ``MACHINE`` and ``ACCOUNT`` variables in the ``user:`` section of ``config.yaml``. See :numref:`Section %s <PlatEnv>` for details on valid values. 
 
       .. note::
 
-         On ``JET``, users must also add ``PARTITION_DEFAULT="xjet"`` and ``PARTITION_FCST="xjet"`` to the ``config.yaml`` file. 
+         On ``JET``, users must also add ``PARTITION_DEFAULT: "xjet"`` and ``PARTITION_FCST: "xjet"`` to the ``platform:`` section of the ``config.yaml`` file. 
    
-   #. Edit ``config.yaml`` to include the correct data paths. For example, on Hera, simply uncomment lines at the bottom of the ``config.yaml`` file: 
+   #. Edit the ``task_get_extrn_ics:`` section of the ``config.yaml`` to include the correct data paths for initial conditions files. For example, on Hera, add: 
 
       .. code-block:: console
 
-         USE_USER_STAGED_EXTRN_FILES="TRUE"
-         EXTRN_MDL_SOURCE_BASEDIR_ICS="/scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518"
-         EXTRN_MDL_FILES_ICS=( "gfs.t18z.pgrb2.0p25.f000" )
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS="/scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518"
-         EXTRN_MDL_FILES_LBCS=( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
+         USE_USER_STAGED_EXTRN_FILES: true
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+         EXTRN_MDL_FILES_ICS: []
+         EXTRN_MDL_DATA_STORES: disk
+
+   #. Edit the ``task_get_extrn_lbcs:`` section of the ``config.yaml`` to include the correct data paths for lateral boundary conditions files. For example, on Hera, add: 
+   
+      .. code-block:: console
+
+         USE_USER_STAGED_EXTRN_FILES: true
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+         EXTRN_MDL_FILES_LBCS: []
+         EXTRN_MDL_DATA_STORES: disk
+
+
 
       On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
 
-   #. To automate the workflow, add these two lines to ``config.yaml``: 
+   #. To automate the workflow, add these two lines to ``workflow:`` section of ``config.yaml``: 
 
       .. code-block:: console
 
-         USE_CRON_TO_RELAUNCH="TRUE"
-         CRON_RELAUNCH_INTVL_MNTS="02"
+         USE_CRON_TO_RELAUNCH: "TRUE"
+         CRON_RELAUNCH_INTVL_MNTS: "02"
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via :term:`crontab` is the simplest option. 
 
@@ -341,7 +351,7 @@ The generated workflow will be in the experiment directory specified in the ``co
 
 .. code-block:: console
 
-   cd ../../../expt_dirs/test_community
+   cd ../../expt_dirs/test_community
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
 Users can track the experiment's progress by reissuing the ``rocotostat`` command above every so often until the experiment runs to completion. For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for information on how to run the workflow without Rocoto. 
@@ -354,7 +364,7 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
 
    crontab -e
    i
-   */3 * * * * cd /<path/to>/expt_dirs/test_community && python launch_FV3LAM_wflow.yaml called_from_cron="TRUE"
+   */3 * * * * cd /<path/to>/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
    esc
    :wq
    enter
