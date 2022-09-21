@@ -175,7 +175,7 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel-srwapp``) or the name of the ``.img`` container file. 
 
 .. hint::
-   On Jet, users may need to bind to an ``lfs`` directory (e.g., ``/lfs4``) rather than ``mnt``.
+   On Jet, users may need to bind to an ``lfs`` directory (e.g., ``/lfs4``) rather than ``/mnt``.
 
 If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the container sandbox and then bind it:
 
@@ -191,7 +191,7 @@ To explore the container and view available directories, users can ``cd`` into i
 
 .. code-block:: console
 
-   singularity shell ./ubuntu20.04-intel-srwapp.img
+   singularity shell ./ubuntu20.04-intel-srwapp-develop.img
    cd /
    ls 
 
