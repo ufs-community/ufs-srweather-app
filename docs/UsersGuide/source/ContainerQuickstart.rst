@@ -11,7 +11,7 @@ The "out-of-the-box" SRW App case described in this User's Guide builds a weathe
 .. attention::
 
    * The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
-   * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Chapter %s <NCQuickstart>` for a Quick Start Guide to building **without** a container or :numref:`Chapter %s <BuildRunSRW>` for a **detailed** guide to building the SRW App without a container.
+   * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Chapter %s <NCQuickstart>` for a Quick Start Guide or :numref:`Chapter %s <BuildRunSRW>` for a detailed guide to building the SRW App **without** a container. 
 
 .. _DownloadCodeC:
 
@@ -299,6 +299,15 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
          On ``JET``, users must also add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file. 
    
+   #. To automate the workflow, add these two lines to ``workflow:`` section of ``config.yaml``: 
+
+      .. code-block:: console
+
+         USE_CRON_TO_RELAUNCH: TRUE
+         CRON_RELAUNCH_INTVL_MNTS: 02
+
+      There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via :term:`crontab` is the simplest option. 
+
    #. Edit the ``task_get_extrn_ics:`` section of the ``config.yaml`` to include the correct data paths for initial conditions files. For example, on Hera, add: 
 
       .. code-block:: console
@@ -318,15 +327,6 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          EXTRN_MDL_DATA_STORES: disk
 
       On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
-
-   #. To automate the workflow, add these two lines to ``workflow:`` section of ``config.yaml``: 
-
-      .. code-block:: console
-
-         USE_CRON_TO_RELAUNCH: TRUE
-         CRON_RELAUNCH_INTVL_MNTS: 02
-
-      There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via :term:`crontab` is the simplest option. 
 
 .. _GenerateWorkflowC: 
 
