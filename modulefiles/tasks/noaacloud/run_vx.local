@@ -3,5 +3,5 @@
 module load miniconda_regional_workflow
 module load rocoto
 
+prepend-path LD_LIBRARY_PATH /contrib/spack/apps/miniconda/3.9.12/lib
 setenv SRW_ENV regional_workflow
-
