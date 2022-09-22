@@ -314,6 +314,9 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, this technique (automation via :term:`crontab`) is the simplest option. 
 
+      note::
+      On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
+
    #. Edit the ``task_get_extrn_ics:`` section of the ``config.yaml`` to include the correct data paths to the initial conditions files. For example, on Hera, add: 
 
       .. code-block:: console
