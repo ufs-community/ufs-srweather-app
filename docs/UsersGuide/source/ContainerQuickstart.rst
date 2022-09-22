@@ -305,16 +305,16 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
          On ``JET``, users must also add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file. 
    
-   #. To automate the workflow, add these two lines to ``workflow:`` section of ``config.yaml``: 
+   #. To automate the workflow, add these two lines to the ``workflow:`` section of ``config.yaml``: 
 
       .. code-block:: console
 
          USE_CRON_TO_RELAUNCH: TRUE
          CRON_RELAUNCH_INTVL_MNTS: 02
 
-      There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, automation via :term:`crontab` is the simplest option. 
+      There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, this technique (automation via :term:`crontab`) is the simplest option. 
 
-   #. Edit the ``task_get_extrn_ics:`` section of the ``config.yaml`` to include the correct data paths for initial conditions files. For example, on Hera, add: 
+   #. Edit the ``task_get_extrn_ics:`` section of the ``config.yaml`` to include the correct data paths to the initial conditions files. For example, on Hera, add: 
 
       .. code-block:: console
 
@@ -323,7 +323,9 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          EXTRN_MDL_FILES_ICS: []
          EXTRN_MDL_DATA_STORES: disk
 
-   #. Edit the ``task_get_extrn_lbcs:`` section of the ``config.yaml`` to include the correct data paths for lateral boundary conditions files. For example, on Hera, add: 
+      On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` (below) to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
+
+   #. Edit the ``task_get_extrn_lbcs:`` section of the ``config.yaml`` to include the correct data paths to the lateral boundary conditions files. For example, on Hera, add: 
 
       .. code-block:: console
 
@@ -332,7 +334,6 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          EXTRN_MDL_FILES_LBCS: []
          EXTRN_MDL_DATA_STORES: disk
 
-      On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
 
 .. _GenerateWorkflowC: 
 
@@ -349,9 +350,9 @@ Run the following command to generate the workflow:
 
    python generate_FV3LAM_wflow.py
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/1 * * * *`` or ``*/3 * * * *``. 
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/3 * * * *`` (or similar). 
 
-The generated workflow will be in the experiment directory specified in the ``config.yaml`` file in :numref:`Step %s <SetUpConfigFileC>`. The default location is ``expt_dirs/test_community``. To view experiment progress, users can ``cd`` to the experiment directory from ``ufs-srweather-app/regional_workflow/ush`` and run the ``rocotostat`` command to check the experiment's status:
+The generated workflow will be in the experiment directory specified in the ``config.yaml`` file in :numref:`Step %s <SetUpConfigFileC>`. The default location is ``expt_dirs/test_community``. To view experiment progress, users can ``cd`` to the experiment directory from ``ufs-srweather-app/ush`` and run the ``rocotostat`` command to check the experiment's status:
 
 .. code-block:: console
 
