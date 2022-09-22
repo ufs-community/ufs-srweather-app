@@ -187,7 +187,7 @@ If the command worked properly, ``stage-srw.sh`` should appear in the local dire
 .. attention::
    Be sure to bind the directory that contains the experiment data! 
 
-To explore the container and view available directories, users can ``cd`` into it and run ``ls`` (if it was built as a sandbox) or run the following commands:
+To explore the container and view available directories, users can either ``cd`` into the container and run ``ls`` (if it was built as a sandbox) or run the following commands:
 
 .. code-block:: console
 
@@ -210,7 +210,7 @@ Users can run ``exit`` to exit the shell.
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available, as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. For Level 2-4 systems, the data must be added manually by the user. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. For Level 2-4 systems, the data must be added manually by the user. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GenerateForecastC:
 
@@ -235,7 +235,7 @@ Copy the container's modulefiles to the local working directory so that the file
 
    singularity exec -B /<local_base_dir>:/<container_dir> ./<container_name> cp -r /opt/ufs-srweather-app/modulefiles .
 
-After this command runs, the working directory should contain the ``modulefiles`` directory. 
+After this command runs, the local working directory should contain the ``modulefiles`` directory. 
 
 To activate the regional workflow, run the following commands: 
 
@@ -276,11 +276,17 @@ where:
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <PlatEnv>` for a full list of options. 
    * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-develop.img`` by default).
 
-After this command runs, the working directory should contain ``srw.sh`` and a ``ufs-srweather-app`` directory. 
+For example, on Hera, the command would be:
+
+.. code-block:: console
+
+   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=ubuntu20.04-intel-srwapp-develop.img
 
 .. attention::
 
    The user must have an Intel compiler and MPI on their system because the container uses an Intel compiler and MPI. Intel compilers are now available for free as part of `Intel's oneAPI Toolkit <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__.
+
+After this command runs, the working directory should contain ``srw.sh`` and a ``ufs-srweather-app`` directory. 
 
 From here, users can follow the steps below to configure the out-of-the-box SRW App case with an automated Rocoto workflow. For more detailed instructions on experiment configuration, users can refer to :numref:`Section %s <UserSpecificConfig>`. 
 
