@@ -20,6 +20,10 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
+workflow_switches:
+  RUN_TASK_MAKE_GRID: false
+  RUN_TASK_MAKE_OROG: false
+  RUN_TASK_MAKE_SFC_CLIMO: false
 nco:
   NET: rrfs
   model_ver: v1.0
