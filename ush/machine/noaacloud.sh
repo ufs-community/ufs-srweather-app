@@ -70,5 +70,11 @@ export build_mod_fn="wflow_noaacloud"
 BUILD_MOD_FN="wflow_noaacloud"
 
 # MET Installation Locations
-# MET Plus is not yet supported on noaacloud
+MET_INSTALL_DIR=${MET_INSTALL_DIR:-"/contrib/EPIC/spack-stack/envs/ufs-srw-dev.intel/install/intel/2021.3.0/met-10.1.0-mqwqjxt"}
+METPLUS_PATH=${METPLUS_PATH:-"/contrib/EPIC/spack-stack/envs/ufs-srw-dev.intel/install/intel/2021.3.0/metplus-4.1.0-t4mkmbg"}
+CCPA_OBS_DIR=${CCPA_OBS_DIR:-"${staged_data_dir}/obs_data/ccpa/proc"}
+MRMS_OBS_DIR=${MRMS_OBS_DIR:-"${staged_data_dir}/obs_data/mrms/proc"}
+NDAS_OBS_DIR=${NDAS_OBS_DIR:-"${staged_data_dir}/obs_data/ndas/proc"}
+MET_BIN_EXEC=${MET_BIN_EXEC:-"bin"}
+
 . /contrib/EPIC/.bash_conda
