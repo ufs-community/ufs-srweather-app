@@ -65,9 +65,8 @@ print_info_msg "$VERBOSE" "Starting ensemble-stat verification"
 #
 #-----------------------------------------------------------------------
 #
-yyyymmdd=${CDATE:0:8}
-hh=${CDATE:8:2}
-cyc=$hh
+yyyymmdd=${PDY}
+hh=${cyc}
 export CDATE
 export hh
 

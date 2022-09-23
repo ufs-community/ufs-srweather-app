@@ -107,8 +107,8 @@ fi
 #-----------------------------------------------------------------------
 #
 
-hh=${CDATE:8:2}
-yyyymmdd=${CDATE:0:8}
+yyyymmdd=${PDY}
+hh=${cyc}
 export EXTRN_MDL_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
 
 #

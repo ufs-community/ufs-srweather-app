@@ -520,8 +520,8 @@ POST_STEP
 #
 if [ ${WRITE_DOPOST} = "TRUE" ]; then
 
-  yyyymmdd=${CDATE:0:8}
-  hh=${CDATE:8:2}
+  yyyymmdd=${PDY}
+  hh=${cyc}
   cyc=$hh
   fmn="00"
 

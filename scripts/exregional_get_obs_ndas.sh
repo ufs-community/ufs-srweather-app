@@ -46,9 +46,8 @@ if [[ ! -d "$ndas_proc" ]]; then
 fi
 
 # Initialization
-yyyymmdd=${CDATE:0:8}
-hh=${CDATE:8:2}
-cyc=$hh
+yyyymmdd=${PDY}
+hh=${cyc}
 
 init=${CDATE}${hh}
 
