@@ -93,5 +93,6 @@ module list
   tests_file=${auto_file} \
   machine=${machine} \
   account=${account} \
-  exec_subdir=${exec_subdir}
+  exec_subdir=${exec_subdir} \
+  run_envir="community"
 
