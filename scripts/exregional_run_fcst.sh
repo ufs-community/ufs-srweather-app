@@ -432,6 +432,15 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   cp_vrfy ${post_config_fp} ./postxconfig-NT_FH00.txt
   cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
   cp_vrfy ${UPP_DIR}/parm/params_grib2_tbl_new .
+  # Set itag for inline-post:
+cat > itag <<EOF
+&MODEL_INPUTS
+ MODELNAME='FV3R'
+/
+&NAMPGB
+ KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,
+/
+EOF
 fi
 
 if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
