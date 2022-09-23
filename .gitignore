@@ -1,0 +1,13 @@
+bin/
+exec/
+build/
+include/
+lib/
+share/
+sorc/*/
+ush/__pycache__/
+ush/config.yaml
+ush/python_utils/__pycache__/
+ush/*.swp
+
+*.swp
