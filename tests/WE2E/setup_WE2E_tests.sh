@@ -62,13 +62,16 @@ EXPTS_DIR=${TOP_DIR}/expt_dirs
 # Set the path to the machine-specific test suite file.
 #-----------------------------------------------------------------------
 
-auto_file=${scrfunc_dir}/machine_suites/fundamental.txt
+auto_file=${scrfunc_dir}/machine_suites/${machine}.txt
+if [ ! -f ${auto_file} ]; then
+    auto_file=${scrfunc_dir}/machine_suites/fundamental.txt
+fi
 
 #----------------------------------------------------------------------
 # Use exec_subdir consistent with the automated build.
 #----------------------------------------------------------------------
 
-exec_subdir='bin_intel/exec'
+exec_subdir='install_intel/exec'
 
 #-----------------------------------------------------------------------
 # Run E2E Tests
