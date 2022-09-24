@@ -7,7 +7,7 @@
 #
 # Usage:  see function usage below
 #
-# Examples: ./build.sh hera >& test.out &
+# Examples: ./build.sh hera intel all>& test.out &
 #
 set -eux    # Uncomment for debugging
 #=======================================================================
@@ -16,15 +16,14 @@ fail() { echo -e "\n$1\n" >> ${TEST_OUTPUT} && exit 1; }
 
 function usage() {
   echo
-  echo "Usage: $0 machine"
+  echo "Usage: $0 machine [compiler] [all/default]"
   echo
   exit 1
 }
 
 machines=( hera jet cheyenne orion wcoss2 gaea odin singularity macos noaacloud )
 
-[[ $# -eq 2 ]] && usage
-
+[[ $# -gt 4 ]] && usage
 
 #-----------------------------------------------------------------------
 # Set some directories
@@ -41,6 +40,10 @@ printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
 
 machine=$(echo "${MACHINE}" | tr '[A-Z]' '[a-z]')  # scripts in sorc need lower case machine name
 
+compiler=${2:-"intel"}
+
+components=${3:-"default"}
+
 #-----------------------------------------------------------------------
 # Check that machine is valid
 #-----------------------------------------------------------------------
@@ -50,18 +53,6 @@ else
   echo "ERROR: machine ${machine} is NOT valid"
   exit 1
 fi
-
-#-----------------------------------------------------------------------
-# Set compilers to be tested depending on machine
-#-----------------------------------------------------------------------
-if [ "${machine}" == "cheyenne" ] ; then
-  compilers=( intel gnu )
-elif [ "${machine}" == "macos" ] || [ "${machine}" == "singularity" ] ; then
-  compilers=( gnu )
-else
-  compilers=( intel )
-fi
-
 
 build_it=0        # Set to 1 to skip build (for testing pass/fail criteria)
 #-----------------------------------------------------------------------
@@ -99,63 +90,63 @@ declare -a executables_created=( chgres_cube \
                                  vcoord_gen )
 
 
-#-----------------------------------------------------------------------
-# Array of all optional GSI executables built
-#-----------------------------------------------------------------------
-declare -a executables_gsi_created=( enkf.x \
-                                     gsi.x \
-                                     nc_diag_cat.x \
-                                     ncdiag_cat_serial.x \
-                                     test_nc_unlimdims.x )
-
-#-----------------------------------------------------------------------
-# Array of all optional rrfs_utl executables built
-#-----------------------------------------------------------------------
-declare -a executables_rrfs_utl_created=( adjust_soiltq.exe \
-                                          check_imssnow_fv3lam.exe \
-                                          fv3lam_nonvarcldana.exe \
-                                          gen_annual_maxmin_GVF.exe \
-                                          gen_cs.exe \
-                                          gen_ensmean_recenter.exe \
-                                          lakesurgery.exe \
-                                          process_imssnow_fv3lam.exe \
-                                          process_larccld.exe \
-                                          process_Lightning.exe \
-                                          process_metarcld.exe \
-                                          process_NSSL_mosaic.exe \
-                                          process_updatesst.exe \
-                                          ref2tten.exe \
-                                          update_bc.exe \
-                                          update_GVF.exe \
-                                          update_ice.exe \
-                                          use_raphrrr_sfc.exe )
+if [ $components = "all" ]; then
+    #-----------------------------------------------------------------------
+    # Array of all optional GSI executables built
+    #-----------------------------------------------------------------------
+    executables_created+=( enkf.x \
+                           gsi.x \
+                           nc_diag_cat.x \
+                           ncdiag_cat_serial.x \
+                           test_nc_unlimdims.x )
+    
+    #-----------------------------------------------------------------------
+    # Array of all optional rrfs_utl executables built
+    #-----------------------------------------------------------------------
+    executables_created=( adjust_soiltq.exe \
+                          check_imssnow_fv3lam.exe \
+                          fv3lam_nonvarcldana.exe \
+                          gen_annual_maxmin_GVF.exe \
+                          gen_cs.exe \
+                          gen_ensmean_recenter.exe \
+                          lakesurgery.exe \
+                          process_imssnow_fv3lam.exe \
+                          process_larccld.exe \
+                          process_Lightning.exe \
+                          process_metarcld.exe \
+                          process_NSSL_mosaic.exe \
+                          process_updatesst.exe \
+                          ref2tten.exe \
+                          update_bc.exe \
+                          update_GVF.exe \
+                          update_ice.exe \
+                          use_raphrrr_sfc.exe )
+fi
 
 #-----------------------------------------------------------------------
 # Set up the build environment and run the build script.
 #-----------------------------------------------------------------------
-  for compiler in "${compilers[@]}"; do
-    BUILD_DIR=${TOP_DIR}/build_${compiler}
-    INSTALL_DIR=${TOP_DIR}/install_${compiler}
-    EXEC_DIR=${INSTALL_DIR}/exec
-    if [ $build_it -eq 0 ] ; then
-      ./devbuild.sh --platform=${machine} --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${INSTALL_DIR} \
-        --remove all || fail "Build ${machine} ${compiler} FAILED"
-    fi    # End of skip build for testing
+BUILD_DIR=${TOP_DIR}/build_${compiler}
+INSTALL_DIR=${TOP_DIR}/install_${compiler}
+EXEC_DIR=${INSTALL_DIR}/exec
+if [ $build_it -eq 0 ] ; then
+  ./devbuild.sh --platform=${machine} --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${INSTALL_DIR} \
+    --remove ${components} || fail "Build ${machine} ${compiler} FAILED"
+fi    # End of skip build for testing
 
-  #-----------------------------------------------------------------------
-  # check for existence of executables.
-  #-----------------------------------------------------------------------
-  n_fail=0
-  for file in "${executables_created[@]}" "${executables_gsi_created[@]}" "${executables_rrfs_utl_created[@]}" ; do
-    exec_file=${EXEC_DIR}/${file}
-    if [ -f ${exec_file} ]; then
-      echo "SUCCEED: ${compiler} executable file ${exec_file} exists" >> ${TEST_OUTPUT}
-    else
-      echo "FAIL: ${compiler} executable file ${exec_file} does NOT exist" >> ${TEST_OUTPUT}
-      let "n_fail=n_fail+1"
-    fi
-  done
-done   # End compiler loop
+#-----------------------------------------------------------------------
+# check for existence of executables.
+#-----------------------------------------------------------------------
+n_fail=0
+for file in "${executables_created[@]}" ; do
+  exec_file=${EXEC_DIR}/${file}
+  if [ -f ${exec_file} ]; then
+    echo "SUCCEED: ${compiler} executable file ${exec_file} exists" >> ${TEST_OUTPUT}
+  else
+    echo "FAIL: ${compiler} executable file ${exec_file} does NOT exist" >> ${TEST_OUTPUT}
+    let "n_fail=n_fail+1"
+  fi
+done
 #-----------------------------------------------------------------------
 # Set message for output
 #-----------------------------------------------------------------------

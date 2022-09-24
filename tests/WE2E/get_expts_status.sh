@@ -288,6 +288,7 @@ must be checked."
 # Source the variable definitions file.
 #
     . "./${var_defns_fn}"
+    export DEBUG="FALSE"
 #
 # If the workflow variable EXPT_SUBDIR is the same as the name of the
 # current subdirectory, then assume this subdirectory contains an active

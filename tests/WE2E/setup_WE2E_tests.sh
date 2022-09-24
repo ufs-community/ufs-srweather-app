@@ -25,10 +25,12 @@
 
 function usage {
   echo
-  echo "Usage: $0 machine slurm_account  | -h"
+  echo "Usage: $0 machine slurm_account [compiler] [test_type] | -h"
   echo
   echo "       machine       [required] is one of: ${machines[@]}"
   echo "       slurm_account [required] case sensitive name of the user-specific slurm account"
+  echo "       compiler      [optional] compiler used for build"
+  echo "       test_type     [optional] test type: fundamental or comprehensive or any other name"
   echo "       -h            display this help"
   echo
   exit 1
@@ -42,8 +44,9 @@ if [ "$1" = "-h" ] ; then usage ; fi
 
 machine=$1
 machine=$(echo "${machine}" | tr '[A-Z]' '[a-z]')  # scripts in sorc need lower case machine name
-
 account=$2
+compiler=${3:-intel}
+test_type=${4:-custom}
 
 #-----------------------------------------------------------------------
 # Set directories
@@ -62,16 +65,16 @@ EXPTS_DIR=${TOP_DIR}/expt_dirs
 # Set the path to the machine-specific test suite file.
 #-----------------------------------------------------------------------
 
-auto_file=${scrfunc_dir}/machine_suites/${machine}.txt
+auto_file=${scrfunc_dir}/machine_suites/${test_type}.${machine}
 if [ ! -f ${auto_file} ]; then
-    auto_file=${scrfunc_dir}/machine_suites/fundamental.txt
+    auto_file=${scrfunc_dir}/machine_suites/${test_type}
 fi
 
 #----------------------------------------------------------------------
 # Use exec_subdir consistent with the automated build.
 #----------------------------------------------------------------------
 
-exec_subdir='install_intel/exec'
+exec_subdir="install_${compiler}/exec"
 
 #-----------------------------------------------------------------------
 # Run E2E Tests
@@ -84,7 +87,16 @@ echo "-- Load environment =>" $env_file
 source ${SRW_APP_DIR}/etc/lmod-setup.sh ${machine}
 module use ${env_path}
 module load ${env_file}
-conda activate regional_workflow
+
+if [[ "${platform}" == 'cheyenne' ]]; then
+    conda activate "/glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow"
+else
+    if [[ "${platform}" == 'noaacloud' && -z "${PROJ_LIB-}" ]]; then
+        PROJ_LIB=''
+    fi
+
+    conda activate regional_workflow
+fi
 
 module list
 
@@ -94,6 +106,7 @@ module list
   machine=${machine} \
   account=${account} \
   exec_subdir=${exec_subdir} \
+  compiler=${compiler} \
   debug="TRUE" \
   verbose="TRUE" \
   run_envir="community"
