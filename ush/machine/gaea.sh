@@ -74,3 +74,8 @@ NDAS_OBS_DIR=${NDAS_OBS_DIR:-"${staged_data_dir}/obs_data/ndas/proc"}
 MET_BIN_EXEC=${MET_BIN_EXEC:-"bin"}
 
 # Test Data Locations
+TEST_COMIN="${staged_data_dir}/COMGFS"
+TEST_PREGEN_BASEDIR="${staged_data_dir}/FV3LAM_pregen"
+TEST_EXTRN_MDL_SOURCE_BASEDIR="${staged_data_dir}/input_model_data"
+TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS="/lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir"
+TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS="/lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir"
