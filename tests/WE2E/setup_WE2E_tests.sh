@@ -11,12 +11,12 @@
 #  The script is dependent on a successful build of this repo using the
 #  test/build.sh script in the ufs-srweather-app repository.  The UFS
 #  build must be completed in a particular manner for this script to
-#  function properly, notably the location of the build and bin
+#  function properly, notably the location of the build and install
 #  directories: 
 #    BUILD_DIR=${APP_DIR}/build_${compiler}
-#    BIN_DIR=${APP_DIR}/bin_${compiler}
+#    INSTALL_DIR=${APP_DIR}/install_${compiler}
 #
-#  Example: ./end_to_end_tests.sh hera zrtrr
+#  Example: ./setup_WE2E_tests.sh hera zrtrr
 #----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------

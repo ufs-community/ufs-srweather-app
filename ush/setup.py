@@ -1249,12 +1249,6 @@ def setup():
     #
     global RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO
     global RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID, RUN_TASK_VX_ENSPOINT
-    global SYMLINK_FIX_FILES
-
-    if RUN_ENVIR == "nco":
-        if not SYMLINK_FIX_FILES:
-            SYMLINK_FIX_FILES = True
-            print_info_msg("""Setting SYMLINK_FIX_FILES={SYMLINK_FIX_FILES}""")
 
     # Fix file location
     if RUN_TASK_MAKE_GRID:
