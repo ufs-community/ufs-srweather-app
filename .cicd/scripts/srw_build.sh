@@ -24,17 +24,13 @@ else
     platform="${SRW_PLATFORM}"
 fi
 
-build_dir="${workspace}/build"
+# Build and install
+cd ${workspace}/test
+./build.sh ${platform} ${SRW_COMPILER}
+cd -
 
-# Set build related environment variables and load required modules.
-source "${workspace}/etc/lmod-setup.sh" "${platform}"
-module use "${workspace}/modulefiles"
-module load "build_${platform}_${SRW_COMPILER}"
+# Create combined log file for upload to s3
+build_dir="${workspace}/build_${SRW_COMPILER}"
+cat ${build_dir}/log.cmake ${build_dir}/log.make \
+    >${build_dir}/srw_build-${platform}-${SRW_COMPILER}.log
 
-# Compile SRW application and install to repository root.
-mkdir "${build_dir}"
-pushd "${build_dir}"
-    build_log_file="${build_dir}/srw_build-${platform}-${SRW_COMPILER}.log"
-    cmake -DCMAKE_INSTALL_PREFIX="${workspace}" "${workspace}" | tee "${build_log_file}"
-    make -j "${MAKE_JOBS}" | tee --append "${build_log_file}"
-popd

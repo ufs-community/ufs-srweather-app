@@ -289,6 +289,7 @@ must be checked."
 # Source the variable definitions file.
 #
     . "./${var_defns_fn}"
+    export DEBUG="FALSE"
 #
 # If the workflow variable EXPT_SUBDIR is the same as the name of the
 # current subdirectory, then assume this subdirectory contains an active
@@ -403,12 +404,11 @@ Checking workflow status of experiment \"${expt_subdir}\" ..."
 #
   cd_vrfy "${expt_subdir}"
   launch_msg=$( "${launch_wflow_fn}" 2>&1 )
-  log_tail=$( tail -n ${num_log_lines} "${launch_wflow_log_fn}" )
 #
 # Print the workflow status to the screen.
 #
   # The "tail -1" is to get only the last occurrence of "Workflow status"
-  wflow_status=$( printf "${log_tail}" | grep "Workflow status:" | tail -1 )
+  wflow_status=$( grep "Workflow status:" "${launch_wflow_log_fn}" | tail -1 )
   # Not sure why this doesn't work to strip leading spaces.
 #  wflow_status="${wflow_status## }"
   # Remove leading spaces.
@@ -423,15 +423,11 @@ $separator
 #
   msg=$msg"
 ${wflow_status}
-
-The last ${num_log_lines} lines of this experiment's workflow launch log file 
+The last ${num_log_lines} lines of the workflow launch log file 
 (\"${launch_wflow_log_fn}\") are:
-
-${log_tail}
-
-
 "
   print_info_msg "$msg" >> "${expts_status_fp}"
+  tail -n ${num_log_lines} ${launch_wflow_log_fn} >> "${expts_status_fp}" 
 #
 # Change location back to the experiments base directory.
 #

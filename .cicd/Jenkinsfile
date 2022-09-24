@@ -69,7 +69,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1' //, 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'cheyenne', 'gaea', 'hera', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -83,7 +83,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            values 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1' //, 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            values 'gaea', 'hera', 'jet', 'orion' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                         }
 
                         axis {
@@ -97,6 +97,7 @@ pipeline {
                     BRANCH_NAME_ESCAPED = env.BRANCH_NAME.replace('/', '_')
                     BUILD_VERSION = "${env.SRW_PLATFORM}-${env.SRW_COMPILER}-${env.BRANCH_NAME_ESCAPED}-${env.BUILD_NUMBER}"
                     BUILD_NAME = "ufs-srweather-app_${env.BUILD_VERSION}"
+                    INSTALL_NAME = "install_${env.SRW_COMPILER}"
                 }
 
                 stages {
@@ -127,7 +128,7 @@ pipeline {
 
                         post {
                             success {
-                                sh 'tar --create --gzip --verbose --file "${WORKSPACE}/${BUILD_NAME}.tgz" bin include lib share'
+                                sh 'tar --create --gzip --verbose --file "${WORKSPACE}/${BUILD_NAME}.tgz" "${INSTALL_NAME}"'
                                 s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.BUILD_NAME}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "build/srw_build-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.log", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
                             }
                         }
@@ -140,7 +141,7 @@ pipeline {
                         }
 
                         environment {
-                            SRW_WE2E_EXPERIMENT_BASE_DIR = "${env.WORKSPACE}/experiments"
+                            SRW_WE2E_EXPERIMENT_BASE_DIR = "${env.WORKSPACE}/expt_dirs"
                         }
 
                         steps {
