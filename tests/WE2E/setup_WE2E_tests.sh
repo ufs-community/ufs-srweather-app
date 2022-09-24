@@ -94,5 +94,7 @@ module list
   machine=${machine} \
   account=${account} \
   exec_subdir=${exec_subdir} \
+  debug="TRUE" \
+  verbose="TRUE" \
   run_envir="community"
 
