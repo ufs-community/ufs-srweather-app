@@ -24,30 +24,13 @@
 #
 set +x
 
-# Id for MPMD jobs
-if [[ -v '1' ]]; then
-    local id="(${1})"
-else
-    local id=""
-fi
-
-# Stage our variables
-export STRICT=${STRICT:-"TRUE"}
-export TRACE=${DEBUG:-"FALSE"}
-export ERR_EXIT_CMD=""
-export TRACE_CMD=""
-
-if [[ $STRICT == "TRUE" ]]; then
-    # Exit on error and undefined variable
-    export ERR_EXIT_CMD="set -eu"
-fi
-if [[ $TRACE == "TRUE" ]]; then
-    export TRACE_CMD="set -x"
-    # Print the script name and line number of each command as it is executed
-    export PS4='+ $(basename $BASH_SOURCE)[$LINENO]'"$id: "
-fi
-
-# Only when not called from a function
+#
+#-----------------------------------------------------------------------
+#
+# Print time elaspsed in a script (not done when called from a function)
+#
+#-----------------------------------------------------------------------
+#
 if [[ -z ${FUNCNAME[0]} ]]; then
 
     function postamble() {
@@ -83,10 +66,10 @@ if [[ -z ${FUNCNAME[0]} ]]; then
     }
     
     # Record the start time so we can calculate the elapsed time later
-    local start_time=$(date +%s)
+    start_time=$(date +%s)
     
     # Get the base name of the calling script
-    local _calling_script=$(basename ${BASH_SOURCE[1]})
+    _calling_script=$(basename ${BASH_SOURCE[1]})
     
     # Announce the script has begun
     echo "Begin ${_calling_script} at $(date -u)"
@@ -95,6 +78,32 @@ if [[ -z ${FUNCNAME[0]} ]]; then
     trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 fi
 
-# Turn on our settings
-$ERR_EXIT_CMD
-$TRACE_CMD
+#
+#-----------------------------------------------------------------------
+#
+# Turn on flags for degugging and strict error checking.
+# Also set PS4
+#
+#-----------------------------------------------------------------------
+#
+STRICT=${STRICT:-"TRUE"}
+TRACE=${DEBUG:-"FALSE"}
+
+if [[ $STRICT == "TRUE" ]]; then
+    # Exit on error and undefined variable
+    set -eu
+fi
+if [[ $TRACE == "TRUE" ]]; then
+    # Turn on debugging
+    set -x
+
+    # Id for MPMD jobs
+    if [[ -v '1' ]]; then
+        id="(${1})"
+    else
+        id=""
+    fi
+    # Print the script name and line number of each command as it is executed
+    export PS4='+ $(basename $BASH_SOURCE)[$LINENO]'"$id: "
+fi
+

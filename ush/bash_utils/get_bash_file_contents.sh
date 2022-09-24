@@ -17,7 +17,7 @@
 #
 function get_bash_file_contents() { 
 
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
 
   local valid_args=( \
     "fp" \

@@ -89,6 +89,7 @@ Usage:
     [exec_subdir=\"...\"] \\
     [use_cron_to_relaunch=\"...\"] \\
     [cron_relaunch_intvl_mnts=\"...\"] \\
+    [debug=\"...\"] \\
     [verbose=\"...\"] \\
     [generate_csv_file=\"...\"] \\
     [machine_file=\"...\"] \\
@@ -171,6 +172,9 @@ in the call to this script or the default value of \"02\").  Note also
 that the value of this argument matters only if the argument 
 use_cron_to_relaunch is not explicitly set to \"FALSE\" in the call to 
 this script.
+
+debug:
+If true, run test case in debugging mode.
 
 verbose:
 Optional argument used to explicitly set the experiment variable VERBOSE 
@@ -319,6 +323,7 @@ valid_args=( \
   "exec_subdir" \
   "use_cron_to_relaunch" \
   "cron_relaunch_intvl_mnts" \
+  "debug" \
   "verbose" \
   "generate_csv_file" \
   "machine_file" \
@@ -764,6 +769,7 @@ Please correct and rerun."
   EXEC_SUBDIR="${exec_subdir}"
   USE_CRON_TO_RELAUNCH=${use_cron_to_relaunch:-"TRUE"}
   CRON_RELAUNCH_INTVL_MNTS=${cron_relaunch_intvl_mnts:-"02"}
+  DEBUG=${debug:-"FALSE"}
   VERBOSE=${verbose:-"TRUE"}
 
   MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.sh"}
@@ -812,6 +818,7 @@ MACHINE_FILE=\"${MACHINE_FILE}\"
 #
 # Flag specifying whether to run in verbose mode.
 #
+DEBUG=\"${DEBUG}\"
 VERBOSE=\"${VERBOSE}\""
 #
 #-----------------------------------------------------------------------
