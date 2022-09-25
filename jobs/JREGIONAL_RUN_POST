@@ -17,7 +17,8 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -26,7 +27,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -61,27 +62,27 @@ on the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-run_dir="${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}"
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 #
 # If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
 # minutes (fmn) are set to "00".  This is necessary in order to pass
 # "fmn" into the post ex-script for the calculation of post_time.
 #
 if [ "${SUB_HOURLY_POST}" != "TRUE" ]; then
-  fmn="00"
+  export fmn="00"
 fi
 #
 #-----------------------------------------------------------------------
 #
-# If it doesn't already exist, create the directory (postprd_dir) in which 
-# to store post-processing output.  (Note that postprd_dir may have already 
+# If it doesn't already exist, create the directory (COMOUT) in which 
+# to store post-processing output.  (Note that COMOUT may have already 
 # been created by this post-processing script for a different output time 
 # from the same forecast start time and/or ensemble member.)  Also, create 
-# a temporary work directory (tmp_dir) for the current output time.  This
+# a temporary work directory (DATA_FHR) for the current output time.  This
 # will be deleted later after the processing for the current output time
-# is complete.  Then change location to tmp_dir.
+# is complete.  Then change location to DATA_FHR.
 #
-# Note that there may be a preexisting version of tmp_dir from previous 
+# Note that there may be a preexisting version of DATA_FHR from previous 
 # runs of this script for the current forecast hour (and current forecast
 # start time), e.g. from the workflow task that runs this script failing 
 # and then being called again.  Thus, we first make sure preexisting 
@@ -89,23 +90,20 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  COMOUT="${COMOUT_BASEDIR}/$RUN.$PDY/$cyc${SLASH_ENSMEM_SUBDIR}"
-  postprd_dir="$COMOUT"
-else
-  postprd_dir="${run_dir}/postprd"
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  export COMOUT="${DATA}/postprd"
 fi
-mkdir_vrfy -p "${postprd_dir}"
+mkdir_vrfy -p "${COMOUT}"
 
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
-  tmp_dir="${postprd_dir}/$fhr$fmn"
+  export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
 else
-  tmp_dir="${postprd_dir}/$fhr"
+  export DATA_FHR="${DATA:-$COMOUT}/$fhr"
 fi
-check_for_preexist_dir_file "${tmp_dir}" "delete"
-mkdir_vrfy -p "${tmp_dir}"
+check_for_preexist_dir_file "${DATA_FHR}" "delete"
+mkdir_vrfy -p "${DATA_FHR}"
 
-cd_vrfy "${tmp_dir}"
+cd_vrfy "${DATA_FHR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -113,7 +111,7 @@ cd_vrfy "${tmp_dir}"
 #
 #-----------------------------------------------------------------------
 #
-fhr=$( printf "%s" "${fhr}" | $SED -n -r -e "s/^([0-9]+)$/\1/p" )
+export fhr=$( printf "%s" "${fhr}" | $SED -n -r -e "s/^([0-9]+)$/\1/p" )
 if [ -z "$fhr" ]; then
   print_err_msg_exit "\
 The forecast hour (fhr) must be a non-empty string consisting of only 
@@ -128,28 +126,17 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_run_post.sh \
-  cdate="${CDATE}" \
-  run_dir="${run_dir}" \
-  postprd_dir="${postprd_dir}" \
-  tmp_dir="${tmp_dir}" \
-  fhr="${fhr}" \
-  fmn="${fmn}" \
-  dt_atmos="${DT_ATMOS}" || \
+$SCRIPTSdir/exregional_run_post.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
-# Print exit message.
+# Run job postamble.
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "
-========================================================================
-Exiting script:  \"${scrfunc_fn}\"
-In directory:    \"${scrfunc_dir}\"
-========================================================================"
+job_postamble
 #
 #-----------------------------------------------------------------------
 #

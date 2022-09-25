@@ -11,12 +11,12 @@
 #  The script is dependent on a successful build of this repo using the
 #  test/build.sh script in the ufs-srweather-app repository.  The UFS
 #  build must be completed in a particular manner for this script to
-#  function properly, notably the location of the build and bin
+#  function properly, notably the location of the build and install
 #  directories: 
 #    BUILD_DIR=${APP_DIR}/build_${compiler}
-#    BIN_DIR=${APP_DIR}/bin_${compiler}
+#    INSTALL_DIR=${APP_DIR}/install_${compiler}
 #
-#  Example: ./end_to_end_tests.sh hera zrtrr
+#  Example: ./setup_WE2E_tests.sh hera zrtrr
 #----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -35,7 +35,7 @@ function usage {
 
 }
 
-machines=( hera jet )
+machines=( hera jet cheyenne orion wcoss2 gaea odin singularity macos noaacloud )
 
 if [ "$1" = "-h" ] ; then usage ; fi
 [[ $# -le 1 ]] && usage
@@ -63,12 +63,15 @@ EXPTS_DIR=${TOP_DIR}/expt_dirs
 #-----------------------------------------------------------------------
 
 auto_file=${scrfunc_dir}/machine_suites/${machine}.txt
+if [ ! -f ${auto_file} ]; then
+    auto_file=${scrfunc_dir}/machine_suites/fundamental.txt
+fi
 
 #----------------------------------------------------------------------
 # Use exec_subdir consistent with the automated build.
 #----------------------------------------------------------------------
 
-exec_subdir='bin_intel/bin'
+exec_subdir='install_intel/exec'
 
 #-----------------------------------------------------------------------
 # Run E2E Tests
@@ -90,5 +93,8 @@ module list
   tests_file=${auto_file} \
   machine=${machine} \
   account=${account} \
-  exec_subdir=${exec_subdir}
+  exec_subdir=${exec_subdir} \
+  debug="TRUE" \
+  verbose="TRUE" \
+  run_envir="community"
 

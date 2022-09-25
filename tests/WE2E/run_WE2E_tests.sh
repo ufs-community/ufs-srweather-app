@@ -28,24 +28,24 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 # Set the full path to the top-level directory of the UFS SRW App 
-# repository. We denote this path by SR_WX_APP_TOP_DIR. The current script 
+# repository.  We denote this path by HOMEdir.  The current script 
 # should be located in the "tests/WE2E" subdirectory under this directory.
-# Thus, SR_WX_APP_TOP_DIR is the directory two levels above the directory
-# in which the current script is located.
+# Thus, HOMEdir is the directory two levels above the directory in which 
+# the current script is located.
 #
 #-----------------------------------------------------------------------
 #
-SR_WX_APP_TOP_DIR=${scrfunc_dir%/*/*}
+HOMEdir=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-# Set other directories that depend on SR_WX_APP_TOP_DIR.
+# Set other directories that depend on HOMEdir.
 #
 #-----------------------------------------------------------------------
 #
-ushdir="$SR_WX_APP_TOP_DIR/ush"
-testsdir="$SR_WX_APP_TOP_DIR/tests"
-WE2Edir="$testsdir/WE2E"
+USHdir="$HOMEdir/ush"
+TESTSdir="$HOMEdir/tests"
+WE2Edir="$TESTSdir/WE2E"
 #
 #-----------------------------------------------------------------------
 #
@@ -53,7 +53,7 @@ WE2Edir="$testsdir/WE2E"
 #
 #-----------------------------------------------------------------------
 #
-. $ushdir/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -70,7 +70,7 @@ WE2Edir="$testsdir/WE2E"
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -89,11 +89,12 @@ Usage:
     [exec_subdir=\"...\"] \\
     [use_cron_to_relaunch=\"...\"] \\
     [cron_relaunch_intvl_mnts=\"...\"] \\
+    [debug=\"...\"] \\
     [verbose=\"...\"] \\
     [generate_csv_file=\"...\"] \\
     [machine_file=\"...\"] \\
-    [stmp=\"...\"] \\
-    [ptmp=\"...\"] \\
+    [opsroot=\"...\"] \\
+    [run_envir=\"...\"] \\
     [compiler=\"...\"] \\
     [build_mod_fn=\"...\"]
 
@@ -172,6 +173,9 @@ that the value of this argument matters only if the argument
 use_cron_to_relaunch is not explicitly set to \"FALSE\" in the call to 
 this script.
 
+debug:
+If true, run test case in debugging mode.
+
 verbose:
 Optional argument used to explicitly set the experiment variable VERBOSE 
 in the experiment configuration files of all the WE2E tests the user 
@@ -192,29 +196,11 @@ machine_file:
 Optional argument specifying the full path to a machine configuration 
 file.  If not set, a supported platform machine file may be used.
 
-stmp:
-Optional argument used to explicitly set the experiment variable STMP in 
-the experiment configuration files of all the WE2E tests the user wants 
-to run that are in NCO mode, i.e. they have test configuration files that
-set the experiment variable RUN_ENVIR to \"nco\".  (A description of 
-STMP can be found in the default experiment configuration file.)  If 
-stmp is specified in the call to this script, its value is used to set 
-STMP in the configuration files of all tests that will run in NCO mode.  
-If it is not specified, STMP is (effectively) set as follows in the 
-configuration files (of all NCO mode tests to be run):
+opsroot:
+Operations root directory in NCO mode
 
-    STMP=\$( readlink -f \"\$SR_WX_APP_TOP_DIR/../nco_dirs/stmp\" \)
-
-Here, SR_WX_APP_TOP_DIR is the base directory in which the UFS SRW App
-repository is cloned.  Note that it is not possible to specify a different 
-value for STMP for each test via this argument; all tests will use the
-same value for STMP (either the value specified in the call to this 
-script or the default value above).  Note also that the value of this 
-argument is not used for any tests that are not in NCO mode.
-
-ptmp:
-Same as the argument \"stmp\" described above but for setting the 
-experiment variable PTMP for all tests that will run in NCO mode.
+run_envir:
+Overrides RUN_ENVIR variable to a new value ( nco or community )
 
 compiler:
 Optional argument used to explicitly set the experiment variable COMPILER 
@@ -337,11 +323,12 @@ valid_args=( \
   "exec_subdir" \
   "use_cron_to_relaunch" \
   "cron_relaunch_intvl_mnts" \
+  "debug" \
   "verbose" \
   "generate_csv_file" \
   "machine_file" \
-  "stmp" \
-  "ptmp" \
+  "opsroot" \
+  "run_envir" \
   "compiler" \
   "build_mod_fn" \
   )
@@ -732,7 +719,7 @@ Please correct and rerun."
 #
 #-----------------------------------------------------------------------
 #
-  source_config ${ushdir}/config_defaults.yaml
+  source_config ${USHdir}/config_defaults.yaml
   source_config ${test_config_fp}
 #
 #-----------------------------------------------------------------------
@@ -782,14 +769,15 @@ Please correct and rerun."
   EXEC_SUBDIR="${exec_subdir}"
   USE_CRON_TO_RELAUNCH=${use_cron_to_relaunch:-"TRUE"}
   CRON_RELAUNCH_INTVL_MNTS=${cron_relaunch_intvl_mnts:-"02"}
+  DEBUG=${debug:-"FALSE"}
   VERBOSE=${verbose:-"TRUE"}
 
-  MACHINE_FILE=${machine_file:-"${ushdir}/machine/${machine,,}.sh"}
+  MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.sh"}
 
   # Set the machine-specific configuration settings by sourcing the
   # machine file in the ush directory
 
-  source $ushdir/source_machine_file.sh
+  . ${MACHINE_FILE}
 
   expt_config_str=${expt_config_str}"\
 #
@@ -830,6 +818,7 @@ MACHINE_FILE=\"${MACHINE_FILE}\"
 #
 # Flag specifying whether to run in verbose mode.
 #
+DEBUG=\"${DEBUG}\"
 VERBOSE=\"${VERBOSE}\""
 #
 #-----------------------------------------------------------------------
@@ -852,6 +841,20 @@ VERBOSE=\"${VERBOSE}\""
 # End of section from this test's configuration file.
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------"
+
+#
+# Set RUN_ENVIR from the $run_envir argument passed to this script
+#
+if [ ! -z ${run_envir} ]; then
+    expt_config_str=${expt_config_str}"
+#
+# Set RUN_ENVIR
+#
+RUN_ENVIR=${run_envir}"
+
+    RUN_ENVIR=${run_envir}
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -928,82 +931,21 @@ SFC_CLIMO_DIR=\"${SFC_CLIMO_DIR}\""
 #
     expt_config_str=${expt_config_str}"
 #
-# In order to prevent simultaneous WE2E (Workflow End-to-End) tests that
-# are running in NCO mode and which run the same cycles from interfering
-# with each other, for each cycle, each such test must have a distinct
-# path to the following two directories:
-#
-# 1) The directory in which the cycle-dependent model input files, symlinks
-#    to cycle-independent input files, and raw (i.e. before post-processing)
-#    forecast output files for a given cycle are stored.  The path to this
-#    directory is
-#
-#      \$STMP/tmpnwprd/\$RUN/\$cdate
-#
-#    where cdate is the starting year (yyyy), month (mm), day (dd) and
-#    hour of the cycle in the form yyyymmddhh.
-#
-# 2) The directory in which the output files from the post-processor (UPP)
-#    for a given cycle are stored.  The path to this directory is
-#
-#      \$PTMP/com/\$NET/\$model_ver/\$RUN.\$yyyymmdd/\$hh
-#
-# Here, we make the first directory listed above unique to a WE2E test
-# by setting RUN to the name of the current test.  This will also make
-# the second directory unique because it also conains the variable RUN
-# in its full path, but if this directory -- or set of directories since
-# it involves a set of cycles and forecast hours -- already exists from
-# a previous run of the same test, then it is much less confusing to the
-# user to first move or delete this set of directories during the workflow
-# generation step and then start the experiment (whether we move or delete
-# depends on the setting of PREEXISTING_DIR_METHOD).  For this purpose,
-# it is most convenient to put this set of directories under an umbrella
-# directory that has the same name as the experiment.  This can be done
-# by setting the variable envir to the name of the current test.  Since
-# as mentiond above we will store this name in RUN, below we simply set
-# envir to the same value as RUN (which is just EXPT_SUBDIR).  Then, for
-# this test, the UPP output will be located in the directory
-#
-#   \$PTMP/com/\$NET/\we2e/\$RUN.\$yyyymmdd/\$hh
+# Set NCO mode RUN and model_ver
 #
 RUN=\"\${EXPT_SUBDIR}\"
 model_ver="we2e""
 
 #
-# Set COMIN.
-
-    COMIN=${TEST_COMIN:-}
-
-    if [ ! -d "${COMIN:-}" ] ; then
-      print_err_msg_exit "\
-The directory (COMIN) that needs to be specified when running the
-workflow in NCO mode (RUN_ENVIR set to \"nco\") AND using the FV3GFS or
-the GSMGFS as the external model for ICs and/or LBCs has not been specified
-for this machine (MACHINE):
-  MACHINE= \"${MACHINE}\""
-    fi
+# Set OPSROOT.
+#
+    OPSROOT=${opsroot:-$( readlink -f "$HOMEdir/../nco_dirs" )}
 
     expt_config_str=${expt_config_str}"
 #
-# Directory that needs to be specified when running the workflow in NCO
-# mode (RUN_ENVIR set to \"nco\").
+# Set NCO mode OPSROOT
 #
-COMIN=\"${COMIN}\""
-
-#
-# Set STMP and PTMP.
-#
-    nco_basedir=$( readlink -f "$SR_WX_APP_TOP_DIR/../nco_dirs" )
-    STMP=${stmp:-"${nco_basedir}/stmp"}
-    PTMP=${ptmp:-"${nco_basedir}/ptmp"}
-
-    expt_config_str=${expt_config_str}"
-#
-# Directories STMP and PTMP that need to be specified when running the
-# workflow in NCO-mode (i.e. RUN_ENVIR set to "nco").
-#
-STMP=\"${STMP}\"
-PTMP=\"${PTMP}\""
+OPSROOT=\"${OPSROOT}\""
 
   fi
 #
@@ -1279,9 +1221,9 @@ exist or is not a directory:
 #
 #-----------------------------------------------------------------------
 #
-  expt_config_fp="$ushdir/${EXPT_CONFIG_FN}"
+  expt_config_fp="$USHdir/${EXPT_CONFIG_FN}"
   ext="${EXPT_CONFIG_FN##*.}"
-  config_to_str "${ext}" "${temp_file}" -t "$ushdir/config_defaults.yaml" >"${expt_config_fp}"
+  config_to_str "${ext}" "${temp_file}" -t "$USHdir/config_defaults.yaml" >"${expt_config_fp}"
   rm -rf "${temp_file}"
 #
 #-----------------------------------------------------------------------
@@ -1291,7 +1233,7 @@ exist or is not a directory:
 #
 #-----------------------------------------------------------------------
 #
-  $ushdir/generate_FV3LAM_wflow.py || \
+  $USHdir/generate_FV3LAM_wflow.py || \
     print_err_msg_exit "\
 Could not generate an experiment for the test specified by test_name:
   test_name = \"${test_name}\""

@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -49,29 +49,6 @@ This is the ex-script for the task that generates initial condition
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  Then
-# process the arguments provided to this script/function (which should
-# consist of a set of name-value pairs of the form arg1="value1", etc).
-#
-#-----------------------------------------------------------------------
-#
-valid_args=( \
-"ics_dir" \
-)
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args valid_args
-#
-#-----------------------------------------------------------------------
-#
 # Set OpenMP variables.
 #
 #-----------------------------------------------------------------------
@@ -86,7 +63,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_ICS}
 #
 #-----------------------------------------------------------------------
 #
-source $USHDIR/source_machine_file.sh
+. ${MACHINE_FILE}
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_MAKE_ICS*PPN_MAKE_ICS ))
@@ -96,7 +73,6 @@ if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_UTILS for your platform"
 else
-  RUN_CMD_UTILS=$(eval echo ${RUN_CMD_UTILS})
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
 fi
@@ -110,8 +86,13 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-extrn_mdl_staging_dir="${CYCLE_DIR}/${EXTRN_MDL_NAME_ICS}/for_ICS"
-extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}"
+if [ $RUN_ENVIR = "nco" ]; then
+    extrn_mdl_staging_dir="${COMIN}"
+    extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+else
+    extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_ICS}/for_ICS"
+    extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+fi
 . ${extrn_mdl_var_defns_fp}
 #
 #-----------------------------------------------------------------------
@@ -120,9 +101,9 @@ extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}"
 #
 #-----------------------------------------------------------------------
 #
-workdir="${ics_dir}/tmp_ICS"
-mkdir_vrfy -p "$workdir"
-cd_vrfy $workdir
+DATA="${DATA}/tmp_ICS"
+mkdir_vrfy -p "$DATA"
+cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -483,7 +464,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 #-----------------------------------------------------------------------
 #
 exec_fn="chgres_cube"
-exec_fp="$EXECDIR/${exec_fn}"
+exec_fp="$EXECdir/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
 The executable (exec_fp) for generating initial conditions on the FV3-LAM
@@ -517,12 +498,12 @@ fi
 #
 settings="
 'config': {
- 'fix_dir_target_grid': ${FIXLAM},
- 'mosaic_file_target_grid': ${FIXLAM}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
- 'orog_dir_target_grid': ${FIXLAM},
+ 'fix_dir_target_grid': ${FIXlam},
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
+ 'orog_dir_target_grid': ${FIXlam},
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
  'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
- 'varmap_file': ${UFS_UTILS_DIR}/parm/varmap_tables/${varmap_file},
+ 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
  'data_dir_input_grid': ${extrn_mdl_staging_dir},
  'atm_files_input_grid': ${fn_atm},
  'sfc_files_input_grid': ${fn_sfc},
@@ -555,7 +536,7 @@ settings="
 # Call the python script to create the namelist file.
 #
 nml_fn="fort.41"
-${USHDIR}/set_namelist.py -q -u "$settings" -o ${nml_fn} || \
+${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn} || \
   print_err_msg_exit "\
 Call to python script set_namelist.py to set the variables in the namelist
 file read in by the ${exec_fn} executable failed.  Parameters passed to
@@ -580,7 +561,8 @@ $settings"
 # exit code of chgres_cube is nonzero.  A similar thing happens in the
 # forecast task.
 #
-${RUN_CMD_UTILS} ${exec_fp} || \
+PREP_STEP
+eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
   print_err_msg_exit "\
 Call to executable (exec_fp) to generate surface and initial conditions
 (ICs) files for the FV3-LAM failed:
@@ -590,6 +572,7 @@ The external model from which the ICs files are to be generated is:
 The external model files that are inputs to the executable (exec_fp) are
 located in the following directory:
   extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
+POST_STEP
 #
 #-----------------------------------------------------------------------
 #
@@ -599,14 +582,14 @@ located in the following directory:
 #-----------------------------------------------------------------------
 #
 mv_vrfy out.atm.tile${TILE_RGNL}.nc \
-        ${ics_dir}/gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
+        ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
 
 mv_vrfy out.sfc.tile${TILE_RGNL}.nc \
-        ${ics_dir}/sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
+        ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
 
-mv_vrfy gfs_ctrl.nc ${ics_dir}
+mv_vrfy gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
 
-mv_vrfy gfs.bndy.nc ${ics_dir}/gfs_bndy.tile${TILE_RGNL}.000.nc
+mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -618,7 +601,7 @@ if [ "${USE_FVCOM}" = "TRUE" ]; then
 
 #Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
   fvcom_exec_fn="fvcom_to_FV3"
-  fvcom_exec_fp="$EXECDIR/${fvcom_exec_fn}"
+  fvcom_exec_fp="$EXECdir/${fvcom_exec_fn}"
   fvcom_time="${DATE_FIRST_CYCL:0:4}-${DATE_FIRST_CYCL:4:2}-${DATE_FIRST_CYCL:6:2}T${CYCL_HRS[0]}:00:00.000000"
   if [ ! -f "${fvcom_exec_fp}" ]; then
     print_err_msg_exit "\
@@ -627,7 +610,7 @@ native grid does not exist:
   fvcom_exec_fp = \"${fvcom_exec_fp}\"
 Please ensure that you've built this executable."
   fi
-  cp_vrfy ${fvcom_exec_fp} ${ics_dir}/.
+  cp_vrfy ${fvcom_exec_fp} ${INPUT_DATA}/.
   fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
   if [ ! -f "${fvcom_data_fp}" ]; then
     print_err_msg_exit "\
@@ -638,10 +621,12 @@ Please check the following user defined variables:
   FVCOM_FILE= \"${FVCOM_FILE}\" "
   fi
 
-  cp_vrfy ${fvcom_data_fp} ${ics_dir}/fvcom.nc
-  cd_vrfy ${ics_dir}
-  ${RUN_CMD_UTILS} ${fvcom_exec_fn} sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time}|| \
-  print_err_msg_exit "\
+  cp_vrfy ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
+  cd_vrfy ${INPUT_DATA}
+  PREP_STEP
+  eval ${RUN_CMD_UTILS} ${fvcom_exec_fn} \
+       ${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
+       ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable (fvcom_exe) to modify sfc fields for FV3-LAM failed:
   fvcom_exe = \"${fvcom_exe}\"
 The following variables were being used:
@@ -649,9 +634,10 @@ The following variables were being used:
   FVCOM_FILE = \"${FVCOM_FILE}\"
   fvcom_time = \"${fvcom_time}\"
   FVCOM_WCSTART = \"${FVCOM_WCSTART}\"
-  ics_dir = \"${ics_dir}\"
+  INPUT_DATA = \"${INPUT_DATA}\"
   fvcom_exe_dir = \"${fvcom_exe_dir}\"
   fvcom_exe = \"${fvcom_exe}\""
+  POST_STEP
 fi
 #
 #-----------------------------------------------------------------------

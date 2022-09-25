@@ -12,10 +12,5 @@ jobs:
       - run: |
              cd ufs-srweather-app
              ./manage_externals/checkout_externals
-             module use modulefiles
-             module load build_cheyenne_intel
-             mdkir build
-             cd build
-             cmake -DCMAKE_INSTALL_PREFIX=.. ..
-             make -j 4
+             ./devbuild.sh -p=cheyenne -c=intel
       - run: echo "🍏 This job's status is ${{ job.status }}."

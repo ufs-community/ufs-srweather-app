@@ -95,21 +95,6 @@ class Testing(unittest.TestCase):
         self.assertEqual(val, "MYVAL")
         self.assertEqual(os.getenv("SED"), "gsed" if os.uname() == "Darwin" else "sed")
 
-    def test_process_args(self):
-        valid_args = ["arg1", "arg2", "arg3", "arg4"]
-        values = process_args(
-            valid_args, arg2="bye", arg3="hello", arg4=["this", "is", "an", "array"]
-        )
-        self.assertEqual(
-            values,
-            {
-                "arg1": None,
-                "arg2": "bye",
-                "arg3": "hello",
-                "arg4": ["this", "is", "an", "array"],
-            },
-        )
-
     def test_print_input_args(self):
         valid_args = {"arg1": 1, "arg2": 2, "arg3": 3, "arg4": 4}
         self.assertEqual(print_input_args(valid_args), 4)

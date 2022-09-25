@@ -13,7 +13,7 @@
 #
 function init_env() { 
 
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
 
   local valid_args=( \
     "env_init_scripts_fps" \
@@ -35,9 +35,9 @@ Attempting to source script:
       # The scripts being sourced here may have undefined variables, but since
       # they are system scripts outside of the SRW App, they cannot be changed.
       # Thus, we allow for undefined variables by temporarily using "set +u".
-      set +u
+      set +eu
       source "$fp" && print_info_msg "$DEBUG" "Succeeded."
-      set -u
+      set -eu
     else
       print_err_msg_exit "\
 The script to source does not exist or is not a regular file:

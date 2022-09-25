@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
 class Testing(unittest.TestCase):
     def test_calculate_cost(self):
-        USHDIR = os.path.dirname(os.path.abspath(__file__))
+        USHdir = os.path.dirname(os.path.abspath(__file__))
         params = calculate_cost(None)
         self.assertCountEqual(params, [36, 1987440, 36, 28689])
 

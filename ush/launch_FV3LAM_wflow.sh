@@ -95,10 +95,10 @@ fi
 #-----------------------------------------------------------------------
 #
 . $exptdir/var_defns.sh
-. $USHDIR/source_util_funcs.sh
-. $USHDIR/source_machine_file.sh
-. $USHDIR/constants.sh
-. $USHDIR/init_env.sh
+. $USHdir/source_util_funcs.sh
+. $USHdir/constants.sh
+. $USHdir/init_env.sh
+. ${MACHINE_FILE}
 #
 #-----------------------------------------------------------------------
 #
@@ -396,10 +396,10 @@ script for this experiment:
 #
     if [ "${called_from_cron}" = "TRUE" ]; then
        MACHINE=$MACHINE CRONTAB_LINE=$CRONTAB_LINE \
-           python3 $USHDIR/get_crontab_contents.py --delete --called-from-cron
+           python3 $USHdir/get_crontab_contents.py --delete --called-from-cron
     else
        MACHINE=$MACHINE CRONTAB_LINE=$CRONTAB_LINE \
-           python3 $USHDIR/get_crontab_contents.py --delete
+           python3 $USHdir/get_crontab_contents.py --delete
     fi
   fi
 #

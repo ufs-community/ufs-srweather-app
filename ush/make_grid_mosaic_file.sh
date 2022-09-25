@@ -17,7 +17,7 @@ function make_grid_mosaic_file() {
 #
 #-----------------------------------------------------------------------
 #
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -85,7 +85,7 @@ function make_grid_mosaic_file() {
 #-----------------------------------------------------------------------
 #
   exec_fn="make_solo_mosaic"
-  exec_fp="$EXECDIR/${exec_fn}"
+  exec_fp="$EXECdir/${exec_fn}"
   if [ ! -f "${exec_fp}" ]; then
     print_err_msg_exit "\
 The executable (exec_fp) for generating the grid mosaic file does not 

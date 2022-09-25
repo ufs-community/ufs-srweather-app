@@ -9,11 +9,11 @@
 
 # Prior to submitting the script the following environment variables
 # must be set using export or setenv
-# HOMErrfs=/path-to/ufs-srweather-app/regional_workflow
+# HOMEdir=/path-to/ufs-srweather-app/regional_workflow
 # EXPTDIR1=/path-to/expt_dirs/your_experiment1
 # EXPTDIR2=/path-to/expt_dirs/your_experiment2
 
-cd ${HOMErrfs}/ush/Python
+cd ${HOMEdir}/ush/Python
 set -x
 . /apps/lmod/lmod/init/sh
 

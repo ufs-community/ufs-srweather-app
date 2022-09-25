@@ -4,6 +4,7 @@ import os
 import sys
 import platform
 import subprocess
+import unittest
 from multiprocessing import Process
 from textwrap import dedent
 from datetime import datetime, timedelta
@@ -25,6 +26,7 @@ from python_utils import (
     check_for_preexist_dir_file,
     cfg_to_yaml_str,
     find_pattern_in_str,
+    set_env_var,
 )
 
 from setup import setup
@@ -81,8 +83,8 @@ def generate_FV3LAM_wflow():
         )
     )
 
-    # set ushdir
-    ushdir = os.path.dirname(os.path.abspath(__file__))
+    # set USHdir
+    USHdir = os.path.dirname(os.path.abspath(__file__))
 
     # check python version
     major, minor, patch = platform.python_version_tuple()
@@ -138,7 +140,7 @@ def generate_FV3LAM_wflow():
     #
     if WORKFLOW_MANAGER == "rocoto":
 
-        template_xml_fp = os.path.join(TEMPLATE_DIR, WFLOW_XML_FN)
+        template_xml_fp = os.path.join(PARMdir, WFLOW_XML_FN)
 
         print_info_msg(
             f'''
@@ -178,6 +180,13 @@ def generate_FV3LAM_wflow():
             "queue_fcst": QUEUE_FCST,
             "machine": MACHINE,
             "slurm_native_cmd": SLURM_NATIVE_CMD,
+            "workflow_id": WORKFLOW_ID,
+            #
+            # Run environment
+            #
+            "run_envir": RUN_ENVIR,
+            "run": RUN,
+            "net": NET,
             #
             # Workflow task names.
             #
@@ -367,10 +376,12 @@ def generate_FV3LAM_wflow():
             #
             # Directories and files.
             #
-            "jobsdir": JOBSDIR,
+            "exptdir": EXPTDIR,
+            "jobsdir": JOBSdir,
             "logdir": LOGDIR,
-            "scriptsdir": SCRIPTSDIR,
-            "cycle_basedir": CYCLE_BASEDIR,
+            "scriptsdir": SCRIPTSdir,
+            "comin_basedir": COMIN_BASEDIR,
+            "comout_basedir": COMOUT_BASEDIR,
             "global_var_defns_fp": GLOBAL_VAR_DEFNS_FP,
             "load_modules_run_task_fp": LOAD_MODULES_RUN_TASK_FP,
             #
@@ -503,41 +514,29 @@ def generate_FV3LAM_wflow():
     #
     # -----------------------------------------------------------------------
     #
-    # First, consider NCO mode.
+
     #
-    if RUN_ENVIR == "nco":
+    # Symlink fix files
+    #
+    if SYMLINK_FIX_FILES:
+
+        print_info_msg(
+            f'''
+            Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
+              FIXgsm = \"{FIXgsm}\"
+              FIXam = \"{FIXam}\"''',
+            verbose=VERBOSE,
+        )
 
         ln_vrfy(f'''-fsn "{FIXgsm}" "{FIXam}"''')
-        #
-        # Resolve the target directory that the FIXam symlink points to and check
-        # that it exists.
-        #
-        try:
-            path_resolved = os.path.realpath(FIXam)
-        except:
-            path_resolved = FIXam
-        if not os.path.exists(path_resolved):
-            print_err_msg_exit(
-                f"""
-                In order to be able to generate a forecast experiment in NCO mode (i.e.
-                when RUN_ENVIR set to \"nco\"), the path specified by FIXam after resolving
-                all symlinks (path_resolved) must be an existing directory (but in this
-                case isn't):
-                  RUN_ENVIR = \"{RUN_ENVIR}\"
-                  FIXam = \"{FIXam}\"
-                  path_resolved = \"{path_resolved}\"
-                Please ensure that path_resolved is an existing directory and then rerun
-                the experiment generation script."""
-            )
     #
-    # Now consider community mode.
+    # Copy relevant fix files.
     #
     else:
 
         print_info_msg(
             f'''
-            Copying fixed files from system directory (FIXgsm) to a subdirectory
-            (FIXam) in the experiment directory:
+            Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = \"{FIXgsm}\"
               FIXam = \"{FIXam}\"''',
             verbose=VERBOSE,
@@ -572,8 +571,12 @@ def generate_FV3LAM_wflow():
         check_for_preexist_dir_file(FIXclim, "delete")
         mkdir_vrfy("-p", FIXclim)
 
-        cp_vrfy(os.path.join(FIXaer, "merra2.aerclim*.nc"), FIXclim)
-        cp_vrfy(os.path.join(FIXlut, "optics*.dat"), FIXclim)
+        if SYMLINK_FIX_FILES:
+            ln_vrfy("-fsn", os.path.join(FIXaer, "merra2.aerclim*.nc"), FIXclim)
+            ln_vrfy("-fsn", os.path.join(FIXlut, "optics*.dat"), FIXclim)
+        else:
+            cp_vrfy(os.path.join(FIXaer, "merra2.aerclim*.nc"), FIXclim)
+            cp_vrfy(os.path.join(FIXlut, "optics*.dat"), FIXclim)
     #
     # -----------------------------------------------------------------------
     #
@@ -935,7 +938,7 @@ def generate_FV3LAM_wflow():
     # If not running the MAKE_GRID_TN task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
     # the paths to surface climatology files.  These files are located in
-    # (or have symlinks that point to them) in the FIXLAM directory.
+    # (or have symlinks that point to them) in the FIXlam directory.
     #
     # Note that if running the MAKE_GRID_TN task, this action usually cannot
     # be performed here but must be performed in that task because the names
@@ -955,7 +958,7 @@ def generate_FV3LAM_wflow():
     #
     # -----------------------------------------------------------------------
     #
-    cp_vrfy(os.path.join(USHDIR, EXPT_CONFIG_FN), EXPTDIR)
+    cp_vrfy(os.path.join(USHdir, EXPT_CONFIG_FN), EXPTDIR)
     #
     # -----------------------------------------------------------------------
     #
@@ -1046,7 +1049,7 @@ def generate_FV3LAM_wflow():
         print("Getting NOMADS online data")
         print(f"NOMADS_file_type= {NOMADS_file_type}")
         cd_vrfy(EXPTDIR)
-        NOMADS_script = os.path.join(USHDIR, "NOMADS_get_extrn_mdl_files.h")
+        NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.h")
         run_command(
             f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
                       {CYCL_HRS} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}"""
@@ -1069,21 +1072,21 @@ if __name__ == "__main__":
     #
     # -----------------------------------------------------------------------
     #
-    ushdir = os.path.dirname(os.path.abspath(__file__))
+    USHdir = os.path.dirname(os.path.abspath(__file__))
     #
     # Set the name of and full path to the temporary file in which we will
     # save some experiment/workflow variables.  The need for this temporary
     # file is explained below.
     #
     tmp_fn = "tmp"
-    tmp_fp = os.path.join(ushdir, tmp_fn)
+    tmp_fp = os.path.join(USHdir, tmp_fn)
     rm_vrfy("-f", tmp_fp)
     #
     # Set the name of and full path to the log file in which the output from
     # the experiment/workflow generation function will be saved.
     #
     log_fn = "log.generate_FV3LAM_wflow"
-    log_fp = os.path.join(ushdir, log_fn)
+    log_fp = os.path.join(USHdir, log_fn)
     rm_vrfy("-f", log_fp)
     #
     # Call the generate_FV3LAM_wflow function defined above to generate the
@@ -1150,3 +1153,30 @@ if __name__ == "__main__":
               log_fp = \"{log_fp}\"
             Stopping."""
         )
+
+class Testing(unittest.TestCase):
+    def test_generate_FV3LAM_wflow(self):
+
+        # run workflows in separate process to avoid conflict
+        def workflow_func():
+            generate_FV3LAM_wflow()
+
+        def run_workflow():
+            p = Process(target=workflow_func)
+            p.start()
+            p.join()
+
+        USHdir = os.path.dirname(os.path.abspath(__file__))
+
+        # community test case
+        ln_vrfy("-fs", f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
+        run_workflow()
+
+        # nco test case
+        set_env_var("OPSROOT", f"{USHdir}/../../nco_dirs")
+        ln_vrfy("-fs", f"{USHdir}/config.nco.yaml", f"{USHdir}/config.yaml")
+        run_workflow()
+
+    def setUp(self):
+        set_env_var("DEBUG", False)
+        set_env_var("VERBOSE", False)

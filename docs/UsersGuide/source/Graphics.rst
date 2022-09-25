@@ -196,28 +196,28 @@ At a minimum, the account should be set appropriately prior to job submission:
 Depending on the platform, users may also need to adjust the settings to use the correct Python environment and path to the shapefiles.
 
 When working with these batch scripts, several environment variables must be set prior to submission.
-If plotting output from a single cycle, the variables to set are ``$HOMErrfs`` and ``$EXPTDIR``.
+If plotting output from a single cycle, the variables to set are ``$HOMEdir`` and ``$EXPTDIR``.
 If the user's login shell is bash, these variables can be set as follows:
 
 .. code-block:: console
 
-   export HOMErrfs=/path-to/ufs-srweather-app/regional_workflow
+   export HOMEdir=/path-to/ufs-srweather-app/regional_workflow
    export EXPTDIR=/path-to/experiment/directory
 
 If the user's login shell is csh/tcsh, they can be set as follows:
 
 .. code-block:: console
 
-   setenv HOMErrfs /path-to/ufs-srweather-app/regional_workflow
+   setenv HOMEdir /path-to/ufs-srweather-app/regional_workflow
    setenv EXPTDIR /path-to/experiment/directory
 
 If plotting the difference between the same cycle from two different experiments, the variables 
-to set are ``$HOMErrfs``, ``$EXPTDIR1``, and ``$EXPTDIR2``. If the user's login shell 
+to set are ``$HOMEdir``, ``$EXPTDIR1``, and ``$EXPTDIR2``. If the user's login shell 
 is bash, these variables can be set as follows:
 
 .. code-block:: console
 
-   export HOMErrfs=/path-to/ufs-srweather-app/regional_workflow
+   export HOMEdir=/path-to/ufs-srweather-app/regional_workflow
    export EXPTDIR1=/path-to/experiment/directory1
    export EXPTDIR2=/path-to/experiment/directory2
 
@@ -225,7 +225,7 @@ If the user's login shell is csh/tcsh, they can be set as follows:
 
 .. code-block:: console
 
-   setenv HOMErrfs /path-to/ufs-srweather-app/regional_workflow
+   setenv HOMEdir /path-to/ufs-srweather-app/regional_workflow
    setenv EXPTDIR1 /path-to/experiment/directory1
    setenv EXPTDIR2 /path-to/experiment/directory2
 

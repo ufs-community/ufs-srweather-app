@@ -56,8 +56,9 @@ def setup():
       None
     """
 
-    ushdir = os.path.dirname(os.path.abspath(__file__))
-    cd_vrfy(ushdir)
+    global USHdir
+    USHdir = os.path.dirname(os.path.abspath(__file__))
+    cd_vrfy(USHdir)
 
     # import all environment variables
     import_vars()
@@ -78,7 +79,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     EXPT_DEFAULT_CONFIG_FN = "config_defaults.yaml"
-    cfg_d = load_config_file(os.path.join(ushdir, EXPT_DEFAULT_CONFIG_FN))
+    cfg_d = load_config_file(os.path.join(USHdir, EXPT_DEFAULT_CONFIG_FN))
     import_vars(dictionary=flatten_dict(cfg_d))
 
     #
@@ -103,7 +104,7 @@ def setup():
         # configuration file are also assigned default values in the default
         # configuration file.
         #
-        cfg_u = load_config_file(os.path.join(ushdir, EXPT_CONFIG_FN))
+        cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
         cfg_u = flatten_dict(cfg_u)
         import_vars(dictionary=cfg_u)
         update_dict(cfg_u, cfg_d)
@@ -113,8 +114,21 @@ def setup():
     # Source constants.sh and save its contents to a variable for later
     # -----------------------------------------------------------------------
     #
-    cfg_c = load_config_file(os.path.join(ushdir, CONSTANTS_FN))
+    cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
     import_vars(dictionary=cfg_c)
+
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Generate a unique number for this workflow run. This maybe used to
+    # get unique log file names for example
+    #
+    # -----------------------------------------------------------------------
+    #
+    global WORKFLOW_ID
+    WORKFLOW_ID = "id_" + str(int(datetime.datetime.now().timestamp()))
+    print_info_msg(f"""WORKFLOW ID = {WORKFLOW_ID}""")
+
     #
     # -----------------------------------------------------------------------
     #
@@ -280,6 +294,10 @@ def setup():
     property_name = "local_path"
     cfg = load_ini_config(mng_extrns_cfg_fn)
     #
+    # Get the path to the workflow scripts
+    #
+    HOMEdir = SR_WX_APP_TOP_DIR
+    #
     # Get the base directory of the FV3 forecast model code.
     #
     external_name = FCST_MODEL
@@ -302,67 +320,21 @@ def setup():
             build the executable, and then rerun the workflow."""
         )
     #
-    # Get the base directory of the UFS_UTILS codes.
-    #
-    external_name = "ufs_utils"
-    UFS_UTILS_DIR = get_ini_value(cfg, external_name, property_name)
-
-    if not UFS_UTILS_DIR:
-        print_err_msg_exit(
-            f"""
-            Externals.cfg does not contain "{external_name}"."""
-        )
-
-    UFS_UTILS_DIR = os.path.join(SR_WX_APP_TOP_DIR, UFS_UTILS_DIR)
-    if not os.path.exists(UFS_UTILS_DIR):
-        print_err_msg_exit(
-            f"""
-            The base directory in which the UFS utilities source codes should be lo-
-            cated (UFS_UTILS_DIR) does not exist:
-              UFS_UTILS_DIR = \"{UFS_UTILS_DIR}\"
-            Please clone the external repository containing the code in this direct-
-            ory, build the executables, and then rerun the workflow."""
-        )
-    #
-    # Get the base directory of the UPP code.
-    #
-    external_name = "UPP"
-    UPP_DIR = get_ini_value(cfg, external_name, property_name)
-    if not UPP_DIR:
-        print_err_msg_exit(
-            f"""
-            Externals.cfg does not contain "{external_name}"."""
-        )
-
-    UPP_DIR = os.path.join(SR_WX_APP_TOP_DIR, UPP_DIR)
-    if not os.path.exists(UPP_DIR):
-        print_err_msg_exit(
-            f"""
-            The base directory in which the UPP source code should be located
-            (UPP_DIR) does not exist:
-              UPP_DIR = \"{UPP_DIR}\"
-            Please clone the external repository containing the code in this directory,
-            build the executable, and then rerun the workflow."""
-        )
-
-    #
     # Define some other useful paths
     #
-    global USHDIR, SCRIPTSDIR, JOBSDIR, SORCDIR, SRC_DIR, PARMDIR, MODULES_DIR
-    global EXECDIR, TEMPLATE_DIR, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
+    global SCRIPTSdir, JOBSdir, SORCdir, PARMdir, MODULESdir
+    global EXECdir, PARMdir, FIXdir, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
 
-    USHDIR = os.path.join(SR_WX_APP_TOP_DIR, "ush")
-    SCRIPTSDIR = os.path.join(SR_WX_APP_TOP_DIR, "scripts")
-    JOBSDIR = os.path.join(SR_WX_APP_TOP_DIR, "jobs")
-    SORCDIR = os.path.join(SR_WX_APP_TOP_DIR, "sorc")
-    SRC_DIR = os.path.join(SR_WX_APP_TOP_DIR, "src")
-    PARMDIR = os.path.join(SR_WX_APP_TOP_DIR, "parm")
-    MODULES_DIR = os.path.join(SR_WX_APP_TOP_DIR, "modulefiles")
-    EXECDIR = os.path.join(SR_WX_APP_TOP_DIR, EXEC_SUBDIR)
-    TEMPLATE_DIR = os.path.join(USHDIR, "templates")
-    VX_CONFIG_DIR = os.path.join(TEMPLATE_DIR, "parm")
-    METPLUS_CONF = os.path.join(TEMPLATE_DIR, "parm", "metplus")
-    MET_CONFIG = os.path.join(TEMPLATE_DIR, "parm", "met")
+    USHdir = os.path.join(HOMEdir, "ush")
+    SCRIPTSdir = os.path.join(HOMEdir, "scripts")
+    JOBSdir = os.path.join(HOMEdir, "jobs")
+    SORCdir = os.path.join(HOMEdir, "sorc")
+    PARMdir = os.path.join(HOMEdir, "parm")
+    MODULESdir = os.path.join(HOMEdir, "modulefiles")
+    EXECdir = os.path.join(HOMEdir, EXEC_SUBDIR)
+    VX_CONFIG_DIR = PARMdir
+    METPLUS_CONF = os.path.join(PARMdir, "metplus")
+    MET_CONFIG = os.path.join(PARMdir, "met")
 
     #
     # -----------------------------------------------------------------------
@@ -380,7 +352,7 @@ def setup():
     MACHINE = uppercase(MACHINE)
     RELATIVE_LINK_FLAG = "--relative"
     MACHINE_FILE = MACHINE_FILE or os.path.join(
-        USHDIR, "machine", f"{lowercase(MACHINE)}.sh"
+        USHdir, "machine", f"{lowercase(MACHINE)}.sh"
     )
     machine_cfg = load_shell_config(MACHINE_FILE)
     import_vars(dictionary=machine_cfg)
@@ -879,62 +851,83 @@ def setup():
     # This is the directory that will contain the MERRA2 aerosol climatology
     # data file and lookup tables for optics properties
     #
-    # FIXLAM:
+    # FIXlam:
     # This is the directory that will contain the fixed files or symlinks to
     # the fixed files containing the grid, orography, and surface climatology
     # on the native FV3-LAM grid.
-    #
-    # CYCLE_BASEDIR:
-    # The base directory in which the directories for the various cycles will
-    # be placed.
-    #
-    # COMROOT:
-    # In NCO mode, this is the full path to the "com" directory under which
-    # output from the RUN_POST_TN task will be placed.  Note that this output
-    # is not placed directly under COMROOT but several directories further
-    # down.  More specifically, for a cycle starting at yyyymmddhh, it is at
-    #
-    #   $COMROOT/$NET/$envir/$RUN.$yyyymmdd/$hh
-    #
-    # Below, we set COMROOT in terms of PTMP as COMROOT="$PTMP/com".  COMOROOT
-    # is not used by the workflow in community mode.
-    #
-    # COMOUT_BASEDIR:
-    # In NCO mode, this is the base directory directly under which the output
-    # from the RUN_POST_TN task will be placed, i.e. it is the cycle-independent
-    # portion of the RUN_POST_TN task's output directory.  It is given by
-    #
-    #   $COMROOT/$NET/$model_ver
-    #
-    # COMOUT_BASEDIR is not used by the workflow in community mode.
     #
     # POST_OUTPUT_DOMAIN_NAME:
     # The PREDEF_GRID_NAME is set by default.
     #
     # -----------------------------------------------------------------------
     #
-    global LOGDIR, FIXam, FIXclim, FIXLAM, CYCLE_BASEDIR, COMROOT
-    global COMOUT_BASEDIR, POST_OUTPUT_DOMAIN_NAME
+    global LOGDIR, FIXam, FIXclim, FIXlam
+    global POST_OUTPUT_DOMAIN_NAME
+    global COMIN_BASEDIR, COMOUT_BASEDIR
 
-    LOGDIR = os.path.join(EXPTDIR, "log")
+    global OPSROOT, COMROOT, PACKAGEROOT, DATAROOT, DCOMROOT, DBNROOT
+    global SENDECF, SENDDBN, SENDDBN_NTC, SENDCOM, SENDWEB
+    global KEEPDATA, MAILTO, MAILCC
 
-    FIXam = os.path.join(EXPTDIR, "fix_am")
-    FIXclim = os.path.join(EXPTDIR, "fix_clim")
-    FIXLAM = os.path.join(EXPTDIR, "fix_lam")
-
+    # Main directory locations
     if RUN_ENVIR == "nco":
 
-        CYCLE_BASEDIR = os.path.join(STMP, "tmpnwprd", RUN)
-        check_for_preexist_dir_file(CYCLE_BASEDIR, PREEXISTING_DIR_METHOD)
-        COMROOT = os.path.join(PTMP, "com")
+        try: OPSROOT
+        except NameError: OPSROOT = OPSROOT or EXPTDIR
+        try: COMROOT
+        except NameError: COMROOT = os.path.join(OPSROOT, "com")
+        try: PACKAGEROOT
+        except NameError: PACKAGEROOT = os.path.join(OPSROOT, "packages")
+        try: DATAROOT
+        except NameError: DATAROOT = os.path.join(OPSROOT, "tmp")
+        try: DCOMROOT
+        except NameError: DCOMROOT = os.path.join(OPSROOT, "dcom")
+
+        COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
         COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
-        check_for_preexist_dir_file(COMOUT_BASEDIR, PREEXISTING_DIR_METHOD)
+
+        LOGDIR = os.path.join(OPSROOT,"output")
 
     else:
 
-        CYCLE_BASEDIR = EXPTDIR
-        COMROOT = ""
-        COMOUT_BASEDIR = ""
+        COMIN_BASEDIR = EXPTDIR
+        COMOUT_BASEDIR = EXPTDIR
+        OPSROOT = EXPTDIR
+        COMROOT = EXPTDIR
+        PACKAGEROOT = EXPTDIR
+        DATAROOT = EXPTDIR
+        DCOMROOT = EXPTDIR
+
+        LOGDIR = os.path.join(EXPTDIR, "log")
+
+    try: DBNROOT
+    except NameError: DBNROOT = None
+    try: SENDECF
+    except NameError: SENDECF = False
+    try: SENDDBN
+    except NameError: SENDDBN = False
+    try: SENDDBN_NTC
+    except NameError: SENDDBN_NTC = False
+    try: SENDCOM
+    except NameError: SENDCOM = False
+    try: SENDWEB
+    except NameError: SENDWEB = False
+    try: KEEPDATA
+    except NameError: KEEPDATA = True
+    try: MAILTO
+    except NameError: MAILTO = None
+    try: MAILCC
+    except NameError: MAILCC = None
+
+    # create NCO directories
+    if RUN_ENVIR == "nco":
+        mkdir_vrfy(f' -p "{OPSROOT}"')
+        mkdir_vrfy(f' -p "{COMROOT}"')
+        mkdir_vrfy(f' -p "{PACKAGEROOT}"')
+        mkdir_vrfy(f' -p "{DATAROOT}"')
+        mkdir_vrfy(f' -p "{DCOMROOT}"')
+    if DBNROOT is not None:
+        mkdir_vrfy(f' -p "{DBNROOT}"')
 
     #
     # -----------------------------------------------------------------------
@@ -1029,14 +1022,14 @@ def setup():
     MODEL_CONFIG_TMPL_FN = MODEL_CONFIG_TMPL_FN or MODEL_CONFIG_FN
     NEMS_CONFIG_TMPL_FN = NEMS_CONFIG_TMPL_FN or NEMS_CONFIG_FN
 
-    DATA_TABLE_TMPL_FP = os.path.join(TEMPLATE_DIR, DATA_TABLE_TMPL_FN)
-    DIAG_TABLE_TMPL_FP = os.path.join(TEMPLATE_DIR, DIAG_TABLE_TMPL_FN)
-    FIELD_TABLE_TMPL_FP = os.path.join(TEMPLATE_DIR, FIELD_TABLE_TMPL_FN)
-    FV3_NML_BASE_SUITE_FP = os.path.join(TEMPLATE_DIR, FV3_NML_BASE_SUITE_FN)
-    FV3_NML_YAML_CONFIG_FP = os.path.join(TEMPLATE_DIR, FV3_NML_YAML_CONFIG_FN)
+    DATA_TABLE_TMPL_FP = os.path.join(PARMdir, DATA_TABLE_TMPL_FN)
+    DIAG_TABLE_TMPL_FP = os.path.join(PARMdir, DIAG_TABLE_TMPL_FN)
+    FIELD_TABLE_TMPL_FP = os.path.join(PARMdir, FIELD_TABLE_TMPL_FN)
+    FV3_NML_BASE_SUITE_FP = os.path.join(PARMdir, FV3_NML_BASE_SUITE_FN)
+    FV3_NML_YAML_CONFIG_FP = os.path.join(PARMdir, FV3_NML_YAML_CONFIG_FN)
     FV3_NML_BASE_ENS_FP = os.path.join(EXPTDIR, FV3_NML_BASE_ENS_FN)
-    MODEL_CONFIG_TMPL_FP = os.path.join(TEMPLATE_DIR, MODEL_CONFIG_TMPL_FN)
-    NEMS_CONFIG_TMPL_FP = os.path.join(TEMPLATE_DIR, NEMS_CONFIG_TMPL_FN)
+    MODEL_CONFIG_TMPL_FP = os.path.join(PARMdir, MODEL_CONFIG_TMPL_FN)
+    NEMS_CONFIG_TMPL_FP = os.path.join(PARMdir, NEMS_CONFIG_TMPL_FN)
     #
     # -----------------------------------------------------------------------
     #
@@ -1214,7 +1207,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     global FV3_EXEC_FP
-    FV3_EXEC_FP = os.path.join(EXECDIR, FV3_EXEC_FN)
+    FV3_EXEC_FP = os.path.join(EXECdir, FV3_EXEC_FN)
     #
     # -----------------------------------------------------------------------
     #
@@ -1227,7 +1220,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     global WFLOW_LAUNCH_SCRIPT_FP, WFLOW_LAUNCH_LOG_FP, CRONTAB_LINE
-    WFLOW_LAUNCH_SCRIPT_FP = os.path.join(USHDIR, WFLOW_LAUNCH_SCRIPT_FN)
+    WFLOW_LAUNCH_SCRIPT_FP = os.path.join(USHdir, WFLOW_LAUNCH_SCRIPT_FN)
     WFLOW_LAUNCH_LOG_FP = os.path.join(EXPTDIR, WFLOW_LAUNCH_LOG_FN)
     if USE_CRON_TO_RELAUNCH:
         CRONTAB_LINE = (
@@ -1245,7 +1238,44 @@ def setup():
     # -----------------------------------------------------------------------
     #
     global LOAD_MODULES_RUN_TASK_FP
-    LOAD_MODULES_RUN_TASK_FP = os.path.join(USHDIR, "load_modules_run_task.sh")
+    LOAD_MODULES_RUN_TASK_FP = os.path.join(USHdir, "load_modules_run_task.sh")
+
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Turn off some tasks that can not be run in NCO mode
+    #
+    # -----------------------------------------------------------------------
+    #
+    global RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO
+    global RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID, RUN_TASK_VX_ENSPOINT
+
+    # Fix file location
+    if RUN_TASK_MAKE_GRID:
+        FIXdir = EXPTDIR
+    else:
+        FIXdir = os.path.join(HOMEdir, "fix")
+
+    FIXam = os.path.join(FIXdir, "fix_am")
+    FIXclim = os.path.join(FIXdir, "fix_clim")
+    FIXlam = os.path.join(FIXdir, "fix_lam")
+
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Make sure that DO_ENSEMBLE is set to TRUE when running ensemble vx.
+    #
+    # -----------------------------------------------------------------------
+    #
+    if (not DO_ENSEMBLE) and (RUN_TASK_VX_ENSGRID or RUN_TASK_VX_ENSPOINT):
+        print_err_msg_exit(
+            f'''
+            Ensemble verification can not be run unless running in ensemble mode:
+               DO_ENSEMBLE = \"{DO_ENSEMBLE}\"
+               RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
+               RUN_TASK_VX_ENSPOINT = \"{RUN_TASK_VX_ENSPOINT}\"'''
+        )
+
     #
     # -----------------------------------------------------------------------
     #
@@ -1270,225 +1300,47 @@ def setup():
     #
     # ----------------------------------------------------------------------
     #
-    global RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO
     global GRID_DIR, OROG_DIR, SFC_CLIMO_DIR
-    global RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID
 
     #
-    # -----------------------------------------------------------------------
+    # If RUN_TASK_MAKE_GRID is set to False, the workflow will look for
+    # the pregenerated grid files in GRID_DIR.  In this case, make sure that
+    # GRID_DIR exists.  Otherwise, set it to a predefined location under the
+    # experiment directory (EXPTDIR).
     #
-    # Make sure that DO_ENSEMBLE is set to TRUE when running ensemble vx.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if (not DO_ENSEMBLE) and (RUN_TASK_VX_ENSGRID or RUN_TASK_VX_ENSPOINT):
-        print_err_msg_exit(
-            f'''
-            Ensemble verification can not be run unless running in ensemble mode:
-               DO_ENSEMBLE = \"{DO_ENSEMBLE}\"
-               RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
-               RUN_TASK_VX_ENSPOINT = \"{RUN_TASK_VX_ENSPOINT}\"'''
-        )
+    if not RUN_TASK_MAKE_GRID:
+        if (GRID_DIR is None) or (not os.path.exists(GRID_DIR)):
+            GRID_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
 
-    if RUN_ENVIR == "nco":
-
-        nco_fix_dir = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
-        if not os.path.exists(nco_fix_dir):
-            print_err_msg_exit(
-                f'''
-                The directory (nco_fix_dir) that should contain the pregenerated grid,
-                orography, and surface climatology files does not exist:
-                  nco_fix_dir = \"{nco_fix_dir}\"'''
-            )
-
-        if RUN_TASK_MAKE_GRID or (not RUN_TASK_MAKE_GRID and GRID_DIR != nco_fix_dir):
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", the workflow assumes that pregenerated
-               grid files already exist in the directory
-
-                 {DOMAIN_PREGEN_BASEDIR}/{PREDEF_GRID_NAME}
-
-               where
-
-                 DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR}\"
-                 PREDEF_GRID_NAME = \"{PREDEF_GRID_NAME}\"
-
-               Thus, the MAKE_GRID_TN task must not be run (i.e. RUN_TASK_MAKE_GRID must
-               be set to \"FALSE\"), and the directory in which to look for the grid
-               files (i.e. GRID_DIR) must be set to the one above.  Current values for
-               these quantities are:
-
-                 RUN_TASK_MAKE_GRID = \"{RUN_TASK_MAKE_GRID}\"
-                 GRID_DIR = \"{GRID_DIR}\"
-
-               Resetting RUN_TASK_MAKE_GRID to \"FALSE\" and GRID_DIR to the one above.
-               Reset values are:
-            """
-
-            RUN_TASK_MAKE_GRID = False
-            GRID_DIR = nco_fix_dir
-
-            msg += f"""
-               RUN_TASK_MAKE_GRID = \"{RUN_TASK_MAKE_GRID}\"
+            msg = f"""Setting GRID_DIR to:
                GRID_DIR = \"{GRID_DIR}\"
             """
-
             print_info_msg(msg)
 
-        if RUN_TASK_MAKE_OROG or (not RUN_TASK_MAKE_OROG and OROG_DIR != nco_fix_dir):
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", the workflow assumes that pregenerated
-               orography files already exist in the directory
-                 {DOMAIN_PREGEN_BASEDIR}/{PREDEF_GRID_NAME}
-
-               where
-
-                 DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR}\"
-                 PREDEF_GRID_NAME = \"{PREDEF_GRID_NAME}\"
-
-               Thus, the MAKE_OROG_TN task must not be run (i.e. RUN_TASK_MAKE_OROG must
-               be set to \"FALSE\"), and the directory in which to look for the orography
-               files (i.e. OROG_DIR) must be set to the one above.  Current values for
-               these quantities are:
-
-                 RUN_TASK_MAKE_OROG = \"{RUN_TASK_MAKE_OROG}\"
-                 OROG_DIR = \"{OROG_DIR}\"
-
-               Resetting RUN_TASK_MAKE_OROG to \"FALSE\" and OROG_DIR to the one above.
-               Reset values are:
-            """
-
-            RUN_TASK_MAKE_OROG = False
-            OROG_DIR = nco_fix_dir
-
-            msg += f"""
-               RUN_TASK_MAKE_OROG = \"{RUN_TASK_MAKE_OROG}\"
-               OROG_DIR = \"{OROG_DIR}\"
-            """
-
-            print_info_msg(msg)
-
-        if RUN_TASK_MAKE_SFC_CLIMO or (
-            not RUN_TASK_MAKE_SFC_CLIMO and SFC_CLIMO_DIR != nco_fix_dir
-        ):
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", the workflow assumes that pregenerated
-               surface climatology files already exist in the directory
-
-                 {DOMAIN_PREGEN_BASEDIR}/{PREDEF_GRID_NAME}
-
-               where
-
-                 DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR}\"
-                 PREDEF_GRID_NAME = \"{PREDEF_GRID_NAME}\"
-
-               Thus, the MAKE_SFC_CLIMO_TN task must not be run (i.e. RUN_TASK_MAKE_SFC_CLIMO
-               must be set to \"FALSE\"), and the directory in which to look for the
-               surface climatology files (i.e. SFC_CLIMO_DIR) must be set to the one
-               above.  Current values for these quantities are:
-
-                 RUN_TASK_MAKE_SFC_CLIMO = \"{RUN_TASK_MAKE_SFC_CLIMO}\"
-                 SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"
-
-               Resetting RUN_TASK_MAKE_SFC_CLIMO to \"FALSE\" and SFC_CLIMO_DIR to the
-               one above.  Reset values are:
-            """
-
-            RUN_TASK_MAKE_SFC_CLIMO = False
-            SFC_CLIMO_DIR = nco_fix_dir
-
-            msg += f"""
-               RUN_TASK_MAKE_SFC_CLIMO = \"{RUN_TASK_MAKE_SFC_CLIMO}\"
-               SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"
-            """
-
-            print_info_msg(msg)
-
-        if RUN_TASK_VX_GRIDSTAT:
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", it is assumed that the verification
-               will not be run.
-                 RUN_TASK_VX_GRIDSTAT = \"{RUN_TASK_VX_GRIDSTAT}\"
-               Resetting RUN_TASK_VX_GRIDSTAT to \"FALSE\"
-               Reset value is:"""
-
-            RUN_TASK_VX_GRIDSTAT = False
-
-            msg += f"""
-               RUN_TASK_VX_GRIDSTAT = \"{RUN_TASK_VX_GRIDSTAT}\"
-            """
-
-            print_info_msg(msg)
-
-        if RUN_TASK_VX_POINTSTAT:
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", it is assumed that the verification
-               will not be run.
-                 RUN_TASK_VX_POINTSTAT = \"{RUN_TASK_VX_POINTSTAT}\"
-               Resetting RUN_TASK_VX_POINTSTAT to \"FALSE\"
-               Reset value is:"""
-
-            RUN_TASK_VX_POINTSTAT = False
-
-            msg = f"""
-               RUN_TASK_VX_POINTSTAT = \"{RUN_TASK_VX_POINTSTAT}\"
-            """
-
-            print_info_msg(msg)
-
-        if RUN_TASK_VX_ENSGRID:
-
-            msg = f"""
-               When RUN_ENVIR is set to \"nco\", it is assumed that the verification
-               will not be run.
-                 RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
-               Resetting RUN_TASK_VX_ENSGRID to \"FALSE\"
-               Reset value is:"""
-
-            RUN_TASK_VX_ENSGRID = False
-
-            msg += f"""
-               RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
-            """
-
-            print_info_msg(msg)
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Now consider community mode.
-    #
-    # -----------------------------------------------------------------------
-    #
-    else:
-        #
-        # If RUN_TASK_MAKE_GRID is set to False, the workflow will look for
-        # the pregenerated grid files in GRID_DIR.  In this case, make sure that
-        # GRID_DIR exists.  Otherwise, set it to a predefined location under the
-        # experiment directory (EXPTDIR).
-        #
-        if not RUN_TASK_MAKE_GRID:
-            if not os.path.exists(GRID_DIR):
+            if not os.path.exists(GRID_DIR): 
                 print_err_msg_exit(
                     f'''
                     The directory (GRID_DIR) that should contain the pregenerated grid files
                     does not exist:
                       GRID_DIR = \"{GRID_DIR}\"'''
                 )
-        else:
-            GRID_DIR = os.path.join(EXPTDIR, "grid")
-        #
-        # If RUN_TASK_MAKE_OROG is set to False, the workflow will look for
-        # the pregenerated orography files in OROG_DIR.  In this case, make sure
-        # that OROG_DIR exists.  Otherwise, set it to a predefined location under
-        # the experiment directory (EXPTDIR).
-        #
-        if not RUN_TASK_MAKE_OROG:
+    else:
+        GRID_DIR = os.path.join(EXPTDIR, "grid")
+    #
+    # If RUN_TASK_MAKE_OROG is set to False, the workflow will look for
+    # the pregenerated orography files in OROG_DIR.  In this case, make sure
+    # that OROG_DIR exists.  Otherwise, set it to a predefined location under
+    # the experiment directory (EXPTDIR).
+    #
+    if not RUN_TASK_MAKE_OROG:
+        if (OROG_DIR is None) or (not os.path.exists(OROG_DIR)):
+            OROG_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
+
+            msg = f"""Setting OROG_DIR to:
+               OROG_DIR = \"{OROG_DIR}\"
+            """
+            print_info_msg(msg)
+
             if not os.path.exists(OROG_DIR):
                 print_err_msg_exit(
                     f'''
@@ -1496,15 +1348,23 @@ def setup():
                     files does not exist:
                       OROG_DIR = \"{OROG_DIR}\"'''
                 )
-        else:
-            OROG_DIR = os.path.join(EXPTDIR, "orog")
-        #
-        # If RUN_TASK_MAKE_SFC_CLIMO is set to False, the workflow will look
-        # for the pregenerated surface climatology files in SFC_CLIMO_DIR.  In
-        # this case, make sure that SFC_CLIMO_DIR exists.  Otherwise, set it to
-        # a predefined location under the experiment directory (EXPTDIR).
-        #
-        if not RUN_TASK_MAKE_SFC_CLIMO:
+    else:
+        OROG_DIR = os.path.join(EXPTDIR, "orog")
+    #
+    # If RUN_TASK_MAKE_SFC_CLIMO is set to False, the workflow will look
+    # for the pregenerated surface climatology files in SFC_CLIMO_DIR.  In
+    # this case, make sure that SFC_CLIMO_DIR exists.  Otherwise, set it to
+    # a predefined location under the experiment directory (EXPTDIR).
+    #
+    if not RUN_TASK_MAKE_SFC_CLIMO:
+        if (SFC_CLIMO_DIR is None) or (not os.path.exists(SFC_CLIMO_DIR)):
+            SFC_CLIMO_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
+
+            msg = f"""Setting SFC_CLIMO_DIR to:
+               SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"
+            """
+            print_info_msg(msg)
+
             if not os.path.exists(SFC_CLIMO_DIR):
                 print_err_msg_exit(
                     f'''
@@ -1512,8 +1372,8 @@ def setup():
                     climatology files does not exist:
                       SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"'''
                 )
-        else:
-            SFC_CLIMO_DIR = os.path.join(EXPTDIR, "sfc_climo")
+    else:
+        SFC_CLIMO_DIR = os.path.join(EXPTDIR, "sfc_climo")
 
     # -----------------------------------------------------------------------
     #
@@ -1610,21 +1470,21 @@ def setup():
     # -----------------------------------------------------------------------
     #
     # If not running the MAKE_GRID_TN, MAKE_OROG_TN, and/or MAKE_SFC_CLIMO
-    # tasks, create symlinks under the FIXLAM directory to pregenerated grid,
+    # tasks, create symlinks under the FIXlam directory to pregenerated grid,
     # orography, and surface climatology files.  In the process, also set
     # RES_IN_FIXLAM_FILENAMES, which is the resolution of the grid (in units
     # of number of grid points on an equivalent global uniform cubed-sphere
-    # grid) used in the names of the fixed files in the FIXLAM directory.
+    # grid) used in the names of the fixed files in the FIXlam directory.
     #
     # -----------------------------------------------------------------------
     #
-    mkdir_vrfy(f' -p "{FIXLAM}"')
+    mkdir_vrfy(f' -p "{FIXlam}"')
     RES_IN_FIXLAM_FILENAMES = ""
     #
     # -----------------------------------------------------------------------
     #
     # If the grid file generation task in the workflow is going to be skipped
-    # (because pregenerated files are available), create links in the FIXLAM
+    # (because pregenerated files are available), create links in the FIXlam
     # directory to the pregenerated grid files.
     #
     # -----------------------------------------------------------------------
@@ -1645,7 +1505,7 @@ def setup():
     #
     # If the orography file generation task in the workflow is going to be
     # skipped (because pregenerated files are available), create links in
-    # the FIXLAM directory to the pregenerated orography files.
+    # the FIXlam directory to the pregenerated orography files.
     #
     # -----------------------------------------------------------------------
     #
@@ -1670,7 +1530,7 @@ def setup():
     #
     # If the surface climatology file generation task in the workflow is
     # going to be skipped (because pregenerated files are available), create
-    # links in the FIXLAM directory to the pregenerated surface climatology
+    # links in the FIXlam directory to the pregenerated surface climatology
     # files.
     #
     # -----------------------------------------------------------------------
@@ -1825,13 +1685,13 @@ def setup():
     #
     # 1) Copying the default workflow/experiment configuration file (speci-
     #    fied by EXPT_DEFAULT_CONFIG_FN and located in the shell script di-
-    #    rectory specified by USHDIR) to the experiment directory and rena-
+    #    rectory specified by USHdir) to the experiment directory and rena-
     #    ming it to the name specified by GLOBAL_VAR_DEFNS_FN.
     #
     # 2) Resetting the default variable values in this file to their current
     #    values.  This is necessary because these variables may have been
     #    reset by the user-specified configuration file (if one exists in
-    #    USHDIR) and/or by this setup script, e.g. because predef_domain is
+    #    USHdir) and/or by this setup script, e.g. because predef_domain is
     #    set to a valid non-empty value.
     #
     # 3) Appending to the variable definitions file any new variables intro-
@@ -1889,34 +1749,28 @@ def setup():
         # -----------------------------------------------------------------------
         #
         "SR_WX_APP_TOP_DIR": SR_WX_APP_TOP_DIR,
-        "USHDIR": USHDIR,
-        "SCRIPTSDIR": SCRIPTSDIR,
-        "JOBSDIR": JOBSDIR,
-        "SORCDIR": SORCDIR,
-        "SRC_DIR": SRC_DIR,
-        "PARMDIR": PARMDIR,
-        "MODULES_DIR": MODULES_DIR,
-        "EXECDIR": EXECDIR,
+        "HOMEdir": HOMEdir,
+        "USHdir": USHdir,
+        "SCRIPTSdir": SCRIPTSdir,
+        "JOBSdir": JOBSdir,
+        "SORCdir": SORCdir,
+        "PARMdir": PARMdir,
+        "MODULESdir": MODULESdir,
+        "EXECdir": EXECdir,
+        "FIXdir": FIXdir,
         "FIXam": FIXam,
         "FIXclim": FIXclim,
-        "FIXLAM": FIXLAM,
+        "FIXlam": FIXlam,
         "FIXgsm": FIXgsm,
         "FIXaer": FIXaer,
         "FIXlut": FIXlut,
-        "COMROOT": COMROOT,
-        "COMOUT_BASEDIR": COMOUT_BASEDIR,
-        "TEMPLATE_DIR": TEMPLATE_DIR,
         "VX_CONFIG_DIR": VX_CONFIG_DIR,
         "METPLUS_CONF": METPLUS_CONF,
         "MET_CONFIG": MET_CONFIG,
         "UFS_WTHR_MDL_DIR": UFS_WTHR_MDL_DIR,
-        "UFS_UTILS_DIR": UFS_UTILS_DIR,
         "SFC_CLIMO_INPUT_DIR": SFC_CLIMO_INPUT_DIR,
         "TOPO_DIR": TOPO_DIR,
-        "UPP_DIR": UPP_DIR,
         "EXPTDIR": EXPTDIR,
-        "LOGDIR": LOGDIR,
-        "CYCLE_BASEDIR": CYCLE_BASEDIR,
         "GRID_DIR": GRID_DIR,
         "OROG_DIR": OROG_DIR,
         "SFC_CLIMO_DIR": SFC_CLIMO_DIR,
@@ -2128,6 +1982,33 @@ def setup():
     # write derived settings
     cfg_d["derived"] = settings
 
+    #
+    # -----------------------------------------------------------------------
+    #
+    # NCO specific settings
+    #
+    # -----------------------------------------------------------------------
+    #
+    settings = {
+        "COMIN_BASEDIR": COMIN_BASEDIR,
+        "COMOUT_BASEDIR": COMOUT_BASEDIR,
+        "OPSROOT": OPSROOT,
+        "COMROOT": COMROOT,
+        "PACKAGEROOT": PACKAGEROOT,
+        "DATAROOT": DATAROOT,
+        "DCOMROOT": DCOMROOT,
+        "DBNROOT": DBNROOT,
+        "SENDECF": SENDECF,
+        "SENDDBN": SENDDBN,
+        "SENDDBN_NTC": SENDDBN_NTC,
+        "SENDCOM": SENDCOM,
+        "SENDWEB": SENDWEB,
+        "KEEPDATA": KEEPDATA,
+        "MAILTO": MAILTO,
+        "MAILCC": MAILCC,
+    }
+
+    cfg_d["nco"].update(settings)
     #
     # -----------------------------------------------------------------------
     #

@@ -23,7 +23,7 @@ function print_info_msg() {
 #
 #-----------------------------------------------------------------------
 #
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -172,7 +172,7 @@ function print_err_msg_exit() {
 #
 #-----------------------------------------------------------------------
 #
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -299,7 +299,7 @@ the header and footer.
       err_msg="\n$1"
     fi
 
-    printf "${msg_header}${err_msg}${msg_footer}\n" 1>&2
+    printf "FATAL ERROR: ${msg_header}${err_msg}${msg_footer}\n" 1>&2
     exit 1
 
   fi

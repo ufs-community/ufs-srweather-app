@@ -18,7 +18,7 @@ function filesys_cmd_vrfy() {
 #
 #-----------------------------------------------------------------------
 #
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -239,37 +239,37 @@ $output"
 #
 
 function cp_vrfy() {
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
   filesys_cmd_vrfy "cp" "$@"
   { restore_shell_opts; } > /dev/null 2>&1
 }
 
 function mv_vrfy() {
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
   filesys_cmd_vrfy "mv" "$@"
   { restore_shell_opts; } > /dev/null 2>&1
 }
 
 function rm_vrfy() {
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
   filesys_cmd_vrfy "rm" "$@"
   { restore_shell_opts; } > /dev/null 2>&1
 }
 
 function ln_vrfy() {
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
   filesys_cmd_vrfy "$LN_UTIL" "$@"
   { restore_shell_opts; } > /dev/null 2>&1
 }
 
 function mkdir_vrfy() {
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
   filesys_cmd_vrfy "mkdir" "$@"
   { restore_shell_opts; } > /dev/null 2>&1
 }
 
 function cd_vrfy() {
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
   filesys_cmd_vrfy "cd" "$@"
   { restore_shell_opts; } > /dev/null 2>&1
 }

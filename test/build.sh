@@ -135,10 +135,10 @@ declare -a executables_rrfs_utl_created=( adjust_soiltq.exe \
 #-----------------------------------------------------------------------
   for compiler in "${compilers[@]}"; do
     BUILD_DIR=${TOP_DIR}/build_${compiler}
-    BIN_DIR=${TOP_DIR}/bin_${compiler}
-    EXEC_DIR=${BIN_DIR}/bin
+    INSTALL_DIR=${TOP_DIR}/install_${compiler}
+    EXEC_DIR=${INSTALL_DIR}/exec
     if [ $build_it -eq 0 ] ; then
-      ./devbuild.sh --platform=${machine} --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${BIN_DIR} \
+      ./devbuild.sh --platform=${machine} --compiler=${compiler} --build-dir=${BUILD_DIR} --install-dir=${INSTALL_DIR} \
         --remove all || fail "Build ${machine} ${compiler} FAILED"
     fi    # End of skip build for testing
 

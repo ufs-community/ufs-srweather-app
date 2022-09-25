@@ -19,7 +19,7 @@ def print_err_msg_exit(error_msg="", stack_trace=True):
         traceback.print_stack(file=sys.stderr)
 
     msg_footer = "\nExiting with nonzero status."
-    print(dedent(error_msg) + msg_footer, file=sys.stderr)
+    print("FATAL ERROR: " + dedent(error_msg) + msg_footer, file=sys.stderr)
     sys.exit(1)
 
 

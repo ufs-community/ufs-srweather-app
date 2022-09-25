@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -50,59 +50,31 @@ or lateral boundary conditions for the FV3.
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  Then 
-# process the arguments provided to this script/function (which should 
-# consist of a set of name-value pairs of the form arg1="value1", etc).
-#
-#-----------------------------------------------------------------------
-#
-valid_args=( \
-"extrn_mdl_cdate" \
-"extrn_mdl_name" \
-"extrn_mdl_staging_dir" \
-"time_offset_hrs" \
-)
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args valid_args
-
-
-#
-#-----------------------------------------------------------------------
-#
 # Set up variables for call to retrieve_data.py
 #
 #-----------------------------------------------------------------------
 #
 set -x
 if [ "${ICS_OR_LBCS}" = "ICS" ]; then
-  if [ ${time_offset_hrs} -eq 0 ] ; then
+  if [ ${TIME_OFFSET_HRS} -eq 0 ] ; then
     anl_or_fcst="anl"
   else
     anl_or_fcst="fcst"
   fi
-  fcst_hrs=${time_offset_hrs}
+  fcst_hrs=${TIME_OFFSET_HRS}
   file_names=${EXTRN_MDL_FILES_ICS[@]}
-  if [ ${extrn_mdl_name} = FV3GFS ] ; then
+  if [ ${EXTRN_MDL_NAME} = FV3GFS ] ; then
     file_type=$FV3GFS_FILE_FMT_ICS
   fi
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_ICS:-$EXTRN_MDL_SYSBASEDIR_ICS}
 
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   anl_or_fcst="fcst"
-  first_time=$((time_offset_hrs + LBC_SPEC_INTVL_HRS))
-  last_time=$((time_offset_hrs + FCST_LEN_HRS))
+  first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
+  last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}
-  if [ ${extrn_mdl_name} = FV3GFS ] ; then
+  if [ ${EXTRN_MDL_NAME} = FV3GFS ] ; then
     file_type=$FV3GFS_FILE_FMT_LBCS
   fi
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_LBCS:-$EXTRN_MDL_SYSBASEDIR_LBCS}
@@ -110,7 +82,7 @@ fi
 
 data_stores="${EXTRN_MDL_DATA_STORES}"
 
-yyyymmddhh=${extrn_mdl_cdate:0:10}
+yyyymmddhh=${EXTRN_MDL_CDATE:0:10}
 yyyy=${yyyymmddhh:0:4}
 yyyymm=${yyyymmddhh:0:6}
 yyyymmdd=${yyyymmddhh:0:8}
@@ -153,17 +125,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+if [ $RUN_ENVIR = "nco" ]; then
+    EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.${ICS_OR_LBCS}.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+else
+    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+fi
 cmd="
-python3 -u ${USHDIR}/retrieve_data.py \
+python3 -u ${USHdir}/retrieve_data.py \
   --debug \
   --anl_or_fcst ${anl_or_fcst} \
-  --config ${USHDIR}/templates/data_locations.yml \
-  --cycle_date ${extrn_mdl_cdate} \
+  --config ${PARMdir}/data_locations.yml \
+  --cycle_date ${EXTRN_MDL_CDATE} \
   --data_stores ${data_stores} \
-  --external_model ${extrn_mdl_name} \
+  --external_model ${EXTRN_MDL_NAME} \
   --fcst_hrs ${fcst_hrs[@]} \
-  --output_path ${extrn_mdl_staging_dir} \
-  --summary_file ${EXTRN_MDL_VAR_DEFNS_FN} \
+  --output_path ${EXTRN_MDL_STAGING_DIR} \
+  --summary_file ${EXTRN_DEFNS} \
   $additional_flags"
 
 $cmd || print_err_msg_exit "\
