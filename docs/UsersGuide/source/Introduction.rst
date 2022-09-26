@@ -447,7 +447,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/latest/                                  |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | Stochastic Physics         | https://stochastic-physics.readthedocs.io/en/release-public-v3/                 |
+   | Stochastic Physics         | https://stochastic-physics.readthedocs.io/en/latest/                 |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | ESMF manual                | https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/                |
@@ -455,8 +455,6 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | Unified Post Processor     | https://upp.readthedocs.io/en/latest/                                           |
    +----------------------------+---------------------------------------------------------------------------------+
 
-..
-   COMMENT: Stochastic physics "latest" branch is noticeably behind the release/public-v3 branch, the link to the release branch is maintained here/throughout develop docs for now.
 
 The UFS community is encouraged to contribute to the development effort of all related
 utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`. Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository or the `regional_workflow <https://github.com/ufs-community/regional_workflow>`__ repository should follow the guidelines contained in the :ref:`SRW App Contributor's Guide <ContributorsGuide>`.
