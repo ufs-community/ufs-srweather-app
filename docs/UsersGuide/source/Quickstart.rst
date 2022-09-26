@@ -72,10 +72,10 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
 
-         cd regional_workflow/ush
-         cp config.community.sh config.sh
+         cd ush
+         cp config.community.yaml config.yaml
       
-      Users will need to adjust the experiment parameters in the ``config.sh`` file to suit the needs of their experiment (e.g., date, time, grid, physics suite, etc.). More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. 
+      Users will need to adjust the experiment parameters in the ``config.yaml`` file to suit the needs of their experiment (e.g., date, time, grid, physics suite, etc.). More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. 
 
    #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
 
@@ -97,7 +97,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
 
-         ./generate_FV3LAM_wflow.sh
+         python generate_FV3LAM_wflow.py
 
    #. Run the regional workflow. There are several methods available for this step, which are discussed in :numref:`Section %s <Run>`. One possible method is summarized below. It requires the Rocoto Workflow Manager. 
 
