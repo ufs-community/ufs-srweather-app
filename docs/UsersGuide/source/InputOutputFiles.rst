@@ -179,8 +179,8 @@ If users wish to modify the fields or levels that are output from the UPP, they 
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
 
 UPP Product Output Tables for the UFS SRW LAM Grid:
-   * :doc:`3D Native Hybrid Level Fields <SRW_NATLEV_table>`
-   * :doc:`3D Pressure Level Fields <SRW_PRSLEV_table>`
+   * :doc:`3D Native Hybrid Level Fields <tables/SRW_NATLEV_table>`
+   * :doc:`3D Pressure Level Fields <tables/SRW_PRSLEV_table>`
 
 Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
 
