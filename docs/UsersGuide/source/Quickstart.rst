@@ -66,7 +66,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             cmake .. -DCMAKE_INSTALL_PREFIX=..
             make -j 4  >& build.out &
 
-   #. Download and stage data (both the fix files and the :term:`IC/LBC` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a Level 2-4 system).
+   #. Download and stage data (both the fix files and the :term:`IC/LBC <IC/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a Level 2-4 system).
 
    #. Configure the experiment parameters.
 

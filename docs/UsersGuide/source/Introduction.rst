@@ -310,7 +310,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | data_table                | :term:`Cycle-independent` input file (empty)                                                                 |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-   | field_table               | :term:`Tracers` in the `forecast model                                                                       |
+   | field_table               | :term:`Tracers <tracer>` in the `forecast model                                                              |
    |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#field-table-file>`__                  |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                          |
