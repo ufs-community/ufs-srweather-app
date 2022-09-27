@@ -10,6 +10,7 @@ module-whatis "Loads libraries and utilities needed for running SRW on Cheyenne"
 module load ncarenv
 module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
 module load rocoto
+module unload python
 module load conda/latest
 
 if { [module-info mode load] } {
