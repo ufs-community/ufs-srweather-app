@@ -61,7 +61,7 @@ Users may specify the set of tests to run by creating a text file, such as ``my_
 (and ``Ctrl + D`` to exit). For each test in ``my_tests.txt``, ``run_WE2E_tests.sh`` will generate a new experiment directory and, by default, create a new :term:`cron` job in the user's cron table that will (re)launch the workflow every 2 minutes. This cron job calls the workflow launch script ``launch_FV3LAM_wflow.sh`` until the workflow either completes successfully (i.e., all tasks are successful) or fails (i.e., at least one task fails). 
 The cron job is then removed from the user's cron table.
 
-The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` can be called with the ``my_tests.txt`` file above. These examples assume that the user has already built the SRW App and loaded the regional workflow as described in :numref:`Chapter %s <NCQuickstart>` (and in detail in :numref:`Chapter %s <BuildRunSRW>`). 
+The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` can be called with the ``my_tests.txt`` file above. These examples assume that the user has already built the SRW App and loaded the regional workflow as described in :numref:`Chapter %s <NCQuickstart>` (and in detail in Chapters :numref:`%s <BuildSRW>` and :numref:`%s <RunSRW>`). 
 
 #. To run the tests listed in ``my_tests.txt`` on Hera and charge the computational
    resources used to the "rtrr" account, use:

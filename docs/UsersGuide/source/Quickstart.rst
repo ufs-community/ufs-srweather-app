@@ -4,7 +4,7 @@
 Quick Start Guide
 ====================
 
-This chapter provides a brief summary of how to build and run the SRW Application. The steps will run most smoothly on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users should expect to reference other chapters of this User's Guide, particularly :numref:`Chapter %s <BuildRunSRW>`, for additional explanations regarding each step. 
+This chapter provides a brief summary of how to build and run the SRW Application. The steps will run most smoothly on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users should expect to reference other chapters of this User's Guide, particularly :numref:`Chapter %s <BuildSRW>` and :numref:`Chapter %s <RunSRW>`, for additional explanations regarding each step. 
 
 
 Install the HPC-Stack
@@ -17,7 +17,7 @@ Once the HPC-Stack has been successfully installed, users can move on to buildin
 Building and Running the UFS SRW Application 
 ===============================================
 
-For a detailed explanation of how to build and run the SRW App on any supported system, see :numref:`Chapter %s <BuildRunSRW>`. The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. An overview of the required steps appears below. However, users can expect to access other referenced sections of this User's Guide for more detail. 
+For a detailed explanation of how to build and run the SRW App on any supported system, see :numref:`Chapter %s: Building the SRW App <BuildSRW>` and :numref:`Chapter %s: Running the SRW App <RunSRW>`. The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. An overview of the required steps appears below. However, users can expect to access other referenced sections of this User's Guide for more detail. 
 
    #. Clone the SRW App from GitHub:
 

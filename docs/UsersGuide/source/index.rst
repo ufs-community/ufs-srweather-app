@@ -14,7 +14,8 @@ UFS Short-Range Weather App Users Guide
    Introduction
    Quickstart
    ContainerQuickstart
-   BuildRunSRW
+   BuildSRW
+   RunSRW
    Components
    InputOutputFiles
    LAMGrids
