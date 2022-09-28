@@ -75,7 +75,18 @@ For a detailed explanation of how to build and run the SRW App on any supported 
          cd ush
          cp config.community.yaml config.yaml
       
-      Users will need to adjust the experiment parameters in the ``config.yaml`` file to suit the needs of their experiment (e.g., date, time, grid, physics suite, etc.). More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. 
+      Users will need to adjust the experiment parameters in the ``config.yaml`` file to suit the needs of their experiment (e.g., date, time, grid, physics suite, etc.). More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. To determine whether the ``config.yaml`` file adjustments are valid, users can run:
+
+      .. code-block:: console
+
+         ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
+      
+      A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
+
+      .. code-block:: console
+
+         INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
+         FAILURE
 
    #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
 
