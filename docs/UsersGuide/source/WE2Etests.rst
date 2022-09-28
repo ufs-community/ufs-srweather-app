@@ -44,7 +44,7 @@ the executables have been built (see :numref:`Section %s <BuildExecutables>`). I
 Supported Tests
 ===================
 
-The full list of WE2E tests is extensive; it is not recommended to run all the tests, as some are computationally expensive. A subset of the full WE2E test suite is supported for the latest release of the SRW Application. Supported test cases can be viewed in :doc:`this table <Tests>`. 
+The full list of WE2E tests is extensive; it is not recommended to run all the tests, as some are computationally expensive. A subset of the full WE2E test suite is supported for the latest release of the SRW Application. Supported test cases can be viewed in :doc:`this table <tables/Tests>`. 
 
 Running the WE2E Tests
 ================================

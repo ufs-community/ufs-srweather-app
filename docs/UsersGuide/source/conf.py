@@ -203,7 +203,9 @@ epub_exclude_files = ['search.html']
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/3/': None}
+intersphinx_mapping = {
+   'hpc-stack': ('https://hpc-stack.readthedocs.io/en/latest/', None),
+}
 
 # -- Options for todo extension ----------------------------------------------
 

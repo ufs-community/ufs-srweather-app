@@ -9,7 +9,7 @@ This chapter provides a brief summary of how to build and run the SRW Applicatio
 
 Install the HPC-Stack
 ===========================
-SRW App users who are not working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the :term:`HPC-Stack` prior to building the SRW App on a new machine. Installation instructions appear in both the `HPC-Stack documentation <https://hpc-stack.readthedocs.io/en/latest/>`__ and in :numref:`Chapter %s <InstallBuildHPCstack>` of this User's Guide. The steps will vary slightly depending on the user's platform. However, in all cases, the process involves cloning the `HPC-Stack repository <https://github.com/NOAA-EMC/hpc-stack>`__, creating and entering a build directory, and invoking ``cmake`` and ``make`` commands to build the stack. This process will create a number of modulefiles and scripts that will be used for setting up the build environment for the SRW App. 
+SRW App users who are not working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the :term:`HPC-Stack` prior to building the SRW App on a new machine. Installation instructions appear in the :doc:`HPC-Stack documentation <hpc-stack:index>`. The steps will vary slightly depending on the user's platform. However, in all cases, the process involves cloning the `HPC-Stack repository <https://github.com/NOAA-EMC/hpc-stack>`__, creating and entering a build directory, and invoking ``cmake`` and ``make`` commands to build the stack. This process will create a number of modulefiles and scripts that will be used for setting up the build environment for the SRW App. 
 
 Once the HPC-Stack has been successfully installed, users can move on to building the SRW Application.
 
@@ -66,16 +66,27 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             cmake .. -DCMAKE_INSTALL_PREFIX=..
             make -j 4  >& build.out &
 
-   #. Download and stage data (both the fix files and the :term:`IC/LBC` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a Level 2-4 system).
+   #. Download and stage data (both the fix files and the :term:`IC/LBC <IC/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a Level 2-4 system).
 
    #. Configure the experiment parameters.
 
       .. code-block:: console
 
-         cd regional_workflow/ush
-         cp config.community.sh config.sh
+         cd ush
+         cp config.community.yaml config.yaml
       
-      Users will need to adjust the experiment parameters in the ``config.sh`` file to suit the needs of their experiment (e.g., date, time, grid, physics suite, etc.). More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. 
+      Users will need to adjust the experiment parameters in the ``config.yaml`` file to suit the needs of their experiment (e.g., date, time, grid, physics suite, etc.). More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. To determine whether the ``config.yaml`` file adjustments are valid, users can run:
+
+      .. code-block:: console
+
+         ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
+      
+      A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
+
+      .. code-block:: console
+
+         INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
+         FAILURE
 
    #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
 
@@ -97,7 +108,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
 
-         ./generate_FV3LAM_wflow.sh
+         ./generate_FV3LAM_wflow.py
 
    #. Run the regional workflow. There are several methods available for this step, which are discussed in :numref:`Section %s <Run>`. One possible method is summarized below. It requires the Rocoto Workflow Manager. 
 

@@ -205,7 +205,7 @@ File Name Parameters
    Name of the file specifying the fields that the forecast model will output.
 
 ``FIELD_TABLE_FN``: (Default: "field_table")
-   Name of the file specifying the :term:`tracers` that the forecast model will read in from the :term:`IC/LBC` files.
+   Name of the file specifying the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files.
 
 ``DATA_TABLE_FN``: (Default: "data_table")
    Name of the file containing the data table read in by the forecast model.
@@ -413,7 +413,7 @@ CCPP Parameter
 Stochastic Physics Parameters
 ================================
 
-For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/release-public-v3/namelist_options.html>`__.
+For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/namelist_options.html>`__.
 
 ``NEW_LSCALE``: (Default: "TRUE") 
    Use correct formula for converting a spatial legnth scale into spectral space. 
@@ -508,7 +508,7 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 Parameters for Stochastically Perturbed Parameterizations (SPP)
 ------------------------------------------------------------------
 
-SPP perturbs specific tuning parameters within a physics :term:`parameterization` (unlike :ref:`SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
+SPP perturbs specific tuning parameters within a physics :term:`parameterization <parameterizations>` (unlike :ref:`SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
 .. note::
    SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. Among the supported physics suites, the full set of parameterizations can only be used with the ``FV3_HRRR`` option for ``CCPP_PHYS_SUITE``.
