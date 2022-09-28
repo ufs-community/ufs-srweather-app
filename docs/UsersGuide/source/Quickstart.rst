@@ -97,7 +97,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
 
-         python generate_FV3LAM_wflow.py
+         ./generate_FV3LAM_wflow.py
 
    #. Run the regional workflow. There are several methods available for this step, which are discussed in :numref:`Section %s <Run>`. One possible method is summarized below. It requires the Rocoto Workflow Manager. 
 

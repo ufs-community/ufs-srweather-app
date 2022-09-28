@@ -40,6 +40,8 @@ Scientists from across multiple labs and organizations have volunteered to revie
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
     |                  | Jong Kim (@jkbk2004)                           | UFS Weather Model configuration, forecast sensitivity analysis, data assimilation           |
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
+    |                  | Michael Leukin                                 | SRW App code management                                                                     |
+    |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
     |                  | Natalie Perlin (@natalie-perlin)               | Generic Linux/Mac installations, hpc-stack/spack-stack                                      |
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
     |                  | Gillian Petro (@gspetro-NOAA)                  | Documentation                                                                               |
