@@ -1,13 +1,16 @@
 .. _ConfigWorkflow:
 
-============================================================================================
-Workflow Parameters: Configuring the Workflow in ``config.sh`` and ``config_defaults.sh``		
-============================================================================================
-To create the experiment directory and workflow when running the SRW Application, the user must create an experiment configuration file named ``config.sh``. This file contains experiment-specific information, such as dates, external model data, observation data, directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``regional_workflow`` repository's ``ush`` directory: ``config.community.sh`` and ``config.nco.sh``. The first is for running experiments in community mode (``RUN_ENVIR`` set to "community"), and the second is for running experiments in "nco" mode (``RUN_ENVIR`` set to "nco"). Note that for this release, only "community" mode is supported. These files can be used as the starting point from which to generate a variety of experiment configurations for the SRW App.
+================================================================================================
+Workflow Parameters: Configuring the Workflow in ``config.yaml`` and ``config_defaults.yaml``		
+================================================================================================
+To create the experiment directory and workflow when running the SRW Application, the user must create an experiment configuration file (usually named ``config.yaml``). This file contains experiment-specific information, such as forecast dates, grid and physics suite selections, data directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``ush`` directory: ``config.community.yaml`` and ``config.nco.yaml``. The first is for running experiments in *community* mode (``RUN_ENVIR`` set to "community"), and the second is for running experiments in *nco* mode (``RUN_ENVIR`` set to "nco"). The content of these files can be copied into ``config.yaml`` and used as the starting point from which to generate a variety of experiment configurations for the SRW App. Note that for this release, only "community" mode is supported. 
 
-There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these need to be explicitly set by the user in ``config.sh``. If a user does not define an entry in the ``config.sh`` script, either its value in ``config_defaults.sh`` will be used, or it will be reset depending on other parameters, such as the platform on which the experiment will be run (specified by ``MACHINE``). Note that ``config_defaults.sh`` contains the full list of experiment parameters that a user may set in ``config.sh`` (i.e., the user cannot set parameters in ``config.sh`` that are not initialized in ``config_defaults.sh``).
+There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these parameters need to be set explicitly by the user in ``config.yaml``. If a user does not define an entry in the ``config.yaml`` script, either its value in ``config_defaults.yaml`` will be used, or it will be reset depending on other parameters, such as the platform on which the experiment will be run (specified by ``MACHINE``). 
 
-The following is a list of the parameters in the ``config_defaults.sh`` file. For each parameter, the default value and a brief description is given. 
+.. note:: 
+   The ``config_defaults.yaml`` file contains the full list of experiment parameters that a user may set in ``config.yaml``. The user cannot set parameters in ``config.yaml`` that are not initialized in ``config_defaults.yaml``.
+
+The following is a list of the parameters in the ``config_defaults.yaml`` file. For each parameter, the default value and a brief description is given. 
 
 .. _PlatEnv:
 
@@ -27,7 +30,7 @@ Platform Environment
    The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParellelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). When running the SRW App in a container, set ``MACHINE`` to "SINGULARITY" regardless of the underlying platform (including on NOAA Cloud systems). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"``
 
 ``MACHINE_FILE``: (Default: "")
-   Path to a configuration file with machine-specific settings. If none is provided, ``setup.sh`` will attempt to set the path to a configuration file for a supported platform.
+   Path to a configuration file with machine-specific settings. If none is provided, ``setup.py`` will attempt to set the path to a configuration file for a supported platform.
 
 ``ACCOUNT``: (Default: "project_name")
    The account under which users submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
@@ -39,7 +42,7 @@ Platform Environment
    The workflow manager to use (e.g., "ROCOTO"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "ROCOTO." Valid values: ``"rocoto"`` | ``"none"``
 
 ``NCORES_PER_NODE``: (Default: "")
-   The number of cores available per node on the compute platform. Set for supported platforms in ``setup.sh``, but it is now also configurable for all platforms.
+   The number of cores available per node on the compute platform. Set for supported platforms in ``setup.py``, but it is now also configurable for all platforms.
 
 ``LMOD_PATH``: (Default: "")
    Path to the LMOD shell file on the user's Linux system. It is set automatically for supported machines.
@@ -57,7 +60,7 @@ Platform Environment
 
 Machine-Dependent Parameters:
 -------------------------------
-These parameters vary depending on machine. On `Level 1 and 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, the appropriate values for each machine can be viewed in the ``regional_workflow/ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.sh`` file so that they override the ``config_defaults.sh`` and machine default values. 
+These parameters vary depending on machine. On `Level 1 and 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, the appropriate values for each machine can be viewed in the ``ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.yaml`` file so that they override the ``config_defaults.yaml`` and machine default values. 
 
 ``PARTITION_DEFAULT``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., if ``SCHED`` is set to "slurm"). This is the default partition to which Slurm submits workflow tasks. When a variable that designates the partition (e.g., ``PARTITION_HPSS``, ``PARTITION_FCST``; see below) is **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: ``""`` | ``"hera"`` | ``"normal"`` | ``"orion"`` | ``"sjet,vjet,kjet,xjet"`` | ``"workq"``
@@ -117,7 +120,7 @@ Cron is a job scheduler accessed through the command-line on UNIX-like operating
 Directory Parameters
 ====================
 ``EXPT_BASEDIR``: (Default: "")
-   The full path to the base directory inside of which the experiment directory (``EXPT_SUBDIR``) will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMEdir}/../../expt_dirs``, where ``${HOMEdir}`` contains the full path to the ``regional_workflow`` directory.
+   The full path to the base directory inside of which the experiment directory (``EXPT_SUBDIR``) will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMEdir}/../../expt_dirs``, where ``${HOMEdir}`` contains the full path to the ``ush`` directory.
 
 ``EXPT_SUBDIR``: (Default: "")
    A descriptive name of the user's choice for the experiment directory (*not* its full path). The full path to the experiment directory, which will be contained in the variable ``EXPTDIR``, will be:
@@ -151,7 +154,7 @@ These variables apply only when using NCO mode (i.e., when ``RUN_ENVIR`` is set 
 
       ${FIXLAM_NCO_BASEDIR}/${PREDEF_GRID_NAME}
 
-   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the name of the grid being used) under this directory. This variable should be set to a null string in ``config_defaults.sh`` and specified by the user in the workflow configuration file (``config.sh``).
+   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the name of the grid being used) under this directory. This variable should be set to a null string in ``config_defaults.yaml`` and specified by the user in the workflow configuration file (``config.yaml``).
 
 ``STMP``: (Default: "/base/path/of/directory/containing/model/input/and/raw/output/files")
    The beginning portion of the path to the directory that will contain :term:`cycle-dependent` model input files, symlinks to :term:`cycle-independent` input files, and raw (i.e., before post-processing) forecast output files for a given :term:`cycle`. The format for cycle dates (cdate) is ``cdate="${YYYYMMDD}${HH}"``, where the date is specified using YYYYMMDD format, and the hour is specified using HH format. The files for a cycle date will be located in the following directory:
@@ -186,7 +189,7 @@ Pre-Processing File Separator Parameters
 
 File Name Parameters
 ====================
-``EXPT_CONFIG_FN``: (Default: "config.sh")
+``EXPT_CONFIG_FN``: (Default: "config.yaml")
    Name of the user-specified configuration file for the forecast experiment.
 
 ``RGNL_GRID_NML_FN``: (Default: "regional_grid.nml")
@@ -226,13 +229,10 @@ File Name Parameters
    Name of the Rocoto workflow XML file that the experiment generation script creates. This file defines the workflow for the experiment.
 
 ``GLOBAL_VAR_DEFNS_FN``: (Default: "var_defns.sh")
-   Name of the file (a shell script) containing definitions of the primary and secondary experiment variables (parameters). This file is sourced by many scripts (e.g., the J-job scripts corresponding to each workflow task) in order to make all the experiment variables available in those scripts. The primary variables are defined in the default configuration script (``config_defaults.sh``) and in ``config.sh``. The secondary experiment variables are generated by the experiment generation script. 
+   Name of the file (a shell script) containing definitions of the primary and secondary experiment variables (parameters). This file is sourced by many scripts (e.g., the J-job scripts corresponding to each workflow task) in order to make all the experiment variables available in those scripts. The primary variables are defined in the default configuration script (``config_defaults.yaml``) and in ``config.yaml``. The secondary experiment variables are generated by the experiment generation script. 
 
-``EXTRN_MDL_ICS_VAR_DEFNS_FN``: (Default: "extrn_mdl_ics_var_defns.sh")
-   Name of the file (a shell script) containing the definitions of variables associated with the external model from which :term:`ICs` are generated. This file is created by the ``GET_EXTRN_ICS_TN`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS_TN`` task.
-
-``EXTRN_MDL_LBCS_VAR_DEFNS_FN``: (Default: "extrn_mdl_lbcs_var_defns.sh")
-   Name of the file (a shell script) containing the definitions of variables associated with the external model from which :term:`LBCs` are generated. This file is created by the ``GET_EXTRN_LBCS_TN`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS_TN`` task.
+``EXTRN_MDL_VAR_DEFNS_FN``: (Default: "extrn_mdl_var_defns")
+   Name of the file (a shell script) containing the defintions of variables associated with the external model from which :term:`ICs` or :term:`LBCs` are generated. This file is created by the ``GET_EXTRN_*_TN`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS_TN`` and ``MAKE_LBCS_TN`` tasks.
 
 ``WFLOW_LAUNCH_SCRIPT_FN``: (Default: "launch_FV3LAM_wflow.sh")
    Name of the script that can be used to (re)launch the experiment's Rocoto workflow.
@@ -261,7 +261,7 @@ Model Configuration Parameters
 =================================
 
 ``DT_ATMOS``: (Default: "")
-   Time step for the outermost atmospheric model loop in seconds. This corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, tracer transport, and vertical dynamics routines; see the `FV3 dycore scientific documentation <https://repository.library.noaa.gov/view/noaa/30725>`__ for details.) Must be set. Takes an integer value. In the SRW App, a default value for ``DT_ATMOS`` appears in the ``set_predef_grid_params.sh`` script, but a different value can be set in ``config.sh``. 
+   Time step for the outermost atmospheric model loop in seconds. This corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, tracer transport, and vertical dynamics routines; see the `FV3 dycore scientific documentation <https://repository.library.noaa.gov/view/noaa/30725>`__ for details.) Must be set. Takes an integer value. In the SRW App, a default value for ``DT_ATMOS`` appears in the ``set_predef_grid_params.py`` script, but a different value can be set in ``config.yaml``. 
 
 ``RESTART_INTERVAL``: (Default: "0")
    Frequency of the output restart files in hours. Using the default interval ("0"), restart files are produced at the end of a forecast run. When ``RESTART_INTERVAL="1"``, restart files are produced every hour with the prefix "YYYYMMDD.HHmmSS." in the ``RESTART`` directory. 
@@ -269,7 +269,7 @@ Model Configuration Parameters
 .. _InlinePost:
 
 ``WRITE_DOPOST``: (Default: "FALSE")
-   Flag that determines whether to use the INLINE POST option. If TRUE, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to "TRUE", and the post-processing tasks get called from within the weather model so that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST="TRUE"`` turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to "FALSE") in ``setup.sh``.
+   Flag that determines whether to use the INLINE POST option. If TRUE, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to "TRUE", and the post-processing tasks get called from within the weather model so that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST="TRUE"`` turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to "FALSE") in ``setup.py``.
 
 METplus Parameters
 =====================
@@ -307,19 +307,24 @@ METplus Parameters
    .. note::
       There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ccpa_files.sh``) has an example of how to account for this and organize the data into a more intuitive format. When a fix is provided, it will be accounted for in the ``exregional_get_ccpa_files.sh`` script.
 
+.. COMMENT: Find file & rm regional_workflow ref
+
 ``MRMS_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_mrms_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_MRMS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. 
    
    METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
 
 .. note::
-   METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script (within the main script that retrieves MRMS data from the NOAA HPSS) is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file-naming structure: ``regional_workflow/scripts/exregional_get_mrms_files.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``regional_workflow/ush/mrms_pull_topofhour.py``.
+   METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script (within the main script that retrieves MRMS data from the NOAA HPSS) is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file-naming structure: ``regional_workflow/scripts/exregional_get_mrms_files.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``ush/mrms_pull_topofhour.py``.
 
+.. COMMENT: Find file & rm regional_workflow ref
 
 ``NDAS_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ndas_tn`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_NDAS="TRUE"``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defined as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
    
    METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user-provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``regional_workflow/scripts/exregional_get_ndas_files.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
+   
+.. COMMENT: Find file & rm regional_workflow ref
 
 Initial and Lateral Boundary Condition Generation Parameters
 ============================================================
@@ -338,6 +343,8 @@ Initial and Lateral Boundary Condition Generation Parameters
 ``EXTRN_MDL_LBCS_OFFSET_HRS``: (Default: "")
    Users may wish to use lateral boundary conditions from a forecast that was started earlier than the start of the forecast configured here. This variable indicates how many hours earlier the external model started than the FV3 forecast configured here. For example, if the forecast should use lateral boundary conditions from the GFS started 6 hours earlier, then ``EXTRN_MDL_LBCS_OFFSET_HRS="6"``. Note: the default value is model-dependent and is set in ``set_extrn_mdl_params.sh``.
 
+.. COMMENT: Find file & confirm file extension
+
 ``FV3GFS_FILE_FMT_ICS``: (Default: "nemsio")
    If using the FV3GFS model as the source of the :term:`ICs` (i.e., if ``EXTRN_MDL_NAME_ICS="FV3GFS"``), this variable specifies the format of the model files to use when generating the ICs. Valid values: ``"nemsio"`` | ``"grib2"`` | ``"netcdf"``
 
@@ -350,7 +357,7 @@ Base Directories for External Model Files
 ===========================================
 
 .. note::
-   These variables must be defined as null strings in ``config_defaults.sh`` so that if they are specified by the user in the experiment configuration file (``config.sh``), they remain set to those values, and if not, they get set to machine-dependent values.
+   These variables must be defined as null strings in ``config_defaults.yaml`` so that if they are specified by the user in the experiment configuration file (``config.yaml``), they remain set to those values, and if not, they get set to machine-dependent values.
 
 ``EXTRN_MDL_SYSBASEDIR_ICS``: (Default: "")
    Base directory on the local machine containing external model files for generating :term:`ICs` on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined in ``EXTRN_MDL_NAME_ICS`` above).
@@ -508,7 +515,7 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 Parameters for Stochastically Perturbed Parameterizations (SPP)
 ------------------------------------------------------------------
 
-SPP perturbs specific tuning parameters within a physics :term:`parameterization <parameterizations>` (unlike :ref:`SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
+SPP perturbs specific tuning parameters within a physics :term:`parameterization <parameterizations>` (unlike :ref:`SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.yaml`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
 .. note::
    SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. Among the supported physics suites, the full set of parameterizations can only be used with the ``FV3_HRRR`` option for ``CCPP_PHYS_SUITE``.
@@ -574,7 +581,7 @@ The parameters below turn on SPP in Noah or RUC LSM (support for Noah MP is in p
 Predefined Grid Parameters
 ==========================
 ``PREDEF_GRID_NAME``: (Default: "")
-   This parameter indicates which (if any) predefined regional grid to use for the experiment. Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid settings can be viewed in the script ``ush/set_predef_grid_params.sh``. 
+   This parameter indicates which (if any) predefined regional grid to use for the experiment. Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid settings can be viewed in the script ``ush/set_predef_grid_params.py``. 
    
    **Currently supported options:**
    
@@ -607,9 +614,9 @@ Predefined Grid Parameters
 
 .. note::
 
-   * If ``PREDEF_GRID_NAME`` is set to a valid predefined grid name, the grid generation method, the (native) grid parameters, and the write component grid parameters are set to predefined values for the specified grid, overwriting any settings of these parameters in the user-specified experiment configuration file (``config.sh``). In addition, if the time step ``DT_ATMOS`` and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) are not specified in that configuration file, they are also set to predefined values for the specified grid.
+   * If ``PREDEF_GRID_NAME`` is set to a valid predefined grid name, the grid generation method, the (native) grid parameters, and the write component grid parameters are set to predefined values for the specified grid, overwriting any settings of these parameters in the user-specified experiment configuration file (``config.yaml``). In addition, if the time step ``DT_ATMOS`` and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) are not specified in that configuration file, they are also set to predefined values for the specified grid.
 
-   * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies that the user will provide the native grid parameters in the user-specified experiment configuration file (``config.sh``).  In this case, the grid generation method, the native grid parameters, the write component grid parameters, the main time step (``DT_ATMOS``), and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) must be set in the configuration file. Otherwise, the values of the parameters in the default experiment configuration file (``config_defaults.sh``) will be used.
+   * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies that the user will provide the native grid parameters in the user-specified experiment configuration file (``config.yaml``).  In this case, the grid generation method, the native grid parameters, the write component grid parameters, the main time step (``DT_ATMOS``), and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) must be set in the configuration file. Otherwise, the values of the parameters in the default experiment configuration file (``config_defaults.yaml``) will be used.
 
 
 .. _ConfigParameters:
@@ -736,9 +743,9 @@ Computational Forecast Parameters
 
 .. note::
 
-   In ``config_defaults.sh`` these parameters are set to null strings so that:
+   In ``config_defaults.yaml`` these parameters are set to null strings so that:
 
-   #. If the experiment is using a predefined grid and the user sets the ``BLOCKSIZE`` parameter in the user-specified experiment configuration file (i.e., ``config.sh``), that value will be used in the forecast(s). Otherwise, the default ``BLOCKSIZE`` for that predefined grid will be used.
+   #. If the experiment is using a predefined grid and the user sets the ``BLOCKSIZE`` parameter in the user-specified experiment configuration file (i.e., ``config.yaml``), that value will be used in the forecast(s). Otherwise, the default ``BLOCKSIZE`` for that predefined grid will be used.
    #. If the experiment is *not* using a predefined grid (i.e., it is using a custom grid whose parameters are specified in the experiment configuration file), then the user must specify a value for the ``BLOCKSIZE`` parameter in that configuration file. Otherwise, it will remain set to a null string, and the experiment generation will fail, because the generation scripts check to ensure that all the parameters defined in this section are set to non-empty strings before creating the experiment directory.
 
 .. _WriteComp:
@@ -766,7 +773,7 @@ Write-Component (Quilting) Parameters
    The number of MPI tasks to allocate for each write group.
 
 ``WRTCMP_output_grid``: (Default: "''")
-   Sets the type (coordinate system) of the write component grid. The default empty string forces the user to set a valid value for ``WRTCMP_output_grid`` in ``config.sh`` if specifying a *custom* grid. When creating an experiment with a user-defined grid, this parameter must be specified or the experiment will fail. Valid values: ``"lambert_conformal"`` | ``"regional_latlon"`` | ``"rotated_latlon"``
+   Sets the type (coordinate system) of the write component grid. The default empty string forces the user to set a valid value for ``WRTCMP_output_grid`` in ``config.yaml`` if specifying a *custom* grid. When creating an experiment with a user-defined grid, this parameter must be specified or the experiment will fail. Valid values: ``"lambert_conformal"`` | ``"regional_latlon"`` | ``"rotated_latlon"``
 
 ``WRTCMP_cen_lon``: (Default: "")
    Longitude (in degrees) of the center of the write component grid. Can usually be set to the corresponding value from the native grid.
@@ -933,7 +940,7 @@ For each workflow task, additional parameters determine the values to pass to th
 | ``PPN_RUN_FCST``: (Default: "")    
 
 .. note::
-   The correct value for ``PPN_RUN_FCST`` will be calculated from ``NCORES_PER_NODE`` and ``OMP_NUM_THREADS`` in ``setup.sh``. 
+   The correct value for ``PPN_RUN_FCST`` will be calculated from ``NCORES_PER_NODE`` and ``OMP_NUM_THREADS`` in ``setup.py``. 
 
 | ``PPN_RUN_POST``: (Default: "24")
 | ``PPN_GET_OBS_CCPA``: (Default: "1")
@@ -1102,7 +1109,7 @@ Surface Climatology Parameter
 
 Fixed File Parameters
 =====================
-These parameters are associated with the fixed (i.e., static) files. On `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, fixed files are prestaged with paths defined in the ``setup.sh`` script. Because the default values are platform-dependent, they are set to a null string in ``config_defaults.sh``. Then these null values are overwritten in ``setup.sh`` with machine-specific values or with a user-specified value from ``config.sh``.
+These parameters are associated with the fixed (i.e., static) files. On `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, fixed files are prestaged with paths defined in the ``setup.py`` script. Because the default values are platform-dependent, they are set to a null string in ``config_defaults.yaml``. Then these null values are overwritten in ``setup.py`` with machine-specific values or with a user-specified value from ``config.yaml``.
 
 ``FIXgsm``: (Default: "")
    System directory in which the majority of fixed (i.e., time-independent) files that are needed to run the FV3-LAM model are located.
