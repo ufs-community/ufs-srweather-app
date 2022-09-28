@@ -7,12 +7,14 @@ proc ModulesHelp { } {
 
 module-whatis "Loads libraries needed for running SRW on Gaea"
 
-module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
+module use /lustre/f2/dev/role.epic/contrib/modulefiles
 module load rocoto
 module load miniconda3
 
 setenv CONDA_DEFAULT_ENV "regional_workflow"
-setenv PROJ_LIB /lustre/f2/pdata/esrl/gsd/contrib/miniconda3/4.8.3/envs/regional_workflow/share/proj
-#if { [module-info mode load] } {
-#   system "conda activate regional_workflow;"
-#}
+setenv PROJ_LIB /lustre/f2/dev/role.epic/contrib/miniconda3/4.12.0/envs/regional_workflow/share/proj
+
+if { [module-info mode load] } {
+  puts stderr "Please do the following to activate conda:
+       > conda activate regional_workflow"
+}
