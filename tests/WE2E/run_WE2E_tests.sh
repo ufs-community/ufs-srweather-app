@@ -720,6 +720,8 @@ Please correct and rerun."
 #-----------------------------------------------------------------------
 #
   source_config ${USHdir}/config_defaults.yaml
+  MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.yaml"}
+  source_config ${MACHINE_FILE}
   source_config ${test_config_fp}
 #
 #-----------------------------------------------------------------------
@@ -772,13 +774,6 @@ Please correct and rerun."
   DEBUG=${debug:-"FALSE"}
   VERBOSE=${verbose:-"TRUE"}
 
-  MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.sh"}
-
-  # Set the machine-specific configuration settings by sourcing the
-  # machine file in the ush directory
-
-  . ${MACHINE_FILE}
-
   expt_config_str=${expt_config_str}"\
 #
 # The machine on which to run, the account to which to charge computational
@@ -812,11 +807,7 @@ EXPT_SUBDIR=\"${EXPT_SUBDIR}\"
 USE_CRON_TO_RELAUNCH=\"${USE_CRON_TO_RELAUNCH}\"
 CRON_RELAUNCH_INTVL_MNTS=\"${CRON_RELAUNCH_INTVL_MNTS}\"
 #
-# Path to machine configuration file.
-#
-MACHINE_FILE=\"${MACHINE_FILE}\"
-#
-# Flag specifying whether to run in verbose mode.
+# Flags specifying whether to run in debug and verbose mode.
 #
 DEBUG=\"${DEBUG}\"
 VERBOSE=\"${VERBOSE}\""

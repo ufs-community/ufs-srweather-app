@@ -13,9 +13,12 @@ module load rocoto
 module use /contrib/GST/miniconda3/modulefiles
 module load miniconda3/4.10.3
 
+setenv PROJ_LIB "/contrib/GST/miniconda/envs/regional_workflow/share/proj"
+setenv OPT "/contrib/EPIC/hpc-modules"
+append-path PATH "/contrib/GST/miniconda/envs/regional_workflow/bin"
+
 if { [module-info mode load] } {
   puts stderr "Please do the following to activate conda:
        > conda activate regional_workflow"
 }
-
 

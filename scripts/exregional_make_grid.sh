@@ -60,7 +60,6 @@ This is the ex-script for the task that generates grid files.
 #
 #-----------------------------------------------------------------------
 #
-. ${MACHINE_FILE}
 eval ${PRE_TASK_CMDS}
 
 if [ -z "${RUN_CMD_SERIAL:-}" ] ; then

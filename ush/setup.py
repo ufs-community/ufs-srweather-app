@@ -108,6 +108,45 @@ def setup():
         cfg_u = flatten_dict(cfg_u)
         import_vars(dictionary=cfg_u)
         update_dict(cfg_u, cfg_d)
+    #
+    # -----------------------------------------------------------------------
+    # Source machine specific file
+    # -----------------------------------------------------------------------
+    #
+    global MACHINE
+    MACHINE = uppercase(MACHINE)
+    MACHINE_FILE = os.path.join(USHdir, "machine", f"{lowercase(MACHINE)}.yaml")
+    machine_cfg = load_config_file(MACHINE_FILE)
+
+    # ics and lbcs
+    def get_location(xcs,fmt):
+       if ("data" in machine_cfg) and (xcs in machine_cfg["data"]):
+          v = machine_cfg["data"][xcs]
+          if not isinstance(v,dict):
+             return v
+          else:
+             return v[fmt]
+       else:
+          return ""
+
+    global EXTRN_MDL_SYSBASEDIR_ICS, EXTRN_MDL_SYSBASEDIR_LBCS
+    EXTRN_MDL_SYSBASEDIR_ICS = EXTRN_MDL_SYSBASEDIR_ICS or \
+                get_location(EXTRN_MDL_NAME_ICS, FV3GFS_FILE_FMT_ICS)
+    EXTRN_MDL_SYSBASEDIR_LBCS = EXTRN_MDL_SYSBASEDIR_LBCS or \
+            get_location(EXTRN_MDL_NAME_LBCS, FV3GFS_FILE_FMT_LBCS)
+
+    # remove the data key and provide machine specific default values for cfg_d
+    if "data" in machine_cfg:
+        machine_cfg.pop("data")
+    machine_cfg.update({
+       "EXTRN_MDL_SYSBASEDIR_ICS": EXTRN_MDL_SYSBASEDIR_ICS,
+       "EXTRN_MDL_SYSBASEDIR_LBCS": EXTRN_MDL_SYSBASEDIR_LBCS,
+    })
+    machine_cfg = flatten_dict(machine_cfg)
+    update_dict(machine_cfg, cfg_d, True)
+
+    # import cfg_d again   
+    import_vars(dictionary=flatten_dict(cfg_d))
 
     #
     # -----------------------------------------------------------------------
@@ -344,18 +383,11 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global MACHINE, MACHINE_FILE
     global FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR, DOMAIN_PREGEN_BASEDIR
     global RELATIVE_LINK_FLAG, WORKFLOW_MANAGER, NCORES_PER_NODE, SCHED, QUEUE_DEFAULT
     global QUEUE_HPSS, QUEUE_FCST, PARTITION_DEFAULT, PARTITION_HPSS, PARTITION_FCST
 
-    MACHINE = uppercase(MACHINE)
     RELATIVE_LINK_FLAG = "--relative"
-    MACHINE_FILE = MACHINE_FILE or os.path.join(
-        USHdir, "machine", f"{lowercase(MACHINE)}.sh"
-    )
-    machine_cfg = load_shell_config(MACHINE_FILE)
-    import_vars(dictionary=machine_cfg)
 
     if not NCORES_PER_NODE:
         print_err_msg_exit(
@@ -412,7 +444,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    if WORKFLOW_MANAGER != "none":
+    if WORKFLOW_MANAGER is not None:
         if not ACCOUNT:
             print_err_msg_exit(
                 f'''
@@ -1882,39 +1914,6 @@ def setup():
             # -----------------------------------------------------------------------
             #
             "OZONE_PARAM": OZONE_PARAM,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # If USE_USER_STAGED_EXTRN_FILES is set to \"FALSE\", this is the system
-            # directory in which the workflow scripts will look for the files generated
-            # by the external model specified in EXTRN_MDL_NAME_ICS.  These files will
-            # be used to generate the input initial condition and surface files for
-            # the FV3-LAM.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "EXTRN_MDL_SYSBASEDIR_ICS": EXTRN_MDL_SYSBASEDIR_ICS,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # If USE_USER_STAGED_EXTRN_FILES is set to \"FALSE\", this is the system
-            # directory in which the workflow scripts will look for the files generated
-            # by the external model specified in EXTRN_MDL_NAME_LBCS.  These files
-            # will be used to generate the input lateral boundary condition files for
-            # the FV3-LAM.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "EXTRN_MDL_SYSBASEDIR_LBCS": EXTRN_MDL_SYSBASEDIR_LBCS,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # Shift back in time (in units of hours) of the starting time of the ex-
-            # ternal model specified in EXTRN_MDL_NAME_LBCS.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "EXTRN_MDL_LBCS_OFFSET_HRS": EXTRN_MDL_LBCS_OFFSET_HRS,
             #
             # -----------------------------------------------------------------------
             #

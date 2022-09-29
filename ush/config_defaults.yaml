@@ -49,17 +49,11 @@ user:
   # Please see ush/valid_param_vals.sh for a full list of supported
   # platforms.
   #
-  # MACHINE_FILE:
-  # Path to a configuration file with machine-specific settings. If none
-  # is provided, setup.sh will attempt to set the path to for a supported
-  # platform.
-  #
   # ACCOUNT:
   # The account under which to submit jobs to the queue.
   #
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
-  MACHINE_FILE: ""
   ACCOUNT: "project_name"
 
 #----------------------------
@@ -149,7 +143,7 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  WORKFLOW_MANAGER: "none"
+  WORKFLOW_MANAGER: ""
   NCORES_PER_NODE: ""
   LMOD_PATH: ""
   BUILD_MOD_FN: ""
@@ -183,9 +177,10 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  RUN_CMD_UTILS: "mpirun -np 1"
-  RUN_CMD_FCST: "mpirun -np ${PE_MEMBER01}"
-  RUN_CMD_POST: "mpirun -np 1"
+  RUN_CMD_SERIAL: ""
+  RUN_CMD_UTILS: ""
+  RUN_CMD_FCST: ""
+  RUN_CMD_POST: ""
 
   #
   #-----------------------------------------------------------------------
@@ -288,7 +283,7 @@ platform:
   #
   MODEL: ""
   MET_INSTALL_DIR: ""
-  MET_BIN_EXEC: "bin"
+  MET_BIN_EXEC: ""
   METPLUS_PATH: ""
   CCPA_OBS_DIR: ""
   MRMS_OBS_DIR: ""
@@ -315,8 +310,24 @@ platform:
   #-----------------------------------------------------------------------
   #
   DOMAIN_PREGEN_BASEDIR: ""
+  #
+  #-----------------------------------------------------------------------
+  # Scritps and commands needed by workflow and tasks
+  #-----------------------------------------------------------------------
+  #
+  ENV_INIT_SCRIPTS_FPS: []
+  PRE_TASK_CMDS: ""
+  #
+  #-----------------------------------------------------------------------
+  # Test directories
+  #-----------------------------------------------------------------------
+  #
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: ""
+  TEST_PREGEN_BASEDIR: ""
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: ""
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: ""
 
-#----------------------------
+#-----------------------------
 # WORKFLOW config parameters
 #-----------------------------
 workflow:
@@ -1419,10 +1430,6 @@ task_run_fcst:
   # forecast model documentation, "It corresponds to the frequency with 
   # which the top level routine in the dynamics is called as well as the 
   # frequency with which the physics is called."
-  #
-  # CPL: parameter for coupling
-  # (set automatically based on FCST_MODEL in ush/setup.sh)
-  # (ufs-weather-model:FALSE, fv3gfs_aqm:TRUE)
   #
   # RESTART_INTERVAL:
   # frequency of the output restart files (unit:hour). 

@@ -71,7 +71,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-. ${MACHINE_FILE}
 env_init_scripts_fps_str="( "$(printf "\"%s\" " "${ENV_INIT_SCRIPTS_FPS[@]}")")"
 init_env env_init_scripts_fps="${env_init_scripts_fps_str}"
 #
