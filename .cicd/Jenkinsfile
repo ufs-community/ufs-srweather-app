@@ -2,19 +2,21 @@ pipeline {
     agent none
 
     options {
+        disableConcurrentBuilds()
+        overrideIndexTriggers(false)
         skipDefaultCheckout(true)
     }
 
     parameters {
         // Allow job runner to filter based on platform
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
+        booleanParam name: 'SRW_WE2E_COMPREHENSIVE_TESTS', defaultValue: false, description: 'Whether to execute the comprehensive end-to-end tests'
     }
 
     stages {
-        /*
         // Start the NOAA Parallel Works clusters, if necessary
         stage('Start Parallel Works Clusters') {
             matrix {
@@ -29,7 +31,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'
+                        values 'pclusternoaav2use1' //, 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
                 }
 
@@ -44,7 +46,6 @@ pipeline {
                 }
             }
         }
-        */
 
         // Build and test the SRW application on all supported platforms using the supported compilers for each platform
         stage('Build and Test') {
@@ -68,8 +69,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        // values 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1'
-                        values 'cheyenne', 'gaea', 'hera', 'jet', 'orion'
+                        values 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1' //, 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -83,7 +83,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            values 'gaea', 'hera', 'jet', 'orion'
+                            values 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1' //, 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                         }
 
                         axis {
@@ -91,10 +91,6 @@ pipeline {
                             values 'gnu'
                         }
                     }
-                }
-
-                agent {
-                    label env.SRW_PLATFORM
                 }
 
                 environment {
@@ -106,6 +102,10 @@ pipeline {
                 stages {
                     // Clean the workspace, checkout the repository, and run checkout_externals
                     stage('Initialize') {
+                        agent {
+                            label env.SRW_PLATFORM
+                        }
+
                         steps {
                             echo "Initializing SRW (${env.SRW_COMPILER}) build environment on ${env.SRW_PLATFORM}"
                             cleanWs()
@@ -116,6 +116,10 @@ pipeline {
 
                     // Run the unified build script; if successful create a tarball of the build and upload to S3
                     stage('Build') {
+                        agent {
+                            label env.SRW_PLATFORM
+                        }
+
                         steps {
                             echo "Building SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM}"
                             sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_build.sh"'
@@ -124,16 +128,49 @@ pipeline {
                         post {
                             success {
                                 sh 'tar --create --gzip --verbose --file "${WORKSPACE}/${BUILD_NAME}.tgz" bin include lib share'
-                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.BUILD_NAME}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
+                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.BUILD_NAME}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "build/srw_build-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.log", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
                             }
                         }
                     }
 
                     // Run the unified test script
                     stage('Test') {
+                        agent {
+                            label env.SRW_PLATFORM
+                        }
+
+                        environment {
+                            SRW_WE2E_EXPERIMENT_BASE_DIR = "${env.WORKSPACE}/experiments"
+                        }
+
                         steps {
                             echo "Testing SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM}"
-                            sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_test.sh"'
+
+                            // If executing for a Pull Request, check for the run_we2e_comprehensive_tests. If set,
+                            // override the value of the SRW_WE2E_COMPREHENSIVE_TESTS parameter
+                            script {
+                                def run_we2e_comprehensive_tests = params.SRW_WE2E_COMPREHENSIVE_TESTS
+                                def run_we2e_comprehensive_tests_label = 'run_we2e_comprehensive_tests'
+
+                                if (env.CHANGE_ID) {
+                                    pullRequest.labels.each {
+                                        if (it == run_we2e_comprehensive_tests_label) {
+                                            run_we2e_comprehensive_tests = true
+                                        }
+                                    }
+                                }
+
+                                sh "SRW_WE2E_COMPREHENSIVE_TESTS=${run_we2e_comprehensive_tests} bash --login ${env.WORKSPACE}/.cicd/scripts/srw_test.sh"
+                            }
+                        }
+
+                        post {
+                            always {
+                                // Archive the test log files and remove the experiments directory to conserve disk space
+                                sh 'cd "${SRW_WE2E_EXPERIMENT_BASE_DIR}" && tar --create --gzip --verbose --file "${WORKSPACE}/we2e_test_logs-${SRW_PLATFORM}-${SRW_COMPILER}.tgz" */log.generate_FV3LAM_wflow */log.launch_FV3LAM_wflow */log/*'
+                                sh 'rm -rf "${SRW_WE2E_EXPERIMENT_BASE_DIR}"'
+                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'we2e_test_results-*-*.txt', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'we2e_test_logs-*-*.tgz', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
+                            }
                         }
                     }
                 }
@@ -141,12 +178,12 @@ pipeline {
         }
     }
 
-    /*
     post {
         always {
             // Stop any Parallel Works clusters that were started during the pipeline execution
             script {
-                def pw_clusters = ['pcluster_noaa_v2_use1', 'azcluster_noaa', 'gcluster_noaa_v2_usc1']
+                // def pw_clusters = ['pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1']
+                def pw_clusters = ['pclusternoaav2use1']
                 def clusters = []
 
                 // Determine which clusters need to be stopped, if any
@@ -166,5 +203,4 @@ pipeline {
             }
         }
     }
-    */
 }
