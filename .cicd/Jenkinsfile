@@ -168,6 +168,8 @@ pipeline {
                         post {
                             always {
                                 // Archive the test log files and remove the experiments directory to conserve disk space
+                                sh 'which tar'
+                                sh 'tar --version'
                                 sh 'cd "${SRW_WE2E_EXPERIMENT_BASE_DIR}" && tar --create --gzip --verbose --file "${WORKSPACE}/we2e_test_logs-${SRW_PLATFORM}-${SRW_COMPILER}.tgz" */log.generate_FV3LAM_wflow */log.launch_FV3LAM_wflow */log/*'
                                 sh 'rm -rf "${SRW_WE2E_EXPERIMENT_BASE_DIR}"'
                                 s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'we2e_test_results-*-*.txt', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'we2e_test_logs-*-*.tgz', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
