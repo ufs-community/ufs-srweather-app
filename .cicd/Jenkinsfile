@@ -9,14 +9,19 @@ pipeline {
 
     parameters {
         // Allow job runner to filter based on platform
+        // Use the line below to enable all PW clusters
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
+        // Use the line below to enable the PW AWS cluster
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         booleanParam name: 'SRW_WE2E_COMPREHENSIVE_TESTS', defaultValue: false, description: 'Whether to execute the comprehensive end-to-end tests'
     }
 
     stages {
+        // Uncomment the following block to re-enable PW clusters
+        /*
         // Start the NOAA Parallel Works clusters, if necessary
         stage('Start Parallel Works Clusters') {
             matrix {
@@ -46,6 +51,7 @@ pipeline {
                 }
             }
         }
+        */
 
         // Build and test the SRW application on all supported platforms using the supported compilers for each platform
         stage('Build and Test') {
@@ -181,6 +187,8 @@ pipeline {
         }
     }
 
+    // Uncomment the following block to re-enable PW clusters
+    /*
     post {
         always {
             // Stop any Parallel Works clusters that were started during the pipeline execution
@@ -206,4 +214,5 @@ pipeline {
             }
         }
     }
+    */
 }
