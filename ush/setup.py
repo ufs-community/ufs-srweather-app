@@ -308,7 +308,7 @@ def setup():
     # workflow directory.  Thus, the workflow directory is the one above the
     # directory of the current script.
     #
-    SR_WX_APP_TOP_DIR = os.path.abspath(
+    HOMEdir = os.path.abspath(
         os.path.dirname(__file__) + os.sep + os.pardir
     )
 
@@ -325,17 +325,13 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    mng_extrns_cfg_fn = os.path.join(SR_WX_APP_TOP_DIR, "Externals.cfg")
+    mng_extrns_cfg_fn = os.path.join(HOMEdir, "Externals.cfg")
     try:
         mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
     except:
         pass
     property_name = "local_path"
     cfg = load_ini_config(mng_extrns_cfg_fn)
-    #
-    # Get the path to the workflow scripts
-    #
-    HOMEdir = SR_WX_APP_TOP_DIR
     #
     # Get the base directory of the FV3 forecast model code.
     #
@@ -348,7 +344,7 @@ def setup():
             Externals.cfg does not contain "{external_name}"."""
         )
 
-    UFS_WTHR_MDL_DIR = os.path.join(SR_WX_APP_TOP_DIR, UFS_WTHR_MDL_DIR)
+    UFS_WTHR_MDL_DIR = os.path.join(HOMEdir, UFS_WTHR_MDL_DIR)
     if not os.path.exists(UFS_WTHR_MDL_DIR):
         print_err_msg_exit(
             f"""
@@ -831,7 +827,7 @@ def setup():
     if (not EXPT_BASEDIR) or (EXPT_BASEDIR[0] != "/"):
         if not EXPT_BASEDIR:
             EXPT_BASEDIR = ""
-        EXPT_BASEDIR = os.path.join(SR_WX_APP_TOP_DIR, "..", "expt_dirs", EXPT_BASEDIR)
+        EXPT_BASEDIR = os.path.join(HOMEdir, "..", "expt_dirs", EXPT_BASEDIR)
     try:
         EXPT_BASEDIR = os.path.realpath(EXPT_BASEDIR)
     except:
@@ -1780,7 +1776,6 @@ def setup():
         #
         # -----------------------------------------------------------------------
         #
-        "SR_WX_APP_TOP_DIR": SR_WX_APP_TOP_DIR,
         "HOMEdir": HOMEdir,
         "USHdir": USHdir,
         "SCRIPTSdir": SCRIPTSdir,

@@ -108,8 +108,8 @@ fi
 #
 machine=$(echo_lowercase $MACHINE)
 
-source "${SR_WX_APP_TOP_DIR}/etc/lmod-setup.sh" ${machine}
-module use "${SR_WX_APP_TOP_DIR}/modulefiles"
+source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
+module use "${HOMEdir}/modulefiles"
 module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
 Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:

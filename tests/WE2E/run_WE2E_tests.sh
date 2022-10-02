@@ -242,14 +242,14 @@ Then:
    This will create the experiment subdirectories for the two tests in
    the directory
 
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs
+     \${HOMEdir}/../expt_dirs
 
-   where SR_WX_APP_TOP_DIR is the directory in which the ufs-srweather-app 
+   where HOMEdir is the directory in which the ufs-srweather-app 
    repository is cloned.  Thus, the following two experiment directories
    will be created:
 
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs/new_ESGgrid
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs/specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
+     \${HOMEdir}/../expt_dirs/new_ESGgrid
+     \${HOMEdir}/../expt_dirs/specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
 
    In addition, by default, cron jobs will be created in the user's cron
    table to relaunch the workflows of these experiments every 2 minutes.
@@ -268,7 +268,7 @@ Then:
 4) To place the experiment subdirectories in a subdirectory named \"test_set_01\"
    under 
 
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs
+     \${HOMEdir}/../expt_dirs
 
    (instead of immediately under the latter), use:
 
@@ -276,8 +276,8 @@ Then:
 
    In this case, the full paths to the experiment directories will be:
 
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/new_ESGgrid
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
+     \${HOMEdir}/../expt_dirs/test_set_01/new_ESGgrid
+     \${HOMEdir}/../expt_dirs/test_set_01/specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
 
 5) To use a list of tests that is located in
 
