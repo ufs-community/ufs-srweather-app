@@ -106,5 +106,3 @@ class Testing(unittest.TestCase):
         set_env_var("LAYOUT_Y", 36)
         set_env_var("BLOCKSIZE", 28)
         set_env_var("QUILTING", False)
-        set_env_var("RADIUS_EARTH", 6371200.0)
-        set_env_var("DEGS_PER_RADIAN", 57.2957795131)

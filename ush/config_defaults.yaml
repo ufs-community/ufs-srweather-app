@@ -495,7 +495,7 @@ workflow:
   #-----------------------------------------------------------------------
   #
   EXPT_CONFIG_FN: "config.yaml"
-  CONSTANTS_FN: "constants.sh"
+  CONSTANTS_FN: "constants.yaml"
   
   RGNL_GRID_NML_FN: "regional_grid.nml"
   

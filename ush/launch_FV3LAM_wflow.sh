@@ -96,7 +96,6 @@ fi
 #
 . $exptdir/var_defns.sh
 . $USHdir/source_util_funcs.sh
-. $USHdir/constants.sh
 . $USHdir/init_env.sh
 #
 #-----------------------------------------------------------------------

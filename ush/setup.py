@@ -158,7 +158,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
-    import_vars(dictionary=cfg_c)
+    import_vars(dictionary=flatten_dict(cfg_c))
 
     #
     # -----------------------------------------------------------------------
@@ -1746,7 +1746,7 @@ def setup():
     update_dict(globals(), cfg_d)
 
     # constants section
-    cfg_d["constants"] = cfg_c
+    cfg_d.update(cfg_c)
 
     # grid params
     cfg_d["grid_params"] = grid_params
