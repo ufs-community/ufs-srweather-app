@@ -1359,7 +1359,7 @@ task_make_ics:
   #
   USE_FVCOM: false
   FVCOM_WCSTART: "cold"
-  FVCOM_DIR: "/user/defined/dir/to/fvcom/data"
+  FVCOM_DIR: ""
   FVCOM_FILE: "fvcom.nc"
 
 #----------------------------
@@ -1374,6 +1374,7 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
+  LBC_SPEC_FCST_HRS: []
 
 #----------------------------
 # FORECAST config parameters

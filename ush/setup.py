@@ -110,7 +110,9 @@ def setup():
         update_dict(cfg_u, cfg_d)
     #
     # -----------------------------------------------------------------------
+    #
     # Source machine specific file
+    #
     # -----------------------------------------------------------------------
     #
     global MACHINE
@@ -150,7 +152,9 @@ def setup():
 
     #
     # -----------------------------------------------------------------------
+    #
     # Source constants.sh and save its contents to a variable for later
+    #
     # -----------------------------------------------------------------------
     #
     cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
@@ -687,6 +691,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
+    global LBC_SPEC_FCST_HRS
     LBC_SPEC_FCST_HRS = [
         i
         for i in range(
@@ -1912,15 +1917,6 @@ def setup():
             #
             # -----------------------------------------------------------------------
             #
-            # Boundary condition update times (in units of forecast hours).  Note that
-            # LBC_SPEC_FCST_HRS is an array, even if it has only one element.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "LBC_SPEC_FCST_HRS": LBC_SPEC_FCST_HRS,
-            #
-            # -----------------------------------------------------------------------
-            #
             # The number of cycles for which to make forecasts and the list of
             # starting dates/hours of these cycles.
             #
@@ -1931,27 +1927,10 @@ def setup():
             #
             # -----------------------------------------------------------------------
             #
-            # Parameters that determine whether FVCOM data will be used, and if so,
-            # their location.
-            #
-            # If USE_FVCOM is set to \"TRUE\", then FVCOM data (in the file FVCOM_FILE
-            # located in the directory FVCOM_DIR) will be used to update the surface
-            # boundary conditions during the initial conditions generation task
-            # (MAKE_ICS_TN).
-            #
-            # -----------------------------------------------------------------------
-            #
-            "USE_FVCOM": USE_FVCOM,
-            "FVCOM_DIR": FVCOM_DIR,
-            "FVCOM_FILE": FVCOM_FILE,
-            #
-            # -----------------------------------------------------------------------
-            #
             # Computational parameters.
             #
             # -----------------------------------------------------------------------
             #
-            "NCORES_PER_NODE": NCORES_PER_NODE,
             "PE_MEMBER01": PE_MEMBER01,
             #
             # -----------------------------------------------------------------------
