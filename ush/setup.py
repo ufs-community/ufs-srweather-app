@@ -905,8 +905,9 @@ def setup():
     # Main directory locations
     if RUN_ENVIR == "nco":
 
-        try: OPSROOT
-        except NameError: OPSROOT = OPSROOT or EXPTDIR
+        try: OPSROOT = os.path.abspath(f"{EXPT_BASEDIR}{os.sep}..{os.sep}nco_dirs") \
+                       if OPSROOT is None else OPSROOT
+        except NameError: OPSROOT = EXPTDIR
         try: COMROOT
         except NameError: COMROOT = os.path.join(OPSROOT, "com")
         try: PACKAGEROOT
@@ -1334,6 +1335,11 @@ def setup():
     # ----------------------------------------------------------------------
     #
     global GRID_DIR, OROG_DIR, SFC_CLIMO_DIR
+
+    if DOMAIN_PREGEN_BASEDIR is None:
+        RUN_TASK_MAKE_GRID = True
+        RUN_TASK_MAKE_OROG = True
+        RUN_TASK_MAKE_SFC_CLIMO = True
 
     #
     # If RUN_TASK_MAKE_GRID is set to False, the workflow will look for

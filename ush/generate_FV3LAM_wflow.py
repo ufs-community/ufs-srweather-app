@@ -27,6 +27,7 @@ from python_utils import (
     cfg_to_yaml_str,
     find_pattern_in_str,
     set_env_var,
+    get_env_var,
 )
 
 from setup import setup
@@ -1165,18 +1166,25 @@ class Testing(unittest.TestCase):
             p = Process(target=workflow_func)
             p.start()
             p.join()
+            exit_code = p.exitcode
+            if exit_code != 0:
+                sys.exit(exit_code)
 
         USHdir = os.path.dirname(os.path.abspath(__file__))
+        SED = get_env_var("SED")
 
         # community test case
-        ln_vrfy("-fs", f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
+        cp_vrfy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
+        run_command(f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml""")
         run_workflow()
 
         # nco test case
         set_env_var("OPSROOT", f"{USHdir}/../../nco_dirs")
-        ln_vrfy("-fs", f"{USHdir}/config.nco.yaml", f"{USHdir}/config.yaml")
+        cp_vrfy(f"{USHdir}/config.nco.yaml", f"{USHdir}/config.yaml")
+        run_command(f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml""")
         run_workflow()
 
     def setUp(self):
+        define_macos_utilities()
         set_env_var("DEBUG", False)
         set_env_var("VERBOSE", False)
