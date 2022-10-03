@@ -116,7 +116,6 @@ def setup():
     # -----------------------------------------------------------------------
     #
     global MACHINE
-    MACHINE = uppercase(MACHINE)
     MACHINE_FILE = os.path.join(USHdir, "machine", f"{lowercase(MACHINE)}.yaml")
     machine_cfg = load_config_file(MACHINE_FILE)
 
@@ -149,6 +148,7 @@ def setup():
 
     # import cfg_d again   
     import_vars(dictionary=flatten_dict(cfg_d))
+    MACHINE = uppercase(MACHINE)
 
     #
     # -----------------------------------------------------------------------
