@@ -247,7 +247,7 @@ To activate the regional workflow, run the following commands:
 where: 
 
    * ``<path/to/modulefiles>`` is replaced with the actual path to the modulefiles on the user's system (often ``$PWD/modulefiles``), and 
-   * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <PlatEnv>`). 
+   * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <user>`). 
 
 The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
 
@@ -273,7 +273,7 @@ where:
 
    * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``)
    * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``)
-   * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <PlatEnv>` for a full list of options. 
+   * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options. 
    * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-develop.img`` by default).
 
 For example, on Hera, the command would be:
@@ -299,7 +299,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
       The default settings include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
-   #. Edit the ``MACHINE`` and ``ACCOUNT`` variables in the ``user:`` section of ``config.yaml``. See :numref:`Section %s <PlatEnv>` for details on valid values. 
+   #. Edit the ``MACHINE`` and ``ACCOUNT`` variables in the ``user:`` section of ``config.yaml``. See :numref:`Section %s <user>` for details on valid values. 
 
       .. note::
 

@@ -121,6 +121,13 @@ Run the executable that pulls in SRW App components from external repositories:
 
 The script should output dialogue indicating that it is retrieving different code repositories. It may take several minutes to download these repositories.
 
+To see more options, users can run ``./manage_externals/checkout_externals -h``. For example:
+
+   * ``-S``: Outputs the status of the repositories managed by checkout_externals. By default only summary information is provided. Use with the ``-v`` (verbose) option to see details.
+   * ``-x [EXCLUDE [EXCLUDE ...]]``: allows users to exclude components listed in the externals file when checking out externals. 
+   * ``-o``: By default only the required externals are checked out. This flag will also checkout the optional externals.
+
+Generally, users will not need to use the options and can simply run the script, but the options are available for those who are curious. 
 
 .. _BuildExecutables:
 
