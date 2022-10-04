@@ -242,14 +242,14 @@ Then:
    This will create the experiment subdirectories for the two tests in
    the directory
 
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs
+     \${HOMEdir}/../expt_dirs
 
-   where SR_WX_APP_TOP_DIR is the directory in which the ufs-srweather-app 
+   where HOMEdir is the directory in which the ufs-srweather-app 
    repository is cloned.  Thus, the following two experiment directories
    will be created:
 
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs/new_ESGgrid
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs/specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
+     \${HOMEdir}/../expt_dirs/new_ESGgrid
+     \${HOMEdir}/../expt_dirs/specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
 
    In addition, by default, cron jobs will be created in the user's cron
    table to relaunch the workflows of these experiments every 2 minutes.
@@ -268,7 +268,7 @@ Then:
 4) To place the experiment subdirectories in a subdirectory named \"test_set_01\"
    under 
 
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs
+     \${HOMEdir}/../expt_dirs
 
    (instead of immediately under the latter), use:
 
@@ -276,8 +276,8 @@ Then:
 
    In this case, the full paths to the experiment directories will be:
 
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/new_ESGgrid
-     \${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
+     \${HOMEdir}/../expt_dirs/test_set_01/new_ESGgrid
+     \${HOMEdir}/../expt_dirs/test_set_01/specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
 
 5) To use a list of tests that is located in
 
@@ -720,6 +720,8 @@ Please correct and rerun."
 #-----------------------------------------------------------------------
 #
   source_config ${USHdir}/config_defaults.yaml
+  MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.yaml"}
+  source_config ${MACHINE_FILE}
   source_config ${test_config_fp}
 #
 #-----------------------------------------------------------------------
@@ -772,13 +774,6 @@ Please correct and rerun."
   DEBUG=${debug:-"FALSE"}
   VERBOSE=${verbose:-"TRUE"}
 
-  MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.sh"}
-
-  # Set the machine-specific configuration settings by sourcing the
-  # machine file in the ush directory
-
-  . ${MACHINE_FILE}
-
   expt_config_str=${expt_config_str}"\
 #
 # The machine on which to run, the account to which to charge computational
@@ -812,11 +807,7 @@ EXPT_SUBDIR=\"${EXPT_SUBDIR}\"
 USE_CRON_TO_RELAUNCH=\"${USE_CRON_TO_RELAUNCH}\"
 CRON_RELAUNCH_INTVL_MNTS=\"${CRON_RELAUNCH_INTVL_MNTS}\"
 #
-# Path to machine configuration file.
-#
-MACHINE_FILE=\"${MACHINE_FILE}\"
-#
-# Flag specifying whether to run in verbose mode.
+# Flags specifying whether to run in debug and verbose mode.
 #
 DEBUG=\"${DEBUG}\"
 VERBOSE=\"${VERBOSE}\""

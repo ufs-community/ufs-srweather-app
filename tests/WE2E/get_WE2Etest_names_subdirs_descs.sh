@@ -256,6 +256,14 @@ function get_WE2Etest_names_subdirs_descs() {
 #
 #-----------------------------------------------------------------------
 #
+# Source constant files.
+#
+#-----------------------------------------------------------------------
+#
+  source_config $USHdir/constants.yaml
+#
+#-----------------------------------------------------------------------
+#
 # Specify the set of valid argument names for this script or function.  
 # Then process the arguments provided to it on the command line (which 
 # should consist of a set of name-value pairs of the form arg1="value1", 
@@ -408,14 +416,6 @@ function get_WE2Etest_names_subdirs_descs() {
         nxny \
         dta_r \
         nxny_r
-#
-#-----------------------------------------------------------------------
-#
-# Source files.
-#
-#-----------------------------------------------------------------------
-#
-  . $USHdir/constants.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -1136,9 +1136,6 @@ configuration files of the primary WE2E tests...
 params=$(\
   PREDEF_GRID_NAME="${PREDEF_GRID_NAME}" \
   QUILTING="FALSE" \
-  RADIUS_EARTH=${RADIUS_EARTH} \
-  DEGS_PER_RADIAN=${DEGS_PER_RADIAN} \
-  NH4=${NH4} \
     $USHdir/calculate_cost.py -c "${test_configs_basedir}/$subdir/${config_fn}")
 
 read dta nxny dta_r nxny_r <<< "${params}"

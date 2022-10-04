@@ -96,9 +96,7 @@ fi
 #
 . $exptdir/var_defns.sh
 . $USHdir/source_util_funcs.sh
-. $USHdir/constants.sh
 . $USHdir/init_env.sh
-. ${MACHINE_FILE}
 #
 #-----------------------------------------------------------------------
 #
@@ -148,7 +146,7 @@ expt_name="${EXPT_SUBDIR}"
 #
 #-----------------------------------------------------------------------
 #
-module use "${SR_WX_APP_TOP_DIR}/modulefiles"
+module use "${HOMEdir}/modulefiles"
 module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || print_err_msg_exit "\
 Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 
 task failed:

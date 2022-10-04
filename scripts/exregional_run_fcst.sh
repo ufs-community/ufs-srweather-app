@@ -62,7 +62,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
 #
 #-----------------------------------------------------------------------
 #
-. ${MACHINE_FILE}
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_RUN_FCST*PPN_RUN_FCST ))

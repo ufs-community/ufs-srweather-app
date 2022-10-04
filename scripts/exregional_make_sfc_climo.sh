@@ -106,7 +106,6 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-. ${MACHINE_FILE}
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))

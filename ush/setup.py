@@ -108,14 +108,57 @@ def setup():
         cfg_u = flatten_dict(cfg_u)
         import_vars(dictionary=cfg_u)
         update_dict(cfg_u, cfg_d)
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Source machine specific file
+    #
+    # -----------------------------------------------------------------------
+    #
+    global MACHINE
+    MACHINE_FILE = os.path.join(USHdir, "machine", f"{lowercase(MACHINE)}.yaml")
+    machine_cfg = load_config_file(MACHINE_FILE)
+
+    # ics and lbcs
+    def get_location(xcs,fmt):
+       if ("data" in machine_cfg) and (xcs in machine_cfg["data"]):
+          v = machine_cfg["data"][xcs]
+          if not isinstance(v,dict):
+             return v
+          else:
+             return v[fmt]
+       else:
+          return ""
+
+    global EXTRN_MDL_SYSBASEDIR_ICS, EXTRN_MDL_SYSBASEDIR_LBCS
+    EXTRN_MDL_SYSBASEDIR_ICS = EXTRN_MDL_SYSBASEDIR_ICS or \
+                get_location(EXTRN_MDL_NAME_ICS, FV3GFS_FILE_FMT_ICS)
+    EXTRN_MDL_SYSBASEDIR_LBCS = EXTRN_MDL_SYSBASEDIR_LBCS or \
+            get_location(EXTRN_MDL_NAME_LBCS, FV3GFS_FILE_FMT_LBCS)
+
+    # remove the data key and provide machine specific default values for cfg_d
+    if "data" in machine_cfg:
+        machine_cfg.pop("data")
+    machine_cfg.update({
+       "EXTRN_MDL_SYSBASEDIR_ICS": EXTRN_MDL_SYSBASEDIR_ICS,
+       "EXTRN_MDL_SYSBASEDIR_LBCS": EXTRN_MDL_SYSBASEDIR_LBCS,
+    })
+    machine_cfg = flatten_dict(machine_cfg)
+    update_dict(machine_cfg, cfg_d, True)
+
+    # import cfg_d again   
+    import_vars(dictionary=flatten_dict(cfg_d))
+    MACHINE = uppercase(MACHINE)
 
     #
     # -----------------------------------------------------------------------
+    #
     # Source constants.sh and save its contents to a variable for later
+    #
     # -----------------------------------------------------------------------
     #
     cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
-    import_vars(dictionary=cfg_c)
+    import_vars(dictionary=flatten_dict(cfg_c))
 
     #
     # -----------------------------------------------------------------------
@@ -269,7 +312,7 @@ def setup():
     # workflow directory.  Thus, the workflow directory is the one above the
     # directory of the current script.
     #
-    SR_WX_APP_TOP_DIR = os.path.abspath(
+    HOMEdir = os.path.abspath(
         os.path.dirname(__file__) + os.sep + os.pardir
     )
 
@@ -286,17 +329,13 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    mng_extrns_cfg_fn = os.path.join(SR_WX_APP_TOP_DIR, "Externals.cfg")
+    mng_extrns_cfg_fn = os.path.join(HOMEdir, "Externals.cfg")
     try:
         mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
     except:
         pass
     property_name = "local_path"
     cfg = load_ini_config(mng_extrns_cfg_fn)
-    #
-    # Get the path to the workflow scripts
-    #
-    HOMEdir = SR_WX_APP_TOP_DIR
     #
     # Get the base directory of the FV3 forecast model code.
     #
@@ -309,7 +348,7 @@ def setup():
             Externals.cfg does not contain "{external_name}"."""
         )
 
-    UFS_WTHR_MDL_DIR = os.path.join(SR_WX_APP_TOP_DIR, UFS_WTHR_MDL_DIR)
+    UFS_WTHR_MDL_DIR = os.path.join(HOMEdir, UFS_WTHR_MDL_DIR)
     if not os.path.exists(UFS_WTHR_MDL_DIR):
         print_err_msg_exit(
             f"""
@@ -344,18 +383,11 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global MACHINE, MACHINE_FILE
     global FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR, DOMAIN_PREGEN_BASEDIR
     global RELATIVE_LINK_FLAG, WORKFLOW_MANAGER, NCORES_PER_NODE, SCHED, QUEUE_DEFAULT
     global QUEUE_HPSS, QUEUE_FCST, PARTITION_DEFAULT, PARTITION_HPSS, PARTITION_FCST
 
-    MACHINE = uppercase(MACHINE)
     RELATIVE_LINK_FLAG = "--relative"
-    MACHINE_FILE = MACHINE_FILE or os.path.join(
-        USHdir, "machine", f"{lowercase(MACHINE)}.sh"
-    )
-    machine_cfg = load_shell_config(MACHINE_FILE)
-    import_vars(dictionary=machine_cfg)
 
     if not NCORES_PER_NODE:
         print_err_msg_exit(
@@ -412,7 +444,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    if WORKFLOW_MANAGER != "none":
+    if WORKFLOW_MANAGER is not None:
         if not ACCOUNT:
             print_err_msg_exit(
                 f'''
@@ -659,6 +691,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
+    global LBC_SPEC_FCST_HRS
     LBC_SPEC_FCST_HRS = [
         i
         for i in range(
@@ -799,7 +832,7 @@ def setup():
     if (not EXPT_BASEDIR) or (EXPT_BASEDIR[0] != "/"):
         if not EXPT_BASEDIR:
             EXPT_BASEDIR = ""
-        EXPT_BASEDIR = os.path.join(SR_WX_APP_TOP_DIR, "..", "expt_dirs", EXPT_BASEDIR)
+        EXPT_BASEDIR = os.path.join(HOMEdir, "..", "expt_dirs", EXPT_BASEDIR)
     try:
         EXPT_BASEDIR = os.path.realpath(EXPT_BASEDIR)
     except:
@@ -872,8 +905,9 @@ def setup():
     # Main directory locations
     if RUN_ENVIR == "nco":
 
-        try: OPSROOT
-        except NameError: OPSROOT = OPSROOT or EXPTDIR
+        try: OPSROOT = os.path.abspath(f"{EXPT_BASEDIR}{os.sep}..{os.sep}nco_dirs") \
+                       if OPSROOT is None else OPSROOT
+        except NameError: OPSROOT = EXPTDIR
         try: COMROOT
         except NameError: COMROOT = os.path.join(OPSROOT, "com")
         try: PACKAGEROOT
@@ -1302,6 +1336,11 @@ def setup():
     #
     global GRID_DIR, OROG_DIR, SFC_CLIMO_DIR
 
+    if DOMAIN_PREGEN_BASEDIR is None:
+        RUN_TASK_MAKE_GRID = True
+        RUN_TASK_MAKE_OROG = True
+        RUN_TASK_MAKE_SFC_CLIMO = True
+
     #
     # If RUN_TASK_MAKE_GRID is set to False, the workflow will look for
     # the pregenerated grid files in GRID_DIR.  In this case, make sure that
@@ -1713,7 +1752,7 @@ def setup():
     update_dict(globals(), cfg_d)
 
     # constants section
-    cfg_d["constants"] = cfg_c
+    cfg_d.update(cfg_c)
 
     # grid params
     cfg_d["grid_params"] = grid_params
@@ -1748,7 +1787,6 @@ def setup():
         #
         # -----------------------------------------------------------------------
         #
-        "SR_WX_APP_TOP_DIR": SR_WX_APP_TOP_DIR,
         "HOMEdir": HOMEdir,
         "USHdir": USHdir,
         "SCRIPTSdir": SCRIPTSdir,
@@ -1885,48 +1923,6 @@ def setup():
             #
             # -----------------------------------------------------------------------
             #
-            # If USE_USER_STAGED_EXTRN_FILES is set to \"FALSE\", this is the system
-            # directory in which the workflow scripts will look for the files generated
-            # by the external model specified in EXTRN_MDL_NAME_ICS.  These files will
-            # be used to generate the input initial condition and surface files for
-            # the FV3-LAM.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "EXTRN_MDL_SYSBASEDIR_ICS": EXTRN_MDL_SYSBASEDIR_ICS,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # If USE_USER_STAGED_EXTRN_FILES is set to \"FALSE\", this is the system
-            # directory in which the workflow scripts will look for the files generated
-            # by the external model specified in EXTRN_MDL_NAME_LBCS.  These files
-            # will be used to generate the input lateral boundary condition files for
-            # the FV3-LAM.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "EXTRN_MDL_SYSBASEDIR_LBCS": EXTRN_MDL_SYSBASEDIR_LBCS,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # Shift back in time (in units of hours) of the starting time of the ex-
-            # ternal model specified in EXTRN_MDL_NAME_LBCS.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "EXTRN_MDL_LBCS_OFFSET_HRS": EXTRN_MDL_LBCS_OFFSET_HRS,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # Boundary condition update times (in units of forecast hours).  Note that
-            # LBC_SPEC_FCST_HRS is an array, even if it has only one element.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "LBC_SPEC_FCST_HRS": LBC_SPEC_FCST_HRS,
-            #
-            # -----------------------------------------------------------------------
-            #
             # The number of cycles for which to make forecasts and the list of
             # starting dates/hours of these cycles.
             #
@@ -1937,27 +1933,10 @@ def setup():
             #
             # -----------------------------------------------------------------------
             #
-            # Parameters that determine whether FVCOM data will be used, and if so,
-            # their location.
-            #
-            # If USE_FVCOM is set to \"TRUE\", then FVCOM data (in the file FVCOM_FILE
-            # located in the directory FVCOM_DIR) will be used to update the surface
-            # boundary conditions during the initial conditions generation task
-            # (MAKE_ICS_TN).
-            #
-            # -----------------------------------------------------------------------
-            #
-            "USE_FVCOM": USE_FVCOM,
-            "FVCOM_DIR": FVCOM_DIR,
-            "FVCOM_FILE": FVCOM_FILE,
-            #
-            # -----------------------------------------------------------------------
-            #
             # Computational parameters.
             #
             # -----------------------------------------------------------------------
             #
-            "NCORES_PER_NODE": NCORES_PER_NODE,
             "PE_MEMBER01": PE_MEMBER01,
             #
             # -----------------------------------------------------------------------

@@ -1,0 +1,33 @@
+platform:
+  WORKFLOW_MANAGER: rocoto
+  NCORES_PER_NODE: 32
+  SCHED: slurm
+  CCPA_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/ccpa/proc
+  MRMS_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/mrms/proc
+  NDAS_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/ndas/proc
+  METPLUS_PATH: /usw/met/METplus/METplus-4.1.3
+  MET_BIN_EXEC: bin
+  MET_INSTALL_DIR: /usw/met/10.1.2
+  QUEUE_DEFAULT: normal
+  QUEUE_FCST: normal
+  QUEUE_HPSS: normal
+  RUN_CMD_FCST: srun --mpi=pmi2 -n ${PE_MEMBER01}
+  RUN_CMD_POST: srun --mpi=pmi2 -n $nprocs
+  RUN_CMD_SERIAL: time
+  RUN_CMD_UTILS: srun --mpi=pmi2 -n $nprocs
+  SLURM_NATIVE_CMD: -M c3
+  ENV_INIT_SCRIPTS_FPS:
+    - /etc/profile
+  PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/input_model_data
+  TEST_PREGEN_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/FV3LAM_pregen
+task_make_lbcs:
+  WTIME_MAKE_LBCS: 00:60:00
+task_run_fcst:
+  FIXaer: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsm: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_am
+  FIXlut: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_lut
+  TOPO_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_orog
+  SFC_CLIMO_INPUT_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_sfc_climo
+data:
+  FV3GFS: /lustre/f2/dev/Mark.Potts/EPIC/SRW/model_data/FV3GFS/${yyyymmdd}${hh}
