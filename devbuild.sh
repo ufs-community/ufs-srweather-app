@@ -233,6 +233,11 @@ if [ "${VERBOSE}" = true ] ; then
   settings
 fi
 
+# source version file only for wcoss2
+if [ "${PLATFORM}" = "wcoss2" ]; then
+  . ${SRW_DIR}/versions/build.ver
+fi	
+
 # set MODULE_FILE for this platform/compiler combination
 MODULE_FILE="build_${PLATFORM}_${COMPILER}"
 if [ ! -f "${SRW_DIR}/modulefiles/${MODULE_FILE}" ]; then
