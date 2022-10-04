@@ -20,6 +20,12 @@ if ( "$L_MACHINE" == macos ) then
 
    module purge
 
+else if ( "$L_MACHINE" == linux ) then
+   setenv ENV "/usr/share/lmod/lmod/init/csh"
+   source $ENV
+
+   module purge
+
 else if ( "$L_MACHINE" == singularity ) then
    set ENV="/usr/share/lmod/lmod/init/csh"
    source $ENV

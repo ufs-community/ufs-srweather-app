@@ -21,6 +21,12 @@ if [ "$L_MACHINE" = macos ]; then
 
    module purge
 
+elif [ "$L_MACHINE" = linux ]; then
+   export BASH_ENV="/usr/share/share/lmod/init/bash"
+   source $BASH_ENV
+
+   module purge
+
 elif [ "$L_MACHINE" = singularity ]; then
    export BASH_ENV="/usr/share/lmod/lmod/init/bash"
    source $BASH_ENV
