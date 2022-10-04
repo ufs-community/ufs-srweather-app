@@ -466,6 +466,10 @@ MODULES_RUN_TASK_FP script.
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_fcst }}</cores>
     <native>{{ native_run_fcst }}</native>
+  {%- elif machine in ["wcoss2"]  %}
+    <nodes>{{ nnodes_run_fcst }}:ppn={{ ppn_run_fcst }}:tpp={{ omp_num_threads_run_fcst }}</nodes>
+    <native>-l place=excl</native>
+    <nodesize>&NCORES_PER_NODE;</nodesize>	
   {%- else %}
     <nodes>{{ nnodes_run_fcst }}:ppn={{ ppn_run_fcst }}</nodes>
     <nodesize>&NCORES_PER_NODE;</nodesize>
