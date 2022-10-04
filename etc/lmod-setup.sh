@@ -28,11 +28,11 @@ elif [ "$L_MACHINE" = singularity ]; then
    module purge
 
 elif [ "$L_MACHINE" = gaea ]; then
-   export LMOD_SYSTEM_DEFAULT_MODULES=modules/3.2.11.4
-   export BASH_ENV=/lustre/f2/dev/role.epic/contrib/apps/lmod/lmod/init/profile
+   export BASH_ENV="/lustre/f2/dev/role.epic/contrib/apps/lmod/lmod/init/bash"
    source $BASH_ENV
-   module --initial_load restore
 
+   export LMOD_SYSTEM_DEFAULT_MODULES="modules/3.2.11.4"
+   module --initial_load --no_redirect restore
 elif [ "$L_MACHINE" = odin ]; then
    module unload modules
    unset -f module
