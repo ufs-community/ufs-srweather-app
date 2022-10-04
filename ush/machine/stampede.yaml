@@ -17,6 +17,8 @@ platform:
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data
   TEST_PREGEN_BASEDIR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
 task_run_fcst:
   FIXaer: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_am
