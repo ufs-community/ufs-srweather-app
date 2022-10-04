@@ -73,19 +73,21 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
+    # Step-1 of config
+    # ================
     # Set the name of the configuration file containing default values for
-    # the experiment/workflow variables.  Then source the file.
+    # the experiment/workflow variables.  Then import the content.
     #
     # -----------------------------------------------------------------------
     #
     EXPT_DEFAULT_CONFIG_FN = "config_defaults.yaml"
     cfg_d = load_config_file(os.path.join(USHdir, EXPT_DEFAULT_CONFIG_FN))
-    import_vars(dictionary=flatten_dict(cfg_d))
+    EXPT_CONFIG_FN = cfg_d["workflow"]["EXPT_CONFIG_FN"]
 
     #
     # -----------------------------------------------------------------------
     #
-    # If a user-specified configuration file exists, source it.  This file
+    # Load the user config file but don't source it yet.  This file
     # contains user-specified values for a subset of the experiment/workflow
     # variables that override their default values.  Note that the user-
     # specified configuration file is not tracked by the repository, whereas
@@ -94,28 +96,28 @@ def setup():
     # -----------------------------------------------------------------------
     #
     if os.path.exists(EXPT_CONFIG_FN):
-        #
-        # We require that the variables being set in the user-specified configu-
-        # ration file have counterparts in the default configuration file.  This
-        # is so that we do not introduce new variables in the user-specified
-        # configuration file without also officially introducing them in the de-
-        # fault configuration file.  Thus, before sourcing the user-specified
-        # configuration file, we check that all variables in the user-specified
-        # configuration file are also assigned default values in the default
-        # configuration file.
-        #
         cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
         cfg_u = flatten_dict(cfg_u)
-        import_vars(dictionary=cfg_u)
-        update_dict(cfg_u, cfg_d)
+        import_vars(dictionary=cfg_u,
+            env_vars=["MACHINE",
+                      "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
+                      "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
+    else:
+        print_err_msg_exit(
+            f'''
+            User config file not found
+              EXPT_CONFIG_FN = \"{EXPT_CONFIG_FN}\"'''
+        )
     #
     # -----------------------------------------------------------------------
     #
-    # Source machine specific file
+    # Step-2 of config
+    # ================
+    # Source machine specific config file to set default values
     #
     # -----------------------------------------------------------------------
     #
-    global MACHINE
+    global MACHINE, EXTRN_MDL_SYSBASEDIR_ICS, EXTRN_MDL_SYSBASEDIR_LBCS
     MACHINE_FILE = os.path.join(USHdir, "machine", f"{lowercase(MACHINE)}.yaml")
     machine_cfg = load_config_file(MACHINE_FILE)
 
@@ -130,11 +132,8 @@ def setup():
        else:
           return ""
 
-    global EXTRN_MDL_SYSBASEDIR_ICS, EXTRN_MDL_SYSBASEDIR_LBCS
-    EXTRN_MDL_SYSBASEDIR_ICS = EXTRN_MDL_SYSBASEDIR_ICS or \
-                get_location(EXTRN_MDL_NAME_ICS, FV3GFS_FILE_FMT_ICS)
-    EXTRN_MDL_SYSBASEDIR_LBCS = EXTRN_MDL_SYSBASEDIR_LBCS or \
-            get_location(EXTRN_MDL_NAME_LBCS, FV3GFS_FILE_FMT_LBCS)
+    EXTRN_MDL_SYSBASEDIR_ICS = get_location(EXTRN_MDL_NAME_ICS, FV3GFS_FILE_FMT_ICS)
+    EXTRN_MDL_SYSBASEDIR_LBCS = get_location(EXTRN_MDL_NAME_LBCS, FV3GFS_FILE_FMT_LBCS)
 
     # remove the data key and provide machine specific default values for cfg_d
     if "data" in machine_cfg:
@@ -144,10 +143,24 @@ def setup():
        "EXTRN_MDL_SYSBASEDIR_LBCS": EXTRN_MDL_SYSBASEDIR_LBCS,
     })
     machine_cfg = flatten_dict(machine_cfg)
-    update_dict(machine_cfg, cfg_d, True)
+    update_dict(machine_cfg, cfg_d)
 
-    # import cfg_d again   
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Step-3 of config
+    # ================
+    # Source user config. This overrides previous two configs
+    #
+    # -----------------------------------------------------------------------
+    #
+    update_dict(cfg_u, cfg_d)
+
+    # Now that all 3 config files have their contribution in cfg_d
+    # import its content to python globals()
     import_vars(dictionary=flatten_dict(cfg_d))
+
+    # make machine name uppercase
     MACHINE = uppercase(MACHINE)
 
     #
