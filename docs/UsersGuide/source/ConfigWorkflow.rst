@@ -305,20 +305,110 @@ Set File Name Parameters
 ``WFLOW_LAUNCH_LOG_FN``: (Default: "log.launch_FV3LAM_wflow")
    Name of the log file that contains the output from successive calls to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``).
 
-  
+.. _CCPP_Params:
+
+CCPP Parameter
+------------------
+
+``CCPP_PHYS_SUITE``: (Default: "FV3_GFS_v16")
+   This parameter indicates which :term:`CCPP` (Common Community Physics Package) physics suite to use for the forecast(s). The choice of physics suite determines the forecast model's namelist file, the diagnostics table file, the field table file, and the XML physics suite definition file, which are staged in the experiment directory or the :term:`cycle` directories under it. 
+   
+   **Current supported settings for this parameter are:** 
+
+   | ``"FV3_GFS_v16"`` 
+   | ``"FV3_RRFS_v1beta"`` 
+   | ``"FV3_HRRR"``
+   | ``"FV3_WoFS_v0"``
+
+   **Other valid values include:**
+
+   | ``"FV3_GFS_2017_gfdlmp"``
+   | ``"FV3_GFS_2017_gfdlmp_regional"``
+   | ``"FV3_GFS_v15p2"``
+   | ``"FV3_GFS_v15_thompson_mynn_lam3km"``
 
 
+.. _ConfigParameters:
 
+Grid Generation Parameters
+------------------------------
 
+``GRID_GEN_METHOD``: (Default: "")
+   This variable specifies which method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
 
+   * **"ESGgrid":** The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. 
+
+   * **"GFDLgrid":** The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" method is the legacy grid generation method. It is not supported in *all* predefined domains. 
+
+.. attention::
+
+   If the experiment uses a **predefined grid** (i.e., if ``PREDEF_GRID_NAME`` is set to the name of a valid predefined grid), then ``GRID_GEN_METHOD`` will be reset to the value of ``GRID_GEN_METHOD`` for that grid. This will happen regardless of whether ``GRID_GEN_METHOD`` is assigned a value in the experiment configuration file; any value assigned will be overwritten.
+
+.. note::
+
+   If the experiment uses a **user-defined grid** (i.e., if ``PREDEF_GRID_NAME`` is set to a null string), then ``GRID_GEN_METHOD`` must be set in the experiment configuration file. Otherwise, the experiment generation will fail because the generation scripts check to ensure that the grid name is set to a non-empty string before creating the experiment directory.
+
+Forecast Parameters
+----------------------
+``DATE_FIRST_CYCL``: (Default: "YYYYMMDD")
+   Starting date of the first forecast in the set of forecasts to run. Format is "YYYYMMDD". Note that this does not include the hour of the day.
+
+``DATE_LAST_CYCL``: (Default: "YYYYMMDD")
+   Starting date of the last forecast in the set of forecasts to run. Format is "YYYYMMDD". Note that this does not include the hour of the day.
+
+``CYCL_HRS``: (Default: [ "HH1", "HH2" ] )
+   An array containing the hours of the day at which to launch forecasts. Forecasts are launched at these hours on each day from ``DATE_FIRST_CYCL`` to ``DATE_LAST_CYCL``, inclusive. Each element of this array must be a two-digit string representing an integer that is less than or equal to 23 (e.g., "00", "03", "12", "23").
+
+``INCR_CYCL_FREQ``: (Default: 24)
+   Increment in hours for cycle frequency (cycl_freq). The default is 24, which means cycl_freq=24:00:00.
+
+``FCST_LEN_HRS``: (Default: 24)
+   The length of each forecast, in integer hours.
+
+Pre-Existing Directory Parameter
+------------------------------------
+``PREEXISTING_DIR_METHOD``: (Default: "delete")
+   This variable determines how to deal with pre-existing directories (resulting from previous calls to the experiment generation script using the same experiment name [``EXPT_SUBDIR``] as the current experiment). This variable must be set to one of three valid values: ``"delete"``, ``"rename"``, or ``"quit"``.  The behavior for each of these values is as follows:
+
+   * **"delete":** The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
+
+   * **"rename":** The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created. The new name of the preexisting directory consists of its original name and the suffix "_old###", where ``###`` is a 3-digit integer chosen to make the new name unique.
+
+   * **"quit":** The preexisting directory is left unchanged, but execution of the currently running script is terminated. In this case, the preexisting directory must be dealt with manually before rerunning the script.
+
+Verbose Parameter
+---------------------
+``VERBOSE``: (Default: true)
+   Flag that determines whether the experiment generation and workflow task scripts print out extra informational messages. Valid values: ``"True"`` | ``"False"``
+
+Debug Parameter
+--------------------
+``DEBUG``: (Default: false)
+   Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to true, then VERBOSE will also be reset to true if it isn't already. Valid values: ``"True"`` | ``"False"``
+
+Compiler
+-----------
+
+``COMPILER``: (Default: "intel")
+   Type of compiler invoked during the build step. Currently, this must be set manually (i.e., it is not inherited from the build system in the ``ufs-srweather-app`` directory). Valid values: ``"intel"`` | ``"gnu"``
+
+   .. COMMENT: This bit isn't in config_defaults: "Currently, this must be set manually (i.e., it is not inherited from the build system in the ``ufs-srweather-app`` directory)."
+      Should it be removed? Is it still true?
+
+   .. COMMENT: Add?:
+         GET_OBS: "get_obs"
+         VX_TN: "run_vx"
+         VX_ENSGRID_TN: "run_ensgridvx"
+         VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
+         MAXTRIES_VX_ENSGRID_PROB_REFC: 1
 
 
 .. _NCOModeParms:
 
 NCO Mode Parameters
------------------------
+=======================
 
-These variables apply only when using NCO mode (i.e., when ``RUN_ENVIR`` is set to "nco").
+These variables apply only when using NCO mode (i.e., when ``RUN_ENVIR`` is set to "nco"). If non-default parameters are selected for the variables in this section, they should be added to the ``nco:`` section of the ``config.yaml`` file. 
 
 ``COMINgfs``: (Default: "/base/path/of/directory/containing/gfs/input/files")
    The beginning portion of the path to the directory that contains files generated by the external model (FV3GFS). The initial and lateral boundary condition generation tasks need this path in order to create initial and boundary condition files for a given cycle on the native FV3-LAM grid. For a cycle that starts on the date specified by the variable YYYYMMDD (consisting of the 4-digit year, 2-digit month, and 2-digit day of the month) and the hour specified by the variable HH (consisting of the 2-digit hour of the day), the directory in which the workflow will look for the external model files is:
@@ -363,156 +453,56 @@ These variables apply only when using NCO mode (i.e., when ``RUN_ENVIR`` is set 
       $PTMP/com/$NET/$envir/$RUN.$yyyymmdd/$hh
 
 
+#----------------------------
+# NCO specific variables
+#-----------------------------
+nco:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
+  # set to "nco").  Definitions:
+  #
+  # envir, NET, model_ver, RUN:
+  # Standard environment variables defined in the NCEP Central Operations WCOSS
+  # Implementation Standards document as follows:
+  #
+  #   envir:
+  #   Set to "test" during the initial testing phase, "para" when running
+  #   in parallel (on a schedule), and "prod" in production.
+  #
+  #   NET:
+  #   Model name (first level of com directory structure)
+  #
+  #   model_ver:
+  #   Version number of package in three digits (second level of com directory)
+  #
+  #   RUN:
+  #   Name of model run (third level of com directory structure).
+  #   In general, same as $NET
+  #
+  # OPSROOT:
+  # The operations root directory in NCO mode.
+  # 
+  # For more information on NCO standards
+  #   
+  #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
+  #
+  #-----------------------------------------------------------------------
+  #
+  envir: "para"
+  NET: "rrfs"
+  RUN: "rrfs"
+  model_ver: "v1.0.0"
+  OPSROOT: ""
+
+
+
+
 
 
 
 #***************************************** DELETE BELOW THIS LINE ****************************************
-
-
-  
-  #-----------------------------------------------------------------------
-  #
-  # Set CCPP-associated parameters.  Definitions:
-  #
-  # CCPP_PHYS_SUITE:
-  # The physics suite that will run using CCPP (Common Community Physics
-  # Package).  The choice of physics suite determines the forecast model's 
-  # namelist file, the diagnostics table file, the field table file, and 
-  # the XML physics suite definition file that are staged in the experiment 
-  # directory or the cycle directories under it.
-  #
-  #-----------------------------------------------------------------------
-  #
-  CCPP_PHYS_SUITE: "FV3_GFS_v16"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set GRID_GEN_METHOD.  This variable specifies the method to use to 
-  # generate a regional grid in the horizontal.  The values that it can 
-  # take on are:
-  #
-  # * "GFDLgrid":
-  #   This setting will generate a regional grid by first generating a 
-  #   "parent" global cubed-sphere grid and then taking a portion of tile
-  #   6 of that global grid -- referred to in the grid generation scripts
-  #   as "tile 7" even though it doesn't correspond to a complete tile --
-  #   and using it as the regional grid.  Note that the forecast is run on
-  #   only on the regional grid (i.e. tile 7, not tiles 1 through 6).
-  #
-  # * "ESGgrid":
-  #   This will generate a regional grid using the map projection developed
-  #   by Jim Purser of EMC.
-  #
-  # Note that:
-  #
-  # 1) If the experiment is using one of the predefined grids (i.e. if 
-  #    PREDEF_GRID_NAME is set to the name of one of the valid predefined 
-  #    grids), then GRID_GEN_METHOD will be reset to the value of 
-  #    GRID_GEN_METHOD for that grid.  This will happen regardless of 
-  #    whether or not GRID_GEN_METHOD is assigned a value in the user-
-  #    specified experiment configuration file, i.e. any value it may be
-  #    assigned in the experiment configuration file will be overwritten.
-  #
-  # 2) If the experiment is not using one of the predefined grids (i.e. if 
-  #    PREDEF_GRID_NAME is set to a null string), then GRID_GEN_METHOD must 
-  #    be set in the experiment configuration file.  Otherwise, it will 
-  #    remain set to a null string, and the experiment generation will 
-  #    fail because the generation scripts check to ensure that it is set 
-  #    to a non-empty string before creating the experiment directory.
-  #
-  #-----------------------------------------------------------------------
-  #
-  GRID_GEN_METHOD: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set forecast parameters.  Definitions:
-  #
-  # DATE_FIRST_CYCL:
-  # Starting date of the first forecast in the set of forecasts to run.  
-  # Format is "YYYYMMDD".  Note that this does not include the hour-of-day.
-  #
-  # DATE_LAST_CYCL:
-  # Starting date of the last forecast in the set of forecasts to run.
-  # Format is "YYYYMMDD".  Note that this does not include the hour-of-day.
-  #
-  # CYCL_HRS:
-  # An array containing the hours of the day at which to launch forecasts.
-  # Forecasts are launched at these hours on each day from DATE_FIRST_CYCL
-  # to DATE_LAST_CYCL, inclusive.  Each element of this array must be a 
-  # two-digit string representing an integer that is less than or equal to
-  # 23, e.g. "00", "03", "12", "23".
-  #
-  # INCR_CYCL_FREQ:
-  # Increment in hours for Cycle Frequency (cycl_freq).
-  # Default is 24, which means cycle_freq=24:00:00
-  #
-  # FCST_LEN_HRS:
-  # The length of each forecast, in integer hours.
-  #
-  #-----------------------------------------------------------------------
-  #
-  DATE_FIRST_CYCL: "YYYYMMDD"
-  DATE_LAST_CYCL: "YYYYMMDD"
-  CYCL_HRS: [ "HH1", "HH2" ]
-  INCR_CYCL_FREQ: 24
-  FCST_LEN_HRS: 24
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set PREEXISTING_DIR_METHOD.  This variable determines the method to use
-  # use to deal with preexisting directories [e.g ones generated by previous
-  # calls to the experiment generation script using the same experiment name
-  # (EXPT_SUBDIR) as the current experiment].  This variable must be set to
-  # one of "delete", "rename", and "quit".  The resulting behavior for each
-  # of these values is as follows:
-  #
-  # * "delete":
-  #   The preexisting directory is deleted and a new directory (having the
-  #   same name as the original preexisting directory) is created.
-  #
-  # * "rename":
-  #   The preexisting directory is renamed and a new directory (having the
-  #   same name as the original preexisting directory) is created.  The new
-  #   name of the preexisting directory consists of its original name and
-  #   the suffix "_oldNNN", where NNN is a 3-digit integer chosen to make
-  #   the new name unique.
-  #
-  # * "quit":
-  #   The preexisting directory is left unchanged, but execution of the
-  #   currently running script is terminated.  In this case, the preexisting
-  #   directory must be dealt with manually before rerunning the script.
-  #
-  #-----------------------------------------------------------------------
-  #
-  PREEXISTING_DIR_METHOD: "delete"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set flags for more detailed messages.  Defintitions:
-  #
-  # VERBOSE:
-  # This is a flag that determines whether or not the experiment generation 
-  # and workflow task scripts tend to print out more informational messages.
-  #
-  # DEBUG:
-  # This is a flag that determines whether or not very detailed debugging
-  # messages are printed to out.  Note that if DEBUG is set to TRUE, then
-  # VERBOSE will also get reset to TRUE if it isn't already.
-  #
-  #-----------------------------------------------------------------------
-  #
-  VERBOSE: true
-  DEBUG: false
-  #
-  #-----------------------------------------------------------------------
-  #
-  # COMPILER:
-  # Type of compiler invoked during the build step. 
-  #
-  #------------------------------------------------------------------------
-  #
-  COMPILER: "intel"
 
   #is this the right place?
   GET_OBS: "get_obs"
@@ -525,29 +515,6 @@ These variables apply only when using NCO mode (i.e., when ``RUN_ENVIR`` is set 
 
 
 
-
-``COMPILER``: (Default: "intel")
-   Type of compiler invoked during the build step. Currently, this must be set manually (i.e., it is not inherited from the build system in the ``ufs-srweather-app`` directory). Valid values: ``"intel"`` | ``"gnu"``
-
-
-
-
-Forecast Parameters
-===================
-``DATE_FIRST_CYCL``: (Default: "YYYYMMDD")
-   Starting date of the first forecast in the set of forecasts to run. Format is "YYYYMMDD". Note that this does not include the hour of the day.
-
-``DATE_LAST_CYCL``: (Default: "YYYYMMDD")
-   Starting date of the last forecast in the set of forecasts to run. Format is "YYYYMMDD". Note that this does not include the hour of the day.
-
-``CYCL_HRS``: (Default: ( "HH1" "HH2" ))
-   An array containing the hours of the day at which to launch forecasts. Forecasts are launched at these hours on each day from ``DATE_FIRST_CYCL`` to ``DATE_LAST_CYCL``, inclusive. Each element of this array must be a two-digit string representing an integer that is less than or equal to 23 (e.g., "00", "03", "12", "23").
-
-``INCR_CYCL_FREQ``: (Default: "24")
-   Increment in hours for cycle frequency (cycl_freq). The default is "24", which means cycl_freq=24:00:00.
-
-``FCST_LEN_HRS``: (Default: "24")
-   The length of each forecast, in integer hours.
 
 Model Configuration Parameters
 =================================
@@ -634,26 +601,6 @@ Set parameters associated with NOMADS online data.
 ``NOMADS_file_type``: (Default: "nemsio")
    Flag controlling the format of the data. Valid values: ``"GRIB2"`` | ``"grib2"`` | ``"NEMSIO"`` | ``"nemsio"``
 
-.. _CCPP_Params:
-
-CCPP Parameter
-===============
-``CCPP_PHYS_SUITE``: (Default: "FV3_GFS_v16")
-   This parameter indicates which :term:`CCPP` (Common Community Physics Package) physics suite to use for the forecast(s). The choice of physics suite determines the forecast model's namelist file, the diagnostics table file, the field table file, and the XML physics suite definition file, which are staged in the experiment directory or the :term:`cycle` directories under it. 
-   
-   **Current supported settings for this parameter are:** 
-
-   | ``"FV3_GFS_v16"`` 
-   | ``"FV3_RRFS_v1beta"`` 
-   | ``"FV3_HRRR"``
-   | ``"FV3_WoFS_v0"``
-
-   **Other valid values include:**
-
-   | ``"FV3_GFS_2017_gfdlmp"``
-   | ``"FV3_GFS_2017_gfdlmp_regional"``
-   | ``"FV3_GFS_v15p2"``
-   | ``"FV3_GFS_v15_thompson_mynn_lam3km"``
 
 Stochastic Physics Parameters
 ================================
@@ -857,24 +804,6 @@ Predefined Grid Parameters
    * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies that the user will provide the native grid parameters in the user-specified experiment configuration file (``config.yaml``).  In this case, the grid generation method, the native grid parameters, the write component grid parameters, the main time step (``DT_ATMOS``), and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) must be set in the configuration file. Otherwise, the values of the parameters in the default experiment configuration file (``config_defaults.yaml``) will be used.
 
 
-.. _ConfigParameters:
-
-Grid Generation Parameters
-==========================
-``GRID_GEN_METHOD``: (Default: "")
-   This variable specifies which method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
-
-   * **"ESGgrid":** The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. 
-
-   * **"GFDLgrid":** The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" method is the legacy grid generation method. It is not supported in *all* predefined domains. 
-
-.. attention::
-
-   If the experiment uses a **predefined grid** (i.e., if ``PREDEF_GRID_NAME`` is set to the name of a valid predefined grid), then ``GRID_GEN_METHOD`` will be reset to the value of ``GRID_GEN_METHOD`` for that grid. This will happen regardless of whether ``GRID_GEN_METHOD`` is assigned a value in the experiment configuration file; any value assigned will be overwritten.
-
-.. note::
-
-   If the experiment uses a **user-defined grid** (i.e., if ``PREDEF_GRID_NAME`` is set to a null string), then ``GRID_GEN_METHOD`` must be set in the experiment configuration file. Otherwise, the experiment generation will fail because the generation scripts check to ensure that the grid name is set to a non-empty string before creating the experiment directory.
 
 .. _ESGgrid:
 
@@ -1059,27 +988,7 @@ Write-Component (Quilting) Parameters
 ``WRTCMP_dy``: (Default: "")
    Grid cell size (in meters) along the y-axis of the Lambert conformal projection. 
 
-Pre-existing Directory Parameter
-================================
-``PREEXISTING_DIR_METHOD``: (Default: "delete")
-   This variable determines how to deal with pre-existing directories (resulting from previous calls to the experiment generation script using the same experiment name [``EXPT_SUBDIR``] as the current experiment). This variable must be set to one of three valid values: ``"delete"``, ``"rename"``, or ``"quit"``.  The behavior for each of these values is as follows:
 
-   * **"delete":** The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
-
-   * **"rename":** The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created. The new name of the preexisting directory consists of its original name and the suffix "_old###", where ``###`` is a 3-digit integer chosen to make the new name unique.
-
-   * **"quit":** The preexisting directory is left unchanged, but execution of the currently running script is terminated. In this case, the preexisting directory must be dealt with manually before rerunning the script.
-
-
-Verbose Parameter
-=================
-``VERBOSE``: (Default: true)
-   Flag that determines whether the experiment generation and workflow task scripts print out extra informational messages. Valid values: ``"True"`` | ``"False"``
-
-Debug Parameter
-=================
-``DEBUG``: (Default: false)
-   Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to TRUE, then VERBOSE will also be reset to TRUE if it isn't already. Valid values: ``"True"`` | ``"False"``
 
 .. _WFTasks:
 
