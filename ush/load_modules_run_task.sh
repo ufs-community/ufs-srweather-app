@@ -110,6 +110,12 @@ set -u
 #
 machine=$(echo_lowercase $MACHINE)
 
+# source version file only if it is specified in machine file
+VERSION_FILE="${HOMEdir}/versions/build.ver.${machine}"
+if [ -f ${VERSION_FILE} ]; then
+  . ${VERSION_FILE}
+fi
+
 source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
 module use "${HOMEdir}/modulefiles"
 module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
