@@ -246,20 +246,68 @@ Pre-Processing File Separator Parameters
 
    .. COMMENT: It also says "Ideally, the same separator should be used in the names of these fixed files as the surface climatology fixed files (which always use a "." as the separator), i.e. ideally DOT_OR_USCORE should be set to "." "  --> Does it have to be set to "_" in the SRW App?
 
+Set File Name Parameters
+----------------------------
 
-  #-----------------------------------------------------------------------
-  #
-  # Set the separator character(s) to use in the names of the grid, mosaic,
-  # and orography fixed files.
-  #
-  # Ideally, the same separator should be used in the names of these fixed
-  # files as the surface climatology fixed files (which always use a "."
-  # as the separator), i.e. ideally, DOT_OR_USCORE should be set to "."
-  #
-  #-----------------------------------------------------------------------
-  #
-  DOT_OR_USCORE: "_"
-  #
+``EXPT_CONFIG_FN``: (Default: "config.yaml")
+   Name of the user-specified configuration file for the forecast experiment.
+
+``CONSTANTS_FN``: (Default: "constants.sh")
+   Name of the file containing definitions of various mathematical, physical, and SRW App contants.
+
+``RGNL_GRID_NML_FN``: (Default: "regional_grid.nml")
+   Name of the file containing namelist settings for the code that generates an "ESGgrid" regional grid.
+
+``FV3_NML_BASE_SUITE_FN``: (Default: "input.nml.FV3")
+   Name of the Fortran file containing the forecast model's base suite namelist (i.e., the portion of the namelist that is common to all physics suites).
+
+``FV3_NML_YAML_CONFIG_FN``: (Default: "FV3.input.yml")
+   Name of YAML configuration file containing the forecast model's namelist settings for various physics suites.
+
+``FV3_NML_BASE_ENS_FN``: (Default: "input.nml.base_ens")
+   Name of the Fortran file containing the forecast model's base ensemble namelist (i.e., the original namelist file from which each of the ensemble members' namelist files is generated).
+
+``FV3_EXEC_FN``: (Default: "ufs_model")
+   Name of the forecast model executable that is copied from the executables directory (``EXEC_SUBDIR``;where it was created during the build process) to the experiment directory; set during experiment generation.
+
+.. COMMENT: Check this definition...
+
+``DIAG_TABLE_TMPL_FN``: (Default: "")
+   Name of a template file that specifies the output fields of the forecast model. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{DIAG_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``diag_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a value for ``DIAG_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the names of the ``diag_table`` options in the ``ufs-srweather-app/parm`` directory. 
+
+``FIELD_TABLE_TMPL_FN``: (Default: "")
+   Name of a template file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{FIELD_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``field_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a different value for ``FIELD_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the names of the ``field_table`` options in the ``ufs-srweather-app/parm`` directory. 
+
+``DATA_TABLE_TMPL_FN``: (Default: "")
+   Name of a template file that contains the data table read in by the forecast model. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``data_table``), and users should **not** specify a different value for ``DATA_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the name of ``data_table`` in the ``ufs-srweather-app/parm`` directory. 
+
+``MODEL_CONFIG_TMPL_FN``: (Default: "")
+   Name of a template file that contains settings and configurations for the :term:`NUOPC`/:term:`ESMF` main component. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``model_configure``), and users should **not** specify a different value for ``MODEL_CONFIG_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the name of ``model_configure`` in the ``ufs-srweather-app/parm`` directory. 
+
+``NEMS_CONFIG_TMPL_FN``: (Default: "")
+   Name of a template file that contains information about the various :term:`NEMS` components and their run sequence. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``nems.configure``), and users should **not** specify a different value for ``NEMS_CONFIG_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the name of ``nems.configure`` in the ``ufs-srweather-app/parm`` directory.
+
+``FCST_MODEL``: (Default: "ufs-weather-model")
+   Name of forecast model. Valid values: ``"ufs-weather-model"`` | ``"fv3gfs_aqm"``
+
+``WFLOW_XML_FN``: (Default: "FV3LAM_wflow.xml")
+   Name of the Rocoto workflow XML file that the experiment generation script creates. This file defines the workflow for the experiment.
+
+``GLOBAL_VAR_DEFNS_FN``: (Default: "var_defns.sh")
+   Name of the file (a shell script) containing definitions of the primary and secondary experiment variables (parameters). This file is sourced by many scripts (e.g., the J-job scripts corresponding to each workflow task) in order to make all the experiment variables available in those scripts. The primary variables are defined in the default configuration script (``config_defaults.yaml``) and in ``config.yaml``. The secondary experiment variables are generated by the experiment generation script. 
+
+``EXTRN_MDL_VAR_DEFNS_FN``: (Default: "extrn_mdl_var_defns")
+   Name of the file (a shell script) containing the definitions of variables associated with the external model from which :term:`ICs` or :term:`LBCs` are generated. This file is created by the ``GET_EXTRN_*_TN`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS_TN`` and ``MAKE_LBCS_TN`` tasks.
+
+``WFLOW_LAUNCH_SCRIPT_FN``: (Default: "launch_FV3LAM_wflow.sh")
+   Name of the script that can be used to (re)launch the experiment's Rocoto workflow.
+
+``WFLOW_LAUNCH_LOG_FN``: (Default: "log.launch_FV3LAM_wflow")
+   Name of the log file that contains the output from successive calls to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``).
+
+  
+
+
 
 
 
@@ -314,59 +362,6 @@ These variables apply only when using NCO mode (i.e., when ``RUN_ENVIR`` is set 
 
       $PTMP/com/$NET/$envir/$RUN.$yyyymmdd/$hh
 
-File Name Parameters
-------------------------
-
-``EXPT_CONFIG_FN``: (Default: "config.yaml")
-   Name of the user-specified configuration file for the forecast experiment.
-
-``RGNL_GRID_NML_FN``: (Default: "regional_grid.nml")
-   Name of the file containing namelist settings for the code that generates an "ESGgrid" regional grid.
-
-``FV3_NML_BASE_SUITE_FN``: (Default: "input.nml.FV3")
-   Name of the Fortran file containing the forecast model's base suite namelist (i.e., the portion of the namelist that is common to all physics suites).
-
-``FV3_NML_YAML_CONFIG_FN``: (Default: "FV3.input.yml")
-   Name of YAML configuration file containing the forecast model's namelist settings for various physics suites.
-
-``FV3_NML_BASE_ENS_FN``: (Default: "input.nml.base_ens")
-   Name of the Fortran file containing the forecast model's base ensemble namelist (i.e., the original namelist file from which each of the ensemble members' namelist files is generated).
-
-``DIAG_TABLE_FN``: (Default: "diag_table")
-   Name of the file specifying the fields that the forecast model will output.
-
-``FIELD_TABLE_FN``: (Default: "field_table")
-   Name of the file specifying the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files.
-
-``DATA_TABLE_FN``: (Default: "data_table")
-   Name of the file containing the data table read in by the forecast model.
-
-``MODEL_CONFIG_FN``: (Default: "model_configure")
-   Name of the file containing settings and configurations for the :term:`NUOPC`/:term:`ESMF` component.
-
-``NEMS_CONFIG_FN``: (Default: "nems.configure")
-   Name of the file containing information about the various :term:`NEMS` components and their run sequence.
-
-``FV3_EXEC_FN``: (Default: "ufs_model")
-   Name of the forecast model executable stored in the executables directory (``EXECDIR``; set during experiment generation).
-
-``FCST_MODEL``: (Default: "ufs-weather-model")
-   Name of forecast model. Valid values: ``"ufs-weather-model"`` | ``"fv3gfs_aqm"``
-
-``WFLOW_XML_FN``: (Default: "FV3LAM_wflow.xml")
-   Name of the Rocoto workflow XML file that the experiment generation script creates. This file defines the workflow for the experiment.
-
-``GLOBAL_VAR_DEFNS_FN``: (Default: "var_defns.sh")
-   Name of the file (a shell script) containing definitions of the primary and secondary experiment variables (parameters). This file is sourced by many scripts (e.g., the J-job scripts corresponding to each workflow task) in order to make all the experiment variables available in those scripts. The primary variables are defined in the default configuration script (``config_defaults.yaml``) and in ``config.yaml``. The secondary experiment variables are generated by the experiment generation script. 
-
-``EXTRN_MDL_VAR_DEFNS_FN``: (Default: "extrn_mdl_var_defns")
-   Name of the file (a shell script) containing the defintions of variables associated with the external model from which :term:`ICs` or :term:`LBCs` are generated. This file is created by the ``GET_EXTRN_*_TN`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS_TN`` and ``MAKE_LBCS_TN`` tasks.
-
-``WFLOW_LAUNCH_SCRIPT_FN``: (Default: "launch_FV3LAM_wflow.sh")
-   Name of the script that can be used to (re)launch the experiment's Rocoto workflow.
-
-``WFLOW_LAUNCH_LOG_FN``: (Default: "log.launch_FV3LAM_wflow")
-   Name of the log file that contains the output from successive calls to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``).
 
 
 
@@ -374,120 +369,7 @@ File Name Parameters
 #***************************************** DELETE BELOW THIS LINE ****************************************
 
 
-  #-----------------------------------------------------------------------
-  #
-  # Set file names.  Definitions:
-  #
-  # EXPT_CONFIG_FN:
-  # Name of the user-specified configuration file for the forecast experiment.
-  #
-  # CONSTANTS_FN:
-  # Name of the file containing definitions of various mathematical, physical, 
-  # and SRW App contants.
-  #
-  # RGNL_GRID_NML_FN:
-  # Name of file containing the namelist settings for the code that generates
-  # a "ESGgrid" type of regional grid.
-  #
-  # FV3_NML_BASE_SUITE_FN:
-  # Name of Fortran namelist file containing the forecast model's base suite
-  # namelist, i.e. the portion of the namelist that is common to all physics
-  # suites.
-  #
-  # FV3_NML_YAML_CONFIG_FN:
-  # Name of YAML configuration file containing the forecast model's namelist
-  # settings for various physics suites.
-  #
-  # FV3_NML_BASE_ENS_FN:
-  # Name of Fortran namelist file containing the forecast model's base 
-  # ensemble namelist, i.e. the the namelist file that is the starting point 
-  # from which the namelist files for each of the enesemble members are
-  # generated.
-  #
-  # FV3_EXEC_FN:
-  # Name to use for the forecast model executable when it is copied from
-  # the directory in which it is created in the build step to the executables
-  # directory (EXECDIR; this is set during experiment generation).
-  #
-  # DIAG_TABLE_TMPL_FN:
-  # Name of a template file that specifies the output fields of the forecast 
-  # model (ufs-weather-model: diag_table) followed by [dot_ccpp_phys_suite]. 
-  # Its default value is the name of the file that the ufs weather model 
-  # expects to read in.
-  #
-  # FIELD_TABLE_TMPL_FN:
-  # Name of a template file that specifies the tracers in IC/LBC files of the 
-  # forecast model (ufs-weather-mode: field_table) followed by [dot_ccpp_phys_suite]. 
-  # Its default value is the name of the file that the ufs weather model expects 
-  # to read in.
-  #
-  # MODEL_CONFIG_TMPL_FN:
-  # Name of a template file that contains settings and configurations for the 
-  # NUOPC/ESMF main component (ufs-weather-model: model_config). Its default 
-  # value is the name of the file that the ufs weather model expects to read in.
-  #
-  # NEMS_CONFIG_TMPL_FN:
-  # Name of a template file that contains information about the various NEMS 
-  # components and their run sequence (ufs-weather-model: nems.configure). 
-  # Its default value is the name of the file that the ufs weather model expects 
-  # to read in.
-  #
-  # FCST_MODEL:
-  # Name of forecast model (default=ufs-weather-model)
-  #
-  # WFLOW_XML_FN:
-  # Name of the rocoto workflow XML file that the experiment generation
-  # script creates and that defines the workflow for the experiment.
-  #
-  # GLOBAL_VAR_DEFNS_FN:
-  # Name of file (a shell script) containing the defintions of the primary 
-  # experiment variables (parameters) defined in this default configuration 
-  # script and in the user-specified configuration as well as secondary 
-  # experiment variables generated by the experiment generation script.  
-  # This file is sourced by many scripts (e.g. the J-job scripts corresponding 
-  # to each workflow task) in order to make all the experiment variables 
-  # available in those scripts.
-  #
-  # EXTRN_MDL_VAR_DEFNS_FN:
-  # Name of file (a shell script) containing the defintions of variables
-  # associated with the external model from which ICs or LBCs are generated.  This
-  # file is created by the GET_EXTRN_*_TN task because the values of the variables
-  # it contains are not known before this task runs.  The file is then sourced by
-  # the MAKE_ICS_TN and MAKE_LBCS_TN tasks.
-  #
-  # WFLOW_LAUNCH_SCRIPT_FN:
-  # Name of the script that can be used to (re)launch the experiment's rocoto
-  # workflow.
-  #
-  # WFLOW_LAUNCH_LOG_FN:
-  # Name of the log file that contains the output from successive calls to
-  # the workflow launch script (WFLOW_LAUNCH_SCRIPT_FN).
-  #
-  #-----------------------------------------------------------------------
-  #
-  EXPT_CONFIG_FN: "config.yaml"
-  CONSTANTS_FN: "constants.sh"
   
-  RGNL_GRID_NML_FN: "regional_grid.nml"
-  
-  FV3_NML_BASE_SUITE_FN: "input.nml.FV3"
-  FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
-  FV3_NML_BASE_ENS_FN: "input.nml.base_ens"
-  FV3_EXEC_FN: "ufs_model"
-  
-  DATA_TABLE_TMPL_FN: ""
-  DIAG_TABLE_TMPL_FN: ""
-  FIELD_TABLE_TMPL_FN: ""
-  MODEL_CONFIG_TMPL_FN: ""
-  NEMS_CONFIG_TMPL_FN: ""
-  
-  FCST_MODEL: "ufs-weather-model"
-  WFLOW_XML_FN: "FV3LAM_wflow.xml"
-  GLOBAL_VAR_DEFNS_FN: "var_defns.sh"
-  EXTRN_MDL_VAR_DEFNS_FN: "extrn_mdl_var_defns"
-  WFLOW_LAUNCH_SCRIPT_FN: "launch_FV3LAM_wflow.sh"
-  WFLOW_LAUNCH_LOG_FN: "log.launch_FV3LAM_wflow"
-  #
   #-----------------------------------------------------------------------
   #
   # Set CCPP-associated parameters.  Definitions:
