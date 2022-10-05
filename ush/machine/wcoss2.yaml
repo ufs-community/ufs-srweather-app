@@ -13,9 +13,9 @@ platform:
   QUEUE_FCST: dev
   QUEUE_HPSS: dev_transfer
   RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01}
-  RUN_CMD_POST: mpiexec
+  RUN_CMD_POST: mpiexec -n ${nprocs}
   RUN_CMD_SERIAL: mpiexec
-  RUN_CMD_UTILS: mpiexec
+  RUN_CMD_UTILS: mpiexec -n ${nprocs}
   ENV_INIT_SCRIPTS_FPS:
     - /etc/profile
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'

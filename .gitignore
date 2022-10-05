@@ -1,6 +1,7 @@
 bin/
 exec/
 build/
+fix/
 include/
 lib/
 share/
