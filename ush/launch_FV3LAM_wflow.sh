@@ -156,7 +156,7 @@ task failed:
 python3 --version
 python --version
 if [ "$MACHINE" = "CHEYENNE" ]; then
-    module load python/3.7.9
+    conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow
 fi
 python3 --version
 python --version

@@ -41,7 +41,7 @@ cd ${we2e_test_dir}
 
 # Allow the tests to start before checking for status.
 # TODO: Create a parameter that sets the initial start delay.
-sleep 360
+sleep 180
 
 # Progress file
 progress_file="${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt"
