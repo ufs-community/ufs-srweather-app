@@ -67,7 +67,7 @@ USHdir="$HOMEdir/ush"
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config $USHdir/constants.yaml
+#source_config $USHdir/constants.yaml
 #
 #-----------------------------------------------------------------------
 #
@@ -145,7 +145,7 @@ num_log_lines=${num_log_lines:-"40"}
 #-----------------------------------------------------------------------
 #
 verbose=${verbose:-"FALSE"}
-check_var_valid_value "verbose" "valid_vals_BOOLEAN"
+#check_var_valid_value "verbose" "valid_vals_BOOLEAN"
 verbose=$(boolify "$verbose")
 #
 #-----------------------------------------------------------------------
