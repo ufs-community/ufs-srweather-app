@@ -46,7 +46,7 @@ def get_crontab_contents(called_from_cron):
     print_input_args(locals())
 
     # import selected env vars
-    IMPORTS = ["MACHINE", "USER"]
+    IMPORTS = ["MACHINE", "USER", "DEBUG"]
     import_vars(env_vars=IMPORTS)
 
     __crontab_cmd__ = "crontab"
@@ -60,7 +60,22 @@ def get_crontab_contents(called_from_cron):
     if MACHINE == "CHEYENNE":
         if called_from_cron:
             __crontab_cmd__ = "/usr/bin/crontab"
+
+    print_info_msg(
+        f'''
+        Getting crontab content with command:
+          {__crontab_cmd__} -l''',
+        verbose=DEBUG,
+    )
+
     (_, __crontab_contents__, _) = run_command(f"""{__crontab_cmd__} -l""")
+
+    print_info_msg(
+        f'''
+        Crontab contents:
+          {__crontab_contents__}''',
+        verbose=DEBUG,
+    )
 
     # replace single quotes (hopefully in comments) with double quotes
     __crontab_contents__ = __crontab_contents__.replace("'", '"')

@@ -151,6 +151,16 @@ module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || print_err_msg_exit "\
 Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 
 task failed:
   WFLOW_MOD_FN = \"${WFLOW_MOD_FN}\""
+
+# to be removed later
+python3 --version
+python --version
+if [ "$MACHINE" = "CHEYENNE" ]; then
+    module load python/3.7.9
+fi
+python3 --version
+python --version
+
 #
 #-----------------------------------------------------------------------
 #
