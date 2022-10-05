@@ -176,7 +176,7 @@ def delete_crontab_line(called_from_cron):
     print_info_msg(
         f'''
         Crontab contents after delete:
-          {__crontab_contents__}''',
+          {crontab_contents}''',
         verbose=DEBUG,
     )
 

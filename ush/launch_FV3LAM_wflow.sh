@@ -155,8 +155,11 @@ task failed:
 #
 #-----------------------------------------------------------------------
 #
-# Hack for Gaea since system python version is 3.4.10
-# SRW app requires at least 3.6 so crontab deletion doesn't work
+# Hack for Cheyenne since system python3 version is 3.4.10.
+# SRW app requires at least 3.6 so crontab deletion doesn't work with it.
+# Here we switch to using the python3 in conda that satisfies the requirement.
+# In the future, we could do conda activate on all systems here, to get rid
+# of the system python requirement.
 #
 #-----------------------------------------------------------------------
 #
