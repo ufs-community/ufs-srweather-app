@@ -95,11 +95,11 @@ Directories and files.
 <!ENTITY EXPTDIR                  "{{ exptdir }}">
 
 {%- if run_envir == "nco"  %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.dyn">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.phy">
+<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.dyn</cyclestr>">
+<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.phy</cyclestr>">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/@Y@m@d@H{{ slash_ensmem_subdir }}/dyn">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/@Y@m@d@H{{ slash_ensmem_subdir }}/phy">
+<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H{{ slash_ensmem_subdir }}/dyn</cyclestr>">
+<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H{{ slash_ensmem_subdir }}/phy</cyclestr>">
 {%- endif %}
 
 {%- if run_envir == "nco"  %}
@@ -551,8 +551,8 @@ names in the dependencies.
         <or>
           <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
           <and>
-            <datadep age="05:00"><cyclestr>&DYN_DIR;f{{ first_fv3_file_tstr }}.nc</cyclestr></datadep>
-            <datadep age="05:00"><cyclestr>&PHY_DIR;f{{ first_fv3_file_tstr }}.nc</cyclestr></datadep>
+            <datadep age="05:00">&DYN_DIR;f{{ first_fv3_file_tstr }}.nc</datadep>
+            <datadep age="05:00">&PHY_DIR;f{{ first_fv3_file_tstr }}.nc</datadep>
           </and>
         </or>
       </dependency>
@@ -603,8 +603,8 @@ for other output times.
           <or>
             <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
             <and>
-              <datadep age="05:00"><cyclestr>&DYN_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
-              <datadep age="05:00"><cyclestr>&PHY_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
+              <datadep age="05:00">&DYN_DIR;f#fhr#:#fmn#:00.nc</datadep>
+              <datadep age="05:00">&PHY_DIR;f#fhr#:#fmn#:00.nc</datadep>
             </and>
           </or>
         </dependency>
@@ -676,11 +676,11 @@ always zero).
             <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
             <and>
             {%- if sub_hourly_post %}
-              <datadep age="05:00"><cyclestr>&DYN_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
-              <datadep age="05:00"><cyclestr>&PHY_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
+              <datadep age="05:00">&DYN_DIR;f#fhr#:#fmn#:00.nc</datadep>
+              <datadep age="05:00">&PHY_DIR;f#fhr#:#fmn#:00.nc</datadep>
             {%- else %}
-              <datadep age="05:00"><cyclestr>&DYN_DIR;f#fhr#.nc</cyclestr></datadep>
-              <datadep age="05:00"><cyclestr>&PHY_DIR;f#fhr#.nc</cyclestr></datadep>
+              <datadep age="05:00">&DYN_DIR;f#fhr#.nc</datadep>
+              <datadep age="05:00">&PHY_DIR;f#fhr#.nc</datadep>
             {%- endif %}
             </and>
           </or>
@@ -738,8 +738,8 @@ the <task> tag to be identical to the ones above for other output times.
         <or>
           <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
           <and>
-            <datadep age="05:00"><cyclestr>&DYN_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
-            <datadep age="05:00"><cyclestr>&PHY_DIR;f#fhr#:#fmn#:00.nc</cyclestr></datadep>
+            <datadep age="05:00">&DYN_DIR;f#fhr#:#fmn#:00.nc</datadep>
+            <datadep age="05:00">&PHY_DIR;f#fhr#:#fmn#:00.nc</datadep>
           </and>
         </or>
       </dependency>

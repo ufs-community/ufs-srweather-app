@@ -76,7 +76,7 @@ def setup():
     # Step-1 of config
     # ================
     # Set the name of the configuration file containing default values for
-    # the experiment/workflow variables.  Then import the content.
+    # the experiment/workflow variables.  Then load its content.
     #
     # -----------------------------------------------------------------------
     #
