@@ -154,7 +154,7 @@ def delete_crontab_line(called_from_cron):
     print_input_args(locals())
 
     # import selected env vars
-    IMPORTS = ["MACHINE", "USER", "CRONTAB_LINE"]
+    IMPORTS = ["MACHINE", "USER", "CRONTAB_LINE", "DEBUG"]
     import_vars(env_vars=IMPORTS)
 
     #
@@ -172,6 +172,13 @@ def delete_crontab_line(called_from_cron):
         crontab_contents = crontab_contents.replace(CRONTAB_LINE, "")
 
     run_command(f"""echo '{crontab_contents}' | {crontab_cmd}""")
+
+    print_info_msg(
+        f'''
+        Crontab contents after delete:
+          {__crontab_contents__}''',
+        verbose=DEBUG,
+    )
 
 
 def parse_args(argv):

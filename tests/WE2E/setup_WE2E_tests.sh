@@ -111,6 +111,6 @@ module list
   expt_basedir=${EXPTS_DIR} \
   debug="TRUE" \
   verbose="TRUE" \
-  cron_relaunch_intvl_mnts=2 \
+  cron_relaunch_intvl_mnts=4 \
   run_envir="community"
 

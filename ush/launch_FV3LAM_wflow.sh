@@ -152,14 +152,17 @@ Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow
 task failed:
   WFLOW_MOD_FN = \"${WFLOW_MOD_FN}\""
 
-# to be removed later
-python3 --version
-python --version
+#
+#-----------------------------------------------------------------------
+#
+# Hack for Gaea since system python version is 3.4.10
+# SRW app requires at least 3.6 so crontab deletion doesn't work
+#
+#-----------------------------------------------------------------------
+#
 if [ "$MACHINE" = "CHEYENNE" ]; then
     conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow
 fi
-python3 --version
-python --version
 
 #
 #-----------------------------------------------------------------------
