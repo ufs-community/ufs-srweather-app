@@ -67,6 +67,12 @@ while true; do
     sleep 60
 done
 
+# Allow we2e cron jobs time to complete and clean up themselves
+# TODO: Create parameter that sets the interval for the we2e cron jobs; this
+# value should be some factor of that interval to ensure the cron jobs execute
+# before the workspace is cleaned up.
+sleep 600
+
 # Set exit code to number of failures
 set +e
 failures=$(grep "Workflow status:  FAILURE" ${progress_file} | wc -l)
