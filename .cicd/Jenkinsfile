@@ -167,7 +167,7 @@ pipeline {
                                     }
                                 }
 
-                                sh "SRW_WE2E_COMPREHENSIVE_TESTS=${run_we2e_comprehensive_tests}"
+                                sh "export SRW_WE2E_COMPREHENSIVE_TESTS=${run_we2e_comprehensive_tests}"
                                 sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_test.sh"'
                             }
                         }
