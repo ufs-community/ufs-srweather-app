@@ -13,8 +13,6 @@ platform:
   RUN_CMD_POST: mpirun -np $nprocs --oversubscribe
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpirun -np $nprocs --oversubscribe
-  ENV_INIT_SCRIPTS_FPS:
-    - /usr/share/lmod/6.6/init/profile
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
 task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: aws nomads

@@ -322,10 +322,9 @@ platform:
   DOMAIN_PREGEN_BASEDIR: ""
   #
   #-----------------------------------------------------------------------
-  # Scripts and commands needed by workflow and tasks
+  # Pre task commands such as "ulimit" needed by tasks
   #-----------------------------------------------------------------------
   #
-  ENV_INIT_SCRIPTS_FPS: []
   PRE_TASK_CMDS: ""
   #
   #-----------------------------------------------------------------------

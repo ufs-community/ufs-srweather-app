@@ -12,8 +12,6 @@ platform:
   RUN_CMD_POST: mpiexec -np $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpiexec -np $nprocs
-  ENV_INIT_SCRIPTS_FPS:
-    - /etc/profile
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   BUILD_MOD_FN: wflow_noaacloud
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /contrib/EPIC/UFS_SRW_App/develop/input_model_data

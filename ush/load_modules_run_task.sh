@@ -9,7 +9,6 @@
 #
 . ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
-. $USHdir/init_env.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -63,16 +62,6 @@ where the arguments are defined as follows:
 "
 
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Initialize the environment, e.g. by making available the "module" 
-# command as well as others.
-#
-#-----------------------------------------------------------------------
-#
-env_init_scripts_fps_str="( "$(printf "\"%s\" " "${ENV_INIT_SCRIPTS_FPS[@]}")")"
-init_env env_init_scripts_fps="${env_init_scripts_fps_str}"
 #
 #-----------------------------------------------------------------------
 #

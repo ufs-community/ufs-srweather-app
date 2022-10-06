@@ -12,6 +12,8 @@ EOF_USAGE
 else
    set L_MACHINE=$1
 endif
+
+source /etc/csh.login
    
 if ( "$L_MACHINE" == macos ) then
    set ENV="/opt/homebrew/opt/lmod/init/csh"
