@@ -95,7 +95,7 @@ if [ ! -z ${SLURM_JOB_ID} ]; then
     export jobid=${job}.${SLURM_JOB_ID}
 elif [ ! -z ${PBS_JOBID} ]; then
     export job=${PBS_JOBNAME}
-    export jobid=${job}.${PBS_JOB_ID}
+    export jobid=${job}.${PBS_JOBID}
 else
     export job=${task_name}
     export jobid=${job}.$$
