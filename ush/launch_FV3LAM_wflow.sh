@@ -151,6 +151,22 @@ module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || print_err_msg_exit "\
 Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 
 task failed:
   WFLOW_MOD_FN = \"${WFLOW_MOD_FN}\""
+
+#
+#-----------------------------------------------------------------------
+#
+# Hack for Cheyenne since system python3 version is 3.4.10.
+# SRW app requires at least 3.6 so crontab deletion doesn't work with it.
+# Here we switch to using the python3 in conda that satisfies the requirement.
+# In the future, we could do conda activate on all systems here, to get rid
+# of the system python requirement.
+#
+#-----------------------------------------------------------------------
+#
+if [ "$MACHINE" = "CHEYENNE" ]; then
+    conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow
+fi
+
 #
 #-----------------------------------------------------------------------
 #
