@@ -521,7 +521,6 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
 
   yyyymmdd=${PDY}
   hh=${cyc}
-  cyc=$hh
   fmn="00"
 
   if [ "${RUN_ENVIR}" != "nco" ]; then
@@ -552,9 +551,12 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       FID=$(echo_uppercase $fid)
       post_orig_fn="${FID}.${post_fn_suffix}"
       post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
+ 
       mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
       if [ $RUN_ENVIR != "nco" ]; then
-        ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
+        create_symlink_to_file target="${post_renamed_fn}" \
+                         symlink="${FID}${symlink_suffix}" \
+	                 relative="TRUE"
       fi
       # DBN alert
       if [ $SENDDBN = "TRUE" ]; then
