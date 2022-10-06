@@ -64,7 +64,9 @@ def get_crontab_contents(called_from_cron):
     print_info_msg(
         f'''
         Getting crontab content with command:
-          {__crontab_cmd__} -l''',
+        =========================================================
+          {__crontab_cmd__} -l
+        =========================================================''',
         verbose=DEBUG,
     )
 
@@ -73,7 +75,9 @@ def get_crontab_contents(called_from_cron):
     print_info_msg(
         f'''
         Crontab contents:
-          {__crontab_contents__}''',
+        =========================================================
+          {__crontab_contents__}
+        =========================================================''',
         verbose=DEBUG,
     )
 
@@ -166,6 +170,15 @@ def delete_crontab_line(called_from_cron):
     # current forecast experiment (if that line is part of the contents).
     # Then record the results back into the user's cron table.
     #
+    print_info_msg(
+        f'''
+        Crontab contents before delete:
+        =========================================================
+          {crontab_contents}
+        =========================================================''',
+        verbose=True,
+    )
+
     if (CRONTAB_LINE + "\n") in crontab_contents:
         crontab_contents = crontab_contents.replace(CRONTAB_LINE + "\n", "")
     else:
@@ -176,8 +189,10 @@ def delete_crontab_line(called_from_cron):
     print_info_msg(
         f'''
         Crontab contents after delete:
-          {crontab_contents}''',
-        verbose=DEBUG,
+        =========================================================
+          {crontab_contents}
+        =========================================================''',
+        verbose=True,
     )
 
 
