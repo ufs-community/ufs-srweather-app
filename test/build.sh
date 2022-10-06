@@ -103,7 +103,7 @@ if [ $components = "all" ]; then
     #-----------------------------------------------------------------------
     # Array of all optional rrfs_utl executables built
     #-----------------------------------------------------------------------
-    executables_created=( adjust_soiltq.exe \
+    executables_created+=( adjust_soiltq.exe \
                           check_imssnow_fv3lam.exe \
                           fv3lam_nonvarcldana.exe \
                           gen_annual_maxmin_GVF.exe \
