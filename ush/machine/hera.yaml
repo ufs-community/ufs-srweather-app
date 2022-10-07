@@ -24,6 +24,10 @@ platform:
   TEST_PREGEN_BASEDIR: /scratch2/BMC/det/UFS_SRW_App/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_app/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_app/develop/dummy_FV3GFS_sys_dir
+task_make_orog:
+  TOPO_DIR: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_orog
+task_make_sfc_climo:
+  SFC_CLIMO_INPUT_DIR: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
 task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 task_get_extrn_lbcs:
@@ -32,5 +36,3 @@ task_run_fcst:
   FIXaer: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_lut
-  TOPO_DIR: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_orog
-  SFC_CLIMO_INPUT_DIR: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
