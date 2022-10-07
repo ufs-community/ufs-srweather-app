@@ -110,8 +110,8 @@ set -u
 #
 machine=$(echo_lowercase $MACHINE)
 
-# source version file only if it is specified in machine file
-VERSION_FILE="${HOMEdir}/versions/build.ver.${machine}"
+# source version file (build) only if it is specified in versions directory
+VERSION_FILE="${HOMEdir}/versions/${BUILD_VER_FN}"
 if [ -f ${VERSION_FILE} ]; then
   . ${VERSION_FILE}
 fi
@@ -166,6 +166,11 @@ Loading modules for task \"${task_name}\" ..."
 module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
 
+# source version file (run) only if it is specified in versions directory
+VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
+if [ -f ${VERSION_FILE} ]; then
+  . ${VERSION_FILE}
+fi
 #
 # Load the .local module file if available for the given task
 #

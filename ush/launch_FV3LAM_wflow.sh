@@ -146,6 +146,11 @@ expt_name="${EXPT_SUBDIR}"
 #
 #-----------------------------------------------------------------------
 #
+# source version file (run) only if it is specified in versions directory
+VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
+if [ -f ${VERSION_FILE} ]; then
+  . ${VERSION_FILE}
+fi  
 module use "${HOMEdir}/modulefiles"
 module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || print_err_msg_exit "\
 Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 
