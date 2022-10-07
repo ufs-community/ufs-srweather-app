@@ -185,10 +185,10 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  # Allows an extra parameter to be passed to slurm via XML Native
-  # command
+  # Allows an extra parameter to be passed to SCHEDULER (SLURM/PBSPRO) via 
+  # XML Native command
   #
-  SLURM_NATIVE_CMD: ""
+  SCHED_NATIVE_CMD: ""
 
   #
   #-----------------------------------------------------------------------

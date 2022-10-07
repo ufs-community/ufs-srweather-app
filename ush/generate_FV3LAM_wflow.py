@@ -180,7 +180,7 @@ def generate_FV3LAM_wflow():
             "partition_fcst": PARTITION_FCST,
             "queue_fcst": QUEUE_FCST,
             "machine": MACHINE,
-            "slurm_native_cmd": SLURM_NATIVE_CMD,
+            "sched_native_cmd": SCHED_NATIVE_CMD,
             "workflow_id": WORKFLOW_ID,
             #
             # Run environment

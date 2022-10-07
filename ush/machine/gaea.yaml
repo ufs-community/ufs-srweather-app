@@ -15,7 +15,7 @@ platform:
   RUN_CMD_POST: srun --mpi=pmi2 -n $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: srun --mpi=pmi2 -n $nprocs
-  SLURM_NATIVE_CMD: -M c3
+  SCHED_NATIVE_CMD: -M c3
   ENV_INIT_SCRIPTS_FPS:
     - /etc/profile
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
