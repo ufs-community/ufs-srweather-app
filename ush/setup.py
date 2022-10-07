@@ -975,7 +975,9 @@ def setup():
     # -----------------------------------------------------------------------
     #
     POST_OUTPUT_DOMAIN_NAME = POST_OUTPUT_DOMAIN_NAME or PREDEF_GRID_NAME
-    POST_OUTPUT_DOMAIN_NAME = lowercase(POST_OUTPUT_DOMAIN_NAME)
+
+    if type(POST_OUTPUT_DOMAIN_NAME) != int:
+      POST_OUTPUT_DOMAIN_NAME = lowercase(POST_OUTPUT_DOMAIN_NAME)
 
     if POST_OUTPUT_DOMAIN_NAME is None:
         if PREDEF_GRID_NAME is None:
