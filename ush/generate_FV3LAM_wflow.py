@@ -1044,7 +1044,7 @@ def generate_FV3LAM_wflow():
             following line can be added to the user's crontab (use \"crontab -e\" to
             edit the cron table):
 
-            */3 * * * * cd {EXPTDIR} && ./launch_FV3LAM_wflow.sh called_from_cron=\"TRUE\"
+            */{CRON_RELAUNCH_INTVL_MNTS} * * * * cd {EXPTDIR} && ./launch_FV3LAM_wflow.sh called_from_cron=\"TRUE\"
             """
         )
     #

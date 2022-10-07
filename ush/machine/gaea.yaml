@@ -18,11 +18,12 @@ platform:
   SCHED_NATIVE_CMD: -M c3
   ENV_INIT_SCRIPTS_FPS:
     - /etc/profile
+    - /lustre/f2/dev/role.epic/contrib/Lmod_init.sh
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/input_model_data
   TEST_PREGEN_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/FV3LAM_pregen
-task_make_lbcs:
-  WTIME_MAKE_LBCS: 00:60:00
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
 task_run_fcst:
   FIXaer: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_am

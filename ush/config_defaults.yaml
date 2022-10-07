@@ -312,7 +312,7 @@ platform:
   DOMAIN_PREGEN_BASEDIR: ""
   #
   #-----------------------------------------------------------------------
-  # Scritps and commands needed by workflow and tasks
+  # Scripts and commands needed by workflow and tasks
   #-----------------------------------------------------------------------
   #
   ENV_INIT_SCRIPTS_FPS: []

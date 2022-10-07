@@ -46,7 +46,7 @@ def get_crontab_contents(called_from_cron):
     print_input_args(locals())
 
     # import selected env vars
-    IMPORTS = ["MACHINE", "USER"]
+    IMPORTS = ["MACHINE", "USER", "DEBUG"]
     import_vars(env_vars=IMPORTS)
 
     __crontab_cmd__ = "crontab"
@@ -60,7 +60,26 @@ def get_crontab_contents(called_from_cron):
     if MACHINE == "CHEYENNE":
         if called_from_cron:
             __crontab_cmd__ = "/usr/bin/crontab"
+
+    print_info_msg(
+        f'''
+        Getting crontab content with command:
+        =========================================================
+          {__crontab_cmd__} -l
+        =========================================================''',
+        verbose=DEBUG,
+    )
+
     (_, __crontab_contents__, _) = run_command(f"""{__crontab_cmd__} -l""")
+
+    print_info_msg(
+        f'''
+        Crontab contents:
+        =========================================================
+          {__crontab_contents__}
+        =========================================================''',
+        verbose=DEBUG,
+    )
 
     # replace single quotes (hopefully in comments) with double quotes
     __crontab_contents__ = __crontab_contents__.replace("'", '"')
@@ -139,7 +158,7 @@ def delete_crontab_line(called_from_cron):
     print_input_args(locals())
 
     # import selected env vars
-    IMPORTS = ["MACHINE", "USER", "CRONTAB_LINE"]
+    IMPORTS = ["MACHINE", "USER", "CRONTAB_LINE", "DEBUG"]
     import_vars(env_vars=IMPORTS)
 
     #
@@ -151,12 +170,30 @@ def delete_crontab_line(called_from_cron):
     # current forecast experiment (if that line is part of the contents).
     # Then record the results back into the user's cron table.
     #
+    print_info_msg(
+        f'''
+        Crontab contents before delete:
+        =========================================================
+          {crontab_contents}
+        =========================================================''',
+        verbose=True,
+    )
+
     if (CRONTAB_LINE + "\n") in crontab_contents:
         crontab_contents = crontab_contents.replace(CRONTAB_LINE + "\n", "")
     else:
         crontab_contents = crontab_contents.replace(CRONTAB_LINE, "")
 
     run_command(f"""echo '{crontab_contents}' | {crontab_cmd}""")
+
+    print_info_msg(
+        f'''
+        Crontab contents after delete:
+        =========================================================
+          {crontab_contents}
+        =========================================================''',
+        verbose=True,
+    )
 
 
 def parse_args(argv):
