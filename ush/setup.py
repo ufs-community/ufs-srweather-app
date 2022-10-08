@@ -433,10 +433,12 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global WFLOW_MOD_FN, BUILD_MOD_FN
+    global WFLOW_MOD_FN, BUILD_MOD_FN, BUILD_VER_FN, RUN_VER_FN
     machine = lowercase(MACHINE)
     WFLOW_MOD_FN = WFLOW_MOD_FN or f"wflow_{machine}"
     BUILD_MOD_FN = BUILD_MOD_FN or f"build_{machine}_{COMPILER}"
+    BUILD_VER_FN = BUILD_VER_FN or f"build.ver.{machine}"
+    RUN_VER_FN = RUN_VER_FN or f"run.ver.{machine}"
     #
     # -----------------------------------------------------------------------
     #
@@ -988,7 +990,9 @@ def setup():
     # -----------------------------------------------------------------------
     #
     POST_OUTPUT_DOMAIN_NAME = POST_OUTPUT_DOMAIN_NAME or PREDEF_GRID_NAME
-    POST_OUTPUT_DOMAIN_NAME = lowercase(POST_OUTPUT_DOMAIN_NAME)
+
+    if type(POST_OUTPUT_DOMAIN_NAME) != int:
+      POST_OUTPUT_DOMAIN_NAME = lowercase(POST_OUTPUT_DOMAIN_NAME)
 
     if POST_OUTPUT_DOMAIN_NAME is None:
         if PREDEF_GRID_NAME is None:

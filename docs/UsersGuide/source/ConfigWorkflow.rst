@@ -50,6 +50,12 @@ Platform Environment
 ``WFLOW_MOD_FN``: (Default: "")
    Name of alternative workflow module file to use if running on an unsupported platform. Is set automatically for supported machines.
 
+``BUILD_VER_FN``: (Default: "")
+   File name containing the version of the modules used for building the app. Currently, WCOSS2 only uses this file.
+
+``RUN_VER_FN``: (Default: "")
+   File name containing the version of the modules used for running the app. Currently, WCOSS2 only uses this file.
+
 .. _sched:
 
 ``SCHED``: (Default: "")

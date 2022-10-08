@@ -95,7 +95,7 @@ if [ ! -z ${SLURM_JOB_ID} ]; then
     export jobid=${job}.${SLURM_JOB_ID}
 elif [ ! -z ${PBS_JOBID} ]; then
     export job=${PBS_JOBNAME}
-    export jobid=${job}.${PBS_JOB_ID}
+    export jobid=${job}.${PBS_JOBID}
 else
     export job=${task_name}
     export jobid=${job}.$$
@@ -109,6 +109,12 @@ set -u
 #-----------------------------------------------------------------------
 #
 machine=$(echo_lowercase $MACHINE)
+
+# source version file (build) only if it is specified in versions directory
+VERSION_FILE="${HOMEdir}/versions/${BUILD_VER_FN}"
+if [ -f ${VERSION_FILE} ]; then
+  . ${VERSION_FILE}
+fi
 
 source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
 module use "${HOMEdir}/modulefiles"
@@ -160,6 +166,11 @@ Loading modules for task \"${task_name}\" ..."
 module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
 
+# source version file (run) only if it is specified in versions directory
+VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
+if [ -f ${VERSION_FILE} ]; then
+  . ${VERSION_FILE}
+fi
 #
 # Load the .local module file if available for the given task
 #

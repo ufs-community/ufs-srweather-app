@@ -88,6 +88,14 @@ platform:
   # Name of alternative workflow module file to use if using an
   # unsupported platform. Is set automatically for supported machines.
   #
+  # BUILD_VER_FN:
+  # File name containing the version of the modules used for building the app.
+  # Currently, WCOSS2 only uses this file.
+  #
+  # RUN_VER_FN:
+  # File name containing the version of the modules used for running the app.
+  # Currently, WCOSS2 only uses this file.
+  #
   # SCHED:
   # The job scheduler to use (e.g. slurm).  Set this to an empty string in
   # order for the experiment generation script to set it depending on the
@@ -148,6 +156,8 @@ platform:
   LMOD_PATH: ""
   BUILD_MOD_FN: ""
   WFLOW_MOD_FN: ""
+  BUILD_VER_FN: ""
+  RUN_VER_FN: ""
   SCHED: ""
   PARTITION_DEFAULT: ""
   QUEUE_DEFAULT: ""
@@ -185,10 +195,10 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  # Allows an extra parameter to be passed to slurm via XML Native
-  # command
+  # Allows an extra parameter to be passed to SCHEDULER (SLURM/PBSPRO) via 
+  # XML Native command
   #
-  SLURM_NATIVE_CMD: ""
+  SCHED_NATIVE_CMD: ""
 
   #
   #-----------------------------------------------------------------------
