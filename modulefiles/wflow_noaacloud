@@ -7,7 +7,6 @@ proc ModulesHelp { } {
 
 module-whatis "Loads libraries needed for running SRW on NOAA cloud"
 
-
 module use /apps/modules/modulefiles 
 module load rocoto
 module use /contrib/GST/miniconda3/modulefiles
