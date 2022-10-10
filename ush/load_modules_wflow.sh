@@ -57,15 +57,18 @@ task failed:
   WFLOW_MOD_FN = \"${WFLOW_MOD_FN}\""; exit 1; }
 
 # Activate conda
+[[ ${SHELLOPTS} =~ nounset ]] && has_mu=true || has_mu=false
+
+$has_mu && set +u
 if [[ "${machine}" == 'cheyenne' ]]; then
     conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow
 else
-    if [[ "${machine}" == 'noaacloud' && -z "${PROJ_LIB-}" ]]; then
-        PROJ_LIB=''
+    if [ ! -z $(command -v conda) ]; then
+        conda activate regional_workflow
     fi
-
-    conda activate regional_workflow
 fi
+$has_mu && set -u
 
+# List loaded modulefiles
 module list
 
