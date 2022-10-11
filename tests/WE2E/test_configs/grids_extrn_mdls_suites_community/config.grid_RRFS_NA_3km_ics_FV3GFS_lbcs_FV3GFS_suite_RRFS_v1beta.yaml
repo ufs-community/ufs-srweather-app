@@ -23,6 +23,8 @@ task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 6
   USE_USER_STAGED_EXTRN_FILES: true
+task_make_orog:
+  WTIME_MAKE_OROG: 01:00:00
 task_make_ics:
   NNODES_MAKE_ICS: 12
   PPN_MAKE_ICS: 4

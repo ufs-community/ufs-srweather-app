@@ -5,8 +5,6 @@ user:
   RUN_ENVIR: nco
   MACHINE: hera
   ACCOUNT: an_account
-platform:
-  DOMAIN_PREGEN_BASEDIR: /scratch2/BMC/det/UFS_SRW_App/develop/FV3LAM_pregen
 workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3

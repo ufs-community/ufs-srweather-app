@@ -1,0 +1,28 @@
+platform:
+  WORKFLOW_MANAGER: rocoto
+  NCORES_PER_NODE: 40
+  SCHED: slurm
+  DOMAIN_PREGEN_BASEDIR: /needs/to/be/specified
+  PARTITION_DEFAULT: null
+  QUEUE_DEFAULT: batch
+  PARTITION_FCST: null
+  QUEUE_FCST: batch
+  PARTITION_HPSS: service
+  QUEUE_HPSS: batch
+  RUN_CMD_FCST: mpirun -n ${PE_MEMBER01} --oversubscribe
+  RUN_CMD_POST: mpirun -np $nprocs --oversubscribe
+  RUN_CMD_SERIAL: time
+  RUN_CMD_UTILS: mpirun -np $nprocs --oversubscribe
+  ENV_INIT_SCRIPTS_FPS:
+    - /usr/share/lmod/6.6/init/profile
+  PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
+task_get_extrn_ics:
+  EXTRN_MDL_DATA_STORES: aws nomads
+task_get_extrn_lbcs:
+  EXTRN_MDL_DATA_STORES: aws nomads
+task_run_fcst:
+  FIXaer: /contrib/global/glopara/fix/fix_aer
+  FIXgsm: /contrib/global/glopara/fix/fix_am
+  FIXlut: /contrib/global/glopara/fix/fix_lut
+  TOPO_DIR: /contrib/global/glopara/fix/fix_orog
+  SFC_CLIMO_INPUT_DIR: /contrib/global/glopara/fix/fix_sfc_climo

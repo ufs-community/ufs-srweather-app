@@ -17,5 +17,64 @@ else
     workspace="$(cd -- "${script_dir}/../.." && pwd)"
 fi
 
-# Verify that there is a non-zero sized weather model executable.
-[[ -s "${workspace}/bin/ufs_model" ]] || [[ -s "${workspace}/bin/NEMS.exe" ]]
+# Normalize Parallel Works cluster platform value.
+declare platform
+if [[ "${SRW_PLATFORM}" =~ ^(az|g|p)clusternoaa ]]; then
+    platform='noaacloud'
+else
+    platform="${SRW_PLATFORM}"
+fi
+
+# Test directories
+we2e_experiment_base_dir="${workspace}/expt_dirs"
+we2e_test_dir="${workspace}/tests/WE2E"
+
+# Run the end-to-end tests.
+if "${SRW_WE2E_COMPREHENSIVE_TESTS}"; then
+    test_type="comprehensive"
+else
+    test_type="fundamental"
+fi
+
+cd ${we2e_test_dir}
+./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} ${we2e_experiment_base_dir}
+
+# Allow the tests to start before checking for status.
+# TODO: Create a parameter that sets the initial start delay.
+sleep 300
+
+# Progress file
+progress_file="${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt"
+
+# Wait for all tests to complete.
+while true; do
+
+    # Check status of all experiments
+    ./get_expts_status.sh expts_basedir="${we2e_experiment_base_dir}" \
+         verbose="FALSE" | tee ${progress_file}
+
+    # Exit loop only if there are not tests in progress
+    set +e
+    grep -q "Workflow status:  IN PROGRESS" ${progress_file}
+    exit_code=$?
+    set -e
+
+    if [[ $exit_code -ne 0 ]]; then
+       break
+    fi
+
+    # TODO: Create a paremeter that sets the poll frequency.
+    sleep 60
+done
+
+# Allow we2e cron jobs time to complete and clean up themselves
+# TODO: Create parameter that sets the interval for the we2e cron jobs; this
+# value should be some factor of that interval to ensure the cron jobs execute
+# before the workspace is cleaned up.
+sleep 600
+
+# Set exit code to number of failures
+set +e
+failures=$(grep "Workflow status:  FAILURE" ${progress_file} | wc -l)
+set -e
+exit ${failures}

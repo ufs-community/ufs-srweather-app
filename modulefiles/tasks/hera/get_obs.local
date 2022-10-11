@@ -3,8 +3,6 @@
 ## get_obs_ndas task.
 #############################################################
 
-module purge
-
 module load hpss
 
 module use /contrib/miniconda3/modulefiles
