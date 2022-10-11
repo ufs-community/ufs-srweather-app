@@ -18,10 +18,6 @@ metadata:
        three tasks.
 user:
   RUN_ENVIR: community
-platform:
-  RUN_CMD_UTILS: cd $yyyymmdd
-  RUN_CMD_FCST: mpirun -np ${PE_MEMBER01}
-  RUN_CMD_POST: echo hello $yyyymmdd
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
   DATE_FIRST_CYCL: '20190701'

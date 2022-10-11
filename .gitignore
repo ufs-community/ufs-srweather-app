@@ -1,10 +1,14 @@
 bin/
 exec/
 build/
+fix/
 include/
 lib/
 share/
 sorc/*/
+tests/WE2E/WE2E_test_info.csv
+tests/WE2E/*.txt
+tests/WE2E/*.log
 ush/__pycache__/
 ush/config.yaml
 ush/python_utils/__pycache__/

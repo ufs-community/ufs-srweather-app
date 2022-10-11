@@ -71,7 +71,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-. ${MACHINE_FILE}
 env_init_scripts_fps_str="( "$(printf "\"%s\" " "${ENV_INIT_SCRIPTS_FPS[@]}")")"
 init_env env_init_scripts_fps="${env_init_scripts_fps_str}"
 #
@@ -90,16 +89,18 @@ jjob_fp="$2"
 #
 #-----------------------------------------------------------------------
 #
+set +u
 if [ ! -z ${SLURM_JOB_ID} ]; then
     export job=${SLURM_JOB_NAME}
     export jobid=${job}.${SLURM_JOB_ID}
 elif [ ! -z ${PBS_JOBID} ]; then
     export job=${PBS_JOBNAME}
-    export jobid=${job}.${PBS_JOB_ID}
+    export jobid=${job}.${PBS_JOBID}
 else
     export job=${task_name}
     export jobid=${job}.$$
 fi
+set -u
 #
 #-----------------------------------------------------------------------
 #
@@ -109,8 +110,14 @@ fi
 #
 machine=$(echo_lowercase $MACHINE)
 
-source "${SR_WX_APP_TOP_DIR}/etc/lmod-setup.sh" ${machine}
-module use "${SR_WX_APP_TOP_DIR}/modulefiles"
+# source version file (build) only if it is specified in versions directory
+VERSION_FILE="${HOMEdir}/versions/${BUILD_VER_FN}"
+if [ -f ${VERSION_FILE} ]; then
+  . ${VERSION_FILE}
+fi
+
+source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
+module use "${HOMEdir}/modulefiles"
 module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
 Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
@@ -159,6 +166,11 @@ Loading modules for task \"${task_name}\" ..."
 module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
 
+# source version file (run) only if it is specified in versions directory
+VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
+if [ -f ${VERSION_FILE} ]; then
+  . ${VERSION_FILE}
+fi
 #
 # Load the .local module file if available for the given task
 #

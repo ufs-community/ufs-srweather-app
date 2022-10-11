@@ -16,16 +16,21 @@ else
     workspace="$(cd -- "${script_dir}/../.." && pwd)"
 fi
 
-build_dir="${workspace}/build"
+# Normalize Parallel Works cluster platform value.
+declare platform
+if [[ "${SRW_PLATFORM}" =~ ^(az|g|p)clusternoaa ]]; then
+    platform='noaacloud'
+else
+    platform="${SRW_PLATFORM}"
+fi
 
-# Set build related environment variables and load required modules.
-source "${workspace}/etc/lmod-setup.sh" "${SRW_PLATFORM}"
-module use "${workspace}/modulefiles"
-module load "build_${SRW_PLATFORM}_${SRW_COMPILER}"
+# Build and install
+cd ${workspace}/test
+./build.sh ${platform} ${SRW_COMPILER}
+cd -
 
-# Compile SRW application and install to repository root.
-mkdir "${build_dir}"
-pushd "${build_dir}"
-    cmake -DCMAKE_INSTALL_PREFIX="${workspace}" -DENABLE_RRFS=on "${workspace}"
-    make -j "${MAKE_JOBS}"
-popd
+# Create combined log file for upload to s3
+build_dir="${workspace}/build_${SRW_COMPILER}"
+cat ${build_dir}/log.cmake ${build_dir}/log.make \
+    >${build_dir}/srw_build-${platform}-${SRW_COMPILER}.log
+

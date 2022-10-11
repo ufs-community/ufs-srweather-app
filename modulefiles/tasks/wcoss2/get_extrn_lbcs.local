@@ -1,0 +1,4 @@
+#%Module
+
+module load intel/$::env(intel_ver)
+module load python/$::env(python_ver)

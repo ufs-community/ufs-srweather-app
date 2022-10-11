@@ -1,0 +1,19 @@
+platform:
+  WORKFLOW_MANAGER: none
+  NCORES_PER_NODE: 8
+  SCHED: none
+  RUN_CMD_FCST: 'mpirun -n ${PE_MEMBER01} '
+  RUN_CMD_POST: 'mpirun -n 4 '
+  RUN_CMD_SERIAL: time
+  RUN_CMD_UTILS: mpirun -n 4
+  ENV_INIT_SCRIPTS_FPS:
+    - /etc/profile
+  PRE_TASK_CMDS: '{ ulimit -a; }'
+task_run_fcst:
+  FIXaer: /home/username/DATA/UFS/fix/fix_aer
+  FIXgsm: /home/username/DATA/UFS/fix/fix_am
+  FIXlut: /home/username/DATA/UFS/fix/fix_lut
+  TOPO_DIR: /home/username/DATA/UFS/fix/fix_orog
+  SFC_CLIMO_INPUT_DIR: /home/username/DATA/UFS/fix/fix_sfc_climo
+data:
+  FV3GFS: /home/username/DATA/UFS/FV3GFS

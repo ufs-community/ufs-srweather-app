@@ -1,0 +1,34 @@
+platform:
+  WORKFLOW_MANAGER: rocoto
+  NCORES_PER_NODE: 36
+  SCHED: slurm
+  CCPA_OBS_DIR: /contrib/EPIC/UFS_SRW_App/develop/obs_data/ccpa/proc
+  MRMS_OBS_DIR: /contrib/EPIC/UFS_SRW_App/develop/obs_data/mrms/proc
+  NDAS_OBS_DIR: /contrib/EPIC/UFS_SRW_App/develop/obs_data/ndas/proc
+  METPLUS_PATH: /contrib/EPIC/spack-stack/envs/ufs-srw-dev.intel/install/intel/2021.3.0/metplus-4.1.0-t4mkmbg
+  MET_BIN_EXEC: bin
+  MET_INSTALL_DIR: /contrib/EPIC/spack-stack/envs/ufs-srw-dev.intel/install/intel/2021.3.0/met-10.1.0-mqwqjxt
+  RUN_CMD_FCST: mpiexec -np ${PE_MEMBER01}
+  RUN_CMD_POST: mpiexec -np $nprocs
+  RUN_CMD_SERIAL: time
+  RUN_CMD_UTILS: mpiexec -np $nprocs
+  ENV_INIT_SCRIPTS_FPS:
+    - /etc/profile
+  PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
+  BUILD_MOD_FN: wflow_noaacloud
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /contrib/EPIC/UFS_SRW_App/develop/input_model_data
+  TEST_PREGEN_BASEDIR: /contrib/EPIC/UFS_SRW_App/develop/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /contrib/EPIC/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /contrib/EPIC/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+task_get_extrn_ics:
+  EXTRN_MDL_DATA_STORES: aws nomads
+task_get_extrn_lbcs:
+  EXTRN_MDL_DATA_STORES: aws nomads
+task_run_fcst:
+  FIXaer: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsm: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_am
+  FIXlut: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_lut
+  TOPO_DIR: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_orog
+  SFC_CLIMO_INPUT_DIR: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_sfc_climo
+data:
+  FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}
