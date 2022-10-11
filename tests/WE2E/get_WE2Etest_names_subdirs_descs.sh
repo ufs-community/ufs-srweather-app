@@ -252,7 +252,15 @@ function get_WE2Etest_names_subdirs_descs() {
 #
 #-----------------------------------------------------------------------
 #
-  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+  { save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Source constant files.
+#
+#-----------------------------------------------------------------------
+#
+  source_config $USHdir/constants.yaml
 #
 #-----------------------------------------------------------------------
 #
@@ -399,7 +407,6 @@ function get_WE2Etest_names_subdirs_descs() {
         test_subdirs_str \
         test_type \
         units \
-        ushdir \
         val \
         var_name \
         var_name_at \
@@ -409,15 +416,6 @@ function get_WE2Etest_names_subdirs_descs() {
         nxny \
         dta_r \
         nxny_r
-#
-#-----------------------------------------------------------------------
-#
-# Source files.
-#
-#-----------------------------------------------------------------------
-#
-  ushdir=$( readlink -f "$WE2Edir/../../ush" )
-  . $ushdir/constants.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -998,7 +996,9 @@ configuration files of the primary WE2E tests...
       for (( k=0; k<=$((num_vars_to_extract-1)); k++ )); do
 
         var_name="${vars_to_extract[$k]}"
+        set +e
         cmd=$( grep "^[ ]*${var_name}=" <<< "${config_content}" )
+        set -e
         eval $cmd
 
         if [ -z "${!var_name+x}" ]; then
@@ -1136,10 +1136,7 @@ configuration files of the primary WE2E tests...
 params=$(\
   PREDEF_GRID_NAME="${PREDEF_GRID_NAME}" \
   QUILTING="FALSE" \
-  RADIUS_EARTH=${RADIUS_EARTH} \
-  DEGS_PER_RADIAN=${DEGS_PER_RADIAN} \
-  NH4=${NH4} \
-    $ushdir/calculate_cost.py -c "${test_configs_basedir}/$subdir/${config_fn}")
+    $USHdir/calculate_cost.py -c "${test_configs_basedir}/$subdir/${config_fn}")
 
 read dta nxny dta_r nxny_r <<< "${params}"
 

@@ -4,7 +4,6 @@ import unittest
 import os
 
 from python_utils import (
-    process_args,
     import_vars,
     export_vars,
     set_env_var,
@@ -36,8 +35,8 @@ def set_predef_grid_params():
     ]
     import_vars(env_vars=IMPORTS)
 
-    USHDIR = os.path.dirname(os.path.abspath(__file__))
-    params_dict = load_config_file(os.path.join(USHDIR, "predef_grid_params.yaml"))
+    USHdir = os.path.dirname(os.path.abspath(__file__))
+    params_dict = load_config_file(os.path.join(USHdir, "predef_grid_params.yaml"))
     params_dict = params_dict[PREDEF_GRID_NAME]
 
     # if QUILTING = False, remove key

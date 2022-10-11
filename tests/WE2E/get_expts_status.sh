@@ -44,13 +44,13 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 # The current script should be located in the "tests" subdirectory of the
-# workflow's top-level directory, which we denote by SR_WX_APP_TOP_DIR.
-# SR_WX_APP_TOP_DIR is the directory two levels above the directory in
-# which the current script is located; Set SR_WX_APP_TOP_DIR accordingly.
+# workflow's top-level directory, which we denote by HOMEdir.  Thus,
+# HOMEdir is the directory one level above the directory in which the
+# current script is located.  Set HOMEdir accordingly.
 #
 #-----------------------------------------------------------------------
 #
-SR_WX_APP_TOP_DIR=${scrfunc_dir%/*/*}
+HOMEdir=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
@@ -58,7 +58,7 @@ SR_WX_APP_TOP_DIR=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-ushdir="$SR_WX_APP_TOP_DIR/ush"
+USHdir="$HOMEdir/ush"
 #
 #-----------------------------------------------------------------------
 #
@@ -66,7 +66,7 @@ ushdir="$SR_WX_APP_TOP_DIR/ush"
 #
 #-----------------------------------------------------------------------
 #
-. $ushdir/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -144,7 +144,6 @@ num_log_lines=${num_log_lines:-"40"}
 #-----------------------------------------------------------------------
 #
 verbose=${verbose:-"FALSE"}
-check_var_valid_value "verbose" "valid_vals_BOOLEAN"
 verbose=$(boolify "$verbose")
 #
 #-----------------------------------------------------------------------
@@ -288,6 +287,8 @@ must be checked."
 # Source the variable definitions file.
 #
     . "./${var_defns_fn}"
+# We want a clean output from this script so disable debugging mode
+    export DEBUG="FALSE"
 #
 # If the workflow variable EXPT_SUBDIR is the same as the name of the
 # current subdirectory, then assume this subdirectory contains an active
@@ -396,41 +397,46 @@ $separator
 Checking workflow status of experiment \"${expt_subdir}\" ..."
   print_info_msg "$msg"
 #
-# Change location to the experiment subdirectory, call the workflow launch
-# script to update the workflow launch log file, and capture the output 
-# from that call.
+# Change location to the experiment subdirectory, and check the launch
+# log file for status
 #
   cd_vrfy "${expt_subdir}"
-  launch_msg=$( "${launch_wflow_fn}" 2>&1 )
-  log_tail=$( tail -n ${num_log_lines} "${launch_wflow_log_fn}" )
-#
-# Print the workflow status to the screen.
-#
-  # The "tail -1" is to get only the last occurrence of "Workflow status"
-  wflow_status=$( printf "${log_tail}" | grep "Workflow status:" | tail -1 )
-  # Not sure why this doesn't work to strip leading spaces.
-#  wflow_status="${wflow_status## }"
-  # Remove leading spaces.
-  wflow_status=$( printf "${wflow_status}" "%s" | sed -r 's|^[ ]*||g' )
-  print_info_msg "${wflow_status}"
-  print_info_msg "\
+  if [ -f "${launch_wflow_log_fn}" ]; then
+    #
+    # Print the workflow status to the screen.
+    #
+    # The "tail -1" is to get only the last occurrence of "Workflow status"
+    wflow_status=$( grep "Workflow status:" "${launch_wflow_log_fn}" | tail -1 )
+    # Not sure why this doesn't work to strip leading spaces.
+    # wflow_status="${wflow_status## }"
+    # Remove leading spaces.
+    wflow_status=$( printf "${wflow_status}" "%s" | sed -r 's|^[ ]*||g' )
+    print_info_msg "${wflow_status}"
+    print_info_msg "\
 $separator
 "
-#
-# Combine message above with the last num_log_lines lines from the workflow 
-# launch log file and place the result in the status report file.
-#
-  msg=$msg"
+    #
+    # Combine message above with the last num_log_lines lines from the workflow 
+    # launch log file and place the result in the status report file.
+    #
+    msg=$msg"
 ${wflow_status}
-
-The last ${num_log_lines} lines of this experiment's workflow launch log file 
+The last ${num_log_lines} lines of the workflow launch log file 
 (\"${launch_wflow_log_fn}\") are:
-
-${log_tail}
-
-
 "
-  print_info_msg "$msg" >> "${expts_status_fp}"
+    print_info_msg "$msg" >> "${expts_status_fp}"
+    tail -n ${num_log_lines} ${launch_wflow_log_fn} >> "${expts_status_fp}" 
+  else
+    wflow_status="Workflow status:  NOT LAUNCHED YET"
+    print_info_msg "${wflow_status}"
+    print_info_msg "\
+$separator
+"
+    msg=$msg"
+${wflow_status}
+"
+    print_info_msg "$msg" >> "${expts_status_fp}"
+  fi
 #
 # Change location back to the experiments base directory.
 #

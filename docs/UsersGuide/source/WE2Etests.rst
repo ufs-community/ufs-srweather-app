@@ -44,7 +44,7 @@ the executables have been built (see :numref:`Section %s <BuildExecutables>`). I
 Supported Tests
 ===================
 
-The full list of WE2E tests is extensive; it is not recommended to run all the tests, as some are computationally expensive. A subset of the full WE2E test suite is supported for the latest release of the SRW Application. Supported test cases can be viewed in :doc:`this table <Tests>`. 
+The full list of WE2E tests is extensive; it is not recommended to run all the tests, as some are computationally expensive. A subset of the full WE2E test suite is supported for the latest release of the SRW Application. Supported test cases can be viewed in :doc:`this table <tables/Tests>`. 
 
 Running the WE2E Tests
 ================================
@@ -70,12 +70,12 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
 
       ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr"
 
-   This will create the experiment subdirectories for the two sample WE2E tests in the directory ``${SR_WX_APP_TOP_DIR}/../expt_dirs``, where ``SR_WX_APP_TOP_DIR`` is the top-level directory for the ufs-srweather-app repository (usually set to something like ``/path/to/ufs-srweather-app``). Thus, the following two experiment directories will be created:
+   This will create the experiment subdirectories for the two sample WE2E tests in the directory ``${HOMEdir}/../expt_dirs``, where ``HOMEdir`` is the top-level directory for the ufs-srweather-app repository (usually set to something like ``/path/to/ufs-srweather-app``). Thus, the following two experiment directories will be created:
 
    .. code-block::
 
-      ${SR_WX_APP_TOP_DIR}/../expt_dirs/custom_ESGgrid
-      ${SR_WX_APP_TOP_DIR}/../expt_dirs/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+      ${HOMEdir}/../expt_dirs/custom_ESGgrid
+      ${HOMEdir}/../expt_dirs/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
 
    In addition, by default, cron jobs will be added to the user's cron table to relaunch the workflows of these experiments every 2 minutes.
 
@@ -95,7 +95,7 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
    In this case, the user will have to go into each test's experiment directory and either manually call the ``launch_FV3LAM_wflow.sh`` script or use the Rocoto commands described in :numref:`Chapter %s <RocotoInfo>` to (re)launch the workflow. Note that if using the Rocoto commands directly, the log file ``log.launch_FV3LAM_wflow`` will not be created; in this case, the status of the workflow can be checked using the ``rocotostat`` command (see :numref:`Section %s <RocotoManualRun>` or :numref:`Section %s <RocotoStatCmd>`).
 
 #. To place the experiment subdirectories in a subdirectory named ``test_set_01`` under 
-   ``${SR_WX_APP_TOP_DIR}/../expt_dirs`` (instead of immediately under ``expt_dirs``), use:
+   ``${HOMEdir}/../expt_dirs`` (instead of immediately under ``expt_dirs``), use:
 
    .. code-block::
 
@@ -105,8 +105,8 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
 
    .. code-block::
 
-      ${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/custom_ESGgrid
-      ${SR_WX_APP_TOP_DIR}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+      ${HOMEdir}/../expt_dirs/test_set_01/custom_ESGgrid
+      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
 
    This is useful for grouping various sets of tests.
 

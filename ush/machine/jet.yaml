@@ -1,0 +1,45 @@
+platform:
+  WORKFLOW_MANAGER: rocoto
+  NCORES_PER_NODE: 24
+  SCHED: slurm
+  CCPA_OBS_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/obs_data/ccpa/proc
+  MRMS_OBS_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/obs_data/mrms/proc
+  NDAS_OBS_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/obs_data/ndas/proc
+  METPLUS_PATH: /contrib/met/METplus/METplus-4.1.1
+  MET_BIN_EXEC: bin
+  MET_INSTALL_DIR: /contrib/met/10.1.1
+  DOMAIN_PREGEN_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/FV3LAM_pregen
+  PARTITION_DEFAULT: sjet,vjet,kjet,xjet
+  QUEUE_DEFAULT: batch
+  PARTITION_FCST: sjet,vjet,kjet,xjet
+  QUEUE_FCST: batch
+  PARTITION_HPSS: service
+  QUEUE_HPSS: batch
+  RUN_CMD_FCST: srun
+  RUN_CMD_POST: srun
+  RUN_CMD_SERIAL: time
+  RUN_CMD_UTILS: srun
+  ENV_INIT_SCRIPTS_FPS:
+    - /etc/profile
+  PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/input_model_data
+  TEST_PREGEN_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+task_get_extrn_ics:
+  EXTRN_MDL_DATA_STORES: hpss aws nomads
+task_get_extrn_lbcs:
+  EXTRN_MDL_DATA_STORES: hpss aws nomads
+task_run_fcst:
+  FIXaer: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsm: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_am
+  FIXlut: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_lut
+  TOPO_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_orog
+  SFC_CLIMO_INPUT_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_sfc_climo
+data:
+  FV3GFS:
+    - nemsio: /public/data/grids/gfs/nemsio
+    - grib2: /public/data/grids/gfs/0p25deg/grib2
+    - netcdf: /public/data/grids/gfs/anl/netcdf
+  RAP: /public/data/grids/rap/full/wrfprs/grib2
+  HRRR: /public/data/grids/hrrr/conus/wrfprs/grib2

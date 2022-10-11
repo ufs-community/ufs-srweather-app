@@ -16,7 +16,6 @@ UFS Short-Range Weather App Users Guide
    ContainerQuickstart
    BuildRunSRW
    Components
-   Include-HPCInstall
    InputOutputFiles
    LAMGrids
    ConfigWorkflow

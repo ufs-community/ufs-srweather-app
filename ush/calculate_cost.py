@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
 class Testing(unittest.TestCase):
     def test_calculate_cost(self):
-        USHDIR = os.path.dirname(os.path.abspath(__file__))
+        USHdir = os.path.dirname(os.path.abspath(__file__))
         params = calculate_cost(None)
         self.assertCountEqual(params, [36, 1987440, 36, 28689])
 
@@ -106,5 +106,3 @@ class Testing(unittest.TestCase):
         set_env_var("LAYOUT_Y", 36)
         set_env_var("BLOCKSIZE", 28)
         set_env_var("QUILTING", False)
-        set_env_var("RADIUS_EARTH", 6371200.0)
-        set_env_var("DEGS_PER_RADIAN", 57.2957795131)

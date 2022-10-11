@@ -18,7 +18,8 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -27,7 +28,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -62,9 +63,21 @@ the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-run_dir="${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}"
-mkdir_vrfy -p ${run_dir}/INPUT
-mkdir_vrfy -p ${run_dir}/RESTART
+if [ $RUN_ENVIR = "nco" ]; then
+    export INPUT_DATA="${COMIN}"
+else
+    export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Create the INPUT and RESTART directories under the run directory.
+#
+#-----------------------------------------------------------------------
+#
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+mkdir_vrfy -p ${DATA}/INPUT
+mkdir_vrfy -p ${DATA}/RESTART
 #
 #-----------------------------------------------------------------------
 #
@@ -73,25 +86,17 @@ mkdir_vrfy -p ${run_dir}/RESTART
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_run_fcst.sh \
-  cdate="${CDATE}" \
-  cycle_dir="${CYCLE_DIR}" \
-  ensmem_indx="${ENSMEM_INDX}" \
-  slash_ensmem_subdir="${SLASH_ENSMEM_SUBDIR}" || \
+$SCRIPTSdir/exregional_run_fcst.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
-# Print exit message.
+# Run job postamble.
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "
-========================================================================
-Exiting script:  \"${scrfunc_fn}\"
-In directory:    \"${scrfunc_dir}\"
-========================================================================"
+job_postamble
 #
 #-----------------------------------------------------------------------
 #
@@ -101,4 +106,3 @@ In directory:    \"${scrfunc_dir}\"
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-

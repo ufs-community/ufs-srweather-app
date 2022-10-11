@@ -28,7 +28,7 @@ class FunctionalTesting(unittest.TestCase):
 
     def setUp(self):
         self.path = os.path.dirname(__file__)
-        self.config = f'{self.path}/templates/data_locations.yml'
+        self.config = f'{self.path}/../parm/data_locations.yml'
 
     @unittest.skipIf(os.environ.get('CI') == "true", "Skipping HPSS tests")
     def test_fv3gfs_grib2_lbcs_from_hpss(self):
@@ -38,6 +38,7 @@ class FunctionalTesting(unittest.TestCase):
         '''
 
         with tempfile.TemporaryDirectory(dir='.') as tmp_dir:
+            os.chdir(tmp_dir)
 
             args = [
                 '--anl_or_fcst', 'fcst',
@@ -55,7 +56,6 @@ class FunctionalTesting(unittest.TestCase):
 
             # Verify files exist in temp dir
 
-            os.chdir(os.path.dirname(__file__))
             path = os.path.join(tmp_dir, '*')
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 3)
@@ -68,6 +68,7 @@ class FunctionalTesting(unittest.TestCase):
         '''
 
         with tempfile.TemporaryDirectory(dir='.') as tmp_dir:
+            os.chdir(tmp_dir)
 
             args = [
                 '--anl_or_fcst', 'fcst',
@@ -85,7 +86,6 @@ class FunctionalTesting(unittest.TestCase):
 
             # Verify files exist in temp dir
 
-            os.chdir(os.path.dirname(__file__))
             path = os.path.join(tmp_dir, '*')
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 2)
@@ -97,7 +97,9 @@ class FunctionalTesting(unittest.TestCase):
         '''
 
         with tempfile.TemporaryDirectory(dir='.') as tmp_dir:
-            out_path_tmpl = f'{tmp_dir}/mem{{mem:03d}}'
+            os.chdir(tmp_dir)
+
+            out_path_tmpl = f'mem{{mem:03d}}'
 
             args = [
                 '--anl_or_fcst', 'anl',
@@ -131,7 +133,9 @@ class FunctionalTesting(unittest.TestCase):
         '''
 
         with tempfile.TemporaryDirectory(dir='.') as tmp_dir:
-            out_path_tmpl = f'{tmp_dir}/mem{{mem:03d}}'
+            os.chdir(tmp_dir)
+
+            out_path_tmpl = f'mem{{mem:03d}}'
 
             args = [
                 '--anl_or_fcst', 'anl',
@@ -164,6 +168,7 @@ class FunctionalTesting(unittest.TestCase):
         ''' Get HRRR ICS from hpss '''
 
         with tempfile.TemporaryDirectory(dir='.') as tmp_dir:
+            os.chdir(tmp_dir)
 
             args = [
                 '--anl_or_fcst', 'anl',
@@ -180,7 +185,6 @@ class FunctionalTesting(unittest.TestCase):
 
             # Verify files exist in temp dir
 
-            os.chdir(os.path.dirname(__file__))
             path = os.path.join(tmp_dir, '*')
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 1)
@@ -191,6 +195,7 @@ class FunctionalTesting(unittest.TestCase):
         ''' Get HRRR LBCS from hpss for 3 hour boundary conditions '''
 
         with tempfile.TemporaryDirectory(dir='.') as tmp_dir:
+            os.chdir(tmp_dir)
 
             args = [
                 '--anl_or_fcst', 'fcst',
@@ -207,7 +212,6 @@ class FunctionalTesting(unittest.TestCase):
 
             # Verify files exist in temp dir
 
-            os.chdir(os.path.dirname(__file__))
             path = os.path.join(tmp_dir, '*')
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 8)
@@ -217,6 +221,7 @@ class FunctionalTesting(unittest.TestCase):
         ''' Get HRRR ICS from aws '''
 
         with tempfile.TemporaryDirectory(dir='.') as tmp_dir:
+            os.chdir(tmp_dir)
 
             args = [
                 '--anl_or_fcst', 'anl',
@@ -233,7 +238,6 @@ class FunctionalTesting(unittest.TestCase):
 
             # Verify files exist in temp dir
 
-            os.chdir(os.path.dirname(__file__))
             path = os.path.join(tmp_dir, '*')
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 1)
@@ -243,6 +247,7 @@ class FunctionalTesting(unittest.TestCase):
         ''' Get HRRR LBCS from aws for 3 hour boundary conditions '''
 
         with tempfile.TemporaryDirectory(dir='.') as tmp_dir:
+            os.chdir(tmp_dir)
 
             args = [
                 '--anl_or_fcst', 'fcst',
@@ -259,7 +264,6 @@ class FunctionalTesting(unittest.TestCase):
 
             # Verify files exist in temp dir
 
-            os.chdir(os.path.dirname(__file__))
             path = os.path.join(tmp_dir, '*')
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 8)
@@ -270,6 +274,7 @@ class FunctionalTesting(unittest.TestCase):
         ''' Get RAP ICS from aws offset by 3 hours '''
 
         with tempfile.TemporaryDirectory(dir='.') as tmp_dir:
+            os.chdir(tmp_dir)
 
             args = [
                 '--anl_or_fcst', 'anl',
@@ -286,7 +291,6 @@ class FunctionalTesting(unittest.TestCase):
 
             # Verify files exist in temp dir
 
-            os.chdir(os.path.dirname(__file__))
             path = os.path.join(tmp_dir, '*')
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 1)
@@ -297,6 +301,7 @@ class FunctionalTesting(unittest.TestCase):
         by 3 hours. Use 09Z start time for longer LBCS.'''
 
         with tempfile.TemporaryDirectory(dir='.') as tmp_dir:
+            os.chdir(tmp_dir)
 
             args = [
                 '--anl_or_fcst', 'fcst',
@@ -313,7 +318,6 @@ class FunctionalTesting(unittest.TestCase):
 
             # Verify files exist in temp dir
 
-            os.chdir(os.path.dirname(__file__))
             path = os.path.join(tmp_dir, '*')
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 5)

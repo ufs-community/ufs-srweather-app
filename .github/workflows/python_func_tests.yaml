@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - ush/*retrieve_data.py
-      - ush/templates/data_locations.yml
+      - parm/data_locations.yml
   pull_request:
 
 env:

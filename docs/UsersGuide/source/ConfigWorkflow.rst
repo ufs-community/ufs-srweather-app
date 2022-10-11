@@ -9,6 +9,8 @@ There is an extensive list of experiment parameters that a user can set when con
 
 The following is a list of the parameters in the ``config_defaults.sh`` file. For each parameter, the default value and a brief description is given. 
 
+.. _PlatEnv:
+
 Platform Environment
 ====================
 ``RUN_ENVIR``: (Default: "nco")
@@ -47,6 +49,12 @@ Platform Environment
 
 ``WFLOW_MOD_FN``: (Default: "")
    Name of alternative workflow module file to use if running on an unsupported platform. Is set automatically for supported machines.
+
+``BUILD_VER_FN``: (Default: "")
+   File name containing the version of the modules used for building the app. Currently, WCOSS2 only uses this file.
+
+``RUN_VER_FN``: (Default: "")
+   File name containing the version of the modules used for running the app. Currently, WCOSS2 only uses this file.
 
 .. _sched:
 
@@ -115,7 +123,7 @@ Cron is a job scheduler accessed through the command-line on UNIX-like operating
 Directory Parameters
 ====================
 ``EXPT_BASEDIR``: (Default: "")
-   The full path to the base directory inside of which the experiment directory (``EXPT_SUBDIR``) will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMErrfs}/../../expt_dirs``, where ``${HOMErrfs}`` contains the full path to the ``regional_workflow`` directory.
+   The full path to the base directory inside of which the experiment directory (``EXPT_SUBDIR``) will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMEdir}/../../expt_dirs``, where ``${HOMEdir}`` contains the full path to the ``regional_workflow`` directory.
 
 ``EXPT_SUBDIR``: (Default: "")
    A descriptive name of the user's choice for the experiment directory (*not* its full path). The full path to the experiment directory, which will be contained in the variable ``EXPTDIR``, will be:
@@ -203,7 +211,7 @@ File Name Parameters
    Name of the file specifying the fields that the forecast model will output.
 
 ``FIELD_TABLE_FN``: (Default: "field_table")
-   Name of the file specifying the :term:`tracers` that the forecast model will read in from the :term:`IC/LBC` files.
+   Name of the file specifying the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files.
 
 ``DATA_TABLE_FN``: (Default: "data_table")
    Name of the file containing the data table read in by the forecast model.
@@ -411,7 +419,7 @@ CCPP Parameter
 Stochastic Physics Parameters
 ================================
 
-For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/release-public-v3/namelist_options.html>`__.
+For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/namelist_options.html>`__.
 
 ``NEW_LSCALE``: (Default: "TRUE") 
    Use correct formula for converting a spatial legnth scale into spectral space. 
@@ -506,7 +514,7 @@ Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 Parameters for Stochastically Perturbed Parameterizations (SPP)
 ------------------------------------------------------------------
 
-SPP perturbs specific tuning parameters within a physics :term:`parameterization` (unlike :ref:`SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
+SPP perturbs specific tuning parameters within a physics :term:`parameterization <parameterizations>` (unlike :ref:`SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.sh`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd"`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
 .. note::
    SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. Among the supported physics suites, the full set of parameterizations can only be used with the ``FV3_HRRR`` option for ``CCPP_PHYS_SUITE``.

@@ -30,16 +30,8 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-  local ushdir="${scrfunc_dir}"
-  local bashutils_dir="${ushdir}/bash_utils"
-#
-#-----------------------------------------------------------------------
-#
-# Source the file containing workflow constants. 
-#
-#-----------------------------------------------------------------------
-#
-  . ${ushdir}/constants.sh
+  local USHdir="${scrfunc_dir}"
+  local bashutils_dir="${USHdir}/bash_utils"
 #
 #-----------------------------------------------------------------------
 #

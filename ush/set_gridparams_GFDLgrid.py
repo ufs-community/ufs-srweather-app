@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import unittest
 
 from python_utils import (
@@ -8,6 +9,8 @@ from python_utils import (
     print_input_args,
     print_info_msg,
     print_err_msg_exit,
+    load_config_file,
+    flatten_dict,
 )
 
 
@@ -56,8 +59,12 @@ def set_gridparams_GFDLgrid(
     print_input_args(locals())
 
     # get needed environment variables
-    IMPORTS = ["VERBOSE", "RUN_ENVIR", "NH4"]
+    IMPORTS = ["VERBOSE", "RUN_ENVIR"]
     import_vars(env_vars=IMPORTS)
+    IMPORTS = ["NH4"]
+    USHdir = os.path.dirname(os.path.abspath(__file__))
+    constants_cfg = load_config_file(os.path.join(USHdir,"constants.yaml"))
+    import_vars(dictionary=flatten_dict(constants_cfg), env_vars=IMPORTS)
 
     #
     # -----------------------------------------------------------------------

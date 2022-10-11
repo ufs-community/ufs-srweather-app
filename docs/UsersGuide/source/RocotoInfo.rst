@@ -7,7 +7,7 @@ The tasks in the SRW Application (:numref:`Table %s <WorkflowTasksTable>`) are t
 the Rocoto Workflow Manager. Rocoto is a Ruby program that communicates with the batch system on an
 :term:`HPC` system to run and manage dependencies between the tasks. Rocoto submits jobs to the HPC batch
 system as the task dependencies allow and runs one instance of the workflow for a set of user-defined
-:term:`cycles`. More information about Rocoto can be found on the `Rocoto Wiki <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
+:term:`cycles <cycle>`. More information about Rocoto can be found on the `Rocoto Wiki <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 
 The SRW App workflow is defined in a Jinja-enabled Rocoto XML template called ``FV3LAM_wflow.xml``,
 which resides in the ``regional_workflow/ush/templates`` directory. When the ``generate_FV3LAM_wflow.sh``

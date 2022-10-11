@@ -30,8 +30,9 @@ def check_ruc_lsm(ccpp_phys_suite_fp):
 
 class Testing(unittest.TestCase):
     def test_check_ruc_lsm(self):
+        USHdir = os.path.dirname(os.path.abspath(__file__))
         self.assertTrue(
-            check_ruc_lsm(ccpp_phys_suite_fp=f"test_data{os.sep}suite_FV3_GSD_SAR.xml")
+            check_ruc_lsm(ccpp_phys_suite_fp=f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml")
         )
 
     def setUp(self):

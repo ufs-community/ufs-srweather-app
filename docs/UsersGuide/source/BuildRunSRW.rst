@@ -13,7 +13,7 @@ This chapter walks users through how to build and run the "out-of-the-box" case 
    The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. This chapter can also serve as a starting point for running the SRW App on other systems (including generic Linux/Mac systems), but the user may need to perform additional troubleshooting. 
 
 .. note::
-   The :ref:`container approach <QuickstartC>` is recommended for a smoother first-time build and run experience. Building without a container allows for the use of the Rocoto workflow manager and may allow for more customization. However, the non-container approach requires more in-depth system-based knowledge, especially on Level 3 and 4 systems, so it is less appropriate for beginners. 
+   The :ref:`container approach <QuickstartC>` is recommended for a smoother first-time build and run experience. Building without a container may allow for more customization. However, the non-container approach requires more in-depth system-based knowledge, especially on Level 3 and 4 systems, so it is less appropriate for beginners. 
 
 The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. The steps are as follows:
 
@@ -28,7 +28,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
       * :ref:`Configure the experiment parameters <UserSpecificConfig>`
       * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
 
-   #. :ref:`Run the regional workflow <RocotoRun>` 
+   #. :ref:`Run the regional workflow <Run>` 
    #. :ref:`Optional: Plot the output <PlotOutput>`
 
 .. _AppOverallProc:
@@ -128,7 +128,7 @@ The cloned repository contains the configuration files and sub-directories shown
 Check Out External Components
 ================================
 
-The SRW App relies on a variety of components (e.g., regional_workflow, UFS_UTILS, ufs-weather-model, and UPP) detailed in :numref:`Chapter %s <Components>` of this User's Guide. Each component has its own repository. Users must run the ``checkout_externals`` script to collect the individual components of the SRW App from their respective git repositories. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>` into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
+The SRW App relies on a variety of components (e.g., regional_workflow, UFS_UTILS, ufs-weather-model, and UPP) detailed in :numref:`Chapter %s <Components>` of this User's Guide. Each component has its own repository. Users must run the ``checkout_externals`` script to collect the individual components of the SRW App from their respective Git repositories. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>` into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
 
 Run the executable that pulls in SRW App components from external repositories:
 
@@ -146,7 +146,6 @@ Set Up the Environment and Build the Executables
 ===================================================
 
 .. _DevBuild:
-
 
 ``devbuild.sh`` Approach
 -----------------------------
@@ -170,14 +169,15 @@ If compiler auto-detection fails for some reason, specify it using the ``--compi
 
 where valid values are ``intel`` or ``gnu``.
 
-If users want to build the optional GSI and rrfs_utl components for RRFS (NOTE: These components are not currently available for use at runtime), they can add the --rrfs argument.  For example:
+If users want to build the optional ``GSI`` and ``rrfs_utl`` components for RRFS (NOTE: These components are not currently available for use at runtime), they can add the ``--rrfs`` argument. For example:
+
 .. code-block:: console
 
    ./devbuild.sh --platform=hera --rrfs
 
 The last line of the console output should be ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/bin`` directory. If this build method doesn't work, or if users are not on a supported machine, they will have to manually setup the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
+The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/bin`` directory. If users choose to build the ``GSI`` and ``rrfs_utl`` components, the executables listed in :numref:`Table %s <RRFSexec>` will also appear there. If this build method does not work, or if users are not on a supported machine, they will have to manually setup the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
 
 
 .. _ExecDescription:
@@ -237,7 +237,7 @@ The executables listed in :numref:`Table %s <ExecDescription>` should appear in 
    | vcoord_gen             | Generates hybrid coordinate interface profiles                                  |
    +------------------------+---------------------------------------------------------------------------------+
 
-
+.. _RRFSexec:
 
 .. table::  Names and descriptions of the executables produced when the RRFS option is enabled
    
@@ -367,12 +367,12 @@ From the build directory, run the following commands to build the pre-processing
 
 ``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``bin``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. Although users can specify a larger or smaller number of threads (e.g., ``-j8``, ``-j2``), it is highly recommended to use at least 4 parallel threads to prevent overly long installation times. 
 
-If users want to build the optional GSI and rrfs_utl components for RRFS (NOTE: These components are not currently available for use at runtime), they can add ENABLE_RRFS=on to the original cmake command. For example:
+If users want to build the optional ``GSI`` and ``rrfs_utl`` components for RRFS (NOTE: These components are not currently available for use at runtime), they can add ``ENABLE_RRFS=on`` to the original cmake command. For example:
+
 .. code-block:: console
 
    cmake .. -DCMAKE_INSTALL_PREFIX=.. ENABLE_RRFS=on
    make -j 4 >& build.out &
-
 
 The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
 
@@ -1169,7 +1169,7 @@ Description of Workflow Tasks
 --------------------------------
 
 .. note::
-   This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <RocotoRun>`
+   This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <Run>`
 
 :numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by adding the following lines to the ``config.sh`` file before running the ``generate_FV3LAM_wflow.sh`` script: 
 
@@ -1322,14 +1322,22 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
 
 
-.. _RocotoRun:
+.. _Run:
 
-Run the Workflow Using Rocoto
-=============================
+Run the Workflow 
+=======================
+
+The workflow can be run using the Rocoto workflow manager (see :numref:`Section %s <UseRocoto>`) or using standalone wrapper scripts (see :numref:`Section %s <RunUsingStandaloneScripts>`). 
 
 .. attention::
 
-   If users are running the SRW App in a container or on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS or generic Linux systems), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
+   If users are running the SRW App on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS or generic Linux systems), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
+
+
+.. _UseRocoto:
+
+Run the Workflow Using Rocoto
+--------------------------------
 
 The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, Rocoto cannot be used when running the workflow within a container. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. 
 
@@ -1351,10 +1359,89 @@ If the login shell is csh/tcsh, it can be set using:
    setenv EXPTDIR /<path-to-experiment>/<directory_name>
 
 
-Launch the Rocoto Workflow Using a Script
------------------------------------------------
+.. _Automate:
 
-To run Rocoto using the ``launch_FV3LAM_wflow.sh`` script provided, simply call it without any arguments: 
+Automated Option
+^^^^^^^^^^^^^^^^^^^
+
+The simplest way to run the Rocoto workflow is to automate the process using a job scheduler such as :term:`Cron`. For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add the following commands to their ``config.sh`` file *before* generating the experiment:
+
+.. code-block:: console
+
+   USE_CRON_TO_RELAUNCH="TRUE"
+   CRON_RELAUNCH_INTVL_MNTS="02"
+
+This will automatically add an appropriate entry to the user's :term:`cron table` and launch the workflow. Alternatively, the user can add a crontab entry using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *`` or ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+
+.. code-block:: console
+
+   */3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
+
+where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``. The number ``3`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every three minutes.
+
+.. hint::
+
+   * On NOAA Cloud instances, ``*/1 * * * *`` is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
+   * On other NOAA HPC systems, admins discourage the ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` is the preferred option for cron jobs on non-NOAA Cloud systems. 
+
+To check the experiment progress:
+
+.. code-block:: console
+   
+   cd $EXPTDIR
+   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
+
+
+After finishing the experiment, open the crontab using ``crontab -e`` and delete the crontab entry. 
+
+.. note::
+
+   On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
+
+.. _Success:
+
+The workflow run is complete when all tasks have "SUCCEEDED". If everything goes smoothly, users will eventually see a workflow status table similar to the following: 
+
+.. code-block:: console
+
+   CYCLE              TASK                   JOBID         STATE        EXIT STATUS   TRIES   DURATION
+   ==========================================================================================================
+   201906150000       make_grid              4953154       SUCCEEDED         0          1          5.0
+   201906150000       make_orog              4953176       SUCCEEDED         0          1         26.0
+   201906150000       make_sfc_climo         4953179       SUCCEEDED         0          1         33.0
+   201906150000       get_extrn_ics          4953155       SUCCEEDED         0          1          2.0
+   201906150000       get_extrn_lbcs         4953156       SUCCEEDED         0          1          2.0
+   201906150000       make_ics               4953184       SUCCEEDED         0          1         16.0
+   201906150000       make_lbcs              4953185       SUCCEEDED         0          1         71.0
+   201906150000       run_fcst               4953196       SUCCEEDED         0          1       1035.0
+   201906150000       run_post_f000          4953244       SUCCEEDED         0          1          5.0
+   201906150000       run_post_f001          4953245       SUCCEEDED         0          1          4.0
+   ...
+   201906150000       run_post_f012          4953381       SUCCEEDED         0          1          7.0
+
+If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f012``. The output will resemble the following but may be significantly longer when using ensemble verification: 
+
+.. code-block:: console
+
+   CYCLE              TASK                   JOBID          STATE       EXIT STATUS   TRIES   DURATION
+   ==========================================================================================================
+   201906150000       make_grid              30466134       SUCCEEDED        0          1          5.0
+   ...
+   201906150000       run_post_f012          30468271       SUCCEEDED        0          1          7.0
+   201906150000       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
+   201906150000       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
+   201906150000       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0
+   201906150000       run_gridstatvx_03h     30468491       SUCCEEDED        0          1         43.0
+   201906150000       run_gridstatvx_06h     30468492       SUCCEEDED        0          1         29.0
+   201906150000       run_gridstatvx_24h     30468493       SUCCEEDED        0          1         20.0
+   201906150000       run_pointstatvx        30468423       SUCCEEDED        0          1        670.0
+
+
+Launch the Rocoto Workflow Using a Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Users who prefer not to automate their experiments can run the Rocoto workflow using the ``launch_FV3LAM_wflow.sh`` script provided. Simply call it without any arguments from the experiment directory: 
 
 .. code-block:: console
 
@@ -1403,51 +1490,15 @@ This will output the last 40 lines of the log file, which list the status of the
 
 If all the tasks complete successfully, the "Workflow status" at the bottom of the log file will change from "IN PROGRESS" to "SUCCESS". If certain tasks could not complete, the "Workflow status" will instead change to "FAILURE". Error messages for each specific task can be found in the task log files located in ``$EXPTDIR/log``. 
 
-.. _Success:
+The workflow run is complete when all tasks have "SUCCEEDED", and the ``rocotostat`` command outputs a table similar to the one :ref:`above <Success>`.
 
-The workflow run is complete when all tasks have "SUCCEEDED". If everything goes smoothly, users will eventually see a workflow status table similar to the following: 
-
-.. code-block:: console
-
-   CYCLE              TASK                   JOBID         STATE        EXIT STATUS   TRIES   DURATION
-   ==========================================================================================================
-   201906150000       make_grid              4953154       SUCCEEDED         0          1          5.0
-   201906150000       make_orog              4953176       SUCCEEDED         0          1         26.0
-   201906150000       make_sfc_climo         4953179       SUCCEEDED         0          1         33.0
-   201906150000       get_extrn_ics          4953155       SUCCEEDED         0          1          2.0
-   201906150000       get_extrn_lbcs         4953156       SUCCEEDED         0          1          2.0
-   201906150000       make_ics               4953184       SUCCEEDED         0          1         16.0
-   201906150000       make_lbcs              4953185       SUCCEEDED         0          1         71.0
-   201906150000       run_fcst               4953196       SUCCEEDED         0          1       1035.0
-   201906150000       run_post_f000          4953244       SUCCEEDED         0          1          5.0
-   201906150000       run_post_f001          4953245       SUCCEEDED         0          1          4.0
-   ...
-   201906150000       run_post_f012          4953381       SUCCEEDED         0          1          7.0
-
-If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f012``. The output will resemble the following but may be significantly longer when using ensemble verification: 
-
-.. code-block:: console
-
-   CYCLE              TASK                   JOBID          STATE       EXIT STATUS   TRIES   DURATION
-   ==========================================================================================================
-   201906150000       make_grid              30466134       SUCCEEDED        0          1          5.0
-   ...
-   201906150000       run_post_f012          30468271       SUCCEEDED        0          1          7.0
-   201906150000       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
-   201906150000       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
-   201906150000       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0
-   201906150000       run_gridstatvx_03h     30468491       SUCCEEDED        0          1         43.0
-   201906150000       run_gridstatvx_06h     30468492       SUCCEEDED        0          1         29.0
-   201906150000       run_gridstatvx_24h     30468493       SUCCEEDED        0          1         20.0
-   201906150000       run_pointstatvx        30468423       SUCCEEDED        0          1        670.0
 
 .. _RocotoManualRun:
 
 Launch the Rocoto Workflow Manually
----------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Load Rocoto
-^^^^^^^^^^^^^^^^
+**Load Rocoto**
 
 Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can load Rocoto and any other required modules. This gives the user more control over the process and allows them to view experiment progress more easily. On Level 1 systems, the Rocoto modules are loaded automatically in :numref:`Step %s <SetUpPythonEnv>`. For most other systems, a variant on the following commands will be necessary to load the Rocoto module:
 
@@ -1458,8 +1509,7 @@ Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can load Rocot
 
 Some systems may require a version number (e.g., ``module load rocoto/1.3.3``)
 
-Run the Rocoto Workflow
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+**Run the Rocoto Workflow**
 
 After loading Rocoto, call ``rocotorun`` from the experiment directory to launch the workflow tasks. This will start any tasks that do not have a dependency. As the workflow progresses through its stages, ``rocotostat`` will show the state of each task and allow users to monitor progress: 
 
@@ -1480,49 +1530,102 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
 
 .. note::
    
-   If users have the `Slurm workload manager <https://slurm.schedmd.com/documentation.html>`_ on their system, they can run the ``squeue`` command in lieu of ``rocotostat`` to check what jobs are currently running. 
+   If users have the `Slurm workload manager <https://slurm.schedmd.com/documentation.html>`__ on their system, they can run the ``squeue`` command in lieu of ``rocotostat`` to check what jobs are currently running. 
 
-.. _Automate:
 
-Automated Option
-----------------------
+.. _RunUsingStandaloneScripts:
 
-For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add the following commands to their ``config.sh`` file *before* generating the experiment:
+Run the Workflow Using Stand-Alone Scripts
+---------------------------------------------
+
+.. note:: 
+   The Rocoto workflow manager cannot be used inside a container. 
+
+The regional workflow can be run using standalone shell scripts in cases where the Rocoto software is not available on a given platform. If Rocoto *is* available, see :numref:`Section %s <Run>` to run the workflow using Rocoto. 
+
+#. ``cd`` into the experiment directory
+
+#. Set the environment variable ``$EXPTDIR`` for either bash or csh, respectively:
+
+   .. code-block:: console
+
+      export EXPTDIR=`pwd`
+      setenv EXPTDIR `pwd`
+
+#. Copy the wrapper scripts from the ``regional_workflow`` directory into the experiment directory. Each workflow task has a wrapper script that sets environment variables and runs the job script.
+
+   .. code-block:: console
+
+      cp <path-to>/ufs-srweather-app/regional_workflow/ush/wrappers/* .
+
+#. Set the ``OMP_NUM_THREADS`` variable. 
+
+   .. code-block:: console
+
+      export OMP_NUM_THREADS=1
+
+#. Run each of the listed scripts in order.  Scripts with the same stage number (listed in :numref:`Table %s <RegionalWflowTasks>`) may be run simultaneously.
+
+   .. code-block:: console
+
+      ./run_make_grid.sh
+      ./run_get_ics.sh
+      ./run_get_lbcs.sh
+      ./run_make_orog.sh
+      ./run_make_sfc_climo.sh
+      ./run_make_ics.sh
+      ./run_make_lbcs.sh
+      ./run_fcst.sh
+      ./run_post.sh
+
+Check the batch script output file in your experiment directory for a “SUCCESS” message near the end of the file.
+
+.. _RegionalWflowTasks:
+
+.. table::  List of tasks in the regional workflow in the order that they are executed.
+            Scripts with the same stage number may be run simultaneously. The number of
+            processors and wall clock time is a good starting point for Cheyenne or Hera 
+            when running a 48-h forecast on the 25-km CONUS domain. For a brief description of tasks, see :numref:`Table %s <WorkflowTasksTable>`. 
+
+   +------------+------------------------+----------------+----------------------------+
+   | **Stage/** | **Task Run Script**    | **Number of**  | **Wall clock time (H:mm)** |
+   | **step**   |                        | **Processors** |                            |             
+   +============+========================+================+============================+
+   | 1          | run_get_ics.sh         | 1              | 0:20 (depends on HPSS vs   |
+   |            |                        |                | FTP vs staged-on-disk)     |
+   +------------+------------------------+----------------+----------------------------+
+   | 1          | run_get_lbcs.sh        | 1              | 0:20 (depends on HPSS vs   |
+   |            |                        |                | FTP vs staged-on-disk)     |
+   +------------+------------------------+----------------+----------------------------+
+   | 1          | run_make_grid.sh       | 24             | 0:20                       |
+   +------------+------------------------+----------------+----------------------------+
+   | 2          | run_make_orog.sh       | 24             | 0:20                       |
+   +------------+------------------------+----------------+----------------------------+
+   | 3          | run_make_sfc_climo.sh  | 48             | 0:20                       |
+   +------------+------------------------+----------------+----------------------------+
+   | 4          | run_make_ics.sh        | 48             | 0:30                       |
+   +------------+------------------------+----------------+----------------------------+
+   | 4          | run_make_lbcs.sh       | 48             | 0:30                       |
+   +------------+------------------------+----------------+----------------------------+
+   | 5          | run_fcst.sh            | 48             | 0:30                       |
+   +------------+------------------------+----------------+----------------------------+
+   | 6          | run_post.sh            | 48             | 0:25 (2 min per output     |
+   |            |                        |                | forecast hour)             |
+   +------------+------------------------+----------------+----------------------------+
+
+Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory. To see how the experiment is progressing, users can also check the end of the ``log.launch_FV3LAM_wflow`` file from the command line:
 
 .. code-block:: console
 
-   USE_CRON_TO_RELAUNCH="TRUE"
-   CRON_RELAUNCH_INTVL_MNTS="02"
+   tail -n 40 log.launch_FV3LAM_wflow
 
-
-Alternatively, the user can add a crontab entry using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.sh`` (starting with ``*/1 * * * *`` or ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
-
-.. code-block:: console
-
-   */3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
-
-where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``. The number ``3`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every three minutes.
-
-.. hint::
-
-   * On NOAA Cloud instances, ``*/1 * * * *`` is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
-   * On other NOAA HPC systems, admins discourage the ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` is the preferred option for cron jobs on non-NOAA Cloud systems. 
-
-To check the experiment progress:
-
-.. code-block:: console
-   
-   cd $EXPTDIR
-   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
-
-After finishing the experiment, open the crontab using ``crontab -e`` and delete the crontab entry. 
+.. hint:: 
+   If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA Cloud systems can be viewed in :numref:`Section %s <WorkOnHPC>` as an example. 
 
 .. note::
+   On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first two jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided (``sq_job.sh`` and ``qsub_job.sh``, respectively). These examples will need to be adapted to each user's system. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). 
 
-   On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
-   
 
-The workflow run is complete when all tasks have "SUCCEEDED", and the rocotostat command outputs a table similar to the one :ref:`above <Success>`.
 
 .. _PlotOutput:
 

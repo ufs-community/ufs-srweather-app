@@ -21,6 +21,12 @@ if [ "$L_MACHINE" = macos ]; then
 
    module purge
 
+elif [ "$L_MACHINE" = linux ]; then
+   export BASH_ENV="/usr/share/share/lmod/init/bash"
+   source $BASH_ENV
+
+   module purge
+
 elif [ "$L_MACHINE" = singularity ]; then
    export BASH_ENV="/usr/share/lmod/lmod/init/bash"
    source $BASH_ENV
@@ -28,10 +34,11 @@ elif [ "$L_MACHINE" = singularity ]; then
    module purge
 
 elif [ "$L_MACHINE" = gaea ]; then
-   export BASH_ENV="/lustre/f2/pdata/esrl/gsd/contrib/lua-5.1.4.9/lmod/lmod/init/bash"
+   export BASH_ENV="/lustre/f2/dev/role.epic/contrib/apps/lmod/lmod/init/bash"
    source $BASH_ENV
-   module purge
 
+   export LMOD_SYSTEM_DEFAULT_MODULES="modules/3.2.11.4"
+   module --initial_load --no_redirect restore
 elif [ "$L_MACHINE" = odin ]; then
    module unload modules
    unset -f module

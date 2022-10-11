@@ -7,11 +7,11 @@ user:
   ACCOUNT: an_account
 platform:
   MODEL: FV3_GFS_v16_CONUS_25km
-  MET_INSTALL_DIR: path/to/MET
-  METPLUS_PATH: path/to/METPlus
-  CCPA_OBS_DIR: /path/to/processed/CCPA/data
-  MRMS_OBS_DIR: /path/to/processed/MRMS/data
-  NDAS_OBS_DIR: /path/to/processed/NDAS/data
+  MET_INSTALL_DIR: ""
+  METPLUS_PATH: ""
+  CCPA_OBS_DIR: ""
+  MRMS_OBS_DIR: ""
+  NDAS_OBS_DIR: ""
 workflow:
   EXPT_SUBDIR: test_community
   CCPP_PHYS_SUITE: FV3_GFS_v16

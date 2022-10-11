@@ -223,7 +223,9 @@ def import_vars(dictionary=None, target_dict=None, env_vars=None):
         env_vars = {k: dictionary[k] if k in dictionary else None for k in env_vars}
 
     for k, v in env_vars.items():
-        target_dict[k] = str_to_list(v)
+        # Don't replace variable with empty value
+        if not ((k in target_dict) and (v == "")):
+            target_dict[k] = str_to_list(v)
 
 
 def export_vars(dictionary=None, source_dict=None, env_vars=None):

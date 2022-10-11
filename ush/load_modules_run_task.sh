@@ -8,9 +8,8 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
-. $USHDIR/source_machine_file.sh
-. $USHDIR/init_env.sh
+. $USHdir/source_util_funcs.sh
+. $USHdir/init_env.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -19,7 +18,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -86,14 +85,39 @@ jjob_fp="$2"
 #
 #-----------------------------------------------------------------------
 #
+# For NCO mode we need to define job and jobid
+#
+#-----------------------------------------------------------------------
+#
+set +u
+if [ ! -z ${SLURM_JOB_ID} ]; then
+    export job=${SLURM_JOB_NAME}
+    export jobid=${job}.${SLURM_JOB_ID}
+elif [ ! -z ${PBS_JOBID} ]; then
+    export job=${PBS_JOBNAME}
+    export jobid=${job}.${PBS_JOBID}
+else
+    export job=${task_name}
+    export jobid=${job}.$$
+fi
+set -u
+#
+#-----------------------------------------------------------------------
+#
 # Loading ufs-srweather-app build module files
 #
 #-----------------------------------------------------------------------
 #
 machine=$(echo_lowercase $MACHINE)
 
-source "${SR_WX_APP_TOP_DIR}/etc/lmod-setup.sh"
-module use "${SR_WX_APP_TOP_DIR}/modulefiles"
+# source version file (build) only if it is specified in versions directory
+VERSION_FILE="${HOMEdir}/versions/${BUILD_VER_FN}"
+if [ -f ${VERSION_FILE} ]; then
+  . ${VERSION_FILE}
+fi
+
+source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
+module use "${HOMEdir}/modulefiles"
 module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
 Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
@@ -117,17 +141,17 @@ for the workflow task specified by task_name failed:
 #
 # The full path to a module file for a given task is
 #
-#   $SR_WX_APP_TOP_DIR/modulefiles/$machine/${task_name}.local
+#   $HOMEdir/modulefiles/$machine/${task_name}.local
 #
-# where SR_WX_APP_TOP_DIR is the base directory of the workflow, machine is the
+# where HOMEdir is the base directory of the workflow, machine is the
 # name of the machine that we're running on (in lowercase), and task_-
 # name is the name of the current task (an input to this script).
 #
 #-----------------------------------------------------------------------
 #
-modules_dir="$SR_WX_APP_TOP_DIR/modulefiles/tasks/$machine"
+modules_dir="$HOMEdir/modulefiles/tasks/$machine"
 modulefile_name="${task_name}"
-default_modules_dir="$SR_WX_APP_TOP_DIR/modulefiles"
+default_modules_dir="$HOMEdir/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
@@ -142,6 +166,11 @@ Loading modules for task \"${task_name}\" ..."
 module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
 
+# source version file (run) only if it is specified in versions directory
+VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
+if [ -f ${VERSION_FILE} ]; then
+  . ${VERSION_FILE}
+fi
 #
 # Load the .local module file if available for the given task
 #

@@ -2,6 +2,4 @@
 ## Module file for get_extrn_lbcs task.
 #############################################################
 
-module purge
-
 module load miniconda_regional_workflow

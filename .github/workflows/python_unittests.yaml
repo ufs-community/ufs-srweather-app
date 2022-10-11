@@ -1,5 +1,8 @@
 name: Python unittests
 on: [push, pull_request, workflow_dispatch]
+defaults:
+  run:
+    shell: bash
 jobs:
 
   python_unittests:
@@ -15,13 +18,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install python3 python3-pip netcdf-bin
-          sudo pip3 install pyyaml jinja2 f90nml
+          sudo pip3 install pyyaml jinja2==2.11 f90nml
           sudo pip3 install numpy matplotlib basemap
 
       # Run python unittests
       - name: Run python unittests
         run: |
+          ./manage_externals/checkout_externals ufs-weather-model
           cd ush
           python3 -m unittest -b python_utils/test_python_utils.py
-          python3 -m unittest -b *.py
+          # exclude test_retrieve_data that is tested in functional test
+          files=$(find . -maxdepth 1 -name '*.py' -a ! -name 'test_retrieve_data.py' -exec basename {} \;)
+          files=$(echo $(echo "${files[@]}"))
+          python3 -m unittest -b ${files[@]}
 

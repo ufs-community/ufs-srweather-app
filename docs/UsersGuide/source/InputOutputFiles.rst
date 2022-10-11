@@ -68,9 +68,9 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    +-----------------------------+--------------------------------------------------------------+
    | field_table_[CCPP]          | :term:`Cycle-independent` file that the forecast model       |
    |                             | reads in at the start of each forecast. It specifies the     |
-   |                             | :term:`tracers` that the forecast model will :term:`advect`. |
-   |                             | A different ``field_table`` may be needed for different      |
-   |                             | CCPP suites.                                                 |
+   |                             | :term:`tracers <tracer>` that the forecast model will        |
+   |                             | :term:`advect`. A different ``field_table`` may be needed    |
+   |                             | for different CCPP suites.                                   |
    +-----------------------------+--------------------------------------------------------------+
    | FV3.input.yml               | YAML configuration file containing the forecast model's      |
    |                             | namelist settings for various physics suites. The values     |
@@ -179,8 +179,8 @@ If users wish to modify the fields or levels that are output from the UPP, they 
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
 
 UPP Product Output Tables for the UFS SRW LAM Grid:
-   * :doc:`3D Native Hybrid Level Fields <SRW_NATLEV_table>`
-   * :doc:`3D Pressure Level Fields <SRW_PRSLEV_table>`
+   * :doc:`3D Native Hybrid Level Fields <tables/SRW_NATLEV_table>`
+   * :doc:`3D Pressure Level Fields <tables/SRW_PRSLEV_table>`
 
 Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
 
@@ -277,7 +277,7 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
    EXTRN_MDL_SOURCE_BASEDIR_ICS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
 
-These last two variables describe where the :term:`IC` and :term:`LBC` file directories are located, respectively. For ease of reusing ``config.sh`` across experiments, it is recommended that users set up the raw :term:`IC/LBC` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
+These last two variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.sh`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
 When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like:
 

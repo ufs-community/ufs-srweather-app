@@ -107,7 +107,7 @@ The following software is also required to run the SRW Application, but the :ter
 
    * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user (if desired). 
 
-For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :numref:`Chapter %s <MacInstall>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
+For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :ref:`Chapter %s <hpc-stack:MacInstall>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
 
 * bash v4.x
 * GNU compiler suite v.11 or higher with gfortran
@@ -217,7 +217,7 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
 The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/latest/CodeOverview.html>`__.
 
 .. note::
-   The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. :numref:`Chapter %s <InstallBuildHPCstack>` contains details on installing the HPC-Stack. 
+   The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`HPC-Stack Documentation <hpc-stack:index>` for details on installing the HPC-Stack. 
 
 
 .. _TopLevelDirStructure:
@@ -310,7 +310,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | data_table                | :term:`Cycle-independent` input file (empty)                                                                 |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-   | field_table               | :term:`Tracers` in the `forecast model                                                                       |
+   | field_table               | :term:`Tracers <tracer>` in the `forecast model                                                              |
    |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#field-table-file>`__                  |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                          |
@@ -447,7 +447,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | CCPP Technical             | https://ccpp-techdoc.readthedocs.io/en/latest/                                  |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | Stochastic Physics         | https://stochastic-physics.readthedocs.io/en/release-public-v3/                 |
+   | Stochastic Physics         | https://stochastic-physics.readthedocs.io/en/latest/                            |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | ESMF manual                | https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/                |
@@ -455,8 +455,6 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | Unified Post Processor     | https://upp.readthedocs.io/en/latest/                                           |
    +----------------------------+---------------------------------------------------------------------------------+
 
-..
-   COMMENT: Stochastic physics "latest" branch is noticeably behind the release/public-v3 branch, the link to the release branch is maintained here/throughout develop docs for now.
 
 The UFS community is encouraged to contribute to the development effort of all related
 utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`. Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository or the `regional_workflow <https://github.com/ufs-community/regional_workflow>`__ repository should follow the guidelines contained in the :ref:`SRW App Contributor's Guide <ContributorsGuide>`.
@@ -473,7 +471,6 @@ Users can expect to see incremental improvements and additional capabilities in 
 
 
 .. bibliography:: references.bib
-
 
 
 

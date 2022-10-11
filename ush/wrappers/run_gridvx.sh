@@ -15,5 +15,5 @@ export ACCUM="06" # 01 03 06 24 --> leave empty for REFC and RETOP
 
 export FHR=`echo $(seq 0 ${ACCUM} ${FCST_LEN_HRS}) | cut -d" " -f2-`
 
-${JOBSDIR}/JREGIONAL_RUN_VX_GRIDSTAT
+${JOBSdir}/JREGIONAL_RUN_VX_GRIDSTAT
 

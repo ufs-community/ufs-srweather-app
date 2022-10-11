@@ -106,7 +106,8 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -115,7 +116,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -145,12 +146,32 @@ This is the J-job script for the task that generates grid files.
 #
 #-----------------------------------------------------------------------
 #
+# Create the (cycle-independent) subdirectories under the experiment
+# directory (EXPTDIR) that are needed by the various steps and substeps
+# in this script.
+#
+#-----------------------------------------------------------------------
+#
+check_for_preexist_dir_file "${GRID_DIR}" "${PREEXISTING_DIR_METHOD}"
+mkdir_vrfy -p "${GRID_DIR}"
+#
+#-----------------------------------------------------------------------
+#
+# Create a work directory.
+#
+#-----------------------------------------------------------------------
+#
+DATA="${DATA:-${GRID_DIR}/tmp}"
+mkdir_vrfy -p "$DATA"
+#
+#-----------------------------------------------------------------------
+#
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.
 #
 #-----------------------------------------------------------------------
 #
-${SCRIPTSDIR}/exregional_make_grid.sh || \
+${SCRIPTSdir}/exregional_make_grid.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
@@ -176,19 +197,15 @@ Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
-touch "$LOGDIR/make_grid_task_complete.txt"
+touch "$GRID_DIR/make_grid_task_complete.txt"
 #
 #-----------------------------------------------------------------------
 #
-# Print exit message.
+# Run job postamble.
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "
-========================================================================
-Exiting script:  \"${scrfunc_fn}\"
-In directory:    \"${scrfunc_dir}\"
-========================================================================"
+job_postamble
 #
 #-----------------------------------------------------------------------
 #

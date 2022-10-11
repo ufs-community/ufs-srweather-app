@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
-. $USHDIR/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -u +x; } > /dev/null 2>&1
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -48,36 +48,6 @@ the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.  
-# Then process the arguments provided to this script/function (which 
-# should consist of a set of name-value pairs of the form arg1="value1",
-# etc).
-#
-#-----------------------------------------------------------------------
-#
-valid_args=( \
-"cdate" \
-"run_dir" \
-"postprd_dir" \
-"tmp_dir" \
-"fhr" \
-"fmn" \
-"dt_atmos" \
-)
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args valid_args
-#
-#-----------------------------------------------------------------------
-#
 # Set OpenMP variables.
 #
 #-----------------------------------------------------------------------
@@ -92,7 +62,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_POST}
 #
 #-----------------------------------------------------------------------
 #
-source $USHDIR/source_machine_file.sh
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_RUN_POST*PPN_RUN_POST ))
@@ -101,7 +70,6 @@ if [ -z "${RUN_CMD_POST:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_POST for your platform"
 else
-  RUN_CMD_POST=$(eval echo ${RUN_CMD_POST})
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_POST}\'."
 fi
@@ -109,37 +77,37 @@ fi
 #-----------------------------------------------------------------------
 #
 # Remove any files from previous runs and stage necessary files in the 
-# temporary work directory specified by tmp_dir.
+# temporary work directory specified by DATA_FHR.
 #
 #-----------------------------------------------------------------------
 #
 rm_vrfy -f fort.*
-cp_vrfy ${UPP_DIR}/parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
 ====================================================================
 Copying the user-defined post flat file specified by CUSTOM_POST_CONFIG_FP
-to the temporary work directory (tmp_dir):
+to the temporary work directory (DATA_FHR):
   CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
-  tmp_dir = \"${tmp_dir}\"
+  DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 else
   if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
-    post_config_fp="${UPP_DIR}/parm/postxconfig-NT-fv3lam_cmaq.txt"
+    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam_cmaq.txt"
   else
-    post_config_fp="${UPP_DIR}/parm/postxconfig-NT-fv3lam.txt"
+    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
   fi
   print_info_msg "
 ====================================================================
 Copying the default post flat file specified by post_config_fp to the 
-temporary work directory (tmp_dir):
+temporary work directory (DATA_FHR):
   post_config_fp = \"${post_config_fp}\"
-  tmp_dir = \"${tmp_dir}\"
+  DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 fi
 cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-cp_vrfy ${UPP_DIR}/parm/params_grib2_tbl_new .
+cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
 if [ ${USE_CRTM} = "TRUE" ]; then
   cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Water/Big_Endian/Nalli.IRwater.EmisCoeff.bin ./
   cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/MW_Water/Big_Endian/FAST*.bin ./
@@ -153,22 +121,21 @@ if [ ${USE_CRTM} = "TRUE" ]; then
   print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from CRTM_DIR to the temporary
-work directory (tmp_dir):
+work directory (DATA_FHR):
   CRTM_DIR = \"${CRTM_DIR}\"
-  tmp_dir = \"${tmp_dir}\"
+  DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 fi
 #
 #-----------------------------------------------------------------------
 #
 # Get the cycle date and hour (in formats of yyyymmdd and hh, respectively)
-# from cdate.
+# from CDATE.
 #
 #-----------------------------------------------------------------------
 #
-yyyymmdd=${cdate:0:8}
-hh=${cdate:8:2}
-cyc=$hh
+yyyymmdd=${PDY}
+hh=${cyc}
 #
 #-----------------------------------------------------------------------
 #
@@ -191,7 +158,7 @@ cyc=$hh
 mnts_secs_str=""
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
   if [ ${fhr}${fmn} = "00000" ]; then
-    mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${dt_atmos} seconds" "+%M:%S" )
+    mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${DT_ATMOS} seconds" "+%M:%S" )
   else
     mnts_secs_str=":${fmn}:00"
   fi
@@ -199,8 +166,13 @@ fi
 #
 # Set the names of the forecast model's write-component output files.
 #
-dyn_file="${run_dir}/dynf${fhr}${mnts_secs_str}.nc"
-phy_file="${run_dir}/phyf${fhr}${mnts_secs_str}.nc"
+if [ "${RUN_ENVIR}" != "nco" ]; then
+    dyn_file="${DATA}/dynf${fhr}${mnts_secs_str}.nc"
+    phy_file="${DATA}/phyf${fhr}${mnts_secs_str}.nc"
+else
+    dyn_file="${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
+    phy_file="${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
+fi
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
@@ -236,7 +208,7 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-# Run the UPP executable in the temporary directory (tmp_dir) for this
+# Run the UPP executable in the temporary directory (DATA_FHR) for this
 # output time.
 #
 #-----------------------------------------------------------------------
@@ -244,14 +216,16 @@ EOF
 print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
-${RUN_CMD_POST} ${EXECDIR}/upp.x < itag || print_err_msg_exit "\
+PREP_STEP
+eval ${RUN_CMD_POST} ${EXECdir}/upp.x < itag ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run post for forecast hour $fhr returned with non-
 zero exit code."
+POST_STEP
 #
 #-----------------------------------------------------------------------
 #
 # Move and rename the output files from the work directory to their final 
-# location in postprd_dir.  Also, create symlinks in postprd_dir to the
+# location in COMOUT.  Also, create symlinks in COMOUT to the
 # grib2 files that are needed by the data services group.  Then delete 
 # the work directory.
 #
@@ -291,26 +265,32 @@ fi
 post_fn_suffix="GrbF${post_fhr}${dot_post_mn_or_null}"
 post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 #
-# For convenience, change location to postprd_dir (where the final output
+# For convenience, change location to COMOUT (where the final output
 # from UPP will be located).  Then loop through the two files that UPP
 # generates (i.e. "...prslev..." and "...natlev..." files) and move, 
 # rename, and create symlinks to them.
 #
-cd_vrfy "${postprd_dir}"
+cd_vrfy "${COMOUT}"
 basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
-symlink_suffix="_${basetime}f${fhr}${post_mn}"
+symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
 fids=( "prslev" "natlev" )
 for fid in "${fids[@]}"; do
   FID=$(echo_uppercase $fid)
   post_orig_fn="${FID}.${post_fn_suffix}"
-  post_renamed_fn="${NET}.t${cyc}z.${fid}.${post_renamed_fn_suffix}"
-  mv_vrfy ${tmp_dir}/${post_orig_fn} ${post_renamed_fn}
-  create_symlink_to_file target="${post_renamed_fn}" \
+  post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
+  mv_vrfy ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
+  if [ $RUN_ENVIR != "nco" ]; then
+    create_symlink_to_file target="${post_renamed_fn}" \
                          symlink="${FID}${symlink_suffix}" \
                          relative="TRUE"
+  fi
+  # DBN alert
+  if [ $SENDDBN = "TRUE" ]; then
+    $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
+  fi
 done
 
-rm_vrfy -rf ${tmp_dir}
+rm_vrfy -rf ${DATA_FHR}
 #
 #-----------------------------------------------------------------------
 #
