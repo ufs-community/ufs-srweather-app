@@ -1,0 +1,44 @@
+# Settings that will run tasks needed per-experiment to create "fix
+# files" for the stationary grid.
+
+default_task_prep: &default_task
+  attrs:
+    cycledefs: at_start
+    maxtries: '2'
+  account: '&ACCOUNT;'
+  queue: '&QUEUE_DEFAULT;'
+  envars: &default_envars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+  nodes: 1:ppn=24
+  nodesize: "&NCORES_PER_NODE;"
+  walltime: 00:20:00
+
+task_make_grid:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "make_grid" "&JOBSDIR;/JREGIONAL_MAKE_GRID"'
+  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
+
+task_make_orog:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "make_orog" "&JOBSDIR;/JREGIONAL_MAKE_OROG"'
+  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
+  walltime: 01:00:00
+  dependency:
+    taskdep_make_grid:
+      attrs:
+        task: make_grid
+
+task_make_sfc_climo:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "make_sfc_climo" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"'
+  nodes: 2:ppn=24
+  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
+  dependency:
+    and:
+      taskdep_make_grid:
+        attrs:
+          task: make_grid
+      taskdep_make_grid:
+        attrs:
+          task: make_orog
+

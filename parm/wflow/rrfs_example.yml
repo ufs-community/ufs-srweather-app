@@ -1,0 +1,44 @@
+# Trying to match grid_RRFS_CONUS_25km_ics_HRRR_lbcs_RAP_suite_HRRR 
+#
+#
+user:
+  account: zrtrr
+  sr_wx_app_top_dir: /scratch2/BMC/wrfruc/cholt/repos/srw_yaml_wflow
+  jobsdir: '{{ ( user.sr_wx_app_top_dir, "/regional_workflow/jobs")|path_join }}'
+  load_modules_run_task_fp: '/scratch2/BMC/wrfruc/cholt/repos/srw_yaml_wflow/regional_workflow/ush/load_modules_run_task.sh'
+expt:
+  logdir: '{{ (expt.exptdir, "log")|path_join }}'
+  expt_basedir: /somewhere
+  expt_subdir: test_community
+  exptdir: '{{ (expt.expt_basedir, expt.expt_subdir)|path_join }}'
+  fcst_len_hrs: 24
+machine:
+  scheduler: slurm
+  queue_default: batch
+  queue_hpss: batch
+  queue_fcst: batch
+  ncores_per_node: 40
+workflow:
+  entities:
+    ACCOUNT: '{{ user.account }}'
+    SCHED : '{{ machine.scheduler }}'
+    QUEUE_DEFAULT: '{{ machine.queue_default }}'
+    QUEUE_HPSS: '{{ machine.queue_hpss }}'
+    QUEUE_FCST: '{{ machine.queue_fcst }}'
+    NCORES_PER_NODE: '{{ machine.ncores_per_node }}'
+    JOBSDIR: '{{ user.jobsdir }}'
+    LOGDIR: '{{ expt.logdir }}'
+    CYCLE_BASEDIR: '{{ expt.cycle_basedir }}'
+    GLOBAL_VAR_DEFNS_FP: '{{ expt.global_var_defns_fp }}'
+    LOAD_MODULES_RUN_TASK_FP: '{{user.load_modules_run_task_fp }}'
+  attrs:
+    realtime: F
+    scheduler: "&SCHED;"
+    cyclethrottle: '20'
+  cycledefs:
+    at_start:
+      dates: !startstopfreq [202008100000, 202008100000, '00:00:00']
+    forecast:
+      dates: !startstopfreq [202008100000, 202008100000, '24:00:00']
+  log: "&LOGDIR;/FV3LAM_wflow.log"
+  tasks: !include ['/scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/wflow/prep.yaml', '/scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/wflow/coldstart.yaml']

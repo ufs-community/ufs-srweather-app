@@ -1,0 +1,125 @@
+default_task_verify: &default_task
+  account: '&ACCOUNT;'
+  queue: '&QUEUE_DEFAULT;'
+  entities:
+    - "&RSRV_DEFAULT;"
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    PDY: !cycstr {value: '@Y@m@d'}
+    CDATE: !cycstr {value: '@Y@m@d@H'}
+    CYCLE_DIR: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H'}
+    FHR: '{% for h in range(0, expt.fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %}'
+  nodes: 1:ppn=1
+  join: !cycstr {value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'}
+  nodesize: '{{ machine.ncores_per_node }}'
+  walltime: 00:30:00
+
+task_get_obs_ccpa:
+  <<: *default_task
+  queue: "&QUEUE_HPSS;"
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSDIR;/JREGIONAL_GET_OBS_CCPA"'
+  walltime: 00:45:00
+  envars:
+    <<: *default_vars
+    ACCUM: 01
+
+task_get_obs_mrms:
+  <<: *default_task
+  queue: "&QUEUE_HPSS;"
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSDIR;/JREGIONAL_GET_OBS_MRMS"'
+  walltime: 00:45:00
+  envars:
+    <<: *default_vars
+    VAR: 'REFC RETOP'
+
+task_get_obs_ndas:
+  <<: *default_task
+  queue: "&QUEUE_HPSS;"
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSDIR;/JREGIONAL_GET_OBS_NDAS"'
+  walltime: 02:00:00
+
+metatask_vx_gridstat:
+  var:
+    VAR: APCP REFC RETOP
+    OBS: ccpa mrms mrms
+    OBS_DIR: '&CCPA_OBS_DIR; &MRMS_OBS_DIR; &MRMS_OBS_DIR;'
+  task_vx_gridstat_#VAR#:
+    <<: *default_task
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"'
+    walltime: 02:00:00
+    envars:
+      <<: *default_vars
+      OBS_DIR: '#OBS_DIR#'
+      VAR: '#VAR#'
+      ACCUM: 01
+    dependency:
+      and:
+        or_get_obs: # Get obs complete if turned on
+          not:
+            taskvalid:
+              attrs:
+                task: get_obs_#OBS#
+          and:
+            taskvalid:
+              attrs:
+                task: get_obs_#OBS#
+            taskdep:
+              attrs:
+                task: get_obs_#OBS#
+        or_do_post: &post_files_exist
+          and_run_post:
+            taskvalid:
+              attrs:
+                task: run_post_000
+            metataskdep:
+              attrs:
+                metatask: run_post
+          and_inline_post:
+            not:
+              taskvalid:
+                attrs:
+                  task: run_post_000
+            taskdep:
+              attrs:
+                task: run_fcst
+
+metatask_vx_gridstat_acc:
+  var:
+    ACCUM_HR: 03 06 24
+    FCST_HR_LIST: '&3HRLY_FH; &6HRLY_FH; &24HRLY_FH;'
+  task_vx_gridstat_#ACCUM_HR#:
+    <<: *default_task
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"'
+    walltime: 02:00:00
+    envars:
+      <<: *default_vars
+      FHR: '#FCST_HR_LIST#'
+      OBS_DIR: '&CCPA_OBS_DIR;'
+      VAR: APCP
+      ACCUM: '#ACCUM_HR#'
+    dependency:
+      taskdep:
+        attrs:
+          task: run_vx_gridstat_APCP
+
+
+task_run_pointstatvx:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_POINTSTAT"'
+  walltime: 01:00:00
+  dependency:
+    and:
+      <<: *post_files_exist
+      or_get_obs: # Get obs complete if turned on
+        not:
+          taskvalid:
+            attrs:
+              task: get_obs_ndas
+        and:
+          taskvalid:
+            attrs:
+              task: get_obs_ndas
+          taskdep:
+            attrs:
+              task: get_obs_ndas
+

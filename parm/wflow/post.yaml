@@ -1,0 +1,72 @@
+default_task_post: &default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSDIR;/JREGIONAL_RUN_POST"'
+  attrs:
+    cycledef: forecast
+    maxtries: '2'
+  account: '&ACCOUNT;'
+  queue: '&QUEUE_DEFAULT;'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    PDY: !cycstr {value: '@Y@m@d'}
+    CDATE: !cycstr {value: '@Y@m@d@H'}
+    CYCLE_DIR: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H'}
+    SLASH_ENSMEM_SUBDIR: '/'
+    cyc: !cycstr {value: '@H'}
+    fhr: '#fhr#'
+  join: !cycstr {value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'}
+  nodes: 2:ppn=24
+  nodesize: '{{ machine.ncores_per_node }}'
+  walltime: 00:15:00
+
+metatask_run_post:
+  var:
+    fhr: '{% for h in range(1, expt.fcst_len_hrs+1) %}{{ " %03d" % h }}{% endfor %}'
+  task_run_post_f#fhr#:
+    <<: *default_task
+    dependency:
+      or:
+        taskdep:
+          attrs:
+            task: run_fcst
+        and:
+          datadep_dyn:
+            text: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H/dynf#fhr#.nc'}
+            attrs:
+              age: '05:00'
+          datadep_phy:
+            text: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H/phyf#fhr#.nc'}
+            attrs:
+              age: '05:00'
+
+metatask_run_sub_hourly_post:
+  var:
+    fhr: '{% for h in range(1, expt.fcst_len_hrs) %}{{ " %03d" % h }}{% endfor %}'
+  metatask_sub_hourly_post:
+    var:
+      fmn: '{% for min in range(0, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}'
+    task_run_post_f#fhr##fmn#: &subhourly_run_post_task
+      <<: *default_task
+      envars:
+        <<: *default_vars
+        fmn: '#fmn#'
+      dependency:
+        or:
+          taskdep:
+            attrs:
+              task: run_fcst
+          and:
+            datadep_dyn:
+              text: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H/dynf#fhr#:#fmn#:00.nc'}
+              attrs:
+                age: '05:00'
+            datadep_phy:
+              text: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H/phyf#fhr#:#fmn#:00.nc'}
+              attrs:
+                age: '05:00'
+
+metatask_sub_hourly_last_hour_post:
+  var:
+    fhr: '{{ " %03d" % expt.fcst_len_hrs }}'
+    fmn: '00'
+  task_run_post:
+    <<: &subhourly_run_post_task
