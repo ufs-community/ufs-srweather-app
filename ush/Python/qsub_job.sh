@@ -31,7 +31,7 @@ SHAPE_FILES=/glade/p/ral/jntp/UFS_SRW_app/tools/NaturalEarth
 
 export GLOBAL_VAR_DEFNS_FP="${EXPTDIR}/var_defns.sh"
 source ${GLOBAL_VAR_DEFNS_FP}
-export CDATE=${DATE_FIRST_CYCL}${CYCL_HRS}
+export CDATE=${DATE_FIRST_CYCL}
 export FCST_START=3
 export FCST_END=${FCST_LEN_HRS}
 export FCST_INC=3

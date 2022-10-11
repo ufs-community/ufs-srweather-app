@@ -601,7 +601,7 @@ if [ "${USE_FVCOM}" = "TRUE" ]; then
 #Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
   fvcom_exec_fn="fvcom_to_FV3"
   fvcom_exec_fp="$EXECdir/${fvcom_exec_fn}"
-  fvcom_time="${DATE_FIRST_CYCL:0:4}-${DATE_FIRST_CYCL:4:2}-${DATE_FIRST_CYCL:6:2}T${CYCL_HRS[0]}:00:00.000000"
+  fvcom_time="${DATE_FIRST_CYCL:0:4}-${DATE_FIRST_CYCL:4:2}-${DATE_FIRST_CYCL:6:2}T${DATE_FIRST_CYCL:8:2}:00:00.000000"
   if [ ! -f "${fvcom_exec_fp}" ]; then
     print_err_msg_exit "\
 The executable (fvcom_exec_fp) for processing FVCOM data onto FV3-LAM
