@@ -163,9 +163,6 @@ def generate_FV3LAM_wflow():
         d = DATE_FIRST_CYCL + timedelta(seconds=DT_ATMOS)
         time_str = d.strftime("%M:%S")
 
-        cycl_hrs_str = [f"{c:02d}" for c in CYCL_HRS]
-        cdate_first_cycl = DATE_FIRST_CYCL + timedelta(hours=CYCL_HRS[0])
-
         # Dictionary of settings
         settings = {
             #
@@ -397,10 +394,9 @@ def generate_FV3LAM_wflow():
             #
             # Parameters that determine the set of cycles to run.
             #
-            "date_first_cycl": date_to_str(DATE_FIRST_CYCL, format="%Y%m%d"),
-            "date_last_cycl": date_to_str(DATE_LAST_CYCL, format="%Y%m%d"),
-            "cdate_first_cycl": cdate_first_cycl,
-            "cycl_hrs": cycl_hrs_str,
+            "date_first_cycl": date_to_str(DATE_FIRST_CYCL, format="%Y%m%d%H00"),
+            "date_last_cycl": date_to_str(DATE_LAST_CYCL, format="%Y%m%d%H00"),
+            "cdate_first_cycl": DATE_FIRST_CYCL
             "cycl_freq": f"{INCR_CYCL_FREQ:02d}:00:00",
             #
             # Forecast length (same for all cycles).
@@ -1057,7 +1053,7 @@ def generate_FV3LAM_wflow():
         NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.h")
         run_command(
             f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
-                      {CYCL_HRS} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}"""
+                      {date_to_str(DATE_FIRST_CYCL,format="%H")} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}"""
         )
 
 
