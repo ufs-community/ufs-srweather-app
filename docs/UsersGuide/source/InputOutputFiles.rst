@@ -313,7 +313,7 @@ from 20190615 at 18 UTC. FV3GFS GRIB2 files are the default model and file forma
 
 Running the App for Different Dates
 -----------------------------------
-If users want to run the SRW Application for dates other than June 15-16, 2019, they will need to modify the ``config.sh`` settings, including the ``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL``, and ``CYCL_HRS`` variables. The forecast length can be modified by changing the ``FCST_LEN_HRS``. In addition, the lateral boundary interval can be specified using the ``LBC_SPEC_INTVL_HRS`` variable.
+If users want to run the SRW Application for dates other than June 15-16, 2019, they will need to modify the ``config.sh`` settings, including the ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` variables. The forecast length can be modified by changing the ``FCST_LEN_HRS``. In addition, the lateral boundary interval can be specified using the ``LBC_SPEC_INTVL_HRS`` variable.
 
 Users will need to ensure that the initial and lateral boundary condition files are available
 in the specified path for their new date, cycle, and forecast length.

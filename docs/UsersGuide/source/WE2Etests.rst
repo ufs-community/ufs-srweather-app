@@ -222,7 +222,6 @@ The rows of the file/sheet represent the full set of available tests (not just t
   |  ``EXTRN_MDL_NAME_LBCS``
   |  ``DATE_FIRST_CYCL``
   |  ``DATE_LAST_CYCL``
-  |  ``CYCL_HRS``
   |  ``INCR_CYCL_FREQ``
   |  ``FCST_LEN_HRS``
   |  ``DT_ATMOS``
