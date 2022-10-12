@@ -101,7 +101,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
 
     # The setup function reads the user configuration file and fills in 
     # non-user-specified values from config_defaults.yaml
-    setup()
+    setup(logging.getLogger('root.setup'))
 
     # import all environment variables
     import_vars()

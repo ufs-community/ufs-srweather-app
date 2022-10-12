@@ -4,6 +4,7 @@ import os
 import sys
 import datetime
 from textwrap import dedent
+from logging import Logger, getLogger
 
 from python_utils import (
     cd_vrfy,
@@ -18,8 +19,6 @@ from python_utils import (
     import_vars,
     export_vars,
     get_env_var,
-    print_info_msg,
-    print_err_msg_exit,
     load_config_file,
     cfg_to_shell_str,
     cfg_to_yaml_str,
@@ -39,7 +38,7 @@ from check_ruc_lsm import check_ruc_lsm
 from set_thompson_mp_fix_files import set_thompson_mp_fix_files
 
 
-def setup():
+def setup(logger: Logger = getLogger()):
     """Function that sets a secondary set
     of parameters needed by the various scripts that are called by the
     FV3-LAM rocoto community workflow.  This secondary set of parameters is
@@ -51,7 +50,8 @@ def setup():
     scripts called by the tasks in the workflow.
 
     Args:
-      None
+      logger: A logger object for Python's built in logging module. Typically
+              this is set up in generate_FV3LAM_workflow and passed here.
     Returns:
       None
     """
@@ -64,12 +64,12 @@ def setup():
     import_vars()
 
     # print message
-    print_info_msg(
+    logger.info(dedent(
         f"""
         ========================================================================
         Starting function setup() in \"{os.path.basename(__file__)}\"...
         ========================================================================"""
-    )
+    ))
     #
     # -----------------------------------------------------------------------
     #
@@ -93,19 +93,14 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    if os.path.exists(EXPT_CONFIG_FN):
-        cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
-        cfg_u = flatten_dict(cfg_u)
-        import_vars(dictionary=cfg_u,
-            env_vars=["MACHINE",
-                      "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
-                      "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
-    else:
-        print_err_msg_exit(
-            f'''
-            User config file not found
-              EXPT_CONFIG_FN = \"{EXPT_CONFIG_FN}\"'''
-        )
+    if not os.path.exists(EXPT_CONFIG_FN):
+        raise FileNotFoundError(f'User config file not found: {EXPT_CONFIG_FN=}')
+
+    cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
+    cfg_u = flatten_dict(cfg_u)
+    import_vars(dictionary=cfg_u, env_vars=["MACHINE",
+                   "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
+                   "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
     #
     # -----------------------------------------------------------------------
     #
@@ -181,7 +176,7 @@ def setup():
     #
     global WORKFLOW_ID
     WORKFLOW_ID = "id_" + str(int(datetime.datetime.now().timestamp()))
-    print_info_msg(f"""WORKFLOW ID = {WORKFLOW_ID}""")
+    logger.info(f"""WORKFLOW ID = {WORKFLOW_ID}""")
 
     #
     # -----------------------------------------------------------------------
@@ -208,7 +203,7 @@ def setup():
     #
     global VERBOSE
     if DEBUG and not VERBOSE:
-        print_info_msg(
+        logging.info(
             """
             Resetting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
         )
@@ -289,7 +284,7 @@ def setup():
             or (len(SPP_STDDEV_CUTOFF) != N_VAR_SPP)
             or (len(ISEED_SPP) != N_VAR_SPP)
         ):
-            print_err_msg_exit(
+            raise Exception(
                 f'''
                 All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
                 variables set in {CONFIG_FN} must be equal in number of entries to what is
@@ -311,7 +306,7 @@ def setup():
             or (len(LSM_SPP_LSCALE) != N_VAR_LNDP)
             or (len(LSM_SPP_TSCALE) != N_VAR_LNDP)
         ):
-            print_err_msg_exit(
+            raise Exception(
                 f'''
                 All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
                 set in {CONFIG_FN} must be equal in number of entries to what is found in
@@ -354,14 +349,14 @@ def setup():
     UFS_WTHR_MDL_DIR = get_ini_value(cfg, external_name, property_name)
 
     if not UFS_WTHR_MDL_DIR:
-        print_err_msg_exit(
+        raise Exception(
             f"""
             Externals.cfg does not contain "{external_name}"."""
         )
 
     UFS_WTHR_MDL_DIR = os.path.join(HOMEdir, UFS_WTHR_MDL_DIR)
     if not os.path.exists(UFS_WTHR_MDL_DIR):
-        print_err_msg_exit(
+        raise FileNotFoundError(
             f"""
             The base directory in which the FV3 source code should be located
             (UFS_WTHR_MDL_DIR) does not exist:
@@ -401,14 +396,14 @@ def setup():
     RELATIVE_LINK_FLAG = "--relative"
 
     if not NCORES_PER_NODE:
-        print_err_msg_exit(
+        raise Exception(
             f"""
             NCORES_PER_NODE has not been specified in the file {MACHINE_FILE}
             Please ensure this value has been set for your desired platform. """
         )
 
     if not (FIXgsm and FIXaer and FIXlut and TOPO_DIR and SFC_CLIMO_INPUT_DIR):
-        print_err_msg_exit(
+        raise Exception(
             f"""
             One or more fix file directories have not been specified for this machine:
               MACHINE = \"{MACHINE}\"
@@ -459,7 +454,7 @@ def setup():
     #
     if WORKFLOW_MANAGER is not None:
         if not ACCOUNT:
-            print_err_msg_exit(
+            raise Exception(
                 f'''
                 The variable ACCOUNT cannot be empty if you are using a workflow manager:
                   ACCOUNT = \"ACCOUNT\"
@@ -503,7 +498,7 @@ def setup():
     elif FCST_MODEL == "fv3gfs_aqm":
         CPL = True
     else:
-        print_err_msg_exit(
+        raise Exception(
             f'''
             The coupling flag CPL has not been specified for this value of FCST_MODEL:
               FCST_MODEL = \"{FCST_MODEL}\"'''
@@ -516,7 +511,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     if not isinstance(RESTART_INTERVAL, int):
-        print_err_msg_exit(
+        raise Exception(
             f'''
             RESTART_INTERVAL must be set to an integer number of hours.
               RESTART_INTERVAL = \"{RESTART_INTERVAL}\"'''
@@ -530,7 +525,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     if not isinstance(DATE_FIRST_CYCL, datetime.date):
-        print_err_msg_exit(
+        raise Exception(
             f'''
             DATE_FIRST_CYCL must be a string consisting of exactly 10 digits of the
             form \"YYYYMMDDHH\", where YYYY is the 4-digit year, MM is the 2-digit
@@ -540,7 +535,7 @@ def setup():
         )
 
     if not isinstance(DATE_LAST_CYCL, datetime.date):
-        print_err_msg_exit(
+        raise Exception(
             f'''
             DATE_LAST_CYCL must be a string consisting of exactly 10 digits of the
             form \"YYYYMMDDHH\", where YYYY is the 4-digit year, MM is the 2-digit
@@ -571,55 +566,37 @@ def setup():
     # Completely arbitrary cutoff of 90 cycles.
     if NUM_CYCLES > 90:
         ALL_CDATES = None
-        print_info_msg(
+        logger.warning(
             f"""
             Too many cycles in ALL_CDATES to list, redefining in abbreviated form."
             ALL_CDATES="{DATE_FIRST_CYCL}...{DATE_LAST_CYCL}"""
         )
-    #
-    # -----------------------------------------------------------------------
-    #
+
     # If using a custom post configuration file, make sure that it exists.
-    #
-    # -----------------------------------------------------------------------
-    #
     if USE_CUSTOM_POST_CONFIG_FILE:
         if not os.path.exists(CUSTOM_POST_CONFIG_FP):
-            print_err_msg_exit(
+            raise FileNotFoundError(
                 f'''
                 The custom post configuration specified by CUSTOM_POST_CONFIG_FP does not
                 exist:
                   CUSTOM_POST_CONFIG_FP = \"{CUSTOM_POST_CONFIG_FP}\"'''
             )
-    #
-    # -----------------------------------------------------------------------
-    #
+
     # If using external CRTM fix files to allow post-processing of synthetic
-    # satellite products from the UPP, then make sure the fix file directory
-    # exists.
-    #
-    # -----------------------------------------------------------------------
-    #
+    # satellite products from the UPP, make sure the CRTM fix file directory exists.
     if USE_CRTM:
         if not os.path.exists(CRTM_DIR):
-            print_err_msg_exit(
+            raise FileNotFoundError(
                 f'''
                 The external CRTM fix file directory specified by CRTM_DIR does not exist:
                     CRTM_DIR = \"{CRTM_DIR}\"'''
             )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # The forecast length (in integer hours) cannot contain more than 3 cha-
-    # racters.  Thus, its maximum value is 999.  Check whether the specified
-    # forecast length exceeds this maximum value.  If so, print out a warn-
-    # ing and exit this script.
-    #
-    # -----------------------------------------------------------------------
-    #
+
+    # The forecast length (in integer hours) cannot contain more than 3 characters.
+    # Thus, its maximum value is 999.
     fcst_len_hrs_max = 999
     if FCST_LEN_HRS > fcst_len_hrs_max:
-        print_err_msg_exit(
+        raise ValueError(
             f"""
             Forecast length is greater than maximum allowed length:
               FCST_LEN_HRS = {FCST_LEN_HRS}
@@ -629,16 +606,15 @@ def setup():
     # -----------------------------------------------------------------------
     #
     # Check whether the forecast length (FCST_LEN_HRS) is evenly divisible
-    # by the BC update interval (LBC_SPEC_INTVL_HRS).  If not, print out a
-    # warning and exit this script.  If so, generate an array of forecast
-    # hours at which the boundary values will be updated.
+    # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an 
+    # array of forecast hours at which the boundary values will be updated.
     #
     # -----------------------------------------------------------------------
     #
     rem = FCST_LEN_HRS % LBC_SPEC_INTVL_HRS
 
     if rem != 0:
-        print_err_msg_exit(
+        raise Exception(
             f"""
             The forecast length (FCST_LEN_HRS) is not evenly divisible by the lateral
             boundary conditions update interval (LBC_SPEC_INTVL_HRS):
@@ -673,7 +649,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     if not DT_ATMOS:
-        print_err_msg_exit(
+        raise Exception(
             f'''
             The forecast model main time step (DT_ATMOS) is set to a null string:
               DT_ATMOS = {DT_ATMOS}
@@ -683,7 +659,7 @@ def setup():
         )
 
     if not LAYOUT_X:
-        print_err_msg_exit(
+        raise Exception(
             f'''
             The number of MPI processes to be used in the x direction (LAYOUT_X) by
             the forecast job is set to a null string:
@@ -694,7 +670,7 @@ def setup():
         )
 
     if not LAYOUT_Y:
-        print_err_msg_exit(
+        raise Exception(
             f'''
             The number of MPI processes to be used in the y direction (LAYOUT_Y) by
             the forecast job is set to a null string:
@@ -705,7 +681,7 @@ def setup():
         )
 
     if not BLOCKSIZE:
-        print_err_msg_exit(
+        raise Exception(
             f'''
             The cache size to use for each MPI task of the forecast (BLOCKSIZE) is
             set to a null string:
@@ -730,7 +706,7 @@ def setup():
         # Check that DT_SUBHOURLY_POST_MNTS is between 0 and 59, inclusive.
         #
         if DT_SUBHOURLY_POST_MNTS < 0 or DT_SUBHOURLY_POST_MNTS > 59:
-            print_err_msg_exit(
+            raise ValueError(
                 f'''
                 When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
                 DT_SUBHOURLY_POST_MNTS must be set to an integer between 0 and 59,
@@ -744,7 +720,7 @@ def setup():
         #
         rem = DT_SUBHOURLY_POST_MNTS * 60 % DT_ATMOS
         if rem != 0:
-            print_err_msg_exit(
+            raise ValueError(
                 f"""
                 When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
                 the time interval specified by DT_SUBHOURLY_POST_MNTS (after converting
@@ -765,7 +741,7 @@ def setup():
         # informational message that such a change was made.
         #
         if DT_SUBHOURLY_POST_MNTS == 0:
-            print_info_msg(
+            logger.warning(
                 f"""
                 When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
                 DT_SUBHOURLY_POST_MNTS must be set to a value greater than 0; otherwise,
@@ -804,16 +780,10 @@ def setup():
     EXPT_BASEDIR = os.path.abspath(EXPT_BASEDIR)
 
     mkdir_vrfy(f' -p "{EXPT_BASEDIR}"')
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If the experiment subdirectory name (EXPT_SUBDIR) is set to an empty
-    # string, print out an error message and exit.
-    #
-    # -----------------------------------------------------------------------
-    #
+
+    # The experiment subdirectory name (EXPT_SUBDIR) can not be set to an empty string
     if not EXPT_SUBDIR:
-        print_err_msg_exit(
+        raise Exception(
             f'''
             The name of the experiment subdirectory (EXPT_SUBDIR) cannot be empty:
               EXPT_SUBDIR = \"{EXPT_SUBDIR}\"'''
@@ -945,7 +915,7 @@ def setup():
 
     if POST_OUTPUT_DOMAIN_NAME is None:
         if PREDEF_GRID_NAME is None:
-            print_err_msg_exit(
+            raise Exception(
                 f"""
                 The domain name used in naming the run_post output files
                 (POST_OUTPUT_DOMAIN_NAME) has not been set:
@@ -1056,7 +1026,7 @@ def setup():
     )
     CCPP_PHYS_SUITE_FP = os.path.join(EXPTDIR, CCPP_PHYS_SUITE_FN)
     if not os.path.exists(CCPP_PHYS_SUITE_IN_CCPP_FP):
-        print_err_msg_exit(
+        raise FileNotFoundError(
             f'''
             The CCPP suite definition file (CCPP_PHYS_SUITE_IN_CCPP_FP) does not exist
             in the local clone of the ufs-weather-model:
@@ -1083,7 +1053,7 @@ def setup():
     )
     FIELD_DICT_FP = os.path.join(EXPTDIR, FIELD_DICT_FN)
     if not os.path.exists(FIELD_DICT_IN_UWM_FP):
-        print_err_msg_exit(
+        raise FileNotFoundError(
             f'''
             The field dictionary file (FIELD_DICT_IN_UWM_FP) does not exist
             in the local clone of the ufs-weather-model:
@@ -1159,7 +1129,7 @@ def setup():
             idx = len(EXTRN_MDL_SOURCE_BASEDIR_ICS)
 
         if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_ICS[:idx]):
-            print_err_msg_exit(
+            raise FileNotFoundError(
                 f'''
                 The directory (EXTRN_MDL_SOURCE_BASEDIR_ICS) in which the user-staged
                 external model files for generating ICs should be located does not exist:
@@ -1171,7 +1141,7 @@ def setup():
             idx = len(EXTRN_MDL_SOURCE_BASEDIR_LBCS)
 
         if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_LBCS[:idx]):
-            print_err_msg_exit(
+            raise FileNotFoundError(
                 f'''
                 The directory (EXTRN_MDL_SOURCE_BASEDIR_LBCS) in which the user-staged
                 external model files for generating LBCs should be located does not exist:
@@ -1268,7 +1238,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     if (not DO_ENSEMBLE) and (RUN_TASK_VX_ENSGRID or RUN_TASK_VX_ENSPOINT):
-        print_err_msg_exit(
+        raise Exception(
             f'''
             Ensemble verification can not be run unless running in ensemble mode:
                DO_ENSEMBLE = \"{DO_ENSEMBLE}\"
@@ -1320,10 +1290,10 @@ def setup():
             msg = f"""Setting GRID_DIR to:
                GRID_DIR = \"{GRID_DIR}\"
             """
-            print_info_msg(msg)
+            logger.info(msg)
 
             if not os.path.exists(GRID_DIR): 
-                print_err_msg_exit(
+                raise FileNotFoundError(
                     f'''
                     The directory (GRID_DIR) that should contain the pregenerated grid files
                     does not exist:
@@ -1344,10 +1314,10 @@ def setup():
             msg = f"""Setting OROG_DIR to:
                OROG_DIR = \"{OROG_DIR}\"
             """
-            print_info_msg(msg)
+            logger.info(msg)
 
             if not os.path.exists(OROG_DIR):
-                print_err_msg_exit(
+                raise FileNotFoundError(
                     f'''
                     The directory (OROG_DIR) that should contain the pregenerated orography
                     files does not exist:
@@ -1368,10 +1338,10 @@ def setup():
             msg = f"""Setting SFC_CLIMO_DIR to:
                SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"
             """
-            print_info_msg(msg)
+            logger.info(msg)
 
             if not os.path.exists(SFC_CLIMO_DIR):
-                print_err_msg_exit(
+                raise FileNotFoundError(
                     f'''
                     The directory (SFC_CLIMO_DIR) that should contain the pregenerated surface
                     climatology files does not exist:
@@ -1520,7 +1490,7 @@ def setup():
         res_in_orog_fns = link_fix(verbose=VERBOSE, file_group="orog")
 
         if not RES_IN_FIXLAM_FILENAMES and (res_in_orog_fns != RES_IN_FIXLAM_FILENAMES):
-            print_err_msg_exit(
+            raise Exception(
                 f"""
                 The resolution extracted from the orography file names (res_in_orog_fns)
                 does not match the resolution in other groups of files already consi-
@@ -1546,7 +1516,7 @@ def setup():
         res_in_sfc_climo_fns = link_fix(verbose=VERBOSE, file_group="sfc_climo")
 
         if RES_IN_FIXLAM_FILENAMES and res_in_sfc_climo_fns != RES_IN_FIXLAM_FILENAMES:
-            print_err_msg_exit(
+            raise Exception(
                 f"""
                 The resolution extracted from the surface climatology file names (res_-
                 in_sfc_climo_fns) does not match the resolution in other groups of files
@@ -1583,7 +1553,7 @@ def setup():
 
         # Check if SUB_HOURLY_POST is on
         if SUB_HOURLY_POST:
-            print_err_msg_exit(
+            raise Exception(
                 f"""
                 SUB_HOURLY_POST is NOT available with Inline Post yet."""
             )
@@ -1601,12 +1571,11 @@ def setup():
     if QUILTING:
         PE_MEMBER01 = PE_MEMBER01 + WRTCMP_write_groups * WRTCMP_write_tasks_per_group
 
-    print_info_msg(
+    logger.info(
         f"""
         The number of MPI tasks for the forecast (including those for the write
         component if it is being used) are:
           PE_MEMBER01 = {PE_MEMBER01}""",
-        verbose=VERBOSE,
     )
     #
     # -----------------------------------------------------------------------
@@ -1963,11 +1932,12 @@ def setup():
     #
 
     # print content of var_defns if DEBUG=True
-    all_lines = cfg_to_yaml_str(cfg_d)
-    print_info_msg(all_lines, verbose=DEBUG)
+    if DEBUG:
+        all_lines = cfg_to_yaml_str(cfg_d)
+        logger.info(all_lines)
 
     # print info message
-    print_info_msg(
+    logger.info(
         f"""
         Generating the global experiment variable definitions file specified by
         GLOBAL_VAR_DEFNS_FN:
@@ -2000,26 +1970,12 @@ def setup():
             continue
         vkey = "valid_vals_" + k
         if (vkey in cfg_v) and not (v in cfg_v[vkey]):
-            print_err_msg_exit(
+            raise Exception(
                 f"""
                 The variable {k}={v} in {EXPT_DEFAULT_CONFIG_FN} or {EXPT_CONFIG_FN} does not have
                 a valid value. Possible values are:
                     {k} = {cfg_v[vkey]}"""
             )
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Print message indicating successful completion of script.
-    #
-    # -----------------------------------------------------------------------
-    #
-    print_info_msg(
-        f"""
-        ========================================================================
-        Function setup() in \"{os.path.basename(__file__)}\" completed successfully!!!
-        ========================================================================"""
-    )
 
 
 #
