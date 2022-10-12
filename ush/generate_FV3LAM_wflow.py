@@ -62,31 +62,28 @@ except ImportError as error:
     python_error_handler()
 
 
-def generate_FV3LAM_wflow(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
+def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') -> None:
     """Function to setup a forecast experiment and create a workflow
     (according to the parameters specified in the config file)
 
     Args:
+        USHdir  (str): The full path of the ush/ directory where this script is located
         logfile (str): The name of the file where logging is written
     Returns:
         None
     """
 
-    print(
+    # Set up logging to write to screen and logfile
+    setup_logging(logfile)
+
+    logging.info(
         dedent(
             """
         ========================================================================
-        ========================================================================
-
         Starting experiment generation...
-
-        ========================================================================
         ========================================================================"""
         )
     )
-
-    # set USHdir
-    USHdir = os.path.dirname(os.path.abspath(__file__))
 
     # check python version
     major, minor, patch = platform.python_version_tuple()
@@ -102,18 +99,8 @@ def generate_FV3LAM_wflow(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
     # define utilities 
     define_macos_utilities()
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Source the file that defines and then calls the setup function.  The
-    # setup function in turn first sources the default configuration file
-    # (which contains default values for the experiment/workflow parameters)
-    # and then sources the user-specified configuration file (which contains
-    # user-specified values for a subset of the experiment/workflow parame-
-    # ters that override their default values).
-    #
-    # -----------------------------------------------------------------------
-    #
+    # The setup function reads the user configuration file and fills in 
+    # non-user-specified values from config_defaults.yaml
     setup()
 
     # import all environment variables
@@ -489,7 +476,6 @@ def generate_FV3LAM_wflow(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
         workflow launch script (WFLOW_LAUNCH_SCRIPT_FP):
           EXPTDIR = \"{EXPTDIR}\"
           WFLOW_LAUNCH_SCRIPT_FP = \"{WFLOW_LAUNCH_SCRIPT_FP}\"''',
-        verbose=VERBOSE,
     )
 
     create_symlink_to_file(
@@ -941,6 +927,11 @@ def generate_FV3LAM_wflow(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
     if not RUN_TASK_MAKE_GRID:
 
         set_FV3nml_sfc_climo_filenames()
+
+    # Call script to get NOMADS data
+    if NOMADS:
+        get_nomads_data(NOMADS_file_type,EXPTDIR,USHdir,DATE_FIRST_CYCL,CYCL_HRS,FCST_LEN_HRS,LBC_SPEC_INTVL_HRS)
+
     #
     # -----------------------------------------------------------------------
     #
@@ -1034,30 +1025,26 @@ def generate_FV3LAM_wflow(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
             */{CRON_RELAUNCH_INTVL_MNTS} * * * * cd {EXPTDIR} && ./launch_FV3LAM_wflow.sh called_from_cron=\"TRUE\"
             """
         )
-    #
-    # If necessary, run the NOMADS script to source external model data.
-    #
-    if NOMADS:
-        print("Getting NOMADS online data")
-        print(f"NOMADS_file_type= {NOMADS_file_type}")
-        cd_vrfy(EXPTDIR)
-        NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.h")
-        run_command(
-            f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
-                      {date_to_str(DATE_FIRST_CYCL,format="%H")} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}"""
-        )
 
     # If we got to this point everything was successful: move the log file to the experiment directory.
-    mv_vrfy(logfile, exptdir)
+    mv_vrfy(logfile, EXPTDIR)
+
+def get_nomads_data(NOMADS_file_type,EXPTDIR,USHdir,DATE_FIRST_CYCL,CYCL_HRS,FCST_LEN_HRS,LBC_SPEC_INTVL_HRS):
+    print("Getting NOMADS online data")
+    print(f"NOMADS_file_type= {NOMADS_file_type}")
+    cd_vrfy(EXPTDIR)
+    NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.sh")
+    # run_command(f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
+    #                 {date_to_str(DATE_FIRST_CYCL,format="%H")} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}""")
+    raise Exception("Nomads script does not work")
 
 def setup_logging(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
     messages with detailed timing and routine info in the specified text file.
     """
-    logger = logging.getLogger()
     logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                        format='%(name)-12s %(levelname)-8s %(message)s',
                         filename=logfile,
                         filemode='w')
     logging.debug(f'Finished setting up debug file logging in {logfile}')
@@ -1069,30 +1056,20 @@ def setup_logging(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
 if __name__ == "__main__":
 
     USHdir = os.path.dirname(os.path.abspath(__file__))
-    logfile='log.generate_FV3LAM_wflow'
-
-    # Quit if not run from ush/ directory; this simplifies so much logic
-    if USHdir != os.getcwd():
-        print(f"This script must be run from the ush/ directory\n{USHdir}")
-        sys.exit(1)
-
-    # Set the log filename; this will be written in USHdir during this script's
-    # execution and moved to EXPTDIR once the experiment is successfully created 
-    setup_logging(logfile)
+    logfile=f'{USHdir}/log.generate_FV3LAM_wflow'
 
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        generate_FV3LAM_wflow(logfile)
+        generate_FV3LAM_wflow(USHdir, logfile)
     except:
         # If the call to the generate_FV3LAM_wflow function above was not successful, 
         # print out an error message and exit with a nonzero return code.
-        logging.error(
+        logging.exception(
             f"""
-            Experiment generation failed. See the error message(s) printed above.
+            Experiment generation failed. See the error message(s) printed below.
             For more detailed information, check the log file from the workflow
-            generation script: {logfile}
-            Stopping."""
+            generation script: {logfile}"""
         )
 
 class Testing(unittest.TestCase):
@@ -1105,13 +1082,13 @@ class Testing(unittest.TestCase):
         # community test case
         cp_vrfy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
         run_command(f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml""")
-        generate_FV3LAM_wflow(logfile)
+        generate_FV3LAM_wflow(USHdir, logfile)
 
         # nco test case
         set_env_var("OPSROOT", f"{USHdir}/../../nco_dirs")
         cp_vrfy(f"{USHdir}/config.nco.yaml", f"{USHdir}/config.yaml")
         run_command(f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml""")
-        generate_FV3LAM_wflow(logfile)
+        generate_FV3LAM_wflow(USHdir, logfile)
 
     def setUp(self):
         define_macos_utilities()
