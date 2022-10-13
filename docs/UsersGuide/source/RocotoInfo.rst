@@ -143,7 +143,7 @@ from the ``$EXPTDIR`` directory as follows:
 where 
 
 * ``-c`` is the cycle to query in YYYYMMDDHHmm format
-* ``-t`` is the task name (see default task names in :numref:`Chapter %s <WFTasks>`)
+* ``-t`` is the task name (e.g., ``make_grid``, ``get_extrn_ics``, ``run_fcst``). See :numref:`Chapter %s <ConfigWorkflow>` for the default values for task name variables, which end in ``_TN``.
 
 The cycle and task names appear in the first and second columns of the table output by ``rocotostat``. 
 
