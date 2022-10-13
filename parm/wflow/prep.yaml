@@ -2,11 +2,10 @@
 # files" for the stationary grid.
 
 default_task_prep: &default_task
+  account: '&ACCOUNT;'
   attrs:
     cycledefs: at_start
     maxtries: '2'
-  account: '&ACCOUNT;'
-  queue: '&QUEUE_DEFAULT;'
   envars: &default_envars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     PDY: !cycstr "@Y@m@d"
@@ -15,6 +14,7 @@ default_task_prep: &default_task
     LOGDIR: !cycstr "&LOGDIR;"
   nodes: 1:ppn=24
   nodesize: "&NCORES_PER_NODE;"
+  queue: '&QUEUE_DEFAULT;'
   walltime: 00:20:00
 
 task_make_grid:
@@ -34,8 +34,8 @@ task_make_orog:
 task_make_sfc_climo:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_sfc_climo" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"'
-  nodes: 2:ppn=24
   join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+  nodes: 2:ppn=24
   dependency:
     and:
       taskdep_make_grid:

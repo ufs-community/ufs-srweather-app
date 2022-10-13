@@ -1,9 +1,8 @@
 default_task_verify: &default_task
+  account: '&ACCOUNT;'
   attrs:
     cycledefs: forecast
     maxtries: '1'
-  account: '&ACCOUNT;'
-  queue: '&QUEUE_DEFAULT;'
   entities:
     - "&RSRV_DEFAULT;"
   envars: &default_vars
@@ -13,33 +12,34 @@ default_task_verify: &default_task
     CYCLE_DIR: !cycstr '&CYCLE_BASEDIR;/@Y@m@d@H'
     FHR: '{% for h in range(0, expt.fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %}'
     SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
-  nodes: 1:ppn=1
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  nodes: 1:ppn=1
   nodesize: '{{ machine.ncores_per_node }}'
+  queue: '&QUEUE_DEFAULT;'
   walltime: 00:30:00
 
 task_get_obs_ccpa:
   <<: *default_task
-  queue: "&QUEUE_HPSS;"
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSDIR;/JREGIONAL_GET_OBS_CCPA"'
-  walltime: 00:45:00
   envars:
     <<: *default_vars
     ACCUM: 01
+  queue: "&QUEUE_HPSS;"
+  walltime: 00:45:00
 
 task_get_obs_mrms:
   <<: *default_task
-  queue: "&QUEUE_HPSS;"
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSDIR;/JREGIONAL_GET_OBS_MRMS"'
-  walltime: 00:45:00
   envars:
     <<: *default_vars
     VAR: 'REFC RETOP'
+  queue: "&QUEUE_HPSS;"
+  walltime: 00:45:00
 
 task_get_obs_ndas:
   <<: *default_task
-  queue: "&QUEUE_HPSS;"
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSDIR;/JREGIONAL_GET_OBS_NDAS"'
+  queue: "&QUEUE_HPSS;"
   walltime: 02:00:00
 
 metatask_vx_gridstat:
@@ -50,12 +50,12 @@ metatask_vx_gridstat:
   task_vx_gridstat_#VAR#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"'
-    walltime: 02:00:00
     envars:
       <<: *default_vars
       OBS_DIR: '#OBS_DIR#'
       VAR: '#VAR#'
       ACCUM: 01
+    walltime: 02:00:00
     dependency:
       and:
         or_get_obs: # Ensure get_obs task is complete if it's turned on
@@ -94,13 +94,13 @@ metatask_vx_gridstat_acc:
   task_vx_gridstat_#ACCUM_HR#h:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"'
-    walltime: 02:00:00
     envars:
       <<: *default_vars
       FHR: '#FCST_HR_LIST#'
       OBS_DIR: '&CCPA_OBS_DIR;'
       VAR: APCP
       ACCUM: '#ACCUM_HR#'
+    walltime: 02:00:00
     dependency:
       taskdep:
         attrs:

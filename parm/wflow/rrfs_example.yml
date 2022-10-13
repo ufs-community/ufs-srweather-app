@@ -4,34 +4,34 @@
 rocoto:
   entities:
     ACCOUNT: '{{ ACCOUNT }}'
-    PARTITION_DEFAULT: '{{ PARTITION_DEFAULT }}'
-    PARTITION_HPSS: '{{ PARTITION_HPSS }}'
-    PARTITION_FCST: '{{ PARTITION_FCST }}'
-    QUEUE_DEFAULT: '{{ QUEUE_DEFAULT }}'
-    QUEUE_HPSS: '{{ QUEUE_HPSS }}'
-    QUEUE_FCST: '{{ QUEUE_FCST }}'
-    SCHED_NATIVE_CMD: '{{ SCHED_NATIVE_CMD }}'
-    WORKFLOW_ID: '{{ WORKFLOW_ID }}'
-    LOGDIR: '{% if RUN_ENVIR == "nco" %} "{}/@Y@m@d".format(LOGDIR) {% else %} LOGDIR {% endif %}'
-    LOGEXT: '{% if RUN_ENVIR == "nco" %} ".{}.log".format(WORKFLOW_ID) {% else %} ".log" {% endif %}'
-    RUN: '{{ RUN }}'
-    NET: '{{ NET }}'
-    NCORES_PER_NODE: '{{ NCORES_PER_NODE }}'
-    EXPTDIR: '{{ EXPTDIR }}'
-    JOBSDIR: '{{ JOBSdir }}'
-    SCRIPTSDIR: '{{ SCRIPTSdir }}'
+    CCPA_OBS_DIR: '{{ CCPA_OBS_DIR }}'
     COMIN_BASEDIR: '{{ COMIN_BASEDIR }}'
     COMOUT_BASEDIR: '{{ COMOUT_BASEDIR }}'
+    EXPTDIR: '{{ EXPTDIR }}'
     GLOBAL_VAR_DEFNS_FP: '{{ GLOBAL_VAR_DEFNS_FP }}'
+    JOBSDIR: '{{ JOBSdir }}'
     LOAD_MODULES_RUN_TASK_FP: '{{ LOAD_MODULES_RUN_TASK_FP }}'
-    CCPA_OBS_DIR: '{{ CCPA_OBS_DIR }}'
+    LOGDIR: '{% if RUN_ENVIR == "nco" %} "{}/@Y@m@d".format(LOGDIR) {% else %} LOGDIR {% endif %}'
+    LOGEXT: '{% if RUN_ENVIR == "nco" %} ".{}.log".format(WORKFLOW_ID) {% else %} ".log" {% endif %}'
     MRMS_OBS_DIR: '{{ MRMS_OBS_DIR }}'
+    NCORES_PER_NODE: '{{ NCORES_PER_NODE }}'
     NDAS_OBS_DIR: '{{ NDAS_OBS_DIR }}'
+    NET: '{{ NET }}'
+    PARTITION_DEFAULT: '{{ PARTITION_DEFAULT }}'
+    PARTITION_FCST: '{{ PARTITION_FCST }}'
+    PARTITION_HPSS: '{{ PARTITION_HPSS }}'
+    QUEUE_DEFAULT: '{{ QUEUE_DEFAULT }}'
+    QUEUE_FCST: '{{ QUEUE_FCST }}'
+    QUEUE_HPSS: '{{ QUEUE_HPSS }}'
+    RUN: '{{ RUN }}'
+    SCHED_NATIVE_CMD: '{{ SCHED_NATIVE_CMD }}'
+    SCRIPTSDIR: '{{ SCRIPTSdir }}'
     USCORE_ENSMEM_NAME: '{% if DO_ENSEMBLE  %}{{ "_mem#mem#" }}{% else %}{{ "" }}{% endif %}'
+    WORKFLOW_ID: '{{ WORKFLOW_ID }}'
   attrs:
+    cyclethrottle: "20"
     realtime: False
     scheduler: '{{ SCHED }}'
-    cyclethrottle: "20"
   cycledefs:
     at_start:
       dates: !startstopfreq ['DATE_FIRST_CYCL', 'DATE_FIRST_CYCL', 'CYCL_FREQ']

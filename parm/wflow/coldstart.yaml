@@ -1,9 +1,8 @@
 default_task: &default_task
+  account: '&ACCOUNT;'
   attrs:
     cycledefs: forecast
     maxtries: '1'
-  account: '&ACCOUNT;'
-  queue: '&QUEUE_DEFAULT;'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     PDY: !cycstr "@Y@m@d"
@@ -13,29 +12,30 @@ default_task: &default_task
     ENSMEM_INDX: '#mem#'
   nodes: 1:ppn=24
   nodesize: "&NCORES_PER_NODE;"
+  queue: '&QUEUE_DEFAULT;'
   walltime: 00:30:00
 
 task_get_extrn_ics:
   <<: *default_task
-  queue: '&QUEUE_HPSS;'
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_ics" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES'
-  nodes: 1:ppn=1
-  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
-  walltime: 00:45:00
   envars:
     <<: *default_vars
     ICS_OR_LBCS: ICS
+  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+  nodes: 1:ppn=1
+  queue: '&QUEUE_HPSS;'
+  walltime: 00:45:00
 
 task_get_extrn_lbcs:
   <<: *default_task
-  queue: '&QUEUE_HPSS;'
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_lbcs" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES'
-  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
-  nodes: 1:ppn=1
-  walltime: 00:45:00
   envars:
     <<: *default_vars
     ICS_OR_LBCS: LBCS
+  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+  nodes: 1:ppn=1
+  queue: '&QUEUE_HPSS;'
+  walltime: 00:45:00
 
 metatask_run_ensemble:
   var:
@@ -43,11 +43,11 @@ metatask_run_ensemble:
   task_make_ics:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "make_ics" "&JOBSDIR;/JREGIONAL_MAKE_ICS"'
-    nodes: 4:ppn=12
-    join: !cycstr '&LOGDIR;/{{ jobname }}.log'
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+    nodes: 4:ppn=12
     dependency:
       and: &make_ics_deps
         taskdep_get_extrn:
@@ -72,11 +72,11 @@ metatask_run_ensemble:
   task_make_lbcs:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "make_lbcs" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"'
-    nodes: 4:ppn=12
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
     join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+    nodes: 4:ppn=12
     dependency:
       and:
         <<: *make_ics_deps
@@ -87,15 +87,15 @@ metatask_run_ensemble:
   task_run_fcst:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSDIR;/JREGIONAL_RUN_FCST"'
-    queue: '&QUEUE_FCST;'
     cores: '12'
-    native: '--cpus-per-task 2 --exclusive'
-    nodes: None
-    join: !cycstr '&LOGDIR;/{{ jobname }}.log'
-    walltime: 04:30:00
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+    native: '--cpus-per-task 2 --exclusive'
+    nodes: None
+    queue: '&QUEUE_FCST;'
+    walltime: 04:30:00
     dependency:
       and:
         taskdep_make_ics:
