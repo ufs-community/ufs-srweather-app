@@ -4,6 +4,8 @@ module load jasper/2.0.25
 module load zlib/1.2.11
 module load-any png/1.6.35 libpng/1.6.37
 
+module load ncio/1.1.2
+
 module load-any netcdf/4.7.4 netcdf-c/4.7.4
 module load-any netcdf/4.7.4 netcdf-fortran/4.5.4
 module load-any pio/2.5.3 parallelio/2.5.2
@@ -29,5 +31,4 @@ module load sigio/2.3.2
 module load w3nco/2.4.1
 module load wrf_io/1.2.0
 
-module load ncio/1.1.2
 module load wgrib2/2.0.8

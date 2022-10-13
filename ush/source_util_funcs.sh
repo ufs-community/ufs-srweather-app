@@ -35,14 +35,6 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-# Source the file containing workflow constants. 
-#
-#-----------------------------------------------------------------------
-#
-  . ${USHdir}/constants.sh
-#
-#-----------------------------------------------------------------------
-#
 # Source the file containing functions to save and restore shell op-
 # tions.
 #

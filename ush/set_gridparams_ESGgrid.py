@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 
+import os
 import unittest
 from datetime import datetime, timedelta
 
-from python_utils import import_vars, set_env_var, print_input_args
+from python_utils import (
+     import_vars,
+     set_env_var,
+     print_input_args,
+     load_config_file,
+     flatten_dict,
+)
 
 
 def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, pazi):
@@ -25,9 +32,12 @@ def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, paz
 
     print_input_args(locals())
 
-    # get needed environment variables
+    # get constants
     IMPORTS = ["RADIUS_EARTH", "DEGS_PER_RADIAN"]
-    import_vars(env_vars=IMPORTS)
+    USHdir = os.path.dirname(os.path.abspath(__file__))
+    constants_cfg = load_config_file(os.path.join(USHdir,"constants.yaml"))
+    import_vars(dictionary=flatten_dict(constants_cfg), env_vars=IMPORTS)
+
     #
     # -----------------------------------------------------------------------
     #
@@ -119,5 +129,5 @@ class Testing(unittest.TestCase):
         )
 
     def setUp(self):
-        set_env_var("RADIUS_EARTH", 6371200.0)
-        set_env_var("DEGS_PER_RADIAN", 57.2957795131)
+        set_env_var("DEBUG", False)
+        set_env_var("VERBOSE", False)

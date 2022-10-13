@@ -1,0 +1,33 @@
+platform:
+  WORKFLOW_MANAGER: rocoto
+  NCORES_PER_NODE: 24
+  SCHED: slurm
+  DOMAIN_PREGEN_BASEDIR: /FV3LAM_pregen
+  PARTITION_DEFAULT: workq
+  QUEUE_DEFAULT: workq
+  PARTITION_FCST: workq
+  QUEUE_FCST: workq
+  PARTITION_HPSS: workq
+  QUEUE_HPSS: workq
+  RUN_CMD_FCST: srun -n ${PE_MEMBER01}
+  RUN_CMD_POST: srun -n 1
+  RUN_CMD_SERIAL: srun -n 1
+  RUN_CMD_UTILS: srun -n $nprocs
+  ENV_INIT_SCRIPTS_FPS: []
+  PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /scratch/ywang/UFS_SRW_App/develop/input_model_data
+  TEST_PREGEN_BASEDIR: /scratch/ywang/UFS_SRW_App/develop/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /scratch/ywang/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch/ywang/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+task_run_fcst:
+  FIXaer: /scratch/ywang/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsm: /scratch/ywang/UFS_SRW_App/develop/fix/fix_am
+  FIXlut: /scratch/ywang/UFS_SRW_App/develop/fix/fix_lut
+  TOPO_DIR: /scratch/ywang/UFS_SRW_App/develop/fix/fix_orog
+  SFC_CLIMO_INPUT_DIR: /scratch/ywang/UFS_SRW_App/develop/fix/fix_sfc_climo
+data:
+  GSMGFS: /scratch/ywang/UFS_SRW_App/develop/input_model_data/GFS
+  FV3GFS: /scratch/ywang/UFS_SRW_App/develop/input_model_data/FV3GFS
+  HRRR: /scratch/ywang/UFS_SRW_App/develop/input_model_data/HRRR
+  RAP: /scratch/ywang/UFS_SRW_App/develop/input_model_data/RAP
+  NAM: /scratch/ywang/UFS_SRW_App/develop/input_model_data/NAM

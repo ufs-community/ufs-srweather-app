@@ -62,7 +62,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
 #
 #-----------------------------------------------------------------------
 #
-. ${MACHINE_FILE}
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_RUN_FCST*PPN_RUN_FCST ))
@@ -519,10 +518,9 @@ POST_STEP
 #-----------------------------------------------------------------------
 #
 if [ ${WRITE_DOPOST} = "TRUE" ]; then
-
+	
   yyyymmdd=${PDY}
   hh=${cyc}
-  cyc=$hh
   fmn="00"
 
   if [ "${RUN_ENVIR}" != "nco" ]; then
@@ -546,16 +544,19 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
     post_fn_suffix="GrbF${fhr_d}"
     post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 
-    basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
-    symlink_suffix="_${basetime}f${fhr}${post_mn}"
     fids=( "prslev" "natlev" )
     for fid in "${fids[@]}"; do
       FID=$(echo_uppercase $fid)
       post_orig_fn="${FID}.${post_fn_suffix}"
       post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
+ 
       mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
       if [ $RUN_ENVIR != "nco" ]; then
-        ln_vrfy -fs ${post_renamed_fn} ${FID}${symlink_suffix}
+        basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
+        symlink_suffix="_${basetime}f${fhr}${post_mn}"
+        create_symlink_to_file target="${post_renamed_fn}" \
+                         symlink="${FID}${symlink_suffix}" \
+	                 relative="TRUE"
       fi
       # DBN alert
       if [ $SENDDBN = "TRUE" ]; then

@@ -63,7 +63,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_ICS}
 #
 #-----------------------------------------------------------------------
 #
-. ${MACHINE_FILE}
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_MAKE_ICS*PPN_MAKE_ICS ))

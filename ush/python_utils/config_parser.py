@@ -369,7 +369,7 @@ def structure_dict(dict_o, dict_t):
     return struct_dict
 
 
-def update_dict(dict_o, dict_t):
+def update_dict(dict_o, dict_t, provide_default=False):
     """Update a dictionary with another
 
     Args:
@@ -380,9 +380,10 @@ def update_dict(dict_o, dict_t):
     """
     for k, v in dict_t.items():
         if isinstance(v, dict):
-            update_dict(dict_o, v)
+            update_dict(dict_o, v, provide_default)
         elif k in dict_o.keys():
-            dict_t[k] = dict_o[k]
+            if (not provide_default) or (dict_t[k] is None) or (len(dict_t[k]) == 0):
+                dict_t[k] = dict_o[k]
 
 
 def check_structure_dict(dict_o, dict_t):
