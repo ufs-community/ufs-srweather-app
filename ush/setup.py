@@ -93,13 +93,21 @@ def setup(logger: Logger = getLogger()):
     if not os.path.exists(EXPT_CONFIG_FN):
         raise FileNotFoundError(f'User config file not found: {EXPT_CONFIG_FN=}')
 
-    cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
+    try:
+        cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
+    except:
+        errmsg = dedent(f'''\n
+                        Could not load YAML config file:  {EXPT_CONFIG_FN}
+                        The file may be formatted incorrectly; reference the Users Guide for more info 
+                        ''')
+        raise Exception(errmsg) from None
+
     cfg_u = flatten_dict(cfg_u)
     for key in cfg_u:
         if key not in flatten_dict(cfg_d):
             raise Exception(dedent(f'''
-                                   User-specified variable "{key}" in {EXPT_CONFIG_FN} is not valid
-                                   Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n'''))
+                            User-specified variable "{key}" in {EXPT_CONFIG_FN} is not valid
+                            Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n'''))
 
     # Mandatory variables *must* be set in the user's config; the default value is invalid
     mandatory = ['MACHINE']
@@ -121,6 +129,12 @@ def setup(logger: Logger = getLogger()):
     #
     global MACHINE, EXTRN_MDL_SYSBASEDIR_ICS, EXTRN_MDL_SYSBASEDIR_LBCS
     MACHINE_FILE = os.path.join(USHdir, "machine", f"{lowercase(MACHINE)}.yaml")
+    if not os.path.exists(MACHINE_FILE):
+        raise FileNotFoundError(dedent(
+            f"""
+            The machine file {MACHINE_FILE} does not exist.
+            Check that you have specified the correct machine ({MACHINE=}) in your config file {EXPT_CONFIG_FN}"""
+        ))
     machine_cfg = load_config_file(MACHINE_FILE)
 
     # ics and lbcs
@@ -165,20 +179,14 @@ def setup(logger: Logger = getLogger()):
     # make machine name uppercase
     MACHINE = uppercase(MACHINE)
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Source constants.sh and save its contents to a variable for later
-    #
-    # -----------------------------------------------------------------------
-    #
+    # Load constants file and save its contents to a variable for later
     cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
     import_vars(dictionary=flatten_dict(cfg_c))
 
     #
     # -----------------------------------------------------------------------
     #
-    # Generate a unique number for this workflow run. This maybe used to
+    # Generate a unique number for this workflow run. This may be used to
     # get unique log file names for example
     #
     # -----------------------------------------------------------------------
@@ -1984,8 +1992,8 @@ def setup(logger: Logger = getLogger()):
         if (vkey in cfg_v) and not (v in cfg_v[vkey]):
             raise Exception(
                 f"""
-                The variable {k}={v} in {EXPT_DEFAULT_CONFIG_FN} or {EXPT_CONFIG_FN} does not have
-                a valid value. Possible values are:
+                The variable {k}={v} in {EXPT_DEFAULT_CONFIG_FN} or {EXPT_CONFIG_FN}
+                does not have a valid value. Possible values are:
                     {k} = {cfg_v[vkey]}"""
             )
 
