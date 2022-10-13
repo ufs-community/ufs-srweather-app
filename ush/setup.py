@@ -304,9 +304,17 @@ def setup(logger: Logger = getLogger()):
             raise Exception(
                 f'''
                 All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
-                variables set in {CONFIG_FN} must be equal in number of entries to what is
+                variables set in {EXPT_CONFIG_FN} must be equal in number of entries to what is
                 found in SPP_VAR_LIST:
-                  Number of entries in SPP_VAR_LIST = \"{len(SPP_VAR_LIST)}\"'''
+                  {len(SPP_VAR_LIST)=}
+                  {len(SPP_MAG_LIST)=}
+                  {len(SPP_LSCALE)=}
+                  {len(SPP_TSCALE)=}
+                  {len(SPP_SIGTOP1)=}
+                  {len(SPP_SIGTOP2)=}
+                  {len(SPP_STDDEV_CUTOFF)=}
+                  {len(ISEED_SPP)=}
+                '''
             )
     #
     # -----------------------------------------------------------------------
@@ -326,9 +334,13 @@ def setup(logger: Logger = getLogger()):
             raise Exception(
                 f'''
                 All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
-                set in {CONFIG_FN} must be equal in number of entries to what is found in
+                set in {EXPT_CONFIG_FN} must be equal in number of entries to what is found in
                 SPP_VAR_LIST:
-                  Number of entries in SPP_VAR_LIST = \"{len(LSM_SPP_VAR_LIST)}\"'''
+                  {len(LSM_SPP_VAR_LIST)=}
+                  {len(LSM_SPP_MAG_LIST)=}
+                  {len(LSM_SPP_LSCALE)=}
+                  {len(LSM_SPP_TSCALE)=}
+                  '''
             )
     #
     # The current script should be located in the ush subdirectory of the
@@ -390,7 +402,6 @@ def setup(logger: Logger = getLogger()):
     global SCRIPTSdir, JOBSdir, SORCdir, PARMdir, MODULESdir
     global EXECdir, PARMdir, FIXdir, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
 
-    USHdir = os.path.join(HOMEdir, "ush")
     SCRIPTSdir = os.path.join(HOMEdir, "scripts")
     JOBSdir = os.path.join(HOMEdir, "jobs")
     SORCdir = os.path.join(HOMEdir, "sorc")
@@ -415,26 +426,17 @@ def setup(logger: Logger = getLogger()):
 
     RELATIVE_LINK_FLAG = "--relative"
 
-    if not NCORES_PER_NODE:
-        raise Exception(
-            f"""
-            NCORES_PER_NODE has not been specified in the file {MACHINE_FILE}
-            Please ensure this value has been set for your desired platform. """
-        )
-
-    if not (FIXgsm and FIXaer and FIXlut and TOPO_DIR and SFC_CLIMO_INPUT_DIR):
-        raise Exception(
-            f"""
-            One or more fix file directories have not been specified for this machine:
-              MACHINE = \"{MACHINE}\"
-              FIXgsm = \"{FIXgsm or ""}
-              FIXaer = \"{FIXaer or ""}
-              FIXlut = \"{FIXlut or ""}
-              TOPO_DIR = \"{TOPO_DIR or ""}
-              SFC_CLIMO_INPUT_DIR = \"{SFC_CLIMO_INPUT_DIR or ""}
-              DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR or ""}
-            You can specify the missing location(s) in config.sh"""
-        )
+    # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
+    mandatory = ['NCORES_PER_NODE', 'FIXgsm', 'FIXaer', 'FIXlut', 'TOPO_DIR', 'SFC_CLIMO_INPUT_DIR']
+    for val in mandatory:
+        # globals() returns dictionary of global variables
+        if not globals()[val]:
+            raise Exception(dedent(f'''
+                            Mandatory variable "{val}" not found in:
+                            user config file {EXPT_CONFIG_FN}
+                                          OR
+                            machine file {MACHINE_FILE} 
+                            '''))
 
     #
     # -----------------------------------------------------------------------
@@ -474,12 +476,10 @@ def setup(logger: Logger = getLogger()):
     #
     if WORKFLOW_MANAGER is not None:
         if not ACCOUNT:
-            raise Exception(
-                f'''
-                The variable ACCOUNT cannot be empty if you are using a workflow manager:
-                  ACCOUNT = \"ACCOUNT\"
-                  WORKFLOW_MANAGER = \"WORKFLOW_MANAGER\"'''
-            )
+            raise Exception(dedent(f'''
+                  ACCOUNT must be specified in config or machine file if using a workflow manager.
+                  {WORKFLOW_MANAGER=}\n'''
+            ))
     #
     # -----------------------------------------------------------------------
     #
@@ -496,12 +496,7 @@ def setup(logger: Logger = getLogger()):
     GTYPE = "regional"
     TILE_RGNL = "7"
 
-    # -----------------------------------------------------------------------
-    #
-    # Set USE_MERRA_CLIMO to either "TRUE" or "FALSE" so we don't
-    # have to consider other valid values later on.
-    #
-    # -----------------------------------------------------------------------
+    # USE_MERRA_CLIMO must be True for the physics suite FV3_GFS_v15_thompson_mynn_lam3km"
     global USE_MERRA_CLIMO
     if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
         USE_MERRA_CLIMO = True
