@@ -86,18 +86,19 @@ def setup(logger: Logger = getLogger()):
                   "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
                   "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Load the user config file but don't source it yet.
-    #
-    # -----------------------------------------------------------------------
-    #
+
+    # Load the user config file, containing contains user-specified values 
+    # variables that override their default values. Ensure all user-specified
+    # variables correspond to a default value. 
     if not os.path.exists(EXPT_CONFIG_FN):
         raise FileNotFoundError(f'User config file not found: {EXPT_CONFIG_FN=}')
 
     cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
     cfg_u = flatten_dict(cfg_u)
+    for key in cfg_u:
+        if key not in cfg_d:
+            raise Exception(dedent(f'''User-specified variable {key} in {EXPT_CONFIG_FN} is not valid
+                           Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n'''))
     import_vars(dictionary=cfg_u, env_vars=["MACHINE",
                    "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
                    "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
