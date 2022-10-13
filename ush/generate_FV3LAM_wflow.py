@@ -396,7 +396,7 @@ def generate_FV3LAM_wflow():
             #
             "date_first_cycl": date_to_str(DATE_FIRST_CYCL, format="%Y%m%d%H00"),
             "date_last_cycl": date_to_str(DATE_LAST_CYCL, format="%Y%m%d%H00"),
-            "cdate_first_cycl": DATE_FIRST_CYCL
+            "cdate_first_cycl": DATE_FIRST_CYCL,
             "cycl_freq": f"{INCR_CYCL_FREQ:02d}:00:00",
             #
             # Forecast length (same for all cycles).
