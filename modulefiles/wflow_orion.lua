@@ -1,0 +1,19 @@
+help([[
+This module loads python environement for running SRW on
+the MSU machine Orion
+]])
+
+whatis([===[Loads libraries needed for running SRW on Orion ]===])
+
+load("contrib")
+load("rocoto")
+
+append_path("MODULEPATH","/apps/contrib/miniconda3-noaa-gsl/modulefiles")
+load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "3.8"))
+
+if mode() == "load" then
+   LmodMsgRaw([===[Please do the following to activate conda:
+       > conda activate regional_workflow
+]===])
+end
+
