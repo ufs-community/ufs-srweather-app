@@ -595,9 +595,6 @@ workflow:
   # Format is "YYYYMMDDHH".  Note: This has recently changed to include
   # the last cycle hour.
   #
-  # CYCL_HRS:
-  # Deprecated.
-  #
   # INCR_CYCL_FREQ:
   # Increment in hours for Rocoto cycle frequency.
   # Default is 24, which means cycle_freq=24:00:00

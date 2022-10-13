@@ -534,7 +534,7 @@ settings. There is usually no need for a user to modify the default configuratio
    |                      | EXTRN_MDL_ICS_VAR_DEFNS_FN, EXTRN_MDL_LBCS_VAR_DEFNS_FN,     |
    |                      | WFLOW_LAUNCH_SCRIPT_FN, WFLOW_LAUNCH_LOG_FN                  |
    +----------------------+--------------------------------------------------------------+
-   | Forecast             | DATE_FIRST_CYCL, DATE_LAST_CYCL, INCR_CYCL_FREQ, FCST_LEN_HRS|
+   | Forecast             | DATE_FIRST_CYCL, DATE_LAST_CYCL, INCR_CYCL_FREQ,             |
    |                      | FCST_LEN_HRS                                                 |
    +----------------------+--------------------------------------------------------------+
    | IC/LBC               | EXTRN_MDL_NAME_ICS, EXTRN_MDL_NAME_LBCS,                     |
