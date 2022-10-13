@@ -96,9 +96,17 @@ def setup(logger: Logger = getLogger()):
     cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
     cfg_u = flatten_dict(cfg_u)
     for key in cfg_u:
-        if key not in cfg_d:
-            raise Exception(dedent(f'''User-specified variable {key} in {EXPT_CONFIG_FN} is not valid
-                           Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n'''))
+        if key not in flatten_dict(cfg_d):
+            raise Exception(dedent(f'''
+                                   User-specified variable "{key}" in {EXPT_CONFIG_FN} is not valid
+                                   Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n'''))
+
+    # Mandatory variables *must* be set in the user's config; the default value is invalid
+    mandatory = ['MACHINE']
+    for val in mandatory:
+        if val not in cfg_u:
+            raise Exception(f'Mandatory variable "{val}" not found in user config file {EXPT_CONFIG_FN}')
+
     import_vars(dictionary=cfg_u, env_vars=["MACHINE",
                    "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
                    "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
@@ -341,30 +349,33 @@ def setup(logger: Logger = getLogger()):
         mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
     except:
         pass
-    property_name = "local_path"
     cfg = load_ini_config(mng_extrns_cfg_fn)
+
     #
     # Get the base directory of the FV3 forecast model code.
     #
     external_name = FCST_MODEL
-    UFS_WTHR_MDL_DIR = get_ini_value(cfg, external_name, property_name)
+    property_name = "local_path"
 
-    if not UFS_WTHR_MDL_DIR:
-        raise Exception(
-            f"""
-            Externals.cfg does not contain "{external_name}"."""
-        )
+    try:
+        UFS_WTHR_MDL_DIR = get_ini_value(cfg, external_name, property_name)
+    except KeyError:
+        errmsg = dedent(f'''
+                        Externals configuration file {mng_extrns_cfg_fn}
+                        does not contain "{external_name}".''')
+        raise Exception(errmsg) from None
+        
 
     UFS_WTHR_MDL_DIR = os.path.join(HOMEdir, UFS_WTHR_MDL_DIR)
     if not os.path.exists(UFS_WTHR_MDL_DIR):
-        raise FileNotFoundError(
+        raise FileNotFoundError(dedent(
             f"""
             The base directory in which the FV3 source code should be located
             (UFS_WTHR_MDL_DIR) does not exist:
               UFS_WTHR_MDL_DIR = \"{UFS_WTHR_MDL_DIR}\"
             Please clone the external repository containing the code in this directory,
             build the executable, and then rerun the workflow."""
-        )
+        ))
     #
     # Define some other useful paths
     #

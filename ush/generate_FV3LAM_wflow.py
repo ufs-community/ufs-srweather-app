@@ -1065,12 +1065,15 @@ if __name__ == "__main__":
     except:
         # If the call to the generate_FV3LAM_wflow function above was not successful, 
         # print out an error message and exit with a nonzero return code.
-        logging.exception(
+        logging.exception(dedent(
             f"""
+            *********************************************************************
             Experiment generation failed. See the error message(s) printed below.
             For more detailed information, check the log file from the workflow
-            generation script: {logfile}"""
-        )
+            generation script: {logfile}
+            *********************************************************************\n
+            """
+        ))
 
 class Testing(unittest.TestCase):
     def test_generate_FV3LAM_wflow(self):
