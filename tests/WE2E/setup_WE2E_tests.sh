@@ -62,24 +62,6 @@ TOP_DIR=$( dirname "${SRW_APP_DIR}" )
 
 EXPTS_DIR=${5:-"${TOP_DIR}/expt_dirs"}
 
-#-----------------------------------------------------------------------
-# Set the path to the machine-specific test suite file.
-#-----------------------------------------------------------------------
-
-if [ $test_type = "all" ] ; then
-  auto_file=$(mktemp ${scrfunc_dir}/all_tests.XXXXX)
-  for fp in $(find ${scrfunc_dir}/test_configs -name "config.*" -type f ) ; do
-      # Remove the path with basename, remove the prefix and suffix
-      # with cut
-      echo $(basename $fp | cut -f 2 -d .) >> $auto_file
-  done
-else
-  auto_file=${scrfunc_dir}/machine_suites/${test_type}.${machine}
-  if [ ! -f ${auto_file} ]; then
-      auto_file=${scrfunc_dir}/machine_suites/${test_type}
-  fi
-fi
-
 #----------------------------------------------------------------------
 # Use exec_subdir consistent with the automated build.
 #----------------------------------------------------------------------
@@ -112,7 +94,7 @@ module list
 
 # Run the E2E Workflow tests
 ./run_WE2E_tests.sh \
-  tests_file=${auto_file} \
+  test_type=${test_type} \
   machine=${machine} \
   account=${account} \
   exec_subdir=${exec_subdir} \
