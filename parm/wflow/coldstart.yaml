@@ -6,9 +6,11 @@ default_task: &default_task
   queue: '&QUEUE_DEFAULT;'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
-    PDY: !cycstr {value: '@Y@m@d'}
-    CDATE: !cycstr {value: '@Y@m@d@H'}
-    CYCLE_DIR: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H'}
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
+    ENSMEM_INDX: '#mem#'
   nodes: 1:ppn=24
   nodesize: "&NCORES_PER_NODE;"
   walltime: 00:30:00
@@ -18,7 +20,8 @@ task_get_extrn_ics:
   queue: '&QUEUE_HPSS;'
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_ics" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES'
   nodes: 1:ppn=1
-  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
+  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+  walltime: 00:45:00
   envars:
     <<: *default_vars
     ICS_OR_LBCS: ICS
@@ -27,110 +30,78 @@ task_get_extrn_lbcs:
   <<: *default_task
   queue: '&QUEUE_HPSS;'
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_lbcs" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES'
-  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
+  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
   nodes: 1:ppn=1
+  walltime: 00:45:00
   envars:
     <<: *default_vars
     ICS_OR_LBCS: LBCS
 
-
-task_make_ics:
-  <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "make_ics" "&JOBSDIR;/JREGIONAL_MAKE_ICS"'
-  nodes: 4:ppn=12
-  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
-  envars:
-    <<: *default_vars
-    SLASH_ENSMEM_SUBDIR: '/'
-  dependency:
-    and: &make_ics_deps
-      taskdep_get_extrn:
-        attrs:
-          task: get_extrn_ics
-      or_grid:
-        datadep_grid:
-          attrs:
-            age: 00:00:00:05
-          text: '&LOGDIR;/make_grid_task_complete.txt'
-      or_orog:
-        datadep_orog:
-          attrs:
-            age: 00:00:00:05
-          text: '&LOGDIR;/make_orog_task_complete.txt'
-      or_sfc_climo:
-        datadep_sfc_climo:
-          attrs:
-            age: 00:00:00:05
-          text: '&LOGDIR;/make_sfc_climo_task_complete.txt'
-
-task_make_lbcs:
-  <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "make_lbcs" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"'
-  nodes: 4:ppn=12
-  envars:
-    <<: *default_vars
-    SLASH_ENSMEM_SUBDIR: '/'
-  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
-  dependency:
-    and:
-      <<: *make_ics_deps
-      taskdep_get_extrn:
-        attrs:
-          task: get_extrn_lbcs
-
-
-task_run_fcst:
-  <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSDIR;/JREGIONAL_RUN_FCST"'
-  queue: '&QUEUE_FCST;'
-  cores: '12'
-  native: '--cpus-per-task 2 --exclusive'
-  nodes: None
-  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
-  walltime: 04:30:00
-  envars:
-    <<: *default_vars
-    SLASH_ENSMEM_SUBDIR: '/'
-    ENSMEM_INDX: ''
-  dependency:
-    and:
-      taskdep_make_ics:
-        attrs:
-          task: make_ics
-      taskdep_make_lbcs:
-        attrs:
-          task: make_lbcs
-
-
-metatask_run_post:
+metatask_run_ensemble:
   var:
-    fhr: '{% for h in range(0, expt.fcst_len_hrs+1) %}{{ " %03d" % h  }}{% endfor %}'
-  task_run_post_f#fhr#:
+    mem: '{% if DO_ENSEMBLE  %} "{%- for m in range(1, NUM_ENS_MEMBERS+1) -%}{{ "%03d"%m }}{%- endfor -%} {% else %} det {% endif %}'
+  task_make_ics:
     <<: *default_task
-    attrs:
-      cycledef: forcast
-      maxtries: '2'
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSDIR;/JREGIONAL_RUN_POST"'
-    nodes: 2:ppn=24
-    walltime: 00:15:00
-    join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
+    command: '&LOAD_MODULES_RUN_TASK_FP; "make_ics" "&JOBSDIR;/JREGIONAL_MAKE_ICS"'
+    nodes: 4:ppn=12
+    join: !cycstr '&LOGDIR;/{{ jobname }}.log'
     envars:
       <<: *default_vars
-      SLASH_ENSMEM_SUBDIR: '/'
-      cyc: !cycstr {value: '@H'}
-      fhr: '#fhr#'
+      SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
     dependency:
-      or:
-        taskdep:
+      and: &make_ics_deps
+        taskdep_get_extrn:
           attrs:
-            task: run_fcst
-        and:
-          datadep_dyn:
-            text: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H/dynf#fhr#.nc'}
+            task: get_extrn_ics
+        or_grid:
+          datadep_grid:
             attrs:
-              age: '05:00'
-          datadep_phy:
-            text: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H/phyf#fhr#.nc'}
+              age: 00:00:00:05
+            text: '&LOGDIR;/make_grid_task_complete.txt'
+        or_orog:
+          datadep_orog:
             attrs:
-              age: '05:00'
+              age: 00:00:00:05
+            text: '&LOGDIR;/make_orog_task_complete.txt'
+        or_sfc_climo:
+          datadep_sfc_climo:
+            attrs:
+              age: 00:00:00:05
+            text: '&LOGDIR;/make_sfc_climo_task_complete.txt'
+
+  task_make_lbcs:
+    <<: *default_task
+    command: '&LOAD_MODULES_RUN_TASK_FP; "make_lbcs" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"'
+    nodes: 4:ppn=12
+    envars:
+      <<: *default_vars
+      SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+    dependency:
+      and:
+        <<: *make_ics_deps
+        taskdep_get_extrn:
+          attrs:
+            task: get_extrn_lbcs
+
+  task_run_fcst:
+    <<: *default_task
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSDIR;/JREGIONAL_RUN_FCST"'
+    queue: '&QUEUE_FCST;'
+    cores: '12'
+    native: '--cpus-per-task 2 --exclusive'
+    nodes: None
+    join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+    walltime: 04:30:00
+    envars:
+      <<: *default_vars
+      SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
+    dependency:
+      and:
+        taskdep_make_ics:
+          attrs:
+            task: make_ics
+        taskdep_make_lbcs:
+          attrs:
+            task: make_lbcs
 

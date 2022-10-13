@@ -9,6 +9,10 @@ default_task_prep: &default_task
   queue: '&QUEUE_DEFAULT;'
   envars: &default_envars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
   nodes: 1:ppn=24
   nodesize: "&NCORES_PER_NODE;"
   walltime: 00:20:00
@@ -16,13 +20,12 @@ default_task_prep: &default_task
 task_make_grid:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_grid" "&JOBSDIR;/JREGIONAL_MAKE_GRID"'
-  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
+  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
 
 task_make_orog:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_orog" "&JOBSDIR;/JREGIONAL_MAKE_OROG"'
-  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
-  walltime: 01:00:00
+  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
   dependency:
     taskdep_make_grid:
       attrs:
@@ -32,7 +35,7 @@ task_make_sfc_climo:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_sfc_climo" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"'
   nodes: 2:ppn=24
-  join: !cycstr {value: '&LOGDIR;/{{ jobname }}.log'}
+  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
   dependency:
     and:
       taskdep_make_grid:

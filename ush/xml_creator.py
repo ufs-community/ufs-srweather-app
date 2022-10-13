@@ -7,6 +7,7 @@ import argparse
 from copy import deepcopy
 from io import StringIO
 import os
+import pathlib
 import re
 import sys
 from textwrap import dedent
@@ -133,10 +134,17 @@ def cycstr(loader, node):
     ''' Returns a cyclestring Element whose content corresponds to the
     input node argument '''
 
-    arg = loader.construct_mapping(node, deep=True)
-    string = arg.pop('value')
-    attrs = ' '.join([f'{key}={value}' for key, value in arg.items()])
-    cyc = ET.Element('cyclestr', attrib=arg)
+    try:
+        arg = loader.construct_mapping(node, deep=True)
+    except yaml.constructor.ConstructorError:
+        arg = loader.construct_scalar(node)
+
+    if isinstance(arg, str):
+        string = arg
+        cyc = ET.Element('cyclestr')
+    else:
+        string = arg.pop('value')
+        cyc = ET.Element('cyclestr', attrib=arg)
     cyc.text = string
     return cyc
 
@@ -145,22 +153,31 @@ def include(loader, node):
     ''' Returns a dictionary that includes the contents of the referenced
     YAML file(s). '''
 
-    filenames = loader.construct_sequence(node)
+    filepaths = loader.construct_sequence(node)
+    srw_path = pathlib.Path(__file__).resolve().parents[0]
 
     cfg = {}
-    for filename in filenames:
-        with open(filename, 'r') as fn:
-           cfg.update(yaml.load(fn, Loader=yaml.SafeLoader))
+    for filepath in filepaths:
+        abs_path = filepath
+        if not os.path.isabs(filepath):
+            abs_path = os.path.join(os.path.dirname(srw_path), filepath)
+        with open(abs_path, 'r') as fp:
+           cfg.update(yaml.load(fp, Loader=yaml.SafeLoader))
     return cfg
 
 def startstopfreq(loader, node):
 
     ''' Returns a Rocoto-formatted string for the contents of a cycledef
-    tag '''
+    tag. Assume that the items in the node are env variables, and return
+    a Rocoto-formatted string'''
 
-    arg = loader.construct_sequence(node)
-    return ' '.join([str(i) for i in arg])
+    args = loader.construct_sequence(node)
 
+    # Try to fill the values from environment values, default to the
+    # value provided in the entry.
+    start, stop, freq = (os.environ.get(arg, arg) for arg in args)
+
+    return f'{start} {stop} {freq}:00:00'
 
 yaml.add_constructor('!cycstr', cycstr, Loader=yaml.SafeLoader)
 yaml.add_constructor('!include', include, Loader=yaml.SafeLoader)

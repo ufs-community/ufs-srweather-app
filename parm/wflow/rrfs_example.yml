@@ -1,44 +1,41 @@
 # Trying to match grid_RRFS_CONUS_25km_ics_HRRR_lbcs_RAP_suite_HRRR 
 #
 #
-user:
-  account: zrtrr
-  sr_wx_app_top_dir: /scratch2/BMC/wrfruc/cholt/repos/srw_yaml_wflow
-  jobsdir: '{{ ( user.sr_wx_app_top_dir, "/regional_workflow/jobs")|path_join }}'
-  load_modules_run_task_fp: '/scratch2/BMC/wrfruc/cholt/repos/srw_yaml_wflow/regional_workflow/ush/load_modules_run_task.sh'
-expt:
-  logdir: '{{ (expt.exptdir, "log")|path_join }}'
-  expt_basedir: /somewhere
-  expt_subdir: test_community
-  exptdir: '{{ (expt.expt_basedir, expt.expt_subdir)|path_join }}'
-  fcst_len_hrs: 24
-machine:
-  scheduler: slurm
-  queue_default: batch
-  queue_hpss: batch
-  queue_fcst: batch
-  ncores_per_node: 40
-workflow:
+rocoto:
   entities:
-    ACCOUNT: '{{ user.account }}'
-    SCHED : '{{ machine.scheduler }}'
-    QUEUE_DEFAULT: '{{ machine.queue_default }}'
-    QUEUE_HPSS: '{{ machine.queue_hpss }}'
-    QUEUE_FCST: '{{ machine.queue_fcst }}'
-    NCORES_PER_NODE: '{{ machine.ncores_per_node }}'
-    JOBSDIR: '{{ user.jobsdir }}'
-    LOGDIR: '{{ expt.logdir }}'
-    CYCLE_BASEDIR: '{{ expt.cycle_basedir }}'
-    GLOBAL_VAR_DEFNS_FP: '{{ expt.global_var_defns_fp }}'
-    LOAD_MODULES_RUN_TASK_FP: '{{user.load_modules_run_task_fp }}'
+    ACCOUNT: '{{ ACCOUNT }}'
+    PARTITION_DEFAULT: '{{ PARTITION_DEFAULT }}'
+    PARTITION_HPSS: '{{ PARTITION_HPSS }}'
+    PARTITION_FCST: '{{ PARTITION_FCST }}'
+    QUEUE_DEFAULT: '{{ QUEUE_DEFAULT }}'
+    QUEUE_HPSS: '{{ QUEUE_HPSS }}'
+    QUEUE_FCST: '{{ QUEUE_FCST }}'
+    SCHED_NATIVE_CMD: '{{ SCHED_NATIVE_CMD }}'
+    WORKFLOW_ID: '{{ WORKFLOW_ID }}'
+    LOGDIR: '{% if RUN_ENVIR == "nco" %} "{}/@Y@m@d".format(LOGDIR) {% else %} LOGDIR {% endif %}'
+    LOGEXT: '{% if RUN_ENVIR == "nco" %} ".{}.log".format(WORKFLOW_ID) {% else %} ".log" {% endif %}'
+    RUN: '{{ RUN }}'
+    NET: '{{ NET }}'
+    NCORES_PER_NODE: '{{ NCORES_PER_NODE }}'
+    EXPTDIR: '{{ EXPTDIR }}'
+    JOBSDIR: '{{ JOBSdir }}'
+    SCRIPTSDIR: '{{ SCRIPTSdir }}'
+    COMIN_BASEDIR: '{{ COMIN_BASEDIR }}'
+    COMOUT_BASEDIR: '{{ COMOUT_BASEDIR }}'
+    GLOBAL_VAR_DEFNS_FP: '{{ GLOBAL_VAR_DEFNS_FP }}'
+    LOAD_MODULES_RUN_TASK_FP: '{{ LOAD_MODULES_RUN_TASK_FP }}'
+    CCPA_OBS_DIR: '{{ CCPA_OBS_DIR }}'
+    MRMS_OBS_DIR: '{{ MRMS_OBS_DIR }}'
+    NDAS_OBS_DIR: '{{ NDAS_OBS_DIR }}'
+    USCORE_ENSMEM_NAME: '{% if DO_ENSEMBLE  %}{{ "_mem#mem#" }}{% else %}{{ "" }}{% endif %}'
   attrs:
-    realtime: F
-    scheduler: "&SCHED;"
-    cyclethrottle: '20'
+    realtime: False
+    scheduler: '{{ SCHED }}'
+    cyclethrottle: "20"
   cycledefs:
     at_start:
-      dates: !startstopfreq [202008100000, 202008100000, '00:00:00']
+      dates: !startstopfreq ['DATE_FIRST_CYCL', 'DATE_FIRST_CYCL', 'CYCL_FREQ']
     forecast:
-      dates: !startstopfreq [202008100000, 202008100000, '24:00:00']
-  log: "&LOGDIR;/FV3LAM_wflow.log"
-  tasks: !include ['/scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/wflow/prep.yaml', '/scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/wflow/coldstart.yaml']
+      dates: !startstopfreq ['DATE_FIRST_CYCL', 'DATE_LAST_CYCL', 'CYCL_FREQ']
+  log: !cycstr '&LOGDIR'
+  tasks: !include ['parm/wflow/prep.yaml', 'parm/wflow/coldstart.yaml']

@@ -1,16 +1,20 @@
 default_task_verify: &default_task
+  attrs:
+    cycledefs: forecast
+    maxtries: '1'
   account: '&ACCOUNT;'
   queue: '&QUEUE_DEFAULT;'
   entities:
     - "&RSRV_DEFAULT;"
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
-    PDY: !cycstr {value: '@Y@m@d'}
-    CDATE: !cycstr {value: '@Y@m@d@H'}
-    CYCLE_DIR: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H'}
+    PDY: !cycstr '@Y@m@d'
+    CDATE: !cycstr '@Y@m@d@H'
+    CYCLE_DIR: !cycstr '&CYCLE_BASEDIR;/@Y@m@d@H'
     FHR: '{% for h in range(0, expt.fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %}'
+    SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
   nodes: 1:ppn=1
-  join: !cycstr {value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'}
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   nodesize: '{{ machine.ncores_per_node }}'
   walltime: 00:30:00
 
@@ -54,7 +58,7 @@ metatask_vx_gridstat:
       ACCUM: 01
     dependency:
       and:
-        or_get_obs: # Get obs complete if turned on
+        or_get_obs: # Ensure get_obs task is complete if it's turned on
           not:
             taskvalid:
               attrs:
@@ -67,14 +71,14 @@ metatask_vx_gridstat:
               attrs:
                 task: get_obs_#OBS#
         or_do_post: &post_files_exist
-          and_run_post:
+          and_run_post: # If post was meant to run, wait on the whole post metatask
             taskvalid:
               attrs:
                 task: run_post_000
             metataskdep:
               attrs:
                 metatask: run_post
-          and_inline_post:
+          and_inline_post: # If inline post ran, wait on the forecast task to complete
             not:
               taskvalid:
                 attrs:
@@ -87,7 +91,7 @@ metatask_vx_gridstat_acc:
   var:
     ACCUM_HR: 03 06 24
     FCST_HR_LIST: '&3HRLY_FH; &6HRLY_FH; &24HRLY_FH;'
-  task_vx_gridstat_#ACCUM_HR#:
+  task_vx_gridstat_#ACCUM_HR#h:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"'
     walltime: 02:00:00

@@ -16,10 +16,6 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
-workflow_switches:
-  RUN_TASK_MAKE_GRID: false
-  RUN_TASK_MAKE_OROG: false
-  RUN_TASK_MAKE_SFC_CLIMO: false
 nco:
   NET: rrfs
   model_ver: v1.0
@@ -39,3 +35,8 @@ task_run_fcst:
   PREDEF_GRID_NAME: RRFS_CONUS_25km
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: conus_25km
+
+rocoto:
+  task_make_grid: !null
+  task_make_orog: !null
+  task_make_sfc_climo: !null

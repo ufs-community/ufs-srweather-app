@@ -216,78 +216,88 @@ platform:
   #
   # CCPA_OBS_DIR:
   # User-specified location of top-level directory where CCPA hourly
-  # precipitation files used by METplus are located. This parameter needs
-  # to be set for both user-provided observations and for observations 
-  # that are retrieved from the NOAA HPSS (if the user has access) via
-  # the get_obs_ccpa_tn task (activated in workflow by setting
-  # RUN_TASK_GET_OBS_CCPA=true). In the case of pulling observations 
-  # directly from NOAA HPSS, the data retrieved will be placed in this 
-  # directory. Please note, this path must be defind as 
-  # /full-path-to-obs/ccpa/proc. METplus is configured to verify 01-, 
-  # 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.
-  # METplus configuration files require the use of predetermined directory 
-  # structure and file names. Therefore, if the CCPA files are user 
-  # provided, they need to follow the anticipated naming structure: 
-  # {YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2, where YYYY is the 4-digit 
-  # valid year, MM the 2-digit valid month, DD the 2-digit valid day of 
-  # the month, and HH the 2-digit valid hour of the day. In addition, a 
-  # caveat is noted for using hourly CCPA data. There is a problem with 
-  # the valid time in the metadata for files valid from 19 - 00 UTC (or 
-  # files under the '00' directory). The script to pull the CCPA data 
-  # from the NOAA HPSS has an example of how to account for this as well
-  # as organizing the data into a more intuitive format: 
-  # scripts/exregional_get_ccpa_files.sh. When a fix is provided, it will
-  # be accounted for in the exregional_get_ccpa_files.sh script.
+  # precipitation files used by METplus are located. This parameter
+  # needs to be set for both user-provided observations and for
+  # observations that are retrieved from the NOAA HPSS (if the user has
+  # access) via the get_obs_ccpa_tn task (activated in workflow by
+  # including the parm/wflow/verify.yaml task set in the wflow config).
+  # In the case of pulling observations directly from NOAA HPSS, the
+  # data retrieved will be placed in this directory. Please note, this
+  # path must be defind as /full-path-to-obs/ccpa/proc. METplus is
+  # configured to verify 01-, 03-, 06-, and 24-h accumulated
+  # precipitation using hourly CCPA files.
+  # METplus configuration files require the use of predetermined
+  # directory structure and file names. Therefore, if the CCPA files are
+  # user provided, they need to follow the anticipated naming structure:
+  #
+  # {YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2,
+  #
+  # where YYYY is the 4-digit valid year, MM the 2-digit valid month, DD
+  # the 2-digit valid day of the month, and HH the 2-digit valid hour of
+  # the day. In addition, a caveat is noted for using hourly CCPA data.
+  # There is a problem with the valid time in the metadata for files
+  # valid from 19 - 00 UTC (or files under the '00' directory). The
+  # script to pull the CCPA data from the NOAA HPSS has an example of
+  # how to account for this as well as organizing the data into a more
+  # intuitive format: scripts/exregional_get_ccpa_files.sh. When a fix
+  # is provided, it will be accounted for in the
+  # exregional_get_ccpa_files.sh script.
   #
   # MRMS_OBS_DIR:
   # User-specified location of top-level directory where MRMS composite
-  # reflectivity files used by METplus are located.  This parameter needs
-  # to be set for both user-provided observations and for observations
-  # that are retrieved from the NOAA HPSS (if the user has access) via the
-  # get_obs_mrms_tn task (activated in workflow by setting
-  # RUN_TASK_GET_OBS_MRMS=true).  In the case of pulling observations 
-  # directly from NOAA HPSS, the data retrieved will be placed in this 
-  # directory. Please note, this path must be defind as 
-  # /full-path-to-obs/mrms/proc. METplus configuration files require the
-  # use of predetermined directory structure and file names. Therefore, if
-  # the MRMS files are user provided, they need to follow the anticipated 
-  # naming structure:
+  # reflectivity files used by METplus are located.  This parameter
+  # needs to be set for both user-provided observations and for
+  # observations that are retrieved from the NOAA HPSS (if the user has
+  # access) via the get_obs_mrms_tn task (activated in workflow by
+  # including the parm/wflow/verify.yaml task set in the wflow config).
+  # In the case of pulling observations directly from NOAA HPSS, the
+  # data retrieved will be placed in this directory. Please note, this
+  # path must be defind as /full-path-to-obs/mrms/proc.
+  # METplus configuration files require the use of predetermined
+  # directory structure and file names. Therefore, if the MRMS files are
+  # user provided, they need to follow the anticipated naming structure:
+  #
   # {YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2,
-  # where YYYY is the 4-digit valid year, MM the 2-digit valid month, DD 
-  # the 2-digit valid day of the month, HH the 2-digit valid hour of the 
-  # day, mm the 2-digit valid minutes of the hour, and SS is the two-digit
-  # valid seconds of the hour. In addition, METplus is configured to look
-  # for a MRMS composite reflectivity file for the valid time of the 
-  # forecast being verified; since MRMS composite reflectivity files do 
-  # not always exactly match the valid time, a script, within the main 
-  # script to retrieve MRMS data from the NOAA HPSS, is used to identify
-  # and rename the MRMS composite reflectivity file to match the valid
-  # time of the forecast.  The script to pull the MRMS data from the NOAA 
-  # HPSS has an example of the expected file naming structure: 
-  # scripts/exregional_get_mrms_files.sh. This script calls the script
-  # used to identify the MRMS file closest to the valid time:
-  # ush/mrms_pull_topofhour.py.
+  #
+  # where YYYY is the 4-digit valid year, MM the 2-digit valid month, DD
+  # the 2-digit valid day of the month, HH the 2-digit valid hour of the
+  # day, mm the 2-digit valid minutes of the hour, and SS is the
+  # two-digit valid seconds of the hour. In addition, METplus is
+  # configured to look for a MRMS composite reflectivity file for the
+  # valid time of the forecast being verified; since MRMS composite
+  # reflectivity files do not always exactly match the valid time, a
+  # script, within the main script to retrieve MRMS data from the NOAA
+  # HPSS, is used to identify and rename the MRMS composite reflectivity
+  # file to match the valid time of the forecast.  The script to pull
+  # the MRMS data from the NOAA HPSS has an example of the expected file
+  # naming structure: scripts/exregional_get_mrms_files.sh. This script
+  # calls the script used to identify the MRMS file closest to the valid
+  # time: ush/mrms_pull_topofhour.py.
   #
   # NDAS_OBS_DIR:
   # User-specified location of top-level directory where NDAS prepbufr 
   # files used by METplus are located. This parameter needs to be set for
   # both user-provided observations and for observations that are 
   # retrieved from the NOAA HPSS (if the user has access) via the 
-  # get_obs_ndas_tn task (activated in workflow by setting 
-  # RUN_TASK_GET_OBS_NDAS=true). In the case of pulling observations 
-  # directly from NOAA HPSS, the data retrieved will be placed in this 
-  # directory. Please note, this path must be defind as 
-  # /full-path-to-obs/ndas/proc. METplus is configured to verify 
-  # near-surface variables hourly and upper-air variables at times valid 
-  # at 00 and 12 UTC with NDAS prepbufr files.  METplus configuration files
-  # require the use of predetermined file names. Therefore, if the NDAS 
-  # files are user provided, they need to follow the anticipated naming 
-  # structure: prepbufr.ndas.{YYYYMMDDHH}, where YYYY is the 4-digit valid
-  # year, MM the 2-digit valid month, DD the 2-digit valid day of the 
-  # month, and HH the 2-digit valid hour of the day. The script to pull 
-  # the NDAS data from the NOAA HPSS has an example of how to rename the
-  # NDAS data into a more intuitive format with the valid time listed in 
-  # the file name: scripts/exregional_get_ndas_files.sh
+  # get_obs_ndas_tn task (activated in workflow by includeing the
+  # parm/wflow/verify.yaml task set in the wflow config). 
+  # In the case of pulling observations directly from NOAA HPSS, the
+  # data retrieved will be placed in this directory. Please note, this
+  # path must be defind as /full-path-to-obs/ndas/proc. METplus is
+  # configured to verify near-surface variables hourly and upper-air
+  # variables at times valid at 00 and 12 UTC with NDAS prepbufr files.
+  # METplus configuration files require the use of predetermined file
+  # names. Therefore, if the NDAS files are user provided, they need to
+  # follow the anticipated naming structure:
+  #
+  # prepbufr.ndas.{YYYYMMDDHH},
+  #
+  # where YYYY is the 4-digit valid year, MM the 2-digit valid month, DD
+  # the 2-digit valid day of the month, and HH the 2-digit valid hour of
+  # the day. The script to pull the NDAS data from the NOAA HPSS has an
+  # example of how to rename the NDAS data into a more intuitive format
+  # with the valid time listed in the file name:
+  # scripts/exregional_get_ndas_files.sh
   #
   #-----------------------------------------------------------------------
   #
@@ -668,13 +678,6 @@ workflow:
   #
   COMPILER: "intel"
 
-  #is this the right place?
-  GET_OBS: "get_obs"
-  VX_TN: "run_vx"
-  VX_ENSGRID_TN: "run_ensgridvx"
-  VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
-  MAXTRIES_VX_ENSGRID_PROB_REFC: 1
-
 #----------------------------
 # NCO specific variables
 #-----------------------------
@@ -719,102 +722,15 @@ nco:
   OPSROOT: ""
 
 #----------------------------
-# WORKFLOW SWITCHES config parameters
-#-----------------------------
-workflow_switches:
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set flags (and related directories) that determine whether various
-  # workflow tasks should be run.  Note that the MAKE_GRID_TN, MAKE_OROG_TN, 
-  # and MAKE_SFC_CLIMO_TN are all cycle-independent tasks, i.e. if they 
-  # are to be run, they do so only once at the beginning of the workflow 
-  # before any cycles are run.  Definitions:
-  #
-  # RUN_TASK_MAKE_GRID:
-  # Flag that determines whether the MAKE_GRID_TN task is to be run.  If 
-  # this is set to true, the grid generation task is run and new grid
-  # files are generated.  If it is set to false, then the scripts look
-  # for pregenerated grid files in the directory specified by GRID_DIR 
-  # (see below).
-  #
-  # RUN_TASK_MAKE_OROG:
-  # Same as RUN_TASK_MAKE_GRID but for the MAKE_OROG_TN task.
-  #
-  # RUN_TASK_MAKE_SFC_CLIMO:
-  # Same as RUN_TASK_MAKE_GRID but for the MAKE_SFC_CLIMO_TN task.
-  #
-  # RUN_TASK_GET_EXTRN_ICS:
-  # Flag that determines whether the GET_EXTRN_ICS_TN task is to be run.
-  #
-  # RUN_TASK_GET_EXTRN_LBCS:
-  # Flag that determines whether the GET_EXTRN_LBCS_TN task is to be run.
-  #
-  # RUN_TASK_MAKE_ICS:
-  # Flag that determines whether the MAKE_ICS_TN task is to be run.
-  #
-  # RUN_TASK_MAKE_LBCS:
-  # Flag that determines whether the MAKE_LBCS_TN task is to be run.
-  #
-  # RUN_TASK_RUN_FCST:
-  # Flag that determines whether the RUN_FCST_TN task is to be run.
-  #
-  # RUN_TASK_RUN_POST:
-  # Flag that determines whether the RUN_POST_TN task is to be run.
-  # 
-  # RUN_TASK_VX_GRIDSTAT:
-  # Flag that determines whether the grid-stat verification task is to be
-  # run.
-  #
-  # RUN_TASK_VX_POINTSTAT:
-  # Flag that determines whether the point-stat verification task is to be
-  # run.
-  #
-  # RUN_TASK_VX_ENSGRID:
-  # Flag that determines whether the ensemble-stat verification for gridded
-  # data task is to be run. 
-  #
-  # RUN_TASK_VX_ENSPOINT:
-  # Flag that determines whether the ensemble point verification task is
-  # to be run. If this flag is set, both ensemble-stat point verification
-  # and point verification of ensemble-stat output is computed.
-  #
-  #-----------------------------------------------------------------------
-  #
-  RUN_TASK_MAKE_GRID: true
-  RUN_TASK_MAKE_OROG: true
-  RUN_TASK_MAKE_SFC_CLIMO: true
-  
-  RUN_TASK_GET_EXTRN_ICS: true
-  RUN_TASK_GET_EXTRN_LBCS: true
-  RUN_TASK_MAKE_ICS: true
-  RUN_TASK_MAKE_LBCS: true
-  RUN_TASK_RUN_FCST: true
-  RUN_TASK_RUN_POST: true
-  
-  RUN_TASK_GET_OBS_CCPA: false
-  RUN_TASK_GET_OBS_MRMS: false
-  RUN_TASK_GET_OBS_NDAS: false
-  RUN_TASK_VX_GRIDSTAT: false
-  RUN_TASK_VX_POINTSTAT: false
-  RUN_TASK_VX_ENSGRID: false
-  RUN_TASK_VX_ENSPOINT: false
-
-#----------------------------
 # MAKE GRID config parameters
 #-----------------------------
 task_make_grid:
-  MAKE_GRID_TN: "make_grid"
-  NNODES_MAKE_GRID: 1
-  PPN_MAKE_GRID: 24
-  WTIME_MAKE_GRID: 00:20:00
-  MAXTRIES_MAKE_GRID: 2
   #
   #-----------------------------------------------------------------------
   #
   # GRID_DIR:
-  # The directory in which to look for pregenerated grid files if 
-  # RUN_TASK_MAKE_GRID is set to false.
+  # The directory in which to look for pregenerated grid files if the
+  # make_grid task is not set to run.
   # 
   #-----------------------------------------------------------------------
   # 
@@ -1091,11 +1007,6 @@ task_make_grid:
 # MAKE OROG config parameters
 #-----------------------------
 task_make_orog:
-  MAKE_OROG_TN: "make_orog"
-  NNODES_MAKE_OROG: 1
-  PPN_MAKE_OROG: 24
-  WTIME_MAKE_OROG: 00:20:00
-  MAXTRIES_MAKE_OROG: 2
   KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
@@ -1105,11 +1016,6 @@ task_make_orog:
 # MAKE SFC CLIMO config parameters
 #-----------------------------
 task_make_sfc_climo:
-  MAKE_SFC_CLIMO_TN: "make_sfc_climo"
-  NNODES_MAKE_SFC_CLIMO: 2
-  PPN_MAKE_SFC_CLIMO: 24
-  WTIME_MAKE_SFC_CLIMO: 00:20:00
-  MAXTRIES_MAKE_SFC_CLIMO: 2
   KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
@@ -1119,11 +1025,6 @@ task_make_sfc_climo:
 # EXTRN ICS config parameters
 #-----------------------------
 task_get_extrn_ics:
-  GET_EXTRN_ICS_TN: "get_extrn_ics"
-  NNODES_GET_EXTRN_ICS: 1
-  PPN_GET_EXTRN_ICS: 1
-  WTIME_GET_EXTRN_ICS: 00:45:00
-  MAXTRIES_GET_EXTRN_ICS: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1235,11 +1136,6 @@ task_get_extrn_ics:
 # EXTRN LBCS config parameters
 #-----------------------------
 task_get_extrn_lbcs:
-  GET_EXTRN_LBCS_TN: "get_extrn_lbcs"
-  NNODES_GET_EXTRN_LBCS: 1
-  PPN_GET_EXTRN_LBCS: 1
-  WTIME_GET_EXTRN_LBCS: 00:45:00
-  MAXTRIES_GET_EXTRN_LBCS: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1328,11 +1224,6 @@ task_get_extrn_lbcs:
 # MAKE ICS config parameters
 #-----------------------------
 task_make_ics:
-  MAKE_ICS_TN: "make_ics"
-  NNODES_MAKE_ICS: 4
-  PPN_MAKE_ICS: 12
-  WTIME_MAKE_ICS: 00:30:00
-  MAXTRIES_MAKE_ICS: 1
   KMP_AFFINITY_MAKE_ICS: "scatter"
   OMP_NUM_THREADS_MAKE_ICS: 1
   OMP_STACKSIZE_MAKE_ICS: "1024m"
@@ -1373,11 +1264,6 @@ task_make_ics:
 # MAKE LBCS config parameters
 #-----------------------------
 task_make_lbcs:
-  MAKE_LBCS_TN: "make_lbcs"
-  NNODES_MAKE_LBCS: 4
-  PPN_MAKE_LBCS: 12
-  WTIME_MAKE_LBCS: 00:30:00
-  MAXTRIES_MAKE_LBCS: 1
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
@@ -1387,11 +1273,6 @@ task_make_lbcs:
 # FORECAST config parameters
 #-----------------------------
 task_run_fcst:
-  RUN_FCST_TN: "run_fcst"
-  NNODES_RUN_FCST: ""  # This is calculated in the workflow generation scripts, so no need to set here.
-  PPN_RUN_FCST: ""    # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.sh
-  WTIME_RUN_FCST: 04:30:00
-  MAXTRIES_RUN_FCST: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1446,11 +1327,10 @@ task_run_fcst:
   # with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
   #
   # WRITE_DOPOST:
-  # Flag that determines whether or not to use the inline post feature 
-  # [i.e. calling the Unified Post Processor (UPP) from within the weather 
-  # model].  If this is set to true, the RUN_POST_TN task is deactivated 
-  # (i.e. RUN_TASK_RUN_POST is set to false) to avoid unnecessary 
-  # computations.
+  # Flag that determines whether or not to use the inline post feature
+  # [i.e. calling the Unified Post Processor (UPP) from within the
+  # weather model].  If this is set to true, the the run_post task will
+  # be deactivated.
   #
   #-----------------------------------------------------------------------
   #
@@ -1630,8 +1510,9 @@ task_run_fcst:
   # task (orog.x and shave.x). Can be the same as FIXgsm.
   #
   # SFC_CLIMO_INPUT_DIR:
-  # The location on disk of the static surface climatology input fields, used by 
-  # sfc_climo_gen. These files are only used if RUN_TASK_MAKE_SFC_CLIMO=TRUE
+  # The location on disk of the static surface climatology input fields,
+  # used by sfc_climo_gen. These files are only used if the
+  # make_sfc_climo task is activated.
   #
   # FNGLAC, ..., FNMSKH:
   # Names of (some of the) global data files that are assumed to exist in 
@@ -1792,11 +1673,6 @@ task_run_fcst:
 # POST config parameters
 #-----------------------------
 task_run_post:
-  RUN_POST_TN: "run_post"
-  NNODES_RUN_POST: 2
-  PPN_RUN_POST: 24
-  WTIME_RUN_POST: 00:15:00
-  MAXTRIES_RUN_POST: 2
   KMP_AFFINITY_RUN_POST: "scatter"
   OMP_NUM_THREADS_RUN_POST: 1
   OMP_STACKSIZE_RUN_POST: "1024m"
@@ -1862,246 +1738,6 @@ task_run_post:
   USE_CUSTOM_POST_CONFIG_FILE: false
   CUSTOM_POST_CONFIG_FP: ""
   POST_OUTPUT_DOMAIN_NAME: ""
-
-#----------------------------
-# GET OBS CCPA config parameters
-#-----------------------------
-task_get_obs_ccpa:
-  GET_OBS_CCPA_TN: "get_obs_ccpa"
-  NNODES_GET_OBS_CCPA: 1
-  PPN_GET_OBS_CCPA: 1
-  WTIME_GET_OBS_CCPA: 00:45:00
-  MAXTRIES_GET_OBS_CCPA: 1
-
-#----------------------------
-# GET OBS MRMS config parameters
-#-----------------------------
-task_get_obs_mrms:
-  GET_OBS_MRMS_TN: "get_obs_mrms"
-  NNODES_GET_OBS_MRMS: 1
-  PPN_GET_OBS_MRMS: 1
-  WTIME_GET_OBS_MRMS: 00:45:00
-  MAXTRIES_GET_OBS_MRMS: 1
-
-#----------------------------
-# GET OBS NDAS config parameters
-#-----------------------------
-task_get_obs_ndas:
-  GET_OBS_NDAS_TN: "get_obs_ndas"
-  NNODES_GET_OBS_NDAS: 1
-  PPN_GET_OBS_NDAS: 1
-  WTIME_GET_OBS_NDAS: 02:00:00
-  MAXTRIES_GET_OBS_NDAS: 1
-
-#----------------------------
-# VX_GRIDSTAT config parameters
-#-----------------------------
-task_run_vx_gridstat:
-  VX_GRIDSTAT_TN: "run_gridstatvx"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT: 1
-
-#----------------------------
-# VX_GRIDSTAT_REFC config parameters
-#-----------------------------
-task_run_vx_gridstat_refc:
-  VX_GRIDSTAT_REFC_TN: "run_gridstatvx_refc"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_REFC: 1
-
-#----------------------------
-# VX_GRIDSTAT_RETOP config parameters
-#-----------------------------
-task_run_vx_gridstat_retop:
-  VX_GRIDSTAT_RETOP_TN: "run_gridstatvx_retop"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_RETOP: 1
-
-#----------------------------
-# VX_GRIDSTAT_03h config parameters
-#-----------------------------
-task_run_vx_gridstat_03h:
-  VX_GRIDSTAT_03h_TN: "run_gridstatvx_03h"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_03h: 1
-
-#----------------------------
-# VX_GRIDSTAT_06h config parameters
-#-----------------------------
-task_run_vx_gridstat_06h:
-  VX_GRIDSTAT_06h_TN: "run_gridstatvx_06h"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_06h: 1
-
-#----------------------------
-# VX_GRIDSTAT_24h config parameters
-#-----------------------------
-task_run_vx_gridstat_24h:
-  VX_GRIDSTAT_24h_TN: "run_gridstatvx_24h"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_24h: 1
-
-#----------------------------
-# VX_POINTSTAT config parameters
-#-----------------------------
-task_run_vx_pointstat:
-  VX_POINTSTAT_TN: "run_pointstatvx"
-  NNODES_VX_POINTSTAT: 1
-  PPN_VX_POINTSTAT: 1
-  WTIME_VX_POINTSTAT: 01:00:00
-  MAXTRIES_VX_POINTSTAT: 1
-
-#----------------------------
-# VX_ENSGRID config parameters
-#-----------------------------
-task_run_vx_ensgrid:
-  VX_ENSGRID_03h_TN: "run_ensgridvx_03h"
-  MAXTRIES_VX_ENSGRID_03h: 1
-  VX_ENSGRID_06h_TN: "run_ensgridvx_06h"
-  MAXTRIES_VX_ENSGRID_06h: 1
-  VX_ENSGRID_24h_TN: "run_ensgridvx_24h"
-  MAXTRIES_VX_ENSGRID_24h: 1
-  VX_ENSGRID_RETOP_TN: "run_ensgridvx_retop"
-  MAXTRIES_VX_ENSGRID_RETOP: 1
-  VX_ENSGRID_PROB_RETOP_TN: "run_ensgridvx_prob_retop"
-  MAXTRIES_VX_ENSGRID_PROB_RETOP: 1
-  NNODES_VX_ENSGRID: 1
-  PPN_VX_ENSGRID: 1
-  WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID: 1
-
-
-#----------------------------
-# VX_ENSGRID_REFC config parameters
-#-----------------------------
-task_run_vx_ensgrid_refc:
-  VX_ENSGRID_REFC_TN: "run_ensgridvx_refc"
-  NNODES_VX_ENSGRID: 1
-  PPN_VX_ENSGRID: 1
-  WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID_REFC: 1
-
-#----------------------------
-# VX_ENSGRID_MEAN config parameters
-#-----------------------------
-task_run_vx_ensgrid_mean:
-  VX_ENSGRID_MEAN_TN: "run_ensgridvx_mean"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN: 1
-
-#----------------------------
-# VX_ENSGRID_MEAN_03h config parameters
-#-----------------------------
-task_run_vx_ensgrid_mean_03h:
-  VX_ENSGRID_MEAN_03h_TN: "run_ensgridvx_mean_03h"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_03h: 1
-
-#----------------------------
-# VX_ENSGRID_MEAN_06h config parameters
-#-----------------------------
-task_run_vx_ensgrid_mean_06h:
-  VX_ENSGRID_MEAN_06h_TN: "run_ensgridvx_mean_06h"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_06h: 1
-
-#----------------------------
-# VX_ENSGRID_MEAN_24h config parameters
-#-----------------------------
-task_run_vx_ensgrid_mean_24h:
-  VX_ENSGRID_MEAN_24h_TN: "run_ensgridvx_mean_24h"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_24h: 1
-
-#----------------------------
-# VX_ENSGRID_PROB config parameters
-#-----------------------------
-task_run_vx_ensgrid_prob:
-  VX_ENSGRID_PROB_TN: "run_ensgridvx_prob"
-  NNODES_VX_ENSGRID_PROB: 1
-  PPN_VX_ENSGRID_PROB: 1
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB: 1
-
-#----------------------------
-# VX_ENSGRID_PROB_03h config parameters
-#-----------------------------
-task_run_vx_ensgrid_prob_03h:
-  VX_ENSGRID_PROB_03h_TN: "run_ensgridvx_prob_03h"
-  NNODES_VX_ENSGRID_PROB: 1
-  PPN_VX_ENSGRID_PROB: 1
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_03h: 1
-
-#----------------------------
-# VX_ENSGRID_PROB_06h config parameters
-#-----------------------------
-task_run_vx_ensgrid_prob_06h:
-  VX_ENSGRID_PROB_06h_TN: "run_ensgridvx_prob_06h"
-  NNODES_VX_ENSGRID_PROB: 1
-  PPN_VX_ENSGRID_PROB: 1
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_06h: 1
-
-#----------------------------
-# VX_ENSGRID_PROB_24h config parameters
-#-----------------------------
-task_run_vx_ensgrid_prob_24h:
-  VX_ENSGRID_PROB_24h_TN: "run_ensgridvx_prob_24h"
-  NNODES_VX_ENSGRID_PROB: 1
-  PPN_VX_ENSGRID_PROB: 1
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_24h: 1
-
-#----------------------------
-# VX_ENSPOINT config parameters
-#-----------------------------
-task_run_vx_enspoint:
-  VX_ENSPOINT_TN: "run_enspointvx"
-  NNODES_VX_ENSPOINT: 1
-  PPN_VX_ENSPOINT: 1
-  WTIME_VX_ENSPOINT: 01:00:00
-  MAXTRIES_VX_ENSPOINT: 1
-
-#----------------------------
-# VX_ENSPOINT_MEAN config parameters
-#-----------------------------
-task_run_vx_enspoint_mean:
-  VX_ENSPOINT_MEAN_TN: "run_enspointvx_mean"
-  NNODES_VX_ENSPOINT_MEAN: 1
-  PPN_VX_ENSPOINT_MEAN: 1
-  WTIME_VX_ENSPOINT_MEAN: 01:00:00
-  MAXTRIES_VX_ENSPOINT_MEAN: 1
-
-#----------------------------
-# VX_ENSPOINT_PROB config parameters
-#-----------------------------
-task_run_vx_enspoint_prob:
-  VX_ENSPOINT_PROB_TN: "run_enspointvx_prob"
-  NNODES_VX_ENSPOINT_PROB: 1
-  PPN_VX_ENSPOINT_PROB: 1
-  WTIME_VX_ENSPOINT_PROB: 01:00:00
-  MAXTRIES_VX_ENSPOINT_PROB: 1
 
 
 #----------------------------

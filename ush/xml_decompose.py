@@ -57,7 +57,7 @@ def main(argv):
                 {cdef.attrib.get('group'): cdef.text })
 
     # Get the log
-    xml_config['log'] = list(xml_root.find('log'))[0].text
+    xml_config['log'] = xml_root.find('log').text.strip()
 
     # Get the tasks
     xml_config['tasks'] = {}

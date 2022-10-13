@@ -3,11 +3,12 @@ default_task_verify_ens: &default_task
   queue: '&QUEUE_DEFAULT;'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
-    PDY: !cycstr {value: '@Y@m@d'}
-    CDATE: !cycstr {value: '@Y@m@d@H'}
-    CYCLE_DIR: !cycstr {value: '&CYCLE_BASEDIR;/@Y@m@d@H'}
+    PDY: !cycstr '@Y@m@d'
+    CDATE: !cycstr '@Y@m@d@H'
+    CYCLE_DIR: !cycstr '&CYCLE_BASEDIR;/@Y@m@d@H'
     FHR: '{% for h in range(0, expt.fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %}'
-  join: !cycstr {value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'}
+    SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   nodes: 1:ppn=1
   nodesize: '{{ machine.ncores_per_node }}'
   walltime: 01:00:00
@@ -94,7 +95,6 @@ metatask_vx_ens_stats:
         taskdep:
           attrs:
             task: run_enspointvx
-
 
 task_enspointvx:
   <<: *default_task
