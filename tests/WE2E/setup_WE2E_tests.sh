@@ -25,13 +25,15 @@
 
 function usage {
   echo
-  echo "Usage: $0 machine slurm_account [compiler] [test_type] [expt_dirs] | -h"
+  echo "Usage: $0 machine slurm_account [compiler] [test_type] [expts_dir] [nco_dirs] [run_envir] | -h"
   echo
   echo "       machine       [required] is one of: ${machines[@]}"
   echo "       slurm_account [required] case sensitive name of the user-specific slurm account"
   echo "       compiler      [optional] compiler used for build"
   echo "       test_type     [optional] test type: fundamental or comprehensive or all or any other name"
   echo "       expts_dir     [optional] Experiment base directory"
+  echo "       nco_dirs      [optional] NCO operations root directory"
+  echo "       run_envir     [optional] either 'community' or 'nco' "
   echo "       -h            display this help"
   echo
   exit 1
@@ -61,6 +63,9 @@ SRW_APP_DIR=$( dirname "${TESTS_DIR}" )
 TOP_DIR=$( dirname "${SRW_APP_DIR}" )
 
 EXPTS_DIR=${5:-"${TOP_DIR}/expt_dirs"}
+NCO_DIR=${6:-"${TOP_DIR}/nco_dirs"}
+
+RUN_ENVIR=${7:-""}
 
 #----------------------------------------------------------------------
 # Use exec_subdir consistent with the automated build.
@@ -83,8 +88,9 @@ source ${SRW_APP_DIR}/ush/load_modules_wflow.sh ${machine}
   exec_subdir=${exec_subdir} \
   compiler=${compiler} \
   expt_basedir=${EXPTS_DIR} \
+  opsroot=${NCO_DIR} \
   debug="TRUE" \
   verbose="TRUE" \
   cron_relaunch_intvl_mnts=4 \
-  run_envir="community"
+  run_envir=${RUN_ENVIR}
 

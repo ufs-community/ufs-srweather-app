@@ -118,9 +118,18 @@ fi
 function job_postamble() {
 
     if [ "${RUN_ENVIR}" = "nco" ]; then
+
         # Remove temp directory
         cd ${DATAROOT}
         [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA $DATA_SHARED
+
+        # Create symlinks to log files
+        local EXPTLOG=${EXPTDIR}/log
+        mkdir_vrfy -p ${EXPTLOG}
+        for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do
+            local LOGB=$(basename $i .${WORKFLOW_ID}.log)
+            ln_vrfy -sf $i ${EXPTLOG}/${LOGB}.log
+        done
     fi
 
     # Print exit message

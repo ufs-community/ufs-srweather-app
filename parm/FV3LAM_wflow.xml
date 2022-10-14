@@ -154,7 +154,7 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 
   <log>
   {%- if run_envir == "nco"  %}
-    &LOGDIR;/FV3LAM_wflow_{{ workflow_id }}.log
+    &LOGDIR;/FV3LAM_wflow.{{ workflow_id }}.log
   {%- else %}
     &LOGDIR;/FV3LAM_wflow.log
   {%- endif %}
