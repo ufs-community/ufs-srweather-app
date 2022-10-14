@@ -518,46 +518,25 @@ def setup(logger: Logger = getLogger()):
             The coupling flag CPL has not been specified for this value of FCST_MODEL:
               FCST_MODEL = \"{FCST_MODEL}\"'''
         )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Make sure RESTART_INTERVAL is set to an integer value if present
-    #
-    # -----------------------------------------------------------------------
-    #
-    if not isinstance(RESTART_INTERVAL, int):
-        raise Exception(
-            f'''
-            RESTART_INTERVAL must be set to an integer number of hours.
-              RESTART_INTERVAL = \"{RESTART_INTERVAL}\"'''
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Check that DATE_FIRST_CYCL and DATE_LAST_CYCL are strings consisting
-    # of exactly 10 digits.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if not isinstance(DATE_FIRST_CYCL, datetime.date):
-        raise Exception(
-            f'''
-            DATE_FIRST_CYCL must be a string consisting of exactly 10 digits of the
-            form \"YYYYMMDDHH\", where YYYY is the 4-digit year, MM is the 2-digit
-            month, DD is the 2-digit day-of-month, and HH is the 2-digit
-            cycle hour.
-              DATE_FIRST_CYCL = \"{DATE_FIRST_CYCL}\"'''
-        )
 
-    if not isinstance(DATE_LAST_CYCL, datetime.date):
-        raise Exception(
-            f'''
-            DATE_LAST_CYCL must be a string consisting of exactly 10 digits of the
-            form \"YYYYMMDDHH\", where YYYY is the 4-digit year, MM is the 2-digit
-            month, DD is the 2-digit day-of-month, and HH is the 2-digit
-            cycle hour.
-              DATE_LAST_CYCL = \"{DATE_LAST_CYCL}\"'''
-        )
+    # Make sure RESTART_INTERVAL is set to an integer value
+    if not isinstance(RESTART_INTERVAL, int):
+        raise Exception(f"\n{RESTART_INTERVAL=}, must be an integer value\n")
+
+    # Check that input dates are in a date format
+
+    # get dictionary of all variables
+    allvars = dict(globals())
+    allvars.update(locals())
+    dates = ['DATE_FIRST_CYCL', 'DATE_LAST_CYCL']
+    for val in dates:
+        if not isinstance(allvars[val], datetime.date):
+            raise Exception(dedent(f'''
+                            Date variable {val}={allvars[val]} is not in a valid date format
+
+                            For examples of valid formats, see the users guide.
+                            '''))
+
     #
     # -----------------------------------------------------------------------
     #
@@ -589,23 +568,30 @@ def setup(logger: Logger = getLogger()):
 
     # If using a custom post configuration file, make sure that it exists.
     if USE_CUSTOM_POST_CONFIG_FILE:
-        if not os.path.exists(CUSTOM_POST_CONFIG_FP):
-            raise FileNotFoundError(
+        try:
+            if not os.path.exists(CUSTOM_POST_CONFIG_FP):
+                raise
+        except:
+            raise FileNotFoundError(dedent(
                 f'''
-                The custom post configuration specified by CUSTOM_POST_CONFIG_FP does not
-                exist:
-                  CUSTOM_POST_CONFIG_FP = \"{CUSTOM_POST_CONFIG_FP}\"'''
-            )
+                USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom post configuration file
+                {CUSTOM_POST_CONFIG_FP=}
+                could not be found.'''
+            )) from None
 
     # If using external CRTM fix files to allow post-processing of synthetic
     # satellite products from the UPP, make sure the CRTM fix file directory exists.
     if USE_CRTM:
-        if not os.path.exists(CRTM_DIR):
-            raise FileNotFoundError(
+        try:
+            if not os.path.exists(CRTM_DIR):
+                raise
+        except:
+            raise FileNotFoundError(dedent(
                 f'''
-                The external CRTM fix file directory specified by CRTM_DIR does not exist:
-                    CRTM_DIR = \"{CRTM_DIR}\"'''
-            )
+                USE_CRTM has been set, but the external CRTM fix file directory:
+                {CRTM_DIR=}
+                could not be found.'''
+            )) from None
 
     # The forecast length (in integer hours) cannot contain more than 3 characters.
     # Thus, its maximum value is 999.
@@ -663,48 +649,18 @@ def setup(logger: Logger = getLogger()):
     #
     # -----------------------------------------------------------------------
     #
-    if not DT_ATMOS:
-        raise Exception(
-            f'''
-            The forecast model main time step (DT_ATMOS) is set to a null string:
-              DT_ATMOS = {DT_ATMOS}
-            Please set this to a valid numerical value in the user-specified experiment
-            configuration file (EXPT_CONFIG_FP) and rerun:
-              EXPT_CONFIG_FP = \"{EXPT_CONFIG_FP}\"'''
-        )
+    # get dictionary of all variables
+    allvars = dict(globals())
+    allvars.update(locals())
+    vlist = ['DT_ATMOS', 
+             'LAYOUT_X',
+             'LAYOUT_Y',
+             'BLOCKSIZE',
+             'EXPT_SUBDIR']
+    for val in vlist:
+        if not allvars[val]:
+            raise Exception(f"\nMandatory variable '{val}' has not been set\n")
 
-    if not LAYOUT_X:
-        raise Exception(
-            f'''
-            The number of MPI processes to be used in the x direction (LAYOUT_X) by
-            the forecast job is set to a null string:
-              LAYOUT_X = {LAYOUT_X}
-            Please set this to a valid numerical value in the user-specified experiment
-            configuration file (EXPT_CONFIG_FP) and rerun:
-              EXPT_CONFIG_FP = \"{EXPT_CONFIG_FP}\"'''
-        )
-
-    if not LAYOUT_Y:
-        raise Exception(
-            f'''
-            The number of MPI processes to be used in the y direction (LAYOUT_Y) by
-            the forecast job is set to a null string:
-              LAYOUT_Y = {LAYOUT_Y}
-            Please set this to a valid numerical value in the user-specified experiment
-            configuration file (EXPT_CONFIG_FP) and rerun:
-              EXPT_CONFIG_FP = \"{EXPT_CONFIG_FP}\"'''
-        )
-
-    if not BLOCKSIZE:
-        raise Exception(
-            f'''
-            The cache size to use for each MPI task of the forecast (BLOCKSIZE) is
-            set to a null string:
-              BLOCKSIZE = {BLOCKSIZE}
-            Please set this to a valid numerical value in the user-specified experiment
-            configuration file (EXPT_CONFIG_FP) and rerun:
-              EXPT_CONFIG_FP = \"{EXPT_CONFIG_FP}\"'''
-        )
     #
     # -----------------------------------------------------------------------
     #
@@ -796,13 +752,6 @@ def setup(logger: Logger = getLogger()):
 
     mkdir_vrfy(f' -p "{EXPT_BASEDIR}"')
 
-    # The experiment subdirectory name (EXPT_SUBDIR) can not be set to an empty string
-    if not EXPT_SUBDIR:
-        raise Exception(
-            f'''
-            The name of the experiment subdirectory (EXPT_SUBDIR) cannot be empty:
-              EXPT_SUBDIR = \"{EXPT_SUBDIR}\"'''
-        )
     #
     # -----------------------------------------------------------------------
     #
@@ -951,9 +900,6 @@ def setup(logger: Logger = getLogger()):
     #   (4) The FV3 namelist file
     #   (5) The model configuration file
     #   (6) The NEMS configuration file
-    #
-    # If using CCPP, it also needs:
-    #
     #   (7) The CCPP physics suite definition file
     #
     # The workflow contains templates for the first six of these files.
