@@ -8,13 +8,14 @@ proc ModulesHelp { } {
 module-whatis "Loads libraries and utilities needed for running SRW on Cheyenne"
 
 module load ncarenv
-module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
+module use -a /glade/work/epicufsrt/contrib/miniconda3/modulefiles
+module load miniconda3
+module use -a /glade/work/epicufsrt/contrib/modulefiles
 module load rocoto
-module load conda/latest
 
 if { [module-info mode load] } {
   puts stderr "Please do the following to activate conda:
-       > conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow"
+       > conda activate regional_workflow"
 }
 
 
