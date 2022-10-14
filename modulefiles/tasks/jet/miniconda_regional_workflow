@@ -1,5 +1,5 @@
 #%Module
-module use /contrib/miniconda3/modulefiles
-module load miniconda3/4.5.12
+module use /mnt/lfs4/HFIP/hfv3gfs/role.epic/miniconda3/modulefiles
+module load miniconda3/4.12.0
 
 setenv SRW_ENV regional_workflow
