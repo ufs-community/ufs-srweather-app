@@ -1,2 +1,6 @@
 #%Module
-module load miniconda_regional_workflow
+
+module use /glade/work/epicufsrt/contrib/miniconda3/modulefiles
+module load miniconda3/latest
+
+setenv SRW_ENV regional_workflow
