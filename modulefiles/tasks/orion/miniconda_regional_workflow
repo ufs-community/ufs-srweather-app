@@ -1,5 +1,5 @@
 #%Module
-module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-module load miniconda3/3.8
+module use /work/noaa/epic-ps/role-epic-ps/miniconda3/modulefiles
+module load miniconda3/4.12.0
 
 setenv SRW_ENV regional_workflow
