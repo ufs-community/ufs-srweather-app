@@ -1,4 +1,2 @@
 #%Module
-
-module load conda_regional_workflow
-
+module load miniconda_regional_workflow
