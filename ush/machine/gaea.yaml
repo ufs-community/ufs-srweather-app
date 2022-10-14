@@ -5,9 +5,9 @@ platform:
   CCPA_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/ccpa/proc
   MRMS_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/mrms/proc
   NDAS_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/ndas/proc
-  METPLUS_PATH: /usw/met/METplus/METplus-4.1.3
+  METPLUS_PATH: /lustre/f2/dev/role.epic/contrib/hpc-stack/intel-2021.3.0/intel-2021.3.0/metplus/4.1.3
   MET_BIN_EXEC: bin
-  MET_INSTALL_DIR: /usw/met/10.1.2
+  MET_INSTALL_DIR: /lustre/f2/dev/role.epic/contrib/hpc-stack/intel-2021.3.0/intel-2021.3.0/met/10.1.2
   QUEUE_DEFAULT: normal
   QUEUE_FCST: normal
   QUEUE_HPSS: normal
