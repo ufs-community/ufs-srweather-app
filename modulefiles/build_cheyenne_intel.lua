@@ -29,8 +29,8 @@ load(pathJoin("libpng", os.getenv("libpng_ver") or "1.6.37"))
 load(pathJoin("pio", os.getenv("pio_ver") or "2.5.3"))
 load(pathJoin("fms", os.getenv("fms_ver") or "2022.01"))
 
-setenv("CMAKE_C_COMPILER","mpiicc")
-setenv("CMAKE_CXX_COMPILER","mpiicpc")
-setenv("CMAKE_Fortran_COMPILER","mpiifort")
-setenv("CMAKE_Platform","cheyenne.gnu")
+setenv("CMAKE_C_COMPILER","mpicc")
+setenv("CMAKE_CXX_COMPILER","mpicpc")
+setenv("CMAKE_Fortran_COMPILER","mpif90")
+setenv("CMAKE_Platform","cheyenne.intel")
 
