@@ -3,6 +3,7 @@
 import os
 import unittest
 from textwrap import dedent
+from logging import getLogger
 
 from python_utils import (
     import_vars,
@@ -10,14 +11,11 @@ from python_utils import (
     set_env_var,
     list_to_str,
     print_input_args,
-    print_info_msg,
-    print_err_msg_exit,
     define_macos_utilities,
     load_xml_file,
     has_tag_with_value,
     find_pattern_in_str,
 )
-
 
 def set_ozone_param(ccpp_phys_suite_fp):
     """Function that does the following:
@@ -47,6 +45,7 @@ def set_ozone_param(ccpp_phys_suite_fp):
         ozone_param: a string
     """
 
+    logger = getLogger(__name__)
     print_input_args(locals())
 
     # import all environment variables
@@ -92,12 +91,11 @@ def set_ozone_param(ccpp_phys_suite_fp):
         fixgsm_ozone_fn = "global_o3prdlos.f77"
         ozone_param = "ozphys"
     else:
-        print_err_msg_exit(
+        raise Exception(
             f'''
             Unknown or no ozone parameterization
             specified in the CCPP physics suite file (ccpp_phys_suite_fp):
-              ccpp_phys_suite_fp = \"{ccpp_phys_suite_fp}\"
-              ozone_param = \"{ozone_param}\"'''
+              ccpp_phys_suite_fp = \"{ccpp_phys_suite_fp}\"'''
         )
     #
     # -----------------------------------------------------------------------
@@ -167,11 +165,11 @@ def set_ozone_param(ccpp_phys_suite_fp):
               CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING)}
             """
         )
-        print_info_msg(msg, verbose=VERBOSE)
+        logger.info(msg)
 
     else:
 
-        print_err_msg_exit(
+        raise Exception(
             f'''
             Unable to set name of the ozone production/loss file in the FIXgsm directory
             in the array that specifies the mapping between the symlinks that need to

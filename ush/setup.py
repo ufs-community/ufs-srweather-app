@@ -4,7 +4,7 @@ import os
 import sys
 import datetime
 from textwrap import dedent
-from logging import Logger, getLogger
+from logging import getLogger
 
 from python_utils import (
     cd_vrfy,
@@ -38,7 +38,7 @@ from check_ruc_lsm import check_ruc_lsm
 from set_thompson_mp_fix_files import set_thompson_mp_fix_files
 
 
-def setup(logger: Logger = getLogger()):
+def setup():
     """Function that sets a secondary set
     of parameters needed by the various scripts that are called by the
     FV3-LAM rocoto community workflow.  This secondary set of parameters is
@@ -50,12 +50,12 @@ def setup(logger: Logger = getLogger()):
     scripts called by the tasks in the workflow.
 
     Args:
-      logger: A logger object for Python's built in logging module. Typically
-              this is set up in generate_FV3LAM_workflow and passed here.
+      None
     Returns:
       None
     """
 
+    logger = getLogger(__name__)
     global USHdir
     USHdir = os.path.dirname(os.path.abspath(__file__))
     cd_vrfy(USHdir)
@@ -220,7 +220,7 @@ def setup(logger: Logger = getLogger()):
     #
     global VERBOSE
     if DEBUG and not VERBOSE:
-        logging.info(
+        logger.info(
             """
             Resetting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
         )
@@ -536,35 +536,6 @@ def setup(logger: Logger = getLogger()):
 
                             For examples of valid formats, see the users guide.
                             '''))
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Call a function to generate the array ALL_CDATES containing the cycle
-    # dates/hours for which to run forecasts.  The elements of this array
-    # will have the form YYYYMMDDHH.  They are the starting dates/times of
-    # the forecasts that will be run in the experiment.  Then set NUM_CYCLES
-    # to the number of elements in this array.
-    #
-    # -----------------------------------------------------------------------
-    #
-
-    ALL_CDATES = set_cycle_dates(
-        date_start=DATE_FIRST_CYCL,
-        date_end=DATE_LAST_CYCL,
-        incr_cycl_freq=INCR_CYCL_FREQ,
-    )
-
-    NUM_CYCLES = len(ALL_CDATES)
-
-    # Completely arbitrary cutoff of 90 cycles.
-    if NUM_CYCLES > 90:
-        ALL_CDATES = None
-        logger.warning(
-            f"""
-            Too many cycles in ALL_CDATES to list, redefining in abbreviated form."
-            ALL_CDATES="{DATE_FIRST_CYCL}...{DATE_LAST_CYCL}"""
-        )
 
     # If using a custom post configuration file, make sure that it exists.
     if USE_CUSTOM_POST_CONFIG_FILE:
@@ -1032,7 +1003,7 @@ def setup(logger: Logger = getLogger()):
     # export env vars before calling another module
     export_vars()
 
-    OZONE_PARAM = set_ozone_param(ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP)
+    OZONE_PARAM = set_ozone_param(CCPP_PHYS_SUITE_IN_CCPP_FP)
 
     IMPORTS = ["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING", "FIXgsm_FILES_TO_COPY_TO_FIXam"]
     import_vars(env_vars=IMPORTS)
@@ -1111,10 +1082,9 @@ def setup(logger: Logger = getLogger()):
     #
     # -----------------------------------------------------------------------
     #
-    # Make sure that DO_ENSEMBLE is set to a valid value.  Then set the names
-    # of the ensemble members.  These will be used to set the ensemble member
-    # directories.  Also, set the full path to the FV3 namelist file corresponding
-    # to each ensemble member.
+    # If DO_ENSEMBLE, set the names of the ensemble members; these will be
+    # used to set the ensemble member directories.  Also, set the full path
+    # to the FV3 namelist file corresponding to each ensemble member.
     #
     # -----------------------------------------------------------------------
     #
@@ -1130,13 +1100,8 @@ def setup(logger: Logger = getLogger()):
             FV3_NML_ENSMEM_FPS.append(
                 os.path.join(EXPTDIR, f"{FV3_NML_FN}_{ENSMEM_NAMES[i]}")
             )
-    #
-    # -----------------------------------------------------------------------
-    #
+
     # Set the full path to the forecast model executable.
-    #
-    # -----------------------------------------------------------------------
-    #
     global FV3_EXEC_FP
     FV3_EXEC_FP = os.path.join(EXECdir, FV3_EXEC_FN)
     #
@@ -1171,13 +1136,6 @@ def setup(logger: Logger = getLogger()):
     global LOAD_MODULES_RUN_TASK_FP
     LOAD_MODULES_RUN_TASK_FP = os.path.join(USHdir, "load_modules_run_task.sh")
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Turn off some tasks that can not be run in NCO mode
-    #
-    # -----------------------------------------------------------------------
-    #
     global RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO
     global RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID, RUN_TASK_VX_ENSPOINT
 
@@ -1191,13 +1149,7 @@ def setup(logger: Logger = getLogger()):
     FIXclim = os.path.join(FIXdir, "fix_clim")
     FIXlam = os.path.join(FIXdir, "fix_lam")
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Make sure that DO_ENSEMBLE is set to TRUE when running ensemble vx.
-    #
-    # -----------------------------------------------------------------------
-    #
+    # Ensemble verification can only be run in ensemble mode
     if (not DO_ENSEMBLE) and (RUN_TASK_VX_ENSGRID or RUN_TASK_VX_ENSPOINT):
         raise Exception(
             f'''
@@ -1245,21 +1197,22 @@ def setup(logger: Logger = getLogger()):
     # experiment directory (EXPTDIR).
     #
     if not RUN_TASK_MAKE_GRID:
-        if (GRID_DIR is None) or (not os.path.exists(GRID_DIR)):
+        if (GRID_DIR is None):
             GRID_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
 
-            msg = f"""Setting GRID_DIR to:
-               GRID_DIR = \"{GRID_DIR}\"
-            """
-            logger.info(msg)
+            msg = dedent(f"""
+               GRID_DIR not specified!
+               Setting {GRID_DIR=}
+            """)
+            logger.warning(msg)
 
-            if not os.path.exists(GRID_DIR): 
-                raise FileNotFoundError(
-                    f'''
-                    The directory (GRID_DIR) that should contain the pregenerated grid files
-                    does not exist:
-                      GRID_DIR = \"{GRID_DIR}\"'''
-                )
+        if not os.path.exists(GRID_DIR): 
+            raise FileNotFoundError(
+                f'''
+                The directory (GRID_DIR) that should contain the pregenerated grid files
+                does not exist:
+                  GRID_DIR = \"{GRID_DIR}\"'''
+            )
     else:
         GRID_DIR = os.path.join(EXPTDIR, "grid")
     #
@@ -1269,21 +1222,22 @@ def setup(logger: Logger = getLogger()):
     # the experiment directory (EXPTDIR).
     #
     if not RUN_TASK_MAKE_OROG:
-        if (OROG_DIR is None) or (not os.path.exists(OROG_DIR)):
+        if (OROG_DIR is None):
             OROG_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
 
-            msg = f"""Setting OROG_DIR to:
-               OROG_DIR = \"{OROG_DIR}\"
-            """
-            logger.info(msg)
+            msg = dedent(f"""
+               OROG_DIR not specified!
+               Setting {OROG_DIR=}
+            """)
+            logger.warning(msg)
 
-            if not os.path.exists(OROG_DIR):
-                raise FileNotFoundError(
-                    f'''
-                    The directory (OROG_DIR) that should contain the pregenerated orography
-                    files does not exist:
-                      OROG_DIR = \"{OROG_DIR}\"'''
-                )
+        if not os.path.exists(OROG_DIR):
+            raise FileNotFoundError(
+                f'''
+                The directory (OROG_DIR) that should contain the pregenerated orography
+                files does not exist:
+                  OROG_DIR = \"{OROG_DIR}\"'''
+            )
     else:
         OROG_DIR = os.path.join(EXPTDIR, "orog")
     #
@@ -1293,21 +1247,22 @@ def setup(logger: Logger = getLogger()):
     # a predefined location under the experiment directory (EXPTDIR).
     #
     if not RUN_TASK_MAKE_SFC_CLIMO:
-        if (SFC_CLIMO_DIR is None) or (not os.path.exists(SFC_CLIMO_DIR)):
+        if (SFC_CLIMO_DIR is None):
             SFC_CLIMO_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
 
-            msg = f"""Setting SFC_CLIMO_DIR to:
-               SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"
-            """
-            logger.info(msg)
+            msg = dedent(f"""
+               SFC_CLIMO_DIR not specified!
+               Setting {SFC_CLIMO_DIR=}
+            """)
+            logger.warning(msg)
 
-            if not os.path.exists(SFC_CLIMO_DIR):
-                raise FileNotFoundError(
-                    f'''
-                    The directory (SFC_CLIMO_DIR) that should contain the pregenerated surface
-                    climatology files does not exist:
-                      SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"'''
-                )
+        if not os.path.exists(SFC_CLIMO_DIR):
+            raise FileNotFoundError(
+                f'''
+                The directory (SFC_CLIMO_DIR) that should contain the pregenerated surface
+                climatology files does not exist:
+                  SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"'''
+            )
     else:
         SFC_CLIMO_DIR = os.path.join(EXPTDIR, "sfc_climo")
 
@@ -1816,16 +1771,6 @@ def setup(logger: Logger = getLogger()):
             # -----------------------------------------------------------------------
             #
             "OZONE_PARAM": OZONE_PARAM,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # The number of cycles for which to make forecasts and the list of
-            # starting dates/hours of these cycles.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "NUM_CYCLES": NUM_CYCLES,
-            "ALL_CDATES": ALL_CDATES,
             #
             # -----------------------------------------------------------------------
             #
