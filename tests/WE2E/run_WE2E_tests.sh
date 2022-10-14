@@ -412,7 +412,7 @@ elif [ "${test_type}" = "all" ] ; then
     user_spec_tests+=("$(basename $fp | cut -f 2 -d .)")
   done
 
-elif [ -n "${tests_file}" ] | [ -n "${test_type}" ] ; then
+elif [ -n "${tests_file}" ] || [ -n "${test_type}" ] ; then
 
   # User wants to run a set of tests from a file, either their own or
   # one managed in the repo
