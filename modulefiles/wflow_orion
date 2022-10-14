@@ -9,8 +9,8 @@ module-whatis "Loads libraries needed for running SRW on Orion"
 
 module load contrib rocoto
 
-module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-module load miniconda3/3.8
+module use /work/noaa/epic-ps/role-epic-ps/miniconda3/modulefiles
+module load miniconda3/4.12.0
 
 if { [module-info mode load] } {
   puts stderr "Please do the following to activate conda:
