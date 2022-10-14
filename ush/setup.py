@@ -534,7 +534,7 @@ def setup():
     if not isinstance(DATE_FIRST_CYCL, datetime.date):
         print_err_msg_exit(
             f'''
-            DATE_FIRST_CYCL must be a string consisting of exactly 8 digits of the
+            DATE_FIRST_CYCL must be a string consisting of exactly 10 digits of the
             form \"YYYYMMDDHH\", where YYYY is the 4-digit year, MM is the 2-digit
             month, DD is the 2-digit day-of-month, and HH is the 2-digit
             cycle hour.
@@ -544,7 +544,7 @@ def setup():
     if not isinstance(DATE_LAST_CYCL, datetime.date):
         print_err_msg_exit(
             f'''
-            DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the
+            DATE_LAST_CYCL must be a string consisting of exactly 10 digits of the
             form \"YYYYMMDDHH\", where YYYY is the 4-digit year, MM is the 2-digit
             month, DD is the 2-digit day-of-month, and HH is the 2-digit
             cycle hour.
