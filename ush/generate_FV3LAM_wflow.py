@@ -1047,8 +1047,8 @@ class Testing(unittest.TestCase):
     def test_generate_FV3LAM_wflow(self):
 
         # run workflows in separate process to avoid conflict between community and nco settings
-        def run_workflow():
-            p = Process(target=generate_FV3LAM_wflow)
+        def run_workflow(USHdir,logfile):
+            p = Process(target=generate_FV3LAM_wflow,args=(USHdir,logfile))
             p.start()
             p.join()
             exit_code = p.exitcode
@@ -1062,13 +1062,13 @@ class Testing(unittest.TestCase):
         # community test case
         cp_vrfy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
         run_command(f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml""")
-        generate_FV3LAM_wflow(USHdir, logfile)
+        run_workflow(USHdir, logfile)
 
         # nco test case
         set_env_var("OPSROOT", f"{USHdir}/../../nco_dirs")
         cp_vrfy(f"{USHdir}/config.nco.yaml", f"{USHdir}/config.yaml")
         run_command(f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml""")
-        generate_FV3LAM_wflow(USHdir, logfile)
+        run_workflow(USHdir, logfile)
 
     def setUp(self):
         define_macos_utilities()
