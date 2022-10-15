@@ -733,7 +733,18 @@ def setup():
     #
     global EXPTDIR
     EXPTDIR = os.path.join(EXPT_BASEDIR, EXPT_SUBDIR)
-    check_for_preexist_dir_file(EXPTDIR, PREEXISTING_DIR_METHOD)
+    try:
+        check_for_preexist_dir_file(EXPTDIR, PREEXISTING_DIR_METHOD)
+    except FileExistsError:
+        errmsg = dedent(f'''
+                        {EXPTDIR=} already exists, and {PREEXISTING_DIR_METHOD=}
+
+                        To ignore this error, delete the directory, or set 
+                        PREEXISTING_DIR_METHOD = delete, or
+                        PREEXISTING_DIR_METHOD = rename
+                        in your config file.
+                        ''')
+        raise Exception(errmsg) from None
     #
     # -----------------------------------------------------------------------
     #

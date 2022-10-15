@@ -2,7 +2,8 @@
 
 import os
 from datetime import datetime
-from .print_msg import print_info_msg, print_err_msg_exit
+from logging import getLogger
+from textwrap import dedent
 from .check_var_valid_value import check_var_valid_value
 from .filesys_cmds_vrfy import rm_vrfy, mv_vrfy
 
@@ -27,17 +28,17 @@ def check_for_preexist_dir_file(path, method):
             now = datetime.now()
             d = now.strftime("_old_%Y%m%d_%H%M%S")
             new_path = path + d
-            print_info_msg(
+            logger.info(dedent(
                 f"""
                 Specified directory or file already exists:
                     {path}
                 Moving (renaming) preexisting directory or file to:
                     {new_path}"""
-            )
+            ))
             mv_vrfy(path, new_path)
         else:
-            print_err_msg_exit(
+            raise FileExistsError(dedent(
                 f"""
                 Specified directory or file already exists
                     {path}"""
-            )
+            ))

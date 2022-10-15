@@ -123,8 +123,8 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     # Create a multiline variable that consists of a yaml-compliant string
     # specifying the values that the jinja variables in the template rocoto
     # XML should be set to.  These values are set either in the user-specified
-    # workflow configuration file (EXPT_CONFIG_FN) or in the setup.sh script
-    # sourced above.  Then call the python script that generates the XML.
+    # workflow configuration file (EXPT_CONFIG_FN) or in the setup() function
+    # called above.  Then call the python script that generates the XML.
     #
     # -----------------------------------------------------------------------
     #
@@ -492,19 +492,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     #
     if USE_CRON_TO_RELAUNCH:
         add_crontab_line()
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Create the FIXam directory under the experiment directory.  In NCO mode,
-    # this will be a symlink to the directory specified in FIXgsm, while in
-    # community mode, it will be an actual directory with files copied into
-    # it from FIXgsm.
-    #
-    # -----------------------------------------------------------------------
-    #
 
     #
-    # Symlink fix files
+    # Copy or symlink fix files
     #
     if SYMLINK_FIX_FILES:
 
@@ -516,9 +506,6 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         )
 
         ln_vrfy(f'''-fsn "{FIXgsm}" "{FIXam}"''')
-    #
-    # Copy relevant fix files.
-    #
     else:
 
         logging.info(
@@ -637,9 +624,6 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     # For the physics suites that use RUC LSM, set the parameter kice to 9,
     # Otherwise, leave it unspecified (which means it gets set to the default
     # value in the forecast model).
-    #
-    # NOTE:
-    # May want to remove kice from FV3.input.yml (and maybe input.nml.FV3).
     #
     kice = None
     if SDF_USES_RUC_LSM:
@@ -981,22 +965,6 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
 
         logging.info(
             f"""
-            To launch the workflow, first ensure that you have a compatible version
-            of rocoto available. For most pre-configured platforms, rocoto can be
-            loaded via a module:
-
-              > module load rocoto
-
-            For more details on rocoto, see the User's Guide.
-
-            To launch the workflow, first ensure that you have a compatible version
-            of rocoto loaded.  For example, to load version 1.3.1 of rocoto, use
-
-              > module load rocoto/1.3.1
-
-            (This version has been tested on hera; later versions may also work but
-            have not been tested.)
-
             To launch the workflow, change location to the experiment directory
             (EXPTDIR) and issue the rocotrun command, as follows:
 
