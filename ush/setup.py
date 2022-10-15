@@ -1348,10 +1348,9 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    # Create a new experiment directory.  Note that at this point we are
-    # guaranteed that there is no preexisting experiment directory. For
-    # platforms with no workflow manager, we need to create LOGDIR as well,
-    # since it won't be created later at runtime.
+    # Create a new experiment directory. For platforms with no workflow 
+    # manager we need to create LOGDIR as well, since it won't be created
+    # later at runtime.
     #
     # -----------------------------------------------------------------------
     #
@@ -1359,7 +1358,7 @@ def setup():
     mkdir_vrfy(f' -p "{LOGDIR}"')
     #
     # -----------------------------------------------------------------------
-    #
+    # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
     # If not running the MAKE_GRID_TN, MAKE_OROG_TN, and/or MAKE_SFC_CLIMO
     # tasks, create symlinks under the FIXlam directory to pregenerated grid,
     # orography, and surface climatology files.  In the process, also set
@@ -1455,17 +1454,16 @@ def setup():
     CRES = ""
     if not RUN_TASK_MAKE_GRID:
         CRES = f"C{RES_IN_FIXLAM_FILENAMES}"
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Make sure that WRITE_DOPOST is set to a valid value.
-    #
-    # -----------------------------------------------------------------------
-    #
+
     global RUN_TASK_RUN_POST
     if WRITE_DOPOST:
         # Turn off run_post
-        RUN_TASK_RUN_POST = False
+        if RUN_TASK_RUN_POST:
+            logger.warning(dedent(f"""
+                           Inline post is turned on, deactivating post-processing tasks:
+                           RUN_TASK_RUN_POST = False
+                           """))
+            RUN_TASK_RUN_POST = False
 
         # Check if SUB_HOURLY_POST is on
         if SUB_HOURLY_POST:
@@ -1742,62 +1740,50 @@ def setup():
         # the make_grid task is complete.
         #
         "CRES": CRES,
+        #
+        # -----------------------------------------------------------------------
+        #
+        # Flag in the \"{MODEL_CONFIG_FN}\" file for coupling the ocean model to
+        # the weather model.
+        #
+        # -----------------------------------------------------------------------
+        #
+        "CPL": CPL,
+        #
+        # -----------------------------------------------------------------------
+        #
+        # Name of the ozone parameterization.  The value this gets set to depends
+        # on the CCPP physics suite being used.
+        #
+        # -----------------------------------------------------------------------
+        #
+        "OZONE_PARAM": OZONE_PARAM,
+        #
+        # -----------------------------------------------------------------------
+        #
+        # Computational parameters.
+        #
+        # -----------------------------------------------------------------------
+        #
+        "PE_MEMBER01": PE_MEMBER01,
+        #
+        # -----------------------------------------------------------------------
+        #
+        # IF DO_SPP is set to "TRUE", N_VAR_SPP specifies the number of physics
+        # parameterizations that are perturbed with SPP.  If DO_LSM_SPP is set to
+        # "TRUE", N_VAR_LNDP specifies the number of LSM parameters that are
+        # perturbed.  LNDP_TYPE determines the way LSM perturbations are employed
+        # and FHCYC_LSM_SPP_OR_NOT sets FHCYC based on whether LSM perturbations
+        # are turned on or not.
+        #
+        # -----------------------------------------------------------------------
+        #
+        "N_VAR_SPP": N_VAR_SPP,
+        "N_VAR_LNDP": N_VAR_LNDP,
+        "LNDP_TYPE": LNDP_TYPE,
+        "LNDP_MODEL_TYPE": LNDP_MODEL_TYPE,
+        "FHCYC_LSM_SPP_OR_NOT": FHCYC_LSM_SPP_OR_NOT,
     }
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Continue appending variable definitions to the variable definitions
-    # file.
-    #
-    # -----------------------------------------------------------------------
-    #
-    settings.update(
-        {
-            #
-            # -----------------------------------------------------------------------
-            #
-            # Flag in the \"{MODEL_CONFIG_FN}\" file for coupling the ocean model to
-            # the weather model.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "CPL": CPL,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # Name of the ozone parameterization.  The value this gets set to depends
-            # on the CCPP physics suite being used.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "OZONE_PARAM": OZONE_PARAM,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # Computational parameters.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "PE_MEMBER01": PE_MEMBER01,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # IF DO_SPP is set to "TRUE", N_VAR_SPP specifies the number of physics
-            # parameterizations that are perturbed with SPP.  If DO_LSM_SPP is set to
-            # "TRUE", N_VAR_LNDP specifies the number of LSM parameters that are
-            # perturbed.  LNDP_TYPE determines the way LSM perturbations are employed
-            # and FHCYC_LSM_SPP_OR_NOT sets FHCYC based on whether LSM perturbations
-            # are turned on or not.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "N_VAR_SPP": N_VAR_SPP,
-            "N_VAR_LNDP": N_VAR_LNDP,
-            "LNDP_TYPE": LNDP_TYPE,
-            "LNDP_MODEL_TYPE": LNDP_MODEL_TYPE,
-            "FHCYC_LSM_SPP_OR_NOT": FHCYC_LSM_SPP_OR_NOT,
-        }
-    )
 
     # write derived settings
     cfg_d["derived"] = settings
