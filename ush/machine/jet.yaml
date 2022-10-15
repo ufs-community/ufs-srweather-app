@@ -38,8 +38,8 @@ task_run_fcst:
   FIXlut: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_lut
 data:
   FV3GFS:
-    - nemsio: /public/data/grids/gfs/nemsio
-    - grib2: /public/data/grids/gfs/0p25deg/grib2
-    - netcdf: /public/data/grids/gfs/anl/netcdf
+    nemsio: /public/data/grids/gfs/nemsio
+    grib2: /public/data/grids/gfs/0p25deg/grib2
+    netcdf: /public/data/grids/gfs/anl/netcdf
   RAP: /public/data/grids/rap/full/wrfprs/grib2
   HRRR: /public/data/grids/hrrr/conus/wrfprs/grib2

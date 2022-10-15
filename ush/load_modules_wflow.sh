@@ -70,5 +70,6 @@ fi
 $has_mu && set -u
 
 # List loaded modulefiles
+module --version
 module list
 
