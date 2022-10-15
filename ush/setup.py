@@ -735,6 +735,13 @@ def setup():
     EXPTDIR = os.path.join(EXPT_BASEDIR, EXPT_SUBDIR)
     try:
         check_for_preexist_dir_file(EXPTDIR, PREEXISTING_DIR_METHOD)
+    except ValueError:
+        logger.exception(f'''
+                        Check that the following values are valid:
+                        {EXPTDIR=}
+                        {PREEXISTING_DIR_METHOD=}
+                        ''')
+        raise
     except FileExistsError:
         errmsg = dedent(f'''
                         {EXPTDIR=} already exists, and {PREEXISTING_DIR_METHOD=}
@@ -744,7 +751,7 @@ def setup():
                         PREEXISTING_DIR_METHOD = rename
                         in your config file.
                         ''')
-        raise Exception(errmsg) from None
+        raise FileExistsError(errmsg) from None
     #
     # -----------------------------------------------------------------------
     #

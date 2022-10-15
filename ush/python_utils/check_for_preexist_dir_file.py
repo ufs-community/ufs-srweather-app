@@ -19,7 +19,14 @@ def check_for_preexist_dir_file(path, method):
         None
     """
 
-    check_var_valid_value(method, ["delete", "rename", "quit"])
+    try:
+        check_var_valid_value(method, ["delete", "rename", "quit"])
+    except ValueError:
+        errmsg = dedent(f'''
+                        Invalid method for dealing with pre-existing directory specified
+                        {method=}
+                        ''')
+        raise ValueError(errmsg) from None
 
     if os.path.exists(path):
         if method == "delete":
