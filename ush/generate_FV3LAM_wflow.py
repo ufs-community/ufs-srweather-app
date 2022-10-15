@@ -1046,6 +1046,15 @@ if __name__ == "__main__":
 class Testing(unittest.TestCase):
     def test_generate_FV3LAM_wflow(self):
 
+        # run workflows in separate process to avoid conflict between community and nco settings
+        def run_workflow():
+            p = Process(target=generate_FV3LAM_wflow)
+            p.start()
+            p.join()
+            exit_code = p.exitcode
+            if exit_code != 0:
+                sys.exit(exit_code)
+
         USHdir = os.path.dirname(os.path.abspath(__file__))
         logfile='log.generate_FV3LAM_wflow'
         SED = get_env_var("SED")

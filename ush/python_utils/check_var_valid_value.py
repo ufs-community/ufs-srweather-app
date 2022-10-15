@@ -12,6 +12,6 @@ def check_var_valid_value(var, values):
 
     if not var:
         var = ""
-    if not var or var not in values:
+    if var not in values:
         raise ValueError(f"Got '{var}', expected one of the following:\n   {values}")
     return True
