@@ -19,6 +19,8 @@ def check_for_preexist_dir_file(path, method):
         None
     """
 
+    logger = getLogger(__name__)
+
     try:
         check_var_valid_value(method, ["delete", "rename", "quit"])
     except ValueError:
