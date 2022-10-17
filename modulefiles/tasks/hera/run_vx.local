@@ -1,0 +1,5 @@
+#%Module
+
+module use -a /contrib/anaconda/modulefiles
+module load intel/18.0.5.274
+module load anaconda/latest

@@ -1,0 +1,149 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# This script runs the post-processor (UPP) on the NetCDF output files
+# of the write component of the FV3-LAM model.
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/source_util_funcs.sh
+. $USHdir/job_preamble.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the J-job script for the task that runs the post-processor (UPP)
+on the output files corresponding to a specified forecast hour.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Set the run directory.
+#
+#-----------------------------------------------------------------------
+#
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+#
+# If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
+# minutes (fmn) are set to "00".  This is necessary in order to pass
+# "fmn" into the post ex-script for the calculation of post_time.
+#
+if [ "${SUB_HOURLY_POST}" != "TRUE" ]; then
+  export fmn="00"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# If it doesn't already exist, create the directory (COMOUT) in which 
+# to store post-processing output.  (Note that COMOUT may have already 
+# been created by this post-processing script for a different output time 
+# from the same forecast start time and/or ensemble member.)  Also, create 
+# a temporary work directory (DATA_FHR) for the current output time.  This
+# will be deleted later after the processing for the current output time
+# is complete.  Then change location to DATA_FHR.
+#
+# Note that there may be a preexisting version of DATA_FHR from previous 
+# runs of this script for the current forecast hour (and current forecast
+# start time), e.g. from the workflow task that runs this script failing 
+# and then being called again.  Thus, we first make sure preexisting 
+# versions are deleted.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  export COMOUT="${DATA}/postprd"
+fi
+mkdir_vrfy -p "${COMOUT}"
+
+if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+  export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
+else
+  export DATA_FHR="${DATA:-$COMOUT}/$fhr"
+fi
+check_for_preexist_dir_file "${DATA_FHR}" "delete"
+mkdir_vrfy -p "${DATA_FHR}"
+
+cd_vrfy "${DATA_FHR}"
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that fhr is a non-empty string consisting of only digits.  
+#
+#-----------------------------------------------------------------------
+#
+export fhr=$( printf "%s" "${fhr}" | $SED -n -r -e "s/^([0-9]+)$/\1/p" )
+if [ -z "$fhr" ]; then
+  print_err_msg_exit "\
+The forecast hour (fhr) must be a non-empty string consisting of only 
+digits:
+  fhr = \"${fhr}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
+#
+#-----------------------------------------------------------------------
+#
+$SCRIPTSdir/exregional_run_post.sh || \
+print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Run job postamble.
+#
+#-----------------------------------------------------------------------
+#
+job_postamble
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+

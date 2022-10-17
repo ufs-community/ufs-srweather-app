@@ -1,0 +1,37 @@
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module loads libraries for building SRW on"
+   puts stderr "the CISL Cheyenne machine using Intel-2022.1"
+}
+
+module-whatis "Loads libraries needed for building SRW on Cheyenne"
+
+module load cmake/3.22.0
+module load python/3.7.9
+module load ncarenv/1.3
+module load intel/2022.1
+module load mpt/2.25
+module load mkl/2022.1
+module load ncarcompilers/0.5.0
+module unload netcdf
+
+module use /glade/work/epicufsrt/GMTB/tools/intel/2022.1/hpc-stack-v1.2.0_6eb6/modulefiles/stack
+module load hpc/1.2.0
+module load hpc-intel/2022.1
+module load hpc-mpt/2.25
+
+module load srw_common
+
+module load g2/3.4.5
+module load esmf/8.3.0b09
+module load mapl/2.11.0-esmf-8.3.0b09
+module load netcdf/4.7.4
+module load libpng/1.6.37
+module load pio/2.5.3
+module load fms/2022.01
+
+setenv CMAKE_C_COMPILER mpicc
+setenv CMAKE_CXX_COMPILER mpicxx
+setenv CMAKE_Fortran_COMPILER mpif90
+setenv CMAKE_Platform cheyenne.intel

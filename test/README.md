@@ -13,17 +13,17 @@ for the current code in the users ufs-srweather-app directory.  It consists of t
 
 Currently, the following configurations are supported:
 
-Machine     | Cheyenne       | Hera           | Jet            |
-------------| ---------------|----------------|----------------|
-Compiler(s) | Intel, GNU     | Intel          | Intel          |
+Machine     | Cheyenne    | Hera   | Jet    | Orion  | wcoss2  |
+------------| ------------|--------|--------|--------|---------|
+Compiler(s) | Intel, GNU  | Intel  | Intel  | Intel  | Intel   |
 
 The CMake build is done in the ``build_${compiler}`` directory.
 The executables for each build are installed under the ``bin_${compiler}`` directory.
 
 NOTE:  To run the regional workflow using these executables, the ``EXECDIR`` variable in the
-``${SR_WX_APP_TOP_DIR}/regional_workflow/ush/setup.sh`` file must be set to the
-appropiate directory, for example:  ``EXECDIR="${SR_WX_APP_TOP_DIR}/bin_intel/bin"``,
-where ``${SR_WX_APP_TOP_DIR}`` is the top-level directory of the cloned ufs-srweather-app repository.
+``${HOMEdir}/ush/setup.py`` file must be set to the
+appropiate directory, for example:  ``EXECDIR="${HOMEdir}/bin_intel/bin"``,
+where ``${HOMEdir}`` is the top-level directory of the cloned ufs-srweather-app repository.
 
 ## Usage
 
@@ -36,4 +36,4 @@ cd test
 ./build.sh cheyenne >& build.out &
 ```
 
-Check the ``${SR_WX_APP_TOP_DIR}/test/build_test$PID.out`` file for PASS/FAIL.
+Check the ``${HOMEdir}/test/build_test$PID.out`` file for PASS/FAIL.

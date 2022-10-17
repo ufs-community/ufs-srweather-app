@@ -12,10 +12,38 @@ git clone https://github.com/ufs-community/ufs-srweather-app.git
 cd ufs-srweather-app/
 ./manage_externals/checkout_externals
 
-# Prior to building, you must set up the environment so cmake can find the appropriate compilers
-# and libraries. For instructions specific to supported platforms, see the "build_[machine]_[compiler].env 
-# files in the "env" directory. These files give instructions assuming a bash or ksh login shell, for
-# csh and tcsh users you will have to modify the commands for setting envronment variables.
+# We can build ufs-sreweather-app binaries in two ways.
+
+# Method 1
+# ========
+
+# This is the simplest way to build the binaries
+
+./devbuild.sh --platform=PLATFORM
+
+# If compiler auto-detection fails, specify it using
+
+./devbuild.sh --platform=PLATFORM --compiler=COMPILER
+
+# Method 2
+# ========
+
+# The above instructions will work atleast on Tier-1 systems, if not on all supported machines.
+# However, if it fails for some reason, we can build directly with cmake.
+
+# First, we need to make sure that there is a modulefile "build_[PLATFORM]_[COMPILER]" in the
+# "modulefiles" directory. Also, on some systems (e.g. Gaea/Odin) that come with cray module app,
+# we may need to swap that for Lmod instead. Assuming your login shell is bash, run
+
+source etc/lmod-setup.sh PLATFORM
+
+# and if your login schell is csh/tcsh, source etc/lmod-setup.csh instead.
+
+# From here on, we can assume Lmod is loaded and ready to go. Then we load the specific
+# module for a given PLATFORM and COMPILER as follows
+
+module use $PWD/modulefiles   #full path to modulefiles directory
+module load build_[PLATFORM]_[COMPILER]
 
 # Supported CMake flags:
 #  -DCMAKE_INSTALL_PREFIX Location where the bin/ include/ lib/ and share/ directories containing

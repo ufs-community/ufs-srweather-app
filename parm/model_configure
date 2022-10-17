@@ -1,0 +1,115 @@
+total_member:            1
+PE_MEMBER01:             {{ PE_MEMBER01 }}
+print_esmf:              {{ print_esmf }}
+start_year:              {{ start_year }}
+start_month:             {{ start_month }}
+start_day:               {{ start_day }}
+start_hour:              {{ start_hour }}
+start_minute:            0
+start_second:            0
+nhours_fcst:             {{ nhours_fcst }}
+RUN_CONTINUE:            .false.
+ENS_SPS:                 .false.
+dt_atmos:                {{ dt_atmos }}
+cpl:                     {{ cpl }}
+calendar:                'julian'
+memuse_verbose:          .false.
+atmos_nthreads:          {{ atmos_nthreads }}
+restart_interval:        {{ restart_interval }}  -1
+output_1st_tstep_rst:    .false.
+write_dopost:            {{ write_dopost }}
+ideflate:                0
+nbits:                   0
+quilting:                {{ quilting }}
+{% if quilting  %}
+#
+# Write-component (quilting) computational parameters.
+#
+write_groups:            {{ write_groups }}
+write_tasks_per_group:   {{ write_tasks_per_group }}
+num_files:               2
+filename_base:           'dyn' 'phy'
+output_file:             'netcdf' 'netcdf'
+#
+# Write-component output frequency parameter definitions:
+#
+# output_fh: Output frequency in hours.
+# nsout: Output frequency in time steps (positive values override "output_fh").
+#
+output_fh:  {{ output_fh }}  -1
+nsout:      {{ nsout }}
+#
+# Coordinate system used by the output grid.
+#
+output_grid:  '{{ output_grid }}'
+#
+# Parameter definitions for an output grid of type "{{ output_grid }}":
+#
+  {%- if output_grid == "lambert_conformal" %}
+# cen_lon: Longitude of center of grid (degrees).
+# cen_lat: Latitude of center of grid (degrees).
+# stdlat1: Latitude of first standard parallel (degrees).
+# stdlat2: Latitude of second standard parallel (degrees).
+# nx: Number of grid cells along x-axis in Lambert conformal (x,y) plane.
+# ny: Number of grid cells along y-axis in Lambert conformal (x,y) plane.
+# lon1: Longitude of center of grid cell at bottom-left corner of grid (degrees).
+# lat1: Latitude of center of grid cell at bottom-left corner of grid (degrees).
+# dx: Grid cell size in x direction (meters).
+# dy: Grid cell size in y direction (meters).
+#
+  {%- elif output_grid == "regional_latlon" %}
+# cen_lon: Longitude of center of grid (degrees).
+# cen_lat: Latitude of center of grid (degrees).
+# lon1: Longitude of center of lower-left (southwest) grid cell (degrees).
+# lat1: Latitude of center of lower-left (southwest) grid cell (degrees).
+# lon2: Longitude of center of upper-right (northeast) grid cell (degrees).
+# lat2: Latitude of center of upper-right (northeast) grid cell (degrees).
+# dlon: Longitudinal grid size (degrees).
+# dlat: Latitudinal grid size (degrees).
+#
+  {%- elif output_grid == "rotated_latlon" %}
+# cen_lon: Longitude of center of grid, expressed in the NON-ROTATED latlon coordinate 
+#          system (degrees).  This is also the longitude of the point at which the 
+#          equator and prime meridian of the ROTATED coordinate system intersect (i.e. 
+#          the point at which the longitude and latitude in the ROTATED latlon 
+#          coordinate system are both 0).
+# cen_lat: Latitude of center of grid, expressed in the NON-ROTATED latlon coordinate 
+#          system (degrees).  This is also the latitude of the point at which the 
+#          equator and prime meridian of the ROTATED coordinate system intersect (i.e. 
+#          the point at which the longitude and latitude in the ROTATED latlon 
+#          coordinate system are both 0).
+# lon1: Longitude of center of lower-left grid cell, expressed in the ROTATED latlon 
+#       coordinate system (degrees).
+# lat1: Latitude of center of lower-left grid cell, expressed in the ROTATED latlon 
+#       coordinate system (degrees).
+# lon2: Longitude of center of upper-right grid cell, expressed in the ROTATED latlon 
+#       coordinate system (degrees).
+# lat2: Latitude of center of upper-right grid cell, expressed in the ROTATED latlon 
+#       coordinate system (degrees).
+# dlon: Longitudinal grid size in the ROTATED latlon coordinate system (degrees).
+# dlat: Latitudinal grid size in the ROTATED latlon coordinate system (degrees).
+#
+  {%- endif %}
+  {%- if output_grid == "lambert_conformal" %}
+cen_lon:  {{ cen_lon }}
+cen_lat:  {{ cen_lat }}
+stdlat1:  {{ stdlat1 }}
+stdlat2:  {{ stdlat2 }}
+nx:       {{ nx }}
+ny:       {{ ny }}
+lon1:     {{ lon1 }}
+lat1:     {{ lat1 }}
+dx:       {{ dx }}
+dy:       {{ dy }}
+  {%- elif (output_grid == "regional_latlon") or (output_grid == "rotated_latlon") %}
+cen_lon:  {{ cen_lon }}
+cen_lat:  {{ cen_lat }}
+lon1:     {{ lon1 }}            
+lat1:     {{ lat1 }}            
+lon2:     {{ lon2 }}            
+lat2:     {{ lat2 }}            
+dlon:     {{ dlon }}
+dlat:     {{ dlat }}
+  {%- endif %}
+{%- endif %}
+

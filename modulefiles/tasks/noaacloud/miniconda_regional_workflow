@@ -1,0 +1,5 @@
+#%Module
+module use -a /contrib/GST/miniconda3/modulefiles
+module load miniconda3/4.10.3
+
+setenv SRW_ENV regional_workflow

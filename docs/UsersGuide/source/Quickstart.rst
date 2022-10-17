@@ -1,329 +1,126 @@
-.. _Quickstart:
+.. _NCQuickstart:
 
 ====================
-Workflow Quick Start
+Quick Start Guide
 ====================
-To build and run the out-of-the-box case of the UFS Short-Range Weather (SRW) Application the user
-must get the source code for multiple components, including: the regional workflow, the UFS_UTILS
-pre-processor utilities, the UFS Weather Model, and the Unified Post Processor (UPP).  Once the UFS
-SRW Application umbrella repository is cloned, obtaining the necessary external repositories is
-simplified by the use of ``manage_externals``.  The out-of-the-box case uses a predefined 25-km
-CONUS grid (RRFS_CONUS_25km), the GFS version 15.2 physics suite (FV3_GFS_v15p2 CCPP), and
-FV3-based GFS raw external model data for initialization.
 
-.. note::
+This chapter provides a brief summary of how to build and run the SRW Application. The steps will run most smoothly on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users should expect to reference other chapters of this User's Guide, particularly :numref:`Chapter %s <BuildRunSRW>`, for additional explanations regarding each step. 
 
-   The steps described in this chapter are applicable to preconfigured (Level 1) machines where
-   all of the required libraries for building community releases of UFS models and applications
-   are available in a central place (i.e. the bundled libraries (NCEPLIBS) and third-party
-   libraries (NCEPLIBS-external) have both been built).  The Level 1 platforms are listed `here
-   <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_.
-   For more information on compiling NCEPLIBS-external and NCEPLIBS, please refer to the
-   NCEPLIBS-external `wiki <https://github.com/NOAA-EMC/NCEPLIBS-external/wiki>`_. 
 
+Install the HPC-Stack
+===========================
+SRW App users who are not working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the :term:`HPC-Stack` prior to building the SRW App on a new machine. Installation instructions appear in the :doc:`HPC-Stack documentation <hpc-stack:index>`. The steps will vary slightly depending on the user's platform. However, in all cases, the process involves cloning the `HPC-Stack repository <https://github.com/NOAA-EMC/hpc-stack>`__, creating and entering a build directory, and invoking ``cmake`` and ``make`` commands to build the stack. This process will create a number of modulefiles and scripts that will be used for setting up the build environment for the SRW App. 
 
-Download the UFS SRW Application Code
-=====================================
-The necessary source code is publicly available on GitHub.  To clone the release branch of the repository:
+Once the HPC-Stack has been successfully installed, users can move on to building the SRW Application.
 
-.. code-block:: console
 
-   git clone -b ufs-v1.0.0 https://github.com/ufs-community/ufs-srweather-app.git
-   cd ufs-srweather-app
+Building and Running the UFS SRW Application 
+===============================================
 
-Then, check out the submodules for the SRW application:
+For a detailed explanation of how to build and run the SRW App on any supported system, see :numref:`Chapter %s <BuildRunSRW>`. The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. An overview of the required steps appears below. However, users can expect to access other referenced sections of this User's Guide for more detail. 
 
-.. code-block:: console
+   #. Clone the SRW App from GitHub:
 
-   ./manage_externals/checkout_externals
+      .. code-block:: console
 
-The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory
-and will clone the regional workflow, pre-processing utilities, UFS Weather Model, and UPP source code
-into the appropriate directories under your ``regional_workflow`` and ``src`` directories.
+         git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
 
+   #. Check out the external repositories:
 
-.. _SetUpBuild:
+      .. code-block:: console
 
-Set up the Build Environment
-============================
-Instructions for loading the proper modules and/or setting the correct environment variables can be
-found in the ``env/`` directory in files named ``build_<platform>_<compiler>.env``.
-The commands in these files can be directly copy-pasted to the command line or the file can be sourced.
-You may need to modify certain variables such as the path to NCEP libraries for your individual platform,
-or use ``setenv`` rather than ``export`` depending on your environment:
+         cd ufs-srweather-app
+         ./manage_externals/checkout_externals
 
-.. code-block:: console
+   #. Set up the build environment and build the executables.
 
-   $ ls -l env/
-      -rw-rw-r-- 1 user ral 1062 Apr  27 10:09 build_cheyenne_gnu.env
-      -rw-rw-r-- 1 user ral 1061 Apr  27 10:09 build_cheyenne_intel.env
-      -rw-rw-r-- 1 user ral 1023 Apr  27 10:09 build_hera_intel.env
-      -rw-rw-r-- 1 user ral 1017 Apr  27 10:09 build_jet_intel.env
+      * **Option 1:** 
 
-Build the Executables
-=====================
-Build the executables as follows:
+         .. code-block:: console
+            
+            ./devbuild.sh --platform=<machine_name>
 
-.. code-block:: console
+         where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``macos`` | ``noaacloud`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss2``
 
-   mkdir build
-   cd build
+      * **Option 2:**
 
-Run ``cmake`` to set up the ``Makefile``, then run ``make``:
+         .. code-block:: console
 
-.. code-block:: console
+            source etc/lmod-setup.sh <machine>
 
-   cmake .. -DCMAKE_INSTALL_PREFIX=..
-   make -j 4  >& build.out &
+         where ``<machine>`` refers to the user's platform (e.g., ``macos``, ``gaea``, ``odin``, ``singularity``). 
 
-Output from the build will be in the ``ufs-srweather-app/build/build.out`` file.
-When the build completes, you should see the forecast model executable ``NEMS.exe`` and eleven
-pre- and post-processing executables in the ``ufs-srweather-app/bin`` directory which are
-described in :numref:`Table %s <ExecDescription>`.
+         Users will also need to load the "build" modulefile appropriate to their system. On Level 3 & 4 systems, users can adapt an existing modulefile (such as ``build_macos_gnu``) to their system. 
 
-Generate the Workflow Experiment
-================================
-Generating the workflow experiment requires three steps:
+         .. code-block:: console
 
-* Set experiment parameters in config.sh
-* Set Python and other environment parameters
-* Run the ``generate_FV3LAM_wflow.sh`` script
+            module use <path/to/modulefiles>
+            module load build_<platform>_<compiler>
 
-The first two steps depend on the platform being used and are described here for each Level 1 platform.
+         From the top-level ``ufs-srweather-app`` directory, run:
 
-.. _SetUpConfigFile:
+         .. code-block:: console
 
-Set up ``config.sh`` file
--------------------------
-The workflow requires a file called ``config.sh`` to specify the values of your experiment parameters.
-Two example templates are provided: ``config.community.sh`` and ``config.nco.sh`` and can be found in
-the ``ufs-srweather-app/regional_workflow/ush directory``.  The first file is a minimal example for
-creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``),
-while the second is an example of creating and running an experiment in the *NCO* (operational) mode
-(with ``RUN_ENVIR`` set to ``nco``).   The *community* mode is recommended in most cases and will be
-fully supported for this release while the operational mode will be more exclusively used by NOAA/NCEP
-Central Operations (NCO) and those in the NOAA/NCEP/Environmental Modeling Center (EMC) working with
-NCO on pre-implementation testing. Sample config.sh files are discussed in this section for Level 1 platforms. 
+            mkdir build
+            cd build
+            cmake .. -DCMAKE_INSTALL_PREFIX=..
+            make -j 4  >& build.out &
 
-Make a copy of ``config.community.sh`` to get started (under /path-to-ufs-srweather-app/regional_workflow/ush):
+   #. Download and stage data (both the fix files and the :term:`IC/LBC <IC/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a Level 2-4 system).
 
-.. code-block:: console
+   #. Configure the experiment parameters.
 
-   cd ../regional_workflow/ush
-   cp config.community.sh config.sh
+      .. code-block:: console
 
-Edit the ``config.sh`` file to set the machine you are running on to ``MACHINE``, use an account you can charge for 
-``ACCOUNT``, and set the name of the experiment with ``EXPT_SUBDIR``. If you have access to the NOAA HPSS from the 
-machine you are running on, those changes should be sufficient; however, if that is not the case (for example, 
-on Cheyenne), or if you have pre-staged the initialization data you would like to use, you will also want to set 
-``USE_USER_STAGED_EXTRN_FILES="TRUE"`` and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and 
-``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. 
+         cd ush
+         cp config.community.yaml config.yaml
+      
+      Users will need to adjust the experiment parameters in the ``config.yaml`` file to suit the needs of their experiment (e.g., date, time, grid, physics suite, etc.). More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. To determine whether the ``config.yaml`` file adjustments are valid, users can run:
 
-.. note::
+      .. code-block:: console
 
-   If you set up the build environment with the GNU compiler in :numref:`Section %s <SetUpBuild>`, you will
-   have to add the line ``COMPILER="gnu"`` to the ``config.sh`` file.
- 
-At a minimum, the following parameters should be set for the machine you are using:
+         ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
+      
+      A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
 
-For Cheyenne:
+      .. code-block:: console
 
-.. code-block:: console
+         INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
+         FAILURE
 
-   MACHINE="cheyenne"
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
-   USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/glade/p/ral/jntp/UFS_SRW_app/model_data/FV3GFS"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/glade/p/ral/jntp/UFS_SRW_app/model_data/FV3GFS"
+   #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
 
-For Hera:
+      .. code-block:: console
 
-.. code-block:: console
+         module use <path/to/modulefiles>
+         module load wflow_<platform>
 
-   MACHINE="hera"
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
+      After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
 
-For Jet:
+      .. code-block:: console
 
-.. code-block:: console
+         Please do the following to activate conda:
+            > conda activate regional_workflow
+      
+      then the user should run ``conda activate regional_workflow`` to activate the ``regional_workflow`` environment. 
 
-   MACHINE="jet"
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
+   #. Generate the experiment workflow. 
 
-For Orion:
+      .. code-block:: console
 
-.. code-block:: console
+         ./generate_FV3LAM_wflow.py
 
-   MACHINE="orion"
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
+   #. Run the regional workflow. There are several methods available for this step, which are discussed in :numref:`Section %s <Run>`. One possible method is summarized below. It requires the Rocoto Workflow Manager. 
 
-For Gaea:
+      .. code-block:: console
 
-.. code-block:: console
+         cd $EXPTDIR
+         ./launch_FV3LAM_wflow.sh
 
-   MACHINE="gaea"
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
+      To launch the workflow and check the experiment's progress:
 
-For WCOSS, edit ``config.sh`` with these WCOSS-specific parameters, and use a valid WCOSS
-project code for the account parameter:
+      .. code-block:: console
 
-.. code-block:: console
+         ./launch_FV3LAM_wflow.sh; tail -n 40 log.launch_FV3LAM_wflow
 
-   MACHINE=”wcoss_cray” or MACHINE=”wcoss_dell_p3”
-   ACCOUNT="my_account"
-   EXPT_SUBDIR="my_expt_name"
-
-.. _SetUpPythonEnv:
-
-Set up the Python and other Environment Parameters
---------------------------------------------------
-Next, it is necessary to load the appropriate Python environment for the workflow.
-The workflow requires Python 3, with the packages 'PyYAML', 'Jinja2', and 'f90nml' available.
-This Python environment has already been set up on Level 1 platforms, and can be activated in
-the following way (when in /path-to-ufs-srweather-app/regional_workflow/ush):
-
-.. code-block:: console
-
-   source ../../env/wflow_<platform>.env
-
-Run the ``generate_FV3LAM_wflow.sh`` script
--------------------------------------------
-For all platforms, the workflow can then be generated with the command:
-
-.. code-block:: console
-
-   ./generate_FV3LAM_wflow.sh
-
-The generated workflow will be in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. A 
-log file called ``log.generate_FV3LAM_wflow`` is generated by this step and can also be found in 
-``$EXPTDIR``. The settings for these paths can be found in the output from the 
-``./generate_FV3LAM_wflow.sh`` script.
-
-Run the Workflow Using Rocoto
-=============================
-The information in this section assumes that Rocoto is available on the desired platform.
-If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts
-described in :numref:`Section %s <RunUsingStandaloneScripts>`. There are two ways you can run 
-the workflow with Rocoto using either the ``./launch_FV3LAM_wflow.sh`` or by hand. 
-
-An environment variable may be set to navigate to the ``$EXPTDIR`` more easily. If the login 
-shell is bash, it can be set as follows:
-
-.. code-block:: console
-
-   export EXPTDIR=/path-to-experiment/directory
-
-Or if the login shell is csh/tcsh, it can be set using:
-
-.. code-block:: console
-
-   setenv EXPTDIR /path-to-experiment/directory
-
-To run Rocoto using the script:
-
-.. code-block:: console
-
-   cd $EXPTDIR
-   ./launch_FV3LAM_wflow.sh
-
-Once the workflow is launched with the ``launch_FV3LAM_wflow.sh`` script, a log file named
-``log.launch_FV3LAM_wflow`` will be created (or appended to it if it already exists) in ``EXPTDIR``.
-
-Or to manually call Rocoto: 
-
-First load the Rocoto module, depending on the platform used.
-
-For Cheyenne:
-
-.. code-block:: console
-
-   module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
-   module load rocoto
-
-For Hera or Jet:
-
-.. code-block:: console
-
-   module purge
-   module load rocoto
-
-For Orion:
-
-.. code-block:: console
-
-   module purge
-   module load contrib rocoto
-
-For Gaea:
-
-.. code-block:: console
-
-   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
-   module load rocoto/1.3.3
-
-For WCOSS_DELL_P3:
-
-.. code-block:: console
-
-   module purge
-   module load lsf/10.1
-   module use /gpfs/dell3/usrx/local/dev/emc_rocoto/modulefiles/
-   module load ruby/2.5.1 rocoto/1.2.4
-
-For WCOSS_CRAY:
-
-.. code-block:: console
-
-   module purge
-   module load xt-lsfhpc/9.1.3
-   module use -a /usrx/local/emc_rocoto/modulefiles
-   module load rocoto/1.2.4
-
-Then manually call ``rocotorun`` to launch the tasks that have all dependencies satisfied 
-and ``rocotostat`` to monitor the progress: 
-
-.. code-block:: console
-
-   cd $EXPTDIR
-   rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
-   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
-
-For automatic resubmission of the workflow (e.g., every 3 minutes), the following line can be added
-to the user's crontab (use ``crontab -e`` to edit the cron table).
-
-.. code-block:: console
-
-   */3 * * * * cd /glade/p/ral/jntp/$USER/expt_dirs/test_CONUS_25km_GFSv15p2 && ./launch_FV3LAM_wflow.sh 
-
-.. note::
-
-   Currently cron is only available on the orion-login-1 node, so please use that node.
-   
-The workflow run is completed when all tasks have “SUCCEEDED”, and the rocotostat command will output the following:
-
-.. code-block:: console
-
-   CYCLE               TASK                 JOBID              STATE         EXIT STATUS   TRIES   DURATION
-   ==========================================================================================================
-   201906150000          make_grid           4953154           SUCCEEDED         0         1           5.0
-   201906150000          make_orog           4953176           SUCCEEDED         0         1          26.0
-   201906150000          make_sfc_climo      4953179           SUCCEEDED         0         1          33.0
-   201906150000          get_extrn_ics       4953155           SUCCEEDED         0         1           2.0
-   201906150000          get_extrn_lbcs      4953156           SUCCEEDED         0         1           2.0
-   201906150000          make_ics            4953184           SUCCEEDED         0         1          16.0
-   201906150000          make_lbcs           4953185           SUCCEEDED         0         1          71.0
-   201906150000          run_fcst            4953196           SUCCEEDED         0         1        1035.0
-   201906150000          run_post_f000       4953244           SUCCEEDED         0         1           5.0
-   201906150000          run_post_f001       4953245           SUCCEEDED         0         1           4.0
-   ...
-   201906150000          run_post_f048       4953381           SUCCEEDED         0         1           7.0
-
-Plot the Output
-===============
-Two python scripts are provided to generate plots from the FV3-LAM post-processed GRIB2 output. Information
-on how to generate the graphics can be found in :numref:`Chapter %s <Graphics>`.
+Optionally, users may :ref:`configure their own grid <UserDefinedGrid>`, instead of using a predefined grid, and :ref:`plot the output <Graphics>` of their experiment(s).

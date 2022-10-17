@@ -5,21 +5,23 @@
 
 UFS Short-Range Weather App Users Guide
 =======================================
-
+   
 .. toctree::
    :numbered:
    :maxdepth: 3
+   
 
    Introduction
    Quickstart
-   CodeReposAndDirs
-   SRWAppOverview
-   ConfigWorkflow
-   LAMGrids
+   ContainerQuickstart
+   BuildRunSRW
+   Components
    InputOutputFiles
-   ConfigNewPlatform
+   LAMGrids
+   ConfigWorkflow
+   RocotoInfo
    WE2Etests
    Graphics
+   ContributorsGuide
    FAQ
-   RocotoInfo
    Glossary

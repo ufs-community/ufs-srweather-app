@@ -1,0 +1,28 @@
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module loads libraries for building SRW on"
+   puts stderr "the MSU machineOrion using Intel-2022.1.2"
+}
+
+module-whatis "Loads libraries needed for building SRW on Orion"
+
+module load contrib noaatools
+
+module load cmake/3.22.1
+module load python/3.9.2
+
+module use /apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack
+module load hpc/1.2.0
+module load hpc-intel/2022.1.2
+module load hpc-impi/2022.1.2
+
+module load srw_common
+
+module load nccmp/1.8.9.0
+module load nco/4.9.3
+
+setenv CMAKE_C_COMPILER mpiicc
+setenv CMAKE_CXX_COMPILER mpiicpc
+setenv CMAKE_Fortran_COMPILER mpiifort
+setenv CMAKE_Platform orion.intel

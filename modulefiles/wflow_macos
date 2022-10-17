@@ -1,0 +1,31 @@
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module activates python environement for running SRW on macOS"
+}
+
+module-whatis "Loads libraries needed for running SRW on macOS"
+
+setenv CMAKE_Platform macos
+
+# This path should point to your python virtual environment directory,
+# `regional_workflow`, created earlier for 
+# 
+setenv VENV "$env(HOME)/venv/regional_workflow"
+if { [module-info mode load] } {
+   puts stderr "Verify the Python virtual environment path \$VENV shown below is correct, "
+   puts stderr "set to the correct path otherwise: "
+   puts stderr "VENV=$env(VENV) "
+   puts stderr "Please do the following to activate python virtual environment:
+       > source \$VENV/bin/activate "
+}
+if { [module-info mode remove] } {
+   puts "deactivate;"
+}
+
+# Uncomment if Rocoto workflow manager is used
+# This path should point to your Rocoto module location
+# setenv ROCOTOmod "/Users/username/modules"
+# module use $env(ROCOTOmod)
+# module load rocoto
+

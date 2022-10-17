@@ -1,0 +1,36 @@
+platform:
+  WORKFLOW_MANAGER: rocoto
+  NCORES_PER_NODE: 40
+  SCHED: slurm
+  CCPA_OBS_DIR: /work/noaa/fv3-cam/UFS_SRW_App/develop/obs_data/ccpa/proc
+  MRMS_OBS_DIR: /work/noaa/fv3-cam/UFS_SRW_App/develop/obs_data/mrms/proc
+  NDAS_OBS_DIR: /work/noaa/fv3-cam/UFS_SRW_App/develop/obs_data/ndas/proc
+  METPLUS_PATH: /apps/contrib/MET/METplus/METplus-4.1.1
+  MET_BIN_EXEC: bin
+  MET_INSTALL_DIR: /apps/contrib/MET/10.1.1
+  DOMAIN_PREGEN_BASEDIR: /work/noaa/fv3-cam/UFS_SRW_App/develop/FV3LAM_pregen
+  PARTITION_DEFAULT: orion
+  QUEUE_DEFAULT: batch
+  PARTITION_FCST: orion
+  QUEUE_FCST: batch
+  PARTITION_HPSS: service
+  QUEUE_HPSS: batch
+  RUN_CMD_FCST: srun -n ${PE_MEMBER01}
+  RUN_CMD_POST: srun
+  RUN_CMD_SERIAL: time
+  RUN_CMD_UTILS: srun
+  PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /work/noaa/fv3-cam/UFS_SRW_App/develop/input_model_data
+  TEST_PREGEN_BASEDIR: /work/noaa/fv3-cam/UFS_SRW_App/develop/FV3LAM_pregen
+task_make_orog:
+  TOPO_DIR: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_orog
+task_make_sfc_climo:
+  SFC_CLIMO_INPUT_DIR: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_sfc_climo
+task_get_extrn_ics:
+  EXTRN_MDL_DATA_STORES: aws nomads
+task_get_extrn_lbcs:
+  EXTRN_MDL_DATA_STORES: aws nomads
+task_run_fcst:
+  FIXaer: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsm: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_am
+  FIXlut: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_lut

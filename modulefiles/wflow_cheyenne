@@ -1,0 +1,20 @@
+#%Module
+
+proc ModulesHelp { } {
+   put stderr "This module loads rocoto and the python environment"
+   put stderr "for running the UFS SRW App on the CISL machine Cheyenne"
+}
+
+module-whatis "Loads libraries and utilities needed for running SRW on Cheyenne"
+
+module load ncarenv
+module use -a /glade/p/ral/jntp/UFS_SRW_app/modules/
+module load rocoto
+module load conda/latest
+
+if { [module-info mode load] } {
+  puts stderr "Please do the following to activate conda:
+       > conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow"
+}
+
+

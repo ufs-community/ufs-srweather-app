@@ -1,0 +1,19 @@
+#%Module
+
+proc ModulesHelp { } {
+   put stderr "This module loads python environement for running SRW on"
+   put stderr "the NOAA RDHPC machine Hera"
+}
+
+module-whatis "Loads libraries needed for running SRW on Hera"
+
+module load rocoto
+
+module use /contrib/miniconda3/modulefiles
+module load miniconda3/4.5.12
+
+if { [module-info mode load] } {
+  puts stderr "Please do the following to activate conda:
+       > conda activate regional_workflow"
+}
+

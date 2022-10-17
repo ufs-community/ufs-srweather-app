@@ -1,0 +1,90 @@
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module needs to be customized for the user's MacOS environment:" 
+   puts stderr "specify compilers, path for HPC-stack, load the modules, set compiler and linker flags"
+   puts stderr "Option 1: M1/arm64 platform, OS BigSur, Monterey (Darwin 20,21) "
+   puts stderr "Option 2: Intel/x86_64 platform, OS Catalina (Darwin 19) "
+   puts stderr " "
+}
+
+module-whatis "Loads libraries needed for building SRW on Hera"
+
+if { [module-info mode load] } {
+   puts "ulimit -S -s unlimited;"
+}
+
+# This path should point to your HPCstack installation directory
+setenv HPCstack "/Users/username/hpc-stack/install"
+
+# Load HPC stack 
+module use $env(HPCstack)/modulefiles/stack
+module load hpc
+module load hpc-python
+#
+module load hpc-gnu
+module load openmpi
+module load hpc-openmpi
+
+module load jasper/2.0.25
+module load zlib/1.2.11
+
+module load hdf5/1.10.6
+module load netcdf/4.7.4
+module load pio/2.5.3
+module load esmf/8.3.0b09
+module load fms/2022.01
+
+module load bacio/2.4.1
+module load crtm/2.3.0
+module load g2/3.4.3
+module load g2tmpl/1.10.0
+module load ip/3.3.3
+module load sp/2.3.3
+module load w3nco/2.4.1
+module load upp/10.0.10
+
+module load gftl-shared/1.3.3
+module load yafyaml/0.5.1
+module load mapl/2.12.2-esmf-8.3.0b09
+module load gfsio/1.4.1
+module load landsfcutil/2.4.1
+module load nemsio/2.5.4
+module load nemsiogfs/2.5.3
+module load sfcio/1.4.1
+module load sigio/2.3.2
+module load w3emc/2.9.2
+module load wgrib2/2.0.8
+module list
+
+# Option 1 compiler paths: 
+setenv CC "/opt/homebrew/bin/gcc"
+setenv FC "/opt/homebrew/bin/gfortran"
+setenv CXX "/opt/homebrew/bin/g++"
+
+# Option 2 compiler paths:
+#setenv CC "/usr/local/bin/gcc"
+#setenv FC "/usr/local/bin/gfortran"
+#setenv CXX "/usr/local/bin/g++"
+
+setenv MPI_CC mpicc
+setenv MPI_CXX mpicxx
+setenv MPI_FC mpif90
+
+setenv CMAKE_C_COMPILER $env(MPI_CC)
+setenv CMAKE_CXX_COMPILER $env(MPI_CXX)
+setenv CMAKE_Fortran_COMPILER $env(MPI_FC)
+setenv CMAKE_Platform macos.gnu
+
+setenv CMAKE_Fortran_COMPILER_ID "GNU"
+setenv FFLAGS "-DNO_QUAD_PRECISION -fallow-argument-mismatch "
+
+# export the env. variable LDFLAGS after loading the current module
+# export LDFLAGS="-L$MPI_ROOT/lib"
+if { [module-info mode load] } {
+   puts stderr " "
+   puts stderr "Please export env. variable LDFLAGS after the module is successfully loaded:
+       > export LDFLAGS=\"-L\$MPI_ROOT/lib \" "
+}
+
+

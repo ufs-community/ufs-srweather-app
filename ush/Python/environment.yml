@@ -1,0 +1,15 @@
+name: pygraf
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7*
+  - basemap=1.2*
+  - basemap-data-hires=1.2.1
+  - pynio=1.5.5
+  - matplotlib=3.2*
+  - metpy=0.12.1
+  - pylint=2.4*
+  - pytest=6.1*
+  - pyyaml=5.3.1
+  - xarray=0.15.1

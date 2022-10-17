@@ -1,0 +1,3 @@
+#%Module
+
+module load miniconda_regional_workflow

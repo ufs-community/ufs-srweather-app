@@ -28,11 +28,11 @@ This project utilizes the following unmodified works under various licenses, as 
 
 - UFS Utils: [GNU Lesser General Public License 3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html) (LGPL)
 
-- Regional Workflow: [CC0 1.0 Universal public domain dedication (CC0)](https://creativecommons.org/publicdomain/zero/1.0)
-
 ## The rest of this project is in the worldwide public domain
 
-As a work of the United States Government, this project is in the public domain within the United States. Additionally, NOAA waives copyright and related rights in the work worldwide through the [CC0 1.0 Universal public domain dedication](https://creativecommons.org/publicdomain/zero/1.0/).
+As a work of the United States Government, this project is in the public domain within the United States. Additionally, NOAA, CIRA, CIRES, and UCAR waive copyright and related rights in the work worldwide through the [CC0 1.0 Universal public domain dedication](https://creativecommons.org/publicdomain/zero/1.0/).
+
+The regional_workflow code incorporated in the Unified Forecast System (UFS) (previously located in a separate repository: https://github.com/ufs-community/regional_workflow) was jointly developed by the National Oceanic and Atmospheric Administration (NOAA), Cooperative Institute for Research in the Atmosphere (CIRA), Cooperative Institute for Research in Environmental Sciences (CIRES), University Corporation for Atmospheric Research (UCAR), and I. M. Systems Group (IMSG).
 
 ## CC0 1.0 Universal Summary
 
@@ -44,7 +44,7 @@ The person who associated a work with this deed has dedicated the work to the pu
 
 ## Other information
 In no way are the patent or trademark rights of any person affected by CC0, nor are the rights that other persons may have in the work or in how the work is used, such as publicity or privacy rights. Unless expressly stated otherwise, the person who associated a work with this deed makes no warranties about the work, and disclaims liability for all uses of the work, to the fullest extent permitted by applicable law. When using or citing the work, you should not imply endorsement by the author or the affirmer.
- 
+
 ## Contributions to this project
 All contributions to this project will be released under the CC0 dedication. By submitting a pull request, you are agreeing to comply with this waiver of copyright interest.
 
