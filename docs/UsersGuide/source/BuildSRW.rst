@@ -74,36 +74,67 @@ The cloned repository contains the configuration files and sub-directories shown
 
 .. table::  Files and sub-directories of the ufs-srweather-app repository
 
-   +--------------------------------+--------------------------------------------------------+
-   | **File/Directory Name**        | **Description**                                        |
-   +================================+========================================================+
-   | CMakeLists.txt                 | Main CMake file for SRW App                            |
-   +--------------------------------+--------------------------------------------------------+
-   | Externals.cfg                  | Includes tags pointing to the correct version of the   |
-   |                                | external GitHub repositories/branches used in the SRW  |
-   |                                | App.                                                   |
-   +--------------------------------+--------------------------------------------------------+
-   | LICENSE.md                     | CC0 license information                                |
-   +--------------------------------+--------------------------------------------------------+
-   | README.md                      | Getting Started Guide                                  |
-   +--------------------------------+--------------------------------------------------------+
-   | ufs_srweather_app_meta.h.in    | Meta information for SRW App which can be used by      |
-   |                                | other packages                                         |
-   +--------------------------------+--------------------------------------------------------+
-   | ufs_srweather_app.settings.in  | SRW App configuration summary                          |
-   +--------------------------------+--------------------------------------------------------+
-   | modulefiles                    | Contains build and workflow modulefiles                |
-   +--------------------------------+--------------------------------------------------------+
-   | etc                            | Contains Lmod startup scripts                          |
-   +--------------------------------+--------------------------------------------------------+
-   | docs                           | Contains release notes, documentation, and User's Guide|
-   +--------------------------------+--------------------------------------------------------+
-   | manage_externals               | Utility for checking out external repositories         |
-   +--------------------------------+--------------------------------------------------------+
-   | src                            | Contains CMakeLists.txt; external repositories         |
-   |                                | will be cloned into this directory.                    |
-   +--------------------------------+--------------------------------------------------------+
+   +--------------------------------+-----------------------------------------------------------+
+   | **File/Directory Name**        | **Description**                                           |
+   +================================+===========================================================+
+   | CMakeLists.txt                 | Main CMake file for SRW App                               |
+   +--------------------------------+-----------------------------------------------------------+
+   | devbuild.sh                    | SRW App build script                                      |
+   +--------------------------------+-----------------------------------------------------------+
+   | docs                           | Contains release notes, documentation, and User's Guide   |
+   +--------------------------------+-----------------------------------------------------------+
+   | environment.yml                |                                                           |
+   +--------------------------------+-----------------------------------------------------------+
+   | etc                            | Contains Lmod startup scripts                             |
+   +--------------------------------+-----------------------------------------------------------+
+   | Externals.cfg                  | Includes tags pointing to the correct version of the      |
+   |                                | external GitHub repositories/branches used in the SRW     |
+   |                                | App.                                                      |
+   +--------------------------------+-----------------------------------------------------------+
+   | jobs                           | Contains the *j-job* script for each workflow task. These |
+   |                                | scripts set up the environment variables and call an      |
+   |                                | *ex-script* script located in the ``scripts``             |
+   |                                | subdirectory.                                             |
+   +--------------------------------+-----------------------------------------------------------+
+   | LICENSE.md                     | CC0 license information                                   |
+   +--------------------------------+-----------------------------------------------------------+
+   | manage_externals               | Utility for checking out external repositories            |
+   +--------------------------------+-----------------------------------------------------------+
+   | modulefiles                    | Contains build and workflow modulefiles                   |
+   +--------------------------------+-----------------------------------------------------------+
+   | parm                           | Contains parameter files. Includes UFS Weather Model      |
+   |                                | configuration files such as ``model_configure``,          |
+   |                                | ``diag_table``, and ``field_table``.                      |
+   +--------------------------------+-----------------------------------------------------------+
+   | README.md                      | Getting Started Guide                                     |
+   +--------------------------------+-----------------------------------------------------------+
+   | rename_model.sh                |                                                           |
+   +--------------------------------+-----------------------------------------------------------+
+   | scripts                        | Contains the *ex-script* for each workflow task.          |
+   |                                | These scripts are where the script logic and executables  |
+   |                                | are contained.                                            |
+   +--------------------------------+-----------------------------------------------------------+
+   | sorc                           | Contains CMakeLists.txt; external repositories            |
+   |                                | will be cloned into this directory.                       |
+   +--------------------------------+-----------------------------------------------------------+
+   | tests                          | Contains SRW App tests, including workflow end-to-end     |
+   |                                | (WE2E) tests.                                             |
+   +--------------------------------+-----------------------------------------------------------+
+   | ufs_srweather_app_meta.h.in    | Meta information for SRW App which can be used by         |
+   |                                | other packages                                            |
+   +--------------------------------+-----------------------------------------------------------+
+   | ufs_srweather_app.settings.in  | SRW App configuration summary                             |
+   +--------------------------------+-----------------------------------------------------------+
+   | ush                            | Contains utility scripts. Includes the experiment         |
+   |                                | configuration file and the experiment generation file.    |
+   +--------------------------------+-----------------------------------------------------------+
+   | versions                       | Contains ``run.ver`` and ``build.ver`` files, which track |
+   |                                | package versions at run time and compile time,            |
+   |                                | respectively.                                             |
+   +--------------------------------+-----------------------------------------------------------+
 
+.. COMMENT: Is environment.yml deprecated? Remove?
+   Add rename_model.sh details. 
 
 .. _CheckoutExternals:
 
@@ -351,7 +382,7 @@ From the build directory, run the following commands to build the pre-processing
 
 .. code-block:: console
 
-   cmake .. -DCMAKE_INSTALL_PREFIX=..
+   cmake .. -DCMAKE_INSTALL_PREFIX=.. -DCMAKE_INSTALL_BINDIR=exec ..
    make -j 4  >& build.out &
 
 ``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``exec``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` call argument ``-j 4`` indicates that the build will run in parallel with 4 threads. Although users can specify a larger or smaller number of threads (e.g., ``-j8``, ``-j2``), it is highly recommended to use at least 4 parallel threads to prevent overly long installation times. 
