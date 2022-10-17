@@ -1176,7 +1176,7 @@ task_get_extrn_ics:
   #
   # USE_USER_STAGED_EXTRN_FILES:
   # Flag that determines whether or not the workflow will look for the 
-  # external model files needed for generating LBCs in user-specified
+  # external model files needed for generating ICs in user-specified
   # directories.
   #
   # EXTRN_MDL_SOURCE_BASEDIR_ICS:
@@ -1684,8 +1684,8 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   # Because the default values are dependent on the platform, we set these
-  # to a null string which will then be overwritten in setup.sh unless the
-  # user has specified a different value in config.sh
+  # to a null string which will then be overwritten in setup.py unless the
+  # user has specified a different value in config.yaml
   #
   SYMLINK_FIX_FILES: true
   FIXgsm: ""

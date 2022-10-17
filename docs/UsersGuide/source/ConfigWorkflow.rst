@@ -3,9 +3,9 @@
 ================================================================================================
 Workflow Parameters: Configuring the Workflow in ``config.yaml`` and ``config_defaults.yaml``		
 ================================================================================================
-To create the experiment directory and workflow when running the SRW Application, the user must create an experiment configuration file (usually named ``config.yaml``). This file contains experiment-specific information, such as forecast dates, grid and physics suite selections, data directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``ush`` directory: ``config.community.yaml`` and ``config.nco.yaml``. The first is for running experiments in *community* mode (``RUN_ENVIR`` set to "community"), and the second is for running experiments in *nco* mode (``RUN_ENVIR`` set to "nco"). The content of these files can be copied into ``config.yaml`` and used as the starting point from which to generate a variety of experiment configurations for the SRW App. Note that for this release, only *community* mode is supported. 
+To create the experiment directory and workflow when running the SRW Application, the user must create an experiment configuration file (usually named ``config.yaml``). This file contains experiment-specific information, such as forecast dates, grid and physics suite choices, data directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``ush`` directory: ``config.community.yaml`` and ``config.nco.yaml``. The first is for running experiments in *community* mode (``RUN_ENVIR`` set to "community"), and the second is for running experiments in *nco* mode (``RUN_ENVIR`` set to "nco"). The content of these files can be copied into ``config.yaml`` and used as the starting point from which to generate a variety of experiment configurations for the SRW App. Note that for this release, only *community* mode is supported. 
 
-There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these parameters need to be set explicitly by the user in ``config.yaml``. If a user does not define an entry in the ``config.yaml`` script, either its value in ``config_defaults.yaml`` will be used, or it will be reset depending on other parameters, such as the platform on which the experiment will be run (specified by ``MACHINE``). 
+There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these parameters need to be set explicitly by the user in ``config.yaml``. If a user does not define a variable in the ``config.yaml`` script, its value in ``config_defaults.yaml`` will be used, or the value will be reset depending on other parameters, such as the platform (``MACHINE``) selected for the experiment. 
 
 .. note:: 
    The ``config_defaults.yaml`` file contains the full list of experiment parameters that a user may set in ``config.yaml``. The user cannot set parameters in ``config.yaml`` that are not initialized in ``config_defaults.yaml``.
@@ -30,7 +30,7 @@ If non-default parameters are selected for the variables in this section, they s
    Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not planning to implement their code into operations at NCO. Valid values: ``"nco"`` | ``"community"``
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParellelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"``
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParellelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"``
 
    .. hint::
       Users who are NOT on a named, supported Level 1 or 2 platform will need to set the ``MACHINE`` variable to ``LINUX`` or ``MACOS``; to combine use of a Linux or MacOS platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
@@ -54,12 +54,8 @@ If non-default parameters are selected for the variables in this section, they s
 ``NCORES_PER_NODE``: (Default: "")
    The number of cores available per node on the compute platform. Set for supported platforms in ``setup.py``, but it is now also configurable for all platforms.
 
-   .. COMMENT: Does it mean Level 1 platforms for "supported platforms"? Check setup.py. 
-
 ``LMOD_PATH``: (Default: "")
    Path to the LMOD shell file on the user's Linux system. It is set automatically for supported machines.
-
-   .. COMMENT: Does it mean Level 1 platforms for "supported platforms"? 
 
 ``BUILD_MOD_FN``: (Default: "")
    Name of an alternative build module file to use if running on an unsupported platform. It is set automatically for supported machines.
@@ -78,6 +74,9 @@ If non-default parameters are selected for the variables in this section, they s
 ``SCHED``: (Default: "")
    The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Leaving this an empty string allows the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: ``"slurm"`` | ``"pbspro"`` | ``"lsf"`` | ``"lsfcray"`` | ``"none"``
 
+``SLURM_NATIVE_CMD``: (Default: "")
+   Allows an extra parameter to be passed to slurm via XML Native command. 
+
 
 Machine-Dependent Parameters
 -------------------------------
@@ -86,7 +85,7 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
 ``PARTITION_DEFAULT``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., when ``SCHED: "slurm"``). This is the default partition to which Slurm submits workflow tasks. When a variable that designates the partition (e.g., ``PARTITION_HPSS``, ``PARTITION_FCST``; see below) is **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: ``""`` | ``"hera"`` | ``"normal"`` | ``"orion"`` | ``"sjet"`` | ``"vjet"`` | ``"kjet"`` | ``"xjet"`` | ``"workq"``
 
-   .. COMMENT: Don't see these valid values in valid_param_vals anymore. Also, "xjet" is not listed here but is an option...
+   .. COMMENT: Don't see these valid values in valid_param_vals anymore. 
 
 ``QUEUE_DEFAULT``: (Default: "")
    The default queue or QOS to which workflow tasks are submitted (QOS is Slurm's term for queue; it stands for "Quality of Service"). If the task's ``QUEUE_HPSS`` or ``QUEUE_FCST`` parameters (see below) are not specified, the task will be submitted to the queue indicated by this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Valid values: ``""`` | ``"batch"`` | ``"dev"`` | ``"normal"`` | ``"regular"`` | ``"workq"``
@@ -122,17 +121,9 @@ These settings set run commands for platforms without a workflow manager. Values
 
 ``RUN_CMD_FCST``: (Default: "mpirun -np ${PE_MEMBER01}")
    The run command for the model forecast step. This will be appended to the end of the variable definitions file (``var_defns.sh``). Changing the ``${PE_MEMBER01}`` variable is **not** recommended; it refers to the number of MPI tasks that the Weather Model will expect to run with. Running the Weather Model with a different number of MPI tasks than the workflow has been set up for can lead to segmentation faults and other errors. 
-   
-   .. COMMENT: Is this no longer an issue?:
-      It is also important to escape the ``$`` character or use single quotes here so that ``PE_MEMBER01`` is not referenced until runtime, since it is not defined at the beginning of the workflow generation script.
 
 ``RUN_CMD_POST``: (Default: "mpirun -np 1")
    The run command for post-processing (via the :term:`UPP`). Can be left blank for smaller domains, in which case UPP will run without :term:`MPI`.
-
-``SLURM_NATIVE_CMD``: (Default: "")
-   Allows an extra parameter to be passed to slurm via XML Native command. 
-
-.. COMMENT: Should SLURM_NATIVE_CMD go in a different part of the platform: section?
 
 
 METplus Parameters
@@ -149,10 +140,10 @@ METplus Parameters
 ``METPLUS_PATH``: (Default: "")
    Path to top-level directory of METplus installation.
 
-``MET_BIN_EXEC``: (Default: "bin")
+``MET_BIN_EXEC``: (Default: "")
    Location where METplus executables are installed.
 
-.. COMMENT: MET_BIN_EXEC not in config.yaml...
+   .. COMMENT: Add MET_BIN_EXEC to config_defaults descriptions (variable is there but no description)
 
 .. _METParamNote:
 
@@ -195,9 +186,7 @@ General Directory Parameters
 
       ${DOMAIN_PREGEN_BASEDIR}/${PREDEF_GRID_NAME}
 
-   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the name of the grid being used) under this directory. This variable should be set to a null string in this file, but it can be specified in the user-specified workflow configuration file set by ``EXPT_CONFIG_FN`` (usually ``config.yaml``).
-
-.. COMMENT: Clarify second paragraph above... 
+   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the same name as the experiment grid) under this directory. This variable should be set to a null string in ``config_defaults.yaml``, but it can be changed in the user-specified workflow configuration file set by ``EXPT_CONFIG_FN`` (usually ``config.yaml``).
 
 .. _workflow:
 
@@ -219,10 +208,10 @@ Cron-Associated Parameters
 Cron is a job scheduler accessed through the command-line on UNIX-like operating systems. It is useful for automating tasks such as the ``rocotorun`` command, which launches each workflow task in the SRW App. Cron periodically checks a cron table (aka crontab) to see if any tasks are are ready to execute. If so, it runs them. 
 
 ``USE_CRON_TO_RELAUNCH``: (Default: false)
-   Flag that determines whether or not a line is added to the user's cron table, which calls the experiment launch script every ``CRON_RELAUNCH_INTVL_MNTS`` minutes.
+   Flag that determines whether or not a line is added to the user's cron table, which calls the experiment launch script every ``CRON_RELAUNCH_INTVL_MNTS`` minutes. Valid values: ``True`` | ``False``
 
 ``CRON_RELAUNCH_INTVL_MNTS``: (Default: 3)
-   The interval (in minutes) between successive calls of the experiment launch script by a cron job to (re)launch the experiment (so that the workflow for the experiment kicks off where it left off). This is used only if ``USE_CRON_TO_RELAUNCH`` is set to "TRUE".
+   The interval (in minutes) between successive calls of the experiment launch script by a cron job to (re)launch the experiment (so that the workflow for the experiment kicks off where it left off). This is used only if ``USE_CRON_TO_RELAUNCH`` is set to true.
 
 .. _DirParams:
 
@@ -231,8 +220,6 @@ Directory Parameters
 
 ``EXPT_BASEDIR``: (Default: "")
    The full path to the base directory in which the experiment directory (``EXPT_SUBDIR``) will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMEdir}/../expt_dirs``, where ``${HOMEdir}`` contains the full path to the ``ufs-srweather-app`` directory.
-
-.. COMMENT: Check whether HOMEdir refers to ush or ufs-srweather-app now...
 
 ``EXPT_SUBDIR``: (Default: "")
    The user-designated name of the experiment directory (*not* its full path). The full path to the experiment directory, which will be contained in the variable ``EXPTDIR``, will be:
@@ -276,7 +263,7 @@ Set File Name Parameters
    Name of the Fortran file containing the forecast model's base ensemble namelist (i.e., the original namelist file from which each of the ensemble members' namelist files is generated).
 
 ``FV3_EXEC_FN``: (Default: "ufs_model")
-   Name of the forecast model executable that is copied from the executables directory (``EXEC_SUBDIR``;where it was created during the build process) to the experiment directory; set during experiment generation.
+   Name of the forecast model executable that is copied from the executables directory (``EXEC_SUBDIR``, where it was created during the build process) to the experiment directory; set during experiment generation.
 
 .. COMMENT: Check this definition...
 
@@ -347,9 +334,9 @@ Grid Generation Parameters
 ``GRID_GEN_METHOD``: (Default: "")
    This variable specifies which method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
 
-   * **"ESGgrid":** The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. 
+   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. 
 
-   * **"GFDLgrid":** The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" method is the legacy grid generation method. It is not supported in *all* predefined domains. 
+   * ``"GFDLgrid"``: The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" method is the legacy grid generation method. It is not supported in *all* predefined domains. 
 
 .. attention::
 
@@ -390,12 +377,12 @@ Pre-Existing Directory Parameter
 Verbose Parameter
 ---------------------
 ``VERBOSE``: (Default: true)
-   Flag that determines whether the experiment generation and workflow task scripts print out extra informational messages. Valid values: ``"True"`` | ``"False"``
+   Flag that determines whether the experiment generation and workflow task scripts print out extra informational messages. Valid values: ``True`` | ``False``
 
 Debug Parameter
 --------------------
 ``DEBUG``: (Default: false)
-   Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to true, then VERBOSE will also be reset to true if it isn't already. Valid values: ``"True"`` | ``"False"``
+   Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to true, then VERBOSE will also be reset to true if it isn't already. Valid values: ``True`` | ``False``
 
 Compiler
 -----------
@@ -410,12 +397,10 @@ Verification Parameters
 ---------------------------
 
 ``GET_OBS``: (Default: "get_obs")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value. 
-   .. COMMENT: How is this different from the other get_obs tasks (e.g., RUN_TASK_GET_OBS_CCPA, MRMS)? Define. Add to WORKFLOW_SWITCHES section? 
+   Set the name of the Rocoto workflow task used to load proper module files for ``GET_OBS_*`` tasks. Users typically do not need to change this value. 
 
 ``VX_TN``: (Default: "run_vx")
-   Set the name of the Rocoto workflow task that launches verification tasks. Users typically do not need to change this value. 
-   .. COMMENT: Define. Is this an overarching VX indicator task? Add to WORKFLOW_SWITCHES section?
+   Set the name of the Rocoto workflow task used to load proper module files for ``VX_*`` tasks. Users typically do not need to change this value. 
 
 ``VX_ENSGRID_TN``: (Default: "run_ensgridvx")
    Set the name of the Rocoto workflow task that runs METplus grid-to-grid ensemble verification for 1-h accumulated precipitation. Users typically do not need to change this value. 
@@ -464,13 +449,13 @@ Baseline Workflow Tasks
 --------------------------
 
 ``RUN_TASK_MAKE_GRID``: (Default: true)
-   Flag that determines whether to run the grid file generation task (``MAKE_GRID_TN``). If this is set to true, the grid generation task is run and new grid files are generated. If it is set to false, then the scripts look for pre-generated grid files in the directory specified by ``GRID_DIR`` (see :numref:`Section %s <make-grid>` below).
+   Flag that determines whether to run the grid file generation task (``MAKE_GRID_TN``). If this is set to true, the grid generation task is run and new grid files are generated. If it is set to false, then the scripts look for pre-generated grid files in the directory specified by ``GRID_DIR`` (see :numref:`Section %s <make-grid>` below). Valid values: ``True`` | ``False``
 
 ``RUN_TASK_MAKE_OROG``: (Default: true)
-   Same as ``RUN_TASK_MAKE_GRID`` but for the orography generation task (``MAKE_OROG_TN``). Flag that determines whether to run the orography file generation task (``MAKE_OROG_TN``). If this is set to true, the orography generation task is run and new orography files are generated. If it is set to false, then the scripts look for pre-generated orography files in the directory specified by ``OROG_DIR`` (see :numref:`Section %s <make-orog>` below).
+   Same as ``RUN_TASK_MAKE_GRID`` but for the orography generation task (``MAKE_OROG_TN``). Flag that determines whether to run the orography file generation task (``MAKE_OROG_TN``). If this is set to true, the orography generation task is run and new orography files are generated. If it is set to false, then the scripts look for pre-generated orography files in the directory specified by ``OROG_DIR`` (see :numref:`Section %s <make-orog>` below). Valid values: ``True`` | ``False``
 
 ``RUN_TASK_MAKE_SFC_CLIMO``: (Default: true)
-   Same as ``RUN_TASK_MAKE_GRID`` but for the surface climatology generation task (``MAKE_SFC_CLIMO_TN``). Flag that determines whether to run the surface climatology file generation task (``MAKE_SFC_CLIMO_TN``). If this is set to true, the surface climatology generation task is run and new surface climatology files are generated. If it is set to false, then the scripts look for pre-generated surface climatology files in the directory specified by ``SFC_CLIMO_DIR`` (see :numref:`Section %s <make-sfc-climo>` below).
+   Same as ``RUN_TASK_MAKE_GRID`` but for the surface climatology generation task (``MAKE_SFC_CLIMO_TN``). Flag that determines whether to run the surface climatology file generation task (``MAKE_SFC_CLIMO_TN``). If this is set to true, the surface climatology generation task is run and new surface climatology files are generated. If it is set to false, then the scripts look for pre-generated surface climatology files in the directory specified by ``SFC_CLIMO_DIR`` (see :numref:`Section %s <make-sfc-climo>` below). Valid values: ``True`` | ``False``
 
 ``RUN_TASK_GET_EXTRN_ICS``: (Default: true)
    Flag that determines whether to run the ``GET_EXTRN_ICS_TN`` task.
@@ -488,39 +473,41 @@ Baseline Workflow Tasks
    Flag that determines whether to run the ``RUN_FCST_TN`` task.
 
 ``RUN_TASK_RUN_POST``: (Default: true)
-   Flag that determines whether to run the ``RUN_POST_TN`` task.
+   Flag that determines whether to run the ``RUN_POST_TN`` task. Valid values: ``True`` | ``False``
 
 .. _VXTasks:
 
 Verification Tasks
 --------------------
 .. COMMENT:
-   ``RUN_TASK_GET_OBS_CCPA``: (Default: false)
-      Flag that determines whether to run the ``GET_OBS_CCPA_TN`` task, which retrieves the :term:`CCPA` hourly precipitation files used by METplus from NOAA :term:`HPSS`. 
+``RUN_TASK_GET_OBS_CCPA``: (Default: false)
+   Flag that determines whether to run the ``GET_OBS_CCPA_TN`` task, which retrieves the :term:`CCPA` hourly precipitation files used by METplus from NOAA :term:`HPSS`. See :numref:`Section %s <get-obs-ccpa>` for additional parameters related to this task.
 
-   .. COMMENT: Not included in this section of config_defaults...? Where is it now? Replaced by GET_OBS? Delete?
+   .. COMMENT: No description of task in config_defaults. Just lists var and default value
 
-   ``RUN_TASK_GET_OBS_MRMS``: (Default: false)
-      Flag that determines whether to run the ``GET_OBS_MRMS_TN`` task, which retrieves the :term:`MRMS` composite reflectivity files used by METplus from NOAA HPSS. 
+``RUN_TASK_GET_OBS_MRMS``: (Default: false)
+   Flag that determines whether to run the ``GET_OBS_MRMS_TN`` task, which retrieves the :term:`MRMS` composite reflectivity files used by METplus from NOAA HPSS. See :numref:`Section %s <get-obs-mrms>` for additional parameters related to this task.
 
-   .. COMMENT: Not included in this section of config_defaults...? Where is it now? Replaced by GET_OBS? Delete?
+   .. COMMENT: No description of task in config_defaults. Just lists var and default value
 
-   ``RUN_TASK_GET_OBS_NDAS``: (Default: false)
-      Flag that determines whether to run the ``GET_OBS_NDAS_TN`` task, which retrieves the :term:`NDAS` PrepBufr files used by METplus from NOAA HPSS. 
+``RUN_TASK_GET_OBS_NDAS``: (Default: false)
+   Flag that determines whether to run the ``GET_OBS_NDAS_TN`` task, which retrieves the :term:`NDAS` PrepBufr files used by METplus from NOAA HPSS. See :numref:`Section %s <get-obs-ndas>` for additional parameters related to this task.
 
-   .. COMMENT: Not included in this section of config_defaults...? Where is it now? Replaced by GET_OBS? Delete?
+   .. COMMENT: No description of task in config_defaults. Just lists var and default value
 
 ``RUN_TASK_VX_GRIDSTAT``: (Default: false)
-   Flag that determines whether to run the grid-stat verification task. The :ref:`MET Grid-Stat tool <grid-stat>` provides verification statistics for a matched forecast and observation grid. 
+   Flag that determines whether to run the grid-stat verification task. The :ref:`MET Grid-Stat tool <grid-stat>` provides verification statistics for a matched forecast and observation grid. See :numref:`Section %s <VX-gridstat>` for additional parameters related to this task. Valid values: ``True`` | ``False``
 
 ``RUN_TASK_VX_POINTSTAT``: (Default: false)
-   Flag that determines whether to run the point-stat verification task. The :ref:`MET Point-Stat tool <point-stat>` provides verification statistics for forecasts at observation points (as opposed to over gridded analyses).  
+   Flag that determines whether to run the point-stat verification task. The :ref:`MET Point-Stat tool <point-stat>` provides verification statistics for forecasts at observation points (as opposed to over gridded analyses). See :numref:`Section %s <VX-pointstat>` for additional parameters related to this task. Valid values: ``True`` | ``False``
 
 ``RUN_TASK_VX_ENSGRID``: (Default: false)
-   Flag that determines whether to run the ensemble-stat verification for gridded data task. 
+   Flag that determines whether to run the ensemble-stat verification for gridded data task. The :ref:`MET Ensemble-Stat tool <ensemble-stat>` provides verification statistics for ensemble forecasts and can be used in conjunction with the :ref:`MET Grid-Stat tool <grid-stat>`. See :numref:`Section %s <VX-ensgrid>` for additional parameters related to this task. Valid values: ``True`` | ``False``
+
+   https://met.readthedocs.io/en/latest/Users_Guide/ensemble-stat.html
 
 ``RUN_TASK_VX_ENSPOINT``: (Default: false)
-   Flag that determines whether to run the ensemble point verification task. If this flag is set, both ensemble-stat point verification and point verification of ensemble-stat output is computed.
+   Flag that determines whether to run the ensemble point verification task. If this flag is set, both ensemble-stat point verification and point verification of ensemble-stat output is computed. The :ref:`MET Ensemble-Stat tool <ensemble-stat>` provides verification statistics for ensemble forecasts and can be used in conjunction with the :ref:`MET Point-Stat tool <point-stat>`. See :numref:`Section %s <VX-enspoint>` for additional parameters related to this task. Valid values: ``True`` | ``False``
 
 ..
    COMMENT: Might be worth defining "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"
@@ -570,18 +557,12 @@ Note that the regional grid is defined with respect to a "parent" global cubed-s
    Latitude of the center of tile 6 (in degrees).
 
 ``GFDLgrid_NUM_CELLS``: (Default: "")
-   Number of grid cells in either of the two horizontal directions (x and y) on each of the six tiles of the parent global cubed-sphere grid. Valid values: ``"48"`` | ``"96"`` | ``"192"`` | ``"384"`` | ``"768"`` | ``"1152"`` | ``"3072"``
+   Number of grid cells in either of the two horizontal directions (x and y) on each of the six tiles of the parent global cubed-sphere grid. Valid values: ``48`` | ``96`` | ``192`` | ``384`` | ``768`` | ``1152`` | ``3072``
 
    To give an idea of what these values translate to in terms of grid cell size in kilometers, we list below the approximate grid cell size on a uniform global grid having the specified value of ``GFDLgrid_NUM_CELLS``, where by "uniform" we mean with Schmidt stretch factor ``GFDLgrid_STRETCH_FAC: "1"`` (although in regional applications ``GFDLgrid_STRETCH_FAC`` will typically be set to a value greater than ``"1"`` to obtain a smaller grid size on tile 6):
 
-            .. COMMENT: Add/change above?
-               # The mapping from GFDLgrid_NUM_CELLS to a nominal
-               #   resolution (grid cell size) for a uniform global grid (i.e. Schmidt
-               #   stretch factor GFDLgrid_STRETCH_FAC set to 1) for several values of
-               #   GFDLgrid_NUM_CELLS is as follows:
-
          +---------------------+--------------------+
-         | GFDLgrid_NUM_CELLS  | typical cell size  |
+         | GFDLgrid_NUM_CELLS  | Typical Cell Size  |
          +=====================+====================+
          |  48                 |     200 km         |
          +---------------------+--------------------+
@@ -766,9 +747,7 @@ File and Directory Parameters
    Base directory on the local machine containing external model files for generating :term:`ICs` on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined in ``EXTRN_MDL_NAME_ICS`` above).
 
 ``USE_USER_STAGED_EXTRN_FILES``: (Default: false)
-   Flag that determines whether the workflow will look for the external model files needed for generating :term:`ICs` in user-specified directories (rather than fetching them from mass storage like NOAA :term:`HPSS`).
-
-   .. COMMENT: Current definition in config_defaults only lists LBCs, but it's in the ICs section...
+   Flag that determines whether the workflow will look for the external model files needed for generating :term:`ICs` in user-specified directories (rather than fetching them from mass storage like NOAA :term:`HPSS`). Valid values: ``True`` | ``False``
 
 ``EXTRN_MDL_SOURCE_BASEDIR_ICS``: (Default: "")
    Directory containing external model files for generating ICs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to true, the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_ICS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the :term:`ICs` on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false.
@@ -798,7 +777,7 @@ NOMADS Parameters
 Set parameters associated with NOMADS online data.
 
 ``NOMADS``: (Default: false)
-   Flag controlling whether to use NOMADS online data.
+   Flag controlling whether to use NOMADS online data. Valid values: ``True`` | ``False``
 
 ``NOMADS_file_type``: (Default: "nemsio")
    Flag controlling the format of the data. Valid values: ``"GRIB2"`` | ``"grib2"`` | ``"NEMSIO"`` | ``"nemsio"``
@@ -838,9 +817,7 @@ For each workflow task, certain parameter values must be passed to the job sched
    The interval (in integer hours) at which LBC files will be generated. This is also referred to as the *boundary update interval*. Note that the model selected in ``EXTRN_MDL_NAME_LBCS`` must have data available at a frequency greater than or equal to that implied by ``LBC_SPEC_INTVL_HRS``. For example, if ``LBC_SPEC_INTVL_HRS`` is set to "6", then the model must have data available at least every 6 hours. It is up to the user to ensure that this is the case.
 
 ``EXTRN_MDL_LBCS_OFFSET_HRS``: (Default: "")
-   Users may wish to use lateral boundary conditions from a forecast that was started earlier than the start of the forecast configured here. This variable indicates how many hours earlier the external model started than the FV3 forecast configured here. For example, if the forecast should use lateral boundary conditions from the GFS started 6 hours earlier, then ``EXTRN_MDL_LBCS_OFFSET_HRS: "6"``. Note: the default value is model-dependent and is set in ``set_extrn_mdl_params.sh``.
-
-.. COMMENT: Find file & confirm file extension
+   Users may wish to use lateral boundary conditions from a forecast that was started earlier than the start of the forecast configured here. This variable indicates how many hours earlier the external model started than the FV3 forecast configured here. For example, if the forecast should use lateral boundary conditions from the GFS started 6 hours earlier, then ``EXTRN_MDL_LBCS_OFFSET_HRS: "6"``. Note: the default value is model-dependent and is set in ``ush/set_extrn_mdl_params.py``.
 
 ``FV3GFS_FILE_FMT_LBCS``: (Default: "nemsio")
    If using the FV3GFS model as the source of the :term:`LBCs` (i.e., if ``EXTRN_MDL_NAME_LBCS: "FV3GFS"``), this variable specifies the format of the model files to use when generating the LBCs. Valid values: ``"nemsio"`` | ``"grib2"`` | ``"netcdf"``
@@ -858,7 +835,7 @@ File and Directory Parameters
    .. COMMENT: In the original config_defaults, the note applied to the ICS version, too. The current config_defaults comments still talk about "these"/"they"... Add the note above with ICS, too?
 
 ``USE_USER_STAGED_EXTRN_FILES``: (Default: false)
-   Analogous to ``USE_USER_STAGED_EXTRN_FILES`` in :term:`ICs` but for :term:`LBCs`. Flag that determines whether the workflow will look for the external model files needed for generating :term:`LBCs` in user-specified directories (rather than fetching them from mass storage like NOAA :term:`HPSS`).
+   Analogous to ``USE_USER_STAGED_EXTRN_FILES`` in :term:`ICs` but for :term:`LBCs`. Flag that determines whether the workflow will look for the external model files needed for generating :term:`LBCs` in user-specified directories (rather than fetching them from mass storage like NOAA :term:`HPSS`). Valid values: ``True`` | ``False``
  
 ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``: (Default: "")
    Analogous to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` but for :term:`LBCs` instead of :term:`ICs`.
@@ -918,10 +895,10 @@ For each workflow task, certain parameter values must be passed to the job sched
 FVCOM Parameter
 -------------------
 ``USE_FVCOM``: (Default: false)
-   Flag that specifies whether to update surface conditions in FV3-:term:`LAM` with fields generated from the Finite Volume Community Ocean Model (:term:`FVCOM`). If set to true, lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten using data provided by FVCOM. Setting ``USE_FVCOM`` to true causes the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to run. This, in turn, modifies the file ``sfc_data.nc`` generated by ``chgres_cube`` during the ``make_ics`` task. Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. 
+   Flag that specifies whether to update surface conditions in FV3-:term:`LAM` with fields generated from the Finite Volume Community Ocean Model (:term:`FVCOM`). If set to true, lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten using data provided by FVCOM. Setting ``USE_FVCOM`` to true causes the executable ``process_FVCOM.exe`` in the ``MAKE_ICS_TN`` task to run. This, in turn, modifies the file ``sfc_data.nc`` generated by ``chgres_cube`` during the ``make_ics`` task. Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. Valid values: ``True`` | ``False``
 
 ``FVCOM_WCSTART``: (Default: "cold")
-   Define if this is a "warm" start or a "cold" start. Setting this to "warm" will read in ``sfc_data.nc`` generated in a RESTART directory. Setting this to "cold" will read in the ``sfc_data.nc`` generated from ``chgres_cube`` in the ``make_ics`` portion of the workflow. Valid values: ``"cold"`` | ``"warm"``
+   Define if this is a "warm" start or a "cold" start. Setting this to "warm" will read in ``sfc_data.nc`` generated in a RESTART directory. Setting this to "cold" will read in the ``sfc_data.nc`` generated from ``chgres_cube`` in the ``make_ics`` portion of the workflow. Valid values: ``"cold"`` | ``"COLD"`` | ``"warm"`` | ``"WARM"``
 
 ``FVCOM_DIR``: (Default: "")
    User-defined directory where the ``fvcom.nc`` file containing :term:`FVCOM` data already interpolated to the FV3-LAM native grid is located. The file in this directory must be named ``fvcom.nc``.
@@ -1012,8 +989,7 @@ For each workflow task, certain parameter values must be passed to the job sched
 Model Configuration Parameters
 ----------------------------------
 
-These parameters set values in ``model_configure``.
-.. COMMENT: Is this accurate??? ^ And what is model_configure?
+These parameters set values in the Weather Model's ``model_configure`` file.
 
 ``DT_ATMOS``: (Default: "")
    Time step for the outermost atmospheric model loop in seconds. This corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, :term:`tracer` transport, and vertical dynamics routines; see the `FV3 dycore scientific documentation <https://repository.library.noaa.gov/view/noaa/30725>`__ for details.) Must be set. Takes an integer value. In the SRW App, a default value for ``DT_ATMOS`` appears in the ``set_predef_grid_params.py`` script, but a different value can be set in ``config.yaml``. 
@@ -1024,9 +1000,7 @@ These parameters set values in ``model_configure``.
 .. _InlinePost:
 
 ``WRITE_DOPOST``: (Default: false)
-   Flag that determines whether to use the inline post option, which calls the :term:`UPP` from within the Weather Model. The default ``WRITE_DOPOST: false`` does not use the inline post functionality, and the ``run_post`` tasks are called from outside of the Weather Model. If ``WRITE_DOPOST: true``, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to true, and the post-processing tasks will be called from within the Weather Model. This means that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST: true`` turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to false) in ``setup.py`` to avoid unnecessary computations.
-
-   .. COMMENT: Reword above to be more concise. 
+   Flag that determines whether to use the inline post option. The default ``WRITE_DOPOST: false`` does not use the inline post functionality, and the ``run_post`` tasks are called from outside of the Weather Model. If ``WRITE_DOPOST: true``, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to true, and the post-processing (:term:`UPP`) tasks will be called from within the Weather Model. This means that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST: true`` turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to false) in ``setup.py`` to avoid unnecessary computations. Valid values: ``True`` | ``False``
 
 Computational Parameters
 ----------------------------
@@ -1057,12 +1031,12 @@ Write-Component (Quilting) Parameters
    .. attention::
       The regional grid requires the use of the write component, so users generally should not need to change the default value for ``QUILTING``. 
 
-   Flag that determines whether to use the write component for writing forecast output files to disk. If set to true, the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where ``HHH`` is the 3-digit forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. For example, the output files for the 3rd hour of the forecast would be ``dynf$003.nc`` and ``phyf$003.nc``. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to false, then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to true when running the SRW App. If ``QUILTING`` is set to false, the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code called by this task cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to true in the SRW App. 
+   Flag that determines whether to use the write component for writing forecast output files to disk. If set to true, the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where ``HHH`` is the 3-digit forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. For example, the output files for the 3rd hour of the forecast would be ``dynf$003.nc`` and ``phyf$003.nc``. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to false, then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to true when running the SRW App. If ``QUILTING`` is set to false, the ``RUN_POST_TN`` (meta)task cannot run because the :term:`UPP` code called by this task cannot process fields on the native grid. In that case, the ``RUN_POST_TN`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to true in the SRW App. Valid values: ``True`` | ``False``
 
       .. COMMENT: Most of this detail is not in the config_defaults file... where did I get it?
 
 ``PRINT_ESMF``: (Default: false)
-   Flag that determines whether to output extra (debugging) information from :term:`ESMF` routines. Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``MODEL_CONFIG_FN`` in the forecast run directory). Valid values: ``true`` | ``false``
+   Flag that determines whether to output extra (debugging) information from :term:`ESMF` routines. Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``MODEL_CONFIG_FN`` in the forecast run directory). Valid values: ``True`` | ``False``
 
    .. COMMENT: Used to say ``model_configure`` (as opposed to config.yaml, which is EXPT_CONFIG_FN)? Or is this a third thing...? 
 
@@ -1175,7 +1149,7 @@ Aerosol Climatology Parameter
 ---------------------------------
 
 ``USE_MERRA_CLIMO``: (Default: false)
-   Flag that determines whether :term:`MERRA2` aerosol climatology data and lookup tables for optics properties are obtained. 
+   Flag that determines whether :term:`MERRA2` aerosol climatology data and lookup tables for optics properties are obtained. Valid values: ``True`` | ``False``
 
    .. COMMENT: When would it be appropriate to obtain these files?
 
@@ -1224,26 +1198,16 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
 
 ``FNGLAC, ..., FNMSKH``: (Default: see below)
 
-   .. code-block:: console
-
-      FNGLAC: &FNGLAC "global_glacier.2x2.grb"
-      FNMXIC: &FNMXIC "global_maxice.2x2.grb"
-      FNTSFC: &FNTSFC "RTGSST.1982.2012.monthly.clim.grb"
-      FNSNOC: &FNSNOC "global_snoclim.1.875.grb"
-      FNZORC: &FNZORC "igbp"
-      FNAISC: &FNAISC "CFSR.SEAICE.1982.2012.monthly.clim.grb"
-      FNSMCC: &FNSMCC "global_soilmgldas.t126.384.190.grb"
-      FNMSKH: &FNMSKH "seaice_newland.grb"
-      
-   .. COMMENT: Should these default values be in an array? They were before... but currently aren't in config_defaults. 
+    | ``FNGLAC:`` &FNGLAC "global_glacier.2x2.grb"
+    | ``FNMXIC:`` &FNMXIC "global_maxice.2x2.grb"
+    | ``FNTSFC:`` &FNTSFC "RTGSST.1982.2012.monthly.clim.grb"
+    | ``FNSNOC:`` &FNSNOC "global_snoclim.1.875.grb"
+    | ``FNZORC:`` &FNZORC "igbp"
+    | ``FNAISC:`` &FNAISC "CFSR.SEAICE.1982.2012.monthly.clim.grb"
+    | ``FNSMCC:`` &FNSMCC "global_soilmgldas.t126.384.190.grb"
+    | ``FNMSKH:`` &FNMSKH "seaice_newland.grb"
 
    Names and default locations of (some of the) global data files that are assumed to exist in a system directory. (This directory is machine-dependent; the experiment generation scripts will set it and store it in the variable ``FIXgsm``.) These file names also appear directly in the forecast model's input :term:`namelist` file.
-
-   .. COMMENT: A note also says: 
-      "# Because the default values are dependent on the platform, we set these
-      # to a null string which will then be overwritten in setup.py unless the
-      # user has specified a different value in config.yaml"
-      ADD?
 
 ``FIXgsm_FILES_TO_COPY_TO_FIXam``: (Default: see below)
 
@@ -1392,7 +1356,7 @@ Subhourly Post Parameters
 Set parameters associated with subhourly forecast model output and post-processing. 
 
 ``SUB_HOURLY_POST``: (Default: false)
-   Flag that indicates whether the forecast model will generate output files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes). This will also cause the post-processor to process these sub-hourly files. If this variable is set to true, then ``DT_SUBHOURLY_POST_MNTS`` should be set to a valid value between 1 and 59.
+   Flag that indicates whether the forecast model will generate output files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes). This will also cause the post-processor to process these sub-hourly files. If this variable is set to true, then ``DT_SUBHOURLY_POST_MNTS`` should be set to a valid value between 1 and 59. Valid values: ``True`` | ``False``
 
 ``DT_SUB_HOURLY_POST_MNTS``: (Default: 0)
    Time interval in minutes between the forecast model output files (only used if ``SUB_HOURLY_POST`` is set to true). If ``SUB_HOURLY_POST`` is set to true, this needs to be set to a valid two-digit integer between 1 and 59. Note that if ``SUB_HOURLY_POST`` is set to true but ``DT_SUB_HOURLY_POST_MNTS`` is set to 0, ``SUB_HOURLY_POST`` will get reset to false in the experiment generation scripts (there will be an informational message in the log file to emphasize this). Valid values: ``0`` | ``1`` | ``2`` | ``3`` | ``4`` | ``5`` | ``6`` | ``10`` | ``12`` | ``15`` | ``20`` | ``30``
@@ -1403,33 +1367,29 @@ Customized Post Configuration Parameters
 Set parameters for customizing the :term:`UPP`.
 
 ``USE_CUSTOM_POST_CONFIG_FILE``: (Default: false)
-   Flag that determines whether a user-provided custom configuration file should be used for post-processing the model data. If this is set to true, then the workflow will use the custom post-processing (:term:`UPP`) configuration file specified in ``CUSTOM_POST_CONFIG_FP``. Otherwise, a default configuration file provided in the UPP repository will be used.
+   Flag that determines whether a user-provided custom configuration file should be used for post-processing the model data. If this is set to true, then the workflow will use the custom post-processing (:term:`UPP`) configuration file specified in ``CUSTOM_POST_CONFIG_FP``. Otherwise, a default configuration file provided in the UPP repository will be used. Valid values: ``True`` | ``False``
 
 ``CUSTOM_POST_CONFIG_FP``: (Default: "")
    The full path to the custom post flat file, including filename, to be used for post-processing. This is only used if ``CUSTOM_POST_CONFIG_FILE`` is set to true.
 
 ``POST_OUTPUT_DOMAIN_NAME``: (Default: "")
-   Domain name (in lowercase) used to construct the names of the output files generated by :term:`UPP`. The post output files are named as follows:
+   Domain name (in lowercase) used to construct the names of the output files generated by the :term:`UPP`. If using a predefined grid, ``POST_OUTPUT_DOMAIN_NAME`` defaults to ``PREDEF_GRID_NAME``. If using a custom grid, ``POST_OUTPUT_DOMAIN_NAME`` must be specified by the user. The post output files are named as follows:
 
    .. code-block:: console 
       
       $NET.tHHz.[var_name].f###.${POST_OUTPUT_DOMAIN_NAME}.grib2
    
-   If using a custom grid, ``POST_OUTPUT_DOMAIN_NAME`` must be specified by the user. If using a predefined grid, ``POST_OUTPUT_DOMAIN_NAME`` defaults to ``PREDEF_GRID_NAME``.  Note that this variable is first changed to lower case before being used to construct the file names.
+   Note that this variable is first changed to lower case before being used to construct the file names.
 
-   .. COMMENT: Reword/reorganize a tad above? 
-
-
+.. _get-obs-ccpa:
 
 GET_OBS_CCPA Configuration Parameters
 ========================================
 
-.. COMMENT: Add details about the VX GET tasks? Like, what the task is for? When it is used? 
-
 Non-default parameters for the ``get_obs_ccpa`` task are set in the ``task_get_obs_ccpa:`` section of the ``config.yaml`` file. 
 
 ``GET_OBS_CCPA_TN``: (Default: "get_obs_ccpa")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
+   Set the name of this Rocoto workflow task. Users typically do not need to change this value. See :numref:`Section %s <VXTasks>` for more information about the verification tasks. 
 
 ``NNODES_GET_OBS_CCPA``: (Default: 1)
    Number of nodes to use for the job.
@@ -1442,10 +1402,12 @@ Non-default parameters for the ``get_obs_ccpa`` task are set in the ``task_get_o
 
 ``MAXTRIES_GET_OBS_CCPA``: (Default: 1)
 
+.. _get-obs-mrms:
+
 GET_OBS_MRMS Configuration Parameters
 ========================================
 
-Non-default parameters for the ``get_obs_mrms`` task are set in the ``task_get_obs_mrms:`` section of the ``config.yaml`` file. 
+Non-default parameters for the ``get_obs_mrms`` task are set in the ``task_get_obs_mrms:`` section of the ``config.yaml`` file. See :numref:`Section %s <VXTasks>` for more information about the verification tasks. 
 
 ``GET_OBS_MRMS_TN``: (Default: "get_obs_mrms")
    Set the name of this Rocoto workflow task. Users typically do not need to change this value.
@@ -1461,10 +1423,12 @@ Non-default parameters for the ``get_obs_mrms`` task are set in the ``task_get_o
 
 ``MAXTRIES_GET_OBS_MRMS``: (Default: 1)
 
+.. _get-obs-ndas:
+
 GET_OBS_NDAS Configuration Parameters
 ========================================
 
-Non-default parameters for the ``get_obs_ndas`` task are set in the ``task_get_obs_ndas:`` section of the ``config.yaml`` file. 
+Non-default parameters for the ``get_obs_ndas`` task are set in the ``task_get_obs_ndas:`` section of the ``config.yaml`` file. See :numref:`Section %s <VXTasks>` for more information about the verification tasks. 
 
 ``GET_OBS_NDAS_TN``: (Default: "get_obs_ndas")
    Set the name of this Rocoto workflow task. Users typically do not need to change this value.
@@ -1482,6 +1446,7 @@ Non-default parameters for the ``get_obs_ndas`` task are set in the ``task_get_o
    Maximum number of times to attempt the task.
 
 
+.. _VX-gridstat:
 
 VX_GRIDSTAT Configuration Parameters
 ========================================
@@ -1608,6 +1573,7 @@ Non-default parameters for the ``run_gridstatvx_24h`` task are set in the ``task
 ``MAXTRIES_VX_GRIDSTAT_24h``: (Default: 1)
    Maximum number of times to attempt the task.
 
+.. _VX-pointstat:
 
 VX_POINTSTAT Configuration Parameters
 =============================================
@@ -1629,6 +1595,7 @@ Non-default parameters for the ``run_pointstatvx`` task are set in the ``task_ru
 ``MAXTRIES_VX_POINTSTAT``: (Default: 1)
    Maximum number of times to attempt the task.
 
+.. _VX-ensgrid:
 
 VX_ENSGRID Configuration Parameters
 =============================================
@@ -1866,6 +1833,7 @@ Non-default parameters for the ``run_ensgridvx_prob_24h`` task are set in the ``
 ``MAXTRIES_VX_ENSGRID_PROB_24h``: (Default: 1)
    Maximum number of times to attempt the task.
 
+.. _VX-enspoint:
 
 VX_ENSPOINT Configuration Parameters
 ========================================
@@ -1941,7 +1909,7 @@ Community Radiative Transfer Model (CRTM) Parameters
 These variables set parameters associated with outputting satellite fields in the :term:`UPP` :term:`grib2` files using the Community Radiative Transfer Model (:term:`CRTM`). :numref:`Section %s <SatelliteProducts>` includes further instructions on how to do this. 
 
 ``USE_CRTM``: (Default: false)
-   Flag that defines whether external :term:`CRTM` coefficient files have been staged by the user in order to output synthetic satellite products available within the :term:`UPP`. If this is set to true, then the workflow will check for these files in the directory ``CRTM_DIR``. Otherwise, it is assumed that no satellite fields are being requested in the UPP configuration.
+   Flag that defines whether external :term:`CRTM` coefficient files have been staged by the user in order to output synthetic satellite products available within the :term:`UPP`. If this is set to true, then the workflow will check for these files in the directory ``CRTM_DIR``. Otherwise, it is assumed that no satellite fields are being requested in the UPP configuration. Valid values: ``True`` | ``False``
 
 ``CRTM_DIR``: (Default: "")
    This is the path to the top CRTM fix file directory. This is only used if ``USE_CRTM`` is set to true.
@@ -1953,7 +1921,7 @@ Ensemble Model Parameters
 Set parameters associated with running ensembles. 
 
 ``DO_ENSEMBLE``: (Default: false)
-   Flag that determines whether to run a set of ensemble forecasts (for each set of specified cycles).  If this is set to true, ``NUM_ENS_MEMBERS`` forecasts are run for each cycle, each with a different set of stochastic seed values. When false, a single forecast is run for each cycle.
+   Flag that determines whether to run a set of ensemble forecasts (for each set of specified cycles).  If this is set to true, ``NUM_ENS_MEMBERS`` forecasts are run for each cycle, each with a different set of stochastic seed values. When false, a single forecast is run for each cycle. Valid values: ``True`` | ``False``
 
 ``NUM_ENS_MEMBERS``: (Default: 1)
    The number of ensemble members to run if ``DO_ENSEMBLE`` is set to true. This variable also controls the naming of the ensemble member directories. For example, if ``NUM_ENS_MEMBERS`` is set to 8, the member directories will be named *mem1, mem2, ..., mem8*.  If it is set to 08 (with a leading zero), the member directories will be named *mem01, mem02, ..., mem08*. However, after reading in the number of characters in this string (in order to determine how many leading zeros, if any, should be placed in the names of the member directories), the workflow generation scripts strip away those leading zeros. Thus, in the variable definitions file (``GLOBAL_VAR_DEFNS_FN``), this variable appears with its leading zeros stripped. This variable is not used unless ``DO_ENSEMBLE`` is set to true.
@@ -1974,7 +1942,7 @@ Specific Humidity (SHUM) Perturbation Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``DO_SHUM``: (Default: false)
-   Flag to turn Specific Humidity (SHUM) perturbations on or off. SHUM perturbations multiply the low-level specific humidity by a small random number at each time-step. The SHUM scheme attempts to address missing physics phenomena (e.g., cold pools, gust fronts) most active in convective regions. 
+   Flag to turn Specific Humidity (SHUM) perturbations on or off. SHUM perturbations multiply the low-level specific humidity by a small random number at each time-step. The SHUM scheme attempts to address missing physics phenomena (e.g., cold pools, gust fronts) most active in convective regions. Valid values: ``True`` | ``False``
 
 ``ISEED_SHUM``: (Default: 2)
    Seed for setting the SHUM random number sequence.
@@ -1999,7 +1967,7 @@ Stochastically Perturbed Physics Tendencies (SPPT) Parameters
 SPPT perturbs full physics tendencies *after* the call to the physics suite, unlike :ref:`SPP <SPP>` (below), which perturbs specific tuning parameters within a physics scheme. 
 
 ``DO_SPPT``: (Default: false)
-   Flag to turn Stochastically Perturbed Physics Tendencies (SPPT) on or off. SPPT multiplies the physics tendencies by a random number between 0 and 2 before updating the model state. This addresses error in the physics parameterizations (either missing physics or unresolved subgrid processes). It is most active in the boundary layer and convective regions. 
+   Flag to turn Stochastically Perturbed Physics Tendencies (SPPT) on or off. SPPT multiplies the physics tendencies by a random number between 0 and 2 before updating the model state. This addresses error in the physics parameterizations (either missing physics or unresolved subgrid processes). It is most active in the boundary layer and convective regions. Valid values: ``True`` | ``False``
 
 ``ISEED_SPPT``: (Default: 1) 
    Seed for setting the SPPT random number sequence.
@@ -2023,14 +1991,14 @@ SPPT perturbs full physics tendencies *after* the call to the physics suite, unl
    When true, tapers the SPPT perturbations to zero at the model's lowest level, which reduces model crashes. 
 
 ``USE_ZMTNBLCK``: (Default: false)
-   When true, do not apply perturbations below the dividing streamline that is diagnosed by the gravity wave drag, mountain blocking scheme.
+   When true, do not apply perturbations below the dividing streamline that is diagnosed by the gravity wave drag, mountain blocking scheme. Valid values: ``True`` | ``False``
 
 
 Stochastic Kinetic Energy Backscatter (SKEB) Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``DO_SKEB``: (Default: false)
-   Flag to turn Stochastic Kinetic Energy Backscatter (SKEB) on or off. SKEB adds wind perturbations to the model state. Perturbations are random in space/time, but amplitude is determined by a smoothed dissipation estimate provided by the :term:`dynamical core`. SKEB addresses errors in the dynamics more active in the mid-latitudes.
+   Flag to turn Stochastic Kinetic Energy Backscatter (SKEB) on or off. SKEB adds wind perturbations to the model state. Perturbations are random in space/time, but amplitude is determined by a smoothed dissipation estimate provided by the :term:`dynamical core`. SKEB addresses errors in the dynamics more active in the mid-latitudes. Valid values: ``True`` | ``False``
 
 ``ISEED_SKEB``: (Default: 3)
    Seed for setting the SHUM random number sequence.
@@ -2068,7 +2036,7 @@ SPP perturbs specific tuning parameters within a physics :term:`parameterization
    SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. Of the four supported physics suites, the full set of parameterizations can only be used with the ``FV3_HRRR`` option for ``CCPP_PHYS_SUITE``.
 
 ``DO_SPP``: (Default: false)
-   Flag to turn SPP on or off. SPP perturbs parameters or variables with unknown or uncertain magnitudes within the physics code based on ranges provided by physics experts.
+   Flag to turn SPP on or off. SPP perturbs parameters or variables with unknown or uncertain magnitudes within the physics code based on ranges provided by physics experts. Valid values: ``True`` | ``False``
 
 ``ISEED_SPP``: (Default: [ 4, 5, 6, 7, 8 ] )
    Seed for setting the random number sequence for the perturbation pattern. 
@@ -2106,7 +2074,7 @@ The parameters below turn on SPP in Noah or RUC LSM (support for Noah MP is in p
       "The default perturbation frequency is determined by the ``fhcyc`` namelist entry. Since that parameter is set to zero in the SRW App, use ``LSM_SPP_EACH_STEP`` to perturb every time step.""
 
 ``DO_LSM_SPP``: (Default: false) 
-   Turns on Land Surface Model (LSM) Stochastic Physics Parameterizations (SPP). When true, sets ``lndp_type=2``, which applies land perturbations to the selected paramaters using a newer scheme designed for data assimilation (DA) ensemble spread. LSM SPP perturbs uncertain land surface fields ("smc" "vgf" "alb" "sal" "emi" "zol" "stc") based on recommendations from physics experts. 
+   Turns on Land Surface Model (LSM) Stochastic Physics Parameterizations (SPP). When true, sets ``lndp_type=2``, which applies land perturbations to the selected paramaters using a newer scheme designed for data assimilation (DA) ensemble spread. LSM SPP perturbs uncertain land surface fields ("smc" "vgf" "alb" "sal" "emi" "zol" "stc") based on recommendations from physics experts. Valid values: ``True`` | ``False``
 
 ``LSM_SPP_TSCALE``: (Default: [ 21600, 21600, 21600, 21600, 21600, 21600, 21600 ] )
    Decorrelation timescales in seconds. 
