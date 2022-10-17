@@ -189,18 +189,17 @@ If compiler auto-detection fails for some reason, specify it using the ``--compi
 
 where valid values are ``intel`` or ``gnu``.
 
-If users want to build the optional ``GSI`` and ``rrfs_utl`` components for RRFS, they can add the ``--rrfs`` argument (NOTE: These components are not currently available for use at runtime). For example:
+If users want to build the optional ``GSI`` and ``rrfs_utl`` components for :term:`RRFS`, they can pass the ``gsi`` and ``rrfs_utils`` arguments (NOTE: These components are not currently available for use at runtime). For example:
 
 .. COMMENT: What does the runtime note mean?
 
 .. code-block:: console
 
-   ./devbuild.sh --platform=hera --rrfs
+   ./devbuild.sh -p=hera gsi rrfs_utils
 
 The last line of the console output should be ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/exec`` directory. If users choose to build the ``GSI`` and ``rrfs_utl`` components, the executables listed in :numref:`Table %s <RRFSexec>` will also appear there. If this build method does not work, or if users are not on a supported machine, they will have to manually set up the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
-
+The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/exec`` directory. If users choose to build the ``GSI`` and ``rrfs_utils`` components, the executables listed in :numref:`Table %s <RRFSexec>` will also appear there. If the ``devbuild.sh`` build method does not work, or if users are not on a supported machine, they will have to manually set up the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
 
 .. _ExecDescription:
 
@@ -242,7 +241,7 @@ The executables listed in :numref:`Table %s <ExecDescription>` should appear in 
    +------------------------+---------------------------------------------------------------------------------+
    | orog                   | Generates orography, land mask, and gravity wave drag files from fixed files    |
    +------------------------+---------------------------------------------------------------------------------+
-   | orog_gsl               | Ceates orographic statistics fields required for the orographic drag suite      |
+   | orog_gsl               | Creates orographic statistics fields required for the orographic drag suite     |
    |                        | developed by NOAA's Global Systems Laboratory (GSL)                             |
    +------------------------+---------------------------------------------------------------------------------+
    | regional_esg_grid      | Generates an ESG regional grid based on a user-defined namelist                 |

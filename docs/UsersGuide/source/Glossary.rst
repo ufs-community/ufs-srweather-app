@@ -93,6 +93,11 @@ Glossary
    GRIB2 
       The second version of the World Meterological Organization's (WMO) standard for distributing gridded data.  
 
+   GSI
+      `Gridpoint Statistical Interpolation <https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi>`__ (GSI) is a variational data assimilation system, designed to be flexible, state-of-art, and run efficiently on various parallel computing platforms. It supports :term:`RRFS` features. GSI code is publicly available `on GitHub <https://github.com/NOAA-EMC/GSI>`__, but some features are only accessible to NOAA affiliates. 
+
+   .. COMMENT: What does GSI do... just data assimilation stuff? How is it different from JEDI and other options? What is available to the public? What is needed for running RRFS?
+
    halo
       A strip of cells on the edge of the regional grid. The :ref:`wide halo <WideHalo>` surrounds the regional grid and is used to feed the lateral boundary conditions into the grid. The :ref:`HALO_BLEND <HaloBlend>` parameter refers to a strip of cells *inside* the boundary of the native grid. This halo smooths out mismatches between the external and internal solutions. 
 
@@ -184,6 +189,9 @@ Glossary
 
    Repository
       A central location in which files (e.g., data, code, documentation) are stored and managed. 
+
+   RRFS
+      The `Rapid Refresh Forecast System <https://gsl.noaa.gov/focus-areas/unified_forecast_system/rrfs>`__ is NOAA's next-generation convection-allowing, rapidly-updated, ensemble-based data assimilation and forecasting system currently scheduled for operational implementation in 2024. It is designed to run forecasts on a 3-km :term:`CONUS` domain. 
 
    SDF
       Suite Definition File. An external file containing information about the construction of a physics suite. It describes the schemes that are called, in which order they are called, whether they are subcycled, and whether they are assembled into groups to be called together.
