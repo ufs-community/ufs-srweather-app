@@ -32,7 +32,6 @@ from python_utils import (
 from set_cycle_dates import set_cycle_dates
 from set_predef_grid_params import set_predef_grid_params
 from set_ozone_param import set_ozone_param
-from set_extrn_mdl_params import set_extrn_mdl_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
@@ -180,6 +179,10 @@ def setup():
     # make machine name uppercase
     MACHINE = uppercase(MACHINE)
 
+    # Load fixed-files mapping file
+    cfg_f = load_config_file(os.path.join(USHdir, os.pardir, "parm", "fixed_files_mapping.yaml"))
+    import_vars(dictionary=flatten_dict(cfg_f))
+
     # Load constants file and save its contents to a variable for later
     cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
     import_vars(dictionary=flatten_dict(cfg_c))
@@ -194,6 +197,7 @@ def setup():
     #
     global WORKFLOW_ID
     WORKFLOW_ID = "id_" + str(int(datetime.datetime.now().timestamp()))
+    cfg_d["workflow"]["WORKFLOW_ID"] = WORKFLOW_ID
     log_info(f"""WORKFLOW ID = {WORKFLOW_ID}""")
 
     #
@@ -614,6 +618,7 @@ def setup():
             LBC_SPEC_INTVL_HRS, LBC_SPEC_INTVL_HRS + FCST_LEN_HRS, LBC_SPEC_INTVL_HRS
         )
     ]
+    cfg_d["task_make_lbcs"]["LBC_SPEC_FCST_HRS"] = LBC_SPEC_FCST_HRS
     #
     # -----------------------------------------------------------------------
     #
@@ -1022,13 +1027,13 @@ def setup():
     # -----------------------------------------------------------------------
     #
 
-    # export env vars before calling another module
-    export_vars()
+    OZONE_PARAM = set_ozone_param(
+          CCPP_PHYS_SUITE_IN_CCPP_FP,
+          CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
+          FIXgsm_FILES_TO_COPY_TO_FIXam,
+          VERBOSE=VERBOSE,
+          )
 
-    OZONE_PARAM = set_ozone_param(CCPP_PHYS_SUITE_IN_CCPP_FP)
-
-    IMPORTS = ["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING", "FIXgsm_FILES_TO_COPY_TO_FIXam"]
-    import_vars(env_vars=IMPORTS)
     #
     # -----------------------------------------------------------------------
     #
@@ -1288,21 +1293,21 @@ def setup():
     else:
         SFC_CLIMO_DIR = os.path.join(EXPTDIR, "sfc_climo")
 
-    # -----------------------------------------------------------------------
-    #
-    # Set cycle-independent parameters associated with the external models
-    # from which we will obtain the ICs and LBCs.
     #
     # -----------------------------------------------------------------------
     #
+    # Set EXTRN_MDL_LBCS_OFFSET_HRS, which is the number of hours to shift
+    # the starting time of the external model that provides lateral boundary
+    # conditions.
+    #
+    # -----------------------------------------------------------------------
+    #
+    global EXTRN_MDL_LBCS_OFFSET_HRS
+    if EXTRN_MDL_NAME_LBCS == "RAP":
+        EXTRN_MDL_LBCS_OFFSET_HRS = EXTRN_MDL_LBCS_OFFSET_HRS or "3"
+    else:
+        EXTRN_MDL_LBCS_OFFSET_HRS = EXTRN_MDL_LBCS_OFFSET_HRS or "0"
 
-    # export env vars before calling another module
-    export_vars()
-
-    set_extrn_mdl_params()
-
-    IMPORTS = ["EXTRN_MDL_LBCS_OFFSET_HRS"]
-    import_vars(env_vars=IMPORTS)
     #
     # -----------------------------------------------------------------------
     #
@@ -1579,47 +1584,18 @@ def setup():
     # -----------------------------------------------------------------------
     #
     SDF_USES_THOMPSON_MP = set_thompson_mp_fix_files(
-        ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP,
-        thompson_mp_climo_fn=THOMPSON_MP_CLIMO_FN,
+        CCPP_PHYS_SUITE_IN_CCPP_FP,
+        THOMPSON_MP_CLIMO_FN,
+        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
+        FIXgsm_FILES_TO_COPY_TO_FIXam,
     )
-
-    IMPORTS = ["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING", "FIXgsm_FILES_TO_COPY_TO_FIXam"]
-    import_vars(env_vars=IMPORTS)
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Generate the shell script that will appear in the experiment directory
-    # (EXPTDIR) and will contain definitions of variables needed by the va-
-    # rious scripts in the workflow.  We refer to this as the experiment/
-    # workflow global variable definitions file.  We will create this file
-    # by:
-    #
-    # 1) Copying the default workflow/experiment configuration file (speci-
-    #    fied by EXPT_DEFAULT_CONFIG_FN and located in the shell script di-
-    #    rectory specified by USHdir) to the experiment directory and rena-
-    #    ming it to the name specified by GLOBAL_VAR_DEFNS_FN.
-    #
-    # 2) Resetting the default variable values in this file to their current
-    #    values.  This is necessary because these variables may have been
-    #    reset by the user-specified configuration file (if one exists in
-    #    USHdir) and/or by this setup script, e.g. because predef_domain is
-    #    set to a valid non-empty value.
-    #
-    # 3) Appending to the variable definitions file any new variables intro-
-    #    duced in this setup script that may be needed by the scripts that
-    #    perform the various tasks in the workflow (and which source the va-
-    #    riable defintions file).
-    #
-    # First, set the full path to the variable definitions file and copy the
-    # default configuration script into it.
-    #
-    # -----------------------------------------------------------------------
-    #
 
     # global variable definition file path
     global GLOBAL_VAR_DEFNS_FP
     GLOBAL_VAR_DEFNS_FP = os.path.join(EXPTDIR, GLOBAL_VAR_DEFNS_FN)
+
+    # fixed files section
+    cfg_d.update(cfg_f)
 
     # update dictionary with globals() values
     update_dict(globals(), cfg_d)

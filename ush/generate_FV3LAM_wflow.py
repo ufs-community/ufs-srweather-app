@@ -992,7 +992,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
                the rocotorun command must be issued immediately before issuing the
                rocotostat command.
 
-            For automatic resubmission of the workflow (say every 3 minutes), the
+            For automatic resubmission of the workflow (say every {CRON_RELAUNCH_INTVL_MNTS} minutes), the
             following line can be added to the user's crontab (use \"crontab -e\" to
             edit the cron table):
 

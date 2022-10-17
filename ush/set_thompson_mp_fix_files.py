@@ -17,7 +17,8 @@ from python_utils import (
 )
 
 
-def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn):
+def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn, 
+             CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING, FIXgsm_FILES_TO_COPY_TO_FIXam):
     """Function that first checks whether the Thompson
     microphysics parameterization is being called by the selected physics
     suite.  If not, it sets the output variable whose name is specified by
@@ -31,14 +32,17 @@ def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn):
     Args:
         ccpp_phys_suite_fp: full path to CCPP physics suite
         thompson_mp_climo_fn: netcdf file for thompson microphysics
+        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
+        FIXgsm_FILES_TO_COPY_TO_FIXam
     Returns:
         boolean: sdf_uses_thompson_mp
     """
 
     print_input_args(locals())
 
-    # import all environment variables
-    import_vars()
+    # import some environment variables
+    IMPORTS=["EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS", "CCPP_PHYS_SUITE"]
+    import_vars(env_vars=IMPORTS)
 
     #
     # -----------------------------------------------------------------------
@@ -113,12 +117,6 @@ def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn):
             """
         )
 
-        EXPORTS = [
-            "CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING",
-            "FIXgsm_FILES_TO_COPY_TO_FIXam",
-        ]
-        export_vars(env_vars=EXPORTS)
-
     return sdf_uses_thompson_mp
 
 
@@ -128,19 +126,19 @@ class Testing(unittest.TestCase):
         self.assertEqual(
             True,
             set_thompson_mp_fix_files(
-                ccpp_phys_suite_fp=f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
-                thompson_mp_climo_fn="Thompson_MP_MONTHLY_CLIMO.nc",
+                f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
+                "Thompson_MP_MONTHLY_CLIMO.nc",
+                CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
+                FIXgsm_FILES_TO_COPY_TO_FIXam,       
             ),
         )
 
     def setUp(self):
-        define_macos_utilities()
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
         set_env_var("EXTRN_MDL_NAME_ICS", "FV3GFS")
         set_env_var("EXTRN_MDL_NAME_LBCS", "FV3GFS")
         set_env_var("CCPP_PHYS_SUITE", "FV3_GSD_SAR")
 
+        global CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
         CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = [
             "aerosol.dat                | global_climaeropac_global.txt",
             "co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt",
@@ -164,6 +162,7 @@ class Testing(unittest.TestCase):
             "global_o3prdlos.f77        | ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77",
         ]
 
+        global FIXgsm_FILES_TO_COPY_TO_FIXam
         FIXgsm_FILES_TO_COPY_TO_FIXam = [
             "global_glacier.2x2.grb",
             "global_maxice.2x2.grb",
@@ -197,8 +196,3 @@ class Testing(unittest.TestCase):
             "ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77",
         ]
 
-        set_env_var(
-            "CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING",
-            CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
-        )
-        set_env_var("FIXgsm_FILES_TO_COPY_TO_FIXam", FIXgsm_FILES_TO_COPY_TO_FIXam)
