@@ -480,6 +480,7 @@ Baseline Workflow Tasks
 Verification Tasks
 --------------------
 .. COMMENT:
+
 ``RUN_TASK_GET_OBS_CCPA``: (Default: false)
    Flag that determines whether to run the ``GET_OBS_CCPA_TN`` task, which retrieves the :term:`CCPA` hourly precipitation files used by METplus from NOAA :term:`HPSS`. See :numref:`Section %s <get-obs-ccpa>` for additional parameters related to this task.
 

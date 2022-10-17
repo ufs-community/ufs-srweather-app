@@ -141,7 +141,7 @@ The cloned repository contains the configuration files and sub-directories shown
 Check Out External Components
 ================================
 
-The SRW App relies on a variety of components (e.g., regional_workflow, UFS_UTILS, ufs-weather-model, and UPP) detailed in :numref:`Chapter %s <Components>` of this User's Guide. Each component has its own repository. Users must run the ``checkout_externals`` script to collect the individual components of the SRW App from their respective Git repositories. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>` into the appropriate directories under the ``regional_workflow`` and ``src`` directories. 
+The SRW App relies on a variety of components (e.g., UFS_UTILS, ufs-weather-model, and UPP) detailed in :numref:`Chapter %s <Components>` of this User's Guide. Each component has its own repository. Users must run the ``checkout_externals`` script to collect the individual components of the SRW App from their respective GitHub repositories. The ``checkout_externals`` script uses the configuration file ``Externals.cfg`` in the top level directory of the SRW App to clone the correct tags (code versions) of the external repositories listed in :numref:`Section %s <HierarchicalRepoStr>` into the appropriate directories (e.g., ``ush``, ``sorc``). 
 
 Run the executable that pulls in SRW App components from external repositories:
 
@@ -152,10 +152,10 @@ Run the executable that pulls in SRW App components from external repositories:
 
 The script should output dialogue indicating that it is retrieving different code repositories. It may take several minutes to download these repositories.
 
-To see more options, users can run ``./manage_externals/checkout_externals -h``. For example:
+To see more options for the ``checkout_externals`` script, users can run ``./manage_externals/checkout_externals -h``. For example:
 
-   * ``-S``: Outputs the status of the repositories managed by checkout_externals. By default only summary information is provided. Use with the ``-v`` (verbose) option to see details.
-   * ``-x [EXCLUDE [EXCLUDE ...]]``: allows users to exclude components listed in the externals file when checking out externals. 
+   * ``-S``: Outputs the status of the repositories managed by ``checkout_externals``. By default only summary information is provided. Use with the ``-v`` (verbose) option to see details.
+   * ``-x [EXCLUDE [EXCLUDE ...]]``: allows users to exclude components when checking out externals. 
    * ``-o``: By default only the required externals are checked out. This flag will also checkout the optional externals.
 
 Generally, users will not need to use the options and can simply run the script, but the options are available for those who are curious. 
@@ -170,7 +170,7 @@ Set Up the Environment and Build the Executables
 ``devbuild.sh`` Approach
 -----------------------------
 
-On Level 1 systems for which a modulefile is provided under the ``modulefiles`` directory, users can build the SRW App binaries with:
+On Level 1 systems for which a modulefile is provided under the ``modulefiles`` directory, users can build the SRW App binaries with the following command:
 
 .. code-block:: console
 
@@ -189,7 +189,9 @@ If compiler auto-detection fails for some reason, specify it using the ``--compi
 
 where valid values are ``intel`` or ``gnu``.
 
-If users want to build the optional ``GSI`` and ``rrfs_utl`` components for RRFS (NOTE: These components are not currently available for use at runtime), they can add the ``--rrfs`` argument. For example:
+If users want to build the optional ``GSI`` and ``rrfs_utl`` components for RRFS, they can add the ``--rrfs`` argument (NOTE: These components are not currently available for use at runtime). For example:
+
+.. COMMENT: What does the runtime note mean?
 
 .. code-block:: console
 
@@ -197,12 +199,12 @@ If users want to build the optional ``GSI`` and ``rrfs_utl`` components for RRFS
 
 The last line of the console output should be ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/exec`` directory. If users choose to build the ``GSI`` and ``rrfs_utl`` components, the executables listed in :numref:`Table %s <RRFSexec>` will also appear there. If this build method does not work, or if users are not on a supported machine, they will have to manually setup the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
+The executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/exec`` directory. If users choose to build the ``GSI`` and ``rrfs_utl`` components, the executables listed in :numref:`Table %s <RRFSexec>` will also appear there. If this build method does not work, or if users are not on a supported machine, they will have to manually set up the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
 
 
 .. _ExecDescription:
 
-.. table::  Names and descriptions of the executables produced by the build step and used by the SRW App
+.. table:: Names and descriptions of the executables produced by the build step and used by the SRW App
 
    +------------------------+---------------------------------------------------------------------------------+
    | **Executable Name**    | **Description**                                                                 |
@@ -227,7 +229,7 @@ The executables listed in :numref:`Table %s <ExecDescription>` should appear in 
    | global_equiv_resol     | Calculates a global, uniform, cubed-sphere equivalent resolution for the        |
    |                        | regional Extended Schmidt Gnomonic (ESG) grid                                   |
    +------------------------+---------------------------------------------------------------------------------+
-   | inland                 | Creates an inland land mask by determining in-land (i.e. non-coastal) points    |
+   | inland                 | Creates an inland land mask by determining inland (i.e., non-coastal) points    |
    |                        | and assigning a value of 1. Default value is 0.                                 |
    +------------------------+---------------------------------------------------------------------------------+
    | lakefrac               | Calculates the ratio of the lake area to the grid cell area at each atmospheric |
@@ -248,7 +250,7 @@ The executables listed in :numref:`Table %s <ExecDescription>` should appear in 
    | sfc_climo_gen          | Creates surface climatology fields from fixed files for use in ``chgres_cube``  |
    +------------------------+---------------------------------------------------------------------------------+
    | shave                  | Shaves the excess halo rows down to what is required for the lateral boundary   |
-   |                        | conditions (LBC's) in the orography and grid files                              |
+   |                        | conditions (LBCs) in the orography and grid files                               |
    +------------------------+---------------------------------------------------------------------------------+
    | upp.x                  | Post-processor for the model output                                             |
    +------------------------+---------------------------------------------------------------------------------+
@@ -268,11 +270,11 @@ The executables listed in :numref:`Table %s <ExecDescription>` should appear in 
    +----------------------------+-----------------------------------------------------------------------------+
    | enkf.x                     | Runs the Ensemble Kalman Filter.                                            |
    +----------------------------+-----------------------------------------------------------------------------+
-   | gen_annual_maxmin_GVF.exe  | Generate maximum and minimum GVF files based on yearly long GVF             |
-   |                            | observations for update_GVF process.                                        |
+   | gen_annual_maxmin_GVF.exe  | Generate maximum and minimum greenness vegetation fraction (GVF) files      |
+   |                            | based on yearly long GVF observations for update_GVF process.               |
    +----------------------------+-----------------------------------------------------------------------------+
-   | update_GVF.exe             | Update the greenness vegetation fraction (GVF) in the surface file based on |
-   |                            | the real-time observations files.                                           |
+   | update_GVF.exe             | Update the GVF in the surface file based on the real-time observations      |
+   |                            | files.                                                                      |
    +----------------------------+-----------------------------------------------------------------------------+
    | ref2tten.exe               | Calculate temperature tendency based on the radar reflectivity observation  |
    |                            | at each grid point. This temperature tendency can be used by the model      |
@@ -325,6 +327,7 @@ The executables listed in :numref:`Table %s <ExecDescription>` should appear in 
    |                            | and radar reflectivity.                                                     |
    +----------------------------+-----------------------------------------------------------------------------+
 
+.. COMMENT: Remove RRFS table? Save it somewhere tho so it can be used later in RRFS docs. 
 
 
 .. _CMakeApproach:
