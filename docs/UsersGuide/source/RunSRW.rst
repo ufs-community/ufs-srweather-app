@@ -37,7 +37,29 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available. For Level 2-4 systems, the data must be added. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available in the following locations: 
+
+.. table:: Data locations for Level 1 systems
+
+   +--------------+--------------------------------------------------------------+
+   | Machine      | File location                                                |
+   +==============+==============================================================+
+   | Cheyenne     | /glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/      |
+   +--------------+--------------------------------------------------------------+
+   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/  |
+   +--------------+--------------------------------------------------------------+
+   | Hera         | /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/      |
+   +--------------+--------------------------------------------------------------+
+   | Jet          | /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/input_model_data/   |
+   +--------------+--------------------------------------------------------------+
+   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/develop/input_model_data/          |
+   +--------------+--------------------------------------------------------------+
+   | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/develop/input_model_data/     |
+   +--------------+--------------------------------------------------------------+
+   | WCOSS2       | /lfs/h2/emc/lam/noscrub/UFS_SRW_App/                         |
+   +--------------+--------------------------------------------------------------+ 
+
+For Level 2-4 systems, the data must be added. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GridSpecificConfig:
 
