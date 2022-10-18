@@ -11,8 +11,3 @@ load(pathJoin("python", os.getenv("python_ver")))
 prepend_path("MODULEPATH","/apps/ops/test/nco/modulefiles")
 load(pathJoin("core/rocoto", os.getenv("rocoto_ver")))
 
-if mode() == "load" then
-   LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate regional_workflow
-]===])
-end
