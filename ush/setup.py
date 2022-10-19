@@ -7,6 +7,7 @@ from textwrap import dedent
 from logging import getLogger
 
 from python_utils import (
+    log_info,
     cd_vrfy,
     mkdir_vrfy,
     rm_vrfy,
@@ -64,12 +65,12 @@ def setup():
     import_vars()
 
     # print message
-    logger.info(dedent(
+    log_info(
         f"""
         ========================================================================
         Starting function setup() in \"{os.path.basename(__file__)}\"...
         ========================================================================"""
-    ))
+    )
     #
     # -----------------------------------------------------------------------
     #
@@ -193,7 +194,7 @@ def setup():
     #
     global WORKFLOW_ID
     WORKFLOW_ID = "id_" + str(int(datetime.datetime.now().timestamp()))
-    logger.info(f"""WORKFLOW ID = {WORKFLOW_ID}""")
+    log_info(f"""WORKFLOW ID = {WORKFLOW_ID}""")
 
     #
     # -----------------------------------------------------------------------
@@ -220,7 +221,7 @@ def setup():
     #
     global VERBOSE
     if DEBUG and not VERBOSE:
-        logger.info(
+        log_info(
             """
             Resetting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
         )
@@ -1503,7 +1504,7 @@ def setup():
     if QUILTING:
         PE_MEMBER01 = PE_MEMBER01 + WRTCMP_write_groups * WRTCMP_write_tasks_per_group
 
-    logger.info(
+    log_info(
         f"""
         The number of MPI tasks for the forecast (including those for the write
         component if it is being used) are:
@@ -1844,10 +1845,10 @@ def setup():
     # print content of var_defns if DEBUG=True
     if DEBUG:
         all_lines = cfg_to_yaml_str(cfg_d)
-        logger.info(all_lines)
+        log_info(all_lines)
 
     # print info message
-    logger.info(
+    log_info(
         f"""
         Generating the global experiment variable definitions file specified by
         GLOBAL_VAR_DEFNS_FN:

@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from python_utils import (
     print_info_msg,
     print_err_msg_exit,
+    log_info,
     import_vars,
     cp_vrfy,
     cd_vrfy,
@@ -76,13 +77,11 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     # Set up logging to write to screen and logfile
     setup_logging(logfile)
 
-    logging.info(
-        dedent(
+    log_info(
             """
         ========================================================================
         Starting experiment generation...
         ========================================================================"""
-        )
     )
 
     # check python version
@@ -132,7 +131,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
 
         template_xml_fp = os.path.join(PARMdir, WFLOW_XML_FN)
 
-        logging.info(
+        log_info(
             f'''
             Creating rocoto workflow XML file (WFLOW_XML_FP) from jinja template XML
             file (template_xml_fp):
@@ -427,16 +426,13 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         # End of "settings" variable.
         settings_str = cfg_to_yaml_str(settings)
 
-        logging.info(
-            dedent(
+        log_info(
                 f"""
                 The variable \"settings\" specifying values of the rococo XML variables
                 has been set as follows:
                 #-----------------------------------------------------------------------
-                settings =\n\n"""
-            )
-            + settings_str,
-        )
+                settings =\n\n""")
+        log_info(settings_str)
 
         #
         # Call the python script to generate the experiment's actual XML file
@@ -470,7 +466,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     #
     # -----------------------------------------------------------------------
     #
-    logging.info(
+    log_info(
         f'''
         Creating symlink in the experiment directory (EXPTDIR) that points to the
         workflow launch script (WFLOW_LAUNCH_SCRIPT_FP):
@@ -498,7 +494,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     #
     if SYMLINK_FIX_FILES:
 
-        logging.info(
+        log_info(
             f'''
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = \"{FIXgsm}\"
@@ -508,7 +504,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         ln_vrfy(f'''-fsn "{FIXgsm}" "{FIXam}"''')
     else:
 
-        logging.info(
+        log_info(
             f'''
             Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = \"{FIXgsm}\"
@@ -531,7 +527,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     # -----------------------------------------------------------------------
     #
     if USE_MERRA_CLIMO:
-        logging.info(
+        log_info(
             f'''
             Copying MERRA2 aerosol climatology data files from system directory
             (FIXaer/FIXlut) to a subdirectory (FIXclim) in the experiment directory:
@@ -556,24 +552,24 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     #
     # -----------------------------------------------------------------------
     #
-    logging.info(
+    log_info(
         f"""
         Copying templates of various input files to the experiment directory...""",
     )
 
-    logging.info(
+    log_info(
         f"""
         Copying the template data table file to the experiment directory...""",
     )
     cp_vrfy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
 
-    logging.info(
+    log_info(
         f"""
         Copying the template field table file to the experiment directory...""",
     )
     cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
 
-    logging.info(
+    log_info(
         f"""
         Copying the template NEMS configuration file to the experiment directory...""",
     )
@@ -583,7 +579,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     # clone of the FV3 code repository to the experiment directory (EXPT-
     # DIR).
     #
-    logging.info(
+    log_info(
         f"""
         Copying the CCPP physics suite definition XML file from its location in
         the forecast model directory sturcture to the experiment directory...""",
@@ -594,7 +590,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     # clone of the FV3 code repository to the experiment directory (EXPT-
     # DIR).
     #
-    logging.info(
+    log_info(
         f"""
         Copying the field dictionary file from its location in the forecast
         model directory sturcture to the experiment directory...""",
@@ -607,7 +603,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     #
     # -----------------------------------------------------------------------
     #
-    logging.info(
+    log_info(
         f'''
         Setting parameters in weather model's namelist file (FV3_NML_FP):
         FV3_NML_FP = \"{FV3_NML_FP}\"'''
@@ -839,16 +835,11 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
 
     settings_str = cfg_to_yaml_str(settings)
 
-    logging.info(
-        dedent(
+    log_info(
             f"""
             The variable \"settings\" specifying values of the weather model's
-            namelist variables has been set as follows:
-
-            settings =\n\n"""
-        )
-        + settings_str,
-    )
+            namelist variables has been set as follows:\n""")
+    log_info("\nsettings =\n\n" + settings_str)
     #
     # -----------------------------------------------------------------------
     #
@@ -941,7 +932,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         rocotorun_cmd = f"rocotorun -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
         rocotostat_cmd = f"rocotostat -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
 
-    logging.info(
+    log_info(
         f"""
         ========================================================================
         ========================================================================
@@ -963,7 +954,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     #
     if WORKFLOW_MANAGER == "rocoto":
 
-        logging.info(
+        log_info(
             f"""
             To launch the workflow, change location to the experiment directory
             (EXPTDIR) and issue the rocotrun command, as follows:
@@ -1012,7 +1003,7 @@ def setup_logging(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
     messages with detailed timing and routine info in the specified text file.
     """
     logging.basicConfig(level=logging.DEBUG,
-                        format='%(name)-12s %(levelname)-8s %(message)s',
+                        format='%(name)-22s %(levelname)-8s %(message)s',
                         filename=logfile,
                         filemode='w')
     logging.debug(f'Finished setting up debug file logging in {logfile}')

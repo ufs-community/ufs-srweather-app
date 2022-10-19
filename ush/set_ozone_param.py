@@ -3,9 +3,9 @@
 import os
 import unittest
 from textwrap import dedent
-from logging import getLogger
 
 from python_utils import (
+    log_info,
     import_vars,
     export_vars,
     set_env_var,
@@ -45,7 +45,6 @@ def set_ozone_param(ccpp_phys_suite_fp):
         ozone_param: a string
     """
 
-    logger = getLogger(__name__)
     print_input_args(locals())
 
     # import all environment variables
@@ -149,23 +148,17 @@ def set_ozone_param(ccpp_phys_suite_fp):
     # -----------------------------------------------------------------------
     #
     if fixgsm_ozone_fn_is_set:
-
-        msg = dedent(
+        log_info(
             f"""
             After setting the file name of the ozone production/loss file in the
             FIXgsm directory (based on the ozone parameterization specified in the
             CCPP suite definition file), the array specifying the mapping between
             the symlinks that need to be created in the cycle directories and the
             files in the FIXam directory is:
-
-            """
-        )
-        msg += dedent(
-            f"""
+            """)
+        log_info(f"""
               CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING)}
-            """
-        )
-        logger.info(msg)
+            """, ddent=False)
 
     else:
 

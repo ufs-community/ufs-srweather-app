@@ -2,11 +2,10 @@
 
 import os
 from datetime import datetime
-from logging import getLogger
 from textwrap import dedent
 from .check_var_valid_value import check_var_valid_value
 from .filesys_cmds_vrfy import rm_vrfy, mv_vrfy
-
+from .print_msg import log_info
 
 def check_for_preexist_dir_file(path, method):
     """Check for a preexisting directory or file and, if present, deal with it
@@ -18,8 +17,6 @@ def check_for_preexist_dir_file(path, method):
     Returns:
         None
     """
-
-    logger = getLogger(__name__)
 
     try:
         check_var_valid_value(method, ["delete", "rename", "quit"])
@@ -37,13 +34,13 @@ def check_for_preexist_dir_file(path, method):
             now = datetime.now()
             d = now.strftime("_old_%Y%m%d_%H%M%S")
             new_path = path + d
-            logger.info(dedent(
+            log_info(
                 f"""
                 Specified directory or file already exists:
                     {path}
                 Moving (renaming) preexisting directory or file to:
                     {new_path}"""
-            ))
+            )
             mv_vrfy(path, new_path)
         else:
             raise FileExistsError(dedent(

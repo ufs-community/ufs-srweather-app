@@ -2,7 +2,8 @@
 
 import traceback
 import sys
-from textwrap import dedent
+from textwrap import dedent, indent
+from logging import getLogger
 
 
 def print_err_msg_exit(error_msg="", stack_trace=True):
@@ -39,3 +40,21 @@ def print_info_msg(info_msg, verbose=True):
         print(dedent(info_msg))
         return True
     return False
+
+def log_info(info_msg, ddent=True):
+    """Function to print information message using the logging module. This function
+    should not be used if python logging has not been initialized.
+
+    Args:
+        info_msg : info message to print
+        ddent : set to False to disable "dedenting" (print string as-is)
+    Returns:
+        None
+    """
+
+    logger=getLogger(sys._getframe().f_back.f_code.co_name)
+    if ddent:
+        logger.info(indent(dedent(info_msg), '  '))
+    else:
+        logger.info(info_msg)
+

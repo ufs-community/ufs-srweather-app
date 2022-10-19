@@ -5,10 +5,10 @@ import sys
 import unittest
 import argparse
 from datetime import datetime
-from logging import getLogger
 from textwrap import dedent
 
 from python_utils import (
+    log_info,
     import_vars,
     set_env_var,
     print_input_args,
@@ -92,7 +92,6 @@ def get_crontab_contents(called_from_cron):
 def add_crontab_line():
     """Add crontab line to cron table"""
 
-    logger = getLogger(__name__)
     # import selected env vars
     IMPORTS = ["MACHINE", "USER", "CRONTAB_LINE", "VERBOSE", "EXPTDIR"]
     import_vars(env_vars=IMPORTS)
@@ -102,11 +101,11 @@ def add_crontab_line():
     #
     time_stamp = datetime.now().strftime("%F_%T")
     crontab_backup_fp = os.path.join(EXPTDIR, f"crontab.bak.{time_stamp}")
-    logger.info(dedent(
+    log_info(
         f'''
         Copying contents of user cron table to backup file:
           crontab_backup_fp = \"{crontab_backup_fp}\"'''
-    ))
+    )
 
     global called_from_cron
     try:
@@ -125,21 +124,21 @@ def add_crontab_line():
     # Add crontab line
     if CRONTAB_LINE in crontab_contents:
 
-        logger.info(dedent(
+        log_info(
             f'''
             The following line already exists in the cron table and thus will not be
             added:
               CRONTAB_LINE = \"{CRONTAB_LINE}\"'''
-        ))
+        )
 
     else:
 
-        logger.info(dedent(
+        log_info(
             f'''
             Adding the following line to the user's cron table in order to automatically
             resubmit SRW workflow:
               CRONTAB_LINE = \"{CRONTAB_LINE}\"'''
-        ))
+        )
 
         # add new line to crontab contents if it doesn't have one
         NEWLINE_CHAR = ""
