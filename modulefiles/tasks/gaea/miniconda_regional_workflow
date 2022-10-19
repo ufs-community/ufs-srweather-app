@@ -1,6 +1,6 @@
 #%Module
 
-module use /lustre/f2/dev/wpo/role.epic/contrib/modulefiles
-module load miniconda3
+module use /lustre/f2/dev/role.epic/contrib/modulefiles
+module load miniconda3/4.12.0
 
 setenv SRW_ENV regional_workflow

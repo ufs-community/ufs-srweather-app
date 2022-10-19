@@ -16,18 +16,18 @@ platform:
   RUN_CMD_POST: mpirun -np $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpirun -np $nprocs
-  ENV_INIT_SCRIPTS_FPS:
-    - /etc/profile
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data
   TEST_PREGEN_BASEDIR: /glade/p/ral/jntp/UFS_SRW_App/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /glade/p/ral/jntp/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /glade/p/ral/jntp/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+task_make_orog:
+  TOPO_DIR: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_orog
+task_make_sfc_climo:
+  SFC_CLIMO_INPUT_DIR: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_sfc_climo
 task_run_fcst:
   FIXaer: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_lut
-  TOPO_DIR: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_orog
-  SFC_CLIMO_INPUT_DIR: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_sfc_climo
 data:
   FV3GFS: /glade/p/ral/jntp/UFS_CAM/COMGFS/gfs.${yyyymmdd}/${hh}

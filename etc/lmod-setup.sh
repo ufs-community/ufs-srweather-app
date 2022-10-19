@@ -14,6 +14,14 @@ else
    L_MACHINE=$1
 fi
 
+[[ ${SHELLOPTS} =~ nounset ]] && has_mu=true || has_mu=false
+[[ ${SHELLOPTS} =~ errexit ]] && has_me=true || has_me=false
+$has_mu && set +u
+$has_me && set +e
+source /etc/profile
+$has_mu && set -u
+$has_me && set -e
+
 if [ "$L_MACHINE" = macos ]; then
    export BASH_ENV="/opt/homebrew/opt/lmod/init/bash"
    # export BASH_ENV="/usr/local/opt/lmod/init/bash"

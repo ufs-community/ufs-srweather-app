@@ -10,19 +10,13 @@ module load hpc/1.2.0
 module load intel/2021.3.0
 module load hpc-intel/2021.3.0
 module load hpc-cray-mpich/7.7.11
-# Needed at runtime:
-module load alps
 #needed for WW3 build
 module load gcc/8.3.0
 
 module load srw_common
 module load libpng/1.6.37
 
-module use /lustre/f2/dev/role.epic/contrib/modulefiles
-module load miniconda3/4.12.0
-
 module load cmake/3.20.1
-module load rocoto
 
 setenv CC cc
 setenv FC ftn

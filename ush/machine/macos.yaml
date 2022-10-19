@@ -6,14 +6,14 @@ platform:
   RUN_CMD_POST: 'mpirun -n 4 '
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpirun -n 4
-  ENV_INIT_SCRIPTS_FPS:
-    - /etc/profile
   PRE_TASK_CMDS: '{ ulimit -a; }'
+task_make_orog:
+  TOPO_DIR: /Users/username/DATA/UFS/fix/fix_orog
+task_make_sfc_climo:
+  SFC_CLIMO_INPUT_DIR: /Users/username/DATA/UFS/fix/fix_sfc_climo
 task_run_fcst:
   FIXaer: /Users/username/DATA/UFS/fix/fix_aer
   FIXgsm: /Users/username/DATA/UFS/fix/fix_am
   FIXlut: /Users/username/DATA/UFS/fix/fix_lut
-  TOPO_DIR: /Users/username/DATA/UFS/fix/fix_orog
-  SFC_CLIMO_INPUT_DIR: /Users/username/DATA/UFS/fix/fix_sfc_climo
 data:
   FV3GFS: /Users/username/DATA/UFS/FV3GFS

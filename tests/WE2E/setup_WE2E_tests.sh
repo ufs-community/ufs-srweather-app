@@ -30,7 +30,7 @@ function usage {
   echo "       machine       [required] is one of: ${machines[@]}"
   echo "       slurm_account [required] case sensitive name of the user-specific slurm account"
   echo "       compiler      [optional] compiler used for build"
-  echo "       test_type     [optional] test type: fundamental or comprehensive or any other name"
+  echo "       test_type     [optional] test type: fundamental or comprehensive or all or any other name"
   echo "       expts_dir     [optional] Experiment base directory"
   echo "       -h            display this help"
   echo
@@ -62,15 +62,6 @@ TOP_DIR=$( dirname "${SRW_APP_DIR}" )
 
 EXPTS_DIR=${5:-"${TOP_DIR}/expt_dirs"}
 
-#-----------------------------------------------------------------------
-# Set the path to the machine-specific test suite file.
-#-----------------------------------------------------------------------
-
-auto_file=${scrfunc_dir}/machine_suites/${test_type}.${machine}
-if [ ! -f ${auto_file} ]; then
-    auto_file=${scrfunc_dir}/machine_suites/${test_type}
-fi
-
 #----------------------------------------------------------------------
 # Use exec_subdir consistent with the automated build.
 #----------------------------------------------------------------------
@@ -82,28 +73,11 @@ exec_subdir="install_${compiler}/exec"
 #-----------------------------------------------------------------------
 
 # Load Python Modules
-env_path="${SRW_APP_DIR}/modulefiles"
-env_file="wflow_${machine}"
-echo "-- Load environment =>" $env_file
-source ${SRW_APP_DIR}/etc/lmod-setup.sh ${machine}
-module use ${env_path}
-module load ${env_file}
-
-if [[ "${machine}" == 'cheyenne' ]]; then
-    conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow
-else
-    if [[ "${machine}" == 'noaacloud' && -z "${PROJ_LIB-}" ]]; then
-        PROJ_LIB=''
-    fi
-
-    conda activate regional_workflow
-fi
-
-module list
+source ${SRW_APP_DIR}/ush/load_modules_wflow.sh ${machine}
 
 # Run the E2E Workflow tests
 ./run_WE2E_tests.sh \
-  tests_file=${auto_file} \
+  test_type=${test_type} \
   machine=${machine} \
   account=${account} \
   exec_subdir=${exec_subdir} \

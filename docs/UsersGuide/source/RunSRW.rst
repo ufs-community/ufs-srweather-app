@@ -119,6 +119,7 @@ settings. There is usually no need for a user to modify the default configuratio
 
 .. _ConfigVarsDefault:
 
+<<<<<<< HEAD:docs/UsersGuide/source/RunSRW.rst
 .. table::  Configuration variables specified in the config_defaults.yaml script
 
    +-----------------------------+-----------------------------------------------------------------------+
@@ -358,6 +359,187 @@ settings. There is usually no need for a user to modify the default configuratio
    |                             | WTIME_VX_ENSPOINT_PROB, MAXTRIES_VX_ENSPOINT_PROB                     |
    +-----------------------------+-----------------------------------------------------------------------+
    
+=======
+.. table::  Configuration variables specified in the config_defaults.sh script.
+
+   +----------------------+--------------------------------------------------------------+
+   | **Group Name**       | **Configuration variables**                                  |
+   +======================+==============================================================+
+   | Experiment mode      | RUN_ENVIR                                                    | 
+   +----------------------+--------------------------------------------------------------+
+   | Machine and queue    | MACHINE, MACHINE_FILE, ACCOUNT, COMPILER, SCHED,             |
+   |                      | LMOD_PATH, NCORES_PER_NODE, BUILD_MOD_FN, WFLOW_MOD_FN,      |
+   |                      | PARTITION_DEFAULT, CLUSTERS_DEFAULT, QUEUE_DEFAULT,          |
+   |                      | PARTITION_HPSS, CLUSTERS_HPSS, QUEUE_HPSS, PARTITION_FCST,   |
+   |                      | CLUSTERS_FCST, QUEUE_FCST                                    |
+   +----------------------+--------------------------------------------------------------+
+   | Workflow management  | WORKFLOW_MANAGER, RUN_CMD_UTILS, RUN_CMD_FCST, RUN_CMD_POST  |
+   +----------------------+--------------------------------------------------------------+
+   | Cron                 | USE_CRON_TO_RELAUNCH, CRON_RELAUNCH_INTVL_MNTS               |
+   +----------------------+--------------------------------------------------------------+
+   | Directory parameters | EXPT_BASEDIR, EXPT_SUBDIR, EXEC_SUBDIR                       |
+   +----------------------+--------------------------------------------------------------+
+   | NCO mode             | COMINgfs, FIXLAM_NCO_BASEDIR, STMP, NET, envir, RUN, PTMP    |
+   +----------------------+--------------------------------------------------------------+
+   | Separator            | DOT_OR_USCORE                                                |
+   +----------------------+--------------------------------------------------------------+
+   | File name            | EXPT_CONFIG_FN, RGNL_GRID_NML_FN, DATA_TABLE_FN,             |
+   |                      | DIAG_TABLE_FN, FIELD_TABLE_FN, FV3_NML_BASE_SUITE_FN,        |
+   |                      | FV3_NML_YAML_CONFIG_FN, FV3_NML_BASE_ENS_FN,                 |
+   |                      | MODEL_CONFIG_FN, NEMS_CONFIG_FN, FV3_EXEC_FN,                |
+   |                      | FCST_MODEL, WFLOW_XML_FN, GLOBAL_VAR_DEFNS_FN,               |
+   |                      | EXTRN_MDL_ICS_VAR_DEFNS_FN, EXTRN_MDL_LBCS_VAR_DEFNS_FN,     |
+   |                      | WFLOW_LAUNCH_SCRIPT_FN, WFLOW_LAUNCH_LOG_FN                  |
+   +----------------------+--------------------------------------------------------------+
+   | Forecast             | DATE_FIRST_CYCL, DATE_LAST_CYCL, INCR_CYCL_FREQ,             |
+   |                      | FCST_LEN_HRS                                                 |
+   +----------------------+--------------------------------------------------------------+
+   | IC/LBC               | EXTRN_MDL_NAME_ICS, EXTRN_MDL_NAME_LBCS,                     |
+   |                      | LBC_SPEC_INTVL_HRS, EXTRN_MDL_ICS_OFFSET_HRS,                |
+   |                      | EXTRN_MDL_LBCS_OFFSET_HRS, FV3GFS_FILE_FMT_ICS,              |
+   |                      | FV3GFS_FILE_FMT_LBCS                                         |
+   +----------------------+--------------------------------------------------------------+
+   | NOMADS               | NOMADS, NOMADS_file_type                                     |
+   +----------------------+--------------------------------------------------------------+
+   | External model       | EXTRN_MDL_SYSBASEDIR_ICS, EXTRN_MDL_SYSBASEDIR_LBCS,         |
+   |                      | USE_USER_STAGED_EXTRN_FILES, EXTRN_MDL_SOURCE_BASEDIR_ICS,   |
+   |                      | EXTRN_MDL_FILES_ICS, EXTRN_MDL_SOURCE_BASEDIR_LBCS,          |
+   |                      | EXTRN_MDL_FILES_LBCS                                         |
+   +----------------------+--------------------------------------------------------------+
+   | CCPP                 | CCPP_PHYS_SUITE                                              |
+   +----------------------+--------------------------------------------------------------+
+   | Stochastic physics   | NEW_LSCALE, DO_SHUM, DO_SPPT, DO_SKEB, DO_SPP, DO_LSM_SPP,   |
+   |                      | ISEED_SHUM, SHUM_MAG, SHUM_LSCALE, SHUM_TSCALE, SHUM_INT,    |
+   |                      | ISEED_SPPT, SPPT_MAG, SPPT_LOGIT, SPPT_LSCALE, SPPT_TSCALE,  |
+   |                      | SPPT_INT, SPPT_SFCLIMIT, USE_ZMTNBLCK, ISEED_SKEB,           |
+   |                      | SKEB_MAG, SKEB_LSCALE, SKEP_TSCALE, SKEB_INT, SKEBNORM,      |
+   |                      | SKEB_VDOF, ISEED_SPP, SPP_MAG_LIST, SPP_LSCALE, SPP_TSCALE,  | 
+   |                      | SPP_SIGTOP1, SPP_SIGTOP2, SPP_STDDEV_CUTOFF, SPP_VAR_LIST,   |
+   |                      | LSM_SPP_TSCALE, LSM_SPP_LSCALE, ISEED_LSM_SPP,               |
+   |                      | LSM_SPP_VAR_LIST, LSM_SPP_MAG_LIST, LSM_SPP_EACH_STEP        |
+   +----------------------+--------------------------------------------------------------+
+   | GRID                 | GRID_GEN_METHOD, PREDEF_GRID_NAME                            |
+   +----------------------+--------------------------------------------------------------+
+   | ESG grid             | ESGgrid_LON_CTR, ESGgrid_LAT_CTR, ESGgrid_DELX,              |
+   |                      | ESGgrid_DELY, ESGgrid_NX, ESGgrid_NY, ESGgrid_PAZI           |
+   |                      | ESGgrid_WIDE_HALO_WIDTH                                      |
+   +----------------------+--------------------------------------------------------------+
+   | GFDL grid            | GFDLgrid_LON_T6_CTR, GFDLgrid_LAT_T6_CTR, GFDLgrid_RES,      |
+   |                      | GFDLgrid_STRETCH_FAC, GFDLgrid_REFINE_RATIO,                 |
+   |                      | GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G,                          |
+   |                      | GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G,                            |
+   |                      | GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G,                          |
+   |                      | GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G,                            |
+   |                      | GFDLgrid_USE_GFDLgrid_RES_IN_FILENAMES                       |
+   +----------------------+--------------------------------------------------------------+
+   | Input configuration  | DT_ATMOS, RESTART_INTERVAL, WRITE_DOPOST, LAYOUT_X,          |
+   |                      | LAYOUT_Y, BLOCKSIZE, QUILTING,                               |
+   |                      | PRINT_ESMF, WRTCMP_write_groups,                             |
+   |                      | WRTCMP_write_tasks_per_group, WRTCMP_output_grid,            |
+   |                      | WRTCMP_cen_lon, WRTCMP_cen_lat, WRTCMP_lon_lwr_left,         |
+   |                      | WRTCMP_lat_lwr_left, WRTCMP_lon_upr_rght,                    |
+   |                      | WRTCMP_lat_upr_rght, WRTCMP_dlon, WRTCMP_dlat,               |
+   |                      | WRTCMP_stdlat1, WRTCMP_stdlat2, WRTCMP_nx, WRTCMP_ny,        |
+   |                      | WRTCMP_dx, WRTCMP_dy                                         |
+   +----------------------+--------------------------------------------------------------+
+   | Experiment generation| PREEXISTING_DIR_METHOD, VERBOSE, DEBUG                       |
+   +----------------------+--------------------------------------------------------------+
+   | Cycle-independent    | RUN_TASK_MAKE_GRID, GRID_DIR, RUN_TASK_MAKE_OROG,            |
+   |                      | OROG_DIR, RUN_TASK_MAKE_SFC_CLIMO, SFC_CLIMO_DIR             |
+   +----------------------+--------------------------------------------------------------+
+   | Cycle dependent      | RUN_TASK_GET_EXTRN_ICS, RUN_TASK_GET_EXTRN_LBCS,             |
+   |                      | RUN_TASK_MAKE_ICS, RUN_TASK_MAKE_LBCS, RUN_TASK_RUN_FCST,    |
+   |                      | RUN_TASK_RUN_POST                                            |
+   +----------------------+--------------------------------------------------------------+
+   | VX run tasks         | RUN_TASK_GET_OBS_CCPA, RUN_TASK_GET_OBS_MRMS,                |
+   |                      | RUN_TASK_GET_OBS_NDAS, RUN_TASK_VX_GRIDSTAT,                 |
+   |                      | RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID,                  |
+   |                      | RUN_TASK_VX_ENSPOINT                                         |
+   +----------------------+--------------------------------------------------------------+
+   | Fixed File Parameters| FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR,       |
+   |                      | FNGLAC, FNMXIC, FNTSFC, FNSNOC, FNZORC,                      |
+   |                      | FNAISC, FNSMCC, FNMSKH, FIXgsm_FILES_TO_COPY_TO_FIXam,       |
+   |                      | FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING,                      |
+   |                      | FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING,                  |
+   |                      | CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING                        |
+   +----------------------+--------------------------------------------------------------+
+   | Workflow tasks       | MAKE_GRID_TN, MAKE_OROG_TN, MAKE_SFC_CLIMO_TN,               |
+   |                      | GET_EXTRN_ICS_TN, GET_EXTRN_LBCS_TN, MAKE_ICS_TN,            |
+   |                      | MAKE_LBCS_TN, RUN_FCST_TN, RUN_POST_TN                       |
+   +----------------------+--------------------------------------------------------------+
+   | Verification tasks   | GET_OBS, GET_OBS_CCPA_TN, GET_OBS_MRMS_TN, GET_OBS_NDAS_TN,  |
+   |                      | VX_TN, VX_GRIDSTAT_TN, VX_GRIDSTAT_REFC_TN,                  |
+   |                      | VX_GRIDSTAT_RETOP_TN, VX_GRIDSTAT_##h_TN, VX_POINTSTAT_TN,   |
+   |                      | VX_ENSGRID_TN, VX_ENSGRID_##h_TN, VX_ENSGRID_REFC_TN,        |
+   |                      | VX_ENSGRID_RETOP_TN, VX_ENSGRID_MEAN_TN, VX_ENSGRID_PROB_TN, |
+   |                      | VX_ENSGRID_MEAN_##h_TN, VX_ENSGRID_PROB_03h_TN,              |
+   |                      | VX_ENSGRID_PROB_REFC_TN, VX_ENSGRID_PROB_RETOP_TN,           |
+   |                      | VX_ENSPOINT_TN, VX_ENSPOINT_MEAN_TN, VX_ENSPOINT_PROB_TN     |
+   +----------------------+--------------------------------------------------------------+
+   | NODE                 | NNODES_MAKE_GRID, NNODES_MAKE_OROG, NNODES_MAKE_SFC_CLIMO,   |
+   |                      | NNODES_GET_EXTRN_ICS, NNODES_GET_EXTRN_LBCS,                 |
+   |                      | NNODES_MAKE_ICS, NNODES_MAKE_LBCS, NNODES_RUN_FCST,          |
+   |                      | NNODES_RUN_POST, NNODES_GET_OBS_CCPA, NNODES_GET_OBS_MRMS,   |
+   |                      | NNODES_GET_OBS_NDAS, NNODES_VX_GRIDSTAT,                     |
+   |                      | NNODES_VX_POINTSTAT, NNODES_VX_ENSGRID,                      |
+   |                      | NNODES_VX_ENSGRID_MEAN, NNODES_VX_ENSGRID_PROB,              |
+   |                      | NNODES_VX_ENSPOINT, NNODES_VX_ENSPOINT_MEAN,                 |
+   |                      | NNODES_VX_ENSPOINT_PROB                                      |
+   +----------------------+--------------------------------------------------------------+
+   | MPI processes        | PPN_MAKE_GRID, PPN_MAKE_OROG, PPN_MAKE_SFC_CLIMO,            |
+   |                      | PPN_GET_EXTRN_ICS, PPN_GET_EXTRN_LBCS, PPN_MAKE_ICS,         |
+   |                      | PPN_MAKE_LBCS, PPN_RUN_FCST, PPN_RUN_POST,                   |
+   |                      | PPN_GET_OBS_CCPA, PPN_GET_OBS_MRMS, PPN_GET_OBS_NDAS,        |
+   |                      | PPN_VX_GRIDSTAT, PPN_VX_POINTSTAT, PPN_VX_ENSGRID,           |
+   |                      | PPN_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_PROB, PPN_VX_ENSPOINT,   |
+   |                      | PPN_VX_ENSPOINT_MEAN, PPN_VX_ENSPOINT_PROB                   |
+   +----------------------+--------------------------------------------------------------+
+   | Walltime             | WTIME_MAKE_GRID, WTIME_MAKE_OROG, WTIME_MAKE_SFC_CLIMO,      |
+   |                      | WTIME_GET_EXTRN_ICS, WTIME_GET_EXTRN_LBCS, WTIME_MAKE_ICS,   |
+   |                      | WTIME_MAKE_LBCS, WTIME_RUN_FCST, WTIME_RUN_POST,             |
+   |                      | WTIME_GET_OBS_CCPA, WTIME_GET_OBS_MRMS, WTIME_GET_OBS_NDAS,  |
+   |                      | WTIME_VX_GRIDSTAT, WTIME_VX_POINTSTAT, WTIME_VX_ENSGRID,     |
+   |                      | WTIME_VX_ENSGRID_MEAN, WTIME_VX_ENSGRID_PROB,                |
+   |                      | WTIME_VX_ENSPOINT, WTIME_VX_ENSPOINT_MEAN,                   |
+   |                      | WTIME_VX_ENSPOINT_PROB                                       |
+   +----------------------+--------------------------------------------------------------+
+   | Maximum attempt      | MAXTRIES_MAKE_GRID, MAXTRIES_MAKE_OROG,                      |
+   |                      | MAXTRIES_MAKE_SFC_CLIMO, MAXTRIES_GET_EXTRN_ICS,             |
+   |                      | MAXTRIES_GET_EXTRN_LBCS, MAXTRIES_MAKE_ICS,                  |
+   |                      | MAXTRIES_MAKE_LBCS, MAXTRIES_RUN_FCST, MAXTRIES_RUN_POST,    |
+   |                      | MAXTRIES_GET_OBS_CCPA, MAXTRIES_GET_OBS_MRMS,                |
+   |                      | MAXTRIES_GET_OBS_NDAS, MAXTRIES_VX_GRIDSTAT,                 |
+   |                      | MAXTRIES_VX_GRIDSTAT_REFC, MAXTRIES_VX_GRIDSTAT_RETOP,       |
+   |                      | MAXTRIES_VX_GRIDSTAT_##h, MAXTRIES_VX_POINTSTAT,             |
+   |                      | MAXTRIES_VX_ENSGRID, MAXTRIES_VX_ENSGRID_REFC,               |
+   |                      | MAXTRIES_VX_ENSGRID_RETOP, MAXTRIES_VX_ENSGRID_##h,          |
+   |                      | MAXTRIES_VX_ENSGRID_MEAN, MAXTRIES_VX_ENSGRID_PROB,          |
+   |                      | MAXTRIES_VX_ENSGRID_MEAN_##h, MAXTRIES_VX_ENSGRID_PROB_##h,  |
+   |                      | MAXTRIES_VX_ENSGRID_PROB_REFC,                               |
+   |                      | MAXTRIES_VX_ENSGRID_PROB_RETOP, MAXTRIES_VX_ENSPOINT,        |
+   |                      | MAXTRIES_VX_ENSPOINT_MEAN, MAXTRIES_VX_ENSPOINT_PROB         |
+   +----------------------+--------------------------------------------------------------+
+   | Climatology          | SFC_CLIMO_FIELDS, USE_MERRA_CLIMO                            |
+   +----------------------+--------------------------------------------------------------+
+   | CRTM                 | USE_CRTM, CRTM_DIR                                           |
+   +----------------------+--------------------------------------------------------------+
+   | Post configuration   | USE_CUSTOM_POST_CONFIG_FILE, CUSTOM_POST_CONFIG_FP,          |
+   |                      | SUB_HOURLY_POST, DT_SUB_HOURLY_POST_MNTS                     |
+   +----------------------+--------------------------------------------------------------+
+   | METplus              | MODEL, MET_INSTALL_DIR, MET_BIN_EXEC, METPLUS_PATH,          |
+   |                      | CCPA_OBS_DIR, MRMS_OBS_DIR, NDAS_OBS_DIR                     |
+   +----------------------+--------------------------------------------------------------+
+   | Running ensembles    | DO_ENSEMBLE, NUM_ENS_MEMBERS                                 |
+   +----------------------+--------------------------------------------------------------+
+   | Boundary blending    | HALO_BLEND                                                   |
+   +----------------------+--------------------------------------------------------------+
+   | FVCOM                | USE_FVCOM, FVCOM_WCSTART, FVCOM_DIR, FVCOM_FILE              |
+   +----------------------+--------------------------------------------------------------+
+   | Thread Affinity      | KMP_AFFINITY_*, OMP_NUM_THREADS_*, OMP_STACKSIZE_*           |
+   +----------------------+--------------------------------------------------------------+
+
+
+>>>>>>> 6089f69fce191d29d4b1bbdb9a97f2a4e58a1c37:docs/UsersGuide/source/BuildRunSRW.rst
 .. _UserSpecificConfig:
 
 User-specific configuration: ``config.yaml``
@@ -385,8 +567,6 @@ The user must specify certain basic experiment configuration information in a ``
    | DATE_FIRST_CYCL                | "YYYYMMDD"        | '2019061518'                                                                     |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | DATE_LAST_CYCL                 | "YYYYMMDD"        | '2019061518'                                                                     |
-   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
-   | CYCL_HRS                       | ["HH1", "HH2"]    | 18                                                                               |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | COMPILER                       | "intel"           | "intel"                                                                          |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
