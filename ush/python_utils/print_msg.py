@@ -52,6 +52,7 @@ def log_info(info_msg, ddent=True):
         None
     """
 
+    # "sys._getframe().f_back.f_code.co_name" returns the name of the calling function
     logger=getLogger(sys._getframe().f_back.f_code.co_name)
     if ddent:
         logger.info(indent(dedent(info_msg), '  '))

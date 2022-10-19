@@ -1123,17 +1123,6 @@ def setup():
     # Set the full path to the forecast model executable.
     global FV3_EXEC_FP
     FV3_EXEC_FP = os.path.join(EXECdir, FV3_EXEC_FN)
-    if not os.path.exists(FV3_EXEC_FP):
-        raise FileNotFoundError(dedent(
-            f'''
-            The forecast model executable
-
-            {FV3_EXEC_FP=}
-
-            does not exist! Ensure you have successfully built the SRW App executables
-            prior to running this script!'''
-        ))
-
     #
     # -----------------------------------------------------------------------
     #
