@@ -87,7 +87,9 @@ If non-default parameters are selected for the variables in this section, they s
    The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the same name as the experiment grid) under this directory. This variable should be set to a null string in ``config_defaults.yaml``, but it can be changed in the user-specified workflow configuration file set by ``EXPT_CONFIG_FN`` (usually ``config.yaml``).
 
 .. Scripts and commands needed by workflow and tasks
+
 ``ENV_INIT_SCRIPTS_FPS``: (Default: [])
+
 ``PRE_TASK_CMDS``: (Default: "")
 
 .. COMMENT: Define! 

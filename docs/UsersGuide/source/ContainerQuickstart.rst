@@ -326,7 +326,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          EXTRN_MDL_FILES_ICS: []
          EXTRN_MDL_DATA_STORES: disk
 
-      On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` (below) to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
+      On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` (below) to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <Data>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
 
    #. Edit the ``task_get_extrn_lbcs:`` section of the ``config.yaml`` to include the correct data paths to the lateral boundary conditions files. For example, on Hera, add: 
 

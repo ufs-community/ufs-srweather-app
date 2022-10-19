@@ -102,7 +102,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
          Please do the following to activate conda:
             > conda activate regional_workflow
       
-      then the user should run ``conda activate regional_workflow`` to activate the ``regional_workflow`` environment. 
+      then the user should run ``conda activate regional_workflow`` to activate the regional workflow environment. 
 
    #. Generate the experiment workflow. 
 
