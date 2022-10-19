@@ -91,6 +91,7 @@ If non-default parameters are selected for the variables in this section, they s
 ``ENV_INIT_SCRIPTS_FPS``: (Default: [])
 
 ``PRE_TASK_CMDS``: (Default: "")
+   Pre-task commands such as ``ulimit`` needed by tasks. For example: ``'{ ulimit -s unlimited; ulimit -a; }'``
 
 .. COMMENT: Define! 
 
@@ -354,6 +355,8 @@ Forecast Parameters
 
 ``CYCL_HRS``: (Default: [ "HH1", "HH2" ] )
    An array containing the hours of the day at which to launch forecasts. Forecasts are launched at these hours on each day from ``DATE_FIRST_CYCL`` to ``DATE_LAST_CYCL``, inclusive. Each element of this array must be a two-digit string representing an integer that is less than or equal to 23 (e.g., "00", "03", "12", "23").
+
+.. COMMENT: Delete CYCL_HRS
 
 ``INCR_CYCL_FREQ``: (Default: 24)
    Increment in hours for cycle frequency (cycl_freq). The default is 24, which means cycl_freq=24:00:00.

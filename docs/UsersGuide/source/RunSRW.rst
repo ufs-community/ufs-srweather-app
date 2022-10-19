@@ -358,14 +358,12 @@ settings. There is usually no need for a user to modify the default configuratio
    |                             | WTIME_VX_ENSPOINT_PROB, MAXTRIES_VX_ENSPOINT_PROB                     |
    +-----------------------------+-----------------------------------------------------------------------+
    
-.. COMMENT: Move the VX stuff to its own chapter? 
-
 .. _UserSpecificConfig:
 
 User-specific configuration: ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The user must specify certain basic information about the experiment in a ``config.yaml`` file located in the ``ufs-srweather-app/regional_workflow/ush`` directory. Two example templates are provided in that directory: ``config.community.yaml`` and ``config.nco.yaml``. The first file is a minimal example for creating and running an experiment in the *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases and is fully supported for this release. The operational/NCO mode is typically used by those at the NOAA/NCEP/Environmental Modeling Center (EMC) and the NOAA/Global Systems Laboratory (GSL) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` shows the configuration variables that appear in the ``config.community.yaml``, along with their default values in ``config_default.yaml`` and the values defined in ``config.community.yaml``.
+The user must specify certain basic experiment configuration information in a ``config.yaml`` file located in the ``ufs-srweather-app/ush`` directory. Two example templates are provided in that directory: ``config.community.yaml`` and ``config.nco.yaml``. The first file is a minimal example for creating and running an experiment in *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases and is fully supported for this release. The operational/NCO mode is typically used by those at NOAA's Environmental Modeling Center (:term:`EMC`) and at the NOAA Global Systems Laboratory (GSL) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` shows the configuration variables that appear in the ``config.community.yaml``, along with their default values in ``config_default.yaml`` and the values defined in ``config.community.yaml``.
 
 .. _ConfigCommunity:
 
@@ -374,17 +372,25 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | **Parameter**                  | **Default Value** | **config.community.yaml Value**                                                  |
    +================================+===================+==================================================================================+
+   | RUN_ENVIR                      | "nco"             | "community"                                                                      |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | MACHINE                        | "BIG_COMPUTER"    | "hera"                                                                           |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | ACCOUNT                        | "project_name"    | "an_account"                                                                     |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
-   | EXPT_SUBDIR                    | ""                | "test_CONUS_25km_GFSv16"                                                         |
+   | EXPT_SUBDIR                    | ""                | "test_community"                                                                 |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | CCPP_PHYS_SUITE                | "FV3_GFS_v16"     | "FV3_GFS_v16"                                                                    |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | DATE_FIRST_CYCL                | "YYYYMMDD"        | '2019061518'                                                                     |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | DATE_LAST_CYCL                 | "YYYYMMDD"        | '2019061518'                                                                     |
+   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
+   | CYCL_HRS                       | ["HH1", "HH2"]    | 18                                                                               |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | COMPILER                       | "intel"           | "intel"                                                                          |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
-   | VERBOSE                        | "TRUE"            | "TRUE"                                                                           |
-   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
-   | RUN_ENVIR                      | "nco"             | "community"                                                                      |
+   | VERBOSE                        | true              | true                                                                             |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | PREEXISTING_DIR_METHOD         | "delete"          | "rename"                                                                         |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
@@ -396,17 +402,9 @@ The user must specify certain basic information about the experiment in a ``conf
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | QUILTING                       | "TRUE"            | "TRUE"                                                                           |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
-   | CCPP_PHYS_SUITE                | "FV3_GFS_v16"     | "FV3_GFS_v16"                                                                    |
-   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | FCST_LEN_HRS                   | "24"              | "12"                                                                             |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | LBC_SPEC_INTVL_HRS             | "6"               | "6"                                                                              |
-   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
-   | DATE_FIRST_CYCL                | "YYYYMMDD"        | "20190615"                                                                       |
-   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
-   | DATE_LAST_CYCL                 | "YYYYMMDD"        | "20190615"                                                                       |
-   +--------------------------------+-------------------+----------------------------------------------------------------------------------+
-   | CYCL_HRS                       | ("HH1" "HH2")     | "18"                                                                             |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
    | EXTRN_MDL_NAME_ICS             | "FV3GFS"          | "FV3GFS"                                                                         |
    +--------------------------------+-------------------+----------------------------------------------------------------------------------+
