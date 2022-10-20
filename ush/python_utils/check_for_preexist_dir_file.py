@@ -23,7 +23,7 @@ def check_for_preexist_dir_file(path, method):
     except ValueError:
         errmsg = dedent(f'''
                         Invalid method for dealing with pre-existing directory specified
-                        {method=}
+                        method = {method}
                         ''')
         raise ValueError(errmsg) from None
 

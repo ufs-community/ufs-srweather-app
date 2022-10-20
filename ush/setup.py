@@ -92,7 +92,7 @@ def setup():
     # variables that override their default values. Ensure all user-specified
     # variables correspond to a default value. 
     if not os.path.exists(EXPT_CONFIG_FN):
-        raise FileNotFoundError(f'User config file not found: {EXPT_CONFIG_FN=}')
+        raise FileNotFoundError(f'User config file not found: EXPT_CONFIG_FN = {EXPT_CONFIG_FN}')
 
     try:
         cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
@@ -134,7 +134,7 @@ def setup():
         raise FileNotFoundError(dedent(
             f"""
             The machine file {MACHINE_FILE} does not exist.
-            Check that you have specified the correct machine ({MACHINE=}) in your config file {EXPT_CONFIG_FN}"""
+            Check that you have specified the correct machine ({MACHINE}) in your config file {EXPT_CONFIG_FN}"""
         ))
     machine_cfg = load_config_file(MACHINE_FILE)
 
@@ -307,14 +307,14 @@ def setup():
                 All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
                 variables set in {EXPT_CONFIG_FN} must be equal in number of entries to what is
                 found in SPP_VAR_LIST:
-                  {len(SPP_VAR_LIST)=}
-                  {len(SPP_MAG_LIST)=}
-                  {len(SPP_LSCALE)=}
-                  {len(SPP_TSCALE)=}
-                  {len(SPP_SIGTOP1)=}
-                  {len(SPP_SIGTOP2)=}
-                  {len(SPP_STDDEV_CUTOFF)=}
-                  {len(ISEED_SPP)=}
+                  SPP_VAR_LIST (length {len(SPP_VAR_LIST)})
+                  SPP_MAG_LIST (length {len(SPP_MAG_LIST)})
+                  SPP_LSCALE (length {len(SPP_LSCALE)})
+                  SPP_TSCALE (length {len(SPP_TSCALE)})
+                  SPP_SIGTOP1 (length {len(SPP_SIGTOP1)})
+                  SPP_SIGTOP2 (length {len(SPP_SIGTOP2)})
+                  SPP_STDDEV_CUTOFF (length {len(SPP_STDDEV_CUTOFF)})
+                  ISEED_SPP (length {len(ISEED_SPP)})
                 '''
             )
     #
@@ -337,10 +337,10 @@ def setup():
                 All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
                 set in {EXPT_CONFIG_FN} must be equal in number of entries to what is found in
                 SPP_VAR_LIST:
-                  {len(LSM_SPP_VAR_LIST)=}
-                  {len(LSM_SPP_MAG_LIST)=}
-                  {len(LSM_SPP_LSCALE)=}
-                  {len(LSM_SPP_TSCALE)=}
+                  LSM_SPP_VAR_LIST (length {len(LSM_SPP_VAR_LIST)})
+                  LSM_SPP_MAG_LIST (length {len(LSM_SPP_MAG_LIST)})
+                  LSM_SPP_LSCALE (length {len(LSM_SPP_LSCALE)})
+                  LSM_SPP_TSCALE (length {len(LSM_SPP_TSCALE)})
                   '''
             )
     #
@@ -479,7 +479,7 @@ def setup():
         if not ACCOUNT:
             raise Exception(dedent(f'''
                   ACCOUNT must be specified in config or machine file if using a workflow manager.
-                  {WORKFLOW_MANAGER=}\n'''
+                  WORKFLOW_MANAGER = {WORKFLOW_MANAGER}\n'''
             ))
     #
     # -----------------------------------------------------------------------
@@ -522,7 +522,7 @@ def setup():
 
     # Make sure RESTART_INTERVAL is set to an integer value
     if not isinstance(RESTART_INTERVAL, int):
-        raise Exception(f"\n{RESTART_INTERVAL=}, must be an integer value\n")
+        raise Exception(f"\nRESTART_INTERVAL = {RESTART_INTERVAL}, must be an integer value\n")
 
     # Check that input dates are in a date format
 
@@ -547,7 +547,7 @@ def setup():
             raise FileNotFoundError(dedent(
                 f'''
                 USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom post configuration file
-                {CUSTOM_POST_CONFIG_FP=}
+                CUSTOM_POST_CONFIG_FP = {CUSTOM_POST_CONFIG_FP}
                 could not be found.'''
             )) from None
 
@@ -561,7 +561,7 @@ def setup():
             raise FileNotFoundError(dedent(
                 f'''
                 USE_CRTM has been set, but the external CRTM fix file directory:
-                {CRTM_DIR=}
+                CRTM_DIR = {CRTM_DIR}
                 could not be found.'''
             )) from None
 
@@ -739,13 +739,13 @@ def setup():
     except ValueError:
         logger.exception(f'''
                         Check that the following values are valid:
-                        {EXPTDIR=}
-                        {PREEXISTING_DIR_METHOD=}
+                        EXPTDIR {EXPTDIR}
+                        PREEXISTING_DIR_METHOD {PREEXISTING_DIR_METHOD}
                         ''')
         raise
     except FileExistsError:
         errmsg = dedent(f'''
-                        {EXPTDIR=} already exists, and {PREEXISTING_DIR_METHOD=}
+                        EXPTDIR ({EXPTDIR}) already exists, and PREEXISTING_DIR_METHOD = {PREEXISTING_DIR_METHOD}
 
                         To ignore this error, delete the directory, or set 
                         PREEXISTING_DIR_METHOD = delete, or
@@ -1221,7 +1221,7 @@ def setup():
 
             msg = dedent(f"""
                GRID_DIR not specified!
-               Setting {GRID_DIR=}
+               Setting GRID_DIR = {GRID_DIR}
             """)
             logger.warning(msg)
 
@@ -1246,7 +1246,7 @@ def setup():
 
             msg = dedent(f"""
                OROG_DIR not specified!
-               Setting {OROG_DIR=}
+               Setting OROG_DIR = {OROG_DIR}
             """)
             logger.warning(msg)
 
@@ -1271,7 +1271,7 @@ def setup():
 
             msg = dedent(f"""
                SFC_CLIMO_DIR not specified!
-               Setting {SFC_CLIMO_DIR=}
+               Setting SFC_CLIMO_DIR ={SFC_CLIMO_DIR}
             """)
             logger.warning(msg)
 
