@@ -104,7 +104,8 @@ def add_crontab_line():
     log_info(
         f'''
         Copying contents of user cron table to backup file:
-          crontab_backup_fp = \"{crontab_backup_fp}\"'''
+          crontab_backup_fp = \"{crontab_backup_fp}\"''',
+        verbose=VERBOSE,
     )
 
     global called_from_cron
@@ -137,7 +138,8 @@ def add_crontab_line():
             f'''
             Adding the following line to the user's cron table in order to automatically
             resubmit SRW workflow:
-              CRONTAB_LINE = \"{CRONTAB_LINE}\"'''
+              CRONTAB_LINE = \"{CRONTAB_LINE}\"''',
+            verbose=VERBOSE,
         )
 
         # add new line to crontab contents if it doesn't have one

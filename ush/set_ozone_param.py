@@ -155,10 +155,10 @@ def set_ozone_param(ccpp_phys_suite_fp):
             CCPP suite definition file), the array specifying the mapping between
             the symlinks that need to be created in the cycle directories and the
             files in the FIXam directory is:
-            """)
+            """, verbose=VERBOSE)
         log_info(f"""
               CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING)}
-            """, ddent=False)
+            """, verbose=VERBOSE, ddent=False)
 
     else:
 

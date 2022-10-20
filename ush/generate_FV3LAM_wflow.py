@@ -431,8 +431,10 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
                 The variable \"settings\" specifying values of the rococo XML variables
                 has been set as follows:
                 #-----------------------------------------------------------------------
-                settings =\n\n""")
-        log_info(settings_str)
+                settings =\n\n""",
+                verbose=VERBOSE,
+            )
+        log_info(settings_str, verbose=VERBOSE)
 
         #
         # Call the python script to generate the experiment's actual XML file
@@ -472,6 +474,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         workflow launch script (WFLOW_LAUNCH_SCRIPT_FP):
           EXPTDIR = \"{EXPTDIR}\"
           WFLOW_LAUNCH_SCRIPT_FP = \"{WFLOW_LAUNCH_SCRIPT_FP}\"''',
+        verbose=VERBOSE,
     )
 
     create_symlink_to_file(
@@ -499,6 +502,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = \"{FIXgsm}\"
               FIXam = \"{FIXam}\"''',
+            verbose=VERBOSE,
         )
 
         ln_vrfy(f'''-fsn "{FIXgsm}" "{FIXam}"''')
@@ -509,6 +513,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
             Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = \"{FIXgsm}\"
               FIXam = \"{FIXam}\"''',
+            verbose=VERBOSE,
         )
 
         check_for_preexist_dir_file(FIXam, "delete")
@@ -534,6 +539,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
               FIXaer = \"{FIXaer}\"
               FIXlut = \"{FIXlut}\"
               FIXclim = \"{FIXclim}\"''',
+            verbose=VERBOSE,
         )
 
         check_for_preexist_dir_file(FIXclim, "delete")
@@ -555,23 +561,27 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     log_info(
         f"""
         Copying templates of various input files to the experiment directory...""",
+        verbose=VERBOSE,
     )
 
     log_info(
         f"""
         Copying the template data table file to the experiment directory...""",
+        verbose=VERBOSE,
     )
     cp_vrfy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
 
     log_info(
         f"""
         Copying the template field table file to the experiment directory...""",
+        verbose=VERBOSE,
     )
     cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
 
     log_info(
         f"""
         Copying the template NEMS configuration file to the experiment directory...""",
+        verbose=VERBOSE,
     )
     cp_vrfy(NEMS_CONFIG_TMPL_FP, NEMS_CONFIG_FP)
     #
@@ -583,6 +593,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         f"""
         Copying the CCPP physics suite definition XML file from its location in
         the forecast model directory sturcture to the experiment directory...""",
+        verbose=VERBOSE,
     )
     cp_vrfy(CCPP_PHYS_SUITE_IN_CCPP_FP, CCPP_PHYS_SUITE_FP)
     #
@@ -594,6 +605,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         f"""
         Copying the field dictionary file from its location in the forecast
         model directory sturcture to the experiment directory...""",
+        verbose=VERBOSE,
     )
     cp_vrfy(FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP)
     #
@@ -838,7 +850,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     log_info(
             f"""
             The variable \"settings\" specifying values of the weather model's
-            namelist variables has been set as follows:\n""")
+            namelist variables has been set as follows:\n""",
+        verbose=VERBOSE,
+    )
     log_info("\nsettings =\n\n" + settings_str)
     #
     # -----------------------------------------------------------------------

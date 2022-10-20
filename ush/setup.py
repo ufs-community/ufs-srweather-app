@@ -1504,11 +1504,13 @@ def setup():
     if QUILTING:
         PE_MEMBER01 = PE_MEMBER01 + WRTCMP_write_groups * WRTCMP_write_tasks_per_group
 
-    log_info(
+    if VERBOSE:
+        log_info(
         f"""
         The number of MPI tasks for the forecast (including those for the write
         component if it is being used) are:
           PE_MEMBER01 = {PE_MEMBER01}""",
+        verbose=VERBOSE,
     )
     #
     # -----------------------------------------------------------------------
@@ -1843,9 +1845,8 @@ def setup():
     #
 
     # print content of var_defns if DEBUG=True
-    if DEBUG:
-        all_lines = cfg_to_yaml_str(cfg_d)
-        log_info(all_lines)
+    all_lines = cfg_to_yaml_str(cfg_d)
+    log_info(all_lines, verbose=DEBUG)
 
     # print info message
     log_info(
