@@ -853,7 +853,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
             namelist variables has been set as follows:\n""",
         verbose=VERBOSE,
     )
-    log_info("\nsettings =\n\n" + settings_str)
+    log_info("\nsettings =\n\n" + settings_str, verbose=VERBOSE)
     #
     # -----------------------------------------------------------------------
     #
