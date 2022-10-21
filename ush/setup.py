@@ -107,7 +107,7 @@ def setup():
     for key in cfg_u:
         if key not in flatten_dict(cfg_d):
             raise Exception(dedent(f'''
-                            User-specified variable "{key}" in {EXPT_CONFIG_FN} is not valid
+                            User-specified variable "{key}" in {EXPT_CONFIG_FN} is not valid.
                             Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables.\n'''))
 
     # Mandatory variables *must* be set in the user's config; the default value is invalid
