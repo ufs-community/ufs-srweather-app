@@ -5,13 +5,12 @@ import unittest
 from textwrap import dedent
 
 from python_utils import (
+    log_info,
     import_vars,
     export_vars,
     set_env_var,
     list_to_str,
     print_input_args,
-    print_info_msg,
-    print_err_msg_exit,
     define_macos_utilities,
     load_xml_file,
     has_tag_with_value,
@@ -90,7 +89,7 @@ def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn):
             mapping = f"{fix_file} | {fix_file}"
             CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING.append(mapping)
 
-        msg = dedent(
+        log_info(
             f"""
             Since the Thompson microphysics parameterization is being used by this
             physics suite (CCPP_PHYS_SUITE), the names of the fixed files needed by
@@ -100,21 +99,19 @@ def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn):
             CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING.  After these modifications, the
             values of these parameters are as follows:
 
+            CCPP_PHYS_SUITE = \"{CCPP_PHYS_SUITE}\"
             """
         )
-        msg += dedent(
+        log_info(
             f"""
-                CCPP_PHYS_SUITE = \"{CCPP_PHYS_SUITE}\"
-
                 FIXgsm_FILES_TO_COPY_TO_FIXam = {list_to_str(FIXgsm_FILES_TO_COPY_TO_FIXam)}
             """
         )
-        msg += dedent(
+        log_info(
             f"""
                 CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING)}
             """
         )
-        print_info_msg(msg)
 
         EXPORTS = [
             "CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING",

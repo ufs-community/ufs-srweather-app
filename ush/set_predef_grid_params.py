@@ -2,6 +2,7 @@
 
 import unittest
 import os
+from textwrap import dedent
 
 from python_utils import (
     import_vars,
@@ -37,7 +38,14 @@ def set_predef_grid_params():
 
     USHdir = os.path.dirname(os.path.abspath(__file__))
     params_dict = load_config_file(os.path.join(USHdir, "predef_grid_params.yaml"))
-    params_dict = params_dict[PREDEF_GRID_NAME]
+    try:
+        params_dict = params_dict[PREDEF_GRID_NAME]
+    except KeyError:
+        errmsg = dedent(f'''
+                        PREDEF_GRID_NAME = {PREDEF_GRID_NAME} not found in predef_grid_params.yaml
+                        Check your config file settings.''')
+        raise Exception(errmsg) from None
+
 
     # if QUILTING = False, remove key
     if not QUILTING:
