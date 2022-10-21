@@ -164,7 +164,7 @@ fi
 # Load the .local module file if available for the given task
 #
 modulefile_local="${task_name}.local"
-if [ -f ${modules_dir}/${modulefile_local} ]; then
+if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
   module load "${modulefile_local}" || print_err_msg_exit "\
   Loading .local module file (in directory specified by mod-
   ules_dir) for the specified task (task_name) failed:

@@ -224,7 +224,7 @@ def import_vars(dictionary=None, target_dict=None, env_vars=None):
 
     for k, v in env_vars.items():
         # Don't replace variable with empty value
-        if not ((k in target_dict) and (v == "")):
+        if not ((k in target_dict) and (v is None or v == "")):
             target_dict[k] = str_to_list(v)
 
 

@@ -75,23 +75,21 @@ def setup():
     #
     # Step-1 of config
     # ================
-    # Set the name of the configuration file containing default values for
-    # the experiment/workflow variables.  Then load its content.
+    # Load the configuration file containing default values for the experiment.
     #
     # -----------------------------------------------------------------------
     #
     EXPT_DEFAULT_CONFIG_FN = "config_defaults.yaml"
     cfg_d = load_config_file(os.path.join(USHdir, EXPT_DEFAULT_CONFIG_FN))
-    EXPT_CONFIG_FN = cfg_d["workflow"]["EXPT_CONFIG_FN"]
+    import_vars(dictionary=flatten_dict(cfg_d),
+        env_vars=["EXPT_CONFIG_FN",
+                  "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
+                  "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
 
     #
     # -----------------------------------------------------------------------
     #
-    # Load the user config file but don't source it yet.  This file
-    # contains user-specified values for a subset of the experiment/workflow
-    # variables that override their default values.  Note that the user-
-    # specified configuration file is not tracked by the repository, whereas
-    # the default configuration file is tracked.
+    # Load the user config file but don't source it yet.
     #
     # -----------------------------------------------------------------------
     #

@@ -245,7 +245,7 @@ fi
 
 # set MODULE_FILE for this platform/compiler combination
 MODULE_FILE="build_${PLATFORM}_${COMPILER}"
-if [ ! -f "${SRW_DIR}/modulefiles/${MODULE_FILE}" ]; then
+if [ ! -f "${SRW_DIR}/modulefiles/${MODULE_FILE}.lua" ]; then
   printf "ERROR: module file does not exist for platform/compiler\n" >&2
   printf "  MODULE_FILE=${MODULE_FILE}\n" >&2
   printf "  PLATFORM=${PLATFORM}\n" >&2
