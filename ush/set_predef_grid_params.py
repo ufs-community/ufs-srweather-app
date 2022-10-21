@@ -17,7 +17,7 @@ from python_utils import (
 )
 
 
-def set_predef_grid_params():
+def set_predef_grid_params(USHdir, fcst_config):
     """Sets grid parameters for the specified predfined grid
 
     Args:
@@ -25,42 +25,23 @@ def set_predef_grid_params():
     Returns:
         None
     """
-    # import all environement variables
-    IMPORTS = [
-        "PREDEF_GRID_NAME",
-        "QUILTING",
-        "DT_ATMOS",
-        "LAYOUT_X",
-        "LAYOUT_Y",
-        "BLOCKSIZE",
-    ]
-    import_vars(env_vars=IMPORTS)
+    predef_grid_name = fcst_config['PREDEF_GRID_NAME']
+    quilting = fcst_config['QUILTING']
 
-    USHdir = os.path.dirname(os.path.abspath(__file__))
     params_dict = load_config_file(os.path.join(USHdir, "predef_grid_params.yaml"))
     try:
-        params_dict = params_dict[PREDEF_GRID_NAME]
+        params_dict = params_dict[predef_grid_name]
     except KeyError:
         errmsg = dedent(f'''
-                        PREDEF_GRID_NAME = {PREDEF_GRID_NAME} not found in predef_grid_params.yaml
+                        PREDEF_GRID_NAME = {predef_grid_name} not found in predef_grid_params.yaml
                         Check your config file settings.''')
         raise Exception(errmsg) from None
 
-
-    # if QUILTING = False, remove key
-    if not QUILTING:
+    # We don't need the quilting section if user wants it turned off
+    if not quilting:
         params_dict.pop("QUILTING")
     else:
         params_dict = flatten_dict(params_dict)
-
-    # take care of special vars
-    special_vars = ["DT_ATMOS", "LAYOUT_X", "LAYOUT_Y", "BLOCKSIZE"]
-    for var in special_vars:
-        if globals()[var] is not None:
-            params_dict[var] = globals()[var]
-
-    # export variables to environment
-    export_vars(source_dict=params_dict)
 
     return params_dict
 

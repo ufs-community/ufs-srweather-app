@@ -377,7 +377,7 @@ def update_dict(dict_o, dict_t, provide_default=False):
 
 
 def check_structure_dict(dict_o, dict_t):
-    """Check if a dictinary's structure follows a template.
+    """Check if a dictionary's structure follows a template.
     The invalid entries are printed to the screen.
 
     Args:

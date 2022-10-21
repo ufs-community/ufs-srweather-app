@@ -17,6 +17,7 @@ from python_utils import (
     uppercase,
     check_for_preexist_dir_file,
     flatten_dict,
+    check_strcuture_dict,
     update_dict,
     import_vars,
     export_vars,
@@ -40,30 +41,100 @@ from check_ruc_lsm import check_ruc_lsm
 from set_thompson_mp_fix_files import set_thompson_mp_fix_files
 
 
-def setup():
-    """Function that sets a secondary set
-    of parameters needed by the various scripts that are called by the
-    FV3-LAM rocoto community workflow.  This secondary set of parameters is
-    calculated using the primary set of user-defined parameters in the de-
-    fault and custom experiment/workflow configuration scripts (whose file
-    names are defined below).  This script then saves both sets of parame-
-    ters in a global variable definitions file (really a bash script) in
-    the experiment directory.  This file then gets sourced by the various
-    scripts called by the tasks in the workflow.
+def load_config_for_setup(default_config, user_config):
+    """ Load in the default, machine, and user configuration files into
+    Python dictionaries. Return the combined dictionary.
 
     Args:
-      None
+      default_config     (str): Path to the default config YAML
+      user_config        (str): Path to the user-provided config YAML
+
+    Returns:
+      Python dict of configuration settings from YAML files.
+    """
+
+    # Load the default config.
+    cfg_d = load_config_file(default_config)
+
+
+    # Load the user config file, then ensure all user-specified
+    # variables correspond to a default value.
+    if not os.path.exists(user_config):
+        raise FileNotFoundError(f'User config file not found:
+                user_config = {user_config}')
+
+    try:
+        cfg_u = load_config_file(user_config)
+    except:
+        errmsg = dedent(f'''\n
+                        Could not load YAML config file:  {user_config}
+                        Reference the above traceback for more information.
+                        ''')
+        raise Exception(errmsg)
+
+    # Make sure the keys in user config match those in the default
+    # config.
+    if not check_structure_dict(cfg_u, cfg_d):
+        raise Exception(dedent(f'''
+                        User-specified variable "{key}" in {user_config} is not valid
+                        Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n'''))
+
+    # Mandatory variables *must* be set in the user's config; the default value is invalid
+    mandatory = ['user.MACHINE']
+    for val in mandatory:
+        sect, key = val.split('.')
+        user_setting = cfg_u.get(sect, {}).get(key)
+        if user_setting is None:
+            raise Exception(f'Mandatory variable "{val}" not found in
+            user config file {user_config}')
+
+    # Load the machine config file
+    machine = cfg_u.get('user').get('MACHINE')
+    machine_file = os.path.join(USHdir, "machine", f"{lowercase(MACHINE)}.yaml")
+
+    if not os.path.exists(machine_file):
+        raise FileNotFoundError(dedent(
+            f"""
+            The machine file {machine_file} does not exist.
+            Check that you have specified the correct machine
+            ({machine}) in your config file {user_config}"""
+        ))
+    machine_cfg = load_config_file(machine_file)
+
+    # Load the constants file
+    cfg_c = load_config_file(os.path.join(USHdir, "constants.yaml"))
+
+    # Update default config with the constants, the machine config, and
+    # then the user_config
+    update_dict(cfg_c, cfg_d)
+    update_dict(machine_cfg, cfg_d)
+    update_dict(cfg_u, cfg_d)
+
+    return cfg_d
+
+
+def setup(USHdir, user_config_fn="config.yaml"):
+    """Function that derives a secondary set of parameters needed to
+    configure a Rocoto-based SRW workflow. The derived parameters use a
+    set of required user-defined parameters defined by either
+    config_defaults.yaml, a user-provided configuration file
+    (config.yaml), or a YAML machine file.
+
+    A set of global variable definitions is saved to the experiment
+    directory as a bash configure file that is sourced by scripts at run
+    time.
+
+    Args:
+      USHdir          (str): The full path of the ush/ directory where
+                             this script is located
+      user_config_fn  (str): The name of a user-provided config YAML
+
     Returns:
       None
     """
 
     logger = getLogger(__name__)
-    global USHdir
-    USHdir = os.path.dirname(os.path.abspath(__file__))
-    cd_vrfy(USHdir)
-
-    # import all environment variables
-    import_vars()
+    cd_verify(USHdir)
 
     # print message
     log_info(
@@ -72,76 +143,18 @@ def setup():
         Starting function setup() in \"{os.path.basename(__file__)}\"...
         ========================================================================"""
     )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Step-1 of config
-    # ================
-    # Load the configuration file containing default values for the experiment.
-    #
-    # -----------------------------------------------------------------------
-    #
-    EXPT_DEFAULT_CONFIG_FN = "config_defaults.yaml"
-    cfg_d = load_config_file(os.path.join(USHdir, EXPT_DEFAULT_CONFIG_FN))
-    import_vars(dictionary=flatten_dict(cfg_d),
-        env_vars=["EXPT_CONFIG_FN",
-                  "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
-                  "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
 
+    # Create a dictionary of config options from defaults, machine, and
+    # user config files.
+    default_config_fp = os.path.join(USHdir, "config_defaults.yaml")
+    user_config_fp = os.path.join(USHdir, user_config_fn)
+    expt_config = load_config_for_setup(default_config_fp, user_config_fp)
 
-    # Load the user config file, then ensure all user-specified
-    # variables correspond to a default value. 
-    if not os.path.exists(EXPT_CONFIG_FN):
-        raise FileNotFoundError(f'User config file not found: EXPT_CONFIG_FN = {EXPT_CONFIG_FN}')
-
-    try:
-        cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
-    except:
-        errmsg = dedent(f'''\n
-                        Could not load YAML config file:  {EXPT_CONFIG_FN}
-                        Reference the above traceback for more information.
-                        ''')
-        raise Exception(errmsg)
-
-    cfg_u = flatten_dict(cfg_u)
-    for key in cfg_u:
-        if key not in flatten_dict(cfg_d):
-            raise Exception(dedent(f'''
-                            User-specified variable "{key}" in {EXPT_CONFIG_FN} is not valid.
-                            Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables.\n'''))
-
-    # Mandatory variables *must* be set in the user's config; the default value is invalid
-    mandatory = ['MACHINE']
-    for val in mandatory:
-        if val not in cfg_u:
-            raise Exception(f'Mandatory variable "{val}" not found in user config file {EXPT_CONFIG_FN}')
-
-    import_vars(dictionary=cfg_u, env_vars=["MACHINE",
-                   "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
-                   "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Step-2 of config
-    # ================
-    # Source machine specific config file to set default values
-    #
-    # -----------------------------------------------------------------------
-    #
-    global MACHINE, EXTRN_MDL_SYSBASEDIR_ICS, EXTRN_MDL_SYSBASEDIR_LBCS
-    MACHINE_FILE = os.path.join(USHdir, "machine", f"{lowercase(MACHINE)}.yaml")
-    if not os.path.exists(MACHINE_FILE):
-        raise FileNotFoundError(dedent(
-            f"""
-            The machine file {MACHINE_FILE} does not exist.
-            Check that you have specified the correct machine ({MACHINE}) in your config file {EXPT_CONFIG_FN}"""
-        ))
-    machine_cfg = load_config_file(MACHINE_FILE)
 
     # ics and lbcs
-    def get_location(xcs,fmt):
-       if ("data" in machine_cfg) and (xcs in machine_cfg["data"]):
-          v = machine_cfg["data"][xcs]
+    def get_location(xcs, fmt, expt_cfg):
+       if ("data" in expt_cfg) and (xcs in expt_cfg["data"]):
+          v = expt_cfg["data"][xcs]
           if not isinstance(v,dict):
              return v
           else:
@@ -149,40 +162,23 @@ def setup():
        else:
           return ""
 
-    EXTRN_MDL_SYSBASEDIR_ICS = get_location(EXTRN_MDL_NAME_ICS, FV3GFS_FILE_FMT_ICS)
-    EXTRN_MDL_SYSBASEDIR_LBCS = get_location(EXTRN_MDL_NAME_LBCS, FV3GFS_FILE_FMT_LBCS)
+    EXTRN_MDL_SYSBASEDIR_ICS = get_location(
+            expt_config.get('task_get_extrn_ics', {}).get('EXTRN_MDL_NAME_ICS'),
+            expt_config.get('task_get_extrn_ics', {}).get('FV3GFS_FILE_FMT_ICS'),
+            expt_cfg,
+            )
+    EXTRN_MDL_SYSBASEDIR_LBCS = get_location(
+            expt_config.get('task_get_extrn_lbcs', {}).get('EXTRN_MDL_NAME_LBCS'),
+            expt_config.get('task_get_extrn_lbcs', {}).get('FV3GFS_FILE_FMT_LBCS'),
+            expt_cfg,
+            )
 
     # remove the data key and provide machine specific default values for cfg_d
-    if "data" in machine_cfg:
-        machine_cfg.pop("data")
-    machine_cfg.update({
-       "EXTRN_MDL_SYSBASEDIR_ICS": EXTRN_MDL_SYSBASEDIR_ICS,
-       "EXTRN_MDL_SYSBASEDIR_LBCS": EXTRN_MDL_SYSBASEDIR_LBCS,
-    })
-    machine_cfg = flatten_dict(machine_cfg)
-    update_dict(machine_cfg, cfg_d)
+    if "data" in expt_config:
+        expt_config.pop("data")
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Step-3 of config
-    # ================
-    # Source user config. This overrides previous two configs
-    #
-    # -----------------------------------------------------------------------
-    #
-    update_dict(cfg_u, cfg_d)
-
-    # Now that all 3 config files have their contribution in cfg_d
-    # import its content to python globals()
-    import_vars(dictionary=flatten_dict(cfg_d))
-
-    # make machine name uppercase
-    MACHINE = uppercase(MACHINE)
-
-    # Load constants file and save its contents to a variable for later
-    cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
-    import_vars(dictionary=flatten_dict(cfg_c))
+    expt_config['task_get_extrn_ics']["EXTRN_MDL_SYSBASEDIR_ICS"] = EXTRN_MDL_SYSBASEDIR_ICS
+    expt_config['task_get_extrn_lbcs']["EXTRN_MDL_SYSBASEDIR_LBCS"] = EXTRN_MDL_SYSBASEDIR_LBCS
 
     #
     # -----------------------------------------------------------------------
@@ -192,9 +188,9 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global WORKFLOW_ID
-    WORKFLOW_ID = "id_" + str(int(datetime.datetime.now().timestamp()))
-    log_info(f"""WORKFLOW ID = {WORKFLOW_ID}""")
+    workflow_id = "id_" + str(int(datetime.datetime.now().timestamp()))
+    expt_config["workflow"]["WORKFLOW_ID"] = workflow_id
+    log_info(f"""WORKFLOW ID = {workflow_id}""")
 
     #
     # -----------------------------------------------------------------------
@@ -204,13 +200,17 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    # export env vars before calling another module
-    export_vars()
+    if expt_config.get('task_run_fcst', {}).get('PREDEF_GRID_NAME'):
+        grid_params = set_predef_grid_params(USHdir, expt_config['task_run_fcst'])
 
-    if PREDEF_GRID_NAME:
-        set_predef_grid_params()
-
-    import_vars()
+        # Users like to change these variables, so don't overwrite them
+        special_vars = ["DT_ATMOS", "LAYOUT_X", "LAYOUT_Y", "BLOCKSIZE"]
+        for param, value in grid_params.items():
+            if param in special_vars and
+                expt_config.get('task_run_fcst', {}).get(param) is not None:
+                continue
+            else:
+                expt_config['task_run_fcst'][param] = value
 
     #
     # -----------------------------------------------------------------------
@@ -219,11 +219,10 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global VERBOSE
-    if DEBUG and not VERBOSE:
+    if expt_config.get('workflow', {}).get('DEBUG'):
         log_info(
             """
-            Resetting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
+            Setting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
         )
         VERBOSE = True
 
@@ -238,13 +237,15 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global SHUM_MAG, SKEB_MAG, SPPT_MAG
-    if not DO_SHUM:
-        SHUM_MAG = -999.0
-    if not DO_SKEB:
-        SKEB_MAG = -999.0
-    if not DO_SPPT:
-        SPPT_MAG = -999.0
+    # Alias to save some space below. Also, make sure the section
+    # exists!
+    global_sect = expt_config['global']
+    if not global_sect.get('DO_SHUM'):
+        global_sect['SHUM_MAG'] = -999.0
+    if not global_sect.get('DO_SKEB'):
+        global_sect['SKEB_MAG'] = -999.0
+    if not global_sect.get('DO_SPPT'):
+        global_sect['SPPT_MAG'] = -999.0
     #
     # -----------------------------------------------------------------------
     #
@@ -254,10 +255,39 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global N_VAR_SPP
-    N_VAR_SPP = 0
-    if DO_SPP:
-        N_VAR_SPP = len(SPP_VAR_LIST)
+    if global_sect.get('DO_SPP'):
+        global_sect['N_VAR_SPP'] = len(global_sect['SPP_VAR_LIST'])
+    else:
+        global_sect['N_VAR_SPP'] = 0
+    #
+    # -----------------------------------------------------------------------
+    #
+    # If running with SPP, confirm that each SPP-related namelist value
+    # contains the same number of entries as N_VAR_SPP (set above to be equal
+    # to the number of entries in SPP_VAR_LIST).
+    #
+    # -----------------------------------------------------------------------
+    #
+    spp_vars = ['SPP_MAG_LIST',
+                'SPP_LSCALE',
+                'SPP_TSCALE',
+                'SPP_SIGTOP1',
+                'SPP_SIGTOP2',
+                'SPP_STDDEV_CUTOFF',
+                'ISEED_SPP',
+                ]
+
+    if global_sect.get('DO_SPP'):
+        for spp_var in spp_vars:
+            if len(global_sect[spp_var]) != global_sect['N_VAR_SPP']:
+                raise Exception(
+                    f'''
+                    All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
+                    variables must be of equal length to SPP_VAR_LIST:
+                      SPP_VAR_LIST (length {global_sect['N_VAR_SPP']})
+                      {spp_var} (length {len(global_sect[spp_var])})
+                    '''
+                )
     #
     # -----------------------------------------------------------------------
     #
@@ -273,50 +303,16 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global N_VAR_LNDP, LNDP_TYPE, LNDP_MODEL_TYPE, FHCYC_LSM_SPP_OR_NOT
-    N_VAR_LNDP = 0
-    LNDP_TYPE = 0
-    LNDP_MODEL_TYPE = 0
-    FHCYC_LSM_SPP_OR_NOT = 0
-    if DO_LSM_SPP:
-        N_VAR_LNDP = len(LSM_SPP_VAR_LIST)
-        LNDP_TYPE = 2
-        LNDP_MODEL_TYPE = 2
-        FHCYC_LSM_SPP_OR_NOT = 999
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If running with SPP, confirm that each SPP-related namelist value
-    # contains the same number of entries as N_VAR_SPP (set above to be equal
-    # to the number of entries in SPP_VAR_LIST).
-    #
-    # -----------------------------------------------------------------------
-    #
-    if DO_SPP:
-        if (
-            (len(SPP_MAG_LIST) != N_VAR_SPP)
-            or (len(SPP_LSCALE) != N_VAR_SPP)
-            or (len(SPP_TSCALE) != N_VAR_SPP)
-            or (len(SPP_SIGTOP1) != N_VAR_SPP)
-            or (len(SPP_SIGTOP2) != N_VAR_SPP)
-            or (len(SPP_STDDEV_CUTOFF) != N_VAR_SPP)
-            or (len(ISEED_SPP) != N_VAR_SPP)
-        ):
-            raise Exception(
-                f'''
-                All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
-                variables set in {EXPT_CONFIG_FN} must be equal in number of entries to what is
-                found in SPP_VAR_LIST:
-                  SPP_VAR_LIST (length {len(SPP_VAR_LIST)})
-                  SPP_MAG_LIST (length {len(SPP_MAG_LIST)})
-                  SPP_LSCALE (length {len(SPP_LSCALE)})
-                  SPP_TSCALE (length {len(SPP_TSCALE)})
-                  SPP_SIGTOP1 (length {len(SPP_SIGTOP1)})
-                  SPP_SIGTOP2 (length {len(SPP_SIGTOP2)})
-                  SPP_STDDEV_CUTOFF (length {len(SPP_STDDEV_CUTOFF)})
-                  ISEED_SPP (length {len(ISEED_SPP)})
-                '''
-            )
+    if global_sect.get('DO_LSM_SPP'):
+        global_sect['N_VAR_LNDP'] = len(global_sect['LSM_SPP_VAR_LIST'])
+        global_sect['LNDP_TYPE'] = 2
+        global_sect['LNDP_MODEL_TYPE'] = 2
+        global_sect['FHCYC_LSM_SPP_OR_NOT'] = 999
+    else
+        global_sect['N_VAR_LNDP'] = 0
+        global_sect['LNDP_TYPE'] = 0
+        global_sect['LNDP_MODEL_TYPE'] = 0
+        global_sect['FHCYC_LSM_SPP_OR_NOT'] = 0
     #
     # -----------------------------------------------------------------------
     #
@@ -326,26 +322,26 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    if DO_LSM_SPP:
-        if (
-            (len(LSM_SPP_MAG_LIST) != N_VAR_LNDP)
-            or (len(LSM_SPP_LSCALE) != N_VAR_LNDP)
-            or (len(LSM_SPP_TSCALE) != N_VAR_LNDP)
-        ):
-            raise Exception(
-                f'''
-                All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
-                set in {EXPT_CONFIG_FN} must be equal in number of entries to what is found in
-                SPP_VAR_LIST:
-                  LSM_SPP_VAR_LIST (length {len(LSM_SPP_VAR_LIST)})
-                  LSM_SPP_MAG_LIST (length {len(LSM_SPP_MAG_LIST)})
-                  LSM_SPP_LSCALE (length {len(LSM_SPP_LSCALE)})
-                  LSM_SPP_TSCALE (length {len(LSM_SPP_TSCALE)})
-                  '''
-            )
+    lsm_spp_vars = ['LSM_SPP_MAG_LIST',
+                    'LSM_SPP_LSCALE',
+                    'LSM_SPP_TSCALE',
+                    ]
+    if global_sect.get('DO_LSM_SPP'):
+        for lsm_spp_var in lsm_spp_vars:
+            if len(global_sect[lsm_spp_var]) != global_sect['N_VAR_LNDP']:
+                raise Exception(
+                    f'''
+                    All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
+                    variables must be of equal length to SPP_VAR_LIST:
+                    All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
+                    must be equal of equal length to LSM_SPP_VAR_LIST:
+                      LSM_SPP_VAR_LIST (length {global_sect['N_VAR_LNDP']})
+                      {lsm_spp_var} (length {len(global_sect[lsm_spp_var])}
+                      '''
+                )
     #
     # The current script should be located in the ush subdirectory of the
-    # workflow directory.  Thus, the workflow directory is the one above the
+    # workflow directory.  Thus, the SRW home directory is the one above the
     # directory of the current script.
     #
     HOMEdir = os.path.abspath(
@@ -355,13 +351,13 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    # Set the base directories in which codes obtained from external reposi-
-    # tories (using the manage_externals tool) are placed.  Obtain the rela-
-    # tive paths to these directories by reading them in from the manage_ex-
-    # ternals configuration file.  (Note that these are relative to the lo-
-    # cation of the configuration file.)  Then form the full paths to these
-    # directories.  Finally, make sure that each of these directories actu-
-    # ally exists.
+    # Set the base directories in which codes obtained from external
+    # repositories (using the manage_externals tool) are placed.  Obtain the
+    # rela- tive paths to these directories by reading them in from the
+    # manage_externals configuration file.  (Note that these are relative to the
+    # lo- cation of the configuration file.)  Then form the full paths to these
+    # directories.  Finally, make sure that each of these directories actually
+    # exists.
     #
     # -----------------------------------------------------------------------
     #
@@ -385,7 +381,7 @@ def setup():
                         Externals configuration file {mng_extrns_cfg_fn}
                         does not contain "{external_name}".''')
         raise Exception(errmsg) from None
-        
+
 
     UFS_WTHR_MDL_DIR = os.path.join(HOMEdir, UFS_WTHR_MDL_DIR)
     if not os.path.exists(UFS_WTHR_MDL_DIR):
