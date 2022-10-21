@@ -3,6 +3,7 @@
 import os
 import sys
 import datetime
+import traceback
 from textwrap import dedent
 from logging import getLogger
 
@@ -88,8 +89,7 @@ def setup():
                   "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
 
 
-    # Load the user config file, containing contains user-specified values 
-    # variables that override their default values. Ensure all user-specified
+    # Load the user config file, then ensure all user-specified
     # variables correspond to a default value. 
     if not os.path.exists(EXPT_CONFIG_FN):
         raise FileNotFoundError(f'User config file not found: EXPT_CONFIG_FN = {EXPT_CONFIG_FN}')
@@ -99,16 +99,16 @@ def setup():
     except:
         errmsg = dedent(f'''\n
                         Could not load YAML config file:  {EXPT_CONFIG_FN}
-                        The file may be formatted incorrectly; reference the Users Guide for more info 
+                        Reference the above traceback for more information.
                         ''')
-        raise Exception(errmsg) from None
+        raise Exception(errmsg)
 
     cfg_u = flatten_dict(cfg_u)
     for key in cfg_u:
         if key not in flatten_dict(cfg_d):
             raise Exception(dedent(f'''
                             User-specified variable "{key}" in {EXPT_CONFIG_FN} is not valid
-                            Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n'''))
+                            Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables.\n'''))
 
     # Mandatory variables *must* be set in the user's config; the default value is invalid
     mandatory = ['MACHINE']
@@ -429,9 +429,10 @@ def setup():
 
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
     mandatory = ['NCORES_PER_NODE', 'FIXgsm', 'FIXaer', 'FIXlut', 'TOPO_DIR', 'SFC_CLIMO_INPUT_DIR']
+    globalvars = globals()
     for val in mandatory:
         # globals() returns dictionary of global variables
-        if not globals()[val]:
+        if not globalvars[val]:
             raise Exception(dedent(f'''
                             Mandatory variable "{val}" not found in:
                             user config file {EXPT_CONFIG_FN}

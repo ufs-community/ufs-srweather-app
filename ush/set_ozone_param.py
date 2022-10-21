@@ -90,12 +90,8 @@ def set_ozone_param(ccpp_phys_suite_fp):
         fixgsm_ozone_fn = "global_o3prdlos.f77"
         ozone_param = "ozphys"
     else:
-        raise Exception(
-            f'''
-            Unknown or no ozone parameterization
-            specified in the CCPP physics suite file (ccpp_phys_suite_fp):
-              ccpp_phys_suite_fp = \"{ccpp_phys_suite_fp}\"'''
-        )
+        raise KeyError(f'Unknown or no ozone parameterization specified in the '
+                        'CCPP physics suite file "{ccpp_phys_suite_fp}"')
     #
     # -----------------------------------------------------------------------
     #
@@ -158,7 +154,7 @@ def set_ozone_param(ccpp_phys_suite_fp):
             """, verbose=VERBOSE)
         log_info(f"""
               CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING)}
-            """, verbose=VERBOSE, ddent=False)
+            """, verbose=VERBOSE, dedent_=False)
 
     else:
 

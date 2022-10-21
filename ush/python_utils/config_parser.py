@@ -44,11 +44,8 @@ from .run_command import run_command
 def load_yaml_config(config_file):
     """Safe load a yaml file"""
 
-    try:
-        with open(config_file, "r") as f:
-            cfg = yaml.safe_load(f)
-    except yaml.YAMLError as e:
-        raise Exception(f"Unable to load yaml file {config_file}")
+    with open(config_file, "r") as f:
+        cfg = yaml.safe_load(f)
 
     return cfg
 

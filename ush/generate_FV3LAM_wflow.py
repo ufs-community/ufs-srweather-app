@@ -917,9 +917,11 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
 
         set_FV3nml_sfc_climo_filenames()
 
-    # Call script to get NOMADS data
+    # Call function to get NOMADS data
     if NOMADS:
-        get_nomads_data(NOMADS_file_type,EXPTDIR,USHdir,DATE_FIRST_CYCL,CYCL_HRS,FCST_LEN_HRS,LBC_SPEC_INTVL_HRS)
+        raise Exception("Nomads script does not work!")
+
+        # get_nomads_data(NOMADS_file_type,EXPTDIR,USHdir,DATE_FIRST_CYCL,CYCL_HRS,FCST_LEN_HRS,LBC_SPEC_INTVL_HRS)
 
     #
     # -----------------------------------------------------------------------
@@ -959,10 +961,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         ========================================================================
         """
     )
-    #
     # -----------------------------------------------------------------------
     #
-    # If rocoto is required, print instructions on how to load and use it
+    # If rocoto is required, print instructions on how to use it
     #
     # -----------------------------------------------------------------------
     #
@@ -1007,9 +1008,8 @@ def get_nomads_data(NOMADS_file_type,EXPTDIR,USHdir,DATE_FIRST_CYCL,CYCL_HRS,FCS
     print(f"NOMADS_file_type= {NOMADS_file_type}")
     cd_vrfy(EXPTDIR)
     NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.sh")
-    # run_command(f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
-    #                 {date_to_str(DATE_FIRST_CYCL,format="%H")} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}""")
-    raise Exception("Nomads script does not work")
+    run_command(f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
+                    {date_to_str(DATE_FIRST_CYCL,format="%H")} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}""")
 
 def setup_logging(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
     """
@@ -1036,11 +1036,10 @@ if __name__ == "__main__":
     try:
         generate_FV3LAM_wflow(USHdir, logfile)
     except:
-        # If the call to the generate_FV3LAM_wflow function above was not successful, 
-        # print out an error message and exit with a nonzero return code.
         logging.exception(dedent(
             f"""
             *********************************************************************
+            FATAL ERROR:
             Experiment generation failed. See the error message(s) printed below.
             For more detailed information, check the log file from the workflow
             generation script: {logfile}
