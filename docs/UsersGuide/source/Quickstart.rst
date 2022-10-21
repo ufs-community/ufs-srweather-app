@@ -68,6 +68,22 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
    #. Download and stage data (both the fix files and the :term:`IC/LBC <IC/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a Level 2-4 system).
 
+   #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
+
+      .. code-block:: console
+
+         module use <path/to/modulefiles>
+         module load wflow_<platform>
+
+      After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
+
+      .. code-block:: console
+
+         Please do the following to activate conda:
+            > conda activate regional_workflow
+      
+      then the user should run ``conda activate regional_workflow`` to activate the regional workflow environment. 
+
    #. Configure the experiment parameters.
 
       .. code-block:: console
@@ -87,22 +103,6 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
          INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
          FAILURE
-
-   #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
-
-      .. code-block:: console
-
-         module use <path/to/modulefiles>
-         module load wflow_<platform>
-
-      After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
-
-      .. code-block:: console
-
-         Please do the following to activate conda:
-            > conda activate regional_workflow
-      
-      then the user should run ``conda activate regional_workflow`` to activate the regional workflow environment. 
 
    #. Generate the experiment workflow. 
 
