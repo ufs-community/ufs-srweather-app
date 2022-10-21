@@ -542,6 +542,7 @@ def setup():
     # If using a custom post configuration file, make sure that it exists.
     if USE_CUSTOM_POST_CONFIG_FILE:
         try:
+            #os.path.exists returns exception if passed an empty string or None, so use "try/except" as a 2-for-1 error catch
             if not os.path.exists(CUSTOM_POST_CONFIG_FP):
                 raise
         except:
@@ -556,6 +557,7 @@ def setup():
     # satellite products from the UPP, make sure the CRTM fix file directory exists.
     if USE_CRTM:
         try:
+            #os.path.exists returns exception if passed an empty string or None, so use "try/except" as a 2-for-1 error catch
             if not os.path.exists(CRTM_DIR):
                 raise
         except:
