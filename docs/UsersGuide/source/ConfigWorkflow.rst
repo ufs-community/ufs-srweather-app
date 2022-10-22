@@ -180,10 +180,20 @@ METplus Parameters
 Test Directories
 ----------------------
 
+These directories are used only by the ``run_WE2E_tests.sh`` script, so they are not used unless the user runs a Workflow End-to-End (WE2E) test.
+
+.. COMMENT: 
+   TEST_PREGEN_BASEDIR does something similar to DOMAIN_PREGEN_BASEDIR in setting OROG/GRID/SFC_CLIMO _DIR variables for NCO mode. The other variables TEST_* variables do similar things that the corresponding variable without TEST_* do, so this definitely looks redundant and removable.
+
 ``TEST_EXTRN_MDL_SOURCE_BASEDIR``: (Default: "")
+
 ``TEST_PREGEN_BASEDIR``: (Default: "")
+   Similar to ``DOMAIN_PREGEN_BASEDIR``, this variable sets the base directory containing pregenerated grid, orography, and surface climatology files for WE2E tests. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. 
+
 ``TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS``: (Default: "")
+
 ``TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: "")
+
 
 .. _workflow:
 
@@ -725,17 +735,17 @@ For each workflow task, certain parameter values must be passed to the job sched
 File and Directory Parameters
 --------------------------------
 
-``EXTRN_MDL_SYSBASEDIR_ICS``: (Default: '')
-   Base directory on the local machine containing external model files for generating :term:`ICs` on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined in ``EXTRN_MDL_NAME_ICS`` above).
-
-   .. note::
-      This variable must be defined as a null string in ``config_defaults.yaml`` so that if it is specified by the user in the experiment configuration file (``config.yaml``), it remains set to those values, and if not, it gets set to machine-dependent values.
-
 ``USE_USER_STAGED_EXTRN_FILES``: (Default: false)
    Flag that determines whether the workflow will look for the external model files needed for generating :term:`ICs` in user-specified directories (rather than fetching them from mass storage like NOAA :term:`HPSS`). Valid values: ``True`` | ``False``
 
 ``EXTRN_MDL_SOURCE_BASEDIR_ICS``: (Default: "")
    Directory containing external model files for generating ICs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to true, the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_ICS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the :term:`ICs` on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false.
+
+``EXTRN_MDL_SYSBASEDIR_ICS``: (Default: '')
+   Base directory on the local machine containing external model files for generating :term:`ICs` on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined in ``EXTRN_MDL_NAME_ICS`` below).
+
+   .. note::
+      This variable must be defined as a null string in ``config_defaults.yaml`` so that if it is specified by the user in the experiment configuration file (``config.yaml``), it remains set to those values, and if not, it gets set to machine-dependent values.
 
 ``EXTRN_MDL_FILES_ICS``: (Default: "")
    Array containing templates of the file names to search for in the ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` directory. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false. A single template should be used for each model file type that is used. Users may use any of the Python-style templates allowed in the ``ush/retrieve_data.py`` script. To see the full list of supported templates, run that script with the ``-h`` option. 
@@ -744,14 +754,14 @@ File and Directory Parameters
    
    .. code-block:: console
 
-      EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio \
-      gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio )
+      EXTRN_MDL_FILES_ICS=[ gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio ,
+      gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio ]
   
-  To set FV3GFS grib files:
+   To set FV3GFS grib files:
 
    .. code-block:: console
 
-      EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d} )
+      EXTRN_MDL_FILES_ICS=[ gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d} ]
 
 ``EXTRN_MDL_DATA_STORES``: (Default: "")
    A list of data stores where the scripts should look to find external model data. The list is in priority order. If disk information is provided via ``USE_USER_STAGED_EXTRN_FILES`` or a known location on the platform, the disk location will receive highest priority. Valid values: ``disk`` | ``hpss`` | ``aws`` | ``nomads``

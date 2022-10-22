@@ -91,11 +91,60 @@ Generate the Forecast Experiment
 =================================
 Generating the forecast experiment requires three steps:
 
-#. :ref:`Set experiment configuration parameters <ExptConfig>`
 #. :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
+#. :ref:`Set experiment configuration parameters <ExptConfig>`
 #. :ref:`Run a script to generate the experiment workflow <GenerateWorkflow>`
 
 The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to reflect their machine configuration if they are working on a Level 2-4 platform. Information in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>` can help with this. 
+
+.. _SetUpPythonEnv:
+
+Load the Python Environment for the Regional Workflow
+---------------------------------------------------------
+
+The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f90nml`` available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way:
+
+.. code-block:: console
+
+   module use <path/to/modulefiles>
+   module load wflow_<platform>
+
+The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
+
+.. code-block:: console
+
+   Please do the following to activate conda:
+       > conda activate regional_workflow
+
+then the user should run ``conda activate regional_workflow``. This will activate the ``regional_workflow`` conda environment. However, the command(s) will vary from system to system. Regardless, the user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
+
+.. code-block:: console
+
+   conda init
+   source ~/.bashrc
+   conda activate regional_workflow
+
+.. _LinuxMacActivateWFenv:
+
+Activating the Workflow Environment on Non-Level 1 Systems
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. ``wflow_macos`` and ``wflow_linux`` template files are provided with the release. After making appropriate modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow. 
+
+On generic Linux or MacOS systems, loading the designated ``wflow_<platform>`` file will output instructions similar to the following:
+
+.. code-block:: console
+
+   Please do the following to activate conda:
+       > source $VENV/bin/activate
+
+If that does not work, users can also try:  
+
+.. code-block:: console
+
+   source $HOME/venv/regional_workflow/bin/activate
+
+However, it may instead be necessary to make additional adjustments to the ``wflow_<platform>`` file. 
 
 .. _ExptConfig:
 
@@ -128,57 +177,39 @@ settings. There is usually no need for a user to modify the default configuratio
    +-----------------------------+-----------------------------------------------------------------------+
    | Platform                    | WORKFLOW_MANAGER, NCORES_PER_NODE, BUILD_MOD_FN, WFLOW_MOD_FN,        |
    |                             | BUILD_VER_FN, RUN_VER_FN, SCHED, DOMAIN_PREGEN_BASEDIR,               |
-   |                             | ENV_INIT_SCRIPTS_FPS, PRE_TASK_CMDS                                   |
-   |                             |                                                                       |
-   |   - Machine                 | PARTITION_DEFAULT, QUEUE_DEFAULT, PARTITION_HPSS, QUEUE_HPSS,         |
-   |                             | PARTITION_FCST, QUEUE_FCST                                            |
-   |                             |                                                                       |
-   |   - Workflow                | RUN_CMD_UTILS, RUN_CMD_FCST, RUN_CMD_POST, SLURM_NATIVE_CMD           |
-   |                             |                                                                       |
-   |   - METplus                 | MODEL, MET_INSTALL_DIR, METPLUS_PATH, MET_BIN_EXEC, CCPA_OBS_DIR,     |
+   |                             | ENV_INIT_SCRIPTS_FPS, PRE_TASK_CMDS, PARTITION_DEFAULT, QUEUE_DEFAULT,|
+   |                             | PARTITION_HPSS, QUEUE_HPSS, PARTITION_FCST, QUEUE_FCST,               |
+   |                             | RUN_CMD_UTILS, RUN_CMD_FCST, RUN_CMD_POST, SLURM_NATIVE_CMD,          |
+   |                             | MODEL, MET_INSTALL_DIR, METPLUS_PATH, MET_BIN_EXEC, CCPA_OBS_DIR,     |
    |                             | MRMS_OBS_DIR, NDAS_OBS_DIR                                            |
    +-----------------------------+-----------------------------------------------------------------------+
    | Workflow                    | WORKFLOW_ID, USE_CRON_TO_RELAUNCH, CRON_RELAUNCH_INTVL_MNTS,          |
-   |                             | EXPT_BASEDIR, EXPT_SUBDIR, EXEC_SUBDIR, DOT_OR_USCORE                 |
-   |                             |                                                                       |
-   |   - File names              | EXPT_CONFIG_FN, CONSTANTS_FN, RGNL_GRID_NML_FN,                       |
+   |                             | EXPT_BASEDIR, EXPT_SUBDIR, EXEC_SUBDIR, DOT_OR_USCORE,                |
+   |                             | EXPT_CONFIG_FN, CONSTANTS_FN, RGNL_GRID_NML_FN,                       |
    |                             | FV3_NML_BASE_SUITE_FN, FV3_NML_YAML_CONFIG_FN, FV3_NML_BASE_ENS_FN,   |
    |                             | FV3_EXEC_FN, DIAG_TABLE_TMPL_FN, FIELD_TABLE_TMPL_FN,                 |
    |                             | DATA_TABLE_TMPL_FN, MODEL_CONFIG_TMPL_FN, NEMS_CONFIG_TMPL_FN,        |
    |                             | FCST_MODEL, WFLOW_XML_FN, GLOBAL_VAR_DEFNS_FN,                        |
-   |                             | EXTRN_MDL_VAR_DEFNS_FN, WFLOW_LAUNCH_SCRIPT_FN, WFLOW_LAUNCH_LOG_FN   |
-   |                             |                                                                       |
-   |   - Forecast                | CCPP_PHYS_SUITE, GRID_GEN_METHOD, DATE_FIRST_CYCL, DATE_LAST_CYCL,    |
-   |                             | INCR_CYCL_FREQ, FCST_LEN_HRS                                          |
-   |                             |                                                                       |
-   |   - Verification            | GET_OBS, VX_TN, VX_ENSGRID_TN, VX_ENSGRID_PROB_REFC_TN,               |
-   |                             | MAXTRIES_VX_ENSGRID_PROB_REFC                                         |
-   |                             |                                                                       |
-   |   - Miscellaneous           | PREEXISTING_DIR_METHOD, VERBOSE, DEBUG, COMPILER                      |
+   |                             | EXTRN_MDL_VAR_DEFNS_FN, WFLOW_LAUNCH_SCRIPT_FN, WFLOW_LAUNCH_LOG_FN,  |
+   |                             | CCPP_PHYS_SUITE, GRID_GEN_METHOD, DATE_FIRST_CYCL, DATE_LAST_CYCL,    |
+   |                             | INCR_CYCL_FREQ, FCST_LEN_HRS, GET_OBS, VX_TN, VX_ENSGRID_TN,          |
+   |                             | VX_ENSGRID_PROB_REFC_TN, MAXTRIES_VX_ENSGRID_PROB_REFC,               |
+   |                             | PREEXISTING_DIR_METHOD, VERBOSE, DEBUG, COMPILER                      |
    +-----------------------------+-----------------------------------------------------------------------+
    | NCO                         | envir, NET, model_ver, RUN, OPSROOT                                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | Workflow Switches           |                                                                       |
-   |                             |                                                                       |
-   |   - Cycle-independent       | RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO,      |
-   |                             |                                                                       |
-   |   - Cycle dependent         | RUN_TASK_GET_EXTRN_ICS, RUN_TASK_GET_EXTRN_LBCS, RUN_TASK_MAKE_ICS,   |
-   |                             | RUN_TASK_MAKE_LBCS, RUN_TASK_RUN_FCST, RUN_TASK_RUN_POST              |
-   |                             |                                                                       |
-   |   - VX run tasks            | RUN_TASK_GET_OBS_CCPA, RUN_TASK_GET_OBS_MRMS, RUN_TASK_GET_OBS_NDAS,  |
+   | Workflow Switches           | RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO,      |
+   |                             | RUN_TASK_GET_EXTRN_ICS, RUN_TASK_GET_EXTRN_LBCS, RUN_TASK_MAKE_ICS,   |
+   |                             | RUN_TASK_MAKE_LBCS, RUN_TASK_RUN_FCST, RUN_TASK_RUN_POST,             |
+   |                             | RUN_TASK_GET_OBS_CCPA, RUN_TASK_GET_OBS_MRMS, RUN_TASK_GET_OBS_NDAS,  |
    |                             | RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID,     |
    |                             | RUN_TASK_VX_ENSPOINT                                                  |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_grid              |                                                                       |
-   |                             |                                                                       |
-   |   - Basic                   | MAKE_GRID_TN, NNODES_MAKE_GRID, PPN_MAKE_GRID, WTIME_MAKE_GRID,       |
-   |                             | MAXTRIES_MAKE_GRID, GRID_DIR                                          |
-   |                             |                                                                       |
-   |   - ESGgrid Settings        | ESGgrid_LON_CTR, ESGgrid_LAT_CTR, ESGgrid_DELX, ESGgrid_DELY,         |
-   |                             | ESGgrid_NX, ESGgrid_NY, ESGgrid_PAZI, ESGgrid_WIDE_HALO_WIDTH         |
-   |                             |                                                                       |
-   |   - GFDLgrid Settings       | GFDLgrid_LON_T6_CTR, GFDLgrid_LAT_T6_CTR, GFDLgrid_NUM_CELLS,         |
-   |                             | GFDLgrid_STRETCH_FAC, GFDLgrid_REFINE_RATIO,                          |
+   | task_make_grid              | MAKE_GRID_TN, NNODES_MAKE_GRID, PPN_MAKE_GRID, WTIME_MAKE_GRID,       |
+   |                             | MAXTRIES_MAKE_GRID, GRID_DIR, ESGgrid_LON_CTR, ESGgrid_LAT_CTR,       |
+   |                             | ESGgrid_DELX, ESGgrid_DELY, ESGgrid_NX, ESGgrid_NY, ESGgrid_PAZI,     |
+   |                             | ESGgrid_WIDE_HALO_WIDTH, GFDLgrid_LON_T6_CTR, GFDLgrid_LAT_T6_CTR,    |
+   |                             | GFDLgrid_NUM_CELLS, GFDLgrid_STRETCH_FAC, GFDLgrid_REFINE_RATIO,      |
    |                             | GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G, GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G, |
    |                             | GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G, GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G, |
    |                             | GFDLgrid_USE_NUM_CELLS_IN_FILENAMES                                   |
@@ -192,97 +223,61 @@ settings. There is usually no need for a user to modify the default configuratio
    |                             | KMP_AFFINITY_MAKE_SFC_CLIMO, OMP_NUM_THREADS_MAKE_SFC_CLIMO,          |
    |                             | OMP_STACKSIZE_MAKE_SFC_CLIMO, SFC_CLIMO_DIR                           |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_extrn_ics          |                                                                       |
-   |                             |                                                                       |
-   |   - Basic                   | GET_EXTRN_ICS_TN, NNODES_GET_EXTRN_ICS, PPN_GET_EXTRN_ICS,            |
+   | task_get_extrn_ics          | GET_EXTRN_ICS_TN, NNODES_GET_EXTRN_ICS, PPN_GET_EXTRN_ICS,            |
    |                             | WTIME_GET_EXTRN_ICS, MAXTRIES_GET_EXTRN_ICS, EXTRN_MDL_NAME_ICS,      |
-   |                             | EXTRN_MDL_ICS_OFFSET_HRS, FV3GFS_FILE_FMT_ICS                         |
-   |                             |                                                                       |
-   |   - File/Directory          | EXTRN_MDL_SYSBASEDIR_ICS, USE_USER_STAGED_EXTRN_FILES,                |
-   |     Parameter               | EXTRN_MDL_SOURCE_BASEDIR_ICS, EXTRN_MDL_FILES_ICS,                    |
-   |                             | EXTRN_MDL_FILES_ICS, EXTRN_MDL_FILES_ICS, EXTRN_MDL_DATA_STORES       |
-   |                             |                                                                       |
-   |   - NOMADS Parameters       | NOMADS, NOMADS_file_type                                              |
+   |                             | EXTRN_MDL_ICS_OFFSET_HRS, FV3GFS_FILE_FMT_ICS,                        |
+   |                             | EXTRN_MDL_SYSBASEDIR_ICS, USE_USER_STAGED_EXTRN_FILES,                |
+   |                             | EXTRN_MDL_SOURCE_BASEDIR_ICS, EXTRN_MDL_FILES_ICS,                    |
+   |                             | EXTRN_MDL_FILES_ICS, EXTRN_MDL_FILES_ICS, EXTRN_MDL_DATA_STORES,      |
+   |                             | NOMADS, NOMADS_file_type                                              |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_extrn_lbcs         |                                                                       |
-   |                             |                                                                       |
-   |   - Basic                   | GET_EXTRN_LBCS_TN, NNODES_GET_EXTRN_LBCS, PPN_GET_EXTRN_LBCS,         |
+   | task_get_extrn_lbcs         | GET_EXTRN_LBCS_TN, NNODES_GET_EXTRN_LBCS, PPN_GET_EXTRN_LBCS,         |
    |                             | WTIME_GET_EXTRN_LBCS, MAXTRIES_GET_EXTRN_LBCS, EXTRN_MDL_NAME_LBCS,   |
-   |                             | LBC_SPEC_INTVL_HRS, EXTRN_MDL_LBCS_OFFSET_HRS, FV3GFS_FILE_FMT_LBCS   |
-   |                             |                                                                       |
-   |   - File/Directory          | EXTRN_MDL_SYSBASEDIR_LBCS, USE_USER_STAGED_EXTRN_FILES,               |
-   |     Parameter               | EXTRN_MDL_SOURCE_BASEDIR_LBCS, EXTRN_MDL_FILES_LBCS,                  |
-   |                             | EXTRN_MDL_DATA_STORES                                                 |
-   |                             |                                                                       |
-   |   - NOMADS Parameters       | NOMADS, NOMADS_file_type                                              |
+   |                             | LBC_SPEC_INTVL_HRS, EXTRN_MDL_LBCS_OFFSET_HRS, FV3GFS_FILE_FMT_LBCS,  |
+   |                             | EXTRN_MDL_SYSBASEDIR_LBCS, USE_USER_STAGED_EXTRN_FILES,               |
+   |                             | EXTRN_MDL_SOURCE_BASEDIR_LBCS, EXTRN_MDL_FILES_LBCS,                  |
+   |                             | EXTRN_MDL_DATA_STORE, NOMADS, NOMADS_file_type                        |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_ics               |                                                                       |
-   |                             |                                                                       |
-   |   - Basic                   | MAKE_ICS_TN, NNODES_MAKE_ICS, PPN_MAKE_ICS, WTIME_MAKE_ICS,           |
+   | task_make_ics               | MAKE_ICS_TN, NNODES_MAKE_ICS, PPN_MAKE_ICS, WTIME_MAKE_ICS,           |
    |                             | MAXTRIES_MAKE_ICS, KMP_AFFINITY_MAKE_ICS, OMP_NUM_THREADS_MAKE_ICS,   |
-   |                             | OMP_STACKSIZE_MAKE_ICS                                                |
-   |                             |                                                                       |
-   |   - FVCOM Parameter         | USE_FVCOM, FVCOM_WCSTART, FVCOM_DIR, FVCOM_FILE                       |
+   |                             | OMP_STACKSIZE_MAKE_ICS, USE_FVCOM, FVCOM_WCSTART, FVCOM_DIR,          |
+   |                             | FVCOM_FILE                                                            |
    +-----------------------------+-----------------------------------------------------------------------+
    | task_make_lbcs              | MAKE_LBCS_TN, NNODES_MAKE_LBCS, PPN_MAKE_LBCS, WTIME_MAKE_LBCS,       |
    |                             | MAXTRIES_MAKE_LBCS, KMP_AFFINITY_MAKE_LBCS, OMP_NUM_THREADS_MAKE_LBCS,| 
    |                             | OMP_STACKSIZE_MAKE_LBCS                                               |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_fcst               |                                                                       |
-   |                             |                                                                       |
-   |   - Basic                   | RUN_FCST_TN, NNODES_RUN_FCST, PPN_RUN_FCST, WTIME_RUN_FCST,           |
+   | task_run_fcst               | RUN_FCST_TN, NNODES_RUN_FCST, PPN_RUN_FCST, WTIME_RUN_FCST,           |
    |                             | MAXTRIES_RUN_FCST, KMP_AFFINITY_RUN_FCST, OMP_NUM_THREADS_RUN_FCST,   |
-   |                             | OMP_STACKSIZE_RUN_FCST                                                |
-   |                             |                                                                       |
-   |   - Model Config            | DT_ATMOS, RESTART_INTERVAL, WRITE_DOPOST                              |
-   |                             |                                                                       |
-   |   - Computational           | LAYOUT_X, LAYOUT_Y, BLOCKSIZE                                         |
-   |                             |                                                                       |
-   |   - Write Component         | QUILTING, PRINT_ESMF, WRTCMP_write_groups,                            |
-   |                             | WRTCMP_write_tasks_per_group, WRTCMP_output_grid, WRTCMP_cen_lon,     |
-   |                             | WRTCMP_cen_lat, WRTCMP_lon_lwr_left, WRTCMP_lat_lwr_left,             |
-   |                             | WRTCMP_lon_upr_rght, WRTCMP_lat_upr_rght, WRTCMP_dlon, WRTCMP_dlat,   |
-   |                             | WRTCMP_stdlat1, WRTCMP_stdlat2, WRTCMP_nx, WRTCMP_ny, WRTCMP_dx,      | 
-   |                             | WRTCMP_dy                                                             |
-   |                             |                                                                       |
-   |   - Predefined Grid         | PREDEF_GRID_NAME                                                      |
-   |                             |                                                                       |
-   |   - Miscellaneous           | USE_MERRA_CLIMO, SFC_CLIMO_FIELDS                                     |
-   |                             |                                                                       |
-   |   - Fixed Files             | FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR,                |
-   |                             | SYMLINK_FIX_FILES, FNGLAC, FNMXIC, FNTSFC, FNSNOC, FNZORC, FNAISC,    |
-   |                             | FNSMCC, FNMSKH, FIXgsm_FILES_TO_COPY_TO_FIXam,                        |
+   |                             | OMP_STACKSIZE_RUN_FCST, DT_ATMOS, RESTART_INTERVAL, WRITE_DOPOST,     |
+   |                             | LAYOUT_X, LAYOUT_Y, BLOCKSIZE, QUILTING, PRINT_ESMF,                  |
+   |                             | WRTCMP_write_groups, WRTCMP_write_tasks_per_group,                    |
+   |                             | WRTCMP_cen_lon, WRTCMP_cen_lat, WRTCMP_lon_lwr_left,                  |
+   |                             | WRTCMP_lat_lwr_left, WRTCMP_lon_upr_rght, WRTCMP_lat_upr_rght,        |
+   |                             | WRTCMP_dlon, WRTCMP_dlat, WRTCMP_stdlat1, WRTCMP_stdlat2, WRTCMP_nx,  |
+   |                             | WRTCMP_ny, WRTCMP_dx, WRTCMP_dy, PREDEF_GRID_NAME, USE_MERRA_CLIMO,   |
+   |                             | SFC_CLIMO_FIELDS, FIXgsm, FIXaer, FIXlut, TOPO_DIR,                   |
+   |                             | SFC_CLIMO_INPUT_DIR, SYMLINK_FIX_FILES, FNGLAC, FNMXIC, FNTSFC,       |
+   |                             | FNSNOC, FNZORC, FNAISC, FNSMCC, FNMSKH, FIXgsm_FILES_TO_COPY_TO_FIXam,|
    |                             | FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING,                               |
    |                             | FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING,                           |
    |                             | CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING                                 |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_post               |                                                                       |
-   |                             |                                                                       |
-   |   - Basic                   | RUN_POST_TN, NNODES_RUN_POST, PPN_RUN_POST, WTIME_RUN_POST,           | 
+   | task_run_post               | RUN_POST_TN, NNODES_RUN_POST, PPN_RUN_POST, WTIME_RUN_POST,           | 
    |                             | MAXTRIES_RUN_POST, KMP_AFFINITY_RUN_POST, OMP_NUM_THREADS_RUN_POST,   |
-   |                             | OMP_STACKSIZE_RUN_POST                                                |
-   |                             |                                                                       |
-   |   - Subhourly Post          | SUB_HOURLY_POST, DT_SUB_HOURLY_POST_MNTS                              |
-   |                             |                                                                       |
-   |   - Custom Post             | USE_CUSTOM_POST_CONFIG_FILE, CUSTOM_POST_CONFIG_FP,                   |
+   |                             | OMP_STACKSIZE_RUN_POST, SUB_HOURLY_POST, DT_SUB_HOURLY_POST_MNTS,     |
+   |                             | USE_CUSTOM_POST_CONFIG_FILE, CUSTOM_POST_CONFIG_FP,                   |
    |                             | POST_OUTPUT_DOMAIN_NAME                                               |
    +-----------------------------+-----------------------------------------------------------------------+
-   | Global                      |                                                                       |
-   |                             |                                                                       |
-   |   - CRTM                    | USE_CRTM, CRTM_DIR                                                    |
-   |                             |                                                                       |
-   |   - Ensembles               | DO_ENSEMBLE, NUM_ENS_MEMBERS                                          |
-   |                             |                                                                       |
-   |   - Stochastic Physics      | NEW_LSCALE, DO_SHUM, ISEED_SHUM, SHUM_MAG, SHUM_LSCALE, SHUM_TSCALE,  |
+   | Global                      | USE_CRTM, CRTM_DIR, DO_ENSEMBLE, NUM_ENS_MEMBERS,                     |
+   |                             | NEW_LSCALE, DO_SHUM, ISEED_SHUM, SHUM_MAG, SHUM_LSCALE, SHUM_TSCALE,  |
    |                             | SHUM_INT, DO_SPPT, ISEED_SPPT, SPPT_MAG, SPPT_LOGIT, SPPT_LSCALE,     |
    |                             | SPPT_TSCALE, SPPT_INT, SPPT_SFCLIMIT, USE_ZMTNBLCK, DO_SKEB,          |
    |                             | ISEED_SKEB, SKEB_MAG, SKEB_LSCALE, SKEP_TSCALE, SKEB_INT, SKEBNORM,   |
    |                             | SKEB_VDOF, DO_SPP, ISEED_SPP, SPP_VAR_LIST, SPP_MAG_LIST, SPP_LSCALE, |
    |                             | SPP_TSCALE, SPP_SIGTOP1, SPP_SIGTOP2, SPP_STDDEV_CUTOFF, DO_LSM_SPP,  |
    |                             | LSM_SPP_TSCALE, LSM_SPP_LSCALE, ISEED_LSM_SPP, LSM_SPP_VAR_LIST,      |
-   |                             | LSM_SPP_MAG_LIST                                                      |
-   |                             |                                                                       |
-   |                             | HALO_BLEND                                                            |
+   |                             | LSM_SPP_MAG_LIST, HALO_BLEND                                          |
    +-----------------------------+-----------------------------------------------------------------------+
    | task_get_obs_ccpa           | GET_OBS_CCPA_TN, NNODES_GET_OBS_CCPA, PPN_GET_OBS_CCPA,               |
    |                             | WTIME_GET_OBS_CCPA, MAXTRIES_GET_OBS_CCPA                             |
@@ -457,7 +452,7 @@ To get started, make a copy of ``config.community.yaml``. From the ``ufs-srweath
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
-Next, edit the new ``config.yaml`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If you have pre-staged initialization data for the experiment, set ``USE_USER_STAGED_EXTRN_FILES: true``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER="gnu"`` appears in the ``config.yaml`` file. On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``config.yaml`` file:
+Next, users should edit the new ``config.yaml`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If users have pre-staged initialization data for the experiment, they can set ``USE_USER_STAGED_EXTRN_FILES: true``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER: "gnu"`` appears in the ``config.yaml`` file. On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
 
 .. code-block:: console
 
@@ -470,95 +465,69 @@ Next, edit the new ``config.yaml`` file to customize it for your machine. At a m
 
 Sample ``config.yaml`` settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
-.. hint::
-
-   To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
-
-Minimum parameter settings for running the out-of-the-box SRW App case on Level 1 machines:
-
-.. _SystemData:
-
-**Cheyenne:**
+On Level 1 systems, the following fields will need to be updated or added to the appropriate section of the ``config.yaml`` file in order to run the out-of-the-box SRW App case: 
 
 .. code-block:: console
 
-   MACHINE: "cheyenne"
-   ACCOUNT: "<my_account>"
-   EXPT_SUBDIR: "<my_expt_name>"
-   USE_USER_STAGED_EXTRN_FILES: true
-   EXTRN_MDL_SOURCE_BASEDIR_ICS: "/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+   user:
+      MACHINE: hera
+      ACCOUNT: an_account
+   workflow:
+      EXPT_SUBDIR: test_community
+   task_get_extrn_ics:
+      USE_USER_STAGED_EXTRN_FILES: true
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: "/path/to/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+   task_get_extrn_lbcs:
+      USE_USER_STAGED_EXTRN_FILES: true
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
 
 where: 
-   * ``<my_account>`` refers to a valid account name.
-   * ``<my_expt_name>`` is an experiment name of the user's choice.
-   * ``<model_type>`` refers to a subdirectory, such as "FV3GFS" or "HRRR", containing the experiment data. 
+   * ``MACHINE`` refers to a valid machine name (see :numref:`Section %s <user>` for options).
+   * ``ACCOUNT`` refers to a valid account name. Not all systems require a valid account name, but most do. 
+
+      .. hint::
+
+         To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
+
+   * ``EXPT_SUBDIR`` is changed to an experiment name of the user's choice.
+   * ``</path/to/>`` is the path to the SRW App data on the user's machine (see :numref:`Section %s <Data>`). 
+   * ``<model_type>`` refers to a subdirectory containing the experiment data from a particular model. Valid values on Level 1 systems correspond to the valid values for ``EXTRN_MDL_NAME_ICS`` and ``EXTRN_MDL_NAME_LBCS`` (see :numref:`Chapter %s <ConfigWorkflow>` for options). 
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
    * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). 
+   
+For example, to run the out-of-the-box experiment on Hera, add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` (unmodified variables are not shown in this example): 
 
+   .. code-block::
+      
+      user:
+         MACHINE: hera
+         ACCOUNT: nems
+      workflow:
+         EXPT_SUBDIR: run_basic_srw
+      task_get_extrn_ics:
+         USE_USER_STAGED_EXTRN_FILES: true
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518
+      task_get_extrn_lbcs:
+         USE_USER_STAGED_EXTRN_FILES: true
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518
 
-**Hera, Jet, Orion, Gaea:**
-
-The ``MACHINE``, ``ACCOUNT``, and ``EXPT_SUBDIR`` settings are the same as for Cheyenne, except that ``"cheyenne"`` should be switched to ``"hera"``, ``"jet"``, ``"orion"``, or ``"gaea"``, respectively. Set ``USE_USER_STAGED_EXTRN_FILES: true``, but replace the file paths to Cheyenne's data with the file paths for the correct machine. ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` use the same base file path. 
-
-On Hera: 
-
-.. code-block:: console
-
-   "/scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
-
-On Jet: 
-
-.. code-block:: console
-
-   "/mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
-
-On Orion: 
-
-.. code-block:: console
-
-   "/work/noaa/fv3-cam/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
-
-On Gaea: 
+To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
 
 .. code-block:: console
 
-   "/lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
+   ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
 
-On **WCOSS** systems, edit ``config.yaml`` with these WCOSS-specific parameters, and use a valid WCOSS project code for the account parameter:
-
-.. code-block:: console
-
-   MACHINE: "wcoss2"
-   ACCOUNT: "valid_wcoss_project_code"
-   EXPT_SUBDIR: "my_expt_name"
-   USE_USER_STAGED_EXTRN_FILES: true
-
-On WCOSS2:
+A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
 
 .. code-block:: console
 
-   EXTRN_MDL_SOURCE_BASEDIR_ICS: "/lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/ICS"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/YYYYMMDDHH/LBCS"
-
-On NOAA Cloud Systems:
-
-.. code-block:: console
-
-   MACHINE: "NOAACLOUD"
-   ACCOUNT: "none"
-   EXPT_SUBDIR: "<my_expt_name>"
-   USE_USER_STAGED_EXTRN_FILES: true
-   EXTRN_MDL_SOURCE_BASEDIR_ICS: "/contrib/EPIC/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
-   EXTRN_MDL_FILES_ICS: ( "gfs.t18z.pgrb2.0p25.f000" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/contrib/EPIC/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>/"
-   EXTRN_MDL_FILES_LBCS: ( "gfs.t18z.pgrb2.0p25.f006" "gfs.t18z.pgrb2.0p25.f012" )
+   INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
+   FAILURE
 
 .. note::
 
-   The values of the configuration variables should be consistent with those in the
-   ``valid_param_vals.yaml`` script. In addition, various sample configuration files can be found in the ``ush/tests/baseline_configs`` directory.
-
+   Valid values for configuration variables should be consistent with those in the
+   ``valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdiretories of ``tests/WE2E/test_configs``.
 
 To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>`.
 
@@ -751,55 +720,6 @@ Next, the verification tasks must be turned on according to the user's needs. Us
 
 These tasks are independent, so users may set some values to "TRUE" and others to "FALSE" depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`. More details on all of the parameters in this section are available in :numref:`Section %s <VXTasks>`. 
 
-.. _SetUpPythonEnv:
-
-Load the Python Environment for the Regional Workflow
----------------------------------------------------------
-
-The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f90nml`` available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way:
-
-.. code-block:: console
-
-   module use <path/to/modulefiles>
-   module load wflow_<platform>
-
-The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
-
-.. code-block:: console
-
-   Please do the following to activate conda:
-       > conda activate regional_workflow
-
-then the user should run ``conda activate regional_workflow``. This will activate the ``regional_workflow`` conda environment. However, the command(s) will vary from system to system. Regardless, the user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
-
-.. code-block:: console
-
-   conda init
-   source ~/.bashrc
-   conda activate regional_workflow
-
-.. _LinuxMacActivateWFenv:
-
-Activating the Workflow Environment on Non-Level 1 Systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. ``wflow_macos`` and ``wflow_linux`` template files are provided with the release. After making appropriate modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow. 
-
-On generic Linux or MacOS systems, loading the designated ``wflow_<platform>`` file will output instructions similar to the following:
-
-.. code-block:: console
-
-   Please do the following to activate conda:
-       > source $VENV/bin/activate
-
-If that does not work, users can also try:  
-
-.. code-block:: console
-
-   source $HOME/venv/regional_workflow/bin/activate
-
-However, it may instead be necessary to make additional adjustments to the ``wflow_<platform>`` file. 
-
 .. _GenerateWorkflow: 
 
 Generate the Regional Workflow
@@ -897,16 +817,16 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | **Workflow Task**     | **Task Description**                                       |
    +=======================+============================================================+
    | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
-   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA: true``  |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA: true``   |
    |                       | *and* user has access to NOAA :term:`HPSS` data.           |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
-   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS: true``  |
+   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS: true``   |
    |                       | *and* user has access to NOAA HPSS data.                   |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
    |                       | reflectivity and :term:`echo top` data from NOAA HPSS. Can |
-   |                       | only be run if ``RUN_TASK_GET_OBS_MRMS: true`` *and* user |
+   |                       | only be run if ``RUN_TASK_GET_OBS_MRMS: true`` *and* user  |
    |                       | has access to NOAA HPSS data.                              |
    +-----------------------+------------------------------------------------------------+
    | VX_GRIDSTAT           | Runs METplus grid-to-grid verification for 1-h accumulated |
@@ -926,64 +846,64 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID            | Runs METplus grid-to-grid ensemble verification for 1-h    |
    |                       | accumulated precipitation. Can only be run if              |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``. |
+   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``.   |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_REFC       | Runs METplus grid-to-grid ensemble verification for        |
    |                       | composite reflectivity. Can only be run if                 |
-   |                       | ``DO_ENSEMBLE: true`` and                                 |
-   |                       | ``RUN_TASK_VX_ENSGRID: true``.                            |
+   |                       | ``DO_ENSEMBLE: true`` and                                  |
+   |                       | ``RUN_TASK_VX_ENSGRID: true``.                             |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_RETOP      | Runs METplus grid-to-grid ensemble verification for        |
-   |                       | :term:`echo top`. Can only be run if ``DO_ENSEMBLE: true``|
-   |                       | and ``RUN_TASK_VX_ENSGRID: true``.                        |
+   |                       | :term:`echo top`. Can only be run if ``DO_ENSEMBLE: true`` |
+   |                       | and ``RUN_TASK_VX_ENSGRID: true``.                         |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_##h        | Runs METplus grid-to-grid ensemble verification for 3-h,   |
    |                       | 6-h, and 24-h (i.e., daily) accumulated precipitation.     |
    |                       | Valid values for ``##`` are ``03``, ``06``, and ``24``.    |
-   |                       | Can only be run if ``DO_ENSEMBLE: true`` and              |
-   |                       | ``RUN_TASK_VX_ENSGRID: true``.                            |
+   |                       | Can only be run if ``DO_ENSEMBLE: true`` and               |
+   |                       | ``RUN_TASK_VX_ENSGRID: true``.                             |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_MEAN       | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | 1-h accumulated precipitation. Can only be run if          |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``. |
+   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``.   |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB       | Runs METplus grid-to-grid verification for 1-h accumulated |
    |                       | precipitation probabilistic output. Can only be run if     |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``. |
+   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``.   |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_MEAN_##h   | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation. |
    |                       | Valid values for ``##`` are ``03``, ``06``, and ``24``.    |
-   |                       | Can only be run if ``DO_ENSEMBLE: true`` and              |
-   |                       | ``RUN_TASK_VX_ENSGRID: true``.                            |
+   |                       | Can only be run if ``DO_ENSEMBLE: true`` and               |
+   |                       | ``RUN_TASK_VX_ENSGRID: true``.                             |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB_##h   | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
    |                       | 24h (i.e., daily) accumulated precipitation probabilistic  |
    |                       | output. Valid values for ``##`` are ``03``, ``06``, and    |
-   |                       | ``24``. Can only be run if ``DO_ENSEMBLE: true`` and      |
-   |                       | ``RUN_TASK_VX_ENSGRID: true``.                            |
+   |                       | ``24``. Can only be run if ``DO_ENSEMBLE: true`` and       |
+   |                       | ``RUN_TASK_VX_ENSGRID: true``.                             |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB_REFC  | Runs METplus grid-to-grid verification for ensemble        |
    |                       | probabilities for composite reflectivity. Can only be run  |
-   |                       | if ``DO_ENSEMBLE: true`` and                              |
-   |                       | ``RUN_TASK_VX_ENSGRID: true``.                            |
+   |                       | if ``DO_ENSEMBLE: true`` and                               |
+   |                       | ``RUN_TASK_VX_ENSGRID: true``.                             |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB_RETOP | Runs METplus grid-to-grid verification for ensemble        |
    |                       | probabilities for :term:`echo top`. Can only be run if     |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``. | 
+   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``.   | 
    +-----------------------+------------------------------------------------------------+
    | VX_ENSPOINT           | Runs METplus grid-to-point ensemble verification for       |
    |                       | surface and upper-air variables. Can only be run if        |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSPOINT: true``.|
+   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSPOINT: true``.  |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSPOINT_MEAN      | Runs METplus grid-to-point verification for ensemble mean  |
    |                       | surface and upper-air variables. Can only be run if        |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSPOINT: true``.|
+   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSPOINT: true``.  |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSPOINT_PROB      | Runs METplus grid-to-point verification for ensemble       |
    |                       | probabilities for surface and upper-air variables. Can     |
-   |                       | only be run if ``DO_ENSEMBLE: true`` and                  |
-   |                       | ``RUN_TASK_VX_ENSPOINT: true``.                           |
+   |                       | only be run if ``DO_ENSEMBLE: true`` and                   |
+   |                       | ``RUN_TASK_VX_ENSPOINT: true``.                            |
    +-----------------------+------------------------------------------------------------+
 
 
