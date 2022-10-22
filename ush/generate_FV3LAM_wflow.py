@@ -2,7 +2,6 @@
 
 import os
 import sys
-import platform
 import subprocess
 import unittest
 import logging
@@ -37,30 +36,7 @@ from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
 from fill_jinja_template import fill_jinja_template
 from set_namelist import set_namelist
-
-
-def python_error_handler():
-    """Error handler for missing packages"""
-
-    print_err_msg_exit(
-        """
-        Errors found: check your python environment
-
-        Instructions for setting up python environments can be found on the web:
-        https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
-        """,
-        stack_trace=False,
-    )
-
-
-# Check for non-standard python packages
-try:
-    import jinja2
-    import yaml
-    import f90nml
-except ImportError as error:
-    print_info_msg(error.__class__.__name__ + ": " + str(error))
-    python_error_handler()
+from check_python_version import check_python_version
 
 
 def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') -> None:
@@ -77,23 +53,16 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     # Set up logging to write to screen and logfile
     setup_logging(logfile)
 
+    # Check python version and presence of some non-standard packages
+    check_python_version()
+
+    # Note start of workflow generation
     log_info(
             """
         ========================================================================
         Starting experiment generation...
         ========================================================================"""
     )
-
-    # check python version
-    major, minor, patch = platform.python_version_tuple()
-    if int(major) < 3 or int(minor) < 6:
-        logging.error(
-            f"""
-
-            Error: python version must be 3.6 or higher
-            python version: {major}.{minor}"""
-        )
-        raise
 
     # define utilities 
     define_macos_utilities()
