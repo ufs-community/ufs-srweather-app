@@ -902,6 +902,21 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     # -----------------------------------------------------------------------
     #
     cp_vrfy(os.path.join(USHdir, EXPT_CONFIG_FN), EXPTDIR)
+
+    # Note workflow generation completion
+    log_info(
+        f"""
+        ========================================================================
+        ========================================================================
+
+        Experiment generation completed.  The experiment directory is:
+
+          EXPTDIR=\"{EXPTDIR}\"
+
+        ========================================================================
+        ========================================================================
+        """
+    )
     #
     # -----------------------------------------------------------------------
     #
@@ -916,27 +931,6 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         wflow_db_fn = f"{os.path.splitext(WFLOW_XML_FN)[0]}.db"
         rocotorun_cmd = f"rocotorun -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
         rocotostat_cmd = f"rocotostat -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
-
-    log_info(
-        f"""
-        ========================================================================
-        ========================================================================
-
-        Experiment generation completed.  The experiment directory is:
-
-          EXPTDIR=\"{EXPTDIR}\"
-
-        ========================================================================
-        ========================================================================
-        """
-    )
-    # -----------------------------------------------------------------------
-    #
-    # If rocoto is required, print instructions on how to use it
-    #
-    # -----------------------------------------------------------------------
-    #
-    if WORKFLOW_MANAGER == "rocoto":
 
         log_info(
             f"""
