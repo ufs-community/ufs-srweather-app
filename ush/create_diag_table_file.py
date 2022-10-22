@@ -133,9 +133,7 @@ class Testing(unittest.TestCase):
         USHdir = os.path.dirname(os.path.abspath(__file__))
         PARMdir = os.path.join(USHdir, "..", "parm")
         DIAG_TABLE_FN = "diag_table"
-        DIAG_TABLE_TMPL_FP = os.path.join(
-            PARMdir, f"{DIAG_TABLE_FN}.FV3_GFS_v15p2"
-        )
+        DIAG_TABLE_TMPL_FP = os.path.join(PARMdir, f"{DIAG_TABLE_FN}.FV3_GFS_v15p2")
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
         set_env_var("USHdir", USHdir)

@@ -17,8 +17,12 @@ from python_utils import (
 )
 
 
-def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn, 
-             CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING, FIXgsm_FILES_TO_COPY_TO_FIXam):
+def set_thompson_mp_fix_files(
+    ccpp_phys_suite_fp,
+    thompson_mp_climo_fn,
+    CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
+    FIXgsm_FILES_TO_COPY_TO_FIXam,
+):
     """Function that first checks whether the Thompson
     microphysics parameterization is being called by the selected physics
     suite.  If not, it sets the output variable whose name is specified by
@@ -41,7 +45,7 @@ def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn,
     print_input_args(locals())
 
     # import some environment variables
-    IMPORTS=["EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS", "CCPP_PHYS_SUITE"]
+    IMPORTS = ["EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS", "CCPP_PHYS_SUITE"]
     import_vars(env_vars=IMPORTS)
 
     #
@@ -129,7 +133,7 @@ class Testing(unittest.TestCase):
                 f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
                 "Thompson_MP_MONTHLY_CLIMO.nc",
                 CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
-                FIXgsm_FILES_TO_COPY_TO_FIXam,       
+                FIXgsm_FILES_TO_COPY_TO_FIXam,
             ),
         )
 
@@ -195,4 +199,3 @@ class Testing(unittest.TestCase):
             "HGT.Beljaars_filtered.lat-lon.30s_res.nc",
             "ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77",
         ]
-

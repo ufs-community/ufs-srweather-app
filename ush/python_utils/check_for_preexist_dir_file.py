@@ -7,6 +7,7 @@ from .check_var_valid_value import check_var_valid_value
 from .filesys_cmds_vrfy import rm_vrfy, mv_vrfy
 from .print_msg import log_info
 
+
 def check_for_preexist_dir_file(path, method):
     """Check for a preexisting directory or file and, if present, deal with it
     according to the specified method
@@ -21,10 +22,12 @@ def check_for_preexist_dir_file(path, method):
     try:
         check_var_valid_value(method, ["delete", "rename", "quit"])
     except ValueError:
-        errmsg = dedent(f'''
-                        Invalid method for dealing with pre-existing directory specified
-                        method = {method}
-                        ''')
+        errmsg = dedent(
+            f"""
+            Invalid method for dealing with pre-existing directory specified
+            method = {method}
+            """
+        )
         raise ValueError(errmsg) from None
 
     if os.path.exists(path):
@@ -43,8 +46,10 @@ def check_for_preexist_dir_file(path, method):
             )
             mv_vrfy(path, new_path)
         else:
-            raise FileExistsError(dedent(
-                f"""
+            raise FileExistsError(
+                dedent(
+                    f"""
                 Specified directory or file already exists
                     {path}"""
-            ))
+                )
+            )

@@ -185,7 +185,9 @@ class Testing(unittest.TestCase):
                 ),
             )
 
-        cd_vrfy(f'{EXPTDIR}{os.sep}{date_to_str(self.cdate,format="%Y%m%d%H")}{os.sep}mem2')
+        cd_vrfy(
+            f'{EXPTDIR}{os.sep}{date_to_str(self.cdate,format="%Y%m%d%H")}{os.sep}mem2'
+        )
 
         set_env_var("USHdir", USHdir)
         set_env_var("ENSMEM_INDX", 2)

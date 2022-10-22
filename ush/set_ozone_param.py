@@ -18,7 +18,12 @@ from python_utils import (
 )
 
 
-def set_ozone_param(ccpp_phys_suite_fp, CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING, FIXgsm_FILES_TO_COPY_TO_FIXam, VERBOSE):
+def set_ozone_param(
+    ccpp_phys_suite_fp,
+    CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
+    FIXgsm_FILES_TO_COPY_TO_FIXam,
+    VERBOSE,
+):
     """Function that does the following:
     (1) Determines the ozone parameterization being used by checking in the
         CCPP physics suite XML.
@@ -90,8 +95,10 @@ def set_ozone_param(ccpp_phys_suite_fp, CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING, F
         fixgsm_ozone_fn = "global_o3prdlos.f77"
         ozone_param = "ozphys"
     else:
-        raise KeyError(f'Unknown or no ozone parameterization specified in the '
-                        'CCPP physics suite file "{ccpp_phys_suite_fp}"')
+        raise KeyError(
+            f"Unknown or no ozone parameterization specified in the "
+            'CCPP physics suite file "{ccpp_phys_suite_fp}"'
+        )
     #
     # -----------------------------------------------------------------------
     #
@@ -151,10 +158,16 @@ def set_ozone_param(ccpp_phys_suite_fp, CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING, F
             CCPP suite definition file), the array specifying the mapping between
             the symlinks that need to be created in the cycle directories and the
             files in the FIXam directory is:
-            """, verbose=VERBOSE)
-        log_info(f"""
+            """,
+            verbose=VERBOSE,
+        )
+        log_info(
+            f"""
               CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING)}
-            """, verbose=VERBOSE, dedent_=False)
+            """,
+            verbose=VERBOSE,
+            dedent_=False,
+        )
 
     else:
 
@@ -178,7 +191,7 @@ class Testing(unittest.TestCase):
                 f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
                 CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
                 FIXgsm_FILES_TO_COPY_TO_FIXam,
-                VERBOSE=True
+                VERBOSE=True,
             ),
         )
 

@@ -64,22 +64,22 @@ def get_crontab_contents(called_from_cron):
             __crontab_cmd__ = "/usr/bin/crontab"
 
     print_info_msg(
-        f'''
+        f"""
         Getting crontab content with command:
         =========================================================
           {__crontab_cmd__} -l
-        =========================================================''',
+        =========================================================""",
         verbose=DEBUG,
     )
 
     (_, __crontab_contents__, _) = run_command(f"""{__crontab_cmd__} -l""")
 
     print_info_msg(
-        f'''
+        f"""
         Crontab contents:
         =========================================================
           {__crontab_contents__}
-        =========================================================''',
+        =========================================================""",
         verbose=DEBUG,
     )
 
@@ -173,11 +173,11 @@ def delete_crontab_line(called_from_cron):
     # Then record the results back into the user's cron table.
     #
     print_info_msg(
-        f'''
+        f"""
         Crontab contents before delete:
         =========================================================
           {crontab_contents}
-        =========================================================''',
+        =========================================================""",
         verbose=True,
     )
 
@@ -189,11 +189,11 @@ def delete_crontab_line(called_from_cron):
     run_command(f"""echo '{crontab_contents}' | {crontab_cmd}""")
 
     print_info_msg(
-        f'''
+        f"""
         Crontab contents after delete:
         =========================================================
           {crontab_contents}
-        =========================================================''',
+        =========================================================""",
         verbose=True,
     )
 

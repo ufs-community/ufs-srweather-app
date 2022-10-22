@@ -39,7 +39,7 @@ from set_namelist import set_namelist
 from check_python_version import check_python_version
 
 
-def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') -> None:
+def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") -> None:
     """Function to setup a forecast experiment and create a workflow
     (according to the parameters specified in the config file)
 
@@ -58,16 +58,16 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
 
     # Note start of workflow generation
     log_info(
-            """
+        """
         ========================================================================
         Starting experiment generation...
         ========================================================================"""
     )
 
-    # define utilities 
+    # define utilities
     define_macos_utilities()
 
-    # The setup function reads the user configuration file and fills in 
+    # The setup function reads the user configuration file and fills in
     # non-user-specified values from config_defaults.yaml
     setup()
 
@@ -396,13 +396,13 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         settings_str = cfg_to_yaml_str(settings)
 
         log_info(
-                f"""
-                The variable \"settings\" specifying values of the rococo XML variables
-                has been set as follows:
-                #-----------------------------------------------------------------------
-                settings =\n\n""",
-                verbose=VERBOSE,
-            )
+            f"""
+            The variable \"settings\" specifying values of the rococo XML variables
+            has been set as follows:
+            #-----------------------------------------------------------------------
+            settings =\n\n""",
+            verbose=VERBOSE,
+        )
         log_info(settings_str, verbose=VERBOSE)
 
         #
@@ -817,7 +817,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     settings_str = cfg_to_yaml_str(settings)
 
     log_info(
-            f"""
+        f"""
             The variable \"settings\" specifying values of the weather model's
             namelist variables has been set as follows:\n""",
         verbose=VERBOSE,
@@ -890,7 +890,15 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     if NOMADS:
         raise Exception("Nomads script does not work!")
 
-        # get_nomads_data(NOMADS_file_type,EXPTDIR,USHdir,DATE_FIRST_CYCL,CYCL_HRS,FCST_LEN_HRS,LBC_SPEC_INTVL_HRS)
+        # get_nomads_data(
+        #     NOMADS_file_type,
+        #     EXPTDIR,
+        #     USHdir,
+        #     DATE_FIRST_CYCL,
+        #     CYCL_HRS,
+        #     FCST_LEN_HRS,
+        #     LBC_SPEC_INTVL_HRS,
+        # )
 
     #
     # -----------------------------------------------------------------------
@@ -966,41 +974,61 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     # If we got to this point everything was successful: move the log file to the experiment directory.
     mv_vrfy(logfile, EXPTDIR)
 
-def get_nomads_data(NOMADS_file_type,EXPTDIR,USHdir,DATE_FIRST_CYCL,CYCL_HRS,FCST_LEN_HRS,LBC_SPEC_INTVL_HRS):
+
+def get_nomads_data(
+    NOMADS_file_type,
+    EXPTDIR,
+    USHdir,
+    DATE_FIRST_CYCL,
+    CYCL_HRS,
+    FCST_LEN_HRS,
+    LBC_SPEC_INTVL_HRS,
+):
     print("Getting NOMADS online data")
     print(f"NOMADS_file_type= {NOMADS_file_type}")
     cd_vrfy(EXPTDIR)
     NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.sh")
-    run_command(f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
-                    {date_to_str(DATE_FIRST_CYCL,format="%H")} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}""")
+    run_command(
+        f"""{NOMADS_script} \
+            {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
+            {date_to_str(DATE_FIRST_CYCL,format="%H")} \
+            {NOMADS_file_type} \
+            {FCST_LEN_HRS} \
+            {LBC_SPEC_INTVL_HRS}"""
+    )
 
-def setup_logging(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
+
+def setup_logging(logfile: str = "log.generate_FV3LAM_wflow") -> None:
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
     messages with detailed timing and routine info in the specified text file.
     """
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(name)-22s %(levelname)-8s %(message)s',
-                        filename=logfile,
-                        filemode='w')
-    logging.debug(f'Finished setting up debug file logging in {logfile}')
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(name)-22s %(levelname)-8s %(message)s",
+        filename=logfile,
+        filemode="w",
+    )
+    logging.debug(f"Finished setting up debug file logging in {logfile}")
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
     logging.getLogger().addHandler(console)
-    logging.debug('Logging set up successfully')
+    logging.debug("Logging set up successfully")
+
 
 if __name__ == "__main__":
 
     USHdir = os.path.dirname(os.path.abspath(__file__))
-    logfile=f'{USHdir}/log.generate_FV3LAM_wflow'
+    logfile = f"{USHdir}/log.generate_FV3LAM_wflow"
 
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
         generate_FV3LAM_wflow(USHdir, logfile)
     except:
-        logging.exception(dedent(
-            f"""
+        logging.exception(
+            dedent(
+                f"""
             *********************************************************************
             FATAL ERROR:
             Experiment generation failed. See the error message(s) printed below.
@@ -1008,14 +1036,16 @@ if __name__ == "__main__":
             generation script: {logfile}
             *********************************************************************\n
             """
-        ))
+            )
+        )
+
 
 class Testing(unittest.TestCase):
     def test_generate_FV3LAM_wflow(self):
 
         # run workflows in separate process to avoid conflict between community and nco settings
-        def run_workflow(USHdir,logfile):
-            p = Process(target=generate_FV3LAM_wflow,args=(USHdir,logfile))
+        def run_workflow(USHdir, logfile):
+            p = Process(target=generate_FV3LAM_wflow, args=(USHdir, logfile))
             p.start()
             p.join()
             exit_code = p.exitcode
@@ -1023,18 +1053,22 @@ class Testing(unittest.TestCase):
                 sys.exit(exit_code)
 
         USHdir = os.path.dirname(os.path.abspath(__file__))
-        logfile='log.generate_FV3LAM_wflow'
+        logfile = "log.generate_FV3LAM_wflow"
         SED = get_env_var("SED")
 
         # community test case
         cp_vrfy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
-        run_command(f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml""")
+        run_command(
+            f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml"""
+        )
         run_workflow(USHdir, logfile)
 
         # nco test case
         set_env_var("OPSROOT", f"{USHdir}/../../nco_dirs")
         cp_vrfy(f"{USHdir}/config.nco.yaml", f"{USHdir}/config.yaml")
-        run_command(f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml""")
+        run_command(
+            f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml"""
+        )
         run_workflow(USHdir, logfile)
 
     def setUp(self):

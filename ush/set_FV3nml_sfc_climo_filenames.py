@@ -27,6 +27,7 @@ from python_utils import (
 
 from set_namelist import set_namelist
 
+
 def set_FV3nml_sfc_climo_filenames():
     """
     This function sets the values of the variables in
@@ -47,7 +48,7 @@ def set_FV3nml_sfc_climo_filenames():
     import_vars()
 
     # fixed file mapping variables
-    fixed_cfg = load_config_file(os.path.join(PARMdir,"fixed_files_mapping.yaml"))
+    fixed_cfg = load_config_file(os.path.join(PARMdir, "fixed_files_mapping.yaml"))
     IMPORTS = ["SFC_CLIMO_FIELDS", "FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING"]
     import_vars(dictionary=flatten_dict(fixed_cfg), env_vars=IMPORTS)
 
@@ -171,4 +172,3 @@ class Testing(unittest.TestCase):
         set_env_var("CRES", "C3357")
         set_env_var("RUN_ENVIR", "nco")
         set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml"))
-
