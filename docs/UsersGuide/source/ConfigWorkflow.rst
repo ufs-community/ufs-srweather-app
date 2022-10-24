@@ -488,8 +488,6 @@ Verification Tasks
 ``RUN_TASK_VX_ENSGRID``: (Default: false)
    Flag that determines whether to run the ensemble-stat verification for gridded data task. The :ref:`MET Ensemble-Stat tool <ensemble-stat>` provides verification statistics for ensemble forecasts and can be used in conjunction with the :ref:`MET Grid-Stat tool <grid-stat>`. See :numref:`Section %s <VX-ensgrid>` for additional parameters related to this task. Valid values: ``True`` | ``False``
 
-   https://met.readthedocs.io/en/latest/Users_Guide/ensemble-stat.html
-
 ``RUN_TASK_VX_ENSPOINT``: (Default: false)
    Flag that determines whether to run the ensemble point verification task. If this flag is set, both ensemble-stat point verification and point verification of ensemble-stat output is computed. The :ref:`MET Ensemble-Stat tool <ensemble-stat>` provides verification statistics for ensemble forecasts and can be used in conjunction with the :ref:`MET Point-Stat tool <point-stat>`. See :numref:`Section %s <VX-enspoint>` for additional parameters related to this task. Valid values: ``True`` | ``False``
 
