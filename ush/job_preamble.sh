@@ -41,7 +41,7 @@ fi
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
     if [ ! -z $(command -v setpdy.sh) ]; then
-        setpdy.sh
+        COMROOT=$COMROOT setpdy.sh
         . ./PDY
     fi
 fi
