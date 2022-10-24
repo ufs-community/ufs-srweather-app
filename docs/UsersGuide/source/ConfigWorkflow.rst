@@ -89,9 +89,6 @@ If non-default parameters are selected for the variables in this section, they s
 ``PRE_TASK_CMDS``: (Default: "")
    Pre-task commands such as ``ulimit`` needed by tasks. For example: ``'{ ulimit -s unlimited; ulimit -a; }'``
 
-.. COMMENT: Define! 
-
-
 Machine-Dependent Parameters
 -------------------------------
 These parameters vary depending on machine. On `Level 1 and 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, the appropriate values for each machine can be viewed in the ``ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.yaml`` file so that they override the ``config_defaults.yaml`` and machine default values. 
@@ -180,19 +177,19 @@ METplus Parameters
 Test Directories
 ----------------------
 
-These directories are used only by the ``run_WE2E_tests.sh`` script, so they are not used unless the user runs a Workflow End-to-End (WE2E) test.
-
-.. COMMENT: 
-   TEST_PREGEN_BASEDIR does something similar to DOMAIN_PREGEN_BASEDIR in setting OROG/GRID/SFC_CLIMO _DIR variables for NCO mode. The other variables TEST_* variables do similar things that the corresponding variable without TEST_* do, so this definitely looks redundant and removable.
+These directories are used only by the ``run_WE2E_tests.sh`` script, so they are not used unless the user runs a Workflow End-to-End (WE2E) test. Their function corresponds to the same variables without the ``TEST_`` prefix. Users typically should not modify these variables. For any alterations, the logic in the ``run_WE2E_tests.sh`` script would need to be adjusted accordingly.
 
 ``TEST_EXTRN_MDL_SOURCE_BASEDIR``: (Default: "")
+   This parameter allows testing of user-staged files in a known location on a given platform. This path contains a limited dataset and likely will not be useful for most user experiments. 
 
 ``TEST_PREGEN_BASEDIR``: (Default: "")
    Similar to ``DOMAIN_PREGEN_BASEDIR``, this variable sets the base directory containing pregenerated grid, orography, and surface climatology files for WE2E tests. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. 
 
 ``TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS``: (Default: "")
+   This parameter is used to test the mechanism that allows users to point to a data stream on disk. It sets up a sandbox location that mimics the stream in a more controlled way and tests the ability to access :term:`ICS`. 
 
 ``TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: "")
+   This parameter is used to test the mechanism that allows users to point to a data stream on disk. It sets up a sandbox location that mimics the stream in a more controlled way and tests the ability to access :term:`LBCS`.
 
 
 .. _workflow:
@@ -241,7 +238,6 @@ Pre-Processing File Separator Parameters
 ``DOT_OR_USCORE``: (Default: "_")
    This variable sets the separator character(s) to use in the names of the grid, mosaic, and orography fixed files. Ideally, the same separator should be used in the names of these fixed files as in the surface climatology fixed files. Valid values: ``"_"`` | ``"."``
 
-   .. COMMENT: It also says "Ideally, the same separator should be used in the names of these fixed files as the surface climatology fixed files (which always use a "." as the separator), i.e. ideally DOT_OR_USCORE should be set to "." "  --> Does it have to be set to "_" in the SRW App?
 
 Set File Name Parameters
 ----------------------------
@@ -265,9 +261,7 @@ Set File Name Parameters
    Name of the Fortran file containing the forecast model's base ensemble namelist (i.e., the original namelist file from which each of the ensemble members' namelist files is generated).
 
 ``FV3_EXEC_FN``: (Default: "ufs_model")
-   Name of the forecast model executable that is copied from the executables directory (``EXEC_SUBDIR``, where it was created during the build process) to the experiment directory; set during experiment generation. 
-   
-.. COMMENT: Check this definition... : Name to use for the forecast model executable. 
+   Name to use for the forecast model executable. 
 
 ``DIAG_TABLE_TMPL_FN``: (Default: "")
    Name of a template file that specifies the output fields of the forecast model. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{DIAG_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``diag_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a value for ``DIAG_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the names of the ``diag_table`` options in the ``ufs-srweather-app/parm`` directory. 
@@ -700,6 +694,8 @@ GET_EXTRN_ICS Configuration Parameters
 
 Non-default parameters for the ``get_extrn_ics`` task are set in the ``task_get_extrn_ics:`` section of the ``config.yaml`` file. 
 
+.. _basic-get-extrn-ics:
+
 Basic Task Parameters
 ---------------------------------
 
@@ -739,7 +735,7 @@ File and Directory Parameters
    Directory containing external model files for generating ICs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to true, the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_ICS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the :term:`ICs` on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false.
 
 ``EXTRN_MDL_SYSBASEDIR_ICS``: (Default: '')
-   Base directory on the local machine containing external model files for generating :term:`ICs` on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined in ``EXTRN_MDL_NAME_ICS`` below).
+   A known location of a real data stream on a given platform. This is typically a real-time data stream as on Hera, Jet, or WCOSS. External model files for generating :term:`ICs` on the native grid should be accessible via this data stream. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined above in :numref:`Section %s <basic-get-extrn-ics>` ``EXTRN_MDL_NAME_ICS``).
 
    .. note::
       This variable must be defined as a null string in ``config_defaults.yaml`` so that if it is specified by the user in the experiment configuration file (``config.yaml``), it remains set to those values, and if not, it gets set to machine-dependent values.
@@ -780,6 +776,8 @@ GET_EXTRN_LBCS Configuration Parameters
 
 Non-default parameters for the ``get_extrn_lbcs`` task are set in the ``task_get_extrn_lbcs:`` section of the ``config.yaml`` file. 
 
+.. _basic-get-extrn-lbcs:
+
 Basic Task Parameters
 ---------------------------------
 
@@ -816,18 +814,18 @@ For each workflow task, certain parameter values must be passed to the job sched
 File and Directory Parameters
 --------------------------------
 
-``EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: '')
-   Same as ``EXTRN_MDL_SYSBASEDIR_ICS`` but for :term:`LBCs`. Base directory on the local machine containing external model files for generating LBCs on the native grid. The way the full path containing these files is constructed depends on the user-specified external model for LBCs (defined in ``EXTRN_MDL_NAME_LBCS`` above).
-
-   .. note::
-      This variable must be defined as a null string in ``config_defaults.yaml`` so that if it is specified by the user in the experiment configuration file (``config.yaml``), it remains set to those values, and if not, it gets set to machine-dependent values.
-
 ``USE_USER_STAGED_EXTRN_FILES``: (Default: false)
    Analogous to ``USE_USER_STAGED_EXTRN_FILES`` in :term:`ICs` but for :term:`LBCs`. Flag that determines whether the workflow will look for the external model files needed for generating :term:`LBCs` in user-specified directories (rather than fetching them from mass storage like NOAA :term:`HPSS`). Valid values: ``True`` | ``False``
  
 ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``: (Default: "")
    Analogous to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` but for :term:`LBCs` instead of :term:`ICs`.
    Directory containing external model files for generating LBCs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to true, the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_LBCS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the :term:`LBCs` on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false.
+
+``EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: '')
+   Same as ``EXTRN_MDL_SYSBASEDIR_ICS`` but for :term:`LBCs`. A known location of a real data stream on a given platform. This is typically a real-time data stream as on Hera, Jet, or WCOSS. External model files for generating :term:`LBICs` on the native grid should be accessible via this data stream. The way the full path containing these files is constructed depends on the user-specified external model for LBCs (defined above in :numref:`Section %s <basic-get-extrn-lbcs>` ``EXTRN_MDL_NAME_LBCS`` above).
+
+   .. note::
+      This variable must be defined as a null string in ``config_defaults.yaml`` so that if it is specified by the user in the experiment configuration file (``config.yaml``), it remains set to those values, and if not, it gets set to machine-dependent values.
 
 ``EXTRN_MDL_FILES_LBCS``: (Default: "")
    Analogous to ``EXTRN_MDL_FILES_ICS`` but for :term:`LBCs` instead of :term:`ICs`. Array containing templates of the file names to search for in the ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` directory. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false. A single template should be used for each model file type that is used. Users may use any of the Python-style templates allowed in the ``ush/retrieve_data.py`` script. To see the full list of supported templates, run that script with the ``-h`` option. For examples, see the ``EXTRN_MDL_FILES_ICS`` variable above. 
@@ -963,9 +961,7 @@ For each workflow task, certain parameter values must be passed to the job sched
       For more information, see the `Intel Development Reference Guide <https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/optimization-and-programming-guide/openmp-support/openmp-library-support/thread-affinity-interface-linux-and-windows.html>`__. 
 
 ``OMP_NUM_THREADS_RUN_FCST``: (Default: 2)
-   The number of OpenMP threads to use for parallel regions. 
-   
-   ..COMMENT: Note says: # atmos_nthreads in model_configure --> What does this mean? Can it be removed?
+   The number of OpenMP threads to use for parallel regions. Corresponds to the ``atmos_nthreads`` value in ``model_configure``.
 
 ``OMP_STACKSIZE_RUN_FCST``: (Default: "1024m")
    Controls the size of the stack for threads created by the OpenMP implementation.
@@ -1041,8 +1037,6 @@ Write-Component (Quilting) Parameters
 ``WRTCMP_lat_lwr_left``: (Default: "")
    Latitude (in degrees) of the center of the lower-left (southwest) cell on the write component grid. If using the "rotated_latlon" coordinate system, this is expressed in terms of the rotated latitude. Must be set manually when running an experiment with a user-defined grid.
 
-.. COMMENT: The descriptions for the five tasks above have been deleted from config_defaults... why? The variables are still there...
-
 **The following parameters must be set when** ``WRTCMP_output_grid`` **is set to "rotated_latlon":**
 
 ``WRTCMP_lon_upr_rght``: (Default: "")
@@ -1056,8 +1050,6 @@ Write-Component (Quilting) Parameters
 
 ``WRTCMP_dlat``: (Default: "")
    Size (in degrees) of a grid cell on the write component grid (expressed in terms of the rotated latitude).
-
-.. COMMENT: Descriptions for all variables in this section were removed from config_defaults... why?
 
 **The following parameters must be set when** ``WRTCMP_output_grid`` **is set to "lambert_conformal":**
 
@@ -1078,9 +1070,6 @@ Write-Component (Quilting) Parameters
 
 ``WRTCMP_dy``: (Default: "")
    Grid cell size (in meters) along the y-axis of the Lambert conformal projection. 
-
-   .. COMMENT: Descriptions for all variables in this section were removed from config_defaults... why?
-
 
 .. _PredefGrid:
 
@@ -2049,9 +2038,6 @@ Land Surface Model (LSM) SPP
 Land surface perturbations can be applied to land model parameters and land model prognostic variables. The LSM scheme is intended to address errors in the land model and land-atmosphere interactions. LSM perturbations include soil moisture content (SMC) (volume fraction), vegetation fraction (VGF), albedo (ALB), salinity (SAL), emissivity (EMI), surface roughness (ZOL) (in cm), and soil temperature (STC). Perturbations to soil moisture content (SMC) are only applied at the first time step. Only five perturbations at a time can be applied currently, but all seven are shown below. In addition, only one unique *iseed* value is allowed at the moment, and it is used for each pattern.
 
 The parameters below turn on SPP in Noah or RUC LSM (support for Noah MP is in progress). Please be aware of the :term:`SDF` that you choose if you wish to turn on Land Surface Model (LSM) SPP. SPP in LSM schemes is handled in the ``&nam_sfcperts`` namelist block instead of in ``&nam_sppperts``, where all other SPP is implemented. 
-
-   .. COMMENT: No longer appears:
-      "The default perturbation frequency is determined by the ``fhcyc`` namelist entry. Since that parameter is set to zero in the SRW App, use ``LSM_SPP_EACH_STEP`` to perturb every time step.""
 
 ``DO_LSM_SPP``: (Default: false) 
    Turns on Land Surface Model (LSM) Stochastic Physics Parameterizations (SPP). When true, sets ``lndp_type=2``, which applies land perturbations to the selected paramaters using a newer scheme designed for data assimilation (DA) ensemble spread. LSM SPP perturbs uncertain land surface fields ("smc" "vgf" "alb" "sal" "emi" "zol" "stc") based on recommendations from physics experts. Valid values: ``True`` | ``False``
