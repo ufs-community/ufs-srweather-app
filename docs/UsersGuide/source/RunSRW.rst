@@ -129,7 +129,7 @@ then the user should run ``conda activate regional_workflow``. This will activat
 Activating the Workflow Environment on Non-Level 1 Systems
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. ``wflow_macos`` and ``wflow_linux`` template files are provided with the release. After making appropriate modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow. 
+Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. ``wflow_macos`` and ``wflow_linux`` template files are provided in the ``modulefiles`` directory. After making appropriate modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow. 
 
 On generic Linux or MacOS systems, loading the designated ``wflow_<platform>`` file will output instructions similar to the following:
 
@@ -164,7 +164,7 @@ Default configuration: ``config_defaults.yaml``
    This section provides background information on available parameters and how the SRW App uses the ``config_defaults.yaml`` file. It is informative, but users do not need to modify ``config_defaults.yaml`` to run the out-of-the-box case for the SRW App. Therefore, users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
 
 Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.yaml`` file. Any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``. 
-settings. There is usually no need for a user to modify the default configuration file. Additional information on the default settings can be found in the file itself and in :numref:`Chapter %s <ConfigWorkflow>`. 
+settings. There is usually no need for a user to modify the default configuration file. Additional information on the default settings can be found in the ``config_defaults.yaml`` file comments and in :numref:`Chapter %s <ConfigWorkflow>`. 
 
 .. _ConfigVarsDefault:
 
@@ -358,7 +358,7 @@ settings. There is usually no need for a user to modify the default configuratio
 User-specific configuration: ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The user must specify certain basic experiment configuration information in a ``config.yaml`` file located in the ``ufs-srweather-app/ush`` directory. Two example templates are provided in that directory: ``config.community.yaml`` and ``config.nco.yaml``. The first file is a minimal example for creating and running an experiment in *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases and is fully supported for this release. The operational/NCO mode is typically used by those at NOAA's Environmental Modeling Center (:term:`EMC`) and at the NOAA Global Systems Laboratory (GSL) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` compares the configuration variables that appear in the ``config.community.yaml`` with their default values in ``config_default.yaml``.
+The user must specify certain basic experiment configuration information in a ``config.yaml`` file located in the ``ufs-srweather-app/ush`` directory. Two example templates are provided in that directory: ``config.community.yaml`` and ``config.nco.yaml``. The first file is a minimal example for creating and running an experiment in *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases and is fully supported for this release. The operational/NCO mode is typically used by developers at the Environmental Modeling Center (:term:`EMC`) and at the Global Systems Laboratory (:term:`GSL`) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` compares the configuration variables that appear in the ``config.community.yaml`` with their default values in ``config_default.yaml``.
 
 .. _ConfigCommunity:
 
@@ -452,7 +452,7 @@ To get started, make a copy of ``config.community.yaml``. From the ``ufs-srweath
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
-Next, users should edit the new ``config.yaml`` file to customize it for your machine. At a minimum, change the ``MACHINE`` and ``ACCOUNT`` variables; then choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If users have pre-staged initialization data for the experiment, they can set ``USE_USER_STAGED_EXTRN_FILES: true``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER: "gnu"`` appears in the ``config.yaml`` file. On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
+Next, users should edit the new ``config.yaml`` file to customize it for their machine. At a minimum, users must change the ``MACHINE`` and ``ACCOUNT`` variables. Then, they can choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If users have pre-staged initialization data for the experiment, they can set ``USE_USER_STAGED_EXTRN_FILES: true``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER: "gnu"`` appears in the ``config.yaml`` file. On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
 
 .. code-block:: console
 
@@ -495,21 +495,21 @@ where:
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
    * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). 
    
-For example, to run the out-of-the-box experiment on Hera, add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` (unmodified variables are not shown in this example): 
+For example, to run the out-of-the-box experiment on Gaea, add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` (unmodified variables are not shown in this example): 
 
    .. code-block::
       
       user:
-         MACHINE: hera
-         ACCOUNT: nems
+         MACHINE: gaea
+         ACCOUNT: hfv3gfs
       workflow:
          EXPT_SUBDIR: run_basic_srw
       task_get_extrn_ics:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518
       task_get_extrn_lbcs:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518
 
 To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
 
@@ -526,8 +526,9 @@ A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yam
 
 .. note::
 
-   Valid values for configuration variables should be consistent with those in the
-   ``valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdiretories of ``tests/WE2E/test_configs``.
+   The regional workflow must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
+
+Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
 To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>`.
 
@@ -539,7 +540,7 @@ User-specific Configuration on a General Linux/MacOS System
 The configuration process for Linux and MacOS systems is similar to the process for other systems, but it requires a few extra steps.
 
 .. note::
-    Examples in this subsection presume that the user is running Terminal.app with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
+    Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
 
 .. _MacMorePackages:
 
@@ -566,7 +567,7 @@ Users should ensure that the following packages are installed and up-to-date:
    python3 -m pip --version 
    python3 -m pip install --upgrade pip 
    python3 -m ensurepip --default-pip
-   python3 -m pip install ruby             OR(on MacOS only): brew install ruby
+   python3 -m pip install ruby             OR (on MacOS only): brew install ruby
 
 Users must create a virtual regional workflow environment, store it in their ``$HOME/venv/`` directory, and install additional python packages:
 
@@ -601,20 +602,22 @@ Configure an experiment using a template. Copy the contents of ``config.communit
    cd $SRW/ush
    cp config.community.yaml config.yaml
 
-In the ``config.yaml`` file, set ``MACHINE="macos"`` or ``MACHINE="linux"``, and modify the account and experiment info. For example: 
+In the ``config.yaml`` file, set ``MACHINE: macos`` or ``MACHINE: linux``, and modify the account and experiment info. For example: 
 
 .. code-block:: console
 
-   MACHINE="macos"
-   ACCOUNT="user" 
-   EXPT_SUBDIR="<test_community>"
-   COMPILER="gnu"
-   VERBOSE: true
-   RUN_ENVIR="community"
-   PREEXISTING_DIR_METHOD="rename"
-
-   PREDEF_GRID_NAME="RRFS_CONUS_25km"	
-   QUILTING: true
+   user:
+      RUN_ENVIR: community
+      MACHINE: macos
+      ACCOUNT: user 
+   workflow:
+      EXPT_SUBDIR: test_community
+      PREEXISTING_DIR_METHOD: rename
+      VERBOSE: true
+      COMPILER: gnu
+   task_run_fcst:
+      PREDEF_GRID_NAME: RRFS_CONUS_25km	
+      QUILTING: true
 
 Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
 
@@ -622,19 +625,21 @@ For :ref:`Option 1 <MacDetails>`, add the following information to ``config.yaml
 
 .. code-block:: console
 
-   LAYOUT_X="${LAYOUT_X:-3}"
-   LAYOUT_Y="${LAYOUT_Y:-2}"
-   WRTCMP_write_groups="1"
-   WRTCMP_write_tasks_per_group="2"
+   task_run_fcst:
+      LAYOUT_X: ${LAYOUT_X:-3}
+      LAYOUT_Y: ${LAYOUT_Y:-2}
+      WRTCMP_write_groups: 1
+      WRTCMP_write_tasks_per_group: 2
 
 For :ref:`Option 2 <MacDetails>`, add the following information to ``config.yaml``:
 
 .. code-block:: console
 
-   LAYOUT_X="${LAYOUT_X:-3}"
-   LAYOUT_Y="${LAYOUT_Y:-1}"
-   WRTCMP_write_groups="1"
-   WRTCMP_write_tasks_per_group="1"
+   task_run_fcst:
+      LAYOUT_X: ${LAYOUT_X:-3}
+      LAYOUT_Y: ${LAYOUT_Y:-1}
+      WRTCMP_write_groups: 1
+      WRTCMP_write_tasks_per_group: 1
 
 .. note::
    The number of MPI processes required by the forecast will be equal to ``LAYOUT_X`` * ``LAYOUT_Y`` + ``WRTCMP_write_tasks_per_group``. 
@@ -645,29 +650,30 @@ Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``$SRW/ush/machine/
 
 .. code-block:: console
 
-   # Commands to run at the start of each workflow task.
-   PRE_TASK_CMDS='{ ulimit -a; }'
+   platform:
+      # Architecture information
+      WORKFLOW_MANAGER: none
+      NCORES_PER_NODE: ${NCORES_PER_NODE:-<ncores>}
+      SCHED: ${SCHED:-"<sched>"}
+      # Run commands for executables
+      RUN_CMD_FCST: 'mpirun -np ${PE_MEMBER01}'
+      RUN_CMD_POST: 'mpirun -np 4'
+      RUN_CMD_SERIAL: time
+      RUN_CMD_UTILS: 'mpirun -np 4'
+      # Commands to run at the start of each workflow task.
+      PRE_TASK_CMDS: '{ ulimit -a; }'
+   task_make_orog:
+      TOPO_DIR: path/to/FIXgsm/files # (path to location of static input files used by the make_orog task)
+   task_make_sfc_climo:
+      SFC_CLIMO_INPUT_DIR: path/to/FIXgsm/files # (path to location of static surface climatology input fields used by sfc_climo_gen)
+   task_run_fcst:
+      FIXaer: /path/to/FIXaer/files
+      FIXgsm: /path/to/FIXgsm/files
+      FIXlut: /path/to/FIXlut/files
+   data:
+      FV3GFS: /Users/username/DATA/UFS/FV3GFS
 
-   # Architecture information
-   WORKFLOW_MANAGER="none"
-   NCORES_PER_NODE=${NCORES_PER_NODE:-<ncores>}	 
-   SCHED=${SCHED:-"<sched>"}
-   
-   # UFS SRW App specific paths
-   FIXgsm="path/to/FIXgsm/files"
-   FIXaer="path/to/FIXaer/files"
-   FIXlut="path/to/FIXlut/files"
-   TOPO_DIR="path/to/FIXgsm/files" # (path to location of static input files used by the 
-                                     make_orog task) 
-   SFC_CLIMO_INPUT_DIR="path/to/FIXgsm/files" # (path to location of static surface climatology
-                                                input fields used by sfc_climo_gen)
-
-   # Run commands for executables
-   RUN_CMD_SERIAL="time"
-   RUN_CMD_UTILS="mpirun -np 4"
-   RUN_CMD_FCST='mpirun -np ${PE_MEMBER01}'
-   RUN_CMD_POST="mpirun -np 4"
-
+.. COMMENT: what is this "data:" section used for?!
 
 .. _VXConfig:
 
@@ -691,21 +697,24 @@ To use METplus verification, the path to the MET and METplus directories must be
 
 .. code-block:: console
 
-   METPLUS_PATH="</path/to/METplus/METplus-4.1.0>"
-   MET_INSTALL_DIR="</path/to/met/10.1.0>"
+   platform:
+      METPLUS_PATH: </path/to/METplus/METplus-4.1.0>
+      MET_INSTALL_DIR: </path/to/met/10.1.0>
 
-Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and set the corresponding ``RUN_TASK_GET_OBS_*`` parameters to "FALSE" in ``config.yaml``. 
+Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and set the corresponding ``RUN_TASK_GET_OBS_*`` parameters to false in ``config.yaml``. 
 
 .. code-block:: console
 
-   CCPA_OBS_DIR="/path/to/UFS_SRW_App/develop/obs_data/ccpa/proc"
-   MRMS_OBS_DIR="/path/to/UFS_SRW_App/develop/obs_data/mrms/proc"
-   NDAS_OBS_DIR="/path/to/UFS_SRW_App/develop/obs_data/ndas/proc"
-   RUN_TASK_GET_OBS_CCPA: false
-   RUN_TASK_GET_OBS_MRMS: false
-   RUN_TASK_GET_OBS_NDAS: false
+   platform:
+      CCPA_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
+      MRMS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/mrms/proc
+      NDAS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ndas/proc
+   workflow_switches:
+      RUN_TASK_GET_OBS_CCPA: false
+      RUN_TASK_GET_OBS_MRMS: false
+      RUN_TASK_GET_OBS_NDAS: false
 
-If users have access to NOAA :term:`HPSS` but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to "TRUE", and the machine will attempt to download the appropriate data from NOAA HPSS. The ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
+If users have access to NOAA :term:`HPSS` but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to true, and the machine will attempt to download the appropriate data from NOAA HPSS. The ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
 
 Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
 
@@ -718,7 +727,7 @@ Next, the verification tasks must be turned on according to the user's needs. Us
    RUN_TASK_VX_ENSGRID: true
    RUN_TASK_VX_ENSPOINT: true
 
-These tasks are independent, so users may set some values to "TRUE" and others to "FALSE" depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`. More details on all of the parameters in this section are available in :numref:`Section %s <VXTasks>`. 
+These tasks are independent, so users may set some values to true and others to false depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`. More details on all of the parameters in this section are available in :numref:`Section %s <VXTasks>`. 
 
 .. _GenerateWorkflow: 
 
