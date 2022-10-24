@@ -14,7 +14,7 @@ load(pathJoin("conda", os.getenv("conda_ver") or "latest"))
 
 if mode() == "load" then
    LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate regional_workflow
+       > conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow
 ]===])
 end
 
