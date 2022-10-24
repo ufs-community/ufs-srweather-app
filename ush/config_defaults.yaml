@@ -1525,13 +1525,6 @@ task_run_fcst:
   # writing output files to disk. The regional grid requires the use of 
   # the write component, so users should not change the default value. 
   #
-  # WRTCMP_write_groups:
-  # The number of write groups (i.e. groups of MPI tasks) to use in the
-  # write component.
-  #
-  # WRTCMP_write_tasks_per_group:
-  # The number of MPI tasks to allocate for each write group.
-  #
   # PRINT_ESMF:
   # Flag for whether or not to output extra (debugging) information from
   # ESMF routines. Must be true or false. Note that the write
@@ -1539,6 +1532,83 @@ task_run_fcst:
   # forecast model grid to the user-specified output grid (which is defined 
   # in the model configuration file "model_configure" in the forecast's  
   # run directory).
+  # 
+  # WRTCMP_write_groups:
+  # The number of write groups (i.e. groups of MPI tasks) to use in the
+  # write component.
+  #
+  # WRTCMP_write_tasks_per_group:
+  # The number of MPI tasks to allocate for each write group.
+  #
+  # WRTCMP_output_grid:
+  # Sets the type (coordinate system) of the write component grid. The 
+  # default empty string forces the user to set a valid value for 
+  # WRTCMP_output_grid in config.yaml if specifying a *custom* grid. When 
+  # creating an experiment with a user-defined grid, this parameter must 
+  # be specified or the experiment will fail. 
+  #
+  # WRTCMP_cen_lon:
+  # Longitude (in degrees) of the center of the write component grid. Can 
+  # usually be set to the corresponding value from the native grid.
+  #
+  # WRTCMP_cen_lat:
+  # Latitude (in degrees) of the center of the write component grid. Can 
+  # usually be set to the corresponding value from the native grid.
+  # WRTCMP_lon_lwr_left:
+  # Longitude (in degrees) of the center of the lower-left (southwest) 
+  # cell on the write component grid. If using the "rotated_latlon" 
+  # coordinate system, this is expressed in terms of the rotated longitude. 
+  # Must be set manually when running an experiment with a user-defined grid.
+  #
+  # WRTCMP_lat_lwr_left:
+  # Latitude (in degrees) of the center of the lower-left (southwest) cell 
+  # on the write component grid. If using the "rotated_latlon" coordinate 
+  # system, this is expressed in terms of the rotated latitude. Must be set 
+  # manually when running an experiment with a user-defined grid.
+  # 
+  # -----------------------------------------------------------------------
+  # 
+  # WRTCMP_lon_upr_rght:
+  # Longitude (in degrees) of the center of the upper-right (northeast) cell 
+  # on the write component grid (expressed in terms of the rotated longitude).
+  #
+  # WRTCMP_lat_upr_rght:
+  # Latitude (in degrees) of the center of the upper-right (northeast) cell 
+  # on the write component grid (expressed in terms of the rotated latitude).
+  #
+  # WRTCMP_dlon:
+  # Size (in degrees) of a grid cell on the write component grid (expressed 
+  # in terms of the rotated longitude).
+  #
+  # WRTCMP_dlat:
+  # Size (in degrees) of a grid cell on the write component grid (expressed 
+  # in terms of the rotated latitude).
+  #
+  # -----------------------------------------------------------------------
+  # 
+  # WRTCMP_stdlat1:
+  # First standard latitude (in degrees) in definition of Lambert conformal 
+  # projection.
+  #
+  # WRTCMP_stdlat2:
+  # Second standard latitude (in degrees) in definition of Lambert conformal 
+  # projection.
+  #
+  # WRTCMP_nx:
+  # Number of grid points in the x-coordinate of the Lambert conformal 
+  # projection.
+  #
+  # WRTCMP_ny:
+  # Number of grid points in the y-coordinate of the Lambert conformal 
+  # projection.
+  #
+  # WRTCMP_dx:
+  # Grid cell size (in meters) along the x-axis of the Lambert conformal 
+  # projection.
+  #
+  # WRTCMP_dy:
+  # Grid cell size (in meters) along the y-axis of the Lambert conformal 
+  # projection. 
   #
   #-----------------------------------------------------------------------
   #
