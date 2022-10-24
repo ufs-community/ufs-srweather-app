@@ -78,7 +78,7 @@ If non-default parameters are selected for the variables in this section, they s
    Allows an extra parameter to be passed to slurm via XML Native command. 
 
 ``DOMAIN_PREGEN_BASEDIR``: (Default: "")
-   The base directory containing pregenerated grid, orography, and surface climatology files. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. For the pregenerated grid specified by ``PREDEF_GRID_NAME``, these "fixed" files are located in: 
+   For use in NCO mode only (``RUN_ENVIR: "nco"``). The base directory containing pregenerated grid, orography, and surface climatology files. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. For the pregenerated grid specified by ``PREDEF_GRID_NAME``, these "fixed" files are located in: 
 
    .. code-block:: console 
 
@@ -201,9 +201,6 @@ WORKFLOW Configuration Parameters
 =====================================
 
 If non-default parameters are selected for the variables in this section, they should be added to the ``workflow:`` section of the ``config.yaml`` file. 
-
-``WORKFLOW_ID``: (Default: "")
-   Unique ID for workflow run that will be set in ``setup.py``. Users should not set this variable in their configuration file; it will be overridden in ``setup.py``.
 
 .. _Cron:
 

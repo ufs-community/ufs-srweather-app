@@ -71,11 +71,12 @@ For a detailed explanation of how to build and run the SRW App on any supported 
    #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
 
       .. code-block:: console
-
+         
+         source <path/to/etc/lmod-setup.sh> <platform>
          module use <path/to/modulefiles>
          module load wflow_<platform>
 
-      After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
+      where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
 
       .. code-block:: console
 
@@ -83,6 +84,9 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             > conda activate regional_workflow
       
       then the user should run ``conda activate regional_workflow`` to activate the regional workflow environment. 
+
+      .. note::
+         If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
 
    #. Configure the experiment parameters.
 

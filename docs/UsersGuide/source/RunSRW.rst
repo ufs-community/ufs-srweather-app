@@ -106,8 +106,14 @@ The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f
 
 .. code-block:: console
 
+   source <path/to/etc/lmod-setup.sh/or/lmod-setup.csh> <platform>
    module use <path/to/modulefiles>
    module load wflow_<platform>
+
+where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). 
+
+.. note::
+   If users source the lmod-steup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
 
 The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
 
@@ -619,7 +625,7 @@ In the ``config.yaml`` file, set ``MACHINE: macos`` or ``MACHINE: linux``, and m
       PREDEF_GRID_NAME: RRFS_CONUS_25km	
       QUILTING: true
 
-Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64). 
+Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64 chips). 
 
 For :ref:`Option 1 <MacDetails>`, add the following information to ``config.yaml``:
 
@@ -646,7 +652,7 @@ For :ref:`Option 2 <MacDetails>`, add the following information to ``config.yaml
 
 **Configure the Machine File**
 
-Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``$SRW/ush/machine/`` based on the number of CPUs (``<ncores>``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
+Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``$SRW/ush/machine/`` based on the number of CPUs (``<ncores>``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``<sched>``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
 
 .. code-block:: console
 
@@ -685,6 +691,8 @@ Users who want to use the METplus verification suite to evaluate their forecasts
 .. attention::
    METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on many `Level 1 & 2 <https://dtcenter.org/community-code/metplus/metplus-4-1-existing-builds>`__ systems. For the v2.0.0 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
 
+   .. COMMENT: Update note for release v2.1!
+
 .. note::
    If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
 
@@ -714,7 +722,7 @@ Users who have already staged the observation data needed for METplus (i.e., the
       RUN_TASK_GET_OBS_MRMS: false
       RUN_TASK_GET_OBS_NDAS: false
 
-If users have access to NOAA :term:`HPSS` but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to true, and the machine will attempt to download the appropriate data from NOAA HPSS. The ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
+If users have access to NOAA :term:`HPSS` but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to true, and the machine will attempt to download the appropriate data from NOAA HPSS. In this case, the ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
 
 Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
 
@@ -722,10 +730,11 @@ Next, the verification tasks must be turned on according to the user's needs. Us
 
 .. code-block:: console
 
-   RUN_TASK_VX_GRIDSTAT: true
-   RUN_TASK_VX_POINTSTAT: true
-   RUN_TASK_VX_ENSGRID: true
-   RUN_TASK_VX_ENSPOINT: true
+   workflow_switches:
+      RUN_TASK_VX_GRIDSTAT: true
+      RUN_TASK_VX_POINTSTAT: true
+      RUN_TASK_VX_ENSGRID: true
+      RUN_TASK_VX_ENSPOINT: true
 
 These tasks are independent, so users may set some values to true and others to false depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`. More details on all of the parameters in this section are available in :numref:`Section %s <VXTasks>`. 
 
@@ -743,6 +752,8 @@ Run the following command from the ``ufs-srweather-app/ush`` directory to genera
 The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and :ref:`used later <Automate>` to automatically run portions of the workflow if users have the Rocoto workflow manager installed on their system. 
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.py`` runs the ``setup.py`` script to set the configuration parameters. Second, it copies the time-independent (fix) files and other necessary data input files from their location in the ufs-weather-model directory to the experiment directory (``$EXPTDIR``). Third, it copies the Weather Model executable (``ufs_model``) from the ``exec`` directory to ``$EXPTDIR`` and creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the ``parm`` directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
+
+.. COMMENT: ufs-weather-model directory doesn't exist... What was intended here?
 
 The ``setup.py`` script reads three other configuration scripts in order: (1) ``config_defaults.yaml`` (:numref:`Section %s <DefaultConfigSection>`), (2) ``config.yaml`` (:numref:`Section %s <UserSpecificConfig>`), and (3) ``set_predef_grid_params.py``. If a parameter is specified differently in these scripts, the file containing the last defined value will be used.
 
@@ -765,13 +776,14 @@ Description of Workflow Tasks
 .. note::
    This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <Run>`
 
-:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO`` are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by adding the following lines to the ``config.yaml`` file before running the ``generate_FV3LAM_wflow.py`` script: 
+:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO``; are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by adding the following lines to the ``config.yaml`` file before running the ``generate_FV3LAM_wflow.py`` script: 
 
 .. code-block:: console
 
-   RUN_TASK_MAKE_GRID: false
-   RUN_TASK_MAKE_OROG: false
-   RUN_TASK_MAKE_SFC_CLIMO: false
+   workflow_switches:
+      RUN_TASK_MAKE_GRID: false
+      RUN_TASK_MAKE_OROG: false
+      RUN_TASK_MAKE_SFC_CLIMO: false
 
 
 .. _WorkflowTasksFig:
@@ -799,10 +811,10 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``jobs/JREGIONAL_
    |                      | needs to be run once per experiment.                       |
    +----------------------+------------------------------------------------------------+
    | make_sfc_climo       | Pre-processing task to generate surface climatology files. |
-   |                      | Only needs to be run, at most, once per experiment.        |
+   |                      | Only needs to be run once per experiment.                  |
    +----------------------+------------------------------------------------------------+
    | get_extrn_ics        | Cycle-specific task to obtain external data for the        |
-   |                      | initial conditions                                         |
+   |                      | initial conditions (ICs)                                   |
    +----------------------+------------------------------------------------------------+
    | get_extrn_lbcs       | Cycle-specific task to obtain external data for the        |
    |                      | lateral boundary conditions (LBCs)                         |
@@ -811,7 +823,7 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``jobs/JREGIONAL_
    +----------------------+------------------------------------------------------------+
    | make_lbcs            | Generate LBCs from the external data                       |
    +----------------------+------------------------------------------------------------+
-   | run_fcst             | Run the forecast model (UFS weather model)                 |
+   | run_fcst             | Run the forecast model (UFS Weather Model)                 |
    +----------------------+------------------------------------------------------------+
    | run_post             | Run the post-processing tool (UPP)                         |
    +----------------------+------------------------------------------------------------+
@@ -933,9 +945,9 @@ The workflow can be run using the Rocoto workflow manager (see :numref:`Section 
 Run the Workflow Using Rocoto
 --------------------------------
 
-The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, Rocoto cannot be used when running the workflow within a container. If Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. 
+The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, if Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. 
 
-There are two main ways to run the workflow with Rocoto: (1) with the ``launch_FV3LAM_wflow.sh`` script, and (2) by manually calling the ``rocotorun`` command. Users can also automate the workflow using a crontab. 
+There are three ways to run the workflow with Rocoto: (1) automation via crontab (2) by calling the ``launch_FV3LAM_wflow.sh`` script, and (3) by manually calling the ``rocotorun`` command. 
 
 .. note::
    Users may find it helpful to review :numref:`Chapter %s <RocotoInfo>` to gain a better understanding of Rocoto commands and workflow management before continuing, but this is not required to run the experiment. 
@@ -963,20 +975,20 @@ The simplest way to run the Rocoto workflow is to automate the process using a j
 .. code-block:: console
 
    USE_CRON_TO_RELAUNCH: true
-   CRON_RELAUNCH_INTVL_MNTS: 2
+   CRON_RELAUNCH_INTVL_MNTS: 3
 
-This will automatically add an appropriate entry to the user's :term:`cron table` and launch the workflow. Alternatively, the user can add a crontab entry using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.py`` (starting with ``*/1 * * * *`` or ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+This will automatically add an appropriate entry to the user's :term:`cron table` and launch the workflow. Alternatively, the user can add a crontab entry using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.py`` (starting with ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
 
 .. code-block:: console
 
-   */3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh called_from_cron: true
+   */3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
 
 where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``. The number ``3`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every three minutes.
 
 .. hint::
 
-   * On NOAA Cloud instances, ``*/1 * * * *`` is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
-   * On other NOAA HPC systems, admins discourage the ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` is the preferred option for cron jobs on non-NOAA Cloud systems. 
+   * On NOAA Cloud instances, ``*/1 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 1``) is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
+   * On other NOAA HPC systems, admins discourage the ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 3``) is the preferred option for cron jobs on non-NOAA Cloud systems. 
 
 To check the experiment progress:
 
@@ -1094,7 +1106,7 @@ Launch the Rocoto Workflow Manually
 
 **Load Rocoto**
 
-Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can load Rocoto and any other required modules. This gives the user more control over the process and allows them to view experiment progress more easily. On Level 1 systems, the Rocoto modules are loaded automatically in :numref:`Step %s <SetUpPythonEnv>`. For most other systems, a variant on the following commands will be necessary to load the Rocoto module:
+Instead of running the ``./launch_FV3LAM_wflow.sh`` script, users can load Rocoto and any other required modules manually. This gives the user more control over the process and allows them to view experiment progress more easily. On Level 1 systems, the Rocoto modules are loaded automatically in :numref:`Step %s <SetUpPythonEnv>`. For most other systems, users can load a modified ``wflow_<platform>`` modulefile, or they can use a variant on the following commands to load the Rocoto module:
 
 .. code-block:: console
 
@@ -1105,7 +1117,7 @@ Some systems may require a version number (e.g., ``module load rocoto/1.3.3``)
 
 **Run the Rocoto Workflow**
 
-After loading Rocoto, call ``rocotorun`` from the experiment directory to launch the workflow tasks. This will start any tasks that do not have a dependency. As the workflow progresses through its stages, ``rocotostat`` will show the state of each task and allow users to monitor progress: 
+After loading Rocoto, ``cd`` to the experiment directory and call ``rocotorun`` to launch the workflow tasks. This will start any tasks that do not have a dependency. As the workflow progresses through its stages, ``rocotostat`` will show the state of each task and allow users to monitor progress: 
 
 .. code-block:: console
 
@@ -1132,12 +1144,13 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
 Run the Workflow Using Stand-Alone Scripts
 ---------------------------------------------
 
-.. note:: 
-   The Rocoto workflow manager cannot be used inside a container. 
+The regional workflow can be run using standalone shell scripts in cases where the Rocoto software is not available on a given platform. If Rocoto *is* available, see :numref:`Section %s <UseRocoto>` to run the workflow using Rocoto. 
 
-The regional workflow can be run using standalone shell scripts in cases where the Rocoto software is not available on a given platform. If Rocoto *is* available, see :numref:`Section %s <Run>` to run the workflow using Rocoto. 
+#. ``cd`` into the experiment directory. For example, from ``ush``, presuming default directory settings:
 
-#. ``cd`` into the experiment directory
+   .. code-block:: console
+      
+      cd ../../expt_dirs/test_community
 
 #. Set the environment variable ``$EXPTDIR`` for either bash or csh, respectively:
 
@@ -1182,8 +1195,8 @@ Check the batch script output file in your experiment directory for a “SUCCESS
             when running a 48-h forecast on the 25-km CONUS domain. For a brief description of tasks, see :numref:`Table %s <WorkflowTasksTable>`. 
 
    +------------+------------------------+----------------+----------------------------+
-   | **Stage/** | **Task Run Script**    | **Number of**  | **Wall clock time (H:mm)** |
-   | **step**   |                        | **Processors** |                            |             
+   | **Stage/** | **Task Run Script**    | **Number of**  | **Wall Clock Time (H:mm)** |
+   |            |                        | **Processors** |                            |             
    +============+========================+================+============================+
    | 1          | run_get_ics.sh         | 1              | 0:20 (depends on HPSS vs   |
    |            |                        |                | FTP vs staged-on-disk)     |
