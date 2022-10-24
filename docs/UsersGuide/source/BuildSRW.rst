@@ -298,7 +298,10 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
    | lakesurgery.exe            | Replaces the existing lake depth with the GLOBathy bathymetry. It is        |
    |                            | designed to work with the HRRR model.                                       |
    +----------------------------+-----------------------------------------------------------------------------+
-   | nc_diag_cat.x              |                                                                             |
+   | nc_diag_cat.x              | Performs :term:`NetCDF` Diagnostic Concatenation. Reads metadata while      |
+   |                            | allocating necessary space, defines variables with the metadata (no         |
+   |                            | attributes are stored), then finally add data to the output file.           |
+   |                            | This is the MPI executable.                                                 |
    +----------------------------+-----------------------------------------------------------------------------+
    | process_imssnow_fv3lam.exe | Uses FV3LAM snow and ice fields based on the snow and ice information from  |
    |                            | imssnow.                                                                    |
@@ -325,7 +328,8 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
    |                            | during integration as latent heating initialization for ongoing             |
    |                            | precipitation systems, especially convection.                               |
    +----------------------------+-----------------------------------------------------------------------------+
-   | test_nc_unlimdims.x        |                                                                             |
+   | test_nc_unlimdims.x        | Checks to see the number of fields with unlimited dimensions in NetCDF      |
+   |                            | files.                                                                      |
    +----------------------------+-----------------------------------------------------------------------------+
    | ufs_srweather_app.settings |                                                                             |
    +----------------------------+-----------------------------------------------------------------------------+

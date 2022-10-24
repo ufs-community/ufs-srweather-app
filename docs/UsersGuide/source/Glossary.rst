@@ -96,8 +96,6 @@ Glossary
    GSI
       `Gridpoint Statistical Interpolation <https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi>`__ (GSI) is a variational data assimilation system, designed to be flexible, state-of-art, and run efficiently on various parallel computing platforms. It supports :term:`RRFS` features. GSI code is publicly available `on GitHub <https://github.com/NOAA-EMC/GSI>`__, but some features are only accessible to NOAA affiliates. 
 
-   .. COMMENT: What does GSI do... just data assimilation stuff? How is it different from JEDI and other options? What is available to the public? What is needed for running RRFS?
-
    GSL
       NOAA `Global Systems Laboratory <https://gsl.noaa.gov/>`__ is one of ten NOAA Research laboratories and is located in Boulder, Colorado. Its research improves environmental prediction models, develops state-of-the-science decision support tools and visualization systems, and uses high-performance computing technology to support a Weather-Ready Nation. 
 
