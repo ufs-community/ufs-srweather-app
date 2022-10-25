@@ -15,7 +15,7 @@ load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
 
 if mode() == "load" then
    LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate /glade/work/epicufsrt/contrib/miniconda3/4.12.0/envs/regional_workflow
+       > conda activate regional_workflow
 ]===])
 end
 
