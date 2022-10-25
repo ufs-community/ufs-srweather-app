@@ -100,7 +100,7 @@ Glossary
       The second version of the World Meterological Organization's (WMO) standard for distributing gridded data.  
 
    GSI
-      `Gridpoint Statistical Interpolation <https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi>`__ (GSI) is a variational data assimilation system, designed to be flexible, state-of-art, and run efficiently on various parallel computing platforms. It supports :term:`RRFS` features. GSI code is publicly available `on GitHub <https://github.com/NOAA-EMC/GSI>`__, but some features are only accessible to NOAA affiliates. 
+      `Gridpoint Statistical Interpolation <https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi>`__ (GSI) is a variational data assimilation system, designed to be flexible, state-of-art, and run efficiently on various parallel computing platforms. It supports :term:`RRFS` features. GSI code is publicly available `on GitHub <https://github.com/NOAA-EMC/GSI>`__, and fix file data is publicly available `here <https://ftp.emc.ncep.noaa.gov/jcsda/WDQMS/NCEP/GSI-FIX/>`__. 
 
    GSL
       NOAA `Global Systems Laboratory <https://gsl.noaa.gov/>`__ is one of ten NOAA Research laboratories and is located in Boulder, Colorado. Its research improves environmental prediction models, develops state-of-the-science decision support tools and visualization systems, and uses high-performance computing technology to support a Weather-Ready Nation. 
