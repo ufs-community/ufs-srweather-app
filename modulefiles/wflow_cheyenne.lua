@@ -10,11 +10,12 @@ load("ncarenv")
 append_path("MODULEPATH","/glade/p/ral/jntp/UFS_SRW_app/modules")
 load("rocoto")
 
-load(pathJoin("conda", os.getenv("conda_ver") or "latest"))
+prepend_path("MODULEPATH","/glade/work/epicufsrt/contrib/miniconda3/modulefiles")
+load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
 
 if mode() == "load" then
    LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow
+       > conda activate /glade/work/epicufsrt/contrib/miniconda3/4.12.0/envs/regional_workflow
 ]===])
 end
 
