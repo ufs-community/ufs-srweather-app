@@ -1,10 +1,17 @@
 name: Python functional tests
 on:
   push:
+    branches:
+      - develop
+      - 'release/*'
     paths:
       - ush/*retrieve_data.py
       - parm/data_locations.yml
   pull_request:
+    branches:
+      - develop
+      - 'release/*'
+  workflow_dispatch:
 
 env:
   CI: true

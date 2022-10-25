@@ -36,7 +36,6 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
 from .environment import list_to_str, str_to_list
-from .print_msg import print_err_msg_exit
 from .run_command import run_command
 
 ##########
@@ -45,11 +44,8 @@ from .run_command import run_command
 def load_yaml_config(config_file):
     """Safe load a yaml file"""
 
-    try:
-        with open(config_file, "r") as f:
-            cfg = yaml.safe_load(f)
-    except yaml.YAMLError as e:
-        print_err_msg_exit(str(e))
+    with open(config_file, "r") as f:
+        cfg = yaml.safe_load(f)
 
     return cfg
 
@@ -102,7 +98,7 @@ def load_json_config(config_file):
         with open(config_file, "r") as f:
             cfg = json.load(f)
     except json.JSONDecodeError as e:
-        print_err_msg_exit(str(e))
+        raise Exception(f"Unable to load json file {config_file}")
 
     return cfg
 
@@ -218,11 +214,10 @@ def load_ini_config(config_file, return_string=0):
     """Load a config file with a format similar to Microsoft's INI files"""
 
     if not os.path.exists(config_file):
-        print_err_msg_exit(
-            f'''
-            The specified configuration file does not exist:
-                  \"{config_file}\"'''
-        )
+        raise FileNotFoundError(dedent(f'''
+                                The specified configuration file does not exist:
+                                "{config_file}"'''
+        ))
 
     config = configparser.RawConfigParser()
     config.optionxform = str
@@ -238,12 +233,7 @@ def get_ini_value(config, section, key):
     """Finds the value of a property in a given section"""
 
     if not section in config:
-        print_err_msg_exit(
-            f'''
-            Section not found:
-              section = \"{section}\"
-              valid sections = \"{config.keys()}\"'''
-        )
+        raise KeyError(f'Section not found: {section}')
     else:
         return config[section][key]
 

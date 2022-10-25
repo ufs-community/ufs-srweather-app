@@ -929,7 +929,6 @@ they correspond to unique test names and rerun."
                       "EXTRN_MDL_NAME_LBCS" \
                       "DATE_FIRST_CYCL" \
                       "DATE_LAST_CYCL" \
-                      "CYCL_HRS" \
                       "INCR_CYCL_FREQ" \
                       "FCST_LEN_HRS" \
                       "LBC_SPEC_INTVL_HRS" \
@@ -1051,17 +1050,17 @@ configuration files of the primary WE2E tests...
 #    to cover those cases.
 #
 # 2) The double quotes (which need to be escaped here, i.e. \") are needed
-#    so that for any experiment variables that are arrays, all the elements 
-#    of the array are combined together and treated as a single element.  
-#    If the experiment variable is CYCL_HRS (cycle hours) and is set to
-#    the array ("00" "12"), we want the value saved in the local array
-#    here to be a single element consisting of "00 12".  Otherwise, "00" 
-#    and "12" will be treated as separate elements, and more than one 
-#    element would be added to the array (which would be incorrect here).
+#    so that for any experiment variables that are arrays, all the elements of
+#    the array are combined together and treated as a single element.  For
+#    example, if a variable CYCL_HRS is set to the array ("00" "12"), we want
+#    the value saved in the local array here to be a single element consisting
+#    of "00 12".  Otherwise, "00" and "12" will be treated as separate
+#    elements, and more than one element would be added to the array (which
+#    would be incorrect here).
 #
 # 3) The single quote (which needs to be escaped here, i.e. \') is needed
-#    so that any numbers (e.g. a set of cycle hours such as "00 12") are 
-#    treated as strings when the CSV file is opened in Google Sheets.  
+#    so that any numbers (e.g. a set of cycle hours such as "00 12") are
+#    treated as strings when the CSV file is opened in Google Sheets.
 #    If this is not done, Google Sheets will remove leading zeros.
 #
           var_name_at="${var_name}[@]"
@@ -1074,12 +1073,14 @@ configuration files of the primary WE2E tests...
 # Calculate the number of forecasts that will be launched by the current
 # test.  The "10#" forces bash to treat the following number as a decimal
 # (not hexadecimal, etc).  Note that INCR_CYCL_FREQ is in units of hours,
-# so the factor of 24 is needed to convert the number of days to hours.
+# so the factor of 3600 is needed to convert the number of seconds to hours.
 #
-      num_cycles_per_day=${#CYCL_HRS[@]}
-      num_days=$(( (${DATE_LAST_CYCL} - ${DATE_FIRST_CYCL} + 1)*24/10#${INCR_CYCL_FREQ} ))
-      num_cdates=$(( ${num_cycles_per_day}*${num_days} ))
-      nf=$(( ${num_cdates}*10#${NUM_ENS_MEMBERS} ))
+      # Convert cycles to seconds
+      first=$(date --utc --date "${DATE_FIRST_CYCL:0:8} ${DATE_FIRST_CYCL:8:2}" +"%s")
+      last=$(date --utc --date "${DATE_LAST_CYCL:0:8} ${DATE_LAST_CYCL:8:2}" +"%s")
+      # Diff and convert seconds to number of cycles where freq is in
+      # hours
+      nf=$(( ($last - $first) / 3600 / 10#${INCR_CYCL_FREQ} ))
 #
 # Save the number of forecasts launched by the current test in an 
 # appropriately named array.  In the following, the single quote at the 

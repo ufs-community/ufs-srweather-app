@@ -9,7 +9,6 @@
 #
 . ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
-. $USHdir/init_env.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -63,16 +62,6 @@ where the arguments are defined as follows:
 "
 
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Initialize the environment, e.g. by making available the "module" 
-# command as well as others.
-#
-#-----------------------------------------------------------------------
-#
-env_init_scripts_fps_str="( "$(printf "\"%s\" " "${ENV_INIT_SCRIPTS_FPS[@]}")")"
-init_env env_init_scripts_fps="${env_init_scripts_fps_str}"
 #
 #-----------------------------------------------------------------------
 #
@@ -175,7 +164,7 @@ fi
 # Load the .local module file if available for the given task
 #
 modulefile_local="${task_name}.local"
-if [ -f ${modules_dir}/${modulefile_local} ]; then
+if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
   module load "${modulefile_local}" || print_err_msg_exit "\
   Loading .local module file (in directory specified by mod-
   ules_dir) for the specified task (task_name) failed:
@@ -195,6 +184,10 @@ module list
 if [ -n "${SRW_ENV:-}" ] ; then
   set +u
   conda activate ${SRW_ENV}
+  if [ $machine = "gaea" ]; then
+     conda deactivate
+     conda activate ${SRW_ENV}
+  fi
   set -u
 fi
 

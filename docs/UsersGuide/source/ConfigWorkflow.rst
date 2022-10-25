@@ -248,14 +248,11 @@ File Name Parameters
 
 Forecast Parameters
 ===================
-``DATE_FIRST_CYCL``: (Default: "YYYYMMDD")
-   Starting date of the first forecast in the set of forecasts to run. Format is "YYYYMMDD". Note that this does not include the hour of the day.
+``DATE_FIRST_CYCL``: (Default: "YYYYMMDDHH")
+   Starting date of the first forecast in the set of forecasts to run. Format is "YYYYMMDDHH".
 
-``DATE_LAST_CYCL``: (Default: "YYYYMMDD")
-   Starting date of the last forecast in the set of forecasts to run. Format is "YYYYMMDD". Note that this does not include the hour of the day.
-
-``CYCL_HRS``: (Default: ( "HH1" "HH2" ))
-   An array containing the hours of the day at which to launch forecasts. Forecasts are launched at these hours on each day from ``DATE_FIRST_CYCL`` to ``DATE_LAST_CYCL``, inclusive. Each element of this array must be a two-digit string representing an integer that is less than or equal to 23 (e.g., "00", "03", "12", "23").
+``DATE_LAST_CYCL``: (Default: "YYYYMMDDHH")
+   Starting date of the last forecast in the set of forecasts to run. Format is "YYYYMMDDHH".
 
 ``INCR_CYCL_FREQ``: (Default: "24")
    Increment in hours for cycle frequency (cycl_freq). The default is "24", which means cycl_freq=24:00:00.

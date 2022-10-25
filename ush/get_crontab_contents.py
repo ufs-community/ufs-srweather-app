@@ -5,8 +5,10 @@ import sys
 import unittest
 import argparse
 from datetime import datetime
+from textwrap import dedent
 
 from python_utils import (
+    log_info,
     import_vars,
     set_env_var,
     print_input_args,
@@ -99,7 +101,7 @@ def add_crontab_line():
     #
     time_stamp = datetime.now().strftime("%F_%T")
     crontab_backup_fp = os.path.join(EXPTDIR, f"crontab.bak.{time_stamp}")
-    print_info_msg(
+    log_info(
         f'''
         Copying contents of user cron table to backup file:
           crontab_backup_fp = \"{crontab_backup_fp}\"''',
@@ -123,7 +125,7 @@ def add_crontab_line():
     # Add crontab line
     if CRONTAB_LINE in crontab_contents:
 
-        print_info_msg(
+        log_info(
             f'''
             The following line already exists in the cron table and thus will not be
             added:
@@ -132,7 +134,7 @@ def add_crontab_line():
 
     else:
 
-        print_info_msg(
+        log_info(
             f'''
             Adding the following line to the user's cron table in order to automatically
             resubmit SRW workflow:

@@ -235,7 +235,7 @@ in the batch scripts:
 
 .. code-block:: console
 
-   export CDATE=${DATE_FIRST_CYCL}${CYCL_HRS}
+   export CDATE=${DATE_FIRST_CYCL}
 
 This sets ``CDATE`` to the first cycle in the set of cycles that the experiment has run. If the
 experiment contains multiple cycles and the user wants to plot output from a cycle other than 

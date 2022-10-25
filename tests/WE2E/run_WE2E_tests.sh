@@ -65,6 +65,63 @@ WE2Edir="$TESTSdir/WE2E"
 #
 #-----------------------------------------------------------------------
 #
+# Run python checks
+#
+#-----------------------------------------------------------------------
+#
+
+# This line will return two numbers: the python major and minor versions
+pyversion=($(/usr/bin/env python3 -c 'import platform; major, minor, patch = platform.python_version_tuple(); print(major); print(minor)'))
+
+#Now, set an error check variable so that we can print all python errors rather than just the first
+pyerrors=0
+
+# Check that the call to python3 returned no errors, then check if the 
+# python3 minor version is 6 or higher
+if [[ -z "$pyversion" ]];then
+  print_info_msg "\
+
+  Error: python3 not found"
+  pyerrors=$((pyerrors+1))
+else
+  if [[ ${#pyversion[@]} -lt 2 ]]; then
+    print_info_msg "\
+
+  Error retrieving python3 version"
+    pyerrors=$((pyerrors+1))
+  elif [[ ${pyversion[1]} -lt 6 ]]; then
+    print_info_msg "\
+
+  Error: python version must be 3.6 or higher
+  python version: ${pyversion[*]}"
+    pyerrors=$((pyerrors+1))
+  fi
+fi
+
+#Next, check for the non-standard python packages: jinja2, yaml, and f90nml
+pkgs=(jinja2 yaml f90nml)
+for pkg in ${pkgs[@]}  ; do
+  if ! /usr/bin/env python3 -c "import ${pkg}" &> /dev/null; then
+  print_info_msg "\
+
+  Error: python module ${pkg} not available"
+  pyerrors=$((pyerrors+1))
+  fi
+done
+
+#Finally, check if the number of errors is >0, and if so exit with helpful message
+if [ $pyerrors -gt 0 ];then
+  print_err_msg_exit "\
+  Errors found: check your python environment
+
+  Instructions for setting up python environments can be found on the web:
+  https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
+
+"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Save current shell options (in a global array).  Then set new options
 # for this script or function.
 #
@@ -101,10 +158,20 @@ Usage:
 The arguments in brackets are optional.  The arguments are defined as 
 follows:
 
-tests_file:
-Name of file or relative or absolute path to file containing the list of
-WE2E tests to run.  This file must contain one test name per line, with 
-no repeated names.  This is a required argument.
+Exactly one of the following flags for defining which tests to run is
+required
+
+  tests_file:
+  Name of file or relative or absolute path to file containing the list
+  of WE2E tests to run.  This file must contain one test name per line,
+  with no repeated names.
+
+  test_type:
+  Name of a supported set of tests. Options are fundamental,
+  comprehensive, or all.
+
+  test_name:
+  The name of a single test to run
 
 machine:
 Argument used to explicitly set the experiment variable MACHINE in the
@@ -317,6 +384,8 @@ fi
 #
 valid_args=( \
   "tests_file" \
+  "test_type" \
+  "test_name" \
   "machine" \
   "account" \
   "expt_basedir" \
@@ -356,10 +425,13 @@ Use
   ${scrfunc_fn} ${help_flag}
 to get help on how to use this script."
 
-if [ -z "${tests_file}" ]; then
+if [ -z "${tests_file}" ] && [ -z "${test_name}" ] && [ -z "${test_type}" ] ; then
   print_err_msg_exit "\
-The argument \"tests_file\" specifying the file containing a list of the 
-WE2E tests to run was not specified in the call to this script.  \
+At least on of the following arguments must be specified to run this
+script:
+  tests_file
+  test_name
+  test_type
 ${help_msg}"
 fi
 
@@ -380,42 +452,69 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file containing the list of user-specified 
-# WE2E tests to run.  Then verify that the file exists.
+# Set the list of tests to run.
 #
 #-----------------------------------------------------------------------
 #
-user_spec_tests_fp=$( readlink -f "${tests_file}" )
+if [ -n "${test_name}" ] ; then
 
-if [ ! -f "${user_spec_tests_fp}" ]; then
-  print_err_msg_exit "\
-The file containing the user-specified list of WE2E tests to run 
-(tests_file) that is passed in as an argument to this script does not
-exit:
-  tests_file = \"${tests_file}\"
-The full path to this script is:
-  user_spec_tests_fp = \"${user_spec_tests_fp}\"
-Please ensure that this file exists and rerun."
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Read in each line of the file specified by user_spec_tests_fp and add 
-# each non-empty line to the array user_spec_tests.  Note that the read 
-# command will remove any leading and trailing whitespace from each line 
-# in user_spec_tests_fp [because it treats whatever character(s) the bash 
-# variable IFS (Internal Field Separator) is set to as word separators 
-# on each line, and IFS is by default set to a space, a tab, and a 
-# newline].
-#
-#-----------------------------------------------------------------------
-#
-user_spec_tests=()
-while read -r line; do
-  if [ ! -z "$line" ]; then
-    user_spec_tests+=("$line")
+  # User specified a single test
+  user_spec_tests=( "${test_name}" )
+
+elif [ "${test_type}" = "all" ] ; then
+
+  # User would like to run all the tests available
+  user_spec_tests=()
+  for fp in $(find ${scrfunc_dir}/test_configs -name "config.*" -type f ) ; do
+    user_spec_tests+=("$(basename $fp | cut -f 2 -d .)")
+  done
+
+elif [ -n "${tests_file}" ] || [ -n "${test_type}" ] ; then
+
+  # User wants to run a set of tests from a file, either their own or
+  # one managed in the repo
+
+  if [ -n "${test_type}" ] ; then
+    # Check for a pre-defined set. It could be machine dependent or not.
+    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}
+    if [ ! -f ${user_spec_tests_fp} ]; then
+        user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}
+    fi
+  elif [ -n "${tests_file}" ] ; then
+    user_spec_tests_fp=$( readlink -f "${tests_file}" )
   fi
-done < "${user_spec_tests_fp}"
+
+  if [ ! -f "${user_spec_tests_fp}" ]; then
+    print_err_msg_exit "\
+  The file containing the user-specified list of WE2E tests to run 
+  (tests_file) that is passed in as an argument to this script does not
+  exit:
+    tests_file = \"${tests_file}\"
+  The full path to this script is:
+    user_spec_tests_fp = \"${user_spec_tests_fp}\"
+  Please ensure that this file exists and rerun."
+  fi
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Read in each line of the file specified by user_spec_tests_fp and add 
+  # each non-empty line to the array user_spec_tests.  Note that the read 
+  # command will remove any leading and trailing whitespace from each line 
+  # in user_spec_tests_fp [because it treats whatever character(s) the bash 
+  # variable IFS (Internal Field Separator) is set to as word separators 
+  # on each line, and IFS is by default set to a space, a tab, and a 
+  # newline].
+  #
+  #-----------------------------------------------------------------------
+  #
+  user_spec_tests=()
+  while read -r line; do
+    if [ ! -z "$line" ]; then
+      user_spec_tests+=("$line")
+    fi
+  done < "${user_spec_tests_fp}"
+
+fi
 #
 #-----------------------------------------------------------------------
 #
