@@ -101,10 +101,10 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     print_info_msg(
         dedent(
             f"""
-        The variable \"settings\" specifying seeds in \"{FV3_NML_FP}\"
-        has been set as follows:
+            The variable 'settings' specifying seeds in '{FV3_NML_FP}'
+            has been set as follows:
 
-        settings =\n\n"""
+            settings =\n\n"""
         )
         + settings_str,
         verbose=VERBOSE,
@@ -118,15 +118,15 @@ def set_FV3nml_ens_stoch_seeds(cdate):
         print_err_msg_exit(
             dedent(
                 f"""
-            Call to python script set_namelist.py to set the variables in the FV3
-            namelist file that specify the paths to the surface climatology files
-            failed.  Parameters passed to this script are:
-              Full path to base namelist file:
-                FV3_NML_FP = \"{FV3_NML_FP}\"
-              Full path to output namelist file:
-                fv3_nml_ensmem_fp = \"{fv3_nml_ensmem_fp}\"
-              Namelist settings specified on command line (these have highest precedence):\n
-                settings =\n\n"""
+                Call to python script set_namelist.py to set the variables in the FV3
+                namelist file that specify the paths to the surface climatology files
+                failed.  Parameters passed to this script are:
+                  Full path to base namelist file:
+                    FV3_NML_FP = '{FV3_NML_FP}'
+                  Full path to output namelist file:
+                    fv3_nml_ensmem_fp = '{fv3_nml_ensmem_fp}'
+                  Namelist settings specified on command line (these have highest precedence):\n
+                    settings =\n\n"""
             )
             + settings_str
         )
@@ -181,12 +181,12 @@ class Testing(unittest.TestCase):
                 "-p",
                 os.path.join(
                     EXPTDIR,
-                    f'{date_to_str(self.cdate,format="%Y%m%d%H")}{os.sep}mem{i+1}',
+                    f"{date_to_str(self.cdate,format='%Y%m%d%H')}{os.sep}mem{i+1}",
                 ),
             )
 
         cd_vrfy(
-            f'{EXPTDIR}{os.sep}{date_to_str(self.cdate,format="%Y%m%d%H")}{os.sep}mem2'
+            f"{EXPTDIR}{os.sep}{date_to_str(self.cdate,format='%Y%m%d%H')}{os.sep}mem2"
         )
 
         set_env_var("USHdir", USHdir)

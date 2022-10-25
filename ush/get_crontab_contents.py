@@ -102,9 +102,9 @@ def add_crontab_line():
     time_stamp = datetime.now().strftime("%F_%T")
     crontab_backup_fp = os.path.join(EXPTDIR, f"crontab.bak.{time_stamp}")
     log_info(
-        f'''
+        f"""
         Copying contents of user cron table to backup file:
-          crontab_backup_fp = \"{crontab_backup_fp}\"''',
+          crontab_backup_fp = '{crontab_backup_fp}'""",
         verbose=VERBOSE,
     )
 
@@ -120,25 +120,25 @@ def add_crontab_line():
     )
 
     # Create backup
-    run_command(f'''printf "%s" '{crontab_contents}' > "{crontab_backup_fp}"''')
+    run_command(f"""printf "%s" '{crontab_contents}' > '{crontab_backup_fp}'""")
 
     # Add crontab line
     if CRONTAB_LINE in crontab_contents:
 
         log_info(
-            f'''
+            f"""
             The following line already exists in the cron table and thus will not be
             added:
-              CRONTAB_LINE = \"{CRONTAB_LINE}\"'''
+              CRONTAB_LINE = '{CRONTAB_LINE}'"""
         )
 
     else:
 
         log_info(
-            f'''
+            f"""
             Adding the following line to the user's cron table in order to automatically
             resubmit SRW workflow:
-              CRONTAB_LINE = \"{CRONTAB_LINE}\"''',
+              CRONTAB_LINE = '{CRONTAB_LINE}'""",
             verbose=VERBOSE,
         )
 

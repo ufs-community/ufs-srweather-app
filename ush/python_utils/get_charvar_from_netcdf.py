@@ -28,21 +28,21 @@ def get_charvar_from_netcdf(nc_file, nc_var_name):
 
     if ret != 0:
         print_err_msg_exit(
-            f'''
+            f"""
             Attempt to extract the value of the NetCDF variable spcecified by nc_var_name
             from the file specified by nc_file failed:
-              nc_file = \"{nc_file}\"
-              nc_var_name = \"{nc_var_name}\"'''
+              nc_file = '{nc_file}'
+              nc_var_name = '{nc_var_name}'"""
         )
 
     if nc_var_value is None:
         print_err_msg_exit(
-            f'''
+            f"""
             In the specified NetCDF file (nc_file), the specified variable (nc_var_name)
             was not found:
-              nc_file = \"{nc_file}\"
-              nc_var_name = \"{nc_var_name}\"
-              nc_var_value = \"{nc_var_value}\"'''
+              nc_file = '{nc_file}'
+              nc_var_name = '{nc_var_name}'
+              nc_var_value = '{nc_var_value}'"""
         )
 
     return nc_var_value

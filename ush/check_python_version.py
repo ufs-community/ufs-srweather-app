@@ -19,8 +19,8 @@ def check_python_version():
         logging.error(
             dedent(
                 """
-        Error: Missing python package required by the SRW app
-        """
+                Error: Missing python package required by the SRW app
+                """
             )
         )
         raise
@@ -31,8 +31,8 @@ def check_python_version():
         logging.error(
             dedent(
                 f"""
-            Error: python version must be 3.6 or higher
-            Your python version is: {major}.{minor}"""
+                Error: python version must be 3.6 or higher
+                Your python version is: {major}.{minor}"""
             )
         )
         raise Exception("Python version below 3.6")
@@ -45,13 +45,13 @@ if __name__ == "__main__":
         logging.exception(
             dedent(
                 f"""
-            *************************************************************************
-            FATAL ERROR:
-            The system does not meet minimum requirements for running the SRW app.
-            Instructions for setting up python environments can be found on the web:
-            https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
-            *************************************************************************\n
-            """
+                *************************************************************************
+                FATAL ERROR:
+                The system does not meet minimum requirements for running the SRW app.
+                Instructions for setting up python environments can be found on the web:
+                https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
+                *************************************************************************\n
+                """
             )
         )
         sys.exit(1)

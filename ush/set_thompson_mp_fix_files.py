@@ -107,7 +107,7 @@ def set_thompson_mp_fix_files(
             CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING.  After these modifications, the
             values of these parameters are as follows:
 
-            CCPP_PHYS_SUITE = \"{CCPP_PHYS_SUITE}\"
+            CCPP_PHYS_SUITE = '{CCPP_PHYS_SUITE}'
             """
         )
         log_info(

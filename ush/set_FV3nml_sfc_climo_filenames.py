@@ -88,9 +88,9 @@ def set_FV3nml_sfc_climo_filenames():
     print_info_msg(
         dedent(
             f"""
-        The variable \"settings\" specifying values of the namelist variables
-        has been set as follows:\n
-        settings =\n\n"""
+            The variable 'settings' specifying values of the namelist variables
+            has been set as follows:\n
+            settings =\n\n"""
         )
         + settings_str,
         verbose=VERBOSE,
@@ -108,15 +108,15 @@ def set_FV3nml_sfc_climo_filenames():
         print_err_msg_exit(
             dedent(
                 f"""
-            Call to python script set_namelist.py to set the variables in the FV3
-            namelist file that specify the paths to the surface climatology files
-            failed.  Parameters passed to this script are:
-              Full path to base namelist file:
-                fv3_nml_base_fp = \"{fv3_nml_base_fp}\"
-              Full path to output namelist file:
-                FV3_NML_FP = \"{FV3_NML_FP}\"
-              Namelist settings specified on command line (these have highest precedence):\n
-                settings =\n\n"""
+                Call to python script set_namelist.py to set the variables in the FV3
+                namelist file that specify the paths to the surface climatology files
+                failed.  Parameters passed to this script are:
+                  Full path to base namelist file:
+                    fv3_nml_base_fp = '{fv3_nml_base_fp}'
+                  Full path to output namelist file:
+                    FV3_NML_FP = '{FV3_NML_FP}'
+                  Namelist settings specified on command line (these have highest precedence):\n
+                    settings =\n\n"""
             )
             + settings_str
         )

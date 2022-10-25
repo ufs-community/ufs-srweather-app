@@ -216,9 +216,9 @@ def load_ini_config(config_file, return_string=0):
     if not os.path.exists(config_file):
         raise FileNotFoundError(
             dedent(
-                f'''
+                f"""
                 The specified configuration file does not exist:
-                "{config_file}"'''
+                '{config_file}'"""
             )
         )
 

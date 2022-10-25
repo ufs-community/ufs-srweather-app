@@ -43,8 +43,8 @@ def set_predef_grid_params():
     except KeyError:
         errmsg = dedent(
             f"""
-                        PREDEF_GRID_NAME = {PREDEF_GRID_NAME} not found in predef_grid_params.yaml
-                        Check your config file settings."""
+            PREDEF_GRID_NAME = {PREDEF_GRID_NAME} not found in predef_grid_params.yaml
+            Check your config file settings."""
         )
         raise Exception(errmsg) from None
 

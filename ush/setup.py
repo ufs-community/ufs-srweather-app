@@ -68,7 +68,7 @@ def setup():
     log_info(
         f"""
         ========================================================================
-        Starting function setup() in \"{os.path.basename(__file__)}\"...
+        Starting function setup() in '{os.path.basename(__file__)}'...
         ========================================================================"""
     )
     #
@@ -127,7 +127,7 @@ def setup():
     for val in mandatory:
         if val not in cfg_u:
             raise Exception(
-                f'Mandatory variable "{val}" not found in user config file {EXPT_CONFIG_FN}'
+                f"Mandatory variable '{val}' not found in user config file {EXPT_CONFIG_FN}"
             )
 
     import_vars(
@@ -155,8 +155,8 @@ def setup():
         raise FileNotFoundError(
             dedent(
                 f"""
-            The machine file {MACHINE_FILE} does not exist.
-            Check that you have specified the correct machine ({MACHINE}) in your config file {EXPT_CONFIG_FN}"""
+                The machine file {MACHINE_FILE} does not exist.
+                Check that you have specified the correct machine ({MACHINE}) in your config file {EXPT_CONFIG_FN}"""
             )
         )
     machine_cfg = load_config_file(MACHINE_FILE)
@@ -255,7 +255,7 @@ def setup():
     if DEBUG and not VERBOSE:
         log_info(
             """
-            Resetting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
+            Resetting VERBOSE to 'TRUE' because DEBUG has been set to 'TRUE'..."""
         )
         VERBOSE = True
 
@@ -373,7 +373,7 @@ def setup():
                   LSM_SPP_MAG_LIST (length {len(LSM_SPP_MAG_LIST)})
                   LSM_SPP_LSCALE (length {len(LSM_SPP_LSCALE)})
                   LSM_SPP_TSCALE (length {len(LSM_SPP_TSCALE)})
-                  """
+                """
             )
     #
     # The current script should be located in the ush subdirectory of the
@@ -414,7 +414,7 @@ def setup():
         errmsg = dedent(
             f"""
             Externals configuration file {mng_extrns_cfg_fn}
-            does not contain "{external_name}"."""
+            does not contain '{external_name}'."""
         )
         raise Exception(errmsg) from None
 
@@ -423,11 +423,11 @@ def setup():
         raise FileNotFoundError(
             dedent(
                 f"""
-            The base directory in which the FV3 source code should be located
-            (UFS_WTHR_MDL_DIR) does not exist:
-              UFS_WTHR_MDL_DIR = \"{UFS_WTHR_MDL_DIR}\"
-            Please clone the external repository containing the code in this directory,
-            build the executable, and then rerun the workflow."""
+                The base directory in which the FV3 source code should be located
+                (UFS_WTHR_MDL_DIR) does not exist:
+                  UFS_WTHR_MDL_DIR = '{UFS_WTHR_MDL_DIR}'
+                Please clone the external repository containing the code in this directory,
+                build the executable, and then rerun the workflow."""
             )
         )
     #
@@ -476,7 +476,7 @@ def setup():
             raise Exception(
                 dedent(
                     f"""
-                    Mandatory variable "{val}" not found in:
+                    Mandatory variable '{val}' not found in:
                     user config file {EXPT_CONFIG_FN}
                                   OR
                     machine file {MACHINE_FILE} 
@@ -525,8 +525,8 @@ def setup():
             raise Exception(
                 dedent(
                     f"""
-                  ACCOUNT must be specified in config or machine file if using a workflow manager.
-                  WORKFLOW_MANAGER = {WORKFLOW_MANAGER}\n"""
+                    ACCOUNT must be specified in config or machine file if using a workflow manager.
+                    WORKFLOW_MANAGER = {WORKFLOW_MANAGER}\n"""
                 )
             )
     #
@@ -563,9 +563,9 @@ def setup():
         CPL = True
     else:
         raise Exception(
-            f'''
+            f"""
             The coupling flag CPL has not been specified for this value of FCST_MODEL:
-              FCST_MODEL = \"{FCST_MODEL}\"'''
+              FCST_MODEL = '{FCST_MODEL}'"""
         )
 
     # Make sure RESTART_INTERVAL is set to an integer value
@@ -602,9 +602,9 @@ def setup():
             raise FileNotFoundError(
                 dedent(
                     f"""
-                USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom post configuration file
-                CUSTOM_POST_CONFIG_FP = {CUSTOM_POST_CONFIG_FP}
-                could not be found."""
+                    USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom post configuration file
+                    CUSTOM_POST_CONFIG_FP = {CUSTOM_POST_CONFIG_FP}
+                    could not be found."""
                 )
             ) from None
 
@@ -619,9 +619,9 @@ def setup():
             raise FileNotFoundError(
                 dedent(
                     f"""
-                USE_CRTM has been set, but the external CRTM fix file directory:
-                CRTM_DIR = {CRTM_DIR}
-                could not be found."""
+                    USE_CRTM has been set, but the external CRTM fix file directory:
+                    CRTM_DIR = {CRTM_DIR}
+                    could not be found."""
                 )
             ) from None
 
@@ -707,12 +707,12 @@ def setup():
         #
         if DT_SUBHOURLY_POST_MNTS < 0 or DT_SUBHOURLY_POST_MNTS > 59:
             raise ValueError(
-                f'''
-                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
+                f"""
+                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to 'TRUE'),
                 DT_SUBHOURLY_POST_MNTS must be set to an integer between 0 and 59,
                 inclusive but in this case is not:
-                  SUB_HOURLY_POST = \"{SUB_HOURLY_POST}\"
-                  DT_SUBHOURLY_POST_MNTS = \"{DT_SUBHOURLY_POST_MNTS}\"'''
+                  SUB_HOURLY_POST = '{SUB_HOURLY_POST}'
+                  DT_SUBHOURLY_POST_MNTS = '{DT_SUBHOURLY_POST_MNTS}'"""
             )
         #
         # Check that DT_SUBHOURLY_POST_MNTS (after converting to seconds) is
@@ -722,14 +722,14 @@ def setup():
         if rem != 0:
             raise ValueError(
                 f"""
-                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
+                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to 'TRUE'),
                 the time interval specified by DT_SUBHOURLY_POST_MNTS (after converting
                 to seconds) must be evenly divisible by the time step DT_ATMOS used in
                 the forecast model, i.e. the remainder (rem) must be zero.  In this case,
                 it is not:
-                  SUB_HOURLY_POST = \"{SUB_HOURLY_POST}\"
-                  DT_SUBHOURLY_POST_MNTS = \"{DT_SUBHOURLY_POST_MNTS}\"
-                  DT_ATMOS = \"{DT_ATMOS}\"
+                  SUB_HOURLY_POST = '{SUB_HOURLY_POST}'
+                  DT_SUBHOURLY_POST_MNTS = '{DT_SUBHOURLY_POST_MNTS}'
+                  DT_ATMOS = '{DT_ATMOS}'
                   rem = (DT_SUBHOURLY_POST_MNTS*60) %% DT_ATMOS = {rem}
                 Please reset DT_SUBHOURLY_POST_MNTS and/or DT_ATMOS so that this remainder
                 is zero."""
@@ -743,12 +743,12 @@ def setup():
         if DT_SUBHOURLY_POST_MNTS == 0:
             logger.warning(
                 f"""
-                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
+                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to 'TRUE'),
                 DT_SUBHOURLY_POST_MNTS must be set to a value greater than 0; otherwise,
                 sub-hourly output is not really being performed:
-                  SUB_HOURLY_POST = \"{SUB_HOURLY_POST}\"
-                  DT_SUBHOURLY_POST_MNTS = \"{DT_SUBHOURLY_POST_MNTS}\"
-                Resetting SUB_HOURLY_POST to \"FALSE\".  If you do not want this, you
+                  SUB_HOURLY_POST = '{SUB_HOURLY_POST}'
+                  DT_SUBHOURLY_POST_MNTS = '{DT_SUBHOURLY_POST_MNTS}'
+                Resetting SUB_HOURLY_POST to 'FALSE'.  If you do not want this, you
                 must set DT_SUBHOURLY_POST_MNTS to something other than zero."""
             )
             SUB_HOURLY_POST = False
@@ -779,7 +779,7 @@ def setup():
         pass
     EXPT_BASEDIR = os.path.abspath(EXPT_BASEDIR)
 
-    mkdir_vrfy(f' -p "{EXPT_BASEDIR}"')
+    mkdir_vrfy(f" -p '{EXPT_BASEDIR}'")
 
     #
     # -----------------------------------------------------------------------
@@ -935,13 +935,13 @@ def setup():
 
     # create NCO directories
     if RUN_ENVIR == "nco":
-        mkdir_vrfy(f' -p "{OPSROOT}"')
-        mkdir_vrfy(f' -p "{COMROOT}"')
-        mkdir_vrfy(f' -p "{PACKAGEROOT}"')
-        mkdir_vrfy(f' -p "{DATAROOT}"')
-        mkdir_vrfy(f' -p "{DCOMROOT}"')
+        mkdir_vrfy(f" -p '{OPSROOT}'")
+        mkdir_vrfy(f" -p '{COMROOT}'")
+        mkdir_vrfy(f" -p '{PACKAGEROOT}'")
+        mkdir_vrfy(f" -p '{DATAROOT}'")
+        mkdir_vrfy(f" -p '{DCOMROOT}'")
     if DBNROOT is not None:
-        mkdir_vrfy(f' -p "{DBNROOT}"')
+        mkdir_vrfy(f" -p '{DBNROOT}'")
 
     #
     # -----------------------------------------------------------------------
@@ -965,10 +965,10 @@ def setup():
                 f"""
                 The domain name used in naming the run_post output files
                 (POST_OUTPUT_DOMAIN_NAME) has not been set:
-                POST_OUTPUT_DOMAIN_NAME = \"{POST_OUTPUT_DOMAIN_NAME}\"
+                POST_OUTPUT_DOMAIN_NAME = '{POST_OUTPUT_DOMAIN_NAME}'
                 If this experiment is not using a predefined grid (i.e. if
                 PREDEF_GRID_NAME is set to a null string), POST_OUTPUT_DOMAIN_NAME
-                must be set in the configuration file (\"{EXPT_CONFIG_FN}\"). """
+                must be set in the configuration file ('{EXPT_CONFIG_FN}'). """
             )
     #
     # -----------------------------------------------------------------------
@@ -1070,10 +1070,10 @@ def setup():
     CCPP_PHYS_SUITE_FP = os.path.join(EXPTDIR, CCPP_PHYS_SUITE_FN)
     if not os.path.exists(CCPP_PHYS_SUITE_IN_CCPP_FP):
         raise FileNotFoundError(
-            f'''
+            f"""
             The CCPP suite definition file (CCPP_PHYS_SUITE_IN_CCPP_FP) does not exist
             in the local clone of the ufs-weather-model:
-              CCPP_PHYS_SUITE_IN_CCPP_FP = \"{CCPP_PHYS_SUITE_IN_CCPP_FP}\"'''
+              CCPP_PHYS_SUITE_IN_CCPP_FP = '{CCPP_PHYS_SUITE_IN_CCPP_FP}'"""
         )
     #
     # -----------------------------------------------------------------------
@@ -1097,10 +1097,10 @@ def setup():
     FIELD_DICT_FP = os.path.join(EXPTDIR, FIELD_DICT_FN)
     if not os.path.exists(FIELD_DICT_IN_UWM_FP):
         raise FileNotFoundError(
-            f'''
+            f"""
             The field dictionary file (FIELD_DICT_IN_UWM_FP) does not exist
             in the local clone of the ufs-weather-model:
-              FIELD_DICT_IN_UWM_FP = \"{FIELD_DICT_IN_UWM_FP}\"'''
+              FIELD_DICT_IN_UWM_FP = '{FIELD_DICT_IN_UWM_FP}'"""
         )
     #
     # -----------------------------------------------------------------------
@@ -1173,10 +1173,10 @@ def setup():
 
         if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_ICS[:idx]):
             raise FileNotFoundError(
-                f'''
+                f"""
                 The directory (EXTRN_MDL_SOURCE_BASEDIR_ICS) in which the user-staged
                 external model files for generating ICs should be located does not exist:
-                  EXTRN_MDL_SOURCE_BASEDIR_ICS = \"{EXTRN_MDL_SOURCE_BASEDIR_ICS}\"'''
+                  EXTRN_MDL_SOURCE_BASEDIR_ICS = '{EXTRN_MDL_SOURCE_BASEDIR_ICS}'"""
             )
 
         idx = EXTRN_MDL_SOURCE_BASEDIR_LBCS.find("$")
@@ -1185,10 +1185,10 @@ def setup():
 
         if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_LBCS[:idx]):
             raise FileNotFoundError(
-                f'''
+                f"""
                 The directory (EXTRN_MDL_SOURCE_BASEDIR_LBCS) in which the user-staged
                 external model files for generating LBCs should be located does not exist:
-                  EXTRN_MDL_SOURCE_BASEDIR_LBCS = \"{EXTRN_MDL_SOURCE_BASEDIR_LBCS}\"'''
+                  EXTRN_MDL_SOURCE_BASEDIR_LBCS = '{EXTRN_MDL_SOURCE_BASEDIR_LBCS}'"""
             )
     #
     # -----------------------------------------------------------------------
@@ -1263,11 +1263,11 @@ def setup():
     # Ensemble verification can only be run in ensemble mode
     if (not DO_ENSEMBLE) and (RUN_TASK_VX_ENSGRID or RUN_TASK_VX_ENSPOINT):
         raise Exception(
-            f'''
+            f"""
             Ensemble verification can not be run unless running in ensemble mode:
-               DO_ENSEMBLE = \"{DO_ENSEMBLE}\"
-               RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
-               RUN_TASK_VX_ENSPOINT = \"{RUN_TASK_VX_ENSPOINT}\"'''
+               DO_ENSEMBLE = '{DO_ENSEMBLE}'
+               RUN_TASK_VX_ENSGRID = '{RUN_TASK_VX_ENSGRID}'
+               RUN_TASK_VX_ENSPOINT = '{RUN_TASK_VX_ENSPOINT}'"""
         )
 
     #
@@ -1313,18 +1313,18 @@ def setup():
 
             msg = dedent(
                 f"""
-               GRID_DIR not specified!
-               Setting GRID_DIR = {GRID_DIR}
-            """
+                GRID_DIR not specified!
+                Setting GRID_DIR = {GRID_DIR}
+                """
             )
             logger.warning(msg)
 
         if not os.path.exists(GRID_DIR):
             raise FileNotFoundError(
-                f'''
+                f"""
                 The directory (GRID_DIR) that should contain the pregenerated grid files
                 does not exist:
-                  GRID_DIR = \"{GRID_DIR}\"'''
+                  GRID_DIR = '{GRID_DIR}'"""
             )
     else:
         GRID_DIR = os.path.join(EXPTDIR, "grid")
@@ -1340,18 +1340,18 @@ def setup():
 
             msg = dedent(
                 f"""
-               OROG_DIR not specified!
-               Setting OROG_DIR = {OROG_DIR}
-            """
+                OROG_DIR not specified!
+                Setting OROG_DIR = {OROG_DIR}
+                """
             )
             logger.warning(msg)
 
         if not os.path.exists(OROG_DIR):
             raise FileNotFoundError(
-                f'''
+                f"""
                 The directory (OROG_DIR) that should contain the pregenerated orography
                 files does not exist:
-                  OROG_DIR = \"{OROG_DIR}\"'''
+                  OROG_DIR = '{OROG_DIR}'"""
             )
     else:
         OROG_DIR = os.path.join(EXPTDIR, "orog")
@@ -1367,18 +1367,18 @@ def setup():
 
             msg = dedent(
                 f"""
-               SFC_CLIMO_DIR not specified!
-               Setting SFC_CLIMO_DIR ={SFC_CLIMO_DIR}
-            """
+                SFC_CLIMO_DIR not specified!
+                Setting SFC_CLIMO_DIR ={SFC_CLIMO_DIR}
+                """
             )
             logger.warning(msg)
 
         if not os.path.exists(SFC_CLIMO_DIR):
             raise FileNotFoundError(
-                f'''
+                f"""
                 The directory (SFC_CLIMO_DIR) that should contain the pregenerated surface
                 climatology files does not exist:
-                  SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"'''
+                  SFC_CLIMO_DIR = '{SFC_CLIMO_DIR}'"""
             )
     else:
         SFC_CLIMO_DIR = os.path.join(EXPTDIR, "sfc_climo")
@@ -1470,8 +1470,8 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    mkdir_vrfy(f' -p "{EXPTDIR}"')
-    mkdir_vrfy(f' -p "{LOGDIR}"')
+    mkdir_vrfy(f" -p '{EXPTDIR}'")
+    mkdir_vrfy(f" -p '{LOGDIR}'")
     #
     # -----------------------------------------------------------------------
     # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
@@ -1484,7 +1484,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    mkdir_vrfy(f' -p "{FIXlam}"')
+    mkdir_vrfy(f" -p '{FIXlam}'")
     RES_IN_FIXLAM_FILENAMES = ""
     #
     # -----------------------------------------------------------------------
@@ -1608,9 +1608,9 @@ def setup():
     if VERBOSE:
         log_info(
             f"""
-        The number of MPI tasks for the forecast (including those for the write
-        component if it is being used) are:
-          PE_MEMBER01 = {PE_MEMBER01}""",
+            The number of MPI tasks for the forecast (including those for the write
+            component if it is being used) are:
+              PE_MEMBER01 = {PE_MEMBER01}""",
             verbose=VERBOSE,
         )
     #
@@ -1715,7 +1715,7 @@ def setup():
         #
         # Full path to workflow (re)launch script, its log file, and the line
         # that gets added to the cron table to launch this script if the flag
-        # USE_CRON_TO_RELAUNCH is set to \"TRUE\".
+        # USE_CRON_TO_RELAUNCH is set to 'TRUE'.
         #
         # -----------------------------------------------------------------------
         #
@@ -1836,7 +1836,7 @@ def setup():
         #
         # -----------------------------------------------------------------------
         #
-        # Flag in the \"{MODEL_CONFIG_FN}\" file for coupling the ocean model to
+        # Flag in the '{MODEL_CONFIG_FN}' file for coupling the ocean model to
         # the weather model.
         #
         # -----------------------------------------------------------------------
@@ -1925,11 +1925,11 @@ def setup():
         f"""
         Generating the global experiment variable definitions file specified by
         GLOBAL_VAR_DEFNS_FN:
-          GLOBAL_VAR_DEFNS_FN = \"{GLOBAL_VAR_DEFNS_FN}\"
+          GLOBAL_VAR_DEFNS_FN = '{GLOBAL_VAR_DEFNS_FN}'
         Full path to this file is:
-          GLOBAL_VAR_DEFNS_FP = \"{GLOBAL_VAR_DEFNS_FP}\"
-        For more detailed information, set DEBUG to \"TRUE\" in the experiment
-        configuration file (\"{EXPT_CONFIG_FN}\")."""
+          GLOBAL_VAR_DEFNS_FP = '{GLOBAL_VAR_DEFNS_FP}'
+        For more detailed information, set DEBUG to 'TRUE' in the experiment
+        configuration file ('{EXPT_CONFIG_FN}')."""
     )
 
     with open(GLOBAL_VAR_DEFNS_FP, "a") as f:

@@ -101,11 +101,11 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         template_xml_fp = os.path.join(PARMdir, WFLOW_XML_FN)
 
         log_info(
-            f'''
+            f"""
             Creating rocoto workflow XML file (WFLOW_XML_FP) from jinja template XML
             file (template_xml_fp):
-              template_xml_fp = \"{template_xml_fp}\"
-              WFLOW_XML_FP = \"{WFLOW_XML_FP}\"'''
+              template_xml_fp = '{template_xml_fp}'
+              WFLOW_XML_FP = '{WFLOW_XML_FP}'"""
         )
 
         ensmem_indx_name = ""
@@ -397,7 +397,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
         log_info(
             f"""
-            The variable \"settings\" specifying values of the rococo XML variables
+            The variable 'settings' specifying values of the rococo XML variables
             has been set as follows:
             #-----------------------------------------------------------------------
             settings =\n\n""",
@@ -417,15 +417,15 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             logging.exception(
                 dedent(
                     f"""
-                Call to python script fill_jinja_template.py to create a rocoto workflow
-                XML file from a template file failed.  Parameters passed to this script
-                are:
-                  Full path to template rocoto XML file:
-                    template_xml_fp = \"{template_xml_fp}\"
-                  Full path to output rocoto XML file:
-                    WFLOW_XML_FP = \"{WFLOW_XML_FP}\"
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
+                    Call to python script fill_jinja_template.py to create a rocoto workflow
+                    XML file from a template file failed.  Parameters passed to this script
+                    are:
+                      Full path to template rocoto XML file:
+                        template_xml_fp = '{template_xml_fp}'
+                      Full path to output rocoto XML file:
+                        WFLOW_XML_FP = '{WFLOW_XML_FP}'
+                      Namelist settings specified on command line:\n
+                        settings =\n\n"""
                 )
                 + settings_str
             )
@@ -438,11 +438,11 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # -----------------------------------------------------------------------
     #
     log_info(
-        f'''
+        f"""
         Creating symlink in the experiment directory (EXPTDIR) that points to the
         workflow launch script (WFLOW_LAUNCH_SCRIPT_FP):
-          EXPTDIR = \"{EXPTDIR}\"
-          WFLOW_LAUNCH_SCRIPT_FP = \"{WFLOW_LAUNCH_SCRIPT_FP}\"''',
+          EXPTDIR = '{EXPTDIR}'
+          WFLOW_LAUNCH_SCRIPT_FP = '{WFLOW_LAUNCH_SCRIPT_FP}'""",
         verbose=VERBOSE,
     )
 
@@ -467,21 +467,21 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     if SYMLINK_FIX_FILES:
 
         log_info(
-            f'''
+            f"""
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
-              FIXgsm = \"{FIXgsm}\"
-              FIXam = \"{FIXam}\"''',
+              FIXgsm = '{FIXgsm}'
+              FIXam = '{FIXam}'""",
             verbose=VERBOSE,
         )
 
-        ln_vrfy(f'''-fsn "{FIXgsm}" "{FIXam}"''')
+        ln_vrfy(f"""-fsn '{FIXgsm}' '{FIXam}'""")
     else:
 
         log_info(
-            f'''
+            f"""
             Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
-              FIXgsm = \"{FIXgsm}\"
-              FIXam = \"{FIXam}\"''',
+              FIXgsm = '{FIXgsm}'
+              FIXam = '{FIXam}'""",
             verbose=VERBOSE,
         )
 
@@ -502,12 +502,12 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     if USE_MERRA_CLIMO:
         log_info(
-            f'''
+            f"""
             Copying MERRA2 aerosol climatology data files from system directory
             (FIXaer/FIXlut) to a subdirectory (FIXclim) in the experiment directory:
-              FIXaer = \"{FIXaer}\"
-              FIXlut = \"{FIXlut}\"
-              FIXclim = \"{FIXclim}\"''',
+              FIXaer = '{FIXaer}'
+              FIXlut = '{FIXlut}'
+              FIXclim = '{FIXclim}'""",
             verbose=VERBOSE,
         )
 
@@ -585,9 +585,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # -----------------------------------------------------------------------
     #
     log_info(
-        f'''
+        f"""
         Setting parameters in weather model's namelist file (FV3_NML_FP):
-        FV3_NML_FP = \"{FV3_NML_FP}\"'''
+        FV3_NML_FP = '{FV3_NML_FP}'"""
     )
     #
     # Set npx and npy, which are just NX plus 1 and NY plus 1, respectively.
@@ -818,8 +818,8 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
     log_info(
         f"""
-            The variable \"settings\" specifying values of the weather model's
-            namelist variables has been set as follows:\n""",
+        The variable 'settings' specifying values of the weather model's
+        namelist variables has been set as follows:\n""",
         verbose=VERBOSE,
     )
     log_info("\nsettings =\n\n" + settings_str, verbose=VERBOSE)
@@ -855,18 +855,18 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         logging.exception(
             dedent(
                 f"""
-            Call to python script set_namelist.py to generate an FV3 namelist file
-            failed.  Parameters passed to this script are:
-              Full path to base namelist file:
-                FV3_NML_BASE_SUITE_FP = \"{FV3_NML_BASE_SUITE_FP}\"
-              Full path to yaml configuration file for various physics suites:
-                FV3_NML_YAML_CONFIG_FP = \"{FV3_NML_YAML_CONFIG_FP}\"
-              Physics suite to extract from yaml configuration file:
-                CCPP_PHYS_SUITE = \"{CCPP_PHYS_SUITE}\"
-              Full path to output namelist file:
-                FV3_NML_FP = \"{FV3_NML_FP}\"
-              Namelist settings specified on command line:\n
-                settings =\n\n"""
+                Call to python script set_namelist.py to generate an FV3 namelist file
+                failed.  Parameters passed to this script are:
+                  Full path to base namelist file:
+                    FV3_NML_BASE_SUITE_FP = '{FV3_NML_BASE_SUITE_FP}'
+                  Full path to yaml configuration file for various physics suites:
+                    FV3_NML_YAML_CONFIG_FP = '{FV3_NML_YAML_CONFIG_FP}'
+                  Physics suite to extract from yaml configuration file:
+                    CCPP_PHYS_SUITE = '{CCPP_PHYS_SUITE}'
+                  Full path to output namelist file:
+                    FV3_NML_FP = '{FV3_NML_FP}'
+                  Namelist settings specified on command line:\n
+                    settings =\n\n"""
             )
             + settings_str
         )
@@ -919,7 +919,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
         Experiment generation completed.  The experiment directory is:
 
-          EXPTDIR=\"{EXPTDIR}\"
+          EXPTDIR='{EXPTDIR}'
 
         ========================================================================
         ========================================================================
@@ -964,10 +964,10 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                rocotostat command.
 
             For automatic resubmission of the workflow (say every {CRON_RELAUNCH_INTVL_MNTS} minutes), the
-            following line can be added to the user's crontab (use \"crontab -e\" to
+            following line can be added to the user's crontab (use 'crontab -e' to
             edit the cron table):
 
-            */{CRON_RELAUNCH_INTVL_MNTS} * * * * cd {EXPTDIR} && ./launch_FV3LAM_wflow.sh called_from_cron=\"TRUE\"
+            */{CRON_RELAUNCH_INTVL_MNTS} * * * * cd {EXPTDIR} && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
             """
         )
 
@@ -990,8 +990,8 @@ def get_nomads_data(
     NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.sh")
     run_command(
         f"""{NOMADS_script} \
-            {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
-            {date_to_str(DATE_FIRST_CYCL,format="%H")} \
+            {date_to_str(DATE_FIRST_CYCL,format='%Y%m%d')} \
+            {date_to_str(DATE_FIRST_CYCL,format='%H')} \
             {NOMADS_file_type} \
             {FCST_LEN_HRS} \
             {LBC_SPEC_INTVL_HRS}"""
@@ -1029,13 +1029,13 @@ if __name__ == "__main__":
         logging.exception(
             dedent(
                 f"""
-            *********************************************************************
-            FATAL ERROR:
-            Experiment generation failed. See the error message(s) printed below.
-            For more detailed information, check the log file from the workflow
-            generation script: {logfile}
-            *********************************************************************\n
-            """
+                *********************************************************************
+                FATAL ERROR:
+                Experiment generation failed. See the error message(s) printed below.
+                For more detailed information, check the log file from the workflow
+                generation script: {logfile}
+                *********************************************************************\n
+                """
             )
         )
 

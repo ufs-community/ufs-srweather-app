@@ -97,7 +97,7 @@ def set_ozone_param(
     else:
         raise KeyError(
             f"Unknown or no ozone parameterization specified in the "
-            'CCPP physics suite file "{ccpp_phys_suite_fp}"'
+            "CCPP physics suite file '{ccpp_phys_suite_fp}'"
         )
     #
     # -----------------------------------------------------------------------
@@ -172,11 +172,11 @@ def set_ozone_param(
     else:
 
         raise Exception(
-            f'''
+            f"""
             Unable to set name of the ozone production/loss file in the FIXgsm directory
             in the array that specifies the mapping between the symlinks that need to
             be created in the cycle directories and the files in the FIXgsm directory:
-              fixgsm_ozone_fn_is_set = \"{fixgsm_ozone_fn_is_set}\"'''
+              fixgsm_ozone_fn_is_set = '{fixgsm_ozone_fn_is_set}'"""
         )
 
     return ozone_param
