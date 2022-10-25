@@ -115,7 +115,13 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+-----------------------------------------------------------+
    | README.md                      | Getting Started Guide                                     |
    +--------------------------------+-----------------------------------------------------------+
-   | rename_model.sh                |                                                           |
+   | rename_model.sh                | Used to rename the model before it becomes NCO            |
+   |                                | operational. The SRW App is a generic app that is the base|
+   |                                | for models such as :term:`AQM` and :term:`RRFS`. When     |
+   |                                | these models become operational, variables like           |
+   |                                | ``HOMEdir`` and ``PARMdir`` will be renamed to            |
+   |                                | ``HOMEaqm``/``HOMErrfs``, ``PARMaqm``/``PARMrrfs``, etc.  |
+   |                                | using this script.                                        |
    +--------------------------------+-----------------------------------------------------------+
    | scripts                        | Contains the *ex-script* for each workflow task.          |
    |                                | These scripts are where the script logic and executables  |
@@ -417,15 +423,6 @@ From the build directory, run the following commands to build the pre-processing
    make -j 4  >& build.out &
 
 ``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``exec``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` argument ``-j 4`` indicates that the build will run in parallel with 4 threads. Although users can specify a larger or smaller number of threads (e.g., ``-j 8``, ``-j 2``), it is highly recommended to use at least 4 parallel threads to prevent overly long installation times. 
-
-If users want to build the optional ``GSI`` and ``rrfs_utl`` components for RRFS, they can add ``ENABLE_RRFS=on`` to the original cmake command. (NOTE: These components are not currently available for use at runtime.) For example:
-
-.. COMMENT: What does this comment mean???
-
-.. code-block:: console
-
-   cmake .. -DCMAKE_INSTALL_PREFIX=.. ENABLE_RRFS=on
-   make -j 4 >& build.out &
 
 The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/exec`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
 

@@ -74,8 +74,8 @@ If non-default parameters are selected for the variables in this section, they s
 ``SCHED``: (Default: "")
    The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Leaving this an empty string allows the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: ``"slurm"`` | ``"pbspro"`` | ``"lsf"`` | ``"lsfcray"`` | ``"none"``
 
-``SLURM_NATIVE_CMD``: (Default: "")
-   Allows an extra parameter to be passed to slurm via XML Native command. 
+``SCHED_NATIVE_CMD``: (Default: "")
+   Allows an extra parameter to be passed to the job scheduler (Slurm or PBSPRO) via XML Native command. 
 
 ``DOMAIN_PREGEN_BASEDIR``: (Default: "")
    For use in NCO mode only (``RUN_ENVIR: "nco"``). The base directory containing pregenerated grid, orography, and surface climatology files. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. For the pregenerated grid specified by ``PREDEF_GRID_NAME``, these "fixed" files are located in: 
@@ -245,7 +245,7 @@ Set File Name Parameters
 ``EXPT_CONFIG_FN``: (Default: "config.yaml")
    Name of the user-specified configuration file for the forecast experiment.
 
-``CONSTANTS_FN``: (Default: "constants.sh")
+``CONSTANTS_FN``: (Default: "constants.yaml")
    Name of the file containing definitions of various mathematical, physical, and SRW App contants.
 
 ``RGNL_GRID_NML_FN``: (Default: "regional_grid.nml")
@@ -970,7 +970,7 @@ Model Configuration Parameters
 These parameters set values in the Weather Model's ``model_configure`` file.
 
 ``DT_ATMOS``: (Default: "")
-   Time step for the outermost atmospheric model loop in seconds. This corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, :term:`tracer` transport, and vertical dynamics routines; see the `FV3 dycore scientific documentation <https://repository.library.noaa.gov/view/noaa/30725>`__ for details.) Must be set. Takes an integer value. In the SRW App, a default value for ``DT_ATMOS`` appears in the ``set_predef_grid_params.py`` script, but a different value can be set in ``config.yaml``. 
+   Time step for the outermost atmospheric model loop in seconds. This corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, :term:`tracer` transport, and vertical dynamics routines; see the `FV3 dycore scientific documentation <https://repository.library.noaa.gov/view/noaa/30725>`__ for details.) Must be set. Takes an integer value. In the SRW App, a default value for ``DT_ATMOS`` appears in the ``set_predef_grid_params.yaml`` script, but a different value can be set in ``config.yaml``. 
 
 ``RESTART_INTERVAL``: (Default: 0)
    Frequency of the output restart files in hours. Using the default interval (0), restart files are produced at the end of a forecast run. When ``RESTART_INTERVAL: 1``, restart files are produced every hour with the prefix "YYYYMMDD.HHmmSS." in the ``RESTART`` directory. 
@@ -1075,7 +1075,7 @@ Predefined Grid Parameters
 ------------------------------
 
 ``PREDEF_GRID_NAME``: (Default: "")
-   This parameter indicates which (if any) predefined regional grid to use for the experiment. Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid settings can be viewed in the script ``ush/set_predef_grid_params.py``. 
+   This parameter indicates which (if any) predefined regional grid to use for the experiment. Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid settings can be viewed in the script ``ush/set_predef_grid_params.yaml``. 
    
    **Currently supported options:**
    
