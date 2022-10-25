@@ -184,10 +184,10 @@ module list
 if [ -n "${SRW_ENV:-}" ] ; then
   set +u
   conda activate ${SRW_ENV}
-  if [ $machine = "gaea" ]; then
+#  if [ $machine = "gaea" ]; then
      conda deactivate
      conda activate ${SRW_ENV}
-  fi
+#  fi
   set -u
 fi
 
