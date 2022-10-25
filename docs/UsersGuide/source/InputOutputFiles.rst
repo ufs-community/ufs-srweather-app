@@ -48,10 +48,8 @@ to create the required namelists and parameter files needed by the Application w
 
 List of Template Files
 ^^^^^^^^^^^^^^^^^^^^^^^^
-The template files for the SRW Application are located in ``ush/templates``
+The template files for the SRW Application are located in ``parm``
 and are shown in :numref:`Table %s <TemplateFiles>`.
-
-.. COMMENT: Where have templates been moved to?
 
 .. _TemplateFiles:
 
@@ -103,9 +101,9 @@ Additional information related to ``diag_table_[CCPP]``, ``field_table_[CCPP]``,
 
 Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-:numref:`Figure %s <MigratoryRoute>` shows how the input files in the template directory (``ufs-srweather-app/ush/templates/``) flow to the experiment directory. First, the CCPP physics suite is specified in the configuration file. The template input files corresponding to the selected physics suite, such as ``field_table_[CCPP]`` and ``nems.configure_[CCPP]``, are copied to the experiment directory (``$EXPTDIR``). Additionally, the namelist file of the Weather Model (``input.nml``) is created from the ``input.nml.FV3`` and ``FV3.input.yml`` files by running the workflow generation script. While running the ``RUN_FCST`` task in the regional workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`, the ``field_table``, ``nems.configure``, and ``input.nml`` files, located in ``$EXPTDIR``, are linked to the cycle directory (``$CYCLE_DIR``). Additionally, ``diag_table`` and ``model_configure`` are copied from the ``templates`` directory. Finally, these files are updated with the variables specified in ``var_defn.sh``.
+:numref:`Figure %s <MigratoryRoute>` shows how the input files in the template directory (``ufs-srweather-app/parm``) flow to the experiment directory. First, the CCPP physics suite is specified in the configuration file. The template input files corresponding to the selected physics suite, such as ``field_table_[CCPP]`` and ``nems.configure_[CCPP]``, are copied to the experiment directory (``$EXPTDIR``). Additionally, the namelist file of the Weather Model (``input.nml``) is created from the ``input.nml.FV3`` and ``FV3.input.yml`` files by running the workflow generation script. While running the ``RUN_FCST`` task in the regional workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`, the ``field_table``, ``nems.configure``, and ``input.nml`` files, located in ``$EXPTDIR``, are linked to the cycle directory (``$CYCLE_DIR``). Additionally, ``diag_table`` and ``model_configure`` are copied from the ``parm`` directory. Finally, these files are updated with the variables specified in ``var_defn.sh``.
 
-.. COMMENT: Where have templates been moved to?
+.. COMMENT: Update image!
 
 .. _MigratoryRoute:
 

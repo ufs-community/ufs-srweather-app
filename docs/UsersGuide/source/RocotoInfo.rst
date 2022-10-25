@@ -10,13 +10,11 @@ system as the task dependencies allow and runs one instance of the workflow for 
 :term:`cycles <cycle>`. More information about Rocoto can be found on the `Rocoto Wiki <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 
 The SRW App workflow is defined in a Jinja-enabled Rocoto XML template called ``FV3LAM_wflow.xml``,
-which resides in the ``ush/templates`` directory. When the ``generate_FV3LAM_wflow.py``
+which resides in the ``parm`` directory. When the ``generate_FV3LAM_wflow.py``
 script is run, the ``fill_jinja_template.py`` script is called, and the parameters in the template file
 are filled in. The completed file contains the workflow task names, parameters needed by the job scheduler,
 and task interdependencies. The generated XML file is then copied to the experiment directory:
 ``$EXPTDIR/FV3LAM_wflow.xml``.
-
-.. COMMENT: Where is the templates dir now?
 
 There are a number of Rocoto commands available to run and monitor the workflow; users can find more information in the
 complete `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
