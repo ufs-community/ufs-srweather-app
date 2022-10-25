@@ -20,6 +20,13 @@ To build the SRW App, users will complete the following steps:
    #. :ref:`Check out the external repositories <CheckoutExternals>`
    #. :ref:`Set up the build environment and build the executables <BuildExecutables>`
 
+.. _AppBuildProc:
+
+.. figure:: _static/SRW_build_process.png
+   :alt: Flowchart describing the SRW App build process. 
+
+   *Overview of the SRW App Build Process*
+
 
 .. _HPCstackInfo:
 
@@ -346,7 +353,7 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
    |                            | This is only used for starting the RRFS surface cycling.                    |
    +----------------------------+-----------------------------------------------------------------------------+
    
-.. COMMENT: What does nc_diag_cat.x do? And test_nc_unlimdims.x? ufs_srweather_app.settings? 
+.. COMMENT: What does ufs_srweather_app.settings do? 
    - precipitable hydrometeor analysis?
    - What does the update_ice.exe description mean?
 

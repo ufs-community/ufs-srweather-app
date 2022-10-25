@@ -27,7 +27,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
 
 .. _AppOverallProc:
 
-.. figure:: _static/FV3LAM_wflow_overall.png
+.. figure:: _static/SRW_overall_workflow_run.png 
    :alt: Flowchart describing the SRW App workflow steps. 
 
    *Overall layout of the SRW App Workflow*
@@ -764,7 +764,7 @@ The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASED
 
    *Experiment generation description*
 
-.. COMMENT: Get updates image/slides from Chan-Hoo!
+.. COMMENT: Get updated image/slides from Chan-Hoo!
 
 .. _WorkflowTaskDescription: 
 
