@@ -5,6 +5,7 @@ import sys
 import platform
 import subprocess
 import unittest
+import logging
 from multiprocessing import Process
 from textwrap import dedent
 from datetime import datetime, timedelta
@@ -12,6 +13,7 @@ from datetime import datetime, timedelta
 from python_utils import (
     print_info_msg,
     print_err_msg_exit,
+    log_info,
     import_vars,
     cp_vrfy,
     cd_vrfy,
@@ -61,57 +63,43 @@ except ImportError as error:
     python_error_handler()
 
 
-def generate_FV3LAM_wflow():
+def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') -> None:
     """Function to setup a forecast experiment and create a workflow
-    (according to the parameters specified in the config file
+    (according to the parameters specified in the config file)
 
     Args:
-        None
+        USHdir  (str): The full path of the ush/ directory where this script is located
+        logfile (str): The name of the file where logging is written
     Returns:
         None
     """
 
-    print(
-        dedent(
+    # Set up logging to write to screen and logfile
+    setup_logging(logfile)
+
+    log_info(
             """
         ========================================================================
-        ========================================================================
-
         Starting experiment generation...
-
-        ========================================================================
         ========================================================================"""
-        )
     )
-
-    # set USHdir
-    USHdir = os.path.dirname(os.path.abspath(__file__))
 
     # check python version
     major, minor, patch = platform.python_version_tuple()
     if int(major) < 3 or int(minor) < 6:
-        print_info_msg(
+        logging.error(
             f"""
 
             Error: python version must be 3.6 or higher
             python version: {major}.{minor}"""
         )
+        raise
 
-    # define macros
+    # define utilities 
     define_macos_utilities()
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Source the file that defines and then calls the setup function.  The
-    # setup function in turn first sources the default configuration file
-    # (which contains default values for the experiment/workflow parameters)
-    # and then sources the user-specified configuration file (which contains
-    # user-specified values for a subset of the experiment/workflow parame-
-    # ters that override their default values).
-    #
-    # -----------------------------------------------------------------------
-    #
+    # The setup function reads the user configuration file and fills in 
+    # non-user-specified values from config_defaults.yaml
     setup()
 
     # import all environment variables
@@ -134,8 +122,8 @@ def generate_FV3LAM_wflow():
     # Create a multiline variable that consists of a yaml-compliant string
     # specifying the values that the jinja variables in the template rocoto
     # XML should be set to.  These values are set either in the user-specified
-    # workflow configuration file (EXPT_CONFIG_FN) or in the setup.sh script
-    # sourced above.  Then call the python script that generates the XML.
+    # workflow configuration file (EXPT_CONFIG_FN) or in the setup() function
+    # called above.  Then call the python script that generates the XML.
     #
     # -----------------------------------------------------------------------
     #
@@ -143,7 +131,7 @@ def generate_FV3LAM_wflow():
 
         template_xml_fp = os.path.join(PARMdir, WFLOW_XML_FN)
 
-        print_info_msg(
+        log_info(
             f'''
             Creating rocoto workflow XML file (WFLOW_XML_FP) from jinja template XML
             file (template_xml_fp):
@@ -438,17 +426,15 @@ def generate_FV3LAM_wflow():
         # End of "settings" variable.
         settings_str = cfg_to_yaml_str(settings)
 
-        print_info_msg(
-            dedent(
+        log_info(
                 f"""
                 The variable \"settings\" specifying values of the rococo XML variables
                 has been set as follows:
                 #-----------------------------------------------------------------------
-                settings =\n\n"""
+                settings =\n\n""",
+                verbose=VERBOSE,
             )
-            + settings_str,
-            verbose=VERBOSE,
-        )
+        log_info(settings_str, verbose=VERBOSE)
 
         #
         # Call the python script to generate the experiment's actual XML file
@@ -459,7 +445,7 @@ def generate_FV3LAM_wflow():
                 ["-q", "-u", settings_str, "-t", template_xml_fp, "-o", WFLOW_XML_FP]
             )
         except:
-            print_err_msg_exit(
+            logging.exception(
                 dedent(
                     f"""
                 Call to python script fill_jinja_template.py to create a rocoto workflow
@@ -482,7 +468,7 @@ def generate_FV3LAM_wflow():
     #
     # -----------------------------------------------------------------------
     #
-    print_info_msg(
+    log_info(
         f'''
         Creating symlink in the experiment directory (EXPTDIR) that points to the
         workflow launch script (WFLOW_LAUNCH_SCRIPT_FP):
@@ -505,23 +491,13 @@ def generate_FV3LAM_wflow():
     #
     if USE_CRON_TO_RELAUNCH:
         add_crontab_line()
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Create the FIXam directory under the experiment directory.  In NCO mode,
-    # this will be a symlink to the directory specified in FIXgsm, while in
-    # community mode, it will be an actual directory with files copied into
-    # it from FIXgsm.
-    #
-    # -----------------------------------------------------------------------
-    #
 
     #
-    # Symlink fix files
+    # Copy or symlink fix files
     #
     if SYMLINK_FIX_FILES:
 
-        print_info_msg(
+        log_info(
             f'''
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = \"{FIXgsm}\"
@@ -530,12 +506,9 @@ def generate_FV3LAM_wflow():
         )
 
         ln_vrfy(f'''-fsn "{FIXgsm}" "{FIXam}"''')
-    #
-    # Copy relevant fix files.
-    #
     else:
 
-        print_info_msg(
+        log_info(
             f'''
             Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = \"{FIXgsm}\"
@@ -559,7 +532,7 @@ def generate_FV3LAM_wflow():
     # -----------------------------------------------------------------------
     #
     if USE_MERRA_CLIMO:
-        print_info_msg(
+        log_info(
             f'''
             Copying MERRA2 aerosol climatology data files from system directory
             (FIXaer/FIXlut) to a subdirectory (FIXclim) in the experiment directory:
@@ -585,27 +558,27 @@ def generate_FV3LAM_wflow():
     #
     # -----------------------------------------------------------------------
     #
-    print_info_msg(
+    log_info(
         f"""
         Copying templates of various input files to the experiment directory...""",
         verbose=VERBOSE,
     )
 
-    print_info_msg(
+    log_info(
         f"""
         Copying the template data table file to the experiment directory...""",
         verbose=VERBOSE,
     )
     cp_vrfy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
 
-    print_info_msg(
+    log_info(
         f"""
         Copying the template field table file to the experiment directory...""",
         verbose=VERBOSE,
     )
     cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
 
-    print_info_msg(
+    log_info(
         f"""
         Copying the template NEMS configuration file to the experiment directory...""",
         verbose=VERBOSE,
@@ -616,7 +589,7 @@ def generate_FV3LAM_wflow():
     # clone of the FV3 code repository to the experiment directory (EXPT-
     # DIR).
     #
-    print_info_msg(
+    log_info(
         f"""
         Copying the CCPP physics suite definition XML file from its location in
         the forecast model directory sturcture to the experiment directory...""",
@@ -628,7 +601,7 @@ def generate_FV3LAM_wflow():
     # clone of the FV3 code repository to the experiment directory (EXPT-
     # DIR).
     #
-    print_info_msg(
+    log_info(
         f"""
         Copying the field dictionary file from its location in the forecast
         model directory sturcture to the experiment directory...""",
@@ -642,7 +615,7 @@ def generate_FV3LAM_wflow():
     #
     # -----------------------------------------------------------------------
     #
-    print_info_msg(
+    log_info(
         f'''
         Setting parameters in weather model's namelist file (FV3_NML_FP):
         FV3_NML_FP = \"{FV3_NML_FP}\"'''
@@ -659,9 +632,6 @@ def generate_FV3LAM_wflow():
     # For the physics suites that use RUC LSM, set the parameter kice to 9,
     # Otherwise, leave it unspecified (which means it gets set to the default
     # value in the forecast model).
-    #
-    # NOTE:
-    # May want to remove kice from FV3.input.yml (and maybe input.nml.FV3).
     #
     kice = None
     if SDF_USES_RUC_LSM:
@@ -877,17 +847,13 @@ def generate_FV3LAM_wflow():
 
     settings_str = cfg_to_yaml_str(settings)
 
-    print_info_msg(
-        dedent(
+    log_info(
             f"""
             The variable \"settings\" specifying values of the weather model's
-            namelist variables has been set as follows:
-
-            settings =\n\n"""
-        )
-        + settings_str,
+            namelist variables has been set as follows:\n""",
         verbose=VERBOSE,
     )
+    log_info("\nsettings =\n\n" + settings_str, verbose=VERBOSE)
     #
     # -----------------------------------------------------------------------
     #
@@ -917,7 +883,7 @@ def generate_FV3LAM_wflow():
             ]
         )
     except:
-        print_err_msg_exit(
+        logging.exception(
             dedent(
                 f"""
             Call to python script set_namelist.py to generate an FV3 namelist file
@@ -950,6 +916,13 @@ def generate_FV3LAM_wflow():
     if not RUN_TASK_MAKE_GRID:
 
         set_FV3nml_sfc_climo_filenames()
+
+    # Call function to get NOMADS data
+    if NOMADS:
+        raise Exception("Nomads script does not work!")
+
+        # get_nomads_data(NOMADS_file_type,EXPTDIR,USHdir,DATE_FIRST_CYCL,CYCL_HRS,FCST_LEN_HRS,LBC_SPEC_INTVL_HRS)
+
     #
     # -----------------------------------------------------------------------
     #
@@ -975,7 +948,7 @@ def generate_FV3LAM_wflow():
         rocotorun_cmd = f"rocotorun -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
         rocotostat_cmd = f"rocotostat -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
 
-    print_info_msg(
+    log_info(
         f"""
         ========================================================================
         ========================================================================
@@ -988,33 +961,16 @@ def generate_FV3LAM_wflow():
         ========================================================================
         """
     )
-    #
     # -----------------------------------------------------------------------
     #
-    # If rocoto is required, print instructions on how to load and use it
+    # If rocoto is required, print instructions on how to use it
     #
     # -----------------------------------------------------------------------
     #
     if WORKFLOW_MANAGER == "rocoto":
 
-        print_info_msg(
+        log_info(
             f"""
-            To launch the workflow, first ensure that you have a compatible version
-            of rocoto available. For most pre-configured platforms, rocoto can be
-            loaded via a module:
-
-              > module load rocoto
-
-            For more details on rocoto, see the User's Guide.
-
-            To launch the workflow, first ensure that you have a compatible version
-            of rocoto loaded.  For example, to load version 1.3.1 of rocoto, use
-
-              > module load rocoto/1.3.1
-
-            (This version has been tested on hera; later versions may also work but
-            have not been tested.)
-
             To launch the workflow, change location to the experiment directory
             (EXPTDIR) and issue the rocotrun command, as follows:
 
@@ -1043,127 +999,60 @@ def generate_FV3LAM_wflow():
             */{CRON_RELAUNCH_INTVL_MNTS} * * * * cd {EXPTDIR} && ./launch_FV3LAM_wflow.sh called_from_cron=\"TRUE\"
             """
         )
-    #
-    # If necessary, run the NOMADS script to source external model data.
-    #
-    if NOMADS:
-        print("Getting NOMADS online data")
-        print(f"NOMADS_file_type= {NOMADS_file_type}")
-        cd_vrfy(EXPTDIR)
-        NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.h")
-        run_command(
-            f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
-                      {date_to_str(DATE_FIRST_CYCL,format="%H")} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}"""
-        )
 
+    # If we got to this point everything was successful: move the log file to the experiment directory.
+    mv_vrfy(logfile, EXPTDIR)
 
-#
-# -----------------------------------------------------------------------
-#
-# Start of the script that will call the experiment/workflow generation
-# function defined above.
-#
-# -----------------------------------------------------------------------
-#
+def get_nomads_data(NOMADS_file_type,EXPTDIR,USHdir,DATE_FIRST_CYCL,CYCL_HRS,FCST_LEN_HRS,LBC_SPEC_INTVL_HRS):
+    print("Getting NOMADS online data")
+    print(f"NOMADS_file_type= {NOMADS_file_type}")
+    cd_vrfy(EXPTDIR)
+    NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.sh")
+    run_command(f"""{NOMADS_script} {date_to_str(DATE_FIRST_CYCL,format="%Y%m%d")} \
+                    {date_to_str(DATE_FIRST_CYCL,format="%H")} {NOMADS_file_type} {FCST_LEN_HRS} {LBC_SPEC_INTVL_HRS}""")
+
+def setup_logging(logfile: str = 'log.generate_FV3LAM_wflow') -> None:
+    """
+    Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
+    messages with detailed timing and routine info in the specified text file.
+    """
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(name)-22s %(levelname)-8s %(message)s',
+                        filename=logfile,
+                        filemode='w')
+    logging.debug(f'Finished setting up debug file logging in {logfile}')
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    logging.getLogger().addHandler(console)
+    logging.debug('Logging set up successfully')
+
 if __name__ == "__main__":
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set directories.
-    #
-    # -----------------------------------------------------------------------
-    #
+
     USHdir = os.path.dirname(os.path.abspath(__file__))
-    #
-    # Set the name of and full path to the temporary file in which we will
-    # save some experiment/workflow variables.  The need for this temporary
-    # file is explained below.
-    #
-    tmp_fn = "tmp"
-    tmp_fp = os.path.join(USHdir, tmp_fn)
-    rm_vrfy("-f", tmp_fp)
-    #
-    # Set the name of and full path to the log file in which the output from
-    # the experiment/workflow generation function will be saved.
-    #
-    log_fn = "log.generate_FV3LAM_wflow"
-    log_fp = os.path.join(USHdir, log_fn)
-    rm_vrfy("-f", log_fp)
-    #
+    logfile=f'{USHdir}/log.generate_FV3LAM_wflow'
+
     # Call the generate_FV3LAM_wflow function defined above to generate the
-    # experiment/workflow.  Note that we pipe the output of the function
-    # (and possibly other commands) to the "tee" command in order to be able
-    # to both save it to a file and print it out to the screen (stdout).
-    # The piping causes the call to the function (and the other commands
-    # grouped with it using the curly braces, { ... }) to be executed in a
-    # subshell.  As a result, the experiment/workflow variables that the
-    # function sets are not available outside of the grouping, i.e. they are
-    # not available at and after the call to "tee".  Since some of these va-
-    # riables are needed after the call to "tee" below, we save them in a
-    # temporary file and read them in outside the subshell later below.
-    #
-    def workflow_func():
-        retval = 1
-        generate_FV3LAM_wflow()
-        retval = 0
-        run_command(f'''echo "{EXPTDIR}" >> "{tmp_fp}"''')
-        run_command(f'''echo "{retval}" >> "{tmp_fp}"''')
-
-    # create tee functionality
-    tee = subprocess.Popen(["tee", log_fp], stdin=subprocess.PIPE)
-    os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
-    os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
-
-    # create workflow process
-    p = Process(target=workflow_func)
-    p.start()
-    p.join()
-
-    #
-    # Read in experiment/workflow variables needed later below from the tem-
-    # porary file created in the subshell above containing the call to the
-    # generate_FV3LAM_wflow function.  These variables are not directly
-    # available here because the call to generate_FV3LAM_wflow above takes
-    # place in a subshell (due to the fact that we are then piping its out-
-    # put to the "tee" command).  Then remove the temporary file.
-    #
-    (_, exptdir, _) = run_command(f'''sed "1q;d" "{tmp_fp}"''')
-    (_, retval, _) = run_command(f''' sed "2q;d" "{tmp_fp}"''')
-    if retval:
-        retval = int(retval)
-    else:
-        retval = 1
-    rm_vrfy(tmp_fp)
-    #
-    # If the call to the generate_FV3LAM_wflow function above was success-
-    # ful, move the log file in which the "tee" command saved the output of
-    # the function to the experiment directory.
-    #
-    if retval == 0:
-        mv_vrfy(log_fp, exptdir)
-    #
-    # If the call to the generate_FV3LAM_wflow function above was not suc-
-    # cessful, print out an error message and exit with a nonzero return
-    # code.
-    #
-    else:
-        print_err_msg_exit(
+    # experiment/workflow.
+    try:
+        generate_FV3LAM_wflow(USHdir, logfile)
+    except:
+        logging.exception(dedent(
             f"""
-            Experiment generation failed.  Check the log file from the ex-
-            periment/workflow generation script in the file specified by log_fp:
-              log_fp = \"{log_fp}\"
-            Stopping."""
-        )
+            *********************************************************************
+            FATAL ERROR:
+            Experiment generation failed. See the error message(s) printed below.
+            For more detailed information, check the log file from the workflow
+            generation script: {logfile}
+            *********************************************************************\n
+            """
+        ))
 
 class Testing(unittest.TestCase):
     def test_generate_FV3LAM_wflow(self):
 
-        # run workflows in separate process to avoid conflict
-        def workflow_func():
-            generate_FV3LAM_wflow()
-
-        def run_workflow():
-            p = Process(target=workflow_func)
+        # run workflows in separate process to avoid conflict between community and nco settings
+        def run_workflow(USHdir,logfile):
+            p = Process(target=generate_FV3LAM_wflow,args=(USHdir,logfile))
             p.start()
             p.join()
             exit_code = p.exitcode
@@ -1171,18 +1060,19 @@ class Testing(unittest.TestCase):
                 sys.exit(exit_code)
 
         USHdir = os.path.dirname(os.path.abspath(__file__))
+        logfile='log.generate_FV3LAM_wflow'
         SED = get_env_var("SED")
 
         # community test case
         cp_vrfy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
         run_command(f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml""")
-        run_workflow()
+        run_workflow(USHdir, logfile)
 
         # nco test case
         set_env_var("OPSROOT", f"{USHdir}/../../nco_dirs")
         cp_vrfy(f"{USHdir}/config.nco.yaml", f"{USHdir}/config.yaml")
         run_command(f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml""")
-        run_workflow()
+        run_workflow(USHdir, logfile)
 
     def setUp(self):
         define_macos_utilities()

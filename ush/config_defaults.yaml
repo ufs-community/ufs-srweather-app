@@ -54,7 +54,7 @@ user:
   #
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
-  ACCOUNT: "project_name"
+  ACCOUNT: ""
 
 #----------------------------
 # PLATFORM config parameters

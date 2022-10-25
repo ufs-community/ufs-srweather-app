@@ -2,10 +2,10 @@
 
 import os
 from datetime import datetime
-from .print_msg import print_info_msg, print_err_msg_exit
+from textwrap import dedent
 from .check_var_valid_value import check_var_valid_value
 from .filesys_cmds_vrfy import rm_vrfy, mv_vrfy
-
+from .print_msg import log_info
 
 def check_for_preexist_dir_file(path, method):
     """Check for a preexisting directory or file and, if present, deal with it
@@ -18,7 +18,14 @@ def check_for_preexist_dir_file(path, method):
         None
     """
 
-    check_var_valid_value(method, ["delete", "rename", "quit"])
+    try:
+        check_var_valid_value(method, ["delete", "rename", "quit"])
+    except ValueError:
+        errmsg = dedent(f'''
+                        Invalid method for dealing with pre-existing directory specified
+                        method = {method}
+                        ''')
+        raise ValueError(errmsg) from None
 
     if os.path.exists(path):
         if method == "delete":
@@ -27,7 +34,7 @@ def check_for_preexist_dir_file(path, method):
             now = datetime.now()
             d = now.strftime("_old_%Y%m%d_%H%M%S")
             new_path = path + d
-            print_info_msg(
+            log_info(
                 f"""
                 Specified directory or file already exists:
                     {path}
@@ -36,8 +43,8 @@ def check_for_preexist_dir_file(path, method):
             )
             mv_vrfy(path, new_path)
         else:
-            print_err_msg_exit(
+            raise FileExistsError(dedent(
                 f"""
                 Specified directory or file already exists
                     {path}"""
-            )
+            ))

@@ -1,4 +1,0 @@
-#%Module
-
-module load conda_regional_workflow
-
