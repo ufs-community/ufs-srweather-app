@@ -72,7 +72,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
          
-         source <path/to/etc/lmod-setup.sh> <platform>
+         source <path/to/etc/lmod-setup.sh/or/lmod-setup.csh> <platform>
          module use <path/to/modulefiles>
          module load wflow_<platform>
 

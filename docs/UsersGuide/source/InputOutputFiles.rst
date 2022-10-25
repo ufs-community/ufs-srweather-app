@@ -82,7 +82,7 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    +-----------------------------+--------------------------------------------------------------+
    | FV3LAM_wflow.xml            | Rocoto XML file to run the workflow. It is filled in using   |
    |                             | the ``fill_template.py`` python script that is called in     |
-   |                             | ``generate_FV3LAM_wflow.sh``.                                |
+   |                             | ``generate_FV3LAM_wflow.py``.                                |
    +-----------------------------+--------------------------------------------------------------+
    | input.nml.FV3               | Namelist file for the Weather Model.                         |
    +-----------------------------+--------------------------------------------------------------+

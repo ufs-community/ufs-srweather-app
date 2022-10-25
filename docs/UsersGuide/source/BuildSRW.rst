@@ -90,7 +90,8 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+-----------------------------------------------------------+
    | docs                           | Contains release notes, documentation, and User's Guide   |
    +--------------------------------+-----------------------------------------------------------+
-   | environment.yml                |                                                           |
+   | environment.yml                | Contains information on the package versions required for |
+   |                                | the regional workflow environment.                        |
    +--------------------------------+-----------------------------------------------------------+
    | etc                            | Contains Lmod startup scripts                             |
    +--------------------------------+-----------------------------------------------------------+
@@ -147,7 +148,6 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+-----------------------------------------------------------+
 
 .. COMMENT: Is environment.yml deprecated? Remove?
-   Add rename_model.sh details. 
 
 .. _CheckoutExternals:
 

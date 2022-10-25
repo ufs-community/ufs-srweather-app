@@ -208,9 +208,6 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
    | Repository for                  | https://github.com/ufs-community/ufs-weather-model      |
    | the UFS Weather Model           |                                                         |
    +---------------------------------+---------------------------------------------------------+
-   | Repository for the regional     | https://github.com/ufs-community/regional_workflow      |
-   | workflow                        |                                                         |
-   +---------------------------------+---------------------------------------------------------+
    | Repository for UFS utilities,   | https://github.com/ufs-community/UFS_UTILS              |
    | including pre-processing,       |                                                         |
    | chgres_cube, and more           |                                                         |
@@ -249,13 +246,13 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
    ├── scripts
    ├── sorc
    │    ├── CMakeLists.txt
-   │    ├── gsi
-   │    ├── rrfs_utl
-   │    ├── UPP
+   │    ├── (gsi)
+   │    ├── (rrfs_utl)
+   │    ├── (UPP)
    │    │     ├── parm
    │    │     └── sorc
    │    │          └── ncep_post.fd
-   │    ├── UFS_UTILS
+   │    ├── (UFS_UTILS)
    │    │     ├── sorc
    │    │     │    ├── chgres_cube.fd
    │    │     │    ├── fre-nctools.fd
@@ -263,7 +260,7 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
    │    │     │    ├── orog_mask_tools.fd
    │    │     │    └── sfc_climo_gen.fd
    │    │     └── ush
-   │    └── ufs-weather-model
+   │    └── (ufs-weather-model)
    │	     └── FV3
    │              ├── atmos_cubed_sphere
    │              └── ccpp
@@ -277,9 +274,9 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
    │     └── wrappers
    └── versions
 
-Regional Workflow Sub-Directories
+SRW App Sub-Directories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A number of sub-directories are created under the ``regional_workflow`` directory when the regional workflow is cloned (see directory diagram :ref:`above <TopLevelDirStructure>`). :numref:`Table %s <Subdirectories>` describes the contents of these sub-directories. 
+:numref:`Table %s <Subdirectories>` describes the contents of the most important sub-directories. :numref:`Table %s <FilesAndSubDirs>` provides and in-depth explanation of the ``ufs-srweather-app`` directories. 
 
 .. _Subdirectories:
 
@@ -304,7 +301,7 @@ A number of sub-directories are created under the ``regional_workflow`` director
 
 Experiment Directory Structure
 --------------------------------
-When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` script (:numref:`Step %s <GenerateWorkflow>`), a user-defined experimental directory (``$EXPTDIR``) is created based on information specified in the ``config.yaml`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before running the experiment workflow.
+When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` script (:numref:`Step %s <GenerateWorkflow>`), a user-defined experimental directory (``$EXPTDIR``) is created based on information specified in the ``config.yaml`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before running the experiment workflow.
 
 .. _ExptDirStructure:
 
@@ -327,13 +324,13 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#namelist-file-input-nml>`__           | 
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | launch_FV3LAM_wflow.sh    | Symlink to the shell script of                                                                               |
-   |                           | ``ufs-srweather-app/regional_workflow/ush/launch_FV3LAM_wflow.sh``,                                          |
+   |                           | ``ufs-srweather-app/ush/launch_FV3LAM_wflow.sh``,                                                            |
    |                           | which can be used to (re)launch the Rocoto workflow.                                                         |
    |                           | Each time this script is called, it appends to a log                                                         |
    |                           | file named ``log.launch_FV3LAM_wflow``.                                                                      |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | log.generate_FV3LAM_wflow | Log of the output from the experiment generation script                                                      |
-   |                           | (``generate_FV3LAM_wflow.sh``)                                                                               |
+   |                           | (``generate_FV3LAM_wflow.py``)                                                                               |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | nems.configure            | See `NEMS configuration file                                                                                 |
    |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#nems-configure-file>`__               |
