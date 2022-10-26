@@ -616,7 +616,7 @@ fi
 #
 print_info_msg "
 ========================================================================
-UPP-POST-STAT completed successfully.
+POST-STAT completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
