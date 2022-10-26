@@ -25,7 +25,7 @@ else
 fi
 
 # Build and install
-cd ${workspace}/test
+cd ${workspace}/tests
 ./build.sh ${platform} ${SRW_COMPILER}
 cd -
 
