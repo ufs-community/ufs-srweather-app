@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-export share_pid=${WORKFLOW_ID:3}${PDY}${cyc}
+export share_pid=${WORKFLOW_ID}_${PDY}${cyc}
 if [ $# -ne 0 ]; then
     export pid=$share_pid
     export jobid=${job}.${pid}
