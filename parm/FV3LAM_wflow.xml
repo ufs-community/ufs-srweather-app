@@ -101,11 +101,11 @@ Directories and files.
 
 {%- if run_envir == "nco"  %}
 {%- if do_ensemble %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/prev_task.<cyclestr>@Y@m@d@H</cyclestr>.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{workflow_id}}/dyn">
-<!ENTITY PHY_DIR  "{{ dataroot }}/prev_task.<cyclestr>@Y@m@d@H</cyclestr>.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{workflow_id}}/phy">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{workflow_id | replace("id_","") }}<cyclestr>@Y@m@d@H</cyclestr>/dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{workflow_id | replace("id_","") }}<cyclestr>@Y@m@d@H</cyclestr>/phy">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/prev_task.<cyclestr>@Y@m@d@H</cyclestr>.{{workflow_id}}/dyn">
-<!ENTITY PHY_DIR  "{{ dataroot }}/prev_task.<cyclestr>@Y@m@d@H</cyclestr>.{{workflow_id}}/phy">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst.{{workflow_id | replace("id_","") }}<cyclestr>@Y@m@d@H</cyclestr>/dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst.{{workflow_id | replace("id_","") }}<cyclestr>@Y@m@d@H</cyclestr>/phy">
 {%- endif %}
 {%- else %}
 <!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/dyn">

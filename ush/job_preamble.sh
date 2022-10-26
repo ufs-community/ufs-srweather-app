@@ -3,6 +3,18 @@
 #
 #-----------------------------------------------------------------------
 #
+# If requested to share data with next task, override jobid
+#
+#-----------------------------------------------------------------------
+#
+export share_pid=${WORKFLOW_ID:3}${PDY}${cyc}
+if [ $# -ne 0 ]; then
+    export pid=$share_pid
+    export jobid=${job}.${pid}
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Set cycle and ensemble member names in file/diectory names
 #
 #-----------------------------------------------------------------------
@@ -44,17 +56,6 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     fi
 fi
 export CDATE=${PDY}${cyc}
-#
-#-----------------------------------------------------------------------
-#
-# Create symlink to $DATA direcory if requested for it
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ] && [ ${1:-"FALSE"} = "TRUE" ]; then
-    DATASYM=${DATAROOT}/prev_task.${PDY}${cyc}${dot_ensmem}.${WORKFLOW_ID}
-    ln_vrfy -sf $DATA $DATASYM
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -144,7 +145,7 @@ fi
 function job_postamble() {
 
     # Remove temp directory
-    if [ "${RUN_ENVIR}" = "nco" ] && [ ${1:-"FALSE"} != "TRUE" ]; then
+    if [ "${RUN_ENVIR}" = "nco" ] && [ $# -eq 0 ]; then
         cd ${DATAROOT}
         [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
     fi
