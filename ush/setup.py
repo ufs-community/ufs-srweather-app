@@ -401,7 +401,7 @@ def setup():
     # Define some other useful paths
     #
     global SCRIPTSdir, JOBSdir, SORCdir, PARMdir, MODULESdir
-    global EXECdir, PARMdir, FIXdir, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
+    global EXECdir, PARMdir, FIXdir, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG, ARL_NEXUS_DIR
 
     SCRIPTSdir = os.path.join(HOMEdir, "scripts")
     JOBSdir = os.path.join(HOMEdir, "jobs")
@@ -412,6 +412,7 @@ def setup():
     VX_CONFIG_DIR = PARMdir
     METPLUS_CONF = os.path.join(PARMdir, "metplus")
     MET_CONFIG = os.path.join(PARMdir, "met")
+    ARL_NEXUS_DIR = os.path.join(HOMEdir, "sorc/arl_nexus")
 
     #
     # -----------------------------------------------------------------------
@@ -465,9 +466,15 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global PPN_RUN_FCST
+    global PPN_RUN_FCST, PPN_RUN_NEXUS, PPN_RUN_PT_SOURCE
     ppn_run_fcst_default = NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST
     PPN_RUN_FCST = PPN_RUN_FCST or ppn_run_fcst_default
+
+    ppn_run_nexus_default = NCORES_PER_NODE // OMP_NUM_THREADS_RUN_NEXUS
+    PPN_RUN_NEXUS = PPN_RUN_NEXUS or ppn_run_nexus_default
+
+    ppn_run_pt_source_default = NCORES_PER_NODE // OMP_NUM_THREADS_RUN_PT_SOURCE
+    PPN_RUN_PT_SOURCE = PPN_RUN_PT_SOURCE or ppn_run_pt_source_default
     #
     # -----------------------------------------------------------------------
     #
@@ -502,31 +509,13 @@ def setup():
     global USE_MERRA_CLIMO
     if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
         USE_MERRA_CLIMO = True
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set CPL to TRUE/FALSE based on FCST_MODEL.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global CPL
-    if FCST_MODEL == "ufs-weather-model":
-        CPL = False
-    elif FCST_MODEL == "fv3gfs_aqm":
-        CPL = True
-    else:
-        raise Exception(
-            f'''
-            The coupling flag CPL has not been specified for this value of FCST_MODEL:
-              FCST_MODEL = \"{FCST_MODEL}\"'''
-        )
 
     # Make sure RESTART_INTERVAL is set to an integer value
+
     if not isinstance(RESTART_INTERVAL, int):
         raise Exception(f"\nRESTART_INTERVAL = {RESTART_INTERVAL}, must be an integer value\n")
 
     # Check that input dates are in a date format
-
     # get dictionary of all variables
     allvars = dict(globals())
     allvars.update(locals())
@@ -922,6 +911,7 @@ def setup():
     global DATA_TABLE_TMPL_FN, DIAG_TABLE_TMPL_FN, FIELD_TABLE_TMPL_FN, MODEL_CONFIG_TMPL_FN, NEMS_CONFIG_TMPL_FN
     global DATA_TABLE_TMPL_FP, DIAG_TABLE_TMPL_FP, FIELD_TABLE_TMPL_FP, MODEL_CONFIG_TMPL_FP, NEMS_CONFIG_TMPL_FP
     global FV3_NML_BASE_SUITE_FP, FV3_NML_YAML_CONFIG_FP, FV3_NML_BASE_ENS_FP
+    global AQM_RC_TMPL_FN, AQM_RC_TMPL_FP
 
     dot_ccpp_phys_suite_or_null = f".{CCPP_PHYS_SUITE}"
 
@@ -934,7 +924,8 @@ def setup():
     FIELD_TABLE_FN = "field_table"
     MODEL_CONFIG_FN = "model_configure"
     NEMS_CONFIG_FN = "nems.configure"
-    # ----------------------------------
+    AQM_RC_FN = "aqm.rc"
+    #----------------------------------
 
     DATA_TABLE_TMPL_FN = DATA_TABLE_TMPL_FN or DATA_TABLE_FN
     DIAG_TABLE_TMPL_FN = (
@@ -945,6 +936,7 @@ def setup():
     )
     MODEL_CONFIG_TMPL_FN = MODEL_CONFIG_TMPL_FN or MODEL_CONFIG_FN
     NEMS_CONFIG_TMPL_FN = NEMS_CONFIG_TMPL_FN or NEMS_CONFIG_FN
+    AQM_RC_TMPL_FN = AQM_RC_TMPL_FN or AQM_RC_FN
 
     DATA_TABLE_TMPL_FP = os.path.join(PARMdir, DATA_TABLE_TMPL_FN)
     DIAG_TABLE_TMPL_FP = os.path.join(PARMdir, DIAG_TABLE_TMPL_FN)
@@ -954,6 +946,7 @@ def setup():
     FV3_NML_BASE_ENS_FP = os.path.join(EXPTDIR, FV3_NML_BASE_ENS_FN)
     MODEL_CONFIG_TMPL_FP = os.path.join(PARMdir, MODEL_CONFIG_TMPL_FN)
     NEMS_CONFIG_TMPL_FP = os.path.join(PARMdir, NEMS_CONFIG_TMPL_FN)
+    AQM_RC_TMPL_FP = os.path.join(PARMdir, AQM_RC_TMPL_FN)
     #
     # -----------------------------------------------------------------------
     #
@@ -1536,8 +1529,9 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global NNODES_RUN_FCST
+    global NNODES_RUN_FCST, NNODES_RUN_PT_SOURCE
     NNODES_RUN_FCST = (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST
+    NNODES_RUN_PT_SOURCE = ((LAYOUT_X * LAYOUT_Y) + PPN_RUN_PT_SOURCE -1) // PPN_RUN_PT_SOURCE
 
     #
     # -----------------------------------------------------------------------
@@ -1681,6 +1675,7 @@ def setup():
         "UFS_WTHR_MDL_DIR": UFS_WTHR_MDL_DIR,
         "SFC_CLIMO_INPUT_DIR": SFC_CLIMO_INPUT_DIR,
         "TOPO_DIR": TOPO_DIR,
+        "ARL_NEXUS_DIR": ARL_NEXUS_DIR,
         "EXPTDIR": EXPTDIR,
         "GRID_DIR": GRID_DIR,
         "OROG_DIR": OROG_DIR,
@@ -1701,11 +1696,13 @@ def setup():
         "FIELD_TABLE_FN": FIELD_TABLE_FN,
         "MODEL_CONFIG_FN": MODEL_CONFIG_FN,
         "NEMS_CONFIG_FN": NEMS_CONFIG_FN,
+        "AQM_RC_FN": AQM_RC_FN,
         "DATA_TABLE_TMPL_FN": DATA_TABLE_TMPL_FN,
         "DIAG_TABLE_TMPL_FN": DIAG_TABLE_TMPL_FN,
         "FIELD_TABLE_TMPL_FN": FIELD_TABLE_TMPL_FN,
         "MODEL_CONFIG_TMPL_FN": MODEL_CONFIG_TMPL_FN,
         "NEMS_CONFIG_TMPL_FN": NEMS_CONFIG_TMPL_FN,
+        "AQM_RC_TMPL_FN": AQM_RC_TMPL_FN,
         "DATA_TABLE_TMPL_FP": DATA_TABLE_TMPL_FP,
         "DIAG_TABLE_TMPL_FP": DIAG_TABLE_TMPL_FP,
         "FIELD_TABLE_TMPL_FP": FIELD_TABLE_TMPL_FP,
@@ -1714,6 +1711,7 @@ def setup():
         "FV3_NML_BASE_ENS_FP": FV3_NML_BASE_ENS_FP,
         "MODEL_CONFIG_TMPL_FP": MODEL_CONFIG_TMPL_FP,
         "NEMS_CONFIG_TMPL_FP": NEMS_CONFIG_TMPL_FP,
+        "AQM_RC_TMPL_FP": AQM_RC_TMPL_FP,
         "CCPP_PHYS_SUITE_FN": CCPP_PHYS_SUITE_FN,
         "CCPP_PHYS_SUITE_IN_CCPP_FP": CCPP_PHYS_SUITE_IN_CCPP_FP,
         "CCPP_PHYS_SUITE_FP": CCPP_PHYS_SUITE_FP,
@@ -1764,15 +1762,6 @@ def setup():
         # the make_grid task is complete.
         #
         "CRES": CRES,
-        #
-        # -----------------------------------------------------------------------
-        #
-        # Flag in the \"{MODEL_CONFIG_FN}\" file for coupling the ocean model to
-        # the weather model.
-        #
-        # -----------------------------------------------------------------------
-        #
-        "CPL": CPL,
         #
         # -----------------------------------------------------------------------
         #

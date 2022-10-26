@@ -68,10 +68,8 @@ def create_model_configure_file(
     #
     # Set parameters in the model configure file.
     #
-    dot_quilting_dot = f".{lowercase(str(QUILTING))}."
-    dot_print_esmf_dot = f".{lowercase(str(PRINT_ESMF))}."
-    dot_cpl_dot = f".{lowercase(str(CPL))}."
-    dot_write_dopost = f".{lowercase(str(WRITE_DOPOST))}."
+    dot_quilting_dot=f".{lowercase(str(QUILTING))}."
+    dot_write_dopost=f".{lowercase(str(WRITE_DOPOST))}."
     #
     # -----------------------------------------------------------------------
     #
@@ -83,14 +81,12 @@ def create_model_configure_file(
     #
     settings = {
         "PE_MEMBER01": PE_MEMBER01,
-        "print_esmf": dot_print_esmf_dot,
         "start_year": yyyy,
         "start_month": mm,
         "start_day": dd,
         "start_hour": hh,
         "nhours_fcst": FCST_LEN_HRS,
         "dt_atmos": DT_ATMOS,
-        "cpl": dot_cpl_dot,
         "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
         "restart_interval": RESTART_INTERVAL,
         "write_dopost": dot_write_dopost,
@@ -326,8 +322,6 @@ class Testing(unittest.TestCase):
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
         set_env_var("QUILTING", True)
-        set_env_var("PRINT_ESMF", True)
-        set_env_var("CPL", True)
         set_env_var("WRITE_DOPOST", True)
         set_env_var("USHdir", USHdir)
         set_env_var("MODEL_CONFIG_FN", MODEL_CONFIG_FN)

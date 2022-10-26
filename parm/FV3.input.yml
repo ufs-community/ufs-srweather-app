@@ -69,7 +69,6 @@ FV3_GFS_2017_gfdlmp:
     agrid_vel_rst: False
     d4_bg: 0.15
     delt_max: 0.008
-    dnats: 1
     do_sat_adj: True
     fv_debug: False
     k_split: 6
@@ -197,7 +196,6 @@ FV3_GFS_v15p2:
     agrid_vel_rst: False
     d2_bg_k1: 0.15
     d2_bg_k2: 0.02
-    dnats: 1
     do_sat_adj: True
     fv_debug: False
     fv_sg_adj: 600

@@ -185,12 +185,16 @@ platform:
   # The run command for post-processing (UPP). Can be left blank for smaller 
   # domains, in which case UPP will run without MPI.
   #
+  # RUN_CMD_AQM:
+  # The run command for ARL-NEXUS.
+  #
   #-----------------------------------------------------------------------
   #
   RUN_CMD_SERIAL: ""
   RUN_CMD_UTILS: ""
   RUN_CMD_FCST: ""
   RUN_CMD_POST: ""
+  RUN_CMD_AQM: ""
 
   #
   #-----------------------------------------------------------------------
@@ -235,7 +239,7 @@ platform:
   # the valid time in the metadata for files valid from 19 - 00 UTC (or 
   # files under the '00' directory). The script to pull the CCPA data 
   # from the NOAA HPSS has an example of how to account for this as well
-  # as organizing the data into a more intuitive format: 
+  # as organizing the data into a more intuitive format:
   # scripts/exregional_get_ccpa_files.sh. When a fix is provided, it will
   # be accounted for in the exregional_get_ccpa_files.sh script.
   #
@@ -2246,3 +2250,199 @@ global:
   #
   #-----------------------------------------------------------------------
   #
+#----------------------------
+# CPL_AQM config parameters
+#-----------------------------
+cpl_aqm_parm:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set coupling parameters
+  #
+  # CPL_AQM:
+  # Coupling flag for air quality modeling
+  #
+  #-----------------------------------------------------------------------
+  #
+  CPL_AQM: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set task flag, name, parallel parameters for air quality modeling
+  #
+  #-----------------------------------------------------------------------
+  #
+  RUN_TASK_ADD_AQM_ICS: false
+  RUN_TASK_ADD_AQM_LBCS: false
+  RUN_TASK_RUN_NEXUS: false
+  RUN_TASK_RUN_PT_SOURCE: false
+  RUN_TASK_RUN_POST_STAT: false
+
+  ADD_AQM_ICS_TN: "add_aqm_ics"
+  NNODES_ADD_AQM_ICS: 1
+  PPN_ADD_AQM_ICS: 1
+  WTIME_ADD_AQM_ICS: 00:30:00
+  MAXTRIES_ADD_AQM_ICS: 2
+
+  ADD_AQM_LBCS_TN: "add_aqm_lbcs"
+  NNODES_ADD_AQM_LBCS: 1
+  PPN_ADD_AQM_LBCS: 24
+  WTIME_ADD_AQM_LBCS: 00:30:00
+  MAXTRIES_ADD_AQM_LBCS: 2
+
+  RUN_NEXUS_TN: "run_nexus"
+  NNODES_RUN_NEXUS: 4
+  PPN_RUN_NEXUS: "" # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.py
+  WTIME_RUN_NEXUS: 00:30:00
+  MAXTRIES_RUN_NEXUS: 2
+  KMP_AFFINITY_RUN_NEXUS: "scatter"
+  OMP_NUM_THREADS_RUN_NEXUS: 2
+  OMP_STACKSIZE_RUN_NEXUS: "1024m"
+
+  RUN_PT_SOURCE_TN: "run_pt_source"
+  NNODES_RUN_PT_SOURCE: ""  # will be calculated in the workflow generation scripts 
+  PPN_RUN_PT_SOURCE: "" # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.py
+  WTIME_RUN_PT_SOURCE: 00:30:00
+  MAXTRIES_RUN_PT_SOURCE: 2
+  KMP_AFFINITY_RUN_PT_SOURCE: "scatter"
+  OMP_NUM_THREADS_RUN_PT_SOURCE: 2
+  OMP_STACKSIZE_RUN_PT_SOURCE: "1024m"
+
+  RUN_POST_STAT_TN: "run_post_stat"
+  NNODES_RUN_POST_STAT: 1
+  PPN_RUN_POST_STAT: 1
+  WTIME_RUN_POST_STAT: 00:30:00
+  MAXTRIES_RUN_POST_STAT: 2
+  KMP_AFFINITY_RUN_POST_STAT: "scatter"
+  OMP_NUM_THREADS_RUN_POST_STAT: 1
+  OMP_STACKSIZE_RUN_POST_STAT: "2056M"
+
+#
+#-----------------------------------------------------------------------
+#
+# Parameters for additional files for air quality modeling
+#
+# AQM_RC_TMPL_FN:
+# Template file name of resource file for NOAA Air Quality Model (AQM)
+#
+# AQM_CONFIG_DIR:
+# Configuration directory for AQM
+# 
+# AQM_BIO_DIR:
+# Path to the directory containing AQM bio files
+# 
+# AQM_BIO_FILE:
+# File name of AQM BIO file
+#
+# DO_AQM_FENGSHA:
+# Flag turning on/off AQM Fengsha option in AQM_RC
+#
+# AQM_FENGSHA_DIR:
+# Path to the directory containing AQM Fengsha file
+#
+# AQM_FENGSHA_FILE_PREFIX:
+# Frefix of AQM Fengsha file
+#
+# AQM_FENGSHA_FILE_SUFFIX:
+# Suffix and extension of AQM Fengsha file
+#
+# DO_AQM_CANOPY
+# Flag turning on/off AQM canopy option in AQM_RC
+#
+# AQM_CANOPY_DIR:
+# Path to the directory containing AQM canopy files
+# 
+# AQM_CANOPY_FILE:
+# File name of AQM canopy file
+#
+# AQM_CANOPY_FILE_SUFFIX:
+# Suffix and extension of AQM CANOPY file
+# 
+# AQM_FIRE_DIR:
+# Path to the directory containing AQM fire files
+# 
+# AQM_FIRE_FILE:
+# File name of AQM FIRE file
+# 
+# AQM_FIRE_FILE_SUFFIX:
+# Suffix and extension of AQM FIRE file
+# 
+# AQM_RC_FIRE_FREQUENCY:
+# Fire frequency in aqm.rc
+# 
+# AQM_LBCS_DIR:
+# Path to the directory containing chemical LBC files
+# 
+# AQM_LBCS_FILES:
+# File name of chemical LBCs
+#
+# AQM_GEFS_DIR:
+# Path to the directory containing GEFS aerosol LBC files
+#
+# AQM_GEFS_CYC:
+# Cycle of the GEFS aerosol LBC files
+# 
+# RUN_ADD_AQM_GEFS_LBCS:
+# Add GEFS aerosol LBCs to chemical LBCs
+# 
+# NEXUS_INPUT_DIR:
+# Same as GRID_DIR but for the the air quality emission generation task.
+# Should be blank for the default value specified in setup.sh
+# 
+# NEXUS_FIX_DIR:
+# Directory containing grid_spec files as the input file of nexus
+# 
+# NEXUS_GRID_FN:
+# File name of the input grid_spec file of nexus
+#
+# PT_SRC_BASE_DIR_CONUS:
+# Directory containing point source files for CONUS
+#
+# PT_SRC_BASE_DIR_HI:
+# Directory containing point source files for HI
+#
+# PT_SRC_BASE_DIR_AK:
+# Directory containing point source files for AK
+#
+# COLDSTART:
+# Flag turning on/off warm start
+#
+# WARMSTART_CYCLE_DIR
+# Path to the directory where RESTART dir is located for warm start
+#
+#-----------------------------------------------------------------------
+#
+  AQM_RC_TMPL_FN: "aqm.rc"
+  AQM_CONFIG_DIR: ""
+  AQM_BIO_DIR: ""
+  AQM_BIO_FILE: "BEIS_SARC401.ncf"
+  DO_AQM_FENGSHA: true
+  AQM_FENGSHA_DIR: "/path/to/fengsha/dir"
+  AQM_FENGSHA_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
+  AQM_FENGSHA_FILE_SUFFIX: ".nc"
+  DO_AQM_CANOPY: false
+  AQM_CANOPY_DIR: "/path/to/canopy/dir"
+  AQM_CANOPY_FILE: "gfs.t12z.geo"
+  AQM_CANOPY_FILE_SUFFIX: ".canopy_regrid.nc"
+  AQM_FIRE_DIR: ""
+  AQM_FIRE_FILE: "GBBEPx_C401GRID.emissions_v003"
+  AQM_FIRE_FILE_SUFFIX: ".nc"
+  AQM_RC_FIRE_FREQUENCY: "static"
+  AQM_LBCS_DIR: ""
+  AQM_LBCS_FILES: "gfs_bndy_chen_<MM>.tile7.000.nc"
+  AQM_GEFS_DIR: ""
+  AQM_GEFS_CYC: 0
+
+  RUN_ADD_AQM_CHEM_LBCS: true
+  RUN_ADD_AQM_GEFS_LBCS: false
+
+  NEXUS_INPUT_DIR: ""
+  NEXUS_FIX_DIR: ""
+  NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
+
+  PT_SRC_BASE_DIR_CONUS: "/path/to/point/source/base/directory/for/conus"
+  PT_SRC_BASE_DIR_HI: "/path/to/point/source/base/directory/for/hi"
+  PT_SRC_BASE_DIR_AK: "/path/to/point/source/base/directory/for/ak"
+
+  COLDSTART: true
+  WARMSTART_CYCLE_DIR: "/path/to/warm/start/cycle/dir"

@@ -15,8 +15,8 @@ OPTIONS
       compiler to use; default depends on platform
       (e.g. intel | gnu | cray | gccgfortran)
   -a, --app=APPLICATION
-      weather model application to build
-      (e.g. ATM | ATMW | S2S | S2SW)
+      weather model application to build; for example, ATMAQ for Online-CMAQ
+      (e.g. ATM | ATMAQ | ATMW | S2S | S2SW)
   --ccpp="CCPP_SUITE1,CCPP_SUITE2..."
       CCPP suites (CCPP_SUITES) to include in build; delimited with ','
   --enable-options="OPTION1,OPTION2,..."
@@ -66,6 +66,7 @@ cat << EOF_SETTINGS
 Settings:
 
   SRW_DIR=${SRW_DIR}
+  BIN_DIR=${BIN_DIR}
   BUILD_DIR=${BUILD_DIR}
   INSTALL_DIR=${INSTALL_DIR}
   BIN_DIR=${BIN_DIR}
@@ -85,6 +86,8 @@ Settings:
   BUILD_UPP=${BUILD_UPP}
   BUILD_GSI=${BUILD_GSI}
   BUILD_RRFS_UTILS=${BUILD_RRFS_UTILS}
+  BUILD_NEXUS=${BUILD_NEXUS}
+  BUILD_AQM_UTILS=${BUILD_AQM_UTILS}
 
 EOF_SETTINGS
 }
@@ -99,6 +102,7 @@ usage_error () {
 # default settings
 LCL_PID=$$
 SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
+BIN_DIR="${SRW_DIR}/bin"
 MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
 BUILD_DIR="${SRW_DIR}/build"
 INSTALL_DIR=${SRW_DIR}
@@ -106,6 +110,7 @@ BIN_DIR="exec"
 COMPILER=""
 APPLICATION=""
 CCPP_SUITES=""
+CANOPY=false
 ENABLE_OPTIONS=""
 DISABLE_OPTIONS=""
 BUILD_TYPE="RELEASE"
@@ -121,6 +126,8 @@ BUILD_UFS_UTILS="off"
 BUILD_UPP="off"
 BUILD_GSI="off"
 BUILD_RRFS_UTILS="off"
+BUILD_NEXUS="off"
+BUILD_AQM_UTILS="off"
 
 # Make options
 CLEAN=false
@@ -145,6 +152,8 @@ while :; do
     --app|--app=|-a|-a=) usage_error "$1 requires argument." ;;
     --ccpp=?*) CCPP_SUITES=${1#*=} ;;
     --ccpp|--ccpp=) usage_error "$1 requires argument." ;;
+    --canopy) CANOPY=true ;;
+    --canopy=*) usage_error "$1 argument ignored." ;;
     --enable-options=?*) ENABLE_OPTIONS=${1#*=} ;;
     --enable-options|--enable-options=) usage_error "$1 requires argument." ;;
     --disable-options=?*) DISABLE_OPTIONS=${1#*=} ;;
@@ -178,6 +187,8 @@ while :; do
     upp) DEFAULT_BUILD=false; BUILD_UPP="on" ;;
     gsi) DEFAULT_BUILD=false; BUILD_GSI="on" ;;
     rrfs_utils) DEFAULT_BUILD=false; BUILD_RRFS_UTILS="on" ;;
+    nexus) DEFAULT_BUILD=false; BUILD_NEXUS="on" ;;
+    aqm_utils) DEFAULT_BUILD=false; BUILD_AQM_UTILS="on" ;;
     # unknown
     -?*|?*) usage_error "Unknown option $1" ;;
     *) break
@@ -196,6 +207,7 @@ fi
 APPLICATION="${APPLICATION^^}"
 PLATFORM="${PLATFORM,,}"
 COMPILER="${COMPILER,,}"
+EXTERNALS="${EXTERNALS^^}"
 
 # check if PLATFORM is set
 if [ -z $PLATFORM ] ; then
@@ -231,6 +243,31 @@ printf "COMPILER=${COMPILER}\n" >&2
 # print settings
 if [ "${VERBOSE}" = true ] ; then
   settings
+fi
+
+# Check out external components for Online-CMAQ =============================
+if [ "${APPLICATION}" = "ATMAQ" ]; then
+  if [ -d "${SRW_DIR}/sorc/arl_nexus" ]; then
+    printf "Extra external components already exist. This step will be skipped.\n"
+  else  
+    printf "... Checking out extra components for Online-CMAQ ...\n"
+
+#    printf "... Replace ufs-weather-model with a temporary fix ...\n"
+#    rm -rf "${SRW_DIR}/sorc/ufs-weather-model"
+
+    ./manage_externals/checkout_externals -e externals/Externals_AQM.cfg
+
+    if [ "${CANOPY}" = true ]; then
+      printf "... Replace ufs-weather-model with the canopy version ...\n"
+      rm -rf "${SRW_DIR}/sorc/ufs-weather-model"
+      ./manage_externals/checkout_externals -e externals/Externals_canopy.cfg
+    fi
+  fi
+
+  if [ "${DEFAULT_BUILD}" = true ]; then
+    BUILD_NEXUS="on"
+    BUILD_AQM_UTILS="on"
+  fi
 fi
 
 # source version file only if it is specified in versions directory
@@ -300,7 +337,9 @@ CMAKE_SETTINGS="\
  -DBUILD_UFS_UTILS=${BUILD_UFS_UTILS}\
  -DBUILD_UPP=${BUILD_UPP}\
  -DBUILD_GSI=${BUILD_GSI}\
- -DBUILD_RRFS_UTILS=${BUILD_RRFS_UTILS}"
+ -DBUILD_RRFS_UTILS=${BUILD_RRFS_UTILS}\
+ -DBUILD_NEXUS=${BUILD_NEXUS}\
+ -DBUILD_AQM_UTILS=${BUILD_AQM_UTILS}"
 
 if [ ! -z "${APPLICATION}" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DAPP=${APPLICATION}"
@@ -313,6 +352,9 @@ if [ ! -z "${ENABLE_OPTIONS}" ]; then
 fi
 if [ ! -z "${DISABLE_OPTIONS}" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DDISABLE_OPTIONS=${DISABLE_OPTIONS}"
+fi
+if [ "${APPLICATION}" = "ATMAQ" ]; then
+  CMAKE_SETTINGS="${CMAKE_SETTINGS} -DCPL_AQM=ON"
 fi
 
 # make settings
@@ -387,6 +429,16 @@ if [ $USE_SUB_MODULES = true ]; then
     fi
     if [ $BUILD_RRFS_UTILS = "on" ]; then
         printf "... Loading RRFS_UTILS modules ...\n"
+        load_module ""
+    fi
+    if [ $BUILD_NEXUS = "on" ]; then
+        printf "... Loading NEXUS modules ...\n"
+        module use ${SRW_DIR}/sorc/arl_nexus/modulefiles
+        load_module ""
+    fi
+    if [ $BUILD_AQM_UTILS = "on" ]; then
+        printf "... Loading AQM-utils modules ...\n"
+        module use ${SRW_DIR}/sorc/AQM-utils/modulefiles
         load_module ""
     fi
 else

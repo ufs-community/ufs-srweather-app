@@ -151,6 +151,11 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         d = DATE_FIRST_CYCL + timedelta(seconds=DT_ATMOS)
         time_str = d.strftime("%M:%S")
 
+        if DATE_FIRST_CYCL == DATE_LAST_CYCL:
+            CYCL_NEXT = date_to_str(DATE_FIRST_CYCL, format="%Y%m%d%H00")
+        else:
+            CYCL_NEXT = date_to_str(DATE_FIRST_CYCL + timedelta(hours=INCR_CYCL_FREQ), format="%Y%m%d%H00")
+
         # Dictionary of settings
         settings = {
             #
@@ -247,10 +252,13 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
             #
             "ncores_run_fcst": PE_MEMBER01,
             "native_run_fcst": f"--cpus-per-task {OMP_NUM_THREADS_RUN_FCST} --exclusive",
+            "native_run_nexus": f"--cpus-per-task {OMP_NUM_THREADS_RUN_NEXUS}",
             #
-            # Number of OpenMP threads for the run_fcst task
+            # Number of OpenMP threads for the run_fcst task and run_nexus
             #
             "omp_num_threads_run_fcst": OMP_NUM_THREADS_RUN_FCST,
+            "omp_num_threads_run_nexus": OMP_NUM_THREADS_RUN_NEXUS,
+            "omp_num_threads_run_pt_source": OMP_NUM_THREADS_RUN_PT_SOURCE,
             #
             # Number of logical processes per node for each task.  If running without
             # threading, this is equal to the number of MPI processes per node.
@@ -407,6 +415,42 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
             "ccpa_obs_dir": CCPA_OBS_DIR,
             "mrms_obs_dir": MRMS_OBS_DIR,
             "ndas_obs_dir": NDAS_OBS_DIR,
+            #
+            # AQM parameters
+            #
+ 	      'add_aqm_ics_tn': ADD_AQM_ICS_TN,
+              'add_aqm_lbcs_tn': ADD_AQM_LBCS_TN,
+              'run_nexus_tn': RUN_NEXUS_TN,
+              'run_pt_source_tn': RUN_PT_SOURCE_TN,
+              'run_post_stat_tn': RUN_POST_STAT_TN,
+              'coldstart': COLDSTART,
+              'warmstart_cycle_dir': WARMSTART_CYCLE_DIR,
+              'cycl_next': CYCL_NEXT,
+              'run_task_add_aqm_ics': RUN_TASK_ADD_AQM_ICS,
+              'run_task_add_aqm_lbcs': RUN_TASK_ADD_AQM_LBCS,
+              'run_task_run_nexus': RUN_TASK_RUN_NEXUS,
+              'run_task_run_pt_source': RUN_TASK_RUN_PT_SOURCE,
+              'run_task_run_post_stat': RUN_TASK_RUN_POST_STAT,
+              'nnodes_add_aqm_ics': NNODES_ADD_AQM_ICS,
+              'nnodes_add_aqm_lbcs': NNODES_ADD_AQM_LBCS,
+              'nnodes_run_nexus': NNODES_RUN_NEXUS,
+              'nnodes_run_pt_source': NNODES_RUN_PT_SOURCE,
+              'nnodes_run_post_stat': NNODES_RUN_POST_STAT,
+              'ppn_add_aqm_ics': PPN_ADD_AQM_ICS,
+              'ppn_add_aqm_lbcs': PPN_ADD_AQM_LBCS,
+              'ppn_run_nexus': PPN_RUN_NEXUS,
+              'ppn_run_pt_source': PPN_RUN_PT_SOURCE,
+              'ppn_run_post_stat': PPN_RUN_POST_STAT,
+              'wtime_add_aqm_ics': WTIME_ADD_AQM_ICS,
+              'wtime_add_aqm_lbcs': WTIME_ADD_AQM_LBCS,
+              'wtime_run_nexus': WTIME_RUN_NEXUS,
+              'wtime_run_pt_source': WTIME_RUN_PT_SOURCE,
+              'wtime_run_post_stat': WTIME_RUN_POST_STAT,
+              'maxtries_add_aqm_ics': MAXTRIES_ADD_AQM_ICS,
+              'maxtries_add_aqm_lbcs': MAXTRIES_ADD_AQM_LBCS,
+              'maxtries_run_nexus': MAXTRIES_RUN_NEXUS,
+              'maxtries_run_pt_source': MAXTRIES_RUN_PT_SOURCE,
+              'maxtries_run_post_stat': MAXTRIES_RUN_POST_STAT,
             #
             # Ensemble-related parameters.
             #
@@ -678,7 +722,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         "blocksize": BLOCKSIZE,
         "ccpp_suite": CCPP_PHYS_SUITE,
     }
-    settings["fv_core_nml"] = {
+
+    fv_core_nml_dict = {}
+    fv_core_nml_dict.update({
         "target_lon": LON_CTR,
         "target_lat": LAT_CTR,
         "nrows_blend": HALO_BLEND,
@@ -695,8 +741,23 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         "npy": npy,
         "layout": [LAYOUT_X, LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
-    }
-    settings["gfs_physics_nml"] = {
+    })
+    if ( CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdl_mp" or
+         CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdlmp_regional" or
+         CCPP_PHYS_SUITE == "FV3_GFS_v15p2" or
+         CCPP_PHYS_SUITE == "FV3_GFS_v16" ):
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "dnats": 4
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 1
+            })
+    settings["fv_core_nml"] = fv_core_nml_dict
+
+    gfs_physics_nml_dict = {}
+    gfs_physics_nml_dict.update({
         "kice": kice or None,
         "lsoil": lsoil or None,
         "do_shum": DO_SHUM,
@@ -707,7 +768,31 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
         "n_var_lndp": N_VAR_LNDP,
         "lndp_type": LNDP_TYPE,
         "fhcyc": FHCYC_LSM_SPP_OR_NOT,
-    }
+    })
+    if CPL_AQM:
+        gfs_physics_nml_dict.update({
+            "cplaqm": True,    
+            "cplocn2atm": False,
+            "fscav_aero": ["aacd:0.0", "acet:0.0", "acrolein:0.0", "acro_primary:0.0", "ald2:0.0", 
+                           "ald2_primary:0.0", "aldx:0.0", "benzene:0.0", "butadiene13:0.0", "cat1:0.0", 
+                           "cl2:0.0", "clno2:0.0", "co:0.0", "cres:0.0", "cron:0.0", 
+                           "ech4:0.0", "epox:0.0", "eth:0.0", "etha:0.0", "ethy:0.0", 
+                           "etoh:0.0", "facd:0.0", "fmcl:0.0", "form:0.0", "form_primary:0.0", 
+                           "gly:0.0", "glyd:0.0", "h2o2:0.0", "hcl:0.0", "hg:0.0", 
+                           "hgiigas:0.0", "hno3:0.0", "hocl:0.0", "hono:0.0", "hpld:0.0", 
+                           "intr:0.0", "iole:0.0", "isop:0.0", "ispd:0.0", "ispx:0.0", 
+                           "ket:0.0", "meoh:0.0", "mepx:0.0", "mgly:0.0", "n2o5:0.0", 
+                           "naph:0.0", "no:0.0", "no2:0.0", "no3:0.0", "ntr1:0.0", 
+                           "ntr2:0.0", "o3:0.0", "ole:0.0", "opan:0.0", "open:0.0", 
+                           "opo3:0.0", "pacd:0.0", "pan:0.0", "panx:0.0", "par:0.0", 
+                           "pcvoc:0.0", "pna:0.0", "prpa:0.0", "rooh:0.0", "sesq:0.0", 
+                           "so2:0.0", "soaalk:0.0", "sulf:0.0", "terp:0.0", "tol:0.0", 
+                           "tolu:0.0", "vivpo1:0.0", "vlvoo1:0.0", "vlvoo2:0.0", "vlvpo1:0.0", 
+                           "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0", 
+                           "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
+        })
+    settings["gfs_physics_nml"] = gfs_physics_nml_dict
+
     #
     # Add to "settings" the values of those namelist variables that specify
     # the paths to fixed files in the FIXam directory.  As above, these namelist

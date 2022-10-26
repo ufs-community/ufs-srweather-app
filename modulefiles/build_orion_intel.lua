@@ -21,6 +21,8 @@ load("srw_common")
 load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.8.9.0"))
 load(pathJoin("nco", os.getenv("nco_ver") or "4.9.3"))
 
+load(pathJoin("wgrib2", os.getenv("wgrib2_ver") or "2.0.8"))
+
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
 setenv("CMAKE_Fortran_COMPILER","mpiifort")

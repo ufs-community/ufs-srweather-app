@@ -1,0 +1,6 @@
+load(pathJoin("intel", os.getenv("intel_ver")))
+load(pathJoin("python", os.getenv("python_ver")))
+load(pathJoin("udunits", os.getenv("udunits_ver")))
+load(pathJoin("gsl", os.getenv("gsl_ver")))
+load(pathJoin("netcdf", os.getenv("netcdf_ver")))
+load(pathJoin("nco", os.getenv("nco_ver")))

@@ -93,8 +93,8 @@ to the temporary work directory (DATA_FHR):
   DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 else
-  if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
-    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam_cmaq.txt"
+  if [ "${CPL_AQM}" = "TRUE" ]; then
+    post_config_fp="${HOMEdir}/sorc/AQM-utils/parm/postxconfig-NT-fv3lam_cmaq.txt"
   else
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
   fi
@@ -186,7 +186,7 @@ post_mn=${post_time:10:2}
 #
 # Create the input namelist file to the post-processor executable.
 #
-if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
+if [ "${CPL_AQM}" = "TRUE" ]; then
   post_itag_add="aqfcmaq_on=.true.,"
 else
   post_itag_add=""
@@ -273,7 +273,11 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.gri
 cd_vrfy "${COMOUT}"
 basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
 symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
-fids=( "prslev" "natlev" )
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  fids=( "cmaq" )
+else
+  fids=( "prslev" "natlev" )
+fi
 for fid in "${fids[@]}"; do
   FID=$(echo_uppercase $fid)
   post_orig_fn="${FID}.${post_fn_suffix}"

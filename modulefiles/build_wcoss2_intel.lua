@@ -43,6 +43,8 @@ load(pathJoin("sigio", os.getenv("sigio_ver")))
 load(pathJoin("sfcio", os.getenv("sfcio_ver")))
 load(pathJoin("wrf_io", os.getenv("wrf_io_ver")))
 
+load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
+
 setenv("CMAKE_C_COMPILER","cc")
 setenv("CMAKE_CXX_COMPILER","CC")
 setenv("CMAKE_Fortran_COMPILER","ftn")
