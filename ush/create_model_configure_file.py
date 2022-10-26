@@ -52,10 +52,10 @@ def create_model_configure_file(
     # -----------------------------------------------------------------------
     #
     print_info_msg(
-        f'''
-        Creating a model configuration file (\"{MODEL_CONFIG_FN}\") in the specified
+        f"""
+        Creating a model configuration file ('{MODEL_CONFIG_FN}') in the specified
         run directory (run_dir):
-          run_dir = \"{run_dir}\"''',
+          run_dir = '{run_dir}'""",
         verbose=VERBOSE,
     )
     #
@@ -190,7 +190,7 @@ def create_model_configure_file(
     print_info_msg(
         dedent(
             f"""
-            The variable \"settings\" specifying values to be used in the \"{MODEL_CONFIG_FN}\"
+            The variable 'settings' specifying values to be used in the '{MODEL_CONFIG_FN}'
             file has been set as follows:\n
             settings =\n\n"""
         )
@@ -223,14 +223,14 @@ def create_model_configure_file(
         print_err_msg_exit(
             dedent(
                 f"""
-            Call to python script fill_jinja_template.py to create a \"{MODEL_CONFIG_FN}\"
-            file from a jinja2 template failed.  Parameters passed to this script are:
-              Full path to template model config file:
-                MODEL_CONFIG_TMPL_FP = \"{MODEL_CONFIG_TMPL_FP}\"
-              Full path to output model config file:
-                model_config_fp = \"{model_config_fp}\"
-              Namelist settings specified on command line:\n
-                settings =\n\n"""
+                Call to python script fill_jinja_template.py to create a '{MODEL_CONFIG_FN}'
+                file from a jinja2 template failed.  Parameters passed to this script are:
+                  Full path to template model config file:
+                    MODEL_CONFIG_TMPL_FP = '{MODEL_CONFIG_TMPL_FP}'
+                  Full path to output model config file:
+                    model_config_fp = '{model_config_fp}'
+                  Namelist settings specified on command line:\n
+                    settings =\n\n"""
             )
             + settings_str
         )
