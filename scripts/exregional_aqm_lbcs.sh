@@ -62,7 +62,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_ADD_AQM_LBCS*PPN_ADD_AQM_LBCS ))
+nprocs=$(( NNODES_AQM_LBCS*PPN_AQM_LBCS ))
 
 if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   print_err_msg_exit "\
@@ -93,7 +93,7 @@ cd_vrfy $DATA
 yyyymmdd="${PDY}"
 mm="${PDY:4:2}"
 
-if [ ${RUN_ADD_AQM_CHEM_LBCS} = "TRUE" ]; then
+if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
 
   ext_lbcs_file=${AQM_LBCS_FILES}
   chem_lbcs_fn=${ext_lbcs_file//<MM>/${mm}}
@@ -127,7 +127,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ ${RUN_ADD_AQM_GEFS_LBCS} = "TRUE" ]; then
+if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
 
   cp_vrfy ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.???.nc $DATA
 

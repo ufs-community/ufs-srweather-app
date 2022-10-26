@@ -3,9 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script generates both the initial conditions (ICs) and the lateral
-# boundary conditions (LBCs) files for the air quality model (AQM) from
-# files stored either in the system directory or on mass storage (HPSS).
+# This script runs POST-UPP-STAT.
 #
 #-----------------------------------------------------------------------
 #
@@ -53,41 +51,37 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies/fetches to a local 
-directory (either from disk or HPSS) the aqm boundary conditions from 
-which the model needs.
+This is the J-job script for the task that runs POST-UPP-STAT.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of and create the directory in which the output from this
-# script will be placed (if it doesn't already exist).
-#
-#-----------------------------------------------------------------------
-#
-if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_DATA="${COMIN}"
-else
-    export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
-fi
-mkdir_vrfy -p "${INPUT_DATA}"
-#
-#-----------------------------------------------------------------------
-#
-# Set the run directory
+# Set the run directory.
 #
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir_vrfy -p "${DATA}"
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary variables.
+# If it doesn't already exist, create the directory (COMOUT) in which 
+# to store post-processing output.  (Note that COMOUT may have already 
+# been created by this post-processing script for a different output time 
+# from the same forecast start time and/or ensemble member.)
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_add_aqm_ics.sh || \
+export COMOUT="${COMOUT}/POST_STAT"
+mkdir_vrfy -p "${COMOUT}"
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
+#
+#-----------------------------------------------------------------------
+#
+$SCRIPTSdir/exregional_post_stat.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
@@ -101,7 +95,8 @@ job_postamble
 #
 #-----------------------------------------------------------------------
 #
-# Restore the shell options saved at the beginning of this script/function.
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
 #
 #-----------------------------------------------------------------------
 #
