@@ -142,6 +142,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             "run_envir": RUN_ENVIR,
             "run": RUN,
             "net": NET,
+            "dataroot": DATAROOT,
             #
             # Workflow task names.
             #

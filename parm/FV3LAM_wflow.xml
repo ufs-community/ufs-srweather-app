@@ -100,11 +100,11 @@ Directories and files.
 
 {%- if run_envir == "nco"  %}
 {%- if do_ensemble %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.dyn</cyclestr>">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.phy</cyclestr>">
+<!ENTITY DYN_DIR  "{{ dataroot }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.dyn</cyclestr>">
+<!ENTITY PHY_DIR  "{{ dataroot }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.phy</cyclestr>">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.dyn</cyclestr>">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.phy</cyclestr>">
+<!ENTITY DYN_DIR  "{{ dataroot }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.dyn</cyclestr>">
+<!ENTITY PHY_DIR  "{{ dataroot }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.phy</cyclestr>">
 {%- endif %}
 {%- else %}
 <!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H{{ slash_ensmem_subdir }}/dyn</cyclestr>">
