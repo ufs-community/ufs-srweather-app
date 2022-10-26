@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 
 #
 #-----------------------------------------------------------------------
@@ -183,12 +183,7 @@ module list
 
 if [ -n "${SRW_ENV:-}" ] ; then
   set +u
-  if [ $machine = "gaea" ]; then
-     conda deactivate
-     conda activate ${SRW_ENV}
-  else
-     conda activate ${SRW_ENV}
-  fi
+  conda activate ${SRW_ENV}
   set -u
 fi
 
